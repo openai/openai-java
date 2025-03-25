@@ -2,7 +2,6 @@
 
 package com.openai.models.beta.assistants
 
-import com.openai.core.NoAutoDetect
 import com.openai.core.Params
 import com.openai.core.checkRequired
 import com.openai.core.http.Headers
@@ -23,16 +22,6 @@ private constructor(
 
     fun _additionalQueryParams(): QueryParams = additionalQueryParams
 
-    fun _pathParam(index: Int): String =
-        when (index) {
-            0 -> assistantId
-            else -> ""
-        }
-
-    override fun _headers(): Headers = additionalHeaders
-
-    override fun _queryParams(): QueryParams = additionalQueryParams
-
     fun toBuilder() = Builder().from(this)
 
     companion object {
@@ -49,7 +38,6 @@ private constructor(
     }
 
     /** A builder for [AssistantRetrieveParams]. */
-    @NoAutoDetect
     class Builder internal constructor() {
 
         private var assistantId: String? = null
@@ -182,6 +170,16 @@ private constructor(
                 additionalQueryParams.build(),
             )
     }
+
+    fun _pathParam(index: Int): String =
+        when (index) {
+            0 -> assistantId
+            else -> ""
+        }
+
+    override fun _headers(): Headers = additionalHeaders
+
+    override fun _queryParams(): QueryParams = additionalQueryParams
 
     override fun equals(other: Any?): Boolean {
         if (this === other) {

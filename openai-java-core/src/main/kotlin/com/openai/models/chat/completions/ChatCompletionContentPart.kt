@@ -19,12 +19,10 @@ import com.openai.core.ExcludeMissing
 import com.openai.core.JsonField
 import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
-import com.openai.core.NoAutoDetect
 import com.openai.core.checkRequired
 import com.openai.core.getOrThrow
-import com.openai.core.immutableEmptyMap
-import com.openai.core.toImmutable
 import com.openai.errors.OpenAIInvalidDataException
+import java.util.Collections
 import java.util.Objects
 import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
@@ -264,17 +262,18 @@ private constructor(
     /**
      * Learn about [file inputs](https://platform.openai.com/docs/guides/text) for text generation.
      */
-    @NoAutoDetect
     class File
-    @JsonCreator
     private constructor(
-        @JsonProperty("file")
-        @ExcludeMissing
-        private val file: JsonField<FileObject> = JsonMissing.of(),
-        @JsonProperty("type") @ExcludeMissing private val type: JsonValue = JsonMissing.of(),
-        @JsonAnySetter
-        private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
+        private val file: JsonField<FileObject>,
+        private val type: JsonValue,
+        private val additionalProperties: MutableMap<String, JsonValue>,
     ) {
+
+        @JsonCreator
+        private constructor(
+            @JsonProperty("file") @ExcludeMissing file: JsonField<FileObject> = JsonMissing.of(),
+            @JsonProperty("type") @ExcludeMissing type: JsonValue = JsonMissing.of(),
+        ) : this(file, type, mutableMapOf())
 
         /**
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
@@ -302,25 +301,15 @@ private constructor(
          */
         @JsonProperty("file") @ExcludeMissing fun _file(): JsonField<FileObject> = file
 
+        @JsonAnySetter
+        private fun putAdditionalProperty(key: String, value: JsonValue) {
+            additionalProperties.put(key, value)
+        }
+
         @JsonAnyGetter
         @ExcludeMissing
-        fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-        private var validated: Boolean = false
-
-        fun validate(): File = apply {
-            if (validated) {
-                return@apply
-            }
-
-            file().validate()
-            _type().let {
-                if (it != JsonValue.from("file")) {
-                    throw OpenAIInvalidDataException("'type' is invalid, received $it")
-                }
-            }
-            validated = true
-        }
+        fun _additionalProperties(): Map<String, JsonValue> =
+            Collections.unmodifiableMap(additionalProperties)
 
         fun toBuilder() = Builder().from(this)
 
@@ -408,25 +397,45 @@ private constructor(
              * @throws IllegalStateException if any required field is unset.
              */
             fun build(): File =
-                File(checkRequired("file", file), type, additionalProperties.toImmutable())
+                File(checkRequired("file", file), type, additionalProperties.toMutableMap())
         }
 
-        @NoAutoDetect
+        private var validated: Boolean = false
+
+        fun validate(): File = apply {
+            if (validated) {
+                return@apply
+            }
+
+            file().validate()
+            _type().let {
+                if (it != JsonValue.from("file")) {
+                    throw OpenAIInvalidDataException("'type' is invalid, received $it")
+                }
+            }
+            validated = true
+        }
+
         class FileObject
-        @JsonCreator
         private constructor(
-            @JsonProperty("file_data")
-            @ExcludeMissing
-            private val fileData: JsonField<String> = JsonMissing.of(),
-            @JsonProperty("file_id")
-            @ExcludeMissing
-            private val fileId: JsonField<String> = JsonMissing.of(),
-            @JsonProperty("filename")
-            @ExcludeMissing
-            private val filename: JsonField<String> = JsonMissing.of(),
-            @JsonAnySetter
-            private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
+            private val fileData: JsonField<String>,
+            private val fileId: JsonField<String>,
+            private val filename: JsonField<String>,
+            private val additionalProperties: MutableMap<String, JsonValue>,
         ) {
+
+            @JsonCreator
+            private constructor(
+                @JsonProperty("file_data")
+                @ExcludeMissing
+                fileData: JsonField<String> = JsonMissing.of(),
+                @JsonProperty("file_id")
+                @ExcludeMissing
+                fileId: JsonField<String> = JsonMissing.of(),
+                @JsonProperty("filename")
+                @ExcludeMissing
+                filename: JsonField<String> = JsonMissing.of(),
+            ) : this(fileData, fileId, filename, mutableMapOf())
 
             /**
              * The base64 encoded file data, used when passing the file to the model as a string.
@@ -476,22 +485,15 @@ private constructor(
              */
             @JsonProperty("filename") @ExcludeMissing fun _filename(): JsonField<String> = filename
 
+            @JsonAnySetter
+            private fun putAdditionalProperty(key: String, value: JsonValue) {
+                additionalProperties.put(key, value)
+            }
+
             @JsonAnyGetter
             @ExcludeMissing
-            fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-            private var validated: Boolean = false
-
-            fun validate(): FileObject = apply {
-                if (validated) {
-                    return@apply
-                }
-
-                fileData()
-                fileId()
-                filename()
-                validated = true
-            }
+            fun _additionalProperties(): Map<String, JsonValue> =
+                Collections.unmodifiableMap(additionalProperties)
 
             fun toBuilder() = Builder().from(this)
 
@@ -584,7 +586,20 @@ private constructor(
                  * Further updates to this [Builder] will not mutate the returned instance.
                  */
                 fun build(): FileObject =
-                    FileObject(fileData, fileId, filename, additionalProperties.toImmutable())
+                    FileObject(fileData, fileId, filename, additionalProperties.toMutableMap())
+            }
+
+            private var validated: Boolean = false
+
+            fun validate(): FileObject = apply {
+                if (validated) {
+                    return@apply
+                }
+
+                fileData()
+                fileId()
+                filename()
+                validated = true
             }
 
             override fun equals(other: Any?): Boolean {

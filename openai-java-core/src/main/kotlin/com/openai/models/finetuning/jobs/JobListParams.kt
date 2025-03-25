@@ -2,7 +2,6 @@
 
 package com.openai.models.finetuning.jobs
 
-import com.openai.core.NoAutoDetect
 import com.openai.core.Params
 import com.openai.core.http.Headers
 import com.openai.core.http.QueryParams
@@ -36,24 +35,6 @@ private constructor(
 
     fun _additionalQueryParams(): QueryParams = additionalQueryParams
 
-    override fun _headers(): Headers = additionalHeaders
-
-    override fun _queryParams(): QueryParams =
-        QueryParams.builder()
-            .apply {
-                after?.let { put("after", it) }
-                limit?.let { put("limit", it.toString()) }
-                metadata?.let {
-                    it._additionalProperties().keys().forEach { key ->
-                        it._additionalProperties().values(key).forEach { value ->
-                            put("metadata[$key]", value)
-                        }
-                    }
-                }
-                putAll(additionalQueryParams)
-            }
-            .build()
-
     fun toBuilder() = Builder().from(this)
 
     companion object {
@@ -65,7 +46,6 @@ private constructor(
     }
 
     /** A builder for [JobListParams]. */
-    @NoAutoDetect
     class Builder internal constructor() {
 
         private var after: String? = null
@@ -223,6 +203,24 @@ private constructor(
                 additionalQueryParams.build(),
             )
     }
+
+    override fun _headers(): Headers = additionalHeaders
+
+    override fun _queryParams(): QueryParams =
+        QueryParams.builder()
+            .apply {
+                after?.let { put("after", it) }
+                limit?.let { put("limit", it.toString()) }
+                metadata?.let {
+                    it._additionalProperties().keys().forEach { key ->
+                        it._additionalProperties().values(key).forEach { value ->
+                            put("metadata[$key]", value)
+                        }
+                    }
+                }
+                putAll(additionalQueryParams)
+            }
+            .build()
 
     /**
      * Optional metadata filter. To filter, use the syntax `metadata[k]=v`. Alternatively, set

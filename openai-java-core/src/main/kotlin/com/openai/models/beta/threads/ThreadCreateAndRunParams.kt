@@ -20,14 +20,12 @@ import com.openai.core.ExcludeMissing
 import com.openai.core.JsonField
 import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
-import com.openai.core.NoAutoDetect
 import com.openai.core.Params
 import com.openai.core.checkKnown
 import com.openai.core.checkRequired
 import com.openai.core.getOrThrow
 import com.openai.core.http.Headers
 import com.openai.core.http.QueryParams
-import com.openai.core.immutableEmptyMap
 import com.openai.core.toImmutable
 import com.openai.errors.OpenAIInvalidDataException
 import com.openai.models.ChatModel
@@ -39,6 +37,7 @@ import com.openai.models.beta.assistants.CodeInterpreterTool
 import com.openai.models.beta.assistants.FileSearchTool
 import com.openai.models.beta.assistants.FunctionTool
 import com.openai.models.beta.threads.messages.MessageContentPartParam
+import java.util.Collections
 import java.util.Objects
 import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
@@ -334,981 +333,6 @@ private constructor(
 
     fun _additionalQueryParams(): QueryParams = additionalQueryParams
 
-    @JvmSynthetic internal fun _body(): Body = body
-
-    override fun _headers(): Headers = additionalHeaders
-
-    override fun _queryParams(): QueryParams = additionalQueryParams
-
-    @NoAutoDetect
-    class Body
-    @JsonCreator
-    private constructor(
-        @JsonProperty("assistant_id")
-        @ExcludeMissing
-        private val assistantId: JsonField<String> = JsonMissing.of(),
-        @JsonProperty("instructions")
-        @ExcludeMissing
-        private val instructions: JsonField<String> = JsonMissing.of(),
-        @JsonProperty("max_completion_tokens")
-        @ExcludeMissing
-        private val maxCompletionTokens: JsonField<Long> = JsonMissing.of(),
-        @JsonProperty("max_prompt_tokens")
-        @ExcludeMissing
-        private val maxPromptTokens: JsonField<Long> = JsonMissing.of(),
-        @JsonProperty("metadata")
-        @ExcludeMissing
-        private val metadata: JsonField<Metadata> = JsonMissing.of(),
-        @JsonProperty("model")
-        @ExcludeMissing
-        private val model: JsonField<ChatModel> = JsonMissing.of(),
-        @JsonProperty("parallel_tool_calls")
-        @ExcludeMissing
-        private val parallelToolCalls: JsonField<Boolean> = JsonMissing.of(),
-        @JsonProperty("response_format")
-        @ExcludeMissing
-        private val responseFormat: JsonField<AssistantResponseFormatOption> = JsonMissing.of(),
-        @JsonProperty("temperature")
-        @ExcludeMissing
-        private val temperature: JsonField<Double> = JsonMissing.of(),
-        @JsonProperty("thread")
-        @ExcludeMissing
-        private val thread: JsonField<Thread> = JsonMissing.of(),
-        @JsonProperty("tool_choice")
-        @ExcludeMissing
-        private val toolChoice: JsonField<AssistantToolChoiceOption> = JsonMissing.of(),
-        @JsonProperty("tool_resources")
-        @ExcludeMissing
-        private val toolResources: JsonField<ToolResources> = JsonMissing.of(),
-        @JsonProperty("tools")
-        @ExcludeMissing
-        private val tools: JsonField<List<Tool>> = JsonMissing.of(),
-        @JsonProperty("top_p")
-        @ExcludeMissing
-        private val topP: JsonField<Double> = JsonMissing.of(),
-        @JsonProperty("truncation_strategy")
-        @ExcludeMissing
-        private val truncationStrategy: JsonField<TruncationStrategy> = JsonMissing.of(),
-        @JsonAnySetter
-        private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
-    ) {
-
-        /**
-         * The ID of the [assistant](https://platform.openai.com/docs/api-reference/assistants) to
-         * use to execute this run.
-         *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
-         */
-        fun assistantId(): String = assistantId.getRequired("assistant_id")
-
-        /**
-         * Override the default system message of the assistant. This is useful for modifying the
-         * behavior on a per-run basis.
-         *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
-         */
-        fun instructions(): Optional<String> =
-            Optional.ofNullable(instructions.getNullable("instructions"))
-
-        /**
-         * The maximum number of completion tokens that may be used over the course of the run. The
-         * run will make a best effort to use only the number of completion tokens specified, across
-         * multiple turns of the run. If the run exceeds the number of completion tokens specified,
-         * the run will end with status `incomplete`. See `incomplete_details` for more info.
-         *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
-         */
-        fun maxCompletionTokens(): Optional<Long> =
-            Optional.ofNullable(maxCompletionTokens.getNullable("max_completion_tokens"))
-
-        /**
-         * The maximum number of prompt tokens that may be used over the course of the run. The run
-         * will make a best effort to use only the number of prompt tokens specified, across
-         * multiple turns of the run. If the run exceeds the number of prompt tokens specified, the
-         * run will end with status `incomplete`. See `incomplete_details` for more info.
-         *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
-         */
-        fun maxPromptTokens(): Optional<Long> =
-            Optional.ofNullable(maxPromptTokens.getNullable("max_prompt_tokens"))
-
-        /**
-         * Set of 16 key-value pairs that can be attached to an object. This can be useful for
-         * storing additional information about the object in a structured format, and querying for
-         * objects via API or the dashboard.
-         *
-         * Keys are strings with a maximum length of 64 characters. Values are strings with a
-         * maximum length of 512 characters.
-         *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
-         */
-        fun metadata(): Optional<Metadata> = Optional.ofNullable(metadata.getNullable("metadata"))
-
-        /**
-         * The ID of the [Model](https://platform.openai.com/docs/api-reference/models) to be used
-         * to execute this run. If a value is provided here, it will override the model associated
-         * with the assistant. If not, the model associated with the assistant will be used.
-         *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
-         */
-        fun model(): Optional<ChatModel> = Optional.ofNullable(model.getNullable("model"))
-
-        /**
-         * Whether to enable
-         * [parallel function calling](https://platform.openai.com/docs/guides/function-calling#configuring-parallel-function-calling)
-         * during tool use.
-         *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
-         */
-        fun parallelToolCalls(): Optional<Boolean> =
-            Optional.ofNullable(parallelToolCalls.getNullable("parallel_tool_calls"))
-
-        /**
-         * Specifies the format that the model must output. Compatible with
-         * [GPT-4o](https://platform.openai.com/docs/models#gpt-4o), [GPT-4
-         * Turbo](https://platform.openai.com/docs/models#gpt-4-turbo-and-gpt-4), and all GPT-3.5
-         * Turbo models since `gpt-3.5-turbo-1106`.
-         *
-         * Setting to `{ "type": "json_schema", "json_schema": {...} }` enables Structured Outputs
-         * which ensures the model will match your supplied JSON schema. Learn more in the
-         * [Structured Outputs guide](https://platform.openai.com/docs/guides/structured-outputs).
-         *
-         * Setting to `{ "type": "json_object" }` enables JSON mode, which ensures the message the
-         * model generates is valid JSON.
-         *
-         * **Important:** when using JSON mode, you **must** also instruct the model to produce JSON
-         * yourself via a system or user message. Without this, the model may generate an unending
-         * stream of whitespace until the generation reaches the token limit, resulting in a
-         * long-running and seemingly "stuck" request. Also note that the message content may be
-         * partially cut off if `finish_reason="length"`, which indicates the generation exceeded
-         * `max_tokens` or the conversation exceeded the max context length.
-         *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
-         */
-        fun responseFormat(): Optional<AssistantResponseFormatOption> =
-            Optional.ofNullable(responseFormat.getNullable("response_format"))
-
-        /**
-         * What sampling temperature to use, between 0 and 2. Higher values like 0.8 will make the
-         * output more random, while lower values like 0.2 will make it more focused and
-         * deterministic.
-         *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
-         */
-        fun temperature(): Optional<Double> =
-            Optional.ofNullable(temperature.getNullable("temperature"))
-
-        /**
-         * Options to create a new thread. If no thread is provided when running a request, an empty
-         * thread will be created.
-         *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
-         */
-        fun thread(): Optional<Thread> = Optional.ofNullable(thread.getNullable("thread"))
-
-        /**
-         * Controls which (if any) tool is called by the model. `none` means the model will not call
-         * any tools and instead generates a message. `auto` is the default value and means the
-         * model can pick between generating a message or calling one or more tools. `required`
-         * means the model must call one or more tools before responding to the user. Specifying a
-         * particular tool like `{"type": "file_search"}` or `{"type": "function", "function":
-         * {"name": "my_function"}}` forces the model to call that tool.
-         *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
-         */
-        fun toolChoice(): Optional<AssistantToolChoiceOption> =
-            Optional.ofNullable(toolChoice.getNullable("tool_choice"))
-
-        /**
-         * A set of resources that are used by the assistant's tools. The resources are specific to
-         * the type of tool. For example, the `code_interpreter` tool requires a list of file IDs,
-         * while the `file_search` tool requires a list of vector store IDs.
-         *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
-         */
-        fun toolResources(): Optional<ToolResources> =
-            Optional.ofNullable(toolResources.getNullable("tool_resources"))
-
-        /**
-         * Override the tools the assistant can use for this run. This is useful for modifying the
-         * behavior on a per-run basis.
-         *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
-         */
-        fun tools(): Optional<List<Tool>> = Optional.ofNullable(tools.getNullable("tools"))
-
-        /**
-         * An alternative to sampling with temperature, called nucleus sampling, where the model
-         * considers the results of the tokens with top_p probability mass. So 0.1 means only the
-         * tokens comprising the top 10% probability mass are considered.
-         *
-         * We generally recommend altering this or temperature but not both.
-         *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
-         */
-        fun topP(): Optional<Double> = Optional.ofNullable(topP.getNullable("top_p"))
-
-        /**
-         * Controls for how a thread will be truncated prior to the run. Use this to control the
-         * intial context window of the run.
-         *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
-         */
-        fun truncationStrategy(): Optional<TruncationStrategy> =
-            Optional.ofNullable(truncationStrategy.getNullable("truncation_strategy"))
-
-        /**
-         * Returns the raw JSON value of [assistantId].
-         *
-         * Unlike [assistantId], this method doesn't throw if the JSON field has an unexpected type.
-         */
-        @JsonProperty("assistant_id")
-        @ExcludeMissing
-        fun _assistantId(): JsonField<String> = assistantId
-
-        /**
-         * Returns the raw JSON value of [instructions].
-         *
-         * Unlike [instructions], this method doesn't throw if the JSON field has an unexpected
-         * type.
-         */
-        @JsonProperty("instructions")
-        @ExcludeMissing
-        fun _instructions(): JsonField<String> = instructions
-
-        /**
-         * Returns the raw JSON value of [maxCompletionTokens].
-         *
-         * Unlike [maxCompletionTokens], this method doesn't throw if the JSON field has an
-         * unexpected type.
-         */
-        @JsonProperty("max_completion_tokens")
-        @ExcludeMissing
-        fun _maxCompletionTokens(): JsonField<Long> = maxCompletionTokens
-
-        /**
-         * Returns the raw JSON value of [maxPromptTokens].
-         *
-         * Unlike [maxPromptTokens], this method doesn't throw if the JSON field has an unexpected
-         * type.
-         */
-        @JsonProperty("max_prompt_tokens")
-        @ExcludeMissing
-        fun _maxPromptTokens(): JsonField<Long> = maxPromptTokens
-
-        /**
-         * Returns the raw JSON value of [metadata].
-         *
-         * Unlike [metadata], this method doesn't throw if the JSON field has an unexpected type.
-         */
-        @JsonProperty("metadata") @ExcludeMissing fun _metadata(): JsonField<Metadata> = metadata
-
-        /**
-         * Returns the raw JSON value of [model].
-         *
-         * Unlike [model], this method doesn't throw if the JSON field has an unexpected type.
-         */
-        @JsonProperty("model") @ExcludeMissing fun _model(): JsonField<ChatModel> = model
-
-        /**
-         * Returns the raw JSON value of [parallelToolCalls].
-         *
-         * Unlike [parallelToolCalls], this method doesn't throw if the JSON field has an unexpected
-         * type.
-         */
-        @JsonProperty("parallel_tool_calls")
-        @ExcludeMissing
-        fun _parallelToolCalls(): JsonField<Boolean> = parallelToolCalls
-
-        /**
-         * Returns the raw JSON value of [responseFormat].
-         *
-         * Unlike [responseFormat], this method doesn't throw if the JSON field has an unexpected
-         * type.
-         */
-        @JsonProperty("response_format")
-        @ExcludeMissing
-        fun _responseFormat(): JsonField<AssistantResponseFormatOption> = responseFormat
-
-        /**
-         * Returns the raw JSON value of [temperature].
-         *
-         * Unlike [temperature], this method doesn't throw if the JSON field has an unexpected type.
-         */
-        @JsonProperty("temperature")
-        @ExcludeMissing
-        fun _temperature(): JsonField<Double> = temperature
-
-        /**
-         * Returns the raw JSON value of [thread].
-         *
-         * Unlike [thread], this method doesn't throw if the JSON field has an unexpected type.
-         */
-        @JsonProperty("thread") @ExcludeMissing fun _thread(): JsonField<Thread> = thread
-
-        /**
-         * Returns the raw JSON value of [toolChoice].
-         *
-         * Unlike [toolChoice], this method doesn't throw if the JSON field has an unexpected type.
-         */
-        @JsonProperty("tool_choice")
-        @ExcludeMissing
-        fun _toolChoice(): JsonField<AssistantToolChoiceOption> = toolChoice
-
-        /**
-         * Returns the raw JSON value of [toolResources].
-         *
-         * Unlike [toolResources], this method doesn't throw if the JSON field has an unexpected
-         * type.
-         */
-        @JsonProperty("tool_resources")
-        @ExcludeMissing
-        fun _toolResources(): JsonField<ToolResources> = toolResources
-
-        /**
-         * Returns the raw JSON value of [tools].
-         *
-         * Unlike [tools], this method doesn't throw if the JSON field has an unexpected type.
-         */
-        @JsonProperty("tools") @ExcludeMissing fun _tools(): JsonField<List<Tool>> = tools
-
-        /**
-         * Returns the raw JSON value of [topP].
-         *
-         * Unlike [topP], this method doesn't throw if the JSON field has an unexpected type.
-         */
-        @JsonProperty("top_p") @ExcludeMissing fun _topP(): JsonField<Double> = topP
-
-        /**
-         * Returns the raw JSON value of [truncationStrategy].
-         *
-         * Unlike [truncationStrategy], this method doesn't throw if the JSON field has an
-         * unexpected type.
-         */
-        @JsonProperty("truncation_strategy")
-        @ExcludeMissing
-        fun _truncationStrategy(): JsonField<TruncationStrategy> = truncationStrategy
-
-        @JsonAnyGetter
-        @ExcludeMissing
-        fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-        private var validated: Boolean = false
-
-        fun validate(): Body = apply {
-            if (validated) {
-                return@apply
-            }
-
-            assistantId()
-            instructions()
-            maxCompletionTokens()
-            maxPromptTokens()
-            metadata().ifPresent { it.validate() }
-            model()
-            parallelToolCalls()
-            responseFormat().ifPresent { it.validate() }
-            temperature()
-            thread().ifPresent { it.validate() }
-            toolChoice().ifPresent { it.validate() }
-            toolResources().ifPresent { it.validate() }
-            tools().ifPresent { it.forEach { it.validate() } }
-            topP()
-            truncationStrategy().ifPresent { it.validate() }
-            validated = true
-        }
-
-        fun toBuilder() = Builder().from(this)
-
-        companion object {
-
-            /**
-             * Returns a mutable builder for constructing an instance of [Body].
-             *
-             * The following fields are required:
-             * ```java
-             * .assistantId()
-             * ```
-             */
-            @JvmStatic fun builder() = Builder()
-        }
-
-        /** A builder for [Body]. */
-        class Builder internal constructor() {
-
-            private var assistantId: JsonField<String>? = null
-            private var instructions: JsonField<String> = JsonMissing.of()
-            private var maxCompletionTokens: JsonField<Long> = JsonMissing.of()
-            private var maxPromptTokens: JsonField<Long> = JsonMissing.of()
-            private var metadata: JsonField<Metadata> = JsonMissing.of()
-            private var model: JsonField<ChatModel> = JsonMissing.of()
-            private var parallelToolCalls: JsonField<Boolean> = JsonMissing.of()
-            private var responseFormat: JsonField<AssistantResponseFormatOption> = JsonMissing.of()
-            private var temperature: JsonField<Double> = JsonMissing.of()
-            private var thread: JsonField<Thread> = JsonMissing.of()
-            private var toolChoice: JsonField<AssistantToolChoiceOption> = JsonMissing.of()
-            private var toolResources: JsonField<ToolResources> = JsonMissing.of()
-            private var tools: JsonField<MutableList<Tool>>? = null
-            private var topP: JsonField<Double> = JsonMissing.of()
-            private var truncationStrategy: JsonField<TruncationStrategy> = JsonMissing.of()
-            private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
-
-            @JvmSynthetic
-            internal fun from(body: Body) = apply {
-                assistantId = body.assistantId
-                instructions = body.instructions
-                maxCompletionTokens = body.maxCompletionTokens
-                maxPromptTokens = body.maxPromptTokens
-                metadata = body.metadata
-                model = body.model
-                parallelToolCalls = body.parallelToolCalls
-                responseFormat = body.responseFormat
-                temperature = body.temperature
-                thread = body.thread
-                toolChoice = body.toolChoice
-                toolResources = body.toolResources
-                tools = body.tools.map { it.toMutableList() }
-                topP = body.topP
-                truncationStrategy = body.truncationStrategy
-                additionalProperties = body.additionalProperties.toMutableMap()
-            }
-
-            /**
-             * The ID of the [assistant](https://platform.openai.com/docs/api-reference/assistants)
-             * to use to execute this run.
-             */
-            fun assistantId(assistantId: String) = assistantId(JsonField.of(assistantId))
-
-            /**
-             * Sets [Builder.assistantId] to an arbitrary JSON value.
-             *
-             * You should usually call [Builder.assistantId] with a well-typed [String] value
-             * instead. This method is primarily for setting the field to an undocumented or not yet
-             * supported value.
-             */
-            fun assistantId(assistantId: JsonField<String>) = apply {
-                this.assistantId = assistantId
-            }
-
-            /**
-             * Override the default system message of the assistant. This is useful for modifying
-             * the behavior on a per-run basis.
-             */
-            fun instructions(instructions: String?) =
-                instructions(JsonField.ofNullable(instructions))
-
-            /** Alias for calling [Builder.instructions] with `instructions.orElse(null)`. */
-            fun instructions(instructions: Optional<String>) =
-                instructions(instructions.getOrNull())
-
-            /**
-             * Sets [Builder.instructions] to an arbitrary JSON value.
-             *
-             * You should usually call [Builder.instructions] with a well-typed [String] value
-             * instead. This method is primarily for setting the field to an undocumented or not yet
-             * supported value.
-             */
-            fun instructions(instructions: JsonField<String>) = apply {
-                this.instructions = instructions
-            }
-
-            /**
-             * The maximum number of completion tokens that may be used over the course of the run.
-             * The run will make a best effort to use only the number of completion tokens
-             * specified, across multiple turns of the run. If the run exceeds the number of
-             * completion tokens specified, the run will end with status `incomplete`. See
-             * `incomplete_details` for more info.
-             */
-            fun maxCompletionTokens(maxCompletionTokens: Long?) =
-                maxCompletionTokens(JsonField.ofNullable(maxCompletionTokens))
-
-            /**
-             * Alias for [Builder.maxCompletionTokens].
-             *
-             * This unboxed primitive overload exists for backwards compatibility.
-             */
-            fun maxCompletionTokens(maxCompletionTokens: Long) =
-                maxCompletionTokens(maxCompletionTokens as Long?)
-
-            /**
-             * Alias for calling [Builder.maxCompletionTokens] with
-             * `maxCompletionTokens.orElse(null)`.
-             */
-            fun maxCompletionTokens(maxCompletionTokens: Optional<Long>) =
-                maxCompletionTokens(maxCompletionTokens.getOrNull())
-
-            /**
-             * Sets [Builder.maxCompletionTokens] to an arbitrary JSON value.
-             *
-             * You should usually call [Builder.maxCompletionTokens] with a well-typed [Long] value
-             * instead. This method is primarily for setting the field to an undocumented or not yet
-             * supported value.
-             */
-            fun maxCompletionTokens(maxCompletionTokens: JsonField<Long>) = apply {
-                this.maxCompletionTokens = maxCompletionTokens
-            }
-
-            /**
-             * The maximum number of prompt tokens that may be used over the course of the run. The
-             * run will make a best effort to use only the number of prompt tokens specified, across
-             * multiple turns of the run. If the run exceeds the number of prompt tokens specified,
-             * the run will end with status `incomplete`. See `incomplete_details` for more info.
-             */
-            fun maxPromptTokens(maxPromptTokens: Long?) =
-                maxPromptTokens(JsonField.ofNullable(maxPromptTokens))
-
-            /**
-             * Alias for [Builder.maxPromptTokens].
-             *
-             * This unboxed primitive overload exists for backwards compatibility.
-             */
-            fun maxPromptTokens(maxPromptTokens: Long) = maxPromptTokens(maxPromptTokens as Long?)
-
-            /** Alias for calling [Builder.maxPromptTokens] with `maxPromptTokens.orElse(null)`. */
-            fun maxPromptTokens(maxPromptTokens: Optional<Long>) =
-                maxPromptTokens(maxPromptTokens.getOrNull())
-
-            /**
-             * Sets [Builder.maxPromptTokens] to an arbitrary JSON value.
-             *
-             * You should usually call [Builder.maxPromptTokens] with a well-typed [Long] value
-             * instead. This method is primarily for setting the field to an undocumented or not yet
-             * supported value.
-             */
-            fun maxPromptTokens(maxPromptTokens: JsonField<Long>) = apply {
-                this.maxPromptTokens = maxPromptTokens
-            }
-
-            /**
-             * Set of 16 key-value pairs that can be attached to an object. This can be useful for
-             * storing additional information about the object in a structured format, and querying
-             * for objects via API or the dashboard.
-             *
-             * Keys are strings with a maximum length of 64 characters. Values are strings with a
-             * maximum length of 512 characters.
-             */
-            fun metadata(metadata: Metadata?) = metadata(JsonField.ofNullable(metadata))
-
-            /** Alias for calling [Builder.metadata] with `metadata.orElse(null)`. */
-            fun metadata(metadata: Optional<Metadata>) = metadata(metadata.getOrNull())
-
-            /**
-             * Sets [Builder.metadata] to an arbitrary JSON value.
-             *
-             * You should usually call [Builder.metadata] with a well-typed [Metadata] value
-             * instead. This method is primarily for setting the field to an undocumented or not yet
-             * supported value.
-             */
-            fun metadata(metadata: JsonField<Metadata>) = apply { this.metadata = metadata }
-
-            /**
-             * The ID of the [Model](https://platform.openai.com/docs/api-reference/models) to be
-             * used to execute this run. If a value is provided here, it will override the model
-             * associated with the assistant. If not, the model associated with the assistant will
-             * be used.
-             */
-            fun model(model: ChatModel?) = model(JsonField.ofNullable(model))
-
-            /** Alias for calling [Builder.model] with `model.orElse(null)`. */
-            fun model(model: Optional<ChatModel>) = model(model.getOrNull())
-
-            /**
-             * Sets [Builder.model] to an arbitrary JSON value.
-             *
-             * You should usually call [Builder.model] with a well-typed [ChatModel] value instead.
-             * This method is primarily for setting the field to an undocumented or not yet
-             * supported value.
-             */
-            fun model(model: JsonField<ChatModel>) = apply { this.model = model }
-
-            /**
-             * Sets [model] to an arbitrary [String].
-             *
-             * You should usually call [model] with a well-typed [ChatModel] constant instead. This
-             * method is primarily for setting the field to an undocumented or not yet supported
-             * value.
-             */
-            fun model(value: String) = model(ChatModel.of(value))
-
-            /**
-             * Whether to enable
-             * [parallel function calling](https://platform.openai.com/docs/guides/function-calling#configuring-parallel-function-calling)
-             * during tool use.
-             */
-            fun parallelToolCalls(parallelToolCalls: Boolean) =
-                parallelToolCalls(JsonField.of(parallelToolCalls))
-
-            /**
-             * Sets [Builder.parallelToolCalls] to an arbitrary JSON value.
-             *
-             * You should usually call [Builder.parallelToolCalls] with a well-typed [Boolean] value
-             * instead. This method is primarily for setting the field to an undocumented or not yet
-             * supported value.
-             */
-            fun parallelToolCalls(parallelToolCalls: JsonField<Boolean>) = apply {
-                this.parallelToolCalls = parallelToolCalls
-            }
-
-            /**
-             * Specifies the format that the model must output. Compatible with
-             * [GPT-4o](https://platform.openai.com/docs/models#gpt-4o), [GPT-4
-             * Turbo](https://platform.openai.com/docs/models#gpt-4-turbo-and-gpt-4), and all
-             * GPT-3.5 Turbo models since `gpt-3.5-turbo-1106`.
-             *
-             * Setting to `{ "type": "json_schema", "json_schema": {...} }` enables Structured
-             * Outputs which ensures the model will match your supplied JSON schema. Learn more in
-             * the
-             * [Structured Outputs guide](https://platform.openai.com/docs/guides/structured-outputs).
-             *
-             * Setting to `{ "type": "json_object" }` enables JSON mode, which ensures the message
-             * the model generates is valid JSON.
-             *
-             * **Important:** when using JSON mode, you **must** also instruct the model to produce
-             * JSON yourself via a system or user message. Without this, the model may generate an
-             * unending stream of whitespace until the generation reaches the token limit, resulting
-             * in a long-running and seemingly "stuck" request. Also note that the message content
-             * may be partially cut off if `finish_reason="length"`, which indicates the generation
-             * exceeded `max_tokens` or the conversation exceeded the max context length.
-             */
-            fun responseFormat(responseFormat: AssistantResponseFormatOption?) =
-                responseFormat(JsonField.ofNullable(responseFormat))
-
-            /** Alias for calling [Builder.responseFormat] with `responseFormat.orElse(null)`. */
-            fun responseFormat(responseFormat: Optional<AssistantResponseFormatOption>) =
-                responseFormat(responseFormat.getOrNull())
-
-            /**
-             * Sets [Builder.responseFormat] to an arbitrary JSON value.
-             *
-             * You should usually call [Builder.responseFormat] with a well-typed
-             * [AssistantResponseFormatOption] value instead. This method is primarily for setting
-             * the field to an undocumented or not yet supported value.
-             */
-            fun responseFormat(responseFormat: JsonField<AssistantResponseFormatOption>) = apply {
-                this.responseFormat = responseFormat
-            }
-
-            /**
-             * Alias for calling [responseFormat] with
-             * `AssistantResponseFormatOption.ofJsonValue()`.
-             */
-            fun responseFormatJsonValue() =
-                responseFormat(AssistantResponseFormatOption.ofJsonValue())
-
-            /**
-             * Alias for calling [responseFormat] with
-             * `AssistantResponseFormatOption.ofResponseFormatText(responseFormatText)`.
-             */
-            fun responseFormat(responseFormatText: ResponseFormatText) =
-                responseFormat(
-                    AssistantResponseFormatOption.ofResponseFormatText(responseFormatText)
-                )
-
-            /**
-             * Alias for calling [responseFormat] with
-             * `AssistantResponseFormatOption.ofResponseFormatJsonObject(responseFormatJsonObject)`.
-             */
-            fun responseFormat(responseFormatJsonObject: ResponseFormatJsonObject) =
-                responseFormat(
-                    AssistantResponseFormatOption.ofResponseFormatJsonObject(
-                        responseFormatJsonObject
-                    )
-                )
-
-            /**
-             * Alias for calling [responseFormat] with
-             * `AssistantResponseFormatOption.ofResponseFormatJsonSchema(responseFormatJsonSchema)`.
-             */
-            fun responseFormat(responseFormatJsonSchema: ResponseFormatJsonSchema) =
-                responseFormat(
-                    AssistantResponseFormatOption.ofResponseFormatJsonSchema(
-                        responseFormatJsonSchema
-                    )
-                )
-
-            /**
-             * What sampling temperature to use, between 0 and 2. Higher values like 0.8 will make
-             * the output more random, while lower values like 0.2 will make it more focused and
-             * deterministic.
-             */
-            fun temperature(temperature: Double?) = temperature(JsonField.ofNullable(temperature))
-
-            /**
-             * Alias for [Builder.temperature].
-             *
-             * This unboxed primitive overload exists for backwards compatibility.
-             */
-            fun temperature(temperature: Double) = temperature(temperature as Double?)
-
-            /** Alias for calling [Builder.temperature] with `temperature.orElse(null)`. */
-            fun temperature(temperature: Optional<Double>) = temperature(temperature.getOrNull())
-
-            /**
-             * Sets [Builder.temperature] to an arbitrary JSON value.
-             *
-             * You should usually call [Builder.temperature] with a well-typed [Double] value
-             * instead. This method is primarily for setting the field to an undocumented or not yet
-             * supported value.
-             */
-            fun temperature(temperature: JsonField<Double>) = apply {
-                this.temperature = temperature
-            }
-
-            /**
-             * Options to create a new thread. If no thread is provided when running a request, an
-             * empty thread will be created.
-             */
-            fun thread(thread: Thread) = thread(JsonField.of(thread))
-
-            /**
-             * Sets [Builder.thread] to an arbitrary JSON value.
-             *
-             * You should usually call [Builder.thread] with a well-typed [Thread] value instead.
-             * This method is primarily for setting the field to an undocumented or not yet
-             * supported value.
-             */
-            fun thread(thread: JsonField<Thread>) = apply { this.thread = thread }
-
-            /**
-             * Controls which (if any) tool is called by the model. `none` means the model will not
-             * call any tools and instead generates a message. `auto` is the default value and means
-             * the model can pick between generating a message or calling one or more tools.
-             * `required` means the model must call one or more tools before responding to the user.
-             * Specifying a particular tool like `{"type": "file_search"}` or `{"type": "function",
-             * "function": {"name": "my_function"}}` forces the model to call that tool.
-             */
-            fun toolChoice(toolChoice: AssistantToolChoiceOption?) =
-                toolChoice(JsonField.ofNullable(toolChoice))
-
-            /** Alias for calling [Builder.toolChoice] with `toolChoice.orElse(null)`. */
-            fun toolChoice(toolChoice: Optional<AssistantToolChoiceOption>) =
-                toolChoice(toolChoice.getOrNull())
-
-            /**
-             * Sets [Builder.toolChoice] to an arbitrary JSON value.
-             *
-             * You should usually call [Builder.toolChoice] with a well-typed
-             * [AssistantToolChoiceOption] value instead. This method is primarily for setting the
-             * field to an undocumented or not yet supported value.
-             */
-            fun toolChoice(toolChoice: JsonField<AssistantToolChoiceOption>) = apply {
-                this.toolChoice = toolChoice
-            }
-
-            /** Alias for calling [toolChoice] with `AssistantToolChoiceOption.ofAuto(auto)`. */
-            fun toolChoice(auto: AssistantToolChoiceOption.Auto) =
-                toolChoice(AssistantToolChoiceOption.ofAuto(auto))
-
-            /**
-             * Alias for calling [toolChoice] with
-             * `AssistantToolChoiceOption.ofAssistantToolChoice(assistantToolChoice)`.
-             */
-            fun toolChoice(assistantToolChoice: AssistantToolChoice) =
-                toolChoice(AssistantToolChoiceOption.ofAssistantToolChoice(assistantToolChoice))
-
-            /**
-             * A set of resources that are used by the assistant's tools. The resources are specific
-             * to the type of tool. For example, the `code_interpreter` tool requires a list of file
-             * IDs, while the `file_search` tool requires a list of vector store IDs.
-             */
-            fun toolResources(toolResources: ToolResources?) =
-                toolResources(JsonField.ofNullable(toolResources))
-
-            /** Alias for calling [Builder.toolResources] with `toolResources.orElse(null)`. */
-            fun toolResources(toolResources: Optional<ToolResources>) =
-                toolResources(toolResources.getOrNull())
-
-            /**
-             * Sets [Builder.toolResources] to an arbitrary JSON value.
-             *
-             * You should usually call [Builder.toolResources] with a well-typed [ToolResources]
-             * value instead. This method is primarily for setting the field to an undocumented or
-             * not yet supported value.
-             */
-            fun toolResources(toolResources: JsonField<ToolResources>) = apply {
-                this.toolResources = toolResources
-            }
-
-            /**
-             * Override the tools the assistant can use for this run. This is useful for modifying
-             * the behavior on a per-run basis.
-             */
-            fun tools(tools: List<Tool>?) = tools(JsonField.ofNullable(tools))
-
-            /** Alias for calling [Builder.tools] with `tools.orElse(null)`. */
-            fun tools(tools: Optional<List<Tool>>) = tools(tools.getOrNull())
-
-            /**
-             * Sets [Builder.tools] to an arbitrary JSON value.
-             *
-             * You should usually call [Builder.tools] with a well-typed `List<Tool>` value instead.
-             * This method is primarily for setting the field to an undocumented or not yet
-             * supported value.
-             */
-            fun tools(tools: JsonField<List<Tool>>) = apply {
-                this.tools = tools.map { it.toMutableList() }
-            }
-
-            /**
-             * Adds a single [Tool] to [tools].
-             *
-             * @throws IllegalStateException if the field was previously set to a non-list.
-             */
-            fun addTool(tool: Tool) = apply {
-                tools =
-                    (tools ?: JsonField.of(mutableListOf())).also {
-                        checkKnown("tools", it).add(tool)
-                    }
-            }
-
-            /** Alias for calling [addTool] with `Tool.ofCodeInterpreter(codeInterpreter)`. */
-            fun addTool(codeInterpreter: CodeInterpreterTool) =
-                addTool(Tool.ofCodeInterpreter(codeInterpreter))
-
-            /** Alias for calling [addTool] with `Tool.ofFileSearch(fileSearch)`. */
-            fun addTool(fileSearch: FileSearchTool) = addTool(Tool.ofFileSearch(fileSearch))
-
-            /** Alias for calling [addTool] with `Tool.ofFunction(function)`. */
-            fun addTool(function: FunctionTool) = addTool(Tool.ofFunction(function))
-
-            /**
-             * An alternative to sampling with temperature, called nucleus sampling, where the model
-             * considers the results of the tokens with top_p probability mass. So 0.1 means only
-             * the tokens comprising the top 10% probability mass are considered.
-             *
-             * We generally recommend altering this or temperature but not both.
-             */
-            fun topP(topP: Double?) = topP(JsonField.ofNullable(topP))
-
-            /**
-             * Alias for [Builder.topP].
-             *
-             * This unboxed primitive overload exists for backwards compatibility.
-             */
-            fun topP(topP: Double) = topP(topP as Double?)
-
-            /** Alias for calling [Builder.topP] with `topP.orElse(null)`. */
-            fun topP(topP: Optional<Double>) = topP(topP.getOrNull())
-
-            /**
-             * Sets [Builder.topP] to an arbitrary JSON value.
-             *
-             * You should usually call [Builder.topP] with a well-typed [Double] value instead. This
-             * method is primarily for setting the field to an undocumented or not yet supported
-             * value.
-             */
-            fun topP(topP: JsonField<Double>) = apply { this.topP = topP }
-
-            /**
-             * Controls for how a thread will be truncated prior to the run. Use this to control the
-             * intial context window of the run.
-             */
-            fun truncationStrategy(truncationStrategy: TruncationStrategy?) =
-                truncationStrategy(JsonField.ofNullable(truncationStrategy))
-
-            /**
-             * Alias for calling [Builder.truncationStrategy] with
-             * `truncationStrategy.orElse(null)`.
-             */
-            fun truncationStrategy(truncationStrategy: Optional<TruncationStrategy>) =
-                truncationStrategy(truncationStrategy.getOrNull())
-
-            /**
-             * Sets [Builder.truncationStrategy] to an arbitrary JSON value.
-             *
-             * You should usually call [Builder.truncationStrategy] with a well-typed
-             * [TruncationStrategy] value instead. This method is primarily for setting the field to
-             * an undocumented or not yet supported value.
-             */
-            fun truncationStrategy(truncationStrategy: JsonField<TruncationStrategy>) = apply {
-                this.truncationStrategy = truncationStrategy
-            }
-
-            fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
-                this.additionalProperties.clear()
-                putAllAdditionalProperties(additionalProperties)
-            }
-
-            fun putAdditionalProperty(key: String, value: JsonValue) = apply {
-                additionalProperties.put(key, value)
-            }
-
-            fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
-                this.additionalProperties.putAll(additionalProperties)
-            }
-
-            fun removeAdditionalProperty(key: String) = apply { additionalProperties.remove(key) }
-
-            fun removeAllAdditionalProperties(keys: Set<String>) = apply {
-                keys.forEach(::removeAdditionalProperty)
-            }
-
-            /**
-             * Returns an immutable instance of [Body].
-             *
-             * Further updates to this [Builder] will not mutate the returned instance.
-             *
-             * The following fields are required:
-             * ```java
-             * .assistantId()
-             * ```
-             *
-             * @throws IllegalStateException if any required field is unset.
-             */
-            fun build(): Body =
-                Body(
-                    checkRequired("assistantId", assistantId),
-                    instructions,
-                    maxCompletionTokens,
-                    maxPromptTokens,
-                    metadata,
-                    model,
-                    parallelToolCalls,
-                    responseFormat,
-                    temperature,
-                    thread,
-                    toolChoice,
-                    toolResources,
-                    (tools ?: JsonMissing.of()).map { it.toImmutable() },
-                    topP,
-                    truncationStrategy,
-                    additionalProperties.toImmutable(),
-                )
-        }
-
-        override fun equals(other: Any?): Boolean {
-            if (this === other) {
-                return true
-            }
-
-            return /* spotless:off */ other is Body && assistantId == other.assistantId && instructions == other.instructions && maxCompletionTokens == other.maxCompletionTokens && maxPromptTokens == other.maxPromptTokens && metadata == other.metadata && model == other.model && parallelToolCalls == other.parallelToolCalls && responseFormat == other.responseFormat && temperature == other.temperature && thread == other.thread && toolChoice == other.toolChoice && toolResources == other.toolResources && tools == other.tools && topP == other.topP && truncationStrategy == other.truncationStrategy && additionalProperties == other.additionalProperties /* spotless:on */
-        }
-
-        /* spotless:off */
-        private val hashCode: Int by lazy { Objects.hash(assistantId, instructions, maxCompletionTokens, maxPromptTokens, metadata, model, parallelToolCalls, responseFormat, temperature, thread, toolChoice, toolResources, tools, topP, truncationStrategy, additionalProperties) }
-        /* spotless:on */
-
-        override fun hashCode(): Int = hashCode
-
-        override fun toString() =
-            "Body{assistantId=$assistantId, instructions=$instructions, maxCompletionTokens=$maxCompletionTokens, maxPromptTokens=$maxPromptTokens, metadata=$metadata, model=$model, parallelToolCalls=$parallelToolCalls, responseFormat=$responseFormat, temperature=$temperature, thread=$thread, toolChoice=$toolChoice, toolResources=$toolResources, tools=$tools, topP=$topP, truncationStrategy=$truncationStrategy, additionalProperties=$additionalProperties}"
-    }
-
     fun toBuilder() = Builder().from(this)
 
     companion object {
@@ -1325,7 +349,6 @@ private constructor(
     }
 
     /** A builder for [ThreadCreateAndRunParams]. */
-    @NoAutoDetect
     class Builder internal constructor() {
 
         private var body: Body.Builder = Body.builder()
@@ -1902,26 +925,1036 @@ private constructor(
             )
     }
 
+    @JvmSynthetic internal fun _body(): Body = body
+
+    override fun _headers(): Headers = additionalHeaders
+
+    override fun _queryParams(): QueryParams = additionalQueryParams
+
+    class Body
+    private constructor(
+        private val assistantId: JsonField<String>,
+        private val instructions: JsonField<String>,
+        private val maxCompletionTokens: JsonField<Long>,
+        private val maxPromptTokens: JsonField<Long>,
+        private val metadata: JsonField<Metadata>,
+        private val model: JsonField<ChatModel>,
+        private val parallelToolCalls: JsonField<Boolean>,
+        private val responseFormat: JsonField<AssistantResponseFormatOption>,
+        private val temperature: JsonField<Double>,
+        private val thread: JsonField<Thread>,
+        private val toolChoice: JsonField<AssistantToolChoiceOption>,
+        private val toolResources: JsonField<ToolResources>,
+        private val tools: JsonField<List<Tool>>,
+        private val topP: JsonField<Double>,
+        private val truncationStrategy: JsonField<TruncationStrategy>,
+        private val additionalProperties: MutableMap<String, JsonValue>,
+    ) {
+
+        @JsonCreator
+        private constructor(
+            @JsonProperty("assistant_id")
+            @ExcludeMissing
+            assistantId: JsonField<String> = JsonMissing.of(),
+            @JsonProperty("instructions")
+            @ExcludeMissing
+            instructions: JsonField<String> = JsonMissing.of(),
+            @JsonProperty("max_completion_tokens")
+            @ExcludeMissing
+            maxCompletionTokens: JsonField<Long> = JsonMissing.of(),
+            @JsonProperty("max_prompt_tokens")
+            @ExcludeMissing
+            maxPromptTokens: JsonField<Long> = JsonMissing.of(),
+            @JsonProperty("metadata")
+            @ExcludeMissing
+            metadata: JsonField<Metadata> = JsonMissing.of(),
+            @JsonProperty("model") @ExcludeMissing model: JsonField<ChatModel> = JsonMissing.of(),
+            @JsonProperty("parallel_tool_calls")
+            @ExcludeMissing
+            parallelToolCalls: JsonField<Boolean> = JsonMissing.of(),
+            @JsonProperty("response_format")
+            @ExcludeMissing
+            responseFormat: JsonField<AssistantResponseFormatOption> = JsonMissing.of(),
+            @JsonProperty("temperature")
+            @ExcludeMissing
+            temperature: JsonField<Double> = JsonMissing.of(),
+            @JsonProperty("thread") @ExcludeMissing thread: JsonField<Thread> = JsonMissing.of(),
+            @JsonProperty("tool_choice")
+            @ExcludeMissing
+            toolChoice: JsonField<AssistantToolChoiceOption> = JsonMissing.of(),
+            @JsonProperty("tool_resources")
+            @ExcludeMissing
+            toolResources: JsonField<ToolResources> = JsonMissing.of(),
+            @JsonProperty("tools") @ExcludeMissing tools: JsonField<List<Tool>> = JsonMissing.of(),
+            @JsonProperty("top_p") @ExcludeMissing topP: JsonField<Double> = JsonMissing.of(),
+            @JsonProperty("truncation_strategy")
+            @ExcludeMissing
+            truncationStrategy: JsonField<TruncationStrategy> = JsonMissing.of(),
+        ) : this(
+            assistantId,
+            instructions,
+            maxCompletionTokens,
+            maxPromptTokens,
+            metadata,
+            model,
+            parallelToolCalls,
+            responseFormat,
+            temperature,
+            thread,
+            toolChoice,
+            toolResources,
+            tools,
+            topP,
+            truncationStrategy,
+            mutableMapOf(),
+        )
+
+        /**
+         * The ID of the [assistant](https://platform.openai.com/docs/api-reference/assistants) to
+         * use to execute this run.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         */
+        fun assistantId(): String = assistantId.getRequired("assistant_id")
+
+        /**
+         * Override the default system message of the assistant. This is useful for modifying the
+         * behavior on a per-run basis.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun instructions(): Optional<String> =
+            Optional.ofNullable(instructions.getNullable("instructions"))
+
+        /**
+         * The maximum number of completion tokens that may be used over the course of the run. The
+         * run will make a best effort to use only the number of completion tokens specified, across
+         * multiple turns of the run. If the run exceeds the number of completion tokens specified,
+         * the run will end with status `incomplete`. See `incomplete_details` for more info.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun maxCompletionTokens(): Optional<Long> =
+            Optional.ofNullable(maxCompletionTokens.getNullable("max_completion_tokens"))
+
+        /**
+         * The maximum number of prompt tokens that may be used over the course of the run. The run
+         * will make a best effort to use only the number of prompt tokens specified, across
+         * multiple turns of the run. If the run exceeds the number of prompt tokens specified, the
+         * run will end with status `incomplete`. See `incomplete_details` for more info.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun maxPromptTokens(): Optional<Long> =
+            Optional.ofNullable(maxPromptTokens.getNullable("max_prompt_tokens"))
+
+        /**
+         * Set of 16 key-value pairs that can be attached to an object. This can be useful for
+         * storing additional information about the object in a structured format, and querying for
+         * objects via API or the dashboard.
+         *
+         * Keys are strings with a maximum length of 64 characters. Values are strings with a
+         * maximum length of 512 characters.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun metadata(): Optional<Metadata> = Optional.ofNullable(metadata.getNullable("metadata"))
+
+        /**
+         * The ID of the [Model](https://platform.openai.com/docs/api-reference/models) to be used
+         * to execute this run. If a value is provided here, it will override the model associated
+         * with the assistant. If not, the model associated with the assistant will be used.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun model(): Optional<ChatModel> = Optional.ofNullable(model.getNullable("model"))
+
+        /**
+         * Whether to enable
+         * [parallel function calling](https://platform.openai.com/docs/guides/function-calling#configuring-parallel-function-calling)
+         * during tool use.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun parallelToolCalls(): Optional<Boolean> =
+            Optional.ofNullable(parallelToolCalls.getNullable("parallel_tool_calls"))
+
+        /**
+         * Specifies the format that the model must output. Compatible with
+         * [GPT-4o](https://platform.openai.com/docs/models#gpt-4o), [GPT-4
+         * Turbo](https://platform.openai.com/docs/models#gpt-4-turbo-and-gpt-4), and all GPT-3.5
+         * Turbo models since `gpt-3.5-turbo-1106`.
+         *
+         * Setting to `{ "type": "json_schema", "json_schema": {...} }` enables Structured Outputs
+         * which ensures the model will match your supplied JSON schema. Learn more in the
+         * [Structured Outputs guide](https://platform.openai.com/docs/guides/structured-outputs).
+         *
+         * Setting to `{ "type": "json_object" }` enables JSON mode, which ensures the message the
+         * model generates is valid JSON.
+         *
+         * **Important:** when using JSON mode, you **must** also instruct the model to produce JSON
+         * yourself via a system or user message. Without this, the model may generate an unending
+         * stream of whitespace until the generation reaches the token limit, resulting in a
+         * long-running and seemingly "stuck" request. Also note that the message content may be
+         * partially cut off if `finish_reason="length"`, which indicates the generation exceeded
+         * `max_tokens` or the conversation exceeded the max context length.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun responseFormat(): Optional<AssistantResponseFormatOption> =
+            Optional.ofNullable(responseFormat.getNullable("response_format"))
+
+        /**
+         * What sampling temperature to use, between 0 and 2. Higher values like 0.8 will make the
+         * output more random, while lower values like 0.2 will make it more focused and
+         * deterministic.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun temperature(): Optional<Double> =
+            Optional.ofNullable(temperature.getNullable("temperature"))
+
+        /**
+         * Options to create a new thread. If no thread is provided when running a request, an empty
+         * thread will be created.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun thread(): Optional<Thread> = Optional.ofNullable(thread.getNullable("thread"))
+
+        /**
+         * Controls which (if any) tool is called by the model. `none` means the model will not call
+         * any tools and instead generates a message. `auto` is the default value and means the
+         * model can pick between generating a message or calling one or more tools. `required`
+         * means the model must call one or more tools before responding to the user. Specifying a
+         * particular tool like `{"type": "file_search"}` or `{"type": "function", "function":
+         * {"name": "my_function"}}` forces the model to call that tool.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun toolChoice(): Optional<AssistantToolChoiceOption> =
+            Optional.ofNullable(toolChoice.getNullable("tool_choice"))
+
+        /**
+         * A set of resources that are used by the assistant's tools. The resources are specific to
+         * the type of tool. For example, the `code_interpreter` tool requires a list of file IDs,
+         * while the `file_search` tool requires a list of vector store IDs.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun toolResources(): Optional<ToolResources> =
+            Optional.ofNullable(toolResources.getNullable("tool_resources"))
+
+        /**
+         * Override the tools the assistant can use for this run. This is useful for modifying the
+         * behavior on a per-run basis.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun tools(): Optional<List<Tool>> = Optional.ofNullable(tools.getNullable("tools"))
+
+        /**
+         * An alternative to sampling with temperature, called nucleus sampling, where the model
+         * considers the results of the tokens with top_p probability mass. So 0.1 means only the
+         * tokens comprising the top 10% probability mass are considered.
+         *
+         * We generally recommend altering this or temperature but not both.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun topP(): Optional<Double> = Optional.ofNullable(topP.getNullable("top_p"))
+
+        /**
+         * Controls for how a thread will be truncated prior to the run. Use this to control the
+         * intial context window of the run.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun truncationStrategy(): Optional<TruncationStrategy> =
+            Optional.ofNullable(truncationStrategy.getNullable("truncation_strategy"))
+
+        /**
+         * Returns the raw JSON value of [assistantId].
+         *
+         * Unlike [assistantId], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("assistant_id")
+        @ExcludeMissing
+        fun _assistantId(): JsonField<String> = assistantId
+
+        /**
+         * Returns the raw JSON value of [instructions].
+         *
+         * Unlike [instructions], this method doesn't throw if the JSON field has an unexpected
+         * type.
+         */
+        @JsonProperty("instructions")
+        @ExcludeMissing
+        fun _instructions(): JsonField<String> = instructions
+
+        /**
+         * Returns the raw JSON value of [maxCompletionTokens].
+         *
+         * Unlike [maxCompletionTokens], this method doesn't throw if the JSON field has an
+         * unexpected type.
+         */
+        @JsonProperty("max_completion_tokens")
+        @ExcludeMissing
+        fun _maxCompletionTokens(): JsonField<Long> = maxCompletionTokens
+
+        /**
+         * Returns the raw JSON value of [maxPromptTokens].
+         *
+         * Unlike [maxPromptTokens], this method doesn't throw if the JSON field has an unexpected
+         * type.
+         */
+        @JsonProperty("max_prompt_tokens")
+        @ExcludeMissing
+        fun _maxPromptTokens(): JsonField<Long> = maxPromptTokens
+
+        /**
+         * Returns the raw JSON value of [metadata].
+         *
+         * Unlike [metadata], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("metadata") @ExcludeMissing fun _metadata(): JsonField<Metadata> = metadata
+
+        /**
+         * Returns the raw JSON value of [model].
+         *
+         * Unlike [model], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("model") @ExcludeMissing fun _model(): JsonField<ChatModel> = model
+
+        /**
+         * Returns the raw JSON value of [parallelToolCalls].
+         *
+         * Unlike [parallelToolCalls], this method doesn't throw if the JSON field has an unexpected
+         * type.
+         */
+        @JsonProperty("parallel_tool_calls")
+        @ExcludeMissing
+        fun _parallelToolCalls(): JsonField<Boolean> = parallelToolCalls
+
+        /**
+         * Returns the raw JSON value of [responseFormat].
+         *
+         * Unlike [responseFormat], this method doesn't throw if the JSON field has an unexpected
+         * type.
+         */
+        @JsonProperty("response_format")
+        @ExcludeMissing
+        fun _responseFormat(): JsonField<AssistantResponseFormatOption> = responseFormat
+
+        /**
+         * Returns the raw JSON value of [temperature].
+         *
+         * Unlike [temperature], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("temperature")
+        @ExcludeMissing
+        fun _temperature(): JsonField<Double> = temperature
+
+        /**
+         * Returns the raw JSON value of [thread].
+         *
+         * Unlike [thread], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("thread") @ExcludeMissing fun _thread(): JsonField<Thread> = thread
+
+        /**
+         * Returns the raw JSON value of [toolChoice].
+         *
+         * Unlike [toolChoice], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("tool_choice")
+        @ExcludeMissing
+        fun _toolChoice(): JsonField<AssistantToolChoiceOption> = toolChoice
+
+        /**
+         * Returns the raw JSON value of [toolResources].
+         *
+         * Unlike [toolResources], this method doesn't throw if the JSON field has an unexpected
+         * type.
+         */
+        @JsonProperty("tool_resources")
+        @ExcludeMissing
+        fun _toolResources(): JsonField<ToolResources> = toolResources
+
+        /**
+         * Returns the raw JSON value of [tools].
+         *
+         * Unlike [tools], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("tools") @ExcludeMissing fun _tools(): JsonField<List<Tool>> = tools
+
+        /**
+         * Returns the raw JSON value of [topP].
+         *
+         * Unlike [topP], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("top_p") @ExcludeMissing fun _topP(): JsonField<Double> = topP
+
+        /**
+         * Returns the raw JSON value of [truncationStrategy].
+         *
+         * Unlike [truncationStrategy], this method doesn't throw if the JSON field has an
+         * unexpected type.
+         */
+        @JsonProperty("truncation_strategy")
+        @ExcludeMissing
+        fun _truncationStrategy(): JsonField<TruncationStrategy> = truncationStrategy
+
+        @JsonAnySetter
+        private fun putAdditionalProperty(key: String, value: JsonValue) {
+            additionalProperties.put(key, value)
+        }
+
+        @JsonAnyGetter
+        @ExcludeMissing
+        fun _additionalProperties(): Map<String, JsonValue> =
+            Collections.unmodifiableMap(additionalProperties)
+
+        fun toBuilder() = Builder().from(this)
+
+        companion object {
+
+            /**
+             * Returns a mutable builder for constructing an instance of [Body].
+             *
+             * The following fields are required:
+             * ```java
+             * .assistantId()
+             * ```
+             */
+            @JvmStatic fun builder() = Builder()
+        }
+
+        /** A builder for [Body]. */
+        class Builder internal constructor() {
+
+            private var assistantId: JsonField<String>? = null
+            private var instructions: JsonField<String> = JsonMissing.of()
+            private var maxCompletionTokens: JsonField<Long> = JsonMissing.of()
+            private var maxPromptTokens: JsonField<Long> = JsonMissing.of()
+            private var metadata: JsonField<Metadata> = JsonMissing.of()
+            private var model: JsonField<ChatModel> = JsonMissing.of()
+            private var parallelToolCalls: JsonField<Boolean> = JsonMissing.of()
+            private var responseFormat: JsonField<AssistantResponseFormatOption> = JsonMissing.of()
+            private var temperature: JsonField<Double> = JsonMissing.of()
+            private var thread: JsonField<Thread> = JsonMissing.of()
+            private var toolChoice: JsonField<AssistantToolChoiceOption> = JsonMissing.of()
+            private var toolResources: JsonField<ToolResources> = JsonMissing.of()
+            private var tools: JsonField<MutableList<Tool>>? = null
+            private var topP: JsonField<Double> = JsonMissing.of()
+            private var truncationStrategy: JsonField<TruncationStrategy> = JsonMissing.of()
+            private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
+
+            @JvmSynthetic
+            internal fun from(body: Body) = apply {
+                assistantId = body.assistantId
+                instructions = body.instructions
+                maxCompletionTokens = body.maxCompletionTokens
+                maxPromptTokens = body.maxPromptTokens
+                metadata = body.metadata
+                model = body.model
+                parallelToolCalls = body.parallelToolCalls
+                responseFormat = body.responseFormat
+                temperature = body.temperature
+                thread = body.thread
+                toolChoice = body.toolChoice
+                toolResources = body.toolResources
+                tools = body.tools.map { it.toMutableList() }
+                topP = body.topP
+                truncationStrategy = body.truncationStrategy
+                additionalProperties = body.additionalProperties.toMutableMap()
+            }
+
+            /**
+             * The ID of the [assistant](https://platform.openai.com/docs/api-reference/assistants)
+             * to use to execute this run.
+             */
+            fun assistantId(assistantId: String) = assistantId(JsonField.of(assistantId))
+
+            /**
+             * Sets [Builder.assistantId] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.assistantId] with a well-typed [String] value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun assistantId(assistantId: JsonField<String>) = apply {
+                this.assistantId = assistantId
+            }
+
+            /**
+             * Override the default system message of the assistant. This is useful for modifying
+             * the behavior on a per-run basis.
+             */
+            fun instructions(instructions: String?) =
+                instructions(JsonField.ofNullable(instructions))
+
+            /** Alias for calling [Builder.instructions] with `instructions.orElse(null)`. */
+            fun instructions(instructions: Optional<String>) =
+                instructions(instructions.getOrNull())
+
+            /**
+             * Sets [Builder.instructions] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.instructions] with a well-typed [String] value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun instructions(instructions: JsonField<String>) = apply {
+                this.instructions = instructions
+            }
+
+            /**
+             * The maximum number of completion tokens that may be used over the course of the run.
+             * The run will make a best effort to use only the number of completion tokens
+             * specified, across multiple turns of the run. If the run exceeds the number of
+             * completion tokens specified, the run will end with status `incomplete`. See
+             * `incomplete_details` for more info.
+             */
+            fun maxCompletionTokens(maxCompletionTokens: Long?) =
+                maxCompletionTokens(JsonField.ofNullable(maxCompletionTokens))
+
+            /**
+             * Alias for [Builder.maxCompletionTokens].
+             *
+             * This unboxed primitive overload exists for backwards compatibility.
+             */
+            fun maxCompletionTokens(maxCompletionTokens: Long) =
+                maxCompletionTokens(maxCompletionTokens as Long?)
+
+            /**
+             * Alias for calling [Builder.maxCompletionTokens] with
+             * `maxCompletionTokens.orElse(null)`.
+             */
+            fun maxCompletionTokens(maxCompletionTokens: Optional<Long>) =
+                maxCompletionTokens(maxCompletionTokens.getOrNull())
+
+            /**
+             * Sets [Builder.maxCompletionTokens] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.maxCompletionTokens] with a well-typed [Long] value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun maxCompletionTokens(maxCompletionTokens: JsonField<Long>) = apply {
+                this.maxCompletionTokens = maxCompletionTokens
+            }
+
+            /**
+             * The maximum number of prompt tokens that may be used over the course of the run. The
+             * run will make a best effort to use only the number of prompt tokens specified, across
+             * multiple turns of the run. If the run exceeds the number of prompt tokens specified,
+             * the run will end with status `incomplete`. See `incomplete_details` for more info.
+             */
+            fun maxPromptTokens(maxPromptTokens: Long?) =
+                maxPromptTokens(JsonField.ofNullable(maxPromptTokens))
+
+            /**
+             * Alias for [Builder.maxPromptTokens].
+             *
+             * This unboxed primitive overload exists for backwards compatibility.
+             */
+            fun maxPromptTokens(maxPromptTokens: Long) = maxPromptTokens(maxPromptTokens as Long?)
+
+            /** Alias for calling [Builder.maxPromptTokens] with `maxPromptTokens.orElse(null)`. */
+            fun maxPromptTokens(maxPromptTokens: Optional<Long>) =
+                maxPromptTokens(maxPromptTokens.getOrNull())
+
+            /**
+             * Sets [Builder.maxPromptTokens] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.maxPromptTokens] with a well-typed [Long] value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun maxPromptTokens(maxPromptTokens: JsonField<Long>) = apply {
+                this.maxPromptTokens = maxPromptTokens
+            }
+
+            /**
+             * Set of 16 key-value pairs that can be attached to an object. This can be useful for
+             * storing additional information about the object in a structured format, and querying
+             * for objects via API or the dashboard.
+             *
+             * Keys are strings with a maximum length of 64 characters. Values are strings with a
+             * maximum length of 512 characters.
+             */
+            fun metadata(metadata: Metadata?) = metadata(JsonField.ofNullable(metadata))
+
+            /** Alias for calling [Builder.metadata] with `metadata.orElse(null)`. */
+            fun metadata(metadata: Optional<Metadata>) = metadata(metadata.getOrNull())
+
+            /**
+             * Sets [Builder.metadata] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.metadata] with a well-typed [Metadata] value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun metadata(metadata: JsonField<Metadata>) = apply { this.metadata = metadata }
+
+            /**
+             * The ID of the [Model](https://platform.openai.com/docs/api-reference/models) to be
+             * used to execute this run. If a value is provided here, it will override the model
+             * associated with the assistant. If not, the model associated with the assistant will
+             * be used.
+             */
+            fun model(model: ChatModel?) = model(JsonField.ofNullable(model))
+
+            /** Alias for calling [Builder.model] with `model.orElse(null)`. */
+            fun model(model: Optional<ChatModel>) = model(model.getOrNull())
+
+            /**
+             * Sets [Builder.model] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.model] with a well-typed [ChatModel] value instead.
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun model(model: JsonField<ChatModel>) = apply { this.model = model }
+
+            /**
+             * Sets [model] to an arbitrary [String].
+             *
+             * You should usually call [model] with a well-typed [ChatModel] constant instead. This
+             * method is primarily for setting the field to an undocumented or not yet supported
+             * value.
+             */
+            fun model(value: String) = model(ChatModel.of(value))
+
+            /**
+             * Whether to enable
+             * [parallel function calling](https://platform.openai.com/docs/guides/function-calling#configuring-parallel-function-calling)
+             * during tool use.
+             */
+            fun parallelToolCalls(parallelToolCalls: Boolean) =
+                parallelToolCalls(JsonField.of(parallelToolCalls))
+
+            /**
+             * Sets [Builder.parallelToolCalls] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.parallelToolCalls] with a well-typed [Boolean] value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun parallelToolCalls(parallelToolCalls: JsonField<Boolean>) = apply {
+                this.parallelToolCalls = parallelToolCalls
+            }
+
+            /**
+             * Specifies the format that the model must output. Compatible with
+             * [GPT-4o](https://platform.openai.com/docs/models#gpt-4o), [GPT-4
+             * Turbo](https://platform.openai.com/docs/models#gpt-4-turbo-and-gpt-4), and all
+             * GPT-3.5 Turbo models since `gpt-3.5-turbo-1106`.
+             *
+             * Setting to `{ "type": "json_schema", "json_schema": {...} }` enables Structured
+             * Outputs which ensures the model will match your supplied JSON schema. Learn more in
+             * the
+             * [Structured Outputs guide](https://platform.openai.com/docs/guides/structured-outputs).
+             *
+             * Setting to `{ "type": "json_object" }` enables JSON mode, which ensures the message
+             * the model generates is valid JSON.
+             *
+             * **Important:** when using JSON mode, you **must** also instruct the model to produce
+             * JSON yourself via a system or user message. Without this, the model may generate an
+             * unending stream of whitespace until the generation reaches the token limit, resulting
+             * in a long-running and seemingly "stuck" request. Also note that the message content
+             * may be partially cut off if `finish_reason="length"`, which indicates the generation
+             * exceeded `max_tokens` or the conversation exceeded the max context length.
+             */
+            fun responseFormat(responseFormat: AssistantResponseFormatOption?) =
+                responseFormat(JsonField.ofNullable(responseFormat))
+
+            /** Alias for calling [Builder.responseFormat] with `responseFormat.orElse(null)`. */
+            fun responseFormat(responseFormat: Optional<AssistantResponseFormatOption>) =
+                responseFormat(responseFormat.getOrNull())
+
+            /**
+             * Sets [Builder.responseFormat] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.responseFormat] with a well-typed
+             * [AssistantResponseFormatOption] value instead. This method is primarily for setting
+             * the field to an undocumented or not yet supported value.
+             */
+            fun responseFormat(responseFormat: JsonField<AssistantResponseFormatOption>) = apply {
+                this.responseFormat = responseFormat
+            }
+
+            /**
+             * Alias for calling [responseFormat] with
+             * `AssistantResponseFormatOption.ofJsonValue()`.
+             */
+            fun responseFormatJsonValue() =
+                responseFormat(AssistantResponseFormatOption.ofJsonValue())
+
+            /**
+             * Alias for calling [responseFormat] with
+             * `AssistantResponseFormatOption.ofResponseFormatText(responseFormatText)`.
+             */
+            fun responseFormat(responseFormatText: ResponseFormatText) =
+                responseFormat(
+                    AssistantResponseFormatOption.ofResponseFormatText(responseFormatText)
+                )
+
+            /**
+             * Alias for calling [responseFormat] with
+             * `AssistantResponseFormatOption.ofResponseFormatJsonObject(responseFormatJsonObject)`.
+             */
+            fun responseFormat(responseFormatJsonObject: ResponseFormatJsonObject) =
+                responseFormat(
+                    AssistantResponseFormatOption.ofResponseFormatJsonObject(
+                        responseFormatJsonObject
+                    )
+                )
+
+            /**
+             * Alias for calling [responseFormat] with
+             * `AssistantResponseFormatOption.ofResponseFormatJsonSchema(responseFormatJsonSchema)`.
+             */
+            fun responseFormat(responseFormatJsonSchema: ResponseFormatJsonSchema) =
+                responseFormat(
+                    AssistantResponseFormatOption.ofResponseFormatJsonSchema(
+                        responseFormatJsonSchema
+                    )
+                )
+
+            /**
+             * What sampling temperature to use, between 0 and 2. Higher values like 0.8 will make
+             * the output more random, while lower values like 0.2 will make it more focused and
+             * deterministic.
+             */
+            fun temperature(temperature: Double?) = temperature(JsonField.ofNullable(temperature))
+
+            /**
+             * Alias for [Builder.temperature].
+             *
+             * This unboxed primitive overload exists for backwards compatibility.
+             */
+            fun temperature(temperature: Double) = temperature(temperature as Double?)
+
+            /** Alias for calling [Builder.temperature] with `temperature.orElse(null)`. */
+            fun temperature(temperature: Optional<Double>) = temperature(temperature.getOrNull())
+
+            /**
+             * Sets [Builder.temperature] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.temperature] with a well-typed [Double] value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun temperature(temperature: JsonField<Double>) = apply {
+                this.temperature = temperature
+            }
+
+            /**
+             * Options to create a new thread. If no thread is provided when running a request, an
+             * empty thread will be created.
+             */
+            fun thread(thread: Thread) = thread(JsonField.of(thread))
+
+            /**
+             * Sets [Builder.thread] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.thread] with a well-typed [Thread] value instead.
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun thread(thread: JsonField<Thread>) = apply { this.thread = thread }
+
+            /**
+             * Controls which (if any) tool is called by the model. `none` means the model will not
+             * call any tools and instead generates a message. `auto` is the default value and means
+             * the model can pick between generating a message or calling one or more tools.
+             * `required` means the model must call one or more tools before responding to the user.
+             * Specifying a particular tool like `{"type": "file_search"}` or `{"type": "function",
+             * "function": {"name": "my_function"}}` forces the model to call that tool.
+             */
+            fun toolChoice(toolChoice: AssistantToolChoiceOption?) =
+                toolChoice(JsonField.ofNullable(toolChoice))
+
+            /** Alias for calling [Builder.toolChoice] with `toolChoice.orElse(null)`. */
+            fun toolChoice(toolChoice: Optional<AssistantToolChoiceOption>) =
+                toolChoice(toolChoice.getOrNull())
+
+            /**
+             * Sets [Builder.toolChoice] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.toolChoice] with a well-typed
+             * [AssistantToolChoiceOption] value instead. This method is primarily for setting the
+             * field to an undocumented or not yet supported value.
+             */
+            fun toolChoice(toolChoice: JsonField<AssistantToolChoiceOption>) = apply {
+                this.toolChoice = toolChoice
+            }
+
+            /** Alias for calling [toolChoice] with `AssistantToolChoiceOption.ofAuto(auto)`. */
+            fun toolChoice(auto: AssistantToolChoiceOption.Auto) =
+                toolChoice(AssistantToolChoiceOption.ofAuto(auto))
+
+            /**
+             * Alias for calling [toolChoice] with
+             * `AssistantToolChoiceOption.ofAssistantToolChoice(assistantToolChoice)`.
+             */
+            fun toolChoice(assistantToolChoice: AssistantToolChoice) =
+                toolChoice(AssistantToolChoiceOption.ofAssistantToolChoice(assistantToolChoice))
+
+            /**
+             * A set of resources that are used by the assistant's tools. The resources are specific
+             * to the type of tool. For example, the `code_interpreter` tool requires a list of file
+             * IDs, while the `file_search` tool requires a list of vector store IDs.
+             */
+            fun toolResources(toolResources: ToolResources?) =
+                toolResources(JsonField.ofNullable(toolResources))
+
+            /** Alias for calling [Builder.toolResources] with `toolResources.orElse(null)`. */
+            fun toolResources(toolResources: Optional<ToolResources>) =
+                toolResources(toolResources.getOrNull())
+
+            /**
+             * Sets [Builder.toolResources] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.toolResources] with a well-typed [ToolResources]
+             * value instead. This method is primarily for setting the field to an undocumented or
+             * not yet supported value.
+             */
+            fun toolResources(toolResources: JsonField<ToolResources>) = apply {
+                this.toolResources = toolResources
+            }
+
+            /**
+             * Override the tools the assistant can use for this run. This is useful for modifying
+             * the behavior on a per-run basis.
+             */
+            fun tools(tools: List<Tool>?) = tools(JsonField.ofNullable(tools))
+
+            /** Alias for calling [Builder.tools] with `tools.orElse(null)`. */
+            fun tools(tools: Optional<List<Tool>>) = tools(tools.getOrNull())
+
+            /**
+             * Sets [Builder.tools] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.tools] with a well-typed `List<Tool>` value instead.
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun tools(tools: JsonField<List<Tool>>) = apply {
+                this.tools = tools.map { it.toMutableList() }
+            }
+
+            /**
+             * Adds a single [Tool] to [tools].
+             *
+             * @throws IllegalStateException if the field was previously set to a non-list.
+             */
+            fun addTool(tool: Tool) = apply {
+                tools =
+                    (tools ?: JsonField.of(mutableListOf())).also {
+                        checkKnown("tools", it).add(tool)
+                    }
+            }
+
+            /** Alias for calling [addTool] with `Tool.ofCodeInterpreter(codeInterpreter)`. */
+            fun addTool(codeInterpreter: CodeInterpreterTool) =
+                addTool(Tool.ofCodeInterpreter(codeInterpreter))
+
+            /** Alias for calling [addTool] with `Tool.ofFileSearch(fileSearch)`. */
+            fun addTool(fileSearch: FileSearchTool) = addTool(Tool.ofFileSearch(fileSearch))
+
+            /** Alias for calling [addTool] with `Tool.ofFunction(function)`. */
+            fun addTool(function: FunctionTool) = addTool(Tool.ofFunction(function))
+
+            /**
+             * An alternative to sampling with temperature, called nucleus sampling, where the model
+             * considers the results of the tokens with top_p probability mass. So 0.1 means only
+             * the tokens comprising the top 10% probability mass are considered.
+             *
+             * We generally recommend altering this or temperature but not both.
+             */
+            fun topP(topP: Double?) = topP(JsonField.ofNullable(topP))
+
+            /**
+             * Alias for [Builder.topP].
+             *
+             * This unboxed primitive overload exists for backwards compatibility.
+             */
+            fun topP(topP: Double) = topP(topP as Double?)
+
+            /** Alias for calling [Builder.topP] with `topP.orElse(null)`. */
+            fun topP(topP: Optional<Double>) = topP(topP.getOrNull())
+
+            /**
+             * Sets [Builder.topP] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.topP] with a well-typed [Double] value instead. This
+             * method is primarily for setting the field to an undocumented or not yet supported
+             * value.
+             */
+            fun topP(topP: JsonField<Double>) = apply { this.topP = topP }
+
+            /**
+             * Controls for how a thread will be truncated prior to the run. Use this to control the
+             * intial context window of the run.
+             */
+            fun truncationStrategy(truncationStrategy: TruncationStrategy?) =
+                truncationStrategy(JsonField.ofNullable(truncationStrategy))
+
+            /**
+             * Alias for calling [Builder.truncationStrategy] with
+             * `truncationStrategy.orElse(null)`.
+             */
+            fun truncationStrategy(truncationStrategy: Optional<TruncationStrategy>) =
+                truncationStrategy(truncationStrategy.getOrNull())
+
+            /**
+             * Sets [Builder.truncationStrategy] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.truncationStrategy] with a well-typed
+             * [TruncationStrategy] value instead. This method is primarily for setting the field to
+             * an undocumented or not yet supported value.
+             */
+            fun truncationStrategy(truncationStrategy: JsonField<TruncationStrategy>) = apply {
+                this.truncationStrategy = truncationStrategy
+            }
+
+            fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                this.additionalProperties.clear()
+                putAllAdditionalProperties(additionalProperties)
+            }
+
+            fun putAdditionalProperty(key: String, value: JsonValue) = apply {
+                additionalProperties.put(key, value)
+            }
+
+            fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                this.additionalProperties.putAll(additionalProperties)
+            }
+
+            fun removeAdditionalProperty(key: String) = apply { additionalProperties.remove(key) }
+
+            fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                keys.forEach(::removeAdditionalProperty)
+            }
+
+            /**
+             * Returns an immutable instance of [Body].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             *
+             * The following fields are required:
+             * ```java
+             * .assistantId()
+             * ```
+             *
+             * @throws IllegalStateException if any required field is unset.
+             */
+            fun build(): Body =
+                Body(
+                    checkRequired("assistantId", assistantId),
+                    instructions,
+                    maxCompletionTokens,
+                    maxPromptTokens,
+                    metadata,
+                    model,
+                    parallelToolCalls,
+                    responseFormat,
+                    temperature,
+                    thread,
+                    toolChoice,
+                    toolResources,
+                    (tools ?: JsonMissing.of()).map { it.toImmutable() },
+                    topP,
+                    truncationStrategy,
+                    additionalProperties.toMutableMap(),
+                )
+        }
+
+        private var validated: Boolean = false
+
+        fun validate(): Body = apply {
+            if (validated) {
+                return@apply
+            }
+
+            assistantId()
+            instructions()
+            maxCompletionTokens()
+            maxPromptTokens()
+            metadata().ifPresent { it.validate() }
+            model()
+            parallelToolCalls()
+            responseFormat().ifPresent { it.validate() }
+            temperature()
+            thread().ifPresent { it.validate() }
+            toolChoice().ifPresent { it.validate() }
+            toolResources().ifPresent { it.validate() }
+            tools().ifPresent { it.forEach { it.validate() } }
+            topP()
+            truncationStrategy().ifPresent { it.validate() }
+            validated = true
+        }
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) {
+                return true
+            }
+
+            return /* spotless:off */ other is Body && assistantId == other.assistantId && instructions == other.instructions && maxCompletionTokens == other.maxCompletionTokens && maxPromptTokens == other.maxPromptTokens && metadata == other.metadata && model == other.model && parallelToolCalls == other.parallelToolCalls && responseFormat == other.responseFormat && temperature == other.temperature && thread == other.thread && toolChoice == other.toolChoice && toolResources == other.toolResources && tools == other.tools && topP == other.topP && truncationStrategy == other.truncationStrategy && additionalProperties == other.additionalProperties /* spotless:on */
+        }
+
+        /* spotless:off */
+        private val hashCode: Int by lazy { Objects.hash(assistantId, instructions, maxCompletionTokens, maxPromptTokens, metadata, model, parallelToolCalls, responseFormat, temperature, thread, toolChoice, toolResources, tools, topP, truncationStrategy, additionalProperties) }
+        /* spotless:on */
+
+        override fun hashCode(): Int = hashCode
+
+        override fun toString() =
+            "Body{assistantId=$assistantId, instructions=$instructions, maxCompletionTokens=$maxCompletionTokens, maxPromptTokens=$maxPromptTokens, metadata=$metadata, model=$model, parallelToolCalls=$parallelToolCalls, responseFormat=$responseFormat, temperature=$temperature, thread=$thread, toolChoice=$toolChoice, toolResources=$toolResources, tools=$tools, topP=$topP, truncationStrategy=$truncationStrategy, additionalProperties=$additionalProperties}"
+    }
+
     /**
      * Options to create a new thread. If no thread is provided when running a request, an empty
      * thread will be created.
      */
-    @NoAutoDetect
     class Thread
-    @JsonCreator
     private constructor(
-        @JsonProperty("messages")
-        @ExcludeMissing
-        private val messages: JsonField<List<Message>> = JsonMissing.of(),
-        @JsonProperty("metadata")
-        @ExcludeMissing
-        private val metadata: JsonField<Metadata> = JsonMissing.of(),
-        @JsonProperty("tool_resources")
-        @ExcludeMissing
-        private val toolResources: JsonField<ToolResources> = JsonMissing.of(),
-        @JsonAnySetter
-        private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
+        private val messages: JsonField<List<Message>>,
+        private val metadata: JsonField<Metadata>,
+        private val toolResources: JsonField<ToolResources>,
+        private val additionalProperties: MutableMap<String, JsonValue>,
     ) {
+
+        @JsonCreator
+        private constructor(
+            @JsonProperty("messages")
+            @ExcludeMissing
+            messages: JsonField<List<Message>> = JsonMissing.of(),
+            @JsonProperty("metadata")
+            @ExcludeMissing
+            metadata: JsonField<Metadata> = JsonMissing.of(),
+            @JsonProperty("tool_resources")
+            @ExcludeMissing
+            toolResources: JsonField<ToolResources> = JsonMissing.of(),
+        ) : this(messages, metadata, toolResources, mutableMapOf())
 
         /**
          * A list of [messages](https://platform.openai.com/docs/api-reference/messages) to start
@@ -1984,22 +2017,15 @@ private constructor(
         @ExcludeMissing
         fun _toolResources(): JsonField<ToolResources> = toolResources
 
+        @JsonAnySetter
+        private fun putAdditionalProperty(key: String, value: JsonValue) {
+            additionalProperties.put(key, value)
+        }
+
         @JsonAnyGetter
         @ExcludeMissing
-        fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-        private var validated: Boolean = false
-
-        fun validate(): Thread = apply {
-            if (validated) {
-                return@apply
-            }
-
-            messages().ifPresent { it.forEach { it.validate() } }
-            metadata().ifPresent { it.validate() }
-            toolResources().ifPresent { it.validate() }
-            validated = true
-        }
+        fun _additionalProperties(): Map<String, JsonValue> =
+            Collections.unmodifiableMap(additionalProperties)
 
         fun toBuilder() = Builder().from(this)
 
@@ -2129,29 +2155,45 @@ private constructor(
                     (messages ?: JsonMissing.of()).map { it.toImmutable() },
                     metadata,
                     toolResources,
-                    additionalProperties.toImmutable(),
+                    additionalProperties.toMutableMap(),
                 )
         }
 
-        @NoAutoDetect
+        private var validated: Boolean = false
+
+        fun validate(): Thread = apply {
+            if (validated) {
+                return@apply
+            }
+
+            messages().ifPresent { it.forEach { it.validate() } }
+            metadata().ifPresent { it.validate() }
+            toolResources().ifPresent { it.validate() }
+            validated = true
+        }
+
         class Message
-        @JsonCreator
         private constructor(
-            @JsonProperty("content")
-            @ExcludeMissing
-            private val content: JsonField<Content> = JsonMissing.of(),
-            @JsonProperty("role")
-            @ExcludeMissing
-            private val role: JsonField<Role> = JsonMissing.of(),
-            @JsonProperty("attachments")
-            @ExcludeMissing
-            private val attachments: JsonField<List<Attachment>> = JsonMissing.of(),
-            @JsonProperty("metadata")
-            @ExcludeMissing
-            private val metadata: JsonField<Metadata> = JsonMissing.of(),
-            @JsonAnySetter
-            private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
+            private val content: JsonField<Content>,
+            private val role: JsonField<Role>,
+            private val attachments: JsonField<List<Attachment>>,
+            private val metadata: JsonField<Metadata>,
+            private val additionalProperties: MutableMap<String, JsonValue>,
         ) {
+
+            @JsonCreator
+            private constructor(
+                @JsonProperty("content")
+                @ExcludeMissing
+                content: JsonField<Content> = JsonMissing.of(),
+                @JsonProperty("role") @ExcludeMissing role: JsonField<Role> = JsonMissing.of(),
+                @JsonProperty("attachments")
+                @ExcludeMissing
+                attachments: JsonField<List<Attachment>> = JsonMissing.of(),
+                @JsonProperty("metadata")
+                @ExcludeMissing
+                metadata: JsonField<Metadata> = JsonMissing.of(),
+            ) : this(content, role, attachments, metadata, mutableMapOf())
 
             /**
              * The text contents of the message.
@@ -2232,23 +2274,15 @@ private constructor(
             @ExcludeMissing
             fun _metadata(): JsonField<Metadata> = metadata
 
+            @JsonAnySetter
+            private fun putAdditionalProperty(key: String, value: JsonValue) {
+                additionalProperties.put(key, value)
+            }
+
             @JsonAnyGetter
             @ExcludeMissing
-            fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-            private var validated: Boolean = false
-
-            fun validate(): Message = apply {
-                if (validated) {
-                    return@apply
-                }
-
-                content().validate()
-                role()
-                attachments().ifPresent { it.forEach { it.validate() } }
-                metadata().ifPresent { it.validate() }
-                validated = true
-            }
+            fun _additionalProperties(): Map<String, JsonValue> =
+                Collections.unmodifiableMap(additionalProperties)
 
             fun toBuilder() = Builder().from(this)
 
@@ -2421,8 +2455,22 @@ private constructor(
                         checkRequired("role", role),
                         (attachments ?: JsonMissing.of()).map { it.toImmutable() },
                         metadata,
-                        additionalProperties.toImmutable(),
+                        additionalProperties.toMutableMap(),
                     )
+            }
+
+            private var validated: Boolean = false
+
+            fun validate(): Message = apply {
+                if (validated) {
+                    return@apply
+                }
+
+                content().validate()
+                role()
+                attachments().ifPresent { it.forEach { it.validate() } }
+                metadata().ifPresent { it.validate() }
+                validated = true
             }
 
             /** The text contents of the message. */
@@ -2709,19 +2757,22 @@ private constructor(
                 override fun toString() = value.toString()
             }
 
-            @NoAutoDetect
             class Attachment
-            @JsonCreator
             private constructor(
-                @JsonProperty("file_id")
-                @ExcludeMissing
-                private val fileId: JsonField<String> = JsonMissing.of(),
-                @JsonProperty("tools")
-                @ExcludeMissing
-                private val tools: JsonField<List<Tool>> = JsonMissing.of(),
-                @JsonAnySetter
-                private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
+                private val fileId: JsonField<String>,
+                private val tools: JsonField<List<Tool>>,
+                private val additionalProperties: MutableMap<String, JsonValue>,
             ) {
+
+                @JsonCreator
+                private constructor(
+                    @JsonProperty("file_id")
+                    @ExcludeMissing
+                    fileId: JsonField<String> = JsonMissing.of(),
+                    @JsonProperty("tools")
+                    @ExcludeMissing
+                    tools: JsonField<List<Tool>> = JsonMissing.of(),
+                ) : this(fileId, tools, mutableMapOf())
 
                 /**
                  * The ID of the file to attach to the message.
@@ -2755,21 +2806,15 @@ private constructor(
                  */
                 @JsonProperty("tools") @ExcludeMissing fun _tools(): JsonField<List<Tool>> = tools
 
+                @JsonAnySetter
+                private fun putAdditionalProperty(key: String, value: JsonValue) {
+                    additionalProperties.put(key, value)
+                }
+
                 @JsonAnyGetter
                 @ExcludeMissing
-                fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-                private var validated: Boolean = false
-
-                fun validate(): Attachment = apply {
-                    if (validated) {
-                        return@apply
-                    }
-
-                    fileId()
-                    tools().ifPresent { it.forEach { it.validate() } }
-                    validated = true
-                }
+                fun _additionalProperties(): Map<String, JsonValue> =
+                    Collections.unmodifiableMap(additionalProperties)
 
                 fun toBuilder() = Builder().from(this)
 
@@ -2871,8 +2916,20 @@ private constructor(
                         Attachment(
                             fileId,
                             (tools ?: JsonMissing.of()).map { it.toImmutable() },
-                            additionalProperties.toImmutable(),
+                            additionalProperties.toMutableMap(),
                         )
+                }
+
+                private var validated: Boolean = false
+
+                fun validate(): Attachment = apply {
+                    if (validated) {
+                        return@apply
+                    }
+
+                    fileId()
+                    tools().ifPresent { it.forEach { it.validate() } }
+                    validated = true
                 }
 
                 @JsonDeserialize(using = Tool.Deserializer::class)
@@ -3092,19 +3149,22 @@ private constructor(
          * requires a list of file IDs, while the `file_search` tool requires a list of vector store
          * IDs.
          */
-        @NoAutoDetect
         class ToolResources
-        @JsonCreator
         private constructor(
-            @JsonProperty("code_interpreter")
-            @ExcludeMissing
-            private val codeInterpreter: JsonField<CodeInterpreter> = JsonMissing.of(),
-            @JsonProperty("file_search")
-            @ExcludeMissing
-            private val fileSearch: JsonField<FileSearch> = JsonMissing.of(),
-            @JsonAnySetter
-            private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
+            private val codeInterpreter: JsonField<CodeInterpreter>,
+            private val fileSearch: JsonField<FileSearch>,
+            private val additionalProperties: MutableMap<String, JsonValue>,
         ) {
+
+            @JsonCreator
+            private constructor(
+                @JsonProperty("code_interpreter")
+                @ExcludeMissing
+                codeInterpreter: JsonField<CodeInterpreter> = JsonMissing.of(),
+                @JsonProperty("file_search")
+                @ExcludeMissing
+                fileSearch: JsonField<FileSearch> = JsonMissing.of(),
+            ) : this(codeInterpreter, fileSearch, mutableMapOf())
 
             /**
              * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if
@@ -3140,21 +3200,15 @@ private constructor(
             @ExcludeMissing
             fun _fileSearch(): JsonField<FileSearch> = fileSearch
 
+            @JsonAnySetter
+            private fun putAdditionalProperty(key: String, value: JsonValue) {
+                additionalProperties.put(key, value)
+            }
+
             @JsonAnyGetter
             @ExcludeMissing
-            fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-            private var validated: Boolean = false
-
-            fun validate(): ToolResources = apply {
-                if (validated) {
-                    return@apply
-                }
-
-                codeInterpreter().ifPresent { it.validate() }
-                fileSearch().ifPresent { it.validate() }
-                validated = true
-            }
+            fun _additionalProperties(): Map<String, JsonValue> =
+                Collections.unmodifiableMap(additionalProperties)
 
             fun toBuilder() = Builder().from(this)
 
@@ -3233,19 +3287,33 @@ private constructor(
                  * Further updates to this [Builder] will not mutate the returned instance.
                  */
                 fun build(): ToolResources =
-                    ToolResources(codeInterpreter, fileSearch, additionalProperties.toImmutable())
+                    ToolResources(codeInterpreter, fileSearch, additionalProperties.toMutableMap())
             }
 
-            @NoAutoDetect
+            private var validated: Boolean = false
+
+            fun validate(): ToolResources = apply {
+                if (validated) {
+                    return@apply
+                }
+
+                codeInterpreter().ifPresent { it.validate() }
+                fileSearch().ifPresent { it.validate() }
+                validated = true
+            }
+
             class CodeInterpreter
-            @JsonCreator
             private constructor(
-                @JsonProperty("file_ids")
-                @ExcludeMissing
-                private val fileIds: JsonField<List<String>> = JsonMissing.of(),
-                @JsonAnySetter
-                private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
+                private val fileIds: JsonField<List<String>>,
+                private val additionalProperties: MutableMap<String, JsonValue>,
             ) {
+
+                @JsonCreator
+                private constructor(
+                    @JsonProperty("file_ids")
+                    @ExcludeMissing
+                    fileIds: JsonField<List<String>> = JsonMissing.of()
+                ) : this(fileIds, mutableMapOf())
 
                 /**
                  * A list of [file](https://platform.openai.com/docs/api-reference/files) IDs made
@@ -3268,20 +3336,15 @@ private constructor(
                 @ExcludeMissing
                 fun _fileIds(): JsonField<List<String>> = fileIds
 
+                @JsonAnySetter
+                private fun putAdditionalProperty(key: String, value: JsonValue) {
+                    additionalProperties.put(key, value)
+                }
+
                 @JsonAnyGetter
                 @ExcludeMissing
-                fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-                private var validated: Boolean = false
-
-                fun validate(): CodeInterpreter = apply {
-                    if (validated) {
-                        return@apply
-                    }
-
-                    fileIds()
-                    validated = true
-                }
+                fun _additionalProperties(): Map<String, JsonValue> =
+                    Collections.unmodifiableMap(additionalProperties)
 
                 fun toBuilder() = Builder().from(this)
 
@@ -3365,8 +3428,19 @@ private constructor(
                     fun build(): CodeInterpreter =
                         CodeInterpreter(
                             (fileIds ?: JsonMissing.of()).map { it.toImmutable() },
-                            additionalProperties.toImmutable(),
+                            additionalProperties.toMutableMap(),
                         )
+                }
+
+                private var validated: Boolean = false
+
+                fun validate(): CodeInterpreter = apply {
+                    if (validated) {
+                        return@apply
+                    }
+
+                    fileIds()
+                    validated = true
                 }
 
                 override fun equals(other: Any?): Boolean {
@@ -3387,19 +3461,22 @@ private constructor(
                     "CodeInterpreter{fileIds=$fileIds, additionalProperties=$additionalProperties}"
             }
 
-            @NoAutoDetect
             class FileSearch
-            @JsonCreator
             private constructor(
-                @JsonProperty("vector_store_ids")
-                @ExcludeMissing
-                private val vectorStoreIds: JsonField<List<String>> = JsonMissing.of(),
-                @JsonProperty("vector_stores")
-                @ExcludeMissing
-                private val vectorStores: JsonField<List<VectorStore>> = JsonMissing.of(),
-                @JsonAnySetter
-                private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
+                private val vectorStoreIds: JsonField<List<String>>,
+                private val vectorStores: JsonField<List<VectorStore>>,
+                private val additionalProperties: MutableMap<String, JsonValue>,
             ) {
+
+                @JsonCreator
+                private constructor(
+                    @JsonProperty("vector_store_ids")
+                    @ExcludeMissing
+                    vectorStoreIds: JsonField<List<String>> = JsonMissing.of(),
+                    @JsonProperty("vector_stores")
+                    @ExcludeMissing
+                    vectorStores: JsonField<List<VectorStore>> = JsonMissing.of(),
+                ) : this(vectorStoreIds, vectorStores, mutableMapOf())
 
                 /**
                  * The
@@ -3445,21 +3522,15 @@ private constructor(
                 @ExcludeMissing
                 fun _vectorStores(): JsonField<List<VectorStore>> = vectorStores
 
+                @JsonAnySetter
+                private fun putAdditionalProperty(key: String, value: JsonValue) {
+                    additionalProperties.put(key, value)
+                }
+
                 @JsonAnyGetter
                 @ExcludeMissing
-                fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-                private var validated: Boolean = false
-
-                fun validate(): FileSearch = apply {
-                    if (validated) {
-                        return@apply
-                    }
-
-                    vectorStoreIds()
-                    vectorStores().ifPresent { it.forEach { it.validate() } }
-                    validated = true
-                }
+                fun _additionalProperties(): Map<String, JsonValue> =
+                    Collections.unmodifiableMap(additionalProperties)
 
                 fun toBuilder() = Builder().from(this)
 
@@ -3578,26 +3649,42 @@ private constructor(
                         FileSearch(
                             (vectorStoreIds ?: JsonMissing.of()).map { it.toImmutable() },
                             (vectorStores ?: JsonMissing.of()).map { it.toImmutable() },
-                            additionalProperties.toImmutable(),
+                            additionalProperties.toMutableMap(),
                         )
                 }
 
-                @NoAutoDetect
+                private var validated: Boolean = false
+
+                fun validate(): FileSearch = apply {
+                    if (validated) {
+                        return@apply
+                    }
+
+                    vectorStoreIds()
+                    vectorStores().ifPresent { it.forEach { it.validate() } }
+                    validated = true
+                }
+
                 class VectorStore
-                @JsonCreator
                 private constructor(
-                    @JsonProperty("chunking_strategy")
-                    @ExcludeMissing
-                    private val chunkingStrategy: JsonField<ChunkingStrategy> = JsonMissing.of(),
-                    @JsonProperty("file_ids")
-                    @ExcludeMissing
-                    private val fileIds: JsonField<List<String>> = JsonMissing.of(),
-                    @JsonProperty("metadata")
-                    @ExcludeMissing
-                    private val metadata: JsonField<Metadata> = JsonMissing.of(),
-                    @JsonAnySetter
-                    private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
+                    private val chunkingStrategy: JsonField<ChunkingStrategy>,
+                    private val fileIds: JsonField<List<String>>,
+                    private val metadata: JsonField<Metadata>,
+                    private val additionalProperties: MutableMap<String, JsonValue>,
                 ) {
+
+                    @JsonCreator
+                    private constructor(
+                        @JsonProperty("chunking_strategy")
+                        @ExcludeMissing
+                        chunkingStrategy: JsonField<ChunkingStrategy> = JsonMissing.of(),
+                        @JsonProperty("file_ids")
+                        @ExcludeMissing
+                        fileIds: JsonField<List<String>> = JsonMissing.of(),
+                        @JsonProperty("metadata")
+                        @ExcludeMissing
+                        metadata: JsonField<Metadata> = JsonMissing.of(),
+                    ) : this(chunkingStrategy, fileIds, metadata, mutableMapOf())
 
                     /**
                      * The chunking strategy used to chunk the file(s). If not set, will use the
@@ -3664,22 +3751,15 @@ private constructor(
                     @ExcludeMissing
                     fun _metadata(): JsonField<Metadata> = metadata
 
+                    @JsonAnySetter
+                    private fun putAdditionalProperty(key: String, value: JsonValue) {
+                        additionalProperties.put(key, value)
+                    }
+
                     @JsonAnyGetter
                     @ExcludeMissing
-                    fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-                    private var validated: Boolean = false
-
-                    fun validate(): VectorStore = apply {
-                        if (validated) {
-                            return@apply
-                        }
-
-                        chunkingStrategy().ifPresent { it.validate() }
-                        fileIds()
-                        metadata().ifPresent { it.validate() }
-                        validated = true
-                    }
+                    fun _additionalProperties(): Map<String, JsonValue> =
+                        Collections.unmodifiableMap(additionalProperties)
 
                     fun toBuilder() = Builder().from(this)
 
@@ -3839,8 +3919,21 @@ private constructor(
                                 chunkingStrategy,
                                 (fileIds ?: JsonMissing.of()).map { it.toImmutable() },
                                 metadata,
-                                additionalProperties.toImmutable(),
+                                additionalProperties.toMutableMap(),
                             )
+                    }
+
+                    private var validated: Boolean = false
+
+                    fun validate(): VectorStore = apply {
+                        if (validated) {
+                            return@apply
+                        }
+
+                        chunkingStrategy().ifPresent { it.validate() }
+                        fileIds()
+                        metadata().ifPresent { it.validate() }
+                        validated = true
                     }
 
                     /**
@@ -4037,20 +4130,22 @@ private constructor(
                             }
                         }
 
-                        @NoAutoDetect
                         class StaticObject
-                        @JsonCreator
                         private constructor(
-                            @JsonProperty("static")
-                            @ExcludeMissing
-                            private val static_: JsonField<Static> = JsonMissing.of(),
-                            @JsonProperty("type")
-                            @ExcludeMissing
-                            private val type: JsonValue = JsonMissing.of(),
-                            @JsonAnySetter
-                            private val additionalProperties: Map<String, JsonValue> =
-                                immutableEmptyMap(),
+                            private val static_: JsonField<Static>,
+                            private val type: JsonValue,
+                            private val additionalProperties: MutableMap<String, JsonValue>,
                         ) {
+
+                            @JsonCreator
+                            private constructor(
+                                @JsonProperty("static")
+                                @ExcludeMissing
+                                static_: JsonField<Static> = JsonMissing.of(),
+                                @JsonProperty("type")
+                                @ExcludeMissing
+                                type: JsonValue = JsonMissing.of(),
+                            ) : this(static_, type, mutableMapOf())
 
                             /**
                              * @throws OpenAIInvalidDataException if the JSON field has an
@@ -4082,28 +4177,15 @@ private constructor(
                             @ExcludeMissing
                             fun _static_(): JsonField<Static> = static_
 
+                            @JsonAnySetter
+                            private fun putAdditionalProperty(key: String, value: JsonValue) {
+                                additionalProperties.put(key, value)
+                            }
+
                             @JsonAnyGetter
                             @ExcludeMissing
                             fun _additionalProperties(): Map<String, JsonValue> =
-                                additionalProperties
-
-                            private var validated: Boolean = false
-
-                            fun validate(): StaticObject = apply {
-                                if (validated) {
-                                    return@apply
-                                }
-
-                                static_().validate()
-                                _type().let {
-                                    if (it != JsonValue.from("static")) {
-                                        throw OpenAIInvalidDataException(
-                                            "'type' is invalid, received $it"
-                                        )
-                                    }
-                                }
-                                validated = true
-                            }
+                                Collections.unmodifiableMap(additionalProperties)
 
                             fun toBuilder() = Builder().from(this)
 
@@ -4204,24 +4286,44 @@ private constructor(
                                     StaticObject(
                                         checkRequired("static_", static_),
                                         type,
-                                        additionalProperties.toImmutable(),
+                                        additionalProperties.toMutableMap(),
                                     )
                             }
 
-                            @NoAutoDetect
+                            private var validated: Boolean = false
+
+                            fun validate(): StaticObject = apply {
+                                if (validated) {
+                                    return@apply
+                                }
+
+                                static_().validate()
+                                _type().let {
+                                    if (it != JsonValue.from("static")) {
+                                        throw OpenAIInvalidDataException(
+                                            "'type' is invalid, received $it"
+                                        )
+                                    }
+                                }
+                                validated = true
+                            }
+
                             class Static
-                            @JsonCreator
                             private constructor(
-                                @JsonProperty("chunk_overlap_tokens")
-                                @ExcludeMissing
-                                private val chunkOverlapTokens: JsonField<Long> = JsonMissing.of(),
-                                @JsonProperty("max_chunk_size_tokens")
-                                @ExcludeMissing
-                                private val maxChunkSizeTokens: JsonField<Long> = JsonMissing.of(),
-                                @JsonAnySetter
-                                private val additionalProperties: Map<String, JsonValue> =
-                                    immutableEmptyMap(),
+                                private val chunkOverlapTokens: JsonField<Long>,
+                                private val maxChunkSizeTokens: JsonField<Long>,
+                                private val additionalProperties: MutableMap<String, JsonValue>,
                             ) {
+
+                                @JsonCreator
+                                private constructor(
+                                    @JsonProperty("chunk_overlap_tokens")
+                                    @ExcludeMissing
+                                    chunkOverlapTokens: JsonField<Long> = JsonMissing.of(),
+                                    @JsonProperty("max_chunk_size_tokens")
+                                    @ExcludeMissing
+                                    maxChunkSizeTokens: JsonField<Long> = JsonMissing.of(),
+                                ) : this(chunkOverlapTokens, maxChunkSizeTokens, mutableMapOf())
 
                                 /**
                                  * The number of tokens that overlap between chunks. The default
@@ -4269,22 +4371,15 @@ private constructor(
                                 @ExcludeMissing
                                 fun _maxChunkSizeTokens(): JsonField<Long> = maxChunkSizeTokens
 
+                                @JsonAnySetter
+                                private fun putAdditionalProperty(key: String, value: JsonValue) {
+                                    additionalProperties.put(key, value)
+                                }
+
                                 @JsonAnyGetter
                                 @ExcludeMissing
                                 fun _additionalProperties(): Map<String, JsonValue> =
-                                    additionalProperties
-
-                                private var validated: Boolean = false
-
-                                fun validate(): Static = apply {
-                                    if (validated) {
-                                        return@apply
-                                    }
-
-                                    chunkOverlapTokens()
-                                    maxChunkSizeTokens()
-                                    validated = true
-                                }
+                                    Collections.unmodifiableMap(additionalProperties)
 
                                 fun toBuilder() = Builder().from(this)
 
@@ -4408,8 +4503,20 @@ private constructor(
                                         Static(
                                             checkRequired("chunkOverlapTokens", chunkOverlapTokens),
                                             checkRequired("maxChunkSizeTokens", maxChunkSizeTokens),
-                                            additionalProperties.toImmutable(),
+                                            additionalProperties.toMutableMap(),
                                         )
+                                }
+
+                                private var validated: Boolean = false
+
+                                fun validate(): Static = apply {
+                                    if (validated) {
+                                        return@apply
+                                    }
+
+                                    chunkOverlapTokens()
+                                    maxChunkSizeTokens()
+                                    validated = true
                                 }
 
                                 override fun equals(other: Any?): Boolean {
@@ -4526,19 +4633,22 @@ private constructor(
      * type of tool. For example, the `code_interpreter` tool requires a list of file IDs, while the
      * `file_search` tool requires a list of vector store IDs.
      */
-    @NoAutoDetect
     class ToolResources
-    @JsonCreator
     private constructor(
-        @JsonProperty("code_interpreter")
-        @ExcludeMissing
-        private val codeInterpreter: JsonField<CodeInterpreter> = JsonMissing.of(),
-        @JsonProperty("file_search")
-        @ExcludeMissing
-        private val fileSearch: JsonField<FileSearch> = JsonMissing.of(),
-        @JsonAnySetter
-        private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
+        private val codeInterpreter: JsonField<CodeInterpreter>,
+        private val fileSearch: JsonField<FileSearch>,
+        private val additionalProperties: MutableMap<String, JsonValue>,
     ) {
+
+        @JsonCreator
+        private constructor(
+            @JsonProperty("code_interpreter")
+            @ExcludeMissing
+            codeInterpreter: JsonField<CodeInterpreter> = JsonMissing.of(),
+            @JsonProperty("file_search")
+            @ExcludeMissing
+            fileSearch: JsonField<FileSearch> = JsonMissing.of(),
+        ) : this(codeInterpreter, fileSearch, mutableMapOf())
 
         /**
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
@@ -4573,21 +4683,15 @@ private constructor(
         @ExcludeMissing
         fun _fileSearch(): JsonField<FileSearch> = fileSearch
 
+        @JsonAnySetter
+        private fun putAdditionalProperty(key: String, value: JsonValue) {
+            additionalProperties.put(key, value)
+        }
+
         @JsonAnyGetter
         @ExcludeMissing
-        fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-        private var validated: Boolean = false
-
-        fun validate(): ToolResources = apply {
-            if (validated) {
-                return@apply
-            }
-
-            codeInterpreter().ifPresent { it.validate() }
-            fileSearch().ifPresent { it.validate() }
-            validated = true
-        }
+        fun _additionalProperties(): Map<String, JsonValue> =
+            Collections.unmodifiableMap(additionalProperties)
 
         fun toBuilder() = Builder().from(this)
 
@@ -4663,19 +4767,33 @@ private constructor(
              * Further updates to this [Builder] will not mutate the returned instance.
              */
             fun build(): ToolResources =
-                ToolResources(codeInterpreter, fileSearch, additionalProperties.toImmutable())
+                ToolResources(codeInterpreter, fileSearch, additionalProperties.toMutableMap())
         }
 
-        @NoAutoDetect
+        private var validated: Boolean = false
+
+        fun validate(): ToolResources = apply {
+            if (validated) {
+                return@apply
+            }
+
+            codeInterpreter().ifPresent { it.validate() }
+            fileSearch().ifPresent { it.validate() }
+            validated = true
+        }
+
         class CodeInterpreter
-        @JsonCreator
         private constructor(
-            @JsonProperty("file_ids")
-            @ExcludeMissing
-            private val fileIds: JsonField<List<String>> = JsonMissing.of(),
-            @JsonAnySetter
-            private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
+            private val fileIds: JsonField<List<String>>,
+            private val additionalProperties: MutableMap<String, JsonValue>,
         ) {
+
+            @JsonCreator
+            private constructor(
+                @JsonProperty("file_ids")
+                @ExcludeMissing
+                fileIds: JsonField<List<String>> = JsonMissing.of()
+            ) : this(fileIds, mutableMapOf())
 
             /**
              * A list of [file](https://platform.openai.com/docs/api-reference/files) IDs made
@@ -4697,20 +4815,15 @@ private constructor(
             @ExcludeMissing
             fun _fileIds(): JsonField<List<String>> = fileIds
 
+            @JsonAnySetter
+            private fun putAdditionalProperty(key: String, value: JsonValue) {
+                additionalProperties.put(key, value)
+            }
+
             @JsonAnyGetter
             @ExcludeMissing
-            fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-            private var validated: Boolean = false
-
-            fun validate(): CodeInterpreter = apply {
-                if (validated) {
-                    return@apply
-                }
-
-                fileIds()
-                validated = true
-            }
+            fun _additionalProperties(): Map<String, JsonValue> =
+                Collections.unmodifiableMap(additionalProperties)
 
             fun toBuilder() = Builder().from(this)
 
@@ -4792,8 +4905,19 @@ private constructor(
                 fun build(): CodeInterpreter =
                     CodeInterpreter(
                         (fileIds ?: JsonMissing.of()).map { it.toImmutable() },
-                        additionalProperties.toImmutable(),
+                        additionalProperties.toMutableMap(),
                     )
+            }
+
+            private var validated: Boolean = false
+
+            fun validate(): CodeInterpreter = apply {
+                if (validated) {
+                    return@apply
+                }
+
+                fileIds()
+                validated = true
             }
 
             override fun equals(other: Any?): Boolean {
@@ -4814,16 +4938,18 @@ private constructor(
                 "CodeInterpreter{fileIds=$fileIds, additionalProperties=$additionalProperties}"
         }
 
-        @NoAutoDetect
         class FileSearch
-        @JsonCreator
         private constructor(
-            @JsonProperty("vector_store_ids")
-            @ExcludeMissing
-            private val vectorStoreIds: JsonField<List<String>> = JsonMissing.of(),
-            @JsonAnySetter
-            private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
+            private val vectorStoreIds: JsonField<List<String>>,
+            private val additionalProperties: MutableMap<String, JsonValue>,
         ) {
+
+            @JsonCreator
+            private constructor(
+                @JsonProperty("vector_store_ids")
+                @ExcludeMissing
+                vectorStoreIds: JsonField<List<String>> = JsonMissing.of()
+            ) : this(vectorStoreIds, mutableMapOf())
 
             /**
              * The ID of the
@@ -4847,20 +4973,15 @@ private constructor(
             @ExcludeMissing
             fun _vectorStoreIds(): JsonField<List<String>> = vectorStoreIds
 
+            @JsonAnySetter
+            private fun putAdditionalProperty(key: String, value: JsonValue) {
+                additionalProperties.put(key, value)
+            }
+
             @JsonAnyGetter
             @ExcludeMissing
-            fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-            private var validated: Boolean = false
-
-            fun validate(): FileSearch = apply {
-                if (validated) {
-                    return@apply
-                }
-
-                vectorStoreIds()
-                validated = true
-            }
+            fun _additionalProperties(): Map<String, JsonValue> =
+                Collections.unmodifiableMap(additionalProperties)
 
             fun toBuilder() = Builder().from(this)
 
@@ -4944,8 +5065,19 @@ private constructor(
                 fun build(): FileSearch =
                     FileSearch(
                         (vectorStoreIds ?: JsonMissing.of()).map { it.toImmutable() },
-                        additionalProperties.toImmutable(),
+                        additionalProperties.toMutableMap(),
                     )
+            }
+
+            private var validated: Boolean = false
+
+            fun validate(): FileSearch = apply {
+                if (validated) {
+                    return@apply
+                }
+
+                vectorStoreIds()
+                validated = true
             }
 
             override fun equals(other: Any?): Boolean {
@@ -5145,17 +5277,20 @@ private constructor(
      * Controls for how a thread will be truncated prior to the run. Use this to control the intial
      * context window of the run.
      */
-    @NoAutoDetect
     class TruncationStrategy
-    @JsonCreator
     private constructor(
-        @JsonProperty("type") @ExcludeMissing private val type: JsonField<Type> = JsonMissing.of(),
-        @JsonProperty("last_messages")
-        @ExcludeMissing
-        private val lastMessages: JsonField<Long> = JsonMissing.of(),
-        @JsonAnySetter
-        private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
+        private val type: JsonField<Type>,
+        private val lastMessages: JsonField<Long>,
+        private val additionalProperties: MutableMap<String, JsonValue>,
     ) {
+
+        @JsonCreator
+        private constructor(
+            @JsonProperty("type") @ExcludeMissing type: JsonField<Type> = JsonMissing.of(),
+            @JsonProperty("last_messages")
+            @ExcludeMissing
+            lastMessages: JsonField<Long> = JsonMissing.of(),
+        ) : this(type, lastMessages, mutableMapOf())
 
         /**
          * The truncation strategy to use for the thread. The default is `auto`. If set to
@@ -5195,21 +5330,15 @@ private constructor(
         @ExcludeMissing
         fun _lastMessages(): JsonField<Long> = lastMessages
 
+        @JsonAnySetter
+        private fun putAdditionalProperty(key: String, value: JsonValue) {
+            additionalProperties.put(key, value)
+        }
+
         @JsonAnyGetter
         @ExcludeMissing
-        fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-        private var validated: Boolean = false
-
-        fun validate(): TruncationStrategy = apply {
-            if (validated) {
-                return@apply
-            }
-
-            type()
-            lastMessages()
-            validated = true
-        }
+        fun _additionalProperties(): Map<String, JsonValue> =
+            Collections.unmodifiableMap(additionalProperties)
 
         fun toBuilder() = Builder().from(this)
 
@@ -5319,8 +5448,20 @@ private constructor(
                 TruncationStrategy(
                     checkRequired("type", type),
                     lastMessages,
-                    additionalProperties.toImmutable(),
+                    additionalProperties.toMutableMap(),
                 )
+        }
+
+        private var validated: Boolean = false
+
+        fun validate(): TruncationStrategy = apply {
+            if (validated) {
+                return@apply
+            }
+
+            type()
+            lastMessages()
+            validated = true
         }
 
         /**

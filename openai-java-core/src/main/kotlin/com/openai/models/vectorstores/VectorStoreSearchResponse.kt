@@ -11,35 +11,37 @@ import com.openai.core.ExcludeMissing
 import com.openai.core.JsonField
 import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
-import com.openai.core.NoAutoDetect
 import com.openai.core.checkKnown
 import com.openai.core.checkRequired
-import com.openai.core.immutableEmptyMap
 import com.openai.core.toImmutable
 import com.openai.errors.OpenAIInvalidDataException
+import java.util.Collections
 import java.util.Objects
 import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
-@NoAutoDetect
 class VectorStoreSearchResponse
-@JsonCreator
 private constructor(
-    @JsonProperty("attributes")
-    @ExcludeMissing
-    private val attributes: JsonField<Attributes> = JsonMissing.of(),
-    @JsonProperty("content")
-    @ExcludeMissing
-    private val content: JsonField<List<Content>> = JsonMissing.of(),
-    @JsonProperty("file_id")
-    @ExcludeMissing
-    private val fileId: JsonField<String> = JsonMissing.of(),
-    @JsonProperty("filename")
-    @ExcludeMissing
-    private val filename: JsonField<String> = JsonMissing.of(),
-    @JsonProperty("score") @ExcludeMissing private val score: JsonField<Double> = JsonMissing.of(),
-    @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
+    private val attributes: JsonField<Attributes>,
+    private val content: JsonField<List<Content>>,
+    private val fileId: JsonField<String>,
+    private val filename: JsonField<String>,
+    private val score: JsonField<Double>,
+    private val additionalProperties: MutableMap<String, JsonValue>,
 ) {
+
+    @JsonCreator
+    private constructor(
+        @JsonProperty("attributes")
+        @ExcludeMissing
+        attributes: JsonField<Attributes> = JsonMissing.of(),
+        @JsonProperty("content")
+        @ExcludeMissing
+        content: JsonField<List<Content>> = JsonMissing.of(),
+        @JsonProperty("file_id") @ExcludeMissing fileId: JsonField<String> = JsonMissing.of(),
+        @JsonProperty("filename") @ExcludeMissing filename: JsonField<String> = JsonMissing.of(),
+        @JsonProperty("score") @ExcludeMissing score: JsonField<Double> = JsonMissing.of(),
+    ) : this(attributes, content, fileId, filename, score, mutableMapOf())
 
     /**
      * Set of 16 key-value pairs that can be attached to an object. This can be useful for storing
@@ -122,24 +124,15 @@ private constructor(
      */
     @JsonProperty("score") @ExcludeMissing fun _score(): JsonField<Double> = score
 
+    @JsonAnySetter
+    private fun putAdditionalProperty(key: String, value: JsonValue) {
+        additionalProperties.put(key, value)
+    }
+
     @JsonAnyGetter
     @ExcludeMissing
-    fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-    private var validated: Boolean = false
-
-    fun validate(): VectorStoreSearchResponse = apply {
-        if (validated) {
-            return@apply
-        }
-
-        attributes().ifPresent { it.validate() }
-        content().forEach { it.validate() }
-        fileId()
-        filename()
-        score()
-        validated = true
-    }
+    fun _additionalProperties(): Map<String, JsonValue> =
+        Collections.unmodifiableMap(additionalProperties)
 
     fun toBuilder() = Builder().from(this)
 
@@ -302,8 +295,23 @@ private constructor(
                 checkRequired("fileId", fileId),
                 checkRequired("filename", filename),
                 checkRequired("score", score),
-                additionalProperties.toImmutable(),
+                additionalProperties.toMutableMap(),
             )
+    }
+
+    private var validated: Boolean = false
+
+    fun validate(): VectorStoreSearchResponse = apply {
+        if (validated) {
+            return@apply
+        }
+
+        attributes().ifPresent { it.validate() }
+        content().forEach { it.validate() }
+        fileId()
+        filename()
+        score()
+        validated = true
     }
 
     /**
@@ -312,27 +320,20 @@ private constructor(
      * API or the dashboard. Keys are strings with a maximum length of 64 characters. Values are
      * strings with a maximum length of 512 characters, booleans, or numbers.
      */
-    @NoAutoDetect
     class Attributes
-    @JsonCreator
-    private constructor(
+    private constructor(private val additionalProperties: MutableMap<String, JsonValue>) {
+
+        @JsonCreator private constructor() : this(mutableMapOf())
+
         @JsonAnySetter
-        private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap()
-    ) {
+        private fun putAdditionalProperty(key: String, value: JsonValue) {
+            additionalProperties.put(key, value)
+        }
 
         @JsonAnyGetter
         @ExcludeMissing
-        fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-        private var validated: Boolean = false
-
-        fun validate(): Attributes = apply {
-            if (validated) {
-                return@apply
-            }
-
-            validated = true
-        }
+        fun _additionalProperties(): Map<String, JsonValue> =
+            Collections.unmodifiableMap(additionalProperties)
 
         fun toBuilder() = Builder().from(this)
 
@@ -376,7 +377,17 @@ private constructor(
              *
              * Further updates to this [Builder] will not mutate the returned instance.
              */
-            fun build(): Attributes = Attributes(additionalProperties.toImmutable())
+            fun build(): Attributes = Attributes(additionalProperties.toMutableMap())
+        }
+
+        private var validated: Boolean = false
+
+        fun validate(): Attributes = apply {
+            if (validated) {
+                return@apply
+            }
+
+            validated = true
         }
 
         override fun equals(other: Any?): Boolean {
@@ -396,17 +407,18 @@ private constructor(
         override fun toString() = "Attributes{additionalProperties=$additionalProperties}"
     }
 
-    @NoAutoDetect
     class Content
-    @JsonCreator
     private constructor(
-        @JsonProperty("text")
-        @ExcludeMissing
-        private val text: JsonField<String> = JsonMissing.of(),
-        @JsonProperty("type") @ExcludeMissing private val type: JsonField<Type> = JsonMissing.of(),
-        @JsonAnySetter
-        private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
+        private val text: JsonField<String>,
+        private val type: JsonField<Type>,
+        private val additionalProperties: MutableMap<String, JsonValue>,
     ) {
+
+        @JsonCreator
+        private constructor(
+            @JsonProperty("text") @ExcludeMissing text: JsonField<String> = JsonMissing.of(),
+            @JsonProperty("type") @ExcludeMissing type: JsonField<Type> = JsonMissing.of(),
+        ) : this(text, type, mutableMapOf())
 
         /**
          * The text content returned from search.
@@ -438,21 +450,15 @@ private constructor(
          */
         @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<Type> = type
 
+        @JsonAnySetter
+        private fun putAdditionalProperty(key: String, value: JsonValue) {
+            additionalProperties.put(key, value)
+        }
+
         @JsonAnyGetter
         @ExcludeMissing
-        fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-        private var validated: Boolean = false
-
-        fun validate(): Content = apply {
-            if (validated) {
-                return@apply
-            }
-
-            text()
-            type()
-            validated = true
-        }
+        fun _additionalProperties(): Map<String, JsonValue> =
+            Collections.unmodifiableMap(additionalProperties)
 
         fun toBuilder() = Builder().from(this)
 
@@ -544,8 +550,20 @@ private constructor(
                 Content(
                     checkRequired("text", text),
                     checkRequired("type", type),
-                    additionalProperties.toImmutable(),
+                    additionalProperties.toMutableMap(),
                 )
+        }
+
+        private var validated: Boolean = false
+
+        fun validate(): Content = apply {
+            if (validated) {
+                return@apply
+            }
+
+            text()
+            type()
+            validated = true
         }
 
         /** The type of content. */

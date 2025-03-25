@@ -11,10 +11,8 @@ import com.openai.core.ExcludeMissing
 import com.openai.core.JsonField
 import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
-import com.openai.core.NoAutoDetect
-import com.openai.core.immutableEmptyMap
-import com.openai.core.toImmutable
 import com.openai.errors.OpenAIInvalidDataException
+import java.util.Collections
 import java.util.Objects
 import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
@@ -24,18 +22,22 @@ import kotlin.jvm.optionals.getOrNull
  *
  * Configuration options for [reasoning models](https://platform.openai.com/docs/guides/reasoning).
  */
-@NoAutoDetect
 class Reasoning
-@JsonCreator
 private constructor(
-    @JsonProperty("effort")
-    @ExcludeMissing
-    private val effort: JsonField<ReasoningEffort> = JsonMissing.of(),
-    @JsonProperty("generate_summary")
-    @ExcludeMissing
-    private val generateSummary: JsonField<GenerateSummary> = JsonMissing.of(),
-    @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
+    private val effort: JsonField<ReasoningEffort>,
+    private val generateSummary: JsonField<GenerateSummary>,
+    private val additionalProperties: MutableMap<String, JsonValue>,
 ) {
+
+    @JsonCreator
+    private constructor(
+        @JsonProperty("effort")
+        @ExcludeMissing
+        effort: JsonField<ReasoningEffort> = JsonMissing.of(),
+        @JsonProperty("generate_summary")
+        @ExcludeMissing
+        generateSummary: JsonField<GenerateSummary> = JsonMissing.of(),
+    ) : this(effort, generateSummary, mutableMapOf())
 
     /**
      * **o-series models only**
@@ -78,21 +80,15 @@ private constructor(
     @ExcludeMissing
     fun _generateSummary(): JsonField<GenerateSummary> = generateSummary
 
+    @JsonAnySetter
+    private fun putAdditionalProperty(key: String, value: JsonValue) {
+        additionalProperties.put(key, value)
+    }
+
     @JsonAnyGetter
     @ExcludeMissing
-    fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-    private var validated: Boolean = false
-
-    fun validate(): Reasoning = apply {
-        if (validated) {
-            return@apply
-        }
-
-        effort()
-        generateSummary()
-        validated = true
-    }
+    fun _additionalProperties(): Map<String, JsonValue> =
+        Collections.unmodifiableMap(additionalProperties)
 
     fun toBuilder() = Builder().from(this)
 
@@ -187,7 +183,19 @@ private constructor(
          * Further updates to this [Builder] will not mutate the returned instance.
          */
         fun build(): Reasoning =
-            Reasoning(effort, generateSummary, additionalProperties.toImmutable())
+            Reasoning(effort, generateSummary, additionalProperties.toMutableMap())
+    }
+
+    private var validated: Boolean = false
+
+    fun validate(): Reasoning = apply {
+        if (validated) {
+            return@apply
+        }
+
+        effort()
+        generateSummary()
+        validated = true
     }
 
     /**

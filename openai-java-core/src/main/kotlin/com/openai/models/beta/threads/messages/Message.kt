@@ -20,15 +20,14 @@ import com.openai.core.ExcludeMissing
 import com.openai.core.JsonField
 import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
-import com.openai.core.NoAutoDetect
 import com.openai.core.checkKnown
 import com.openai.core.checkRequired
 import com.openai.core.getOrThrow
-import com.openai.core.immutableEmptyMap
 import com.openai.core.toImmutable
 import com.openai.errors.OpenAIInvalidDataException
 import com.openai.models.Metadata
 import com.openai.models.beta.assistants.CodeInterpreterTool
+import java.util.Collections
 import java.util.Objects
 import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
@@ -36,46 +35,70 @@ import kotlin.jvm.optionals.getOrNull
 /**
  * Represents a message within a [thread](https://platform.openai.com/docs/api-reference/threads).
  */
-@NoAutoDetect
 class Message
-@JsonCreator
 private constructor(
-    @JsonProperty("id") @ExcludeMissing private val id: JsonField<String> = JsonMissing.of(),
-    @JsonProperty("assistant_id")
-    @ExcludeMissing
-    private val assistantId: JsonField<String> = JsonMissing.of(),
-    @JsonProperty("attachments")
-    @ExcludeMissing
-    private val attachments: JsonField<List<Attachment>> = JsonMissing.of(),
-    @JsonProperty("completed_at")
-    @ExcludeMissing
-    private val completedAt: JsonField<Long> = JsonMissing.of(),
-    @JsonProperty("content")
-    @ExcludeMissing
-    private val content: JsonField<List<MessageContent>> = JsonMissing.of(),
-    @JsonProperty("created_at")
-    @ExcludeMissing
-    private val createdAt: JsonField<Long> = JsonMissing.of(),
-    @JsonProperty("incomplete_at")
-    @ExcludeMissing
-    private val incompleteAt: JsonField<Long> = JsonMissing.of(),
-    @JsonProperty("incomplete_details")
-    @ExcludeMissing
-    private val incompleteDetails: JsonField<IncompleteDetails> = JsonMissing.of(),
-    @JsonProperty("metadata")
-    @ExcludeMissing
-    private val metadata: JsonField<Metadata> = JsonMissing.of(),
-    @JsonProperty("object") @ExcludeMissing private val object_: JsonValue = JsonMissing.of(),
-    @JsonProperty("role") @ExcludeMissing private val role: JsonField<Role> = JsonMissing.of(),
-    @JsonProperty("run_id") @ExcludeMissing private val runId: JsonField<String> = JsonMissing.of(),
-    @JsonProperty("status")
-    @ExcludeMissing
-    private val status: JsonField<Status> = JsonMissing.of(),
-    @JsonProperty("thread_id")
-    @ExcludeMissing
-    private val threadId: JsonField<String> = JsonMissing.of(),
-    @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
+    private val id: JsonField<String>,
+    private val assistantId: JsonField<String>,
+    private val attachments: JsonField<List<Attachment>>,
+    private val completedAt: JsonField<Long>,
+    private val content: JsonField<List<MessageContent>>,
+    private val createdAt: JsonField<Long>,
+    private val incompleteAt: JsonField<Long>,
+    private val incompleteDetails: JsonField<IncompleteDetails>,
+    private val metadata: JsonField<Metadata>,
+    private val object_: JsonValue,
+    private val role: JsonField<Role>,
+    private val runId: JsonField<String>,
+    private val status: JsonField<Status>,
+    private val threadId: JsonField<String>,
+    private val additionalProperties: MutableMap<String, JsonValue>,
 ) {
+
+    @JsonCreator
+    private constructor(
+        @JsonProperty("id") @ExcludeMissing id: JsonField<String> = JsonMissing.of(),
+        @JsonProperty("assistant_id")
+        @ExcludeMissing
+        assistantId: JsonField<String> = JsonMissing.of(),
+        @JsonProperty("attachments")
+        @ExcludeMissing
+        attachments: JsonField<List<Attachment>> = JsonMissing.of(),
+        @JsonProperty("completed_at")
+        @ExcludeMissing
+        completedAt: JsonField<Long> = JsonMissing.of(),
+        @JsonProperty("content")
+        @ExcludeMissing
+        content: JsonField<List<MessageContent>> = JsonMissing.of(),
+        @JsonProperty("created_at") @ExcludeMissing createdAt: JsonField<Long> = JsonMissing.of(),
+        @JsonProperty("incomplete_at")
+        @ExcludeMissing
+        incompleteAt: JsonField<Long> = JsonMissing.of(),
+        @JsonProperty("incomplete_details")
+        @ExcludeMissing
+        incompleteDetails: JsonField<IncompleteDetails> = JsonMissing.of(),
+        @JsonProperty("metadata") @ExcludeMissing metadata: JsonField<Metadata> = JsonMissing.of(),
+        @JsonProperty("object") @ExcludeMissing object_: JsonValue = JsonMissing.of(),
+        @JsonProperty("role") @ExcludeMissing role: JsonField<Role> = JsonMissing.of(),
+        @JsonProperty("run_id") @ExcludeMissing runId: JsonField<String> = JsonMissing.of(),
+        @JsonProperty("status") @ExcludeMissing status: JsonField<Status> = JsonMissing.of(),
+        @JsonProperty("thread_id") @ExcludeMissing threadId: JsonField<String> = JsonMissing.of(),
+    ) : this(
+        id,
+        assistantId,
+        attachments,
+        completedAt,
+        content,
+        createdAt,
+        incompleteAt,
+        incompleteDetails,
+        metadata,
+        object_,
+        role,
+        runId,
+        status,
+        threadId,
+        mutableMapOf(),
+    )
 
     /**
      * The identifier, which can be referenced in API endpoints.
@@ -310,37 +333,15 @@ private constructor(
      */
     @JsonProperty("thread_id") @ExcludeMissing fun _threadId(): JsonField<String> = threadId
 
+    @JsonAnySetter
+    private fun putAdditionalProperty(key: String, value: JsonValue) {
+        additionalProperties.put(key, value)
+    }
+
     @JsonAnyGetter
     @ExcludeMissing
-    fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-    private var validated: Boolean = false
-
-    fun validate(): Message = apply {
-        if (validated) {
-            return@apply
-        }
-
-        id()
-        assistantId()
-        attachments().ifPresent { it.forEach { it.validate() } }
-        completedAt()
-        content().forEach { it.validate() }
-        createdAt()
-        incompleteAt()
-        incompleteDetails().ifPresent { it.validate() }
-        metadata().ifPresent { it.validate() }
-        _object_().let {
-            if (it != JsonValue.from("thread.message")) {
-                throw OpenAIInvalidDataException("'object_' is invalid, received $it")
-            }
-        }
-        role()
-        runId()
-        status()
-        threadId()
-        validated = true
-    }
+    fun _additionalProperties(): Map<String, JsonValue> =
+        Collections.unmodifiableMap(additionalProperties)
 
     fun toBuilder() = Builder().from(this)
 
@@ -777,23 +778,50 @@ private constructor(
                 checkRequired("runId", runId),
                 checkRequired("status", status),
                 checkRequired("threadId", threadId),
-                additionalProperties.toImmutable(),
+                additionalProperties.toMutableMap(),
             )
     }
 
-    @NoAutoDetect
+    private var validated: Boolean = false
+
+    fun validate(): Message = apply {
+        if (validated) {
+            return@apply
+        }
+
+        id()
+        assistantId()
+        attachments().ifPresent { it.forEach { it.validate() } }
+        completedAt()
+        content().forEach { it.validate() }
+        createdAt()
+        incompleteAt()
+        incompleteDetails().ifPresent { it.validate() }
+        metadata().ifPresent { it.validate() }
+        _object_().let {
+            if (it != JsonValue.from("thread.message")) {
+                throw OpenAIInvalidDataException("'object_' is invalid, received $it")
+            }
+        }
+        role()
+        runId()
+        status()
+        threadId()
+        validated = true
+    }
+
     class Attachment
-    @JsonCreator
     private constructor(
-        @JsonProperty("file_id")
-        @ExcludeMissing
-        private val fileId: JsonField<String> = JsonMissing.of(),
-        @JsonProperty("tools")
-        @ExcludeMissing
-        private val tools: JsonField<List<Tool>> = JsonMissing.of(),
-        @JsonAnySetter
-        private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
+        private val fileId: JsonField<String>,
+        private val tools: JsonField<List<Tool>>,
+        private val additionalProperties: MutableMap<String, JsonValue>,
     ) {
+
+        @JsonCreator
+        private constructor(
+            @JsonProperty("file_id") @ExcludeMissing fileId: JsonField<String> = JsonMissing.of(),
+            @JsonProperty("tools") @ExcludeMissing tools: JsonField<List<Tool>> = JsonMissing.of(),
+        ) : this(fileId, tools, mutableMapOf())
 
         /**
          * The ID of the file to attach to the message.
@@ -825,21 +853,15 @@ private constructor(
          */
         @JsonProperty("tools") @ExcludeMissing fun _tools(): JsonField<List<Tool>> = tools
 
+        @JsonAnySetter
+        private fun putAdditionalProperty(key: String, value: JsonValue) {
+            additionalProperties.put(key, value)
+        }
+
         @JsonAnyGetter
         @ExcludeMissing
-        fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-        private var validated: Boolean = false
-
-        fun validate(): Attachment = apply {
-            if (validated) {
-                return@apply
-            }
-
-            fileId()
-            tools().ifPresent { it.forEach { it.validate() } }
-            validated = true
-        }
+        fun _additionalProperties(): Map<String, JsonValue> =
+            Collections.unmodifiableMap(additionalProperties)
 
         fun toBuilder() = Builder().from(this)
 
@@ -937,8 +959,20 @@ private constructor(
                 Attachment(
                     fileId,
                     (tools ?: JsonMissing.of()).map { it.toImmutable() },
-                    additionalProperties.toImmutable(),
+                    additionalProperties.toMutableMap(),
                 )
+        }
+
+        private var validated: Boolean = false
+
+        fun validate(): Attachment = apply {
+            if (validated) {
+                return@apply
+            }
+
+            fileId()
+            tools().ifPresent { it.forEach { it.validate() } }
+            validated = true
         }
 
         @JsonDeserialize(using = Tool.Deserializer::class)
@@ -1132,16 +1166,16 @@ private constructor(
     }
 
     /** On an incomplete message, details about why the message is incomplete. */
-    @NoAutoDetect
     class IncompleteDetails
-    @JsonCreator
     private constructor(
-        @JsonProperty("reason")
-        @ExcludeMissing
-        private val reason: JsonField<Reason> = JsonMissing.of(),
-        @JsonAnySetter
-        private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
+        private val reason: JsonField<Reason>,
+        private val additionalProperties: MutableMap<String, JsonValue>,
     ) {
+
+        @JsonCreator
+        private constructor(
+            @JsonProperty("reason") @ExcludeMissing reason: JsonField<Reason> = JsonMissing.of()
+        ) : this(reason, mutableMapOf())
 
         /**
          * The reason the message is incomplete.
@@ -1158,20 +1192,15 @@ private constructor(
          */
         @JsonProperty("reason") @ExcludeMissing fun _reason(): JsonField<Reason> = reason
 
+        @JsonAnySetter
+        private fun putAdditionalProperty(key: String, value: JsonValue) {
+            additionalProperties.put(key, value)
+        }
+
         @JsonAnyGetter
         @ExcludeMissing
-        fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-        private var validated: Boolean = false
-
-        fun validate(): IncompleteDetails = apply {
-            if (validated) {
-                return@apply
-            }
-
-            reason()
-            validated = true
-        }
+        fun _additionalProperties(): Map<String, JsonValue> =
+            Collections.unmodifiableMap(additionalProperties)
 
         fun toBuilder() = Builder().from(this)
 
@@ -1246,8 +1275,19 @@ private constructor(
             fun build(): IncompleteDetails =
                 IncompleteDetails(
                     checkRequired("reason", reason),
-                    additionalProperties.toImmutable(),
+                    additionalProperties.toMutableMap(),
                 )
+        }
+
+        private var validated: Boolean = false
+
+        fun validate(): IncompleteDetails = apply {
+            if (validated) {
+                return@apply
+            }
+
+            reason()
+            validated = true
         }
 
         /** The reason the message is incomplete. */

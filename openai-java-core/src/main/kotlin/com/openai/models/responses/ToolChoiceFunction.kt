@@ -10,22 +10,24 @@ import com.openai.core.ExcludeMissing
 import com.openai.core.JsonField
 import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
-import com.openai.core.NoAutoDetect
 import com.openai.core.checkRequired
-import com.openai.core.immutableEmptyMap
-import com.openai.core.toImmutable
 import com.openai.errors.OpenAIInvalidDataException
+import java.util.Collections
 import java.util.Objects
 
 /** Use this option to force the model to call a specific function. */
-@NoAutoDetect
 class ToolChoiceFunction
-@JsonCreator
 private constructor(
-    @JsonProperty("name") @ExcludeMissing private val name: JsonField<String> = JsonMissing.of(),
-    @JsonProperty("type") @ExcludeMissing private val type: JsonValue = JsonMissing.of(),
-    @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
+    private val name: JsonField<String>,
+    private val type: JsonValue,
+    private val additionalProperties: MutableMap<String, JsonValue>,
 ) {
+
+    @JsonCreator
+    private constructor(
+        @JsonProperty("name") @ExcludeMissing name: JsonField<String> = JsonMissing.of(),
+        @JsonProperty("type") @ExcludeMissing type: JsonValue = JsonMissing.of(),
+    ) : this(name, type, mutableMapOf())
 
     /**
      * The name of the function to call.
@@ -55,25 +57,15 @@ private constructor(
      */
     @JsonProperty("name") @ExcludeMissing fun _name(): JsonField<String> = name
 
+    @JsonAnySetter
+    private fun putAdditionalProperty(key: String, value: JsonValue) {
+        additionalProperties.put(key, value)
+    }
+
     @JsonAnyGetter
     @ExcludeMissing
-    fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-    private var validated: Boolean = false
-
-    fun validate(): ToolChoiceFunction = apply {
-        if (validated) {
-            return@apply
-        }
-
-        name()
-        _type().let {
-            if (it != JsonValue.from("function")) {
-                throw OpenAIInvalidDataException("'type' is invalid, received $it")
-            }
-        }
-        validated = true
-    }
+    fun _additionalProperties(): Map<String, JsonValue> =
+        Collections.unmodifiableMap(additionalProperties)
 
     fun toBuilder() = Builder().from(this)
 
@@ -164,8 +156,24 @@ private constructor(
             ToolChoiceFunction(
                 checkRequired("name", name),
                 type,
-                additionalProperties.toImmutable(),
+                additionalProperties.toMutableMap(),
             )
+    }
+
+    private var validated: Boolean = false
+
+    fun validate(): ToolChoiceFunction = apply {
+        if (validated) {
+            return@apply
+        }
+
+        name()
+        _type().let {
+            if (it != JsonValue.from("function")) {
+                throw OpenAIInvalidDataException("'type' is invalid, received $it")
+            }
+        }
+        validated = true
     }
 
     override fun equals(other: Any?): Boolean {

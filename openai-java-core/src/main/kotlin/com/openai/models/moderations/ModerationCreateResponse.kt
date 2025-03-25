@@ -10,26 +10,30 @@ import com.openai.core.ExcludeMissing
 import com.openai.core.JsonField
 import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
-import com.openai.core.NoAutoDetect
 import com.openai.core.checkKnown
 import com.openai.core.checkRequired
-import com.openai.core.immutableEmptyMap
 import com.openai.core.toImmutable
 import com.openai.errors.OpenAIInvalidDataException
+import java.util.Collections
 import java.util.Objects
 
 /** Represents if a given text input is potentially harmful. */
-@NoAutoDetect
 class ModerationCreateResponse
-@JsonCreator
 private constructor(
-    @JsonProperty("id") @ExcludeMissing private val id: JsonField<String> = JsonMissing.of(),
-    @JsonProperty("model") @ExcludeMissing private val model: JsonField<String> = JsonMissing.of(),
-    @JsonProperty("results")
-    @ExcludeMissing
-    private val results: JsonField<List<Moderation>> = JsonMissing.of(),
-    @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
+    private val id: JsonField<String>,
+    private val model: JsonField<String>,
+    private val results: JsonField<List<Moderation>>,
+    private val additionalProperties: MutableMap<String, JsonValue>,
 ) {
+
+    @JsonCreator
+    private constructor(
+        @JsonProperty("id") @ExcludeMissing id: JsonField<String> = JsonMissing.of(),
+        @JsonProperty("model") @ExcludeMissing model: JsonField<String> = JsonMissing.of(),
+        @JsonProperty("results")
+        @ExcludeMissing
+        results: JsonField<List<Moderation>> = JsonMissing.of(),
+    ) : this(id, model, results, mutableMapOf())
 
     /**
      * The unique identifier for the moderation request.
@@ -76,22 +80,15 @@ private constructor(
      */
     @JsonProperty("results") @ExcludeMissing fun _results(): JsonField<List<Moderation>> = results
 
+    @JsonAnySetter
+    private fun putAdditionalProperty(key: String, value: JsonValue) {
+        additionalProperties.put(key, value)
+    }
+
     @JsonAnyGetter
     @ExcludeMissing
-    fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-    private var validated: Boolean = false
-
-    fun validate(): ModerationCreateResponse = apply {
-        if (validated) {
-            return@apply
-        }
-
-        id()
-        model()
-        results().forEach { it.validate() }
-        validated = true
-    }
+    fun _additionalProperties(): Map<String, JsonValue> =
+        Collections.unmodifiableMap(additionalProperties)
 
     fun toBuilder() = Builder().from(this)
 
@@ -212,8 +209,21 @@ private constructor(
                 checkRequired("id", id),
                 checkRequired("model", model),
                 checkRequired("results", results).map { it.toImmutable() },
-                additionalProperties.toImmutable(),
+                additionalProperties.toMutableMap(),
             )
+    }
+
+    private var validated: Boolean = false
+
+    fun validate(): ModerationCreateResponse = apply {
+        if (validated) {
+            return@apply
+        }
+
+        id()
+        model()
+        results().forEach { it.validate() }
+        validated = true
     }
 
     override fun equals(other: Any?): Boolean {

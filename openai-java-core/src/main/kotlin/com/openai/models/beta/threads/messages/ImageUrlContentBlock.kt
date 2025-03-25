@@ -10,24 +10,24 @@ import com.openai.core.ExcludeMissing
 import com.openai.core.JsonField
 import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
-import com.openai.core.NoAutoDetect
 import com.openai.core.checkRequired
-import com.openai.core.immutableEmptyMap
-import com.openai.core.toImmutable
 import com.openai.errors.OpenAIInvalidDataException
+import java.util.Collections
 import java.util.Objects
 
 /** References an image URL in the content of a message. */
-@NoAutoDetect
 class ImageUrlContentBlock
-@JsonCreator
 private constructor(
-    @JsonProperty("image_url")
-    @ExcludeMissing
-    private val imageUrl: JsonField<ImageUrl> = JsonMissing.of(),
-    @JsonProperty("type") @ExcludeMissing private val type: JsonValue = JsonMissing.of(),
-    @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
+    private val imageUrl: JsonField<ImageUrl>,
+    private val type: JsonValue,
+    private val additionalProperties: MutableMap<String, JsonValue>,
 ) {
+
+    @JsonCreator
+    private constructor(
+        @JsonProperty("image_url") @ExcludeMissing imageUrl: JsonField<ImageUrl> = JsonMissing.of(),
+        @JsonProperty("type") @ExcludeMissing type: JsonValue = JsonMissing.of(),
+    ) : this(imageUrl, type, mutableMapOf())
 
     /**
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
@@ -55,25 +55,15 @@ private constructor(
      */
     @JsonProperty("image_url") @ExcludeMissing fun _imageUrl(): JsonField<ImageUrl> = imageUrl
 
+    @JsonAnySetter
+    private fun putAdditionalProperty(key: String, value: JsonValue) {
+        additionalProperties.put(key, value)
+    }
+
     @JsonAnyGetter
     @ExcludeMissing
-    fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-    private var validated: Boolean = false
-
-    fun validate(): ImageUrlContentBlock = apply {
-        if (validated) {
-            return@apply
-        }
-
-        imageUrl().validate()
-        _type().let {
-            if (it != JsonValue.from("image_url")) {
-                throw OpenAIInvalidDataException("'type' is invalid, received $it")
-            }
-        }
-        validated = true
-    }
+    fun _additionalProperties(): Map<String, JsonValue> =
+        Collections.unmodifiableMap(additionalProperties)
 
     fun toBuilder() = Builder().from(this)
 
@@ -164,8 +154,24 @@ private constructor(
             ImageUrlContentBlock(
                 checkRequired("imageUrl", imageUrl),
                 type,
-                additionalProperties.toImmutable(),
+                additionalProperties.toMutableMap(),
             )
+    }
+
+    private var validated: Boolean = false
+
+    fun validate(): ImageUrlContentBlock = apply {
+        if (validated) {
+            return@apply
+        }
+
+        imageUrl().validate()
+        _type().let {
+            if (it != JsonValue.from("image_url")) {
+                throw OpenAIInvalidDataException("'type' is invalid, received $it")
+            }
+        }
+        validated = true
     }
 
     override fun equals(other: Any?): Boolean {

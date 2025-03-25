@@ -10,25 +10,28 @@ import com.openai.core.ExcludeMissing
 import com.openai.core.JsonField
 import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
-import com.openai.core.NoAutoDetect
 import com.openai.core.checkRequired
-import com.openai.core.immutableEmptyMap
-import com.openai.core.toImmutable
 import com.openai.errors.OpenAIInvalidDataException
+import java.util.Collections
 import java.util.Objects
 
 /** An audio output from the model. */
-@NoAutoDetect
 class ResponseOutputAudio
-@JsonCreator
 private constructor(
-    @JsonProperty("data") @ExcludeMissing private val data: JsonField<String> = JsonMissing.of(),
-    @JsonProperty("transcript")
-    @ExcludeMissing
-    private val transcript: JsonField<String> = JsonMissing.of(),
-    @JsonProperty("type") @ExcludeMissing private val type: JsonValue = JsonMissing.of(),
-    @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
+    private val data: JsonField<String>,
+    private val transcript: JsonField<String>,
+    private val type: JsonValue,
+    private val additionalProperties: MutableMap<String, JsonValue>,
 ) {
+
+    @JsonCreator
+    private constructor(
+        @JsonProperty("data") @ExcludeMissing data: JsonField<String> = JsonMissing.of(),
+        @JsonProperty("transcript")
+        @ExcludeMissing
+        transcript: JsonField<String> = JsonMissing.of(),
+        @JsonProperty("type") @ExcludeMissing type: JsonValue = JsonMissing.of(),
+    ) : this(data, transcript, type, mutableMapOf())
 
     /**
      * Base64-encoded audio data from the model.
@@ -73,26 +76,15 @@ private constructor(
      */
     @JsonProperty("transcript") @ExcludeMissing fun _transcript(): JsonField<String> = transcript
 
+    @JsonAnySetter
+    private fun putAdditionalProperty(key: String, value: JsonValue) {
+        additionalProperties.put(key, value)
+    }
+
     @JsonAnyGetter
     @ExcludeMissing
-    fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-    private var validated: Boolean = false
-
-    fun validate(): ResponseOutputAudio = apply {
-        if (validated) {
-            return@apply
-        }
-
-        data()
-        transcript()
-        _type().let {
-            if (it != JsonValue.from("output_audio")) {
-                throw OpenAIInvalidDataException("'type' is invalid, received $it")
-            }
-        }
-        validated = true
-    }
+    fun _additionalProperties(): Map<String, JsonValue> =
+        Collections.unmodifiableMap(additionalProperties)
 
     fun toBuilder() = Builder().from(this)
 
@@ -200,8 +192,25 @@ private constructor(
                 checkRequired("data", data),
                 checkRequired("transcript", transcript),
                 type,
-                additionalProperties.toImmutable(),
+                additionalProperties.toMutableMap(),
             )
+    }
+
+    private var validated: Boolean = false
+
+    fun validate(): ResponseOutputAudio = apply {
+        if (validated) {
+            return@apply
+        }
+
+        data()
+        transcript()
+        _type().let {
+            if (it != JsonValue.from("output_audio")) {
+                throw OpenAIInvalidDataException("'type' is invalid, received $it")
+            }
+        }
+        validated = true
     }
 
     override fun equals(other: Any?): Boolean {

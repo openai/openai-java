@@ -10,28 +10,30 @@ import com.openai.core.ExcludeMissing
 import com.openai.core.JsonField
 import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
-import com.openai.core.NoAutoDetect
 import com.openai.core.checkRequired
-import com.openai.core.immutableEmptyMap
-import com.openai.core.toImmutable
 import com.openai.errors.OpenAIInvalidDataException
+import java.util.Collections
 import java.util.Objects
 import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
 /** Emitted when an error occurs. */
-@NoAutoDetect
 class ResponseErrorEvent
-@JsonCreator
 private constructor(
-    @JsonProperty("code") @ExcludeMissing private val code: JsonField<String> = JsonMissing.of(),
-    @JsonProperty("message")
-    @ExcludeMissing
-    private val message: JsonField<String> = JsonMissing.of(),
-    @JsonProperty("param") @ExcludeMissing private val param: JsonField<String> = JsonMissing.of(),
-    @JsonProperty("type") @ExcludeMissing private val type: JsonValue = JsonMissing.of(),
-    @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
+    private val code: JsonField<String>,
+    private val message: JsonField<String>,
+    private val param: JsonField<String>,
+    private val type: JsonValue,
+    private val additionalProperties: MutableMap<String, JsonValue>,
 ) {
+
+    @JsonCreator
+    private constructor(
+        @JsonProperty("code") @ExcludeMissing code: JsonField<String> = JsonMissing.of(),
+        @JsonProperty("message") @ExcludeMissing message: JsonField<String> = JsonMissing.of(),
+        @JsonProperty("param") @ExcludeMissing param: JsonField<String> = JsonMissing.of(),
+        @JsonProperty("type") @ExcludeMissing type: JsonValue = JsonMissing.of(),
+    ) : this(code, message, param, type, mutableMapOf())
 
     /**
      * The error code.
@@ -91,27 +93,15 @@ private constructor(
      */
     @JsonProperty("param") @ExcludeMissing fun _param(): JsonField<String> = param
 
+    @JsonAnySetter
+    private fun putAdditionalProperty(key: String, value: JsonValue) {
+        additionalProperties.put(key, value)
+    }
+
     @JsonAnyGetter
     @ExcludeMissing
-    fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-    private var validated: Boolean = false
-
-    fun validate(): ResponseErrorEvent = apply {
-        if (validated) {
-            return@apply
-        }
-
-        code()
-        message()
-        param()
-        _type().let {
-            if (it != JsonValue.from("error")) {
-                throw OpenAIInvalidDataException("'type' is invalid, received $it")
-            }
-        }
-        validated = true
-    }
+    fun _additionalProperties(): Map<String, JsonValue> =
+        Collections.unmodifiableMap(additionalProperties)
 
     fun toBuilder() = Builder().from(this)
 
@@ -240,8 +230,26 @@ private constructor(
                 checkRequired("message", message),
                 checkRequired("param", param),
                 type,
-                additionalProperties.toImmutable(),
+                additionalProperties.toMutableMap(),
             )
+    }
+
+    private var validated: Boolean = false
+
+    fun validate(): ResponseErrorEvent = apply {
+        if (validated) {
+            return@apply
+        }
+
+        code()
+        message()
+        param()
+        _type().let {
+            if (it != JsonValue.from("error")) {
+                throw OpenAIInvalidDataException("'type' is invalid, received $it")
+            }
+        }
+        validated = true
     }
 
     override fun equals(other: Any?): Boolean {

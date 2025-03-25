@@ -10,10 +10,8 @@ import com.openai.core.ExcludeMissing
 import com.openai.core.JsonField
 import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
-import com.openai.core.NoAutoDetect
 import com.openai.core.checkKnown
 import com.openai.core.checkRequired
-import com.openai.core.immutableEmptyMap
 import com.openai.core.toImmutable
 import com.openai.errors.OpenAIInvalidDataException
 import com.openai.models.responses.ResponseComputerToolCall
@@ -25,28 +23,30 @@ import com.openai.models.responses.ResponseFunctionWebSearch
 import com.openai.models.responses.ResponseInputMessageItem
 import com.openai.models.responses.ResponseItem
 import com.openai.models.responses.ResponseOutputMessage
+import java.util.Collections
 import java.util.Objects
 
 /** A list of Response items. */
-@NoAutoDetect
 class ResponseItemList
-@JsonCreator
 private constructor(
-    @JsonProperty("data")
-    @ExcludeMissing
-    private val data: JsonField<List<ResponseItem>> = JsonMissing.of(),
-    @JsonProperty("first_id")
-    @ExcludeMissing
-    private val firstId: JsonField<String> = JsonMissing.of(),
-    @JsonProperty("has_more")
-    @ExcludeMissing
-    private val hasMore: JsonField<Boolean> = JsonMissing.of(),
-    @JsonProperty("last_id")
-    @ExcludeMissing
-    private val lastId: JsonField<String> = JsonMissing.of(),
-    @JsonProperty("object") @ExcludeMissing private val object_: JsonValue = JsonMissing.of(),
-    @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
+    private val data: JsonField<List<ResponseItem>>,
+    private val firstId: JsonField<String>,
+    private val hasMore: JsonField<Boolean>,
+    private val lastId: JsonField<String>,
+    private val object_: JsonValue,
+    private val additionalProperties: MutableMap<String, JsonValue>,
 ) {
+
+    @JsonCreator
+    private constructor(
+        @JsonProperty("data")
+        @ExcludeMissing
+        data: JsonField<List<ResponseItem>> = JsonMissing.of(),
+        @JsonProperty("first_id") @ExcludeMissing firstId: JsonField<String> = JsonMissing.of(),
+        @JsonProperty("has_more") @ExcludeMissing hasMore: JsonField<Boolean> = JsonMissing.of(),
+        @JsonProperty("last_id") @ExcludeMissing lastId: JsonField<String> = JsonMissing.of(),
+        @JsonProperty("object") @ExcludeMissing object_: JsonValue = JsonMissing.of(),
+    ) : this(data, firstId, hasMore, lastId, object_, mutableMapOf())
 
     /**
      * A list of items used to generate this response.
@@ -121,28 +121,15 @@ private constructor(
      */
     @JsonProperty("last_id") @ExcludeMissing fun _lastId(): JsonField<String> = lastId
 
+    @JsonAnySetter
+    private fun putAdditionalProperty(key: String, value: JsonValue) {
+        additionalProperties.put(key, value)
+    }
+
     @JsonAnyGetter
     @ExcludeMissing
-    fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-    private var validated: Boolean = false
-
-    fun validate(): ResponseItemList = apply {
-        if (validated) {
-            return@apply
-        }
-
-        data().forEach { it.validate() }
-        firstId()
-        hasMore()
-        lastId()
-        _object_().let {
-            if (it != JsonValue.from("list")) {
-                throw OpenAIInvalidDataException("'object_' is invalid, received $it")
-            }
-        }
-        validated = true
-    }
+    fun _additionalProperties(): Map<String, JsonValue> =
+        Collections.unmodifiableMap(additionalProperties)
 
     fun toBuilder() = Builder().from(this)
 
@@ -338,8 +325,27 @@ private constructor(
                 checkRequired("hasMore", hasMore),
                 checkRequired("lastId", lastId),
                 object_,
-                additionalProperties.toImmutable(),
+                additionalProperties.toMutableMap(),
             )
+    }
+
+    private var validated: Boolean = false
+
+    fun validate(): ResponseItemList = apply {
+        if (validated) {
+            return@apply
+        }
+
+        data().forEach { it.validate() }
+        firstId()
+        hasMore()
+        lastId()
+        _object_().let {
+            if (it != JsonValue.from("list")) {
+                throw OpenAIInvalidDataException("'object_' is invalid, received $it")
+            }
+        }
+        validated = true
     }
 
     override fun equals(other: Any?): Boolean {

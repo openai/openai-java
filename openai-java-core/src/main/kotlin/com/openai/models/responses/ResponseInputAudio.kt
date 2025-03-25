@@ -11,25 +11,26 @@ import com.openai.core.ExcludeMissing
 import com.openai.core.JsonField
 import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
-import com.openai.core.NoAutoDetect
 import com.openai.core.checkRequired
-import com.openai.core.immutableEmptyMap
-import com.openai.core.toImmutable
 import com.openai.errors.OpenAIInvalidDataException
+import java.util.Collections
 import java.util.Objects
 
 /** An audio input to the model. */
-@NoAutoDetect
 class ResponseInputAudio
-@JsonCreator
 private constructor(
-    @JsonProperty("data") @ExcludeMissing private val data: JsonField<String> = JsonMissing.of(),
-    @JsonProperty("format")
-    @ExcludeMissing
-    private val format: JsonField<Format> = JsonMissing.of(),
-    @JsonProperty("type") @ExcludeMissing private val type: JsonValue = JsonMissing.of(),
-    @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
+    private val data: JsonField<String>,
+    private val format: JsonField<Format>,
+    private val type: JsonValue,
+    private val additionalProperties: MutableMap<String, JsonValue>,
 ) {
+
+    @JsonCreator
+    private constructor(
+        @JsonProperty("data") @ExcludeMissing data: JsonField<String> = JsonMissing.of(),
+        @JsonProperty("format") @ExcludeMissing format: JsonField<Format> = JsonMissing.of(),
+        @JsonProperty("type") @ExcludeMissing type: JsonValue = JsonMissing.of(),
+    ) : this(data, format, type, mutableMapOf())
 
     /**
      * Base64-encoded audio data.
@@ -74,26 +75,15 @@ private constructor(
      */
     @JsonProperty("format") @ExcludeMissing fun _format(): JsonField<Format> = format
 
+    @JsonAnySetter
+    private fun putAdditionalProperty(key: String, value: JsonValue) {
+        additionalProperties.put(key, value)
+    }
+
     @JsonAnyGetter
     @ExcludeMissing
-    fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-    private var validated: Boolean = false
-
-    fun validate(): ResponseInputAudio = apply {
-        if (validated) {
-            return@apply
-        }
-
-        data()
-        format()
-        _type().let {
-            if (it != JsonValue.from("input_audio")) {
-                throw OpenAIInvalidDataException("'type' is invalid, received $it")
-            }
-        }
-        validated = true
-    }
+    fun _additionalProperties(): Map<String, JsonValue> =
+        Collections.unmodifiableMap(additionalProperties)
 
     fun toBuilder() = Builder().from(this)
 
@@ -200,8 +190,25 @@ private constructor(
                 checkRequired("data", data),
                 checkRequired("format", format),
                 type,
-                additionalProperties.toImmutable(),
+                additionalProperties.toMutableMap(),
             )
+    }
+
+    private var validated: Boolean = false
+
+    fun validate(): ResponseInputAudio = apply {
+        if (validated) {
+            return@apply
+        }
+
+        data()
+        format()
+        _type().let {
+            if (it != JsonValue.from("input_audio")) {
+                throw OpenAIInvalidDataException("'type' is invalid, received $it")
+            }
+        }
+        validated = true
     }
 
     /** The format of the audio data. Currently supported formats are `mp3` and `wav`. */

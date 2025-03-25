@@ -10,34 +10,33 @@ import com.openai.core.ExcludeMissing
 import com.openai.core.JsonField
 import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
-import com.openai.core.NoAutoDetect
 import com.openai.core.checkRequired
-import com.openai.core.immutableEmptyMap
-import com.openai.core.toImmutable
 import com.openai.errors.OpenAIInvalidDataException
+import java.util.Collections
 import java.util.Objects
 
 /**
  * A URL for the file that's generated when the assistant used the `code_interpreter` tool to
  * generate a file.
  */
-@NoAutoDetect
 class FilePathAnnotation
-@JsonCreator
 private constructor(
-    @JsonProperty("end_index")
-    @ExcludeMissing
-    private val endIndex: JsonField<Long> = JsonMissing.of(),
-    @JsonProperty("file_path")
-    @ExcludeMissing
-    private val filePath: JsonField<FilePath> = JsonMissing.of(),
-    @JsonProperty("start_index")
-    @ExcludeMissing
-    private val startIndex: JsonField<Long> = JsonMissing.of(),
-    @JsonProperty("text") @ExcludeMissing private val text: JsonField<String> = JsonMissing.of(),
-    @JsonProperty("type") @ExcludeMissing private val type: JsonValue = JsonMissing.of(),
-    @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
+    private val endIndex: JsonField<Long>,
+    private val filePath: JsonField<FilePath>,
+    private val startIndex: JsonField<Long>,
+    private val text: JsonField<String>,
+    private val type: JsonValue,
+    private val additionalProperties: MutableMap<String, JsonValue>,
 ) {
+
+    @JsonCreator
+    private constructor(
+        @JsonProperty("end_index") @ExcludeMissing endIndex: JsonField<Long> = JsonMissing.of(),
+        @JsonProperty("file_path") @ExcludeMissing filePath: JsonField<FilePath> = JsonMissing.of(),
+        @JsonProperty("start_index") @ExcludeMissing startIndex: JsonField<Long> = JsonMissing.of(),
+        @JsonProperty("text") @ExcludeMissing text: JsonField<String> = JsonMissing.of(),
+        @JsonProperty("type") @ExcludeMissing type: JsonValue = JsonMissing.of(),
+    ) : this(endIndex, filePath, startIndex, text, type, mutableMapOf())
 
     /**
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
@@ -106,28 +105,15 @@ private constructor(
      */
     @JsonProperty("text") @ExcludeMissing fun _text(): JsonField<String> = text
 
+    @JsonAnySetter
+    private fun putAdditionalProperty(key: String, value: JsonValue) {
+        additionalProperties.put(key, value)
+    }
+
     @JsonAnyGetter
     @ExcludeMissing
-    fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-    private var validated: Boolean = false
-
-    fun validate(): FilePathAnnotation = apply {
-        if (validated) {
-            return@apply
-        }
-
-        endIndex()
-        filePath().validate()
-        startIndex()
-        text()
-        _type().let {
-            if (it != JsonValue.from("file_path")) {
-                throw OpenAIInvalidDataException("'type' is invalid, received $it")
-            }
-        }
-        validated = true
-    }
+    fun _additionalProperties(): Map<String, JsonValue> =
+        Collections.unmodifiableMap(additionalProperties)
 
     fun toBuilder() = Builder().from(this)
 
@@ -264,20 +250,39 @@ private constructor(
                 checkRequired("startIndex", startIndex),
                 checkRequired("text", text),
                 type,
-                additionalProperties.toImmutable(),
+                additionalProperties.toMutableMap(),
             )
     }
 
-    @NoAutoDetect
+    private var validated: Boolean = false
+
+    fun validate(): FilePathAnnotation = apply {
+        if (validated) {
+            return@apply
+        }
+
+        endIndex()
+        filePath().validate()
+        startIndex()
+        text()
+        _type().let {
+            if (it != JsonValue.from("file_path")) {
+                throw OpenAIInvalidDataException("'type' is invalid, received $it")
+            }
+        }
+        validated = true
+    }
+
     class FilePath
-    @JsonCreator
     private constructor(
-        @JsonProperty("file_id")
-        @ExcludeMissing
-        private val fileId: JsonField<String> = JsonMissing.of(),
-        @JsonAnySetter
-        private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
+        private val fileId: JsonField<String>,
+        private val additionalProperties: MutableMap<String, JsonValue>,
     ) {
+
+        @JsonCreator
+        private constructor(
+            @JsonProperty("file_id") @ExcludeMissing fileId: JsonField<String> = JsonMissing.of()
+        ) : this(fileId, mutableMapOf())
 
         /**
          * The ID of the file that was generated.
@@ -294,20 +299,15 @@ private constructor(
          */
         @JsonProperty("file_id") @ExcludeMissing fun _fileId(): JsonField<String> = fileId
 
+        @JsonAnySetter
+        private fun putAdditionalProperty(key: String, value: JsonValue) {
+            additionalProperties.put(key, value)
+        }
+
         @JsonAnyGetter
         @ExcludeMissing
-        fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-        private var validated: Boolean = false
-
-        fun validate(): FilePath = apply {
-            if (validated) {
-                return@apply
-            }
-
-            fileId()
-            validated = true
-        }
+        fun _additionalProperties(): Map<String, JsonValue> =
+            Collections.unmodifiableMap(additionalProperties)
 
         fun toBuilder() = Builder().from(this)
 
@@ -380,7 +380,18 @@ private constructor(
              * @throws IllegalStateException if any required field is unset.
              */
             fun build(): FilePath =
-                FilePath(checkRequired("fileId", fileId), additionalProperties.toImmutable())
+                FilePath(checkRequired("fileId", fileId), additionalProperties.toMutableMap())
+        }
+
+        private var validated: Boolean = false
+
+        fun validate(): FilePath = apply {
+            if (validated) {
+                return@apply
+            }
+
+            fileId()
+            validated = true
         }
 
         override fun equals(other: Any?): Boolean {

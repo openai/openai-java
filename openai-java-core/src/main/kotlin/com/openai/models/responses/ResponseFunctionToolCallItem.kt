@@ -10,11 +10,9 @@ import com.openai.core.ExcludeMissing
 import com.openai.core.JsonField
 import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
-import com.openai.core.NoAutoDetect
 import com.openai.core.checkRequired
-import com.openai.core.immutableEmptyMap
-import com.openai.core.toImmutable
 import com.openai.errors.OpenAIInvalidDataException
+import java.util.Collections
 import java.util.Objects
 import java.util.Optional
 
@@ -23,24 +21,38 @@ import java.util.Optional
  * [function calling guide](https://platform.openai.com/docs/guides/function-calling) for more
  * information.
  */
-@NoAutoDetect
 class ResponseFunctionToolCallItem
-@JsonCreator
 private constructor(
-    @JsonProperty("arguments")
-    @ExcludeMissing
-    private val arguments: JsonField<String> = JsonMissing.of(),
-    @JsonProperty("call_id")
-    @ExcludeMissing
-    private val callId: JsonField<String> = JsonMissing.of(),
-    @JsonProperty("name") @ExcludeMissing private val name: JsonField<String> = JsonMissing.of(),
-    @JsonProperty("type") @ExcludeMissing private val type: JsonValue = JsonMissing.of(),
-    @JsonProperty("id") @ExcludeMissing private val id: JsonField<String> = JsonMissing.of(),
-    @JsonProperty("status")
-    @ExcludeMissing
-    private val status: JsonField<ResponseFunctionToolCall.Status> = JsonMissing.of(),
-    @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
+    private val arguments: JsonField<String>,
+    private val callId: JsonField<String>,
+    private val name: JsonField<String>,
+    private val type: JsonValue,
+    private val id: JsonField<String>,
+    private val status: JsonField<ResponseFunctionToolCall.Status>,
+    private val additionalProperties: MutableMap<String, JsonValue>,
 ) {
+
+    @JsonCreator
+    private constructor(
+        @JsonProperty("arguments") @ExcludeMissing arguments: JsonField<String> = JsonMissing.of(),
+        @JsonProperty("call_id") @ExcludeMissing callId: JsonField<String> = JsonMissing.of(),
+        @JsonProperty("name") @ExcludeMissing name: JsonField<String> = JsonMissing.of(),
+        @JsonProperty("type") @ExcludeMissing type: JsonValue = JsonMissing.of(),
+        @JsonProperty("id") @ExcludeMissing id: JsonField<String> = JsonMissing.of(),
+        @JsonProperty("status")
+        @ExcludeMissing
+        status: JsonField<ResponseFunctionToolCall.Status> = JsonMissing.of(),
+    ) : this(arguments, callId, name, type, id, status, mutableMapOf())
+
+    fun toResponseFunctionToolCall(): ResponseFunctionToolCall =
+        ResponseFunctionToolCall.builder()
+            .arguments(arguments)
+            .callId(callId)
+            .name(name)
+            .type(type)
+            .id(id)
+            .status(status)
+            .build()
 
     /**
      * A JSON string of the arguments to pass to the function.
@@ -134,39 +146,15 @@ private constructor(
     @ExcludeMissing
     fun _status(): JsonField<ResponseFunctionToolCall.Status> = status
 
+    @JsonAnySetter
+    private fun putAdditionalProperty(key: String, value: JsonValue) {
+        additionalProperties.put(key, value)
+    }
+
     @JsonAnyGetter
     @ExcludeMissing
-    fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-    fun toResponseFunctionToolCall(): ResponseFunctionToolCall =
-        ResponseFunctionToolCall.builder()
-            .arguments(arguments)
-            .callId(callId)
-            .name(name)
-            .type(type)
-            .id(id)
-            .status(status)
-            .build()
-
-    private var validated: Boolean = false
-
-    fun validate(): ResponseFunctionToolCallItem = apply {
-        if (validated) {
-            return@apply
-        }
-
-        arguments()
-        callId()
-        name()
-        _type().let {
-            if (it != JsonValue.from("function_call")) {
-                throw OpenAIInvalidDataException("'type' is invalid, received $it")
-            }
-        }
-        id()
-        status()
-        validated = true
-    }
+    fun _additionalProperties(): Map<String, JsonValue> =
+        Collections.unmodifiableMap(additionalProperties)
 
     fun toBuilder() = Builder().from(this)
 
@@ -324,8 +312,28 @@ private constructor(
                 type,
                 id,
                 status,
-                additionalProperties.toImmutable(),
+                additionalProperties.toMutableMap(),
             )
+    }
+
+    private var validated: Boolean = false
+
+    fun validate(): ResponseFunctionToolCallItem = apply {
+        if (validated) {
+            return@apply
+        }
+
+        arguments()
+        callId()
+        name()
+        _type().let {
+            if (it != JsonValue.from("function_call")) {
+                throw OpenAIInvalidDataException("'type' is invalid, received $it")
+            }
+        }
+        id()
+        status()
+        validated = true
     }
 
     override fun equals(other: Any?): Boolean {

@@ -10,26 +10,29 @@ import com.openai.core.ExcludeMissing
 import com.openai.core.JsonField
 import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
-import com.openai.core.NoAutoDetect
 import com.openai.core.checkKnown
 import com.openai.core.checkRequired
-import com.openai.core.immutableEmptyMap
 import com.openai.core.toImmutable
 import com.openai.errors.OpenAIInvalidDataException
+import java.util.Collections
 import java.util.Objects
 import java.util.Optional
 
 /** Represents a transcription response returned by model, based on the provided input. */
-@NoAutoDetect
 class Transcription
-@JsonCreator
 private constructor(
-    @JsonProperty("text") @ExcludeMissing private val text: JsonField<String> = JsonMissing.of(),
-    @JsonProperty("logprobs")
-    @ExcludeMissing
-    private val logprobs: JsonField<List<Logprob>> = JsonMissing.of(),
-    @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
+    private val text: JsonField<String>,
+    private val logprobs: JsonField<List<Logprob>>,
+    private val additionalProperties: MutableMap<String, JsonValue>,
 ) {
+
+    @JsonCreator
+    private constructor(
+        @JsonProperty("text") @ExcludeMissing text: JsonField<String> = JsonMissing.of(),
+        @JsonProperty("logprobs")
+        @ExcludeMissing
+        logprobs: JsonField<List<Logprob>> = JsonMissing.of(),
+    ) : this(text, logprobs, mutableMapOf())
 
     /**
      * The transcribed text.
@@ -63,21 +66,15 @@ private constructor(
      */
     @JsonProperty("logprobs") @ExcludeMissing fun _logprobs(): JsonField<List<Logprob>> = logprobs
 
+    @JsonAnySetter
+    private fun putAdditionalProperty(key: String, value: JsonValue) {
+        additionalProperties.put(key, value)
+    }
+
     @JsonAnyGetter
     @ExcludeMissing
-    fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-    private var validated: Boolean = false
-
-    fun validate(): Transcription = apply {
-        if (validated) {
-            return@apply
-        }
-
-        text()
-        logprobs().ifPresent { it.forEach { it.validate() } }
-        validated = true
-    }
+    fun _additionalProperties(): Map<String, JsonValue> =
+        Collections.unmodifiableMap(additionalProperties)
 
     fun toBuilder() = Builder().from(this)
 
@@ -184,26 +181,38 @@ private constructor(
             Transcription(
                 checkRequired("text", text),
                 (logprobs ?: JsonMissing.of()).map { it.toImmutable() },
-                additionalProperties.toImmutable(),
+                additionalProperties.toMutableMap(),
             )
     }
 
-    @NoAutoDetect
+    private var validated: Boolean = false
+
+    fun validate(): Transcription = apply {
+        if (validated) {
+            return@apply
+        }
+
+        text()
+        logprobs().ifPresent { it.forEach { it.validate() } }
+        validated = true
+    }
+
     class Logprob
-    @JsonCreator
     private constructor(
-        @JsonProperty("token")
-        @ExcludeMissing
-        private val token: JsonField<String> = JsonMissing.of(),
-        @JsonProperty("bytes")
-        @ExcludeMissing
-        private val bytes: JsonField<List<Double>> = JsonMissing.of(),
-        @JsonProperty("logprob")
-        @ExcludeMissing
-        private val logprob: JsonField<Double> = JsonMissing.of(),
-        @JsonAnySetter
-        private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
+        private val token: JsonField<String>,
+        private val bytes: JsonField<List<Double>>,
+        private val logprob: JsonField<Double>,
+        private val additionalProperties: MutableMap<String, JsonValue>,
     ) {
+
+        @JsonCreator
+        private constructor(
+            @JsonProperty("token") @ExcludeMissing token: JsonField<String> = JsonMissing.of(),
+            @JsonProperty("bytes")
+            @ExcludeMissing
+            bytes: JsonField<List<Double>> = JsonMissing.of(),
+            @JsonProperty("logprob") @ExcludeMissing logprob: JsonField<Double> = JsonMissing.of(),
+        ) : this(token, bytes, logprob, mutableMapOf())
 
         /**
          * The token in the transcription.
@@ -250,22 +259,15 @@ private constructor(
          */
         @JsonProperty("logprob") @ExcludeMissing fun _logprob(): JsonField<Double> = logprob
 
+        @JsonAnySetter
+        private fun putAdditionalProperty(key: String, value: JsonValue) {
+            additionalProperties.put(key, value)
+        }
+
         @JsonAnyGetter
         @ExcludeMissing
-        fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-        private var validated: Boolean = false
-
-        fun validate(): Logprob = apply {
-            if (validated) {
-                return@apply
-            }
-
-            token()
-            bytes()
-            logprob()
-            validated = true
-        }
+        fun _additionalProperties(): Map<String, JsonValue> =
+            Collections.unmodifiableMap(additionalProperties)
 
         fun toBuilder() = Builder().from(this)
 
@@ -370,8 +372,21 @@ private constructor(
                     token,
                     (bytes ?: JsonMissing.of()).map { it.toImmutable() },
                     logprob,
-                    additionalProperties.toImmutable(),
+                    additionalProperties.toMutableMap(),
                 )
+        }
+
+        private var validated: Boolean = false
+
+        fun validate(): Logprob = apply {
+            if (validated) {
+                return@apply
+            }
+
+            token()
+            bytes()
+            logprob()
+            validated = true
         }
 
         override fun equals(other: Any?): Boolean {

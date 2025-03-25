@@ -11,30 +11,33 @@ import com.openai.core.ExcludeMissing
 import com.openai.core.JsonField
 import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
-import com.openai.core.NoAutoDetect
 import com.openai.core.checkKnown
 import com.openai.core.checkRequired
-import com.openai.core.immutableEmptyMap
 import com.openai.core.toImmutable
 import com.openai.errors.OpenAIInvalidDataException
+import java.util.Collections
 import java.util.Objects
 import java.util.Optional
 
 /** A description of the chain of thought used by a reasoning model while generating a response. */
-@NoAutoDetect
 class ResponseReasoningItem
-@JsonCreator
 private constructor(
-    @JsonProperty("id") @ExcludeMissing private val id: JsonField<String> = JsonMissing.of(),
-    @JsonProperty("summary")
-    @ExcludeMissing
-    private val summary: JsonField<List<Summary>> = JsonMissing.of(),
-    @JsonProperty("type") @ExcludeMissing private val type: JsonValue = JsonMissing.of(),
-    @JsonProperty("status")
-    @ExcludeMissing
-    private val status: JsonField<Status> = JsonMissing.of(),
-    @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
+    private val id: JsonField<String>,
+    private val summary: JsonField<List<Summary>>,
+    private val type: JsonValue,
+    private val status: JsonField<Status>,
+    private val additionalProperties: MutableMap<String, JsonValue>,
 ) {
+
+    @JsonCreator
+    private constructor(
+        @JsonProperty("id") @ExcludeMissing id: JsonField<String> = JsonMissing.of(),
+        @JsonProperty("summary")
+        @ExcludeMissing
+        summary: JsonField<List<Summary>> = JsonMissing.of(),
+        @JsonProperty("type") @ExcludeMissing type: JsonValue = JsonMissing.of(),
+        @JsonProperty("status") @ExcludeMissing status: JsonField<Status> = JsonMissing.of(),
+    ) : this(id, summary, type, status, mutableMapOf())
 
     /**
      * The unique identifier of the reasoning content.
@@ -95,27 +98,15 @@ private constructor(
      */
     @JsonProperty("status") @ExcludeMissing fun _status(): JsonField<Status> = status
 
+    @JsonAnySetter
+    private fun putAdditionalProperty(key: String, value: JsonValue) {
+        additionalProperties.put(key, value)
+    }
+
     @JsonAnyGetter
     @ExcludeMissing
-    fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-    private var validated: Boolean = false
-
-    fun validate(): ResponseReasoningItem = apply {
-        if (validated) {
-            return@apply
-        }
-
-        id()
-        summary().forEach { it.validate() }
-        _type().let {
-            if (it != JsonValue.from("reasoning")) {
-                throw OpenAIInvalidDataException("'type' is invalid, received $it")
-            }
-        }
-        status()
-        validated = true
-    }
+    fun _additionalProperties(): Map<String, JsonValue> =
+        Collections.unmodifiableMap(additionalProperties)
 
     fun toBuilder() = Builder().from(this)
 
@@ -254,21 +245,40 @@ private constructor(
                 checkRequired("summary", summary).map { it.toImmutable() },
                 type,
                 status,
-                additionalProperties.toImmutable(),
+                additionalProperties.toMutableMap(),
             )
     }
 
-    @NoAutoDetect
+    private var validated: Boolean = false
+
+    fun validate(): ResponseReasoningItem = apply {
+        if (validated) {
+            return@apply
+        }
+
+        id()
+        summary().forEach { it.validate() }
+        _type().let {
+            if (it != JsonValue.from("reasoning")) {
+                throw OpenAIInvalidDataException("'type' is invalid, received $it")
+            }
+        }
+        status()
+        validated = true
+    }
+
     class Summary
-    @JsonCreator
     private constructor(
-        @JsonProperty("text")
-        @ExcludeMissing
-        private val text: JsonField<String> = JsonMissing.of(),
-        @JsonProperty("type") @ExcludeMissing private val type: JsonValue = JsonMissing.of(),
-        @JsonAnySetter
-        private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
+        private val text: JsonField<String>,
+        private val type: JsonValue,
+        private val additionalProperties: MutableMap<String, JsonValue>,
     ) {
+
+        @JsonCreator
+        private constructor(
+            @JsonProperty("text") @ExcludeMissing text: JsonField<String> = JsonMissing.of(),
+            @JsonProperty("type") @ExcludeMissing type: JsonValue = JsonMissing.of(),
+        ) : this(text, type, mutableMapOf())
 
         /**
          * A short summary of the reasoning used by the model when generating the response.
@@ -298,25 +308,15 @@ private constructor(
          */
         @JsonProperty("text") @ExcludeMissing fun _text(): JsonField<String> = text
 
+        @JsonAnySetter
+        private fun putAdditionalProperty(key: String, value: JsonValue) {
+            additionalProperties.put(key, value)
+        }
+
         @JsonAnyGetter
         @ExcludeMissing
-        fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-        private var validated: Boolean = false
-
-        fun validate(): Summary = apply {
-            if (validated) {
-                return@apply
-            }
-
-            text()
-            _type().let {
-                if (it != JsonValue.from("summary_text")) {
-                    throw OpenAIInvalidDataException("'type' is invalid, received $it")
-                }
-            }
-            validated = true
-        }
+        fun _additionalProperties(): Map<String, JsonValue> =
+            Collections.unmodifiableMap(additionalProperties)
 
         fun toBuilder() = Builder().from(this)
 
@@ -405,7 +405,23 @@ private constructor(
              * @throws IllegalStateException if any required field is unset.
              */
             fun build(): Summary =
-                Summary(checkRequired("text", text), type, additionalProperties.toImmutable())
+                Summary(checkRequired("text", text), type, additionalProperties.toMutableMap())
+        }
+
+        private var validated: Boolean = false
+
+        fun validate(): Summary = apply {
+            if (validated) {
+                return@apply
+            }
+
+            text()
+            _type().let {
+                if (it != JsonValue.from("summary_text")) {
+                    throw OpenAIInvalidDataException("'type' is invalid, received $it")
+                }
+            }
+            validated = true
         }
 
         override fun equals(other: Any?): Boolean {

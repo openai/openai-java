@@ -20,85 +20,120 @@ import com.openai.core.ExcludeMissing
 import com.openai.core.JsonField
 import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
-import com.openai.core.NoAutoDetect
 import com.openai.core.checkKnown
 import com.openai.core.checkRequired
 import com.openai.core.getOrThrow
-import com.openai.core.immutableEmptyMap
 import com.openai.core.toImmutable
 import com.openai.errors.OpenAIInvalidDataException
 import com.openai.models.ChatModel
 import com.openai.models.Metadata
 import com.openai.models.Reasoning
 import com.openai.models.ResponsesModel
+import java.util.Collections
 import java.util.Objects
 import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
-@NoAutoDetect
 class Response
-@JsonCreator
 private constructor(
-    @JsonProperty("id") @ExcludeMissing private val id: JsonField<String> = JsonMissing.of(),
-    @JsonProperty("created_at")
-    @ExcludeMissing
-    private val createdAt: JsonField<Double> = JsonMissing.of(),
-    @JsonProperty("error")
-    @ExcludeMissing
-    private val error: JsonField<ResponseError> = JsonMissing.of(),
-    @JsonProperty("incomplete_details")
-    @ExcludeMissing
-    private val incompleteDetails: JsonField<IncompleteDetails> = JsonMissing.of(),
-    @JsonProperty("instructions")
-    @ExcludeMissing
-    private val instructions: JsonField<String> = JsonMissing.of(),
-    @JsonProperty("metadata")
-    @ExcludeMissing
-    private val metadata: JsonField<Metadata> = JsonMissing.of(),
-    @JsonProperty("model")
-    @ExcludeMissing
-    private val model: JsonField<ResponsesModel> = JsonMissing.of(),
-    @JsonProperty("object") @ExcludeMissing private val object_: JsonValue = JsonMissing.of(),
-    @JsonProperty("output")
-    @ExcludeMissing
-    private val output: JsonField<List<ResponseOutputItem>> = JsonMissing.of(),
-    @JsonProperty("parallel_tool_calls")
-    @ExcludeMissing
-    private val parallelToolCalls: JsonField<Boolean> = JsonMissing.of(),
-    @JsonProperty("temperature")
-    @ExcludeMissing
-    private val temperature: JsonField<Double> = JsonMissing.of(),
-    @JsonProperty("tool_choice")
-    @ExcludeMissing
-    private val toolChoice: JsonField<ToolChoice> = JsonMissing.of(),
-    @JsonProperty("tools")
-    @ExcludeMissing
-    private val tools: JsonField<List<Tool>> = JsonMissing.of(),
-    @JsonProperty("top_p") @ExcludeMissing private val topP: JsonField<Double> = JsonMissing.of(),
-    @JsonProperty("max_output_tokens")
-    @ExcludeMissing
-    private val maxOutputTokens: JsonField<Long> = JsonMissing.of(),
-    @JsonProperty("previous_response_id")
-    @ExcludeMissing
-    private val previousResponseId: JsonField<String> = JsonMissing.of(),
-    @JsonProperty("reasoning")
-    @ExcludeMissing
-    private val reasoning: JsonField<Reasoning> = JsonMissing.of(),
-    @JsonProperty("status")
-    @ExcludeMissing
-    private val status: JsonField<ResponseStatus> = JsonMissing.of(),
-    @JsonProperty("text")
-    @ExcludeMissing
-    private val text: JsonField<ResponseTextConfig> = JsonMissing.of(),
-    @JsonProperty("truncation")
-    @ExcludeMissing
-    private val truncation: JsonField<Truncation> = JsonMissing.of(),
-    @JsonProperty("usage")
-    @ExcludeMissing
-    private val usage: JsonField<ResponseUsage> = JsonMissing.of(),
-    @JsonProperty("user") @ExcludeMissing private val user: JsonField<String> = JsonMissing.of(),
-    @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
+    private val id: JsonField<String>,
+    private val createdAt: JsonField<Double>,
+    private val error: JsonField<ResponseError>,
+    private val incompleteDetails: JsonField<IncompleteDetails>,
+    private val instructions: JsonField<String>,
+    private val metadata: JsonField<Metadata>,
+    private val model: JsonField<ResponsesModel>,
+    private val object_: JsonValue,
+    private val output: JsonField<List<ResponseOutputItem>>,
+    private val parallelToolCalls: JsonField<Boolean>,
+    private val temperature: JsonField<Double>,
+    private val toolChoice: JsonField<ToolChoice>,
+    private val tools: JsonField<List<Tool>>,
+    private val topP: JsonField<Double>,
+    private val maxOutputTokens: JsonField<Long>,
+    private val previousResponseId: JsonField<String>,
+    private val reasoning: JsonField<Reasoning>,
+    private val status: JsonField<ResponseStatus>,
+    private val text: JsonField<ResponseTextConfig>,
+    private val truncation: JsonField<Truncation>,
+    private val usage: JsonField<ResponseUsage>,
+    private val user: JsonField<String>,
+    private val additionalProperties: MutableMap<String, JsonValue>,
 ) {
+
+    @JsonCreator
+    private constructor(
+        @JsonProperty("id") @ExcludeMissing id: JsonField<String> = JsonMissing.of(),
+        @JsonProperty("created_at") @ExcludeMissing createdAt: JsonField<Double> = JsonMissing.of(),
+        @JsonProperty("error") @ExcludeMissing error: JsonField<ResponseError> = JsonMissing.of(),
+        @JsonProperty("incomplete_details")
+        @ExcludeMissing
+        incompleteDetails: JsonField<IncompleteDetails> = JsonMissing.of(),
+        @JsonProperty("instructions")
+        @ExcludeMissing
+        instructions: JsonField<String> = JsonMissing.of(),
+        @JsonProperty("metadata") @ExcludeMissing metadata: JsonField<Metadata> = JsonMissing.of(),
+        @JsonProperty("model") @ExcludeMissing model: JsonField<ResponsesModel> = JsonMissing.of(),
+        @JsonProperty("object") @ExcludeMissing object_: JsonValue = JsonMissing.of(),
+        @JsonProperty("output")
+        @ExcludeMissing
+        output: JsonField<List<ResponseOutputItem>> = JsonMissing.of(),
+        @JsonProperty("parallel_tool_calls")
+        @ExcludeMissing
+        parallelToolCalls: JsonField<Boolean> = JsonMissing.of(),
+        @JsonProperty("temperature")
+        @ExcludeMissing
+        temperature: JsonField<Double> = JsonMissing.of(),
+        @JsonProperty("tool_choice")
+        @ExcludeMissing
+        toolChoice: JsonField<ToolChoice> = JsonMissing.of(),
+        @JsonProperty("tools") @ExcludeMissing tools: JsonField<List<Tool>> = JsonMissing.of(),
+        @JsonProperty("top_p") @ExcludeMissing topP: JsonField<Double> = JsonMissing.of(),
+        @JsonProperty("max_output_tokens")
+        @ExcludeMissing
+        maxOutputTokens: JsonField<Long> = JsonMissing.of(),
+        @JsonProperty("previous_response_id")
+        @ExcludeMissing
+        previousResponseId: JsonField<String> = JsonMissing.of(),
+        @JsonProperty("reasoning")
+        @ExcludeMissing
+        reasoning: JsonField<Reasoning> = JsonMissing.of(),
+        @JsonProperty("status")
+        @ExcludeMissing
+        status: JsonField<ResponseStatus> = JsonMissing.of(),
+        @JsonProperty("text")
+        @ExcludeMissing
+        text: JsonField<ResponseTextConfig> = JsonMissing.of(),
+        @JsonProperty("truncation")
+        @ExcludeMissing
+        truncation: JsonField<Truncation> = JsonMissing.of(),
+        @JsonProperty("usage") @ExcludeMissing usage: JsonField<ResponseUsage> = JsonMissing.of(),
+        @JsonProperty("user") @ExcludeMissing user: JsonField<String> = JsonMissing.of(),
+    ) : this(
+        id,
+        createdAt,
+        error,
+        incompleteDetails,
+        instructions,
+        metadata,
+        model,
+        object_,
+        output,
+        parallelToolCalls,
+        temperature,
+        toolChoice,
+        tools,
+        topP,
+        maxOutputTokens,
+        previousResponseId,
+        reasoning,
+        status,
+        text,
+        truncation,
+        usage,
+        user,
+        mutableMapOf(),
+    )
 
     /**
      * Unique identifier for this Response.
@@ -505,45 +540,15 @@ private constructor(
      */
     @JsonProperty("user") @ExcludeMissing fun _user(): JsonField<String> = user
 
+    @JsonAnySetter
+    private fun putAdditionalProperty(key: String, value: JsonValue) {
+        additionalProperties.put(key, value)
+    }
+
     @JsonAnyGetter
     @ExcludeMissing
-    fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-    private var validated: Boolean = false
-
-    fun validate(): Response = apply {
-        if (validated) {
-            return@apply
-        }
-
-        id()
-        createdAt()
-        error().ifPresent { it.validate() }
-        incompleteDetails().ifPresent { it.validate() }
-        instructions()
-        metadata().ifPresent { it.validate() }
-        model().validate()
-        _object_().let {
-            if (it != JsonValue.from("response")) {
-                throw OpenAIInvalidDataException("'object_' is invalid, received $it")
-            }
-        }
-        output().forEach { it.validate() }
-        parallelToolCalls()
-        temperature()
-        toolChoice().validate()
-        tools().forEach { it.validate() }
-        topP()
-        maxOutputTokens()
-        previousResponseId()
-        reasoning().ifPresent { it.validate() }
-        status()
-        text().ifPresent { it.validate() }
-        truncation()
-        usage().ifPresent { it.validate() }
-        user()
-        validated = true
-    }
+    fun _additionalProperties(): Map<String, JsonValue> =
+        Collections.unmodifiableMap(additionalProperties)
 
     fun toBuilder() = Builder().from(this)
 
@@ -1209,21 +1214,57 @@ private constructor(
                 truncation,
                 usage,
                 user,
-                additionalProperties.toImmutable(),
+                additionalProperties.toMutableMap(),
             )
     }
 
+    private var validated: Boolean = false
+
+    fun validate(): Response = apply {
+        if (validated) {
+            return@apply
+        }
+
+        id()
+        createdAt()
+        error().ifPresent { it.validate() }
+        incompleteDetails().ifPresent { it.validate() }
+        instructions()
+        metadata().ifPresent { it.validate() }
+        model().validate()
+        _object_().let {
+            if (it != JsonValue.from("response")) {
+                throw OpenAIInvalidDataException("'object_' is invalid, received $it")
+            }
+        }
+        output().forEach { it.validate() }
+        parallelToolCalls()
+        temperature()
+        toolChoice().validate()
+        tools().forEach { it.validate() }
+        topP()
+        maxOutputTokens()
+        previousResponseId()
+        reasoning().ifPresent { it.validate() }
+        status()
+        text().ifPresent { it.validate() }
+        truncation()
+        usage().ifPresent { it.validate() }
+        user()
+        validated = true
+    }
+
     /** Details about why the response is incomplete. */
-    @NoAutoDetect
     class IncompleteDetails
-    @JsonCreator
     private constructor(
-        @JsonProperty("reason")
-        @ExcludeMissing
-        private val reason: JsonField<Reason> = JsonMissing.of(),
-        @JsonAnySetter
-        private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
+        private val reason: JsonField<Reason>,
+        private val additionalProperties: MutableMap<String, JsonValue>,
     ) {
+
+        @JsonCreator
+        private constructor(
+            @JsonProperty("reason") @ExcludeMissing reason: JsonField<Reason> = JsonMissing.of()
+        ) : this(reason, mutableMapOf())
 
         /**
          * The reason why the response is incomplete.
@@ -1240,20 +1281,15 @@ private constructor(
          */
         @JsonProperty("reason") @ExcludeMissing fun _reason(): JsonField<Reason> = reason
 
+        @JsonAnySetter
+        private fun putAdditionalProperty(key: String, value: JsonValue) {
+            additionalProperties.put(key, value)
+        }
+
         @JsonAnyGetter
         @ExcludeMissing
-        fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-        private var validated: Boolean = false
-
-        fun validate(): IncompleteDetails = apply {
-            if (validated) {
-                return@apply
-            }
-
-            reason()
-            validated = true
-        }
+        fun _additionalProperties(): Map<String, JsonValue> =
+            Collections.unmodifiableMap(additionalProperties)
 
         fun toBuilder() = Builder().from(this)
 
@@ -1312,7 +1348,18 @@ private constructor(
              * Further updates to this [Builder] will not mutate the returned instance.
              */
             fun build(): IncompleteDetails =
-                IncompleteDetails(reason, additionalProperties.toImmutable())
+                IncompleteDetails(reason, additionalProperties.toMutableMap())
+        }
+
+        private var validated: Boolean = false
+
+        fun validate(): IncompleteDetails = apply {
+            if (validated) {
+                return@apply
+            }
+
+            reason()
+            validated = true
         }
 
         /** The reason why the response is incomplete. */

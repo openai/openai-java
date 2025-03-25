@@ -10,40 +10,61 @@ import com.openai.core.ExcludeMissing
 import com.openai.core.JsonField
 import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
-import com.openai.core.NoAutoDetect
 import com.openai.core.checkKnown
 import com.openai.core.checkRequired
-import com.openai.core.immutableEmptyMap
 import com.openai.core.toImmutable
 import com.openai.errors.OpenAIInvalidDataException
+import java.util.Collections
 import java.util.Objects
 
-@NoAutoDetect
 class TranscriptionSegment
-@JsonCreator
 private constructor(
-    @JsonProperty("id") @ExcludeMissing private val id: JsonField<Long> = JsonMissing.of(),
-    @JsonProperty("avg_logprob")
-    @ExcludeMissing
-    private val avgLogprob: JsonField<Double> = JsonMissing.of(),
-    @JsonProperty("compression_ratio")
-    @ExcludeMissing
-    private val compressionRatio: JsonField<Double> = JsonMissing.of(),
-    @JsonProperty("end") @ExcludeMissing private val end: JsonField<Double> = JsonMissing.of(),
-    @JsonProperty("no_speech_prob")
-    @ExcludeMissing
-    private val noSpeechProb: JsonField<Double> = JsonMissing.of(),
-    @JsonProperty("seek") @ExcludeMissing private val seek: JsonField<Long> = JsonMissing.of(),
-    @JsonProperty("start") @ExcludeMissing private val start: JsonField<Double> = JsonMissing.of(),
-    @JsonProperty("temperature")
-    @ExcludeMissing
-    private val temperature: JsonField<Double> = JsonMissing.of(),
-    @JsonProperty("text") @ExcludeMissing private val text: JsonField<String> = JsonMissing.of(),
-    @JsonProperty("tokens")
-    @ExcludeMissing
-    private val tokens: JsonField<List<Long>> = JsonMissing.of(),
-    @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
+    private val id: JsonField<Long>,
+    private val avgLogprob: JsonField<Double>,
+    private val compressionRatio: JsonField<Double>,
+    private val end: JsonField<Double>,
+    private val noSpeechProb: JsonField<Double>,
+    private val seek: JsonField<Long>,
+    private val start: JsonField<Double>,
+    private val temperature: JsonField<Double>,
+    private val text: JsonField<String>,
+    private val tokens: JsonField<List<Long>>,
+    private val additionalProperties: MutableMap<String, JsonValue>,
 ) {
+
+    @JsonCreator
+    private constructor(
+        @JsonProperty("id") @ExcludeMissing id: JsonField<Long> = JsonMissing.of(),
+        @JsonProperty("avg_logprob")
+        @ExcludeMissing
+        avgLogprob: JsonField<Double> = JsonMissing.of(),
+        @JsonProperty("compression_ratio")
+        @ExcludeMissing
+        compressionRatio: JsonField<Double> = JsonMissing.of(),
+        @JsonProperty("end") @ExcludeMissing end: JsonField<Double> = JsonMissing.of(),
+        @JsonProperty("no_speech_prob")
+        @ExcludeMissing
+        noSpeechProb: JsonField<Double> = JsonMissing.of(),
+        @JsonProperty("seek") @ExcludeMissing seek: JsonField<Long> = JsonMissing.of(),
+        @JsonProperty("start") @ExcludeMissing start: JsonField<Double> = JsonMissing.of(),
+        @JsonProperty("temperature")
+        @ExcludeMissing
+        temperature: JsonField<Double> = JsonMissing.of(),
+        @JsonProperty("text") @ExcludeMissing text: JsonField<String> = JsonMissing.of(),
+        @JsonProperty("tokens") @ExcludeMissing tokens: JsonField<List<Long>> = JsonMissing.of(),
+    ) : this(
+        id,
+        avgLogprob,
+        compressionRatio,
+        end,
+        noSpeechProb,
+        seek,
+        start,
+        temperature,
+        text,
+        tokens,
+        mutableMapOf(),
+    )
 
     /**
      * Unique identifier of the segment.
@@ -202,29 +223,15 @@ private constructor(
      */
     @JsonProperty("tokens") @ExcludeMissing fun _tokens(): JsonField<List<Long>> = tokens
 
+    @JsonAnySetter
+    private fun putAdditionalProperty(key: String, value: JsonValue) {
+        additionalProperties.put(key, value)
+    }
+
     @JsonAnyGetter
     @ExcludeMissing
-    fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-    private var validated: Boolean = false
-
-    fun validate(): TranscriptionSegment = apply {
-        if (validated) {
-            return@apply
-        }
-
-        id()
-        avgLogprob()
-        compressionRatio()
-        end()
-        noSpeechProb()
-        seek()
-        start()
-        temperature()
-        text()
-        tokens()
-        validated = true
-    }
+    fun _additionalProperties(): Map<String, JsonValue> =
+        Collections.unmodifiableMap(additionalProperties)
 
     fun toBuilder() = Builder().from(this)
 
@@ -475,8 +482,28 @@ private constructor(
                 checkRequired("temperature", temperature),
                 checkRequired("text", text),
                 checkRequired("tokens", tokens).map { it.toImmutable() },
-                additionalProperties.toImmutable(),
+                additionalProperties.toMutableMap(),
             )
+    }
+
+    private var validated: Boolean = false
+
+    fun validate(): TranscriptionSegment = apply {
+        if (validated) {
+            return@apply
+        }
+
+        id()
+        avgLogprob()
+        compressionRatio()
+        end()
+        noSpeechProb()
+        seek()
+        start()
+        temperature()
+        text()
+        tokens()
+        validated = true
     }
 
     override fun equals(other: Any?): Boolean {

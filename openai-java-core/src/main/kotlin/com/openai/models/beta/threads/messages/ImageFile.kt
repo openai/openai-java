@@ -11,26 +11,24 @@ import com.openai.core.ExcludeMissing
 import com.openai.core.JsonField
 import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
-import com.openai.core.NoAutoDetect
 import com.openai.core.checkRequired
-import com.openai.core.immutableEmptyMap
-import com.openai.core.toImmutable
 import com.openai.errors.OpenAIInvalidDataException
+import java.util.Collections
 import java.util.Objects
 import java.util.Optional
 
-@NoAutoDetect
 class ImageFile
-@JsonCreator
 private constructor(
-    @JsonProperty("file_id")
-    @ExcludeMissing
-    private val fileId: JsonField<String> = JsonMissing.of(),
-    @JsonProperty("detail")
-    @ExcludeMissing
-    private val detail: JsonField<Detail> = JsonMissing.of(),
-    @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
+    private val fileId: JsonField<String>,
+    private val detail: JsonField<Detail>,
+    private val additionalProperties: MutableMap<String, JsonValue>,
 ) {
+
+    @JsonCreator
+    private constructor(
+        @JsonProperty("file_id") @ExcludeMissing fileId: JsonField<String> = JsonMissing.of(),
+        @JsonProperty("detail") @ExcludeMissing detail: JsonField<Detail> = JsonMissing.of(),
+    ) : this(fileId, detail, mutableMapOf())
 
     /**
      * The [File](https://platform.openai.com/docs/api-reference/files) ID of the image in the
@@ -65,21 +63,15 @@ private constructor(
      */
     @JsonProperty("detail") @ExcludeMissing fun _detail(): JsonField<Detail> = detail
 
+    @JsonAnySetter
+    private fun putAdditionalProperty(key: String, value: JsonValue) {
+        additionalProperties.put(key, value)
+    }
+
     @JsonAnyGetter
     @ExcludeMissing
-    fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-    private var validated: Boolean = false
-
-    fun validate(): ImageFile = apply {
-        if (validated) {
-            return@apply
-        }
-
-        fileId()
-        detail()
-        validated = true
-    }
+    fun _additionalProperties(): Map<String, JsonValue> =
+        Collections.unmodifiableMap(additionalProperties)
 
     fun toBuilder() = Builder().from(this)
 
@@ -171,7 +163,19 @@ private constructor(
          * @throws IllegalStateException if any required field is unset.
          */
         fun build(): ImageFile =
-            ImageFile(checkRequired("fileId", fileId), detail, additionalProperties.toImmutable())
+            ImageFile(checkRequired("fileId", fileId), detail, additionalProperties.toMutableMap())
+    }
+
+    private var validated: Boolean = false
+
+    fun validate(): ImageFile = apply {
+        if (validated) {
+            return@apply
+        }
+
+        fileId()
+        detail()
+        validated = true
     }
 
     /**

@@ -10,26 +10,30 @@ import com.openai.core.ExcludeMissing
 import com.openai.core.JsonField
 import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
-import com.openai.core.NoAutoDetect
 import com.openai.core.checkKnown
 import com.openai.core.checkRequired
-import com.openai.core.immutableEmptyMap
 import com.openai.core.toImmutable
 import com.openai.errors.OpenAIInvalidDataException
+import java.util.Collections
 import java.util.Objects
 
 /** Represents an embedding vector returned by embedding endpoint. */
-@NoAutoDetect
 class Embedding
-@JsonCreator
 private constructor(
-    @JsonProperty("embedding")
-    @ExcludeMissing
-    private val embedding: JsonField<List<Double>> = JsonMissing.of(),
-    @JsonProperty("index") @ExcludeMissing private val index: JsonField<Long> = JsonMissing.of(),
-    @JsonProperty("object") @ExcludeMissing private val object_: JsonValue = JsonMissing.of(),
-    @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
+    private val embedding: JsonField<List<Double>>,
+    private val index: JsonField<Long>,
+    private val object_: JsonValue,
+    private val additionalProperties: MutableMap<String, JsonValue>,
 ) {
+
+    @JsonCreator
+    private constructor(
+        @JsonProperty("embedding")
+        @ExcludeMissing
+        embedding: JsonField<List<Double>> = JsonMissing.of(),
+        @JsonProperty("index") @ExcludeMissing index: JsonField<Long> = JsonMissing.of(),
+        @JsonProperty("object") @ExcludeMissing object_: JsonValue = JsonMissing.of(),
+    ) : this(embedding, index, object_, mutableMapOf())
 
     /**
      * The embedding vector, which is a list of floats. The length of vector depends on the model as
@@ -75,26 +79,15 @@ private constructor(
      */
     @JsonProperty("index") @ExcludeMissing fun _index(): JsonField<Long> = index
 
+    @JsonAnySetter
+    private fun putAdditionalProperty(key: String, value: JsonValue) {
+        additionalProperties.put(key, value)
+    }
+
     @JsonAnyGetter
     @ExcludeMissing
-    fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-    private var validated: Boolean = false
-
-    fun validate(): Embedding = apply {
-        if (validated) {
-            return@apply
-        }
-
-        embedding()
-        index()
-        _object_().let {
-            if (it != JsonValue.from("embedding")) {
-                throw OpenAIInvalidDataException("'object_' is invalid, received $it")
-            }
-        }
-        validated = true
-    }
+    fun _additionalProperties(): Map<String, JsonValue> =
+        Collections.unmodifiableMap(additionalProperties)
 
     fun toBuilder() = Builder().from(this)
 
@@ -220,8 +213,25 @@ private constructor(
                 checkRequired("embedding", embedding).map { it.toImmutable() },
                 checkRequired("index", index),
                 object_,
-                additionalProperties.toImmutable(),
+                additionalProperties.toMutableMap(),
             )
+    }
+
+    private var validated: Boolean = false
+
+    fun validate(): Embedding = apply {
+        if (validated) {
+            return@apply
+        }
+
+        embedding()
+        index()
+        _object_().let {
+            if (it != JsonValue.from("embedding")) {
+                throw OpenAIInvalidDataException("'object_' is invalid, received $it")
+            }
+        }
+        validated = true
     }
 
     override fun equals(other: Any?): Boolean {

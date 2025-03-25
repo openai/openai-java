@@ -2,9 +2,9 @@
 
 package com.openai.models.files
 
-import com.fasterxml.jackson.annotation.JsonCreator
+import com.fasterxml.jackson.annotation.JsonProperty
+import com.openai.core.ExcludeMissing
 import com.openai.core.MultipartField
-import com.openai.core.NoAutoDetect
 import com.openai.core.Params
 import com.openai.core.checkRequired
 import com.openai.core.http.Headers
@@ -78,170 +78,6 @@ private constructor(
 
     fun _additionalQueryParams(): QueryParams = additionalQueryParams
 
-    @JvmSynthetic
-    internal fun _body(): Map<String, MultipartField<*>> =
-        mapOf("file" to _file(), "purpose" to _purpose()).toImmutable()
-
-    override fun _headers(): Headers = additionalHeaders
-
-    override fun _queryParams(): QueryParams = additionalQueryParams
-
-    @NoAutoDetect
-    class Body
-    @JsonCreator
-    private constructor(
-        private val file: MultipartField<InputStream>,
-        private val purpose: MultipartField<FilePurpose>,
-    ) {
-
-        /**
-         * The File object (not file name) to be uploaded.
-         *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
-         */
-        fun file(): InputStream = file.value.getRequired("file")
-
-        /**
-         * The intended purpose of the uploaded file. One of: - `assistants`: Used in the Assistants
-         * API - `batch`: Used in the Batch API - `fine-tune`: Used for fine-tuning - `vision`:
-         * Images used for vision fine-tuning - `user_data`: Flexible file type for any purpose -
-         * `evals`: Used for eval data sets
-         *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
-         */
-        fun purpose(): FilePurpose = purpose.value.getRequired("purpose")
-
-        /**
-         * Returns the raw multipart value of [file].
-         *
-         * Unlike [file], this method doesn't throw if the multipart field has an unexpected type.
-         */
-        fun _file(): MultipartField<InputStream> = file
-
-        /**
-         * Returns the raw multipart value of [purpose].
-         *
-         * Unlike [purpose], this method doesn't throw if the multipart field has an unexpected
-         * type.
-         */
-        fun _purpose(): MultipartField<FilePurpose> = purpose
-
-        private var validated: Boolean = false
-
-        fun validate(): Body = apply {
-            if (validated) {
-                return@apply
-            }
-
-            file()
-            purpose()
-            validated = true
-        }
-
-        fun toBuilder() = Builder().from(this)
-
-        companion object {
-
-            /**
-             * Returns a mutable builder for constructing an instance of [Body].
-             *
-             * The following fields are required:
-             * ```java
-             * .file()
-             * .purpose()
-             * ```
-             */
-            @JvmStatic fun builder() = Builder()
-        }
-
-        /** A builder for [Body]. */
-        class Builder internal constructor() {
-
-            private var file: MultipartField<InputStream>? = null
-            private var purpose: MultipartField<FilePurpose>? = null
-
-            @JvmSynthetic
-            internal fun from(body: Body) = apply {
-                file = body.file
-                purpose = body.purpose
-            }
-
-            /** The File object (not file name) to be uploaded. */
-            fun file(file: InputStream) = file(MultipartField.of(file))
-
-            /**
-             * Sets [Builder.file] to an arbitrary multipart value.
-             *
-             * You should usually call [Builder.file] with a well-typed [InputStream] value instead.
-             * This method is primarily for setting the field to an undocumented or not yet
-             * supported value.
-             */
-            fun file(file: MultipartField<InputStream>) = apply { this.file = file }
-
-            /** The File object (not file name) to be uploaded. */
-            fun file(file: ByteArray) = file(file.inputStream())
-
-            /** The File object (not file name) to be uploaded. */
-            fun file(file: Path) =
-                file(
-                    MultipartField.builder<InputStream>()
-                        .value(file.inputStream())
-                        .filename(file.name)
-                        .build()
-                )
-
-            /**
-             * The intended purpose of the uploaded file. One of: - `assistants`: Used in the
-             * Assistants API - `batch`: Used in the Batch API - `fine-tune`: Used for fine-tuning -
-             * `vision`: Images used for vision fine-tuning - `user_data`: Flexible file type for
-             * any purpose - `evals`: Used for eval data sets
-             */
-            fun purpose(purpose: FilePurpose) = purpose(MultipartField.of(purpose))
-
-            /**
-             * Sets [Builder.purpose] to an arbitrary multipart value.
-             *
-             * You should usually call [Builder.purpose] with a well-typed [FilePurpose] value
-             * instead. This method is primarily for setting the field to an undocumented or not yet
-             * supported value.
-             */
-            fun purpose(purpose: MultipartField<FilePurpose>) = apply { this.purpose = purpose }
-
-            /**
-             * Returns an immutable instance of [Body].
-             *
-             * Further updates to this [Builder] will not mutate the returned instance.
-             *
-             * The following fields are required:
-             * ```java
-             * .file()
-             * .purpose()
-             * ```
-             *
-             * @throws IllegalStateException if any required field is unset.
-             */
-            fun build(): Body = Body(checkRequired("file", file), checkRequired("purpose", purpose))
-        }
-
-        override fun equals(other: Any?): Boolean {
-            if (this === other) {
-                return true
-            }
-
-            return /* spotless:off */ other is Body && file == other.file && purpose == other.purpose /* spotless:on */
-        }
-
-        /* spotless:off */
-        private val hashCode: Int by lazy { Objects.hash(file, purpose) }
-        /* spotless:on */
-
-        override fun hashCode(): Int = hashCode
-
-        override fun toString() = "Body{file=$file, purpose=$purpose}"
-    }
-
     fun toBuilder() = Builder().from(this)
 
     companion object {
@@ -259,7 +95,6 @@ private constructor(
     }
 
     /** A builder for [FileCreateParams]. */
-    @NoAutoDetect
     class Builder internal constructor() {
 
         private var body: Body.Builder = Body.builder()
@@ -421,6 +256,170 @@ private constructor(
          */
         fun build(): FileCreateParams =
             FileCreateParams(body.build(), additionalHeaders.build(), additionalQueryParams.build())
+    }
+
+    @JvmSynthetic
+    internal fun _body(): Map<String, MultipartField<*>> =
+        mapOf("file" to _file(), "purpose" to _purpose()).toImmutable()
+
+    override fun _headers(): Headers = additionalHeaders
+
+    override fun _queryParams(): QueryParams = additionalQueryParams
+
+    class Body
+    private constructor(
+        private val file: MultipartField<InputStream>,
+        private val purpose: MultipartField<FilePurpose>,
+    ) {
+
+        /**
+         * The File object (not file name) to be uploaded.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         */
+        fun file(): InputStream = file.value.getRequired("file")
+
+        /**
+         * The intended purpose of the uploaded file. One of: - `assistants`: Used in the Assistants
+         * API - `batch`: Used in the Batch API - `fine-tune`: Used for fine-tuning - `vision`:
+         * Images used for vision fine-tuning - `user_data`: Flexible file type for any purpose -
+         * `evals`: Used for eval data sets
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         */
+        fun purpose(): FilePurpose = purpose.value.getRequired("purpose")
+
+        /**
+         * Returns the raw multipart value of [file].
+         *
+         * Unlike [file], this method doesn't throw if the multipart field has an unexpected type.
+         */
+        @JsonProperty("file") @ExcludeMissing fun _file(): MultipartField<InputStream> = file
+
+        /**
+         * Returns the raw multipart value of [purpose].
+         *
+         * Unlike [purpose], this method doesn't throw if the multipart field has an unexpected
+         * type.
+         */
+        @JsonProperty("purpose")
+        @ExcludeMissing
+        fun _purpose(): MultipartField<FilePurpose> = purpose
+
+        fun toBuilder() = Builder().from(this)
+
+        companion object {
+
+            /**
+             * Returns a mutable builder for constructing an instance of [Body].
+             *
+             * The following fields are required:
+             * ```java
+             * .file()
+             * .purpose()
+             * ```
+             */
+            @JvmStatic fun builder() = Builder()
+        }
+
+        /** A builder for [Body]. */
+        class Builder internal constructor() {
+
+            private var file: MultipartField<InputStream>? = null
+            private var purpose: MultipartField<FilePurpose>? = null
+
+            @JvmSynthetic
+            internal fun from(body: Body) = apply {
+                file = body.file
+                purpose = body.purpose
+            }
+
+            /** The File object (not file name) to be uploaded. */
+            fun file(file: InputStream) = file(MultipartField.of(file))
+
+            /**
+             * Sets [Builder.file] to an arbitrary multipart value.
+             *
+             * You should usually call [Builder.file] with a well-typed [InputStream] value instead.
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun file(file: MultipartField<InputStream>) = apply { this.file = file }
+
+            /** The File object (not file name) to be uploaded. */
+            fun file(file: ByteArray) = file(file.inputStream())
+
+            /** The File object (not file name) to be uploaded. */
+            fun file(file: Path) =
+                file(
+                    MultipartField.builder<InputStream>()
+                        .value(file.inputStream())
+                        .filename(file.name)
+                        .build()
+                )
+
+            /**
+             * The intended purpose of the uploaded file. One of: - `assistants`: Used in the
+             * Assistants API - `batch`: Used in the Batch API - `fine-tune`: Used for fine-tuning -
+             * `vision`: Images used for vision fine-tuning - `user_data`: Flexible file type for
+             * any purpose - `evals`: Used for eval data sets
+             */
+            fun purpose(purpose: FilePurpose) = purpose(MultipartField.of(purpose))
+
+            /**
+             * Sets [Builder.purpose] to an arbitrary multipart value.
+             *
+             * You should usually call [Builder.purpose] with a well-typed [FilePurpose] value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun purpose(purpose: MultipartField<FilePurpose>) = apply { this.purpose = purpose }
+
+            /**
+             * Returns an immutable instance of [Body].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             *
+             * The following fields are required:
+             * ```java
+             * .file()
+             * .purpose()
+             * ```
+             *
+             * @throws IllegalStateException if any required field is unset.
+             */
+            fun build(): Body = Body(checkRequired("file", file), checkRequired("purpose", purpose))
+        }
+
+        private var validated: Boolean = false
+
+        fun validate(): Body = apply {
+            if (validated) {
+                return@apply
+            }
+
+            file()
+            purpose()
+            validated = true
+        }
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) {
+                return true
+            }
+
+            return /* spotless:off */ other is Body && file == other.file && purpose == other.purpose /* spotless:on */
+        }
+
+        /* spotless:off */
+        private val hashCode: Int by lazy { Objects.hash(file, purpose) }
+        /* spotless:on */
+
+        override fun hashCode(): Int = hashCode
+
+        override fun toString() = "Body{file=$file, purpose=$purpose}"
     }
 
     override fun equals(other: Any?): Boolean {

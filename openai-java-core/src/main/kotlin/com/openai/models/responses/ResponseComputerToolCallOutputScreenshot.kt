@@ -10,27 +10,26 @@ import com.openai.core.ExcludeMissing
 import com.openai.core.JsonField
 import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
-import com.openai.core.NoAutoDetect
-import com.openai.core.immutableEmptyMap
-import com.openai.core.toImmutable
 import com.openai.errors.OpenAIInvalidDataException
+import java.util.Collections
 import java.util.Objects
 import java.util.Optional
 
 /** A computer screenshot image used with the computer use tool. */
-@NoAutoDetect
 class ResponseComputerToolCallOutputScreenshot
-@JsonCreator
 private constructor(
-    @JsonProperty("type") @ExcludeMissing private val type: JsonValue = JsonMissing.of(),
-    @JsonProperty("file_id")
-    @ExcludeMissing
-    private val fileId: JsonField<String> = JsonMissing.of(),
-    @JsonProperty("image_url")
-    @ExcludeMissing
-    private val imageUrl: JsonField<String> = JsonMissing.of(),
-    @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
+    private val type: JsonValue,
+    private val fileId: JsonField<String>,
+    private val imageUrl: JsonField<String>,
+    private val additionalProperties: MutableMap<String, JsonValue>,
 ) {
+
+    @JsonCreator
+    private constructor(
+        @JsonProperty("type") @ExcludeMissing type: JsonValue = JsonMissing.of(),
+        @JsonProperty("file_id") @ExcludeMissing fileId: JsonField<String> = JsonMissing.of(),
+        @JsonProperty("image_url") @ExcludeMissing imageUrl: JsonField<String> = JsonMissing.of(),
+    ) : this(type, fileId, imageUrl, mutableMapOf())
 
     /**
      * Specifies the event type. For a computer screenshot, this property is always set to
@@ -76,26 +75,15 @@ private constructor(
      */
     @JsonProperty("image_url") @ExcludeMissing fun _imageUrl(): JsonField<String> = imageUrl
 
+    @JsonAnySetter
+    private fun putAdditionalProperty(key: String, value: JsonValue) {
+        additionalProperties.put(key, value)
+    }
+
     @JsonAnyGetter
     @ExcludeMissing
-    fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-    private var validated: Boolean = false
-
-    fun validate(): ResponseComputerToolCallOutputScreenshot = apply {
-        if (validated) {
-            return@apply
-        }
-
-        _type().let {
-            if (it != JsonValue.from("computer_screenshot")) {
-                throw OpenAIInvalidDataException("'type' is invalid, received $it")
-            }
-        }
-        fileId()
-        imageUrl()
-        validated = true
-    }
+    fun _additionalProperties(): Map<String, JsonValue> =
+        Collections.unmodifiableMap(additionalProperties)
 
     fun toBuilder() = Builder().from(this)
 
@@ -192,8 +180,25 @@ private constructor(
                 type,
                 fileId,
                 imageUrl,
-                additionalProperties.toImmutable(),
+                additionalProperties.toMutableMap(),
             )
+    }
+
+    private var validated: Boolean = false
+
+    fun validate(): ResponseComputerToolCallOutputScreenshot = apply {
+        if (validated) {
+            return@apply
+        }
+
+        _type().let {
+            if (it != JsonValue.from("computer_screenshot")) {
+                throw OpenAIInvalidDataException("'type' is invalid, received $it")
+            }
+        }
+        fileId()
+        imageUrl()
+        validated = true
     }
 
     override fun equals(other: Any?): Boolean {

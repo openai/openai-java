@@ -11,27 +11,27 @@ import com.openai.core.ExcludeMissing
 import com.openai.core.JsonField
 import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
-import com.openai.core.NoAutoDetect
 import com.openai.core.checkRequired
-import com.openai.core.immutableEmptyMap
-import com.openai.core.toImmutable
 import com.openai.errors.OpenAIInvalidDataException
+import java.util.Collections
 import java.util.Objects
 
 /**
  * Parameters for audio output. Required when audio output is requested with `modalities:
  * ["audio"]`. [Learn more](https://platform.openai.com/docs/guides/audio).
  */
-@NoAutoDetect
 class ChatCompletionAudioParam
-@JsonCreator
 private constructor(
-    @JsonProperty("format")
-    @ExcludeMissing
-    private val format: JsonField<Format> = JsonMissing.of(),
-    @JsonProperty("voice") @ExcludeMissing private val voice: JsonField<Voice> = JsonMissing.of(),
-    @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
+    private val format: JsonField<Format>,
+    private val voice: JsonField<Voice>,
+    private val additionalProperties: MutableMap<String, JsonValue>,
 ) {
+
+    @JsonCreator
+    private constructor(
+        @JsonProperty("format") @ExcludeMissing format: JsonField<Format> = JsonMissing.of(),
+        @JsonProperty("voice") @ExcludeMissing voice: JsonField<Voice> = JsonMissing.of(),
+    ) : this(format, voice, mutableMapOf())
 
     /**
      * Specifies the output audio format. Must be one of `wav`, `mp3`, `flac`, `opus`, or `pcm16`.
@@ -64,21 +64,15 @@ private constructor(
      */
     @JsonProperty("voice") @ExcludeMissing fun _voice(): JsonField<Voice> = voice
 
+    @JsonAnySetter
+    private fun putAdditionalProperty(key: String, value: JsonValue) {
+        additionalProperties.put(key, value)
+    }
+
     @JsonAnyGetter
     @ExcludeMissing
-    fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-    private var validated: Boolean = false
-
-    fun validate(): ChatCompletionAudioParam = apply {
-        if (validated) {
-            return@apply
-        }
-
-        format()
-        voice()
-        validated = true
-    }
+    fun _additionalProperties(): Map<String, JsonValue> =
+        Collections.unmodifiableMap(additionalProperties)
 
     fun toBuilder() = Builder().from(this)
 
@@ -174,8 +168,20 @@ private constructor(
             ChatCompletionAudioParam(
                 checkRequired("format", format),
                 checkRequired("voice", voice),
-                additionalProperties.toImmutable(),
+                additionalProperties.toMutableMap(),
             )
+    }
+
+    private var validated: Boolean = false
+
+    fun validate(): ChatCompletionAudioParam = apply {
+        if (validated) {
+            return@apply
+        }
+
+        format()
+        voice()
+        validated = true
     }
 
     /**

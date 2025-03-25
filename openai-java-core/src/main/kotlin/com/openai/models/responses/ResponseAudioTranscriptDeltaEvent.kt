@@ -10,22 +10,24 @@ import com.openai.core.ExcludeMissing
 import com.openai.core.JsonField
 import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
-import com.openai.core.NoAutoDetect
 import com.openai.core.checkRequired
-import com.openai.core.immutableEmptyMap
-import com.openai.core.toImmutable
 import com.openai.errors.OpenAIInvalidDataException
+import java.util.Collections
 import java.util.Objects
 
 /** Emitted when there is a partial transcript of audio. */
-@NoAutoDetect
 class ResponseAudioTranscriptDeltaEvent
-@JsonCreator
 private constructor(
-    @JsonProperty("delta") @ExcludeMissing private val delta: JsonField<String> = JsonMissing.of(),
-    @JsonProperty("type") @ExcludeMissing private val type: JsonValue = JsonMissing.of(),
-    @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
+    private val delta: JsonField<String>,
+    private val type: JsonValue,
+    private val additionalProperties: MutableMap<String, JsonValue>,
 ) {
+
+    @JsonCreator
+    private constructor(
+        @JsonProperty("delta") @ExcludeMissing delta: JsonField<String> = JsonMissing.of(),
+        @JsonProperty("type") @ExcludeMissing type: JsonValue = JsonMissing.of(),
+    ) : this(delta, type, mutableMapOf())
 
     /**
      * The partial transcript of the audio response.
@@ -55,25 +57,15 @@ private constructor(
      */
     @JsonProperty("delta") @ExcludeMissing fun _delta(): JsonField<String> = delta
 
+    @JsonAnySetter
+    private fun putAdditionalProperty(key: String, value: JsonValue) {
+        additionalProperties.put(key, value)
+    }
+
     @JsonAnyGetter
     @ExcludeMissing
-    fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-    private var validated: Boolean = false
-
-    fun validate(): ResponseAudioTranscriptDeltaEvent = apply {
-        if (validated) {
-            return@apply
-        }
-
-        delta()
-        _type().let {
-            if (it != JsonValue.from("response.audio.transcript.delta")) {
-                throw OpenAIInvalidDataException("'type' is invalid, received $it")
-            }
-        }
-        validated = true
-    }
+    fun _additionalProperties(): Map<String, JsonValue> =
+        Collections.unmodifiableMap(additionalProperties)
 
     fun toBuilder() = Builder().from(this)
 
@@ -167,8 +159,24 @@ private constructor(
             ResponseAudioTranscriptDeltaEvent(
                 checkRequired("delta", delta),
                 type,
-                additionalProperties.toImmutable(),
+                additionalProperties.toMutableMap(),
             )
+    }
+
+    private var validated: Boolean = false
+
+    fun validate(): ResponseAudioTranscriptDeltaEvent = apply {
+        if (validated) {
+            return@apply
+        }
+
+        delta()
+        _type().let {
+            if (it != JsonValue.from("response.audio.transcript.delta")) {
+                throw OpenAIInvalidDataException("'type' is invalid, received $it")
+            }
+        }
+        validated = true
     }
 
     override fun equals(other: Any?): Boolean {

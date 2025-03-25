@@ -5,7 +5,6 @@ package com.openai.models.chat.completions.messages
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.openai.core.Enum
 import com.openai.core.JsonField
-import com.openai.core.NoAutoDetect
 import com.openai.core.Params
 import com.openai.core.checkRequired
 import com.openai.core.http.Headers
@@ -47,24 +46,6 @@ private constructor(
 
     fun _additionalQueryParams(): QueryParams = additionalQueryParams
 
-    fun _pathParam(index: Int): String =
-        when (index) {
-            0 -> completionId
-            else -> ""
-        }
-
-    override fun _headers(): Headers = additionalHeaders
-
-    override fun _queryParams(): QueryParams =
-        QueryParams.builder()
-            .apply {
-                after?.let { put("after", it) }
-                limit?.let { put("limit", it.toString()) }
-                order?.let { put("order", it.toString()) }
-                putAll(additionalQueryParams)
-            }
-            .build()
-
     fun toBuilder() = Builder().from(this)
 
     companion object {
@@ -81,7 +62,6 @@ private constructor(
     }
 
     /** A builder for [MessageListParams]. */
-    @NoAutoDetect
     class Builder internal constructor() {
 
         private var completionId: String? = null
@@ -251,6 +231,24 @@ private constructor(
                 additionalQueryParams.build(),
             )
     }
+
+    fun _pathParam(index: Int): String =
+        when (index) {
+            0 -> completionId
+            else -> ""
+        }
+
+    override fun _headers(): Headers = additionalHeaders
+
+    override fun _queryParams(): QueryParams =
+        QueryParams.builder()
+            .apply {
+                after?.let { put("after", it) }
+                limit?.let { put("limit", it.toString()) }
+                order?.let { put("order", it.toString()) }
+                putAll(additionalQueryParams)
+            }
+            .build()
 
     /**
      * Sort order for messages by timestamp. Use `asc` for ascending order or `desc` for descending

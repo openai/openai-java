@@ -19,15 +19,13 @@ import com.openai.core.ExcludeMissing
 import com.openai.core.JsonField
 import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
-import com.openai.core.NoAutoDetect
 import com.openai.core.Params
 import com.openai.core.checkRequired
 import com.openai.core.getOrThrow
 import com.openai.core.http.Headers
 import com.openai.core.http.QueryParams
-import com.openai.core.immutableEmptyMap
-import com.openai.core.toImmutable
 import com.openai.errors.OpenAIInvalidDataException
+import java.util.Collections
 import java.util.Objects
 import java.util.Optional
 
@@ -81,211 +79,6 @@ private constructor(
 
     fun _additionalQueryParams(): QueryParams = additionalQueryParams
 
-    @JvmSynthetic internal fun _body(): Body = body
-
-    override fun _headers(): Headers = additionalHeaders
-
-    override fun _queryParams(): QueryParams = additionalQueryParams
-
-    @NoAutoDetect
-    class Body
-    @JsonCreator
-    private constructor(
-        @JsonProperty("input")
-        @ExcludeMissing
-        private val input: JsonField<Input> = JsonMissing.of(),
-        @JsonProperty("model")
-        @ExcludeMissing
-        private val model: JsonField<ModerationModel> = JsonMissing.of(),
-        @JsonAnySetter
-        private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
-    ) {
-
-        /**
-         * Input (or inputs) to classify. Can be a single string, an array of strings, or an array
-         * of multi-modal input objects similar to other models.
-         *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
-         */
-        fun input(): Input = input.getRequired("input")
-
-        /**
-         * The content moderation model you would like to use. Learn more in
-         * [the moderation guide](https://platform.openai.com/docs/guides/moderation), and learn
-         * about available models [here](https://platform.openai.com/docs/models#moderation).
-         *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
-         */
-        fun model(): Optional<ModerationModel> = Optional.ofNullable(model.getNullable("model"))
-
-        /**
-         * Returns the raw JSON value of [input].
-         *
-         * Unlike [input], this method doesn't throw if the JSON field has an unexpected type.
-         */
-        @JsonProperty("input") @ExcludeMissing fun _input(): JsonField<Input> = input
-
-        /**
-         * Returns the raw JSON value of [model].
-         *
-         * Unlike [model], this method doesn't throw if the JSON field has an unexpected type.
-         */
-        @JsonProperty("model") @ExcludeMissing fun _model(): JsonField<ModerationModel> = model
-
-        @JsonAnyGetter
-        @ExcludeMissing
-        fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-        private var validated: Boolean = false
-
-        fun validate(): Body = apply {
-            if (validated) {
-                return@apply
-            }
-
-            input().validate()
-            model()
-            validated = true
-        }
-
-        fun toBuilder() = Builder().from(this)
-
-        companion object {
-
-            /**
-             * Returns a mutable builder for constructing an instance of [Body].
-             *
-             * The following fields are required:
-             * ```java
-             * .input()
-             * ```
-             */
-            @JvmStatic fun builder() = Builder()
-        }
-
-        /** A builder for [Body]. */
-        class Builder internal constructor() {
-
-            private var input: JsonField<Input>? = null
-            private var model: JsonField<ModerationModel> = JsonMissing.of()
-            private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
-
-            @JvmSynthetic
-            internal fun from(body: Body) = apply {
-                input = body.input
-                model = body.model
-                additionalProperties = body.additionalProperties.toMutableMap()
-            }
-
-            /**
-             * Input (or inputs) to classify. Can be a single string, an array of strings, or an
-             * array of multi-modal input objects similar to other models.
-             */
-            fun input(input: Input) = input(JsonField.of(input))
-
-            /**
-             * Sets [Builder.input] to an arbitrary JSON value.
-             *
-             * You should usually call [Builder.input] with a well-typed [Input] value instead. This
-             * method is primarily for setting the field to an undocumented or not yet supported
-             * value.
-             */
-            fun input(input: JsonField<Input>) = apply { this.input = input }
-
-            /** Alias for calling [input] with `Input.ofString(string)`. */
-            fun input(string: String) = input(Input.ofString(string))
-
-            /** Alias for calling [input] with `Input.ofStrings(strings)`. */
-            fun inputOfStrings(strings: List<String>) = input(Input.ofStrings(strings))
-
-            /**
-             * Alias for calling [input] with
-             * `Input.ofModerationMultiModalArray(moderationMultiModalArray)`.
-             */
-            fun inputOfModerationMultiModalArray(
-                moderationMultiModalArray: List<ModerationMultiModalInput>
-            ) = input(Input.ofModerationMultiModalArray(moderationMultiModalArray))
-
-            /**
-             * The content moderation model you would like to use. Learn more in
-             * [the moderation guide](https://platform.openai.com/docs/guides/moderation), and learn
-             * about available models [here](https://platform.openai.com/docs/models#moderation).
-             */
-            fun model(model: ModerationModel) = model(JsonField.of(model))
-
-            /**
-             * Sets [Builder.model] to an arbitrary JSON value.
-             *
-             * You should usually call [Builder.model] with a well-typed [ModerationModel] value
-             * instead. This method is primarily for setting the field to an undocumented or not yet
-             * supported value.
-             */
-            fun model(model: JsonField<ModerationModel>) = apply { this.model = model }
-
-            /**
-             * Sets [model] to an arbitrary [String].
-             *
-             * You should usually call [model] with a well-typed [ModerationModel] constant instead.
-             * This method is primarily for setting the field to an undocumented or not yet
-             * supported value.
-             */
-            fun model(value: String) = model(ModerationModel.of(value))
-
-            fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
-                this.additionalProperties.clear()
-                putAllAdditionalProperties(additionalProperties)
-            }
-
-            fun putAdditionalProperty(key: String, value: JsonValue) = apply {
-                additionalProperties.put(key, value)
-            }
-
-            fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
-                this.additionalProperties.putAll(additionalProperties)
-            }
-
-            fun removeAdditionalProperty(key: String) = apply { additionalProperties.remove(key) }
-
-            fun removeAllAdditionalProperties(keys: Set<String>) = apply {
-                keys.forEach(::removeAdditionalProperty)
-            }
-
-            /**
-             * Returns an immutable instance of [Body].
-             *
-             * Further updates to this [Builder] will not mutate the returned instance.
-             *
-             * The following fields are required:
-             * ```java
-             * .input()
-             * ```
-             *
-             * @throws IllegalStateException if any required field is unset.
-             */
-            fun build(): Body =
-                Body(checkRequired("input", input), model, additionalProperties.toImmutable())
-        }
-
-        override fun equals(other: Any?): Boolean {
-            if (this === other) {
-                return true
-            }
-
-            return /* spotless:off */ other is Body && input == other.input && model == other.model && additionalProperties == other.additionalProperties /* spotless:on */
-        }
-
-        /* spotless:off */
-        private val hashCode: Int by lazy { Objects.hash(input, model, additionalProperties) }
-        /* spotless:on */
-
-        override fun hashCode(): Int = hashCode
-
-        override fun toString() =
-            "Body{input=$input, model=$model, additionalProperties=$additionalProperties}"
-    }
-
     fun toBuilder() = Builder().from(this)
 
     companion object {
@@ -302,7 +95,6 @@ private constructor(
     }
 
     /** A builder for [ModerationCreateParams]. */
-    @NoAutoDetect
     class Builder internal constructor() {
 
         private var body: Body.Builder = Body.builder()
@@ -504,6 +296,218 @@ private constructor(
                 additionalHeaders.build(),
                 additionalQueryParams.build(),
             )
+    }
+
+    @JvmSynthetic internal fun _body(): Body = body
+
+    override fun _headers(): Headers = additionalHeaders
+
+    override fun _queryParams(): QueryParams = additionalQueryParams
+
+    class Body
+    private constructor(
+        private val input: JsonField<Input>,
+        private val model: JsonField<ModerationModel>,
+        private val additionalProperties: MutableMap<String, JsonValue>,
+    ) {
+
+        @JsonCreator
+        private constructor(
+            @JsonProperty("input") @ExcludeMissing input: JsonField<Input> = JsonMissing.of(),
+            @JsonProperty("model")
+            @ExcludeMissing
+            model: JsonField<ModerationModel> = JsonMissing.of(),
+        ) : this(input, model, mutableMapOf())
+
+        /**
+         * Input (or inputs) to classify. Can be a single string, an array of strings, or an array
+         * of multi-modal input objects similar to other models.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         */
+        fun input(): Input = input.getRequired("input")
+
+        /**
+         * The content moderation model you would like to use. Learn more in
+         * [the moderation guide](https://platform.openai.com/docs/guides/moderation), and learn
+         * about available models [here](https://platform.openai.com/docs/models#moderation).
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun model(): Optional<ModerationModel> = Optional.ofNullable(model.getNullable("model"))
+
+        /**
+         * Returns the raw JSON value of [input].
+         *
+         * Unlike [input], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("input") @ExcludeMissing fun _input(): JsonField<Input> = input
+
+        /**
+         * Returns the raw JSON value of [model].
+         *
+         * Unlike [model], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("model") @ExcludeMissing fun _model(): JsonField<ModerationModel> = model
+
+        @JsonAnySetter
+        private fun putAdditionalProperty(key: String, value: JsonValue) {
+            additionalProperties.put(key, value)
+        }
+
+        @JsonAnyGetter
+        @ExcludeMissing
+        fun _additionalProperties(): Map<String, JsonValue> =
+            Collections.unmodifiableMap(additionalProperties)
+
+        fun toBuilder() = Builder().from(this)
+
+        companion object {
+
+            /**
+             * Returns a mutable builder for constructing an instance of [Body].
+             *
+             * The following fields are required:
+             * ```java
+             * .input()
+             * ```
+             */
+            @JvmStatic fun builder() = Builder()
+        }
+
+        /** A builder for [Body]. */
+        class Builder internal constructor() {
+
+            private var input: JsonField<Input>? = null
+            private var model: JsonField<ModerationModel> = JsonMissing.of()
+            private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
+
+            @JvmSynthetic
+            internal fun from(body: Body) = apply {
+                input = body.input
+                model = body.model
+                additionalProperties = body.additionalProperties.toMutableMap()
+            }
+
+            /**
+             * Input (or inputs) to classify. Can be a single string, an array of strings, or an
+             * array of multi-modal input objects similar to other models.
+             */
+            fun input(input: Input) = input(JsonField.of(input))
+
+            /**
+             * Sets [Builder.input] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.input] with a well-typed [Input] value instead. This
+             * method is primarily for setting the field to an undocumented or not yet supported
+             * value.
+             */
+            fun input(input: JsonField<Input>) = apply { this.input = input }
+
+            /** Alias for calling [input] with `Input.ofString(string)`. */
+            fun input(string: String) = input(Input.ofString(string))
+
+            /** Alias for calling [input] with `Input.ofStrings(strings)`. */
+            fun inputOfStrings(strings: List<String>) = input(Input.ofStrings(strings))
+
+            /**
+             * Alias for calling [input] with
+             * `Input.ofModerationMultiModalArray(moderationMultiModalArray)`.
+             */
+            fun inputOfModerationMultiModalArray(
+                moderationMultiModalArray: List<ModerationMultiModalInput>
+            ) = input(Input.ofModerationMultiModalArray(moderationMultiModalArray))
+
+            /**
+             * The content moderation model you would like to use. Learn more in
+             * [the moderation guide](https://platform.openai.com/docs/guides/moderation), and learn
+             * about available models [here](https://platform.openai.com/docs/models#moderation).
+             */
+            fun model(model: ModerationModel) = model(JsonField.of(model))
+
+            /**
+             * Sets [Builder.model] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.model] with a well-typed [ModerationModel] value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun model(model: JsonField<ModerationModel>) = apply { this.model = model }
+
+            /**
+             * Sets [model] to an arbitrary [String].
+             *
+             * You should usually call [model] with a well-typed [ModerationModel] constant instead.
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun model(value: String) = model(ModerationModel.of(value))
+
+            fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                this.additionalProperties.clear()
+                putAllAdditionalProperties(additionalProperties)
+            }
+
+            fun putAdditionalProperty(key: String, value: JsonValue) = apply {
+                additionalProperties.put(key, value)
+            }
+
+            fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                this.additionalProperties.putAll(additionalProperties)
+            }
+
+            fun removeAdditionalProperty(key: String) = apply { additionalProperties.remove(key) }
+
+            fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                keys.forEach(::removeAdditionalProperty)
+            }
+
+            /**
+             * Returns an immutable instance of [Body].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             *
+             * The following fields are required:
+             * ```java
+             * .input()
+             * ```
+             *
+             * @throws IllegalStateException if any required field is unset.
+             */
+            fun build(): Body =
+                Body(checkRequired("input", input), model, additionalProperties.toMutableMap())
+        }
+
+        private var validated: Boolean = false
+
+        fun validate(): Body = apply {
+            if (validated) {
+                return@apply
+            }
+
+            input().validate()
+            model()
+            validated = true
+        }
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) {
+                return true
+            }
+
+            return /* spotless:off */ other is Body && input == other.input && model == other.model && additionalProperties == other.additionalProperties /* spotless:on */
+        }
+
+        /* spotless:off */
+        private val hashCode: Int by lazy { Objects.hash(input, model, additionalProperties) }
+        /* spotless:on */
+
+        override fun hashCode(): Int = hashCode
+
+        override fun toString() =
+            "Body{input=$input, model=$model, additionalProperties=$additionalProperties}"
     }
 
     /**

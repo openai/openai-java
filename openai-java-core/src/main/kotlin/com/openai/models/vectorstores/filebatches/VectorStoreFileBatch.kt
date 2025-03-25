@@ -11,34 +11,36 @@ import com.openai.core.ExcludeMissing
 import com.openai.core.JsonField
 import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
-import com.openai.core.NoAutoDetect
 import com.openai.core.checkRequired
-import com.openai.core.immutableEmptyMap
-import com.openai.core.toImmutable
 import com.openai.errors.OpenAIInvalidDataException
+import java.util.Collections
 import java.util.Objects
 
 /** A batch of files attached to a vector store. */
-@NoAutoDetect
 class VectorStoreFileBatch
-@JsonCreator
 private constructor(
-    @JsonProperty("id") @ExcludeMissing private val id: JsonField<String> = JsonMissing.of(),
-    @JsonProperty("created_at")
-    @ExcludeMissing
-    private val createdAt: JsonField<Long> = JsonMissing.of(),
-    @JsonProperty("file_counts")
-    @ExcludeMissing
-    private val fileCounts: JsonField<FileCounts> = JsonMissing.of(),
-    @JsonProperty("object") @ExcludeMissing private val object_: JsonValue = JsonMissing.of(),
-    @JsonProperty("status")
-    @ExcludeMissing
-    private val status: JsonField<Status> = JsonMissing.of(),
-    @JsonProperty("vector_store_id")
-    @ExcludeMissing
-    private val vectorStoreId: JsonField<String> = JsonMissing.of(),
-    @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
+    private val id: JsonField<String>,
+    private val createdAt: JsonField<Long>,
+    private val fileCounts: JsonField<FileCounts>,
+    private val object_: JsonValue,
+    private val status: JsonField<Status>,
+    private val vectorStoreId: JsonField<String>,
+    private val additionalProperties: MutableMap<String, JsonValue>,
 ) {
+
+    @JsonCreator
+    private constructor(
+        @JsonProperty("id") @ExcludeMissing id: JsonField<String> = JsonMissing.of(),
+        @JsonProperty("created_at") @ExcludeMissing createdAt: JsonField<Long> = JsonMissing.of(),
+        @JsonProperty("file_counts")
+        @ExcludeMissing
+        fileCounts: JsonField<FileCounts> = JsonMissing.of(),
+        @JsonProperty("object") @ExcludeMissing object_: JsonValue = JsonMissing.of(),
+        @JsonProperty("status") @ExcludeMissing status: JsonField<Status> = JsonMissing.of(),
+        @JsonProperty("vector_store_id")
+        @ExcludeMissing
+        vectorStoreId: JsonField<String> = JsonMissing.of(),
+    ) : this(id, createdAt, fileCounts, object_, status, vectorStoreId, mutableMapOf())
 
     /**
      * The identifier, which can be referenced in API endpoints.
@@ -133,29 +135,15 @@ private constructor(
     @ExcludeMissing
     fun _vectorStoreId(): JsonField<String> = vectorStoreId
 
+    @JsonAnySetter
+    private fun putAdditionalProperty(key: String, value: JsonValue) {
+        additionalProperties.put(key, value)
+    }
+
     @JsonAnyGetter
     @ExcludeMissing
-    fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-    private var validated: Boolean = false
-
-    fun validate(): VectorStoreFileBatch = apply {
-        if (validated) {
-            return@apply
-        }
-
-        id()
-        createdAt()
-        fileCounts().validate()
-        _object_().let {
-            if (it != JsonValue.from("vector_store.files_batch")) {
-                throw OpenAIInvalidDataException("'object_' is invalid, received $it")
-            }
-        }
-        status()
-        vectorStoreId()
-        validated = true
-    }
+    fun _additionalProperties(): Map<String, JsonValue> =
+        Collections.unmodifiableMap(additionalProperties)
 
     fun toBuilder() = Builder().from(this)
 
@@ -320,32 +308,54 @@ private constructor(
                 object_,
                 checkRequired("status", status),
                 checkRequired("vectorStoreId", vectorStoreId),
-                additionalProperties.toImmutable(),
+                additionalProperties.toMutableMap(),
             )
     }
 
-    @NoAutoDetect
+    private var validated: Boolean = false
+
+    fun validate(): VectorStoreFileBatch = apply {
+        if (validated) {
+            return@apply
+        }
+
+        id()
+        createdAt()
+        fileCounts().validate()
+        _object_().let {
+            if (it != JsonValue.from("vector_store.files_batch")) {
+                throw OpenAIInvalidDataException("'object_' is invalid, received $it")
+            }
+        }
+        status()
+        vectorStoreId()
+        validated = true
+    }
+
     class FileCounts
-    @JsonCreator
     private constructor(
-        @JsonProperty("cancelled")
-        @ExcludeMissing
-        private val cancelled: JsonField<Long> = JsonMissing.of(),
-        @JsonProperty("completed")
-        @ExcludeMissing
-        private val completed: JsonField<Long> = JsonMissing.of(),
-        @JsonProperty("failed")
-        @ExcludeMissing
-        private val failed: JsonField<Long> = JsonMissing.of(),
-        @JsonProperty("in_progress")
-        @ExcludeMissing
-        private val inProgress: JsonField<Long> = JsonMissing.of(),
-        @JsonProperty("total")
-        @ExcludeMissing
-        private val total: JsonField<Long> = JsonMissing.of(),
-        @JsonAnySetter
-        private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
+        private val cancelled: JsonField<Long>,
+        private val completed: JsonField<Long>,
+        private val failed: JsonField<Long>,
+        private val inProgress: JsonField<Long>,
+        private val total: JsonField<Long>,
+        private val additionalProperties: MutableMap<String, JsonValue>,
     ) {
+
+        @JsonCreator
+        private constructor(
+            @JsonProperty("cancelled")
+            @ExcludeMissing
+            cancelled: JsonField<Long> = JsonMissing.of(),
+            @JsonProperty("completed")
+            @ExcludeMissing
+            completed: JsonField<Long> = JsonMissing.of(),
+            @JsonProperty("failed") @ExcludeMissing failed: JsonField<Long> = JsonMissing.of(),
+            @JsonProperty("in_progress")
+            @ExcludeMissing
+            inProgress: JsonField<Long> = JsonMissing.of(),
+            @JsonProperty("total") @ExcludeMissing total: JsonField<Long> = JsonMissing.of(),
+        ) : this(cancelled, completed, failed, inProgress, total, mutableMapOf())
 
         /**
          * The number of files that where cancelled.
@@ -422,24 +432,15 @@ private constructor(
          */
         @JsonProperty("total") @ExcludeMissing fun _total(): JsonField<Long> = total
 
+        @JsonAnySetter
+        private fun putAdditionalProperty(key: String, value: JsonValue) {
+            additionalProperties.put(key, value)
+        }
+
         @JsonAnyGetter
         @ExcludeMissing
-        fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-        private var validated: Boolean = false
-
-        fun validate(): FileCounts = apply {
-            if (validated) {
-                return@apply
-            }
-
-            cancelled()
-            completed()
-            failed()
-            inProgress()
-            total()
-            validated = true
-        }
+        fun _additionalProperties(): Map<String, JsonValue> =
+            Collections.unmodifiableMap(additionalProperties)
 
         fun toBuilder() = Builder().from(this)
 
@@ -582,8 +583,23 @@ private constructor(
                     checkRequired("failed", failed),
                     checkRequired("inProgress", inProgress),
                     checkRequired("total", total),
-                    additionalProperties.toImmutable(),
+                    additionalProperties.toMutableMap(),
                 )
+        }
+
+        private var validated: Boolean = false
+
+        fun validate(): FileCounts = apply {
+            if (validated) {
+                return@apply
+            }
+
+            cancelled()
+            completed()
+            failed()
+            inProgress()
+            total()
+            validated = true
         }
 
         override fun equals(other: Any?): Boolean {

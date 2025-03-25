@@ -11,49 +11,63 @@ import com.openai.core.ExcludeMissing
 import com.openai.core.JsonField
 import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
-import com.openai.core.NoAutoDetect
 import com.openai.core.checkRequired
-import com.openai.core.immutableEmptyMap
-import com.openai.core.toImmutable
 import com.openai.errors.OpenAIInvalidDataException
 import com.openai.models.vectorstores.FileChunkingStrategy
 import com.openai.models.vectorstores.OtherFileChunkingStrategyObject
 import com.openai.models.vectorstores.StaticFileChunkingStrategy
 import com.openai.models.vectorstores.StaticFileChunkingStrategyObject
+import java.util.Collections
 import java.util.Objects
 import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
 /** A list of files attached to a vector store. */
-@NoAutoDetect
 class VectorStoreFile
-@JsonCreator
 private constructor(
-    @JsonProperty("id") @ExcludeMissing private val id: JsonField<String> = JsonMissing.of(),
-    @JsonProperty("created_at")
-    @ExcludeMissing
-    private val createdAt: JsonField<Long> = JsonMissing.of(),
-    @JsonProperty("last_error")
-    @ExcludeMissing
-    private val lastError: JsonField<LastError> = JsonMissing.of(),
-    @JsonProperty("object") @ExcludeMissing private val object_: JsonValue = JsonMissing.of(),
-    @JsonProperty("status")
-    @ExcludeMissing
-    private val status: JsonField<Status> = JsonMissing.of(),
-    @JsonProperty("usage_bytes")
-    @ExcludeMissing
-    private val usageBytes: JsonField<Long> = JsonMissing.of(),
-    @JsonProperty("vector_store_id")
-    @ExcludeMissing
-    private val vectorStoreId: JsonField<String> = JsonMissing.of(),
-    @JsonProperty("attributes")
-    @ExcludeMissing
-    private val attributes: JsonField<Attributes> = JsonMissing.of(),
-    @JsonProperty("chunking_strategy")
-    @ExcludeMissing
-    private val chunkingStrategy: JsonField<FileChunkingStrategy> = JsonMissing.of(),
-    @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
+    private val id: JsonField<String>,
+    private val createdAt: JsonField<Long>,
+    private val lastError: JsonField<LastError>,
+    private val object_: JsonValue,
+    private val status: JsonField<Status>,
+    private val usageBytes: JsonField<Long>,
+    private val vectorStoreId: JsonField<String>,
+    private val attributes: JsonField<Attributes>,
+    private val chunkingStrategy: JsonField<FileChunkingStrategy>,
+    private val additionalProperties: MutableMap<String, JsonValue>,
 ) {
+
+    @JsonCreator
+    private constructor(
+        @JsonProperty("id") @ExcludeMissing id: JsonField<String> = JsonMissing.of(),
+        @JsonProperty("created_at") @ExcludeMissing createdAt: JsonField<Long> = JsonMissing.of(),
+        @JsonProperty("last_error")
+        @ExcludeMissing
+        lastError: JsonField<LastError> = JsonMissing.of(),
+        @JsonProperty("object") @ExcludeMissing object_: JsonValue = JsonMissing.of(),
+        @JsonProperty("status") @ExcludeMissing status: JsonField<Status> = JsonMissing.of(),
+        @JsonProperty("usage_bytes") @ExcludeMissing usageBytes: JsonField<Long> = JsonMissing.of(),
+        @JsonProperty("vector_store_id")
+        @ExcludeMissing
+        vectorStoreId: JsonField<String> = JsonMissing.of(),
+        @JsonProperty("attributes")
+        @ExcludeMissing
+        attributes: JsonField<Attributes> = JsonMissing.of(),
+        @JsonProperty("chunking_strategy")
+        @ExcludeMissing
+        chunkingStrategy: JsonField<FileChunkingStrategy> = JsonMissing.of(),
+    ) : this(
+        id,
+        createdAt,
+        lastError,
+        object_,
+        status,
+        usageBytes,
+        vectorStoreId,
+        attributes,
+        chunkingStrategy,
+        mutableMapOf(),
+    )
 
     /**
      * The identifier, which can be referenced in API endpoints.
@@ -205,32 +219,15 @@ private constructor(
     @ExcludeMissing
     fun _chunkingStrategy(): JsonField<FileChunkingStrategy> = chunkingStrategy
 
+    @JsonAnySetter
+    private fun putAdditionalProperty(key: String, value: JsonValue) {
+        additionalProperties.put(key, value)
+    }
+
     @JsonAnyGetter
     @ExcludeMissing
-    fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-    private var validated: Boolean = false
-
-    fun validate(): VectorStoreFile = apply {
-        if (validated) {
-            return@apply
-        }
-
-        id()
-        createdAt()
-        lastError().ifPresent { it.validate() }
-        _object_().let {
-            if (it != JsonValue.from("vector_store.file")) {
-                throw OpenAIInvalidDataException("'object_' is invalid, received $it")
-            }
-        }
-        status()
-        usageBytes()
-        vectorStoreId()
-        attributes().ifPresent { it.validate() }
-        chunkingStrategy().ifPresent { it.validate() }
-        validated = true
-    }
+    fun _additionalProperties(): Map<String, JsonValue> =
+        Collections.unmodifiableMap(additionalProperties)
 
     fun toBuilder() = Builder().from(this)
 
@@ -483,24 +480,48 @@ private constructor(
                 checkRequired("vectorStoreId", vectorStoreId),
                 attributes,
                 chunkingStrategy,
-                additionalProperties.toImmutable(),
+                additionalProperties.toMutableMap(),
             )
+    }
+
+    private var validated: Boolean = false
+
+    fun validate(): VectorStoreFile = apply {
+        if (validated) {
+            return@apply
+        }
+
+        id()
+        createdAt()
+        lastError().ifPresent { it.validate() }
+        _object_().let {
+            if (it != JsonValue.from("vector_store.file")) {
+                throw OpenAIInvalidDataException("'object_' is invalid, received $it")
+            }
+        }
+        status()
+        usageBytes()
+        vectorStoreId()
+        attributes().ifPresent { it.validate() }
+        chunkingStrategy().ifPresent { it.validate() }
+        validated = true
     }
 
     /**
      * The last error associated with this vector store file. Will be `null` if there are no errors.
      */
-    @NoAutoDetect
     class LastError
-    @JsonCreator
     private constructor(
-        @JsonProperty("code") @ExcludeMissing private val code: JsonField<Code> = JsonMissing.of(),
-        @JsonProperty("message")
-        @ExcludeMissing
-        private val message: JsonField<String> = JsonMissing.of(),
-        @JsonAnySetter
-        private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
+        private val code: JsonField<Code>,
+        private val message: JsonField<String>,
+        private val additionalProperties: MutableMap<String, JsonValue>,
     ) {
+
+        @JsonCreator
+        private constructor(
+            @JsonProperty("code") @ExcludeMissing code: JsonField<Code> = JsonMissing.of(),
+            @JsonProperty("message") @ExcludeMissing message: JsonField<String> = JsonMissing.of(),
+        ) : this(code, message, mutableMapOf())
 
         /**
          * One of `server_error` or `rate_limit_exceeded`.
@@ -532,21 +553,15 @@ private constructor(
          */
         @JsonProperty("message") @ExcludeMissing fun _message(): JsonField<String> = message
 
+        @JsonAnySetter
+        private fun putAdditionalProperty(key: String, value: JsonValue) {
+            additionalProperties.put(key, value)
+        }
+
         @JsonAnyGetter
         @ExcludeMissing
-        fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-        private var validated: Boolean = false
-
-        fun validate(): LastError = apply {
-            if (validated) {
-                return@apply
-            }
-
-            code()
-            message()
-            validated = true
-        }
+        fun _additionalProperties(): Map<String, JsonValue> =
+            Collections.unmodifiableMap(additionalProperties)
 
         fun toBuilder() = Builder().from(this)
 
@@ -638,8 +653,20 @@ private constructor(
                 LastError(
                     checkRequired("code", code),
                     checkRequired("message", message),
-                    additionalProperties.toImmutable(),
+                    additionalProperties.toMutableMap(),
                 )
+        }
+
+        private var validated: Boolean = false
+
+        fun validate(): LastError = apply {
+            if (validated) {
+                return@apply
+            }
+
+            code()
+            message()
+            validated = true
         }
 
         /** One of `server_error` or `rate_limit_exceeded`. */
@@ -888,27 +915,20 @@ private constructor(
      * API or the dashboard. Keys are strings with a maximum length of 64 characters. Values are
      * strings with a maximum length of 512 characters, booleans, or numbers.
      */
-    @NoAutoDetect
     class Attributes
-    @JsonCreator
-    private constructor(
+    private constructor(private val additionalProperties: MutableMap<String, JsonValue>) {
+
+        @JsonCreator private constructor() : this(mutableMapOf())
+
         @JsonAnySetter
-        private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap()
-    ) {
+        private fun putAdditionalProperty(key: String, value: JsonValue) {
+            additionalProperties.put(key, value)
+        }
 
         @JsonAnyGetter
         @ExcludeMissing
-        fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-        private var validated: Boolean = false
-
-        fun validate(): Attributes = apply {
-            if (validated) {
-                return@apply
-            }
-
-            validated = true
-        }
+        fun _additionalProperties(): Map<String, JsonValue> =
+            Collections.unmodifiableMap(additionalProperties)
 
         fun toBuilder() = Builder().from(this)
 
@@ -952,7 +972,17 @@ private constructor(
              *
              * Further updates to this [Builder] will not mutate the returned instance.
              */
-            fun build(): Attributes = Attributes(additionalProperties.toImmutable())
+            fun build(): Attributes = Attributes(additionalProperties.toMutableMap())
+        }
+
+        private var validated: Boolean = false
+
+        fun validate(): Attributes = apply {
+            if (validated) {
+                return@apply
+            }
+
+            validated = true
         }
 
         override fun equals(other: Any?): Boolean {

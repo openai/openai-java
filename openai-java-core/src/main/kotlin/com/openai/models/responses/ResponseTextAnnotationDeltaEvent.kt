@@ -19,39 +19,43 @@ import com.openai.core.ExcludeMissing
 import com.openai.core.JsonField
 import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
-import com.openai.core.NoAutoDetect
 import com.openai.core.checkRequired
 import com.openai.core.getOrThrow
-import com.openai.core.immutableEmptyMap
-import com.openai.core.toImmutable
 import com.openai.errors.OpenAIInvalidDataException
+import java.util.Collections
 import java.util.Objects
 import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
 /** Emitted when a text annotation is added. */
-@NoAutoDetect
 class ResponseTextAnnotationDeltaEvent
-@JsonCreator
 private constructor(
-    @JsonProperty("annotation")
-    @ExcludeMissing
-    private val annotation: JsonField<Annotation> = JsonMissing.of(),
-    @JsonProperty("annotation_index")
-    @ExcludeMissing
-    private val annotationIndex: JsonField<Long> = JsonMissing.of(),
-    @JsonProperty("content_index")
-    @ExcludeMissing
-    private val contentIndex: JsonField<Long> = JsonMissing.of(),
-    @JsonProperty("item_id")
-    @ExcludeMissing
-    private val itemId: JsonField<String> = JsonMissing.of(),
-    @JsonProperty("output_index")
-    @ExcludeMissing
-    private val outputIndex: JsonField<Long> = JsonMissing.of(),
-    @JsonProperty("type") @ExcludeMissing private val type: JsonValue = JsonMissing.of(),
-    @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
+    private val annotation: JsonField<Annotation>,
+    private val annotationIndex: JsonField<Long>,
+    private val contentIndex: JsonField<Long>,
+    private val itemId: JsonField<String>,
+    private val outputIndex: JsonField<Long>,
+    private val type: JsonValue,
+    private val additionalProperties: MutableMap<String, JsonValue>,
 ) {
+
+    @JsonCreator
+    private constructor(
+        @JsonProperty("annotation")
+        @ExcludeMissing
+        annotation: JsonField<Annotation> = JsonMissing.of(),
+        @JsonProperty("annotation_index")
+        @ExcludeMissing
+        annotationIndex: JsonField<Long> = JsonMissing.of(),
+        @JsonProperty("content_index")
+        @ExcludeMissing
+        contentIndex: JsonField<Long> = JsonMissing.of(),
+        @JsonProperty("item_id") @ExcludeMissing itemId: JsonField<String> = JsonMissing.of(),
+        @JsonProperty("output_index")
+        @ExcludeMissing
+        outputIndex: JsonField<Long> = JsonMissing.of(),
+        @JsonProperty("type") @ExcludeMissing type: JsonValue = JsonMissing.of(),
+    ) : this(annotation, annotationIndex, contentIndex, itemId, outputIndex, type, mutableMapOf())
 
     /**
      * A citation to a file.
@@ -147,29 +151,15 @@ private constructor(
      */
     @JsonProperty("output_index") @ExcludeMissing fun _outputIndex(): JsonField<Long> = outputIndex
 
+    @JsonAnySetter
+    private fun putAdditionalProperty(key: String, value: JsonValue) {
+        additionalProperties.put(key, value)
+    }
+
     @JsonAnyGetter
     @ExcludeMissing
-    fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-    private var validated: Boolean = false
-
-    fun validate(): ResponseTextAnnotationDeltaEvent = apply {
-        if (validated) {
-            return@apply
-        }
-
-        annotation().validate()
-        annotationIndex()
-        contentIndex()
-        itemId()
-        outputIndex()
-        _type().let {
-            if (it != JsonValue.from("response.output_text.annotation.added")) {
-                throw OpenAIInvalidDataException("'type' is invalid, received $it")
-            }
-        }
-        validated = true
-    }
+    fun _additionalProperties(): Map<String, JsonValue> =
+        Collections.unmodifiableMap(additionalProperties)
 
     fun toBuilder() = Builder().from(this)
 
@@ -344,8 +334,28 @@ private constructor(
                 checkRequired("itemId", itemId),
                 checkRequired("outputIndex", outputIndex),
                 type,
-                additionalProperties.toImmutable(),
+                additionalProperties.toMutableMap(),
             )
+    }
+
+    private var validated: Boolean = false
+
+    fun validate(): ResponseTextAnnotationDeltaEvent = apply {
+        if (validated) {
+            return@apply
+        }
+
+        annotation().validate()
+        annotationIndex()
+        contentIndex()
+        itemId()
+        outputIndex()
+        _type().let {
+            if (it != JsonValue.from("response.output_text.annotation.added")) {
+                throw OpenAIInvalidDataException("'type' is invalid, received $it")
+            }
+        }
+        validated = true
     }
 
     /** A citation to a file. */
@@ -530,20 +540,22 @@ private constructor(
         }
 
         /** A citation to a file. */
-        @NoAutoDetect
         class FileCitation
-        @JsonCreator
         private constructor(
-            @JsonProperty("file_id")
-            @ExcludeMissing
-            private val fileId: JsonField<String> = JsonMissing.of(),
-            @JsonProperty("index")
-            @ExcludeMissing
-            private val index: JsonField<Long> = JsonMissing.of(),
-            @JsonProperty("type") @ExcludeMissing private val type: JsonValue = JsonMissing.of(),
-            @JsonAnySetter
-            private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
+            private val fileId: JsonField<String>,
+            private val index: JsonField<Long>,
+            private val type: JsonValue,
+            private val additionalProperties: MutableMap<String, JsonValue>,
         ) {
+
+            @JsonCreator
+            private constructor(
+                @JsonProperty("file_id")
+                @ExcludeMissing
+                fileId: JsonField<String> = JsonMissing.of(),
+                @JsonProperty("index") @ExcludeMissing index: JsonField<Long> = JsonMissing.of(),
+                @JsonProperty("type") @ExcludeMissing type: JsonValue = JsonMissing.of(),
+            ) : this(fileId, index, type, mutableMapOf())
 
             /**
              * The ID of the file.
@@ -590,26 +602,15 @@ private constructor(
              */
             @JsonProperty("index") @ExcludeMissing fun _index(): JsonField<Long> = index
 
+            @JsonAnySetter
+            private fun putAdditionalProperty(key: String, value: JsonValue) {
+                additionalProperties.put(key, value)
+            }
+
             @JsonAnyGetter
             @ExcludeMissing
-            fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-            private var validated: Boolean = false
-
-            fun validate(): FileCitation = apply {
-                if (validated) {
-                    return@apply
-                }
-
-                fileId()
-                index()
-                _type().let {
-                    if (it != JsonValue.from("file_citation")) {
-                        throw OpenAIInvalidDataException("'type' is invalid, received $it")
-                    }
-                }
-                validated = true
-            }
+            fun _additionalProperties(): Map<String, JsonValue> =
+                Collections.unmodifiableMap(additionalProperties)
 
             fun toBuilder() = Builder().from(this)
 
@@ -721,8 +722,25 @@ private constructor(
                         checkRequired("fileId", fileId),
                         checkRequired("index", index),
                         type,
-                        additionalProperties.toImmutable(),
+                        additionalProperties.toMutableMap(),
                     )
+            }
+
+            private var validated: Boolean = false
+
+            fun validate(): FileCitation = apply {
+                if (validated) {
+                    return@apply
+                }
+
+                fileId()
+                index()
+                _type().let {
+                    if (it != JsonValue.from("file_citation")) {
+                        throw OpenAIInvalidDataException("'type' is invalid, received $it")
+                    }
+                }
+                validated = true
             }
 
             override fun equals(other: Any?): Boolean {
@@ -744,26 +762,28 @@ private constructor(
         }
 
         /** A citation for a web resource used to generate a model response. */
-        @NoAutoDetect
         class UrlCitation
-        @JsonCreator
         private constructor(
-            @JsonProperty("end_index")
-            @ExcludeMissing
-            private val endIndex: JsonField<Long> = JsonMissing.of(),
-            @JsonProperty("start_index")
-            @ExcludeMissing
-            private val startIndex: JsonField<Long> = JsonMissing.of(),
-            @JsonProperty("title")
-            @ExcludeMissing
-            private val title: JsonField<String> = JsonMissing.of(),
-            @JsonProperty("type") @ExcludeMissing private val type: JsonValue = JsonMissing.of(),
-            @JsonProperty("url")
-            @ExcludeMissing
-            private val url: JsonField<String> = JsonMissing.of(),
-            @JsonAnySetter
-            private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
+            private val endIndex: JsonField<Long>,
+            private val startIndex: JsonField<Long>,
+            private val title: JsonField<String>,
+            private val type: JsonValue,
+            private val url: JsonField<String>,
+            private val additionalProperties: MutableMap<String, JsonValue>,
         ) {
+
+            @JsonCreator
+            private constructor(
+                @JsonProperty("end_index")
+                @ExcludeMissing
+                endIndex: JsonField<Long> = JsonMissing.of(),
+                @JsonProperty("start_index")
+                @ExcludeMissing
+                startIndex: JsonField<Long> = JsonMissing.of(),
+                @JsonProperty("title") @ExcludeMissing title: JsonField<String> = JsonMissing.of(),
+                @JsonProperty("type") @ExcludeMissing type: JsonValue = JsonMissing.of(),
+                @JsonProperty("url") @ExcludeMissing url: JsonField<String> = JsonMissing.of(),
+            ) : this(endIndex, startIndex, title, type, url, mutableMapOf())
 
             /**
              * The index of the last character of the URL citation in the message.
@@ -846,28 +866,15 @@ private constructor(
              */
             @JsonProperty("url") @ExcludeMissing fun _url(): JsonField<String> = url
 
+            @JsonAnySetter
+            private fun putAdditionalProperty(key: String, value: JsonValue) {
+                additionalProperties.put(key, value)
+            }
+
             @JsonAnyGetter
             @ExcludeMissing
-            fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-            private var validated: Boolean = false
-
-            fun validate(): UrlCitation = apply {
-                if (validated) {
-                    return@apply
-                }
-
-                endIndex()
-                startIndex()
-                title()
-                _type().let {
-                    if (it != JsonValue.from("url_citation")) {
-                        throw OpenAIInvalidDataException("'type' is invalid, received $it")
-                    }
-                }
-                url()
-                validated = true
-            }
+            fun _additionalProperties(): Map<String, JsonValue> =
+                Collections.unmodifiableMap(additionalProperties)
 
             fun toBuilder() = Builder().from(this)
 
@@ -1013,8 +1020,27 @@ private constructor(
                         checkRequired("title", title),
                         type,
                         checkRequired("url", url),
-                        additionalProperties.toImmutable(),
+                        additionalProperties.toMutableMap(),
                     )
+            }
+
+            private var validated: Boolean = false
+
+            fun validate(): UrlCitation = apply {
+                if (validated) {
+                    return@apply
+                }
+
+                endIndex()
+                startIndex()
+                title()
+                _type().let {
+                    if (it != JsonValue.from("url_citation")) {
+                        throw OpenAIInvalidDataException("'type' is invalid, received $it")
+                    }
+                }
+                url()
+                validated = true
             }
 
             override fun equals(other: Any?): Boolean {
@@ -1036,20 +1062,22 @@ private constructor(
         }
 
         /** A path to a file. */
-        @NoAutoDetect
         class FilePath
-        @JsonCreator
         private constructor(
-            @JsonProperty("file_id")
-            @ExcludeMissing
-            private val fileId: JsonField<String> = JsonMissing.of(),
-            @JsonProperty("index")
-            @ExcludeMissing
-            private val index: JsonField<Long> = JsonMissing.of(),
-            @JsonProperty("type") @ExcludeMissing private val type: JsonValue = JsonMissing.of(),
-            @JsonAnySetter
-            private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
+            private val fileId: JsonField<String>,
+            private val index: JsonField<Long>,
+            private val type: JsonValue,
+            private val additionalProperties: MutableMap<String, JsonValue>,
         ) {
+
+            @JsonCreator
+            private constructor(
+                @JsonProperty("file_id")
+                @ExcludeMissing
+                fileId: JsonField<String> = JsonMissing.of(),
+                @JsonProperty("index") @ExcludeMissing index: JsonField<Long> = JsonMissing.of(),
+                @JsonProperty("type") @ExcludeMissing type: JsonValue = JsonMissing.of(),
+            ) : this(fileId, index, type, mutableMapOf())
 
             /**
              * The ID of the file.
@@ -1096,26 +1124,15 @@ private constructor(
              */
             @JsonProperty("index") @ExcludeMissing fun _index(): JsonField<Long> = index
 
+            @JsonAnySetter
+            private fun putAdditionalProperty(key: String, value: JsonValue) {
+                additionalProperties.put(key, value)
+            }
+
             @JsonAnyGetter
             @ExcludeMissing
-            fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-            private var validated: Boolean = false
-
-            fun validate(): FilePath = apply {
-                if (validated) {
-                    return@apply
-                }
-
-                fileId()
-                index()
-                _type().let {
-                    if (it != JsonValue.from("file_path")) {
-                        throw OpenAIInvalidDataException("'type' is invalid, received $it")
-                    }
-                }
-                validated = true
-            }
+            fun _additionalProperties(): Map<String, JsonValue> =
+                Collections.unmodifiableMap(additionalProperties)
 
             fun toBuilder() = Builder().from(this)
 
@@ -1227,8 +1244,25 @@ private constructor(
                         checkRequired("fileId", fileId),
                         checkRequired("index", index),
                         type,
-                        additionalProperties.toImmutable(),
+                        additionalProperties.toMutableMap(),
                     )
+            }
+
+            private var validated: Boolean = false
+
+            fun validate(): FilePath = apply {
+                if (validated) {
+                    return@apply
+                }
+
+                fileId()
+                index()
+                _type().let {
+                    if (it != JsonValue.from("file_path")) {
+                        throw OpenAIInvalidDataException("'type' is invalid, received $it")
+                    }
+                }
+                validated = true
             }
 
             override fun equals(other: Any?): Boolean {

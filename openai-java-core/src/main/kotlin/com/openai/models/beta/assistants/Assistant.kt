@@ -10,10 +10,8 @@ import com.openai.core.ExcludeMissing
 import com.openai.core.JsonField
 import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
-import com.openai.core.NoAutoDetect
 import com.openai.core.checkKnown
 import com.openai.core.checkRequired
-import com.openai.core.immutableEmptyMap
 import com.openai.core.toImmutable
 import com.openai.errors.OpenAIInvalidDataException
 import com.openai.models.FunctionDefinition
@@ -22,46 +20,73 @@ import com.openai.models.ResponseFormatJsonObject
 import com.openai.models.ResponseFormatJsonSchema
 import com.openai.models.ResponseFormatText
 import com.openai.models.beta.threads.AssistantResponseFormatOption
+import java.util.Collections
 import java.util.Objects
 import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
 /** Represents an `assistant` that can call the model and use tools. */
-@NoAutoDetect
 class Assistant
-@JsonCreator
 private constructor(
-    @JsonProperty("id") @ExcludeMissing private val id: JsonField<String> = JsonMissing.of(),
-    @JsonProperty("created_at")
-    @ExcludeMissing
-    private val createdAt: JsonField<Long> = JsonMissing.of(),
-    @JsonProperty("description")
-    @ExcludeMissing
-    private val description: JsonField<String> = JsonMissing.of(),
-    @JsonProperty("instructions")
-    @ExcludeMissing
-    private val instructions: JsonField<String> = JsonMissing.of(),
-    @JsonProperty("metadata")
-    @ExcludeMissing
-    private val metadata: JsonField<Metadata> = JsonMissing.of(),
-    @JsonProperty("model") @ExcludeMissing private val model: JsonField<String> = JsonMissing.of(),
-    @JsonProperty("name") @ExcludeMissing private val name: JsonField<String> = JsonMissing.of(),
-    @JsonProperty("object") @ExcludeMissing private val object_: JsonValue = JsonMissing.of(),
-    @JsonProperty("tools")
-    @ExcludeMissing
-    private val tools: JsonField<List<AssistantTool>> = JsonMissing.of(),
-    @JsonProperty("response_format")
-    @ExcludeMissing
-    private val responseFormat: JsonField<AssistantResponseFormatOption> = JsonMissing.of(),
-    @JsonProperty("temperature")
-    @ExcludeMissing
-    private val temperature: JsonField<Double> = JsonMissing.of(),
-    @JsonProperty("tool_resources")
-    @ExcludeMissing
-    private val toolResources: JsonField<ToolResources> = JsonMissing.of(),
-    @JsonProperty("top_p") @ExcludeMissing private val topP: JsonField<Double> = JsonMissing.of(),
-    @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
+    private val id: JsonField<String>,
+    private val createdAt: JsonField<Long>,
+    private val description: JsonField<String>,
+    private val instructions: JsonField<String>,
+    private val metadata: JsonField<Metadata>,
+    private val model: JsonField<String>,
+    private val name: JsonField<String>,
+    private val object_: JsonValue,
+    private val tools: JsonField<List<AssistantTool>>,
+    private val responseFormat: JsonField<AssistantResponseFormatOption>,
+    private val temperature: JsonField<Double>,
+    private val toolResources: JsonField<ToolResources>,
+    private val topP: JsonField<Double>,
+    private val additionalProperties: MutableMap<String, JsonValue>,
 ) {
+
+    @JsonCreator
+    private constructor(
+        @JsonProperty("id") @ExcludeMissing id: JsonField<String> = JsonMissing.of(),
+        @JsonProperty("created_at") @ExcludeMissing createdAt: JsonField<Long> = JsonMissing.of(),
+        @JsonProperty("description")
+        @ExcludeMissing
+        description: JsonField<String> = JsonMissing.of(),
+        @JsonProperty("instructions")
+        @ExcludeMissing
+        instructions: JsonField<String> = JsonMissing.of(),
+        @JsonProperty("metadata") @ExcludeMissing metadata: JsonField<Metadata> = JsonMissing.of(),
+        @JsonProperty("model") @ExcludeMissing model: JsonField<String> = JsonMissing.of(),
+        @JsonProperty("name") @ExcludeMissing name: JsonField<String> = JsonMissing.of(),
+        @JsonProperty("object") @ExcludeMissing object_: JsonValue = JsonMissing.of(),
+        @JsonProperty("tools")
+        @ExcludeMissing
+        tools: JsonField<List<AssistantTool>> = JsonMissing.of(),
+        @JsonProperty("response_format")
+        @ExcludeMissing
+        responseFormat: JsonField<AssistantResponseFormatOption> = JsonMissing.of(),
+        @JsonProperty("temperature")
+        @ExcludeMissing
+        temperature: JsonField<Double> = JsonMissing.of(),
+        @JsonProperty("tool_resources")
+        @ExcludeMissing
+        toolResources: JsonField<ToolResources> = JsonMissing.of(),
+        @JsonProperty("top_p") @ExcludeMissing topP: JsonField<Double> = JsonMissing.of(),
+    ) : this(
+        id,
+        createdAt,
+        description,
+        instructions,
+        metadata,
+        model,
+        name,
+        object_,
+        tools,
+        responseFormat,
+        temperature,
+        toolResources,
+        topP,
+        mutableMapOf(),
+    )
 
     /**
      * The identifier, which can be referenced in API endpoints.
@@ -300,36 +325,15 @@ private constructor(
      */
     @JsonProperty("top_p") @ExcludeMissing fun _topP(): JsonField<Double> = topP
 
+    @JsonAnySetter
+    private fun putAdditionalProperty(key: String, value: JsonValue) {
+        additionalProperties.put(key, value)
+    }
+
     @JsonAnyGetter
     @ExcludeMissing
-    fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-    private var validated: Boolean = false
-
-    fun validate(): Assistant = apply {
-        if (validated) {
-            return@apply
-        }
-
-        id()
-        createdAt()
-        description()
-        instructions()
-        metadata().ifPresent { it.validate() }
-        model()
-        name()
-        _object_().let {
-            if (it != JsonValue.from("assistant")) {
-                throw OpenAIInvalidDataException("'object_' is invalid, received $it")
-            }
-        }
-        tools().forEach { it.validate() }
-        responseFormat().ifPresent { it.validate() }
-        temperature()
-        toolResources().ifPresent { it.validate() }
-        topP()
-        validated = true
-    }
+    fun _additionalProperties(): Map<String, JsonValue> =
+        Collections.unmodifiableMap(additionalProperties)
 
     fun toBuilder() = Builder().from(this)
 
@@ -757,8 +761,35 @@ private constructor(
                 temperature,
                 toolResources,
                 topP,
-                additionalProperties.toImmutable(),
+                additionalProperties.toMutableMap(),
             )
+    }
+
+    private var validated: Boolean = false
+
+    fun validate(): Assistant = apply {
+        if (validated) {
+            return@apply
+        }
+
+        id()
+        createdAt()
+        description()
+        instructions()
+        metadata().ifPresent { it.validate() }
+        model()
+        name()
+        _object_().let {
+            if (it != JsonValue.from("assistant")) {
+                throw OpenAIInvalidDataException("'object_' is invalid, received $it")
+            }
+        }
+        tools().forEach { it.validate() }
+        responseFormat().ifPresent { it.validate() }
+        temperature()
+        toolResources().ifPresent { it.validate() }
+        topP()
+        validated = true
     }
 
     /**
@@ -766,19 +797,22 @@ private constructor(
      * type of tool. For example, the `code_interpreter` tool requires a list of file IDs, while the
      * `file_search` tool requires a list of vector store IDs.
      */
-    @NoAutoDetect
     class ToolResources
-    @JsonCreator
     private constructor(
-        @JsonProperty("code_interpreter")
-        @ExcludeMissing
-        private val codeInterpreter: JsonField<CodeInterpreter> = JsonMissing.of(),
-        @JsonProperty("file_search")
-        @ExcludeMissing
-        private val fileSearch: JsonField<FileSearch> = JsonMissing.of(),
-        @JsonAnySetter
-        private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
+        private val codeInterpreter: JsonField<CodeInterpreter>,
+        private val fileSearch: JsonField<FileSearch>,
+        private val additionalProperties: MutableMap<String, JsonValue>,
     ) {
+
+        @JsonCreator
+        private constructor(
+            @JsonProperty("code_interpreter")
+            @ExcludeMissing
+            codeInterpreter: JsonField<CodeInterpreter> = JsonMissing.of(),
+            @JsonProperty("file_search")
+            @ExcludeMissing
+            fileSearch: JsonField<FileSearch> = JsonMissing.of(),
+        ) : this(codeInterpreter, fileSearch, mutableMapOf())
 
         /**
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
@@ -813,21 +847,15 @@ private constructor(
         @ExcludeMissing
         fun _fileSearch(): JsonField<FileSearch> = fileSearch
 
+        @JsonAnySetter
+        private fun putAdditionalProperty(key: String, value: JsonValue) {
+            additionalProperties.put(key, value)
+        }
+
         @JsonAnyGetter
         @ExcludeMissing
-        fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-        private var validated: Boolean = false
-
-        fun validate(): ToolResources = apply {
-            if (validated) {
-                return@apply
-            }
-
-            codeInterpreter().ifPresent { it.validate() }
-            fileSearch().ifPresent { it.validate() }
-            validated = true
-        }
+        fun _additionalProperties(): Map<String, JsonValue> =
+            Collections.unmodifiableMap(additionalProperties)
 
         fun toBuilder() = Builder().from(this)
 
@@ -903,19 +931,33 @@ private constructor(
              * Further updates to this [Builder] will not mutate the returned instance.
              */
             fun build(): ToolResources =
-                ToolResources(codeInterpreter, fileSearch, additionalProperties.toImmutable())
+                ToolResources(codeInterpreter, fileSearch, additionalProperties.toMutableMap())
         }
 
-        @NoAutoDetect
+        private var validated: Boolean = false
+
+        fun validate(): ToolResources = apply {
+            if (validated) {
+                return@apply
+            }
+
+            codeInterpreter().ifPresent { it.validate() }
+            fileSearch().ifPresent { it.validate() }
+            validated = true
+        }
+
         class CodeInterpreter
-        @JsonCreator
         private constructor(
-            @JsonProperty("file_ids")
-            @ExcludeMissing
-            private val fileIds: JsonField<List<String>> = JsonMissing.of(),
-            @JsonAnySetter
-            private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
+            private val fileIds: JsonField<List<String>>,
+            private val additionalProperties: MutableMap<String, JsonValue>,
         ) {
+
+            @JsonCreator
+            private constructor(
+                @JsonProperty("file_ids")
+                @ExcludeMissing
+                fileIds: JsonField<List<String>> = JsonMissing.of()
+            ) : this(fileIds, mutableMapOf())
 
             /**
              * A list of [file](https://platform.openai.com/docs/api-reference/files) IDs made
@@ -937,20 +979,15 @@ private constructor(
             @ExcludeMissing
             fun _fileIds(): JsonField<List<String>> = fileIds
 
+            @JsonAnySetter
+            private fun putAdditionalProperty(key: String, value: JsonValue) {
+                additionalProperties.put(key, value)
+            }
+
             @JsonAnyGetter
             @ExcludeMissing
-            fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-            private var validated: Boolean = false
-
-            fun validate(): CodeInterpreter = apply {
-                if (validated) {
-                    return@apply
-                }
-
-                fileIds()
-                validated = true
-            }
+            fun _additionalProperties(): Map<String, JsonValue> =
+                Collections.unmodifiableMap(additionalProperties)
 
             fun toBuilder() = Builder().from(this)
 
@@ -1032,8 +1069,19 @@ private constructor(
                 fun build(): CodeInterpreter =
                     CodeInterpreter(
                         (fileIds ?: JsonMissing.of()).map { it.toImmutable() },
-                        additionalProperties.toImmutable(),
+                        additionalProperties.toMutableMap(),
                     )
+            }
+
+            private var validated: Boolean = false
+
+            fun validate(): CodeInterpreter = apply {
+                if (validated) {
+                    return@apply
+                }
+
+                fileIds()
+                validated = true
             }
 
             override fun equals(other: Any?): Boolean {
@@ -1054,16 +1102,18 @@ private constructor(
                 "CodeInterpreter{fileIds=$fileIds, additionalProperties=$additionalProperties}"
         }
 
-        @NoAutoDetect
         class FileSearch
-        @JsonCreator
         private constructor(
-            @JsonProperty("vector_store_ids")
-            @ExcludeMissing
-            private val vectorStoreIds: JsonField<List<String>> = JsonMissing.of(),
-            @JsonAnySetter
-            private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
+            private val vectorStoreIds: JsonField<List<String>>,
+            private val additionalProperties: MutableMap<String, JsonValue>,
         ) {
+
+            @JsonCreator
+            private constructor(
+                @JsonProperty("vector_store_ids")
+                @ExcludeMissing
+                vectorStoreIds: JsonField<List<String>> = JsonMissing.of()
+            ) : this(vectorStoreIds, mutableMapOf())
 
             /**
              * The ID of the
@@ -1087,20 +1137,15 @@ private constructor(
             @ExcludeMissing
             fun _vectorStoreIds(): JsonField<List<String>> = vectorStoreIds
 
+            @JsonAnySetter
+            private fun putAdditionalProperty(key: String, value: JsonValue) {
+                additionalProperties.put(key, value)
+            }
+
             @JsonAnyGetter
             @ExcludeMissing
-            fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-            private var validated: Boolean = false
-
-            fun validate(): FileSearch = apply {
-                if (validated) {
-                    return@apply
-                }
-
-                vectorStoreIds()
-                validated = true
-            }
+            fun _additionalProperties(): Map<String, JsonValue> =
+                Collections.unmodifiableMap(additionalProperties)
 
             fun toBuilder() = Builder().from(this)
 
@@ -1184,8 +1229,19 @@ private constructor(
                 fun build(): FileSearch =
                     FileSearch(
                         (vectorStoreIds ?: JsonMissing.of()).map { it.toImmutable() },
-                        additionalProperties.toImmutable(),
+                        additionalProperties.toMutableMap(),
                     )
+            }
+
+            private var validated: Boolean = false
+
+            fun validate(): FileSearch = apply {
+                if (validated) {
+                    return@apply
+                }
+
+                vectorStoreIds()
+                validated = true
             }
 
             override fun equals(other: Any?): Boolean {

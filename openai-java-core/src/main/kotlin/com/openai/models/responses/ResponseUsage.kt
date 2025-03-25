@@ -10,38 +10,50 @@ import com.openai.core.ExcludeMissing
 import com.openai.core.JsonField
 import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
-import com.openai.core.NoAutoDetect
 import com.openai.core.checkRequired
-import com.openai.core.immutableEmptyMap
-import com.openai.core.toImmutable
 import com.openai.errors.OpenAIInvalidDataException
+import java.util.Collections
 import java.util.Objects
 
 /**
  * Represents token usage details including input tokens, output tokens, a breakdown of output
  * tokens, and the total tokens used.
  */
-@NoAutoDetect
 class ResponseUsage
-@JsonCreator
 private constructor(
-    @JsonProperty("input_tokens")
-    @ExcludeMissing
-    private val inputTokens: JsonField<Long> = JsonMissing.of(),
-    @JsonProperty("input_tokens_details")
-    @ExcludeMissing
-    private val inputTokensDetails: JsonField<InputTokensDetails> = JsonMissing.of(),
-    @JsonProperty("output_tokens")
-    @ExcludeMissing
-    private val outputTokens: JsonField<Long> = JsonMissing.of(),
-    @JsonProperty("output_tokens_details")
-    @ExcludeMissing
-    private val outputTokensDetails: JsonField<OutputTokensDetails> = JsonMissing.of(),
-    @JsonProperty("total_tokens")
-    @ExcludeMissing
-    private val totalTokens: JsonField<Long> = JsonMissing.of(),
-    @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
+    private val inputTokens: JsonField<Long>,
+    private val inputTokensDetails: JsonField<InputTokensDetails>,
+    private val outputTokens: JsonField<Long>,
+    private val outputTokensDetails: JsonField<OutputTokensDetails>,
+    private val totalTokens: JsonField<Long>,
+    private val additionalProperties: MutableMap<String, JsonValue>,
 ) {
+
+    @JsonCreator
+    private constructor(
+        @JsonProperty("input_tokens")
+        @ExcludeMissing
+        inputTokens: JsonField<Long> = JsonMissing.of(),
+        @JsonProperty("input_tokens_details")
+        @ExcludeMissing
+        inputTokensDetails: JsonField<InputTokensDetails> = JsonMissing.of(),
+        @JsonProperty("output_tokens")
+        @ExcludeMissing
+        outputTokens: JsonField<Long> = JsonMissing.of(),
+        @JsonProperty("output_tokens_details")
+        @ExcludeMissing
+        outputTokensDetails: JsonField<OutputTokensDetails> = JsonMissing.of(),
+        @JsonProperty("total_tokens")
+        @ExcludeMissing
+        totalTokens: JsonField<Long> = JsonMissing.of(),
+    ) : this(
+        inputTokens,
+        inputTokensDetails,
+        outputTokens,
+        outputTokensDetails,
+        totalTokens,
+        mutableMapOf(),
+    )
 
     /**
      * The number of input tokens.
@@ -128,24 +140,15 @@ private constructor(
      */
     @JsonProperty("total_tokens") @ExcludeMissing fun _totalTokens(): JsonField<Long> = totalTokens
 
+    @JsonAnySetter
+    private fun putAdditionalProperty(key: String, value: JsonValue) {
+        additionalProperties.put(key, value)
+    }
+
     @JsonAnyGetter
     @ExcludeMissing
-    fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-    private var validated: Boolean = false
-
-    fun validate(): ResponseUsage = apply {
-        if (validated) {
-            return@apply
-        }
-
-        inputTokens()
-        inputTokensDetails().validate()
-        outputTokens()
-        outputTokensDetails().validate()
-        totalTokens()
-        validated = true
-    }
+    fun _additionalProperties(): Map<String, JsonValue> =
+        Collections.unmodifiableMap(additionalProperties)
 
     fun toBuilder() = Builder().from(this)
 
@@ -294,21 +297,38 @@ private constructor(
                 checkRequired("outputTokens", outputTokens),
                 checkRequired("outputTokensDetails", outputTokensDetails),
                 checkRequired("totalTokens", totalTokens),
-                additionalProperties.toImmutable(),
+                additionalProperties.toMutableMap(),
             )
     }
 
+    private var validated: Boolean = false
+
+    fun validate(): ResponseUsage = apply {
+        if (validated) {
+            return@apply
+        }
+
+        inputTokens()
+        inputTokensDetails().validate()
+        outputTokens()
+        outputTokensDetails().validate()
+        totalTokens()
+        validated = true
+    }
+
     /** A detailed breakdown of the input tokens. */
-    @NoAutoDetect
     class InputTokensDetails
-    @JsonCreator
     private constructor(
-        @JsonProperty("cached_tokens")
-        @ExcludeMissing
-        private val cachedTokens: JsonField<Long> = JsonMissing.of(),
-        @JsonAnySetter
-        private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
+        private val cachedTokens: JsonField<Long>,
+        private val additionalProperties: MutableMap<String, JsonValue>,
     ) {
+
+        @JsonCreator
+        private constructor(
+            @JsonProperty("cached_tokens")
+            @ExcludeMissing
+            cachedTokens: JsonField<Long> = JsonMissing.of()
+        ) : this(cachedTokens, mutableMapOf())
 
         /**
          * The number of tokens that were retrieved from the cache.
@@ -329,20 +349,15 @@ private constructor(
         @ExcludeMissing
         fun _cachedTokens(): JsonField<Long> = cachedTokens
 
+        @JsonAnySetter
+        private fun putAdditionalProperty(key: String, value: JsonValue) {
+            additionalProperties.put(key, value)
+        }
+
         @JsonAnyGetter
         @ExcludeMissing
-        fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-        private var validated: Boolean = false
-
-        fun validate(): InputTokensDetails = apply {
-            if (validated) {
-                return@apply
-            }
-
-            cachedTokens()
-            validated = true
-        }
+        fun _additionalProperties(): Map<String, JsonValue> =
+            Collections.unmodifiableMap(additionalProperties)
 
         fun toBuilder() = Builder().from(this)
 
@@ -422,8 +437,19 @@ private constructor(
             fun build(): InputTokensDetails =
                 InputTokensDetails(
                     checkRequired("cachedTokens", cachedTokens),
-                    additionalProperties.toImmutable(),
+                    additionalProperties.toMutableMap(),
                 )
+        }
+
+        private var validated: Boolean = false
+
+        fun validate(): InputTokensDetails = apply {
+            if (validated) {
+                return@apply
+            }
+
+            cachedTokens()
+            validated = true
         }
 
         override fun equals(other: Any?): Boolean {
@@ -445,16 +471,18 @@ private constructor(
     }
 
     /** A detailed breakdown of the output tokens. */
-    @NoAutoDetect
     class OutputTokensDetails
-    @JsonCreator
     private constructor(
-        @JsonProperty("reasoning_tokens")
-        @ExcludeMissing
-        private val reasoningTokens: JsonField<Long> = JsonMissing.of(),
-        @JsonAnySetter
-        private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
+        private val reasoningTokens: JsonField<Long>,
+        private val additionalProperties: MutableMap<String, JsonValue>,
     ) {
+
+        @JsonCreator
+        private constructor(
+            @JsonProperty("reasoning_tokens")
+            @ExcludeMissing
+            reasoningTokens: JsonField<Long> = JsonMissing.of()
+        ) : this(reasoningTokens, mutableMapOf())
 
         /**
          * The number of reasoning tokens.
@@ -474,20 +502,15 @@ private constructor(
         @ExcludeMissing
         fun _reasoningTokens(): JsonField<Long> = reasoningTokens
 
+        @JsonAnySetter
+        private fun putAdditionalProperty(key: String, value: JsonValue) {
+            additionalProperties.put(key, value)
+        }
+
         @JsonAnyGetter
         @ExcludeMissing
-        fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-        private var validated: Boolean = false
-
-        fun validate(): OutputTokensDetails = apply {
-            if (validated) {
-                return@apply
-            }
-
-            reasoningTokens()
-            validated = true
-        }
+        fun _additionalProperties(): Map<String, JsonValue> =
+            Collections.unmodifiableMap(additionalProperties)
 
         fun toBuilder() = Builder().from(this)
 
@@ -565,8 +588,19 @@ private constructor(
             fun build(): OutputTokensDetails =
                 OutputTokensDetails(
                     checkRequired("reasoningTokens", reasoningTokens),
-                    additionalProperties.toImmutable(),
+                    additionalProperties.toMutableMap(),
                 )
+        }
+
+        private var validated: Boolean = false
+
+        fun validate(): OutputTokensDetails = apply {
+            if (validated) {
+                return@apply
+            }
+
+            reasoningTokens()
+            validated = true
         }
 
         override fun equals(other: Any?): Boolean {

@@ -10,12 +10,11 @@ import com.openai.core.ExcludeMissing
 import com.openai.core.JsonField
 import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
-import com.openai.core.NoAutoDetect
 import com.openai.core.checkKnown
 import com.openai.core.checkRequired
-import com.openai.core.immutableEmptyMap
 import com.openai.core.toImmutable
 import com.openai.errors.OpenAIInvalidDataException
+import java.util.Collections
 import java.util.Objects
 import java.util.Optional
 
@@ -23,27 +22,32 @@ import java.util.Optional
  * Represents a completion response from the API. Note: both the streamed and non-streamed response
  * objects share the same shape (unlike the chat endpoint).
  */
-@NoAutoDetect
 class Completion
-@JsonCreator
 private constructor(
-    @JsonProperty("id") @ExcludeMissing private val id: JsonField<String> = JsonMissing.of(),
-    @JsonProperty("choices")
-    @ExcludeMissing
-    private val choices: JsonField<List<CompletionChoice>> = JsonMissing.of(),
-    @JsonProperty("created")
-    @ExcludeMissing
-    private val created: JsonField<Long> = JsonMissing.of(),
-    @JsonProperty("model") @ExcludeMissing private val model: JsonField<String> = JsonMissing.of(),
-    @JsonProperty("object") @ExcludeMissing private val object_: JsonValue = JsonMissing.of(),
-    @JsonProperty("system_fingerprint")
-    @ExcludeMissing
-    private val systemFingerprint: JsonField<String> = JsonMissing.of(),
-    @JsonProperty("usage")
-    @ExcludeMissing
-    private val usage: JsonField<CompletionUsage> = JsonMissing.of(),
-    @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
+    private val id: JsonField<String>,
+    private val choices: JsonField<List<CompletionChoice>>,
+    private val created: JsonField<Long>,
+    private val model: JsonField<String>,
+    private val object_: JsonValue,
+    private val systemFingerprint: JsonField<String>,
+    private val usage: JsonField<CompletionUsage>,
+    private val additionalProperties: MutableMap<String, JsonValue>,
 ) {
+
+    @JsonCreator
+    private constructor(
+        @JsonProperty("id") @ExcludeMissing id: JsonField<String> = JsonMissing.of(),
+        @JsonProperty("choices")
+        @ExcludeMissing
+        choices: JsonField<List<CompletionChoice>> = JsonMissing.of(),
+        @JsonProperty("created") @ExcludeMissing created: JsonField<Long> = JsonMissing.of(),
+        @JsonProperty("model") @ExcludeMissing model: JsonField<String> = JsonMissing.of(),
+        @JsonProperty("object") @ExcludeMissing object_: JsonValue = JsonMissing.of(),
+        @JsonProperty("system_fingerprint")
+        @ExcludeMissing
+        systemFingerprint: JsonField<String> = JsonMissing.of(),
+        @JsonProperty("usage") @ExcludeMissing usage: JsonField<CompletionUsage> = JsonMissing.of(),
+    ) : this(id, choices, created, model, object_, systemFingerprint, usage, mutableMapOf())
 
     /**
      * A unique identifier for the completion.
@@ -157,30 +161,15 @@ private constructor(
      */
     @JsonProperty("usage") @ExcludeMissing fun _usage(): JsonField<CompletionUsage> = usage
 
+    @JsonAnySetter
+    private fun putAdditionalProperty(key: String, value: JsonValue) {
+        additionalProperties.put(key, value)
+    }
+
     @JsonAnyGetter
     @ExcludeMissing
-    fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-    private var validated: Boolean = false
-
-    fun validate(): Completion = apply {
-        if (validated) {
-            return@apply
-        }
-
-        id()
-        choices().forEach { it.validate() }
-        created()
-        model()
-        _object_().let {
-            if (it != JsonValue.from("text_completion")) {
-                throw OpenAIInvalidDataException("'object_' is invalid, received $it")
-            }
-        }
-        systemFingerprint()
-        usage().ifPresent { it.validate() }
-        validated = true
-    }
+    fun _additionalProperties(): Map<String, JsonValue> =
+        Collections.unmodifiableMap(additionalProperties)
 
     fun toBuilder() = Builder().from(this)
 
@@ -372,8 +361,29 @@ private constructor(
                 object_,
                 systemFingerprint,
                 usage,
-                additionalProperties.toImmutable(),
+                additionalProperties.toMutableMap(),
             )
+    }
+
+    private var validated: Boolean = false
+
+    fun validate(): Completion = apply {
+        if (validated) {
+            return@apply
+        }
+
+        id()
+        choices().forEach { it.validate() }
+        created()
+        model()
+        _object_().let {
+            if (it != JsonValue.from("text_completion")) {
+                throw OpenAIInvalidDataException("'object_' is invalid, received $it")
+            }
+        }
+        systemFingerprint()
+        usage().ifPresent { it.validate() }
+        validated = true
     }
 
     override fun equals(other: Any?): Boolean {

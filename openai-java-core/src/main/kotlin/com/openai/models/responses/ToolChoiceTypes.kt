@@ -11,24 +11,25 @@ import com.openai.core.ExcludeMissing
 import com.openai.core.JsonField
 import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
-import com.openai.core.NoAutoDetect
 import com.openai.core.checkRequired
-import com.openai.core.immutableEmptyMap
-import com.openai.core.toImmutable
 import com.openai.errors.OpenAIInvalidDataException
+import java.util.Collections
 import java.util.Objects
 
 /**
  * Indicates that the model should use a built-in tool to generate a response.
  * [Learn more about built-in tools](https://platform.openai.com/docs/guides/tools).
  */
-@NoAutoDetect
 class ToolChoiceTypes
-@JsonCreator
 private constructor(
-    @JsonProperty("type") @ExcludeMissing private val type: JsonField<Type> = JsonMissing.of(),
-    @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
+    private val type: JsonField<Type>,
+    private val additionalProperties: MutableMap<String, JsonValue>,
 ) {
+
+    @JsonCreator
+    private constructor(
+        @JsonProperty("type") @ExcludeMissing type: JsonField<Type> = JsonMissing.of()
+    ) : this(type, mutableMapOf())
 
     /**
      * The type of hosted tool the model should to use. Learn more about
@@ -51,20 +52,15 @@ private constructor(
      */
     @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<Type> = type
 
+    @JsonAnySetter
+    private fun putAdditionalProperty(key: String, value: JsonValue) {
+        additionalProperties.put(key, value)
+    }
+
     @JsonAnyGetter
     @ExcludeMissing
-    fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-    private var validated: Boolean = false
-
-    fun validate(): ToolChoiceTypes = apply {
-        if (validated) {
-            return@apply
-        }
-
-        type()
-        validated = true
-    }
+    fun _additionalProperties(): Map<String, JsonValue> =
+        Collections.unmodifiableMap(additionalProperties)
 
     fun toBuilder() = Builder().from(this)
 
@@ -144,7 +140,18 @@ private constructor(
          * @throws IllegalStateException if any required field is unset.
          */
         fun build(): ToolChoiceTypes =
-            ToolChoiceTypes(checkRequired("type", type), additionalProperties.toImmutable())
+            ToolChoiceTypes(checkRequired("type", type), additionalProperties.toMutableMap())
+    }
+
+    private var validated: Boolean = false
+
+    fun validate(): ToolChoiceTypes = apply {
+        if (validated) {
+            return@apply
+        }
+
+        type()
+        validated = true
     }
 
     /**

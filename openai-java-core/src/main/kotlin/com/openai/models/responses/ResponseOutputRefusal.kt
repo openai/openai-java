@@ -10,24 +10,24 @@ import com.openai.core.ExcludeMissing
 import com.openai.core.JsonField
 import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
-import com.openai.core.NoAutoDetect
 import com.openai.core.checkRequired
-import com.openai.core.immutableEmptyMap
-import com.openai.core.toImmutable
 import com.openai.errors.OpenAIInvalidDataException
+import java.util.Collections
 import java.util.Objects
 
 /** A refusal from the model. */
-@NoAutoDetect
 class ResponseOutputRefusal
-@JsonCreator
 private constructor(
-    @JsonProperty("refusal")
-    @ExcludeMissing
-    private val refusal: JsonField<String> = JsonMissing.of(),
-    @JsonProperty("type") @ExcludeMissing private val type: JsonValue = JsonMissing.of(),
-    @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
+    private val refusal: JsonField<String>,
+    private val type: JsonValue,
+    private val additionalProperties: MutableMap<String, JsonValue>,
 ) {
+
+    @JsonCreator
+    private constructor(
+        @JsonProperty("refusal") @ExcludeMissing refusal: JsonField<String> = JsonMissing.of(),
+        @JsonProperty("type") @ExcludeMissing type: JsonValue = JsonMissing.of(),
+    ) : this(refusal, type, mutableMapOf())
 
     /**
      * The refusal explanationfrom the model.
@@ -57,25 +57,15 @@ private constructor(
      */
     @JsonProperty("refusal") @ExcludeMissing fun _refusal(): JsonField<String> = refusal
 
+    @JsonAnySetter
+    private fun putAdditionalProperty(key: String, value: JsonValue) {
+        additionalProperties.put(key, value)
+    }
+
     @JsonAnyGetter
     @ExcludeMissing
-    fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-    private var validated: Boolean = false
-
-    fun validate(): ResponseOutputRefusal = apply {
-        if (validated) {
-            return@apply
-        }
-
-        refusal()
-        _type().let {
-            if (it != JsonValue.from("refusal")) {
-                throw OpenAIInvalidDataException("'type' is invalid, received $it")
-            }
-        }
-        validated = true
-    }
+    fun _additionalProperties(): Map<String, JsonValue> =
+        Collections.unmodifiableMap(additionalProperties)
 
     fun toBuilder() = Builder().from(this)
 
@@ -166,8 +156,24 @@ private constructor(
             ResponseOutputRefusal(
                 checkRequired("refusal", refusal),
                 type,
-                additionalProperties.toImmutable(),
+                additionalProperties.toMutableMap(),
             )
+    }
+
+    private var validated: Boolean = false
+
+    fun validate(): ResponseOutputRefusal = apply {
+        if (validated) {
+            return@apply
+        }
+
+        refusal()
+        _type().let {
+            if (it != JsonValue.from("refusal")) {
+                throw OpenAIInvalidDataException("'type' is invalid, received $it")
+            }
+        }
+        validated = true
     }
 
     override fun equals(other: Any?): Boolean {

@@ -10,22 +10,25 @@ import com.openai.core.ExcludeMissing
 import com.openai.core.JsonField
 import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
-import com.openai.core.NoAutoDetect
 import com.openai.core.checkRequired
-import com.openai.core.immutableEmptyMap
-import com.openai.core.toImmutable
 import com.openai.errors.OpenAIInvalidDataException
+import java.util.Collections
 import java.util.Objects
 
-@NoAutoDetect
 class TranscriptionWord
-@JsonCreator
 private constructor(
-    @JsonProperty("end") @ExcludeMissing private val end: JsonField<Double> = JsonMissing.of(),
-    @JsonProperty("start") @ExcludeMissing private val start: JsonField<Double> = JsonMissing.of(),
-    @JsonProperty("word") @ExcludeMissing private val word: JsonField<String> = JsonMissing.of(),
-    @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
+    private val end: JsonField<Double>,
+    private val start: JsonField<Double>,
+    private val word: JsonField<String>,
+    private val additionalProperties: MutableMap<String, JsonValue>,
 ) {
+
+    @JsonCreator
+    private constructor(
+        @JsonProperty("end") @ExcludeMissing end: JsonField<Double> = JsonMissing.of(),
+        @JsonProperty("start") @ExcludeMissing start: JsonField<Double> = JsonMissing.of(),
+        @JsonProperty("word") @ExcludeMissing word: JsonField<String> = JsonMissing.of(),
+    ) : this(end, start, word, mutableMapOf())
 
     /**
      * End time of the word in seconds.
@@ -72,22 +75,15 @@ private constructor(
      */
     @JsonProperty("word") @ExcludeMissing fun _word(): JsonField<String> = word
 
+    @JsonAnySetter
+    private fun putAdditionalProperty(key: String, value: JsonValue) {
+        additionalProperties.put(key, value)
+    }
+
     @JsonAnyGetter
     @ExcludeMissing
-    fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-    private var validated: Boolean = false
-
-    fun validate(): TranscriptionWord = apply {
-        if (validated) {
-            return@apply
-        }
-
-        end()
-        start()
-        word()
-        validated = true
-    }
+    fun _additionalProperties(): Map<String, JsonValue> =
+        Collections.unmodifiableMap(additionalProperties)
 
     fun toBuilder() = Builder().from(this)
 
@@ -193,8 +189,21 @@ private constructor(
                 checkRequired("end", end),
                 checkRequired("start", start),
                 checkRequired("word", word),
-                additionalProperties.toImmutable(),
+                additionalProperties.toMutableMap(),
             )
+    }
+
+    private var validated: Boolean = false
+
+    fun validate(): TranscriptionWord = apply {
+        if (validated) {
+            return@apply
+        }
+
+        end()
+        start()
+        word()
+        validated = true
     }
 
     override fun equals(other: Any?): Boolean {

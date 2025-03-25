@@ -10,27 +10,29 @@ import com.openai.core.ExcludeMissing
 import com.openai.core.JsonField
 import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
-import com.openai.core.NoAutoDetect
 import com.openai.core.checkRequired
-import com.openai.core.immutableEmptyMap
-import com.openai.core.toImmutable
 import com.openai.errors.OpenAIInvalidDataException
+import java.util.Collections
 import java.util.Objects
 
 /**
  * References an image [File](https://platform.openai.com/docs/api-reference/files) in the content
  * of a message.
  */
-@NoAutoDetect
 class ImageFileContentBlock
-@JsonCreator
 private constructor(
-    @JsonProperty("image_file")
-    @ExcludeMissing
-    private val imageFile: JsonField<ImageFile> = JsonMissing.of(),
-    @JsonProperty("type") @ExcludeMissing private val type: JsonValue = JsonMissing.of(),
-    @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
+    private val imageFile: JsonField<ImageFile>,
+    private val type: JsonValue,
+    private val additionalProperties: MutableMap<String, JsonValue>,
 ) {
+
+    @JsonCreator
+    private constructor(
+        @JsonProperty("image_file")
+        @ExcludeMissing
+        imageFile: JsonField<ImageFile> = JsonMissing.of(),
+        @JsonProperty("type") @ExcludeMissing type: JsonValue = JsonMissing.of(),
+    ) : this(imageFile, type, mutableMapOf())
 
     /**
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
@@ -58,25 +60,15 @@ private constructor(
      */
     @JsonProperty("image_file") @ExcludeMissing fun _imageFile(): JsonField<ImageFile> = imageFile
 
+    @JsonAnySetter
+    private fun putAdditionalProperty(key: String, value: JsonValue) {
+        additionalProperties.put(key, value)
+    }
+
     @JsonAnyGetter
     @ExcludeMissing
-    fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-    private var validated: Boolean = false
-
-    fun validate(): ImageFileContentBlock = apply {
-        if (validated) {
-            return@apply
-        }
-
-        imageFile().validate()
-        _type().let {
-            if (it != JsonValue.from("image_file")) {
-                throw OpenAIInvalidDataException("'type' is invalid, received $it")
-            }
-        }
-        validated = true
-    }
+    fun _additionalProperties(): Map<String, JsonValue> =
+        Collections.unmodifiableMap(additionalProperties)
 
     fun toBuilder() = Builder().from(this)
 
@@ -167,8 +159,24 @@ private constructor(
             ImageFileContentBlock(
                 checkRequired("imageFile", imageFile),
                 type,
-                additionalProperties.toImmutable(),
+                additionalProperties.toMutableMap(),
             )
+    }
+
+    private var validated: Boolean = false
+
+    fun validate(): ImageFileContentBlock = apply {
+        if (validated) {
+            return@apply
+        }
+
+        imageFile().validate()
+        _type().let {
+            if (it != JsonValue.from("image_file")) {
+                throw OpenAIInvalidDataException("'type' is invalid, received $it")
+            }
+        }
+        validated = true
     }
 
     override fun equals(other: Any?): Boolean {

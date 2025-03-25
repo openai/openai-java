@@ -10,15 +10,13 @@ import com.openai.core.ExcludeMissing
 import com.openai.core.JsonField
 import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
-import com.openai.core.NoAutoDetect
 import com.openai.core.Params
 import com.openai.core.checkRequired
 import com.openai.core.http.Headers
 import com.openai.core.http.QueryParams
-import com.openai.core.immutableEmptyMap
-import com.openai.core.toImmutable
 import com.openai.errors.OpenAIInvalidDataException
 import com.openai.models.files.FilePurpose
+import java.util.Collections
 import java.util.Objects
 
 /**
@@ -117,272 +115,6 @@ private constructor(
 
     fun _additionalQueryParams(): QueryParams = additionalQueryParams
 
-    @JvmSynthetic internal fun _body(): Body = body
-
-    override fun _headers(): Headers = additionalHeaders
-
-    override fun _queryParams(): QueryParams = additionalQueryParams
-
-    @NoAutoDetect
-    class Body
-    @JsonCreator
-    private constructor(
-        @JsonProperty("bytes")
-        @ExcludeMissing
-        private val bytes: JsonField<Long> = JsonMissing.of(),
-        @JsonProperty("filename")
-        @ExcludeMissing
-        private val filename: JsonField<String> = JsonMissing.of(),
-        @JsonProperty("mime_type")
-        @ExcludeMissing
-        private val mimeType: JsonField<String> = JsonMissing.of(),
-        @JsonProperty("purpose")
-        @ExcludeMissing
-        private val purpose: JsonField<FilePurpose> = JsonMissing.of(),
-        @JsonAnySetter
-        private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
-    ) {
-
-        /**
-         * The number of bytes in the file you are uploading.
-         *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
-         */
-        fun bytes(): Long = bytes.getRequired("bytes")
-
-        /**
-         * The name of the file to upload.
-         *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
-         */
-        fun filename(): String = filename.getRequired("filename")
-
-        /**
-         * The MIME type of the file.
-         *
-         * This must fall within the supported MIME types for your file purpose. See the supported
-         * MIME types for assistants and vision.
-         *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
-         */
-        fun mimeType(): String = mimeType.getRequired("mime_type")
-
-        /**
-         * The intended purpose of the uploaded file.
-         *
-         * See the
-         * [documentation on File purposes](https://platform.openai.com/docs/api-reference/files/create#files-create-purpose).
-         *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
-         */
-        fun purpose(): FilePurpose = purpose.getRequired("purpose")
-
-        /**
-         * Returns the raw JSON value of [bytes].
-         *
-         * Unlike [bytes], this method doesn't throw if the JSON field has an unexpected type.
-         */
-        @JsonProperty("bytes") @ExcludeMissing fun _bytes(): JsonField<Long> = bytes
-
-        /**
-         * Returns the raw JSON value of [filename].
-         *
-         * Unlike [filename], this method doesn't throw if the JSON field has an unexpected type.
-         */
-        @JsonProperty("filename") @ExcludeMissing fun _filename(): JsonField<String> = filename
-
-        /**
-         * Returns the raw JSON value of [mimeType].
-         *
-         * Unlike [mimeType], this method doesn't throw if the JSON field has an unexpected type.
-         */
-        @JsonProperty("mime_type") @ExcludeMissing fun _mimeType(): JsonField<String> = mimeType
-
-        /**
-         * Returns the raw JSON value of [purpose].
-         *
-         * Unlike [purpose], this method doesn't throw if the JSON field has an unexpected type.
-         */
-        @JsonProperty("purpose") @ExcludeMissing fun _purpose(): JsonField<FilePurpose> = purpose
-
-        @JsonAnyGetter
-        @ExcludeMissing
-        fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-        private var validated: Boolean = false
-
-        fun validate(): Body = apply {
-            if (validated) {
-                return@apply
-            }
-
-            bytes()
-            filename()
-            mimeType()
-            purpose()
-            validated = true
-        }
-
-        fun toBuilder() = Builder().from(this)
-
-        companion object {
-
-            /**
-             * Returns a mutable builder for constructing an instance of [Body].
-             *
-             * The following fields are required:
-             * ```java
-             * .bytes()
-             * .filename()
-             * .mimeType()
-             * .purpose()
-             * ```
-             */
-            @JvmStatic fun builder() = Builder()
-        }
-
-        /** A builder for [Body]. */
-        class Builder internal constructor() {
-
-            private var bytes: JsonField<Long>? = null
-            private var filename: JsonField<String>? = null
-            private var mimeType: JsonField<String>? = null
-            private var purpose: JsonField<FilePurpose>? = null
-            private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
-
-            @JvmSynthetic
-            internal fun from(body: Body) = apply {
-                bytes = body.bytes
-                filename = body.filename
-                mimeType = body.mimeType
-                purpose = body.purpose
-                additionalProperties = body.additionalProperties.toMutableMap()
-            }
-
-            /** The number of bytes in the file you are uploading. */
-            fun bytes(bytes: Long) = bytes(JsonField.of(bytes))
-
-            /**
-             * Sets [Builder.bytes] to an arbitrary JSON value.
-             *
-             * You should usually call [Builder.bytes] with a well-typed [Long] value instead. This
-             * method is primarily for setting the field to an undocumented or not yet supported
-             * value.
-             */
-            fun bytes(bytes: JsonField<Long>) = apply { this.bytes = bytes }
-
-            /** The name of the file to upload. */
-            fun filename(filename: String) = filename(JsonField.of(filename))
-
-            /**
-             * Sets [Builder.filename] to an arbitrary JSON value.
-             *
-             * You should usually call [Builder.filename] with a well-typed [String] value instead.
-             * This method is primarily for setting the field to an undocumented or not yet
-             * supported value.
-             */
-            fun filename(filename: JsonField<String>) = apply { this.filename = filename }
-
-            /**
-             * The MIME type of the file.
-             *
-             * This must fall within the supported MIME types for your file purpose. See the
-             * supported MIME types for assistants and vision.
-             */
-            fun mimeType(mimeType: String) = mimeType(JsonField.of(mimeType))
-
-            /**
-             * Sets [Builder.mimeType] to an arbitrary JSON value.
-             *
-             * You should usually call [Builder.mimeType] with a well-typed [String] value instead.
-             * This method is primarily for setting the field to an undocumented or not yet
-             * supported value.
-             */
-            fun mimeType(mimeType: JsonField<String>) = apply { this.mimeType = mimeType }
-
-            /**
-             * The intended purpose of the uploaded file.
-             *
-             * See the
-             * [documentation on File purposes](https://platform.openai.com/docs/api-reference/files/create#files-create-purpose).
-             */
-            fun purpose(purpose: FilePurpose) = purpose(JsonField.of(purpose))
-
-            /**
-             * Sets [Builder.purpose] to an arbitrary JSON value.
-             *
-             * You should usually call [Builder.purpose] with a well-typed [FilePurpose] value
-             * instead. This method is primarily for setting the field to an undocumented or not yet
-             * supported value.
-             */
-            fun purpose(purpose: JsonField<FilePurpose>) = apply { this.purpose = purpose }
-
-            fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
-                this.additionalProperties.clear()
-                putAllAdditionalProperties(additionalProperties)
-            }
-
-            fun putAdditionalProperty(key: String, value: JsonValue) = apply {
-                additionalProperties.put(key, value)
-            }
-
-            fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
-                this.additionalProperties.putAll(additionalProperties)
-            }
-
-            fun removeAdditionalProperty(key: String) = apply { additionalProperties.remove(key) }
-
-            fun removeAllAdditionalProperties(keys: Set<String>) = apply {
-                keys.forEach(::removeAdditionalProperty)
-            }
-
-            /**
-             * Returns an immutable instance of [Body].
-             *
-             * Further updates to this [Builder] will not mutate the returned instance.
-             *
-             * The following fields are required:
-             * ```java
-             * .bytes()
-             * .filename()
-             * .mimeType()
-             * .purpose()
-             * ```
-             *
-             * @throws IllegalStateException if any required field is unset.
-             */
-            fun build(): Body =
-                Body(
-                    checkRequired("bytes", bytes),
-                    checkRequired("filename", filename),
-                    checkRequired("mimeType", mimeType),
-                    checkRequired("purpose", purpose),
-                    additionalProperties.toImmutable(),
-                )
-        }
-
-        override fun equals(other: Any?): Boolean {
-            if (this === other) {
-                return true
-            }
-
-            return /* spotless:off */ other is Body && bytes == other.bytes && filename == other.filename && mimeType == other.mimeType && purpose == other.purpose && additionalProperties == other.additionalProperties /* spotless:on */
-        }
-
-        /* spotless:off */
-        private val hashCode: Int by lazy { Objects.hash(bytes, filename, mimeType, purpose, additionalProperties) }
-        /* spotless:on */
-
-        override fun hashCode(): Int = hashCode
-
-        override fun toString() =
-            "Body{bytes=$bytes, filename=$filename, mimeType=$mimeType, purpose=$purpose, additionalProperties=$additionalProperties}"
-    }
-
     fun toBuilder() = Builder().from(this)
 
     companion object {
@@ -402,7 +134,6 @@ private constructor(
     }
 
     /** A builder for [UploadCreateParams]. */
-    @NoAutoDetect
     class Builder internal constructor() {
 
         private var body: Body.Builder = Body.builder()
@@ -609,6 +340,281 @@ private constructor(
                 additionalHeaders.build(),
                 additionalQueryParams.build(),
             )
+    }
+
+    @JvmSynthetic internal fun _body(): Body = body
+
+    override fun _headers(): Headers = additionalHeaders
+
+    override fun _queryParams(): QueryParams = additionalQueryParams
+
+    class Body
+    private constructor(
+        private val bytes: JsonField<Long>,
+        private val filename: JsonField<String>,
+        private val mimeType: JsonField<String>,
+        private val purpose: JsonField<FilePurpose>,
+        private val additionalProperties: MutableMap<String, JsonValue>,
+    ) {
+
+        @JsonCreator
+        private constructor(
+            @JsonProperty("bytes") @ExcludeMissing bytes: JsonField<Long> = JsonMissing.of(),
+            @JsonProperty("filename")
+            @ExcludeMissing
+            filename: JsonField<String> = JsonMissing.of(),
+            @JsonProperty("mime_type")
+            @ExcludeMissing
+            mimeType: JsonField<String> = JsonMissing.of(),
+            @JsonProperty("purpose")
+            @ExcludeMissing
+            purpose: JsonField<FilePurpose> = JsonMissing.of(),
+        ) : this(bytes, filename, mimeType, purpose, mutableMapOf())
+
+        /**
+         * The number of bytes in the file you are uploading.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         */
+        fun bytes(): Long = bytes.getRequired("bytes")
+
+        /**
+         * The name of the file to upload.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         */
+        fun filename(): String = filename.getRequired("filename")
+
+        /**
+         * The MIME type of the file.
+         *
+         * This must fall within the supported MIME types for your file purpose. See the supported
+         * MIME types for assistants and vision.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         */
+        fun mimeType(): String = mimeType.getRequired("mime_type")
+
+        /**
+         * The intended purpose of the uploaded file.
+         *
+         * See the
+         * [documentation on File purposes](https://platform.openai.com/docs/api-reference/files/create#files-create-purpose).
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         */
+        fun purpose(): FilePurpose = purpose.getRequired("purpose")
+
+        /**
+         * Returns the raw JSON value of [bytes].
+         *
+         * Unlike [bytes], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("bytes") @ExcludeMissing fun _bytes(): JsonField<Long> = bytes
+
+        /**
+         * Returns the raw JSON value of [filename].
+         *
+         * Unlike [filename], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("filename") @ExcludeMissing fun _filename(): JsonField<String> = filename
+
+        /**
+         * Returns the raw JSON value of [mimeType].
+         *
+         * Unlike [mimeType], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("mime_type") @ExcludeMissing fun _mimeType(): JsonField<String> = mimeType
+
+        /**
+         * Returns the raw JSON value of [purpose].
+         *
+         * Unlike [purpose], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("purpose") @ExcludeMissing fun _purpose(): JsonField<FilePurpose> = purpose
+
+        @JsonAnySetter
+        private fun putAdditionalProperty(key: String, value: JsonValue) {
+            additionalProperties.put(key, value)
+        }
+
+        @JsonAnyGetter
+        @ExcludeMissing
+        fun _additionalProperties(): Map<String, JsonValue> =
+            Collections.unmodifiableMap(additionalProperties)
+
+        fun toBuilder() = Builder().from(this)
+
+        companion object {
+
+            /**
+             * Returns a mutable builder for constructing an instance of [Body].
+             *
+             * The following fields are required:
+             * ```java
+             * .bytes()
+             * .filename()
+             * .mimeType()
+             * .purpose()
+             * ```
+             */
+            @JvmStatic fun builder() = Builder()
+        }
+
+        /** A builder for [Body]. */
+        class Builder internal constructor() {
+
+            private var bytes: JsonField<Long>? = null
+            private var filename: JsonField<String>? = null
+            private var mimeType: JsonField<String>? = null
+            private var purpose: JsonField<FilePurpose>? = null
+            private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
+
+            @JvmSynthetic
+            internal fun from(body: Body) = apply {
+                bytes = body.bytes
+                filename = body.filename
+                mimeType = body.mimeType
+                purpose = body.purpose
+                additionalProperties = body.additionalProperties.toMutableMap()
+            }
+
+            /** The number of bytes in the file you are uploading. */
+            fun bytes(bytes: Long) = bytes(JsonField.of(bytes))
+
+            /**
+             * Sets [Builder.bytes] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.bytes] with a well-typed [Long] value instead. This
+             * method is primarily for setting the field to an undocumented or not yet supported
+             * value.
+             */
+            fun bytes(bytes: JsonField<Long>) = apply { this.bytes = bytes }
+
+            /** The name of the file to upload. */
+            fun filename(filename: String) = filename(JsonField.of(filename))
+
+            /**
+             * Sets [Builder.filename] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.filename] with a well-typed [String] value instead.
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun filename(filename: JsonField<String>) = apply { this.filename = filename }
+
+            /**
+             * The MIME type of the file.
+             *
+             * This must fall within the supported MIME types for your file purpose. See the
+             * supported MIME types for assistants and vision.
+             */
+            fun mimeType(mimeType: String) = mimeType(JsonField.of(mimeType))
+
+            /**
+             * Sets [Builder.mimeType] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.mimeType] with a well-typed [String] value instead.
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun mimeType(mimeType: JsonField<String>) = apply { this.mimeType = mimeType }
+
+            /**
+             * The intended purpose of the uploaded file.
+             *
+             * See the
+             * [documentation on File purposes](https://platform.openai.com/docs/api-reference/files/create#files-create-purpose).
+             */
+            fun purpose(purpose: FilePurpose) = purpose(JsonField.of(purpose))
+
+            /**
+             * Sets [Builder.purpose] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.purpose] with a well-typed [FilePurpose] value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun purpose(purpose: JsonField<FilePurpose>) = apply { this.purpose = purpose }
+
+            fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                this.additionalProperties.clear()
+                putAllAdditionalProperties(additionalProperties)
+            }
+
+            fun putAdditionalProperty(key: String, value: JsonValue) = apply {
+                additionalProperties.put(key, value)
+            }
+
+            fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                this.additionalProperties.putAll(additionalProperties)
+            }
+
+            fun removeAdditionalProperty(key: String) = apply { additionalProperties.remove(key) }
+
+            fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                keys.forEach(::removeAdditionalProperty)
+            }
+
+            /**
+             * Returns an immutable instance of [Body].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             *
+             * The following fields are required:
+             * ```java
+             * .bytes()
+             * .filename()
+             * .mimeType()
+             * .purpose()
+             * ```
+             *
+             * @throws IllegalStateException if any required field is unset.
+             */
+            fun build(): Body =
+                Body(
+                    checkRequired("bytes", bytes),
+                    checkRequired("filename", filename),
+                    checkRequired("mimeType", mimeType),
+                    checkRequired("purpose", purpose),
+                    additionalProperties.toMutableMap(),
+                )
+        }
+
+        private var validated: Boolean = false
+
+        fun validate(): Body = apply {
+            if (validated) {
+                return@apply
+            }
+
+            bytes()
+            filename()
+            mimeType()
+            purpose()
+            validated = true
+        }
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) {
+                return true
+            }
+
+            return /* spotless:off */ other is Body && bytes == other.bytes && filename == other.filename && mimeType == other.mimeType && purpose == other.purpose && additionalProperties == other.additionalProperties /* spotless:on */
+        }
+
+        /* spotless:off */
+        private val hashCode: Int by lazy { Objects.hash(bytes, filename, mimeType, purpose, additionalProperties) }
+        /* spotless:on */
+
+        override fun hashCode(): Int = hashCode
+
+        override fun toString() =
+            "Body{bytes=$bytes, filename=$filename, mimeType=$mimeType, purpose=$purpose, additionalProperties=$additionalProperties}"
     }
 
     override fun equals(other: Any?): Boolean {

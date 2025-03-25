@@ -11,24 +11,24 @@ import com.openai.core.ExcludeMissing
 import com.openai.core.JsonField
 import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
-import com.openai.core.NoAutoDetect
 import com.openai.core.checkRequired
-import com.openai.core.immutableEmptyMap
-import com.openai.core.toImmutable
 import com.openai.errors.OpenAIInvalidDataException
+import java.util.Collections
 import java.util.Objects
 import java.util.Optional
 
-@NoAutoDetect
 class ImageUrl
-@JsonCreator
 private constructor(
-    @JsonProperty("url") @ExcludeMissing private val url: JsonField<String> = JsonMissing.of(),
-    @JsonProperty("detail")
-    @ExcludeMissing
-    private val detail: JsonField<Detail> = JsonMissing.of(),
-    @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
+    private val url: JsonField<String>,
+    private val detail: JsonField<Detail>,
+    private val additionalProperties: MutableMap<String, JsonValue>,
 ) {
+
+    @JsonCreator
+    private constructor(
+        @JsonProperty("url") @ExcludeMissing url: JsonField<String> = JsonMissing.of(),
+        @JsonProperty("detail") @ExcludeMissing detail: JsonField<Detail> = JsonMissing.of(),
+    ) : this(url, detail, mutableMapOf())
 
     /**
      * The external URL of the image, must be a supported image types: jpeg, jpg, png, gif, webp.
@@ -61,21 +61,15 @@ private constructor(
      */
     @JsonProperty("detail") @ExcludeMissing fun _detail(): JsonField<Detail> = detail
 
+    @JsonAnySetter
+    private fun putAdditionalProperty(key: String, value: JsonValue) {
+        additionalProperties.put(key, value)
+    }
+
     @JsonAnyGetter
     @ExcludeMissing
-    fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-    private var validated: Boolean = false
-
-    fun validate(): ImageUrl = apply {
-        if (validated) {
-            return@apply
-        }
-
-        url()
-        detail()
-        validated = true
-    }
+    fun _additionalProperties(): Map<String, JsonValue> =
+        Collections.unmodifiableMap(additionalProperties)
 
     fun toBuilder() = Builder().from(this)
 
@@ -166,7 +160,19 @@ private constructor(
          * @throws IllegalStateException if any required field is unset.
          */
         fun build(): ImageUrl =
-            ImageUrl(checkRequired("url", url), detail, additionalProperties.toImmutable())
+            ImageUrl(checkRequired("url", url), detail, additionalProperties.toMutableMap())
+    }
+
+    private var validated: Boolean = false
+
+    fun validate(): ImageUrl = apply {
+        if (validated) {
+            return@apply
+        }
+
+        url()
+        detail()
+        validated = true
     }
 
     /**

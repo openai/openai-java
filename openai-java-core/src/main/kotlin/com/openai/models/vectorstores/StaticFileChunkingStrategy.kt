@@ -10,25 +10,27 @@ import com.openai.core.ExcludeMissing
 import com.openai.core.JsonField
 import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
-import com.openai.core.NoAutoDetect
 import com.openai.core.checkRequired
-import com.openai.core.immutableEmptyMap
-import com.openai.core.toImmutable
 import com.openai.errors.OpenAIInvalidDataException
+import java.util.Collections
 import java.util.Objects
 
-@NoAutoDetect
 class StaticFileChunkingStrategy
-@JsonCreator
 private constructor(
-    @JsonProperty("chunk_overlap_tokens")
-    @ExcludeMissing
-    private val chunkOverlapTokens: JsonField<Long> = JsonMissing.of(),
-    @JsonProperty("max_chunk_size_tokens")
-    @ExcludeMissing
-    private val maxChunkSizeTokens: JsonField<Long> = JsonMissing.of(),
-    @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
+    private val chunkOverlapTokens: JsonField<Long>,
+    private val maxChunkSizeTokens: JsonField<Long>,
+    private val additionalProperties: MutableMap<String, JsonValue>,
 ) {
+
+    @JsonCreator
+    private constructor(
+        @JsonProperty("chunk_overlap_tokens")
+        @ExcludeMissing
+        chunkOverlapTokens: JsonField<Long> = JsonMissing.of(),
+        @JsonProperty("max_chunk_size_tokens")
+        @ExcludeMissing
+        maxChunkSizeTokens: JsonField<Long> = JsonMissing.of(),
+    ) : this(chunkOverlapTokens, maxChunkSizeTokens, mutableMapOf())
 
     /**
      * The number of tokens that overlap between chunks. The default value is `400`.
@@ -69,21 +71,15 @@ private constructor(
     @ExcludeMissing
     fun _maxChunkSizeTokens(): JsonField<Long> = maxChunkSizeTokens
 
+    @JsonAnySetter
+    private fun putAdditionalProperty(key: String, value: JsonValue) {
+        additionalProperties.put(key, value)
+    }
+
     @JsonAnyGetter
     @ExcludeMissing
-    fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-    private var validated: Boolean = false
-
-    fun validate(): StaticFileChunkingStrategy = apply {
-        if (validated) {
-            return@apply
-        }
-
-        chunkOverlapTokens()
-        maxChunkSizeTokens()
-        validated = true
-    }
+    fun _additionalProperties(): Map<String, JsonValue> =
+        Collections.unmodifiableMap(additionalProperties)
 
     fun toBuilder() = Builder().from(this)
 
@@ -188,8 +184,20 @@ private constructor(
             StaticFileChunkingStrategy(
                 checkRequired("chunkOverlapTokens", chunkOverlapTokens),
                 checkRequired("maxChunkSizeTokens", maxChunkSizeTokens),
-                additionalProperties.toImmutable(),
+                additionalProperties.toMutableMap(),
             )
+    }
+
+    private var validated: Boolean = false
+
+    fun validate(): StaticFileChunkingStrategy = apply {
+        if (validated) {
+            return@apply
+        }
+
+        chunkOverlapTokens()
+        maxChunkSizeTokens()
+        validated = true
     }
 
     override fun equals(other: Any?): Boolean {

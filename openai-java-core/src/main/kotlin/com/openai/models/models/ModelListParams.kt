@@ -2,7 +2,6 @@
 
 package com.openai.models.models
 
-import com.openai.core.NoAutoDetect
 import com.openai.core.Params
 import com.openai.core.http.Headers
 import com.openai.core.http.QueryParams
@@ -22,10 +21,6 @@ private constructor(
 
     fun _additionalQueryParams(): QueryParams = additionalQueryParams
 
-    override fun _headers(): Headers = additionalHeaders
-
-    override fun _queryParams(): QueryParams = additionalQueryParams
-
     fun toBuilder() = Builder().from(this)
 
     companion object {
@@ -37,7 +32,6 @@ private constructor(
     }
 
     /** A builder for [ModelListParams]. */
-    @NoAutoDetect
     class Builder internal constructor() {
 
         private var additionalHeaders: Headers.Builder = Headers.builder()
@@ -155,6 +149,10 @@ private constructor(
         fun build(): ModelListParams =
             ModelListParams(additionalHeaders.build(), additionalQueryParams.build())
     }
+
+    override fun _headers(): Headers = additionalHeaders
+
+    override fun _queryParams(): QueryParams = additionalQueryParams
 
     override fun equals(other: Any?): Boolean {
         if (this === other) {

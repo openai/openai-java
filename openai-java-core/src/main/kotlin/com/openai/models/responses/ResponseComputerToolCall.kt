@@ -20,13 +20,12 @@ import com.openai.core.ExcludeMissing
 import com.openai.core.JsonField
 import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
-import com.openai.core.NoAutoDetect
 import com.openai.core.checkKnown
 import com.openai.core.checkRequired
 import com.openai.core.getOrThrow
-import com.openai.core.immutableEmptyMap
 import com.openai.core.toImmutable
 import com.openai.errors.OpenAIInvalidDataException
+import java.util.Collections
 import java.util.Objects
 import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
@@ -36,26 +35,28 @@ import kotlin.jvm.optionals.getOrNull
  * [computer use guide](https://platform.openai.com/docs/guides/tools-computer-use) for more
  * information.
  */
-@NoAutoDetect
 class ResponseComputerToolCall
-@JsonCreator
 private constructor(
-    @JsonProperty("id") @ExcludeMissing private val id: JsonField<String> = JsonMissing.of(),
-    @JsonProperty("action")
-    @ExcludeMissing
-    private val action: JsonField<Action> = JsonMissing.of(),
-    @JsonProperty("call_id")
-    @ExcludeMissing
-    private val callId: JsonField<String> = JsonMissing.of(),
-    @JsonProperty("pending_safety_checks")
-    @ExcludeMissing
-    private val pendingSafetyChecks: JsonField<List<PendingSafetyCheck>> = JsonMissing.of(),
-    @JsonProperty("status")
-    @ExcludeMissing
-    private val status: JsonField<Status> = JsonMissing.of(),
-    @JsonProperty("type") @ExcludeMissing private val type: JsonField<Type> = JsonMissing.of(),
-    @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
+    private val id: JsonField<String>,
+    private val action: JsonField<Action>,
+    private val callId: JsonField<String>,
+    private val pendingSafetyChecks: JsonField<List<PendingSafetyCheck>>,
+    private val status: JsonField<Status>,
+    private val type: JsonField<Type>,
+    private val additionalProperties: MutableMap<String, JsonValue>,
 ) {
+
+    @JsonCreator
+    private constructor(
+        @JsonProperty("id") @ExcludeMissing id: JsonField<String> = JsonMissing.of(),
+        @JsonProperty("action") @ExcludeMissing action: JsonField<Action> = JsonMissing.of(),
+        @JsonProperty("call_id") @ExcludeMissing callId: JsonField<String> = JsonMissing.of(),
+        @JsonProperty("pending_safety_checks")
+        @ExcludeMissing
+        pendingSafetyChecks: JsonField<List<PendingSafetyCheck>> = JsonMissing.of(),
+        @JsonProperty("status") @ExcludeMissing status: JsonField<Status> = JsonMissing.of(),
+        @JsonProperty("type") @ExcludeMissing type: JsonField<Type> = JsonMissing.of(),
+    ) : this(id, action, callId, pendingSafetyChecks, status, type, mutableMapOf())
 
     /**
      * The unique ID of the computer call.
@@ -152,25 +153,15 @@ private constructor(
      */
     @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<Type> = type
 
+    @JsonAnySetter
+    private fun putAdditionalProperty(key: String, value: JsonValue) {
+        additionalProperties.put(key, value)
+    }
+
     @JsonAnyGetter
     @ExcludeMissing
-    fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-    private var validated: Boolean = false
-
-    fun validate(): ResponseComputerToolCall = apply {
-        if (validated) {
-            return@apply
-        }
-
-        id()
-        action().validate()
-        callId()
-        pendingSafetyChecks().forEach { it.validate() }
-        status()
-        type()
-        validated = true
-    }
+    fun _additionalProperties(): Map<String, JsonValue> =
+        Collections.unmodifiableMap(additionalProperties)
 
     fun toBuilder() = Builder().from(this)
 
@@ -403,8 +394,24 @@ private constructor(
                 checkRequired("pendingSafetyChecks", pendingSafetyChecks).map { it.toImmutable() },
                 checkRequired("status", status),
                 checkRequired("type", type),
-                additionalProperties.toImmutable(),
+                additionalProperties.toMutableMap(),
             )
+    }
+
+    private var validated: Boolean = false
+
+    fun validate(): ResponseComputerToolCall = apply {
+        if (validated) {
+            return@apply
+        }
+
+        id()
+        action().validate()
+        callId()
+        pendingSafetyChecks().forEach { it.validate() }
+        status()
+        type()
+        validated = true
     }
 
     /** A click action. */
@@ -781,19 +788,24 @@ private constructor(
         }
 
         /** A click action. */
-        @NoAutoDetect
         class Click
-        @JsonCreator
         private constructor(
-            @JsonProperty("button")
-            @ExcludeMissing
-            private val button: JsonField<Button> = JsonMissing.of(),
-            @JsonProperty("type") @ExcludeMissing private val type: JsonValue = JsonMissing.of(),
-            @JsonProperty("x") @ExcludeMissing private val x: JsonField<Long> = JsonMissing.of(),
-            @JsonProperty("y") @ExcludeMissing private val y: JsonField<Long> = JsonMissing.of(),
-            @JsonAnySetter
-            private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
+            private val button: JsonField<Button>,
+            private val type: JsonValue,
+            private val x: JsonField<Long>,
+            private val y: JsonField<Long>,
+            private val additionalProperties: MutableMap<String, JsonValue>,
         ) {
+
+            @JsonCreator
+            private constructor(
+                @JsonProperty("button")
+                @ExcludeMissing
+                button: JsonField<Button> = JsonMissing.of(),
+                @JsonProperty("type") @ExcludeMissing type: JsonValue = JsonMissing.of(),
+                @JsonProperty("x") @ExcludeMissing x: JsonField<Long> = JsonMissing.of(),
+                @JsonProperty("y") @ExcludeMissing y: JsonField<Long> = JsonMissing.of(),
+            ) : this(button, type, x, y, mutableMapOf())
 
             /**
              * Indicates which mouse button was pressed during the click. One of `left`, `right`,
@@ -857,27 +869,15 @@ private constructor(
              */
             @JsonProperty("y") @ExcludeMissing fun _y(): JsonField<Long> = y
 
+            @JsonAnySetter
+            private fun putAdditionalProperty(key: String, value: JsonValue) {
+                additionalProperties.put(key, value)
+            }
+
             @JsonAnyGetter
             @ExcludeMissing
-            fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-            private var validated: Boolean = false
-
-            fun validate(): Click = apply {
-                if (validated) {
-                    return@apply
-                }
-
-                button()
-                _type().let {
-                    if (it != JsonValue.from("click")) {
-                        throw OpenAIInvalidDataException("'type' is invalid, received $it")
-                    }
-                }
-                x()
-                y()
-                validated = true
-            }
+            fun _additionalProperties(): Map<String, JsonValue> =
+                Collections.unmodifiableMap(additionalProperties)
 
             fun toBuilder() = Builder().from(this)
 
@@ -1009,8 +1009,26 @@ private constructor(
                         type,
                         checkRequired("x", x),
                         checkRequired("y", y),
-                        additionalProperties.toImmutable(),
+                        additionalProperties.toMutableMap(),
                     )
+            }
+
+            private var validated: Boolean = false
+
+            fun validate(): Click = apply {
+                if (validated) {
+                    return@apply
+                }
+
+                button()
+                _type().let {
+                    if (it != JsonValue.from("click")) {
+                        throw OpenAIInvalidDataException("'type' is invalid, received $it")
+                    }
+                }
+                x()
+                y()
+                validated = true
             }
 
             /**
@@ -1158,16 +1176,20 @@ private constructor(
         }
 
         /** A double click action. */
-        @NoAutoDetect
         class DoubleClick
-        @JsonCreator
         private constructor(
-            @JsonProperty("type") @ExcludeMissing private val type: JsonValue = JsonMissing.of(),
-            @JsonProperty("x") @ExcludeMissing private val x: JsonField<Long> = JsonMissing.of(),
-            @JsonProperty("y") @ExcludeMissing private val y: JsonField<Long> = JsonMissing.of(),
-            @JsonAnySetter
-            private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
+            private val type: JsonValue,
+            private val x: JsonField<Long>,
+            private val y: JsonField<Long>,
+            private val additionalProperties: MutableMap<String, JsonValue>,
         ) {
+
+            @JsonCreator
+            private constructor(
+                @JsonProperty("type") @ExcludeMissing type: JsonValue = JsonMissing.of(),
+                @JsonProperty("x") @ExcludeMissing x: JsonField<Long> = JsonMissing.of(),
+                @JsonProperty("y") @ExcludeMissing y: JsonField<Long> = JsonMissing.of(),
+            ) : this(type, x, y, mutableMapOf())
 
             /**
              * Specifies the event type. For a double click action, this property is always set to
@@ -1215,26 +1237,15 @@ private constructor(
              */
             @JsonProperty("y") @ExcludeMissing fun _y(): JsonField<Long> = y
 
+            @JsonAnySetter
+            private fun putAdditionalProperty(key: String, value: JsonValue) {
+                additionalProperties.put(key, value)
+            }
+
             @JsonAnyGetter
             @ExcludeMissing
-            fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-            private var validated: Boolean = false
-
-            fun validate(): DoubleClick = apply {
-                if (validated) {
-                    return@apply
-                }
-
-                _type().let {
-                    if (it != JsonValue.from("double_click")) {
-                        throw OpenAIInvalidDataException("'type' is invalid, received $it")
-                    }
-                }
-                x()
-                y()
-                validated = true
-            }
+            fun _additionalProperties(): Map<String, JsonValue> =
+                Collections.unmodifiableMap(additionalProperties)
 
             fun toBuilder() = Builder().from(this)
 
@@ -1346,8 +1357,25 @@ private constructor(
                         type,
                         checkRequired("x", x),
                         checkRequired("y", y),
-                        additionalProperties.toImmutable(),
+                        additionalProperties.toMutableMap(),
                     )
+            }
+
+            private var validated: Boolean = false
+
+            fun validate(): DoubleClick = apply {
+                if (validated) {
+                    return@apply
+                }
+
+                _type().let {
+                    if (it != JsonValue.from("double_click")) {
+                        throw OpenAIInvalidDataException("'type' is invalid, received $it")
+                    }
+                }
+                x()
+                y()
+                validated = true
             }
 
             override fun equals(other: Any?): Boolean {
@@ -1369,17 +1397,20 @@ private constructor(
         }
 
         /** A drag action. */
-        @NoAutoDetect
         class Drag
-        @JsonCreator
         private constructor(
-            @JsonProperty("path")
-            @ExcludeMissing
-            private val path: JsonField<List<Path>> = JsonMissing.of(),
-            @JsonProperty("type") @ExcludeMissing private val type: JsonValue = JsonMissing.of(),
-            @JsonAnySetter
-            private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
+            private val path: JsonField<List<Path>>,
+            private val type: JsonValue,
+            private val additionalProperties: MutableMap<String, JsonValue>,
         ) {
+
+            @JsonCreator
+            private constructor(
+                @JsonProperty("path")
+                @ExcludeMissing
+                path: JsonField<List<Path>> = JsonMissing.of(),
+                @JsonProperty("type") @ExcludeMissing type: JsonValue = JsonMissing.of(),
+            ) : this(path, type, mutableMapOf())
 
             /**
              * An array of coordinates representing the path of the drag action. Coordinates will
@@ -1418,25 +1449,15 @@ private constructor(
              */
             @JsonProperty("path") @ExcludeMissing fun _path(): JsonField<List<Path>> = path
 
+            @JsonAnySetter
+            private fun putAdditionalProperty(key: String, value: JsonValue) {
+                additionalProperties.put(key, value)
+            }
+
             @JsonAnyGetter
             @ExcludeMissing
-            fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-            private var validated: Boolean = false
-
-            fun validate(): Drag = apply {
-                if (validated) {
-                    return@apply
-                }
-
-                path().forEach { it.validate() }
-                _type().let {
-                    if (it != JsonValue.from("drag")) {
-                        throw OpenAIInvalidDataException("'type' is invalid, received $it")
-                    }
-                }
-                validated = true
-            }
+            fun _additionalProperties(): Map<String, JsonValue> =
+                Collections.unmodifiableMap(additionalProperties)
 
             fun toBuilder() = Builder().from(this)
 
@@ -1555,24 +1576,39 @@ private constructor(
                     Drag(
                         checkRequired("path", path).map { it.toImmutable() },
                         type,
-                        additionalProperties.toImmutable(),
+                        additionalProperties.toMutableMap(),
                     )
             }
 
+            private var validated: Boolean = false
+
+            fun validate(): Drag = apply {
+                if (validated) {
+                    return@apply
+                }
+
+                path().forEach { it.validate() }
+                _type().let {
+                    if (it != JsonValue.from("drag")) {
+                        throw OpenAIInvalidDataException("'type' is invalid, received $it")
+                    }
+                }
+                validated = true
+            }
+
             /** A series of x/y coordinate pairs in the drag path. */
-            @NoAutoDetect
             class Path
-            @JsonCreator
             private constructor(
-                @JsonProperty("x")
-                @ExcludeMissing
-                private val x: JsonField<Long> = JsonMissing.of(),
-                @JsonProperty("y")
-                @ExcludeMissing
-                private val y: JsonField<Long> = JsonMissing.of(),
-                @JsonAnySetter
-                private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
+                private val x: JsonField<Long>,
+                private val y: JsonField<Long>,
+                private val additionalProperties: MutableMap<String, JsonValue>,
             ) {
+
+                @JsonCreator
+                private constructor(
+                    @JsonProperty("x") @ExcludeMissing x: JsonField<Long> = JsonMissing.of(),
+                    @JsonProperty("y") @ExcludeMissing y: JsonField<Long> = JsonMissing.of(),
+                ) : this(x, y, mutableMapOf())
 
                 /**
                  * The x-coordinate.
@@ -1606,21 +1642,15 @@ private constructor(
                  */
                 @JsonProperty("y") @ExcludeMissing fun _y(): JsonField<Long> = y
 
+                @JsonAnySetter
+                private fun putAdditionalProperty(key: String, value: JsonValue) {
+                    additionalProperties.put(key, value)
+                }
+
                 @JsonAnyGetter
                 @ExcludeMissing
-                fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-                private var validated: Boolean = false
-
-                fun validate(): Path = apply {
-                    if (validated) {
-                        return@apply
-                    }
-
-                    x()
-                    y()
-                    validated = true
-                }
+                fun _additionalProperties(): Map<String, JsonValue> =
+                    Collections.unmodifiableMap(additionalProperties)
 
                 fun toBuilder() = Builder().from(this)
 
@@ -1715,8 +1745,20 @@ private constructor(
                         Path(
                             checkRequired("x", x),
                             checkRequired("y", y),
-                            additionalProperties.toImmutable(),
+                            additionalProperties.toMutableMap(),
                         )
+                }
+
+                private var validated: Boolean = false
+
+                fun validate(): Path = apply {
+                    if (validated) {
+                        return@apply
+                    }
+
+                    x()
+                    y()
+                    validated = true
                 }
 
                 override fun equals(other: Any?): Boolean {
@@ -1756,17 +1798,20 @@ private constructor(
         }
 
         /** A collection of keypresses the model would like to perform. */
-        @NoAutoDetect
         class Keypress
-        @JsonCreator
         private constructor(
-            @JsonProperty("keys")
-            @ExcludeMissing
-            private val keys: JsonField<List<String>> = JsonMissing.of(),
-            @JsonProperty("type") @ExcludeMissing private val type: JsonValue = JsonMissing.of(),
-            @JsonAnySetter
-            private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
+            private val keys: JsonField<List<String>>,
+            private val type: JsonValue,
+            private val additionalProperties: MutableMap<String, JsonValue>,
         ) {
+
+            @JsonCreator
+            private constructor(
+                @JsonProperty("keys")
+                @ExcludeMissing
+                keys: JsonField<List<String>> = JsonMissing.of(),
+                @JsonProperty("type") @ExcludeMissing type: JsonValue = JsonMissing.of(),
+            ) : this(keys, type, mutableMapOf())
 
             /**
              * The combination of keys the model is requesting to be pressed. This is an array of
@@ -1799,25 +1844,15 @@ private constructor(
              */
             @JsonProperty("keys") @ExcludeMissing fun _keys(): JsonField<List<String>> = keys
 
+            @JsonAnySetter
+            private fun putAdditionalProperty(key: String, value: JsonValue) {
+                additionalProperties.put(key, value)
+            }
+
             @JsonAnyGetter
             @ExcludeMissing
-            fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-            private var validated: Boolean = false
-
-            fun validate(): Keypress = apply {
-                if (validated) {
-                    return@apply
-                }
-
-                keys()
-                _type().let {
-                    if (it != JsonValue.from("keypress")) {
-                        throw OpenAIInvalidDataException("'type' is invalid, received $it")
-                    }
-                }
-                validated = true
-            }
+            fun _additionalProperties(): Map<String, JsonValue> =
+                Collections.unmodifiableMap(additionalProperties)
 
             fun toBuilder() = Builder().from(this)
 
@@ -1929,8 +1964,24 @@ private constructor(
                     Keypress(
                         checkRequired("keys", keys).map { it.toImmutable() },
                         type,
-                        additionalProperties.toImmutable(),
+                        additionalProperties.toMutableMap(),
                     )
+            }
+
+            private var validated: Boolean = false
+
+            fun validate(): Keypress = apply {
+                if (validated) {
+                    return@apply
+                }
+
+                keys()
+                _type().let {
+                    if (it != JsonValue.from("keypress")) {
+                        throw OpenAIInvalidDataException("'type' is invalid, received $it")
+                    }
+                }
+                validated = true
             }
 
             override fun equals(other: Any?): Boolean {
@@ -1952,16 +2003,20 @@ private constructor(
         }
 
         /** A mouse move action. */
-        @NoAutoDetect
         class Move
-        @JsonCreator
         private constructor(
-            @JsonProperty("type") @ExcludeMissing private val type: JsonValue = JsonMissing.of(),
-            @JsonProperty("x") @ExcludeMissing private val x: JsonField<Long> = JsonMissing.of(),
-            @JsonProperty("y") @ExcludeMissing private val y: JsonField<Long> = JsonMissing.of(),
-            @JsonAnySetter
-            private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
+            private val type: JsonValue,
+            private val x: JsonField<Long>,
+            private val y: JsonField<Long>,
+            private val additionalProperties: MutableMap<String, JsonValue>,
         ) {
+
+            @JsonCreator
+            private constructor(
+                @JsonProperty("type") @ExcludeMissing type: JsonValue = JsonMissing.of(),
+                @JsonProperty("x") @ExcludeMissing x: JsonField<Long> = JsonMissing.of(),
+                @JsonProperty("y") @ExcludeMissing y: JsonField<Long> = JsonMissing.of(),
+            ) : this(type, x, y, mutableMapOf())
 
             /**
              * Specifies the event type. For a move action, this property is always set to `move`.
@@ -2008,26 +2063,15 @@ private constructor(
              */
             @JsonProperty("y") @ExcludeMissing fun _y(): JsonField<Long> = y
 
+            @JsonAnySetter
+            private fun putAdditionalProperty(key: String, value: JsonValue) {
+                additionalProperties.put(key, value)
+            }
+
             @JsonAnyGetter
             @ExcludeMissing
-            fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-            private var validated: Boolean = false
-
-            fun validate(): Move = apply {
-                if (validated) {
-                    return@apply
-                }
-
-                _type().let {
-                    if (it != JsonValue.from("move")) {
-                        throw OpenAIInvalidDataException("'type' is invalid, received $it")
-                    }
-                }
-                x()
-                y()
-                validated = true
-            }
+            fun _additionalProperties(): Map<String, JsonValue> =
+                Collections.unmodifiableMap(additionalProperties)
 
             fun toBuilder() = Builder().from(this)
 
@@ -2139,8 +2183,25 @@ private constructor(
                         type,
                         checkRequired("x", x),
                         checkRequired("y", y),
-                        additionalProperties.toImmutable(),
+                        additionalProperties.toMutableMap(),
                     )
+            }
+
+            private var validated: Boolean = false
+
+            fun validate(): Move = apply {
+                if (validated) {
+                    return@apply
+                }
+
+                _type().let {
+                    if (it != JsonValue.from("move")) {
+                        throw OpenAIInvalidDataException("'type' is invalid, received $it")
+                    }
+                }
+                x()
+                y()
+                validated = true
             }
 
             override fun equals(other: Any?): Boolean {
@@ -2162,22 +2223,28 @@ private constructor(
         }
 
         /** A scroll action. */
-        @NoAutoDetect
         class Scroll
-        @JsonCreator
         private constructor(
-            @JsonProperty("scroll_x")
-            @ExcludeMissing
-            private val scrollX: JsonField<Long> = JsonMissing.of(),
-            @JsonProperty("scroll_y")
-            @ExcludeMissing
-            private val scrollY: JsonField<Long> = JsonMissing.of(),
-            @JsonProperty("type") @ExcludeMissing private val type: JsonValue = JsonMissing.of(),
-            @JsonProperty("x") @ExcludeMissing private val x: JsonField<Long> = JsonMissing.of(),
-            @JsonProperty("y") @ExcludeMissing private val y: JsonField<Long> = JsonMissing.of(),
-            @JsonAnySetter
-            private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
+            private val scrollX: JsonField<Long>,
+            private val scrollY: JsonField<Long>,
+            private val type: JsonValue,
+            private val x: JsonField<Long>,
+            private val y: JsonField<Long>,
+            private val additionalProperties: MutableMap<String, JsonValue>,
         ) {
+
+            @JsonCreator
+            private constructor(
+                @JsonProperty("scroll_x")
+                @ExcludeMissing
+                scrollX: JsonField<Long> = JsonMissing.of(),
+                @JsonProperty("scroll_y")
+                @ExcludeMissing
+                scrollY: JsonField<Long> = JsonMissing.of(),
+                @JsonProperty("type") @ExcludeMissing type: JsonValue = JsonMissing.of(),
+                @JsonProperty("x") @ExcludeMissing x: JsonField<Long> = JsonMissing.of(),
+                @JsonProperty("y") @ExcludeMissing y: JsonField<Long> = JsonMissing.of(),
+            ) : this(scrollX, scrollY, type, x, y, mutableMapOf())
 
             /**
              * The horizontal scroll distance.
@@ -2257,28 +2324,15 @@ private constructor(
              */
             @JsonProperty("y") @ExcludeMissing fun _y(): JsonField<Long> = y
 
+            @JsonAnySetter
+            private fun putAdditionalProperty(key: String, value: JsonValue) {
+                additionalProperties.put(key, value)
+            }
+
             @JsonAnyGetter
             @ExcludeMissing
-            fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-            private var validated: Boolean = false
-
-            fun validate(): Scroll = apply {
-                if (validated) {
-                    return@apply
-                }
-
-                scrollX()
-                scrollY()
-                _type().let {
-                    if (it != JsonValue.from("scroll")) {
-                        throw OpenAIInvalidDataException("'type' is invalid, received $it")
-                    }
-                }
-                x()
-                y()
-                validated = true
-            }
+            fun _additionalProperties(): Map<String, JsonValue> =
+                Collections.unmodifiableMap(additionalProperties)
 
             fun toBuilder() = Builder().from(this)
 
@@ -2424,8 +2478,27 @@ private constructor(
                         type,
                         checkRequired("x", x),
                         checkRequired("y", y),
-                        additionalProperties.toImmutable(),
+                        additionalProperties.toMutableMap(),
                     )
+            }
+
+            private var validated: Boolean = false
+
+            fun validate(): Scroll = apply {
+                if (validated) {
+                    return@apply
+                }
+
+                scrollX()
+                scrollY()
+                _type().let {
+                    if (it != JsonValue.from("scroll")) {
+                        throw OpenAIInvalidDataException("'type' is invalid, received $it")
+                    }
+                }
+                x()
+                y()
+                validated = true
             }
 
             override fun equals(other: Any?): Boolean {
@@ -2447,17 +2520,18 @@ private constructor(
         }
 
         /** An action to type in text. */
-        @NoAutoDetect
         class Type
-        @JsonCreator
         private constructor(
-            @JsonProperty("text")
-            @ExcludeMissing
-            private val text: JsonField<String> = JsonMissing.of(),
-            @JsonProperty("type") @ExcludeMissing private val type: JsonValue = JsonMissing.of(),
-            @JsonAnySetter
-            private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
+            private val text: JsonField<String>,
+            private val type: JsonValue,
+            private val additionalProperties: MutableMap<String, JsonValue>,
         ) {
+
+            @JsonCreator
+            private constructor(
+                @JsonProperty("text") @ExcludeMissing text: JsonField<String> = JsonMissing.of(),
+                @JsonProperty("type") @ExcludeMissing type: JsonValue = JsonMissing.of(),
+            ) : this(text, type, mutableMapOf())
 
             /**
              * The text to type.
@@ -2488,25 +2562,15 @@ private constructor(
              */
             @JsonProperty("text") @ExcludeMissing fun _text(): JsonField<String> = text
 
+            @JsonAnySetter
+            private fun putAdditionalProperty(key: String, value: JsonValue) {
+                additionalProperties.put(key, value)
+            }
+
             @JsonAnyGetter
             @ExcludeMissing
-            fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-            private var validated: Boolean = false
-
-            fun validate(): Type = apply {
-                if (validated) {
-                    return@apply
-                }
-
-                text()
-                _type().let {
-                    if (it != JsonValue.from("type")) {
-                        throw OpenAIInvalidDataException("'type' is invalid, received $it")
-                    }
-                }
-                validated = true
-            }
+            fun _additionalProperties(): Map<String, JsonValue> =
+                Collections.unmodifiableMap(additionalProperties)
 
             fun toBuilder() = Builder().from(this)
 
@@ -2598,7 +2662,23 @@ private constructor(
                  * @throws IllegalStateException if any required field is unset.
                  */
                 fun build(): Type =
-                    Type(checkRequired("text", text), type, additionalProperties.toImmutable())
+                    Type(checkRequired("text", text), type, additionalProperties.toMutableMap())
+            }
+
+            private var validated: Boolean = false
+
+            fun validate(): Type = apply {
+                if (validated) {
+                    return@apply
+                }
+
+                text()
+                _type().let {
+                    if (it != JsonValue.from("type")) {
+                        throw OpenAIInvalidDataException("'type' is invalid, received $it")
+                    }
+                }
+                validated = true
             }
 
             override fun equals(other: Any?): Boolean {
@@ -2621,20 +2701,20 @@ private constructor(
     }
 
     /** A pending safety check for the computer call. */
-    @NoAutoDetect
     class PendingSafetyCheck
-    @JsonCreator
     private constructor(
-        @JsonProperty("id") @ExcludeMissing private val id: JsonField<String> = JsonMissing.of(),
-        @JsonProperty("code")
-        @ExcludeMissing
-        private val code: JsonField<String> = JsonMissing.of(),
-        @JsonProperty("message")
-        @ExcludeMissing
-        private val message: JsonField<String> = JsonMissing.of(),
-        @JsonAnySetter
-        private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
+        private val id: JsonField<String>,
+        private val code: JsonField<String>,
+        private val message: JsonField<String>,
+        private val additionalProperties: MutableMap<String, JsonValue>,
     ) {
+
+        @JsonCreator
+        private constructor(
+            @JsonProperty("id") @ExcludeMissing id: JsonField<String> = JsonMissing.of(),
+            @JsonProperty("code") @ExcludeMissing code: JsonField<String> = JsonMissing.of(),
+            @JsonProperty("message") @ExcludeMissing message: JsonField<String> = JsonMissing.of(),
+        ) : this(id, code, message, mutableMapOf())
 
         /**
          * The ID of the pending safety check.
@@ -2681,22 +2761,15 @@ private constructor(
          */
         @JsonProperty("message") @ExcludeMissing fun _message(): JsonField<String> = message
 
+        @JsonAnySetter
+        private fun putAdditionalProperty(key: String, value: JsonValue) {
+            additionalProperties.put(key, value)
+        }
+
         @JsonAnyGetter
         @ExcludeMissing
-        fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-        private var validated: Boolean = false
-
-        fun validate(): PendingSafetyCheck = apply {
-            if (validated) {
-                return@apply
-            }
-
-            id()
-            code()
-            message()
-            validated = true
-        }
+        fun _additionalProperties(): Map<String, JsonValue> =
+            Collections.unmodifiableMap(additionalProperties)
 
         fun toBuilder() = Builder().from(this)
 
@@ -2805,8 +2878,21 @@ private constructor(
                     checkRequired("id", id),
                     checkRequired("code", code),
                     checkRequired("message", message),
-                    additionalProperties.toImmutable(),
+                    additionalProperties.toMutableMap(),
                 )
+        }
+
+        private var validated: Boolean = false
+
+        fun validate(): PendingSafetyCheck = apply {
+            if (validated) {
+                return@apply
+            }
+
+            id()
+            code()
+            message()
+            validated = true
         }
 
         override fun equals(other: Any?): Boolean {

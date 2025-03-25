@@ -2,7 +2,6 @@
 
 package com.openai.models.batches
 
-import com.openai.core.NoAutoDetect
 import com.openai.core.Params
 import com.openai.core.http.Headers
 import com.openai.core.http.QueryParams
@@ -36,17 +35,6 @@ private constructor(
 
     fun _additionalQueryParams(): QueryParams = additionalQueryParams
 
-    override fun _headers(): Headers = additionalHeaders
-
-    override fun _queryParams(): QueryParams =
-        QueryParams.builder()
-            .apply {
-                after?.let { put("after", it) }
-                limit?.let { put("limit", it.toString()) }
-                putAll(additionalQueryParams)
-            }
-            .build()
-
     fun toBuilder() = Builder().from(this)
 
     companion object {
@@ -58,7 +46,6 @@ private constructor(
     }
 
     /** A builder for [BatchListParams]. */
-    @NoAutoDetect
     class Builder internal constructor() {
 
         private var after: String? = null
@@ -207,6 +194,17 @@ private constructor(
         fun build(): BatchListParams =
             BatchListParams(after, limit, additionalHeaders.build(), additionalQueryParams.build())
     }
+
+    override fun _headers(): Headers = additionalHeaders
+
+    override fun _queryParams(): QueryParams =
+        QueryParams.builder()
+            .apply {
+                after?.let { put("after", it) }
+                limit?.let { put("limit", it.toString()) }
+                putAll(additionalQueryParams)
+            }
+            .build()
 
     override fun equals(other: Any?): Boolean {
         if (this === other) {

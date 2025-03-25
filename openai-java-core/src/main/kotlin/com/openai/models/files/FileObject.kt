@@ -11,42 +11,52 @@ import com.openai.core.ExcludeMissing
 import com.openai.core.JsonField
 import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
-import com.openai.core.NoAutoDetect
 import com.openai.core.checkRequired
-import com.openai.core.immutableEmptyMap
-import com.openai.core.toImmutable
 import com.openai.errors.OpenAIInvalidDataException
+import java.util.Collections
 import java.util.Objects
 import java.util.Optional
 
 /** The `File` object represents a document that has been uploaded to OpenAI. */
-@NoAutoDetect
 class FileObject
-@JsonCreator
 private constructor(
-    @JsonProperty("id") @ExcludeMissing private val id: JsonField<String> = JsonMissing.of(),
-    @JsonProperty("bytes") @ExcludeMissing private val bytes: JsonField<Long> = JsonMissing.of(),
-    @JsonProperty("created_at")
-    @ExcludeMissing
-    private val createdAt: JsonField<Long> = JsonMissing.of(),
-    @JsonProperty("filename")
-    @ExcludeMissing
-    private val filename: JsonField<String> = JsonMissing.of(),
-    @JsonProperty("object") @ExcludeMissing private val object_: JsonValue = JsonMissing.of(),
-    @JsonProperty("purpose")
-    @ExcludeMissing
-    private val purpose: JsonField<Purpose> = JsonMissing.of(),
-    @JsonProperty("status")
-    @ExcludeMissing
-    private val status: JsonField<Status> = JsonMissing.of(),
-    @JsonProperty("expires_at")
-    @ExcludeMissing
-    private val expiresAt: JsonField<Long> = JsonMissing.of(),
-    @JsonProperty("status_details")
-    @ExcludeMissing
-    private val statusDetails: JsonField<String> = JsonMissing.of(),
-    @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
+    private val id: JsonField<String>,
+    private val bytes: JsonField<Long>,
+    private val createdAt: JsonField<Long>,
+    private val filename: JsonField<String>,
+    private val object_: JsonValue,
+    private val purpose: JsonField<Purpose>,
+    private val status: JsonField<Status>,
+    private val expiresAt: JsonField<Long>,
+    private val statusDetails: JsonField<String>,
+    private val additionalProperties: MutableMap<String, JsonValue>,
 ) {
+
+    @JsonCreator
+    private constructor(
+        @JsonProperty("id") @ExcludeMissing id: JsonField<String> = JsonMissing.of(),
+        @JsonProperty("bytes") @ExcludeMissing bytes: JsonField<Long> = JsonMissing.of(),
+        @JsonProperty("created_at") @ExcludeMissing createdAt: JsonField<Long> = JsonMissing.of(),
+        @JsonProperty("filename") @ExcludeMissing filename: JsonField<String> = JsonMissing.of(),
+        @JsonProperty("object") @ExcludeMissing object_: JsonValue = JsonMissing.of(),
+        @JsonProperty("purpose") @ExcludeMissing purpose: JsonField<Purpose> = JsonMissing.of(),
+        @JsonProperty("status") @ExcludeMissing status: JsonField<Status> = JsonMissing.of(),
+        @JsonProperty("expires_at") @ExcludeMissing expiresAt: JsonField<Long> = JsonMissing.of(),
+        @JsonProperty("status_details")
+        @ExcludeMissing
+        statusDetails: JsonField<String> = JsonMissing.of(),
+    ) : this(
+        id,
+        bytes,
+        createdAt,
+        filename,
+        object_,
+        purpose,
+        status,
+        expiresAt,
+        statusDetails,
+        mutableMapOf(),
+    )
 
     /**
      * The file identifier, which can be referenced in the API endpoints.
@@ -192,32 +202,15 @@ private constructor(
     @ExcludeMissing
     fun _statusDetails(): JsonField<String> = statusDetails
 
+    @JsonAnySetter
+    private fun putAdditionalProperty(key: String, value: JsonValue) {
+        additionalProperties.put(key, value)
+    }
+
     @JsonAnyGetter
     @ExcludeMissing
-    fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-    private var validated: Boolean = false
-
-    fun validate(): FileObject = apply {
-        if (validated) {
-            return@apply
-        }
-
-        id()
-        bytes()
-        createdAt()
-        filename()
-        _object_().let {
-            if (it != JsonValue.from("file")) {
-                throw OpenAIInvalidDataException("'object_' is invalid, received $it")
-            }
-        }
-        purpose()
-        status()
-        expiresAt()
-        statusDetails()
-        validated = true
-    }
+    fun _additionalProperties(): Map<String, JsonValue> =
+        Collections.unmodifiableMap(additionalProperties)
 
     fun toBuilder() = Builder().from(this)
 
@@ -431,8 +424,31 @@ private constructor(
                 checkRequired("status", status),
                 expiresAt,
                 statusDetails,
-                additionalProperties.toImmutable(),
+                additionalProperties.toMutableMap(),
             )
+    }
+
+    private var validated: Boolean = false
+
+    fun validate(): FileObject = apply {
+        if (validated) {
+            return@apply
+        }
+
+        id()
+        bytes()
+        createdAt()
+        filename()
+        _object_().let {
+            if (it != JsonValue.from("file")) {
+                throw OpenAIInvalidDataException("'object_' is invalid, received $it")
+            }
+        }
+        purpose()
+        status()
+        expiresAt()
+        statusDetails()
+        validated = true
     }
 
     /**
