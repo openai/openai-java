@@ -19,29 +19,33 @@ import com.openai.core.ExcludeMissing
 import com.openai.core.JsonField
 import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
-import com.openai.core.NoAutoDetect
 import com.openai.core.checkKnown
 import com.openai.core.checkRequired
 import com.openai.core.getOrThrow
-import com.openai.core.immutableEmptyMap
 import com.openai.core.toImmutable
 import com.openai.errors.OpenAIInvalidDataException
+import java.util.Collections
 import java.util.Objects
 import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
 /** Details of the Code Interpreter tool call the run step was involved in. */
-@NoAutoDetect
 class CodeInterpreterToolCall
-@JsonCreator
 private constructor(
-    @JsonProperty("id") @ExcludeMissing private val id: JsonField<String> = JsonMissing.of(),
-    @JsonProperty("code_interpreter")
-    @ExcludeMissing
-    private val codeInterpreter: JsonField<CodeInterpreter> = JsonMissing.of(),
-    @JsonProperty("type") @ExcludeMissing private val type: JsonValue = JsonMissing.of(),
-    @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
+    private val id: JsonField<String>,
+    private val codeInterpreter: JsonField<CodeInterpreter>,
+    private val type: JsonValue,
+    private val additionalProperties: MutableMap<String, JsonValue>,
 ) {
+
+    @JsonCreator
+    private constructor(
+        @JsonProperty("id") @ExcludeMissing id: JsonField<String> = JsonMissing.of(),
+        @JsonProperty("code_interpreter")
+        @ExcludeMissing
+        codeInterpreter: JsonField<CodeInterpreter> = JsonMissing.of(),
+        @JsonProperty("type") @ExcludeMissing type: JsonValue = JsonMissing.of(),
+    ) : this(id, codeInterpreter, type, mutableMapOf())
 
     /**
      * The ID of the tool call.
@@ -89,26 +93,15 @@ private constructor(
     @ExcludeMissing
     fun _codeInterpreter(): JsonField<CodeInterpreter> = codeInterpreter
 
+    @JsonAnySetter
+    private fun putAdditionalProperty(key: String, value: JsonValue) {
+        additionalProperties.put(key, value)
+    }
+
     @JsonAnyGetter
     @ExcludeMissing
-    fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-    private var validated: Boolean = false
-
-    fun validate(): CodeInterpreterToolCall = apply {
-        if (validated) {
-            return@apply
-        }
-
-        id()
-        codeInterpreter().validate()
-        _type().let {
-            if (it != JsonValue.from("code_interpreter")) {
-                throw OpenAIInvalidDataException("'type' is invalid, received $it")
-            }
-        }
-        validated = true
-    }
+    fun _additionalProperties(): Map<String, JsonValue> =
+        Collections.unmodifiableMap(additionalProperties)
 
     fun toBuilder() = Builder().from(this)
 
@@ -219,24 +212,42 @@ private constructor(
                 checkRequired("id", id),
                 checkRequired("codeInterpreter", codeInterpreter),
                 type,
-                additionalProperties.toImmutable(),
+                additionalProperties.toMutableMap(),
             )
     }
 
+    private var validated: Boolean = false
+
+    fun validate(): CodeInterpreterToolCall = apply {
+        if (validated) {
+            return@apply
+        }
+
+        id()
+        codeInterpreter().validate()
+        _type().let {
+            if (it != JsonValue.from("code_interpreter")) {
+                throw OpenAIInvalidDataException("'type' is invalid, received $it")
+            }
+        }
+        validated = true
+    }
+
     /** The Code Interpreter tool call definition. */
-    @NoAutoDetect
     class CodeInterpreter
-    @JsonCreator
     private constructor(
-        @JsonProperty("input")
-        @ExcludeMissing
-        private val input: JsonField<String> = JsonMissing.of(),
-        @JsonProperty("outputs")
-        @ExcludeMissing
-        private val outputs: JsonField<List<Output>> = JsonMissing.of(),
-        @JsonAnySetter
-        private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
+        private val input: JsonField<String>,
+        private val outputs: JsonField<List<Output>>,
+        private val additionalProperties: MutableMap<String, JsonValue>,
     ) {
+
+        @JsonCreator
+        private constructor(
+            @JsonProperty("input") @ExcludeMissing input: JsonField<String> = JsonMissing.of(),
+            @JsonProperty("outputs")
+            @ExcludeMissing
+            outputs: JsonField<List<Output>> = JsonMissing.of(),
+        ) : this(input, outputs, mutableMapOf())
 
         /**
          * The input to the Code Interpreter tool call.
@@ -270,21 +281,15 @@ private constructor(
          */
         @JsonProperty("outputs") @ExcludeMissing fun _outputs(): JsonField<List<Output>> = outputs
 
+        @JsonAnySetter
+        private fun putAdditionalProperty(key: String, value: JsonValue) {
+            additionalProperties.put(key, value)
+        }
+
         @JsonAnyGetter
         @ExcludeMissing
-        fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-        private var validated: Boolean = false
-
-        fun validate(): CodeInterpreter = apply {
-            if (validated) {
-                return@apply
-            }
-
-            input()
-            outputs().forEach { it.validate() }
-            validated = true
-        }
+        fun _additionalProperties(): Map<String, JsonValue> =
+            Collections.unmodifiableMap(additionalProperties)
 
         fun toBuilder() = Builder().from(this)
 
@@ -422,8 +427,20 @@ private constructor(
                 CodeInterpreter(
                     checkRequired("input", input),
                     checkRequired("outputs", outputs).map { it.toImmutable() },
-                    additionalProperties.toImmutable(),
+                    additionalProperties.toMutableMap(),
                 )
+        }
+
+        private var validated: Boolean = false
+
+        fun validate(): CodeInterpreter = apply {
+            if (validated) {
+                return@apply
+            }
+
+            input()
+            outputs().forEach { it.validate() }
+            validated = true
         }
 
         /** Text output from the Code Interpreter tool call as part of a run step. */
@@ -574,19 +591,20 @@ private constructor(
             }
 
             /** Text output from the Code Interpreter tool call as part of a run step. */
-            @NoAutoDetect
             class LogsOutput
-            @JsonCreator
             private constructor(
-                @JsonProperty("logs")
-                @ExcludeMissing
-                private val logs: JsonField<String> = JsonMissing.of(),
-                @JsonProperty("type")
-                @ExcludeMissing
-                private val type: JsonValue = JsonMissing.of(),
-                @JsonAnySetter
-                private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
+                private val logs: JsonField<String>,
+                private val type: JsonValue,
+                private val additionalProperties: MutableMap<String, JsonValue>,
             ) {
+
+                @JsonCreator
+                private constructor(
+                    @JsonProperty("logs")
+                    @ExcludeMissing
+                    logs: JsonField<String> = JsonMissing.of(),
+                    @JsonProperty("type") @ExcludeMissing type: JsonValue = JsonMissing.of(),
+                ) : this(logs, type, mutableMapOf())
 
                 /**
                  * The text output from the Code Interpreter tool call.
@@ -618,25 +636,15 @@ private constructor(
                  */
                 @JsonProperty("logs") @ExcludeMissing fun _logs(): JsonField<String> = logs
 
+                @JsonAnySetter
+                private fun putAdditionalProperty(key: String, value: JsonValue) {
+                    additionalProperties.put(key, value)
+                }
+
                 @JsonAnyGetter
                 @ExcludeMissing
-                fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-                private var validated: Boolean = false
-
-                fun validate(): LogsOutput = apply {
-                    if (validated) {
-                        return@apply
-                    }
-
-                    logs()
-                    _type().let {
-                        if (it != JsonValue.from("logs")) {
-                            throw OpenAIInvalidDataException("'type' is invalid, received $it")
-                        }
-                    }
-                    validated = true
-                }
+                fun _additionalProperties(): Map<String, JsonValue> =
+                    Collections.unmodifiableMap(additionalProperties)
 
                 fun toBuilder() = Builder().from(this)
 
@@ -731,8 +739,24 @@ private constructor(
                         LogsOutput(
                             checkRequired("logs", logs),
                             type,
-                            additionalProperties.toImmutable(),
+                            additionalProperties.toMutableMap(),
                         )
+                }
+
+                private var validated: Boolean = false
+
+                fun validate(): LogsOutput = apply {
+                    if (validated) {
+                        return@apply
+                    }
+
+                    logs()
+                    _type().let {
+                        if (it != JsonValue.from("logs")) {
+                            throw OpenAIInvalidDataException("'type' is invalid, received $it")
+                        }
+                    }
+                    validated = true
                 }
 
                 override fun equals(other: Any?): Boolean {
@@ -753,19 +777,20 @@ private constructor(
                     "LogsOutput{logs=$logs, type=$type, additionalProperties=$additionalProperties}"
             }
 
-            @NoAutoDetect
             class ImageOutput
-            @JsonCreator
             private constructor(
-                @JsonProperty("image")
-                @ExcludeMissing
-                private val image: JsonField<Image> = JsonMissing.of(),
-                @JsonProperty("type")
-                @ExcludeMissing
-                private val type: JsonValue = JsonMissing.of(),
-                @JsonAnySetter
-                private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
+                private val image: JsonField<Image>,
+                private val type: JsonValue,
+                private val additionalProperties: MutableMap<String, JsonValue>,
             ) {
+
+                @JsonCreator
+                private constructor(
+                    @JsonProperty("image")
+                    @ExcludeMissing
+                    image: JsonField<Image> = JsonMissing.of(),
+                    @JsonProperty("type") @ExcludeMissing type: JsonValue = JsonMissing.of(),
+                ) : this(image, type, mutableMapOf())
 
                 /**
                  * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
@@ -795,25 +820,15 @@ private constructor(
                  */
                 @JsonProperty("image") @ExcludeMissing fun _image(): JsonField<Image> = image
 
+                @JsonAnySetter
+                private fun putAdditionalProperty(key: String, value: JsonValue) {
+                    additionalProperties.put(key, value)
+                }
+
                 @JsonAnyGetter
                 @ExcludeMissing
-                fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-                private var validated: Boolean = false
-
-                fun validate(): ImageOutput = apply {
-                    if (validated) {
-                        return@apply
-                    }
-
-                    image().validate()
-                    _type().let {
-                        if (it != JsonValue.from("image")) {
-                            throw OpenAIInvalidDataException("'type' is invalid, received $it")
-                        }
-                    }
-                    validated = true
-                }
+                fun _additionalProperties(): Map<String, JsonValue> =
+                    Collections.unmodifiableMap(additionalProperties)
 
                 fun toBuilder() = Builder().from(this)
 
@@ -907,20 +922,38 @@ private constructor(
                         ImageOutput(
                             checkRequired("image", image),
                             type,
-                            additionalProperties.toImmutable(),
+                            additionalProperties.toMutableMap(),
                         )
                 }
 
-                @NoAutoDetect
+                private var validated: Boolean = false
+
+                fun validate(): ImageOutput = apply {
+                    if (validated) {
+                        return@apply
+                    }
+
+                    image().validate()
+                    _type().let {
+                        if (it != JsonValue.from("image")) {
+                            throw OpenAIInvalidDataException("'type' is invalid, received $it")
+                        }
+                    }
+                    validated = true
+                }
+
                 class Image
-                @JsonCreator
                 private constructor(
-                    @JsonProperty("file_id")
-                    @ExcludeMissing
-                    private val fileId: JsonField<String> = JsonMissing.of(),
-                    @JsonAnySetter
-                    private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
+                    private val fileId: JsonField<String>,
+                    private val additionalProperties: MutableMap<String, JsonValue>,
                 ) {
+
+                    @JsonCreator
+                    private constructor(
+                        @JsonProperty("file_id")
+                        @ExcludeMissing
+                        fileId: JsonField<String> = JsonMissing.of()
+                    ) : this(fileId, mutableMapOf())
 
                     /**
                      * The [file](https://platform.openai.com/docs/api-reference/files) ID of the
@@ -942,20 +975,15 @@ private constructor(
                     @ExcludeMissing
                     fun _fileId(): JsonField<String> = fileId
 
+                    @JsonAnySetter
+                    private fun putAdditionalProperty(key: String, value: JsonValue) {
+                        additionalProperties.put(key, value)
+                    }
+
                     @JsonAnyGetter
                     @ExcludeMissing
-                    fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-                    private var validated: Boolean = false
-
-                    fun validate(): Image = apply {
-                        if (validated) {
-                            return@apply
-                        }
-
-                        fileId()
-                        validated = true
-                    }
+                    fun _additionalProperties(): Map<String, JsonValue> =
+                        Collections.unmodifiableMap(additionalProperties)
 
                     fun toBuilder() = Builder().from(this)
 
@@ -1037,8 +1065,19 @@ private constructor(
                         fun build(): Image =
                             Image(
                                 checkRequired("fileId", fileId),
-                                additionalProperties.toImmutable(),
+                                additionalProperties.toMutableMap(),
                             )
+                    }
+
+                    private var validated: Boolean = false
+
+                    fun validate(): Image = apply {
+                        if (validated) {
+                            return@apply
+                        }
+
+                        fileId()
+                        validated = true
                     }
 
                     override fun equals(other: Any?): Boolean {

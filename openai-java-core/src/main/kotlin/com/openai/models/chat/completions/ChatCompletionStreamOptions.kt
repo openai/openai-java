@@ -10,23 +10,24 @@ import com.openai.core.ExcludeMissing
 import com.openai.core.JsonField
 import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
-import com.openai.core.NoAutoDetect
-import com.openai.core.immutableEmptyMap
-import com.openai.core.toImmutable
 import com.openai.errors.OpenAIInvalidDataException
+import java.util.Collections
 import java.util.Objects
 import java.util.Optional
 
 /** Options for streaming response. Only set this when you set `stream: true`. */
-@NoAutoDetect
 class ChatCompletionStreamOptions
-@JsonCreator
 private constructor(
-    @JsonProperty("include_usage")
-    @ExcludeMissing
-    private val includeUsage: JsonField<Boolean> = JsonMissing.of(),
-    @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
+    private val includeUsage: JsonField<Boolean>,
+    private val additionalProperties: MutableMap<String, JsonValue>,
 ) {
+
+    @JsonCreator
+    private constructor(
+        @JsonProperty("include_usage")
+        @ExcludeMissing
+        includeUsage: JsonField<Boolean> = JsonMissing.of()
+    ) : this(includeUsage, mutableMapOf())
 
     /**
      * If set, an additional chunk will be streamed before the `data: [DONE]` message. The `usage`
@@ -52,20 +53,15 @@ private constructor(
     @ExcludeMissing
     fun _includeUsage(): JsonField<Boolean> = includeUsage
 
+    @JsonAnySetter
+    private fun putAdditionalProperty(key: String, value: JsonValue) {
+        additionalProperties.put(key, value)
+    }
+
     @JsonAnyGetter
     @ExcludeMissing
-    fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-    private var validated: Boolean = false
-
-    fun validate(): ChatCompletionStreamOptions = apply {
-        if (validated) {
-            return@apply
-        }
-
-        includeUsage()
-        validated = true
-    }
+    fun _additionalProperties(): Map<String, JsonValue> =
+        Collections.unmodifiableMap(additionalProperties)
 
     fun toBuilder() = Builder().from(this)
 
@@ -136,7 +132,18 @@ private constructor(
          * Further updates to this [Builder] will not mutate the returned instance.
          */
         fun build(): ChatCompletionStreamOptions =
-            ChatCompletionStreamOptions(includeUsage, additionalProperties.toImmutable())
+            ChatCompletionStreamOptions(includeUsage, additionalProperties.toMutableMap())
+    }
+
+    private var validated: Boolean = false
+
+    fun validate(): ChatCompletionStreamOptions = apply {
+        if (validated) {
+            return@apply
+        }
+
+        includeUsage()
+        validated = true
     }
 
     override fun equals(other: Any?): Boolean {

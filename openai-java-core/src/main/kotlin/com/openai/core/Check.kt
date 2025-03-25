@@ -2,6 +2,9 @@
 
 package com.openai.core
 
+import com.fasterxml.jackson.core.Version
+import com.fasterxml.jackson.core.util.VersionUtil
+
 fun <T : Any> checkRequired(name: String, value: T?): T =
     checkNotNull(value) { "`$name` is required, but was not set" }
 
@@ -39,3 +42,46 @@ internal fun checkMaxLength(name: String, value: String, maxLength: Int): String
             "`$name` must have at most length $maxLength, but was ${it.length}"
         }
     }
+
+@JvmSynthetic
+internal fun checkJacksonVersionCompatibility() {
+    val incompatibleJacksonVersions =
+        RUNTIME_JACKSON_VERSIONS.mapNotNull {
+            when {
+                it.majorVersion != MINIMUM_JACKSON_VERSION.majorVersion ->
+                    it to "incompatible major version"
+                it.minorVersion < MINIMUM_JACKSON_VERSION.minorVersion ->
+                    it to "minor version too low"
+                it.minorVersion == MINIMUM_JACKSON_VERSION.minorVersion &&
+                    it.patchLevel < MINIMUM_JACKSON_VERSION.patchLevel ->
+                    it to "patch version too low"
+                else -> null
+            }
+        }
+    check(incompatibleJacksonVersions.isEmpty()) {
+        """
+This SDK depends on Jackson version $MINIMUM_JACKSON_VERSION, but the following incompatible Jackson versions were detected at runtime:
+
+${incompatibleJacksonVersions.asSequence().map { (version, incompatibilityReason) ->
+    "- `${version.toFullString().replace("/", ":")}` ($incompatibilityReason)"
+}.joinToString("\n")}
+
+This can happen if you are either:
+1. Directly depending on different Jackson versions
+2. Depending on some library that depends on different Jackson versions, potentially transitively
+
+Double-check that you are depending on compatible Jackson versions.
+        """
+            .trimIndent()
+    }
+}
+
+private val MINIMUM_JACKSON_VERSION: Version = VersionUtil.parseVersion("2.13.4", null, null)
+private val RUNTIME_JACKSON_VERSIONS: List<Version> =
+    listOf(
+        com.fasterxml.jackson.core.json.PackageVersion.VERSION,
+        com.fasterxml.jackson.databind.cfg.PackageVersion.VERSION,
+        com.fasterxml.jackson.datatype.jdk8.PackageVersion.VERSION,
+        com.fasterxml.jackson.datatype.jsr310.PackageVersion.VERSION,
+        com.fasterxml.jackson.module.kotlin.PackageVersion.VERSION,
+    )

@@ -11,11 +11,9 @@ import com.openai.core.ExcludeMissing
 import com.openai.core.JsonField
 import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
-import com.openai.core.NoAutoDetect
 import com.openai.core.checkRequired
-import com.openai.core.immutableEmptyMap
-import com.openai.core.toImmutable
 import com.openai.errors.OpenAIInvalidDataException
+import java.util.Collections
 import java.util.Objects
 import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
@@ -24,19 +22,24 @@ import kotlin.jvm.optionals.getOrNull
  * This tool searches the web for relevant results to use in a response. Learn more about the
  * [web search tool](https://platform.openai.com/docs/guides/tools-web-search).
  */
-@NoAutoDetect
 class WebSearchTool
-@JsonCreator
 private constructor(
-    @JsonProperty("type") @ExcludeMissing private val type: JsonField<Type> = JsonMissing.of(),
-    @JsonProperty("search_context_size")
-    @ExcludeMissing
-    private val searchContextSize: JsonField<SearchContextSize> = JsonMissing.of(),
-    @JsonProperty("user_location")
-    @ExcludeMissing
-    private val userLocation: JsonField<UserLocation> = JsonMissing.of(),
-    @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
+    private val type: JsonField<Type>,
+    private val searchContextSize: JsonField<SearchContextSize>,
+    private val userLocation: JsonField<UserLocation>,
+    private val additionalProperties: MutableMap<String, JsonValue>,
 ) {
+
+    @JsonCreator
+    private constructor(
+        @JsonProperty("type") @ExcludeMissing type: JsonField<Type> = JsonMissing.of(),
+        @JsonProperty("search_context_size")
+        @ExcludeMissing
+        searchContextSize: JsonField<SearchContextSize> = JsonMissing.of(),
+        @JsonProperty("user_location")
+        @ExcludeMissing
+        userLocation: JsonField<UserLocation> = JsonMissing.of(),
+    ) : this(type, searchContextSize, userLocation, mutableMapOf())
 
     /**
      * The type of the web search tool. One of:
@@ -91,22 +94,15 @@ private constructor(
     @ExcludeMissing
     fun _userLocation(): JsonField<UserLocation> = userLocation
 
+    @JsonAnySetter
+    private fun putAdditionalProperty(key: String, value: JsonValue) {
+        additionalProperties.put(key, value)
+    }
+
     @JsonAnyGetter
     @ExcludeMissing
-    fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-    private var validated: Boolean = false
-
-    fun validate(): WebSearchTool = apply {
-        if (validated) {
-            return@apply
-        }
-
-        type()
-        searchContextSize()
-        userLocation().ifPresent { it.validate() }
-        validated = true
-    }
+    fun _additionalProperties(): Map<String, JsonValue> =
+        Collections.unmodifiableMap(additionalProperties)
 
     fun toBuilder() = Builder().from(this)
 
@@ -226,8 +222,21 @@ private constructor(
                 checkRequired("type", type),
                 searchContextSize,
                 userLocation,
-                additionalProperties.toImmutable(),
+                additionalProperties.toMutableMap(),
             )
+    }
+
+    private var validated: Boolean = false
+
+    fun validate(): WebSearchTool = apply {
+        if (validated) {
+            return@apply
+        }
+
+        type()
+        searchContextSize()
+        userLocation().ifPresent { it.validate() }
+        validated = true
     }
 
     /**
@@ -445,26 +454,24 @@ private constructor(
         override fun toString() = value.toString()
     }
 
-    @NoAutoDetect
     class UserLocation
-    @JsonCreator
     private constructor(
-        @JsonProperty("type") @ExcludeMissing private val type: JsonValue = JsonMissing.of(),
-        @JsonProperty("city")
-        @ExcludeMissing
-        private val city: JsonField<String> = JsonMissing.of(),
-        @JsonProperty("country")
-        @ExcludeMissing
-        private val country: JsonField<String> = JsonMissing.of(),
-        @JsonProperty("region")
-        @ExcludeMissing
-        private val region: JsonField<String> = JsonMissing.of(),
-        @JsonProperty("timezone")
-        @ExcludeMissing
-        private val timezone: JsonField<String> = JsonMissing.of(),
-        @JsonAnySetter
-        private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
+        private val type: JsonValue,
+        private val city: JsonField<String>,
+        private val country: JsonField<String>,
+        private val region: JsonField<String>,
+        private val timezone: JsonField<String>,
+        private val additionalProperties: MutableMap<String, JsonValue>,
     ) {
+
+        @JsonCreator
+        private constructor(
+            @JsonProperty("type") @ExcludeMissing type: JsonValue = JsonMissing.of(),
+            @JsonProperty("city") @ExcludeMissing city: JsonField<String> = JsonMissing.of(),
+            @JsonProperty("country") @ExcludeMissing country: JsonField<String> = JsonMissing.of(),
+            @JsonProperty("region") @ExcludeMissing region: JsonField<String> = JsonMissing.of(),
+            @JsonProperty("timezone") @ExcludeMissing timezone: JsonField<String> = JsonMissing.of(),
+        ) : this(type, city, country, region, timezone, mutableMapOf())
 
         /**
          * The type of location approximation. Always `approximate`.
@@ -541,28 +548,15 @@ private constructor(
          */
         @JsonProperty("timezone") @ExcludeMissing fun _timezone(): JsonField<String> = timezone
 
+        @JsonAnySetter
+        private fun putAdditionalProperty(key: String, value: JsonValue) {
+            additionalProperties.put(key, value)
+        }
+
         @JsonAnyGetter
         @ExcludeMissing
-        fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-        private var validated: Boolean = false
-
-        fun validate(): UserLocation = apply {
-            if (validated) {
-                return@apply
-            }
-
-            _type().let {
-                if (it != JsonValue.from("approximate")) {
-                    throw OpenAIInvalidDataException("'type' is invalid, received $it")
-                }
-            }
-            city()
-            country()
-            region()
-            timezone()
-            validated = true
-        }
+        fun _additionalProperties(): Map<String, JsonValue> =
+            Collections.unmodifiableMap(additionalProperties)
 
         fun toBuilder() = Builder().from(this)
 
@@ -691,8 +685,27 @@ private constructor(
                     country,
                     region,
                     timezone,
-                    additionalProperties.toImmutable(),
+                    additionalProperties.toMutableMap(),
                 )
+        }
+
+        private var validated: Boolean = false
+
+        fun validate(): UserLocation = apply {
+            if (validated) {
+                return@apply
+            }
+
+            _type().let {
+                if (it != JsonValue.from("approximate")) {
+                    throw OpenAIInvalidDataException("'type' is invalid, received $it")
+                }
+            }
+            city()
+            country()
+            region()
+            timezone()
+            validated = true
         }
 
         override fun equals(other: Any?): Boolean {

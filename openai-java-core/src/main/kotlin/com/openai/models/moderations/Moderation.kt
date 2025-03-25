@@ -11,34 +11,37 @@ import com.openai.core.ExcludeMissing
 import com.openai.core.JsonField
 import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
-import com.openai.core.NoAutoDetect
 import com.openai.core.checkKnown
 import com.openai.core.checkRequired
-import com.openai.core.immutableEmptyMap
 import com.openai.core.toImmutable
 import com.openai.errors.OpenAIInvalidDataException
+import java.util.Collections
 import java.util.Objects
 import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
-@NoAutoDetect
 class Moderation
-@JsonCreator
 private constructor(
-    @JsonProperty("categories")
-    @ExcludeMissing
-    private val categories: JsonField<Categories> = JsonMissing.of(),
-    @JsonProperty("category_applied_input_types")
-    @ExcludeMissing
-    private val categoryAppliedInputTypes: JsonField<CategoryAppliedInputTypes> = JsonMissing.of(),
-    @JsonProperty("category_scores")
-    @ExcludeMissing
-    private val categoryScores: JsonField<CategoryScores> = JsonMissing.of(),
-    @JsonProperty("flagged")
-    @ExcludeMissing
-    private val flagged: JsonField<Boolean> = JsonMissing.of(),
-    @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
+    private val categories: JsonField<Categories>,
+    private val categoryAppliedInputTypes: JsonField<CategoryAppliedInputTypes>,
+    private val categoryScores: JsonField<CategoryScores>,
+    private val flagged: JsonField<Boolean>,
+    private val additionalProperties: MutableMap<String, JsonValue>,
 ) {
+
+    @JsonCreator
+    private constructor(
+        @JsonProperty("categories")
+        @ExcludeMissing
+        categories: JsonField<Categories> = JsonMissing.of(),
+        @JsonProperty("category_applied_input_types")
+        @ExcludeMissing
+        categoryAppliedInputTypes: JsonField<CategoryAppliedInputTypes> = JsonMissing.of(),
+        @JsonProperty("category_scores")
+        @ExcludeMissing
+        categoryScores: JsonField<CategoryScores> = JsonMissing.of(),
+        @JsonProperty("flagged") @ExcludeMissing flagged: JsonField<Boolean> = JsonMissing.of(),
+    ) : this(categories, categoryAppliedInputTypes, categoryScores, flagged, mutableMapOf())
 
     /**
      * A list of the categories, and whether they are flagged or not.
@@ -109,23 +112,15 @@ private constructor(
      */
     @JsonProperty("flagged") @ExcludeMissing fun _flagged(): JsonField<Boolean> = flagged
 
+    @JsonAnySetter
+    private fun putAdditionalProperty(key: String, value: JsonValue) {
+        additionalProperties.put(key, value)
+    }
+
     @JsonAnyGetter
     @ExcludeMissing
-    fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-    private var validated: Boolean = false
-
-    fun validate(): Moderation = apply {
-        if (validated) {
-            return@apply
-        }
-
-        categories().validate()
-        categoryAppliedInputTypes().validate()
-        categoryScores().validate()
-        flagged()
-        validated = true
-    }
+    fun _additionalProperties(): Map<String, JsonValue> =
+        Collections.unmodifiableMap(additionalProperties)
 
     fun toBuilder() = Builder().from(this)
 
@@ -256,57 +251,94 @@ private constructor(
                 checkRequired("categoryAppliedInputTypes", categoryAppliedInputTypes),
                 checkRequired("categoryScores", categoryScores),
                 checkRequired("flagged", flagged),
-                additionalProperties.toImmutable(),
+                additionalProperties.toMutableMap(),
             )
     }
 
+    private var validated: Boolean = false
+
+    fun validate(): Moderation = apply {
+        if (validated) {
+            return@apply
+        }
+
+        categories().validate()
+        categoryAppliedInputTypes().validate()
+        categoryScores().validate()
+        flagged()
+        validated = true
+    }
+
     /** A list of the categories, and whether they are flagged or not. */
-    @NoAutoDetect
     class Categories
-    @JsonCreator
     private constructor(
-        @JsonProperty("harassment")
-        @ExcludeMissing
-        private val harassment: JsonField<Boolean> = JsonMissing.of(),
-        @JsonProperty("harassment/threatening")
-        @ExcludeMissing
-        private val harassmentThreatening: JsonField<Boolean> = JsonMissing.of(),
-        @JsonProperty("hate")
-        @ExcludeMissing
-        private val hate: JsonField<Boolean> = JsonMissing.of(),
-        @JsonProperty("hate/threatening")
-        @ExcludeMissing
-        private val hateThreatening: JsonField<Boolean> = JsonMissing.of(),
-        @JsonProperty("illicit")
-        @ExcludeMissing
-        private val illicit: JsonField<Boolean> = JsonMissing.of(),
-        @JsonProperty("illicit/violent")
-        @ExcludeMissing
-        private val illicitViolent: JsonField<Boolean> = JsonMissing.of(),
-        @JsonProperty("self-harm")
-        @ExcludeMissing
-        private val selfHarm: JsonField<Boolean> = JsonMissing.of(),
-        @JsonProperty("self-harm/instructions")
-        @ExcludeMissing
-        private val selfHarmInstructions: JsonField<Boolean> = JsonMissing.of(),
-        @JsonProperty("self-harm/intent")
-        @ExcludeMissing
-        private val selfHarmIntent: JsonField<Boolean> = JsonMissing.of(),
-        @JsonProperty("sexual")
-        @ExcludeMissing
-        private val sexual: JsonField<Boolean> = JsonMissing.of(),
-        @JsonProperty("sexual/minors")
-        @ExcludeMissing
-        private val sexualMinors: JsonField<Boolean> = JsonMissing.of(),
-        @JsonProperty("violence")
-        @ExcludeMissing
-        private val violence: JsonField<Boolean> = JsonMissing.of(),
-        @JsonProperty("violence/graphic")
-        @ExcludeMissing
-        private val violenceGraphic: JsonField<Boolean> = JsonMissing.of(),
-        @JsonAnySetter
-        private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
+        private val harassment: JsonField<Boolean>,
+        private val harassmentThreatening: JsonField<Boolean>,
+        private val hate: JsonField<Boolean>,
+        private val hateThreatening: JsonField<Boolean>,
+        private val illicit: JsonField<Boolean>,
+        private val illicitViolent: JsonField<Boolean>,
+        private val selfHarm: JsonField<Boolean>,
+        private val selfHarmInstructions: JsonField<Boolean>,
+        private val selfHarmIntent: JsonField<Boolean>,
+        private val sexual: JsonField<Boolean>,
+        private val sexualMinors: JsonField<Boolean>,
+        private val violence: JsonField<Boolean>,
+        private val violenceGraphic: JsonField<Boolean>,
+        private val additionalProperties: MutableMap<String, JsonValue>,
     ) {
+
+        @JsonCreator
+        private constructor(
+            @JsonProperty("harassment")
+            @ExcludeMissing
+            harassment: JsonField<Boolean> = JsonMissing.of(),
+            @JsonProperty("harassment/threatening")
+            @ExcludeMissing
+            harassmentThreatening: JsonField<Boolean> = JsonMissing.of(),
+            @JsonProperty("hate") @ExcludeMissing hate: JsonField<Boolean> = JsonMissing.of(),
+            @JsonProperty("hate/threatening")
+            @ExcludeMissing
+            hateThreatening: JsonField<Boolean> = JsonMissing.of(),
+            @JsonProperty("illicit") @ExcludeMissing illicit: JsonField<Boolean> = JsonMissing.of(),
+            @JsonProperty("illicit/violent")
+            @ExcludeMissing
+            illicitViolent: JsonField<Boolean> = JsonMissing.of(),
+            @JsonProperty("self-harm")
+            @ExcludeMissing
+            selfHarm: JsonField<Boolean> = JsonMissing.of(),
+            @JsonProperty("self-harm/instructions")
+            @ExcludeMissing
+            selfHarmInstructions: JsonField<Boolean> = JsonMissing.of(),
+            @JsonProperty("self-harm/intent")
+            @ExcludeMissing
+            selfHarmIntent: JsonField<Boolean> = JsonMissing.of(),
+            @JsonProperty("sexual") @ExcludeMissing sexual: JsonField<Boolean> = JsonMissing.of(),
+            @JsonProperty("sexual/minors")
+            @ExcludeMissing
+            sexualMinors: JsonField<Boolean> = JsonMissing.of(),
+            @JsonProperty("violence")
+            @ExcludeMissing
+            violence: JsonField<Boolean> = JsonMissing.of(),
+            @JsonProperty("violence/graphic")
+            @ExcludeMissing
+            violenceGraphic: JsonField<Boolean> = JsonMissing.of(),
+        ) : this(
+            harassment,
+            harassmentThreatening,
+            hate,
+            hateThreatening,
+            illicit,
+            illicitViolent,
+            selfHarm,
+            selfHarmInstructions,
+            selfHarmIntent,
+            sexual,
+            sexualMinors,
+            violence,
+            violenceGraphic,
+            mutableMapOf(),
+        )
 
         /**
          * Content that expresses, incites, or promotes harassing language towards any target.
@@ -541,32 +573,15 @@ private constructor(
         @ExcludeMissing
         fun _violenceGraphic(): JsonField<Boolean> = violenceGraphic
 
+        @JsonAnySetter
+        private fun putAdditionalProperty(key: String, value: JsonValue) {
+            additionalProperties.put(key, value)
+        }
+
         @JsonAnyGetter
         @ExcludeMissing
-        fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-        private var validated: Boolean = false
-
-        fun validate(): Categories = apply {
-            if (validated) {
-                return@apply
-            }
-
-            harassment()
-            harassmentThreatening()
-            hate()
-            hateThreatening()
-            illicit()
-            illicitViolent()
-            selfHarm()
-            selfHarmInstructions()
-            selfHarmIntent()
-            sexual()
-            sexualMinors()
-            violence()
-            violenceGraphic()
-            validated = true
-        }
+        fun _additionalProperties(): Map<String, JsonValue> =
+            Collections.unmodifiableMap(additionalProperties)
 
         fun toBuilder() = Builder().from(this)
 
@@ -918,8 +933,31 @@ private constructor(
                     checkRequired("sexualMinors", sexualMinors),
                     checkRequired("violence", violence),
                     checkRequired("violenceGraphic", violenceGraphic),
-                    additionalProperties.toImmutable(),
+                    additionalProperties.toMutableMap(),
                 )
+        }
+
+        private var validated: Boolean = false
+
+        fun validate(): Categories = apply {
+            if (validated) {
+                return@apply
+            }
+
+            harassment()
+            harassmentThreatening()
+            hate()
+            hateThreatening()
+            illicit()
+            illicitViolent()
+            selfHarm()
+            selfHarmInstructions()
+            selfHarmIntent()
+            sexual()
+            sexualMinors()
+            violence()
+            violenceGraphic()
+            validated = true
         }
 
         override fun equals(other: Any?): Boolean {
@@ -941,53 +979,79 @@ private constructor(
     }
 
     /** A list of the categories along with the input type(s) that the score applies to. */
-    @NoAutoDetect
     class CategoryAppliedInputTypes
-    @JsonCreator
     private constructor(
-        @JsonProperty("harassment")
-        @ExcludeMissing
-        private val harassment: JsonField<List<Harassment>> = JsonMissing.of(),
-        @JsonProperty("harassment/threatening")
-        @ExcludeMissing
-        private val harassmentThreatening: JsonField<List<HarassmentThreatening>> =
-            JsonMissing.of(),
-        @JsonProperty("hate")
-        @ExcludeMissing
-        private val hate: JsonField<List<Hate>> = JsonMissing.of(),
-        @JsonProperty("hate/threatening")
-        @ExcludeMissing
-        private val hateThreatening: JsonField<List<HateThreatening>> = JsonMissing.of(),
-        @JsonProperty("illicit")
-        @ExcludeMissing
-        private val illicit: JsonField<List<Illicit>> = JsonMissing.of(),
-        @JsonProperty("illicit/violent")
-        @ExcludeMissing
-        private val illicitViolent: JsonField<List<IllicitViolent>> = JsonMissing.of(),
-        @JsonProperty("self-harm")
-        @ExcludeMissing
-        private val selfHarm: JsonField<List<SelfHarm>> = JsonMissing.of(),
-        @JsonProperty("self-harm/instructions")
-        @ExcludeMissing
-        private val selfHarmInstructions: JsonField<List<SelfHarmInstruction>> = JsonMissing.of(),
-        @JsonProperty("self-harm/intent")
-        @ExcludeMissing
-        private val selfHarmIntent: JsonField<List<SelfHarmIntent>> = JsonMissing.of(),
-        @JsonProperty("sexual")
-        @ExcludeMissing
-        private val sexual: JsonField<List<Sexual>> = JsonMissing.of(),
-        @JsonProperty("sexual/minors")
-        @ExcludeMissing
-        private val sexualMinors: JsonField<List<SexualMinor>> = JsonMissing.of(),
-        @JsonProperty("violence")
-        @ExcludeMissing
-        private val violence: JsonField<List<Violence>> = JsonMissing.of(),
-        @JsonProperty("violence/graphic")
-        @ExcludeMissing
-        private val violenceGraphic: JsonField<List<ViolenceGraphic>> = JsonMissing.of(),
-        @JsonAnySetter
-        private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
+        private val harassment: JsonField<List<Harassment>>,
+        private val harassmentThreatening: JsonField<List<HarassmentThreatening>>,
+        private val hate: JsonField<List<Hate>>,
+        private val hateThreatening: JsonField<List<HateThreatening>>,
+        private val illicit: JsonField<List<Illicit>>,
+        private val illicitViolent: JsonField<List<IllicitViolent>>,
+        private val selfHarm: JsonField<List<SelfHarm>>,
+        private val selfHarmInstructions: JsonField<List<SelfHarmInstruction>>,
+        private val selfHarmIntent: JsonField<List<SelfHarmIntent>>,
+        private val sexual: JsonField<List<Sexual>>,
+        private val sexualMinors: JsonField<List<SexualMinor>>,
+        private val violence: JsonField<List<Violence>>,
+        private val violenceGraphic: JsonField<List<ViolenceGraphic>>,
+        private val additionalProperties: MutableMap<String, JsonValue>,
     ) {
+
+        @JsonCreator
+        private constructor(
+            @JsonProperty("harassment")
+            @ExcludeMissing
+            harassment: JsonField<List<Harassment>> = JsonMissing.of(),
+            @JsonProperty("harassment/threatening")
+            @ExcludeMissing
+            harassmentThreatening: JsonField<List<HarassmentThreatening>> = JsonMissing.of(),
+            @JsonProperty("hate") @ExcludeMissing hate: JsonField<List<Hate>> = JsonMissing.of(),
+            @JsonProperty("hate/threatening")
+            @ExcludeMissing
+            hateThreatening: JsonField<List<HateThreatening>> = JsonMissing.of(),
+            @JsonProperty("illicit")
+            @ExcludeMissing
+            illicit: JsonField<List<Illicit>> = JsonMissing.of(),
+            @JsonProperty("illicit/violent")
+            @ExcludeMissing
+            illicitViolent: JsonField<List<IllicitViolent>> = JsonMissing.of(),
+            @JsonProperty("self-harm")
+            @ExcludeMissing
+            selfHarm: JsonField<List<SelfHarm>> = JsonMissing.of(),
+            @JsonProperty("self-harm/instructions")
+            @ExcludeMissing
+            selfHarmInstructions: JsonField<List<SelfHarmInstruction>> = JsonMissing.of(),
+            @JsonProperty("self-harm/intent")
+            @ExcludeMissing
+            selfHarmIntent: JsonField<List<SelfHarmIntent>> = JsonMissing.of(),
+            @JsonProperty("sexual")
+            @ExcludeMissing
+            sexual: JsonField<List<Sexual>> = JsonMissing.of(),
+            @JsonProperty("sexual/minors")
+            @ExcludeMissing
+            sexualMinors: JsonField<List<SexualMinor>> = JsonMissing.of(),
+            @JsonProperty("violence")
+            @ExcludeMissing
+            violence: JsonField<List<Violence>> = JsonMissing.of(),
+            @JsonProperty("violence/graphic")
+            @ExcludeMissing
+            violenceGraphic: JsonField<List<ViolenceGraphic>> = JsonMissing.of(),
+        ) : this(
+            harassment,
+            harassmentThreatening,
+            hate,
+            hateThreatening,
+            illicit,
+            illicitViolent,
+            selfHarm,
+            selfHarmInstructions,
+            selfHarmIntent,
+            sexual,
+            sexualMinors,
+            violence,
+            violenceGraphic,
+            mutableMapOf(),
+        )
 
         /**
          * The applied input type(s) for the category 'harassment'.
@@ -1215,32 +1279,15 @@ private constructor(
         @ExcludeMissing
         fun _violenceGraphic(): JsonField<List<ViolenceGraphic>> = violenceGraphic
 
+        @JsonAnySetter
+        private fun putAdditionalProperty(key: String, value: JsonValue) {
+            additionalProperties.put(key, value)
+        }
+
         @JsonAnyGetter
         @ExcludeMissing
-        fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-        private var validated: Boolean = false
-
-        fun validate(): CategoryAppliedInputTypes = apply {
-            if (validated) {
-                return@apply
-            }
-
-            harassment()
-            harassmentThreatening()
-            hate()
-            hateThreatening()
-            illicit()
-            illicitViolent()
-            selfHarm()
-            selfHarmInstructions()
-            selfHarmIntent()
-            sexual()
-            sexualMinors()
-            violence()
-            violenceGraphic()
-            validated = true
-        }
+        fun _additionalProperties(): Map<String, JsonValue> =
+            Collections.unmodifiableMap(additionalProperties)
 
         fun toBuilder() = Builder().from(this)
 
@@ -1720,8 +1767,31 @@ private constructor(
                     checkRequired("sexualMinors", sexualMinors).map { it.toImmutable() },
                     checkRequired("violence", violence).map { it.toImmutable() },
                     checkRequired("violenceGraphic", violenceGraphic).map { it.toImmutable() },
-                    additionalProperties.toImmutable(),
+                    additionalProperties.toMutableMap(),
                 )
+        }
+
+        private var validated: Boolean = false
+
+        fun validate(): CategoryAppliedInputTypes = apply {
+            if (validated) {
+                return@apply
+            }
+
+            harassment()
+            harassmentThreatening()
+            hate()
+            hateThreatening()
+            illicit()
+            illicitViolent()
+            selfHarm()
+            selfHarmInstructions()
+            selfHarmIntent()
+            sexual()
+            sexualMinors()
+            violence()
+            violenceGraphic()
+            validated = true
         }
 
         class Harassment @JsonCreator private constructor(private val value: JsonField<String>) :
@@ -3055,52 +3125,75 @@ private constructor(
     }
 
     /** A list of the categories along with their scores as predicted by model. */
-    @NoAutoDetect
     class CategoryScores
-    @JsonCreator
     private constructor(
-        @JsonProperty("harassment")
-        @ExcludeMissing
-        private val harassment: JsonField<Double> = JsonMissing.of(),
-        @JsonProperty("harassment/threatening")
-        @ExcludeMissing
-        private val harassmentThreatening: JsonField<Double> = JsonMissing.of(),
-        @JsonProperty("hate")
-        @ExcludeMissing
-        private val hate: JsonField<Double> = JsonMissing.of(),
-        @JsonProperty("hate/threatening")
-        @ExcludeMissing
-        private val hateThreatening: JsonField<Double> = JsonMissing.of(),
-        @JsonProperty("illicit")
-        @ExcludeMissing
-        private val illicit: JsonField<Double> = JsonMissing.of(),
-        @JsonProperty("illicit/violent")
-        @ExcludeMissing
-        private val illicitViolent: JsonField<Double> = JsonMissing.of(),
-        @JsonProperty("self-harm")
-        @ExcludeMissing
-        private val selfHarm: JsonField<Double> = JsonMissing.of(),
-        @JsonProperty("self-harm/instructions")
-        @ExcludeMissing
-        private val selfHarmInstructions: JsonField<Double> = JsonMissing.of(),
-        @JsonProperty("self-harm/intent")
-        @ExcludeMissing
-        private val selfHarmIntent: JsonField<Double> = JsonMissing.of(),
-        @JsonProperty("sexual")
-        @ExcludeMissing
-        private val sexual: JsonField<Double> = JsonMissing.of(),
-        @JsonProperty("sexual/minors")
-        @ExcludeMissing
-        private val sexualMinors: JsonField<Double> = JsonMissing.of(),
-        @JsonProperty("violence")
-        @ExcludeMissing
-        private val violence: JsonField<Double> = JsonMissing.of(),
-        @JsonProperty("violence/graphic")
-        @ExcludeMissing
-        private val violenceGraphic: JsonField<Double> = JsonMissing.of(),
-        @JsonAnySetter
-        private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
+        private val harassment: JsonField<Double>,
+        private val harassmentThreatening: JsonField<Double>,
+        private val hate: JsonField<Double>,
+        private val hateThreatening: JsonField<Double>,
+        private val illicit: JsonField<Double>,
+        private val illicitViolent: JsonField<Double>,
+        private val selfHarm: JsonField<Double>,
+        private val selfHarmInstructions: JsonField<Double>,
+        private val selfHarmIntent: JsonField<Double>,
+        private val sexual: JsonField<Double>,
+        private val sexualMinors: JsonField<Double>,
+        private val violence: JsonField<Double>,
+        private val violenceGraphic: JsonField<Double>,
+        private val additionalProperties: MutableMap<String, JsonValue>,
     ) {
+
+        @JsonCreator
+        private constructor(
+            @JsonProperty("harassment")
+            @ExcludeMissing
+            harassment: JsonField<Double> = JsonMissing.of(),
+            @JsonProperty("harassment/threatening")
+            @ExcludeMissing
+            harassmentThreatening: JsonField<Double> = JsonMissing.of(),
+            @JsonProperty("hate") @ExcludeMissing hate: JsonField<Double> = JsonMissing.of(),
+            @JsonProperty("hate/threatening")
+            @ExcludeMissing
+            hateThreatening: JsonField<Double> = JsonMissing.of(),
+            @JsonProperty("illicit") @ExcludeMissing illicit: JsonField<Double> = JsonMissing.of(),
+            @JsonProperty("illicit/violent")
+            @ExcludeMissing
+            illicitViolent: JsonField<Double> = JsonMissing.of(),
+            @JsonProperty("self-harm")
+            @ExcludeMissing
+            selfHarm: JsonField<Double> = JsonMissing.of(),
+            @JsonProperty("self-harm/instructions")
+            @ExcludeMissing
+            selfHarmInstructions: JsonField<Double> = JsonMissing.of(),
+            @JsonProperty("self-harm/intent")
+            @ExcludeMissing
+            selfHarmIntent: JsonField<Double> = JsonMissing.of(),
+            @JsonProperty("sexual") @ExcludeMissing sexual: JsonField<Double> = JsonMissing.of(),
+            @JsonProperty("sexual/minors")
+            @ExcludeMissing
+            sexualMinors: JsonField<Double> = JsonMissing.of(),
+            @JsonProperty("violence")
+            @ExcludeMissing
+            violence: JsonField<Double> = JsonMissing.of(),
+            @JsonProperty("violence/graphic")
+            @ExcludeMissing
+            violenceGraphic: JsonField<Double> = JsonMissing.of(),
+        ) : this(
+            harassment,
+            harassmentThreatening,
+            hate,
+            hateThreatening,
+            illicit,
+            illicitViolent,
+            selfHarm,
+            selfHarmInstructions,
+            selfHarmIntent,
+            sexual,
+            sexualMinors,
+            violence,
+            violenceGraphic,
+            mutableMapOf(),
+        )
 
         /**
          * The score for the category 'harassment'.
@@ -3322,32 +3415,15 @@ private constructor(
         @ExcludeMissing
         fun _violenceGraphic(): JsonField<Double> = violenceGraphic
 
+        @JsonAnySetter
+        private fun putAdditionalProperty(key: String, value: JsonValue) {
+            additionalProperties.put(key, value)
+        }
+
         @JsonAnyGetter
         @ExcludeMissing
-        fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-        private var validated: Boolean = false
-
-        fun validate(): CategoryScores = apply {
-            if (validated) {
-                return@apply
-            }
-
-            harassment()
-            harassmentThreatening()
-            hate()
-            hateThreatening()
-            illicit()
-            illicitViolent()
-            selfHarm()
-            selfHarmInstructions()
-            selfHarmIntent()
-            sexual()
-            sexualMinors()
-            violence()
-            violenceGraphic()
-            validated = true
-        }
+        fun _additionalProperties(): Map<String, JsonValue> =
+            Collections.unmodifiableMap(additionalProperties)
 
         fun toBuilder() = Builder().from(this)
 
@@ -3646,8 +3722,31 @@ private constructor(
                     checkRequired("sexualMinors", sexualMinors),
                     checkRequired("violence", violence),
                     checkRequired("violenceGraphic", violenceGraphic),
-                    additionalProperties.toImmutable(),
+                    additionalProperties.toMutableMap(),
                 )
+        }
+
+        private var validated: Boolean = false
+
+        fun validate(): CategoryScores = apply {
+            if (validated) {
+                return@apply
+            }
+
+            harassment()
+            harassmentThreatening()
+            hate()
+            hateThreatening()
+            illicit()
+            illicitViolent()
+            selfHarm()
+            selfHarmInstructions()
+            selfHarmIntent()
+            sexual()
+            sexualMinors()
+            violence()
+            violenceGraphic()
+            validated = true
         }
 
         override fun equals(other: Any?): Boolean {

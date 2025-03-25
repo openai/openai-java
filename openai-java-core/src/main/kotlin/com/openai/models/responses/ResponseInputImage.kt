@@ -11,11 +11,9 @@ import com.openai.core.ExcludeMissing
 import com.openai.core.JsonField
 import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
-import com.openai.core.NoAutoDetect
 import com.openai.core.checkRequired
-import com.openai.core.immutableEmptyMap
-import com.openai.core.toImmutable
 import com.openai.errors.OpenAIInvalidDataException
+import java.util.Collections
 import java.util.Objects
 import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
@@ -24,22 +22,22 @@ import kotlin.jvm.optionals.getOrNull
  * An image input to the model. Learn about
  * [image inputs](https://platform.openai.com/docs/guides/vision).
  */
-@NoAutoDetect
 class ResponseInputImage
-@JsonCreator
 private constructor(
-    @JsonProperty("detail")
-    @ExcludeMissing
-    private val detail: JsonField<Detail> = JsonMissing.of(),
-    @JsonProperty("type") @ExcludeMissing private val type: JsonValue = JsonMissing.of(),
-    @JsonProperty("file_id")
-    @ExcludeMissing
-    private val fileId: JsonField<String> = JsonMissing.of(),
-    @JsonProperty("image_url")
-    @ExcludeMissing
-    private val imageUrl: JsonField<String> = JsonMissing.of(),
-    @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
+    private val detail: JsonField<Detail>,
+    private val type: JsonValue,
+    private val fileId: JsonField<String>,
+    private val imageUrl: JsonField<String>,
+    private val additionalProperties: MutableMap<String, JsonValue>,
 ) {
+
+    @JsonCreator
+    private constructor(
+        @JsonProperty("detail") @ExcludeMissing detail: JsonField<Detail> = JsonMissing.of(),
+        @JsonProperty("type") @ExcludeMissing type: JsonValue = JsonMissing.of(),
+        @JsonProperty("file_id") @ExcludeMissing fileId: JsonField<String> = JsonMissing.of(),
+        @JsonProperty("image_url") @ExcludeMissing imageUrl: JsonField<String> = JsonMissing.of(),
+    ) : this(detail, type, fileId, imageUrl, mutableMapOf())
 
     /**
      * The detail level of the image to be sent to the model. One of `high`, `low`, or `auto`.
@@ -101,27 +99,15 @@ private constructor(
      */
     @JsonProperty("image_url") @ExcludeMissing fun _imageUrl(): JsonField<String> = imageUrl
 
+    @JsonAnySetter
+    private fun putAdditionalProperty(key: String, value: JsonValue) {
+        additionalProperties.put(key, value)
+    }
+
     @JsonAnyGetter
     @ExcludeMissing
-    fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-    private var validated: Boolean = false
-
-    fun validate(): ResponseInputImage = apply {
-        if (validated) {
-            return@apply
-        }
-
-        detail()
-        _type().let {
-            if (it != JsonValue.from("input_image")) {
-                throw OpenAIInvalidDataException("'type' is invalid, received $it")
-            }
-        }
-        fileId()
-        imageUrl()
-        validated = true
-    }
+    fun _additionalProperties(): Map<String, JsonValue> =
+        Collections.unmodifiableMap(additionalProperties)
 
     fun toBuilder() = Builder().from(this)
 
@@ -252,8 +238,26 @@ private constructor(
                 type,
                 fileId,
                 imageUrl,
-                additionalProperties.toImmutable(),
+                additionalProperties.toMutableMap(),
             )
+    }
+
+    private var validated: Boolean = false
+
+    fun validate(): ResponseInputImage = apply {
+        if (validated) {
+            return@apply
+        }
+
+        detail()
+        _type().let {
+            if (it != JsonValue.from("input_image")) {
+                throw OpenAIInvalidDataException("'type' is invalid, received $it")
+            }
+        }
+        fileId()
+        imageUrl()
+        validated = true
     }
 
     /**

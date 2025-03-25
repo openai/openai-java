@@ -10,26 +10,28 @@ import com.openai.core.ExcludeMissing
 import com.openai.core.JsonField
 import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
-import com.openai.core.NoAutoDetect
 import com.openai.core.checkRequired
-import com.openai.core.immutableEmptyMap
-import com.openai.core.toImmutable
 import com.openai.errors.OpenAIInvalidDataException
+import java.util.Collections
 import java.util.Objects
 import java.util.Optional
 
-@NoAutoDetect
 class FileSearchToolCallDelta
-@JsonCreator
 private constructor(
-    @JsonProperty("file_search")
-    @ExcludeMissing
-    private val fileSearch: JsonValue = JsonMissing.of(),
-    @JsonProperty("index") @ExcludeMissing private val index: JsonField<Long> = JsonMissing.of(),
-    @JsonProperty("type") @ExcludeMissing private val type: JsonValue = JsonMissing.of(),
-    @JsonProperty("id") @ExcludeMissing private val id: JsonField<String> = JsonMissing.of(),
-    @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
+    private val fileSearch: JsonValue,
+    private val index: JsonField<Long>,
+    private val type: JsonValue,
+    private val id: JsonField<String>,
+    private val additionalProperties: MutableMap<String, JsonValue>,
 ) {
+
+    @JsonCreator
+    private constructor(
+        @JsonProperty("file_search") @ExcludeMissing fileSearch: JsonValue = JsonMissing.of(),
+        @JsonProperty("index") @ExcludeMissing index: JsonField<Long> = JsonMissing.of(),
+        @JsonProperty("type") @ExcludeMissing type: JsonValue = JsonMissing.of(),
+        @JsonProperty("id") @ExcludeMissing id: JsonField<String> = JsonMissing.of(),
+    ) : this(fileSearch, index, type, id, mutableMapOf())
 
     /** For now, this is always going to be an empty object. */
     @JsonProperty("file_search") @ExcludeMissing fun _fileSearch(): JsonValue = fileSearch
@@ -77,26 +79,15 @@ private constructor(
      */
     @JsonProperty("id") @ExcludeMissing fun _id(): JsonField<String> = id
 
+    @JsonAnySetter
+    private fun putAdditionalProperty(key: String, value: JsonValue) {
+        additionalProperties.put(key, value)
+    }
+
     @JsonAnyGetter
     @ExcludeMissing
-    fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-    private var validated: Boolean = false
-
-    fun validate(): FileSearchToolCallDelta = apply {
-        if (validated) {
-            return@apply
-        }
-
-        index()
-        _type().let {
-            if (it != JsonValue.from("file_search")) {
-                throw OpenAIInvalidDataException("'type' is invalid, received $it")
-            }
-        }
-        id()
-        validated = true
-    }
+    fun _additionalProperties(): Map<String, JsonValue> =
+        Collections.unmodifiableMap(additionalProperties)
 
     fun toBuilder() = Builder().from(this)
 
@@ -209,8 +200,25 @@ private constructor(
                 checkRequired("index", index),
                 type,
                 id,
-                additionalProperties.toImmutable(),
+                additionalProperties.toMutableMap(),
             )
+    }
+
+    private var validated: Boolean = false
+
+    fun validate(): FileSearchToolCallDelta = apply {
+        if (validated) {
+            return@apply
+        }
+
+        index()
+        _type().let {
+            if (it != JsonValue.from("file_search")) {
+                throw OpenAIInvalidDataException("'type' is invalid, received $it")
+            }
+        }
+        id()
+        validated = true
     }
 
     override fun equals(other: Any?): Boolean {

@@ -11,7 +11,6 @@ import org.junit.jupiter.api.Test
 
 internal class SerializerTest {
     @JsonDeserialize(builder = ClassWithBooleanFieldPrefixedWithIs.Builder::class)
-    @NoAutoDetect
     class ClassWithBooleanFieldPrefixedWithIs
     private constructor(
         private val isActive: JsonField<Boolean>,
@@ -60,7 +59,6 @@ internal class SerializerTest {
             fun builder() = Builder()
         }
 
-        @NoAutoDetect
         class Builder internal constructor() {
 
             private var isActive: JsonField<Boolean> = JsonMissing.of()

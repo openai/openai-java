@@ -10,30 +10,30 @@ import com.openai.core.ExcludeMissing
 import com.openai.core.JsonField
 import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
-import com.openai.core.NoAutoDetect
 import com.openai.core.checkRequired
-import com.openai.core.immutableEmptyMap
-import com.openai.core.toImmutable
 import com.openai.errors.OpenAIInvalidDataException
+import java.util.Collections
 import java.util.Objects
 
 /** Emitted when function-call arguments are finalized. */
-@NoAutoDetect
 class ResponseFunctionCallArgumentsDoneEvent
-@JsonCreator
 private constructor(
-    @JsonProperty("arguments")
-    @ExcludeMissing
-    private val arguments: JsonField<String> = JsonMissing.of(),
-    @JsonProperty("item_id")
-    @ExcludeMissing
-    private val itemId: JsonField<String> = JsonMissing.of(),
-    @JsonProperty("output_index")
-    @ExcludeMissing
-    private val outputIndex: JsonField<Long> = JsonMissing.of(),
-    @JsonProperty("type") @ExcludeMissing private val type: JsonValue = JsonMissing.of(),
-    @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
+    private val arguments: JsonField<String>,
+    private val itemId: JsonField<String>,
+    private val outputIndex: JsonField<Long>,
+    private val type: JsonValue,
+    private val additionalProperties: MutableMap<String, JsonValue>,
 ) {
+
+    @JsonCreator
+    private constructor(
+        @JsonProperty("arguments") @ExcludeMissing arguments: JsonField<String> = JsonMissing.of(),
+        @JsonProperty("item_id") @ExcludeMissing itemId: JsonField<String> = JsonMissing.of(),
+        @JsonProperty("output_index")
+        @ExcludeMissing
+        outputIndex: JsonField<Long> = JsonMissing.of(),
+        @JsonProperty("type") @ExcludeMissing type: JsonValue = JsonMissing.of(),
+    ) : this(arguments, itemId, outputIndex, type, mutableMapOf())
 
     /**
      * The function-call arguments.
@@ -91,27 +91,15 @@ private constructor(
      */
     @JsonProperty("output_index") @ExcludeMissing fun _outputIndex(): JsonField<Long> = outputIndex
 
+    @JsonAnySetter
+    private fun putAdditionalProperty(key: String, value: JsonValue) {
+        additionalProperties.put(key, value)
+    }
+
     @JsonAnyGetter
     @ExcludeMissing
-    fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-    private var validated: Boolean = false
-
-    fun validate(): ResponseFunctionCallArgumentsDoneEvent = apply {
-        if (validated) {
-            return@apply
-        }
-
-        arguments()
-        itemId()
-        outputIndex()
-        _type().let {
-            if (it != JsonValue.from("response.function_call_arguments.done")) {
-                throw OpenAIInvalidDataException("'type' is invalid, received $it")
-            }
-        }
-        validated = true
-    }
+    fun _additionalProperties(): Map<String, JsonValue> =
+        Collections.unmodifiableMap(additionalProperties)
 
     fun toBuilder() = Builder().from(this)
 
@@ -240,8 +228,26 @@ private constructor(
                 checkRequired("itemId", itemId),
                 checkRequired("outputIndex", outputIndex),
                 type,
-                additionalProperties.toImmutable(),
+                additionalProperties.toMutableMap(),
             )
+    }
+
+    private var validated: Boolean = false
+
+    fun validate(): ResponseFunctionCallArgumentsDoneEvent = apply {
+        if (validated) {
+            return@apply
+        }
+
+        arguments()
+        itemId()
+        outputIndex()
+        _type().let {
+            if (it != JsonValue.from("response.function_call_arguments.done")) {
+                throw OpenAIInvalidDataException("'type' is invalid, received $it")
+            }
+        }
+        validated = true
     }
 
     override fun equals(other: Any?): Boolean {

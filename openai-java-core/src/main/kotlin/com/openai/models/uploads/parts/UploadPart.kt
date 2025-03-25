@@ -10,28 +10,28 @@ import com.openai.core.ExcludeMissing
 import com.openai.core.JsonField
 import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
-import com.openai.core.NoAutoDetect
 import com.openai.core.checkRequired
-import com.openai.core.immutableEmptyMap
-import com.openai.core.toImmutable
 import com.openai.errors.OpenAIInvalidDataException
+import java.util.Collections
 import java.util.Objects
 
 /** The upload Part represents a chunk of bytes we can add to an Upload object. */
-@NoAutoDetect
 class UploadPart
-@JsonCreator
 private constructor(
-    @JsonProperty("id") @ExcludeMissing private val id: JsonField<String> = JsonMissing.of(),
-    @JsonProperty("created_at")
-    @ExcludeMissing
-    private val createdAt: JsonField<Long> = JsonMissing.of(),
-    @JsonProperty("object") @ExcludeMissing private val object_: JsonValue = JsonMissing.of(),
-    @JsonProperty("upload_id")
-    @ExcludeMissing
-    private val uploadId: JsonField<String> = JsonMissing.of(),
-    @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
+    private val id: JsonField<String>,
+    private val createdAt: JsonField<Long>,
+    private val object_: JsonValue,
+    private val uploadId: JsonField<String>,
+    private val additionalProperties: MutableMap<String, JsonValue>,
 ) {
+
+    @JsonCreator
+    private constructor(
+        @JsonProperty("id") @ExcludeMissing id: JsonField<String> = JsonMissing.of(),
+        @JsonProperty("created_at") @ExcludeMissing createdAt: JsonField<Long> = JsonMissing.of(),
+        @JsonProperty("object") @ExcludeMissing object_: JsonValue = JsonMissing.of(),
+        @JsonProperty("upload_id") @ExcludeMissing uploadId: JsonField<String> = JsonMissing.of(),
+    ) : this(id, createdAt, object_, uploadId, mutableMapOf())
 
     /**
      * The upload Part unique identifier, which can be referenced in API endpoints.
@@ -91,27 +91,15 @@ private constructor(
      */
     @JsonProperty("upload_id") @ExcludeMissing fun _uploadId(): JsonField<String> = uploadId
 
+    @JsonAnySetter
+    private fun putAdditionalProperty(key: String, value: JsonValue) {
+        additionalProperties.put(key, value)
+    }
+
     @JsonAnyGetter
     @ExcludeMissing
-    fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-    private var validated: Boolean = false
-
-    fun validate(): UploadPart = apply {
-        if (validated) {
-            return@apply
-        }
-
-        id()
-        createdAt()
-        _object_().let {
-            if (it != JsonValue.from("upload.part")) {
-                throw OpenAIInvalidDataException("'object_' is invalid, received $it")
-            }
-        }
-        uploadId()
-        validated = true
-    }
+    fun _additionalProperties(): Map<String, JsonValue> =
+        Collections.unmodifiableMap(additionalProperties)
 
     fun toBuilder() = Builder().from(this)
 
@@ -234,8 +222,26 @@ private constructor(
                 checkRequired("createdAt", createdAt),
                 object_,
                 checkRequired("uploadId", uploadId),
-                additionalProperties.toImmutable(),
+                additionalProperties.toMutableMap(),
             )
+    }
+
+    private var validated: Boolean = false
+
+    fun validate(): UploadPart = apply {
+        if (validated) {
+            return@apply
+        }
+
+        id()
+        createdAt()
+        _object_().let {
+            if (it != JsonValue.from("upload.part")) {
+                throw OpenAIInvalidDataException("'object_' is invalid, received $it")
+            }
+        }
+        uploadId()
+        validated = true
     }
 
     override fun equals(other: Any?): Boolean {

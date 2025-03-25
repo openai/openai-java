@@ -11,15 +11,13 @@ import com.openai.core.ExcludeMissing
 import com.openai.core.JsonField
 import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
-import com.openai.core.NoAutoDetect
 import com.openai.core.Params
 import com.openai.core.checkRequired
 import com.openai.core.http.Headers
 import com.openai.core.http.QueryParams
-import com.openai.core.immutableEmptyMap
-import com.openai.core.toImmutable
 import com.openai.errors.OpenAIInvalidDataException
 import com.openai.models.Metadata
+import java.util.Collections
 import java.util.Objects
 import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
@@ -115,309 +113,6 @@ private constructor(
 
     fun _additionalQueryParams(): QueryParams = additionalQueryParams
 
-    @JvmSynthetic internal fun _body(): Body = body
-
-    override fun _headers(): Headers = additionalHeaders
-
-    override fun _queryParams(): QueryParams = additionalQueryParams
-
-    @NoAutoDetect
-    class Body
-    @JsonCreator
-    private constructor(
-        @JsonProperty("completion_window")
-        @ExcludeMissing
-        private val completionWindow: JsonField<CompletionWindow> = JsonMissing.of(),
-        @JsonProperty("endpoint")
-        @ExcludeMissing
-        private val endpoint: JsonField<Endpoint> = JsonMissing.of(),
-        @JsonProperty("input_file_id")
-        @ExcludeMissing
-        private val inputFileId: JsonField<String> = JsonMissing.of(),
-        @JsonProperty("metadata")
-        @ExcludeMissing
-        private val metadata: JsonField<Metadata> = JsonMissing.of(),
-        @JsonAnySetter
-        private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
-    ) {
-
-        /**
-         * The time frame within which the batch should be processed. Currently only `24h` is
-         * supported.
-         *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
-         */
-        fun completionWindow(): CompletionWindow = completionWindow.getRequired("completion_window")
-
-        /**
-         * The endpoint to be used for all requests in the batch. Currently `/v1/responses`,
-         * `/v1/chat/completions`, `/v1/embeddings`, and `/v1/completions` are supported. Note that
-         * `/v1/embeddings` batches are also restricted to a maximum of 50,000 embedding inputs
-         * across all requests in the batch.
-         *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
-         */
-        fun endpoint(): Endpoint = endpoint.getRequired("endpoint")
-
-        /**
-         * The ID of an uploaded file that contains requests for the new batch.
-         *
-         * See [upload file](https://platform.openai.com/docs/api-reference/files/create) for how to
-         * upload a file.
-         *
-         * Your input file must be formatted as a
-         * [JSONL file](https://platform.openai.com/docs/api-reference/batch/request-input), and
-         * must be uploaded with the purpose `batch`. The file can contain up to 50,000 requests,
-         * and can be up to 200 MB in size.
-         *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
-         */
-        fun inputFileId(): String = inputFileId.getRequired("input_file_id")
-
-        /**
-         * Set of 16 key-value pairs that can be attached to an object. This can be useful for
-         * storing additional information about the object in a structured format, and querying for
-         * objects via API or the dashboard.
-         *
-         * Keys are strings with a maximum length of 64 characters. Values are strings with a
-         * maximum length of 512 characters.
-         *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
-         */
-        fun metadata(): Optional<Metadata> = Optional.ofNullable(metadata.getNullable("metadata"))
-
-        /**
-         * Returns the raw JSON value of [completionWindow].
-         *
-         * Unlike [completionWindow], this method doesn't throw if the JSON field has an unexpected
-         * type.
-         */
-        @JsonProperty("completion_window")
-        @ExcludeMissing
-        fun _completionWindow(): JsonField<CompletionWindow> = completionWindow
-
-        /**
-         * Returns the raw JSON value of [endpoint].
-         *
-         * Unlike [endpoint], this method doesn't throw if the JSON field has an unexpected type.
-         */
-        @JsonProperty("endpoint") @ExcludeMissing fun _endpoint(): JsonField<Endpoint> = endpoint
-
-        /**
-         * Returns the raw JSON value of [inputFileId].
-         *
-         * Unlike [inputFileId], this method doesn't throw if the JSON field has an unexpected type.
-         */
-        @JsonProperty("input_file_id")
-        @ExcludeMissing
-        fun _inputFileId(): JsonField<String> = inputFileId
-
-        /**
-         * Returns the raw JSON value of [metadata].
-         *
-         * Unlike [metadata], this method doesn't throw if the JSON field has an unexpected type.
-         */
-        @JsonProperty("metadata") @ExcludeMissing fun _metadata(): JsonField<Metadata> = metadata
-
-        @JsonAnyGetter
-        @ExcludeMissing
-        fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-        private var validated: Boolean = false
-
-        fun validate(): Body = apply {
-            if (validated) {
-                return@apply
-            }
-
-            completionWindow()
-            endpoint()
-            inputFileId()
-            metadata().ifPresent { it.validate() }
-            validated = true
-        }
-
-        fun toBuilder() = Builder().from(this)
-
-        companion object {
-
-            /**
-             * Returns a mutable builder for constructing an instance of [Body].
-             *
-             * The following fields are required:
-             * ```java
-             * .completionWindow()
-             * .endpoint()
-             * .inputFileId()
-             * ```
-             */
-            @JvmStatic fun builder() = Builder()
-        }
-
-        /** A builder for [Body]. */
-        class Builder internal constructor() {
-
-            private var completionWindow: JsonField<CompletionWindow>? = null
-            private var endpoint: JsonField<Endpoint>? = null
-            private var inputFileId: JsonField<String>? = null
-            private var metadata: JsonField<Metadata> = JsonMissing.of()
-            private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
-
-            @JvmSynthetic
-            internal fun from(body: Body) = apply {
-                completionWindow = body.completionWindow
-                endpoint = body.endpoint
-                inputFileId = body.inputFileId
-                metadata = body.metadata
-                additionalProperties = body.additionalProperties.toMutableMap()
-            }
-
-            /**
-             * The time frame within which the batch should be processed. Currently only `24h` is
-             * supported.
-             */
-            fun completionWindow(completionWindow: CompletionWindow) =
-                completionWindow(JsonField.of(completionWindow))
-
-            /**
-             * Sets [Builder.completionWindow] to an arbitrary JSON value.
-             *
-             * You should usually call [Builder.completionWindow] with a well-typed
-             * [CompletionWindow] value instead. This method is primarily for setting the field to
-             * an undocumented or not yet supported value.
-             */
-            fun completionWindow(completionWindow: JsonField<CompletionWindow>) = apply {
-                this.completionWindow = completionWindow
-            }
-
-            /**
-             * The endpoint to be used for all requests in the batch. Currently `/v1/responses`,
-             * `/v1/chat/completions`, `/v1/embeddings`, and `/v1/completions` are supported. Note
-             * that `/v1/embeddings` batches are also restricted to a maximum of 50,000 embedding
-             * inputs across all requests in the batch.
-             */
-            fun endpoint(endpoint: Endpoint) = endpoint(JsonField.of(endpoint))
-
-            /**
-             * Sets [Builder.endpoint] to an arbitrary JSON value.
-             *
-             * You should usually call [Builder.endpoint] with a well-typed [Endpoint] value
-             * instead. This method is primarily for setting the field to an undocumented or not yet
-             * supported value.
-             */
-            fun endpoint(endpoint: JsonField<Endpoint>) = apply { this.endpoint = endpoint }
-
-            /**
-             * The ID of an uploaded file that contains requests for the new batch.
-             *
-             * See [upload file](https://platform.openai.com/docs/api-reference/files/create) for
-             * how to upload a file.
-             *
-             * Your input file must be formatted as a
-             * [JSONL file](https://platform.openai.com/docs/api-reference/batch/request-input), and
-             * must be uploaded with the purpose `batch`. The file can contain up to 50,000
-             * requests, and can be up to 200 MB in size.
-             */
-            fun inputFileId(inputFileId: String) = inputFileId(JsonField.of(inputFileId))
-
-            /**
-             * Sets [Builder.inputFileId] to an arbitrary JSON value.
-             *
-             * You should usually call [Builder.inputFileId] with a well-typed [String] value
-             * instead. This method is primarily for setting the field to an undocumented or not yet
-             * supported value.
-             */
-            fun inputFileId(inputFileId: JsonField<String>) = apply {
-                this.inputFileId = inputFileId
-            }
-
-            /**
-             * Set of 16 key-value pairs that can be attached to an object. This can be useful for
-             * storing additional information about the object in a structured format, and querying
-             * for objects via API or the dashboard.
-             *
-             * Keys are strings with a maximum length of 64 characters. Values are strings with a
-             * maximum length of 512 characters.
-             */
-            fun metadata(metadata: Metadata?) = metadata(JsonField.ofNullable(metadata))
-
-            /** Alias for calling [Builder.metadata] with `metadata.orElse(null)`. */
-            fun metadata(metadata: Optional<Metadata>) = metadata(metadata.getOrNull())
-
-            /**
-             * Sets [Builder.metadata] to an arbitrary JSON value.
-             *
-             * You should usually call [Builder.metadata] with a well-typed [Metadata] value
-             * instead. This method is primarily for setting the field to an undocumented or not yet
-             * supported value.
-             */
-            fun metadata(metadata: JsonField<Metadata>) = apply { this.metadata = metadata }
-
-            fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
-                this.additionalProperties.clear()
-                putAllAdditionalProperties(additionalProperties)
-            }
-
-            fun putAdditionalProperty(key: String, value: JsonValue) = apply {
-                additionalProperties.put(key, value)
-            }
-
-            fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
-                this.additionalProperties.putAll(additionalProperties)
-            }
-
-            fun removeAdditionalProperty(key: String) = apply { additionalProperties.remove(key) }
-
-            fun removeAllAdditionalProperties(keys: Set<String>) = apply {
-                keys.forEach(::removeAdditionalProperty)
-            }
-
-            /**
-             * Returns an immutable instance of [Body].
-             *
-             * Further updates to this [Builder] will not mutate the returned instance.
-             *
-             * The following fields are required:
-             * ```java
-             * .completionWindow()
-             * .endpoint()
-             * .inputFileId()
-             * ```
-             *
-             * @throws IllegalStateException if any required field is unset.
-             */
-            fun build(): Body =
-                Body(
-                    checkRequired("completionWindow", completionWindow),
-                    checkRequired("endpoint", endpoint),
-                    checkRequired("inputFileId", inputFileId),
-                    metadata,
-                    additionalProperties.toImmutable(),
-                )
-        }
-
-        override fun equals(other: Any?): Boolean {
-            if (this === other) {
-                return true
-            }
-
-            return /* spotless:off */ other is Body && completionWindow == other.completionWindow && endpoint == other.endpoint && inputFileId == other.inputFileId && metadata == other.metadata && additionalProperties == other.additionalProperties /* spotless:on */
-        }
-
-        /* spotless:off */
-        private val hashCode: Int by lazy { Objects.hash(completionWindow, endpoint, inputFileId, metadata, additionalProperties) }
-        /* spotless:on */
-
-        override fun hashCode(): Int = hashCode
-
-        override fun toString() =
-            "Body{completionWindow=$completionWindow, endpoint=$endpoint, inputFileId=$inputFileId, metadata=$metadata, additionalProperties=$additionalProperties}"
-    }
-
     fun toBuilder() = Builder().from(this)
 
     companion object {
@@ -436,7 +131,6 @@ private constructor(
     }
 
     /** A builder for [BatchCreateParams]. */
-    @NoAutoDetect
     class Builder internal constructor() {
 
         private var body: Body.Builder = Body.builder()
@@ -667,6 +361,320 @@ private constructor(
                 additionalHeaders.build(),
                 additionalQueryParams.build(),
             )
+    }
+
+    @JvmSynthetic internal fun _body(): Body = body
+
+    override fun _headers(): Headers = additionalHeaders
+
+    override fun _queryParams(): QueryParams = additionalQueryParams
+
+    class Body
+    private constructor(
+        private val completionWindow: JsonField<CompletionWindow>,
+        private val endpoint: JsonField<Endpoint>,
+        private val inputFileId: JsonField<String>,
+        private val metadata: JsonField<Metadata>,
+        private val additionalProperties: MutableMap<String, JsonValue>,
+    ) {
+
+        @JsonCreator
+        private constructor(
+            @JsonProperty("completion_window")
+            @ExcludeMissing
+            completionWindow: JsonField<CompletionWindow> = JsonMissing.of(),
+            @JsonProperty("endpoint")
+            @ExcludeMissing
+            endpoint: JsonField<Endpoint> = JsonMissing.of(),
+            @JsonProperty("input_file_id")
+            @ExcludeMissing
+            inputFileId: JsonField<String> = JsonMissing.of(),
+            @JsonProperty("metadata")
+            @ExcludeMissing
+            metadata: JsonField<Metadata> = JsonMissing.of(),
+        ) : this(completionWindow, endpoint, inputFileId, metadata, mutableMapOf())
+
+        /**
+         * The time frame within which the batch should be processed. Currently only `24h` is
+         * supported.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         */
+        fun completionWindow(): CompletionWindow = completionWindow.getRequired("completion_window")
+
+        /**
+         * The endpoint to be used for all requests in the batch. Currently `/v1/responses`,
+         * `/v1/chat/completions`, `/v1/embeddings`, and `/v1/completions` are supported. Note that
+         * `/v1/embeddings` batches are also restricted to a maximum of 50,000 embedding inputs
+         * across all requests in the batch.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         */
+        fun endpoint(): Endpoint = endpoint.getRequired("endpoint")
+
+        /**
+         * The ID of an uploaded file that contains requests for the new batch.
+         *
+         * See [upload file](https://platform.openai.com/docs/api-reference/files/create) for how to
+         * upload a file.
+         *
+         * Your input file must be formatted as a
+         * [JSONL file](https://platform.openai.com/docs/api-reference/batch/request-input), and
+         * must be uploaded with the purpose `batch`. The file can contain up to 50,000 requests,
+         * and can be up to 200 MB in size.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         */
+        fun inputFileId(): String = inputFileId.getRequired("input_file_id")
+
+        /**
+         * Set of 16 key-value pairs that can be attached to an object. This can be useful for
+         * storing additional information about the object in a structured format, and querying for
+         * objects via API or the dashboard.
+         *
+         * Keys are strings with a maximum length of 64 characters. Values are strings with a
+         * maximum length of 512 characters.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun metadata(): Optional<Metadata> = Optional.ofNullable(metadata.getNullable("metadata"))
+
+        /**
+         * Returns the raw JSON value of [completionWindow].
+         *
+         * Unlike [completionWindow], this method doesn't throw if the JSON field has an unexpected
+         * type.
+         */
+        @JsonProperty("completion_window")
+        @ExcludeMissing
+        fun _completionWindow(): JsonField<CompletionWindow> = completionWindow
+
+        /**
+         * Returns the raw JSON value of [endpoint].
+         *
+         * Unlike [endpoint], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("endpoint") @ExcludeMissing fun _endpoint(): JsonField<Endpoint> = endpoint
+
+        /**
+         * Returns the raw JSON value of [inputFileId].
+         *
+         * Unlike [inputFileId], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("input_file_id")
+        @ExcludeMissing
+        fun _inputFileId(): JsonField<String> = inputFileId
+
+        /**
+         * Returns the raw JSON value of [metadata].
+         *
+         * Unlike [metadata], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("metadata") @ExcludeMissing fun _metadata(): JsonField<Metadata> = metadata
+
+        @JsonAnySetter
+        private fun putAdditionalProperty(key: String, value: JsonValue) {
+            additionalProperties.put(key, value)
+        }
+
+        @JsonAnyGetter
+        @ExcludeMissing
+        fun _additionalProperties(): Map<String, JsonValue> =
+            Collections.unmodifiableMap(additionalProperties)
+
+        fun toBuilder() = Builder().from(this)
+
+        companion object {
+
+            /**
+             * Returns a mutable builder for constructing an instance of [Body].
+             *
+             * The following fields are required:
+             * ```java
+             * .completionWindow()
+             * .endpoint()
+             * .inputFileId()
+             * ```
+             */
+            @JvmStatic fun builder() = Builder()
+        }
+
+        /** A builder for [Body]. */
+        class Builder internal constructor() {
+
+            private var completionWindow: JsonField<CompletionWindow>? = null
+            private var endpoint: JsonField<Endpoint>? = null
+            private var inputFileId: JsonField<String>? = null
+            private var metadata: JsonField<Metadata> = JsonMissing.of()
+            private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
+
+            @JvmSynthetic
+            internal fun from(body: Body) = apply {
+                completionWindow = body.completionWindow
+                endpoint = body.endpoint
+                inputFileId = body.inputFileId
+                metadata = body.metadata
+                additionalProperties = body.additionalProperties.toMutableMap()
+            }
+
+            /**
+             * The time frame within which the batch should be processed. Currently only `24h` is
+             * supported.
+             */
+            fun completionWindow(completionWindow: CompletionWindow) =
+                completionWindow(JsonField.of(completionWindow))
+
+            /**
+             * Sets [Builder.completionWindow] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.completionWindow] with a well-typed
+             * [CompletionWindow] value instead. This method is primarily for setting the field to
+             * an undocumented or not yet supported value.
+             */
+            fun completionWindow(completionWindow: JsonField<CompletionWindow>) = apply {
+                this.completionWindow = completionWindow
+            }
+
+            /**
+             * The endpoint to be used for all requests in the batch. Currently `/v1/responses`,
+             * `/v1/chat/completions`, `/v1/embeddings`, and `/v1/completions` are supported. Note
+             * that `/v1/embeddings` batches are also restricted to a maximum of 50,000 embedding
+             * inputs across all requests in the batch.
+             */
+            fun endpoint(endpoint: Endpoint) = endpoint(JsonField.of(endpoint))
+
+            /**
+             * Sets [Builder.endpoint] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.endpoint] with a well-typed [Endpoint] value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun endpoint(endpoint: JsonField<Endpoint>) = apply { this.endpoint = endpoint }
+
+            /**
+             * The ID of an uploaded file that contains requests for the new batch.
+             *
+             * See [upload file](https://platform.openai.com/docs/api-reference/files/create) for
+             * how to upload a file.
+             *
+             * Your input file must be formatted as a
+             * [JSONL file](https://platform.openai.com/docs/api-reference/batch/request-input), and
+             * must be uploaded with the purpose `batch`. The file can contain up to 50,000
+             * requests, and can be up to 200 MB in size.
+             */
+            fun inputFileId(inputFileId: String) = inputFileId(JsonField.of(inputFileId))
+
+            /**
+             * Sets [Builder.inputFileId] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.inputFileId] with a well-typed [String] value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun inputFileId(inputFileId: JsonField<String>) = apply {
+                this.inputFileId = inputFileId
+            }
+
+            /**
+             * Set of 16 key-value pairs that can be attached to an object. This can be useful for
+             * storing additional information about the object in a structured format, and querying
+             * for objects via API or the dashboard.
+             *
+             * Keys are strings with a maximum length of 64 characters. Values are strings with a
+             * maximum length of 512 characters.
+             */
+            fun metadata(metadata: Metadata?) = metadata(JsonField.ofNullable(metadata))
+
+            /** Alias for calling [Builder.metadata] with `metadata.orElse(null)`. */
+            fun metadata(metadata: Optional<Metadata>) = metadata(metadata.getOrNull())
+
+            /**
+             * Sets [Builder.metadata] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.metadata] with a well-typed [Metadata] value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun metadata(metadata: JsonField<Metadata>) = apply { this.metadata = metadata }
+
+            fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                this.additionalProperties.clear()
+                putAllAdditionalProperties(additionalProperties)
+            }
+
+            fun putAdditionalProperty(key: String, value: JsonValue) = apply {
+                additionalProperties.put(key, value)
+            }
+
+            fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                this.additionalProperties.putAll(additionalProperties)
+            }
+
+            fun removeAdditionalProperty(key: String) = apply { additionalProperties.remove(key) }
+
+            fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                keys.forEach(::removeAdditionalProperty)
+            }
+
+            /**
+             * Returns an immutable instance of [Body].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             *
+             * The following fields are required:
+             * ```java
+             * .completionWindow()
+             * .endpoint()
+             * .inputFileId()
+             * ```
+             *
+             * @throws IllegalStateException if any required field is unset.
+             */
+            fun build(): Body =
+                Body(
+                    checkRequired("completionWindow", completionWindow),
+                    checkRequired("endpoint", endpoint),
+                    checkRequired("inputFileId", inputFileId),
+                    metadata,
+                    additionalProperties.toMutableMap(),
+                )
+        }
+
+        private var validated: Boolean = false
+
+        fun validate(): Body = apply {
+            if (validated) {
+                return@apply
+            }
+
+            completionWindow()
+            endpoint()
+            inputFileId()
+            metadata().ifPresent { it.validate() }
+            validated = true
+        }
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) {
+                return true
+            }
+
+            return /* spotless:off */ other is Body && completionWindow == other.completionWindow && endpoint == other.endpoint && inputFileId == other.inputFileId && metadata == other.metadata && additionalProperties == other.additionalProperties /* spotless:on */
+        }
+
+        /* spotless:off */
+        private val hashCode: Int by lazy { Objects.hash(completionWindow, endpoint, inputFileId, metadata, additionalProperties) }
+        /* spotless:on */
+
+        override fun hashCode(): Int = hashCode
+
+        override fun toString() =
+            "Body{completionWindow=$completionWindow, endpoint=$endpoint, inputFileId=$inputFileId, metadata=$metadata, additionalProperties=$additionalProperties}"
     }
 
     /**

@@ -3,10 +3,11 @@
 package com.openai.models.audio.translations
 
 import com.fasterxml.jackson.annotation.JsonCreator
+import com.fasterxml.jackson.annotation.JsonProperty
 import com.openai.core.Enum
+import com.openai.core.ExcludeMissing
 import com.openai.core.JsonField
 import com.openai.core.MultipartField
-import com.openai.core.NoAutoDetect
 import com.openai.core.Params
 import com.openai.core.checkRequired
 import com.openai.core.http.Headers
@@ -118,321 +119,6 @@ private constructor(
 
     fun _additionalQueryParams(): QueryParams = additionalQueryParams
 
-    @JvmSynthetic
-    internal fun _body(): Map<String, MultipartField<*>> =
-        mapOf(
-                "file" to _file(),
-                "model" to _model(),
-                "prompt" to _prompt(),
-                "response_format" to _responseFormat(),
-                "temperature" to _temperature(),
-            )
-            .toImmutable()
-
-    override fun _headers(): Headers = additionalHeaders
-
-    override fun _queryParams(): QueryParams = additionalQueryParams
-
-    @NoAutoDetect
-    class Body
-    @JsonCreator
-    private constructor(
-        private val file: MultipartField<InputStream>,
-        private val model: MultipartField<AudioModel>,
-        private val prompt: MultipartField<String>,
-        private val responseFormat: MultipartField<ResponseFormat>,
-        private val temperature: MultipartField<Double>,
-    ) {
-
-        /**
-         * The audio file object (not file name) translate, in one of these formats: flac, mp3, mp4,
-         * mpeg, mpga, m4a, ogg, wav, or webm.
-         *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
-         */
-        fun file(): InputStream = file.value.getRequired("file")
-
-        /**
-         * ID of the model to use. Only `whisper-1` (which is powered by our open source Whisper V2
-         * model) is currently available.
-         *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
-         */
-        fun model(): AudioModel = model.value.getRequired("model")
-
-        /**
-         * An optional text to guide the model's style or continue a previous audio segment. The
-         * [prompt](https://platform.openai.com/docs/guides/speech-to-text#prompting) should be in
-         * English.
-         *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
-         */
-        fun prompt(): Optional<String> = Optional.ofNullable(prompt.value.getNullable("prompt"))
-
-        /**
-         * The format of the output, in one of these options: `json`, `text`, `srt`, `verbose_json`,
-         * or `vtt`.
-         *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
-         */
-        fun responseFormat(): Optional<ResponseFormat> =
-            Optional.ofNullable(responseFormat.value.getNullable("response_format"))
-
-        /**
-         * The sampling temperature, between 0 and 1. Higher values like 0.8 will make the output
-         * more random, while lower values like 0.2 will make it more focused and deterministic. If
-         * set to 0, the model will use
-         * [log probability](https://en.wikipedia.org/wiki/Log_probability) to automatically
-         * increase the temperature until certain thresholds are hit.
-         *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
-         */
-        fun temperature(): Optional<Double> =
-            Optional.ofNullable(temperature.value.getNullable("temperature"))
-
-        /**
-         * Returns the raw multipart value of [file].
-         *
-         * Unlike [file], this method doesn't throw if the multipart field has an unexpected type.
-         */
-        fun _file(): MultipartField<InputStream> = file
-
-        /**
-         * Returns the raw multipart value of [model].
-         *
-         * Unlike [model], this method doesn't throw if the multipart field has an unexpected type.
-         */
-        fun _model(): MultipartField<AudioModel> = model
-
-        /**
-         * Returns the raw multipart value of [prompt].
-         *
-         * Unlike [prompt], this method doesn't throw if the multipart field has an unexpected type.
-         */
-        fun _prompt(): MultipartField<String> = prompt
-
-        /**
-         * Returns the raw multipart value of [responseFormat].
-         *
-         * Unlike [responseFormat], this method doesn't throw if the multipart field has an
-         * unexpected type.
-         */
-        fun _responseFormat(): MultipartField<ResponseFormat> = responseFormat
-
-        /**
-         * Returns the raw multipart value of [temperature].
-         *
-         * Unlike [temperature], this method doesn't throw if the multipart field has an unexpected
-         * type.
-         */
-        fun _temperature(): MultipartField<Double> = temperature
-
-        private var validated: Boolean = false
-
-        fun validate(): Body = apply {
-            if (validated) {
-                return@apply
-            }
-
-            file()
-            model()
-            prompt()
-            responseFormat()
-            temperature()
-            validated = true
-        }
-
-        fun toBuilder() = Builder().from(this)
-
-        companion object {
-
-            /**
-             * Returns a mutable builder for constructing an instance of [Body].
-             *
-             * The following fields are required:
-             * ```java
-             * .file()
-             * .model()
-             * ```
-             */
-            @JvmStatic fun builder() = Builder()
-        }
-
-        /** A builder for [Body]. */
-        class Builder internal constructor() {
-
-            private var file: MultipartField<InputStream>? = null
-            private var model: MultipartField<AudioModel>? = null
-            private var prompt: MultipartField<String> = MultipartField.of(null)
-            private var responseFormat: MultipartField<ResponseFormat> = MultipartField.of(null)
-            private var temperature: MultipartField<Double> = MultipartField.of(null)
-
-            @JvmSynthetic
-            internal fun from(body: Body) = apply {
-                file = body.file
-                model = body.model
-                prompt = body.prompt
-                responseFormat = body.responseFormat
-                temperature = body.temperature
-            }
-
-            /**
-             * The audio file object (not file name) translate, in one of these formats: flac, mp3,
-             * mp4, mpeg, mpga, m4a, ogg, wav, or webm.
-             */
-            fun file(file: InputStream) = file(MultipartField.of(file))
-
-            /**
-             * Sets [Builder.file] to an arbitrary multipart value.
-             *
-             * You should usually call [Builder.file] with a well-typed [InputStream] value instead.
-             * This method is primarily for setting the field to an undocumented or not yet
-             * supported value.
-             */
-            fun file(file: MultipartField<InputStream>) = apply { this.file = file }
-
-            /**
-             * The audio file object (not file name) translate, in one of these formats: flac, mp3,
-             * mp4, mpeg, mpga, m4a, ogg, wav, or webm.
-             */
-            fun file(file: ByteArray) = file(file.inputStream())
-
-            /**
-             * The audio file object (not file name) translate, in one of these formats: flac, mp3,
-             * mp4, mpeg, mpga, m4a, ogg, wav, or webm.
-             */
-            fun file(file: Path) =
-                file(
-                    MultipartField.builder<InputStream>()
-                        .value(file.inputStream())
-                        .filename(file.name)
-                        .build()
-                )
-
-            /**
-             * ID of the model to use. Only `whisper-1` (which is powered by our open source Whisper
-             * V2 model) is currently available.
-             */
-            fun model(model: AudioModel) = model(MultipartField.of(model))
-
-            /**
-             * Sets [Builder.model] to an arbitrary multipart value.
-             *
-             * You should usually call [Builder.model] with a well-typed [AudioModel] value instead.
-             * This method is primarily for setting the field to an undocumented or not yet
-             * supported value.
-             */
-            fun model(model: MultipartField<AudioModel>) = apply { this.model = model }
-
-            /**
-             * Sets [model] to an arbitrary [String].
-             *
-             * You should usually call [model] with a well-typed [AudioModel] constant instead. This
-             * method is primarily for setting the field to an undocumented or not yet supported
-             * value.
-             */
-            fun model(value: String) = model(AudioModel.of(value))
-
-            /**
-             * An optional text to guide the model's style or continue a previous audio segment. The
-             * [prompt](https://platform.openai.com/docs/guides/speech-to-text#prompting) should be
-             * in English.
-             */
-            fun prompt(prompt: String) = prompt(MultipartField.of(prompt))
-
-            /**
-             * Sets [Builder.prompt] to an arbitrary multipart value.
-             *
-             * You should usually call [Builder.prompt] with a well-typed [String] value instead.
-             * This method is primarily for setting the field to an undocumented or not yet
-             * supported value.
-             */
-            fun prompt(prompt: MultipartField<String>) = apply { this.prompt = prompt }
-
-            /**
-             * The format of the output, in one of these options: `json`, `text`, `srt`,
-             * `verbose_json`, or `vtt`.
-             */
-            fun responseFormat(responseFormat: ResponseFormat) =
-                responseFormat(MultipartField.of(responseFormat))
-
-            /**
-             * Sets [Builder.responseFormat] to an arbitrary multipart value.
-             *
-             * You should usually call [Builder.responseFormat] with a well-typed [ResponseFormat]
-             * value instead. This method is primarily for setting the field to an undocumented or
-             * not yet supported value.
-             */
-            fun responseFormat(responseFormat: MultipartField<ResponseFormat>) = apply {
-                this.responseFormat = responseFormat
-            }
-
-            /**
-             * The sampling temperature, between 0 and 1. Higher values like 0.8 will make the
-             * output more random, while lower values like 0.2 will make it more focused and
-             * deterministic. If set to 0, the model will use
-             * [log probability](https://en.wikipedia.org/wiki/Log_probability) to automatically
-             * increase the temperature until certain thresholds are hit.
-             */
-            fun temperature(temperature: Double) = temperature(MultipartField.of(temperature))
-
-            /**
-             * Sets [Builder.temperature] to an arbitrary multipart value.
-             *
-             * You should usually call [Builder.temperature] with a well-typed [Double] value
-             * instead. This method is primarily for setting the field to an undocumented or not yet
-             * supported value.
-             */
-            fun temperature(temperature: MultipartField<Double>) = apply {
-                this.temperature = temperature
-            }
-
-            /**
-             * Returns an immutable instance of [Body].
-             *
-             * Further updates to this [Builder] will not mutate the returned instance.
-             *
-             * The following fields are required:
-             * ```java
-             * .file()
-             * .model()
-             * ```
-             *
-             * @throws IllegalStateException if any required field is unset.
-             */
-            fun build(): Body =
-                Body(
-                    checkRequired("file", file),
-                    checkRequired("model", model),
-                    prompt,
-                    responseFormat,
-                    temperature,
-                )
-        }
-
-        override fun equals(other: Any?): Boolean {
-            if (this === other) {
-                return true
-            }
-
-            return /* spotless:off */ other is Body && file == other.file && model == other.model && prompt == other.prompt && responseFormat == other.responseFormat && temperature == other.temperature /* spotless:on */
-        }
-
-        /* spotless:off */
-        private val hashCode: Int by lazy { Objects.hash(file, model, prompt, responseFormat, temperature) }
-        /* spotless:on */
-
-        override fun hashCode(): Int = hashCode
-
-        override fun toString() =
-            "Body{file=$file, model=$model, prompt=$prompt, responseFormat=$responseFormat, temperature=$temperature}"
-    }
-
     fun toBuilder() = Builder().from(this)
 
     companion object {
@@ -450,7 +136,6 @@ private constructor(
     }
 
     /** A builder for [TranslationCreateParams]. */
-    @NoAutoDetect
     class Builder internal constructor() {
 
         private var body: Body.Builder = Body.builder()
@@ -685,6 +370,323 @@ private constructor(
                 additionalHeaders.build(),
                 additionalQueryParams.build(),
             )
+    }
+
+    @JvmSynthetic
+    internal fun _body(): Map<String, MultipartField<*>> =
+        mapOf(
+                "file" to _file(),
+                "model" to _model(),
+                "prompt" to _prompt(),
+                "response_format" to _responseFormat(),
+                "temperature" to _temperature(),
+            )
+            .toImmutable()
+
+    override fun _headers(): Headers = additionalHeaders
+
+    override fun _queryParams(): QueryParams = additionalQueryParams
+
+    class Body
+    private constructor(
+        private val file: MultipartField<InputStream>,
+        private val model: MultipartField<AudioModel>,
+        private val prompt: MultipartField<String>,
+        private val responseFormat: MultipartField<ResponseFormat>,
+        private val temperature: MultipartField<Double>,
+    ) {
+
+        /**
+         * The audio file object (not file name) translate, in one of these formats: flac, mp3, mp4,
+         * mpeg, mpga, m4a, ogg, wav, or webm.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         */
+        fun file(): InputStream = file.value.getRequired("file")
+
+        /**
+         * ID of the model to use. Only `whisper-1` (which is powered by our open source Whisper V2
+         * model) is currently available.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         */
+        fun model(): AudioModel = model.value.getRequired("model")
+
+        /**
+         * An optional text to guide the model's style or continue a previous audio segment. The
+         * [prompt](https://platform.openai.com/docs/guides/speech-to-text#prompting) should be in
+         * English.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun prompt(): Optional<String> = Optional.ofNullable(prompt.value.getNullable("prompt"))
+
+        /**
+         * The format of the output, in one of these options: `json`, `text`, `srt`, `verbose_json`,
+         * or `vtt`.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun responseFormat(): Optional<ResponseFormat> =
+            Optional.ofNullable(responseFormat.value.getNullable("response_format"))
+
+        /**
+         * The sampling temperature, between 0 and 1. Higher values like 0.8 will make the output
+         * more random, while lower values like 0.2 will make it more focused and deterministic. If
+         * set to 0, the model will use
+         * [log probability](https://en.wikipedia.org/wiki/Log_probability) to automatically
+         * increase the temperature until certain thresholds are hit.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun temperature(): Optional<Double> =
+            Optional.ofNullable(temperature.value.getNullable("temperature"))
+
+        /**
+         * Returns the raw multipart value of [file].
+         *
+         * Unlike [file], this method doesn't throw if the multipart field has an unexpected type.
+         */
+        @JsonProperty("file") @ExcludeMissing fun _file(): MultipartField<InputStream> = file
+
+        /**
+         * Returns the raw multipart value of [model].
+         *
+         * Unlike [model], this method doesn't throw if the multipart field has an unexpected type.
+         */
+        @JsonProperty("model") @ExcludeMissing fun _model(): MultipartField<AudioModel> = model
+
+        /**
+         * Returns the raw multipart value of [prompt].
+         *
+         * Unlike [prompt], this method doesn't throw if the multipart field has an unexpected type.
+         */
+        @JsonProperty("prompt") @ExcludeMissing fun _prompt(): MultipartField<String> = prompt
+
+        /**
+         * Returns the raw multipart value of [responseFormat].
+         *
+         * Unlike [responseFormat], this method doesn't throw if the multipart field has an
+         * unexpected type.
+         */
+        @JsonProperty("response_format")
+        @ExcludeMissing
+        fun _responseFormat(): MultipartField<ResponseFormat> = responseFormat
+
+        /**
+         * Returns the raw multipart value of [temperature].
+         *
+         * Unlike [temperature], this method doesn't throw if the multipart field has an unexpected
+         * type.
+         */
+        @JsonProperty("temperature")
+        @ExcludeMissing
+        fun _temperature(): MultipartField<Double> = temperature
+
+        fun toBuilder() = Builder().from(this)
+
+        companion object {
+
+            /**
+             * Returns a mutable builder for constructing an instance of [Body].
+             *
+             * The following fields are required:
+             * ```java
+             * .file()
+             * .model()
+             * ```
+             */
+            @JvmStatic fun builder() = Builder()
+        }
+
+        /** A builder for [Body]. */
+        class Builder internal constructor() {
+
+            private var file: MultipartField<InputStream>? = null
+            private var model: MultipartField<AudioModel>? = null
+            private var prompt: MultipartField<String> = MultipartField.of(null)
+            private var responseFormat: MultipartField<ResponseFormat> = MultipartField.of(null)
+            private var temperature: MultipartField<Double> = MultipartField.of(null)
+
+            @JvmSynthetic
+            internal fun from(body: Body) = apply {
+                file = body.file
+                model = body.model
+                prompt = body.prompt
+                responseFormat = body.responseFormat
+                temperature = body.temperature
+            }
+
+            /**
+             * The audio file object (not file name) translate, in one of these formats: flac, mp3,
+             * mp4, mpeg, mpga, m4a, ogg, wav, or webm.
+             */
+            fun file(file: InputStream) = file(MultipartField.of(file))
+
+            /**
+             * Sets [Builder.file] to an arbitrary multipart value.
+             *
+             * You should usually call [Builder.file] with a well-typed [InputStream] value instead.
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun file(file: MultipartField<InputStream>) = apply { this.file = file }
+
+            /**
+             * The audio file object (not file name) translate, in one of these formats: flac, mp3,
+             * mp4, mpeg, mpga, m4a, ogg, wav, or webm.
+             */
+            fun file(file: ByteArray) = file(file.inputStream())
+
+            /**
+             * The audio file object (not file name) translate, in one of these formats: flac, mp3,
+             * mp4, mpeg, mpga, m4a, ogg, wav, or webm.
+             */
+            fun file(file: Path) =
+                file(
+                    MultipartField.builder<InputStream>()
+                        .value(file.inputStream())
+                        .filename(file.name)
+                        .build()
+                )
+
+            /**
+             * ID of the model to use. Only `whisper-1` (which is powered by our open source Whisper
+             * V2 model) is currently available.
+             */
+            fun model(model: AudioModel) = model(MultipartField.of(model))
+
+            /**
+             * Sets [Builder.model] to an arbitrary multipart value.
+             *
+             * You should usually call [Builder.model] with a well-typed [AudioModel] value instead.
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun model(model: MultipartField<AudioModel>) = apply { this.model = model }
+
+            /**
+             * Sets [model] to an arbitrary [String].
+             *
+             * You should usually call [model] with a well-typed [AudioModel] constant instead. This
+             * method is primarily for setting the field to an undocumented or not yet supported
+             * value.
+             */
+            fun model(value: String) = model(AudioModel.of(value))
+
+            /**
+             * An optional text to guide the model's style or continue a previous audio segment. The
+             * [prompt](https://platform.openai.com/docs/guides/speech-to-text#prompting) should be
+             * in English.
+             */
+            fun prompt(prompt: String) = prompt(MultipartField.of(prompt))
+
+            /**
+             * Sets [Builder.prompt] to an arbitrary multipart value.
+             *
+             * You should usually call [Builder.prompt] with a well-typed [String] value instead.
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun prompt(prompt: MultipartField<String>) = apply { this.prompt = prompt }
+
+            /**
+             * The format of the output, in one of these options: `json`, `text`, `srt`,
+             * `verbose_json`, or `vtt`.
+             */
+            fun responseFormat(responseFormat: ResponseFormat) =
+                responseFormat(MultipartField.of(responseFormat))
+
+            /**
+             * Sets [Builder.responseFormat] to an arbitrary multipart value.
+             *
+             * You should usually call [Builder.responseFormat] with a well-typed [ResponseFormat]
+             * value instead. This method is primarily for setting the field to an undocumented or
+             * not yet supported value.
+             */
+            fun responseFormat(responseFormat: MultipartField<ResponseFormat>) = apply {
+                this.responseFormat = responseFormat
+            }
+
+            /**
+             * The sampling temperature, between 0 and 1. Higher values like 0.8 will make the
+             * output more random, while lower values like 0.2 will make it more focused and
+             * deterministic. If set to 0, the model will use
+             * [log probability](https://en.wikipedia.org/wiki/Log_probability) to automatically
+             * increase the temperature until certain thresholds are hit.
+             */
+            fun temperature(temperature: Double) = temperature(MultipartField.of(temperature))
+
+            /**
+             * Sets [Builder.temperature] to an arbitrary multipart value.
+             *
+             * You should usually call [Builder.temperature] with a well-typed [Double] value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun temperature(temperature: MultipartField<Double>) = apply {
+                this.temperature = temperature
+            }
+
+            /**
+             * Returns an immutable instance of [Body].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             *
+             * The following fields are required:
+             * ```java
+             * .file()
+             * .model()
+             * ```
+             *
+             * @throws IllegalStateException if any required field is unset.
+             */
+            fun build(): Body =
+                Body(
+                    checkRequired("file", file),
+                    checkRequired("model", model),
+                    prompt,
+                    responseFormat,
+                    temperature,
+                )
+        }
+
+        private var validated: Boolean = false
+
+        fun validate(): Body = apply {
+            if (validated) {
+                return@apply
+            }
+
+            file()
+            model()
+            prompt()
+            responseFormat()
+            temperature()
+            validated = true
+        }
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) {
+                return true
+            }
+
+            return /* spotless:off */ other is Body && file == other.file && model == other.model && prompt == other.prompt && responseFormat == other.responseFormat && temperature == other.temperature /* spotless:on */
+        }
+
+        /* spotless:off */
+        private val hashCode: Int by lazy { Objects.hash(file, model, prompt, responseFormat, temperature) }
+        /* spotless:on */
+
+        override fun hashCode(): Int = hashCode
+
+        override fun toString() =
+            "Body{file=$file, model=$model, prompt=$prompt, responseFormat=$responseFormat, temperature=$temperature}"
     }
 
     /**

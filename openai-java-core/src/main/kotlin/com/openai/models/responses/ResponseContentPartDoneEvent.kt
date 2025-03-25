@@ -19,34 +19,37 @@ import com.openai.core.ExcludeMissing
 import com.openai.core.JsonField
 import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
-import com.openai.core.NoAutoDetect
 import com.openai.core.checkRequired
 import com.openai.core.getOrThrow
-import com.openai.core.immutableEmptyMap
-import com.openai.core.toImmutable
 import com.openai.errors.OpenAIInvalidDataException
+import java.util.Collections
 import java.util.Objects
 import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
 /** Emitted when a content part is done. */
-@NoAutoDetect
 class ResponseContentPartDoneEvent
-@JsonCreator
 private constructor(
-    @JsonProperty("content_index")
-    @ExcludeMissing
-    private val contentIndex: JsonField<Long> = JsonMissing.of(),
-    @JsonProperty("item_id")
-    @ExcludeMissing
-    private val itemId: JsonField<String> = JsonMissing.of(),
-    @JsonProperty("output_index")
-    @ExcludeMissing
-    private val outputIndex: JsonField<Long> = JsonMissing.of(),
-    @JsonProperty("part") @ExcludeMissing private val part: JsonField<Part> = JsonMissing.of(),
-    @JsonProperty("type") @ExcludeMissing private val type: JsonValue = JsonMissing.of(),
-    @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
+    private val contentIndex: JsonField<Long>,
+    private val itemId: JsonField<String>,
+    private val outputIndex: JsonField<Long>,
+    private val part: JsonField<Part>,
+    private val type: JsonValue,
+    private val additionalProperties: MutableMap<String, JsonValue>,
 ) {
+
+    @JsonCreator
+    private constructor(
+        @JsonProperty("content_index")
+        @ExcludeMissing
+        contentIndex: JsonField<Long> = JsonMissing.of(),
+        @JsonProperty("item_id") @ExcludeMissing itemId: JsonField<String> = JsonMissing.of(),
+        @JsonProperty("output_index")
+        @ExcludeMissing
+        outputIndex: JsonField<Long> = JsonMissing.of(),
+        @JsonProperty("part") @ExcludeMissing part: JsonField<Part> = JsonMissing.of(),
+        @JsonProperty("type") @ExcludeMissing type: JsonValue = JsonMissing.of(),
+    ) : this(contentIndex, itemId, outputIndex, part, type, mutableMapOf())
 
     /**
      * The index of the content part that is done.
@@ -123,28 +126,15 @@ private constructor(
      */
     @JsonProperty("part") @ExcludeMissing fun _part(): JsonField<Part> = part
 
+    @JsonAnySetter
+    private fun putAdditionalProperty(key: String, value: JsonValue) {
+        additionalProperties.put(key, value)
+    }
+
     @JsonAnyGetter
     @ExcludeMissing
-    fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-    private var validated: Boolean = false
-
-    fun validate(): ResponseContentPartDoneEvent = apply {
-        if (validated) {
-            return@apply
-        }
-
-        contentIndex()
-        itemId()
-        outputIndex()
-        part().validate()
-        _type().let {
-            if (it != JsonValue.from("response.content_part.done")) {
-                throw OpenAIInvalidDataException("'type' is invalid, received $it")
-            }
-        }
-        validated = true
-    }
+    fun _additionalProperties(): Map<String, JsonValue> =
+        Collections.unmodifiableMap(additionalProperties)
 
     fun toBuilder() = Builder().from(this)
 
@@ -302,8 +292,27 @@ private constructor(
                 checkRequired("outputIndex", outputIndex),
                 checkRequired("part", part),
                 type,
-                additionalProperties.toImmutable(),
+                additionalProperties.toMutableMap(),
             )
+    }
+
+    private var validated: Boolean = false
+
+    fun validate(): ResponseContentPartDoneEvent = apply {
+        if (validated) {
+            return@apply
+        }
+
+        contentIndex()
+        itemId()
+        outputIndex()
+        part().validate()
+        _type().let {
+            if (it != JsonValue.from("response.content_part.done")) {
+                throw OpenAIInvalidDataException("'type' is invalid, received $it")
+            }
+        }
+        validated = true
     }
 
     /** The content part that is done. */

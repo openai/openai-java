@@ -10,11 +10,9 @@ import com.openai.core.ExcludeMissing
 import com.openai.core.JsonField
 import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
-import com.openai.core.NoAutoDetect
 import com.openai.core.checkRequired
-import com.openai.core.immutableEmptyMap
-import com.openai.core.toImmutable
 import com.openai.errors.OpenAIInvalidDataException
+import java.util.Collections
 import java.util.Objects
 import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
@@ -23,16 +21,20 @@ import kotlin.jvm.optionals.getOrNull
  * JSON Schema response format. Used to generate structured JSON responses. Learn more about
  * [Structured Outputs](https://platform.openai.com/docs/guides/structured-outputs).
  */
-@NoAutoDetect
 class ResponseFormatJsonSchema
-@JsonCreator
 private constructor(
-    @JsonProperty("json_schema")
-    @ExcludeMissing
-    private val jsonSchema: JsonField<JsonSchema> = JsonMissing.of(),
-    @JsonProperty("type") @ExcludeMissing private val type: JsonValue = JsonMissing.of(),
-    @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
+    private val jsonSchema: JsonField<JsonSchema>,
+    private val type: JsonValue,
+    private val additionalProperties: MutableMap<String, JsonValue>,
 ) {
+
+    @JsonCreator
+    private constructor(
+        @JsonProperty("json_schema")
+        @ExcludeMissing
+        jsonSchema: JsonField<JsonSchema> = JsonMissing.of(),
+        @JsonProperty("type") @ExcludeMissing type: JsonValue = JsonMissing.of(),
+    ) : this(jsonSchema, type, mutableMapOf())
 
     /**
      * Structured Outputs configuration options, including a JSON Schema.
@@ -64,25 +66,15 @@ private constructor(
     @ExcludeMissing
     fun _jsonSchema(): JsonField<JsonSchema> = jsonSchema
 
+    @JsonAnySetter
+    private fun putAdditionalProperty(key: String, value: JsonValue) {
+        additionalProperties.put(key, value)
+    }
+
     @JsonAnyGetter
     @ExcludeMissing
-    fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-    private var validated: Boolean = false
-
-    fun validate(): ResponseFormatJsonSchema = apply {
-        if (validated) {
-            return@apply
-        }
-
-        jsonSchema().validate()
-        _type().let {
-            if (it != JsonValue.from("json_schema")) {
-                throw OpenAIInvalidDataException("'type' is invalid, received $it")
-            }
-        }
-        validated = true
-    }
+    fun _additionalProperties(): Map<String, JsonValue> =
+        Collections.unmodifiableMap(additionalProperties)
 
     fun toBuilder() = Builder().from(this)
 
@@ -174,30 +166,45 @@ private constructor(
             ResponseFormatJsonSchema(
                 checkRequired("jsonSchema", jsonSchema),
                 type,
-                additionalProperties.toImmutable(),
+                additionalProperties.toMutableMap(),
             )
     }
 
+    private var validated: Boolean = false
+
+    fun validate(): ResponseFormatJsonSchema = apply {
+        if (validated) {
+            return@apply
+        }
+
+        jsonSchema().validate()
+        _type().let {
+            if (it != JsonValue.from("json_schema")) {
+                throw OpenAIInvalidDataException("'type' is invalid, received $it")
+            }
+        }
+        validated = true
+    }
+
     /** Structured Outputs configuration options, including a JSON Schema. */
-    @NoAutoDetect
     class JsonSchema
-    @JsonCreator
     private constructor(
-        @JsonProperty("name")
-        @ExcludeMissing
-        private val name: JsonField<String> = JsonMissing.of(),
-        @JsonProperty("description")
-        @ExcludeMissing
-        private val description: JsonField<String> = JsonMissing.of(),
-        @JsonProperty("schema")
-        @ExcludeMissing
-        private val schema: JsonField<Schema> = JsonMissing.of(),
-        @JsonProperty("strict")
-        @ExcludeMissing
-        private val strict: JsonField<Boolean> = JsonMissing.of(),
-        @JsonAnySetter
-        private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
+        private val name: JsonField<String>,
+        private val description: JsonField<String>,
+        private val schema: JsonField<Schema>,
+        private val strict: JsonField<Boolean>,
+        private val additionalProperties: MutableMap<String, JsonValue>,
     ) {
+
+        @JsonCreator
+        private constructor(
+            @JsonProperty("name") @ExcludeMissing name: JsonField<String> = JsonMissing.of(),
+            @JsonProperty("description")
+            @ExcludeMissing
+            description: JsonField<String> = JsonMissing.of(),
+            @JsonProperty("schema") @ExcludeMissing schema: JsonField<Schema> = JsonMissing.of(),
+            @JsonProperty("strict") @ExcludeMissing strict: JsonField<Boolean> = JsonMissing.of(),
+        ) : this(name, description, schema, strict, mutableMapOf())
 
         /**
          * The name of the response format. Must be a-z, A-Z, 0-9, or contain underscores and
@@ -268,23 +275,15 @@ private constructor(
          */
         @JsonProperty("strict") @ExcludeMissing fun _strict(): JsonField<Boolean> = strict
 
+        @JsonAnySetter
+        private fun putAdditionalProperty(key: String, value: JsonValue) {
+            additionalProperties.put(key, value)
+        }
+
         @JsonAnyGetter
         @ExcludeMissing
-        fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-        private var validated: Boolean = false
-
-        fun validate(): JsonSchema = apply {
-            if (validated) {
-                return@apply
-            }
-
-            name()
-            description()
-            schema().ifPresent { it.validate() }
-            strict()
-            validated = true
-        }
+        fun _additionalProperties(): Map<String, JsonValue> =
+            Collections.unmodifiableMap(additionalProperties)
 
         fun toBuilder() = Builder().from(this)
 
@@ -430,35 +429,42 @@ private constructor(
                     description,
                     schema,
                     strict,
-                    additionalProperties.toImmutable(),
+                    additionalProperties.toMutableMap(),
                 )
+        }
+
+        private var validated: Boolean = false
+
+        fun validate(): JsonSchema = apply {
+            if (validated) {
+                return@apply
+            }
+
+            name()
+            description()
+            schema().ifPresent { it.validate() }
+            strict()
+            validated = true
         }
 
         /**
          * The schema for the response format, described as a JSON Schema object. Learn how to build
          * JSON schemas [here](https://json-schema.org/).
          */
-        @NoAutoDetect
         class Schema
-        @JsonCreator
-        private constructor(
+        private constructor(private val additionalProperties: MutableMap<String, JsonValue>) {
+
+            @JsonCreator private constructor() : this(mutableMapOf())
+
             @JsonAnySetter
-            private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap()
-        ) {
+            private fun putAdditionalProperty(key: String, value: JsonValue) {
+                additionalProperties.put(key, value)
+            }
 
             @JsonAnyGetter
             @ExcludeMissing
-            fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-            private var validated: Boolean = false
-
-            fun validate(): Schema = apply {
-                if (validated) {
-                    return@apply
-                }
-
-                validated = true
-            }
+            fun _additionalProperties(): Map<String, JsonValue> =
+                Collections.unmodifiableMap(additionalProperties)
 
             fun toBuilder() = Builder().from(this)
 
@@ -505,7 +511,17 @@ private constructor(
                  *
                  * Further updates to this [Builder] will not mutate the returned instance.
                  */
-                fun build(): Schema = Schema(additionalProperties.toImmutable())
+                fun build(): Schema = Schema(additionalProperties.toMutableMap())
+            }
+
+            private var validated: Boolean = false
+
+            fun validate(): Schema = apply {
+                if (validated) {
+                    return@apply
+                }
+
+                validated = true
             }
 
             override fun equals(other: Any?): Boolean {

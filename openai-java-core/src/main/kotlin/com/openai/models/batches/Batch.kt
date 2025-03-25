@@ -11,79 +11,106 @@ import com.openai.core.ExcludeMissing
 import com.openai.core.JsonField
 import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
-import com.openai.core.NoAutoDetect
 import com.openai.core.checkKnown
 import com.openai.core.checkRequired
-import com.openai.core.immutableEmptyMap
 import com.openai.core.toImmutable
 import com.openai.errors.OpenAIInvalidDataException
 import com.openai.models.Metadata
+import java.util.Collections
 import java.util.Objects
 import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
-@NoAutoDetect
 class Batch
-@JsonCreator
 private constructor(
-    @JsonProperty("id") @ExcludeMissing private val id: JsonField<String> = JsonMissing.of(),
-    @JsonProperty("completion_window")
-    @ExcludeMissing
-    private val completionWindow: JsonField<String> = JsonMissing.of(),
-    @JsonProperty("created_at")
-    @ExcludeMissing
-    private val createdAt: JsonField<Long> = JsonMissing.of(),
-    @JsonProperty("endpoint")
-    @ExcludeMissing
-    private val endpoint: JsonField<String> = JsonMissing.of(),
-    @JsonProperty("input_file_id")
-    @ExcludeMissing
-    private val inputFileId: JsonField<String> = JsonMissing.of(),
-    @JsonProperty("object") @ExcludeMissing private val object_: JsonValue = JsonMissing.of(),
-    @JsonProperty("status")
-    @ExcludeMissing
-    private val status: JsonField<Status> = JsonMissing.of(),
-    @JsonProperty("cancelled_at")
-    @ExcludeMissing
-    private val cancelledAt: JsonField<Long> = JsonMissing.of(),
-    @JsonProperty("cancelling_at")
-    @ExcludeMissing
-    private val cancellingAt: JsonField<Long> = JsonMissing.of(),
-    @JsonProperty("completed_at")
-    @ExcludeMissing
-    private val completedAt: JsonField<Long> = JsonMissing.of(),
-    @JsonProperty("error_file_id")
-    @ExcludeMissing
-    private val errorFileId: JsonField<String> = JsonMissing.of(),
-    @JsonProperty("errors")
-    @ExcludeMissing
-    private val errors: JsonField<Errors> = JsonMissing.of(),
-    @JsonProperty("expired_at")
-    @ExcludeMissing
-    private val expiredAt: JsonField<Long> = JsonMissing.of(),
-    @JsonProperty("expires_at")
-    @ExcludeMissing
-    private val expiresAt: JsonField<Long> = JsonMissing.of(),
-    @JsonProperty("failed_at")
-    @ExcludeMissing
-    private val failedAt: JsonField<Long> = JsonMissing.of(),
-    @JsonProperty("finalizing_at")
-    @ExcludeMissing
-    private val finalizingAt: JsonField<Long> = JsonMissing.of(),
-    @JsonProperty("in_progress_at")
-    @ExcludeMissing
-    private val inProgressAt: JsonField<Long> = JsonMissing.of(),
-    @JsonProperty("metadata")
-    @ExcludeMissing
-    private val metadata: JsonField<Metadata> = JsonMissing.of(),
-    @JsonProperty("output_file_id")
-    @ExcludeMissing
-    private val outputFileId: JsonField<String> = JsonMissing.of(),
-    @JsonProperty("request_counts")
-    @ExcludeMissing
-    private val requestCounts: JsonField<BatchRequestCounts> = JsonMissing.of(),
-    @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
+    private val id: JsonField<String>,
+    private val completionWindow: JsonField<String>,
+    private val createdAt: JsonField<Long>,
+    private val endpoint: JsonField<String>,
+    private val inputFileId: JsonField<String>,
+    private val object_: JsonValue,
+    private val status: JsonField<Status>,
+    private val cancelledAt: JsonField<Long>,
+    private val cancellingAt: JsonField<Long>,
+    private val completedAt: JsonField<Long>,
+    private val errorFileId: JsonField<String>,
+    private val errors: JsonField<Errors>,
+    private val expiredAt: JsonField<Long>,
+    private val expiresAt: JsonField<Long>,
+    private val failedAt: JsonField<Long>,
+    private val finalizingAt: JsonField<Long>,
+    private val inProgressAt: JsonField<Long>,
+    private val metadata: JsonField<Metadata>,
+    private val outputFileId: JsonField<String>,
+    private val requestCounts: JsonField<BatchRequestCounts>,
+    private val additionalProperties: MutableMap<String, JsonValue>,
 ) {
+
+    @JsonCreator
+    private constructor(
+        @JsonProperty("id") @ExcludeMissing id: JsonField<String> = JsonMissing.of(),
+        @JsonProperty("completion_window")
+        @ExcludeMissing
+        completionWindow: JsonField<String> = JsonMissing.of(),
+        @JsonProperty("created_at") @ExcludeMissing createdAt: JsonField<Long> = JsonMissing.of(),
+        @JsonProperty("endpoint") @ExcludeMissing endpoint: JsonField<String> = JsonMissing.of(),
+        @JsonProperty("input_file_id")
+        @ExcludeMissing
+        inputFileId: JsonField<String> = JsonMissing.of(),
+        @JsonProperty("object") @ExcludeMissing object_: JsonValue = JsonMissing.of(),
+        @JsonProperty("status") @ExcludeMissing status: JsonField<Status> = JsonMissing.of(),
+        @JsonProperty("cancelled_at")
+        @ExcludeMissing
+        cancelledAt: JsonField<Long> = JsonMissing.of(),
+        @JsonProperty("cancelling_at")
+        @ExcludeMissing
+        cancellingAt: JsonField<Long> = JsonMissing.of(),
+        @JsonProperty("completed_at")
+        @ExcludeMissing
+        completedAt: JsonField<Long> = JsonMissing.of(),
+        @JsonProperty("error_file_id")
+        @ExcludeMissing
+        errorFileId: JsonField<String> = JsonMissing.of(),
+        @JsonProperty("errors") @ExcludeMissing errors: JsonField<Errors> = JsonMissing.of(),
+        @JsonProperty("expired_at") @ExcludeMissing expiredAt: JsonField<Long> = JsonMissing.of(),
+        @JsonProperty("expires_at") @ExcludeMissing expiresAt: JsonField<Long> = JsonMissing.of(),
+        @JsonProperty("failed_at") @ExcludeMissing failedAt: JsonField<Long> = JsonMissing.of(),
+        @JsonProperty("finalizing_at")
+        @ExcludeMissing
+        finalizingAt: JsonField<Long> = JsonMissing.of(),
+        @JsonProperty("in_progress_at")
+        @ExcludeMissing
+        inProgressAt: JsonField<Long> = JsonMissing.of(),
+        @JsonProperty("metadata") @ExcludeMissing metadata: JsonField<Metadata> = JsonMissing.of(),
+        @JsonProperty("output_file_id")
+        @ExcludeMissing
+        outputFileId: JsonField<String> = JsonMissing.of(),
+        @JsonProperty("request_counts")
+        @ExcludeMissing
+        requestCounts: JsonField<BatchRequestCounts> = JsonMissing.of(),
+    ) : this(
+        id,
+        completionWindow,
+        createdAt,
+        endpoint,
+        inputFileId,
+        object_,
+        status,
+        cancelledAt,
+        cancellingAt,
+        completedAt,
+        errorFileId,
+        errors,
+        expiredAt,
+        expiresAt,
+        failedAt,
+        finalizingAt,
+        inProgressAt,
+        metadata,
+        outputFileId,
+        requestCounts,
+        mutableMapOf(),
+    )
 
     /**
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
@@ -407,43 +434,15 @@ private constructor(
     @ExcludeMissing
     fun _requestCounts(): JsonField<BatchRequestCounts> = requestCounts
 
+    @JsonAnySetter
+    private fun putAdditionalProperty(key: String, value: JsonValue) {
+        additionalProperties.put(key, value)
+    }
+
     @JsonAnyGetter
     @ExcludeMissing
-    fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-    private var validated: Boolean = false
-
-    fun validate(): Batch = apply {
-        if (validated) {
-            return@apply
-        }
-
-        id()
-        completionWindow()
-        createdAt()
-        endpoint()
-        inputFileId()
-        _object_().let {
-            if (it != JsonValue.from("batch")) {
-                throw OpenAIInvalidDataException("'object_' is invalid, received $it")
-            }
-        }
-        status()
-        cancelledAt()
-        cancellingAt()
-        completedAt()
-        errorFileId()
-        errors().ifPresent { it.validate() }
-        expiredAt()
-        expiresAt()
-        failedAt()
-        finalizingAt()
-        inProgressAt()
-        metadata().ifPresent { it.validate() }
-        outputFileId()
-        requestCounts().ifPresent { it.validate() }
-        validated = true
-    }
+    fun _additionalProperties(): Map<String, JsonValue> =
+        Collections.unmodifiableMap(additionalProperties)
 
     fun toBuilder() = Builder().from(this)
 
@@ -823,8 +822,42 @@ private constructor(
                 metadata,
                 outputFileId,
                 requestCounts,
-                additionalProperties.toImmutable(),
+                additionalProperties.toMutableMap(),
             )
+    }
+
+    private var validated: Boolean = false
+
+    fun validate(): Batch = apply {
+        if (validated) {
+            return@apply
+        }
+
+        id()
+        completionWindow()
+        createdAt()
+        endpoint()
+        inputFileId()
+        _object_().let {
+            if (it != JsonValue.from("batch")) {
+                throw OpenAIInvalidDataException("'object_' is invalid, received $it")
+            }
+        }
+        status()
+        cancelledAt()
+        cancellingAt()
+        completedAt()
+        errorFileId()
+        errors().ifPresent { it.validate() }
+        expiredAt()
+        expiresAt()
+        failedAt()
+        finalizingAt()
+        inProgressAt()
+        metadata().ifPresent { it.validate() }
+        outputFileId()
+        requestCounts().ifPresent { it.validate() }
+        validated = true
     }
 
     /** The current status of the batch. */
@@ -962,19 +995,20 @@ private constructor(
         override fun toString() = value.toString()
     }
 
-    @NoAutoDetect
     class Errors
-    @JsonCreator
     private constructor(
-        @JsonProperty("data")
-        @ExcludeMissing
-        private val data: JsonField<List<BatchError>> = JsonMissing.of(),
-        @JsonProperty("object")
-        @ExcludeMissing
-        private val object_: JsonField<String> = JsonMissing.of(),
-        @JsonAnySetter
-        private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
+        private val data: JsonField<List<BatchError>>,
+        private val object_: JsonField<String>,
+        private val additionalProperties: MutableMap<String, JsonValue>,
     ) {
+
+        @JsonCreator
+        private constructor(
+            @JsonProperty("data")
+            @ExcludeMissing
+            data: JsonField<List<BatchError>> = JsonMissing.of(),
+            @JsonProperty("object") @ExcludeMissing object_: JsonField<String> = JsonMissing.of(),
+        ) : this(data, object_, mutableMapOf())
 
         /**
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
@@ -1004,21 +1038,15 @@ private constructor(
          */
         @JsonProperty("object") @ExcludeMissing fun _object_(): JsonField<String> = object_
 
+        @JsonAnySetter
+        private fun putAdditionalProperty(key: String, value: JsonValue) {
+            additionalProperties.put(key, value)
+        }
+
         @JsonAnyGetter
         @ExcludeMissing
-        fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-        private var validated: Boolean = false
-
-        fun validate(): Errors = apply {
-            if (validated) {
-                return@apply
-            }
-
-            data().ifPresent { it.forEach { it.validate() } }
-            object_()
-            validated = true
-        }
+        fun _additionalProperties(): Map<String, JsonValue> =
+            Collections.unmodifiableMap(additionalProperties)
 
         fun toBuilder() = Builder().from(this)
 
@@ -1107,8 +1135,20 @@ private constructor(
                 Errors(
                     (data ?: JsonMissing.of()).map { it.toImmutable() },
                     object_,
-                    additionalProperties.toImmutable(),
+                    additionalProperties.toMutableMap(),
                 )
+        }
+
+        private var validated: Boolean = false
+
+        fun validate(): Errors = apply {
+            if (validated) {
+                return@apply
+            }
+
+            data().ifPresent { it.forEach { it.validate() } }
+            object_()
+            validated = true
         }
 
         override fun equals(other: Any?): Boolean {

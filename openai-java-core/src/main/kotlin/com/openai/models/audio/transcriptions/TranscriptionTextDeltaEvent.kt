@@ -10,12 +10,11 @@ import com.openai.core.ExcludeMissing
 import com.openai.core.JsonField
 import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
-import com.openai.core.NoAutoDetect
 import com.openai.core.checkKnown
 import com.openai.core.checkRequired
-import com.openai.core.immutableEmptyMap
 import com.openai.core.toImmutable
 import com.openai.errors.OpenAIInvalidDataException
+import java.util.Collections
 import java.util.Objects
 import java.util.Optional
 
@@ -25,17 +24,22 @@ import java.util.Optional
  * [create a transcription](https://platform.openai.com/docs/api-reference/audio/create-transcription)
  * with the `Stream` parameter set to `true`.
  */
-@NoAutoDetect
 class TranscriptionTextDeltaEvent
-@JsonCreator
 private constructor(
-    @JsonProperty("delta") @ExcludeMissing private val delta: JsonField<String> = JsonMissing.of(),
-    @JsonProperty("type") @ExcludeMissing private val type: JsonValue = JsonMissing.of(),
-    @JsonProperty("logprobs")
-    @ExcludeMissing
-    private val logprobs: JsonField<List<Logprob>> = JsonMissing.of(),
-    @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
+    private val delta: JsonField<String>,
+    private val type: JsonValue,
+    private val logprobs: JsonField<List<Logprob>>,
+    private val additionalProperties: MutableMap<String, JsonValue>,
 ) {
+
+    @JsonCreator
+    private constructor(
+        @JsonProperty("delta") @ExcludeMissing delta: JsonField<String> = JsonMissing.of(),
+        @JsonProperty("type") @ExcludeMissing type: JsonValue = JsonMissing.of(),
+        @JsonProperty("logprobs")
+        @ExcludeMissing
+        logprobs: JsonField<List<Logprob>> = JsonMissing.of(),
+    ) : this(delta, type, logprobs, mutableMapOf())
 
     /**
      * The text delta that was additionally transcribed.
@@ -82,26 +86,15 @@ private constructor(
      */
     @JsonProperty("logprobs") @ExcludeMissing fun _logprobs(): JsonField<List<Logprob>> = logprobs
 
+    @JsonAnySetter
+    private fun putAdditionalProperty(key: String, value: JsonValue) {
+        additionalProperties.put(key, value)
+    }
+
     @JsonAnyGetter
     @ExcludeMissing
-    fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-    private var validated: Boolean = false
-
-    fun validate(): TranscriptionTextDeltaEvent = apply {
-        if (validated) {
-            return@apply
-        }
-
-        delta()
-        _type().let {
-            if (it != JsonValue.from("transcript.text.delta")) {
-                throw OpenAIInvalidDataException("'type' is invalid, received $it")
-            }
-        }
-        logprobs().ifPresent { it.forEach { it.validate() } }
-        validated = true
-    }
+    fun _additionalProperties(): Map<String, JsonValue> =
+        Collections.unmodifiableMap(additionalProperties)
 
     fun toBuilder() = Builder().from(this)
 
@@ -225,26 +218,43 @@ private constructor(
                 checkRequired("delta", delta),
                 type,
                 (logprobs ?: JsonMissing.of()).map { it.toImmutable() },
-                additionalProperties.toImmutable(),
+                additionalProperties.toMutableMap(),
             )
     }
 
-    @NoAutoDetect
+    private var validated: Boolean = false
+
+    fun validate(): TranscriptionTextDeltaEvent = apply {
+        if (validated) {
+            return@apply
+        }
+
+        delta()
+        _type().let {
+            if (it != JsonValue.from("transcript.text.delta")) {
+                throw OpenAIInvalidDataException("'type' is invalid, received $it")
+            }
+        }
+        logprobs().ifPresent { it.forEach { it.validate() } }
+        validated = true
+    }
+
     class Logprob
-    @JsonCreator
     private constructor(
-        @JsonProperty("token")
-        @ExcludeMissing
-        private val token: JsonField<String> = JsonMissing.of(),
-        @JsonProperty("bytes")
-        @ExcludeMissing
-        private val bytes: JsonField<List<JsonValue>> = JsonMissing.of(),
-        @JsonProperty("logprob")
-        @ExcludeMissing
-        private val logprob: JsonField<Double> = JsonMissing.of(),
-        @JsonAnySetter
-        private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
+        private val token: JsonField<String>,
+        private val bytes: JsonField<List<JsonValue>>,
+        private val logprob: JsonField<Double>,
+        private val additionalProperties: MutableMap<String, JsonValue>,
     ) {
+
+        @JsonCreator
+        private constructor(
+            @JsonProperty("token") @ExcludeMissing token: JsonField<String> = JsonMissing.of(),
+            @JsonProperty("bytes")
+            @ExcludeMissing
+            bytes: JsonField<List<JsonValue>> = JsonMissing.of(),
+            @JsonProperty("logprob") @ExcludeMissing logprob: JsonField<Double> = JsonMissing.of(),
+        ) : this(token, bytes, logprob, mutableMapOf())
 
         /**
          * The token that was used to generate the log probability.
@@ -291,22 +301,15 @@ private constructor(
          */
         @JsonProperty("logprob") @ExcludeMissing fun _logprob(): JsonField<Double> = logprob
 
+        @JsonAnySetter
+        private fun putAdditionalProperty(key: String, value: JsonValue) {
+            additionalProperties.put(key, value)
+        }
+
         @JsonAnyGetter
         @ExcludeMissing
-        fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-        private var validated: Boolean = false
-
-        fun validate(): Logprob = apply {
-            if (validated) {
-                return@apply
-            }
-
-            token()
-            bytes()
-            logprob()
-            validated = true
-        }
+        fun _additionalProperties(): Map<String, JsonValue> =
+            Collections.unmodifiableMap(additionalProperties)
 
         fun toBuilder() = Builder().from(this)
 
@@ -411,8 +414,21 @@ private constructor(
                     token,
                     (bytes ?: JsonMissing.of()).map { it.toImmutable() },
                     logprob,
-                    additionalProperties.toImmutable(),
+                    additionalProperties.toMutableMap(),
                 )
+        }
+
+        private var validated: Boolean = false
+
+        fun validate(): Logprob = apply {
+            if (validated) {
+                return@apply
+            }
+
+            token()
+            bytes()
+            logprob()
+            validated = true
         }
 
         override fun equals(other: Any?): Boolean {

@@ -19,12 +19,10 @@ import com.openai.core.ExcludeMissing
 import com.openai.core.JsonField
 import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
-import com.openai.core.NoAutoDetect
 import com.openai.core.checkRequired
 import com.openai.core.getOrThrow
-import com.openai.core.immutableEmptyMap
-import com.openai.core.toImmutable
 import com.openai.errors.OpenAIInvalidDataException
+import java.util.Collections
 import java.util.Objects
 import java.util.Optional
 
@@ -32,17 +30,20 @@ import java.util.Optional
  * Developer-provided instructions that the model should follow, regardless of messages sent by the
  * user. With o1 models and newer, use `developer` messages for this purpose instead.
  */
-@NoAutoDetect
 class ChatCompletionSystemMessageParam
-@JsonCreator
 private constructor(
-    @JsonProperty("content")
-    @ExcludeMissing
-    private val content: JsonField<Content> = JsonMissing.of(),
-    @JsonProperty("role") @ExcludeMissing private val role: JsonValue = JsonMissing.of(),
-    @JsonProperty("name") @ExcludeMissing private val name: JsonField<String> = JsonMissing.of(),
-    @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
+    private val content: JsonField<Content>,
+    private val role: JsonValue,
+    private val name: JsonField<String>,
+    private val additionalProperties: MutableMap<String, JsonValue>,
 ) {
+
+    @JsonCreator
+    private constructor(
+        @JsonProperty("content") @ExcludeMissing content: JsonField<Content> = JsonMissing.of(),
+        @JsonProperty("role") @ExcludeMissing role: JsonValue = JsonMissing.of(),
+        @JsonProperty("name") @ExcludeMissing name: JsonField<String> = JsonMissing.of(),
+    ) : this(content, role, name, mutableMapOf())
 
     /**
      * The contents of the system message.
@@ -88,26 +89,15 @@ private constructor(
      */
     @JsonProperty("name") @ExcludeMissing fun _name(): JsonField<String> = name
 
+    @JsonAnySetter
+    private fun putAdditionalProperty(key: String, value: JsonValue) {
+        additionalProperties.put(key, value)
+    }
+
     @JsonAnyGetter
     @ExcludeMissing
-    fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-    private var validated: Boolean = false
-
-    fun validate(): ChatCompletionSystemMessageParam = apply {
-        if (validated) {
-            return@apply
-        }
-
-        content().validate()
-        _role().let {
-            if (it != JsonValue.from("system")) {
-                throw OpenAIInvalidDataException("'role' is invalid, received $it")
-            }
-        }
-        name()
-        validated = true
-    }
+    fun _additionalProperties(): Map<String, JsonValue> =
+        Collections.unmodifiableMap(additionalProperties)
 
     fun toBuilder() = Builder().from(this)
 
@@ -227,8 +217,25 @@ private constructor(
                 checkRequired("content", content),
                 role,
                 name,
-                additionalProperties.toImmutable(),
+                additionalProperties.toMutableMap(),
             )
+    }
+
+    private var validated: Boolean = false
+
+    fun validate(): ChatCompletionSystemMessageParam = apply {
+        if (validated) {
+            return@apply
+        }
+
+        content().validate()
+        _role().let {
+            if (it != JsonValue.from("system")) {
+                throw OpenAIInvalidDataException("'role' is invalid, received $it")
+            }
+        }
+        name()
+        validated = true
     }
 
     /** The contents of the system message. */

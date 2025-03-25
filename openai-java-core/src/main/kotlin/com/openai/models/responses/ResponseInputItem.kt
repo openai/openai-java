@@ -20,13 +20,12 @@ import com.openai.core.ExcludeMissing
 import com.openai.core.JsonField
 import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
-import com.openai.core.NoAutoDetect
 import com.openai.core.checkKnown
 import com.openai.core.checkRequired
 import com.openai.core.getOrThrow
-import com.openai.core.immutableEmptyMap
 import com.openai.core.toImmutable
 import com.openai.errors.OpenAIInvalidDataException
+import java.util.Collections
 import java.util.Objects
 import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
@@ -589,21 +588,24 @@ private constructor(
      * Instructions given with the `developer` or `system` role take precedence over instructions
      * given with the `user` role.
      */
-    @NoAutoDetect
     class Message
-    @JsonCreator
     private constructor(
-        @JsonProperty("content")
-        @ExcludeMissing
-        private val content: JsonField<List<ResponseInputContent>> = JsonMissing.of(),
-        @JsonProperty("role") @ExcludeMissing private val role: JsonField<Role> = JsonMissing.of(),
-        @JsonProperty("status")
-        @ExcludeMissing
-        private val status: JsonField<Status> = JsonMissing.of(),
-        @JsonProperty("type") @ExcludeMissing private val type: JsonField<Type> = JsonMissing.of(),
-        @JsonAnySetter
-        private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
+        private val content: JsonField<List<ResponseInputContent>>,
+        private val role: JsonField<Role>,
+        private val status: JsonField<Status>,
+        private val type: JsonField<Type>,
+        private val additionalProperties: MutableMap<String, JsonValue>,
     ) {
+
+        @JsonCreator
+        private constructor(
+            @JsonProperty("content")
+            @ExcludeMissing
+            content: JsonField<List<ResponseInputContent>> = JsonMissing.of(),
+            @JsonProperty("role") @ExcludeMissing role: JsonField<Role> = JsonMissing.of(),
+            @JsonProperty("status") @ExcludeMissing status: JsonField<Status> = JsonMissing.of(),
+            @JsonProperty("type") @ExcludeMissing type: JsonField<Type> = JsonMissing.of(),
+        ) : this(content, role, status, type, mutableMapOf())
 
         /**
          * A list of one or many input items to the model, containing different content types.
@@ -668,23 +670,15 @@ private constructor(
          */
         @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<Type> = type
 
+        @JsonAnySetter
+        private fun putAdditionalProperty(key: String, value: JsonValue) {
+            additionalProperties.put(key, value)
+        }
+
         @JsonAnyGetter
         @ExcludeMissing
-        fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-        private var validated: Boolean = false
-
-        fun validate(): Message = apply {
-            if (validated) {
-                return@apply
-            }
-
-            content().forEach { it.validate() }
-            role()
-            status()
-            type()
-            validated = true
-        }
+        fun _additionalProperties(): Map<String, JsonValue> =
+            Collections.unmodifiableMap(additionalProperties)
 
         fun toBuilder() = Builder().from(this)
 
@@ -865,8 +859,22 @@ private constructor(
                     checkRequired("role", role),
                     status,
                     type,
-                    additionalProperties.toImmutable(),
+                    additionalProperties.toMutableMap(),
                 )
+        }
+
+        private var validated: Boolean = false
+
+        fun validate(): Message = apply {
+            if (validated) {
+                return@apply
+            }
+
+            content().forEach { it.validate() }
+            role()
+            status()
+            type()
+            validated = true
         }
 
         /** The role of the message input. One of `user`, `system`, or `developer`. */
@@ -1202,28 +1210,30 @@ private constructor(
     }
 
     /** The output of a computer tool call. */
-    @NoAutoDetect
     class ComputerCallOutput
-    @JsonCreator
     private constructor(
-        @JsonProperty("call_id")
-        @ExcludeMissing
-        private val callId: JsonField<String> = JsonMissing.of(),
-        @JsonProperty("output")
-        @ExcludeMissing
-        private val output: JsonField<ResponseComputerToolCallOutputScreenshot> = JsonMissing.of(),
-        @JsonProperty("type") @ExcludeMissing private val type: JsonValue = JsonMissing.of(),
-        @JsonProperty("id") @ExcludeMissing private val id: JsonField<String> = JsonMissing.of(),
-        @JsonProperty("acknowledged_safety_checks")
-        @ExcludeMissing
-        private val acknowledgedSafetyChecks: JsonField<List<AcknowledgedSafetyCheck>> =
-            JsonMissing.of(),
-        @JsonProperty("status")
-        @ExcludeMissing
-        private val status: JsonField<Status> = JsonMissing.of(),
-        @JsonAnySetter
-        private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
+        private val callId: JsonField<String>,
+        private val output: JsonField<ResponseComputerToolCallOutputScreenshot>,
+        private val type: JsonValue,
+        private val id: JsonField<String>,
+        private val acknowledgedSafetyChecks: JsonField<List<AcknowledgedSafetyCheck>>,
+        private val status: JsonField<Status>,
+        private val additionalProperties: MutableMap<String, JsonValue>,
     ) {
+
+        @JsonCreator
+        private constructor(
+            @JsonProperty("call_id") @ExcludeMissing callId: JsonField<String> = JsonMissing.of(),
+            @JsonProperty("output")
+            @ExcludeMissing
+            output: JsonField<ResponseComputerToolCallOutputScreenshot> = JsonMissing.of(),
+            @JsonProperty("type") @ExcludeMissing type: JsonValue = JsonMissing.of(),
+            @JsonProperty("id") @ExcludeMissing id: JsonField<String> = JsonMissing.of(),
+            @JsonProperty("acknowledged_safety_checks")
+            @ExcludeMissing
+            acknowledgedSafetyChecks: JsonField<List<AcknowledgedSafetyCheck>> = JsonMissing.of(),
+            @JsonProperty("status") @ExcludeMissing status: JsonField<Status> = JsonMissing.of(),
+        ) : this(callId, output, type, id, acknowledgedSafetyChecks, status, mutableMapOf())
 
         /**
          * The ID of the computer tool call that produced the output.
@@ -1321,29 +1331,15 @@ private constructor(
          */
         @JsonProperty("status") @ExcludeMissing fun _status(): JsonField<Status> = status
 
+        @JsonAnySetter
+        private fun putAdditionalProperty(key: String, value: JsonValue) {
+            additionalProperties.put(key, value)
+        }
+
         @JsonAnyGetter
         @ExcludeMissing
-        fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-        private var validated: Boolean = false
-
-        fun validate(): ComputerCallOutput = apply {
-            if (validated) {
-                return@apply
-            }
-
-            callId()
-            output().validate()
-            _type().let {
-                if (it != JsonValue.from("computer_call_output")) {
-                    throw OpenAIInvalidDataException("'type' is invalid, received $it")
-                }
-            }
-            id()
-            acknowledgedSafetyChecks().ifPresent { it.forEach { it.validate() } }
-            status()
-            validated = true
-        }
+        fun _additionalProperties(): Map<String, JsonValue> =
+            Collections.unmodifiableMap(additionalProperties)
 
         fun toBuilder() = Builder().from(this)
 
@@ -1525,27 +1521,47 @@ private constructor(
                     id,
                     (acknowledgedSafetyChecks ?: JsonMissing.of()).map { it.toImmutable() },
                     status,
-                    additionalProperties.toImmutable(),
+                    additionalProperties.toMutableMap(),
                 )
         }
 
+        private var validated: Boolean = false
+
+        fun validate(): ComputerCallOutput = apply {
+            if (validated) {
+                return@apply
+            }
+
+            callId()
+            output().validate()
+            _type().let {
+                if (it != JsonValue.from("computer_call_output")) {
+                    throw OpenAIInvalidDataException("'type' is invalid, received $it")
+                }
+            }
+            id()
+            acknowledgedSafetyChecks().ifPresent { it.forEach { it.validate() } }
+            status()
+            validated = true
+        }
+
         /** A pending safety check for the computer call. */
-        @NoAutoDetect
         class AcknowledgedSafetyCheck
-        @JsonCreator
         private constructor(
-            @JsonProperty("id")
-            @ExcludeMissing
-            private val id: JsonField<String> = JsonMissing.of(),
-            @JsonProperty("code")
-            @ExcludeMissing
-            private val code: JsonField<String> = JsonMissing.of(),
-            @JsonProperty("message")
-            @ExcludeMissing
-            private val message: JsonField<String> = JsonMissing.of(),
-            @JsonAnySetter
-            private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
+            private val id: JsonField<String>,
+            private val code: JsonField<String>,
+            private val message: JsonField<String>,
+            private val additionalProperties: MutableMap<String, JsonValue>,
         ) {
+
+            @JsonCreator
+            private constructor(
+                @JsonProperty("id") @ExcludeMissing id: JsonField<String> = JsonMissing.of(),
+                @JsonProperty("code") @ExcludeMissing code: JsonField<String> = JsonMissing.of(),
+                @JsonProperty("message")
+                @ExcludeMissing
+                message: JsonField<String> = JsonMissing.of(),
+            ) : this(id, code, message, mutableMapOf())
 
             /**
              * The ID of the pending safety check.
@@ -1595,22 +1611,15 @@ private constructor(
              */
             @JsonProperty("message") @ExcludeMissing fun _message(): JsonField<String> = message
 
+            @JsonAnySetter
+            private fun putAdditionalProperty(key: String, value: JsonValue) {
+                additionalProperties.put(key, value)
+            }
+
             @JsonAnyGetter
             @ExcludeMissing
-            fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-            private var validated: Boolean = false
-
-            fun validate(): AcknowledgedSafetyCheck = apply {
-                if (validated) {
-                    return@apply
-                }
-
-                id()
-                code()
-                message()
-                validated = true
-            }
+            fun _additionalProperties(): Map<String, JsonValue> =
+                Collections.unmodifiableMap(additionalProperties)
 
             fun toBuilder() = Builder().from(this)
 
@@ -1724,8 +1733,21 @@ private constructor(
                         checkRequired("id", id),
                         checkRequired("code", code),
                         checkRequired("message", message),
-                        additionalProperties.toImmutable(),
+                        additionalProperties.toMutableMap(),
                     )
+            }
+
+            private var validated: Boolean = false
+
+            fun validate(): AcknowledgedSafetyCheck = apply {
+                if (validated) {
+                    return@apply
+                }
+
+                id()
+                code()
+                message()
+                validated = true
             }
 
             override fun equals(other: Any?): Boolean {
@@ -1877,24 +1899,24 @@ private constructor(
     }
 
     /** The output of a function tool call. */
-    @NoAutoDetect
     class FunctionCallOutput
-    @JsonCreator
     private constructor(
-        @JsonProperty("call_id")
-        @ExcludeMissing
-        private val callId: JsonField<String> = JsonMissing.of(),
-        @JsonProperty("output")
-        @ExcludeMissing
-        private val output: JsonField<String> = JsonMissing.of(),
-        @JsonProperty("type") @ExcludeMissing private val type: JsonValue = JsonMissing.of(),
-        @JsonProperty("id") @ExcludeMissing private val id: JsonField<String> = JsonMissing.of(),
-        @JsonProperty("status")
-        @ExcludeMissing
-        private val status: JsonField<Status> = JsonMissing.of(),
-        @JsonAnySetter
-        private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
+        private val callId: JsonField<String>,
+        private val output: JsonField<String>,
+        private val type: JsonValue,
+        private val id: JsonField<String>,
+        private val status: JsonField<Status>,
+        private val additionalProperties: MutableMap<String, JsonValue>,
     ) {
+
+        @JsonCreator
+        private constructor(
+            @JsonProperty("call_id") @ExcludeMissing callId: JsonField<String> = JsonMissing.of(),
+            @JsonProperty("output") @ExcludeMissing output: JsonField<String> = JsonMissing.of(),
+            @JsonProperty("type") @ExcludeMissing type: JsonValue = JsonMissing.of(),
+            @JsonProperty("id") @ExcludeMissing id: JsonField<String> = JsonMissing.of(),
+            @JsonProperty("status") @ExcludeMissing status: JsonField<Status> = JsonMissing.of(),
+        ) : this(callId, output, type, id, status, mutableMapOf())
 
         /**
          * The unique ID of the function tool call generated by the model.
@@ -1971,28 +1993,15 @@ private constructor(
          */
         @JsonProperty("status") @ExcludeMissing fun _status(): JsonField<Status> = status
 
+        @JsonAnySetter
+        private fun putAdditionalProperty(key: String, value: JsonValue) {
+            additionalProperties.put(key, value)
+        }
+
         @JsonAnyGetter
         @ExcludeMissing
-        fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-        private var validated: Boolean = false
-
-        fun validate(): FunctionCallOutput = apply {
-            if (validated) {
-                return@apply
-            }
-
-            callId()
-            output()
-            _type().let {
-                if (it != JsonValue.from("function_call_output")) {
-                    throw OpenAIInvalidDataException("'type' is invalid, received $it")
-                }
-            }
-            id()
-            status()
-            validated = true
-        }
+        fun _additionalProperties(): Map<String, JsonValue> =
+            Collections.unmodifiableMap(additionalProperties)
 
         fun toBuilder() = Builder().from(this)
 
@@ -2137,8 +2146,27 @@ private constructor(
                     type,
                     id,
                     status,
-                    additionalProperties.toImmutable(),
+                    additionalProperties.toMutableMap(),
                 )
+        }
+
+        private var validated: Boolean = false
+
+        fun validate(): FunctionCallOutput = apply {
+            if (validated) {
+                return@apply
+            }
+
+            callId()
+            output()
+            _type().let {
+                if (it != JsonValue.from("function_call_output")) {
+                    throw OpenAIInvalidDataException("'type' is invalid, received $it")
+                }
+            }
+            id()
+            status()
+            validated = true
         }
 
         /**
@@ -2272,15 +2300,18 @@ private constructor(
     }
 
     /** An internal identifier for an item to reference. */
-    @NoAutoDetect
     class ItemReference
-    @JsonCreator
     private constructor(
-        @JsonProperty("id") @ExcludeMissing private val id: JsonField<String> = JsonMissing.of(),
-        @JsonProperty("type") @ExcludeMissing private val type: JsonValue = JsonMissing.of(),
-        @JsonAnySetter
-        private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
+        private val id: JsonField<String>,
+        private val type: JsonValue,
+        private val additionalProperties: MutableMap<String, JsonValue>,
     ) {
+
+        @JsonCreator
+        private constructor(
+            @JsonProperty("id") @ExcludeMissing id: JsonField<String> = JsonMissing.of(),
+            @JsonProperty("type") @ExcludeMissing type: JsonValue = JsonMissing.of(),
+        ) : this(id, type, mutableMapOf())
 
         /**
          * The ID of the item to reference.
@@ -2310,25 +2341,15 @@ private constructor(
          */
         @JsonProperty("id") @ExcludeMissing fun _id(): JsonField<String> = id
 
+        @JsonAnySetter
+        private fun putAdditionalProperty(key: String, value: JsonValue) {
+            additionalProperties.put(key, value)
+        }
+
         @JsonAnyGetter
         @ExcludeMissing
-        fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-        private var validated: Boolean = false
-
-        fun validate(): ItemReference = apply {
-            if (validated) {
-                return@apply
-            }
-
-            id()
-            _type().let {
-                if (it != JsonValue.from("item_reference")) {
-                    throw OpenAIInvalidDataException("'type' is invalid, received $it")
-                }
-            }
-            validated = true
-        }
+        fun _additionalProperties(): Map<String, JsonValue> =
+            Collections.unmodifiableMap(additionalProperties)
 
         fun toBuilder() = Builder().from(this)
 
@@ -2417,7 +2438,23 @@ private constructor(
              * @throws IllegalStateException if any required field is unset.
              */
             fun build(): ItemReference =
-                ItemReference(checkRequired("id", id), type, additionalProperties.toImmutable())
+                ItemReference(checkRequired("id", id), type, additionalProperties.toMutableMap())
+        }
+
+        private var validated: Boolean = false
+
+        fun validate(): ItemReference = apply {
+            if (validated) {
+                return@apply
+            }
+
+            id()
+            _type().let {
+                if (it != JsonValue.from("item_reference")) {
+                    throw OpenAIInvalidDataException("'type' is invalid, received $it")
+                }
+            }
+            validated = true
         }
 
         override fun equals(other: Any?): Boolean {

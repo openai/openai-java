@@ -10,31 +10,33 @@ import com.openai.core.ExcludeMissing
 import com.openai.core.JsonField
 import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
-import com.openai.core.NoAutoDetect
 import com.openai.core.checkRequired
-import com.openai.core.immutableEmptyMap
-import com.openai.core.toImmutable
 import com.openai.errors.OpenAIInvalidDataException
+import java.util.Collections
 import java.util.Objects
 import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
-@NoAutoDetect
 class FunctionDefinition
-@JsonCreator
 private constructor(
-    @JsonProperty("name") @ExcludeMissing private val name: JsonField<String> = JsonMissing.of(),
-    @JsonProperty("description")
-    @ExcludeMissing
-    private val description: JsonField<String> = JsonMissing.of(),
-    @JsonProperty("parameters")
-    @ExcludeMissing
-    private val parameters: JsonField<FunctionParameters> = JsonMissing.of(),
-    @JsonProperty("strict")
-    @ExcludeMissing
-    private val strict: JsonField<Boolean> = JsonMissing.of(),
-    @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
+    private val name: JsonField<String>,
+    private val description: JsonField<String>,
+    private val parameters: JsonField<FunctionParameters>,
+    private val strict: JsonField<Boolean>,
+    private val additionalProperties: MutableMap<String, JsonValue>,
 ) {
+
+    @JsonCreator
+    private constructor(
+        @JsonProperty("name") @ExcludeMissing name: JsonField<String> = JsonMissing.of(),
+        @JsonProperty("description")
+        @ExcludeMissing
+        description: JsonField<String> = JsonMissing.of(),
+        @JsonProperty("parameters")
+        @ExcludeMissing
+        parameters: JsonField<FunctionParameters> = JsonMissing.of(),
+        @JsonProperty("strict") @ExcludeMissing strict: JsonField<Boolean> = JsonMissing.of(),
+    ) : this(name, description, parameters, strict, mutableMapOf())
 
     /**
      * The name of the function to be called. Must be a-z, A-Z, 0-9, or contain underscores and
@@ -110,23 +112,15 @@ private constructor(
      */
     @JsonProperty("strict") @ExcludeMissing fun _strict(): JsonField<Boolean> = strict
 
+    @JsonAnySetter
+    private fun putAdditionalProperty(key: String, value: JsonValue) {
+        additionalProperties.put(key, value)
+    }
+
     @JsonAnyGetter
     @ExcludeMissing
-    fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-    private var validated: Boolean = false
-
-    fun validate(): FunctionDefinition = apply {
-        if (validated) {
-            return@apply
-        }
-
-        name()
-        description()
-        parameters().ifPresent { it.validate() }
-        strict()
-        validated = true
-    }
+    fun _additionalProperties(): Map<String, JsonValue> =
+        Collections.unmodifiableMap(additionalProperties)
 
     fun toBuilder() = Builder().from(this)
 
@@ -274,8 +268,22 @@ private constructor(
                 description,
                 parameters,
                 strict,
-                additionalProperties.toImmutable(),
+                additionalProperties.toMutableMap(),
             )
+    }
+
+    private var validated: Boolean = false
+
+    fun validate(): FunctionDefinition = apply {
+        if (validated) {
+            return@apply
+        }
+
+        name()
+        description()
+        parameters().ifPresent { it.validate() }
+        strict()
+        validated = true
     }
 
     override fun equals(other: Any?): Boolean {

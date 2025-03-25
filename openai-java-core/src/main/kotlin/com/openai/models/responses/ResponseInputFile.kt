@@ -10,30 +10,28 @@ import com.openai.core.ExcludeMissing
 import com.openai.core.JsonField
 import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
-import com.openai.core.NoAutoDetect
-import com.openai.core.immutableEmptyMap
-import com.openai.core.toImmutable
 import com.openai.errors.OpenAIInvalidDataException
+import java.util.Collections
 import java.util.Objects
 import java.util.Optional
 
 /** A file input to the model. */
-@NoAutoDetect
 class ResponseInputFile
-@JsonCreator
 private constructor(
-    @JsonProperty("type") @ExcludeMissing private val type: JsonValue = JsonMissing.of(),
-    @JsonProperty("file_data")
-    @ExcludeMissing
-    private val fileData: JsonField<String> = JsonMissing.of(),
-    @JsonProperty("file_id")
-    @ExcludeMissing
-    private val fileId: JsonField<String> = JsonMissing.of(),
-    @JsonProperty("filename")
-    @ExcludeMissing
-    private val filename: JsonField<String> = JsonMissing.of(),
-    @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
+    private val type: JsonValue,
+    private val fileData: JsonField<String>,
+    private val fileId: JsonField<String>,
+    private val filename: JsonField<String>,
+    private val additionalProperties: MutableMap<String, JsonValue>,
 ) {
+
+    @JsonCreator
+    private constructor(
+        @JsonProperty("type") @ExcludeMissing type: JsonValue = JsonMissing.of(),
+        @JsonProperty("file_data") @ExcludeMissing fileData: JsonField<String> = JsonMissing.of(),
+        @JsonProperty("file_id") @ExcludeMissing fileId: JsonField<String> = JsonMissing.of(),
+        @JsonProperty("filename") @ExcludeMissing filename: JsonField<String> = JsonMissing.of(),
+    ) : this(type, fileData, fileId, filename, mutableMapOf())
 
     /**
      * The type of the input item. Always `input_file`.
@@ -93,27 +91,15 @@ private constructor(
      */
     @JsonProperty("filename") @ExcludeMissing fun _filename(): JsonField<String> = filename
 
+    @JsonAnySetter
+    private fun putAdditionalProperty(key: String, value: JsonValue) {
+        additionalProperties.put(key, value)
+    }
+
     @JsonAnyGetter
     @ExcludeMissing
-    fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-    private var validated: Boolean = false
-
-    fun validate(): ResponseInputFile = apply {
-        if (validated) {
-            return@apply
-        }
-
-        _type().let {
-            if (it != JsonValue.from("input_file")) {
-                throw OpenAIInvalidDataException("'type' is invalid, received $it")
-            }
-        }
-        fileData()
-        fileId()
-        filename()
-        validated = true
-    }
+    fun _additionalProperties(): Map<String, JsonValue> =
+        Collections.unmodifiableMap(additionalProperties)
 
     fun toBuilder() = Builder().from(this)
 
@@ -213,7 +199,25 @@ private constructor(
          * Further updates to this [Builder] will not mutate the returned instance.
          */
         fun build(): ResponseInputFile =
-            ResponseInputFile(type, fileData, fileId, filename, additionalProperties.toImmutable())
+            ResponseInputFile(type, fileData, fileId, filename, additionalProperties.toMutableMap())
+    }
+
+    private var validated: Boolean = false
+
+    fun validate(): ResponseInputFile = apply {
+        if (validated) {
+            return@apply
+        }
+
+        _type().let {
+            if (it != JsonValue.from("input_file")) {
+                throw OpenAIInvalidDataException("'type' is invalid, received $it")
+            }
+        }
+        fileData()
+        fileId()
+        filename()
+        validated = true
     }
 
     override fun equals(other: Any?): Boolean {

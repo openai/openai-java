@@ -11,26 +11,30 @@ import com.openai.core.ExcludeMissing
 import com.openai.core.JsonField
 import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
-import com.openai.core.NoAutoDetect
 import com.openai.core.checkKnown
 import com.openai.core.checkRequired
-import com.openai.core.immutableEmptyMap
 import com.openai.core.toImmutable
 import com.openai.errors.OpenAIInvalidDataException
+import java.util.Collections
 import java.util.Objects
 import java.util.Optional
 
-@NoAutoDetect
 class FileSearchToolCall
-@JsonCreator
 private constructor(
-    @JsonProperty("id") @ExcludeMissing private val id: JsonField<String> = JsonMissing.of(),
-    @JsonProperty("file_search")
-    @ExcludeMissing
-    private val fileSearch: JsonField<FileSearch> = JsonMissing.of(),
-    @JsonProperty("type") @ExcludeMissing private val type: JsonValue = JsonMissing.of(),
-    @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
+    private val id: JsonField<String>,
+    private val fileSearch: JsonField<FileSearch>,
+    private val type: JsonValue,
+    private val additionalProperties: MutableMap<String, JsonValue>,
 ) {
+
+    @JsonCreator
+    private constructor(
+        @JsonProperty("id") @ExcludeMissing id: JsonField<String> = JsonMissing.of(),
+        @JsonProperty("file_search")
+        @ExcludeMissing
+        fileSearch: JsonField<FileSearch> = JsonMissing.of(),
+        @JsonProperty("type") @ExcludeMissing type: JsonValue = JsonMissing.of(),
+    ) : this(id, fileSearch, type, mutableMapOf())
 
     /**
      * The ID of the tool call object.
@@ -77,26 +81,15 @@ private constructor(
     @ExcludeMissing
     fun _fileSearch(): JsonField<FileSearch> = fileSearch
 
+    @JsonAnySetter
+    private fun putAdditionalProperty(key: String, value: JsonValue) {
+        additionalProperties.put(key, value)
+    }
+
     @JsonAnyGetter
     @ExcludeMissing
-    fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-    private var validated: Boolean = false
-
-    fun validate(): FileSearchToolCall = apply {
-        if (validated) {
-            return@apply
-        }
-
-        id()
-        fileSearch().validate()
-        _type().let {
-            if (it != JsonValue.from("file_search")) {
-                throw OpenAIInvalidDataException("'type' is invalid, received $it")
-            }
-        }
-        validated = true
-    }
+    fun _additionalProperties(): Map<String, JsonValue> =
+        Collections.unmodifiableMap(additionalProperties)
 
     fun toBuilder() = Builder().from(this)
 
@@ -204,24 +197,44 @@ private constructor(
                 checkRequired("id", id),
                 checkRequired("fileSearch", fileSearch),
                 type,
-                additionalProperties.toImmutable(),
+                additionalProperties.toMutableMap(),
             )
     }
 
+    private var validated: Boolean = false
+
+    fun validate(): FileSearchToolCall = apply {
+        if (validated) {
+            return@apply
+        }
+
+        id()
+        fileSearch().validate()
+        _type().let {
+            if (it != JsonValue.from("file_search")) {
+                throw OpenAIInvalidDataException("'type' is invalid, received $it")
+            }
+        }
+        validated = true
+    }
+
     /** For now, this is always going to be an empty object. */
-    @NoAutoDetect
     class FileSearch
-    @JsonCreator
     private constructor(
-        @JsonProperty("ranking_options")
-        @ExcludeMissing
-        private val rankingOptions: JsonField<RankingOptions> = JsonMissing.of(),
-        @JsonProperty("results")
-        @ExcludeMissing
-        private val results: JsonField<List<Result>> = JsonMissing.of(),
-        @JsonAnySetter
-        private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
+        private val rankingOptions: JsonField<RankingOptions>,
+        private val results: JsonField<List<Result>>,
+        private val additionalProperties: MutableMap<String, JsonValue>,
     ) {
+
+        @JsonCreator
+        private constructor(
+            @JsonProperty("ranking_options")
+            @ExcludeMissing
+            rankingOptions: JsonField<RankingOptions> = JsonMissing.of(),
+            @JsonProperty("results")
+            @ExcludeMissing
+            results: JsonField<List<Result>> = JsonMissing.of(),
+        ) : this(rankingOptions, results, mutableMapOf())
 
         /**
          * The ranking options for the file search.
@@ -257,21 +270,15 @@ private constructor(
          */
         @JsonProperty("results") @ExcludeMissing fun _results(): JsonField<List<Result>> = results
 
+        @JsonAnySetter
+        private fun putAdditionalProperty(key: String, value: JsonValue) {
+            additionalProperties.put(key, value)
+        }
+
         @JsonAnyGetter
         @ExcludeMissing
-        fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-        private var validated: Boolean = false
-
-        fun validate(): FileSearch = apply {
-            if (validated) {
-                return@apply
-            }
-
-            rankingOptions().ifPresent { it.validate() }
-            results().ifPresent { it.forEach { it.validate() } }
-            validated = true
-        }
+        fun _additionalProperties(): Map<String, JsonValue> =
+            Collections.unmodifiableMap(additionalProperties)
 
         fun toBuilder() = Builder().from(this)
 
@@ -364,24 +371,39 @@ private constructor(
                 FileSearch(
                     rankingOptions,
                     (results ?: JsonMissing.of()).map { it.toImmutable() },
-                    additionalProperties.toImmutable(),
+                    additionalProperties.toMutableMap(),
                 )
         }
 
+        private var validated: Boolean = false
+
+        fun validate(): FileSearch = apply {
+            if (validated) {
+                return@apply
+            }
+
+            rankingOptions().ifPresent { it.validate() }
+            results().ifPresent { it.forEach { it.validate() } }
+            validated = true
+        }
+
         /** The ranking options for the file search. */
-        @NoAutoDetect
         class RankingOptions
-        @JsonCreator
         private constructor(
-            @JsonProperty("ranker")
-            @ExcludeMissing
-            private val ranker: JsonField<Ranker> = JsonMissing.of(),
-            @JsonProperty("score_threshold")
-            @ExcludeMissing
-            private val scoreThreshold: JsonField<Double> = JsonMissing.of(),
-            @JsonAnySetter
-            private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
+            private val ranker: JsonField<Ranker>,
+            private val scoreThreshold: JsonField<Double>,
+            private val additionalProperties: MutableMap<String, JsonValue>,
         ) {
+
+            @JsonCreator
+            private constructor(
+                @JsonProperty("ranker")
+                @ExcludeMissing
+                ranker: JsonField<Ranker> = JsonMissing.of(),
+                @JsonProperty("score_threshold")
+                @ExcludeMissing
+                scoreThreshold: JsonField<Double> = JsonMissing.of(),
+            ) : this(ranker, scoreThreshold, mutableMapOf())
 
             /**
              * The ranker to use for the file search. If not specified will use the `auto` ranker.
@@ -419,21 +441,15 @@ private constructor(
             @ExcludeMissing
             fun _scoreThreshold(): JsonField<Double> = scoreThreshold
 
+            @JsonAnySetter
+            private fun putAdditionalProperty(key: String, value: JsonValue) {
+                additionalProperties.put(key, value)
+            }
+
             @JsonAnyGetter
             @ExcludeMissing
-            fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-            private var validated: Boolean = false
-
-            fun validate(): RankingOptions = apply {
-                if (validated) {
-                    return@apply
-                }
-
-                ranker()
-                scoreThreshold()
-                validated = true
-            }
+            fun _additionalProperties(): Map<String, JsonValue> =
+                Collections.unmodifiableMap(additionalProperties)
 
             fun toBuilder() = Builder().from(this)
 
@@ -537,8 +553,20 @@ private constructor(
                     RankingOptions(
                         checkRequired("ranker", ranker),
                         checkRequired("scoreThreshold", scoreThreshold),
-                        additionalProperties.toImmutable(),
+                        additionalProperties.toMutableMap(),
                     )
+            }
+
+            private var validated: Boolean = false
+
+            fun validate(): RankingOptions = apply {
+                if (validated) {
+                    return@apply
+                }
+
+                ranker()
+                scoreThreshold()
+                validated = true
             }
 
             /**
@@ -667,25 +695,28 @@ private constructor(
         }
 
         /** A result instance of the file search. */
-        @NoAutoDetect
         class Result
-        @JsonCreator
         private constructor(
-            @JsonProperty("file_id")
-            @ExcludeMissing
-            private val fileId: JsonField<String> = JsonMissing.of(),
-            @JsonProperty("file_name")
-            @ExcludeMissing
-            private val fileName: JsonField<String> = JsonMissing.of(),
-            @JsonProperty("score")
-            @ExcludeMissing
-            private val score: JsonField<Double> = JsonMissing.of(),
-            @JsonProperty("content")
-            @ExcludeMissing
-            private val content: JsonField<List<Content>> = JsonMissing.of(),
-            @JsonAnySetter
-            private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
+            private val fileId: JsonField<String>,
+            private val fileName: JsonField<String>,
+            private val score: JsonField<Double>,
+            private val content: JsonField<List<Content>>,
+            private val additionalProperties: MutableMap<String, JsonValue>,
         ) {
+
+            @JsonCreator
+            private constructor(
+                @JsonProperty("file_id")
+                @ExcludeMissing
+                fileId: JsonField<String> = JsonMissing.of(),
+                @JsonProperty("file_name")
+                @ExcludeMissing
+                fileName: JsonField<String> = JsonMissing.of(),
+                @JsonProperty("score") @ExcludeMissing score: JsonField<Double> = JsonMissing.of(),
+                @JsonProperty("content")
+                @ExcludeMissing
+                content: JsonField<List<Content>> = JsonMissing.of(),
+            ) : this(fileId, fileName, score, content, mutableMapOf())
 
             /**
              * The ID of the file that result was found in.
@@ -755,23 +786,15 @@ private constructor(
             @ExcludeMissing
             fun _content(): JsonField<List<Content>> = content
 
+            @JsonAnySetter
+            private fun putAdditionalProperty(key: String, value: JsonValue) {
+                additionalProperties.put(key, value)
+            }
+
             @JsonAnyGetter
             @ExcludeMissing
-            fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-            private var validated: Boolean = false
-
-            fun validate(): Result = apply {
-                if (validated) {
-                    return@apply
-                }
-
-                fileId()
-                fileName()
-                score()
-                content().ifPresent { it.forEach { it.validate() } }
-                validated = true
-            }
+            fun _additionalProperties(): Map<String, JsonValue> =
+                Collections.unmodifiableMap(additionalProperties)
 
             fun toBuilder() = Builder().from(this)
 
@@ -918,23 +941,38 @@ private constructor(
                         checkRequired("fileName", fileName),
                         checkRequired("score", score),
                         (content ?: JsonMissing.of()).map { it.toImmutable() },
-                        additionalProperties.toImmutable(),
+                        additionalProperties.toMutableMap(),
                     )
             }
 
-            @NoAutoDetect
+            private var validated: Boolean = false
+
+            fun validate(): Result = apply {
+                if (validated) {
+                    return@apply
+                }
+
+                fileId()
+                fileName()
+                score()
+                content().ifPresent { it.forEach { it.validate() } }
+                validated = true
+            }
+
             class Content
-            @JsonCreator
             private constructor(
-                @JsonProperty("text")
-                @ExcludeMissing
-                private val text: JsonField<String> = JsonMissing.of(),
-                @JsonProperty("type")
-                @ExcludeMissing
-                private val type: JsonField<Type> = JsonMissing.of(),
-                @JsonAnySetter
-                private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
+                private val text: JsonField<String>,
+                private val type: JsonField<Type>,
+                private val additionalProperties: MutableMap<String, JsonValue>,
             ) {
+
+                @JsonCreator
+                private constructor(
+                    @JsonProperty("text")
+                    @ExcludeMissing
+                    text: JsonField<String> = JsonMissing.of(),
+                    @JsonProperty("type") @ExcludeMissing type: JsonField<Type> = JsonMissing.of(),
+                ) : this(text, type, mutableMapOf())
 
                 /**
                  * The text content of the file.
@@ -968,21 +1006,15 @@ private constructor(
                  */
                 @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<Type> = type
 
+                @JsonAnySetter
+                private fun putAdditionalProperty(key: String, value: JsonValue) {
+                    additionalProperties.put(key, value)
+                }
+
                 @JsonAnyGetter
                 @ExcludeMissing
-                fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-                private var validated: Boolean = false
-
-                fun validate(): Content = apply {
-                    if (validated) {
-                        return@apply
-                    }
-
-                    text()
-                    type()
-                    validated = true
-                }
+                fun _additionalProperties(): Map<String, JsonValue> =
+                    Collections.unmodifiableMap(additionalProperties)
 
                 fun toBuilder() = Builder().from(this)
 
@@ -1057,7 +1089,19 @@ private constructor(
                      *
                      * Further updates to this [Builder] will not mutate the returned instance.
                      */
-                    fun build(): Content = Content(text, type, additionalProperties.toImmutable())
+                    fun build(): Content = Content(text, type, additionalProperties.toMutableMap())
+                }
+
+                private var validated: Boolean = false
+
+                fun validate(): Content = apply {
+                    if (validated) {
+                        return@apply
+                    }
+
+                    text()
+                    type()
+                    validated = true
                 }
 
                 /** The type of the content. */

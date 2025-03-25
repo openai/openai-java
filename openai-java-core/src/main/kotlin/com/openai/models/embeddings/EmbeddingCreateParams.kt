@@ -20,15 +20,13 @@ import com.openai.core.ExcludeMissing
 import com.openai.core.JsonField
 import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
-import com.openai.core.NoAutoDetect
 import com.openai.core.Params
 import com.openai.core.checkRequired
 import com.openai.core.getOrThrow
 import com.openai.core.http.Headers
 import com.openai.core.http.QueryParams
-import com.openai.core.immutableEmptyMap
-import com.openai.core.toImmutable
 import com.openai.errors.OpenAIInvalidDataException
+import java.util.Collections
 import java.util.Objects
 import java.util.Optional
 
@@ -134,354 +132,6 @@ private constructor(
 
     fun _additionalQueryParams(): QueryParams = additionalQueryParams
 
-    @JvmSynthetic internal fun _body(): Body = body
-
-    override fun _headers(): Headers = additionalHeaders
-
-    override fun _queryParams(): QueryParams = additionalQueryParams
-
-    @NoAutoDetect
-    class Body
-    @JsonCreator
-    private constructor(
-        @JsonProperty("input")
-        @ExcludeMissing
-        private val input: JsonField<Input> = JsonMissing.of(),
-        @JsonProperty("model")
-        @ExcludeMissing
-        private val model: JsonField<EmbeddingModel> = JsonMissing.of(),
-        @JsonProperty("dimensions")
-        @ExcludeMissing
-        private val dimensions: JsonField<Long> = JsonMissing.of(),
-        @JsonProperty("encoding_format")
-        @ExcludeMissing
-        private val encodingFormat: JsonField<EncodingFormat> = JsonMissing.of(),
-        @JsonProperty("user")
-        @ExcludeMissing
-        private val user: JsonField<String> = JsonMissing.of(),
-        @JsonAnySetter
-        private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
-    ) {
-
-        /**
-         * Input text to embed, encoded as a string or array of tokens. To embed multiple inputs in
-         * a single request, pass an array of strings or array of token arrays. The input must not
-         * exceed the max input tokens for the model (8192 tokens for `text-embedding-ada-002`),
-         * cannot be an empty string, and any array must be 2048 dimensions or less.
-         * [Example Python code](https://cookbook.openai.com/examples/how_to_count_tokens_with_tiktoken)
-         * for counting tokens. Some models may also impose a limit on total number of tokens summed
-         * across inputs.
-         *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
-         */
-        fun input(): Input = input.getRequired("input")
-
-        /**
-         * ID of the model to use. You can use the
-         * [List models](https://platform.openai.com/docs/api-reference/models/list) API to see all
-         * of your available models, or see our
-         * [Model overview](https://platform.openai.com/docs/models) for descriptions of them.
-         *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
-         */
-        fun model(): EmbeddingModel = model.getRequired("model")
-
-        /**
-         * The number of dimensions the resulting output embeddings should have. Only supported in
-         * `text-embedding-3` and later models.
-         *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
-         */
-        fun dimensions(): Optional<Long> = Optional.ofNullable(dimensions.getNullable("dimensions"))
-
-        /**
-         * The format to return the embeddings in. Can be either `float` or
-         * [`base64`](https://pypi.org/project/pybase64/).
-         *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
-         */
-        fun encodingFormat(): Optional<EncodingFormat> =
-            Optional.ofNullable(encodingFormat.getNullable("encoding_format"))
-
-        /**
-         * A unique identifier representing your end-user, which can help OpenAI to monitor and
-         * detect abuse.
-         * [Learn more](https://platform.openai.com/docs/guides/safety-best-practices#end-user-ids).
-         *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
-         */
-        fun user(): Optional<String> = Optional.ofNullable(user.getNullable("user"))
-
-        /**
-         * Returns the raw JSON value of [input].
-         *
-         * Unlike [input], this method doesn't throw if the JSON field has an unexpected type.
-         */
-        @JsonProperty("input") @ExcludeMissing fun _input(): JsonField<Input> = input
-
-        /**
-         * Returns the raw JSON value of [model].
-         *
-         * Unlike [model], this method doesn't throw if the JSON field has an unexpected type.
-         */
-        @JsonProperty("model") @ExcludeMissing fun _model(): JsonField<EmbeddingModel> = model
-
-        /**
-         * Returns the raw JSON value of [dimensions].
-         *
-         * Unlike [dimensions], this method doesn't throw if the JSON field has an unexpected type.
-         */
-        @JsonProperty("dimensions") @ExcludeMissing fun _dimensions(): JsonField<Long> = dimensions
-
-        /**
-         * Returns the raw JSON value of [encodingFormat].
-         *
-         * Unlike [encodingFormat], this method doesn't throw if the JSON field has an unexpected
-         * type.
-         */
-        @JsonProperty("encoding_format")
-        @ExcludeMissing
-        fun _encodingFormat(): JsonField<EncodingFormat> = encodingFormat
-
-        /**
-         * Returns the raw JSON value of [user].
-         *
-         * Unlike [user], this method doesn't throw if the JSON field has an unexpected type.
-         */
-        @JsonProperty("user") @ExcludeMissing fun _user(): JsonField<String> = user
-
-        @JsonAnyGetter
-        @ExcludeMissing
-        fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-        private var validated: Boolean = false
-
-        fun validate(): Body = apply {
-            if (validated) {
-                return@apply
-            }
-
-            input().validate()
-            model()
-            dimensions()
-            encodingFormat()
-            user()
-            validated = true
-        }
-
-        fun toBuilder() = Builder().from(this)
-
-        companion object {
-
-            /**
-             * Returns a mutable builder for constructing an instance of [Body].
-             *
-             * The following fields are required:
-             * ```java
-             * .input()
-             * .model()
-             * ```
-             */
-            @JvmStatic fun builder() = Builder()
-        }
-
-        /** A builder for [Body]. */
-        class Builder internal constructor() {
-
-            private var input: JsonField<Input>? = null
-            private var model: JsonField<EmbeddingModel>? = null
-            private var dimensions: JsonField<Long> = JsonMissing.of()
-            private var encodingFormat: JsonField<EncodingFormat> = JsonMissing.of()
-            private var user: JsonField<String> = JsonMissing.of()
-            private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
-
-            @JvmSynthetic
-            internal fun from(body: Body) = apply {
-                input = body.input
-                model = body.model
-                dimensions = body.dimensions
-                encodingFormat = body.encodingFormat
-                user = body.user
-                additionalProperties = body.additionalProperties.toMutableMap()
-            }
-
-            /**
-             * Input text to embed, encoded as a string or array of tokens. To embed multiple inputs
-             * in a single request, pass an array of strings or array of token arrays. The input
-             * must not exceed the max input tokens for the model (8192 tokens for
-             * `text-embedding-ada-002`), cannot be an empty string, and any array must be 2048
-             * dimensions or less.
-             * [Example Python code](https://cookbook.openai.com/examples/how_to_count_tokens_with_tiktoken)
-             * for counting tokens. Some models may also impose a limit on total number of tokens
-             * summed across inputs.
-             */
-            fun input(input: Input) = input(JsonField.of(input))
-
-            /**
-             * Sets [Builder.input] to an arbitrary JSON value.
-             *
-             * You should usually call [Builder.input] with a well-typed [Input] value instead. This
-             * method is primarily for setting the field to an undocumented or not yet supported
-             * value.
-             */
-            fun input(input: JsonField<Input>) = apply { this.input = input }
-
-            /** Alias for calling [input] with `Input.ofString(string)`. */
-            fun input(string: String) = input(Input.ofString(string))
-
-            /** Alias for calling [input] with `Input.ofArrayOfStrings(arrayOfStrings)`. */
-            fun inputOfArrayOfStrings(arrayOfStrings: List<String>) =
-                input(Input.ofArrayOfStrings(arrayOfStrings))
-
-            /** Alias for calling [input] with `Input.ofArrayOfTokens(arrayOfTokens)`. */
-            fun inputOfArrayOfTokens(arrayOfTokens: List<Long>) =
-                input(Input.ofArrayOfTokens(arrayOfTokens))
-
-            /** Alias for calling [input] with `Input.ofArrayOfTokenArrays(arrayOfTokenArrays)`. */
-            fun inputOfArrayOfTokenArrays(arrayOfTokenArrays: List<List<Long>>) =
-                input(Input.ofArrayOfTokenArrays(arrayOfTokenArrays))
-
-            /**
-             * ID of the model to use. You can use the
-             * [List models](https://platform.openai.com/docs/api-reference/models/list) API to see
-             * all of your available models, or see our
-             * [Model overview](https://platform.openai.com/docs/models) for descriptions of them.
-             */
-            fun model(model: EmbeddingModel) = model(JsonField.of(model))
-
-            /**
-             * Sets [Builder.model] to an arbitrary JSON value.
-             *
-             * You should usually call [Builder.model] with a well-typed [EmbeddingModel] value
-             * instead. This method is primarily for setting the field to an undocumented or not yet
-             * supported value.
-             */
-            fun model(model: JsonField<EmbeddingModel>) = apply { this.model = model }
-
-            /**
-             * Sets [model] to an arbitrary [String].
-             *
-             * You should usually call [model] with a well-typed [EmbeddingModel] constant instead.
-             * This method is primarily for setting the field to an undocumented or not yet
-             * supported value.
-             */
-            fun model(value: String) = model(EmbeddingModel.of(value))
-
-            /**
-             * The number of dimensions the resulting output embeddings should have. Only supported
-             * in `text-embedding-3` and later models.
-             */
-            fun dimensions(dimensions: Long) = dimensions(JsonField.of(dimensions))
-
-            /**
-             * Sets [Builder.dimensions] to an arbitrary JSON value.
-             *
-             * You should usually call [Builder.dimensions] with a well-typed [Long] value instead.
-             * This method is primarily for setting the field to an undocumented or not yet
-             * supported value.
-             */
-            fun dimensions(dimensions: JsonField<Long>) = apply { this.dimensions = dimensions }
-
-            /**
-             * The format to return the embeddings in. Can be either `float` or
-             * [`base64`](https://pypi.org/project/pybase64/).
-             */
-            fun encodingFormat(encodingFormat: EncodingFormat) =
-                encodingFormat(JsonField.of(encodingFormat))
-
-            /**
-             * Sets [Builder.encodingFormat] to an arbitrary JSON value.
-             *
-             * You should usually call [Builder.encodingFormat] with a well-typed [EncodingFormat]
-             * value instead. This method is primarily for setting the field to an undocumented or
-             * not yet supported value.
-             */
-            fun encodingFormat(encodingFormat: JsonField<EncodingFormat>) = apply {
-                this.encodingFormat = encodingFormat
-            }
-
-            /**
-             * A unique identifier representing your end-user, which can help OpenAI to monitor and
-             * detect abuse.
-             * [Learn more](https://platform.openai.com/docs/guides/safety-best-practices#end-user-ids).
-             */
-            fun user(user: String) = user(JsonField.of(user))
-
-            /**
-             * Sets [Builder.user] to an arbitrary JSON value.
-             *
-             * You should usually call [Builder.user] with a well-typed [String] value instead. This
-             * method is primarily for setting the field to an undocumented or not yet supported
-             * value.
-             */
-            fun user(user: JsonField<String>) = apply { this.user = user }
-
-            fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
-                this.additionalProperties.clear()
-                putAllAdditionalProperties(additionalProperties)
-            }
-
-            fun putAdditionalProperty(key: String, value: JsonValue) = apply {
-                additionalProperties.put(key, value)
-            }
-
-            fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
-                this.additionalProperties.putAll(additionalProperties)
-            }
-
-            fun removeAdditionalProperty(key: String) = apply { additionalProperties.remove(key) }
-
-            fun removeAllAdditionalProperties(keys: Set<String>) = apply {
-                keys.forEach(::removeAdditionalProperty)
-            }
-
-            /**
-             * Returns an immutable instance of [Body].
-             *
-             * Further updates to this [Builder] will not mutate the returned instance.
-             *
-             * The following fields are required:
-             * ```java
-             * .input()
-             * .model()
-             * ```
-             *
-             * @throws IllegalStateException if any required field is unset.
-             */
-            fun build(): Body =
-                Body(
-                    checkRequired("input", input),
-                    checkRequired("model", model),
-                    dimensions,
-                    encodingFormat,
-                    user,
-                    additionalProperties.toImmutable(),
-                )
-        }
-
-        override fun equals(other: Any?): Boolean {
-            if (this === other) {
-                return true
-            }
-
-            return /* spotless:off */ other is Body && input == other.input && model == other.model && dimensions == other.dimensions && encodingFormat == other.encodingFormat && user == other.user && additionalProperties == other.additionalProperties /* spotless:on */
-        }
-
-        /* spotless:off */
-        private val hashCode: Int by lazy { Objects.hash(input, model, dimensions, encodingFormat, user, additionalProperties) }
-        /* spotless:on */
-
-        override fun hashCode(): Int = hashCode
-
-        override fun toString() =
-            "Body{input=$input, model=$model, dimensions=$dimensions, encodingFormat=$encodingFormat, user=$user, additionalProperties=$additionalProperties}"
-    }
-
     fun toBuilder() = Builder().from(this)
 
     companion object {
@@ -499,7 +149,6 @@ private constructor(
     }
 
     /** A builder for [EmbeddingCreateParams]. */
-    @NoAutoDetect
     class Builder internal constructor() {
 
         private var body: Body.Builder = Body.builder()
@@ -759,6 +408,362 @@ private constructor(
                 additionalHeaders.build(),
                 additionalQueryParams.build(),
             )
+    }
+
+    @JvmSynthetic internal fun _body(): Body = body
+
+    override fun _headers(): Headers = additionalHeaders
+
+    override fun _queryParams(): QueryParams = additionalQueryParams
+
+    class Body
+    private constructor(
+        private val input: JsonField<Input>,
+        private val model: JsonField<EmbeddingModel>,
+        private val dimensions: JsonField<Long>,
+        private val encodingFormat: JsonField<EncodingFormat>,
+        private val user: JsonField<String>,
+        private val additionalProperties: MutableMap<String, JsonValue>,
+    ) {
+
+        @JsonCreator
+        private constructor(
+            @JsonProperty("input") @ExcludeMissing input: JsonField<Input> = JsonMissing.of(),
+            @JsonProperty("model")
+            @ExcludeMissing
+            model: JsonField<EmbeddingModel> = JsonMissing.of(),
+            @JsonProperty("dimensions")
+            @ExcludeMissing
+            dimensions: JsonField<Long> = JsonMissing.of(),
+            @JsonProperty("encoding_format")
+            @ExcludeMissing
+            encodingFormat: JsonField<EncodingFormat> = JsonMissing.of(),
+            @JsonProperty("user") @ExcludeMissing user: JsonField<String> = JsonMissing.of(),
+        ) : this(input, model, dimensions, encodingFormat, user, mutableMapOf())
+
+        /**
+         * Input text to embed, encoded as a string or array of tokens. To embed multiple inputs in
+         * a single request, pass an array of strings or array of token arrays. The input must not
+         * exceed the max input tokens for the model (8192 tokens for `text-embedding-ada-002`),
+         * cannot be an empty string, and any array must be 2048 dimensions or less.
+         * [Example Python code](https://cookbook.openai.com/examples/how_to_count_tokens_with_tiktoken)
+         * for counting tokens. Some models may also impose a limit on total number of tokens summed
+         * across inputs.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         */
+        fun input(): Input = input.getRequired("input")
+
+        /**
+         * ID of the model to use. You can use the
+         * [List models](https://platform.openai.com/docs/api-reference/models/list) API to see all
+         * of your available models, or see our
+         * [Model overview](https://platform.openai.com/docs/models) for descriptions of them.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         */
+        fun model(): EmbeddingModel = model.getRequired("model")
+
+        /**
+         * The number of dimensions the resulting output embeddings should have. Only supported in
+         * `text-embedding-3` and later models.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun dimensions(): Optional<Long> = Optional.ofNullable(dimensions.getNullable("dimensions"))
+
+        /**
+         * The format to return the embeddings in. Can be either `float` or
+         * [`base64`](https://pypi.org/project/pybase64/).
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun encodingFormat(): Optional<EncodingFormat> =
+            Optional.ofNullable(encodingFormat.getNullable("encoding_format"))
+
+        /**
+         * A unique identifier representing your end-user, which can help OpenAI to monitor and
+         * detect abuse.
+         * [Learn more](https://platform.openai.com/docs/guides/safety-best-practices#end-user-ids).
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun user(): Optional<String> = Optional.ofNullable(user.getNullable("user"))
+
+        /**
+         * Returns the raw JSON value of [input].
+         *
+         * Unlike [input], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("input") @ExcludeMissing fun _input(): JsonField<Input> = input
+
+        /**
+         * Returns the raw JSON value of [model].
+         *
+         * Unlike [model], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("model") @ExcludeMissing fun _model(): JsonField<EmbeddingModel> = model
+
+        /**
+         * Returns the raw JSON value of [dimensions].
+         *
+         * Unlike [dimensions], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("dimensions") @ExcludeMissing fun _dimensions(): JsonField<Long> = dimensions
+
+        /**
+         * Returns the raw JSON value of [encodingFormat].
+         *
+         * Unlike [encodingFormat], this method doesn't throw if the JSON field has an unexpected
+         * type.
+         */
+        @JsonProperty("encoding_format")
+        @ExcludeMissing
+        fun _encodingFormat(): JsonField<EncodingFormat> = encodingFormat
+
+        /**
+         * Returns the raw JSON value of [user].
+         *
+         * Unlike [user], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("user") @ExcludeMissing fun _user(): JsonField<String> = user
+
+        @JsonAnySetter
+        private fun putAdditionalProperty(key: String, value: JsonValue) {
+            additionalProperties.put(key, value)
+        }
+
+        @JsonAnyGetter
+        @ExcludeMissing
+        fun _additionalProperties(): Map<String, JsonValue> =
+            Collections.unmodifiableMap(additionalProperties)
+
+        fun toBuilder() = Builder().from(this)
+
+        companion object {
+
+            /**
+             * Returns a mutable builder for constructing an instance of [Body].
+             *
+             * The following fields are required:
+             * ```java
+             * .input()
+             * .model()
+             * ```
+             */
+            @JvmStatic fun builder() = Builder()
+        }
+
+        /** A builder for [Body]. */
+        class Builder internal constructor() {
+
+            private var input: JsonField<Input>? = null
+            private var model: JsonField<EmbeddingModel>? = null
+            private var dimensions: JsonField<Long> = JsonMissing.of()
+            private var encodingFormat: JsonField<EncodingFormat> = JsonMissing.of()
+            private var user: JsonField<String> = JsonMissing.of()
+            private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
+
+            @JvmSynthetic
+            internal fun from(body: Body) = apply {
+                input = body.input
+                model = body.model
+                dimensions = body.dimensions
+                encodingFormat = body.encodingFormat
+                user = body.user
+                additionalProperties = body.additionalProperties.toMutableMap()
+            }
+
+            /**
+             * Input text to embed, encoded as a string or array of tokens. To embed multiple inputs
+             * in a single request, pass an array of strings or array of token arrays. The input
+             * must not exceed the max input tokens for the model (8192 tokens for
+             * `text-embedding-ada-002`), cannot be an empty string, and any array must be 2048
+             * dimensions or less.
+             * [Example Python code](https://cookbook.openai.com/examples/how_to_count_tokens_with_tiktoken)
+             * for counting tokens. Some models may also impose a limit on total number of tokens
+             * summed across inputs.
+             */
+            fun input(input: Input) = input(JsonField.of(input))
+
+            /**
+             * Sets [Builder.input] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.input] with a well-typed [Input] value instead. This
+             * method is primarily for setting the field to an undocumented or not yet supported
+             * value.
+             */
+            fun input(input: JsonField<Input>) = apply { this.input = input }
+
+            /** Alias for calling [input] with `Input.ofString(string)`. */
+            fun input(string: String) = input(Input.ofString(string))
+
+            /** Alias for calling [input] with `Input.ofArrayOfStrings(arrayOfStrings)`. */
+            fun inputOfArrayOfStrings(arrayOfStrings: List<String>) =
+                input(Input.ofArrayOfStrings(arrayOfStrings))
+
+            /** Alias for calling [input] with `Input.ofArrayOfTokens(arrayOfTokens)`. */
+            fun inputOfArrayOfTokens(arrayOfTokens: List<Long>) =
+                input(Input.ofArrayOfTokens(arrayOfTokens))
+
+            /** Alias for calling [input] with `Input.ofArrayOfTokenArrays(arrayOfTokenArrays)`. */
+            fun inputOfArrayOfTokenArrays(arrayOfTokenArrays: List<List<Long>>) =
+                input(Input.ofArrayOfTokenArrays(arrayOfTokenArrays))
+
+            /**
+             * ID of the model to use. You can use the
+             * [List models](https://platform.openai.com/docs/api-reference/models/list) API to see
+             * all of your available models, or see our
+             * [Model overview](https://platform.openai.com/docs/models) for descriptions of them.
+             */
+            fun model(model: EmbeddingModel) = model(JsonField.of(model))
+
+            /**
+             * Sets [Builder.model] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.model] with a well-typed [EmbeddingModel] value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun model(model: JsonField<EmbeddingModel>) = apply { this.model = model }
+
+            /**
+             * Sets [model] to an arbitrary [String].
+             *
+             * You should usually call [model] with a well-typed [EmbeddingModel] constant instead.
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun model(value: String) = model(EmbeddingModel.of(value))
+
+            /**
+             * The number of dimensions the resulting output embeddings should have. Only supported
+             * in `text-embedding-3` and later models.
+             */
+            fun dimensions(dimensions: Long) = dimensions(JsonField.of(dimensions))
+
+            /**
+             * Sets [Builder.dimensions] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.dimensions] with a well-typed [Long] value instead.
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun dimensions(dimensions: JsonField<Long>) = apply { this.dimensions = dimensions }
+
+            /**
+             * The format to return the embeddings in. Can be either `float` or
+             * [`base64`](https://pypi.org/project/pybase64/).
+             */
+            fun encodingFormat(encodingFormat: EncodingFormat) =
+                encodingFormat(JsonField.of(encodingFormat))
+
+            /**
+             * Sets [Builder.encodingFormat] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.encodingFormat] with a well-typed [EncodingFormat]
+             * value instead. This method is primarily for setting the field to an undocumented or
+             * not yet supported value.
+             */
+            fun encodingFormat(encodingFormat: JsonField<EncodingFormat>) = apply {
+                this.encodingFormat = encodingFormat
+            }
+
+            /**
+             * A unique identifier representing your end-user, which can help OpenAI to monitor and
+             * detect abuse.
+             * [Learn more](https://platform.openai.com/docs/guides/safety-best-practices#end-user-ids).
+             */
+            fun user(user: String) = user(JsonField.of(user))
+
+            /**
+             * Sets [Builder.user] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.user] with a well-typed [String] value instead. This
+             * method is primarily for setting the field to an undocumented or not yet supported
+             * value.
+             */
+            fun user(user: JsonField<String>) = apply { this.user = user }
+
+            fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                this.additionalProperties.clear()
+                putAllAdditionalProperties(additionalProperties)
+            }
+
+            fun putAdditionalProperty(key: String, value: JsonValue) = apply {
+                additionalProperties.put(key, value)
+            }
+
+            fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                this.additionalProperties.putAll(additionalProperties)
+            }
+
+            fun removeAdditionalProperty(key: String) = apply { additionalProperties.remove(key) }
+
+            fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                keys.forEach(::removeAdditionalProperty)
+            }
+
+            /**
+             * Returns an immutable instance of [Body].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             *
+             * The following fields are required:
+             * ```java
+             * .input()
+             * .model()
+             * ```
+             *
+             * @throws IllegalStateException if any required field is unset.
+             */
+            fun build(): Body =
+                Body(
+                    checkRequired("input", input),
+                    checkRequired("model", model),
+                    dimensions,
+                    encodingFormat,
+                    user,
+                    additionalProperties.toMutableMap(),
+                )
+        }
+
+        private var validated: Boolean = false
+
+        fun validate(): Body = apply {
+            if (validated) {
+                return@apply
+            }
+
+            input().validate()
+            model()
+            dimensions()
+            encodingFormat()
+            user()
+            validated = true
+        }
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) {
+                return true
+            }
+
+            return /* spotless:off */ other is Body && input == other.input && model == other.model && dimensions == other.dimensions && encodingFormat == other.encodingFormat && user == other.user && additionalProperties == other.additionalProperties /* spotless:on */
+        }
+
+        /* spotless:off */
+        private val hashCode: Int by lazy { Objects.hash(input, model, dimensions, encodingFormat, user, additionalProperties) }
+        /* spotless:on */
+
+        override fun hashCode(): Int = hashCode
+
+        override fun toString() =
+            "Body{input=$input, model=$model, dimensions=$dimensions, encodingFormat=$encodingFormat, user=$user, additionalProperties=$additionalProperties}"
     }
 
     /**

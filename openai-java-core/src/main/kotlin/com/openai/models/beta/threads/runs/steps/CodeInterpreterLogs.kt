@@ -10,24 +10,27 @@ import com.openai.core.ExcludeMissing
 import com.openai.core.JsonField
 import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
-import com.openai.core.NoAutoDetect
 import com.openai.core.checkRequired
-import com.openai.core.immutableEmptyMap
-import com.openai.core.toImmutable
 import com.openai.errors.OpenAIInvalidDataException
+import java.util.Collections
 import java.util.Objects
 import java.util.Optional
 
 /** Text output from the Code Interpreter tool call as part of a run step. */
-@NoAutoDetect
 class CodeInterpreterLogs
-@JsonCreator
 private constructor(
-    @JsonProperty("index") @ExcludeMissing private val index: JsonField<Long> = JsonMissing.of(),
-    @JsonProperty("type") @ExcludeMissing private val type: JsonValue = JsonMissing.of(),
-    @JsonProperty("logs") @ExcludeMissing private val logs: JsonField<String> = JsonMissing.of(),
-    @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
+    private val index: JsonField<Long>,
+    private val type: JsonValue,
+    private val logs: JsonField<String>,
+    private val additionalProperties: MutableMap<String, JsonValue>,
 ) {
+
+    @JsonCreator
+    private constructor(
+        @JsonProperty("index") @ExcludeMissing index: JsonField<Long> = JsonMissing.of(),
+        @JsonProperty("type") @ExcludeMissing type: JsonValue = JsonMissing.of(),
+        @JsonProperty("logs") @ExcludeMissing logs: JsonField<String> = JsonMissing.of(),
+    ) : this(index, type, logs, mutableMapOf())
 
     /**
      * The index of the output in the outputs array.
@@ -72,26 +75,15 @@ private constructor(
      */
     @JsonProperty("logs") @ExcludeMissing fun _logs(): JsonField<String> = logs
 
+    @JsonAnySetter
+    private fun putAdditionalProperty(key: String, value: JsonValue) {
+        additionalProperties.put(key, value)
+    }
+
     @JsonAnyGetter
     @ExcludeMissing
-    fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-    private var validated: Boolean = false
-
-    fun validate(): CodeInterpreterLogs = apply {
-        if (validated) {
-            return@apply
-        }
-
-        index()
-        _type().let {
-            if (it != JsonValue.from("logs")) {
-                throw OpenAIInvalidDataException("'type' is invalid, received $it")
-            }
-        }
-        logs()
-        validated = true
-    }
+    fun _additionalProperties(): Map<String, JsonValue> =
+        Collections.unmodifiableMap(additionalProperties)
 
     fun toBuilder() = Builder().from(this)
 
@@ -196,8 +188,25 @@ private constructor(
                 checkRequired("index", index),
                 type,
                 logs,
-                additionalProperties.toImmutable(),
+                additionalProperties.toMutableMap(),
             )
+    }
+
+    private var validated: Boolean = false
+
+    fun validate(): CodeInterpreterLogs = apply {
+        if (validated) {
+            return@apply
+        }
+
+        index()
+        _type().let {
+            if (it != JsonValue.from("logs")) {
+                throw OpenAIInvalidDataException("'type' is invalid, received $it")
+            }
+        }
+        logs()
+        validated = true
     }
 
     override fun equals(other: Any?): Boolean {

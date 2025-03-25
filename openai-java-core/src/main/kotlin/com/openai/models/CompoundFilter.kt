@@ -20,27 +20,30 @@ import com.openai.core.ExcludeMissing
 import com.openai.core.JsonField
 import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
-import com.openai.core.NoAutoDetect
 import com.openai.core.checkKnown
 import com.openai.core.checkRequired
 import com.openai.core.getOrThrow
-import com.openai.core.immutableEmptyMap
 import com.openai.core.toImmutable
 import com.openai.errors.OpenAIInvalidDataException
+import java.util.Collections
 import java.util.Objects
 import java.util.Optional
 
 /** Combine multiple filters using `and` or `or`. */
-@NoAutoDetect
 class CompoundFilter
-@JsonCreator
 private constructor(
-    @JsonProperty("filters")
-    @ExcludeMissing
-    private val filters: JsonField<List<Filter>> = JsonMissing.of(),
-    @JsonProperty("type") @ExcludeMissing private val type: JsonField<Type> = JsonMissing.of(),
-    @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
+    private val filters: JsonField<List<Filter>>,
+    private val type: JsonField<Type>,
+    private val additionalProperties: MutableMap<String, JsonValue>,
 ) {
+
+    @JsonCreator
+    private constructor(
+        @JsonProperty("filters")
+        @ExcludeMissing
+        filters: JsonField<List<Filter>> = JsonMissing.of(),
+        @JsonProperty("type") @ExcludeMissing type: JsonField<Type> = JsonMissing.of(),
+    ) : this(filters, type, mutableMapOf())
 
     /**
      * Array of filters to combine. Items can be `ComparisonFilter` or `CompoundFilter`.
@@ -72,21 +75,15 @@ private constructor(
      */
     @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<Type> = type
 
+    @JsonAnySetter
+    private fun putAdditionalProperty(key: String, value: JsonValue) {
+        additionalProperties.put(key, value)
+    }
+
     @JsonAnyGetter
     @ExcludeMissing
-    fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-    private var validated: Boolean = false
-
-    fun validate(): CompoundFilter = apply {
-        if (validated) {
-            return@apply
-        }
-
-        filters().forEach { it.validate() }
-        type()
-        validated = true
-    }
+    fun _additionalProperties(): Map<String, JsonValue> =
+        Collections.unmodifiableMap(additionalProperties)
 
     fun toBuilder() = Builder().from(this)
 
@@ -197,8 +194,20 @@ private constructor(
             CompoundFilter(
                 checkRequired("filters", filters).map { it.toImmutable() },
                 checkRequired("type", type),
-                additionalProperties.toImmutable(),
+                additionalProperties.toMutableMap(),
             )
+    }
+
+    private var validated: Boolean = false
+
+    fun validate(): CompoundFilter = apply {
+        if (validated) {
+            return@apply
+        }
+
+        filters().forEach { it.validate() }
+        type()
+        validated = true
     }
 
     /**

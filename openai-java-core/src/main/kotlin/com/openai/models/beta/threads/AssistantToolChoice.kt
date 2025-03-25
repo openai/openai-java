@@ -11,25 +11,27 @@ import com.openai.core.ExcludeMissing
 import com.openai.core.JsonField
 import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
-import com.openai.core.NoAutoDetect
 import com.openai.core.checkRequired
-import com.openai.core.immutableEmptyMap
-import com.openai.core.toImmutable
 import com.openai.errors.OpenAIInvalidDataException
+import java.util.Collections
 import java.util.Objects
 import java.util.Optional
 
 /** Specifies a tool the model should use. Use to force the model to call a specific tool. */
-@NoAutoDetect
 class AssistantToolChoice
-@JsonCreator
 private constructor(
-    @JsonProperty("type") @ExcludeMissing private val type: JsonField<Type> = JsonMissing.of(),
-    @JsonProperty("function")
-    @ExcludeMissing
-    private val function: JsonField<AssistantToolChoiceFunction> = JsonMissing.of(),
-    @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
+    private val type: JsonField<Type>,
+    private val function: JsonField<AssistantToolChoiceFunction>,
+    private val additionalProperties: MutableMap<String, JsonValue>,
 ) {
+
+    @JsonCreator
+    private constructor(
+        @JsonProperty("type") @ExcludeMissing type: JsonField<Type> = JsonMissing.of(),
+        @JsonProperty("function")
+        @ExcludeMissing
+        function: JsonField<AssistantToolChoiceFunction> = JsonMissing.of(),
+    ) : this(type, function, mutableMapOf())
 
     /**
      * The type of the tool. If type is `function`, the function name must be set
@@ -62,21 +64,15 @@ private constructor(
     @ExcludeMissing
     fun _function(): JsonField<AssistantToolChoiceFunction> = function
 
+    @JsonAnySetter
+    private fun putAdditionalProperty(key: String, value: JsonValue) {
+        additionalProperties.put(key, value)
+    }
+
     @JsonAnyGetter
     @ExcludeMissing
-    fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-    private var validated: Boolean = false
-
-    fun validate(): AssistantToolChoice = apply {
-        if (validated) {
-            return@apply
-        }
-
-        type()
-        function().ifPresent { it.validate() }
-        validated = true
-    }
+    fun _additionalProperties(): Map<String, JsonValue> =
+        Collections.unmodifiableMap(additionalProperties)
 
     fun toBuilder() = Builder().from(this)
 
@@ -166,8 +162,20 @@ private constructor(
             AssistantToolChoice(
                 checkRequired("type", type),
                 function,
-                additionalProperties.toImmutable(),
+                additionalProperties.toMutableMap(),
             )
+    }
+
+    private var validated: Boolean = false
+
+    fun validate(): AssistantToolChoice = apply {
+        if (validated) {
+            return@apply
+        }
+
+        type()
+        function().ifPresent { it.validate() }
+        validated = true
     }
 
     /** The type of the tool. If type is `function`, the function name must be set */

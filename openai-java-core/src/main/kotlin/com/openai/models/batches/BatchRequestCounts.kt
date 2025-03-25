@@ -10,25 +10,26 @@ import com.openai.core.ExcludeMissing
 import com.openai.core.JsonField
 import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
-import com.openai.core.NoAutoDetect
 import com.openai.core.checkRequired
-import com.openai.core.immutableEmptyMap
-import com.openai.core.toImmutable
 import com.openai.errors.OpenAIInvalidDataException
+import java.util.Collections
 import java.util.Objects
 
 /** The request counts for different statuses within the batch. */
-@NoAutoDetect
 class BatchRequestCounts
-@JsonCreator
 private constructor(
-    @JsonProperty("completed")
-    @ExcludeMissing
-    private val completed: JsonField<Long> = JsonMissing.of(),
-    @JsonProperty("failed") @ExcludeMissing private val failed: JsonField<Long> = JsonMissing.of(),
-    @JsonProperty("total") @ExcludeMissing private val total: JsonField<Long> = JsonMissing.of(),
-    @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
+    private val completed: JsonField<Long>,
+    private val failed: JsonField<Long>,
+    private val total: JsonField<Long>,
+    private val additionalProperties: MutableMap<String, JsonValue>,
 ) {
+
+    @JsonCreator
+    private constructor(
+        @JsonProperty("completed") @ExcludeMissing completed: JsonField<Long> = JsonMissing.of(),
+        @JsonProperty("failed") @ExcludeMissing failed: JsonField<Long> = JsonMissing.of(),
+        @JsonProperty("total") @ExcludeMissing total: JsonField<Long> = JsonMissing.of(),
+    ) : this(completed, failed, total, mutableMapOf())
 
     /**
      * Number of requests that have been completed successfully.
@@ -75,22 +76,15 @@ private constructor(
      */
     @JsonProperty("total") @ExcludeMissing fun _total(): JsonField<Long> = total
 
+    @JsonAnySetter
+    private fun putAdditionalProperty(key: String, value: JsonValue) {
+        additionalProperties.put(key, value)
+    }
+
     @JsonAnyGetter
     @ExcludeMissing
-    fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-    private var validated: Boolean = false
-
-    fun validate(): BatchRequestCounts = apply {
-        if (validated) {
-            return@apply
-        }
-
-        completed()
-        failed()
-        total()
-        validated = true
-    }
+    fun _additionalProperties(): Map<String, JsonValue> =
+        Collections.unmodifiableMap(additionalProperties)
 
     fun toBuilder() = Builder().from(this)
 
@@ -196,8 +190,21 @@ private constructor(
                 checkRequired("completed", completed),
                 checkRequired("failed", failed),
                 checkRequired("total", total),
-                additionalProperties.toImmutable(),
+                additionalProperties.toMutableMap(),
             )
+    }
+
+    private var validated: Boolean = false
+
+    fun validate(): BatchRequestCounts = apply {
+        if (validated) {
+            return@apply
+        }
+
+        completed()
+        failed()
+        total()
+        validated = true
     }
 
     override fun equals(other: Any?): Boolean {

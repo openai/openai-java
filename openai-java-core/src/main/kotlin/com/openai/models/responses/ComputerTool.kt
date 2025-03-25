@@ -11,33 +11,37 @@ import com.openai.core.ExcludeMissing
 import com.openai.core.JsonField
 import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
-import com.openai.core.NoAutoDetect
 import com.openai.core.checkRequired
-import com.openai.core.immutableEmptyMap
-import com.openai.core.toImmutable
 import com.openai.errors.OpenAIInvalidDataException
+import java.util.Collections
 import java.util.Objects
 
 /**
  * A tool that controls a virtual computer. Learn more about the
  * [computer tool](https://platform.openai.com/docs/guides/tools-computer-use).
  */
-@NoAutoDetect
 class ComputerTool
-@JsonCreator
 private constructor(
-    @JsonProperty("display_height")
-    @ExcludeMissing
-    private val displayHeight: JsonField<Double> = JsonMissing.of(),
-    @JsonProperty("display_width")
-    @ExcludeMissing
-    private val displayWidth: JsonField<Double> = JsonMissing.of(),
-    @JsonProperty("environment")
-    @ExcludeMissing
-    private val environment: JsonField<Environment> = JsonMissing.of(),
-    @JsonProperty("type") @ExcludeMissing private val type: JsonValue = JsonMissing.of(),
-    @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
+    private val displayHeight: JsonField<Double>,
+    private val displayWidth: JsonField<Double>,
+    private val environment: JsonField<Environment>,
+    private val type: JsonValue,
+    private val additionalProperties: MutableMap<String, JsonValue>,
 ) {
+
+    @JsonCreator
+    private constructor(
+        @JsonProperty("display_height")
+        @ExcludeMissing
+        displayHeight: JsonField<Double> = JsonMissing.of(),
+        @JsonProperty("display_width")
+        @ExcludeMissing
+        displayWidth: JsonField<Double> = JsonMissing.of(),
+        @JsonProperty("environment")
+        @ExcludeMissing
+        environment: JsonField<Environment> = JsonMissing.of(),
+        @JsonProperty("type") @ExcludeMissing type: JsonValue = JsonMissing.of(),
+    ) : this(displayHeight, displayWidth, environment, type, mutableMapOf())
 
     /**
      * The height of the computer display.
@@ -103,27 +107,15 @@ private constructor(
     @ExcludeMissing
     fun _environment(): JsonField<Environment> = environment
 
+    @JsonAnySetter
+    private fun putAdditionalProperty(key: String, value: JsonValue) {
+        additionalProperties.put(key, value)
+    }
+
     @JsonAnyGetter
     @ExcludeMissing
-    fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-    private var validated: Boolean = false
-
-    fun validate(): ComputerTool = apply {
-        if (validated) {
-            return@apply
-        }
-
-        displayHeight()
-        displayWidth()
-        environment()
-        _type().let {
-            if (it != JsonValue.from("computer_use_preview")) {
-                throw OpenAIInvalidDataException("'type' is invalid, received $it")
-            }
-        }
-        validated = true
-    }
+    fun _additionalProperties(): Map<String, JsonValue> =
+        Collections.unmodifiableMap(additionalProperties)
 
     fun toBuilder() = Builder().from(this)
 
@@ -255,8 +247,26 @@ private constructor(
                 checkRequired("displayWidth", displayWidth),
                 checkRequired("environment", environment),
                 type,
-                additionalProperties.toImmutable(),
+                additionalProperties.toMutableMap(),
             )
+    }
+
+    private var validated: Boolean = false
+
+    fun validate(): ComputerTool = apply {
+        if (validated) {
+            return@apply
+        }
+
+        displayHeight()
+        displayWidth()
+        environment()
+        _type().let {
+            if (it != JsonValue.from("computer_use_preview")) {
+                throw OpenAIInvalidDataException("'type' is invalid, received $it")
+            }
+        }
+        validated = true
     }
 
     /** The type of computer environment to control. */

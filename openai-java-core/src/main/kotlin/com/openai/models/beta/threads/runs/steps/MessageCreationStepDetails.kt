@@ -10,24 +10,26 @@ import com.openai.core.ExcludeMissing
 import com.openai.core.JsonField
 import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
-import com.openai.core.NoAutoDetect
 import com.openai.core.checkRequired
-import com.openai.core.immutableEmptyMap
-import com.openai.core.toImmutable
 import com.openai.errors.OpenAIInvalidDataException
+import java.util.Collections
 import java.util.Objects
 
 /** Details of the message creation by the run step. */
-@NoAutoDetect
 class MessageCreationStepDetails
-@JsonCreator
 private constructor(
-    @JsonProperty("message_creation")
-    @ExcludeMissing
-    private val messageCreation: JsonField<MessageCreation> = JsonMissing.of(),
-    @JsonProperty("type") @ExcludeMissing private val type: JsonValue = JsonMissing.of(),
-    @JsonAnySetter private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
+    private val messageCreation: JsonField<MessageCreation>,
+    private val type: JsonValue,
+    private val additionalProperties: MutableMap<String, JsonValue>,
 ) {
+
+    @JsonCreator
+    private constructor(
+        @JsonProperty("message_creation")
+        @ExcludeMissing
+        messageCreation: JsonField<MessageCreation> = JsonMissing.of(),
+        @JsonProperty("type") @ExcludeMissing type: JsonValue = JsonMissing.of(),
+    ) : this(messageCreation, type, mutableMapOf())
 
     /**
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
@@ -57,25 +59,15 @@ private constructor(
     @ExcludeMissing
     fun _messageCreation(): JsonField<MessageCreation> = messageCreation
 
+    @JsonAnySetter
+    private fun putAdditionalProperty(key: String, value: JsonValue) {
+        additionalProperties.put(key, value)
+    }
+
     @JsonAnyGetter
     @ExcludeMissing
-    fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-    private var validated: Boolean = false
-
-    fun validate(): MessageCreationStepDetails = apply {
-        if (validated) {
-            return@apply
-        }
-
-        messageCreation().validate()
-        _type().let {
-            if (it != JsonValue.from("message_creation")) {
-                throw OpenAIInvalidDataException("'type' is invalid, received $it")
-            }
-        }
-        validated = true
-    }
+    fun _additionalProperties(): Map<String, JsonValue> =
+        Collections.unmodifiableMap(additionalProperties)
 
     fun toBuilder() = Builder().from(this)
 
@@ -169,20 +161,38 @@ private constructor(
             MessageCreationStepDetails(
                 checkRequired("messageCreation", messageCreation),
                 type,
-                additionalProperties.toImmutable(),
+                additionalProperties.toMutableMap(),
             )
     }
 
-    @NoAutoDetect
+    private var validated: Boolean = false
+
+    fun validate(): MessageCreationStepDetails = apply {
+        if (validated) {
+            return@apply
+        }
+
+        messageCreation().validate()
+        _type().let {
+            if (it != JsonValue.from("message_creation")) {
+                throw OpenAIInvalidDataException("'type' is invalid, received $it")
+            }
+        }
+        validated = true
+    }
+
     class MessageCreation
-    @JsonCreator
     private constructor(
-        @JsonProperty("message_id")
-        @ExcludeMissing
-        private val messageId: JsonField<String> = JsonMissing.of(),
-        @JsonAnySetter
-        private val additionalProperties: Map<String, JsonValue> = immutableEmptyMap(),
+        private val messageId: JsonField<String>,
+        private val additionalProperties: MutableMap<String, JsonValue>,
     ) {
+
+        @JsonCreator
+        private constructor(
+            @JsonProperty("message_id")
+            @ExcludeMissing
+            messageId: JsonField<String> = JsonMissing.of()
+        ) : this(messageId, mutableMapOf())
 
         /**
          * The ID of the message that was created by this run step.
@@ -199,20 +209,15 @@ private constructor(
          */
         @JsonProperty("message_id") @ExcludeMissing fun _messageId(): JsonField<String> = messageId
 
+        @JsonAnySetter
+        private fun putAdditionalProperty(key: String, value: JsonValue) {
+            additionalProperties.put(key, value)
+        }
+
         @JsonAnyGetter
         @ExcludeMissing
-        fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
-
-        private var validated: Boolean = false
-
-        fun validate(): MessageCreation = apply {
-            if (validated) {
-                return@apply
-            }
-
-            messageId()
-            validated = true
-        }
+        fun _additionalProperties(): Map<String, JsonValue> =
+            Collections.unmodifiableMap(additionalProperties)
 
         fun toBuilder() = Builder().from(this)
 
@@ -287,8 +292,19 @@ private constructor(
             fun build(): MessageCreation =
                 MessageCreation(
                     checkRequired("messageId", messageId),
-                    additionalProperties.toImmutable(),
+                    additionalProperties.toMutableMap(),
                 )
+        }
+
+        private var validated: Boolean = false
+
+        fun validate(): MessageCreation = apply {
+            if (validated) {
+                return@apply
+            }
+
+            messageId()
+            validated = true
         }
 
         override fun equals(other: Any?): Boolean {
