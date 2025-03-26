@@ -3,11 +3,10 @@
 package com.openai.models
 
 import com.fasterxml.jackson.annotation.JsonAnyGetter
-import com.fasterxml.jackson.annotation.JsonAnySetter
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.openai.core.ExcludeMissing
 import com.openai.core.JsonValue
-import java.util.Collections
+import com.openai.core.toImmutable
 import java.util.Objects
 
 /**
@@ -19,19 +18,15 @@ import java.util.Objects
  * of 512 characters.
  */
 class Metadata
-private constructor(private val additionalProperties: MutableMap<String, JsonValue>) {
-
-    @JsonCreator private constructor() : this(mutableMapOf())
-
-    @JsonAnySetter
-    private fun putAdditionalProperty(key: String, value: JsonValue) {
-        additionalProperties.put(key, value)
-    }
+@JsonCreator
+private constructor(
+    @com.fasterxml.jackson.annotation.JsonValue
+    private val additionalProperties: Map<String, JsonValue>
+) {
 
     @JsonAnyGetter
     @ExcludeMissing
-    fun _additionalProperties(): Map<String, JsonValue> =
-        Collections.unmodifiableMap(additionalProperties)
+    fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
 
     fun toBuilder() = Builder().from(this)
 
@@ -75,7 +70,7 @@ private constructor(private val additionalProperties: MutableMap<String, JsonVal
          *
          * Further updates to this [Builder] will not mutate the returned instance.
          */
-        fun build(): Metadata = Metadata(additionalProperties.toMutableMap())
+        fun build(): Metadata = Metadata(additionalProperties.toImmutable())
     }
 
     private var validated: Boolean = false
