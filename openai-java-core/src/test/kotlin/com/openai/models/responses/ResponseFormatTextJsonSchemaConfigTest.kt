@@ -12,16 +12,17 @@ internal class ResponseFormatTextJsonSchemaConfigTest {
     fun create() {
         val responseFormatTextJsonSchemaConfig =
             ResponseFormatTextJsonSchemaConfig.builder()
+                .name("name")
                 .schema(
                     ResponseFormatTextJsonSchemaConfig.Schema.builder()
                         .putAdditionalProperty("foo", JsonValue.from("bar"))
                         .build()
                 )
                 .description("description")
-                .name("name")
                 .strict(true)
                 .build()
 
+        assertThat(responseFormatTextJsonSchemaConfig.name()).isEqualTo("name")
         assertThat(responseFormatTextJsonSchemaConfig.schema())
             .isEqualTo(
                 ResponseFormatTextJsonSchemaConfig.Schema.builder()
@@ -29,7 +30,6 @@ internal class ResponseFormatTextJsonSchemaConfigTest {
                     .build()
             )
         assertThat(responseFormatTextJsonSchemaConfig.description()).contains("description")
-        assertThat(responseFormatTextJsonSchemaConfig.name()).contains("name")
         assertThat(responseFormatTextJsonSchemaConfig.strict()).contains(true)
     }
 }
