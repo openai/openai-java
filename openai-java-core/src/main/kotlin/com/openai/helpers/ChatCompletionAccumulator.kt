@@ -1,7 +1,6 @@
 package com.openai.helpers
 
 import com.openai.core.JsonField
-import com.openai.core.JsonMissing
 import com.openai.core.JsonNull
 import com.openai.core.JsonValue
 import com.openai.errors.OpenAIInvalidDataException
@@ -93,24 +92,14 @@ class ChatCompletionAccumulator private constructor() {
         @JvmSynthetic
         internal fun convertToolCallFunction(
             chunkToolCallFunction: JsonField<ChatCompletionChunk.Choice.Delta.ToolCall.Function>
-        ): JsonField<ChatCompletionMessageToolCall.Function> {
-            if (chunkToolCallFunction.isNull()) {
-                return JsonNull.of()
-            }
-            if (chunkToolCallFunction.isMissing()) {
-                return JsonMissing.of()
-            }
-
-            val function = chunkToolCallFunction.getRequired("function")
-
-            return JsonField.of(
+        ): JsonField<ChatCompletionMessageToolCall.Function> =
+            chunkToolCallFunction.map { function ->
                 ChatCompletionMessageToolCall.Function.builder()
                     .name(function._name())
                     .arguments(function._arguments())
                     .additionalProperties(function._additionalProperties())
                     .build()
-            )
-        }
+            }
 
         @JvmSynthetic
         internal fun convertFunctionCall(
@@ -163,8 +152,6 @@ class ChatCompletionAccumulator private constructor() {
 
         val chatCompletionBuilder = ensureChatCompletionBuilder()
 
-        // TODO: Consider an alternative approach to this: only create the `chatCompletion` on
-        //   demand and then throw an exception if any further chunks are passed to `accumulate()`.
         chunk.usage().getOrNull()?.let {
             chatCompletionBuilder.usage(it)
             chatCompletion = chatCompletionBuilder.build()
@@ -242,9 +229,6 @@ class ChatCompletionAccumulator private constructor() {
                 ChatCompletion.Choice.Logprobs.builder()
                     // These must be set explicitly to avoid an error when `build()` is called in
                     // the event that no `content` or `refusal` is added later.
-                    // TODO: To have these be `JsonNull` in the event that nothing was added to
-                    //   either list requires more work (i.e., two extra maps to track if anything
-                    //   was added). Is it OK to use an empty list instead of `JsonNull`?
                     .content(mutableListOf())
                     .refusal(mutableListOf())
             }
@@ -269,10 +253,8 @@ class ChatCompletionAccumulator private constructor() {
         delta.role().ifPresent { messageBuilder.role(JsonValue.from(it.asString())) }
         delta.functionCall().ifPresent { messageBuilder.functionCall(convertFunctionCall(it)) }
 
-        // TODO: `...Delta.ToolCall.index` is not documented and is ignored here. It probably
-        //   relates to the index in the `ChatCompletionMessage.toolCalls` list. Would it be
-        //   overkill to try to support `index`? The alternative (as currently implemented) is to
-        //   just add the `ToolCall` objects in the order in which they are encountered.
+        // Add the `ToolCall` objects in the order in which they are encountered.
+        // (`...Delta.ToolCall.index` is not documented, so it is ignored here.)
         delta.toolCalls().ifPresent { it.map { messageBuilder.addToolCall(convertToolCall(it)) } }
         messageBuilder.putAllAdditionalProperties(delta._additionalProperties())
     }
