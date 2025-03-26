@@ -288,6 +288,58 @@ OpenAIClient client = OpenAIOkHttpClient.builder()
     .build();
 ```
 
+### Streaming helpers
+
+The SDK provides conveniences for streamed chat completions. A
+[`ChatCompletionAccumulator`](openai-java-core/src/main/kotlin/com/openai/helpers/ChatCompletionAccumulator.kt)
+can record the stream of chat completion chunks in the response as they are processed and accumulate 
+a [`ChatCompletion`](openai-java-core/src/main/kotlin/com/openai/models/chat/completions/ChatCompletion.kt)
+object similar to that which would have been returned by the non-streaming API.
+
+For a synchronous response add a
+[`Stream.peek()`](https://docs.oracle.com/javase/8/docs/api/java/util/stream/Stream.html#peek-java.util.function.Consumer-)
+call to the stream pipeline to accumulate each chunk:
+
+```java
+import com.openai.core.http.StreamResponse;
+import com.openai.helpers.ChatCompletionAccumulator;
+import com.openai.models.chat.completions.ChatCompletion;
+import com.openai.models.chat.completions.ChatCompletionChunk;
+
+ChatCompletionAccumulator chatCompletionAccumulator = ChatCompletionAccumulator.create();
+
+try (StreamResponse<ChatCompletionChunk> streamResponse =
+        client.chat().completions().createStreaming(createParams)) {
+    streamResponse.stream()
+            .peek(chatCompletionAccumulator::accumulate)
+            .flatMap(completion -> completion.choices().stream())
+            .flatMap(choice -> choice.delta().content().stream())
+            .forEach(System.out::print);
+}
+
+ChatCompletion chatCompletion = chatCompletionAccumulator.chatCompletion();
+```
+
+For an asynchronous response, add the `ChatCompletionAccumulator` to the `subscribe()` call:
+
+```java
+import com.openai.helpers.ChatCompletionAccumulator;
+import com.openai.models.chat.completions.ChatCompletion;
+
+ChatCompletionAccumulator chatCompletionAccumulator = ChatCompletionAccumulator.create();
+
+client.chat()
+        .completions()
+        .createStreaming(createParams)
+        .subscribe(chunk -> chatCompletionAccumulator.accumulate(chunk).choices().stream()
+                .flatMap(choice -> choice.delta().content().stream())
+                .forEach(System.out::print))
+        .onCompleteFuture()
+        .join();
+
+ChatCompletion chatCompletion = chatCompletionAccumulator.chatCompletion();
+```
+
 ## File uploads
 
 The SDK defines methods that accept files.
