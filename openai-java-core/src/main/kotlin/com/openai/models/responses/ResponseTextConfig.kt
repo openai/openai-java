@@ -129,17 +129,6 @@ private constructor(
         fun format(jsonSchema: ResponseFormatTextJsonSchemaConfig) =
             format(ResponseFormatTextConfig.ofJsonSchema(jsonSchema))
 
-        /**
-         * Alias for calling [format] with the following:
-         * ```java
-         * ResponseFormatTextJsonSchemaConfig.builder()
-         *     .schema(schema)
-         *     .build()
-         * ```
-         */
-        fun jsonSchemaFormat(schema: ResponseFormatTextJsonSchemaConfig.Schema) =
-            format(ResponseFormatTextJsonSchemaConfig.builder().schema(schema).build())
-
         /** Alias for calling [format] with `ResponseFormatTextConfig.ofJsonObject(jsonObject)`. */
         fun format(jsonObject: ResponseFormatJsonObject) =
             format(ResponseFormatTextConfig.ofJsonObject(jsonObject))

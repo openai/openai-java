@@ -172,7 +172,7 @@ private constructor(
      * Inserts a system (or developer) message as the first item in the model's context.
      *
      * When using along with `previous_response_id`, the instructions from a previous response will
-     * be not be carried over to the next response. This makes it simple to swap out system (or
+     * not be carried over to the next response. This makes it simple to swap out system (or
      * developer) messages in new responses.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
@@ -692,7 +692,7 @@ private constructor(
          * Inserts a system (or developer) message as the first item in the model's context.
          *
          * When using along with `previous_response_id`, the instructions from a previous response
-         * will be not be carried over to the next response. This makes it simple to swap out system
+         * will not be carried over to the next response. This makes it simple to swap out system
          * (or developer) messages in new responses.
          */
         fun instructions(instructions: String?) = instructions(JsonField.ofNullable(instructions))

@@ -25,6 +25,7 @@ internal class ResponseFormatTextConfigTest {
     fun ofJsonSchema() {
         val jsonSchema =
             ResponseFormatTextJsonSchemaConfig.builder()
+                .name("name")
                 .schema(
                     ResponseFormatTextJsonSchemaConfig.Schema.builder()
                         .putAdditionalProperty("foo", JsonValue.from("bar"))
