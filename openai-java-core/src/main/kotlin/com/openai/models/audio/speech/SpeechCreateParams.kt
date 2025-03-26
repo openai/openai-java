@@ -46,9 +46,9 @@ private constructor(
     fun model(): SpeechModel = body.model()
 
     /**
-     * The voice to use when generating the audio. Supported voices are `alloy`, `ash`, `coral`,
-     * `echo`, `fable`, `onyx`, `nova`, `sage` and `shimmer`. Previews of the voices are available
-     * in the
+     * The voice to use when generating the audio. Supported voices are `alloy`, `ash`, `ballad`,
+     * `coral`, `echo`, `fable`, `onyx`, `nova`, `sage`, `shimmer`, and `verse`. Previews of the
+     * voices are available in the
      * [Text to speech guide](https://platform.openai.com/docs/guides/text-to-speech#voice-options).
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
@@ -195,9 +195,9 @@ private constructor(
         fun model(value: String) = apply { body.model(value) }
 
         /**
-         * The voice to use when generating the audio. Supported voices are `alloy`, `ash`, `coral`,
-         * `echo`, `fable`, `onyx`, `nova`, `sage` and `shimmer`. Previews of the voices are
-         * available in the
+         * The voice to use when generating the audio. Supported voices are `alloy`, `ash`,
+         * `ballad`, `coral`, `echo`, `fable`, `onyx`, `nova`, `sage`, `shimmer`, and `verse`.
+         * Previews of the voices are available in the
          * [Text to speech guide](https://platform.openai.com/docs/guides/text-to-speech#voice-options).
          */
         fun voice(voice: Voice) = apply { body.voice(voice) }
@@ -209,6 +209,14 @@ private constructor(
          * method is primarily for setting the field to an undocumented or not yet supported value.
          */
         fun voice(voice: JsonField<Voice>) = apply { body.voice(voice) }
+
+        /**
+         * Sets [voice] to an arbitrary [String].
+         *
+         * You should usually call [voice] with a well-typed [Voice] constant instead. This method
+         * is primarily for setting the field to an undocumented or not yet supported value.
+         */
+        fun voice(value: String) = apply { body.voice(value) }
 
         /**
          * Control the voice of your generated audio with additional instructions. Does not work
@@ -448,9 +456,9 @@ private constructor(
         fun model(): SpeechModel = model.getRequired("model")
 
         /**
-         * The voice to use when generating the audio. Supported voices are `alloy`, `ash`, `coral`,
-         * `echo`, `fable`, `onyx`, `nova`, `sage` and `shimmer`. Previews of the voices are
-         * available in the
+         * The voice to use when generating the audio. Supported voices are `alloy`, `ash`,
+         * `ballad`, `coral`, `echo`, `fable`, `onyx`, `nova`, `sage`, `shimmer`, and `verse`.
+         * Previews of the voices are available in the
          * [Text to speech guide](https://platform.openai.com/docs/guides/text-to-speech#voice-options).
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
@@ -622,8 +630,8 @@ private constructor(
 
             /**
              * The voice to use when generating the audio. Supported voices are `alloy`, `ash`,
-             * `coral`, `echo`, `fable`, `onyx`, `nova`, `sage` and `shimmer`. Previews of the
-             * voices are available in the
+             * `ballad`, `coral`, `echo`, `fable`, `onyx`, `nova`, `sage`, `shimmer`, and `verse`.
+             * Previews of the voices are available in the
              * [Text to speech guide](https://platform.openai.com/docs/guides/text-to-speech#voice-options).
              */
             fun voice(voice: Voice) = voice(JsonField.of(voice))
@@ -636,6 +644,15 @@ private constructor(
              * value.
              */
             fun voice(voice: JsonField<Voice>) = apply { this.voice = voice }
+
+            /**
+             * Sets [voice] to an arbitrary [String].
+             *
+             * You should usually call [voice] with a well-typed [Voice] constant instead. This
+             * method is primarily for setting the field to an undocumented or not yet supported
+             * value.
+             */
+            fun voice(value: String) = voice(Voice.of(value))
 
             /**
              * Control the voice of your generated audio with additional instructions. Does not work
@@ -767,9 +784,9 @@ private constructor(
     }
 
     /**
-     * The voice to use when generating the audio. Supported voices are `alloy`, `ash`, `coral`,
-     * `echo`, `fable`, `onyx`, `nova`, `sage` and `shimmer`. Previews of the voices are available
-     * in the
+     * The voice to use when generating the audio. Supported voices are `alloy`, `ash`, `ballad`,
+     * `coral`, `echo`, `fable`, `onyx`, `nova`, `sage`, `shimmer`, and `verse`. Previews of the
+     * voices are available in the
      * [Text to speech guide](https://platform.openai.com/docs/guides/text-to-speech#voice-options).
      */
     class Voice @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
@@ -790,6 +807,8 @@ private constructor(
 
             @JvmField val ASH = of("ash")
 
+            @JvmField val BALLAD = of("ballad")
+
             @JvmField val CORAL = of("coral")
 
             @JvmField val ECHO = of("echo")
@@ -804,6 +823,8 @@ private constructor(
 
             @JvmField val SHIMMER = of("shimmer")
 
+            @JvmField val VERSE = of("verse")
+
             @JvmStatic fun of(value: String) = Voice(JsonField.of(value))
         }
 
@@ -811,6 +832,7 @@ private constructor(
         enum class Known {
             ALLOY,
             ASH,
+            BALLAD,
             CORAL,
             ECHO,
             FABLE,
@@ -818,6 +840,7 @@ private constructor(
             NOVA,
             SAGE,
             SHIMMER,
+            VERSE,
         }
 
         /**
@@ -832,6 +855,7 @@ private constructor(
         enum class Value {
             ALLOY,
             ASH,
+            BALLAD,
             CORAL,
             ECHO,
             FABLE,
@@ -839,6 +863,7 @@ private constructor(
             NOVA,
             SAGE,
             SHIMMER,
+            VERSE,
             /** An enum member indicating that [Voice] was instantiated with an unknown value. */
             _UNKNOWN,
         }
@@ -854,6 +879,7 @@ private constructor(
             when (this) {
                 ALLOY -> Value.ALLOY
                 ASH -> Value.ASH
+                BALLAD -> Value.BALLAD
                 CORAL -> Value.CORAL
                 ECHO -> Value.ECHO
                 FABLE -> Value.FABLE
@@ -861,6 +887,7 @@ private constructor(
                 NOVA -> Value.NOVA
                 SAGE -> Value.SAGE
                 SHIMMER -> Value.SHIMMER
+                VERSE -> Value.VERSE
                 else -> Value._UNKNOWN
             }
 
@@ -877,6 +904,7 @@ private constructor(
             when (this) {
                 ALLOY -> Known.ALLOY
                 ASH -> Known.ASH
+                BALLAD -> Known.BALLAD
                 CORAL -> Known.CORAL
                 ECHO -> Known.ECHO
                 FABLE -> Known.FABLE
@@ -884,6 +912,7 @@ private constructor(
                 NOVA -> Known.NOVA
                 SAGE -> Known.SAGE
                 SHIMMER -> Known.SHIMMER
+                VERSE -> Known.VERSE
                 else -> throw OpenAIInvalidDataException("Unknown Voice: $value")
             }
 
