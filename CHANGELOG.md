@@ -1,5 +1,19 @@
 # Changelog
 
+## 0.40.0 (2025-03-27)
+
+Full Changelog: [v0.39.0...v0.40.0](https://github.com/openai/openai-java/compare/v0.39.0...v0.40.0)
+
+### Features
+
+* **api:** add `get /responses/{response_id}/input_items` endpoint ([#367](https://github.com/openai/openai-java/issues/367)) ([c569175](https://github.com/openai/openai-java/commit/c569175e0427273707d0bee2535da0bf616e9b7c))
+* **client:** add new responses endpoint ([#369](https://github.com/openai/openai-java/issues/369)) ([f15b5ee](https://github.com/openai/openai-java/commit/f15b5eeb2bab3534daa41b56c2f7b05cd5791c97))
+
+
+### Bug Fixes
+
+* deploymentModel arg ([139c062](https://github.com/openai/openai-java/commit/139c06287a82a80a06968b0b8826d9c2c5116dde))
+
 ## 0.39.0 (2025-03-27)
 
 Full Changelog: [v0.38.0...v0.39.0](https://github.com/openai/openai-java/compare/v0.38.0...v0.39.0)
