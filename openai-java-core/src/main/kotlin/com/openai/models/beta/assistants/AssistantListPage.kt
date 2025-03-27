@@ -54,9 +54,7 @@ private constructor(
             return Optional.empty()
         }
 
-        return Optional.of(
-            AssistantListParams.builder().from(params).after(data().last().id()).build()
-        )
+        return Optional.of(params.toBuilder().after(data().last().id()).build())
     }
 
     fun getNextPage(): Optional<AssistantListPage> {

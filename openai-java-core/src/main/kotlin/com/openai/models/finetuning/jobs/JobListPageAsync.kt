@@ -54,7 +54,7 @@ private constructor(
             return Optional.empty()
         }
 
-        return Optional.of(JobListParams.builder().from(params).after(data().last().id()).build())
+        return Optional.of(params.toBuilder().after(data().last().id()).build())
     }
 
     fun getNextPage(): CompletableFuture<Optional<JobListPageAsync>> {
