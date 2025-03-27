@@ -34,6 +34,7 @@ import com.openai.models.chat.completions.ChatCompletionUpdateParams
 import com.openai.services.async.chat.completions.MessageServiceAsync
 import com.openai.services.async.chat.completions.MessageServiceAsyncImpl
 import java.util.concurrent.CompletableFuture
+import kotlin.jvm.optionals.getOrNull
 
 class ChatCompletionServiceAsyncImpl
 internal constructor(private val clientOptions: ClientOptions) : ChatCompletionServiceAsync {
@@ -249,7 +250,11 @@ internal constructor(private val clientOptions: ClientOptions) : ChatCompletionS
                     .method(HttpMethod.GET)
                     .addPathSegments("chat", "completions")
                     .build()
-                    .prepareAsync(clientOptions, params)
+                    .prepareAsync(
+                        clientOptions,
+                        params,
+                        deploymentModel = params.model().map { it.toString() }.getOrNull(),
+                    )
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             return request
                 .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }

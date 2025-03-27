@@ -31,6 +31,7 @@ import com.openai.models.chat.completions.ChatCompletionRetrieveParams
 import com.openai.models.chat.completions.ChatCompletionUpdateParams
 import com.openai.services.blocking.chat.completions.MessageService
 import com.openai.services.blocking.chat.completions.MessageServiceImpl
+import kotlin.jvm.optionals.getOrNull
 
 class ChatCompletionServiceImpl internal constructor(private val clientOptions: ClientOptions) :
     ChatCompletionService {
@@ -231,7 +232,11 @@ class ChatCompletionServiceImpl internal constructor(private val clientOptions: 
                     .method(HttpMethod.GET)
                     .addPathSegments("chat", "completions")
                     .build()
-                    .prepare(clientOptions, params)
+                    .prepare(
+                        clientOptions,
+                        params,
+                        deploymentModel = params.model().map { it.toString() }.getOrNull(),
+                    )
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             val response = clientOptions.httpClient.execute(request, requestOptions)
             return response.parseable {
