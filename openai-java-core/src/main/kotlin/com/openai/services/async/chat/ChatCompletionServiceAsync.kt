@@ -12,6 +12,8 @@ import com.openai.models.chat.completions.ChatCompletionChunk
 import com.openai.models.chat.completions.ChatCompletionCreateParams
 import com.openai.models.chat.completions.ChatCompletionDeleteParams
 import com.openai.models.chat.completions.ChatCompletionDeleted
+import com.openai.models.chat.completions.ChatCompletionListPageAsync
+import com.openai.models.chat.completions.ChatCompletionListParams
 import com.openai.models.chat.completions.ChatCompletionRetrieveParams
 import com.openai.models.chat.completions.ChatCompletionUpdateParams
 import com.openai.services.async.chat.completions.MessageServiceAsync
@@ -109,6 +111,28 @@ interface ChatCompletionServiceAsync {
     ): CompletableFuture<ChatCompletion>
 
     /**
+     * List stored Chat Completions. Only Chat Completions that have been stored with the `store`
+     * parameter set to `true` will be returned.
+     */
+    fun list(): CompletableFuture<ChatCompletionListPageAsync> =
+        list(ChatCompletionListParams.none())
+
+    /** @see [list] */
+    fun list(
+        params: ChatCompletionListParams = ChatCompletionListParams.none(),
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): CompletableFuture<ChatCompletionListPageAsync>
+
+    /** @see [list] */
+    fun list(
+        params: ChatCompletionListParams = ChatCompletionListParams.none()
+    ): CompletableFuture<ChatCompletionListPageAsync> = list(params, RequestOptions.none())
+
+    /** @see [list] */
+    fun list(requestOptions: RequestOptions): CompletableFuture<ChatCompletionListPageAsync> =
+        list(ChatCompletionListParams.none(), requestOptions)
+
+    /**
      * Delete a stored chat completion. Only Chat Completions that have been created with the
      * `store` parameter set to `true` can be deleted.
      */
@@ -196,6 +220,35 @@ interface ChatCompletionServiceAsync {
             params: ChatCompletionUpdateParams,
             requestOptions: RequestOptions = RequestOptions.none(),
         ): CompletableFuture<HttpResponseFor<ChatCompletion>>
+
+        /**
+         * Returns a raw HTTP response for `get /chat/completions`, but is otherwise the same as
+         * [ChatCompletionServiceAsync.list].
+         */
+        @MustBeClosed
+        fun list(): CompletableFuture<HttpResponseFor<ChatCompletionListPageAsync>> =
+            list(ChatCompletionListParams.none())
+
+        /** @see [list] */
+        @MustBeClosed
+        fun list(
+            params: ChatCompletionListParams = ChatCompletionListParams.none(),
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): CompletableFuture<HttpResponseFor<ChatCompletionListPageAsync>>
+
+        /** @see [list] */
+        @MustBeClosed
+        fun list(
+            params: ChatCompletionListParams = ChatCompletionListParams.none()
+        ): CompletableFuture<HttpResponseFor<ChatCompletionListPageAsync>> =
+            list(params, RequestOptions.none())
+
+        /** @see [list] */
+        @MustBeClosed
+        fun list(
+            requestOptions: RequestOptions
+        ): CompletableFuture<HttpResponseFor<ChatCompletionListPageAsync>> =
+            list(ChatCompletionListParams.none(), requestOptions)
 
         /**
          * Returns a raw HTTP response for `delete /chat/completions/{completion_id}`, but is

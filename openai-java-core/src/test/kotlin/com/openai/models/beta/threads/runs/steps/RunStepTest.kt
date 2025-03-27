@@ -3,7 +3,6 @@
 package com.openai.models.beta.threads.runs.steps
 
 import com.openai.core.JsonValue
-import com.openai.models.Metadata
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
@@ -27,7 +26,7 @@ internal class RunStepTest {
                         .build()
                 )
                 .metadata(
-                    Metadata.builder()
+                    RunStep.Metadata.builder()
                         .putAdditionalProperty("foo", JsonValue.from("string"))
                         .build()
                 )
@@ -65,7 +64,9 @@ internal class RunStepTest {
             )
         assertThat(runStep.metadata())
             .contains(
-                Metadata.builder().putAdditionalProperty("foo", JsonValue.from("string")).build()
+                RunStep.Metadata.builder()
+                    .putAdditionalProperty("foo", JsonValue.from("string"))
+                    .build()
             )
         assertThat(runStep.runId()).isEqualTo("run_id")
         assertThat(runStep.status()).isEqualTo(RunStep.Status.IN_PROGRESS)

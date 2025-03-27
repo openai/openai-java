@@ -6,7 +6,6 @@ import com.openai.TestServerExtension
 import com.openai.client.okhttp.OpenAIOkHttpClient
 import com.openai.core.JsonValue
 import com.openai.models.ChatModel
-import com.openai.models.Metadata
 import com.openai.models.ReasoningEffort
 import com.openai.models.beta.assistants.CodeInterpreterTool
 import com.openai.models.beta.threads.AssistantToolChoiceOption
@@ -50,7 +49,7 @@ internal class RunServiceTest {
                                     .build()
                             )
                             .metadata(
-                                Metadata.builder()
+                                RunCreateParams.AdditionalMessage.Metadata.builder()
                                     .putAdditionalProperty("foo", JsonValue.from("string"))
                                     .build()
                             )
@@ -60,7 +59,7 @@ internal class RunServiceTest {
                     .maxCompletionTokens(256L)
                     .maxPromptTokens(256L)
                     .metadata(
-                        Metadata.builder()
+                        RunCreateParams.Metadata.builder()
                             .putAdditionalProperty("foo", JsonValue.from("string"))
                             .build()
                     )
@@ -111,7 +110,7 @@ internal class RunServiceTest {
                                     .build()
                             )
                             .metadata(
-                                Metadata.builder()
+                                RunCreateParams.AdditionalMessage.Metadata.builder()
                                     .putAdditionalProperty("foo", JsonValue.from("string"))
                                     .build()
                             )
@@ -121,7 +120,7 @@ internal class RunServiceTest {
                     .maxCompletionTokens(256L)
                     .maxPromptTokens(256L)
                     .metadata(
-                        Metadata.builder()
+                        RunCreateParams.Metadata.builder()
                             .putAdditionalProperty("foo", JsonValue.from("string"))
                             .build()
                     )
@@ -177,7 +176,7 @@ internal class RunServiceTest {
                     .threadId("thread_id")
                     .runId("run_id")
                     .metadata(
-                        Metadata.builder()
+                        RunUpdateParams.Metadata.builder()
                             .putAdditionalProperty("foo", JsonValue.from("string"))
                             .build()
                     )

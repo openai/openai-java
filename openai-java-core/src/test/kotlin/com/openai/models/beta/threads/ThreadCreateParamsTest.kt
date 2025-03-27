@@ -3,7 +3,6 @@
 package com.openai.models.beta.threads
 
 import com.openai.core.JsonValue
-import com.openai.models.Metadata
 import com.openai.models.beta.assistants.CodeInterpreterTool
 import kotlin.jvm.optionals.getOrNull
 import org.assertj.core.api.Assertions.assertThat
@@ -25,14 +24,16 @@ internal class ThreadCreateParamsTest {
                             .build()
                     )
                     .metadata(
-                        Metadata.builder()
+                        ThreadCreateParams.Message.Metadata.builder()
                             .putAdditionalProperty("foo", JsonValue.from("string"))
                             .build()
                     )
                     .build()
             )
             .metadata(
-                Metadata.builder().putAdditionalProperty("foo", JsonValue.from("string")).build()
+                ThreadCreateParams.Metadata.builder()
+                    .putAdditionalProperty("foo", JsonValue.from("string"))
+                    .build()
             )
             .toolResources(
                 ThreadCreateParams.ToolResources.builder()
@@ -49,7 +50,9 @@ internal class ThreadCreateParamsTest {
                                     .chunkingStrategyAuto()
                                     .addFileId("string")
                                     .metadata(
-                                        Metadata.builder()
+                                        ThreadCreateParams.ToolResources.FileSearch.VectorStore
+                                            .Metadata
+                                            .builder()
                                             .putAdditionalProperty("foo", JsonValue.from("string"))
                                             .build()
                                     )
@@ -77,14 +80,14 @@ internal class ThreadCreateParamsTest {
                                 .build()
                         )
                         .metadata(
-                            Metadata.builder()
+                            ThreadCreateParams.Message.Metadata.builder()
                                 .putAdditionalProperty("foo", JsonValue.from("string"))
                                 .build()
                         )
                         .build()
                 )
                 .metadata(
-                    Metadata.builder()
+                    ThreadCreateParams.Metadata.builder()
                         .putAdditionalProperty("foo", JsonValue.from("string"))
                         .build()
                 )
@@ -104,7 +107,9 @@ internal class ThreadCreateParamsTest {
                                         .chunkingStrategyAuto()
                                         .addFileId("string")
                                         .metadata(
-                                            Metadata.builder()
+                                            ThreadCreateParams.ToolResources.FileSearch.VectorStore
+                                                .Metadata
+                                                .builder()
                                                 .putAdditionalProperty(
                                                     "foo",
                                                     JsonValue.from("string"),
@@ -133,7 +138,7 @@ internal class ThreadCreateParamsTest {
                             .build()
                     )
                     .metadata(
-                        Metadata.builder()
+                        ThreadCreateParams.Message.Metadata.builder()
                             .putAdditionalProperty("foo", JsonValue.from("string"))
                             .build()
                     )
@@ -141,7 +146,9 @@ internal class ThreadCreateParamsTest {
             )
         assertThat(body.metadata())
             .contains(
-                Metadata.builder().putAdditionalProperty("foo", JsonValue.from("string")).build()
+                ThreadCreateParams.Metadata.builder()
+                    .putAdditionalProperty("foo", JsonValue.from("string"))
+                    .build()
             )
         assertThat(body.toolResources())
             .contains(
@@ -159,7 +166,9 @@ internal class ThreadCreateParamsTest {
                                     .chunkingStrategyAuto()
                                     .addFileId("string")
                                     .metadata(
-                                        Metadata.builder()
+                                        ThreadCreateParams.ToolResources.FileSearch.VectorStore
+                                            .Metadata
+                                            .builder()
                                             .putAdditionalProperty("foo", JsonValue.from("string"))
                                             .build()
                                     )

@@ -5,7 +5,6 @@ package com.openai.services.async.beta.threads
 import com.openai.TestServerExtension
 import com.openai.client.okhttp.OpenAIOkHttpClientAsync
 import com.openai.core.JsonValue
-import com.openai.models.Metadata
 import com.openai.models.beta.assistants.CodeInterpreterTool
 import com.openai.models.beta.threads.messages.MessageCreateParams
 import com.openai.models.beta.threads.messages.MessageDeleteParams
@@ -40,7 +39,7 @@ internal class MessageServiceAsyncTest {
                             .build()
                     )
                     .metadata(
-                        Metadata.builder()
+                        MessageCreateParams.Metadata.builder()
                             .putAdditionalProperty("foo", JsonValue.from("string"))
                             .build()
                     )
@@ -87,7 +86,7 @@ internal class MessageServiceAsyncTest {
                     .threadId("thread_id")
                     .messageId("message_id")
                     .metadata(
-                        Metadata.builder()
+                        MessageUpdateParams.Metadata.builder()
                             .putAdditionalProperty("foo", JsonValue.from("string"))
                             .build()
                     )

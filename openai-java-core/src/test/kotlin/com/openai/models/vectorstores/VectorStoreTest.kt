@@ -3,7 +3,6 @@
 package com.openai.models.vectorstores
 
 import com.openai.core.JsonValue
-import com.openai.models.Metadata
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
@@ -26,7 +25,7 @@ internal class VectorStoreTest {
                 )
                 .lastActiveAt(0L)
                 .metadata(
-                    Metadata.builder()
+                    VectorStore.Metadata.builder()
                         .putAdditionalProperty("foo", JsonValue.from("string"))
                         .build()
                 )
@@ -52,7 +51,9 @@ internal class VectorStoreTest {
         assertThat(vectorStore.lastActiveAt()).contains(0L)
         assertThat(vectorStore.metadata())
             .contains(
-                Metadata.builder().putAdditionalProperty("foo", JsonValue.from("string")).build()
+                VectorStore.Metadata.builder()
+                    .putAdditionalProperty("foo", JsonValue.from("string"))
+                    .build()
             )
         assertThat(vectorStore.name()).isEqualTo("name")
         assertThat(vectorStore.status()).isEqualTo(VectorStore.Status.EXPIRED)

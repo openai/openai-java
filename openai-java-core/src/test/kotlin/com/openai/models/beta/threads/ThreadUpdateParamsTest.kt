@@ -3,7 +3,6 @@
 package com.openai.models.beta.threads
 
 import com.openai.core.JsonValue
-import com.openai.models.Metadata
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
@@ -14,7 +13,9 @@ internal class ThreadUpdateParamsTest {
         ThreadUpdateParams.builder()
             .threadId("thread_id")
             .metadata(
-                Metadata.builder().putAdditionalProperty("foo", JsonValue.from("string")).build()
+                ThreadUpdateParams.Metadata.builder()
+                    .putAdditionalProperty("foo", JsonValue.from("string"))
+                    .build()
             )
             .toolResources(
                 ThreadUpdateParams.ToolResources.builder()
@@ -48,7 +49,7 @@ internal class ThreadUpdateParamsTest {
             ThreadUpdateParams.builder()
                 .threadId("thread_id")
                 .metadata(
-                    Metadata.builder()
+                    ThreadUpdateParams.Metadata.builder()
                         .putAdditionalProperty("foo", JsonValue.from("string"))
                         .build()
                 )
@@ -72,7 +73,9 @@ internal class ThreadUpdateParamsTest {
 
         assertThat(body.metadata())
             .contains(
-                Metadata.builder().putAdditionalProperty("foo", JsonValue.from("string")).build()
+                ThreadUpdateParams.Metadata.builder()
+                    .putAdditionalProperty("foo", JsonValue.from("string"))
+                    .build()
             )
         assertThat(body.toolResources())
             .contains(

@@ -5,7 +5,6 @@ package com.openai.services.blocking
 import com.openai.TestServerExtension
 import com.openai.client.okhttp.OpenAIOkHttpClient
 import com.openai.core.JsonValue
-import com.openai.models.Metadata
 import com.openai.models.batches.BatchCancelParams
 import com.openai.models.batches.BatchCreateParams
 import com.openai.models.batches.BatchRetrieveParams
@@ -31,7 +30,7 @@ internal class BatchServiceTest {
                     .endpoint(BatchCreateParams.Endpoint.V1_RESPONSES)
                     .inputFileId("input_file_id")
                     .metadata(
-                        Metadata.builder()
+                        BatchCreateParams.Metadata.builder()
                             .putAdditionalProperty("foo", JsonValue.from("string"))
                             .build()
                     )

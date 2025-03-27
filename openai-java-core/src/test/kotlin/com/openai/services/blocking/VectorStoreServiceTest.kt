@@ -5,7 +5,6 @@ package com.openai.services.blocking
 import com.openai.TestServerExtension
 import com.openai.client.okhttp.OpenAIOkHttpClient
 import com.openai.core.JsonValue
-import com.openai.models.Metadata
 import com.openai.models.vectorstores.AutoFileChunkingStrategyParam
 import com.openai.models.vectorstores.VectorStoreCreateParams
 import com.openai.models.vectorstores.VectorStoreDeleteParams
@@ -34,7 +33,7 @@ internal class VectorStoreServiceTest {
                     .expiresAfter(VectorStoreCreateParams.ExpiresAfter.builder().days(1L).build())
                     .addFileId("string")
                     .metadata(
-                        Metadata.builder()
+                        VectorStoreCreateParams.Metadata.builder()
                             .putAdditionalProperty("foo", JsonValue.from("string"))
                             .build()
                     )
@@ -77,7 +76,7 @@ internal class VectorStoreServiceTest {
                     .vectorStoreId("vector_store_id")
                     .expiresAfter(VectorStoreUpdateParams.ExpiresAfter.builder().days(1L).build())
                     .metadata(
-                        Metadata.builder()
+                        VectorStoreUpdateParams.Metadata.builder()
                             .putAdditionalProperty("foo", JsonValue.from("string"))
                             .build()
                     )

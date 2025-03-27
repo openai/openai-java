@@ -3,7 +3,6 @@
 package com.openai.models.beta.threads
 
 import com.openai.core.JsonValue
-import com.openai.models.Metadata
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
@@ -16,7 +15,7 @@ internal class ThreadTest {
                 .id("id")
                 .createdAt(0L)
                 .metadata(
-                    Metadata.builder()
+                    Thread.Metadata.builder()
                         .putAdditionalProperty("foo", JsonValue.from("string"))
                         .build()
                 )
@@ -40,7 +39,9 @@ internal class ThreadTest {
         assertThat(thread.createdAt()).isEqualTo(0L)
         assertThat(thread.metadata())
             .contains(
-                Metadata.builder().putAdditionalProperty("foo", JsonValue.from("string")).build()
+                Thread.Metadata.builder()
+                    .putAdditionalProperty("foo", JsonValue.from("string"))
+                    .build()
             )
         assertThat(thread.toolResources())
             .contains(

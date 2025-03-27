@@ -3,7 +3,6 @@
 package com.openai.models.beta.threads.messages
 
 import com.openai.core.JsonValue
-import com.openai.models.Metadata
 import com.openai.models.beta.assistants.CodeInterpreterTool
 import kotlin.jvm.optionals.getOrNull
 import org.assertj.core.api.Assertions.assertThat
@@ -35,7 +34,7 @@ internal class MessageTest {
                         .build()
                 )
                 .metadata(
-                    Metadata.builder()
+                    Message.Metadata.builder()
                         .putAdditionalProperty("foo", JsonValue.from("string"))
                         .build()
                 )
@@ -78,7 +77,9 @@ internal class MessageTest {
             )
         assertThat(message.metadata())
             .contains(
-                Metadata.builder().putAdditionalProperty("foo", JsonValue.from("string")).build()
+                Message.Metadata.builder()
+                    .putAdditionalProperty("foo", JsonValue.from("string"))
+                    .build()
             )
         assertThat(message.role()).isEqualTo(Message.Role.USER)
         assertThat(message.runId()).contains("run_id")

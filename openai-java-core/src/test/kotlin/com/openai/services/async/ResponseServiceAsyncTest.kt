@@ -7,7 +7,6 @@ import com.openai.client.okhttp.OpenAIOkHttpClientAsync
 import com.openai.core.JsonValue
 import com.openai.models.ChatModel
 import com.openai.models.ComparisonFilter
-import com.openai.models.Metadata
 import com.openai.models.Reasoning
 import com.openai.models.ReasoningEffort
 import com.openai.models.ResponseFormatText
@@ -42,7 +41,7 @@ internal class ResponseServiceAsyncTest {
                     .instructions("instructions")
                     .maxOutputTokens(0L)
                     .metadata(
-                        Metadata.builder()
+                        ResponseCreateParams.Metadata.builder()
                             .putAdditionalProperty("foo", JsonValue.from("string"))
                             .build()
                     )
@@ -109,7 +108,7 @@ internal class ResponseServiceAsyncTest {
                     .instructions("instructions")
                     .maxOutputTokens(0L)
                     .metadata(
-                        Metadata.builder()
+                        ResponseCreateParams.Metadata.builder()
                             .putAdditionalProperty("foo", JsonValue.from("string"))
                             .build()
                     )
