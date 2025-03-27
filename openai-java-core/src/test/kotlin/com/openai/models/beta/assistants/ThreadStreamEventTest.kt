@@ -3,7 +3,6 @@
 package com.openai.models.beta.assistants
 
 import com.openai.core.JsonValue
-import com.openai.models.Metadata
 import com.openai.models.beta.threads.Thread
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
@@ -19,7 +18,7 @@ internal class ThreadStreamEventTest {
                         .id("id")
                         .createdAt(0L)
                         .metadata(
-                            Metadata.builder()
+                            Thread.Metadata.builder()
                                 .putAdditionalProperty("foo", JsonValue.from("string"))
                                 .build()
                         )
@@ -48,7 +47,7 @@ internal class ThreadStreamEventTest {
                     .id("id")
                     .createdAt(0L)
                     .metadata(
-                        Metadata.builder()
+                        Thread.Metadata.builder()
                             .putAdditionalProperty("foo", JsonValue.from("string"))
                             .build()
                     )

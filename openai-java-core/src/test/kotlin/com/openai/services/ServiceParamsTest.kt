@@ -18,7 +18,6 @@ import com.openai.core.JsonValue
 import com.openai.models.ChatModel
 import com.openai.models.FunctionDefinition
 import com.openai.models.FunctionParameters
-import com.openai.models.Metadata
 import com.openai.models.ReasoningEffort
 import com.openai.models.ResponseFormatText
 import com.openai.models.chat.completions.ChatCompletionAudioParam
@@ -87,7 +86,7 @@ internal class ServiceParamsTest {
                 .maxCompletionTokens(0L)
                 .maxTokens(0L)
                 .metadata(
-                    Metadata.builder()
+                    ChatCompletionCreateParams.Metadata.builder()
                         .putAdditionalProperty("foo", JsonValue.from("string"))
                         .build()
                 )

@@ -3,7 +3,6 @@
 package com.openai.models.batches
 
 import com.openai.core.JsonValue
-import com.openai.models.Metadata
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
@@ -16,7 +15,9 @@ internal class BatchCreateParamsTest {
             .endpoint(BatchCreateParams.Endpoint.V1_RESPONSES)
             .inputFileId("input_file_id")
             .metadata(
-                Metadata.builder().putAdditionalProperty("foo", JsonValue.from("string")).build()
+                BatchCreateParams.Metadata.builder()
+                    .putAdditionalProperty("foo", JsonValue.from("string"))
+                    .build()
             )
             .build()
     }
@@ -29,7 +30,7 @@ internal class BatchCreateParamsTest {
                 .endpoint(BatchCreateParams.Endpoint.V1_RESPONSES)
                 .inputFileId("input_file_id")
                 .metadata(
-                    Metadata.builder()
+                    BatchCreateParams.Metadata.builder()
                         .putAdditionalProperty("foo", JsonValue.from("string"))
                         .build()
                 )
@@ -42,7 +43,9 @@ internal class BatchCreateParamsTest {
         assertThat(body.inputFileId()).isEqualTo("input_file_id")
         assertThat(body.metadata())
             .contains(
-                Metadata.builder().putAdditionalProperty("foo", JsonValue.from("string")).build()
+                BatchCreateParams.Metadata.builder()
+                    .putAdditionalProperty("foo", JsonValue.from("string"))
+                    .build()
             )
     }
 

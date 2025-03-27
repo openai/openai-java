@@ -3,7 +3,6 @@
 package com.openai.models.beta.assistants
 
 import com.openai.core.JsonValue
-import com.openai.models.Metadata
 import com.openai.models.beta.threads.AssistantResponseFormatOption
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
@@ -19,7 +18,7 @@ internal class AssistantTest {
                 .description("description")
                 .instructions("instructions")
                 .metadata(
-                    Metadata.builder()
+                    Assistant.Metadata.builder()
                         .putAdditionalProperty("foo", JsonValue.from("string"))
                         .build()
                 )
@@ -51,7 +50,9 @@ internal class AssistantTest {
         assertThat(assistant.instructions()).contains("instructions")
         assertThat(assistant.metadata())
             .contains(
-                Metadata.builder().putAdditionalProperty("foo", JsonValue.from("string")).build()
+                Assistant.Metadata.builder()
+                    .putAdditionalProperty("foo", JsonValue.from("string"))
+                    .build()
             )
         assertThat(assistant.model()).isEqualTo("model")
         assertThat(assistant.name()).contains("name")

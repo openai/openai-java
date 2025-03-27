@@ -6,7 +6,6 @@ import com.openai.TestServerExtension
 import com.openai.client.okhttp.OpenAIOkHttpClientAsync
 import com.openai.core.JsonValue
 import com.openai.models.ChatModel
-import com.openai.models.Metadata
 import com.openai.models.ReasoningEffort
 import com.openai.models.beta.assistants.AssistantCreateParams
 import com.openai.models.beta.assistants.AssistantDeleteParams
@@ -35,7 +34,7 @@ internal class AssistantServiceAsyncTest {
                     .description("description")
                     .instructions("instructions")
                     .metadata(
-                        Metadata.builder()
+                        AssistantCreateParams.Metadata.builder()
                             .putAdditionalProperty("foo", JsonValue.from("string"))
                             .build()
                     )
@@ -59,7 +58,10 @@ internal class AssistantServiceAsyncTest {
                                             .chunkingStrategyAuto()
                                             .addFileId("string")
                                             .metadata(
-                                                Metadata.builder()
+                                                AssistantCreateParams.ToolResources.FileSearch
+                                                    .VectorStore
+                                                    .Metadata
+                                                    .builder()
                                                     .putAdditionalProperty(
                                                         "foo",
                                                         JsonValue.from("string"),
@@ -115,7 +117,7 @@ internal class AssistantServiceAsyncTest {
                     .description("description")
                     .instructions("instructions")
                     .metadata(
-                        Metadata.builder()
+                        AssistantUpdateParams.Metadata.builder()
                             .putAdditionalProperty("foo", JsonValue.from("string"))
                             .build()
                     )

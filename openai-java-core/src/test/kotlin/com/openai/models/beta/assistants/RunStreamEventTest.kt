@@ -3,7 +3,6 @@
 package com.openai.models.beta.assistants
 
 import com.openai.core.JsonValue
-import com.openai.models.Metadata
 import com.openai.models.beta.threads.AssistantToolChoiceOption
 import com.openai.models.beta.threads.runs.RequiredActionFunctionToolCall
 import com.openai.models.beta.threads.runs.Run
@@ -37,7 +36,7 @@ internal class RunStreamEventTest {
                         .maxCompletionTokens(256L)
                         .maxPromptTokens(256L)
                         .metadata(
-                            Metadata.builder()
+                            Run.Metadata.builder()
                                 .putAdditionalProperty("foo", JsonValue.from("string"))
                                 .build()
                         )
@@ -123,7 +122,7 @@ internal class RunStreamEventTest {
                         .maxCompletionTokens(256L)
                         .maxPromptTokens(256L)
                         .metadata(
-                            Metadata.builder()
+                            Run.Metadata.builder()
                                 .putAdditionalProperty("foo", JsonValue.from("string"))
                                 .build()
                         )
@@ -209,7 +208,7 @@ internal class RunStreamEventTest {
                         .maxCompletionTokens(256L)
                         .maxPromptTokens(256L)
                         .metadata(
-                            Metadata.builder()
+                            Run.Metadata.builder()
                                 .putAdditionalProperty("foo", JsonValue.from("string"))
                                 .build()
                         )
@@ -295,7 +294,7 @@ internal class RunStreamEventTest {
                         .maxCompletionTokens(256L)
                         .maxPromptTokens(256L)
                         .metadata(
-                            Metadata.builder()
+                            Run.Metadata.builder()
                                 .putAdditionalProperty("foo", JsonValue.from("string"))
                                 .build()
                         )
@@ -381,7 +380,7 @@ internal class RunStreamEventTest {
                         .maxCompletionTokens(256L)
                         .maxPromptTokens(256L)
                         .metadata(
-                            Metadata.builder()
+                            Run.Metadata.builder()
                                 .putAdditionalProperty("foo", JsonValue.from("string"))
                                 .build()
                         )
@@ -467,7 +466,7 @@ internal class RunStreamEventTest {
                         .maxCompletionTokens(256L)
                         .maxPromptTokens(256L)
                         .metadata(
-                            Metadata.builder()
+                            Run.Metadata.builder()
                                 .putAdditionalProperty("foo", JsonValue.from("string"))
                                 .build()
                         )
@@ -553,7 +552,7 @@ internal class RunStreamEventTest {
                         .maxCompletionTokens(256L)
                         .maxPromptTokens(256L)
                         .metadata(
-                            Metadata.builder()
+                            Run.Metadata.builder()
                                 .putAdditionalProperty("foo", JsonValue.from("string"))
                                 .build()
                         )
@@ -639,7 +638,7 @@ internal class RunStreamEventTest {
                         .maxCompletionTokens(256L)
                         .maxPromptTokens(256L)
                         .metadata(
-                            Metadata.builder()
+                            Run.Metadata.builder()
                                 .putAdditionalProperty("foo", JsonValue.from("string"))
                                 .build()
                         )
@@ -725,7 +724,7 @@ internal class RunStreamEventTest {
                         .maxCompletionTokens(256L)
                         .maxPromptTokens(256L)
                         .metadata(
-                            Metadata.builder()
+                            Run.Metadata.builder()
                                 .putAdditionalProperty("foo", JsonValue.from("string"))
                                 .build()
                         )
@@ -811,7 +810,7 @@ internal class RunStreamEventTest {
                         .maxCompletionTokens(256L)
                         .maxPromptTokens(256L)
                         .metadata(
-                            Metadata.builder()
+                            Run.Metadata.builder()
                                 .putAdditionalProperty("foo", JsonValue.from("string"))
                                 .build()
                         )

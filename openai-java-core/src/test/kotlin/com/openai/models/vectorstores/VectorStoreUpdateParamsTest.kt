@@ -3,7 +3,6 @@
 package com.openai.models.vectorstores
 
 import com.openai.core.JsonValue
-import com.openai.models.Metadata
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
@@ -15,7 +14,9 @@ internal class VectorStoreUpdateParamsTest {
             .vectorStoreId("vector_store_id")
             .expiresAfter(VectorStoreUpdateParams.ExpiresAfter.builder().days(1L).build())
             .metadata(
-                Metadata.builder().putAdditionalProperty("foo", JsonValue.from("string")).build()
+                VectorStoreUpdateParams.Metadata.builder()
+                    .putAdditionalProperty("foo", JsonValue.from("string"))
+                    .build()
             )
             .name("name")
             .build()
@@ -37,7 +38,7 @@ internal class VectorStoreUpdateParamsTest {
                 .vectorStoreId("vector_store_id")
                 .expiresAfter(VectorStoreUpdateParams.ExpiresAfter.builder().days(1L).build())
                 .metadata(
-                    Metadata.builder()
+                    VectorStoreUpdateParams.Metadata.builder()
                         .putAdditionalProperty("foo", JsonValue.from("string"))
                         .build()
                 )
@@ -50,7 +51,9 @@ internal class VectorStoreUpdateParamsTest {
             .contains(VectorStoreUpdateParams.ExpiresAfter.builder().days(1L).build())
         assertThat(body.metadata())
             .contains(
-                Metadata.builder().putAdditionalProperty("foo", JsonValue.from("string")).build()
+                VectorStoreUpdateParams.Metadata.builder()
+                    .putAdditionalProperty("foo", JsonValue.from("string"))
+                    .build()
             )
         assertThat(body.name()).contains("name")
     }

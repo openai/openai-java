@@ -3,7 +3,6 @@
 package com.openai.models.chat.completions
 
 import com.openai.core.JsonValue
-import com.openai.models.Metadata
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
@@ -14,7 +13,9 @@ internal class ChatCompletionUpdateParamsTest {
         ChatCompletionUpdateParams.builder()
             .completionId("completion_id")
             .metadata(
-                Metadata.builder().putAdditionalProperty("foo", JsonValue.from("string")).build()
+                ChatCompletionUpdateParams.Metadata.builder()
+                    .putAdditionalProperty("foo", JsonValue.from("string"))
+                    .build()
             )
             .build()
     }
@@ -25,7 +26,7 @@ internal class ChatCompletionUpdateParamsTest {
             ChatCompletionUpdateParams.builder()
                 .completionId("completion_id")
                 .metadata(
-                    Metadata.builder()
+                    ChatCompletionUpdateParams.Metadata.builder()
                         .putAdditionalProperty("foo", JsonValue.from("string"))
                         .build()
                 )
@@ -42,7 +43,7 @@ internal class ChatCompletionUpdateParamsTest {
             ChatCompletionUpdateParams.builder()
                 .completionId("completion_id")
                 .metadata(
-                    Metadata.builder()
+                    ChatCompletionUpdateParams.Metadata.builder()
                         .putAdditionalProperty("foo", JsonValue.from("string"))
                         .build()
                 )
@@ -52,7 +53,9 @@ internal class ChatCompletionUpdateParamsTest {
 
         assertThat(body.metadata())
             .contains(
-                Metadata.builder().putAdditionalProperty("foo", JsonValue.from("string")).build()
+                ChatCompletionUpdateParams.Metadata.builder()
+                    .putAdditionalProperty("foo", JsonValue.from("string"))
+                    .build()
             )
     }
 }

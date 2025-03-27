@@ -3,7 +3,6 @@
 package com.openai.models.beta.assistants
 
 import com.openai.core.JsonValue
-import com.openai.models.Metadata
 import com.openai.models.ReasoningEffort
 import com.openai.models.beta.threads.AssistantResponseFormatOption
 import kotlin.jvm.optionals.getOrNull
@@ -19,7 +18,9 @@ internal class AssistantUpdateParamsTest {
             .description("description")
             .instructions("instructions")
             .metadata(
-                Metadata.builder().putAdditionalProperty("foo", JsonValue.from("string")).build()
+                AssistantUpdateParams.Metadata.builder()
+                    .putAdditionalProperty("foo", JsonValue.from("string"))
+                    .build()
             )
             .model(AssistantUpdateParams.Model.O3_MINI)
             .name("name")
@@ -62,7 +63,7 @@ internal class AssistantUpdateParamsTest {
                 .description("description")
                 .instructions("instructions")
                 .metadata(
-                    Metadata.builder()
+                    AssistantUpdateParams.Metadata.builder()
                         .putAdditionalProperty("foo", JsonValue.from("string"))
                         .build()
                 )
@@ -95,7 +96,9 @@ internal class AssistantUpdateParamsTest {
         assertThat(body.instructions()).contains("instructions")
         assertThat(body.metadata())
             .contains(
-                Metadata.builder().putAdditionalProperty("foo", JsonValue.from("string")).build()
+                AssistantUpdateParams.Metadata.builder()
+                    .putAdditionalProperty("foo", JsonValue.from("string"))
+                    .build()
             )
         assertThat(body.model()).contains(AssistantUpdateParams.Model.O3_MINI)
         assertThat(body.name()).contains("name")

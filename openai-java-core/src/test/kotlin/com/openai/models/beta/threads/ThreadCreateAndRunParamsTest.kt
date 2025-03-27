@@ -4,7 +4,6 @@ package com.openai.models.beta.threads
 
 import com.openai.core.JsonValue
 import com.openai.models.ChatModel
-import com.openai.models.Metadata
 import com.openai.models.beta.assistants.CodeInterpreterTool
 import kotlin.jvm.optionals.getOrNull
 import org.assertj.core.api.Assertions.assertThat
@@ -20,7 +19,9 @@ internal class ThreadCreateAndRunParamsTest {
             .maxCompletionTokens(256L)
             .maxPromptTokens(256L)
             .metadata(
-                Metadata.builder().putAdditionalProperty("foo", JsonValue.from("string")).build()
+                ThreadCreateAndRunParams.Metadata.builder()
+                    .putAdditionalProperty("foo", JsonValue.from("string"))
+                    .build()
             )
             .model(ChatModel.O3_MINI)
             .parallelToolCalls(true)
@@ -39,14 +40,14 @@ internal class ThreadCreateAndRunParamsTest {
                                     .build()
                             )
                             .metadata(
-                                Metadata.builder()
+                                ThreadCreateAndRunParams.Thread.Message.Metadata.builder()
                                     .putAdditionalProperty("foo", JsonValue.from("string"))
                                     .build()
                             )
                             .build()
                     )
                     .metadata(
-                        Metadata.builder()
+                        ThreadCreateAndRunParams.Thread.Metadata.builder()
                             .putAdditionalProperty("foo", JsonValue.from("string"))
                             .build()
                     )
@@ -68,7 +69,11 @@ internal class ThreadCreateAndRunParamsTest {
                                             .chunkingStrategyAuto()
                                             .addFileId("string")
                                             .metadata(
-                                                Metadata.builder()
+                                                ThreadCreateAndRunParams.Thread.ToolResources
+                                                    .FileSearch
+                                                    .VectorStore
+                                                    .Metadata
+                                                    .builder()
                                                     .putAdditionalProperty(
                                                         "foo",
                                                         JsonValue.from("string"),
@@ -118,7 +123,7 @@ internal class ThreadCreateAndRunParamsTest {
                 .maxCompletionTokens(256L)
                 .maxPromptTokens(256L)
                 .metadata(
-                    Metadata.builder()
+                    ThreadCreateAndRunParams.Metadata.builder()
                         .putAdditionalProperty("foo", JsonValue.from("string"))
                         .build()
                 )
@@ -139,14 +144,14 @@ internal class ThreadCreateAndRunParamsTest {
                                         .build()
                                 )
                                 .metadata(
-                                    Metadata.builder()
+                                    ThreadCreateAndRunParams.Thread.Message.Metadata.builder()
                                         .putAdditionalProperty("foo", JsonValue.from("string"))
                                         .build()
                                 )
                                 .build()
                         )
                         .metadata(
-                            Metadata.builder()
+                            ThreadCreateAndRunParams.Thread.Metadata.builder()
                                 .putAdditionalProperty("foo", JsonValue.from("string"))
                                 .build()
                         )
@@ -169,7 +174,11 @@ internal class ThreadCreateAndRunParamsTest {
                                                 .chunkingStrategyAuto()
                                                 .addFileId("string")
                                                 .metadata(
-                                                    Metadata.builder()
+                                                    ThreadCreateAndRunParams.Thread.ToolResources
+                                                        .FileSearch
+                                                        .VectorStore
+                                                        .Metadata
+                                                        .builder()
                                                         .putAdditionalProperty(
                                                             "foo",
                                                             JsonValue.from("string"),
@@ -217,7 +226,9 @@ internal class ThreadCreateAndRunParamsTest {
         assertThat(body.maxPromptTokens()).contains(256L)
         assertThat(body.metadata())
             .contains(
-                Metadata.builder().putAdditionalProperty("foo", JsonValue.from("string")).build()
+                ThreadCreateAndRunParams.Metadata.builder()
+                    .putAdditionalProperty("foo", JsonValue.from("string"))
+                    .build()
             )
         assertThat(body.model()).contains(ChatModel.O3_MINI)
         assertThat(body.parallelToolCalls()).contains(true)
@@ -237,14 +248,14 @@ internal class ThreadCreateAndRunParamsTest {
                                     .build()
                             )
                             .metadata(
-                                Metadata.builder()
+                                ThreadCreateAndRunParams.Thread.Message.Metadata.builder()
                                     .putAdditionalProperty("foo", JsonValue.from("string"))
                                     .build()
                             )
                             .build()
                     )
                     .metadata(
-                        Metadata.builder()
+                        ThreadCreateAndRunParams.Thread.Metadata.builder()
                             .putAdditionalProperty("foo", JsonValue.from("string"))
                             .build()
                     )
@@ -266,7 +277,11 @@ internal class ThreadCreateAndRunParamsTest {
                                             .chunkingStrategyAuto()
                                             .addFileId("string")
                                             .metadata(
-                                                Metadata.builder()
+                                                ThreadCreateAndRunParams.Thread.ToolResources
+                                                    .FileSearch
+                                                    .VectorStore
+                                                    .Metadata
+                                                    .builder()
                                                     .putAdditionalProperty(
                                                         "foo",
                                                         JsonValue.from("string"),

@@ -3,7 +3,6 @@
 package com.openai.models.beta.assistants
 
 import com.openai.core.JsonValue
-import com.openai.models.Metadata
 import com.openai.models.beta.threads.messages.ImageFile
 import com.openai.models.beta.threads.messages.Message
 import com.openai.models.beta.threads.messages.MessageDelta
@@ -32,7 +31,7 @@ internal class MessageStreamEventTest {
                                 .build()
                         )
                         .metadata(
-                            Metadata.builder()
+                            Message.Metadata.builder()
                                 .putAdditionalProperty("foo", JsonValue.from("string"))
                                 .build()
                         )
@@ -72,7 +71,7 @@ internal class MessageStreamEventTest {
                                 .build()
                         )
                         .metadata(
-                            Metadata.builder()
+                            Message.Metadata.builder()
                                 .putAdditionalProperty("foo", JsonValue.from("string"))
                                 .build()
                         )
@@ -134,7 +133,7 @@ internal class MessageStreamEventTest {
                                 .build()
                         )
                         .metadata(
-                            Metadata.builder()
+                            Message.Metadata.builder()
                                 .putAdditionalProperty("foo", JsonValue.from("string"))
                                 .build()
                         )
@@ -174,7 +173,7 @@ internal class MessageStreamEventTest {
                                 .build()
                         )
                         .metadata(
-                            Metadata.builder()
+                            Message.Metadata.builder()
                                 .putAdditionalProperty("foo", JsonValue.from("string"))
                                 .build()
                         )

@@ -5,7 +5,6 @@ package com.openai.models.beta.threads.runs
 import com.openai.core.JsonValue
 import com.openai.core.http.QueryParams
 import com.openai.models.ChatModel
-import com.openai.models.Metadata
 import com.openai.models.ReasoningEffort
 import com.openai.models.beta.assistants.AssistantTool
 import com.openai.models.beta.assistants.CodeInterpreterTool
@@ -36,7 +35,7 @@ internal class RunCreateParamsTest {
                             .build()
                     )
                     .metadata(
-                        Metadata.builder()
+                        RunCreateParams.AdditionalMessage.Metadata.builder()
                             .putAdditionalProperty("foo", JsonValue.from("string"))
                             .build()
                     )
@@ -46,7 +45,9 @@ internal class RunCreateParamsTest {
             .maxCompletionTokens(256L)
             .maxPromptTokens(256L)
             .metadata(
-                Metadata.builder().putAdditionalProperty("foo", JsonValue.from("string")).build()
+                RunCreateParams.Metadata.builder()
+                    .putAdditionalProperty("foo", JsonValue.from("string"))
+                    .build()
             )
             .model(ChatModel.O3_MINI)
             .parallelToolCalls(true)
@@ -94,7 +95,7 @@ internal class RunCreateParamsTest {
                                 .build()
                         )
                         .metadata(
-                            Metadata.builder()
+                            RunCreateParams.AdditionalMessage.Metadata.builder()
                                 .putAdditionalProperty("foo", JsonValue.from("string"))
                                 .build()
                         )
@@ -104,7 +105,7 @@ internal class RunCreateParamsTest {
                 .maxCompletionTokens(256L)
                 .maxPromptTokens(256L)
                 .metadata(
-                    Metadata.builder()
+                    RunCreateParams.Metadata.builder()
                         .putAdditionalProperty("foo", JsonValue.from("string"))
                         .build()
                 )
@@ -163,7 +164,7 @@ internal class RunCreateParamsTest {
                                 .build()
                         )
                         .metadata(
-                            Metadata.builder()
+                            RunCreateParams.AdditionalMessage.Metadata.builder()
                                 .putAdditionalProperty("foo", JsonValue.from("string"))
                                 .build()
                         )
@@ -173,7 +174,7 @@ internal class RunCreateParamsTest {
                 .maxCompletionTokens(256L)
                 .maxPromptTokens(256L)
                 .metadata(
-                    Metadata.builder()
+                    RunCreateParams.Metadata.builder()
                         .putAdditionalProperty("foo", JsonValue.from("string"))
                         .build()
                 )
@@ -209,7 +210,7 @@ internal class RunCreateParamsTest {
                             .build()
                     )
                     .metadata(
-                        Metadata.builder()
+                        RunCreateParams.AdditionalMessage.Metadata.builder()
                             .putAdditionalProperty("foo", JsonValue.from("string"))
                             .build()
                     )
@@ -220,7 +221,9 @@ internal class RunCreateParamsTest {
         assertThat(body.maxPromptTokens()).contains(256L)
         assertThat(body.metadata())
             .contains(
-                Metadata.builder().putAdditionalProperty("foo", JsonValue.from("string")).build()
+                RunCreateParams.Metadata.builder()
+                    .putAdditionalProperty("foo", JsonValue.from("string"))
+                    .build()
             )
         assertThat(body.model()).contains(ChatModel.O3_MINI)
         assertThat(body.parallelToolCalls()).contains(true)

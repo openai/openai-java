@@ -25,6 +25,8 @@ import com.openai.models.chat.completions.ChatCompletionChunk
 import com.openai.models.chat.completions.ChatCompletionCreateParams
 import com.openai.models.chat.completions.ChatCompletionDeleteParams
 import com.openai.models.chat.completions.ChatCompletionDeleted
+import com.openai.models.chat.completions.ChatCompletionListPage
+import com.openai.models.chat.completions.ChatCompletionListParams
 import com.openai.models.chat.completions.ChatCompletionRetrieveParams
 import com.openai.models.chat.completions.ChatCompletionUpdateParams
 import com.openai.services.blocking.chat.completions.MessageService
@@ -70,6 +72,13 @@ class ChatCompletionServiceImpl internal constructor(private val clientOptions: 
     ): ChatCompletion =
         // post /chat/completions/{completion_id}
         withRawResponse().update(params, requestOptions).parse()
+
+    override fun list(
+        params: ChatCompletionListParams,
+        requestOptions: RequestOptions,
+    ): ChatCompletionListPage =
+        // get /chat/completions
+        withRawResponse().list(params, requestOptions).parse()
 
     override fun delete(
         params: ChatCompletionDeleteParams,
@@ -205,6 +214,40 @@ class ChatCompletionServiceImpl internal constructor(private val clientOptions: 
                         if (requestOptions.responseValidation!!) {
                             it.validate()
                         }
+                    }
+            }
+        }
+
+        private val listHandler: Handler<ChatCompletionListPage.Response> =
+            jsonHandler<ChatCompletionListPage.Response>(clientOptions.jsonMapper)
+                .withErrorHandler(errorHandler)
+
+        override fun list(
+            params: ChatCompletionListParams,
+            requestOptions: RequestOptions,
+        ): HttpResponseFor<ChatCompletionListPage> {
+            val request =
+                HttpRequest.builder()
+                    .method(HttpMethod.GET)
+                    .addPathSegments("chat", "completions")
+                    .build()
+                    .prepare(clientOptions, params)
+            val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
+            val response = clientOptions.httpClient.execute(request, requestOptions)
+            return response.parseable {
+                response
+                    .use { listHandler.handle(it) }
+                    .also {
+                        if (requestOptions.responseValidation!!) {
+                            it.validate()
+                        }
+                    }
+                    .let {
+                        ChatCompletionListPage.of(
+                            ChatCompletionServiceImpl(clientOptions),
+                            params,
+                            it,
+                        )
                     }
             }
         }

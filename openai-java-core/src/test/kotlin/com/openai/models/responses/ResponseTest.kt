@@ -5,7 +5,6 @@ package com.openai.models.responses
 import com.openai.core.JsonValue
 import com.openai.models.ChatModel
 import com.openai.models.ComparisonFilter
-import com.openai.models.Metadata
 import com.openai.models.Reasoning
 import com.openai.models.ReasoningEffort
 import com.openai.models.ResponseFormatText
@@ -34,7 +33,7 @@ internal class ResponseTest {
                 )
                 .instructions("instructions")
                 .metadata(
-                    Metadata.builder()
+                    Response.Metadata.builder()
                         .putAdditionalProperty("foo", JsonValue.from("string"))
                         .build()
                 )
@@ -128,7 +127,9 @@ internal class ResponseTest {
         assertThat(response.instructions()).contains("instructions")
         assertThat(response.metadata())
             .contains(
-                Metadata.builder().putAdditionalProperty("foo", JsonValue.from("string")).build()
+                Response.Metadata.builder()
+                    .putAdditionalProperty("foo", JsonValue.from("string"))
+                    .build()
             )
         assertThat(response.model()).isEqualTo(ResponsesModel.ofChat(ChatModel.GPT_4O))
         assertThat(response.output())

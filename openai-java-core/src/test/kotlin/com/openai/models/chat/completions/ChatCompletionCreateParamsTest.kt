@@ -6,7 +6,6 @@ import com.openai.core.JsonValue
 import com.openai.models.ChatModel
 import com.openai.models.FunctionDefinition
 import com.openai.models.FunctionParameters
-import com.openai.models.Metadata
 import com.openai.models.ReasoningEffort
 import com.openai.models.ResponseFormatText
 import kotlin.jvm.optionals.getOrNull
@@ -50,7 +49,9 @@ internal class ChatCompletionCreateParamsTest {
             .maxCompletionTokens(0L)
             .maxTokens(0L)
             .metadata(
-                Metadata.builder().putAdditionalProperty("foo", JsonValue.from("string")).build()
+                ChatCompletionCreateParams.Metadata.builder()
+                    .putAdditionalProperty("foo", JsonValue.from("string"))
+                    .build()
             )
             .addModality(ChatCompletionCreateParams.Modality.TEXT)
             .n(1L)
@@ -147,7 +148,7 @@ internal class ChatCompletionCreateParamsTest {
                 .maxCompletionTokens(0L)
                 .maxTokens(0L)
                 .metadata(
-                    Metadata.builder()
+                    ChatCompletionCreateParams.Metadata.builder()
                         .putAdditionalProperty("foo", JsonValue.from("string"))
                         .build()
                 )
@@ -256,7 +257,9 @@ internal class ChatCompletionCreateParamsTest {
         assertThat(body.maxTokens()).contains(0L)
         assertThat(body.metadata())
             .contains(
-                Metadata.builder().putAdditionalProperty("foo", JsonValue.from("string")).build()
+                ChatCompletionCreateParams.Metadata.builder()
+                    .putAdditionalProperty("foo", JsonValue.from("string"))
+                    .build()
             )
         assertThat(body.modalities().getOrNull())
             .containsExactly(ChatCompletionCreateParams.Modality.TEXT)

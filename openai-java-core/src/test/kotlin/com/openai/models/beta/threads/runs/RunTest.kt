@@ -3,7 +3,6 @@
 package com.openai.models.beta.threads.runs
 
 import com.openai.core.JsonValue
-import com.openai.models.Metadata
 import com.openai.models.beta.assistants.AssistantTool
 import com.openai.models.beta.assistants.CodeInterpreterTool
 import com.openai.models.beta.threads.AssistantResponseFormatOption
@@ -39,7 +38,7 @@ internal class RunTest {
                 .maxCompletionTokens(256L)
                 .maxPromptTokens(256L)
                 .metadata(
-                    Metadata.builder()
+                    Run.Metadata.builder()
                         .putAdditionalProperty("foo", JsonValue.from("string"))
                         .build()
                 )
@@ -112,7 +111,9 @@ internal class RunTest {
         assertThat(run.maxPromptTokens()).contains(256L)
         assertThat(run.metadata())
             .contains(
-                Metadata.builder().putAdditionalProperty("foo", JsonValue.from("string")).build()
+                Run.Metadata.builder()
+                    .putAdditionalProperty("foo", JsonValue.from("string"))
+                    .build()
             )
         assertThat(run.model()).isEqualTo("model")
         assertThat(run.parallelToolCalls()).isEqualTo(true)
