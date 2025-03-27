@@ -1,5 +1,18 @@
 # Changelog
 
+## 0.39.0 (2025-03-27)
+
+Full Changelog: [v0.38.0...v0.39.0](https://github.com/openai/openai-java/compare/v0.38.0...v0.39.0)
+
+### Features
+
+* **api:** add `get /chat/completions` endpoint ([#364](https://github.com/openai/openai-java/issues/364)) ([8591689](https://github.com/openai/openai-java/commit/85916892043caeb1cca862d18820aaaae0788514))
+
+
+### Bug Fixes
+
+* add missing `deploymentModel` ([40c568f](https://github.com/openai/openai-java/commit/40c568f3113553c91ab85d911b5340aa28e41a91))
+
 ## 0.38.0 (2025-03-27)
 
 Full Changelog: [v0.37.0...v0.38.0](https://github.com/openai/openai-java/compare/v0.37.0...v0.38.0)
