@@ -55,9 +55,7 @@ private constructor(
             return Optional.empty()
         }
 
-        return Optional.of(
-            FileBatchListFilesParams.builder().from(params).after(data().last().id()).build()
-        )
+        return Optional.of(params.toBuilder().after(data().last().id()).build())
     }
 
     fun getNextPage(): CompletableFuture<Optional<FileBatchListFilesPageAsync>> {

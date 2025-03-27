@@ -10,7 +10,15 @@ import com.openai.core.ExcludeMissing
 import com.openai.core.JsonField
 import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
+import com.openai.models.responses.ResponseComputerToolCall
+import com.openai.models.responses.ResponseComputerToolCallOutputItem
+import com.openai.models.responses.ResponseFileSearchToolCall
+import com.openai.models.responses.ResponseFunctionToolCallItem
+import com.openai.models.responses.ResponseFunctionToolCallOutputItem
+import com.openai.models.responses.ResponseFunctionWebSearch
+import com.openai.models.responses.ResponseInputMessageItem
 import com.openai.models.responses.ResponseItem
+import com.openai.models.responses.ResponseOutputMessage
 import com.openai.services.async.responses.InputItemServiceAsync
 import java.util.Collections
 import java.util.Objects
@@ -56,7 +64,48 @@ private constructor(
         }
 
         return Optional.of(
-            InputItemListParams.builder().from(params).after(data().last().id()).build()
+            params
+                .toBuilder()
+                .after(
+                    data()
+                        .last()
+                        .accept(
+                            object : ResponseItem.Visitor<Optional<String>> {
+                                override fun visitResponseInputMessageItem(
+                                    responseInputMessageItem: ResponseInputMessageItem
+                                ): Optional<String> = Optional.of(responseInputMessageItem.id())
+
+                                override fun visitResponseOutputMessage(
+                                    responseOutputMessage: ResponseOutputMessage
+                                ): Optional<String> = Optional.of(responseOutputMessage.id())
+
+                                override fun visitFileSearchCall(
+                                    fileSearchCall: ResponseFileSearchToolCall
+                                ): Optional<String> = Optional.of(fileSearchCall.id())
+
+                                override fun visitComputerCall(
+                                    computerCall: ResponseComputerToolCall
+                                ): Optional<String> = Optional.of(computerCall.id())
+
+                                override fun visitComputerCallOutput(
+                                    computerCallOutput: ResponseComputerToolCallOutputItem
+                                ): Optional<String> = Optional.of(computerCallOutput.id())
+
+                                override fun visitWebSearchCall(
+                                    webSearchCall: ResponseFunctionWebSearch
+                                ): Optional<String> = Optional.of(webSearchCall.id())
+
+                                override fun visitFunctionCall(
+                                    functionCall: ResponseFunctionToolCallItem
+                                ): Optional<String> = functionCall.id()
+
+                                override fun visitFunctionCallOutput(
+                                    functionCallOutput: ResponseFunctionToolCallOutputItem
+                                ): Optional<String> = Optional.of(functionCallOutput.id())
+                            }
+                        )
+                )
+                .build()
         )
     }
 
