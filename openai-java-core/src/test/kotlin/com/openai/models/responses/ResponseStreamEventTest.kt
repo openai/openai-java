@@ -4,7 +4,6 @@ package com.openai.models.responses
 
 import com.openai.core.JsonValue
 import com.openai.models.ChatModel
-import com.openai.models.Metadata
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
@@ -436,7 +435,7 @@ internal class ResponseStreamEventTest {
                         .incompleteDetails(Response.IncompleteDetails.builder().build())
                         .instructions("instructions")
                         .metadata(
-                            Metadata.builder()
+                            Response.Metadata.builder()
                                 .putAdditionalProperty("foo", JsonValue.from("string"))
                                 .build()
                         )
@@ -632,7 +631,7 @@ internal class ResponseStreamEventTest {
                         .incompleteDetails(Response.IncompleteDetails.builder().build())
                         .instructions("instructions")
                         .metadata(
-                            Metadata.builder()
+                            Response.Metadata.builder()
                                 .putAdditionalProperty("foo", JsonValue.from("string"))
                                 .build()
                         )
@@ -981,7 +980,7 @@ internal class ResponseStreamEventTest {
                         .incompleteDetails(Response.IncompleteDetails.builder().build())
                         .instructions("instructions")
                         .metadata(
-                            Metadata.builder()
+                            Response.Metadata.builder()
                                 .putAdditionalProperty("foo", JsonValue.from("string"))
                                 .build()
                         )
@@ -1065,7 +1064,7 @@ internal class ResponseStreamEventTest {
                         .incompleteDetails(Response.IncompleteDetails.builder().build())
                         .instructions("instructions")
                         .metadata(
-                            Metadata.builder()
+                            Response.Metadata.builder()
                                 .putAdditionalProperty("foo", JsonValue.from("string"))
                                 .build()
                         )
@@ -1149,7 +1148,7 @@ internal class ResponseStreamEventTest {
                         .incompleteDetails(Response.IncompleteDetails.builder().build())
                         .instructions("instructions")
                         .metadata(
-                            Metadata.builder()
+                            Response.Metadata.builder()
                                 .putAdditionalProperty("foo", JsonValue.from("string"))
                                 .build()
                         )

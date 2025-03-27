@@ -8,7 +8,6 @@ import com.openai.core.JsonValue
 import com.openai.models.ChatModel
 import com.openai.models.FunctionDefinition
 import com.openai.models.FunctionParameters
-import com.openai.models.Metadata
 import com.openai.models.ReasoningEffort
 import com.openai.models.ResponseFormatText
 import com.openai.models.chat.completions.ChatCompletionAudioParam
@@ -74,7 +73,7 @@ internal class ChatCompletionServiceAsyncTest {
                     .maxCompletionTokens(0L)
                     .maxTokens(0L)
                     .metadata(
-                        Metadata.builder()
+                        ChatCompletionCreateParams.Metadata.builder()
                             .putAdditionalProperty("foo", JsonValue.from("string"))
                             .build()
                     )
@@ -186,7 +185,7 @@ internal class ChatCompletionServiceAsyncTest {
                     .maxCompletionTokens(0L)
                     .maxTokens(0L)
                     .metadata(
-                        Metadata.builder()
+                        ChatCompletionCreateParams.Metadata.builder()
                             .putAdditionalProperty("foo", JsonValue.from("string"))
                             .build()
                     )
@@ -286,7 +285,7 @@ internal class ChatCompletionServiceAsyncTest {
                 ChatCompletionUpdateParams.builder()
                     .completionId("completion_id")
                     .metadata(
-                        Metadata.builder()
+                        ChatCompletionUpdateParams.Metadata.builder()
                             .putAdditionalProperty("foo", JsonValue.from("string"))
                             .build()
                     )
@@ -295,6 +294,21 @@ internal class ChatCompletionServiceAsyncTest {
 
         val chatCompletion = chatCompletionFuture.get()
         chatCompletion.validate()
+    }
+
+    @Test
+    fun list() {
+        val client =
+            OpenAIOkHttpClientAsync.builder()
+                .baseUrl(TestServerExtension.BASE_URL)
+                .apiKey("My API Key")
+                .build()
+        val chatCompletionServiceAsync = client.chat().completions()
+
+        val pageFuture = chatCompletionServiceAsync.list()
+
+        val page = pageFuture.get()
+        page.response().validate()
     }
 
     @Test

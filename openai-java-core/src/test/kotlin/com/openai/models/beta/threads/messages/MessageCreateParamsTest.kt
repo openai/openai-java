@@ -3,7 +3,6 @@
 package com.openai.models.beta.threads.messages
 
 import com.openai.core.JsonValue
-import com.openai.models.Metadata
 import com.openai.models.beta.assistants.CodeInterpreterTool
 import kotlin.jvm.optionals.getOrNull
 import org.assertj.core.api.Assertions.assertThat
@@ -24,7 +23,9 @@ internal class MessageCreateParamsTest {
                     .build()
             )
             .metadata(
-                Metadata.builder().putAdditionalProperty("foo", JsonValue.from("string")).build()
+                MessageCreateParams.Metadata.builder()
+                    .putAdditionalProperty("foo", JsonValue.from("string"))
+                    .build()
             )
             .build()
     }
@@ -57,7 +58,7 @@ internal class MessageCreateParamsTest {
                         .build()
                 )
                 .metadata(
-                    Metadata.builder()
+                    MessageCreateParams.Metadata.builder()
                         .putAdditionalProperty("foo", JsonValue.from("string"))
                         .build()
                 )
@@ -76,7 +77,9 @@ internal class MessageCreateParamsTest {
             )
         assertThat(body.metadata())
             .contains(
-                Metadata.builder().putAdditionalProperty("foo", JsonValue.from("string")).build()
+                MessageCreateParams.Metadata.builder()
+                    .putAdditionalProperty("foo", JsonValue.from("string"))
+                    .build()
             )
     }
 

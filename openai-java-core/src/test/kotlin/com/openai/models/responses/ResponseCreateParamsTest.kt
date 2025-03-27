@@ -5,7 +5,6 @@ package com.openai.models.responses
 import com.openai.core.JsonValue
 import com.openai.models.ChatModel
 import com.openai.models.ComparisonFilter
-import com.openai.models.Metadata
 import com.openai.models.Reasoning
 import com.openai.models.ReasoningEffort
 import com.openai.models.ResponseFormatText
@@ -25,7 +24,9 @@ internal class ResponseCreateParamsTest {
             .instructions("instructions")
             .maxOutputTokens(0L)
             .metadata(
-                Metadata.builder().putAdditionalProperty("foo", JsonValue.from("string")).build()
+                ResponseCreateParams.Metadata.builder()
+                    .putAdditionalProperty("foo", JsonValue.from("string"))
+                    .build()
             )
             .parallelToolCalls(true)
             .previousResponseId("previous_response_id")
@@ -74,7 +75,7 @@ internal class ResponseCreateParamsTest {
                 .instructions("instructions")
                 .maxOutputTokens(0L)
                 .metadata(
-                    Metadata.builder()
+                    ResponseCreateParams.Metadata.builder()
                         .putAdditionalProperty("foo", JsonValue.from("string"))
                         .build()
                 )
@@ -128,7 +129,9 @@ internal class ResponseCreateParamsTest {
         assertThat(body.maxOutputTokens()).contains(0L)
         assertThat(body.metadata())
             .contains(
-                Metadata.builder().putAdditionalProperty("foo", JsonValue.from("string")).build()
+                ResponseCreateParams.Metadata.builder()
+                    .putAdditionalProperty("foo", JsonValue.from("string"))
+                    .build()
             )
         assertThat(body.parallelToolCalls()).contains(true)
         assertThat(body.previousResponseId()).contains("previous_response_id")

@@ -5,7 +5,6 @@ package com.openai.services.async.finetuning
 import com.openai.TestServerExtension
 import com.openai.client.okhttp.OpenAIOkHttpClientAsync
 import com.openai.core.JsonValue
-import com.openai.models.Metadata
 import com.openai.models.finetuning.jobs.JobCancelParams
 import com.openai.models.finetuning.jobs.JobCreateParams
 import com.openai.models.finetuning.jobs.JobListEventsParams
@@ -50,7 +49,7 @@ internal class JobServiceAsyncTest {
                             .build()
                     )
                     .metadata(
-                        Metadata.builder()
+                        JobCreateParams.Metadata.builder()
                             .putAdditionalProperty("foo", JsonValue.from("string"))
                             .build()
                     )

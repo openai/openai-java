@@ -3,7 +3,6 @@
 package com.openai.models.beta.assistants
 
 import com.openai.core.JsonValue
-import com.openai.models.Metadata
 import com.openai.models.beta.threads.runs.steps.MessageCreationStepDetails
 import com.openai.models.beta.threads.runs.steps.RunStep
 import com.openai.models.beta.threads.runs.steps.RunStepDelta
@@ -33,7 +32,7 @@ internal class RunStepStreamEventTest {
                                 .build()
                         )
                         .metadata(
-                            Metadata.builder()
+                            RunStep.Metadata.builder()
                                 .putAdditionalProperty("foo", JsonValue.from("string"))
                                 .build()
                         )
@@ -88,7 +87,7 @@ internal class RunStepStreamEventTest {
                                 .build()
                         )
                         .metadata(
-                            Metadata.builder()
+                            RunStep.Metadata.builder()
                                 .putAdditionalProperty("foo", JsonValue.from("string"))
                                 .build()
                         )
@@ -167,7 +166,7 @@ internal class RunStepStreamEventTest {
                                 .build()
                         )
                         .metadata(
-                            Metadata.builder()
+                            RunStep.Metadata.builder()
                                 .putAdditionalProperty("foo", JsonValue.from("string"))
                                 .build()
                         )
@@ -222,7 +221,7 @@ internal class RunStepStreamEventTest {
                                 .build()
                         )
                         .metadata(
-                            Metadata.builder()
+                            RunStep.Metadata.builder()
                                 .putAdditionalProperty("foo", JsonValue.from("string"))
                                 .build()
                         )
@@ -277,7 +276,7 @@ internal class RunStepStreamEventTest {
                                 .build()
                         )
                         .metadata(
-                            Metadata.builder()
+                            RunStep.Metadata.builder()
                                 .putAdditionalProperty("foo", JsonValue.from("string"))
                                 .build()
                         )
@@ -332,7 +331,7 @@ internal class RunStepStreamEventTest {
                                 .build()
                         )
                         .metadata(
-                            Metadata.builder()
+                            RunStep.Metadata.builder()
                                 .putAdditionalProperty("foo", JsonValue.from("string"))
                                 .build()
                         )

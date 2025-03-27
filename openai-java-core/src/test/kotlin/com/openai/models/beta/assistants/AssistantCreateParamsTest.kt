@@ -4,7 +4,6 @@ package com.openai.models.beta.assistants
 
 import com.openai.core.JsonValue
 import com.openai.models.ChatModel
-import com.openai.models.Metadata
 import com.openai.models.ReasoningEffort
 import com.openai.models.beta.threads.AssistantResponseFormatOption
 import kotlin.jvm.optionals.getOrNull
@@ -20,7 +19,9 @@ internal class AssistantCreateParamsTest {
             .description("description")
             .instructions("instructions")
             .metadata(
-                Metadata.builder().putAdditionalProperty("foo", JsonValue.from("string")).build()
+                AssistantCreateParams.Metadata.builder()
+                    .putAdditionalProperty("foo", JsonValue.from("string"))
+                    .build()
             )
             .name("name")
             .reasoningEffort(ReasoningEffort.LOW)
@@ -41,7 +42,9 @@ internal class AssistantCreateParamsTest {
                                     .chunkingStrategyAuto()
                                     .addFileId("string")
                                     .metadata(
-                                        Metadata.builder()
+                                        AssistantCreateParams.ToolResources.FileSearch.VectorStore
+                                            .Metadata
+                                            .builder()
                                             .putAdditionalProperty("foo", JsonValue.from("string"))
                                             .build()
                                     )
@@ -64,7 +67,7 @@ internal class AssistantCreateParamsTest {
                 .description("description")
                 .instructions("instructions")
                 .metadata(
-                    Metadata.builder()
+                    AssistantCreateParams.Metadata.builder()
                         .putAdditionalProperty("foo", JsonValue.from("string"))
                         .build()
                 )
@@ -88,7 +91,10 @@ internal class AssistantCreateParamsTest {
                                         .chunkingStrategyAuto()
                                         .addFileId("string")
                                         .metadata(
-                                            Metadata.builder()
+                                            AssistantCreateParams.ToolResources.FileSearch
+                                                .VectorStore
+                                                .Metadata
+                                                .builder()
                                                 .putAdditionalProperty(
                                                     "foo",
                                                     JsonValue.from("string"),
@@ -112,7 +118,9 @@ internal class AssistantCreateParamsTest {
         assertThat(body.instructions()).contains("instructions")
         assertThat(body.metadata())
             .contains(
-                Metadata.builder().putAdditionalProperty("foo", JsonValue.from("string")).build()
+                AssistantCreateParams.Metadata.builder()
+                    .putAdditionalProperty("foo", JsonValue.from("string"))
+                    .build()
             )
         assertThat(body.name()).contains("name")
         assertThat(body.reasoningEffort()).contains(ReasoningEffort.LOW)
@@ -134,7 +142,9 @@ internal class AssistantCreateParamsTest {
                                     .chunkingStrategyAuto()
                                     .addFileId("string")
                                     .metadata(
-                                        Metadata.builder()
+                                        AssistantCreateParams.ToolResources.FileSearch.VectorStore
+                                            .Metadata
+                                            .builder()
                                             .putAdditionalProperty("foo", JsonValue.from("string"))
                                             .build()
                                     )

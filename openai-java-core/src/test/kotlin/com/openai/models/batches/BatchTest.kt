@@ -3,7 +3,6 @@
 package com.openai.models.batches
 
 import com.openai.core.JsonValue
-import com.openai.models.Metadata
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
@@ -42,7 +41,7 @@ internal class BatchTest {
                 .finalizingAt(0L)
                 .inProgressAt(0L)
                 .metadata(
-                    Metadata.builder()
+                    Batch.Metadata.builder()
                         .putAdditionalProperty("foo", JsonValue.from("string"))
                         .build()
                 )
@@ -83,7 +82,9 @@ internal class BatchTest {
         assertThat(batch.inProgressAt()).contains(0L)
         assertThat(batch.metadata())
             .contains(
-                Metadata.builder().putAdditionalProperty("foo", JsonValue.from("string")).build()
+                Batch.Metadata.builder()
+                    .putAdditionalProperty("foo", JsonValue.from("string"))
+                    .build()
             )
         assertThat(batch.outputFileId()).contains("output_file_id")
         assertThat(batch.requestCounts())

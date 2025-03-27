@@ -11,6 +11,8 @@ import com.openai.models.chat.completions.ChatCompletionChunk
 import com.openai.models.chat.completions.ChatCompletionCreateParams
 import com.openai.models.chat.completions.ChatCompletionDeleteParams
 import com.openai.models.chat.completions.ChatCompletionDeleted
+import com.openai.models.chat.completions.ChatCompletionListPage
+import com.openai.models.chat.completions.ChatCompletionListParams
 import com.openai.models.chat.completions.ChatCompletionRetrieveParams
 import com.openai.models.chat.completions.ChatCompletionUpdateParams
 import com.openai.services.blocking.chat.completions.MessageService
@@ -108,6 +110,27 @@ interface ChatCompletionService {
     ): ChatCompletion
 
     /**
+     * List stored Chat Completions. Only Chat Completions that have been stored with the `store`
+     * parameter set to `true` will be returned.
+     */
+    fun list(): ChatCompletionListPage = list(ChatCompletionListParams.none())
+
+    /** @see [list] */
+    fun list(
+        params: ChatCompletionListParams = ChatCompletionListParams.none(),
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): ChatCompletionListPage
+
+    /** @see [list] */
+    fun list(
+        params: ChatCompletionListParams = ChatCompletionListParams.none()
+    ): ChatCompletionListPage = list(params, RequestOptions.none())
+
+    /** @see [list] */
+    fun list(requestOptions: RequestOptions): ChatCompletionListPage =
+        list(ChatCompletionListParams.none(), requestOptions)
+
+    /**
      * Delete a stored chat completion. Only Chat Completions that have been created with the
      * `store` parameter set to `true` can be deleted.
      */
@@ -188,6 +211,31 @@ interface ChatCompletionService {
             params: ChatCompletionUpdateParams,
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<ChatCompletion>
+
+        /**
+         * Returns a raw HTTP response for `get /chat/completions`, but is otherwise the same as
+         * [ChatCompletionService.list].
+         */
+        @MustBeClosed
+        fun list(): HttpResponseFor<ChatCompletionListPage> = list(ChatCompletionListParams.none())
+
+        /** @see [list] */
+        @MustBeClosed
+        fun list(
+            params: ChatCompletionListParams = ChatCompletionListParams.none(),
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): HttpResponseFor<ChatCompletionListPage>
+
+        /** @see [list] */
+        @MustBeClosed
+        fun list(
+            params: ChatCompletionListParams = ChatCompletionListParams.none()
+        ): HttpResponseFor<ChatCompletionListPage> = list(params, RequestOptions.none())
+
+        /** @see [list] */
+        @MustBeClosed
+        fun list(requestOptions: RequestOptions): HttpResponseFor<ChatCompletionListPage> =
+            list(ChatCompletionListParams.none(), requestOptions)
 
         /**
          * Returns a raw HTTP response for `delete /chat/completions/{completion_id}`, but is
