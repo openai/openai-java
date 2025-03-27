@@ -1,5 +1,25 @@
 # Changelog
 
+## 0.38.0 (2025-03-27)
+
+Full Changelog: [v0.37.0...v0.38.0](https://github.com/openai/openai-java/compare/v0.37.0...v0.38.0)
+
+### Features
+
+* **client:** add chat completion streaming helper ([#354](https://github.com/openai/openai-java/issues/354)) ([561c085](https://github.com/openai/openai-java/commit/561c0853b8a06814dba873e942629dff050b325d))
+
+
+### Bug Fixes
+
+* **client:** map deserialization bug ([caa79a2](https://github.com/openai/openai-java/commit/caa79a267a79845eee3a49b22bcbe66849d9cf4e))
+
+
+### Chores
+
+* add hash of OpenAPI spec/config inputs to .stats.yml ([d27646c](https://github.com/openai/openai-java/commit/d27646c179082f6bcba9b5df6b333134968adc95))
+* **api:** updates to supported Voice IDs ([#361](https://github.com/openai/openai-java/issues/361)) ([fd0d45a](https://github.com/openai/openai-java/commit/fd0d45a6f74e6571f1553231a69621db5720580f))
+* **internal:** delete unused methods and annotations ([#362](https://github.com/openai/openai-java/issues/362)) ([caa79a2](https://github.com/openai/openai-java/commit/caa79a267a79845eee3a49b22bcbe66849d9cf4e))
+
 ## 0.37.0 (2025-03-25)
 
 Full Changelog: [v0.36.0...v0.37.0](https://github.com/openai/openai-java/compare/v0.36.0...v0.37.0)
