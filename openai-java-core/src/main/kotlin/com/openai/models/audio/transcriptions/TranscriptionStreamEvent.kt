@@ -197,20 +197,18 @@ private constructor(
 
             when (type) {
                 "transcript.text.delta" -> {
-                    tryDeserialize(node, jacksonTypeRef<TranscriptionTextDeltaEvent>()) {
-                            it.validate()
-                        }
-                        ?.let {
-                            return TranscriptionStreamEvent(transcriptTextDelta = it, _json = json)
-                        }
+                    return TranscriptionStreamEvent(
+                        transcriptTextDelta =
+                            deserialize(node, jacksonTypeRef<TranscriptionTextDeltaEvent>()),
+                        _json = json,
+                    )
                 }
                 "transcript.text.done" -> {
-                    tryDeserialize(node, jacksonTypeRef<TranscriptionTextDoneEvent>()) {
-                            it.validate()
-                        }
-                        ?.let {
-                            return TranscriptionStreamEvent(transcriptTextDone = it, _json = json)
-                        }
+                    return TranscriptionStreamEvent(
+                        transcriptTextDone =
+                            deserialize(node, jacksonTypeRef<TranscriptionTextDoneEvent>()),
+                        _json = json,
+                    )
                 }
             }
 

@@ -140,18 +140,16 @@ private constructor(
 
             when (type) {
                 "image_url" -> {
-                    tryDeserialize(node, jacksonTypeRef<ModerationImageUrlInput>()) {
-                            it.validate()
-                        }
-                        ?.let {
-                            return ModerationMultiModalInput(imageUrl = it, _json = json)
-                        }
+                    return ModerationMultiModalInput(
+                        imageUrl = deserialize(node, jacksonTypeRef<ModerationImageUrlInput>()),
+                        _json = json,
+                    )
                 }
                 "text" -> {
-                    tryDeserialize(node, jacksonTypeRef<ModerationTextInput>()) { it.validate() }
-                        ?.let {
-                            return ModerationMultiModalInput(text = it, _json = json)
-                        }
+                    return ModerationMultiModalInput(
+                        text = deserialize(node, jacksonTypeRef<ModerationTextInput>()),
+                        _json = json,
+                    )
                 }
             }
 

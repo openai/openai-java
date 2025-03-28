@@ -258,52 +258,50 @@ private constructor(
 
             when (role) {
                 "developer" -> {
-                    tryDeserialize(node, jacksonTypeRef<ChatCompletionDeveloperMessageParam>()) {
-                            it.validate()
-                        }
-                        ?.let {
-                            return ChatCompletionMessageParam(developer = it, _json = json)
-                        }
+                    return ChatCompletionMessageParam(
+                        developer =
+                            deserialize(
+                                node,
+                                jacksonTypeRef<ChatCompletionDeveloperMessageParam>(),
+                            ),
+                        _json = json,
+                    )
                 }
                 "system" -> {
-                    tryDeserialize(node, jacksonTypeRef<ChatCompletionSystemMessageParam>()) {
-                            it.validate()
-                        }
-                        ?.let {
-                            return ChatCompletionMessageParam(system = it, _json = json)
-                        }
+                    return ChatCompletionMessageParam(
+                        system =
+                            deserialize(node, jacksonTypeRef<ChatCompletionSystemMessageParam>()),
+                        _json = json,
+                    )
                 }
                 "user" -> {
-                    tryDeserialize(node, jacksonTypeRef<ChatCompletionUserMessageParam>()) {
-                            it.validate()
-                        }
-                        ?.let {
-                            return ChatCompletionMessageParam(user = it, _json = json)
-                        }
+                    return ChatCompletionMessageParam(
+                        user = deserialize(node, jacksonTypeRef<ChatCompletionUserMessageParam>()),
+                        _json = json,
+                    )
                 }
                 "assistant" -> {
-                    tryDeserialize(node, jacksonTypeRef<ChatCompletionAssistantMessageParam>()) {
-                            it.validate()
-                        }
-                        ?.let {
-                            return ChatCompletionMessageParam(assistant = it, _json = json)
-                        }
+                    return ChatCompletionMessageParam(
+                        assistant =
+                            deserialize(
+                                node,
+                                jacksonTypeRef<ChatCompletionAssistantMessageParam>(),
+                            ),
+                        _json = json,
+                    )
                 }
                 "tool" -> {
-                    tryDeserialize(node, jacksonTypeRef<ChatCompletionToolMessageParam>()) {
-                            it.validate()
-                        }
-                        ?.let {
-                            return ChatCompletionMessageParam(tool = it, _json = json)
-                        }
+                    return ChatCompletionMessageParam(
+                        tool = deserialize(node, jacksonTypeRef<ChatCompletionToolMessageParam>()),
+                        _json = json,
+                    )
                 }
                 "function" -> {
-                    tryDeserialize(node, jacksonTypeRef<ChatCompletionFunctionMessageParam>()) {
-                            it.validate()
-                        }
-                        ?.let {
-                            return ChatCompletionMessageParam(function = it, _json = json)
-                        }
+                    return ChatCompletionMessageParam(
+                        function =
+                            deserialize(node, jacksonTypeRef<ChatCompletionFunctionMessageParam>()),
+                        _json = json,
+                    )
                 }
             }
 

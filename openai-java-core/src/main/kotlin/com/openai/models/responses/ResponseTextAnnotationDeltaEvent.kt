@@ -499,22 +499,22 @@ private constructor(
 
                 when (type) {
                     "file_citation" -> {
-                        tryDeserialize(node, jacksonTypeRef<FileCitation>()) { it.validate() }
-                            ?.let {
-                                return Annotation(fileCitation = it, _json = json)
-                            }
+                        return Annotation(
+                            fileCitation = deserialize(node, jacksonTypeRef<FileCitation>()),
+                            _json = json,
+                        )
                     }
                     "url_citation" -> {
-                        tryDeserialize(node, jacksonTypeRef<UrlCitation>()) { it.validate() }
-                            ?.let {
-                                return Annotation(urlCitation = it, _json = json)
-                            }
+                        return Annotation(
+                            urlCitation = deserialize(node, jacksonTypeRef<UrlCitation>()),
+                            _json = json,
+                        )
                     }
                     "file_path" -> {
-                        tryDeserialize(node, jacksonTypeRef<FilePath>()) { it.validate() }
-                            ?.let {
-                                return Annotation(filePath = it, _json = json)
-                            }
+                        return Annotation(
+                            filePath = deserialize(node, jacksonTypeRef<FilePath>()),
+                            _json = json,
+                        )
                     }
                 }
 

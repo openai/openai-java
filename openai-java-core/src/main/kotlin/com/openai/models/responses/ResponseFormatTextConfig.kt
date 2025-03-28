@@ -206,26 +206,23 @@ private constructor(
 
             when (type) {
                 "text" -> {
-                    tryDeserialize(node, jacksonTypeRef<ResponseFormatText>()) { it.validate() }
-                        ?.let {
-                            return ResponseFormatTextConfig(text = it, _json = json)
-                        }
+                    return ResponseFormatTextConfig(
+                        text = deserialize(node, jacksonTypeRef<ResponseFormatText>()),
+                        _json = json,
+                    )
                 }
                 "json_schema" -> {
-                    tryDeserialize(node, jacksonTypeRef<ResponseFormatTextJsonSchemaConfig>()) {
-                            it.validate()
-                        }
-                        ?.let {
-                            return ResponseFormatTextConfig(jsonSchema = it, _json = json)
-                        }
+                    return ResponseFormatTextConfig(
+                        jsonSchema =
+                            deserialize(node, jacksonTypeRef<ResponseFormatTextJsonSchemaConfig>()),
+                        _json = json,
+                    )
                 }
                 "json_object" -> {
-                    tryDeserialize(node, jacksonTypeRef<ResponseFormatJsonObject>()) {
-                            it.validate()
-                        }
-                        ?.let {
-                            return ResponseFormatTextConfig(jsonObject = it, _json = json)
-                        }
+                    return ResponseFormatTextConfig(
+                        jsonObject = deserialize(node, jacksonTypeRef<ResponseFormatJsonObject>()),
+                        _json = json,
+                    )
                 }
             }
 

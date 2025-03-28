@@ -689,74 +689,58 @@ private constructor(
 
                 when (type) {
                     "click" -> {
-                        tryDeserialize(node, jacksonTypeRef<Click>()) { it.validate() }
-                            ?.let {
-                                return Action(click = it, _json = json)
-                            }
+                        return Action(
+                            click = deserialize(node, jacksonTypeRef<Click>()),
+                            _json = json,
+                        )
                     }
                     "double_click" -> {
-                        tryDeserialize(node, jacksonTypeRef<DoubleClick>()) { it.validate() }
-                            ?.let {
-                                return Action(doubleClick = it, _json = json)
-                            }
+                        return Action(
+                            doubleClick = deserialize(node, jacksonTypeRef<DoubleClick>()),
+                            _json = json,
+                        )
                     }
                     "drag" -> {
-                        tryDeserialize(node, jacksonTypeRef<Drag>()) { it.validate() }
-                            ?.let {
-                                return Action(drag = it, _json = json)
-                            }
+                        return Action(
+                            drag = deserialize(node, jacksonTypeRef<Drag>()),
+                            _json = json,
+                        )
                     }
                     "keypress" -> {
-                        tryDeserialize(node, jacksonTypeRef<Keypress>()) { it.validate() }
-                            ?.let {
-                                return Action(keypress = it, _json = json)
-                            }
+                        return Action(
+                            keypress = deserialize(node, jacksonTypeRef<Keypress>()),
+                            _json = json,
+                        )
                     }
                     "move" -> {
-                        tryDeserialize(node, jacksonTypeRef<Move>()) { it.validate() }
-                            ?.let {
-                                return Action(move = it, _json = json)
-                            }
+                        return Action(
+                            move = deserialize(node, jacksonTypeRef<Move>()),
+                            _json = json,
+                        )
                     }
                     "screenshot" -> {
-                        tryDeserialize(node, jacksonTypeRef<JsonValue>()) {
-                                it.let {
-                                    if (it != JsonValue.from(mapOf("type" to "screenshot"))) {
-                                        throw OpenAIInvalidDataException(
-                                            "'screenshot' is invalid, received $it"
-                                        )
-                                    }
-                                }
-                            }
-                            ?.let {
-                                return Action(screenshot = it, _json = json)
-                            }
+                        return Action(
+                            screenshot = deserialize(node, jacksonTypeRef<JsonValue>()),
+                            _json = json,
+                        )
                     }
                     "scroll" -> {
-                        tryDeserialize(node, jacksonTypeRef<Scroll>()) { it.validate() }
-                            ?.let {
-                                return Action(scroll = it, _json = json)
-                            }
+                        return Action(
+                            scroll = deserialize(node, jacksonTypeRef<Scroll>()),
+                            _json = json,
+                        )
                     }
                     "type" -> {
-                        tryDeserialize(node, jacksonTypeRef<Type>()) { it.validate() }
-                            ?.let {
-                                return Action(type = it, _json = json)
-                            }
+                        return Action(
+                            type = deserialize(node, jacksonTypeRef<Type>()),
+                            _json = json,
+                        )
                     }
                     "wait" -> {
-                        tryDeserialize(node, jacksonTypeRef<JsonValue>()) {
-                                it.let {
-                                    if (it != JsonValue.from(mapOf("type" to "wait"))) {
-                                        throw OpenAIInvalidDataException(
-                                            "'wait' is invalid, received $it"
-                                        )
-                                    }
-                                }
-                            }
-                            ?.let {
-                                return Action(wait = it, _json = json)
-                            }
+                        return Action(
+                            wait = deserialize(node, jacksonTypeRef<JsonValue>()),
+                            _json = json,
+                        )
                     }
                 }
 

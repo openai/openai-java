@@ -167,16 +167,16 @@ private constructor(
 
             when (type) {
                 "file_citation" -> {
-                    tryDeserialize(node, jacksonTypeRef<FileCitationAnnotation>()) { it.validate() }
-                        ?.let {
-                            return Annotation(fileCitation = it, _json = json)
-                        }
+                    return Annotation(
+                        fileCitation = deserialize(node, jacksonTypeRef<FileCitationAnnotation>()),
+                        _json = json,
+                    )
                 }
                 "file_path" -> {
-                    tryDeserialize(node, jacksonTypeRef<FilePathAnnotation>()) { it.validate() }
-                        ?.let {
-                            return Annotation(filePath = it, _json = json)
-                        }
+                    return Annotation(
+                        filePath = deserialize(node, jacksonTypeRef<FilePathAnnotation>()),
+                        _json = json,
+                    )
                 }
             }
 

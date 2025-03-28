@@ -178,22 +178,22 @@ private constructor(
 
             when (type) {
                 "image_file" -> {
-                    tryDeserialize(node, jacksonTypeRef<ImageFileContentBlock>()) { it.validate() }
-                        ?.let {
-                            return MessageContentPartParam(imageFile = it, _json = json)
-                        }
+                    return MessageContentPartParam(
+                        imageFile = deserialize(node, jacksonTypeRef<ImageFileContentBlock>()),
+                        _json = json,
+                    )
                 }
                 "image_url" -> {
-                    tryDeserialize(node, jacksonTypeRef<ImageUrlContentBlock>()) { it.validate() }
-                        ?.let {
-                            return MessageContentPartParam(imageUrl = it, _json = json)
-                        }
+                    return MessageContentPartParam(
+                        imageUrl = deserialize(node, jacksonTypeRef<ImageUrlContentBlock>()),
+                        _json = json,
+                    )
                 }
                 "text" -> {
-                    tryDeserialize(node, jacksonTypeRef<TextContentBlockParam>()) { it.validate() }
-                        ?.let {
-                            return MessageContentPartParam(text = it, _json = json)
-                        }
+                    return MessageContentPartParam(
+                        text = deserialize(node, jacksonTypeRef<TextContentBlockParam>()),
+                        _json = json,
+                    )
                 }
             }
 

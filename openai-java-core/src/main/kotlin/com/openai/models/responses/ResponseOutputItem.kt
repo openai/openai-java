@@ -306,48 +306,44 @@ private constructor(
 
             when (type) {
                 "message" -> {
-                    tryDeserialize(node, jacksonTypeRef<ResponseOutputMessage>()) { it.validate() }
-                        ?.let {
-                            return ResponseOutputItem(message = it, _json = json)
-                        }
+                    return ResponseOutputItem(
+                        message = deserialize(node, jacksonTypeRef<ResponseOutputMessage>()),
+                        _json = json,
+                    )
                 }
                 "file_search_call" -> {
-                    tryDeserialize(node, jacksonTypeRef<ResponseFileSearchToolCall>()) {
-                            it.validate()
-                        }
-                        ?.let {
-                            return ResponseOutputItem(fileSearchCall = it, _json = json)
-                        }
+                    return ResponseOutputItem(
+                        fileSearchCall =
+                            deserialize(node, jacksonTypeRef<ResponseFileSearchToolCall>()),
+                        _json = json,
+                    )
                 }
                 "function_call" -> {
-                    tryDeserialize(node, jacksonTypeRef<ResponseFunctionToolCall>()) {
-                            it.validate()
-                        }
-                        ?.let {
-                            return ResponseOutputItem(functionCall = it, _json = json)
-                        }
+                    return ResponseOutputItem(
+                        functionCall =
+                            deserialize(node, jacksonTypeRef<ResponseFunctionToolCall>()),
+                        _json = json,
+                    )
                 }
                 "web_search_call" -> {
-                    tryDeserialize(node, jacksonTypeRef<ResponseFunctionWebSearch>()) {
-                            it.validate()
-                        }
-                        ?.let {
-                            return ResponseOutputItem(webSearchCall = it, _json = json)
-                        }
+                    return ResponseOutputItem(
+                        webSearchCall =
+                            deserialize(node, jacksonTypeRef<ResponseFunctionWebSearch>()),
+                        _json = json,
+                    )
                 }
                 "computer_call" -> {
-                    tryDeserialize(node, jacksonTypeRef<ResponseComputerToolCall>()) {
-                            it.validate()
-                        }
-                        ?.let {
-                            return ResponseOutputItem(computerCall = it, _json = json)
-                        }
+                    return ResponseOutputItem(
+                        computerCall =
+                            deserialize(node, jacksonTypeRef<ResponseComputerToolCall>()),
+                        _json = json,
+                    )
                 }
                 "reasoning" -> {
-                    tryDeserialize(node, jacksonTypeRef<ResponseReasoningItem>()) { it.validate() }
-                        ?.let {
-                            return ResponseOutputItem(reasoning = it, _json = json)
-                        }
+                    return ResponseOutputItem(
+                        reasoning = deserialize(node, jacksonTypeRef<ResponseReasoningItem>()),
+                        _json = json,
+                    )
                 }
             }
 

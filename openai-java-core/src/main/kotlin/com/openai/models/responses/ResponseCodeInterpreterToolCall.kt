@@ -456,16 +456,16 @@ private constructor(
 
                 when (type) {
                     "logs" -> {
-                        tryDeserialize(node, jacksonTypeRef<Logs>()) { it.validate() }
-                            ?.let {
-                                return Result(logs = it, _json = json)
-                            }
+                        return Result(
+                            logs = deserialize(node, jacksonTypeRef<Logs>()),
+                            _json = json,
+                        )
                     }
                     "files" -> {
-                        tryDeserialize(node, jacksonTypeRef<Files>()) { it.validate() }
-                            ?.let {
-                                return Result(files = it, _json = json)
-                            }
+                        return Result(
+                            files = deserialize(node, jacksonTypeRef<Files>()),
+                            _json = json,
+                        )
                     }
                 }
 

@@ -175,22 +175,22 @@ private constructor(
 
             when (type) {
                 "input_text" -> {
-                    tryDeserialize(node, jacksonTypeRef<ResponseInputText>()) { it.validate() }
-                        ?.let {
-                            return ResponseInputContent(inputText = it, _json = json)
-                        }
+                    return ResponseInputContent(
+                        inputText = deserialize(node, jacksonTypeRef<ResponseInputText>()),
+                        _json = json,
+                    )
                 }
                 "input_image" -> {
-                    tryDeserialize(node, jacksonTypeRef<ResponseInputImage>()) { it.validate() }
-                        ?.let {
-                            return ResponseInputContent(inputImage = it, _json = json)
-                        }
+                    return ResponseInputContent(
+                        inputImage = deserialize(node, jacksonTypeRef<ResponseInputImage>()),
+                        _json = json,
+                    )
                 }
                 "input_file" -> {
-                    tryDeserialize(node, jacksonTypeRef<ResponseInputFile>()) { it.validate() }
-                        ?.let {
-                            return ResponseInputContent(inputFile = it, _json = json)
-                        }
+                    return ResponseInputContent(
+                        inputFile = deserialize(node, jacksonTypeRef<ResponseInputFile>()),
+                        _json = json,
+                    )
                 }
             }
 
