@@ -490,6 +490,23 @@ import com.openai.models.chat.completions.ChatCompletion;
 ChatCompletion parsedChatCompletion = chatCompletion.parse();
 ```
 
+### Request IDs
+
+> For more information on debugging requests, see [the API docs](https://platform.openai.com/docs/api-reference/debugging-requests).
+
+When using raw responses, you can access the `x-request-id` response header using the `requestId()` method:
+
+```java
+import com.openai.core.http.HttpResponseFor;
+import com.openai.models.chat.completions.ChatCompletion;
+import java.util.Optional;
+
+HttpResponseFor<ChatCompletion> chatCompletion = client.chat().completions().withRawResponse().create(params);
+Optional<String> requestId = chatCompletion.requestId();
+```
+
+This can be used to quickly log failing requests and report them back to OpenAI.
+
 ## Error handling
 
 The SDK throws custom unchecked exception types:
