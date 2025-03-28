@@ -453,66 +453,70 @@ private constructor(
 
             when (event) {
                 "thread.run.created" -> {
-                    tryDeserialize(node, jacksonTypeRef<ThreadRunCreated>()) { it.validate() }
-                        ?.let {
-                            return RunStreamEvent(threadRunCreated = it, _json = json)
-                        }
+                    return RunStreamEvent(
+                        threadRunCreated = deserialize(node, jacksonTypeRef<ThreadRunCreated>()),
+                        _json = json,
+                    )
                 }
                 "thread.run.queued" -> {
-                    tryDeserialize(node, jacksonTypeRef<ThreadRunQueued>()) { it.validate() }
-                        ?.let {
-                            return RunStreamEvent(threadRunQueued = it, _json = json)
-                        }
+                    return RunStreamEvent(
+                        threadRunQueued = deserialize(node, jacksonTypeRef<ThreadRunQueued>()),
+                        _json = json,
+                    )
                 }
                 "thread.run.in_progress" -> {
-                    tryDeserialize(node, jacksonTypeRef<ThreadRunInProgress>()) { it.validate() }
-                        ?.let {
-                            return RunStreamEvent(threadRunInProgress = it, _json = json)
-                        }
+                    return RunStreamEvent(
+                        threadRunInProgress =
+                            deserialize(node, jacksonTypeRef<ThreadRunInProgress>()),
+                        _json = json,
+                    )
                 }
                 "thread.run.requires_action" -> {
-                    tryDeserialize(node, jacksonTypeRef<ThreadRunRequiresAction>()) {
-                            it.validate()
-                        }
-                        ?.let {
-                            return RunStreamEvent(threadRunRequiresAction = it, _json = json)
-                        }
+                    return RunStreamEvent(
+                        threadRunRequiresAction =
+                            deserialize(node, jacksonTypeRef<ThreadRunRequiresAction>()),
+                        _json = json,
+                    )
                 }
                 "thread.run.completed" -> {
-                    tryDeserialize(node, jacksonTypeRef<ThreadRunCompleted>()) { it.validate() }
-                        ?.let {
-                            return RunStreamEvent(threadRunCompleted = it, _json = json)
-                        }
+                    return RunStreamEvent(
+                        threadRunCompleted =
+                            deserialize(node, jacksonTypeRef<ThreadRunCompleted>()),
+                        _json = json,
+                    )
                 }
                 "thread.run.incomplete" -> {
-                    tryDeserialize(node, jacksonTypeRef<ThreadRunIncomplete>()) { it.validate() }
-                        ?.let {
-                            return RunStreamEvent(threadRunIncomplete = it, _json = json)
-                        }
+                    return RunStreamEvent(
+                        threadRunIncomplete =
+                            deserialize(node, jacksonTypeRef<ThreadRunIncomplete>()),
+                        _json = json,
+                    )
                 }
                 "thread.run.failed" -> {
-                    tryDeserialize(node, jacksonTypeRef<ThreadRunFailed>()) { it.validate() }
-                        ?.let {
-                            return RunStreamEvent(threadRunFailed = it, _json = json)
-                        }
+                    return RunStreamEvent(
+                        threadRunFailed = deserialize(node, jacksonTypeRef<ThreadRunFailed>()),
+                        _json = json,
+                    )
                 }
                 "thread.run.cancelling" -> {
-                    tryDeserialize(node, jacksonTypeRef<ThreadRunCancelling>()) { it.validate() }
-                        ?.let {
-                            return RunStreamEvent(threadRunCancelling = it, _json = json)
-                        }
+                    return RunStreamEvent(
+                        threadRunCancelling =
+                            deserialize(node, jacksonTypeRef<ThreadRunCancelling>()),
+                        _json = json,
+                    )
                 }
                 "thread.run.cancelled" -> {
-                    tryDeserialize(node, jacksonTypeRef<ThreadRunCancelled>()) { it.validate() }
-                        ?.let {
-                            return RunStreamEvent(threadRunCancelled = it, _json = json)
-                        }
+                    return RunStreamEvent(
+                        threadRunCancelled =
+                            deserialize(node, jacksonTypeRef<ThreadRunCancelled>()),
+                        _json = json,
+                    )
                 }
                 "thread.run.expired" -> {
-                    tryDeserialize(node, jacksonTypeRef<ThreadRunExpired>()) { it.validate() }
-                        ?.let {
-                            return RunStreamEvent(threadRunExpired = it, _json = json)
-                        }
+                    return RunStreamEvent(
+                        threadRunExpired = deserialize(node, jacksonTypeRef<ThreadRunExpired>()),
+                        _json = json,
+                    )
                 }
             }
 

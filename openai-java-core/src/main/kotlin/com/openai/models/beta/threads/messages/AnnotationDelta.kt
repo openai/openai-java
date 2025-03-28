@@ -172,20 +172,17 @@ private constructor(
 
             when (type) {
                 "file_citation" -> {
-                    tryDeserialize(node, jacksonTypeRef<FileCitationDeltaAnnotation>()) {
-                            it.validate()
-                        }
-                        ?.let {
-                            return AnnotationDelta(fileCitation = it, _json = json)
-                        }
+                    return AnnotationDelta(
+                        fileCitation =
+                            deserialize(node, jacksonTypeRef<FileCitationDeltaAnnotation>()),
+                        _json = json,
+                    )
                 }
                 "file_path" -> {
-                    tryDeserialize(node, jacksonTypeRef<FilePathDeltaAnnotation>()) {
-                            it.validate()
-                        }
-                        ?.let {
-                            return AnnotationDelta(filePath = it, _json = json)
-                        }
+                    return AnnotationDelta(
+                        filePath = deserialize(node, jacksonTypeRef<FilePathDeltaAnnotation>()),
+                        _json = json,
+                    )
                 }
             }
 

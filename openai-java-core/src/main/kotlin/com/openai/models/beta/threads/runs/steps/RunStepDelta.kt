@@ -274,20 +274,17 @@ private constructor(
 
                 when (type) {
                     "message_creation" -> {
-                        tryDeserialize(node, jacksonTypeRef<RunStepDeltaMessageDelta>()) {
-                                it.validate()
-                            }
-                            ?.let {
-                                return StepDetails(messageCreation = it, _json = json)
-                            }
+                        return StepDetails(
+                            messageCreation =
+                                deserialize(node, jacksonTypeRef<RunStepDeltaMessageDelta>()),
+                            _json = json,
+                        )
                     }
                     "tool_calls" -> {
-                        tryDeserialize(node, jacksonTypeRef<ToolCallDeltaObject>()) {
-                                it.validate()
-                            }
-                            ?.let {
-                                return StepDetails(toolCalls = it, _json = json)
-                            }
+                        return StepDetails(
+                            toolCalls = deserialize(node, jacksonTypeRef<ToolCallDeltaObject>()),
+                            _json = json,
+                        )
                     }
                 }
 

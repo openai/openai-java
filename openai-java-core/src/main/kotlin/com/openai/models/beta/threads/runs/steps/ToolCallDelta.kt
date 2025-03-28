@@ -155,26 +155,23 @@ private constructor(
 
             when (type) {
                 "code_interpreter" -> {
-                    tryDeserialize(node, jacksonTypeRef<CodeInterpreterToolCallDelta>()) {
-                            it.validate()
-                        }
-                        ?.let {
-                            return ToolCallDelta(codeInterpreter = it, _json = json)
-                        }
+                    return ToolCallDelta(
+                        codeInterpreter =
+                            deserialize(node, jacksonTypeRef<CodeInterpreterToolCallDelta>()),
+                        _json = json,
+                    )
                 }
                 "file_search" -> {
-                    tryDeserialize(node, jacksonTypeRef<FileSearchToolCallDelta>()) {
-                            it.validate()
-                        }
-                        ?.let {
-                            return ToolCallDelta(fileSearch = it, _json = json)
-                        }
+                    return ToolCallDelta(
+                        fileSearch = deserialize(node, jacksonTypeRef<FileSearchToolCallDelta>()),
+                        _json = json,
+                    )
                 }
                 "function" -> {
-                    tryDeserialize(node, jacksonTypeRef<FunctionToolCallDelta>()) { it.validate() }
-                        ?.let {
-                            return ToolCallDelta(function = it, _json = json)
-                        }
+                    return ToolCallDelta(
+                        function = deserialize(node, jacksonTypeRef<FunctionToolCallDelta>()),
+                        _json = json,
+                    )
                 }
             }
 

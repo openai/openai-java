@@ -146,22 +146,22 @@ private constructor(
 
             when (type) {
                 "code_interpreter" -> {
-                    tryDeserialize(node, jacksonTypeRef<CodeInterpreterTool>()) { it.validate() }
-                        ?.let {
-                            return AssistantTool(codeInterpreter = it, _json = json)
-                        }
+                    return AssistantTool(
+                        codeInterpreter = deserialize(node, jacksonTypeRef<CodeInterpreterTool>()),
+                        _json = json,
+                    )
                 }
                 "file_search" -> {
-                    tryDeserialize(node, jacksonTypeRef<FileSearchTool>()) { it.validate() }
-                        ?.let {
-                            return AssistantTool(fileSearch = it, _json = json)
-                        }
+                    return AssistantTool(
+                        fileSearch = deserialize(node, jacksonTypeRef<FileSearchTool>()),
+                        _json = json,
+                    )
                 }
                 "function" -> {
-                    tryDeserialize(node, jacksonTypeRef<FunctionTool>()) { it.validate() }
-                        ?.let {
-                            return AssistantTool(function = it, _json = json)
-                        }
+                    return AssistantTool(
+                        function = deserialize(node, jacksonTypeRef<FunctionTool>()),
+                        _json = json,
+                    )
                 }
             }
 

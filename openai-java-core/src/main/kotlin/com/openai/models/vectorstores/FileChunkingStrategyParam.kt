@@ -156,20 +156,20 @@ private constructor(
 
             when (type) {
                 "auto" -> {
-                    tryDeserialize(node, jacksonTypeRef<AutoFileChunkingStrategyParam>()) {
-                            it.validate()
-                        }
-                        ?.let {
-                            return FileChunkingStrategyParam(auto = it, _json = json)
-                        }
+                    return FileChunkingStrategyParam(
+                        auto = deserialize(node, jacksonTypeRef<AutoFileChunkingStrategyParam>()),
+                        _json = json,
+                    )
                 }
                 "static" -> {
-                    tryDeserialize(node, jacksonTypeRef<StaticFileChunkingStrategyObjectParam>()) {
-                            it.validate()
-                        }
-                        ?.let {
-                            return FileChunkingStrategyParam(static_ = it, _json = json)
-                        }
+                    return FileChunkingStrategyParam(
+                        static_ =
+                            deserialize(
+                                node,
+                                jacksonTypeRef<StaticFileChunkingStrategyObjectParam>(),
+                            ),
+                        _json = json,
+                    )
                 }
             }
 

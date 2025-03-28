@@ -874,29 +874,24 @@ private constructor(
 
                     when (type) {
                         "text" -> {
-                            tryDeserialize(node, jacksonTypeRef<ChatCompletionContentPartText>()) {
-                                    it.validate()
-                                }
-                                ?.let {
-                                    return ChatCompletionRequestAssistantMessageContentPart(
-                                        text = it,
-                                        _json = json,
-                                    )
-                                }
+                            return ChatCompletionRequestAssistantMessageContentPart(
+                                text =
+                                    deserialize(
+                                        node,
+                                        jacksonTypeRef<ChatCompletionContentPartText>(),
+                                    ),
+                                _json = json,
+                            )
                         }
                         "refusal" -> {
-                            tryDeserialize(
-                                    node,
-                                    jacksonTypeRef<ChatCompletionContentPartRefusal>(),
-                                ) {
-                                    it.validate()
-                                }
-                                ?.let {
-                                    return ChatCompletionRequestAssistantMessageContentPart(
-                                        refusal = it,
-                                        _json = json,
-                                    )
-                                }
+                            return ChatCompletionRequestAssistantMessageContentPart(
+                                refusal =
+                                    deserialize(
+                                        node,
+                                        jacksonTypeRef<ChatCompletionContentPartRefusal>(),
+                                    ),
+                                _json = json,
+                            )
                         }
                     }
 

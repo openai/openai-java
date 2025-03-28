@@ -11,6 +11,7 @@ import com.fasterxml.jackson.databind.JsonMappingException
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.deser.ContextualDeserializer
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer
+import com.openai.errors.OpenAIInvalidDataException
 import kotlin.reflect.KClass
 
 abstract class BaseDeserializer<T : Any>(type: KClass<T>) :
@@ -28,6 +29,13 @@ abstract class BaseDeserializer<T : Any>(type: KClass<T>) :
     }
 
     protected abstract fun ObjectCodec.deserialize(node: JsonNode): T
+
+    protected fun <T> ObjectCodec.deserialize(node: JsonNode, type: TypeReference<T>): T =
+        try {
+            readValue(treeAsTokens(node), type)
+        } catch (e: Exception) {
+            throw OpenAIInvalidDataException("Error deserializing", e)
+        }
 
     protected fun <T> ObjectCodec.tryDeserialize(
         node: JsonNode,

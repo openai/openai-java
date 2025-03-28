@@ -1254,26 +1254,17 @@ private constructor(
 
                     when (type) {
                         "code_interpreter" -> {
-                            tryDeserialize(node, jacksonTypeRef<CodeInterpreterTool>()) {
-                                    it.validate()
-                                }
-                                ?.let {
-                                    return Tool(codeInterpreter = it, _json = json)
-                                }
+                            return Tool(
+                                codeInterpreter =
+                                    deserialize(node, jacksonTypeRef<CodeInterpreterTool>()),
+                                _json = json,
+                            )
                         }
                         "file_search" -> {
-                            tryDeserialize(node, jacksonTypeRef<JsonValue>()) {
-                                    it.let {
-                                        if (it != JsonValue.from(mapOf("type" to "file_search"))) {
-                                            throw OpenAIInvalidDataException(
-                                                "'fileSearch' is invalid, received $it"
-                                            )
-                                        }
-                                    }
-                                }
-                                ?.let {
-                                    return Tool(fileSearch = it, _json = json)
-                                }
+                            return Tool(
+                                fileSearch = deserialize(node, jacksonTypeRef<JsonValue>()),
+                                _json = json,
+                            )
                         }
                     }
 

@@ -205,34 +205,33 @@ private constructor(
 
             when (type) {
                 "text" -> {
-                    tryDeserialize(node, jacksonTypeRef<ChatCompletionContentPartText>()) {
-                            it.validate()
-                        }
-                        ?.let {
-                            return ChatCompletionContentPart(text = it, _json = json)
-                        }
+                    return ChatCompletionContentPart(
+                        text = deserialize(node, jacksonTypeRef<ChatCompletionContentPartText>()),
+                        _json = json,
+                    )
                 }
                 "image_url" -> {
-                    tryDeserialize(node, jacksonTypeRef<ChatCompletionContentPartImage>()) {
-                            it.validate()
-                        }
-                        ?.let {
-                            return ChatCompletionContentPart(imageUrl = it, _json = json)
-                        }
+                    return ChatCompletionContentPart(
+                        imageUrl =
+                            deserialize(node, jacksonTypeRef<ChatCompletionContentPartImage>()),
+                        _json = json,
+                    )
                 }
                 "input_audio" -> {
-                    tryDeserialize(node, jacksonTypeRef<ChatCompletionContentPartInputAudio>()) {
-                            it.validate()
-                        }
-                        ?.let {
-                            return ChatCompletionContentPart(inputAudio = it, _json = json)
-                        }
+                    return ChatCompletionContentPart(
+                        inputAudio =
+                            deserialize(
+                                node,
+                                jacksonTypeRef<ChatCompletionContentPartInputAudio>(),
+                            ),
+                        _json = json,
+                    )
                 }
                 "file" -> {
-                    tryDeserialize(node, jacksonTypeRef<File>()) { it.validate() }
-                        ?.let {
-                            return ChatCompletionContentPart(file = it, _json = json)
-                        }
+                    return ChatCompletionContentPart(
+                        file = deserialize(node, jacksonTypeRef<File>()),
+                        _json = json,
+                    )
                 }
             }
 

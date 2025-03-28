@@ -361,52 +361,46 @@ private constructor(
                         }
                 }
                 "file_search_call" -> {
-                    tryDeserialize(node, jacksonTypeRef<ResponseFileSearchToolCall>()) {
-                            it.validate()
-                        }
-                        ?.let {
-                            return ResponseItem(fileSearchCall = it, _json = json)
-                        }
+                    return ResponseItem(
+                        fileSearchCall =
+                            deserialize(node, jacksonTypeRef<ResponseFileSearchToolCall>()),
+                        _json = json,
+                    )
                 }
                 "computer_call" -> {
-                    tryDeserialize(node, jacksonTypeRef<ResponseComputerToolCall>()) {
-                            it.validate()
-                        }
-                        ?.let {
-                            return ResponseItem(computerCall = it, _json = json)
-                        }
+                    return ResponseItem(
+                        computerCall =
+                            deserialize(node, jacksonTypeRef<ResponseComputerToolCall>()),
+                        _json = json,
+                    )
                 }
                 "computer_call_output" -> {
-                    tryDeserialize(node, jacksonTypeRef<ResponseComputerToolCallOutputItem>()) {
-                            it.validate()
-                        }
-                        ?.let {
-                            return ResponseItem(computerCallOutput = it, _json = json)
-                        }
+                    return ResponseItem(
+                        computerCallOutput =
+                            deserialize(node, jacksonTypeRef<ResponseComputerToolCallOutputItem>()),
+                        _json = json,
+                    )
                 }
                 "web_search_call" -> {
-                    tryDeserialize(node, jacksonTypeRef<ResponseFunctionWebSearch>()) {
-                            it.validate()
-                        }
-                        ?.let {
-                            return ResponseItem(webSearchCall = it, _json = json)
-                        }
+                    return ResponseItem(
+                        webSearchCall =
+                            deserialize(node, jacksonTypeRef<ResponseFunctionWebSearch>()),
+                        _json = json,
+                    )
                 }
                 "function_call" -> {
-                    tryDeserialize(node, jacksonTypeRef<ResponseFunctionToolCallItem>()) {
-                            it.validate()
-                        }
-                        ?.let {
-                            return ResponseItem(functionCall = it, _json = json)
-                        }
+                    return ResponseItem(
+                        functionCall =
+                            deserialize(node, jacksonTypeRef<ResponseFunctionToolCallItem>()),
+                        _json = json,
+                    )
                 }
                 "function_call_output" -> {
-                    tryDeserialize(node, jacksonTypeRef<ResponseFunctionToolCallOutputItem>()) {
-                            it.validate()
-                        }
-                        ?.let {
-                            return ResponseItem(functionCallOutput = it, _json = json)
-                        }
+                    return ResponseItem(
+                        functionCallOutput =
+                            deserialize(node, jacksonTypeRef<ResponseFunctionToolCallOutputItem>()),
+                        _json = json,
+                    )
                 }
             }
 

@@ -1448,28 +1448,17 @@ private constructor(
 
                         when (type) {
                             "code_interpreter" -> {
-                                tryDeserialize(node, jacksonTypeRef<CodeInterpreterTool>()) {
-                                        it.validate()
-                                    }
-                                    ?.let {
-                                        return Tool(codeInterpreter = it, _json = json)
-                                    }
+                                return Tool(
+                                    codeInterpreter =
+                                        deserialize(node, jacksonTypeRef<CodeInterpreterTool>()),
+                                    _json = json,
+                                )
                             }
                             "file_search" -> {
-                                tryDeserialize(node, jacksonTypeRef<JsonValue>()) {
-                                        it.let {
-                                            if (
-                                                it != JsonValue.from(mapOf("type" to "file_search"))
-                                            ) {
-                                                throw OpenAIInvalidDataException(
-                                                    "'fileSearch' is invalid, received $it"
-                                                )
-                                            }
-                                        }
-                                    }
-                                    ?.let {
-                                        return Tool(fileSearch = it, _json = json)
-                                    }
+                                return Tool(
+                                    fileSearch = deserialize(node, jacksonTypeRef<JsonValue>()),
+                                    _json = json,
+                                )
                             }
                         }
 
@@ -2632,26 +2621,16 @@ private constructor(
 
                             when (type) {
                                 "auto" -> {
-                                    tryDeserialize(node, jacksonTypeRef<JsonValue>()) {
-                                            it.let {
-                                                if (it != JsonValue.from(mapOf("type" to "auto"))) {
-                                                    throw OpenAIInvalidDataException(
-                                                        "'auto' is invalid, received $it"
-                                                    )
-                                                }
-                                            }
-                                        }
-                                        ?.let {
-                                            return ChunkingStrategy(auto = it, _json = json)
-                                        }
+                                    return ChunkingStrategy(
+                                        auto = deserialize(node, jacksonTypeRef<JsonValue>()),
+                                        _json = json,
+                                    )
                                 }
                                 "static" -> {
-                                    tryDeserialize(node, jacksonTypeRef<StaticObject>()) {
-                                            it.validate()
-                                        }
-                                        ?.let {
-                                            return ChunkingStrategy(static_ = it, _json = json)
-                                        }
+                                    return ChunkingStrategy(
+                                        static_ = deserialize(node, jacksonTypeRef<StaticObject>()),
+                                        _json = json,
+                                    )
                                 }
                             }
 

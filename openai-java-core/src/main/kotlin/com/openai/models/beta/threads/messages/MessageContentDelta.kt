@@ -198,28 +198,28 @@ private constructor(
 
             when (type) {
                 "image_file" -> {
-                    tryDeserialize(node, jacksonTypeRef<ImageFileDeltaBlock>()) { it.validate() }
-                        ?.let {
-                            return MessageContentDelta(imageFile = it, _json = json)
-                        }
+                    return MessageContentDelta(
+                        imageFile = deserialize(node, jacksonTypeRef<ImageFileDeltaBlock>()),
+                        _json = json,
+                    )
                 }
                 "text" -> {
-                    tryDeserialize(node, jacksonTypeRef<TextDeltaBlock>()) { it.validate() }
-                        ?.let {
-                            return MessageContentDelta(text = it, _json = json)
-                        }
+                    return MessageContentDelta(
+                        text = deserialize(node, jacksonTypeRef<TextDeltaBlock>()),
+                        _json = json,
+                    )
                 }
                 "refusal" -> {
-                    tryDeserialize(node, jacksonTypeRef<RefusalDeltaBlock>()) { it.validate() }
-                        ?.let {
-                            return MessageContentDelta(refusal = it, _json = json)
-                        }
+                    return MessageContentDelta(
+                        refusal = deserialize(node, jacksonTypeRef<RefusalDeltaBlock>()),
+                        _json = json,
+                    )
                 }
                 "image_url" -> {
-                    tryDeserialize(node, jacksonTypeRef<ImageUrlDeltaBlock>()) { it.validate() }
-                        ?.let {
-                            return MessageContentDelta(imageUrl = it, _json = json)
-                        }
+                    return MessageContentDelta(
+                        imageUrl = deserialize(node, jacksonTypeRef<ImageUrlDeltaBlock>()),
+                        _json = json,
+                    )
                 }
             }
 

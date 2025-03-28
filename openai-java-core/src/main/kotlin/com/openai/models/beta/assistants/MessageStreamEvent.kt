@@ -309,38 +309,39 @@ private constructor(
 
             when (event) {
                 "thread.message.created" -> {
-                    tryDeserialize(node, jacksonTypeRef<ThreadMessageCreated>()) { it.validate() }
-                        ?.let {
-                            return MessageStreamEvent(threadMessageCreated = it, _json = json)
-                        }
+                    return MessageStreamEvent(
+                        threadMessageCreated =
+                            deserialize(node, jacksonTypeRef<ThreadMessageCreated>()),
+                        _json = json,
+                    )
                 }
                 "thread.message.in_progress" -> {
-                    tryDeserialize(node, jacksonTypeRef<ThreadMessageInProgress>()) {
-                            it.validate()
-                        }
-                        ?.let {
-                            return MessageStreamEvent(threadMessageInProgress = it, _json = json)
-                        }
+                    return MessageStreamEvent(
+                        threadMessageInProgress =
+                            deserialize(node, jacksonTypeRef<ThreadMessageInProgress>()),
+                        _json = json,
+                    )
                 }
                 "thread.message.delta" -> {
-                    tryDeserialize(node, jacksonTypeRef<ThreadMessageDelta>()) { it.validate() }
-                        ?.let {
-                            return MessageStreamEvent(threadMessageDelta = it, _json = json)
-                        }
+                    return MessageStreamEvent(
+                        threadMessageDelta =
+                            deserialize(node, jacksonTypeRef<ThreadMessageDelta>()),
+                        _json = json,
+                    )
                 }
                 "thread.message.completed" -> {
-                    tryDeserialize(node, jacksonTypeRef<ThreadMessageCompleted>()) { it.validate() }
-                        ?.let {
-                            return MessageStreamEvent(threadMessageCompleted = it, _json = json)
-                        }
+                    return MessageStreamEvent(
+                        threadMessageCompleted =
+                            deserialize(node, jacksonTypeRef<ThreadMessageCompleted>()),
+                        _json = json,
+                    )
                 }
                 "thread.message.incomplete" -> {
-                    tryDeserialize(node, jacksonTypeRef<ThreadMessageIncomplete>()) {
-                            it.validate()
-                        }
-                        ?.let {
-                            return MessageStreamEvent(threadMessageIncomplete = it, _json = json)
-                        }
+                    return MessageStreamEvent(
+                        threadMessageIncomplete =
+                            deserialize(node, jacksonTypeRef<ThreadMessageIncomplete>()),
+                        _json = json,
+                    )
                 }
             }
 

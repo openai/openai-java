@@ -149,24 +149,23 @@ private constructor(
 
             when (type) {
                 "code_interpreter" -> {
-                    tryDeserialize(node, jacksonTypeRef<CodeInterpreterToolCall>()) {
-                            it.validate()
-                        }
-                        ?.let {
-                            return ToolCall(codeInterpreter = it, _json = json)
-                        }
+                    return ToolCall(
+                        codeInterpreter =
+                            deserialize(node, jacksonTypeRef<CodeInterpreterToolCall>()),
+                        _json = json,
+                    )
                 }
                 "file_search" -> {
-                    tryDeserialize(node, jacksonTypeRef<FileSearchToolCall>()) { it.validate() }
-                        ?.let {
-                            return ToolCall(fileSearch = it, _json = json)
-                        }
+                    return ToolCall(
+                        fileSearch = deserialize(node, jacksonTypeRef<FileSearchToolCall>()),
+                        _json = json,
+                    )
                 }
                 "function" -> {
-                    tryDeserialize(node, jacksonTypeRef<FunctionToolCall>()) { it.validate() }
-                        ?.let {
-                            return ToolCall(function = it, _json = json)
-                        }
+                    return ToolCall(
+                        function = deserialize(node, jacksonTypeRef<FunctionToolCall>()),
+                        _json = json,
+                    )
                 }
             }
 
