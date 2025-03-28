@@ -1,5 +1,19 @@
 # Changelog
 
+## 0.40.1 (2025-03-28)
+
+Full Changelog: [v0.40.0...v0.40.1](https://github.com/openai/openai-java/compare/v0.40.0...v0.40.1)
+
+### Bug Fixes
+
+* **client:** don't call `validate()` during deserialization if we don't have to ([#372](https://github.com/openai/openai-java/issues/372)) ([1dae9bf](https://github.com/openai/openai-java/commit/1dae9bfe33d1cdd78bf47d47c62c1db0c4e5ca53))
+
+
+### Documentation
+
+* add comment on response header methods ([#374](https://github.com/openai/openai-java/issues/374)) ([80bba20](https://github.com/openai/openai-java/commit/80bba200247fa7620cbd63a44f452c2ad3d83a87))
+* document request IDs ([3e2fec3](https://github.com/openai/openai-java/commit/3e2fec36597a15ab56960f4f40096dc779013cca))
+
 ## 0.40.0 (2025-03-27)
 
 Full Changelog: [v0.39.0...v0.40.0](https://github.com/openai/openai-java/compare/v0.39.0...v0.40.0)
