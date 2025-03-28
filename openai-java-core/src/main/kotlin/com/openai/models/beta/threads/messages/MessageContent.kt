@@ -195,28 +195,28 @@ private constructor(
 
             when (type) {
                 "image_file" -> {
-                    tryDeserialize(node, jacksonTypeRef<ImageFileContentBlock>()) { it.validate() }
-                        ?.let {
-                            return MessageContent(imageFile = it, _json = json)
-                        }
+                    return MessageContent(
+                        imageFile = deserialize(node, jacksonTypeRef<ImageFileContentBlock>()),
+                        _json = json,
+                    )
                 }
                 "image_url" -> {
-                    tryDeserialize(node, jacksonTypeRef<ImageUrlContentBlock>()) { it.validate() }
-                        ?.let {
-                            return MessageContent(imageUrl = it, _json = json)
-                        }
+                    return MessageContent(
+                        imageUrl = deserialize(node, jacksonTypeRef<ImageUrlContentBlock>()),
+                        _json = json,
+                    )
                 }
                 "text" -> {
-                    tryDeserialize(node, jacksonTypeRef<TextContentBlock>()) { it.validate() }
-                        ?.let {
-                            return MessageContent(text = it, _json = json)
-                        }
+                    return MessageContent(
+                        text = deserialize(node, jacksonTypeRef<TextContentBlock>()),
+                        _json = json,
+                    )
                 }
                 "refusal" -> {
-                    tryDeserialize(node, jacksonTypeRef<RefusalContentBlock>()) { it.validate() }
-                        ?.let {
-                            return MessageContent(refusal = it, _json = json)
-                        }
+                    return MessageContent(
+                        refusal = deserialize(node, jacksonTypeRef<RefusalContentBlock>()),
+                        _json = json,
+                    )
                 }
             }
 

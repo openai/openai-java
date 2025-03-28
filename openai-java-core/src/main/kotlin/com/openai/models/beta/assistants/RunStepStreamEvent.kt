@@ -401,48 +401,53 @@ private constructor(
 
             when (event) {
                 "thread.run.step.created" -> {
-                    tryDeserialize(node, jacksonTypeRef<ThreadRunStepCreated>()) { it.validate() }
-                        ?.let {
-                            return RunStepStreamEvent(threadRunStepCreated = it, _json = json)
-                        }
+                    return RunStepStreamEvent(
+                        threadRunStepCreated =
+                            deserialize(node, jacksonTypeRef<ThreadRunStepCreated>()),
+                        _json = json,
+                    )
                 }
                 "thread.run.step.in_progress" -> {
-                    tryDeserialize(node, jacksonTypeRef<ThreadRunStepInProgress>()) {
-                            it.validate()
-                        }
-                        ?.let {
-                            return RunStepStreamEvent(threadRunStepInProgress = it, _json = json)
-                        }
+                    return RunStepStreamEvent(
+                        threadRunStepInProgress =
+                            deserialize(node, jacksonTypeRef<ThreadRunStepInProgress>()),
+                        _json = json,
+                    )
                 }
                 "thread.run.step.delta" -> {
-                    tryDeserialize(node, jacksonTypeRef<ThreadRunStepDelta>()) { it.validate() }
-                        ?.let {
-                            return RunStepStreamEvent(threadRunStepDelta = it, _json = json)
-                        }
+                    return RunStepStreamEvent(
+                        threadRunStepDelta =
+                            deserialize(node, jacksonTypeRef<ThreadRunStepDelta>()),
+                        _json = json,
+                    )
                 }
                 "thread.run.step.completed" -> {
-                    tryDeserialize(node, jacksonTypeRef<ThreadRunStepCompleted>()) { it.validate() }
-                        ?.let {
-                            return RunStepStreamEvent(threadRunStepCompleted = it, _json = json)
-                        }
+                    return RunStepStreamEvent(
+                        threadRunStepCompleted =
+                            deserialize(node, jacksonTypeRef<ThreadRunStepCompleted>()),
+                        _json = json,
+                    )
                 }
                 "thread.run.step.failed" -> {
-                    tryDeserialize(node, jacksonTypeRef<ThreadRunStepFailed>()) { it.validate() }
-                        ?.let {
-                            return RunStepStreamEvent(threadRunStepFailed = it, _json = json)
-                        }
+                    return RunStepStreamEvent(
+                        threadRunStepFailed =
+                            deserialize(node, jacksonTypeRef<ThreadRunStepFailed>()),
+                        _json = json,
+                    )
                 }
                 "thread.run.step.cancelled" -> {
-                    tryDeserialize(node, jacksonTypeRef<ThreadRunStepCancelled>()) { it.validate() }
-                        ?.let {
-                            return RunStepStreamEvent(threadRunStepCancelled = it, _json = json)
-                        }
+                    return RunStepStreamEvent(
+                        threadRunStepCancelled =
+                            deserialize(node, jacksonTypeRef<ThreadRunStepCancelled>()),
+                        _json = json,
+                    )
                 }
                 "thread.run.step.expired" -> {
-                    tryDeserialize(node, jacksonTypeRef<ThreadRunStepExpired>()) { it.validate() }
-                        ?.let {
-                            return RunStepStreamEvent(threadRunStepExpired = it, _json = json)
-                        }
+                    return RunStepStreamEvent(
+                        threadRunStepExpired =
+                            deserialize(node, jacksonTypeRef<ThreadRunStepExpired>()),
+                        _json = json,
+                    )
                 }
             }
 

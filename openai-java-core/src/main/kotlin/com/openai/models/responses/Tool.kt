@@ -228,22 +228,22 @@ private constructor(
 
             when (type) {
                 "file_search" -> {
-                    tryDeserialize(node, jacksonTypeRef<FileSearchTool>()) { it.validate() }
-                        ?.let {
-                            return Tool(fileSearch = it, _json = json)
-                        }
+                    return Tool(
+                        fileSearch = deserialize(node, jacksonTypeRef<FileSearchTool>()),
+                        _json = json,
+                    )
                 }
                 "function" -> {
-                    tryDeserialize(node, jacksonTypeRef<FunctionTool>()) { it.validate() }
-                        ?.let {
-                            return Tool(function = it, _json = json)
-                        }
+                    return Tool(
+                        function = deserialize(node, jacksonTypeRef<FunctionTool>()),
+                        _json = json,
+                    )
                 }
                 "computer_use_preview" -> {
-                    tryDeserialize(node, jacksonTypeRef<ComputerTool>()) { it.validate() }
-                        ?.let {
-                            return Tool(computerUsePreview = it, _json = json)
-                        }
+                    return Tool(
+                        computerUsePreview = deserialize(node, jacksonTypeRef<ComputerTool>()),
+                        _json = json,
+                    )
                 }
             }
 

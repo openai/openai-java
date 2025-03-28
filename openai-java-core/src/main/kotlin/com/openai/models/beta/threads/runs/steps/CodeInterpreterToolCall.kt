@@ -557,16 +557,16 @@ private constructor(
 
                     when (type) {
                         "logs" -> {
-                            tryDeserialize(node, jacksonTypeRef<LogsOutput>()) { it.validate() }
-                                ?.let {
-                                    return Output(logs = it, _json = json)
-                                }
+                            return Output(
+                                logs = deserialize(node, jacksonTypeRef<LogsOutput>()),
+                                _json = json,
+                            )
                         }
                         "image" -> {
-                            tryDeserialize(node, jacksonTypeRef<ImageOutput>()) { it.validate() }
-                                ?.let {
-                                    return Output(image = it, _json = json)
-                                }
+                            return Output(
+                                image = deserialize(node, jacksonTypeRef<ImageOutput>()),
+                                _json = json,
+                            )
                         }
                     }
 

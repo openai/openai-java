@@ -454,18 +454,16 @@ private constructor(
 
                 when (type) {
                     "output_text" -> {
-                        tryDeserialize(node, jacksonTypeRef<ResponseOutputText>()) { it.validate() }
-                            ?.let {
-                                return Content(outputText = it, _json = json)
-                            }
+                        return Content(
+                            outputText = deserialize(node, jacksonTypeRef<ResponseOutputText>()),
+                            _json = json,
+                        )
                     }
                     "refusal" -> {
-                        tryDeserialize(node, jacksonTypeRef<ResponseOutputRefusal>()) {
-                                it.validate()
-                            }
-                            ?.let {
-                                return Content(refusal = it, _json = json)
-                            }
+                        return Content(
+                            refusal = deserialize(node, jacksonTypeRef<ResponseOutputRefusal>()),
+                            _json = json,
+                        )
                     }
                 }
 
