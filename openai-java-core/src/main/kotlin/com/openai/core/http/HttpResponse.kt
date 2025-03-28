@@ -11,6 +11,10 @@ interface HttpResponse : AutoCloseable {
 
     fun headers(): Headers
 
+    /**
+     * Returns the value of the `x-request-id` header, or an empty [Optional] if there's no such
+     * header in the response.
+     */
     fun requestId(): Optional<String> =
         Optional.ofNullable(headers().values("x-request-id").firstOrNull())
 
