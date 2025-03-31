@@ -44,7 +44,7 @@ import java.util.Optional
 @JsonSerialize(using = AssistantResponseFormatOption.Serializer::class)
 class AssistantResponseFormatOption
 private constructor(
-    private val jsonValue: JsonValue? = null,
+    private val auto: JsonValue? = null,
     private val responseFormatText: ResponseFormatText? = null,
     private val responseFormatJsonObject: ResponseFormatJsonObject? = null,
     private val responseFormatJsonSchema: ResponseFormatJsonSchema? = null,
@@ -52,7 +52,7 @@ private constructor(
 ) {
 
     /** `auto` is the default value */
-    fun jsonValue(): Optional<JsonValue> = Optional.ofNullable(jsonValue)
+    fun auto(): Optional<JsonValue> = Optional.ofNullable(auto)
 
     /** Default response format. Used to generate text responses. */
     fun responseFormatText(): Optional<ResponseFormatText> = Optional.ofNullable(responseFormatText)
@@ -72,7 +72,7 @@ private constructor(
     fun responseFormatJsonSchema(): Optional<ResponseFormatJsonSchema> =
         Optional.ofNullable(responseFormatJsonSchema)
 
-    fun isJsonValue(): Boolean = jsonValue != null
+    fun isAuto(): Boolean = auto != null
 
     fun isResponseFormatText(): Boolean = responseFormatText != null
 
@@ -81,7 +81,7 @@ private constructor(
     fun isResponseFormatJsonSchema(): Boolean = responseFormatJsonSchema != null
 
     /** `auto` is the default value */
-    fun asJsonValue(): JsonValue = jsonValue.getOrThrow("jsonValue")
+    fun asAuto(): JsonValue = auto.getOrThrow("auto")
 
     /** Default response format. Used to generate text responses. */
     fun asResponseFormatText(): ResponseFormatText =
@@ -106,7 +106,7 @@ private constructor(
 
     fun <T> accept(visitor: Visitor<T>): T {
         return when {
-            jsonValue != null -> visitor.visitJsonValue(jsonValue)
+            auto != null -> visitor.visitAuto(auto)
             responseFormatText != null -> visitor.visitResponseFormatText(responseFormatText)
             responseFormatJsonObject != null ->
                 visitor.visitResponseFormatJsonObject(responseFormatJsonObject)
@@ -125,10 +125,10 @@ private constructor(
 
         accept(
             object : Visitor<Unit> {
-                override fun visitJsonValue(jsonValue: JsonValue) {
-                    jsonValue.let {
+                override fun visitAuto(auto: JsonValue) {
+                    auto.let {
                         if (it != JsonValue.from("auto")) {
-                            throw OpenAIInvalidDataException("'jsonValue' is invalid, received $it")
+                            throw OpenAIInvalidDataException("'auto' is invalid, received $it")
                         }
                     }
                 }
@@ -158,14 +158,14 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is AssistantResponseFormatOption && jsonValue == other.jsonValue && responseFormatText == other.responseFormatText && responseFormatJsonObject == other.responseFormatJsonObject && responseFormatJsonSchema == other.responseFormatJsonSchema /* spotless:on */
+        return /* spotless:off */ other is AssistantResponseFormatOption && auto == other.auto && responseFormatText == other.responseFormatText && responseFormatJsonObject == other.responseFormatJsonObject && responseFormatJsonSchema == other.responseFormatJsonSchema /* spotless:on */
     }
 
-    override fun hashCode(): Int = /* spotless:off */ Objects.hash(jsonValue, responseFormatText, responseFormatJsonObject, responseFormatJsonSchema) /* spotless:on */
+    override fun hashCode(): Int = /* spotless:off */ Objects.hash(auto, responseFormatText, responseFormatJsonObject, responseFormatJsonSchema) /* spotless:on */
 
     override fun toString(): String =
         when {
-            jsonValue != null -> "AssistantResponseFormatOption{jsonValue=$jsonValue}"
+            auto != null -> "AssistantResponseFormatOption{auto=$auto}"
             responseFormatText != null ->
                 "AssistantResponseFormatOption{responseFormatText=$responseFormatText}"
             responseFormatJsonObject != null ->
@@ -179,8 +179,7 @@ private constructor(
     companion object {
 
         /** `auto` is the default value */
-        @JvmStatic
-        fun ofJsonValue() = AssistantResponseFormatOption(jsonValue = JsonValue.from("auto"))
+        @JvmStatic fun ofAuto() = AssistantResponseFormatOption(auto = JsonValue.from("auto"))
 
         /** Default response format. Used to generate text responses. */
         @JvmStatic
@@ -212,7 +211,7 @@ private constructor(
     interface Visitor<out T> {
 
         /** `auto` is the default value */
-        fun visitJsonValue(jsonValue: JsonValue): T
+        fun visitAuto(auto: JsonValue): T
 
         /** Default response format. Used to generate text responses. */
         fun visitResponseFormatText(responseFormatText: ResponseFormatText): T
@@ -254,12 +253,12 @@ private constructor(
             tryDeserialize(node, jacksonTypeRef<JsonValue>()) {
                     it.let {
                         if (it != JsonValue.from("auto")) {
-                            throw OpenAIInvalidDataException("'jsonValue' is invalid, received $it")
+                            throw OpenAIInvalidDataException("'auto' is invalid, received $it")
                         }
                     }
                 }
                 ?.let {
-                    return AssistantResponseFormatOption(jsonValue = it, _json = json)
+                    return AssistantResponseFormatOption(auto = it, _json = json)
                 }
             tryDeserialize(node, jacksonTypeRef<ResponseFormatText>()) { it.validate() }
                 ?.let {
@@ -293,7 +292,7 @@ private constructor(
             provider: SerializerProvider,
         ) {
             when {
-                value.jsonValue != null -> generator.writeObject(value.jsonValue)
+                value.auto != null -> generator.writeObject(value.auto)
                 value.responseFormatText != null -> generator.writeObject(value.responseFormatText)
                 value.responseFormatJsonObject != null ->
                     generator.writeObject(value.responseFormatJsonObject)

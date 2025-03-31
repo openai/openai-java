@@ -25,7 +25,7 @@ internal class ThreadCreateAndRunParamsTest {
             )
             .model(ChatModel.O3_MINI)
             .parallelToolCalls(true)
-            .responseFormatJsonValue()
+            .responseFormatAuto()
             .temperature(1.0)
             .thread(
                 ThreadCreateAndRunParams.Thread.builder()
@@ -129,7 +129,7 @@ internal class ThreadCreateAndRunParamsTest {
                 )
                 .model(ChatModel.O3_MINI)
                 .parallelToolCalls(true)
-                .responseFormatJsonValue()
+                .responseFormatAuto()
                 .temperature(1.0)
                 .thread(
                     ThreadCreateAndRunParams.Thread.builder()
@@ -232,7 +232,7 @@ internal class ThreadCreateAndRunParamsTest {
             )
         assertThat(body.model()).contains(ChatModel.O3_MINI)
         assertThat(body.parallelToolCalls()).contains(true)
-        assertThat(body.responseFormat()).contains(AssistantResponseFormatOption.ofJsonValue())
+        assertThat(body.responseFormat()).contains(AssistantResponseFormatOption.ofAuto())
         assertThat(body.temperature()).contains(1.0)
         assertThat(body.thread())
             .contains(

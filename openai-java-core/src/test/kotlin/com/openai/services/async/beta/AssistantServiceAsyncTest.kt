@@ -40,7 +40,7 @@ internal class AssistantServiceAsyncTest {
                     )
                     .name("name")
                     .reasoningEffort(ReasoningEffort.LOW)
-                    .responseFormatJsonValue()
+                    .responseFormatAuto()
                     .temperature(1.0)
                     .toolResources(
                         AssistantCreateParams.ToolResources.builder()
@@ -124,7 +124,7 @@ internal class AssistantServiceAsyncTest {
                     .model(AssistantUpdateParams.Model.O3_MINI)
                     .name("name")
                     .reasoningEffort(ReasoningEffort.LOW)
-                    .responseFormatJsonValue()
+                    .responseFormatAuto()
                     .temperature(1.0)
                     .toolResources(
                         AssistantUpdateParams.ToolResources.builder()

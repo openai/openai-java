@@ -25,7 +25,7 @@ internal class AssistantCreateParamsTest {
             )
             .name("name")
             .reasoningEffort(ReasoningEffort.LOW)
-            .responseFormatJsonValue()
+            .responseFormatAuto()
             .temperature(1.0)
             .toolResources(
                 AssistantCreateParams.ToolResources.builder()
@@ -73,7 +73,7 @@ internal class AssistantCreateParamsTest {
                 )
                 .name("name")
                 .reasoningEffort(ReasoningEffort.LOW)
-                .responseFormatJsonValue()
+                .responseFormatAuto()
                 .temperature(1.0)
                 .toolResources(
                     AssistantCreateParams.ToolResources.builder()
@@ -124,7 +124,7 @@ internal class AssistantCreateParamsTest {
             )
         assertThat(body.name()).contains("name")
         assertThat(body.reasoningEffort()).contains(ReasoningEffort.LOW)
-        assertThat(body.responseFormat()).contains(AssistantResponseFormatOption.ofJsonValue())
+        assertThat(body.responseFormat()).contains(AssistantResponseFormatOption.ofAuto())
         assertThat(body.temperature()).contains(1.0)
         assertThat(body.toolResources())
             .contains(

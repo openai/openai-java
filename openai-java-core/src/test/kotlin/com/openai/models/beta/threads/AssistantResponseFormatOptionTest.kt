@@ -12,10 +12,10 @@ import org.junit.jupiter.api.Test
 internal class AssistantResponseFormatOptionTest {
 
     @Test
-    fun ofJsonValue() {
-        val assistantResponseFormatOption = AssistantResponseFormatOption.ofJsonValue()
+    fun ofAuto() {
+        val assistantResponseFormatOption = AssistantResponseFormatOption.ofAuto()
 
-        assertThat(assistantResponseFormatOption.jsonValue()).contains(JsonValue.from("auto"))
+        assertThat(assistantResponseFormatOption.auto()).contains(JsonValue.from("auto"))
         assertThat(assistantResponseFormatOption.responseFormatText()).isEmpty
         assertThat(assistantResponseFormatOption.responseFormatJsonObject()).isEmpty
         assertThat(assistantResponseFormatOption.responseFormatJsonSchema()).isEmpty
@@ -28,7 +28,7 @@ internal class AssistantResponseFormatOptionTest {
         val assistantResponseFormatOption =
             AssistantResponseFormatOption.ofResponseFormatText(responseFormatText)
 
-        assertThat(assistantResponseFormatOption.jsonValue()).isEmpty
+        assertThat(assistantResponseFormatOption.auto()).isEmpty
         assertThat(assistantResponseFormatOption.responseFormatText()).contains(responseFormatText)
         assertThat(assistantResponseFormatOption.responseFormatJsonObject()).isEmpty
         assertThat(assistantResponseFormatOption.responseFormatJsonSchema()).isEmpty
@@ -41,7 +41,7 @@ internal class AssistantResponseFormatOptionTest {
         val assistantResponseFormatOption =
             AssistantResponseFormatOption.ofResponseFormatJsonObject(responseFormatJsonObject)
 
-        assertThat(assistantResponseFormatOption.jsonValue()).isEmpty
+        assertThat(assistantResponseFormatOption.auto()).isEmpty
         assertThat(assistantResponseFormatOption.responseFormatText()).isEmpty
         assertThat(assistantResponseFormatOption.responseFormatJsonObject())
             .contains(responseFormatJsonObject)
@@ -58,7 +58,7 @@ internal class AssistantResponseFormatOptionTest {
         val assistantResponseFormatOption =
             AssistantResponseFormatOption.ofResponseFormatJsonSchema(responseFormatJsonSchema)
 
-        assertThat(assistantResponseFormatOption.jsonValue()).isEmpty
+        assertThat(assistantResponseFormatOption.auto()).isEmpty
         assertThat(assistantResponseFormatOption.responseFormatText()).isEmpty
         assertThat(assistantResponseFormatOption.responseFormatJsonObject()).isEmpty
         assertThat(assistantResponseFormatOption.responseFormatJsonSchema())
