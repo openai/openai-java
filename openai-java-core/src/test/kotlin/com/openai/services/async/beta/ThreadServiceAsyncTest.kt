@@ -188,7 +188,7 @@ internal class ThreadServiceAsyncTest {
                     )
                     .model(ChatModel.O3_MINI)
                     .parallelToolCalls(true)
-                    .responseFormatJsonValue()
+                    .responseFormatAuto()
                     .temperature(1.0)
                     .thread(
                         ThreadCreateAndRunParams.Thread.builder()
@@ -308,7 +308,7 @@ internal class ThreadServiceAsyncTest {
                     )
                     .model(ChatModel.O3_MINI)
                     .parallelToolCalls(true)
-                    .responseFormatJsonValue()
+                    .responseFormatAuto()
                     .temperature(1.0)
                     .thread(
                         ThreadCreateAndRunParams.Thread.builder()

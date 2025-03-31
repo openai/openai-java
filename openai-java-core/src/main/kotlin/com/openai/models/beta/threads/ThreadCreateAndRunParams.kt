@@ -570,10 +570,8 @@ private constructor(
             body.responseFormat(responseFormat)
         }
 
-        /**
-         * Alias for calling [responseFormat] with `AssistantResponseFormatOption.ofJsonValue()`.
-         */
-        fun responseFormatJsonValue() = apply { body.responseFormatJsonValue() }
+        /** Alias for calling [responseFormat] with `AssistantResponseFormatOption.ofAuto()`. */
+        fun responseFormatAuto() = apply { body.responseFormatAuto() }
 
         /**
          * Alias for calling [responseFormat] with
@@ -1599,12 +1597,8 @@ private constructor(
                 this.responseFormat = responseFormat
             }
 
-            /**
-             * Alias for calling [responseFormat] with
-             * `AssistantResponseFormatOption.ofJsonValue()`.
-             */
-            fun responseFormatJsonValue() =
-                responseFormat(AssistantResponseFormatOption.ofJsonValue())
+            /** Alias for calling [responseFormat] with `AssistantResponseFormatOption.ofAuto()`. */
+            fun responseFormatAuto() = responseFormat(AssistantResponseFormatOption.ofAuto())
 
             /**
              * Alias for calling [responseFormat] with
