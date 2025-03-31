@@ -8,8 +8,11 @@ import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.databind.MapperFeature
 import com.fasterxml.jackson.databind.SerializationFeature
 import com.fasterxml.jackson.databind.SerializerProvider
+import com.fasterxml.jackson.databind.cfg.CoercionAction
+import com.fasterxml.jackson.databind.cfg.CoercionInputShape
 import com.fasterxml.jackson.databind.json.JsonMapper
 import com.fasterxml.jackson.databind.module.SimpleModule
+import com.fasterxml.jackson.databind.type.LogicalType
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.kotlin.kotlinModule
@@ -21,6 +24,60 @@ fun jsonMapper(): JsonMapper =
         .addModule(Jdk8Module())
         .addModule(JavaTimeModule())
         .addModule(SimpleModule().addSerializer(InputStreamJsonSerializer))
+        .withCoercionConfig(LogicalType.Boolean) {
+            it.setCoercion(CoercionInputShape.Integer, CoercionAction.Fail)
+                .setCoercion(CoercionInputShape.Float, CoercionAction.Fail)
+                .setCoercion(CoercionInputShape.String, CoercionAction.Fail)
+                .setCoercion(CoercionInputShape.Array, CoercionAction.Fail)
+                .setCoercion(CoercionInputShape.Object, CoercionAction.Fail)
+        }
+        .withCoercionConfig(LogicalType.Integer) {
+            it.setCoercion(CoercionInputShape.Boolean, CoercionAction.Fail)
+                .setCoercion(CoercionInputShape.String, CoercionAction.Fail)
+                .setCoercion(CoercionInputShape.Array, CoercionAction.Fail)
+                .setCoercion(CoercionInputShape.Object, CoercionAction.Fail)
+        }
+        .withCoercionConfig(LogicalType.Float) {
+            it.setCoercion(CoercionInputShape.Boolean, CoercionAction.Fail)
+                .setCoercion(CoercionInputShape.String, CoercionAction.Fail)
+                .setCoercion(CoercionInputShape.Array, CoercionAction.Fail)
+                .setCoercion(CoercionInputShape.Object, CoercionAction.Fail)
+        }
+        .withCoercionConfig(LogicalType.Textual) {
+            it.setCoercion(CoercionInputShape.Boolean, CoercionAction.Fail)
+                .setCoercion(CoercionInputShape.Integer, CoercionAction.Fail)
+                .setCoercion(CoercionInputShape.Float, CoercionAction.Fail)
+                .setCoercion(CoercionInputShape.Array, CoercionAction.Fail)
+                .setCoercion(CoercionInputShape.Object, CoercionAction.Fail)
+        }
+        .withCoercionConfig(LogicalType.Array) {
+            it.setCoercion(CoercionInputShape.Boolean, CoercionAction.Fail)
+                .setCoercion(CoercionInputShape.Integer, CoercionAction.Fail)
+                .setCoercion(CoercionInputShape.Float, CoercionAction.Fail)
+                .setCoercion(CoercionInputShape.String, CoercionAction.Fail)
+                .setCoercion(CoercionInputShape.Object, CoercionAction.Fail)
+        }
+        .withCoercionConfig(LogicalType.Collection) {
+            it.setCoercion(CoercionInputShape.Boolean, CoercionAction.Fail)
+                .setCoercion(CoercionInputShape.Integer, CoercionAction.Fail)
+                .setCoercion(CoercionInputShape.Float, CoercionAction.Fail)
+                .setCoercion(CoercionInputShape.String, CoercionAction.Fail)
+                .setCoercion(CoercionInputShape.Object, CoercionAction.Fail)
+        }
+        .withCoercionConfig(LogicalType.Map) {
+            it.setCoercion(CoercionInputShape.Boolean, CoercionAction.Fail)
+                .setCoercion(CoercionInputShape.Integer, CoercionAction.Fail)
+                .setCoercion(CoercionInputShape.Float, CoercionAction.Fail)
+                .setCoercion(CoercionInputShape.String, CoercionAction.Fail)
+                .setCoercion(CoercionInputShape.Object, CoercionAction.Fail)
+        }
+        .withCoercionConfig(LogicalType.POJO) {
+            it.setCoercion(CoercionInputShape.Boolean, CoercionAction.Fail)
+                .setCoercion(CoercionInputShape.Integer, CoercionAction.Fail)
+                .setCoercion(CoercionInputShape.Float, CoercionAction.Fail)
+                .setCoercion(CoercionInputShape.String, CoercionAction.Fail)
+                .setCoercion(CoercionInputShape.Array, CoercionAction.Fail)
+        }
         .serializationInclusion(JsonInclude.Include.NON_ABSENT)
         .disable(DeserializationFeature.ADJUST_DATES_TO_CONTEXT_TIME_ZONE)
         .disable(SerializationFeature.FLUSH_AFTER_WRITE_VALUE)
