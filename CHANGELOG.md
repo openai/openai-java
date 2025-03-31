@@ -1,5 +1,18 @@
 # Changelog
 
+## 0.41.0 (2025-03-31)
+
+Full Changelog: [v0.40.1...v0.41.0](https://github.com/openai/openai-java/compare/v0.40.1...v0.41.0)
+
+### Features
+
+* **client:** improve some method names ([#379](https://github.com/openai/openai-java/issues/379)) ([895f99a](https://github.com/openai/openai-java/commit/895f99acaee6f8e38165c72da1de18e3d7682321))
+
+
+### Bug Fixes
+
+* **client:** limit json deserialization coercion ([#377](https://github.com/openai/openai-java/issues/377)) ([5234cf9](https://github.com/openai/openai-java/commit/5234cf94a540191ae051e3123b7d1be088655100))
+
 ## 0.40.1 (2025-03-28)
 
 Full Changelog: [v0.40.0...v0.40.1](https://github.com/openai/openai-java/compare/v0.40.0...v0.40.1)
