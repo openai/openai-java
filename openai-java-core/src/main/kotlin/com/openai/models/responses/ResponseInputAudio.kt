@@ -15,6 +15,7 @@ import com.openai.core.checkRequired
 import com.openai.errors.OpenAIInvalidDataException
 import java.util.Collections
 import java.util.Objects
+import kotlin.jvm.optionals.getOrNull
 
 /** An audio input to the model. */
 class ResponseInputAudio
@@ -202,7 +203,7 @@ private constructor(
         }
 
         data()
-        format()
+        format().validate()
         _type().let {
             if (it != JsonValue.from("input_audio")) {
                 throw OpenAIInvalidDataException("'type' is invalid, received $it")
@@ -210,6 +211,25 @@ private constructor(
         }
         validated = true
     }
+
+    fun isValid(): Boolean =
+        try {
+            validate()
+            true
+        } catch (e: OpenAIInvalidDataException) {
+            false
+        }
+
+    /**
+     * Returns a score indicating how many valid values are contained in this object recursively.
+     *
+     * Used for best match union deserialization.
+     */
+    @JvmSynthetic
+    internal fun validity(): Int =
+        (if (data.asKnown().isPresent) 1 else 0) +
+            (format.asKnown().getOrNull()?.validity() ?: 0) +
+            type.let { if (it == JsonValue.from("input_audio")) 1 else 0 }
 
     /** The format of the audio data. Currently supported formats are `mp3` and `wav`. */
     class Format @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
@@ -296,6 +316,33 @@ private constructor(
          */
         fun asString(): String =
             _value().asString().orElseThrow { OpenAIInvalidDataException("Value is not a String") }
+
+        private var validated: Boolean = false
+
+        fun validate(): Format = apply {
+            if (validated) {
+                return@apply
+            }
+
+            known()
+            validated = true
+        }
+
+        fun isValid(): Boolean =
+            try {
+                validate()
+                true
+            } catch (e: OpenAIInvalidDataException) {
+                false
+            }
+
+        /**
+         * Returns a score indicating how many valid values are contained in this object
+         * recursively.
+         *
+         * Used for best match union deserialization.
+         */
+        @JvmSynthetic internal fun validity(): Int = if (value() == Value._UNKNOWN) 0 else 1
 
         override fun equals(other: Any?): Boolean {
             if (this === other) {

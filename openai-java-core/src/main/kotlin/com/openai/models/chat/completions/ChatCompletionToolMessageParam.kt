@@ -19,12 +19,14 @@ import com.openai.core.ExcludeMissing
 import com.openai.core.JsonField
 import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
+import com.openai.core.allMaxBy
 import com.openai.core.checkRequired
 import com.openai.core.getOrThrow
 import com.openai.errors.OpenAIInvalidDataException
 import java.util.Collections
 import java.util.Objects
 import java.util.Optional
+import kotlin.jvm.optionals.getOrNull
 
 class ChatCompletionToolMessageParam
 private constructor(
@@ -234,6 +236,25 @@ private constructor(
         validated = true
     }
 
+    fun isValid(): Boolean =
+        try {
+            validate()
+            true
+        } catch (e: OpenAIInvalidDataException) {
+            false
+        }
+
+    /**
+     * Returns a score indicating how many valid values are contained in this object recursively.
+     *
+     * Used for best match union deserialization.
+     */
+    @JvmSynthetic
+    internal fun validity(): Int =
+        (content.asKnown().getOrNull()?.validity() ?: 0) +
+            role.let { if (it == JsonValue.from("tool")) 1 else 0 } +
+            (if (toolCallId.asKnown().isPresent) 1 else 0)
+
     /** The contents of the tool message. */
     @JsonDeserialize(using = Content.Deserializer::class)
     @JsonSerialize(using = Content.Serializer::class)
@@ -270,13 +291,12 @@ private constructor(
 
         fun _json(): Optional<JsonValue> = Optional.ofNullable(_json)
 
-        fun <T> accept(visitor: Visitor<T>): T {
-            return when {
+        fun <T> accept(visitor: Visitor<T>): T =
+            when {
                 text != null -> visitor.visitText(text)
                 arrayOfContentParts != null -> visitor.visitArrayOfContentParts(arrayOfContentParts)
                 else -> visitor.unknown(_json)
             }
-        }
 
         private var validated: Boolean = false
 
@@ -298,6 +318,34 @@ private constructor(
             )
             validated = true
         }
+
+        fun isValid(): Boolean =
+            try {
+                validate()
+                true
+            } catch (e: OpenAIInvalidDataException) {
+                false
+            }
+
+        /**
+         * Returns a score indicating how many valid values are contained in this object
+         * recursively.
+         *
+         * Used for best match union deserialization.
+         */
+        @JvmSynthetic
+        internal fun validity(): Int =
+            accept(
+                object : Visitor<Int> {
+                    override fun visitText(text: String) = 1
+
+                    override fun visitArrayOfContentParts(
+                        arrayOfContentParts: List<ChatCompletionContentPartText>
+                    ) = arrayOfContentParts.sumOf { it.validity().toInt() }
+
+                    override fun unknown(json: JsonValue?) = 0
+                }
+            )
 
         override fun equals(other: Any?): Boolean {
             if (this === other) {
@@ -367,17 +415,30 @@ private constructor(
             override fun ObjectCodec.deserialize(node: JsonNode): Content {
                 val json = JsonValue.fromJsonNode(node)
 
-                tryDeserialize(node, jacksonTypeRef<String>())?.let {
-                    return Content(text = it, _json = json)
+                val bestMatches =
+                    sequenceOf(
+                            tryDeserialize(node, jacksonTypeRef<String>())?.let {
+                                Content(text = it, _json = json)
+                            },
+                            tryDeserialize(
+                                    node,
+                                    jacksonTypeRef<List<ChatCompletionContentPartText>>(),
+                                )
+                                ?.let { Content(arrayOfContentParts = it, _json = json) },
+                        )
+                        .filterNotNull()
+                        .allMaxBy { it.validity() }
+                        .toList()
+                return when (bestMatches.size) {
+                    // This can happen if what we're deserializing is completely incompatible with
+                    // all the possible variants (e.g. deserializing from object).
+                    0 -> Content(_json = json)
+                    1 -> bestMatches.single()
+                    // If there's more than one match with the highest validity, then use the first
+                    // completely valid match, or simply the first match if none are completely
+                    // valid.
+                    else -> bestMatches.firstOrNull { it.isValid() } ?: bestMatches.first()
                 }
-                tryDeserialize(node, jacksonTypeRef<List<ChatCompletionContentPartText>>()) {
-                        it.forEach { it.validate() }
-                    }
-                    ?.let {
-                        return Content(arrayOfContentParts = it, _json = json)
-                    }
-
-                return Content(_json = json)
             }
         }
 

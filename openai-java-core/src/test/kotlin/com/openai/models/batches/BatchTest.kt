@@ -2,7 +2,9 @@
 
 package com.openai.models.batches
 
+import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
 import com.openai.core.JsonValue
+import com.openai.core.jsonMapper
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
@@ -89,5 +91,55 @@ internal class BatchTest {
         assertThat(batch.outputFileId()).contains("output_file_id")
         assertThat(batch.requestCounts())
             .contains(BatchRequestCounts.builder().completed(0L).failed(0L).total(0L).build())
+    }
+
+    @Test
+    fun roundtrip() {
+        val jsonMapper = jsonMapper()
+        val batch =
+            Batch.builder()
+                .id("id")
+                .completionWindow("completion_window")
+                .createdAt(0L)
+                .endpoint("endpoint")
+                .inputFileId("input_file_id")
+                .status(Batch.Status.VALIDATING)
+                .cancelledAt(0L)
+                .cancellingAt(0L)
+                .completedAt(0L)
+                .errorFileId("error_file_id")
+                .errors(
+                    Batch.Errors.builder()
+                        .addData(
+                            BatchError.builder()
+                                .code("code")
+                                .line(0L)
+                                .message("message")
+                                .param("param")
+                                .build()
+                        )
+                        .object_("object")
+                        .build()
+                )
+                .expiredAt(0L)
+                .expiresAt(0L)
+                .failedAt(0L)
+                .finalizingAt(0L)
+                .inProgressAt(0L)
+                .metadata(
+                    Batch.Metadata.builder()
+                        .putAdditionalProperty("foo", JsonValue.from("string"))
+                        .build()
+                )
+                .outputFileId("output_file_id")
+                .requestCounts(
+                    BatchRequestCounts.builder().completed(0L).failed(0L).total(0L).build()
+                )
+                .build()
+
+        val roundtrippedBatch =
+            jsonMapper.readValue(jsonMapper.writeValueAsString(batch), jacksonTypeRef<Batch>())
+
+        assertThat(roundtrippedBatch).isEqualTo(batch)
     }
 }

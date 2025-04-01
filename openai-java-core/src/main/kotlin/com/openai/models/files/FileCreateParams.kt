@@ -401,9 +401,17 @@ private constructor(
             }
 
             file()
-            purpose()
+            purpose().validate()
             validated = true
         }
+
+        fun isValid(): Boolean =
+            try {
+                validate()
+                true
+            } catch (e: OpenAIInvalidDataException) {
+                false
+            }
 
         override fun equals(other: Any?): Boolean {
             if (this === other) {

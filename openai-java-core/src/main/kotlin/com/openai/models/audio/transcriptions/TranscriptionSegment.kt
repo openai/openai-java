@@ -16,6 +16,7 @@ import com.openai.core.toImmutable
 import com.openai.errors.OpenAIInvalidDataException
 import java.util.Collections
 import java.util.Objects
+import kotlin.jvm.optionals.getOrNull
 
 class TranscriptionSegment
 private constructor(
@@ -505,6 +506,32 @@ private constructor(
         tokens()
         validated = true
     }
+
+    fun isValid(): Boolean =
+        try {
+            validate()
+            true
+        } catch (e: OpenAIInvalidDataException) {
+            false
+        }
+
+    /**
+     * Returns a score indicating how many valid values are contained in this object recursively.
+     *
+     * Used for best match union deserialization.
+     */
+    @JvmSynthetic
+    internal fun validity(): Int =
+        (if (id.asKnown().isPresent) 1 else 0) +
+            (if (avgLogprob.asKnown().isPresent) 1 else 0) +
+            (if (compressionRatio.asKnown().isPresent) 1 else 0) +
+            (if (end.asKnown().isPresent) 1 else 0) +
+            (if (noSpeechProb.asKnown().isPresent) 1 else 0) +
+            (if (seek.asKnown().isPresent) 1 else 0) +
+            (if (start.asKnown().isPresent) 1 else 0) +
+            (if (temperature.asKnown().isPresent) 1 else 0) +
+            (if (text.asKnown().isPresent) 1 else 0) +
+            (tokens.asKnown().getOrNull()?.size ?: 0)
 
     override fun equals(other: Any?): Boolean {
         if (this === other) {

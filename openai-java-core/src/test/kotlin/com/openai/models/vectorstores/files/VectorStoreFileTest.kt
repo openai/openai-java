@@ -2,7 +2,9 @@
 
 package com.openai.models.vectorstores.files
 
+import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
 import com.openai.core.JsonValue
+import com.openai.core.jsonMapper
 import com.openai.models.vectorstores.FileChunkingStrategy
 import com.openai.models.vectorstores.StaticFileChunkingStrategy
 import com.openai.models.vectorstores.StaticFileChunkingStrategyObject
@@ -70,5 +72,43 @@ internal class VectorStoreFileTest {
                         .build()
                 )
             )
+    }
+
+    @Test
+    fun roundtrip() {
+        val jsonMapper = jsonMapper()
+        val vectorStoreFile =
+            VectorStoreFile.builder()
+                .id("id")
+                .createdAt(0L)
+                .lastError(
+                    VectorStoreFile.LastError.builder()
+                        .code(VectorStoreFile.LastError.Code.SERVER_ERROR)
+                        .message("message")
+                        .build()
+                )
+                .status(VectorStoreFile.Status.IN_PROGRESS)
+                .usageBytes(0L)
+                .vectorStoreId("vector_store_id")
+                .attributes(
+                    VectorStoreFile.Attributes.builder()
+                        .putAdditionalProperty("foo", JsonValue.from("string"))
+                        .build()
+                )
+                .staticChunkingStrategy(
+                    StaticFileChunkingStrategy.builder()
+                        .chunkOverlapTokens(0L)
+                        .maxChunkSizeTokens(100L)
+                        .build()
+                )
+                .build()
+
+        val roundtrippedVectorStoreFile =
+            jsonMapper.readValue(
+                jsonMapper.writeValueAsString(vectorStoreFile),
+                jacksonTypeRef<VectorStoreFile>(),
+            )
+
+        assertThat(roundtrippedVectorStoreFile).isEqualTo(vectorStoreFile)
     }
 }

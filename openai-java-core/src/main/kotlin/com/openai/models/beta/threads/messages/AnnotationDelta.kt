@@ -64,13 +64,12 @@ private constructor(
 
     fun _json(): Optional<JsonValue> = Optional.ofNullable(_json)
 
-    fun <T> accept(visitor: Visitor<T>): T {
-        return when {
+    fun <T> accept(visitor: Visitor<T>): T =
+        when {
             fileCitation != null -> visitor.visitFileCitation(fileCitation)
             filePath != null -> visitor.visitFilePath(filePath)
             else -> visitor.unknown(_json)
         }
-    }
 
     private var validated: Boolean = false
 
@@ -92,6 +91,32 @@ private constructor(
         )
         validated = true
     }
+
+    fun isValid(): Boolean =
+        try {
+            validate()
+            true
+        } catch (e: OpenAIInvalidDataException) {
+            false
+        }
+
+    /**
+     * Returns a score indicating how many valid values are contained in this object recursively.
+     *
+     * Used for best match union deserialization.
+     */
+    @JvmSynthetic
+    internal fun validity(): Int =
+        accept(
+            object : Visitor<Int> {
+                override fun visitFileCitation(fileCitation: FileCitationDeltaAnnotation) =
+                    fileCitation.validity()
+
+                override fun visitFilePath(filePath: FilePathDeltaAnnotation) = filePath.validity()
+
+                override fun unknown(json: JsonValue?) = 0
+            }
+        )
 
     override fun equals(other: Any?): Boolean {
         if (this === other) {
@@ -172,17 +197,14 @@ private constructor(
 
             when (type) {
                 "file_citation" -> {
-                    return AnnotationDelta(
-                        fileCitation =
-                            deserialize(node, jacksonTypeRef<FileCitationDeltaAnnotation>()),
-                        _json = json,
-                    )
+                    return tryDeserialize(node, jacksonTypeRef<FileCitationDeltaAnnotation>())
+                        ?.let { AnnotationDelta(fileCitation = it, _json = json) }
+                        ?: AnnotationDelta(_json = json)
                 }
                 "file_path" -> {
-                    return AnnotationDelta(
-                        filePath = deserialize(node, jacksonTypeRef<FilePathDeltaAnnotation>()),
-                        _json = json,
-                    )
+                    return tryDeserialize(node, jacksonTypeRef<FilePathDeltaAnnotation>())?.let {
+                        AnnotationDelta(filePath = it, _json = json)
+                    } ?: AnnotationDelta(_json = json)
                 }
             }
 

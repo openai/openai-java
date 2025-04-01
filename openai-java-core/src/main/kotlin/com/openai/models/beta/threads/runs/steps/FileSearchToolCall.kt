@@ -18,6 +18,7 @@ import com.openai.errors.OpenAIInvalidDataException
 import java.util.Collections
 import java.util.Objects
 import java.util.Optional
+import kotlin.jvm.optionals.getOrNull
 
 class FileSearchToolCall
 private constructor(
@@ -218,6 +219,25 @@ private constructor(
         validated = true
     }
 
+    fun isValid(): Boolean =
+        try {
+            validate()
+            true
+        } catch (e: OpenAIInvalidDataException) {
+            false
+        }
+
+    /**
+     * Returns a score indicating how many valid values are contained in this object recursively.
+     *
+     * Used for best match union deserialization.
+     */
+    @JvmSynthetic
+    internal fun validity(): Int =
+        (if (id.asKnown().isPresent) 1 else 0) +
+            (fileSearch.asKnown().getOrNull()?.validity() ?: 0) +
+            type.let { if (it == JsonValue.from("file_search")) 1 else 0 }
+
     /** For now, this is always going to be an empty object. */
     class FileSearch
     private constructor(
@@ -386,6 +406,25 @@ private constructor(
             results().ifPresent { it.forEach { it.validate() } }
             validated = true
         }
+
+        fun isValid(): Boolean =
+            try {
+                validate()
+                true
+            } catch (e: OpenAIInvalidDataException) {
+                false
+            }
+
+        /**
+         * Returns a score indicating how many valid values are contained in this object
+         * recursively.
+         *
+         * Used for best match union deserialization.
+         */
+        @JvmSynthetic
+        internal fun validity(): Int =
+            (rankingOptions.asKnown().getOrNull()?.validity() ?: 0) +
+                (results.asKnown().getOrNull()?.sumOf { it.validity().toInt() } ?: 0)
 
         /** The ranking options for the file search. */
         class RankingOptions
@@ -564,10 +603,29 @@ private constructor(
                     return@apply
                 }
 
-                ranker()
+                ranker().validate()
                 scoreThreshold()
                 validated = true
             }
+
+            fun isValid(): Boolean =
+                try {
+                    validate()
+                    true
+                } catch (e: OpenAIInvalidDataException) {
+                    false
+                }
+
+            /**
+             * Returns a score indicating how many valid values are contained in this object
+             * recursively.
+             *
+             * Used for best match union deserialization.
+             */
+            @JvmSynthetic
+            internal fun validity(): Int =
+                (ranker.asKnown().getOrNull()?.validity() ?: 0) +
+                    (if (scoreThreshold.asKnown().isPresent) 1 else 0)
 
             /**
              * The ranker to use for the file search. If not specified will use the `auto` ranker.
@@ -662,6 +720,33 @@ private constructor(
                     _value().asString().orElseThrow {
                         OpenAIInvalidDataException("Value is not a String")
                     }
+
+                private var validated: Boolean = false
+
+                fun validate(): Ranker = apply {
+                    if (validated) {
+                        return@apply
+                    }
+
+                    known()
+                    validated = true
+                }
+
+                fun isValid(): Boolean =
+                    try {
+                        validate()
+                        true
+                    } catch (e: OpenAIInvalidDataException) {
+                        false
+                    }
+
+                /**
+                 * Returns a score indicating how many valid values are contained in this object
+                 * recursively.
+                 *
+                 * Used for best match union deserialization.
+                 */
+                @JvmSynthetic internal fun validity(): Int = if (value() == Value._UNKNOWN) 0 else 1
 
                 override fun equals(other: Any?): Boolean {
                     if (this === other) {
@@ -959,6 +1044,27 @@ private constructor(
                 validated = true
             }
 
+            fun isValid(): Boolean =
+                try {
+                    validate()
+                    true
+                } catch (e: OpenAIInvalidDataException) {
+                    false
+                }
+
+            /**
+             * Returns a score indicating how many valid values are contained in this object
+             * recursively.
+             *
+             * Used for best match union deserialization.
+             */
+            @JvmSynthetic
+            internal fun validity(): Int =
+                (if (fileId.asKnown().isPresent) 1 else 0) +
+                    (if (fileName.asKnown().isPresent) 1 else 0) +
+                    (if (score.asKnown().isPresent) 1 else 0) +
+                    (content.asKnown().getOrNull()?.sumOf { it.validity().toInt() } ?: 0)
+
             class Content
             private constructor(
                 private val text: JsonField<String>,
@@ -1100,9 +1206,28 @@ private constructor(
                     }
 
                     text()
-                    type()
+                    type().ifPresent { it.validate() }
                     validated = true
                 }
+
+                fun isValid(): Boolean =
+                    try {
+                        validate()
+                        true
+                    } catch (e: OpenAIInvalidDataException) {
+                        false
+                    }
+
+                /**
+                 * Returns a score indicating how many valid values are contained in this object
+                 * recursively.
+                 *
+                 * Used for best match union deserialization.
+                 */
+                @JvmSynthetic
+                internal fun validity(): Int =
+                    (if (text.asKnown().isPresent) 1 else 0) +
+                        (type.asKnown().getOrNull()?.validity() ?: 0)
 
                 /** The type of the content. */
                 class Type @JsonCreator private constructor(private val value: JsonField<String>) :
@@ -1190,6 +1315,34 @@ private constructor(
                         _value().asString().orElseThrow {
                             OpenAIInvalidDataException("Value is not a String")
                         }
+
+                    private var validated: Boolean = false
+
+                    fun validate(): Type = apply {
+                        if (validated) {
+                            return@apply
+                        }
+
+                        known()
+                        validated = true
+                    }
+
+                    fun isValid(): Boolean =
+                        try {
+                            validate()
+                            true
+                        } catch (e: OpenAIInvalidDataException) {
+                            false
+                        }
+
+                    /**
+                     * Returns a score indicating how many valid values are contained in this object
+                     * recursively.
+                     *
+                     * Used for best match union deserialization.
+                     */
+                    @JvmSynthetic
+                    internal fun validity(): Int = if (value() == Value._UNKNOWN) 0 else 1
 
                     override fun equals(other: Any?): Boolean {
                         if (this === other) {

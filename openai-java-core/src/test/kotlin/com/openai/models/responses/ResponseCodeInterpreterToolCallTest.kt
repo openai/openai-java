@@ -2,6 +2,8 @@
 
 package com.openai.models.responses
 
+import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
+import com.openai.core.jsonMapper
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
@@ -27,5 +29,26 @@ internal class ResponseCodeInterpreterToolCallTest {
             )
         assertThat(responseCodeInterpreterToolCall.status())
             .isEqualTo(ResponseCodeInterpreterToolCall.Status.IN_PROGRESS)
+    }
+
+    @Test
+    fun roundtrip() {
+        val jsonMapper = jsonMapper()
+        val responseCodeInterpreterToolCall =
+            ResponseCodeInterpreterToolCall.builder()
+                .id("id")
+                .code("code")
+                .addLogsResult("logs")
+                .status(ResponseCodeInterpreterToolCall.Status.IN_PROGRESS)
+                .build()
+
+        val roundtrippedResponseCodeInterpreterToolCall =
+            jsonMapper.readValue(
+                jsonMapper.writeValueAsString(responseCodeInterpreterToolCall),
+                jacksonTypeRef<ResponseCodeInterpreterToolCall>(),
+            )
+
+        assertThat(roundtrippedResponseCodeInterpreterToolCall)
+            .isEqualTo(responseCodeInterpreterToolCall)
     }
 }

@@ -16,6 +16,7 @@ import com.openai.errors.OpenAIInvalidDataException
 import java.util.Collections
 import java.util.Objects
 import java.util.Optional
+import kotlin.jvm.optionals.getOrNull
 
 /** Fine-tuning job event object */
 class FineTuningJobEvent
@@ -312,16 +313,38 @@ private constructor(
 
         id()
         createdAt()
-        level()
+        level().validate()
         message()
         _object_().let {
             if (it != JsonValue.from("fine_tuning.job.event")) {
                 throw OpenAIInvalidDataException("'object_' is invalid, received $it")
             }
         }
-        type()
+        type().ifPresent { it.validate() }
         validated = true
     }
+
+    fun isValid(): Boolean =
+        try {
+            validate()
+            true
+        } catch (e: OpenAIInvalidDataException) {
+            false
+        }
+
+    /**
+     * Returns a score indicating how many valid values are contained in this object recursively.
+     *
+     * Used for best match union deserialization.
+     */
+    @JvmSynthetic
+    internal fun validity(): Int =
+        (if (id.asKnown().isPresent) 1 else 0) +
+            (if (createdAt.asKnown().isPresent) 1 else 0) +
+            (level.asKnown().getOrNull()?.validity() ?: 0) +
+            (if (message.asKnown().isPresent) 1 else 0) +
+            object_.let { if (it == JsonValue.from("fine_tuning.job.event")) 1 else 0 } +
+            (type.asKnown().getOrNull()?.validity() ?: 0)
 
     /** The log level of the event. */
     class Level @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
@@ -414,6 +437,33 @@ private constructor(
          */
         fun asString(): String =
             _value().asString().orElseThrow { OpenAIInvalidDataException("Value is not a String") }
+
+        private var validated: Boolean = false
+
+        fun validate(): Level = apply {
+            if (validated) {
+                return@apply
+            }
+
+            known()
+            validated = true
+        }
+
+        fun isValid(): Boolean =
+            try {
+                validate()
+                true
+            } catch (e: OpenAIInvalidDataException) {
+                false
+            }
+
+        /**
+         * Returns a score indicating how many valid values are contained in this object
+         * recursively.
+         *
+         * Used for best match union deserialization.
+         */
+        @JvmSynthetic internal fun validity(): Int = if (value() == Value._UNKNOWN) 0 else 1
 
         override fun equals(other: Any?): Boolean {
             if (this === other) {
@@ -513,6 +563,33 @@ private constructor(
          */
         fun asString(): String =
             _value().asString().orElseThrow { OpenAIInvalidDataException("Value is not a String") }
+
+        private var validated: Boolean = false
+
+        fun validate(): Type = apply {
+            if (validated) {
+                return@apply
+            }
+
+            known()
+            validated = true
+        }
+
+        fun isValid(): Boolean =
+            try {
+                validate()
+                true
+            } catch (e: OpenAIInvalidDataException) {
+                false
+            }
+
+        /**
+         * Returns a score indicating how many valid values are contained in this object
+         * recursively.
+         *
+         * Used for best match union deserialization.
+         */
+        @JvmSynthetic internal fun validity(): Int = if (value() == Value._UNKNOWN) 0 else 1
 
         override fun equals(other: Any?): Boolean {
             if (this === other) {

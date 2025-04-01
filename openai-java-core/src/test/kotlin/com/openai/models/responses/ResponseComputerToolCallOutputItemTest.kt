@@ -2,6 +2,8 @@
 
 package com.openai.models.responses
 
+import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
+import com.openai.core.jsonMapper
 import kotlin.jvm.optionals.getOrNull
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
@@ -49,5 +51,38 @@ internal class ResponseComputerToolCallOutputItemTest {
             )
         assertThat(responseComputerToolCallOutputItem.status())
             .contains(ResponseComputerToolCallOutputItem.Status.IN_PROGRESS)
+    }
+
+    @Test
+    fun roundtrip() {
+        val jsonMapper = jsonMapper()
+        val responseComputerToolCallOutputItem =
+            ResponseComputerToolCallOutputItem.builder()
+                .id("id")
+                .callId("call_id")
+                .output(
+                    ResponseComputerToolCallOutputScreenshot.builder()
+                        .fileId("file_id")
+                        .imageUrl("image_url")
+                        .build()
+                )
+                .addAcknowledgedSafetyCheck(
+                    ResponseComputerToolCallOutputItem.AcknowledgedSafetyCheck.builder()
+                        .id("id")
+                        .code("code")
+                        .message("message")
+                        .build()
+                )
+                .status(ResponseComputerToolCallOutputItem.Status.IN_PROGRESS)
+                .build()
+
+        val roundtrippedResponseComputerToolCallOutputItem =
+            jsonMapper.readValue(
+                jsonMapper.writeValueAsString(responseComputerToolCallOutputItem),
+                jacksonTypeRef<ResponseComputerToolCallOutputItem>(),
+            )
+
+        assertThat(roundtrippedResponseComputerToolCallOutputItem)
+            .isEqualTo(responseComputerToolCallOutputItem)
     }
 }

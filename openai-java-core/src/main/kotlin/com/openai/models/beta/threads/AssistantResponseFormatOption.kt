@@ -12,6 +12,7 @@ import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
 import com.openai.core.BaseDeserializer
 import com.openai.core.BaseSerializer
 import com.openai.core.JsonValue
+import com.openai.core.allMaxBy
 import com.openai.core.getOrThrow
 import com.openai.errors.OpenAIInvalidDataException
 import com.openai.models.ResponseFormatJsonObject
@@ -104,8 +105,8 @@ private constructor(
 
     fun _json(): Optional<JsonValue> = Optional.ofNullable(_json)
 
-    fun <T> accept(visitor: Visitor<T>): T {
-        return when {
+    fun <T> accept(visitor: Visitor<T>): T =
+        when {
             auto != null -> visitor.visitAuto(auto)
             responseFormatText != null -> visitor.visitResponseFormatText(responseFormatText)
             responseFormatJsonObject != null ->
@@ -114,7 +115,6 @@ private constructor(
                 visitor.visitResponseFormatJsonSchema(responseFormatJsonSchema)
             else -> visitor.unknown(_json)
         }
-    }
 
     private var validated: Boolean = false
 
@@ -152,6 +152,41 @@ private constructor(
         )
         validated = true
     }
+
+    fun isValid(): Boolean =
+        try {
+            validate()
+            true
+        } catch (e: OpenAIInvalidDataException) {
+            false
+        }
+
+    /**
+     * Returns a score indicating how many valid values are contained in this object recursively.
+     *
+     * Used for best match union deserialization.
+     */
+    @JvmSynthetic
+    internal fun validity(): Int =
+        accept(
+            object : Visitor<Int> {
+                override fun visitAuto(auto: JsonValue) =
+                    auto.let { if (it == JsonValue.from("auto")) 1 else 0 }
+
+                override fun visitResponseFormatText(responseFormatText: ResponseFormatText) =
+                    responseFormatText.validity()
+
+                override fun visitResponseFormatJsonObject(
+                    responseFormatJsonObject: ResponseFormatJsonObject
+                ) = responseFormatJsonObject.validity()
+
+                override fun visitResponseFormatJsonSchema(
+                    responseFormatJsonSchema: ResponseFormatJsonSchema
+                ) = responseFormatJsonSchema.validity()
+
+                override fun unknown(json: JsonValue?) = 0
+            }
+        )
 
     override fun equals(other: Any?): Boolean {
         if (this === other) {
@@ -250,36 +285,39 @@ private constructor(
         override fun ObjectCodec.deserialize(node: JsonNode): AssistantResponseFormatOption {
             val json = JsonValue.fromJsonNode(node)
 
-            tryDeserialize(node, jacksonTypeRef<JsonValue>()) {
-                    it.let {
-                        if (it != JsonValue.from("auto")) {
-                            throw OpenAIInvalidDataException("'auto' is invalid, received $it")
-                        }
-                    }
-                }
-                ?.let {
-                    return AssistantResponseFormatOption(auto = it, _json = json)
-                }
-            tryDeserialize(node, jacksonTypeRef<ResponseFormatText>()) { it.validate() }
-                ?.let {
-                    return AssistantResponseFormatOption(responseFormatText = it, _json = json)
-                }
-            tryDeserialize(node, jacksonTypeRef<ResponseFormatJsonObject>()) { it.validate() }
-                ?.let {
-                    return AssistantResponseFormatOption(
-                        responseFormatJsonObject = it,
-                        _json = json,
+            val bestMatches =
+                sequenceOf(
+                        tryDeserialize(node, jacksonTypeRef<JsonValue>())
+                            ?.let { AssistantResponseFormatOption(auto = it, _json = json) }
+                            ?.takeIf { it.isValid() },
+                        tryDeserialize(node, jacksonTypeRef<ResponseFormatText>())?.let {
+                            AssistantResponseFormatOption(responseFormatText = it, _json = json)
+                        },
+                        tryDeserialize(node, jacksonTypeRef<ResponseFormatJsonObject>())?.let {
+                            AssistantResponseFormatOption(
+                                responseFormatJsonObject = it,
+                                _json = json,
+                            )
+                        },
+                        tryDeserialize(node, jacksonTypeRef<ResponseFormatJsonSchema>())?.let {
+                            AssistantResponseFormatOption(
+                                responseFormatJsonSchema = it,
+                                _json = json,
+                            )
+                        },
                     )
-                }
-            tryDeserialize(node, jacksonTypeRef<ResponseFormatJsonSchema>()) { it.validate() }
-                ?.let {
-                    return AssistantResponseFormatOption(
-                        responseFormatJsonSchema = it,
-                        _json = json,
-                    )
-                }
-
-            return AssistantResponseFormatOption(_json = json)
+                    .filterNotNull()
+                    .allMaxBy { it.validity() }
+                    .toList()
+            return when (bestMatches.size) {
+                // This can happen if what we're deserializing is completely incompatible with all
+                // the possible variants (e.g. deserializing from array).
+                0 -> AssistantResponseFormatOption(_json = json)
+                1 -> bestMatches.single()
+                // If there's more than one match with the highest validity, then use the first
+                // completely valid match, or simply the first match if none are completely valid.
+                else -> bestMatches.firstOrNull { it.isValid() } ?: bestMatches.first()
+            }
         }
     }
 

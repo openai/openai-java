@@ -48,14 +48,13 @@ private constructor(
 
     fun _json(): Optional<JsonValue> = Optional.ofNullable(_json)
 
-    fun <T> accept(visitor: Visitor<T>): T {
-        return when {
+    fun <T> accept(visitor: Visitor<T>): T =
+        when {
             codeInterpreter != null -> visitor.visitCodeInterpreter(codeInterpreter)
             fileSearch != null -> visitor.visitFileSearch(fileSearch)
             function != null -> visitor.visitFunction(function)
             else -> visitor.unknown(_json)
         }
-    }
 
     private var validated: Boolean = false
 
@@ -81,6 +80,34 @@ private constructor(
         )
         validated = true
     }
+
+    fun isValid(): Boolean =
+        try {
+            validate()
+            true
+        } catch (e: OpenAIInvalidDataException) {
+            false
+        }
+
+    /**
+     * Returns a score indicating how many valid values are contained in this object recursively.
+     *
+     * Used for best match union deserialization.
+     */
+    @JvmSynthetic
+    internal fun validity(): Int =
+        accept(
+            object : Visitor<Int> {
+                override fun visitCodeInterpreter(codeInterpreter: CodeInterpreterTool) =
+                    codeInterpreter.validity()
+
+                override fun visitFileSearch(fileSearch: FileSearchTool) = fileSearch.validity()
+
+                override fun visitFunction(function: FunctionTool) = function.validity()
+
+                override fun unknown(json: JsonValue?) = 0
+            }
+        )
 
     override fun equals(other: Any?): Boolean {
         if (this === other) {
@@ -146,22 +173,19 @@ private constructor(
 
             when (type) {
                 "code_interpreter" -> {
-                    return AssistantTool(
-                        codeInterpreter = deserialize(node, jacksonTypeRef<CodeInterpreterTool>()),
-                        _json = json,
-                    )
+                    return tryDeserialize(node, jacksonTypeRef<CodeInterpreterTool>())?.let {
+                        AssistantTool(codeInterpreter = it, _json = json)
+                    } ?: AssistantTool(_json = json)
                 }
                 "file_search" -> {
-                    return AssistantTool(
-                        fileSearch = deserialize(node, jacksonTypeRef<FileSearchTool>()),
-                        _json = json,
-                    )
+                    return tryDeserialize(node, jacksonTypeRef<FileSearchTool>())?.let {
+                        AssistantTool(fileSearch = it, _json = json)
+                    } ?: AssistantTool(_json = json)
                 }
                 "function" -> {
-                    return AssistantTool(
-                        function = deserialize(node, jacksonTypeRef<FunctionTool>()),
-                        _json = json,
-                    )
+                    return tryDeserialize(node, jacksonTypeRef<FunctionTool>())?.let {
+                        AssistantTool(function = it, _json = json)
+                    } ?: AssistantTool(_json = json)
                 }
             }
 

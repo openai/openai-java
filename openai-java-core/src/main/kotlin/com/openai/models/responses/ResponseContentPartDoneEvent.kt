@@ -315,6 +315,27 @@ private constructor(
         validated = true
     }
 
+    fun isValid(): Boolean =
+        try {
+            validate()
+            true
+        } catch (e: OpenAIInvalidDataException) {
+            false
+        }
+
+    /**
+     * Returns a score indicating how many valid values are contained in this object recursively.
+     *
+     * Used for best match union deserialization.
+     */
+    @JvmSynthetic
+    internal fun validity(): Int =
+        (if (contentIndex.asKnown().isPresent) 1 else 0) +
+            (if (itemId.asKnown().isPresent) 1 else 0) +
+            (if (outputIndex.asKnown().isPresent) 1 else 0) +
+            (part.asKnown().getOrNull()?.validity() ?: 0) +
+            type.let { if (it == JsonValue.from("response.content_part.done")) 1 else 0 }
+
     /** The content part that is done. */
     @JsonDeserialize(using = Part.Deserializer::class)
     @JsonSerialize(using = Part.Serializer::class)
@@ -343,13 +364,12 @@ private constructor(
 
         fun _json(): Optional<JsonValue> = Optional.ofNullable(_json)
 
-        fun <T> accept(visitor: Visitor<T>): T {
-            return when {
+        fun <T> accept(visitor: Visitor<T>): T =
+            when {
                 outputText != null -> visitor.visitOutputText(outputText)
                 refusal != null -> visitor.visitRefusal(refusal)
                 else -> visitor.unknown(_json)
             }
-        }
 
         private var validated: Boolean = false
 
@@ -371,6 +391,33 @@ private constructor(
             )
             validated = true
         }
+
+        fun isValid(): Boolean =
+            try {
+                validate()
+                true
+            } catch (e: OpenAIInvalidDataException) {
+                false
+            }
+
+        /**
+         * Returns a score indicating how many valid values are contained in this object
+         * recursively.
+         *
+         * Used for best match union deserialization.
+         */
+        @JvmSynthetic
+        internal fun validity(): Int =
+            accept(
+                object : Visitor<Int> {
+                    override fun visitOutputText(outputText: ResponseOutputText) =
+                        outputText.validity()
+
+                    override fun visitRefusal(refusal: ResponseOutputRefusal) = refusal.validity()
+
+                    override fun unknown(json: JsonValue?) = 0
+                }
+            )
 
         override fun equals(other: Any?): Boolean {
             if (this === other) {
@@ -431,16 +478,14 @@ private constructor(
 
                 when (type) {
                     "output_text" -> {
-                        return Part(
-                            outputText = deserialize(node, jacksonTypeRef<ResponseOutputText>()),
-                            _json = json,
-                        )
+                        return tryDeserialize(node, jacksonTypeRef<ResponseOutputText>())?.let {
+                            Part(outputText = it, _json = json)
+                        } ?: Part(_json = json)
                     }
                     "refusal" -> {
-                        return Part(
-                            refusal = deserialize(node, jacksonTypeRef<ResponseOutputRefusal>()),
-                            _json = json,
-                        )
+                        return tryDeserialize(node, jacksonTypeRef<ResponseOutputRefusal>())?.let {
+                            Part(refusal = it, _json = json)
+                        } ?: Part(_json = json)
                     }
                 }
 

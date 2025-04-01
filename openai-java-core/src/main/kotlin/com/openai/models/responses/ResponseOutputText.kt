@@ -255,6 +255,25 @@ private constructor(
         validated = true
     }
 
+    fun isValid(): Boolean =
+        try {
+            validate()
+            true
+        } catch (e: OpenAIInvalidDataException) {
+            false
+        }
+
+    /**
+     * Returns a score indicating how many valid values are contained in this object recursively.
+     *
+     * Used for best match union deserialization.
+     */
+    @JvmSynthetic
+    internal fun validity(): Int =
+        (annotations.asKnown().getOrNull()?.sumOf { it.validity().toInt() } ?: 0) +
+            (if (text.asKnown().isPresent) 1 else 0) +
+            type.let { if (it == JsonValue.from("output_text")) 1 else 0 }
+
     /** A citation to a file. */
     @JsonDeserialize(using = Annotation.Deserializer::class)
     @JsonSerialize(using = Annotation.Serializer::class)
@@ -292,14 +311,13 @@ private constructor(
 
         fun _json(): Optional<JsonValue> = Optional.ofNullable(_json)
 
-        fun <T> accept(visitor: Visitor<T>): T {
-            return when {
+        fun <T> accept(visitor: Visitor<T>): T =
+            when {
                 fileCitation != null -> visitor.visitFileCitation(fileCitation)
                 urlCitation != null -> visitor.visitUrlCitation(urlCitation)
                 filePath != null -> visitor.visitFilePath(filePath)
                 else -> visitor.unknown(_json)
             }
-        }
 
         private var validated: Boolean = false
 
@@ -325,6 +343,35 @@ private constructor(
             )
             validated = true
         }
+
+        fun isValid(): Boolean =
+            try {
+                validate()
+                true
+            } catch (e: OpenAIInvalidDataException) {
+                false
+            }
+
+        /**
+         * Returns a score indicating how many valid values are contained in this object
+         * recursively.
+         *
+         * Used for best match union deserialization.
+         */
+        @JvmSynthetic
+        internal fun validity(): Int =
+            accept(
+                object : Visitor<Int> {
+                    override fun visitFileCitation(fileCitation: FileCitation) =
+                        fileCitation.validity()
+
+                    override fun visitUrlCitation(urlCitation: UrlCitation) = urlCitation.validity()
+
+                    override fun visitFilePath(filePath: FilePath) = filePath.validity()
+
+                    override fun unknown(json: JsonValue?) = 0
+                }
+            )
 
         override fun equals(other: Any?): Boolean {
             if (this === other) {
@@ -396,22 +443,19 @@ private constructor(
 
                 when (type) {
                     "file_citation" -> {
-                        return Annotation(
-                            fileCitation = deserialize(node, jacksonTypeRef<FileCitation>()),
-                            _json = json,
-                        )
+                        return tryDeserialize(node, jacksonTypeRef<FileCitation>())?.let {
+                            Annotation(fileCitation = it, _json = json)
+                        } ?: Annotation(_json = json)
                     }
                     "url_citation" -> {
-                        return Annotation(
-                            urlCitation = deserialize(node, jacksonTypeRef<UrlCitation>()),
-                            _json = json,
-                        )
+                        return tryDeserialize(node, jacksonTypeRef<UrlCitation>())?.let {
+                            Annotation(urlCitation = it, _json = json)
+                        } ?: Annotation(_json = json)
                     }
                     "file_path" -> {
-                        return Annotation(
-                            filePath = deserialize(node, jacksonTypeRef<FilePath>()),
-                            _json = json,
-                        )
+                        return tryDeserialize(node, jacksonTypeRef<FilePath>())?.let {
+                            Annotation(filePath = it, _json = json)
+                        } ?: Annotation(_json = json)
                     }
                 }
 
@@ -639,6 +683,26 @@ private constructor(
                 }
                 validated = true
             }
+
+            fun isValid(): Boolean =
+                try {
+                    validate()
+                    true
+                } catch (e: OpenAIInvalidDataException) {
+                    false
+                }
+
+            /**
+             * Returns a score indicating how many valid values are contained in this object
+             * recursively.
+             *
+             * Used for best match union deserialization.
+             */
+            @JvmSynthetic
+            internal fun validity(): Int =
+                (if (fileId.asKnown().isPresent) 1 else 0) +
+                    (if (index.asKnown().isPresent) 1 else 0) +
+                    type.let { if (it == JsonValue.from("file_citation")) 1 else 0 }
 
             override fun equals(other: Any?): Boolean {
                 if (this === other) {
@@ -940,6 +1004,28 @@ private constructor(
                 validated = true
             }
 
+            fun isValid(): Boolean =
+                try {
+                    validate()
+                    true
+                } catch (e: OpenAIInvalidDataException) {
+                    false
+                }
+
+            /**
+             * Returns a score indicating how many valid values are contained in this object
+             * recursively.
+             *
+             * Used for best match union deserialization.
+             */
+            @JvmSynthetic
+            internal fun validity(): Int =
+                (if (endIndex.asKnown().isPresent) 1 else 0) +
+                    (if (startIndex.asKnown().isPresent) 1 else 0) +
+                    (if (title.asKnown().isPresent) 1 else 0) +
+                    type.let { if (it == JsonValue.from("url_citation")) 1 else 0 } +
+                    (if (url.asKnown().isPresent) 1 else 0)
+
             override fun equals(other: Any?): Boolean {
                 if (this === other) {
                     return true
@@ -1161,6 +1247,26 @@ private constructor(
                 }
                 validated = true
             }
+
+            fun isValid(): Boolean =
+                try {
+                    validate()
+                    true
+                } catch (e: OpenAIInvalidDataException) {
+                    false
+                }
+
+            /**
+             * Returns a score indicating how many valid values are contained in this object
+             * recursively.
+             *
+             * Used for best match union deserialization.
+             */
+            @JvmSynthetic
+            internal fun validity(): Int =
+                (if (fileId.asKnown().isPresent) 1 else 0) +
+                    (if (index.asKnown().isPresent) 1 else 0) +
+                    type.let { if (it == JsonValue.from("file_path")) 1 else 0 }
 
             override fun equals(other: Any?): Boolean {
                 if (this === other) {

@@ -15,6 +15,7 @@ import com.openai.core.checkRequired
 import com.openai.errors.OpenAIInvalidDataException
 import java.util.Collections
 import java.util.Objects
+import kotlin.jvm.optionals.getOrNull
 
 /**
  * A tool that controls a virtual computer. Learn more about the
@@ -260,7 +261,7 @@ private constructor(
 
         displayHeight()
         displayWidth()
-        environment()
+        environment().validate()
         _type().let {
             if (it != JsonValue.from("computer_use_preview")) {
                 throw OpenAIInvalidDataException("'type' is invalid, received $it")
@@ -268,6 +269,26 @@ private constructor(
         }
         validated = true
     }
+
+    fun isValid(): Boolean =
+        try {
+            validate()
+            true
+        } catch (e: OpenAIInvalidDataException) {
+            false
+        }
+
+    /**
+     * Returns a score indicating how many valid values are contained in this object recursively.
+     *
+     * Used for best match union deserialization.
+     */
+    @JvmSynthetic
+    internal fun validity(): Int =
+        (if (displayHeight.asKnown().isPresent) 1 else 0) +
+            (if (displayWidth.asKnown().isPresent) 1 else 0) +
+            (environment.asKnown().getOrNull()?.validity() ?: 0) +
+            type.let { if (it == JsonValue.from("computer_use_preview")) 1 else 0 }
 
     /** The type of computer environment to control. */
     class Environment @JsonCreator private constructor(private val value: JsonField<String>) :
@@ -369,6 +390,33 @@ private constructor(
          */
         fun asString(): String =
             _value().asString().orElseThrow { OpenAIInvalidDataException("Value is not a String") }
+
+        private var validated: Boolean = false
+
+        fun validate(): Environment = apply {
+            if (validated) {
+                return@apply
+            }
+
+            known()
+            validated = true
+        }
+
+        fun isValid(): Boolean =
+            try {
+                validate()
+                true
+            } catch (e: OpenAIInvalidDataException) {
+                false
+            }
+
+        /**
+         * Returns a score indicating how many valid values are contained in this object
+         * recursively.
+         *
+         * Used for best match union deserialization.
+         */
+        @JvmSynthetic internal fun validity(): Int = if (value() == Value._UNKNOWN) 0 else 1
 
         override fun equals(other: Any?): Boolean {
             if (this === other) {

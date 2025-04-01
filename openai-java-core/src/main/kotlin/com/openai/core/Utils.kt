@@ -26,6 +26,34 @@ internal fun <K : Comparable<K>, V> SortedMap<K, V>.toImmutable(): SortedMap<K, 
     else Collections.unmodifiableSortedMap(toSortedMap(comparator()))
 
 /**
+ * Returns all elements that yield the largest value for the given function, or an empty list if
+ * there are zero elements.
+ *
+ * This is similar to [Sequence.maxByOrNull] except it returns _all_ elements that yield the largest
+ * value; not just the first one.
+ */
+@JvmSynthetic
+internal fun <T, R : Comparable<R>> Sequence<T>.allMaxBy(selector: (T) -> R): List<T> {
+    var maxValue: R? = null
+    val maxElements = mutableListOf<T>()
+
+    val iterator = iterator()
+    while (iterator.hasNext()) {
+        val element = iterator.next()
+        val value = selector(element)
+        if (maxValue == null || value > maxValue) {
+            maxValue = value
+            maxElements.clear()
+            maxElements.add(element)
+        } else if (value == maxValue) {
+            maxElements.add(element)
+        }
+    }
+
+    return maxElements
+}
+
+/**
  * Returns whether [this] is equal to [other].
  *
  * This differs from [Object.equals] because it also deeply equates arrays based on their contents,

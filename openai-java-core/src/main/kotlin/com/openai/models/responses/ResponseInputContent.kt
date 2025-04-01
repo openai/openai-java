@@ -61,14 +61,13 @@ private constructor(
 
     fun _json(): Optional<JsonValue> = Optional.ofNullable(_json)
 
-    fun <T> accept(visitor: Visitor<T>): T {
-        return when {
+    fun <T> accept(visitor: Visitor<T>): T =
+        when {
             inputText != null -> visitor.visitInputText(inputText)
             inputImage != null -> visitor.visitInputImage(inputImage)
             inputFile != null -> visitor.visitInputFile(inputFile)
             else -> visitor.unknown(_json)
         }
-    }
 
     private var validated: Boolean = false
 
@@ -94,6 +93,33 @@ private constructor(
         )
         validated = true
     }
+
+    fun isValid(): Boolean =
+        try {
+            validate()
+            true
+        } catch (e: OpenAIInvalidDataException) {
+            false
+        }
+
+    /**
+     * Returns a score indicating how many valid values are contained in this object recursively.
+     *
+     * Used for best match union deserialization.
+     */
+    @JvmSynthetic
+    internal fun validity(): Int =
+        accept(
+            object : Visitor<Int> {
+                override fun visitInputText(inputText: ResponseInputText) = inputText.validity()
+
+                override fun visitInputImage(inputImage: ResponseInputImage) = inputImage.validity()
+
+                override fun visitInputFile(inputFile: ResponseInputFile) = inputFile.validity()
+
+                override fun unknown(json: JsonValue?) = 0
+            }
+        )
 
     override fun equals(other: Any?): Boolean {
         if (this === other) {
@@ -175,22 +201,19 @@ private constructor(
 
             when (type) {
                 "input_text" -> {
-                    return ResponseInputContent(
-                        inputText = deserialize(node, jacksonTypeRef<ResponseInputText>()),
-                        _json = json,
-                    )
+                    return tryDeserialize(node, jacksonTypeRef<ResponseInputText>())?.let {
+                        ResponseInputContent(inputText = it, _json = json)
+                    } ?: ResponseInputContent(_json = json)
                 }
                 "input_image" -> {
-                    return ResponseInputContent(
-                        inputImage = deserialize(node, jacksonTypeRef<ResponseInputImage>()),
-                        _json = json,
-                    )
+                    return tryDeserialize(node, jacksonTypeRef<ResponseInputImage>())?.let {
+                        ResponseInputContent(inputImage = it, _json = json)
+                    } ?: ResponseInputContent(_json = json)
                 }
                 "input_file" -> {
-                    return ResponseInputContent(
-                        inputFile = deserialize(node, jacksonTypeRef<ResponseInputFile>()),
-                        _json = json,
-                    )
+                    return tryDeserialize(node, jacksonTypeRef<ResponseInputFile>())?.let {
+                        ResponseInputContent(inputFile = it, _json = json)
+                    } ?: ResponseInputContent(_json = json)
                 }
             }
 

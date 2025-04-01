@@ -14,6 +14,7 @@ import com.openai.core.checkRequired
 import com.openai.errors.OpenAIInvalidDataException
 import java.util.Collections
 import java.util.Objects
+import kotlin.jvm.optionals.getOrNull
 
 /**
  * Represents token usage details including input tokens, output tokens, a breakdown of output
@@ -316,6 +317,27 @@ private constructor(
         validated = true
     }
 
+    fun isValid(): Boolean =
+        try {
+            validate()
+            true
+        } catch (e: OpenAIInvalidDataException) {
+            false
+        }
+
+    /**
+     * Returns a score indicating how many valid values are contained in this object recursively.
+     *
+     * Used for best match union deserialization.
+     */
+    @JvmSynthetic
+    internal fun validity(): Int =
+        (if (inputTokens.asKnown().isPresent) 1 else 0) +
+            (inputTokensDetails.asKnown().getOrNull()?.validity() ?: 0) +
+            (if (outputTokens.asKnown().isPresent) 1 else 0) +
+            (outputTokensDetails.asKnown().getOrNull()?.validity() ?: 0) +
+            (if (totalTokens.asKnown().isPresent) 1 else 0)
+
     /** A detailed breakdown of the input tokens. */
     class InputTokensDetails
     private constructor(
@@ -451,6 +473,23 @@ private constructor(
             cachedTokens()
             validated = true
         }
+
+        fun isValid(): Boolean =
+            try {
+                validate()
+                true
+            } catch (e: OpenAIInvalidDataException) {
+                false
+            }
+
+        /**
+         * Returns a score indicating how many valid values are contained in this object
+         * recursively.
+         *
+         * Used for best match union deserialization.
+         */
+        @JvmSynthetic
+        internal fun validity(): Int = (if (cachedTokens.asKnown().isPresent) 1 else 0)
 
         override fun equals(other: Any?): Boolean {
             if (this === other) {
@@ -602,6 +641,23 @@ private constructor(
             reasoningTokens()
             validated = true
         }
+
+        fun isValid(): Boolean =
+            try {
+                validate()
+                true
+            } catch (e: OpenAIInvalidDataException) {
+                false
+            }
+
+        /**
+         * Returns a score indicating how many valid values are contained in this object
+         * recursively.
+         *
+         * Used for best match union deserialization.
+         */
+        @JvmSynthetic
+        internal fun validity(): Int = (if (reasoningTokens.asKnown().isPresent) 1 else 0)
 
         override fun equals(other: Any?): Boolean {
             if (this === other) {

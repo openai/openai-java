@@ -2,6 +2,8 @@
 
 package com.openai.models.images
 
+import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
+import com.openai.core.jsonMapper
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
@@ -30,5 +32,29 @@ internal class ImagesResponseTest {
                     .url("url")
                     .build()
             )
+    }
+
+    @Test
+    fun roundtrip() {
+        val jsonMapper = jsonMapper()
+        val imagesResponse =
+            ImagesResponse.builder()
+                .created(0L)
+                .addData(
+                    Image.builder()
+                        .b64Json("b64_json")
+                        .revisedPrompt("revised_prompt")
+                        .url("url")
+                        .build()
+                )
+                .build()
+
+        val roundtrippedImagesResponse =
+            jsonMapper.readValue(
+                jsonMapper.writeValueAsString(imagesResponse),
+                jacksonTypeRef<ImagesResponse>(),
+            )
+
+        assertThat(roundtrippedImagesResponse).isEqualTo(imagesResponse)
     }
 }

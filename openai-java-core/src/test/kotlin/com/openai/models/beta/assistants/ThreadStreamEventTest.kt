@@ -2,7 +2,9 @@
 
 package com.openai.models.beta.assistants
 
+import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
 import com.openai.core.JsonValue
+import com.openai.core.jsonMapper
 import com.openai.models.beta.threads.Thread
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
@@ -68,5 +70,47 @@ internal class ThreadStreamEventTest {
                     .build()
             )
         assertThat(threadStreamEvent.enabled()).contains(true)
+    }
+
+    @Test
+    fun roundtrip() {
+        val jsonMapper = jsonMapper()
+        val threadStreamEvent =
+            ThreadStreamEvent.builder()
+                .data(
+                    Thread.builder()
+                        .id("id")
+                        .createdAt(0L)
+                        .metadata(
+                            Thread.Metadata.builder()
+                                .putAdditionalProperty("foo", JsonValue.from("string"))
+                                .build()
+                        )
+                        .toolResources(
+                            Thread.ToolResources.builder()
+                                .codeInterpreter(
+                                    Thread.ToolResources.CodeInterpreter.builder()
+                                        .addFileId("string")
+                                        .build()
+                                )
+                                .fileSearch(
+                                    Thread.ToolResources.FileSearch.builder()
+                                        .addVectorStoreId("string")
+                                        .build()
+                                )
+                                .build()
+                        )
+                        .build()
+                )
+                .enabled(true)
+                .build()
+
+        val roundtrippedThreadStreamEvent =
+            jsonMapper.readValue(
+                jsonMapper.writeValueAsString(threadStreamEvent),
+                jacksonTypeRef<ThreadStreamEvent>(),
+            )
+
+        assertThat(roundtrippedThreadStreamEvent).isEqualTo(threadStreamEvent)
     }
 }
