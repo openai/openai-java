@@ -15,6 +15,7 @@ import com.openai.core.checkRequired
 import com.openai.errors.OpenAIInvalidDataException
 import java.util.Collections
 import java.util.Objects
+import kotlin.jvm.optionals.getOrNull
 
 /** A batch of files attached to a vector store. */
 class VectorStoreFileBatch
@@ -327,10 +328,32 @@ private constructor(
                 throw OpenAIInvalidDataException("'object_' is invalid, received $it")
             }
         }
-        status()
+        status().validate()
         vectorStoreId()
         validated = true
     }
+
+    fun isValid(): Boolean =
+        try {
+            validate()
+            true
+        } catch (e: OpenAIInvalidDataException) {
+            false
+        }
+
+    /**
+     * Returns a score indicating how many valid values are contained in this object recursively.
+     *
+     * Used for best match union deserialization.
+     */
+    @JvmSynthetic
+    internal fun validity(): Int =
+        (if (id.asKnown().isPresent) 1 else 0) +
+            (if (createdAt.asKnown().isPresent) 1 else 0) +
+            (fileCounts.asKnown().getOrNull()?.validity() ?: 0) +
+            object_.let { if (it == JsonValue.from("vector_store.files_batch")) 1 else 0 } +
+            (status.asKnown().getOrNull()?.validity() ?: 0) +
+            (if (vectorStoreId.asKnown().isPresent) 1 else 0)
 
     class FileCounts
     private constructor(
@@ -602,6 +625,28 @@ private constructor(
             validated = true
         }
 
+        fun isValid(): Boolean =
+            try {
+                validate()
+                true
+            } catch (e: OpenAIInvalidDataException) {
+                false
+            }
+
+        /**
+         * Returns a score indicating how many valid values are contained in this object
+         * recursively.
+         *
+         * Used for best match union deserialization.
+         */
+        @JvmSynthetic
+        internal fun validity(): Int =
+            (if (cancelled.asKnown().isPresent) 1 else 0) +
+                (if (completed.asKnown().isPresent) 1 else 0) +
+                (if (failed.asKnown().isPresent) 1 else 0) +
+                (if (inProgress.asKnown().isPresent) 1 else 0) +
+                (if (total.asKnown().isPresent) 1 else 0)
+
         override fun equals(other: Any?): Boolean {
             if (this === other) {
                 return true
@@ -720,6 +765,33 @@ private constructor(
          */
         fun asString(): String =
             _value().asString().orElseThrow { OpenAIInvalidDataException("Value is not a String") }
+
+        private var validated: Boolean = false
+
+        fun validate(): Status = apply {
+            if (validated) {
+                return@apply
+            }
+
+            known()
+            validated = true
+        }
+
+        fun isValid(): Boolean =
+            try {
+                validate()
+                true
+            } catch (e: OpenAIInvalidDataException) {
+                false
+            }
+
+        /**
+         * Returns a score indicating how many valid values are contained in this object
+         * recursively.
+         *
+         * Used for best match union deserialization.
+         */
+        @JvmSynthetic internal fun validity(): Int = if (value() == Value._UNKNOWN) 0 else 1
 
         override fun equals(other: Any?): Boolean {
             if (this === other) {

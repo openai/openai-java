@@ -476,6 +476,30 @@ private constructor(
         validated = true
     }
 
+    fun isValid(): Boolean =
+        try {
+            validate()
+            true
+        } catch (e: OpenAIInvalidDataException) {
+            false
+        }
+
+    /**
+     * Returns a score indicating how many valid values are contained in this object recursively.
+     *
+     * Used for best match union deserialization.
+     */
+    @JvmSynthetic
+    internal fun validity(): Int =
+        (if (content.asKnown().isPresent) 1 else 0) +
+            (if (refusal.asKnown().isPresent) 1 else 0) +
+            role.let { if (it == JsonValue.from("assistant")) 1 else 0 } +
+            (annotations.asKnown().getOrNull()?.sumOf { it.validity().toInt() } ?: 0) +
+            (audio.asKnown().getOrNull()?.validity() ?: 0) +
+            (functionCall.asKnown().getOrNull()?.validity() ?: 0) +
+            (toolCalls.asKnown().getOrNull()?.sumOf { it.validity().toInt() } ?: 0) +
+            (if (id.asKnown().isPresent) 1 else 0)
+
     override fun equals(other: Any?): Boolean {
         if (this === other) {
             return true

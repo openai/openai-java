@@ -16,6 +16,7 @@ import com.openai.errors.OpenAIInvalidDataException
 import java.util.Collections
 import java.util.Objects
 import java.util.Optional
+import kotlin.jvm.optionals.getOrNull
 
 class FileSearchTool
 private constructor(
@@ -164,6 +165,24 @@ private constructor(
         fileSearch().ifPresent { it.validate() }
         validated = true
     }
+
+    fun isValid(): Boolean =
+        try {
+            validate()
+            true
+        } catch (e: OpenAIInvalidDataException) {
+            false
+        }
+
+    /**
+     * Returns a score indicating how many valid values are contained in this object recursively.
+     *
+     * Used for best match union deserialization.
+     */
+    @JvmSynthetic
+    internal fun validity(): Int =
+        type.let { if (it == JsonValue.from("file_search")) 1 else 0 } +
+            (fileSearch.asKnown().getOrNull()?.validity() ?: 0)
 
     /** Overrides for the file search tool. */
     class FileSearch
@@ -349,6 +368,25 @@ private constructor(
             validated = true
         }
 
+        fun isValid(): Boolean =
+            try {
+                validate()
+                true
+            } catch (e: OpenAIInvalidDataException) {
+                false
+            }
+
+        /**
+         * Returns a score indicating how many valid values are contained in this object
+         * recursively.
+         *
+         * Used for best match union deserialization.
+         */
+        @JvmSynthetic
+        internal fun validity(): Int =
+            (if (maxNumResults.asKnown().isPresent) 1 else 0) +
+                (rankingOptions.asKnown().getOrNull()?.validity() ?: 0)
+
         /**
          * The ranking options for the file search. If not specified, the file search tool will use
          * the `auto` ranker and a score_threshold of 0.
@@ -529,9 +567,28 @@ private constructor(
                 }
 
                 scoreThreshold()
-                ranker()
+                ranker().ifPresent { it.validate() }
                 validated = true
             }
+
+            fun isValid(): Boolean =
+                try {
+                    validate()
+                    true
+                } catch (e: OpenAIInvalidDataException) {
+                    false
+                }
+
+            /**
+             * Returns a score indicating how many valid values are contained in this object
+             * recursively.
+             *
+             * Used for best match union deserialization.
+             */
+            @JvmSynthetic
+            internal fun validity(): Int =
+                (if (scoreThreshold.asKnown().isPresent) 1 else 0) +
+                    (ranker.asKnown().getOrNull()?.validity() ?: 0)
 
             /**
              * The ranker to use for the file search. If not specified will use the `auto` ranker.
@@ -626,6 +683,33 @@ private constructor(
                     _value().asString().orElseThrow {
                         OpenAIInvalidDataException("Value is not a String")
                     }
+
+                private var validated: Boolean = false
+
+                fun validate(): Ranker = apply {
+                    if (validated) {
+                        return@apply
+                    }
+
+                    known()
+                    validated = true
+                }
+
+                fun isValid(): Boolean =
+                    try {
+                        validate()
+                        true
+                    } catch (e: OpenAIInvalidDataException) {
+                        false
+                    }
+
+                /**
+                 * Returns a score indicating how many valid values are contained in this object
+                 * recursively.
+                 *
+                 * Used for best match union deserialization.
+                 */
+                @JvmSynthetic internal fun validity(): Int = if (value() == Value._UNKNOWN) 0 else 1
 
                 override fun equals(other: Any?): Boolean {
                     if (this === other) {

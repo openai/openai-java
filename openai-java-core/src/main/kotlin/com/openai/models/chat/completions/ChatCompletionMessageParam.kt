@@ -97,8 +97,8 @@ private constructor(
 
     fun _json(): Optional<JsonValue> = Optional.ofNullable(_json)
 
-    fun <T> accept(visitor: Visitor<T>): T {
-        return when {
+    fun <T> accept(visitor: Visitor<T>): T =
+        when {
             developer != null -> visitor.visitDeveloper(developer)
             system != null -> visitor.visitSystem(system)
             user != null -> visitor.visitUser(user)
@@ -107,7 +107,6 @@ private constructor(
             function != null -> visitor.visitFunction(function)
             else -> visitor.unknown(_json)
         }
-    }
 
     private var validated: Boolean = false
 
@@ -145,6 +144,43 @@ private constructor(
         )
         validated = true
     }
+
+    fun isValid(): Boolean =
+        try {
+            validate()
+            true
+        } catch (e: OpenAIInvalidDataException) {
+            false
+        }
+
+    /**
+     * Returns a score indicating how many valid values are contained in this object recursively.
+     *
+     * Used for best match union deserialization.
+     */
+    @JvmSynthetic
+    internal fun validity(): Int =
+        accept(
+            object : Visitor<Int> {
+                override fun visitDeveloper(developer: ChatCompletionDeveloperMessageParam) =
+                    developer.validity()
+
+                override fun visitSystem(system: ChatCompletionSystemMessageParam) =
+                    system.validity()
+
+                override fun visitUser(user: ChatCompletionUserMessageParam) = user.validity()
+
+                override fun visitAssistant(assistant: ChatCompletionAssistantMessageParam) =
+                    assistant.validity()
+
+                override fun visitTool(tool: ChatCompletionToolMessageParam) = tool.validity()
+
+                override fun visitFunction(function: ChatCompletionFunctionMessageParam) =
+                    function.validity()
+
+                override fun unknown(json: JsonValue?) = 0
+            }
+        )
 
     override fun equals(other: Any?): Boolean {
         if (this === other) {
@@ -258,50 +294,43 @@ private constructor(
 
             when (role) {
                 "developer" -> {
-                    return ChatCompletionMessageParam(
-                        developer =
-                            deserialize(
-                                node,
-                                jacksonTypeRef<ChatCompletionDeveloperMessageParam>(),
-                            ),
-                        _json = json,
-                    )
+                    return tryDeserialize(
+                            node,
+                            jacksonTypeRef<ChatCompletionDeveloperMessageParam>(),
+                        )
+                        ?.let { ChatCompletionMessageParam(developer = it, _json = json) }
+                        ?: ChatCompletionMessageParam(_json = json)
                 }
                 "system" -> {
-                    return ChatCompletionMessageParam(
-                        system =
-                            deserialize(node, jacksonTypeRef<ChatCompletionSystemMessageParam>()),
-                        _json = json,
-                    )
+                    return tryDeserialize(node, jacksonTypeRef<ChatCompletionSystemMessageParam>())
+                        ?.let { ChatCompletionMessageParam(system = it, _json = json) }
+                        ?: ChatCompletionMessageParam(_json = json)
                 }
                 "user" -> {
-                    return ChatCompletionMessageParam(
-                        user = deserialize(node, jacksonTypeRef<ChatCompletionUserMessageParam>()),
-                        _json = json,
-                    )
+                    return tryDeserialize(node, jacksonTypeRef<ChatCompletionUserMessageParam>())
+                        ?.let { ChatCompletionMessageParam(user = it, _json = json) }
+                        ?: ChatCompletionMessageParam(_json = json)
                 }
                 "assistant" -> {
-                    return ChatCompletionMessageParam(
-                        assistant =
-                            deserialize(
-                                node,
-                                jacksonTypeRef<ChatCompletionAssistantMessageParam>(),
-                            ),
-                        _json = json,
-                    )
+                    return tryDeserialize(
+                            node,
+                            jacksonTypeRef<ChatCompletionAssistantMessageParam>(),
+                        )
+                        ?.let { ChatCompletionMessageParam(assistant = it, _json = json) }
+                        ?: ChatCompletionMessageParam(_json = json)
                 }
                 "tool" -> {
-                    return ChatCompletionMessageParam(
-                        tool = deserialize(node, jacksonTypeRef<ChatCompletionToolMessageParam>()),
-                        _json = json,
-                    )
+                    return tryDeserialize(node, jacksonTypeRef<ChatCompletionToolMessageParam>())
+                        ?.let { ChatCompletionMessageParam(tool = it, _json = json) }
+                        ?: ChatCompletionMessageParam(_json = json)
                 }
                 "function" -> {
-                    return ChatCompletionMessageParam(
-                        function =
-                            deserialize(node, jacksonTypeRef<ChatCompletionFunctionMessageParam>()),
-                        _json = json,
-                    )
+                    return tryDeserialize(
+                            node,
+                            jacksonTypeRef<ChatCompletionFunctionMessageParam>(),
+                        )
+                        ?.let { ChatCompletionMessageParam(function = it, _json = json) }
+                        ?: ChatCompletionMessageParam(_json = json)
                 }
             }
 

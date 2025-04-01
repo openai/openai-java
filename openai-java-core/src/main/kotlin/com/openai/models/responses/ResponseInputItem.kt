@@ -20,6 +20,7 @@ import com.openai.core.ExcludeMissing
 import com.openai.core.JsonField
 import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
+import com.openai.core.allMaxBy
 import com.openai.core.checkKnown
 import com.openai.core.checkRequired
 import com.openai.core.getOrThrow
@@ -202,8 +203,8 @@ private constructor(
 
     fun _json(): Optional<JsonValue> = Optional.ofNullable(_json)
 
-    fun <T> accept(visitor: Visitor<T>): T {
-        return when {
+    fun <T> accept(visitor: Visitor<T>): T =
+        when {
             easyInputMessage != null -> visitor.visitEasyInputMessage(easyInputMessage)
             message != null -> visitor.visitMessage(message)
             responseOutputMessage != null ->
@@ -218,7 +219,6 @@ private constructor(
             itemReference != null -> visitor.visitItemReference(itemReference)
             else -> visitor.unknown(_json)
         }
-    }
 
     private var validated: Boolean = false
 
@@ -278,6 +278,59 @@ private constructor(
         )
         validated = true
     }
+
+    fun isValid(): Boolean =
+        try {
+            validate()
+            true
+        } catch (e: OpenAIInvalidDataException) {
+            false
+        }
+
+    /**
+     * Returns a score indicating how many valid values are contained in this object recursively.
+     *
+     * Used for best match union deserialization.
+     */
+    @JvmSynthetic
+    internal fun validity(): Int =
+        accept(
+            object : Visitor<Int> {
+                override fun visitEasyInputMessage(easyInputMessage: EasyInputMessage) =
+                    easyInputMessage.validity()
+
+                override fun visitMessage(message: Message) = message.validity()
+
+                override fun visitResponseOutputMessage(
+                    responseOutputMessage: ResponseOutputMessage
+                ) = responseOutputMessage.validity()
+
+                override fun visitFileSearchCall(fileSearchCall: ResponseFileSearchToolCall) =
+                    fileSearchCall.validity()
+
+                override fun visitComputerCall(computerCall: ResponseComputerToolCall) =
+                    computerCall.validity()
+
+                override fun visitComputerCallOutput(computerCallOutput: ComputerCallOutput) =
+                    computerCallOutput.validity()
+
+                override fun visitWebSearchCall(webSearchCall: ResponseFunctionWebSearch) =
+                    webSearchCall.validity()
+
+                override fun visitFunctionCall(functionCall: ResponseFunctionToolCall) =
+                    functionCall.validity()
+
+                override fun visitFunctionCallOutput(functionCallOutput: FunctionCallOutput) =
+                    functionCallOutput.validity()
+
+                override fun visitReasoning(reasoning: ResponseReasoningItem) = reasoning.validity()
+
+                override fun visitItemReference(itemReference: ItemReference) =
+                    itemReference.validity()
+
+                override fun unknown(json: JsonValue?) = 0
+            }
+        )
 
     override fun equals(other: Any?): Boolean {
         if (this === other) {
@@ -482,72 +535,71 @@ private constructor(
 
             when (type) {
                 "message" -> {
-                    tryDeserialize(node, jacksonTypeRef<EasyInputMessage>()) { it.validate() }
-                        ?.let {
-                            return ResponseInputItem(easyInputMessage = it, _json = json)
-                        }
-                    tryDeserialize(node, jacksonTypeRef<Message>()) { it.validate() }
-                        ?.let {
-                            return ResponseInputItem(message = it, _json = json)
-                        }
-                    tryDeserialize(node, jacksonTypeRef<ResponseOutputMessage>()) { it.validate() }
-                        ?.let {
-                            return ResponseInputItem(responseOutputMessage = it, _json = json)
-                        }
+                    val bestMatches =
+                        sequenceOf(
+                                tryDeserialize(node, jacksonTypeRef<EasyInputMessage>())?.let {
+                                    ResponseInputItem(easyInputMessage = it, _json = json)
+                                },
+                                tryDeserialize(node, jacksonTypeRef<Message>())?.let {
+                                    ResponseInputItem(message = it, _json = json)
+                                },
+                                tryDeserialize(node, jacksonTypeRef<ResponseOutputMessage>())?.let {
+                                    ResponseInputItem(responseOutputMessage = it, _json = json)
+                                },
+                            )
+                            .filterNotNull()
+                            .allMaxBy { it.validity() }
+                            .toList()
+                    return when (bestMatches.size) {
+                        // This can happen if what we're deserializing is completely incompatible
+                        // with all the possible variants (e.g. deserializing from boolean).
+                        0 -> ResponseInputItem(_json = json)
+                        1 -> bestMatches.single()
+                        // If there's more than one match with the highest validity, then use the
+                        // first completely valid match, or simply the first match if none are
+                        // completely valid.
+                        else -> bestMatches.firstOrNull { it.isValid() } ?: bestMatches.first()
+                    }
                 }
                 "file_search_call" -> {
-                    return ResponseInputItem(
-                        fileSearchCall =
-                            deserialize(node, jacksonTypeRef<ResponseFileSearchToolCall>()),
-                        _json = json,
-                    )
+                    return tryDeserialize(node, jacksonTypeRef<ResponseFileSearchToolCall>())?.let {
+                        ResponseInputItem(fileSearchCall = it, _json = json)
+                    } ?: ResponseInputItem(_json = json)
                 }
                 "computer_call" -> {
-                    return ResponseInputItem(
-                        computerCall =
-                            deserialize(node, jacksonTypeRef<ResponseComputerToolCall>()),
-                        _json = json,
-                    )
+                    return tryDeserialize(node, jacksonTypeRef<ResponseComputerToolCall>())?.let {
+                        ResponseInputItem(computerCall = it, _json = json)
+                    } ?: ResponseInputItem(_json = json)
                 }
                 "computer_call_output" -> {
-                    return ResponseInputItem(
-                        computerCallOutput =
-                            deserialize(node, jacksonTypeRef<ComputerCallOutput>()),
-                        _json = json,
-                    )
+                    return tryDeserialize(node, jacksonTypeRef<ComputerCallOutput>())?.let {
+                        ResponseInputItem(computerCallOutput = it, _json = json)
+                    } ?: ResponseInputItem(_json = json)
                 }
                 "web_search_call" -> {
-                    return ResponseInputItem(
-                        webSearchCall =
-                            deserialize(node, jacksonTypeRef<ResponseFunctionWebSearch>()),
-                        _json = json,
-                    )
+                    return tryDeserialize(node, jacksonTypeRef<ResponseFunctionWebSearch>())?.let {
+                        ResponseInputItem(webSearchCall = it, _json = json)
+                    } ?: ResponseInputItem(_json = json)
                 }
                 "function_call" -> {
-                    return ResponseInputItem(
-                        functionCall =
-                            deserialize(node, jacksonTypeRef<ResponseFunctionToolCall>()),
-                        _json = json,
-                    )
+                    return tryDeserialize(node, jacksonTypeRef<ResponseFunctionToolCall>())?.let {
+                        ResponseInputItem(functionCall = it, _json = json)
+                    } ?: ResponseInputItem(_json = json)
                 }
                 "function_call_output" -> {
-                    return ResponseInputItem(
-                        functionCallOutput =
-                            deserialize(node, jacksonTypeRef<FunctionCallOutput>()),
-                        _json = json,
-                    )
+                    return tryDeserialize(node, jacksonTypeRef<FunctionCallOutput>())?.let {
+                        ResponseInputItem(functionCallOutput = it, _json = json)
+                    } ?: ResponseInputItem(_json = json)
                 }
                 "reasoning" -> {
-                    return ResponseInputItem(
-                        reasoning = deserialize(node, jacksonTypeRef<ResponseReasoningItem>()),
-                        _json = json,
-                    )
+                    return tryDeserialize(node, jacksonTypeRef<ResponseReasoningItem>())?.let {
+                        ResponseInputItem(reasoning = it, _json = json)
+                    } ?: ResponseInputItem(_json = json)
                 }
                 "item_reference" -> {
-                    return ResponseInputItem(
-                        itemReference = deserialize(node, jacksonTypeRef<ItemReference>()),
-                        _json = json,
-                    )
+                    return tryDeserialize(node, jacksonTypeRef<ItemReference>())?.let {
+                        ResponseInputItem(itemReference = it, _json = json)
+                    } ?: ResponseInputItem(_json = json)
                 }
             }
 
@@ -869,11 +921,32 @@ private constructor(
             }
 
             content().forEach { it.validate() }
-            role()
-            status()
-            type()
+            role().validate()
+            status().ifPresent { it.validate() }
+            type().ifPresent { it.validate() }
             validated = true
         }
+
+        fun isValid(): Boolean =
+            try {
+                validate()
+                true
+            } catch (e: OpenAIInvalidDataException) {
+                false
+            }
+
+        /**
+         * Returns a score indicating how many valid values are contained in this object
+         * recursively.
+         *
+         * Used for best match union deserialization.
+         */
+        @JvmSynthetic
+        internal fun validity(): Int =
+            (content.asKnown().getOrNull()?.sumOf { it.validity().toInt() } ?: 0) +
+                (role.asKnown().getOrNull()?.validity() ?: 0) +
+                (status.asKnown().getOrNull()?.validity() ?: 0) +
+                (type.asKnown().getOrNull()?.validity() ?: 0)
 
         /** The role of the message input. One of `user`, `system`, or `developer`. */
         class Role @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
@@ -968,6 +1041,33 @@ private constructor(
                 _value().asString().orElseThrow {
                     OpenAIInvalidDataException("Value is not a String")
                 }
+
+            private var validated: Boolean = false
+
+            fun validate(): Role = apply {
+                if (validated) {
+                    return@apply
+                }
+
+                known()
+                validated = true
+            }
+
+            fun isValid(): Boolean =
+                try {
+                    validate()
+                    true
+                } catch (e: OpenAIInvalidDataException) {
+                    false
+                }
+
+            /**
+             * Returns a score indicating how many valid values are contained in this object
+             * recursively.
+             *
+             * Used for best match union deserialization.
+             */
+            @JvmSynthetic internal fun validity(): Int = if (value() == Value._UNKNOWN) 0 else 1
 
             override fun equals(other: Any?): Boolean {
                 if (this === other) {
@@ -1081,6 +1181,33 @@ private constructor(
                     OpenAIInvalidDataException("Value is not a String")
                 }
 
+            private var validated: Boolean = false
+
+            fun validate(): Status = apply {
+                if (validated) {
+                    return@apply
+                }
+
+                known()
+                validated = true
+            }
+
+            fun isValid(): Boolean =
+                try {
+                    validate()
+                    true
+                } catch (e: OpenAIInvalidDataException) {
+                    false
+                }
+
+            /**
+             * Returns a score indicating how many valid values are contained in this object
+             * recursively.
+             *
+             * Used for best match union deserialization.
+             */
+            @JvmSynthetic internal fun validity(): Int = if (value() == Value._UNKNOWN) 0 else 1
+
             override fun equals(other: Any?): Boolean {
                 if (this === other) {
                     return true
@@ -1175,6 +1302,33 @@ private constructor(
                 _value().asString().orElseThrow {
                     OpenAIInvalidDataException("Value is not a String")
                 }
+
+            private var validated: Boolean = false
+
+            fun validate(): Type = apply {
+                if (validated) {
+                    return@apply
+                }
+
+                known()
+                validated = true
+            }
+
+            fun isValid(): Boolean =
+                try {
+                    validate()
+                    true
+                } catch (e: OpenAIInvalidDataException) {
+                    false
+                }
+
+            /**
+             * Returns a score indicating how many valid values are contained in this object
+             * recursively.
+             *
+             * Used for best match union deserialization.
+             */
+            @JvmSynthetic internal fun validity(): Int = if (value() == Value._UNKNOWN) 0 else 1
 
             override fun equals(other: Any?): Boolean {
                 if (this === other) {
@@ -1539,9 +1693,33 @@ private constructor(
             }
             id()
             acknowledgedSafetyChecks().ifPresent { it.forEach { it.validate() } }
-            status()
+            status().ifPresent { it.validate() }
             validated = true
         }
+
+        fun isValid(): Boolean =
+            try {
+                validate()
+                true
+            } catch (e: OpenAIInvalidDataException) {
+                false
+            }
+
+        /**
+         * Returns a score indicating how many valid values are contained in this object
+         * recursively.
+         *
+         * Used for best match union deserialization.
+         */
+        @JvmSynthetic
+        internal fun validity(): Int =
+            (if (callId.asKnown().isPresent) 1 else 0) +
+                (output.asKnown().getOrNull()?.validity() ?: 0) +
+                type.let { if (it == JsonValue.from("computer_call_output")) 1 else 0 } +
+                (if (id.asKnown().isPresent) 1 else 0) +
+                (acknowledgedSafetyChecks.asKnown().getOrNull()?.sumOf { it.validity().toInt() }
+                    ?: 0) +
+                (status.asKnown().getOrNull()?.validity() ?: 0)
 
         /** A pending safety check for the computer call. */
         class AcknowledgedSafetyCheck
@@ -1748,6 +1926,26 @@ private constructor(
                 validated = true
             }
 
+            fun isValid(): Boolean =
+                try {
+                    validate()
+                    true
+                } catch (e: OpenAIInvalidDataException) {
+                    false
+                }
+
+            /**
+             * Returns a score indicating how many valid values are contained in this object
+             * recursively.
+             *
+             * Used for best match union deserialization.
+             */
+            @JvmSynthetic
+            internal fun validity(): Int =
+                (if (id.asKnown().isPresent) 1 else 0) +
+                    (if (code.asKnown().isPresent) 1 else 0) +
+                    (if (message.asKnown().isPresent) 1 else 0)
+
             override fun equals(other: Any?): Boolean {
                 if (this === other) {
                     return true
@@ -1864,6 +2062,33 @@ private constructor(
                 _value().asString().orElseThrow {
                     OpenAIInvalidDataException("Value is not a String")
                 }
+
+            private var validated: Boolean = false
+
+            fun validate(): Status = apply {
+                if (validated) {
+                    return@apply
+                }
+
+                known()
+                validated = true
+            }
+
+            fun isValid(): Boolean =
+                try {
+                    validate()
+                    true
+                } catch (e: OpenAIInvalidDataException) {
+                    false
+                }
+
+            /**
+             * Returns a score indicating how many valid values are contained in this object
+             * recursively.
+             *
+             * Used for best match union deserialization.
+             */
+            @JvmSynthetic internal fun validity(): Int = if (value() == Value._UNKNOWN) 0 else 1
 
             override fun equals(other: Any?): Boolean {
                 if (this === other) {
@@ -2163,9 +2388,31 @@ private constructor(
                 }
             }
             id()
-            status()
+            status().ifPresent { it.validate() }
             validated = true
         }
+
+        fun isValid(): Boolean =
+            try {
+                validate()
+                true
+            } catch (e: OpenAIInvalidDataException) {
+                false
+            }
+
+        /**
+         * Returns a score indicating how many valid values are contained in this object
+         * recursively.
+         *
+         * Used for best match union deserialization.
+         */
+        @JvmSynthetic
+        internal fun validity(): Int =
+            (if (callId.asKnown().isPresent) 1 else 0) +
+                (if (output.asKnown().isPresent) 1 else 0) +
+                type.let { if (it == JsonValue.from("function_call_output")) 1 else 0 } +
+                (if (id.asKnown().isPresent) 1 else 0) +
+                (status.asKnown().getOrNull()?.validity() ?: 0)
 
         /**
          * The status of the item. One of `in_progress`, `completed`, or `incomplete`. Populated
@@ -2265,6 +2512,33 @@ private constructor(
                 _value().asString().orElseThrow {
                     OpenAIInvalidDataException("Value is not a String")
                 }
+
+            private var validated: Boolean = false
+
+            fun validate(): Status = apply {
+                if (validated) {
+                    return@apply
+                }
+
+                known()
+                validated = true
+            }
+
+            fun isValid(): Boolean =
+                try {
+                    validate()
+                    true
+                } catch (e: OpenAIInvalidDataException) {
+                    false
+                }
+
+            /**
+             * Returns a score indicating how many valid values are contained in this object
+             * recursively.
+             *
+             * Used for best match union deserialization.
+             */
+            @JvmSynthetic internal fun validity(): Int = if (value() == Value._UNKNOWN) 0 else 1
 
             override fun equals(other: Any?): Boolean {
                 if (this === other) {
@@ -2454,6 +2728,25 @@ private constructor(
             }
             validated = true
         }
+
+        fun isValid(): Boolean =
+            try {
+                validate()
+                true
+            } catch (e: OpenAIInvalidDataException) {
+                false
+            }
+
+        /**
+         * Returns a score indicating how many valid values are contained in this object
+         * recursively.
+         *
+         * Used for best match union deserialization.
+         */
+        @JvmSynthetic
+        internal fun validity(): Int =
+            (if (id.asKnown().isPresent) 1 else 0) +
+                type.let { if (it == JsonValue.from("item_reference")) 1 else 0 }
 
         override fun equals(other: Any?): Boolean {
             if (this === other) {

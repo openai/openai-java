@@ -15,6 +15,7 @@ import com.openai.errors.OpenAIInvalidDataException
 import java.util.Collections
 import java.util.Objects
 import java.util.Optional
+import kotlin.jvm.optionals.getOrNull
 
 /**
  * The `fine_tuning.job.checkpoint` object represents a model checkpoint for a fine-tuning job that
@@ -377,6 +378,29 @@ private constructor(
         validated = true
     }
 
+    fun isValid(): Boolean =
+        try {
+            validate()
+            true
+        } catch (e: OpenAIInvalidDataException) {
+            false
+        }
+
+    /**
+     * Returns a score indicating how many valid values are contained in this object recursively.
+     *
+     * Used for best match union deserialization.
+     */
+    @JvmSynthetic
+    internal fun validity(): Int =
+        (if (id.asKnown().isPresent) 1 else 0) +
+            (if (createdAt.asKnown().isPresent) 1 else 0) +
+            (if (fineTunedModelCheckpoint.asKnown().isPresent) 1 else 0) +
+            (if (fineTuningJobId.asKnown().isPresent) 1 else 0) +
+            (metrics.asKnown().getOrNull()?.validity() ?: 0) +
+            object_.let { if (it == JsonValue.from("fine_tuning.job.checkpoint")) 1 else 0 } +
+            (if (stepNumber.asKnown().isPresent) 1 else 0)
+
     /** Metrics at the step number during the fine-tuning job. */
     class Metrics
     private constructor(
@@ -714,6 +738,30 @@ private constructor(
             validMeanTokenAccuracy()
             validated = true
         }
+
+        fun isValid(): Boolean =
+            try {
+                validate()
+                true
+            } catch (e: OpenAIInvalidDataException) {
+                false
+            }
+
+        /**
+         * Returns a score indicating how many valid values are contained in this object
+         * recursively.
+         *
+         * Used for best match union deserialization.
+         */
+        @JvmSynthetic
+        internal fun validity(): Int =
+            (if (fullValidLoss.asKnown().isPresent) 1 else 0) +
+                (if (fullValidMeanTokenAccuracy.asKnown().isPresent) 1 else 0) +
+                (if (step.asKnown().isPresent) 1 else 0) +
+                (if (trainLoss.asKnown().isPresent) 1 else 0) +
+                (if (trainMeanTokenAccuracy.asKnown().isPresent) 1 else 0) +
+                (if (validLoss.asKnown().isPresent) 1 else 0) +
+                (if (validMeanTokenAccuracy.asKnown().isPresent) 1 else 0)
 
         override fun equals(other: Any?): Boolean {
             if (this === other) {

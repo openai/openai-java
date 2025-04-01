@@ -357,8 +357,8 @@ private constructor(
 
     fun _json(): Optional<JsonValue> = Optional.ofNullable(_json)
 
-    fun <T> accept(visitor: Visitor<T>): T {
-        return when {
+    fun <T> accept(visitor: Visitor<T>): T =
+        when {
             audioDelta != null -> visitor.visitAudioDelta(audioDelta)
             audioDone != null -> visitor.visitAudioDone(audioDone)
             audioTranscriptDelta != null -> visitor.visitAudioTranscriptDelta(audioTranscriptDelta)
@@ -407,7 +407,6 @@ private constructor(
                 visitor.visitWebSearchCallSearching(webSearchCallSearching)
             else -> visitor.unknown(_json)
         }
-    }
 
     private var validated: Boolean = false
 
@@ -583,6 +582,137 @@ private constructor(
         )
         validated = true
     }
+
+    fun isValid(): Boolean =
+        try {
+            validate()
+            true
+        } catch (e: OpenAIInvalidDataException) {
+            false
+        }
+
+    /**
+     * Returns a score indicating how many valid values are contained in this object recursively.
+     *
+     * Used for best match union deserialization.
+     */
+    @JvmSynthetic
+    internal fun validity(): Int =
+        accept(
+            object : Visitor<Int> {
+                override fun visitAudioDelta(audioDelta: ResponseAudioDeltaEvent) =
+                    audioDelta.validity()
+
+                override fun visitAudioDone(audioDone: ResponseAudioDoneEvent) =
+                    audioDone.validity()
+
+                override fun visitAudioTranscriptDelta(
+                    audioTranscriptDelta: ResponseAudioTranscriptDeltaEvent
+                ) = audioTranscriptDelta.validity()
+
+                override fun visitAudioTranscriptDone(
+                    audioTranscriptDone: ResponseAudioTranscriptDoneEvent
+                ) = audioTranscriptDone.validity()
+
+                override fun visitCodeInterpreterCallCodeDelta(
+                    codeInterpreterCallCodeDelta: ResponseCodeInterpreterCallCodeDeltaEvent
+                ) = codeInterpreterCallCodeDelta.validity()
+
+                override fun visitCodeInterpreterCallCodeDone(
+                    codeInterpreterCallCodeDone: ResponseCodeInterpreterCallCodeDoneEvent
+                ) = codeInterpreterCallCodeDone.validity()
+
+                override fun visitCodeInterpreterCallCompleted(
+                    codeInterpreterCallCompleted: ResponseCodeInterpreterCallCompletedEvent
+                ) = codeInterpreterCallCompleted.validity()
+
+                override fun visitCodeInterpreterCallInProgress(
+                    codeInterpreterCallInProgress: ResponseCodeInterpreterCallInProgressEvent
+                ) = codeInterpreterCallInProgress.validity()
+
+                override fun visitCodeInterpreterCallInterpreting(
+                    codeInterpreterCallInterpreting: ResponseCodeInterpreterCallInterpretingEvent
+                ) = codeInterpreterCallInterpreting.validity()
+
+                override fun visitCompleted(completed: ResponseCompletedEvent) =
+                    completed.validity()
+
+                override fun visitContentPartAdded(
+                    contentPartAdded: ResponseContentPartAddedEvent
+                ) = contentPartAdded.validity()
+
+                override fun visitContentPartDone(contentPartDone: ResponseContentPartDoneEvent) =
+                    contentPartDone.validity()
+
+                override fun visitCreated(created: ResponseCreatedEvent) = created.validity()
+
+                override fun visitError(error: ResponseErrorEvent) = error.validity()
+
+                override fun visitFileSearchCallCompleted(
+                    fileSearchCallCompleted: ResponseFileSearchCallCompletedEvent
+                ) = fileSearchCallCompleted.validity()
+
+                override fun visitFileSearchCallInProgress(
+                    fileSearchCallInProgress: ResponseFileSearchCallInProgressEvent
+                ) = fileSearchCallInProgress.validity()
+
+                override fun visitFileSearchCallSearching(
+                    fileSearchCallSearching: ResponseFileSearchCallSearchingEvent
+                ) = fileSearchCallSearching.validity()
+
+                override fun visitFunctionCallArgumentsDelta(
+                    functionCallArgumentsDelta: ResponseFunctionCallArgumentsDeltaEvent
+                ) = functionCallArgumentsDelta.validity()
+
+                override fun visitFunctionCallArgumentsDone(
+                    functionCallArgumentsDone: ResponseFunctionCallArgumentsDoneEvent
+                ) = functionCallArgumentsDone.validity()
+
+                override fun visitInProgress(inProgress: ResponseInProgressEvent) =
+                    inProgress.validity()
+
+                override fun visitFailed(failed: ResponseFailedEvent) = failed.validity()
+
+                override fun visitIncomplete(incomplete: ResponseIncompleteEvent) =
+                    incomplete.validity()
+
+                override fun visitOutputItemAdded(outputItemAdded: ResponseOutputItemAddedEvent) =
+                    outputItemAdded.validity()
+
+                override fun visitOutputItemDone(outputItemDone: ResponseOutputItemDoneEvent) =
+                    outputItemDone.validity()
+
+                override fun visitRefusalDelta(refusalDelta: ResponseRefusalDeltaEvent) =
+                    refusalDelta.validity()
+
+                override fun visitRefusalDone(refusalDone: ResponseRefusalDoneEvent) =
+                    refusalDone.validity()
+
+                override fun visitOutputTextAnnotationAdded(
+                    outputTextAnnotationAdded: ResponseTextAnnotationDeltaEvent
+                ) = outputTextAnnotationAdded.validity()
+
+                override fun visitOutputTextDelta(outputTextDelta: ResponseTextDeltaEvent) =
+                    outputTextDelta.validity()
+
+                override fun visitOutputTextDone(outputTextDone: ResponseTextDoneEvent) =
+                    outputTextDone.validity()
+
+                override fun visitWebSearchCallCompleted(
+                    webSearchCallCompleted: ResponseWebSearchCallCompletedEvent
+                ) = webSearchCallCompleted.validity()
+
+                override fun visitWebSearchCallInProgress(
+                    webSearchCallInProgress: ResponseWebSearchCallInProgressEvent
+                ) = webSearchCallInProgress.validity()
+
+                override fun visitWebSearchCallSearching(
+                    webSearchCallSearching: ResponseWebSearchCallSearchingEvent
+                ) = webSearchCallSearching.validity()
+
+                override fun unknown(json: JsonValue?) = 0
+            }
+        )
 
     override fun equals(other: Any?): Boolean {
         if (this === other) {
@@ -972,257 +1102,208 @@ private constructor(
 
             when (type) {
                 "response.audio.delta" -> {
-                    return ResponseStreamEvent(
-                        audioDelta = deserialize(node, jacksonTypeRef<ResponseAudioDeltaEvent>()),
-                        _json = json,
-                    )
+                    return tryDeserialize(node, jacksonTypeRef<ResponseAudioDeltaEvent>())?.let {
+                        ResponseStreamEvent(audioDelta = it, _json = json)
+                    } ?: ResponseStreamEvent(_json = json)
                 }
                 "response.audio.done" -> {
-                    return ResponseStreamEvent(
-                        audioDone = deserialize(node, jacksonTypeRef<ResponseAudioDoneEvent>()),
-                        _json = json,
-                    )
+                    return tryDeserialize(node, jacksonTypeRef<ResponseAudioDoneEvent>())?.let {
+                        ResponseStreamEvent(audioDone = it, _json = json)
+                    } ?: ResponseStreamEvent(_json = json)
                 }
                 "response.audio.transcript.delta" -> {
-                    return ResponseStreamEvent(
-                        audioTranscriptDelta =
-                            deserialize(node, jacksonTypeRef<ResponseAudioTranscriptDeltaEvent>()),
-                        _json = json,
-                    )
+                    return tryDeserialize(node, jacksonTypeRef<ResponseAudioTranscriptDeltaEvent>())
+                        ?.let { ResponseStreamEvent(audioTranscriptDelta = it, _json = json) }
+                        ?: ResponseStreamEvent(_json = json)
                 }
                 "response.audio.transcript.done" -> {
-                    return ResponseStreamEvent(
-                        audioTranscriptDone =
-                            deserialize(node, jacksonTypeRef<ResponseAudioTranscriptDoneEvent>()),
-                        _json = json,
-                    )
+                    return tryDeserialize(node, jacksonTypeRef<ResponseAudioTranscriptDoneEvent>())
+                        ?.let { ResponseStreamEvent(audioTranscriptDone = it, _json = json) }
+                        ?: ResponseStreamEvent(_json = json)
                 }
                 "response.code_interpreter_call.code.delta" -> {
-                    return ResponseStreamEvent(
-                        codeInterpreterCallCodeDelta =
-                            deserialize(
-                                node,
-                                jacksonTypeRef<ResponseCodeInterpreterCallCodeDeltaEvent>(),
-                            ),
-                        _json = json,
-                    )
+                    return tryDeserialize(
+                            node,
+                            jacksonTypeRef<ResponseCodeInterpreterCallCodeDeltaEvent>(),
+                        )
+                        ?.let {
+                            ResponseStreamEvent(codeInterpreterCallCodeDelta = it, _json = json)
+                        } ?: ResponseStreamEvent(_json = json)
                 }
                 "response.code_interpreter_call.code.done" -> {
-                    return ResponseStreamEvent(
-                        codeInterpreterCallCodeDone =
-                            deserialize(
-                                node,
-                                jacksonTypeRef<ResponseCodeInterpreterCallCodeDoneEvent>(),
-                            ),
-                        _json = json,
-                    )
+                    return tryDeserialize(
+                            node,
+                            jacksonTypeRef<ResponseCodeInterpreterCallCodeDoneEvent>(),
+                        )
+                        ?.let {
+                            ResponseStreamEvent(codeInterpreterCallCodeDone = it, _json = json)
+                        } ?: ResponseStreamEvent(_json = json)
                 }
                 "response.code_interpreter_call.completed" -> {
-                    return ResponseStreamEvent(
-                        codeInterpreterCallCompleted =
-                            deserialize(
-                                node,
-                                jacksonTypeRef<ResponseCodeInterpreterCallCompletedEvent>(),
-                            ),
-                        _json = json,
-                    )
+                    return tryDeserialize(
+                            node,
+                            jacksonTypeRef<ResponseCodeInterpreterCallCompletedEvent>(),
+                        )
+                        ?.let {
+                            ResponseStreamEvent(codeInterpreterCallCompleted = it, _json = json)
+                        } ?: ResponseStreamEvent(_json = json)
                 }
                 "response.code_interpreter_call.in_progress" -> {
-                    return ResponseStreamEvent(
-                        codeInterpreterCallInProgress =
-                            deserialize(
-                                node,
-                                jacksonTypeRef<ResponseCodeInterpreterCallInProgressEvent>(),
-                            ),
-                        _json = json,
-                    )
+                    return tryDeserialize(
+                            node,
+                            jacksonTypeRef<ResponseCodeInterpreterCallInProgressEvent>(),
+                        )
+                        ?.let {
+                            ResponseStreamEvent(codeInterpreterCallInProgress = it, _json = json)
+                        } ?: ResponseStreamEvent(_json = json)
                 }
                 "response.code_interpreter_call.interpreting" -> {
-                    return ResponseStreamEvent(
-                        codeInterpreterCallInterpreting =
-                            deserialize(
-                                node,
-                                jacksonTypeRef<ResponseCodeInterpreterCallInterpretingEvent>(),
-                            ),
-                        _json = json,
-                    )
+                    return tryDeserialize(
+                            node,
+                            jacksonTypeRef<ResponseCodeInterpreterCallInterpretingEvent>(),
+                        )
+                        ?.let {
+                            ResponseStreamEvent(codeInterpreterCallInterpreting = it, _json = json)
+                        } ?: ResponseStreamEvent(_json = json)
                 }
                 "response.completed" -> {
-                    return ResponseStreamEvent(
-                        completed = deserialize(node, jacksonTypeRef<ResponseCompletedEvent>()),
-                        _json = json,
-                    )
+                    return tryDeserialize(node, jacksonTypeRef<ResponseCompletedEvent>())?.let {
+                        ResponseStreamEvent(completed = it, _json = json)
+                    } ?: ResponseStreamEvent(_json = json)
                 }
                 "response.content_part.added" -> {
-                    return ResponseStreamEvent(
-                        contentPartAdded =
-                            deserialize(node, jacksonTypeRef<ResponseContentPartAddedEvent>()),
-                        _json = json,
-                    )
+                    return tryDeserialize(node, jacksonTypeRef<ResponseContentPartAddedEvent>())
+                        ?.let { ResponseStreamEvent(contentPartAdded = it, _json = json) }
+                        ?: ResponseStreamEvent(_json = json)
                 }
                 "response.content_part.done" -> {
-                    return ResponseStreamEvent(
-                        contentPartDone =
-                            deserialize(node, jacksonTypeRef<ResponseContentPartDoneEvent>()),
-                        _json = json,
-                    )
+                    return tryDeserialize(node, jacksonTypeRef<ResponseContentPartDoneEvent>())
+                        ?.let { ResponseStreamEvent(contentPartDone = it, _json = json) }
+                        ?: ResponseStreamEvent(_json = json)
                 }
                 "response.created" -> {
-                    return ResponseStreamEvent(
-                        created = deserialize(node, jacksonTypeRef<ResponseCreatedEvent>()),
-                        _json = json,
-                    )
+                    return tryDeserialize(node, jacksonTypeRef<ResponseCreatedEvent>())?.let {
+                        ResponseStreamEvent(created = it, _json = json)
+                    } ?: ResponseStreamEvent(_json = json)
                 }
                 "error" -> {
-                    return ResponseStreamEvent(
-                        error = deserialize(node, jacksonTypeRef<ResponseErrorEvent>()),
-                        _json = json,
-                    )
+                    return tryDeserialize(node, jacksonTypeRef<ResponseErrorEvent>())?.let {
+                        ResponseStreamEvent(error = it, _json = json)
+                    } ?: ResponseStreamEvent(_json = json)
                 }
                 "response.file_search_call.completed" -> {
-                    return ResponseStreamEvent(
-                        fileSearchCallCompleted =
-                            deserialize(
-                                node,
-                                jacksonTypeRef<ResponseFileSearchCallCompletedEvent>(),
-                            ),
-                        _json = json,
-                    )
+                    return tryDeserialize(
+                            node,
+                            jacksonTypeRef<ResponseFileSearchCallCompletedEvent>(),
+                        )
+                        ?.let { ResponseStreamEvent(fileSearchCallCompleted = it, _json = json) }
+                        ?: ResponseStreamEvent(_json = json)
                 }
                 "response.file_search_call.in_progress" -> {
-                    return ResponseStreamEvent(
-                        fileSearchCallInProgress =
-                            deserialize(
-                                node,
-                                jacksonTypeRef<ResponseFileSearchCallInProgressEvent>(),
-                            ),
-                        _json = json,
-                    )
+                    return tryDeserialize(
+                            node,
+                            jacksonTypeRef<ResponseFileSearchCallInProgressEvent>(),
+                        )
+                        ?.let { ResponseStreamEvent(fileSearchCallInProgress = it, _json = json) }
+                        ?: ResponseStreamEvent(_json = json)
                 }
                 "response.file_search_call.searching" -> {
-                    return ResponseStreamEvent(
-                        fileSearchCallSearching =
-                            deserialize(
-                                node,
-                                jacksonTypeRef<ResponseFileSearchCallSearchingEvent>(),
-                            ),
-                        _json = json,
-                    )
+                    return tryDeserialize(
+                            node,
+                            jacksonTypeRef<ResponseFileSearchCallSearchingEvent>(),
+                        )
+                        ?.let { ResponseStreamEvent(fileSearchCallSearching = it, _json = json) }
+                        ?: ResponseStreamEvent(_json = json)
                 }
                 "response.function_call_arguments.delta" -> {
-                    return ResponseStreamEvent(
-                        functionCallArgumentsDelta =
-                            deserialize(
-                                node,
-                                jacksonTypeRef<ResponseFunctionCallArgumentsDeltaEvent>(),
-                            ),
-                        _json = json,
-                    )
+                    return tryDeserialize(
+                            node,
+                            jacksonTypeRef<ResponseFunctionCallArgumentsDeltaEvent>(),
+                        )
+                        ?.let { ResponseStreamEvent(functionCallArgumentsDelta = it, _json = json) }
+                        ?: ResponseStreamEvent(_json = json)
                 }
                 "response.function_call_arguments.done" -> {
-                    return ResponseStreamEvent(
-                        functionCallArgumentsDone =
-                            deserialize(
-                                node,
-                                jacksonTypeRef<ResponseFunctionCallArgumentsDoneEvent>(),
-                            ),
-                        _json = json,
-                    )
+                    return tryDeserialize(
+                            node,
+                            jacksonTypeRef<ResponseFunctionCallArgumentsDoneEvent>(),
+                        )
+                        ?.let { ResponseStreamEvent(functionCallArgumentsDone = it, _json = json) }
+                        ?: ResponseStreamEvent(_json = json)
                 }
                 "response.in_progress" -> {
-                    return ResponseStreamEvent(
-                        inProgress = deserialize(node, jacksonTypeRef<ResponseInProgressEvent>()),
-                        _json = json,
-                    )
+                    return tryDeserialize(node, jacksonTypeRef<ResponseInProgressEvent>())?.let {
+                        ResponseStreamEvent(inProgress = it, _json = json)
+                    } ?: ResponseStreamEvent(_json = json)
                 }
                 "response.failed" -> {
-                    return ResponseStreamEvent(
-                        failed = deserialize(node, jacksonTypeRef<ResponseFailedEvent>()),
-                        _json = json,
-                    )
+                    return tryDeserialize(node, jacksonTypeRef<ResponseFailedEvent>())?.let {
+                        ResponseStreamEvent(failed = it, _json = json)
+                    } ?: ResponseStreamEvent(_json = json)
                 }
                 "response.incomplete" -> {
-                    return ResponseStreamEvent(
-                        incomplete = deserialize(node, jacksonTypeRef<ResponseIncompleteEvent>()),
-                        _json = json,
-                    )
+                    return tryDeserialize(node, jacksonTypeRef<ResponseIncompleteEvent>())?.let {
+                        ResponseStreamEvent(incomplete = it, _json = json)
+                    } ?: ResponseStreamEvent(_json = json)
                 }
                 "response.output_item.added" -> {
-                    return ResponseStreamEvent(
-                        outputItemAdded =
-                            deserialize(node, jacksonTypeRef<ResponseOutputItemAddedEvent>()),
-                        _json = json,
-                    )
+                    return tryDeserialize(node, jacksonTypeRef<ResponseOutputItemAddedEvent>())
+                        ?.let { ResponseStreamEvent(outputItemAdded = it, _json = json) }
+                        ?: ResponseStreamEvent(_json = json)
                 }
                 "response.output_item.done" -> {
-                    return ResponseStreamEvent(
-                        outputItemDone =
-                            deserialize(node, jacksonTypeRef<ResponseOutputItemDoneEvent>()),
-                        _json = json,
-                    )
+                    return tryDeserialize(node, jacksonTypeRef<ResponseOutputItemDoneEvent>())
+                        ?.let { ResponseStreamEvent(outputItemDone = it, _json = json) }
+                        ?: ResponseStreamEvent(_json = json)
                 }
                 "response.refusal.delta" -> {
-                    return ResponseStreamEvent(
-                        refusalDelta =
-                            deserialize(node, jacksonTypeRef<ResponseRefusalDeltaEvent>()),
-                        _json = json,
-                    )
+                    return tryDeserialize(node, jacksonTypeRef<ResponseRefusalDeltaEvent>())?.let {
+                        ResponseStreamEvent(refusalDelta = it, _json = json)
+                    } ?: ResponseStreamEvent(_json = json)
                 }
                 "response.refusal.done" -> {
-                    return ResponseStreamEvent(
-                        refusalDone = deserialize(node, jacksonTypeRef<ResponseRefusalDoneEvent>()),
-                        _json = json,
-                    )
+                    return tryDeserialize(node, jacksonTypeRef<ResponseRefusalDoneEvent>())?.let {
+                        ResponseStreamEvent(refusalDone = it, _json = json)
+                    } ?: ResponseStreamEvent(_json = json)
                 }
                 "response.output_text.annotation.added" -> {
-                    return ResponseStreamEvent(
-                        outputTextAnnotationAdded =
-                            deserialize(node, jacksonTypeRef<ResponseTextAnnotationDeltaEvent>()),
-                        _json = json,
-                    )
+                    return tryDeserialize(node, jacksonTypeRef<ResponseTextAnnotationDeltaEvent>())
+                        ?.let { ResponseStreamEvent(outputTextAnnotationAdded = it, _json = json) }
+                        ?: ResponseStreamEvent(_json = json)
                 }
                 "response.output_text.delta" -> {
-                    return ResponseStreamEvent(
-                        outputTextDelta =
-                            deserialize(node, jacksonTypeRef<ResponseTextDeltaEvent>()),
-                        _json = json,
-                    )
+                    return tryDeserialize(node, jacksonTypeRef<ResponseTextDeltaEvent>())?.let {
+                        ResponseStreamEvent(outputTextDelta = it, _json = json)
+                    } ?: ResponseStreamEvent(_json = json)
                 }
                 "response.output_text.done" -> {
-                    return ResponseStreamEvent(
-                        outputTextDone = deserialize(node, jacksonTypeRef<ResponseTextDoneEvent>()),
-                        _json = json,
-                    )
+                    return tryDeserialize(node, jacksonTypeRef<ResponseTextDoneEvent>())?.let {
+                        ResponseStreamEvent(outputTextDone = it, _json = json)
+                    } ?: ResponseStreamEvent(_json = json)
                 }
                 "response.web_search_call.completed" -> {
-                    return ResponseStreamEvent(
-                        webSearchCallCompleted =
-                            deserialize(
-                                node,
-                                jacksonTypeRef<ResponseWebSearchCallCompletedEvent>(),
-                            ),
-                        _json = json,
-                    )
+                    return tryDeserialize(
+                            node,
+                            jacksonTypeRef<ResponseWebSearchCallCompletedEvent>(),
+                        )
+                        ?.let { ResponseStreamEvent(webSearchCallCompleted = it, _json = json) }
+                        ?: ResponseStreamEvent(_json = json)
                 }
                 "response.web_search_call.in_progress" -> {
-                    return ResponseStreamEvent(
-                        webSearchCallInProgress =
-                            deserialize(
-                                node,
-                                jacksonTypeRef<ResponseWebSearchCallInProgressEvent>(),
-                            ),
-                        _json = json,
-                    )
+                    return tryDeserialize(
+                            node,
+                            jacksonTypeRef<ResponseWebSearchCallInProgressEvent>(),
+                        )
+                        ?.let { ResponseStreamEvent(webSearchCallInProgress = it, _json = json) }
+                        ?: ResponseStreamEvent(_json = json)
                 }
                 "response.web_search_call.searching" -> {
-                    return ResponseStreamEvent(
-                        webSearchCallSearching =
-                            deserialize(
-                                node,
-                                jacksonTypeRef<ResponseWebSearchCallSearchingEvent>(),
-                            ),
-                        _json = json,
-                    )
+                    return tryDeserialize(
+                            node,
+                            jacksonTypeRef<ResponseWebSearchCallSearchingEvent>(),
+                        )
+                        ?.let { ResponseStreamEvent(webSearchCallSearching = it, _json = json) }
+                        ?: ResponseStreamEvent(_json = json)
                 }
             }
 

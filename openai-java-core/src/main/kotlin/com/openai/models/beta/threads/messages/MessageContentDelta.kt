@@ -73,15 +73,14 @@ private constructor(
 
     fun _json(): Optional<JsonValue> = Optional.ofNullable(_json)
 
-    fun <T> accept(visitor: Visitor<T>): T {
-        return when {
+    fun <T> accept(visitor: Visitor<T>): T =
+        when {
             imageFile != null -> visitor.visitImageFile(imageFile)
             text != null -> visitor.visitText(text)
             refusal != null -> visitor.visitRefusal(refusal)
             imageUrl != null -> visitor.visitImageUrl(imageUrl)
             else -> visitor.unknown(_json)
         }
-    }
 
     private var validated: Boolean = false
 
@@ -111,6 +110,35 @@ private constructor(
         )
         validated = true
     }
+
+    fun isValid(): Boolean =
+        try {
+            validate()
+            true
+        } catch (e: OpenAIInvalidDataException) {
+            false
+        }
+
+    /**
+     * Returns a score indicating how many valid values are contained in this object recursively.
+     *
+     * Used for best match union deserialization.
+     */
+    @JvmSynthetic
+    internal fun validity(): Int =
+        accept(
+            object : Visitor<Int> {
+                override fun visitImageFile(imageFile: ImageFileDeltaBlock) = imageFile.validity()
+
+                override fun visitText(text: TextDeltaBlock) = text.validity()
+
+                override fun visitRefusal(refusal: RefusalDeltaBlock) = refusal.validity()
+
+                override fun visitImageUrl(imageUrl: ImageUrlDeltaBlock) = imageUrl.validity()
+
+                override fun unknown(json: JsonValue?) = 0
+            }
+        )
 
     override fun equals(other: Any?): Boolean {
         if (this === other) {
@@ -198,28 +226,24 @@ private constructor(
 
             when (type) {
                 "image_file" -> {
-                    return MessageContentDelta(
-                        imageFile = deserialize(node, jacksonTypeRef<ImageFileDeltaBlock>()),
-                        _json = json,
-                    )
+                    return tryDeserialize(node, jacksonTypeRef<ImageFileDeltaBlock>())?.let {
+                        MessageContentDelta(imageFile = it, _json = json)
+                    } ?: MessageContentDelta(_json = json)
                 }
                 "text" -> {
-                    return MessageContentDelta(
-                        text = deserialize(node, jacksonTypeRef<TextDeltaBlock>()),
-                        _json = json,
-                    )
+                    return tryDeserialize(node, jacksonTypeRef<TextDeltaBlock>())?.let {
+                        MessageContentDelta(text = it, _json = json)
+                    } ?: MessageContentDelta(_json = json)
                 }
                 "refusal" -> {
-                    return MessageContentDelta(
-                        refusal = deserialize(node, jacksonTypeRef<RefusalDeltaBlock>()),
-                        _json = json,
-                    )
+                    return tryDeserialize(node, jacksonTypeRef<RefusalDeltaBlock>())?.let {
+                        MessageContentDelta(refusal = it, _json = json)
+                    } ?: MessageContentDelta(_json = json)
                 }
                 "image_url" -> {
-                    return MessageContentDelta(
-                        imageUrl = deserialize(node, jacksonTypeRef<ImageUrlDeltaBlock>()),
-                        _json = json,
-                    )
+                    return tryDeserialize(node, jacksonTypeRef<ImageUrlDeltaBlock>())?.let {
+                        MessageContentDelta(imageUrl = it, _json = json)
+                    } ?: MessageContentDelta(_json = json)
                 }
             }
 

@@ -18,6 +18,7 @@ import com.openai.models.audio.transcriptions.TranscriptionSegment
 import java.util.Collections
 import java.util.Objects
 import java.util.Optional
+import kotlin.jvm.optionals.getOrNull
 
 class TranslationVerbose
 private constructor(
@@ -261,6 +262,26 @@ private constructor(
         segments().ifPresent { it.forEach { it.validate() } }
         validated = true
     }
+
+    fun isValid(): Boolean =
+        try {
+            validate()
+            true
+        } catch (e: OpenAIInvalidDataException) {
+            false
+        }
+
+    /**
+     * Returns a score indicating how many valid values are contained in this object recursively.
+     *
+     * Used for best match union deserialization.
+     */
+    @JvmSynthetic
+    internal fun validity(): Int =
+        (if (duration.asKnown().isPresent) 1 else 0) +
+            (if (language.asKnown().isPresent) 1 else 0) +
+            (if (text.asKnown().isPresent) 1 else 0) +
+            (segments.asKnown().getOrNull()?.sumOf { it.validity().toInt() } ?: 0)
 
     override fun equals(other: Any?): Boolean {
         if (this === other) {

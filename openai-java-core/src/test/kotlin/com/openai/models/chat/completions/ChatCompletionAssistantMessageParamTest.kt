@@ -2,6 +2,8 @@
 
 package com.openai.models.chat.completions
 
+import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
+import com.openai.core.jsonMapper
 import kotlin.jvm.optionals.getOrNull
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
@@ -60,5 +62,43 @@ internal class ChatCompletionAssistantMessageParamTest {
                     )
                     .build()
             )
+    }
+
+    @Test
+    fun roundtrip() {
+        val jsonMapper = jsonMapper()
+        val chatCompletionAssistantMessageParam =
+            ChatCompletionAssistantMessageParam.builder()
+                .audio(ChatCompletionAssistantMessageParam.Audio.builder().id("id").build())
+                .content("string")
+                .functionCall(
+                    ChatCompletionAssistantMessageParam.FunctionCall.builder()
+                        .arguments("arguments")
+                        .name("name")
+                        .build()
+                )
+                .name("name")
+                .refusal("refusal")
+                .addToolCall(
+                    ChatCompletionMessageToolCall.builder()
+                        .id("id")
+                        .function(
+                            ChatCompletionMessageToolCall.Function.builder()
+                                .arguments("arguments")
+                                .name("name")
+                                .build()
+                        )
+                        .build()
+                )
+                .build()
+
+        val roundtrippedChatCompletionAssistantMessageParam =
+            jsonMapper.readValue(
+                jsonMapper.writeValueAsString(chatCompletionAssistantMessageParam),
+                jacksonTypeRef<ChatCompletionAssistantMessageParam>(),
+            )
+
+        assertThat(roundtrippedChatCompletionAssistantMessageParam)
+            .isEqualTo(chatCompletionAssistantMessageParam)
     }
 }

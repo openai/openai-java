@@ -2,7 +2,9 @@
 
 package com.openai.models.beta.threads.runs
 
+import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
 import com.openai.core.JsonValue
+import com.openai.core.jsonMapper
 import com.openai.models.beta.assistants.AssistantTool
 import com.openai.models.beta.assistants.CodeInterpreterTool
 import com.openai.models.beta.threads.AssistantResponseFormatOption
@@ -158,5 +160,86 @@ internal class RunTest {
             )
         assertThat(run.temperature()).contains(0.0)
         assertThat(run.topP()).contains(0.0)
+    }
+
+    @Test
+    fun roundtrip() {
+        val jsonMapper = jsonMapper()
+        val run =
+            Run.builder()
+                .id("id")
+                .assistantId("assistant_id")
+                .cancelledAt(0L)
+                .completedAt(0L)
+                .createdAt(0L)
+                .expiresAt(0L)
+                .failedAt(0L)
+                .incompleteDetails(
+                    Run.IncompleteDetails.builder()
+                        .reason(Run.IncompleteDetails.Reason.MAX_COMPLETION_TOKENS)
+                        .build()
+                )
+                .instructions("instructions")
+                .lastError(
+                    Run.LastError.builder()
+                        .code(Run.LastError.Code.SERVER_ERROR)
+                        .message("message")
+                        .build()
+                )
+                .maxCompletionTokens(256L)
+                .maxPromptTokens(256L)
+                .metadata(
+                    Run.Metadata.builder()
+                        .putAdditionalProperty("foo", JsonValue.from("string"))
+                        .build()
+                )
+                .model("model")
+                .parallelToolCalls(true)
+                .requiredAction(
+                    Run.RequiredAction.builder()
+                        .submitToolOutputs(
+                            Run.RequiredAction.SubmitToolOutputs.builder()
+                                .addToolCall(
+                                    RequiredActionFunctionToolCall.builder()
+                                        .id("id")
+                                        .function(
+                                            RequiredActionFunctionToolCall.Function.builder()
+                                                .arguments("arguments")
+                                                .name("name")
+                                                .build()
+                                        )
+                                        .build()
+                                )
+                                .build()
+                        )
+                        .build()
+                )
+                .responseFormatAuto()
+                .startedAt(0L)
+                .status(RunStatus.QUEUED)
+                .threadId("thread_id")
+                .toolChoice(AssistantToolChoiceOption.Auto.NONE)
+                .addTool(CodeInterpreterTool.builder().build())
+                .truncationStrategy(
+                    Run.TruncationStrategy.builder()
+                        .type(Run.TruncationStrategy.Type.AUTO)
+                        .lastMessages(1L)
+                        .build()
+                )
+                .usage(
+                    Run.Usage.builder()
+                        .completionTokens(0L)
+                        .promptTokens(0L)
+                        .totalTokens(0L)
+                        .build()
+                )
+                .temperature(0.0)
+                .topP(0.0)
+                .build()
+
+        val roundtrippedRun =
+            jsonMapper.readValue(jsonMapper.writeValueAsString(run), jacksonTypeRef<Run>())
+
+        assertThat(roundtrippedRun).isEqualTo(run)
     }
 }

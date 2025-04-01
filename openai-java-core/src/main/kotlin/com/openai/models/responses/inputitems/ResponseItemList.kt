@@ -25,6 +25,7 @@ import com.openai.models.responses.ResponseItem
 import com.openai.models.responses.ResponseOutputMessage
 import java.util.Collections
 import java.util.Objects
+import kotlin.jvm.optionals.getOrNull
 
 /** A list of Response items. */
 class ResponseItemList
@@ -347,6 +348,27 @@ private constructor(
         }
         validated = true
     }
+
+    fun isValid(): Boolean =
+        try {
+            validate()
+            true
+        } catch (e: OpenAIInvalidDataException) {
+            false
+        }
+
+    /**
+     * Returns a score indicating how many valid values are contained in this object recursively.
+     *
+     * Used for best match union deserialization.
+     */
+    @JvmSynthetic
+    internal fun validity(): Int =
+        (data.asKnown().getOrNull()?.sumOf { it.validity().toInt() } ?: 0) +
+            (if (firstId.asKnown().isPresent) 1 else 0) +
+            (if (hasMore.asKnown().isPresent) 1 else 0) +
+            (if (lastId.asKnown().isPresent) 1 else 0) +
+            object_.let { if (it == JsonValue.from("list")) 1 else 0 }
 
     override fun equals(other: Any?): Boolean {
         if (this === other) {

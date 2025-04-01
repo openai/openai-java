@@ -17,6 +17,7 @@ import com.openai.errors.OpenAIInvalidDataException
 import java.util.Collections
 import java.util.Objects
 import java.util.Optional
+import kotlin.jvm.optionals.getOrNull
 
 /**
  * Represents a verbose json transcription response returned by model, based on the provided input.
@@ -310,6 +311,27 @@ private constructor(
         words().ifPresent { it.forEach { it.validate() } }
         validated = true
     }
+
+    fun isValid(): Boolean =
+        try {
+            validate()
+            true
+        } catch (e: OpenAIInvalidDataException) {
+            false
+        }
+
+    /**
+     * Returns a score indicating how many valid values are contained in this object recursively.
+     *
+     * Used for best match union deserialization.
+     */
+    @JvmSynthetic
+    internal fun validity(): Int =
+        (if (duration.asKnown().isPresent) 1 else 0) +
+            (if (language.asKnown().isPresent) 1 else 0) +
+            (if (text.asKnown().isPresent) 1 else 0) +
+            (segments.asKnown().getOrNull()?.sumOf { it.validity().toInt() } ?: 0) +
+            (words.asKnown().getOrNull()?.sumOf { it.validity().toInt() } ?: 0)
 
     override fun equals(other: Any?): Boolean {
         if (this === other) {
