@@ -264,6 +264,26 @@ private constructor(
         validated = true
     }
 
+    fun isValid(): Boolean =
+        try {
+            validate()
+            true
+        } catch (e: OpenAIInvalidDataException) {
+            false
+        }
+
+    /**
+     * Returns a score indicating how many valid values are contained in this object recursively.
+     *
+     * Used for best match union deserialization.
+     */
+    @JvmSynthetic
+    internal fun validity(): Int =
+        (if (index.asKnown().isPresent) 1 else 0) +
+            type.let { if (it == JsonValue.from("code_interpreter")) 1 else 0 } +
+            (if (id.asKnown().isPresent) 1 else 0) +
+            (codeInterpreter.asKnown().getOrNull()?.validity() ?: 0)
+
     /** The Code Interpreter tool call definition. */
     class CodeInterpreter
     private constructor(
@@ -458,6 +478,25 @@ private constructor(
             validated = true
         }
 
+        fun isValid(): Boolean =
+            try {
+                validate()
+                true
+            } catch (e: OpenAIInvalidDataException) {
+                false
+            }
+
+        /**
+         * Returns a score indicating how many valid values are contained in this object
+         * recursively.
+         *
+         * Used for best match union deserialization.
+         */
+        @JvmSynthetic
+        internal fun validity(): Int =
+            (if (input.asKnown().isPresent) 1 else 0) +
+                (outputs.asKnown().getOrNull()?.sumOf { it.validity().toInt() } ?: 0)
+
         /** Text output from the Code Interpreter tool call as part of a run step. */
         @JsonDeserialize(using = Output.Deserializer::class)
         @JsonSerialize(using = Output.Serializer::class)
@@ -484,13 +523,12 @@ private constructor(
 
             fun _json(): Optional<JsonValue> = Optional.ofNullable(_json)
 
-            fun <T> accept(visitor: Visitor<T>): T {
-                return when {
+            fun <T> accept(visitor: Visitor<T>): T =
+                when {
                     logs != null -> visitor.visitLogs(logs)
                     image != null -> visitor.visitImage(image)
                     else -> visitor.unknown(_json)
                 }
-            }
 
             private var validated: Boolean = false
 
@@ -512,6 +550,33 @@ private constructor(
                 )
                 validated = true
             }
+
+            fun isValid(): Boolean =
+                try {
+                    validate()
+                    true
+                } catch (e: OpenAIInvalidDataException) {
+                    false
+                }
+
+            /**
+             * Returns a score indicating how many valid values are contained in this object
+             * recursively.
+             *
+             * Used for best match union deserialization.
+             */
+            @JvmSynthetic
+            internal fun validity(): Int =
+                accept(
+                    object : Visitor<Int> {
+                        override fun visitLogs(logs: CodeInterpreterLogs) = logs.validity()
+
+                        override fun visitImage(image: CodeInterpreterOutputImage) =
+                            image.validity()
+
+                        override fun unknown(json: JsonValue?) = 0
+                    }
+                )
 
             override fun equals(other: Any?): Boolean {
                 if (this === other) {
@@ -572,17 +637,15 @@ private constructor(
 
                     when (type) {
                         "logs" -> {
-                            return Output(
-                                logs = deserialize(node, jacksonTypeRef<CodeInterpreterLogs>()),
-                                _json = json,
-                            )
+                            return tryDeserialize(node, jacksonTypeRef<CodeInterpreterLogs>())
+                                ?.let { Output(logs = it, _json = json) } ?: Output(_json = json)
                         }
                         "image" -> {
-                            return Output(
-                                image =
-                                    deserialize(node, jacksonTypeRef<CodeInterpreterOutputImage>()),
-                                _json = json,
-                            )
+                            return tryDeserialize(
+                                    node,
+                                    jacksonTypeRef<CodeInterpreterOutputImage>(),
+                                )
+                                ?.let { Output(image = it, _json = json) } ?: Output(_json = json)
                         }
                     }
 

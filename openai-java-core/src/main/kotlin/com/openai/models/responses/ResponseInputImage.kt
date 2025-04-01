@@ -249,7 +249,7 @@ private constructor(
             return@apply
         }
 
-        detail()
+        detail().validate()
         _type().let {
             if (it != JsonValue.from("input_image")) {
                 throw OpenAIInvalidDataException("'type' is invalid, received $it")
@@ -259,6 +259,26 @@ private constructor(
         imageUrl()
         validated = true
     }
+
+    fun isValid(): Boolean =
+        try {
+            validate()
+            true
+        } catch (e: OpenAIInvalidDataException) {
+            false
+        }
+
+    /**
+     * Returns a score indicating how many valid values are contained in this object recursively.
+     *
+     * Used for best match union deserialization.
+     */
+    @JvmSynthetic
+    internal fun validity(): Int =
+        (detail.asKnown().getOrNull()?.validity() ?: 0) +
+            type.let { if (it == JsonValue.from("input_image")) 1 else 0 } +
+            (if (fileId.asKnown().isPresent) 1 else 0) +
+            (if (imageUrl.asKnown().isPresent) 1 else 0)
 
     /**
      * The detail level of the image to be sent to the model. One of `high`, `low`, or `auto`.
@@ -354,6 +374,33 @@ private constructor(
          */
         fun asString(): String =
             _value().asString().orElseThrow { OpenAIInvalidDataException("Value is not a String") }
+
+        private var validated: Boolean = false
+
+        fun validate(): Detail = apply {
+            if (validated) {
+                return@apply
+            }
+
+            known()
+            validated = true
+        }
+
+        fun isValid(): Boolean =
+            try {
+                validate()
+                true
+            } catch (e: OpenAIInvalidDataException) {
+                false
+            }
+
+        /**
+         * Returns a score indicating how many valid values are contained in this object
+         * recursively.
+         *
+         * Used for best match union deserialization.
+         */
+        @JvmSynthetic internal fun validity(): Int = if (value() == Value._UNKNOWN) 0 else 1
 
         override fun equals(other: Any?): Boolean {
             if (this === other) {

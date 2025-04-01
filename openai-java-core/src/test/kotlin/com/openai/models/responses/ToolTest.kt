@@ -2,15 +2,39 @@
 
 package com.openai.models.responses
 
+import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
 import com.openai.core.JsonValue
+import com.openai.core.jsonMapper
+import com.openai.errors.OpenAIInvalidDataException
+import com.openai.models.ComparisonFilter
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.EnumSource
 
 internal class ToolTest {
 
     @Test
     fun ofFileSearch() {
-        val fileSearch = FileSearchTool.builder().addVectorStoreId("string").build()
+        val fileSearch =
+            FileSearchTool.builder()
+                .addVectorStoreId("string")
+                .filters(
+                    ComparisonFilter.builder()
+                        .key("key")
+                        .type(ComparisonFilter.Type.EQ)
+                        .value("string")
+                        .build()
+                )
+                .maxNumResults(0L)
+                .rankingOptions(
+                    FileSearchTool.RankingOptions.builder()
+                        .ranker(FileSearchTool.RankingOptions.Ranker.AUTO)
+                        .scoreThreshold(0.0)
+                        .build()
+                )
+                .build()
 
         val tool = Tool.ofFileSearch(fileSearch)
 
@@ -18,6 +42,36 @@ internal class ToolTest {
         assertThat(tool.function()).isEmpty
         assertThat(tool.computerUsePreview()).isEmpty
         assertThat(tool.webSearch()).isEmpty
+    }
+
+    @Test
+    fun ofFileSearchRoundtrip() {
+        val jsonMapper = jsonMapper()
+        val tool =
+            Tool.ofFileSearch(
+                FileSearchTool.builder()
+                    .addVectorStoreId("string")
+                    .filters(
+                        ComparisonFilter.builder()
+                            .key("key")
+                            .type(ComparisonFilter.Type.EQ)
+                            .value("string")
+                            .build()
+                    )
+                    .maxNumResults(0L)
+                    .rankingOptions(
+                        FileSearchTool.RankingOptions.builder()
+                            .ranker(FileSearchTool.RankingOptions.Ranker.AUTO)
+                            .scoreThreshold(0.0)
+                            .build()
+                    )
+                    .build()
+            )
+
+        val roundtrippedTool =
+            jsonMapper.readValue(jsonMapper.writeValueAsString(tool), jacksonTypeRef<Tool>())
+
+        assertThat(roundtrippedTool).isEqualTo(tool)
     }
 
     @Test
@@ -31,6 +85,7 @@ internal class ToolTest {
                         .build()
                 )
                 .strict(true)
+                .description("description")
                 .build()
 
         val tool = Tool.ofFunction(function)
@@ -39,6 +94,29 @@ internal class ToolTest {
         assertThat(tool.function()).contains(function)
         assertThat(tool.computerUsePreview()).isEmpty
         assertThat(tool.webSearch()).isEmpty
+    }
+
+    @Test
+    fun ofFunctionRoundtrip() {
+        val jsonMapper = jsonMapper()
+        val tool =
+            Tool.ofFunction(
+                FunctionTool.builder()
+                    .name("name")
+                    .parameters(
+                        FunctionTool.Parameters.builder()
+                            .putAdditionalProperty("foo", JsonValue.from("bar"))
+                            .build()
+                    )
+                    .strict(true)
+                    .description("description")
+                    .build()
+            )
+
+        val roundtrippedTool =
+            jsonMapper.readValue(jsonMapper.writeValueAsString(tool), jacksonTypeRef<Tool>())
+
+        assertThat(roundtrippedTool).isEqualTo(tool)
     }
 
     @Test
@@ -59,8 +137,38 @@ internal class ToolTest {
     }
 
     @Test
+    fun ofComputerUsePreviewRoundtrip() {
+        val jsonMapper = jsonMapper()
+        val tool =
+            Tool.ofComputerUsePreview(
+                ComputerTool.builder()
+                    .displayHeight(0.0)
+                    .displayWidth(0.0)
+                    .environment(ComputerTool.Environment.MAC)
+                    .build()
+            )
+
+        val roundtrippedTool =
+            jsonMapper.readValue(jsonMapper.writeValueAsString(tool), jacksonTypeRef<Tool>())
+
+        assertThat(roundtrippedTool).isEqualTo(tool)
+    }
+
+    @Test
     fun ofWebSearch() {
-        val webSearch = WebSearchTool.builder().type(WebSearchTool.Type.WEB_SEARCH_PREVIEW).build()
+        val webSearch =
+            WebSearchTool.builder()
+                .type(WebSearchTool.Type.WEB_SEARCH_PREVIEW)
+                .searchContextSize(WebSearchTool.SearchContextSize.LOW)
+                .userLocation(
+                    WebSearchTool.UserLocation.builder()
+                        .city("city")
+                        .country("country")
+                        .region("region")
+                        .timezone("timezone")
+                        .build()
+                )
+                .build()
 
         val tool = Tool.ofWebSearch(webSearch)
 
@@ -68,5 +176,47 @@ internal class ToolTest {
         assertThat(tool.function()).isEmpty
         assertThat(tool.computerUsePreview()).isEmpty
         assertThat(tool.webSearch()).contains(webSearch)
+    }
+
+    @Test
+    fun ofWebSearchRoundtrip() {
+        val jsonMapper = jsonMapper()
+        val tool =
+            Tool.ofWebSearch(
+                WebSearchTool.builder()
+                    .type(WebSearchTool.Type.WEB_SEARCH_PREVIEW)
+                    .searchContextSize(WebSearchTool.SearchContextSize.LOW)
+                    .userLocation(
+                        WebSearchTool.UserLocation.builder()
+                            .city("city")
+                            .country("country")
+                            .region("region")
+                            .timezone("timezone")
+                            .build()
+                    )
+                    .build()
+            )
+
+        val roundtrippedTool =
+            jsonMapper.readValue(jsonMapper.writeValueAsString(tool), jacksonTypeRef<Tool>())
+
+        assertThat(roundtrippedTool).isEqualTo(tool)
+    }
+
+    enum class IncompatibleJsonShapeTestCase(val value: JsonValue) {
+        BOOLEAN(JsonValue.from(false)),
+        STRING(JsonValue.from("invalid")),
+        INTEGER(JsonValue.from(-1)),
+        FLOAT(JsonValue.from(3.14)),
+        ARRAY(JsonValue.from(listOf("invalid", "array"))),
+    }
+
+    @ParameterizedTest
+    @EnumSource
+    fun incompatibleJsonShapeDeserializesToUnknown(testCase: IncompatibleJsonShapeTestCase) {
+        val tool = jsonMapper().convertValue(testCase.value, jacksonTypeRef<Tool>())
+
+        val e = assertThrows<OpenAIInvalidDataException> { tool.validate() }
+        assertThat(e).hasMessageStartingWith("Unknown ")
     }
 }

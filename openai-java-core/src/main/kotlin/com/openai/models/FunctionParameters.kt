@@ -7,6 +7,7 @@ import com.fasterxml.jackson.annotation.JsonCreator
 import com.openai.core.ExcludeMissing
 import com.openai.core.JsonValue
 import com.openai.core.toImmutable
+import com.openai.errors.OpenAIInvalidDataException
 import java.util.Objects
 
 /**
@@ -82,6 +83,23 @@ private constructor(
 
         validated = true
     }
+
+    fun isValid(): Boolean =
+        try {
+            validate()
+            true
+        } catch (e: OpenAIInvalidDataException) {
+            false
+        }
+
+    /**
+     * Returns a score indicating how many valid values are contained in this object recursively.
+     *
+     * Used for best match union deserialization.
+     */
+    @JvmSynthetic
+    internal fun validity(): Int =
+        additionalProperties.count { (_, value) -> !value.isNull() && !value.isMissing() }
 
     override fun equals(other: Any?): Boolean {
         if (this === other) {

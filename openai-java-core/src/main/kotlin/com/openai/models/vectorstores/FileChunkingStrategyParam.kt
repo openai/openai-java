@@ -55,13 +55,12 @@ private constructor(
 
     fun _json(): Optional<JsonValue> = Optional.ofNullable(_json)
 
-    fun <T> accept(visitor: Visitor<T>): T {
-        return when {
+    fun <T> accept(visitor: Visitor<T>): T =
+        when {
             auto != null -> visitor.visitAuto(auto)
             static_ != null -> visitor.visitStatic(static_)
             else -> visitor.unknown(_json)
         }
-    }
 
     private var validated: Boolean = false
 
@@ -83,6 +82,32 @@ private constructor(
         )
         validated = true
     }
+
+    fun isValid(): Boolean =
+        try {
+            validate()
+            true
+        } catch (e: OpenAIInvalidDataException) {
+            false
+        }
+
+    /**
+     * Returns a score indicating how many valid values are contained in this object recursively.
+     *
+     * Used for best match union deserialization.
+     */
+    @JvmSynthetic
+    internal fun validity(): Int =
+        accept(
+            object : Visitor<Int> {
+                override fun visitAuto(auto: AutoFileChunkingStrategyParam) = auto.validity()
+
+                override fun visitStatic(static_: StaticFileChunkingStrategyObjectParam) =
+                    static_.validity()
+
+                override fun unknown(json: JsonValue?) = 0
+            }
+        )
 
     override fun equals(other: Any?): Boolean {
         if (this === other) {
@@ -156,20 +181,17 @@ private constructor(
 
             when (type) {
                 "auto" -> {
-                    return FileChunkingStrategyParam(
-                        auto = deserialize(node, jacksonTypeRef<AutoFileChunkingStrategyParam>()),
-                        _json = json,
-                    )
+                    return tryDeserialize(node, jacksonTypeRef<AutoFileChunkingStrategyParam>())
+                        ?.let { FileChunkingStrategyParam(auto = it, _json = json) }
+                        ?: FileChunkingStrategyParam(_json = json)
                 }
                 "static" -> {
-                    return FileChunkingStrategyParam(
-                        static_ =
-                            deserialize(
-                                node,
-                                jacksonTypeRef<StaticFileChunkingStrategyObjectParam>(),
-                            ),
-                        _json = json,
-                    )
+                    return tryDeserialize(
+                            node,
+                            jacksonTypeRef<StaticFileChunkingStrategyObjectParam>(),
+                        )
+                        ?.let { FileChunkingStrategyParam(static_ = it, _json = json) }
+                        ?: FileChunkingStrategyParam(_json = json)
                 }
             }
 

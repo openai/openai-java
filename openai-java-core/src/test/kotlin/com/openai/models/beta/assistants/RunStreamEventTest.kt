@@ -2,13 +2,19 @@
 
 package com.openai.models.beta.assistants
 
+import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
 import com.openai.core.JsonValue
+import com.openai.core.jsonMapper
+import com.openai.errors.OpenAIInvalidDataException
 import com.openai.models.beta.threads.AssistantToolChoiceOption
 import com.openai.models.beta.threads.runs.RequiredActionFunctionToolCall
 import com.openai.models.beta.threads.runs.Run
 import com.openai.models.beta.threads.runs.RunStatus
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.EnumSource
 
 internal class RunStreamEventTest {
 
@@ -25,7 +31,11 @@ internal class RunStreamEventTest {
                         .createdAt(0L)
                         .expiresAt(0L)
                         .failedAt(0L)
-                        .incompleteDetails(Run.IncompleteDetails.builder().build())
+                        .incompleteDetails(
+                            Run.IncompleteDetails.builder()
+                                .reason(Run.IncompleteDetails.Reason.MAX_COMPLETION_TOKENS)
+                                .build()
+                        )
                         .instructions("instructions")
                         .lastError(
                             Run.LastError.builder()
@@ -71,6 +81,7 @@ internal class RunStreamEventTest {
                         .truncationStrategy(
                             Run.TruncationStrategy.builder()
                                 .type(Run.TruncationStrategy.Type.AUTO)
+                                .lastMessages(1L)
                                 .build()
                         )
                         .usage(
@@ -80,6 +91,8 @@ internal class RunStreamEventTest {
                                 .totalTokens(0L)
                                 .build()
                         )
+                        .temperature(0.0)
+                        .topP(0.0)
                         .build()
                 )
                 .build()
@@ -99,6 +112,97 @@ internal class RunStreamEventTest {
     }
 
     @Test
+    fun ofThreadRunCreatedRoundtrip() {
+        val jsonMapper = jsonMapper()
+        val runStreamEvent =
+            RunStreamEvent.ofThreadRunCreated(
+                RunStreamEvent.ThreadRunCreated.builder()
+                    .data(
+                        Run.builder()
+                            .id("id")
+                            .assistantId("assistant_id")
+                            .cancelledAt(0L)
+                            .completedAt(0L)
+                            .createdAt(0L)
+                            .expiresAt(0L)
+                            .failedAt(0L)
+                            .incompleteDetails(
+                                Run.IncompleteDetails.builder()
+                                    .reason(Run.IncompleteDetails.Reason.MAX_COMPLETION_TOKENS)
+                                    .build()
+                            )
+                            .instructions("instructions")
+                            .lastError(
+                                Run.LastError.builder()
+                                    .code(Run.LastError.Code.SERVER_ERROR)
+                                    .message("message")
+                                    .build()
+                            )
+                            .maxCompletionTokens(256L)
+                            .maxPromptTokens(256L)
+                            .metadata(
+                                Run.Metadata.builder()
+                                    .putAdditionalProperty("foo", JsonValue.from("string"))
+                                    .build()
+                            )
+                            .model("model")
+                            .parallelToolCalls(true)
+                            .requiredAction(
+                                Run.RequiredAction.builder()
+                                    .submitToolOutputs(
+                                        Run.RequiredAction.SubmitToolOutputs.builder()
+                                            .addToolCall(
+                                                RequiredActionFunctionToolCall.builder()
+                                                    .id("id")
+                                                    .function(
+                                                        RequiredActionFunctionToolCall.Function
+                                                            .builder()
+                                                            .arguments("arguments")
+                                                            .name("name")
+                                                            .build()
+                                                    )
+                                                    .build()
+                                            )
+                                            .build()
+                                    )
+                                    .build()
+                            )
+                            .responseFormatAuto()
+                            .startedAt(0L)
+                            .status(RunStatus.QUEUED)
+                            .threadId("thread_id")
+                            .toolChoice(AssistantToolChoiceOption.Auto.NONE)
+                            .addTool(CodeInterpreterTool.builder().build())
+                            .truncationStrategy(
+                                Run.TruncationStrategy.builder()
+                                    .type(Run.TruncationStrategy.Type.AUTO)
+                                    .lastMessages(1L)
+                                    .build()
+                            )
+                            .usage(
+                                Run.Usage.builder()
+                                    .completionTokens(0L)
+                                    .promptTokens(0L)
+                                    .totalTokens(0L)
+                                    .build()
+                            )
+                            .temperature(0.0)
+                            .topP(0.0)
+                            .build()
+                    )
+                    .build()
+            )
+
+        val roundtrippedRunStreamEvent =
+            jsonMapper.readValue(
+                jsonMapper.writeValueAsString(runStreamEvent),
+                jacksonTypeRef<RunStreamEvent>(),
+            )
+
+        assertThat(roundtrippedRunStreamEvent).isEqualTo(runStreamEvent)
+    }
+
+    @Test
     fun ofThreadRunQueued() {
         val threadRunQueued =
             RunStreamEvent.ThreadRunQueued.builder()
@@ -111,7 +215,11 @@ internal class RunStreamEventTest {
                         .createdAt(0L)
                         .expiresAt(0L)
                         .failedAt(0L)
-                        .incompleteDetails(Run.IncompleteDetails.builder().build())
+                        .incompleteDetails(
+                            Run.IncompleteDetails.builder()
+                                .reason(Run.IncompleteDetails.Reason.MAX_COMPLETION_TOKENS)
+                                .build()
+                        )
                         .instructions("instructions")
                         .lastError(
                             Run.LastError.builder()
@@ -157,6 +265,7 @@ internal class RunStreamEventTest {
                         .truncationStrategy(
                             Run.TruncationStrategy.builder()
                                 .type(Run.TruncationStrategy.Type.AUTO)
+                                .lastMessages(1L)
                                 .build()
                         )
                         .usage(
@@ -166,6 +275,8 @@ internal class RunStreamEventTest {
                                 .totalTokens(0L)
                                 .build()
                         )
+                        .temperature(0.0)
+                        .topP(0.0)
                         .build()
                 )
                 .build()
@@ -185,6 +296,97 @@ internal class RunStreamEventTest {
     }
 
     @Test
+    fun ofThreadRunQueuedRoundtrip() {
+        val jsonMapper = jsonMapper()
+        val runStreamEvent =
+            RunStreamEvent.ofThreadRunQueued(
+                RunStreamEvent.ThreadRunQueued.builder()
+                    .data(
+                        Run.builder()
+                            .id("id")
+                            .assistantId("assistant_id")
+                            .cancelledAt(0L)
+                            .completedAt(0L)
+                            .createdAt(0L)
+                            .expiresAt(0L)
+                            .failedAt(0L)
+                            .incompleteDetails(
+                                Run.IncompleteDetails.builder()
+                                    .reason(Run.IncompleteDetails.Reason.MAX_COMPLETION_TOKENS)
+                                    .build()
+                            )
+                            .instructions("instructions")
+                            .lastError(
+                                Run.LastError.builder()
+                                    .code(Run.LastError.Code.SERVER_ERROR)
+                                    .message("message")
+                                    .build()
+                            )
+                            .maxCompletionTokens(256L)
+                            .maxPromptTokens(256L)
+                            .metadata(
+                                Run.Metadata.builder()
+                                    .putAdditionalProperty("foo", JsonValue.from("string"))
+                                    .build()
+                            )
+                            .model("model")
+                            .parallelToolCalls(true)
+                            .requiredAction(
+                                Run.RequiredAction.builder()
+                                    .submitToolOutputs(
+                                        Run.RequiredAction.SubmitToolOutputs.builder()
+                                            .addToolCall(
+                                                RequiredActionFunctionToolCall.builder()
+                                                    .id("id")
+                                                    .function(
+                                                        RequiredActionFunctionToolCall.Function
+                                                            .builder()
+                                                            .arguments("arguments")
+                                                            .name("name")
+                                                            .build()
+                                                    )
+                                                    .build()
+                                            )
+                                            .build()
+                                    )
+                                    .build()
+                            )
+                            .responseFormatAuto()
+                            .startedAt(0L)
+                            .status(RunStatus.QUEUED)
+                            .threadId("thread_id")
+                            .toolChoice(AssistantToolChoiceOption.Auto.NONE)
+                            .addTool(CodeInterpreterTool.builder().build())
+                            .truncationStrategy(
+                                Run.TruncationStrategy.builder()
+                                    .type(Run.TruncationStrategy.Type.AUTO)
+                                    .lastMessages(1L)
+                                    .build()
+                            )
+                            .usage(
+                                Run.Usage.builder()
+                                    .completionTokens(0L)
+                                    .promptTokens(0L)
+                                    .totalTokens(0L)
+                                    .build()
+                            )
+                            .temperature(0.0)
+                            .topP(0.0)
+                            .build()
+                    )
+                    .build()
+            )
+
+        val roundtrippedRunStreamEvent =
+            jsonMapper.readValue(
+                jsonMapper.writeValueAsString(runStreamEvent),
+                jacksonTypeRef<RunStreamEvent>(),
+            )
+
+        assertThat(roundtrippedRunStreamEvent).isEqualTo(runStreamEvent)
+    }
+
+    @Test
     fun ofThreadRunInProgress() {
         val threadRunInProgress =
             RunStreamEvent.ThreadRunInProgress.builder()
@@ -197,7 +399,11 @@ internal class RunStreamEventTest {
                         .createdAt(0L)
                         .expiresAt(0L)
                         .failedAt(0L)
-                        .incompleteDetails(Run.IncompleteDetails.builder().build())
+                        .incompleteDetails(
+                            Run.IncompleteDetails.builder()
+                                .reason(Run.IncompleteDetails.Reason.MAX_COMPLETION_TOKENS)
+                                .build()
+                        )
                         .instructions("instructions")
                         .lastError(
                             Run.LastError.builder()
@@ -243,6 +449,7 @@ internal class RunStreamEventTest {
                         .truncationStrategy(
                             Run.TruncationStrategy.builder()
                                 .type(Run.TruncationStrategy.Type.AUTO)
+                                .lastMessages(1L)
                                 .build()
                         )
                         .usage(
@@ -252,6 +459,8 @@ internal class RunStreamEventTest {
                                 .totalTokens(0L)
                                 .build()
                         )
+                        .temperature(0.0)
+                        .topP(0.0)
                         .build()
                 )
                 .build()
@@ -271,6 +480,97 @@ internal class RunStreamEventTest {
     }
 
     @Test
+    fun ofThreadRunInProgressRoundtrip() {
+        val jsonMapper = jsonMapper()
+        val runStreamEvent =
+            RunStreamEvent.ofThreadRunInProgress(
+                RunStreamEvent.ThreadRunInProgress.builder()
+                    .data(
+                        Run.builder()
+                            .id("id")
+                            .assistantId("assistant_id")
+                            .cancelledAt(0L)
+                            .completedAt(0L)
+                            .createdAt(0L)
+                            .expiresAt(0L)
+                            .failedAt(0L)
+                            .incompleteDetails(
+                                Run.IncompleteDetails.builder()
+                                    .reason(Run.IncompleteDetails.Reason.MAX_COMPLETION_TOKENS)
+                                    .build()
+                            )
+                            .instructions("instructions")
+                            .lastError(
+                                Run.LastError.builder()
+                                    .code(Run.LastError.Code.SERVER_ERROR)
+                                    .message("message")
+                                    .build()
+                            )
+                            .maxCompletionTokens(256L)
+                            .maxPromptTokens(256L)
+                            .metadata(
+                                Run.Metadata.builder()
+                                    .putAdditionalProperty("foo", JsonValue.from("string"))
+                                    .build()
+                            )
+                            .model("model")
+                            .parallelToolCalls(true)
+                            .requiredAction(
+                                Run.RequiredAction.builder()
+                                    .submitToolOutputs(
+                                        Run.RequiredAction.SubmitToolOutputs.builder()
+                                            .addToolCall(
+                                                RequiredActionFunctionToolCall.builder()
+                                                    .id("id")
+                                                    .function(
+                                                        RequiredActionFunctionToolCall.Function
+                                                            .builder()
+                                                            .arguments("arguments")
+                                                            .name("name")
+                                                            .build()
+                                                    )
+                                                    .build()
+                                            )
+                                            .build()
+                                    )
+                                    .build()
+                            )
+                            .responseFormatAuto()
+                            .startedAt(0L)
+                            .status(RunStatus.QUEUED)
+                            .threadId("thread_id")
+                            .toolChoice(AssistantToolChoiceOption.Auto.NONE)
+                            .addTool(CodeInterpreterTool.builder().build())
+                            .truncationStrategy(
+                                Run.TruncationStrategy.builder()
+                                    .type(Run.TruncationStrategy.Type.AUTO)
+                                    .lastMessages(1L)
+                                    .build()
+                            )
+                            .usage(
+                                Run.Usage.builder()
+                                    .completionTokens(0L)
+                                    .promptTokens(0L)
+                                    .totalTokens(0L)
+                                    .build()
+                            )
+                            .temperature(0.0)
+                            .topP(0.0)
+                            .build()
+                    )
+                    .build()
+            )
+
+        val roundtrippedRunStreamEvent =
+            jsonMapper.readValue(
+                jsonMapper.writeValueAsString(runStreamEvent),
+                jacksonTypeRef<RunStreamEvent>(),
+            )
+
+        assertThat(roundtrippedRunStreamEvent).isEqualTo(runStreamEvent)
+    }
+
+    @Test
     fun ofThreadRunRequiresAction() {
         val threadRunRequiresAction =
             RunStreamEvent.ThreadRunRequiresAction.builder()
@@ -283,7 +583,11 @@ internal class RunStreamEventTest {
                         .createdAt(0L)
                         .expiresAt(0L)
                         .failedAt(0L)
-                        .incompleteDetails(Run.IncompleteDetails.builder().build())
+                        .incompleteDetails(
+                            Run.IncompleteDetails.builder()
+                                .reason(Run.IncompleteDetails.Reason.MAX_COMPLETION_TOKENS)
+                                .build()
+                        )
                         .instructions("instructions")
                         .lastError(
                             Run.LastError.builder()
@@ -329,6 +633,7 @@ internal class RunStreamEventTest {
                         .truncationStrategy(
                             Run.TruncationStrategy.builder()
                                 .type(Run.TruncationStrategy.Type.AUTO)
+                                .lastMessages(1L)
                                 .build()
                         )
                         .usage(
@@ -338,6 +643,8 @@ internal class RunStreamEventTest {
                                 .totalTokens(0L)
                                 .build()
                         )
+                        .temperature(0.0)
+                        .topP(0.0)
                         .build()
                 )
                 .build()
@@ -357,6 +664,97 @@ internal class RunStreamEventTest {
     }
 
     @Test
+    fun ofThreadRunRequiresActionRoundtrip() {
+        val jsonMapper = jsonMapper()
+        val runStreamEvent =
+            RunStreamEvent.ofThreadRunRequiresAction(
+                RunStreamEvent.ThreadRunRequiresAction.builder()
+                    .data(
+                        Run.builder()
+                            .id("id")
+                            .assistantId("assistant_id")
+                            .cancelledAt(0L)
+                            .completedAt(0L)
+                            .createdAt(0L)
+                            .expiresAt(0L)
+                            .failedAt(0L)
+                            .incompleteDetails(
+                                Run.IncompleteDetails.builder()
+                                    .reason(Run.IncompleteDetails.Reason.MAX_COMPLETION_TOKENS)
+                                    .build()
+                            )
+                            .instructions("instructions")
+                            .lastError(
+                                Run.LastError.builder()
+                                    .code(Run.LastError.Code.SERVER_ERROR)
+                                    .message("message")
+                                    .build()
+                            )
+                            .maxCompletionTokens(256L)
+                            .maxPromptTokens(256L)
+                            .metadata(
+                                Run.Metadata.builder()
+                                    .putAdditionalProperty("foo", JsonValue.from("string"))
+                                    .build()
+                            )
+                            .model("model")
+                            .parallelToolCalls(true)
+                            .requiredAction(
+                                Run.RequiredAction.builder()
+                                    .submitToolOutputs(
+                                        Run.RequiredAction.SubmitToolOutputs.builder()
+                                            .addToolCall(
+                                                RequiredActionFunctionToolCall.builder()
+                                                    .id("id")
+                                                    .function(
+                                                        RequiredActionFunctionToolCall.Function
+                                                            .builder()
+                                                            .arguments("arguments")
+                                                            .name("name")
+                                                            .build()
+                                                    )
+                                                    .build()
+                                            )
+                                            .build()
+                                    )
+                                    .build()
+                            )
+                            .responseFormatAuto()
+                            .startedAt(0L)
+                            .status(RunStatus.QUEUED)
+                            .threadId("thread_id")
+                            .toolChoice(AssistantToolChoiceOption.Auto.NONE)
+                            .addTool(CodeInterpreterTool.builder().build())
+                            .truncationStrategy(
+                                Run.TruncationStrategy.builder()
+                                    .type(Run.TruncationStrategy.Type.AUTO)
+                                    .lastMessages(1L)
+                                    .build()
+                            )
+                            .usage(
+                                Run.Usage.builder()
+                                    .completionTokens(0L)
+                                    .promptTokens(0L)
+                                    .totalTokens(0L)
+                                    .build()
+                            )
+                            .temperature(0.0)
+                            .topP(0.0)
+                            .build()
+                    )
+                    .build()
+            )
+
+        val roundtrippedRunStreamEvent =
+            jsonMapper.readValue(
+                jsonMapper.writeValueAsString(runStreamEvent),
+                jacksonTypeRef<RunStreamEvent>(),
+            )
+
+        assertThat(roundtrippedRunStreamEvent).isEqualTo(runStreamEvent)
+    }
+
+    @Test
     fun ofThreadRunCompleted() {
         val threadRunCompleted =
             RunStreamEvent.ThreadRunCompleted.builder()
@@ -369,7 +767,11 @@ internal class RunStreamEventTest {
                         .createdAt(0L)
                         .expiresAt(0L)
                         .failedAt(0L)
-                        .incompleteDetails(Run.IncompleteDetails.builder().build())
+                        .incompleteDetails(
+                            Run.IncompleteDetails.builder()
+                                .reason(Run.IncompleteDetails.Reason.MAX_COMPLETION_TOKENS)
+                                .build()
+                        )
                         .instructions("instructions")
                         .lastError(
                             Run.LastError.builder()
@@ -415,6 +817,7 @@ internal class RunStreamEventTest {
                         .truncationStrategy(
                             Run.TruncationStrategy.builder()
                                 .type(Run.TruncationStrategy.Type.AUTO)
+                                .lastMessages(1L)
                                 .build()
                         )
                         .usage(
@@ -424,6 +827,8 @@ internal class RunStreamEventTest {
                                 .totalTokens(0L)
                                 .build()
                         )
+                        .temperature(0.0)
+                        .topP(0.0)
                         .build()
                 )
                 .build()
@@ -443,6 +848,97 @@ internal class RunStreamEventTest {
     }
 
     @Test
+    fun ofThreadRunCompletedRoundtrip() {
+        val jsonMapper = jsonMapper()
+        val runStreamEvent =
+            RunStreamEvent.ofThreadRunCompleted(
+                RunStreamEvent.ThreadRunCompleted.builder()
+                    .data(
+                        Run.builder()
+                            .id("id")
+                            .assistantId("assistant_id")
+                            .cancelledAt(0L)
+                            .completedAt(0L)
+                            .createdAt(0L)
+                            .expiresAt(0L)
+                            .failedAt(0L)
+                            .incompleteDetails(
+                                Run.IncompleteDetails.builder()
+                                    .reason(Run.IncompleteDetails.Reason.MAX_COMPLETION_TOKENS)
+                                    .build()
+                            )
+                            .instructions("instructions")
+                            .lastError(
+                                Run.LastError.builder()
+                                    .code(Run.LastError.Code.SERVER_ERROR)
+                                    .message("message")
+                                    .build()
+                            )
+                            .maxCompletionTokens(256L)
+                            .maxPromptTokens(256L)
+                            .metadata(
+                                Run.Metadata.builder()
+                                    .putAdditionalProperty("foo", JsonValue.from("string"))
+                                    .build()
+                            )
+                            .model("model")
+                            .parallelToolCalls(true)
+                            .requiredAction(
+                                Run.RequiredAction.builder()
+                                    .submitToolOutputs(
+                                        Run.RequiredAction.SubmitToolOutputs.builder()
+                                            .addToolCall(
+                                                RequiredActionFunctionToolCall.builder()
+                                                    .id("id")
+                                                    .function(
+                                                        RequiredActionFunctionToolCall.Function
+                                                            .builder()
+                                                            .arguments("arguments")
+                                                            .name("name")
+                                                            .build()
+                                                    )
+                                                    .build()
+                                            )
+                                            .build()
+                                    )
+                                    .build()
+                            )
+                            .responseFormatAuto()
+                            .startedAt(0L)
+                            .status(RunStatus.QUEUED)
+                            .threadId("thread_id")
+                            .toolChoice(AssistantToolChoiceOption.Auto.NONE)
+                            .addTool(CodeInterpreterTool.builder().build())
+                            .truncationStrategy(
+                                Run.TruncationStrategy.builder()
+                                    .type(Run.TruncationStrategy.Type.AUTO)
+                                    .lastMessages(1L)
+                                    .build()
+                            )
+                            .usage(
+                                Run.Usage.builder()
+                                    .completionTokens(0L)
+                                    .promptTokens(0L)
+                                    .totalTokens(0L)
+                                    .build()
+                            )
+                            .temperature(0.0)
+                            .topP(0.0)
+                            .build()
+                    )
+                    .build()
+            )
+
+        val roundtrippedRunStreamEvent =
+            jsonMapper.readValue(
+                jsonMapper.writeValueAsString(runStreamEvent),
+                jacksonTypeRef<RunStreamEvent>(),
+            )
+
+        assertThat(roundtrippedRunStreamEvent).isEqualTo(runStreamEvent)
+    }
+
+    @Test
     fun ofThreadRunIncomplete() {
         val threadRunIncomplete =
             RunStreamEvent.ThreadRunIncomplete.builder()
@@ -455,7 +951,11 @@ internal class RunStreamEventTest {
                         .createdAt(0L)
                         .expiresAt(0L)
                         .failedAt(0L)
-                        .incompleteDetails(Run.IncompleteDetails.builder().build())
+                        .incompleteDetails(
+                            Run.IncompleteDetails.builder()
+                                .reason(Run.IncompleteDetails.Reason.MAX_COMPLETION_TOKENS)
+                                .build()
+                        )
                         .instructions("instructions")
                         .lastError(
                             Run.LastError.builder()
@@ -501,6 +1001,7 @@ internal class RunStreamEventTest {
                         .truncationStrategy(
                             Run.TruncationStrategy.builder()
                                 .type(Run.TruncationStrategy.Type.AUTO)
+                                .lastMessages(1L)
                                 .build()
                         )
                         .usage(
@@ -510,6 +1011,8 @@ internal class RunStreamEventTest {
                                 .totalTokens(0L)
                                 .build()
                         )
+                        .temperature(0.0)
+                        .topP(0.0)
                         .build()
                 )
                 .build()
@@ -529,6 +1032,97 @@ internal class RunStreamEventTest {
     }
 
     @Test
+    fun ofThreadRunIncompleteRoundtrip() {
+        val jsonMapper = jsonMapper()
+        val runStreamEvent =
+            RunStreamEvent.ofThreadRunIncomplete(
+                RunStreamEvent.ThreadRunIncomplete.builder()
+                    .data(
+                        Run.builder()
+                            .id("id")
+                            .assistantId("assistant_id")
+                            .cancelledAt(0L)
+                            .completedAt(0L)
+                            .createdAt(0L)
+                            .expiresAt(0L)
+                            .failedAt(0L)
+                            .incompleteDetails(
+                                Run.IncompleteDetails.builder()
+                                    .reason(Run.IncompleteDetails.Reason.MAX_COMPLETION_TOKENS)
+                                    .build()
+                            )
+                            .instructions("instructions")
+                            .lastError(
+                                Run.LastError.builder()
+                                    .code(Run.LastError.Code.SERVER_ERROR)
+                                    .message("message")
+                                    .build()
+                            )
+                            .maxCompletionTokens(256L)
+                            .maxPromptTokens(256L)
+                            .metadata(
+                                Run.Metadata.builder()
+                                    .putAdditionalProperty("foo", JsonValue.from("string"))
+                                    .build()
+                            )
+                            .model("model")
+                            .parallelToolCalls(true)
+                            .requiredAction(
+                                Run.RequiredAction.builder()
+                                    .submitToolOutputs(
+                                        Run.RequiredAction.SubmitToolOutputs.builder()
+                                            .addToolCall(
+                                                RequiredActionFunctionToolCall.builder()
+                                                    .id("id")
+                                                    .function(
+                                                        RequiredActionFunctionToolCall.Function
+                                                            .builder()
+                                                            .arguments("arguments")
+                                                            .name("name")
+                                                            .build()
+                                                    )
+                                                    .build()
+                                            )
+                                            .build()
+                                    )
+                                    .build()
+                            )
+                            .responseFormatAuto()
+                            .startedAt(0L)
+                            .status(RunStatus.QUEUED)
+                            .threadId("thread_id")
+                            .toolChoice(AssistantToolChoiceOption.Auto.NONE)
+                            .addTool(CodeInterpreterTool.builder().build())
+                            .truncationStrategy(
+                                Run.TruncationStrategy.builder()
+                                    .type(Run.TruncationStrategy.Type.AUTO)
+                                    .lastMessages(1L)
+                                    .build()
+                            )
+                            .usage(
+                                Run.Usage.builder()
+                                    .completionTokens(0L)
+                                    .promptTokens(0L)
+                                    .totalTokens(0L)
+                                    .build()
+                            )
+                            .temperature(0.0)
+                            .topP(0.0)
+                            .build()
+                    )
+                    .build()
+            )
+
+        val roundtrippedRunStreamEvent =
+            jsonMapper.readValue(
+                jsonMapper.writeValueAsString(runStreamEvent),
+                jacksonTypeRef<RunStreamEvent>(),
+            )
+
+        assertThat(roundtrippedRunStreamEvent).isEqualTo(runStreamEvent)
+    }
+
+    @Test
     fun ofThreadRunFailed() {
         val threadRunFailed =
             RunStreamEvent.ThreadRunFailed.builder()
@@ -541,7 +1135,11 @@ internal class RunStreamEventTest {
                         .createdAt(0L)
                         .expiresAt(0L)
                         .failedAt(0L)
-                        .incompleteDetails(Run.IncompleteDetails.builder().build())
+                        .incompleteDetails(
+                            Run.IncompleteDetails.builder()
+                                .reason(Run.IncompleteDetails.Reason.MAX_COMPLETION_TOKENS)
+                                .build()
+                        )
                         .instructions("instructions")
                         .lastError(
                             Run.LastError.builder()
@@ -587,6 +1185,7 @@ internal class RunStreamEventTest {
                         .truncationStrategy(
                             Run.TruncationStrategy.builder()
                                 .type(Run.TruncationStrategy.Type.AUTO)
+                                .lastMessages(1L)
                                 .build()
                         )
                         .usage(
@@ -596,6 +1195,8 @@ internal class RunStreamEventTest {
                                 .totalTokens(0L)
                                 .build()
                         )
+                        .temperature(0.0)
+                        .topP(0.0)
                         .build()
                 )
                 .build()
@@ -615,6 +1216,97 @@ internal class RunStreamEventTest {
     }
 
     @Test
+    fun ofThreadRunFailedRoundtrip() {
+        val jsonMapper = jsonMapper()
+        val runStreamEvent =
+            RunStreamEvent.ofThreadRunFailed(
+                RunStreamEvent.ThreadRunFailed.builder()
+                    .data(
+                        Run.builder()
+                            .id("id")
+                            .assistantId("assistant_id")
+                            .cancelledAt(0L)
+                            .completedAt(0L)
+                            .createdAt(0L)
+                            .expiresAt(0L)
+                            .failedAt(0L)
+                            .incompleteDetails(
+                                Run.IncompleteDetails.builder()
+                                    .reason(Run.IncompleteDetails.Reason.MAX_COMPLETION_TOKENS)
+                                    .build()
+                            )
+                            .instructions("instructions")
+                            .lastError(
+                                Run.LastError.builder()
+                                    .code(Run.LastError.Code.SERVER_ERROR)
+                                    .message("message")
+                                    .build()
+                            )
+                            .maxCompletionTokens(256L)
+                            .maxPromptTokens(256L)
+                            .metadata(
+                                Run.Metadata.builder()
+                                    .putAdditionalProperty("foo", JsonValue.from("string"))
+                                    .build()
+                            )
+                            .model("model")
+                            .parallelToolCalls(true)
+                            .requiredAction(
+                                Run.RequiredAction.builder()
+                                    .submitToolOutputs(
+                                        Run.RequiredAction.SubmitToolOutputs.builder()
+                                            .addToolCall(
+                                                RequiredActionFunctionToolCall.builder()
+                                                    .id("id")
+                                                    .function(
+                                                        RequiredActionFunctionToolCall.Function
+                                                            .builder()
+                                                            .arguments("arguments")
+                                                            .name("name")
+                                                            .build()
+                                                    )
+                                                    .build()
+                                            )
+                                            .build()
+                                    )
+                                    .build()
+                            )
+                            .responseFormatAuto()
+                            .startedAt(0L)
+                            .status(RunStatus.QUEUED)
+                            .threadId("thread_id")
+                            .toolChoice(AssistantToolChoiceOption.Auto.NONE)
+                            .addTool(CodeInterpreterTool.builder().build())
+                            .truncationStrategy(
+                                Run.TruncationStrategy.builder()
+                                    .type(Run.TruncationStrategy.Type.AUTO)
+                                    .lastMessages(1L)
+                                    .build()
+                            )
+                            .usage(
+                                Run.Usage.builder()
+                                    .completionTokens(0L)
+                                    .promptTokens(0L)
+                                    .totalTokens(0L)
+                                    .build()
+                            )
+                            .temperature(0.0)
+                            .topP(0.0)
+                            .build()
+                    )
+                    .build()
+            )
+
+        val roundtrippedRunStreamEvent =
+            jsonMapper.readValue(
+                jsonMapper.writeValueAsString(runStreamEvent),
+                jacksonTypeRef<RunStreamEvent>(),
+            )
+
+        assertThat(roundtrippedRunStreamEvent).isEqualTo(runStreamEvent)
+    }
+
+    @Test
     fun ofThreadRunCancelling() {
         val threadRunCancelling =
             RunStreamEvent.ThreadRunCancelling.builder()
@@ -627,7 +1319,11 @@ internal class RunStreamEventTest {
                         .createdAt(0L)
                         .expiresAt(0L)
                         .failedAt(0L)
-                        .incompleteDetails(Run.IncompleteDetails.builder().build())
+                        .incompleteDetails(
+                            Run.IncompleteDetails.builder()
+                                .reason(Run.IncompleteDetails.Reason.MAX_COMPLETION_TOKENS)
+                                .build()
+                        )
                         .instructions("instructions")
                         .lastError(
                             Run.LastError.builder()
@@ -673,6 +1369,7 @@ internal class RunStreamEventTest {
                         .truncationStrategy(
                             Run.TruncationStrategy.builder()
                                 .type(Run.TruncationStrategy.Type.AUTO)
+                                .lastMessages(1L)
                                 .build()
                         )
                         .usage(
@@ -682,6 +1379,8 @@ internal class RunStreamEventTest {
                                 .totalTokens(0L)
                                 .build()
                         )
+                        .temperature(0.0)
+                        .topP(0.0)
                         .build()
                 )
                 .build()
@@ -701,6 +1400,97 @@ internal class RunStreamEventTest {
     }
 
     @Test
+    fun ofThreadRunCancellingRoundtrip() {
+        val jsonMapper = jsonMapper()
+        val runStreamEvent =
+            RunStreamEvent.ofThreadRunCancelling(
+                RunStreamEvent.ThreadRunCancelling.builder()
+                    .data(
+                        Run.builder()
+                            .id("id")
+                            .assistantId("assistant_id")
+                            .cancelledAt(0L)
+                            .completedAt(0L)
+                            .createdAt(0L)
+                            .expiresAt(0L)
+                            .failedAt(0L)
+                            .incompleteDetails(
+                                Run.IncompleteDetails.builder()
+                                    .reason(Run.IncompleteDetails.Reason.MAX_COMPLETION_TOKENS)
+                                    .build()
+                            )
+                            .instructions("instructions")
+                            .lastError(
+                                Run.LastError.builder()
+                                    .code(Run.LastError.Code.SERVER_ERROR)
+                                    .message("message")
+                                    .build()
+                            )
+                            .maxCompletionTokens(256L)
+                            .maxPromptTokens(256L)
+                            .metadata(
+                                Run.Metadata.builder()
+                                    .putAdditionalProperty("foo", JsonValue.from("string"))
+                                    .build()
+                            )
+                            .model("model")
+                            .parallelToolCalls(true)
+                            .requiredAction(
+                                Run.RequiredAction.builder()
+                                    .submitToolOutputs(
+                                        Run.RequiredAction.SubmitToolOutputs.builder()
+                                            .addToolCall(
+                                                RequiredActionFunctionToolCall.builder()
+                                                    .id("id")
+                                                    .function(
+                                                        RequiredActionFunctionToolCall.Function
+                                                            .builder()
+                                                            .arguments("arguments")
+                                                            .name("name")
+                                                            .build()
+                                                    )
+                                                    .build()
+                                            )
+                                            .build()
+                                    )
+                                    .build()
+                            )
+                            .responseFormatAuto()
+                            .startedAt(0L)
+                            .status(RunStatus.QUEUED)
+                            .threadId("thread_id")
+                            .toolChoice(AssistantToolChoiceOption.Auto.NONE)
+                            .addTool(CodeInterpreterTool.builder().build())
+                            .truncationStrategy(
+                                Run.TruncationStrategy.builder()
+                                    .type(Run.TruncationStrategy.Type.AUTO)
+                                    .lastMessages(1L)
+                                    .build()
+                            )
+                            .usage(
+                                Run.Usage.builder()
+                                    .completionTokens(0L)
+                                    .promptTokens(0L)
+                                    .totalTokens(0L)
+                                    .build()
+                            )
+                            .temperature(0.0)
+                            .topP(0.0)
+                            .build()
+                    )
+                    .build()
+            )
+
+        val roundtrippedRunStreamEvent =
+            jsonMapper.readValue(
+                jsonMapper.writeValueAsString(runStreamEvent),
+                jacksonTypeRef<RunStreamEvent>(),
+            )
+
+        assertThat(roundtrippedRunStreamEvent).isEqualTo(runStreamEvent)
+    }
+
+    @Test
     fun ofThreadRunCancelled() {
         val threadRunCancelled =
             RunStreamEvent.ThreadRunCancelled.builder()
@@ -713,7 +1503,11 @@ internal class RunStreamEventTest {
                         .createdAt(0L)
                         .expiresAt(0L)
                         .failedAt(0L)
-                        .incompleteDetails(Run.IncompleteDetails.builder().build())
+                        .incompleteDetails(
+                            Run.IncompleteDetails.builder()
+                                .reason(Run.IncompleteDetails.Reason.MAX_COMPLETION_TOKENS)
+                                .build()
+                        )
                         .instructions("instructions")
                         .lastError(
                             Run.LastError.builder()
@@ -759,6 +1553,7 @@ internal class RunStreamEventTest {
                         .truncationStrategy(
                             Run.TruncationStrategy.builder()
                                 .type(Run.TruncationStrategy.Type.AUTO)
+                                .lastMessages(1L)
                                 .build()
                         )
                         .usage(
@@ -768,6 +1563,8 @@ internal class RunStreamEventTest {
                                 .totalTokens(0L)
                                 .build()
                         )
+                        .temperature(0.0)
+                        .topP(0.0)
                         .build()
                 )
                 .build()
@@ -787,6 +1584,97 @@ internal class RunStreamEventTest {
     }
 
     @Test
+    fun ofThreadRunCancelledRoundtrip() {
+        val jsonMapper = jsonMapper()
+        val runStreamEvent =
+            RunStreamEvent.ofThreadRunCancelled(
+                RunStreamEvent.ThreadRunCancelled.builder()
+                    .data(
+                        Run.builder()
+                            .id("id")
+                            .assistantId("assistant_id")
+                            .cancelledAt(0L)
+                            .completedAt(0L)
+                            .createdAt(0L)
+                            .expiresAt(0L)
+                            .failedAt(0L)
+                            .incompleteDetails(
+                                Run.IncompleteDetails.builder()
+                                    .reason(Run.IncompleteDetails.Reason.MAX_COMPLETION_TOKENS)
+                                    .build()
+                            )
+                            .instructions("instructions")
+                            .lastError(
+                                Run.LastError.builder()
+                                    .code(Run.LastError.Code.SERVER_ERROR)
+                                    .message("message")
+                                    .build()
+                            )
+                            .maxCompletionTokens(256L)
+                            .maxPromptTokens(256L)
+                            .metadata(
+                                Run.Metadata.builder()
+                                    .putAdditionalProperty("foo", JsonValue.from("string"))
+                                    .build()
+                            )
+                            .model("model")
+                            .parallelToolCalls(true)
+                            .requiredAction(
+                                Run.RequiredAction.builder()
+                                    .submitToolOutputs(
+                                        Run.RequiredAction.SubmitToolOutputs.builder()
+                                            .addToolCall(
+                                                RequiredActionFunctionToolCall.builder()
+                                                    .id("id")
+                                                    .function(
+                                                        RequiredActionFunctionToolCall.Function
+                                                            .builder()
+                                                            .arguments("arguments")
+                                                            .name("name")
+                                                            .build()
+                                                    )
+                                                    .build()
+                                            )
+                                            .build()
+                                    )
+                                    .build()
+                            )
+                            .responseFormatAuto()
+                            .startedAt(0L)
+                            .status(RunStatus.QUEUED)
+                            .threadId("thread_id")
+                            .toolChoice(AssistantToolChoiceOption.Auto.NONE)
+                            .addTool(CodeInterpreterTool.builder().build())
+                            .truncationStrategy(
+                                Run.TruncationStrategy.builder()
+                                    .type(Run.TruncationStrategy.Type.AUTO)
+                                    .lastMessages(1L)
+                                    .build()
+                            )
+                            .usage(
+                                Run.Usage.builder()
+                                    .completionTokens(0L)
+                                    .promptTokens(0L)
+                                    .totalTokens(0L)
+                                    .build()
+                            )
+                            .temperature(0.0)
+                            .topP(0.0)
+                            .build()
+                    )
+                    .build()
+            )
+
+        val roundtrippedRunStreamEvent =
+            jsonMapper.readValue(
+                jsonMapper.writeValueAsString(runStreamEvent),
+                jacksonTypeRef<RunStreamEvent>(),
+            )
+
+        assertThat(roundtrippedRunStreamEvent).isEqualTo(runStreamEvent)
+    }
+
+    @Test
     fun ofThreadRunExpired() {
         val threadRunExpired =
             RunStreamEvent.ThreadRunExpired.builder()
@@ -799,7 +1687,11 @@ internal class RunStreamEventTest {
                         .createdAt(0L)
                         .expiresAt(0L)
                         .failedAt(0L)
-                        .incompleteDetails(Run.IncompleteDetails.builder().build())
+                        .incompleteDetails(
+                            Run.IncompleteDetails.builder()
+                                .reason(Run.IncompleteDetails.Reason.MAX_COMPLETION_TOKENS)
+                                .build()
+                        )
                         .instructions("instructions")
                         .lastError(
                             Run.LastError.builder()
@@ -845,6 +1737,7 @@ internal class RunStreamEventTest {
                         .truncationStrategy(
                             Run.TruncationStrategy.builder()
                                 .type(Run.TruncationStrategy.Type.AUTO)
+                                .lastMessages(1L)
                                 .build()
                         )
                         .usage(
@@ -854,6 +1747,8 @@ internal class RunStreamEventTest {
                                 .totalTokens(0L)
                                 .build()
                         )
+                        .temperature(0.0)
+                        .topP(0.0)
                         .build()
                 )
                 .build()
@@ -870,5 +1765,114 @@ internal class RunStreamEventTest {
         assertThat(runStreamEvent.threadRunCancelling()).isEmpty
         assertThat(runStreamEvent.threadRunCancelled()).isEmpty
         assertThat(runStreamEvent.threadRunExpired()).contains(threadRunExpired)
+    }
+
+    @Test
+    fun ofThreadRunExpiredRoundtrip() {
+        val jsonMapper = jsonMapper()
+        val runStreamEvent =
+            RunStreamEvent.ofThreadRunExpired(
+                RunStreamEvent.ThreadRunExpired.builder()
+                    .data(
+                        Run.builder()
+                            .id("id")
+                            .assistantId("assistant_id")
+                            .cancelledAt(0L)
+                            .completedAt(0L)
+                            .createdAt(0L)
+                            .expiresAt(0L)
+                            .failedAt(0L)
+                            .incompleteDetails(
+                                Run.IncompleteDetails.builder()
+                                    .reason(Run.IncompleteDetails.Reason.MAX_COMPLETION_TOKENS)
+                                    .build()
+                            )
+                            .instructions("instructions")
+                            .lastError(
+                                Run.LastError.builder()
+                                    .code(Run.LastError.Code.SERVER_ERROR)
+                                    .message("message")
+                                    .build()
+                            )
+                            .maxCompletionTokens(256L)
+                            .maxPromptTokens(256L)
+                            .metadata(
+                                Run.Metadata.builder()
+                                    .putAdditionalProperty("foo", JsonValue.from("string"))
+                                    .build()
+                            )
+                            .model("model")
+                            .parallelToolCalls(true)
+                            .requiredAction(
+                                Run.RequiredAction.builder()
+                                    .submitToolOutputs(
+                                        Run.RequiredAction.SubmitToolOutputs.builder()
+                                            .addToolCall(
+                                                RequiredActionFunctionToolCall.builder()
+                                                    .id("id")
+                                                    .function(
+                                                        RequiredActionFunctionToolCall.Function
+                                                            .builder()
+                                                            .arguments("arguments")
+                                                            .name("name")
+                                                            .build()
+                                                    )
+                                                    .build()
+                                            )
+                                            .build()
+                                    )
+                                    .build()
+                            )
+                            .responseFormatAuto()
+                            .startedAt(0L)
+                            .status(RunStatus.QUEUED)
+                            .threadId("thread_id")
+                            .toolChoice(AssistantToolChoiceOption.Auto.NONE)
+                            .addTool(CodeInterpreterTool.builder().build())
+                            .truncationStrategy(
+                                Run.TruncationStrategy.builder()
+                                    .type(Run.TruncationStrategy.Type.AUTO)
+                                    .lastMessages(1L)
+                                    .build()
+                            )
+                            .usage(
+                                Run.Usage.builder()
+                                    .completionTokens(0L)
+                                    .promptTokens(0L)
+                                    .totalTokens(0L)
+                                    .build()
+                            )
+                            .temperature(0.0)
+                            .topP(0.0)
+                            .build()
+                    )
+                    .build()
+            )
+
+        val roundtrippedRunStreamEvent =
+            jsonMapper.readValue(
+                jsonMapper.writeValueAsString(runStreamEvent),
+                jacksonTypeRef<RunStreamEvent>(),
+            )
+
+        assertThat(roundtrippedRunStreamEvent).isEqualTo(runStreamEvent)
+    }
+
+    enum class IncompatibleJsonShapeTestCase(val value: JsonValue) {
+        BOOLEAN(JsonValue.from(false)),
+        STRING(JsonValue.from("invalid")),
+        INTEGER(JsonValue.from(-1)),
+        FLOAT(JsonValue.from(3.14)),
+        ARRAY(JsonValue.from(listOf("invalid", "array"))),
+    }
+
+    @ParameterizedTest
+    @EnumSource
+    fun incompatibleJsonShapeDeserializesToUnknown(testCase: IncompatibleJsonShapeTestCase) {
+        val runStreamEvent =
+            jsonMapper().convertValue(testCase.value, jacksonTypeRef<RunStreamEvent>())
+
+        val e = assertThrows<OpenAIInvalidDataException> { runStreamEvent.validate() }
+        assertThat(e).hasMessageStartingWith("Unknown ")
     }
 }

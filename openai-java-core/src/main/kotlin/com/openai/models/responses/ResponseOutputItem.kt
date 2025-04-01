@@ -118,8 +118,8 @@ private constructor(
 
     fun _json(): Optional<JsonValue> = Optional.ofNullable(_json)
 
-    fun <T> accept(visitor: Visitor<T>): T {
-        return when {
+    fun <T> accept(visitor: Visitor<T>): T =
+        when {
             message != null -> visitor.visitMessage(message)
             fileSearchCall != null -> visitor.visitFileSearchCall(fileSearchCall)
             functionCall != null -> visitor.visitFunctionCall(functionCall)
@@ -128,7 +128,6 @@ private constructor(
             reasoning != null -> visitor.visitReasoning(reasoning)
             else -> visitor.unknown(_json)
         }
-    }
 
     private var validated: Boolean = false
 
@@ -166,6 +165,43 @@ private constructor(
         )
         validated = true
     }
+
+    fun isValid(): Boolean =
+        try {
+            validate()
+            true
+        } catch (e: OpenAIInvalidDataException) {
+            false
+        }
+
+    /**
+     * Returns a score indicating how many valid values are contained in this object recursively.
+     *
+     * Used for best match union deserialization.
+     */
+    @JvmSynthetic
+    internal fun validity(): Int =
+        accept(
+            object : Visitor<Int> {
+                override fun visitMessage(message: ResponseOutputMessage) = message.validity()
+
+                override fun visitFileSearchCall(fileSearchCall: ResponseFileSearchToolCall) =
+                    fileSearchCall.validity()
+
+                override fun visitFunctionCall(functionCall: ResponseFunctionToolCall) =
+                    functionCall.validity()
+
+                override fun visitWebSearchCall(webSearchCall: ResponseFunctionWebSearch) =
+                    webSearchCall.validity()
+
+                override fun visitComputerCall(computerCall: ResponseComputerToolCall) =
+                    computerCall.validity()
+
+                override fun visitReasoning(reasoning: ResponseReasoningItem) = reasoning.validity()
+
+                override fun unknown(json: JsonValue?) = 0
+            }
+        )
 
     override fun equals(other: Any?): Boolean {
         if (this === other) {
@@ -306,44 +342,34 @@ private constructor(
 
             when (type) {
                 "message" -> {
-                    return ResponseOutputItem(
-                        message = deserialize(node, jacksonTypeRef<ResponseOutputMessage>()),
-                        _json = json,
-                    )
+                    return tryDeserialize(node, jacksonTypeRef<ResponseOutputMessage>())?.let {
+                        ResponseOutputItem(message = it, _json = json)
+                    } ?: ResponseOutputItem(_json = json)
                 }
                 "file_search_call" -> {
-                    return ResponseOutputItem(
-                        fileSearchCall =
-                            deserialize(node, jacksonTypeRef<ResponseFileSearchToolCall>()),
-                        _json = json,
-                    )
+                    return tryDeserialize(node, jacksonTypeRef<ResponseFileSearchToolCall>())?.let {
+                        ResponseOutputItem(fileSearchCall = it, _json = json)
+                    } ?: ResponseOutputItem(_json = json)
                 }
                 "function_call" -> {
-                    return ResponseOutputItem(
-                        functionCall =
-                            deserialize(node, jacksonTypeRef<ResponseFunctionToolCall>()),
-                        _json = json,
-                    )
+                    return tryDeserialize(node, jacksonTypeRef<ResponseFunctionToolCall>())?.let {
+                        ResponseOutputItem(functionCall = it, _json = json)
+                    } ?: ResponseOutputItem(_json = json)
                 }
                 "web_search_call" -> {
-                    return ResponseOutputItem(
-                        webSearchCall =
-                            deserialize(node, jacksonTypeRef<ResponseFunctionWebSearch>()),
-                        _json = json,
-                    )
+                    return tryDeserialize(node, jacksonTypeRef<ResponseFunctionWebSearch>())?.let {
+                        ResponseOutputItem(webSearchCall = it, _json = json)
+                    } ?: ResponseOutputItem(_json = json)
                 }
                 "computer_call" -> {
-                    return ResponseOutputItem(
-                        computerCall =
-                            deserialize(node, jacksonTypeRef<ResponseComputerToolCall>()),
-                        _json = json,
-                    )
+                    return tryDeserialize(node, jacksonTypeRef<ResponseComputerToolCall>())?.let {
+                        ResponseOutputItem(computerCall = it, _json = json)
+                    } ?: ResponseOutputItem(_json = json)
                 }
                 "reasoning" -> {
-                    return ResponseOutputItem(
-                        reasoning = deserialize(node, jacksonTypeRef<ResponseReasoningItem>()),
-                        _json = json,
-                    )
+                    return tryDeserialize(node, jacksonTypeRef<ResponseReasoningItem>())?.let {
+                        ResponseOutputItem(reasoning = it, _json = json)
+                    } ?: ResponseOutputItem(_json = json)
                 }
             }
 

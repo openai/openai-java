@@ -75,13 +75,12 @@ private constructor(
 
     fun _json(): Optional<JsonValue> = Optional.ofNullable(_json)
 
-    fun <T> accept(visitor: Visitor<T>): T {
-        return when {
+    fun <T> accept(visitor: Visitor<T>): T =
+        when {
             transcriptTextDelta != null -> visitor.visitTranscriptTextDelta(transcriptTextDelta)
             transcriptTextDone != null -> visitor.visitTranscriptTextDone(transcriptTextDone)
             else -> visitor.unknown(_json)
         }
-    }
 
     private var validated: Boolean = false
 
@@ -107,6 +106,35 @@ private constructor(
         )
         validated = true
     }
+
+    fun isValid(): Boolean =
+        try {
+            validate()
+            true
+        } catch (e: OpenAIInvalidDataException) {
+            false
+        }
+
+    /**
+     * Returns a score indicating how many valid values are contained in this object recursively.
+     *
+     * Used for best match union deserialization.
+     */
+    @JvmSynthetic
+    internal fun validity(): Int =
+        accept(
+            object : Visitor<Int> {
+                override fun visitTranscriptTextDelta(
+                    transcriptTextDelta: TranscriptionTextDeltaEvent
+                ) = transcriptTextDelta.validity()
+
+                override fun visitTranscriptTextDone(
+                    transcriptTextDone: TranscriptionTextDoneEvent
+                ) = transcriptTextDone.validity()
+
+                override fun unknown(json: JsonValue?) = 0
+            }
+        )
 
     override fun equals(other: Any?): Boolean {
         if (this === other) {
@@ -197,18 +225,14 @@ private constructor(
 
             when (type) {
                 "transcript.text.delta" -> {
-                    return TranscriptionStreamEvent(
-                        transcriptTextDelta =
-                            deserialize(node, jacksonTypeRef<TranscriptionTextDeltaEvent>()),
-                        _json = json,
-                    )
+                    return tryDeserialize(node, jacksonTypeRef<TranscriptionTextDeltaEvent>())
+                        ?.let { TranscriptionStreamEvent(transcriptTextDelta = it, _json = json) }
+                        ?: TranscriptionStreamEvent(_json = json)
                 }
                 "transcript.text.done" -> {
-                    return TranscriptionStreamEvent(
-                        transcriptTextDone =
-                            deserialize(node, jacksonTypeRef<TranscriptionTextDoneEvent>()),
-                        _json = json,
-                    )
+                    return tryDeserialize(node, jacksonTypeRef<TranscriptionTextDoneEvent>())?.let {
+                        TranscriptionStreamEvent(transcriptTextDone = it, _json = json)
+                    } ?: TranscriptionStreamEvent(_json = json)
                 }
             }
 

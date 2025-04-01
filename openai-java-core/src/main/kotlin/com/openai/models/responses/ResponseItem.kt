@@ -12,6 +12,7 @@ import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
 import com.openai.core.BaseDeserializer
 import com.openai.core.BaseSerializer
 import com.openai.core.JsonValue
+import com.openai.core.allMaxBy
 import com.openai.core.getOrThrow
 import com.openai.errors.OpenAIInvalidDataException
 import java.util.Objects
@@ -134,8 +135,8 @@ private constructor(
 
     fun _json(): Optional<JsonValue> = Optional.ofNullable(_json)
 
-    fun <T> accept(visitor: Visitor<T>): T {
-        return when {
+    fun <T> accept(visitor: Visitor<T>): T =
+        when {
             responseInputMessageItem != null ->
                 visitor.visitResponseInputMessageItem(responseInputMessageItem)
             responseOutputMessage != null ->
@@ -148,7 +149,6 @@ private constructor(
             functionCallOutput != null -> visitor.visitFunctionCallOutput(functionCallOutput)
             else -> visitor.unknown(_json)
         }
-    }
 
     private var validated: Boolean = false
 
@@ -202,6 +202,55 @@ private constructor(
         )
         validated = true
     }
+
+    fun isValid(): Boolean =
+        try {
+            validate()
+            true
+        } catch (e: OpenAIInvalidDataException) {
+            false
+        }
+
+    /**
+     * Returns a score indicating how many valid values are contained in this object recursively.
+     *
+     * Used for best match union deserialization.
+     */
+    @JvmSynthetic
+    internal fun validity(): Int =
+        accept(
+            object : Visitor<Int> {
+                override fun visitResponseInputMessageItem(
+                    responseInputMessageItem: ResponseInputMessageItem
+                ) = responseInputMessageItem.validity()
+
+                override fun visitResponseOutputMessage(
+                    responseOutputMessage: ResponseOutputMessage
+                ) = responseOutputMessage.validity()
+
+                override fun visitFileSearchCall(fileSearchCall: ResponseFileSearchToolCall) =
+                    fileSearchCall.validity()
+
+                override fun visitComputerCall(computerCall: ResponseComputerToolCall) =
+                    computerCall.validity()
+
+                override fun visitComputerCallOutput(
+                    computerCallOutput: ResponseComputerToolCallOutputItem
+                ) = computerCallOutput.validity()
+
+                override fun visitWebSearchCall(webSearchCall: ResponseFunctionWebSearch) =
+                    webSearchCall.validity()
+
+                override fun visitFunctionCall(functionCall: ResponseFunctionToolCallItem) =
+                    functionCall.validity()
+
+                override fun visitFunctionCallOutput(
+                    functionCallOutput: ResponseFunctionToolCallOutputItem
+                ) = functionCallOutput.validity()
+
+                override fun unknown(json: JsonValue?) = 0
+            }
+        )
 
     override fun equals(other: Any?): Boolean {
         if (this === other) {
@@ -349,58 +398,65 @@ private constructor(
 
             when (type) {
                 "message" -> {
-                    tryDeserialize(node, jacksonTypeRef<ResponseInputMessageItem>()) {
-                            it.validate()
-                        }
-                        ?.let {
-                            return ResponseItem(responseInputMessageItem = it, _json = json)
-                        }
-                    tryDeserialize(node, jacksonTypeRef<ResponseOutputMessage>()) { it.validate() }
-                        ?.let {
-                            return ResponseItem(responseOutputMessage = it, _json = json)
-                        }
+                    val bestMatches =
+                        sequenceOf(
+                                tryDeserialize(node, jacksonTypeRef<ResponseInputMessageItem>())
+                                    ?.let {
+                                        ResponseItem(responseInputMessageItem = it, _json = json)
+                                    },
+                                tryDeserialize(node, jacksonTypeRef<ResponseOutputMessage>())?.let {
+                                    ResponseItem(responseOutputMessage = it, _json = json)
+                                },
+                            )
+                            .filterNotNull()
+                            .allMaxBy { it.validity() }
+                            .toList()
+                    return when (bestMatches.size) {
+                        // This can happen if what we're deserializing is completely incompatible
+                        // with all the possible variants (e.g. deserializing from boolean).
+                        0 -> ResponseItem(_json = json)
+                        1 -> bestMatches.single()
+                        // If there's more than one match with the highest validity, then use the
+                        // first completely valid match, or simply the first match if none are
+                        // completely valid.
+                        else -> bestMatches.firstOrNull { it.isValid() } ?: bestMatches.first()
+                    }
                 }
                 "file_search_call" -> {
-                    return ResponseItem(
-                        fileSearchCall =
-                            deserialize(node, jacksonTypeRef<ResponseFileSearchToolCall>()),
-                        _json = json,
-                    )
+                    return tryDeserialize(node, jacksonTypeRef<ResponseFileSearchToolCall>())?.let {
+                        ResponseItem(fileSearchCall = it, _json = json)
+                    } ?: ResponseItem(_json = json)
                 }
                 "computer_call" -> {
-                    return ResponseItem(
-                        computerCall =
-                            deserialize(node, jacksonTypeRef<ResponseComputerToolCall>()),
-                        _json = json,
-                    )
+                    return tryDeserialize(node, jacksonTypeRef<ResponseComputerToolCall>())?.let {
+                        ResponseItem(computerCall = it, _json = json)
+                    } ?: ResponseItem(_json = json)
                 }
                 "computer_call_output" -> {
-                    return ResponseItem(
-                        computerCallOutput =
-                            deserialize(node, jacksonTypeRef<ResponseComputerToolCallOutputItem>()),
-                        _json = json,
-                    )
+                    return tryDeserialize(
+                            node,
+                            jacksonTypeRef<ResponseComputerToolCallOutputItem>(),
+                        )
+                        ?.let { ResponseItem(computerCallOutput = it, _json = json) }
+                        ?: ResponseItem(_json = json)
                 }
                 "web_search_call" -> {
-                    return ResponseItem(
-                        webSearchCall =
-                            deserialize(node, jacksonTypeRef<ResponseFunctionWebSearch>()),
-                        _json = json,
-                    )
+                    return tryDeserialize(node, jacksonTypeRef<ResponseFunctionWebSearch>())?.let {
+                        ResponseItem(webSearchCall = it, _json = json)
+                    } ?: ResponseItem(_json = json)
                 }
                 "function_call" -> {
-                    return ResponseItem(
-                        functionCall =
-                            deserialize(node, jacksonTypeRef<ResponseFunctionToolCallItem>()),
-                        _json = json,
-                    )
+                    return tryDeserialize(node, jacksonTypeRef<ResponseFunctionToolCallItem>())
+                        ?.let { ResponseItem(functionCall = it, _json = json) }
+                        ?: ResponseItem(_json = json)
                 }
                 "function_call_output" -> {
-                    return ResponseItem(
-                        functionCallOutput =
-                            deserialize(node, jacksonTypeRef<ResponseFunctionToolCallOutputItem>()),
-                        _json = json,
-                    )
+                    return tryDeserialize(
+                            node,
+                            jacksonTypeRef<ResponseFunctionToolCallOutputItem>(),
+                        )
+                        ?.let { ResponseItem(functionCallOutput = it, _json = json) }
+                        ?: ResponseItem(_json = json)
                 }
             }
 

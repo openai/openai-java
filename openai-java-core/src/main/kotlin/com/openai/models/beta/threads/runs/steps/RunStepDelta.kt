@@ -150,6 +150,22 @@ private constructor(
         validated = true
     }
 
+    fun isValid(): Boolean =
+        try {
+            validate()
+            true
+        } catch (e: OpenAIInvalidDataException) {
+            false
+        }
+
+    /**
+     * Returns a score indicating how many valid values are contained in this object recursively.
+     *
+     * Used for best match union deserialization.
+     */
+    @JvmSynthetic
+    internal fun validity(): Int = (stepDetails.asKnown().getOrNull()?.validity() ?: 0)
+
     /** The details of the run step. */
     @JsonDeserialize(using = StepDetails.Deserializer::class)
     @JsonSerialize(using = StepDetails.Serializer::class)
@@ -180,13 +196,12 @@ private constructor(
 
         fun _json(): Optional<JsonValue> = Optional.ofNullable(_json)
 
-        fun <T> accept(visitor: Visitor<T>): T {
-            return when {
+        fun <T> accept(visitor: Visitor<T>): T =
+            when {
                 messageCreation != null -> visitor.visitMessageCreation(messageCreation)
                 toolCalls != null -> visitor.visitToolCalls(toolCalls)
                 else -> visitor.unknown(_json)
             }
-        }
 
         private var validated: Boolean = false
 
@@ -208,6 +223,34 @@ private constructor(
             )
             validated = true
         }
+
+        fun isValid(): Boolean =
+            try {
+                validate()
+                true
+            } catch (e: OpenAIInvalidDataException) {
+                false
+            }
+
+        /**
+         * Returns a score indicating how many valid values are contained in this object
+         * recursively.
+         *
+         * Used for best match union deserialization.
+         */
+        @JvmSynthetic
+        internal fun validity(): Int =
+            accept(
+                object : Visitor<Int> {
+                    override fun visitMessageCreation(messageCreation: RunStepDeltaMessageDelta) =
+                        messageCreation.validity()
+
+                    override fun visitToolCalls(toolCalls: ToolCallDeltaObject) =
+                        toolCalls.validity()
+
+                    override fun unknown(json: JsonValue?) = 0
+                }
+            )
 
         override fun equals(other: Any?): Boolean {
             if (this === other) {
@@ -274,17 +317,14 @@ private constructor(
 
                 when (type) {
                     "message_creation" -> {
-                        return StepDetails(
-                            messageCreation =
-                                deserialize(node, jacksonTypeRef<RunStepDeltaMessageDelta>()),
-                            _json = json,
-                        )
+                        return tryDeserialize(node, jacksonTypeRef<RunStepDeltaMessageDelta>())
+                            ?.let { StepDetails(messageCreation = it, _json = json) }
+                            ?: StepDetails(_json = json)
                     }
                     "tool_calls" -> {
-                        return StepDetails(
-                            toolCalls = deserialize(node, jacksonTypeRef<ToolCallDeltaObject>()),
-                            _json = json,
-                        )
+                        return tryDeserialize(node, jacksonTypeRef<ToolCallDeltaObject>())?.let {
+                            StepDetails(toolCalls = it, _json = json)
+                        } ?: StepDetails(_json = json)
                     }
                 }
 

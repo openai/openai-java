@@ -168,8 +168,8 @@ private constructor(
 
     fun _json(): Optional<JsonValue> = Optional.ofNullable(_json)
 
-    fun <T> accept(visitor: Visitor<T>): T {
-        return when {
+    fun <T> accept(visitor: Visitor<T>): T =
+        when {
             threadRunStepCreated != null -> visitor.visitThreadRunStepCreated(threadRunStepCreated)
             threadRunStepInProgress != null ->
                 visitor.visitThreadRunStepInProgress(threadRunStepInProgress)
@@ -182,7 +182,6 @@ private constructor(
             threadRunStepExpired != null -> visitor.visitThreadRunStepExpired(threadRunStepExpired)
             else -> visitor.unknown(_json)
         }
-    }
 
     private var validated: Boolean = false
 
@@ -230,6 +229,51 @@ private constructor(
         )
         validated = true
     }
+
+    fun isValid(): Boolean =
+        try {
+            validate()
+            true
+        } catch (e: OpenAIInvalidDataException) {
+            false
+        }
+
+    /**
+     * Returns a score indicating how many valid values are contained in this object recursively.
+     *
+     * Used for best match union deserialization.
+     */
+    @JvmSynthetic
+    internal fun validity(): Int =
+        accept(
+            object : Visitor<Int> {
+                override fun visitThreadRunStepCreated(threadRunStepCreated: ThreadRunStepCreated) =
+                    threadRunStepCreated.validity()
+
+                override fun visitThreadRunStepInProgress(
+                    threadRunStepInProgress: ThreadRunStepInProgress
+                ) = threadRunStepInProgress.validity()
+
+                override fun visitThreadRunStepDelta(threadRunStepDelta: ThreadRunStepDelta) =
+                    threadRunStepDelta.validity()
+
+                override fun visitThreadRunStepCompleted(
+                    threadRunStepCompleted: ThreadRunStepCompleted
+                ) = threadRunStepCompleted.validity()
+
+                override fun visitThreadRunStepFailed(threadRunStepFailed: ThreadRunStepFailed) =
+                    threadRunStepFailed.validity()
+
+                override fun visitThreadRunStepCancelled(
+                    threadRunStepCancelled: ThreadRunStepCancelled
+                ) = threadRunStepCancelled.validity()
+
+                override fun visitThreadRunStepExpired(threadRunStepExpired: ThreadRunStepExpired) =
+                    threadRunStepExpired.validity()
+
+                override fun unknown(json: JsonValue?) = 0
+            }
+        )
 
     override fun equals(other: Any?): Boolean {
         if (this === other) {
@@ -401,53 +445,39 @@ private constructor(
 
             when (event) {
                 "thread.run.step.created" -> {
-                    return RunStepStreamEvent(
-                        threadRunStepCreated =
-                            deserialize(node, jacksonTypeRef<ThreadRunStepCreated>()),
-                        _json = json,
-                    )
+                    return tryDeserialize(node, jacksonTypeRef<ThreadRunStepCreated>())?.let {
+                        RunStepStreamEvent(threadRunStepCreated = it, _json = json)
+                    } ?: RunStepStreamEvent(_json = json)
                 }
                 "thread.run.step.in_progress" -> {
-                    return RunStepStreamEvent(
-                        threadRunStepInProgress =
-                            deserialize(node, jacksonTypeRef<ThreadRunStepInProgress>()),
-                        _json = json,
-                    )
+                    return tryDeserialize(node, jacksonTypeRef<ThreadRunStepInProgress>())?.let {
+                        RunStepStreamEvent(threadRunStepInProgress = it, _json = json)
+                    } ?: RunStepStreamEvent(_json = json)
                 }
                 "thread.run.step.delta" -> {
-                    return RunStepStreamEvent(
-                        threadRunStepDelta =
-                            deserialize(node, jacksonTypeRef<ThreadRunStepDelta>()),
-                        _json = json,
-                    )
+                    return tryDeserialize(node, jacksonTypeRef<ThreadRunStepDelta>())?.let {
+                        RunStepStreamEvent(threadRunStepDelta = it, _json = json)
+                    } ?: RunStepStreamEvent(_json = json)
                 }
                 "thread.run.step.completed" -> {
-                    return RunStepStreamEvent(
-                        threadRunStepCompleted =
-                            deserialize(node, jacksonTypeRef<ThreadRunStepCompleted>()),
-                        _json = json,
-                    )
+                    return tryDeserialize(node, jacksonTypeRef<ThreadRunStepCompleted>())?.let {
+                        RunStepStreamEvent(threadRunStepCompleted = it, _json = json)
+                    } ?: RunStepStreamEvent(_json = json)
                 }
                 "thread.run.step.failed" -> {
-                    return RunStepStreamEvent(
-                        threadRunStepFailed =
-                            deserialize(node, jacksonTypeRef<ThreadRunStepFailed>()),
-                        _json = json,
-                    )
+                    return tryDeserialize(node, jacksonTypeRef<ThreadRunStepFailed>())?.let {
+                        RunStepStreamEvent(threadRunStepFailed = it, _json = json)
+                    } ?: RunStepStreamEvent(_json = json)
                 }
                 "thread.run.step.cancelled" -> {
-                    return RunStepStreamEvent(
-                        threadRunStepCancelled =
-                            deserialize(node, jacksonTypeRef<ThreadRunStepCancelled>()),
-                        _json = json,
-                    )
+                    return tryDeserialize(node, jacksonTypeRef<ThreadRunStepCancelled>())?.let {
+                        RunStepStreamEvent(threadRunStepCancelled = it, _json = json)
+                    } ?: RunStepStreamEvent(_json = json)
                 }
                 "thread.run.step.expired" -> {
-                    return RunStepStreamEvent(
-                        threadRunStepExpired =
-                            deserialize(node, jacksonTypeRef<ThreadRunStepExpired>()),
-                        _json = json,
-                    )
+                    return tryDeserialize(node, jacksonTypeRef<ThreadRunStepExpired>())?.let {
+                        RunStepStreamEvent(threadRunStepExpired = it, _json = json)
+                    } ?: RunStepStreamEvent(_json = json)
                 }
             }
 
@@ -645,6 +675,25 @@ private constructor(
             validated = true
         }
 
+        fun isValid(): Boolean =
+            try {
+                validate()
+                true
+            } catch (e: OpenAIInvalidDataException) {
+                false
+            }
+
+        /**
+         * Returns a score indicating how many valid values are contained in this object
+         * recursively.
+         *
+         * Used for best match union deserialization.
+         */
+        @JvmSynthetic
+        internal fun validity(): Int =
+            (data.asKnown().getOrNull()?.validity() ?: 0) +
+                event.let { if (it == JsonValue.from("thread.run.step.created")) 1 else 0 }
+
         override fun equals(other: Any?): Boolean {
             if (this === other) {
                 return true
@@ -826,6 +875,25 @@ private constructor(
             }
             validated = true
         }
+
+        fun isValid(): Boolean =
+            try {
+                validate()
+                true
+            } catch (e: OpenAIInvalidDataException) {
+                false
+            }
+
+        /**
+         * Returns a score indicating how many valid values are contained in this object
+         * recursively.
+         *
+         * Used for best match union deserialization.
+         */
+        @JvmSynthetic
+        internal fun validity(): Int =
+            (data.asKnown().getOrNull()?.validity() ?: 0) +
+                event.let { if (it == JsonValue.from("thread.run.step.in_progress")) 1 else 0 }
 
         override fun equals(other: Any?): Boolean {
             if (this === other) {
@@ -1013,6 +1081,25 @@ private constructor(
             validated = true
         }
 
+        fun isValid(): Boolean =
+            try {
+                validate()
+                true
+            } catch (e: OpenAIInvalidDataException) {
+                false
+            }
+
+        /**
+         * Returns a score indicating how many valid values are contained in this object
+         * recursively.
+         *
+         * Used for best match union deserialization.
+         */
+        @JvmSynthetic
+        internal fun validity(): Int =
+            (data.asKnown().getOrNull()?.validity() ?: 0) +
+                event.let { if (it == JsonValue.from("thread.run.step.delta")) 1 else 0 }
+
         override fun equals(other: Any?): Boolean {
             if (this === other) {
                 return true
@@ -1195,6 +1282,25 @@ private constructor(
             validated = true
         }
 
+        fun isValid(): Boolean =
+            try {
+                validate()
+                true
+            } catch (e: OpenAIInvalidDataException) {
+                false
+            }
+
+        /**
+         * Returns a score indicating how many valid values are contained in this object
+         * recursively.
+         *
+         * Used for best match union deserialization.
+         */
+        @JvmSynthetic
+        internal fun validity(): Int =
+            (data.asKnown().getOrNull()?.validity() ?: 0) +
+                event.let { if (it == JsonValue.from("thread.run.step.completed")) 1 else 0 }
+
         override fun equals(other: Any?): Boolean {
             if (this === other) {
                 return true
@@ -1375,6 +1481,25 @@ private constructor(
             }
             validated = true
         }
+
+        fun isValid(): Boolean =
+            try {
+                validate()
+                true
+            } catch (e: OpenAIInvalidDataException) {
+                false
+            }
+
+        /**
+         * Returns a score indicating how many valid values are contained in this object
+         * recursively.
+         *
+         * Used for best match union deserialization.
+         */
+        @JvmSynthetic
+        internal fun validity(): Int =
+            (data.asKnown().getOrNull()?.validity() ?: 0) +
+                event.let { if (it == JsonValue.from("thread.run.step.failed")) 1 else 0 }
 
         override fun equals(other: Any?): Boolean {
             if (this === other) {
@@ -1558,6 +1683,25 @@ private constructor(
             validated = true
         }
 
+        fun isValid(): Boolean =
+            try {
+                validate()
+                true
+            } catch (e: OpenAIInvalidDataException) {
+                false
+            }
+
+        /**
+         * Returns a score indicating how many valid values are contained in this object
+         * recursively.
+         *
+         * Used for best match union deserialization.
+         */
+        @JvmSynthetic
+        internal fun validity(): Int =
+            (data.asKnown().getOrNull()?.validity() ?: 0) +
+                event.let { if (it == JsonValue.from("thread.run.step.cancelled")) 1 else 0 }
+
         override fun equals(other: Any?): Boolean {
             if (this === other) {
                 return true
@@ -1738,6 +1882,25 @@ private constructor(
             }
             validated = true
         }
+
+        fun isValid(): Boolean =
+            try {
+                validate()
+                true
+            } catch (e: OpenAIInvalidDataException) {
+                false
+            }
+
+        /**
+         * Returns a score indicating how many valid values are contained in this object
+         * recursively.
+         *
+         * Used for best match union deserialization.
+         */
+        @JvmSynthetic
+        internal fun validity(): Int =
+            (data.asKnown().getOrNull()?.validity() ?: 0) +
+                event.let { if (it == JsonValue.from("thread.run.step.expired")) 1 else 0 }
 
         override fun equals(other: Any?): Boolean {
             if (this === other) {

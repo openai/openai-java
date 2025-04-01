@@ -269,6 +269,26 @@ private constructor(
         validated = true
     }
 
+    fun isValid(): Boolean =
+        try {
+            validate()
+            true
+        } catch (e: OpenAIInvalidDataException) {
+            false
+        }
+
+    /**
+     * Returns a score indicating how many valid values are contained in this object recursively.
+     *
+     * Used for best match union deserialization.
+     */
+    @JvmSynthetic
+    internal fun validity(): Int =
+        (categories.asKnown().getOrNull()?.validity() ?: 0) +
+            (categoryAppliedInputTypes.asKnown().getOrNull()?.validity() ?: 0) +
+            (categoryScores.asKnown().getOrNull()?.validity() ?: 0) +
+            (if (flagged.asKnown().isPresent) 1 else 0)
+
     /** A list of the categories, and whether they are flagged or not. */
     class Categories
     private constructor(
@@ -959,6 +979,36 @@ private constructor(
             violenceGraphic()
             validated = true
         }
+
+        fun isValid(): Boolean =
+            try {
+                validate()
+                true
+            } catch (e: OpenAIInvalidDataException) {
+                false
+            }
+
+        /**
+         * Returns a score indicating how many valid values are contained in this object
+         * recursively.
+         *
+         * Used for best match union deserialization.
+         */
+        @JvmSynthetic
+        internal fun validity(): Int =
+            (if (harassment.asKnown().isPresent) 1 else 0) +
+                (if (harassmentThreatening.asKnown().isPresent) 1 else 0) +
+                (if (hate.asKnown().isPresent) 1 else 0) +
+                (if (hateThreatening.asKnown().isPresent) 1 else 0) +
+                (if (illicit.asKnown().isPresent) 1 else 0) +
+                (if (illicitViolent.asKnown().isPresent) 1 else 0) +
+                (if (selfHarm.asKnown().isPresent) 1 else 0) +
+                (if (selfHarmInstructions.asKnown().isPresent) 1 else 0) +
+                (if (selfHarmIntent.asKnown().isPresent) 1 else 0) +
+                (if (sexual.asKnown().isPresent) 1 else 0) +
+                (if (sexualMinors.asKnown().isPresent) 1 else 0) +
+                (if (violence.asKnown().isPresent) 1 else 0) +
+                (if (violenceGraphic.asKnown().isPresent) 1 else 0)
 
         override fun equals(other: Any?): Boolean {
             if (this === other) {
@@ -1778,21 +1828,52 @@ private constructor(
                 return@apply
             }
 
-            harassment()
-            harassmentThreatening()
-            hate()
-            hateThreatening()
-            illicit()
-            illicitViolent()
-            selfHarm()
-            selfHarmInstructions()
-            selfHarmIntent()
-            sexual()
-            sexualMinors()
-            violence()
-            violenceGraphic()
+            harassment().forEach { it.validate() }
+            harassmentThreatening().forEach { it.validate() }
+            hate().forEach { it.validate() }
+            hateThreatening().forEach { it.validate() }
+            illicit().forEach { it.validate() }
+            illicitViolent().forEach { it.validate() }
+            selfHarm().forEach { it.validate() }
+            selfHarmInstructions().forEach { it.validate() }
+            selfHarmIntent().forEach { it.validate() }
+            sexual().forEach { it.validate() }
+            sexualMinors().forEach { it.validate() }
+            violence().forEach { it.validate() }
+            violenceGraphic().forEach { it.validate() }
             validated = true
         }
+
+        fun isValid(): Boolean =
+            try {
+                validate()
+                true
+            } catch (e: OpenAIInvalidDataException) {
+                false
+            }
+
+        /**
+         * Returns a score indicating how many valid values are contained in this object
+         * recursively.
+         *
+         * Used for best match union deserialization.
+         */
+        @JvmSynthetic
+        internal fun validity(): Int =
+            (harassment.asKnown().getOrNull()?.sumOf { it.validity().toInt() } ?: 0) +
+                (harassmentThreatening.asKnown().getOrNull()?.sumOf { it.validity().toInt() }
+                    ?: 0) +
+                (hate.asKnown().getOrNull()?.sumOf { it.validity().toInt() } ?: 0) +
+                (hateThreatening.asKnown().getOrNull()?.sumOf { it.validity().toInt() } ?: 0) +
+                (illicit.asKnown().getOrNull()?.sumOf { it.validity().toInt() } ?: 0) +
+                (illicitViolent.asKnown().getOrNull()?.sumOf { it.validity().toInt() } ?: 0) +
+                (selfHarm.asKnown().getOrNull()?.sumOf { it.validity().toInt() } ?: 0) +
+                (selfHarmInstructions.asKnown().getOrNull()?.sumOf { it.validity().toInt() } ?: 0) +
+                (selfHarmIntent.asKnown().getOrNull()?.sumOf { it.validity().toInt() } ?: 0) +
+                (sexual.asKnown().getOrNull()?.sumOf { it.validity().toInt() } ?: 0) +
+                (sexualMinors.asKnown().getOrNull()?.sumOf { it.validity().toInt() } ?: 0) +
+                (violence.asKnown().getOrNull()?.sumOf { it.validity().toInt() } ?: 0) +
+                (violenceGraphic.asKnown().getOrNull()?.sumOf { it.validity().toInt() } ?: 0)
 
         class Harassment @JsonCreator private constructor(private val value: JsonField<String>) :
             Enum {
@@ -1878,6 +1959,33 @@ private constructor(
                 _value().asString().orElseThrow {
                     OpenAIInvalidDataException("Value is not a String")
                 }
+
+            private var validated: Boolean = false
+
+            fun validate(): Harassment = apply {
+                if (validated) {
+                    return@apply
+                }
+
+                known()
+                validated = true
+            }
+
+            fun isValid(): Boolean =
+                try {
+                    validate()
+                    true
+                } catch (e: OpenAIInvalidDataException) {
+                    false
+                }
+
+            /**
+             * Returns a score indicating how many valid values are contained in this object
+             * recursively.
+             *
+             * Used for best match union deserialization.
+             */
+            @JvmSynthetic internal fun validity(): Int = if (value() == Value._UNKNOWN) 0 else 1
 
             override fun equals(other: Any?): Boolean {
                 if (this === other) {
@@ -1981,6 +2089,33 @@ private constructor(
                     OpenAIInvalidDataException("Value is not a String")
                 }
 
+            private var validated: Boolean = false
+
+            fun validate(): HarassmentThreatening = apply {
+                if (validated) {
+                    return@apply
+                }
+
+                known()
+                validated = true
+            }
+
+            fun isValid(): Boolean =
+                try {
+                    validate()
+                    true
+                } catch (e: OpenAIInvalidDataException) {
+                    false
+                }
+
+            /**
+             * Returns a score indicating how many valid values are contained in this object
+             * recursively.
+             *
+             * Used for best match union deserialization.
+             */
+            @JvmSynthetic internal fun validity(): Int = if (value() == Value._UNKNOWN) 0 else 1
+
             override fun equals(other: Any?): Boolean {
                 if (this === other) {
                     return true
@@ -2074,6 +2209,33 @@ private constructor(
                 _value().asString().orElseThrow {
                     OpenAIInvalidDataException("Value is not a String")
                 }
+
+            private var validated: Boolean = false
+
+            fun validate(): Hate = apply {
+                if (validated) {
+                    return@apply
+                }
+
+                known()
+                validated = true
+            }
+
+            fun isValid(): Boolean =
+                try {
+                    validate()
+                    true
+                } catch (e: OpenAIInvalidDataException) {
+                    false
+                }
+
+            /**
+             * Returns a score indicating how many valid values are contained in this object
+             * recursively.
+             *
+             * Used for best match union deserialization.
+             */
+            @JvmSynthetic internal fun validity(): Int = if (value() == Value._UNKNOWN) 0 else 1
 
             override fun equals(other: Any?): Boolean {
                 if (this === other) {
@@ -2174,6 +2336,33 @@ private constructor(
                     OpenAIInvalidDataException("Value is not a String")
                 }
 
+            private var validated: Boolean = false
+
+            fun validate(): HateThreatening = apply {
+                if (validated) {
+                    return@apply
+                }
+
+                known()
+                validated = true
+            }
+
+            fun isValid(): Boolean =
+                try {
+                    validate()
+                    true
+                } catch (e: OpenAIInvalidDataException) {
+                    false
+                }
+
+            /**
+             * Returns a score indicating how many valid values are contained in this object
+             * recursively.
+             *
+             * Used for best match union deserialization.
+             */
+            @JvmSynthetic internal fun validity(): Int = if (value() == Value._UNKNOWN) 0 else 1
+
             override fun equals(other: Any?): Boolean {
                 if (this === other) {
                     return true
@@ -2270,6 +2459,33 @@ private constructor(
                 _value().asString().orElseThrow {
                     OpenAIInvalidDataException("Value is not a String")
                 }
+
+            private var validated: Boolean = false
+
+            fun validate(): Illicit = apply {
+                if (validated) {
+                    return@apply
+                }
+
+                known()
+                validated = true
+            }
+
+            fun isValid(): Boolean =
+                try {
+                    validate()
+                    true
+                } catch (e: OpenAIInvalidDataException) {
+                    false
+                }
+
+            /**
+             * Returns a score indicating how many valid values are contained in this object
+             * recursively.
+             *
+             * Used for best match union deserialization.
+             */
+            @JvmSynthetic internal fun validity(): Int = if (value() == Value._UNKNOWN) 0 else 1
 
             override fun equals(other: Any?): Boolean {
                 if (this === other) {
@@ -2369,6 +2585,33 @@ private constructor(
                 _value().asString().orElseThrow {
                     OpenAIInvalidDataException("Value is not a String")
                 }
+
+            private var validated: Boolean = false
+
+            fun validate(): IllicitViolent = apply {
+                if (validated) {
+                    return@apply
+                }
+
+                known()
+                validated = true
+            }
+
+            fun isValid(): Boolean =
+                try {
+                    validate()
+                    true
+                } catch (e: OpenAIInvalidDataException) {
+                    false
+                }
+
+            /**
+             * Returns a score indicating how many valid values are contained in this object
+             * recursively.
+             *
+             * Used for best match union deserialization.
+             */
+            @JvmSynthetic internal fun validity(): Int = if (value() == Value._UNKNOWN) 0 else 1
 
             override fun equals(other: Any?): Boolean {
                 if (this === other) {
@@ -2472,6 +2715,33 @@ private constructor(
                 _value().asString().orElseThrow {
                     OpenAIInvalidDataException("Value is not a String")
                 }
+
+            private var validated: Boolean = false
+
+            fun validate(): SelfHarm = apply {
+                if (validated) {
+                    return@apply
+                }
+
+                known()
+                validated = true
+            }
+
+            fun isValid(): Boolean =
+                try {
+                    validate()
+                    true
+                } catch (e: OpenAIInvalidDataException) {
+                    false
+                }
+
+            /**
+             * Returns a score indicating how many valid values are contained in this object
+             * recursively.
+             *
+             * Used for best match union deserialization.
+             */
+            @JvmSynthetic internal fun validity(): Int = if (value() == Value._UNKNOWN) 0 else 1
 
             override fun equals(other: Any?): Boolean {
                 if (this === other) {
@@ -2580,6 +2850,33 @@ private constructor(
                     OpenAIInvalidDataException("Value is not a String")
                 }
 
+            private var validated: Boolean = false
+
+            fun validate(): SelfHarmInstruction = apply {
+                if (validated) {
+                    return@apply
+                }
+
+                known()
+                validated = true
+            }
+
+            fun isValid(): Boolean =
+                try {
+                    validate()
+                    true
+                } catch (e: OpenAIInvalidDataException) {
+                    false
+                }
+
+            /**
+             * Returns a score indicating how many valid values are contained in this object
+             * recursively.
+             *
+             * Used for best match union deserialization.
+             */
+            @JvmSynthetic internal fun validity(): Int = if (value() == Value._UNKNOWN) 0 else 1
+
             override fun equals(other: Any?): Boolean {
                 if (this === other) {
                     return true
@@ -2685,6 +2982,33 @@ private constructor(
                     OpenAIInvalidDataException("Value is not a String")
                 }
 
+            private var validated: Boolean = false
+
+            fun validate(): SelfHarmIntent = apply {
+                if (validated) {
+                    return@apply
+                }
+
+                known()
+                validated = true
+            }
+
+            fun isValid(): Boolean =
+                try {
+                    validate()
+                    true
+                } catch (e: OpenAIInvalidDataException) {
+                    false
+                }
+
+            /**
+             * Returns a score indicating how many valid values are contained in this object
+             * recursively.
+             *
+             * Used for best match union deserialization.
+             */
+            @JvmSynthetic internal fun validity(): Int = if (value() == Value._UNKNOWN) 0 else 1
+
             override fun equals(other: Any?): Boolean {
                 if (this === other) {
                     return true
@@ -2787,6 +3111,33 @@ private constructor(
                     OpenAIInvalidDataException("Value is not a String")
                 }
 
+            private var validated: Boolean = false
+
+            fun validate(): Sexual = apply {
+                if (validated) {
+                    return@apply
+                }
+
+                known()
+                validated = true
+            }
+
+            fun isValid(): Boolean =
+                try {
+                    validate()
+                    true
+                } catch (e: OpenAIInvalidDataException) {
+                    false
+                }
+
+            /**
+             * Returns a score indicating how many valid values are contained in this object
+             * recursively.
+             *
+             * Used for best match union deserialization.
+             */
+            @JvmSynthetic internal fun validity(): Int = if (value() == Value._UNKNOWN) 0 else 1
+
             override fun equals(other: Any?): Boolean {
                 if (this === other) {
                     return true
@@ -2884,6 +3235,33 @@ private constructor(
                 _value().asString().orElseThrow {
                     OpenAIInvalidDataException("Value is not a String")
                 }
+
+            private var validated: Boolean = false
+
+            fun validate(): SexualMinor = apply {
+                if (validated) {
+                    return@apply
+                }
+
+                known()
+                validated = true
+            }
+
+            fun isValid(): Boolean =
+                try {
+                    validate()
+                    true
+                } catch (e: OpenAIInvalidDataException) {
+                    false
+                }
+
+            /**
+             * Returns a score indicating how many valid values are contained in this object
+             * recursively.
+             *
+             * Used for best match union deserialization.
+             */
+            @JvmSynthetic internal fun validity(): Int = if (value() == Value._UNKNOWN) 0 else 1
 
             override fun equals(other: Any?): Boolean {
                 if (this === other) {
@@ -2987,6 +3365,33 @@ private constructor(
                 _value().asString().orElseThrow {
                     OpenAIInvalidDataException("Value is not a String")
                 }
+
+            private var validated: Boolean = false
+
+            fun validate(): Violence = apply {
+                if (validated) {
+                    return@apply
+                }
+
+                known()
+                validated = true
+            }
+
+            fun isValid(): Boolean =
+                try {
+                    validate()
+                    true
+                } catch (e: OpenAIInvalidDataException) {
+                    false
+                }
+
+            /**
+             * Returns a score indicating how many valid values are contained in this object
+             * recursively.
+             *
+             * Used for best match union deserialization.
+             */
+            @JvmSynthetic internal fun validity(): Int = if (value() == Value._UNKNOWN) 0 else 1
 
             override fun equals(other: Any?): Boolean {
                 if (this === other) {
@@ -3092,6 +3497,33 @@ private constructor(
                 _value().asString().orElseThrow {
                     OpenAIInvalidDataException("Value is not a String")
                 }
+
+            private var validated: Boolean = false
+
+            fun validate(): ViolenceGraphic = apply {
+                if (validated) {
+                    return@apply
+                }
+
+                known()
+                validated = true
+            }
+
+            fun isValid(): Boolean =
+                try {
+                    validate()
+                    true
+                } catch (e: OpenAIInvalidDataException) {
+                    false
+                }
+
+            /**
+             * Returns a score indicating how many valid values are contained in this object
+             * recursively.
+             *
+             * Used for best match union deserialization.
+             */
+            @JvmSynthetic internal fun validity(): Int = if (value() == Value._UNKNOWN) 0 else 1
 
             override fun equals(other: Any?): Boolean {
                 if (this === other) {
@@ -3748,6 +4180,36 @@ private constructor(
             violenceGraphic()
             validated = true
         }
+
+        fun isValid(): Boolean =
+            try {
+                validate()
+                true
+            } catch (e: OpenAIInvalidDataException) {
+                false
+            }
+
+        /**
+         * Returns a score indicating how many valid values are contained in this object
+         * recursively.
+         *
+         * Used for best match union deserialization.
+         */
+        @JvmSynthetic
+        internal fun validity(): Int =
+            (if (harassment.asKnown().isPresent) 1 else 0) +
+                (if (harassmentThreatening.asKnown().isPresent) 1 else 0) +
+                (if (hate.asKnown().isPresent) 1 else 0) +
+                (if (hateThreatening.asKnown().isPresent) 1 else 0) +
+                (if (illicit.asKnown().isPresent) 1 else 0) +
+                (if (illicitViolent.asKnown().isPresent) 1 else 0) +
+                (if (selfHarm.asKnown().isPresent) 1 else 0) +
+                (if (selfHarmInstructions.asKnown().isPresent) 1 else 0) +
+                (if (selfHarmIntent.asKnown().isPresent) 1 else 0) +
+                (if (sexual.asKnown().isPresent) 1 else 0) +
+                (if (sexualMinors.asKnown().isPresent) 1 else 0) +
+                (if (violence.asKnown().isPresent) 1 else 0) +
+                (if (violenceGraphic.asKnown().isPresent) 1 else 0)
 
         override fun equals(other: Any?): Boolean {
             if (this === other) {

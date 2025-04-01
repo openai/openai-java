@@ -12,6 +12,7 @@ import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
 import com.openai.core.BaseDeserializer
 import com.openai.core.BaseSerializer
 import com.openai.core.JsonValue
+import com.openai.core.allMaxBy
 import com.openai.core.getOrThrow
 import com.openai.errors.OpenAIInvalidDataException
 import java.util.Objects
@@ -78,8 +79,8 @@ private constructor(
 
     fun _json(): Optional<JsonValue> = Optional.ofNullable(_json)
 
-    fun <T> accept(visitor: Visitor<T>): T {
-        return when {
+    fun <T> accept(visitor: Visitor<T>): T =
+        when {
             inputText != null -> visitor.visitInputText(inputText)
             inputImage != null -> visitor.visitInputImage(inputImage)
             inputFile != null -> visitor.visitInputFile(inputFile)
@@ -87,7 +88,6 @@ private constructor(
             outputRefusal != null -> visitor.visitOutputRefusal(outputRefusal)
             else -> visitor.unknown(_json)
         }
-    }
 
     private var validated: Boolean = false
 
@@ -121,6 +121,38 @@ private constructor(
         )
         validated = true
     }
+
+    fun isValid(): Boolean =
+        try {
+            validate()
+            true
+        } catch (e: OpenAIInvalidDataException) {
+            false
+        }
+
+    /**
+     * Returns a score indicating how many valid values are contained in this object recursively.
+     *
+     * Used for best match union deserialization.
+     */
+    @JvmSynthetic
+    internal fun validity(): Int =
+        accept(
+            object : Visitor<Int> {
+                override fun visitInputText(inputText: ResponseInputText) = inputText.validity()
+
+                override fun visitInputImage(inputImage: ResponseInputImage) = inputImage.validity()
+
+                override fun visitInputFile(inputFile: ResponseInputFile) = inputFile.validity()
+
+                override fun visitOutputText(outputText: ResponseOutputText) = outputText.validity()
+
+                override fun visitOutputRefusal(outputRefusal: ResponseOutputRefusal) =
+                    outputRefusal.validity()
+
+                override fun unknown(json: JsonValue?) = 0
+            }
+        )
 
     override fun equals(other: Any?): Boolean {
         if (this === other) {
@@ -214,28 +246,36 @@ private constructor(
         override fun ObjectCodec.deserialize(node: JsonNode): ResponseContent {
             val json = JsonValue.fromJsonNode(node)
 
-            tryDeserialize(node, jacksonTypeRef<ResponseInputText>()) { it.validate() }
-                ?.let {
-                    return ResponseContent(inputText = it, _json = json)
-                }
-            tryDeserialize(node, jacksonTypeRef<ResponseInputImage>()) { it.validate() }
-                ?.let {
-                    return ResponseContent(inputImage = it, _json = json)
-                }
-            tryDeserialize(node, jacksonTypeRef<ResponseInputFile>()) { it.validate() }
-                ?.let {
-                    return ResponseContent(inputFile = it, _json = json)
-                }
-            tryDeserialize(node, jacksonTypeRef<ResponseOutputText>()) { it.validate() }
-                ?.let {
-                    return ResponseContent(outputText = it, _json = json)
-                }
-            tryDeserialize(node, jacksonTypeRef<ResponseOutputRefusal>()) { it.validate() }
-                ?.let {
-                    return ResponseContent(outputRefusal = it, _json = json)
-                }
-
-            return ResponseContent(_json = json)
+            val bestMatches =
+                sequenceOf(
+                        tryDeserialize(node, jacksonTypeRef<ResponseInputText>())?.let {
+                            ResponseContent(inputText = it, _json = json)
+                        },
+                        tryDeserialize(node, jacksonTypeRef<ResponseInputImage>())?.let {
+                            ResponseContent(inputImage = it, _json = json)
+                        },
+                        tryDeserialize(node, jacksonTypeRef<ResponseInputFile>())?.let {
+                            ResponseContent(inputFile = it, _json = json)
+                        },
+                        tryDeserialize(node, jacksonTypeRef<ResponseOutputText>())?.let {
+                            ResponseContent(outputText = it, _json = json)
+                        },
+                        tryDeserialize(node, jacksonTypeRef<ResponseOutputRefusal>())?.let {
+                            ResponseContent(outputRefusal = it, _json = json)
+                        },
+                    )
+                    .filterNotNull()
+                    .allMaxBy { it.validity() }
+                    .toList()
+            return when (bestMatches.size) {
+                // This can happen if what we're deserializing is completely incompatible with all
+                // the possible variants (e.g. deserializing from boolean).
+                0 -> ResponseContent(_json = json)
+                1 -> bestMatches.single()
+                // If there's more than one match with the highest validity, then use the first
+                // completely valid match, or simply the first match if none are completely valid.
+                else -> bestMatches.firstOrNull { it.isValid() } ?: bestMatches.first()
+            }
         }
     }
 

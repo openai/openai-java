@@ -64,14 +64,13 @@ private constructor(
 
     fun _json(): Optional<JsonValue> = Optional.ofNullable(_json)
 
-    fun <T> accept(visitor: Visitor<T>): T {
-        return when {
+    fun <T> accept(visitor: Visitor<T>): T =
+        when {
             imageFile != null -> visitor.visitImageFile(imageFile)
             imageUrl != null -> visitor.visitImageUrl(imageUrl)
             text != null -> visitor.visitText(text)
             else -> visitor.unknown(_json)
         }
-    }
 
     private var validated: Boolean = false
 
@@ -97,6 +96,33 @@ private constructor(
         )
         validated = true
     }
+
+    fun isValid(): Boolean =
+        try {
+            validate()
+            true
+        } catch (e: OpenAIInvalidDataException) {
+            false
+        }
+
+    /**
+     * Returns a score indicating how many valid values are contained in this object recursively.
+     *
+     * Used for best match union deserialization.
+     */
+    @JvmSynthetic
+    internal fun validity(): Int =
+        accept(
+            object : Visitor<Int> {
+                override fun visitImageFile(imageFile: ImageFileContentBlock) = imageFile.validity()
+
+                override fun visitImageUrl(imageUrl: ImageUrlContentBlock) = imageUrl.validity()
+
+                override fun visitText(text: TextContentBlockParam) = text.validity()
+
+                override fun unknown(json: JsonValue?) = 0
+            }
+        )
 
     override fun equals(other: Any?): Boolean {
         if (this === other) {
@@ -178,22 +204,19 @@ private constructor(
 
             when (type) {
                 "image_file" -> {
-                    return MessageContentPartParam(
-                        imageFile = deserialize(node, jacksonTypeRef<ImageFileContentBlock>()),
-                        _json = json,
-                    )
+                    return tryDeserialize(node, jacksonTypeRef<ImageFileContentBlock>())?.let {
+                        MessageContentPartParam(imageFile = it, _json = json)
+                    } ?: MessageContentPartParam(_json = json)
                 }
                 "image_url" -> {
-                    return MessageContentPartParam(
-                        imageUrl = deserialize(node, jacksonTypeRef<ImageUrlContentBlock>()),
-                        _json = json,
-                    )
+                    return tryDeserialize(node, jacksonTypeRef<ImageUrlContentBlock>())?.let {
+                        MessageContentPartParam(imageUrl = it, _json = json)
+                    } ?: MessageContentPartParam(_json = json)
                 }
                 "text" -> {
-                    return MessageContentPartParam(
-                        text = deserialize(node, jacksonTypeRef<TextContentBlockParam>()),
-                        _json = json,
-                    )
+                    return tryDeserialize(node, jacksonTypeRef<TextContentBlockParam>())?.let {
+                        MessageContentPartParam(text = it, _json = json)
+                    } ?: MessageContentPartParam(_json = json)
                 }
             }
 

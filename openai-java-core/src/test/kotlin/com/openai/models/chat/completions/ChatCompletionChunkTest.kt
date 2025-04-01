@@ -2,6 +2,8 @@
 
 package com.openai.models.chat.completions
 
+import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
+import com.openai.core.jsonMapper
 import com.openai.models.completions.CompletionUsage
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
@@ -200,5 +202,114 @@ internal class ChatCompletionChunkTest {
                     )
                     .build()
             )
+    }
+
+    @Test
+    fun roundtrip() {
+        val jsonMapper = jsonMapper()
+        val chatCompletionChunk =
+            ChatCompletionChunk.builder()
+                .id("id")
+                .addChoice(
+                    ChatCompletionChunk.Choice.builder()
+                        .delta(
+                            ChatCompletionChunk.Choice.Delta.builder()
+                                .content("content")
+                                .functionCall(
+                                    ChatCompletionChunk.Choice.Delta.FunctionCall.builder()
+                                        .arguments("arguments")
+                                        .name("name")
+                                        .build()
+                                )
+                                .refusal("refusal")
+                                .role(ChatCompletionChunk.Choice.Delta.Role.DEVELOPER)
+                                .addToolCall(
+                                    ChatCompletionChunk.Choice.Delta.ToolCall.builder()
+                                        .index(0L)
+                                        .id("id")
+                                        .function(
+                                            ChatCompletionChunk.Choice.Delta.ToolCall.Function
+                                                .builder()
+                                                .arguments("arguments")
+                                                .name("name")
+                                                .build()
+                                        )
+                                        .type(
+                                            ChatCompletionChunk.Choice.Delta.ToolCall.Type.FUNCTION
+                                        )
+                                        .build()
+                                )
+                                .build()
+                        )
+                        .finishReason(ChatCompletionChunk.Choice.FinishReason.STOP)
+                        .index(0L)
+                        .logprobs(
+                            ChatCompletionChunk.Choice.Logprobs.builder()
+                                .addContent(
+                                    ChatCompletionTokenLogprob.builder()
+                                        .token("token")
+                                        .addByte(0L)
+                                        .logprob(0.0)
+                                        .addTopLogprob(
+                                            ChatCompletionTokenLogprob.TopLogprob.builder()
+                                                .token("token")
+                                                .addByte(0L)
+                                                .logprob(0.0)
+                                                .build()
+                                        )
+                                        .build()
+                                )
+                                .addRefusal(
+                                    ChatCompletionTokenLogprob.builder()
+                                        .token("token")
+                                        .addByte(0L)
+                                        .logprob(0.0)
+                                        .addTopLogprob(
+                                            ChatCompletionTokenLogprob.TopLogprob.builder()
+                                                .token("token")
+                                                .addByte(0L)
+                                                .logprob(0.0)
+                                                .build()
+                                        )
+                                        .build()
+                                )
+                                .build()
+                        )
+                        .build()
+                )
+                .created(0L)
+                .model("model")
+                .serviceTier(ChatCompletionChunk.ServiceTier.SCALE)
+                .systemFingerprint("system_fingerprint")
+                .usage(
+                    CompletionUsage.builder()
+                        .completionTokens(0L)
+                        .promptTokens(0L)
+                        .totalTokens(0L)
+                        .completionTokensDetails(
+                            CompletionUsage.CompletionTokensDetails.builder()
+                                .acceptedPredictionTokens(0L)
+                                .audioTokens(0L)
+                                .reasoningTokens(0L)
+                                .rejectedPredictionTokens(0L)
+                                .build()
+                        )
+                        .promptTokensDetails(
+                            CompletionUsage.PromptTokensDetails.builder()
+                                .audioTokens(0L)
+                                .cachedTokens(0L)
+                                .build()
+                        )
+                        .build()
+                )
+                .build()
+
+        val roundtrippedChatCompletionChunk =
+            jsonMapper.readValue(
+                jsonMapper.writeValueAsString(chatCompletionChunk),
+                jacksonTypeRef<ChatCompletionChunk>(),
+            )
+
+        assertThat(roundtrippedChatCompletionChunk).isEqualTo(chatCompletionChunk)
     }
 }
