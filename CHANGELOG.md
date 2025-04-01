@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.41.1 (2025-04-01)
+
+Full Changelog: [v0.41.0...v0.41.1](https://github.com/openai/openai-java/compare/v0.41.0...v0.41.1)
+
+### Chores
+
+* Remove deprecated/unused remote spec feature ([4d3b56e](https://github.com/openai/openai-java/commit/4d3b56eb9f0e9f180c1304b66c3b8fe2e999e75f))
+
 ## 0.41.0 (2025-03-31)
 
 Full Changelog: [v0.40.1...v0.41.0](https://github.com/openai/openai-java/compare/v0.40.1...v0.41.0)
