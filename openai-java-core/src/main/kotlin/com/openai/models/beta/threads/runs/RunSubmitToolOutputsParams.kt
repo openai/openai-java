@@ -100,6 +100,15 @@ private constructor(
 
         fun runId(runId: String) = apply { this.runId = runId }
 
+        /**
+         * Sets the entire request body.
+         *
+         * This is generally only useful if you are already constructing the body separately.
+         * Otherwise, it's more convenient to use the top-level setters instead:
+         * - [toolOutputs]
+         */
+        fun body(body: Body) = apply { this.body = body.toBuilder() }
+
         /** A list of tools for which the outputs are being submitted. */
         fun toolOutputs(toolOutputs: List<ToolOutput>) = apply { body.toolOutputs(toolOutputs) }
 
@@ -262,7 +271,7 @@ private constructor(
             )
     }
 
-    @JvmSynthetic internal fun _body(): Body = body
+    fun _body(): Body = body
 
     fun _pathParam(index: Int): String =
         when (index) {

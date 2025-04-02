@@ -144,6 +144,20 @@ private constructor(
         }
 
         /**
+         * Sets the entire request body.
+         *
+         * This is generally only useful if you are already constructing the body separately.
+         * Otherwise, it's more convenient to use the top-level setters instead:
+         * - [chunkingStrategy]
+         * - [expiresAfter]
+         * - [fileIds]
+         * - [metadata]
+         * - [name]
+         * - etc.
+         */
+        fun body(body: Body) = apply { this.body = body.toBuilder() }
+
+        /**
          * The chunking strategy used to chunk the file(s). If not set, will use the `auto`
          * strategy. Only applicable if `file_ids` is non-empty.
          */
@@ -385,7 +399,7 @@ private constructor(
             )
     }
 
-    @JvmSynthetic internal fun _body(): Body = body
+    fun _body(): Body = body
 
     override fun _headers(): Headers = additionalHeaders
 

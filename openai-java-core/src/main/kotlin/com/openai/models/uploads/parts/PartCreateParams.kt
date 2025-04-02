@@ -90,6 +90,15 @@ private constructor(
 
         fun uploadId(uploadId: String) = apply { this.uploadId = uploadId }
 
+        /**
+         * Sets the entire request body.
+         *
+         * This is generally only useful if you are already constructing the body separately.
+         * Otherwise, it's more convenient to use the top-level setters instead:
+         * - [data]
+         */
+        fun body(body: Body) = apply { this.body = body.toBuilder() }
+
         /** The chunk of bytes for this Part. */
         fun data(data: InputStream) = apply { body.data(data) }
 
@@ -228,8 +237,7 @@ private constructor(
             )
     }
 
-    @JvmSynthetic
-    internal fun _body(): Map<String, MultipartField<*>> = mapOf("data" to _data()).toImmutable()
+    fun _body(): Map<String, MultipartField<*>> = mapOf("data" to _data()).toImmutable()
 
     fun _pathParam(index: Int): String =
         when (index) {

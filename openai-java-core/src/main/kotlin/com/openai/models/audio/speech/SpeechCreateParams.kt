@@ -161,6 +161,20 @@ private constructor(
             additionalQueryParams = speechCreateParams.additionalQueryParams.toBuilder()
         }
 
+        /**
+         * Sets the entire request body.
+         *
+         * This is generally only useful if you are already constructing the body separately.
+         * Otherwise, it's more convenient to use the top-level setters instead:
+         * - [input]
+         * - [model]
+         * - [voice]
+         * - [instructions]
+         * - [responseFormat]
+         * - etc.
+         */
+        fun body(body: Body) = apply { this.body = body.toBuilder() }
+
         /** The text to generate audio for. The maximum length is 4096 characters. */
         fun input(input: String) = apply { body.input(input) }
 
@@ -408,7 +422,7 @@ private constructor(
             )
     }
 
-    @JvmSynthetic internal fun _body(): Body = body
+    fun _body(): Body = body
 
     override fun _headers(): Headers = additionalHeaders
 
