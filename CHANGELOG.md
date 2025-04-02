@@ -1,5 +1,22 @@
 # Changelog
 
+## 0.42.0 (2025-04-02)
+
+Full Changelog: [v0.41.1...v0.42.0](https://github.com/openai/openai-java/compare/v0.41.1...v0.42.0)
+
+### Features
+
+* **api:** manual updates ([0440105](https://github.com/openai/openai-java/commit/0440105162ce52cd187ce8ab8d5d1dc20682a4ed))
+* **client:** add enum validation method ([a641218](https://github.com/openai/openai-java/commit/a6412183ccea1ac3e9105793372693d5ec8c6d72))
+* **client:** make union deserialization more robust ([#385](https://github.com/openai/openai-java/issues/385)) ([a641218](https://github.com/openai/openai-java/commit/a6412183ccea1ac3e9105793372693d5ec8c6d72))
+
+
+### Chores
+
+* **client:** remove unnecessary json state from some query param classes ([a641218](https://github.com/openai/openai-java/commit/a6412183ccea1ac3e9105793372693d5ec8c6d72))
+* **internal:** add invalid json deserialization tests ([a641218](https://github.com/openai/openai-java/commit/a6412183ccea1ac3e9105793372693d5ec8c6d72))
+* **internal:** add json roundtripping tests ([a641218](https://github.com/openai/openai-java/commit/a6412183ccea1ac3e9105793372693d5ec8c6d72))
+
 ## 0.41.1 (2025-04-01)
 
 Full Changelog: [v0.41.0...v0.41.1](https://github.com/openai/openai-java/compare/v0.41.0...v0.41.1)

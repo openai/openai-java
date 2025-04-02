@@ -9,8 +9,8 @@
 
 <!-- x-release-please-start-version -->
 
-[![Maven Central](https://img.shields.io/maven-central/v/com.openai/openai-java)](https://central.sonatype.com/artifact/com.openai/openai-java/0.41.1)
-[![javadoc](https://javadoc.io/badge2/com.openai/openai-java/0.41.1/javadoc.svg)](https://javadoc.io/doc/com.openai/openai-java/0.41.1)
+[![Maven Central](https://img.shields.io/maven-central/v/com.openai/openai-java)](https://central.sonatype.com/artifact/com.openai/openai-java/0.42.0)
+[![javadoc](https://javadoc.io/badge2/com.openai/openai-java/0.42.0/javadoc.svg)](https://javadoc.io/doc/com.openai/openai-java/0.42.0)
 
 <!-- x-release-please-end -->
 
@@ -18,7 +18,7 @@ The OpenAI Java SDK provides convenient access to the [OpenAI REST API](https://
 
 <!-- x-release-please-start-version -->
 
-The REST API documentation can be found on [platform.openai.com](https://platform.openai.com/docs). Javadocs are also available on [javadoc.io](https://javadoc.io/doc/com.openai/openai-java/0.41.1).
+The REST API documentation can be found on [platform.openai.com](https://platform.openai.com/docs). Javadocs are also available on [javadoc.io](https://javadoc.io/doc/com.openai/openai-java/0.42.0).
 
 <!-- x-release-please-end -->
 
@@ -29,7 +29,7 @@ The REST API documentation can be found on [platform.openai.com](https://platfor
 ### Gradle
 
 ```kotlin
-implementation("com.openai:openai-java:0.41.1")
+implementation("com.openai:openai-java:0.42.0")
 ```
 
 ### Maven
@@ -38,7 +38,7 @@ implementation("com.openai:openai-java:0.41.1")
 <dependency>
   <groupId>com.openai</groupId>
   <artifactId>openai-java</artifactId>
-  <version>0.41.1</version>
+  <version>0.42.0</version>
 </dependency>
 ```
 
