@@ -282,6 +282,20 @@ private constructor(
 
         fun assistantId(assistantId: String) = apply { this.assistantId = assistantId }
 
+        /**
+         * Sets the entire request body.
+         *
+         * This is generally only useful if you are already constructing the body separately.
+         * Otherwise, it's more convenient to use the top-level setters instead:
+         * - [description]
+         * - [instructions]
+         * - [metadata]
+         * - [model]
+         * - [name]
+         * - etc.
+         */
+        fun body(body: Body) = apply { this.body = body.toBuilder() }
+
         /** The description of the assistant. The maximum length is 512 characters. */
         fun description(description: String?) = apply { body.description(description) }
 
@@ -726,7 +740,7 @@ private constructor(
             )
     }
 
-    @JvmSynthetic internal fun _body(): Body = body
+    fun _body(): Body = body
 
     fun _pathParam(index: Int): String =
         when (index) {

@@ -438,6 +438,20 @@ private constructor(
         }
 
         /**
+         * Sets the entire request body.
+         *
+         * This is generally only useful if you are already constructing the body separately.
+         * Otherwise, it's more convenient to use the top-level setters instead:
+         * - [assistantId]
+         * - [additionalInstructions]
+         * - [additionalMessages]
+         * - [instructions]
+         * - [maxCompletionTokens]
+         * - etc.
+         */
+        fun body(body: Body) = apply { this.body = body.toBuilder() }
+
+        /**
          * The ID of the [assistant](https://platform.openai.com/docs/api-reference/assistants) to
          * use to execute this run.
          */
@@ -1059,7 +1073,7 @@ private constructor(
             )
     }
 
-    @JvmSynthetic internal fun _body(): Body = body
+    fun _body(): Body = body
 
     fun _pathParam(index: Int): String =
         when (index) {

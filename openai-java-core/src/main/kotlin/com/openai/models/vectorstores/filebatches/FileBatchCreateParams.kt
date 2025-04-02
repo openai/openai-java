@@ -129,6 +129,17 @@ private constructor(
         fun vectorStoreId(vectorStoreId: String) = apply { this.vectorStoreId = vectorStoreId }
 
         /**
+         * Sets the entire request body.
+         *
+         * This is generally only useful if you are already constructing the body separately.
+         * Otherwise, it's more convenient to use the top-level setters instead:
+         * - [fileIds]
+         * - [attributes]
+         * - [chunkingStrategy]
+         */
+        fun body(body: Body) = apply { this.body = body.toBuilder() }
+
+        /**
          * A list of [File](https://platform.openai.com/docs/api-reference/files) IDs that the
          * vector store should use. Useful for tools like `file_search` that can access files.
          */
@@ -353,7 +364,7 @@ private constructor(
             )
     }
 
-    @JvmSynthetic internal fun _body(): Body = body
+    fun _body(): Body = body
 
     fun _pathParam(index: Int): String =
         when (index) {

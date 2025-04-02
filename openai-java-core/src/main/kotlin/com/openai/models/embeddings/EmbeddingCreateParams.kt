@@ -165,6 +165,20 @@ private constructor(
         }
 
         /**
+         * Sets the entire request body.
+         *
+         * This is generally only useful if you are already constructing the body separately.
+         * Otherwise, it's more convenient to use the top-level setters instead:
+         * - [input]
+         * - [model]
+         * - [dimensions]
+         * - [encodingFormat]
+         * - [user]
+         * - etc.
+         */
+        fun body(body: Body) = apply { this.body = body.toBuilder() }
+
+        /**
          * Input text to embed, encoded as a string or array of tokens. To embed multiple inputs in
          * a single request, pass an array of strings or array of token arrays. The input must not
          * exceed the max input tokens for the model (8192 tokens for `text-embedding-ada-002`),
@@ -412,7 +426,7 @@ private constructor(
             )
     }
 
-    @JvmSynthetic internal fun _body(): Body = body
+    fun _body(): Body = body
 
     override fun _headers(): Headers = additionalHeaders
 

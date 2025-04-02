@@ -115,6 +115,16 @@ private constructor(
 
         fun uploadId(uploadId: String) = apply { this.uploadId = uploadId }
 
+        /**
+         * Sets the entire request body.
+         *
+         * This is generally only useful if you are already constructing the body separately.
+         * Otherwise, it's more convenient to use the top-level setters instead:
+         * - [partIds]
+         * - [md5]
+         */
+        fun body(body: Body) = apply { this.body = body.toBuilder() }
+
         /** The ordered list of Part IDs. */
         fun partIds(partIds: List<String>) = apply { body.partIds(partIds) }
 
@@ -287,7 +297,7 @@ private constructor(
             )
     }
 
-    @JvmSynthetic internal fun _body(): Body = body
+    fun _body(): Body = body
 
     fun _pathParam(index: Int): String =
         when (index) {

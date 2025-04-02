@@ -128,6 +128,17 @@ private constructor(
         }
 
         /**
+         * Sets the entire request body.
+         *
+         * This is generally only useful if you are already constructing the body separately.
+         * Otherwise, it's more convenient to use the top-level setters instead:
+         * - [messages]
+         * - [metadata]
+         * - [toolResources]
+         */
+        fun body(body: Body) = apply { this.body = body.toBuilder() }
+
+        /**
          * A list of [messages](https://platform.openai.com/docs/api-reference/messages) to start
          * the thread with.
          */
@@ -326,7 +337,7 @@ private constructor(
             )
     }
 
-    @JvmSynthetic internal fun _body(): Body = body
+    fun _body(): Body = body
 
     override fun _headers(): Headers = additionalHeaders
 
