@@ -90,7 +90,7 @@ class ResponseServiceImpl internal constructor(private val clientOptions: Client
                     .addPathSegments("responses")
                     .body(json(clientOptions.jsonMapper, params._body()))
                     .build()
-                    .prepare(clientOptions, params, deploymentModel = params.model().toString())
+                    .prepare(clientOptions, params, deploymentModel = null)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             val response = clientOptions.httpClient.execute(request, requestOptions)
             return response.parseable {
@@ -128,7 +128,7 @@ class ResponseServiceImpl internal constructor(private val clientOptions: Client
                         )
                     )
                     .build()
-                    .prepare(clientOptions, params, deploymentModel = params.model().toString())
+                    .prepare(clientOptions, params, deploymentModel = null)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             val response = clientOptions.httpClient.execute(request, requestOptions)
             return response.parseable {
