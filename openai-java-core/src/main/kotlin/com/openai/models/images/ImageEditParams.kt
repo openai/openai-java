@@ -192,6 +192,20 @@ private constructor(
         }
 
         /**
+         * Sets the entire request body.
+         *
+         * This is generally only useful if you are already constructing the body separately.
+         * Otherwise, it's more convenient to use the top-level setters instead:
+         * - [image]
+         * - [prompt]
+         * - [mask]
+         * - [model]
+         * - [n]
+         * - etc.
+         */
+        fun body(body: Body) = apply { this.body = body.toBuilder() }
+
+        /**
          * The image to edit. Must be a valid PNG file, less than 4MB, and square. If mask is not
          * provided, image must have transparency, which will be used as the mask.
          */
@@ -472,8 +486,7 @@ private constructor(
             ImageEditParams(body.build(), additionalHeaders.build(), additionalQueryParams.build())
     }
 
-    @JvmSynthetic
-    internal fun _body(): Map<String, MultipartField<*>> =
+    fun _body(): Map<String, MultipartField<*>> =
         mapOf(
                 "image" to _image(),
                 "prompt" to _prompt(),

@@ -195,6 +195,20 @@ private constructor(
         }
 
         /**
+         * Sets the entire request body.
+         *
+         * This is generally only useful if you are already constructing the body separately.
+         * Otherwise, it's more convenient to use the top-level setters instead:
+         * - [prompt]
+         * - [model]
+         * - [n]
+         * - [quality]
+         * - [responseFormat]
+         * - etc.
+         */
+        fun body(body: Body) = apply { this.body = body.toBuilder() }
+
+        /**
          * A text description of the desired image(s). The maximum length is 1000 characters for
          * `dall-e-2` and 4000 characters for `dall-e-3`.
          */
@@ -481,7 +495,7 @@ private constructor(
             )
     }
 
-    @JvmSynthetic internal fun _body(): Body = body
+    fun _body(): Body = body
 
     override fun _headers(): Headers = additionalHeaders
 

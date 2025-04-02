@@ -156,6 +156,18 @@ private constructor(
 
         fun threadId(threadId: String) = apply { this.threadId = threadId }
 
+        /**
+         * Sets the entire request body.
+         *
+         * This is generally only useful if you are already constructing the body separately.
+         * Otherwise, it's more convenient to use the top-level setters instead:
+         * - [content]
+         * - [role]
+         * - [attachments]
+         * - [metadata]
+         */
+        fun body(body: Body) = apply { this.body = body.toBuilder() }
+
         /** The text contents of the message. */
         fun content(content: Content) = apply { body.content(content) }
 
@@ -382,7 +394,7 @@ private constructor(
             )
     }
 
-    @JvmSynthetic internal fun _body(): Body = body
+    fun _body(): Body = body
 
     fun _pathParam(index: Int): String =
         when (index) {

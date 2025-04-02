@@ -160,6 +160,20 @@ private constructor(
         }
 
         /**
+         * Sets the entire request body.
+         *
+         * This is generally only useful if you are already constructing the body separately.
+         * Otherwise, it's more convenient to use the top-level setters instead:
+         * - [image]
+         * - [model]
+         * - [n]
+         * - [responseFormat]
+         * - [size]
+         * - etc.
+         */
+        fun body(body: Body) = apply { this.body = body.toBuilder() }
+
+        /**
          * The image to use as the basis for the variation(s). Must be a valid PNG file, less than
          * 4MB, and square.
          */
@@ -405,8 +419,7 @@ private constructor(
             )
     }
 
-    @JvmSynthetic
-    internal fun _body(): Map<String, MultipartField<*>> =
+    fun _body(): Map<String, MultipartField<*>> =
         mapOf(
                 "image" to _image(),
                 "model" to _model(),

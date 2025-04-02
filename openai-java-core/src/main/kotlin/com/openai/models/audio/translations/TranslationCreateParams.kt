@@ -150,6 +150,20 @@ private constructor(
         }
 
         /**
+         * Sets the entire request body.
+         *
+         * This is generally only useful if you are already constructing the body separately.
+         * Otherwise, it's more convenient to use the top-level setters instead:
+         * - [file]
+         * - [model]
+         * - [prompt]
+         * - [responseFormat]
+         * - [temperature]
+         * - etc.
+         */
+        fun body(body: Body) = apply { this.body = body.toBuilder() }
+
+        /**
          * The audio file object (not file name) translate, in one of these formats: flac, mp3, mp4,
          * mpeg, mpga, m4a, ogg, wav, or webm.
          */
@@ -372,8 +386,7 @@ private constructor(
             )
     }
 
-    @JvmSynthetic
-    internal fun _body(): Map<String, MultipartField<*>> =
+    fun _body(): Map<String, MultipartField<*>> =
         mapOf(
                 "file" to _file(),
                 "model" to _model(),
