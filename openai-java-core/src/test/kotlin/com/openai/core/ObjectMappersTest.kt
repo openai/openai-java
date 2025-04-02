@@ -2,10 +2,15 @@ package com.openai.core
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.databind.exc.MismatchedInputException
+import com.fasterxml.jackson.module.kotlin.readValue
+import java.time.LocalDateTime
 import kotlin.reflect.KClass
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.catchThrowable
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertDoesNotThrow
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.EnumSource
 import org.junitpioneer.jupiter.cartesian.CartesianTest
 
 internal class ObjectMappersTest {
@@ -77,5 +82,21 @@ internal class ObjectMappersTest {
         } else {
             assertThat(e).isInstanceOf(MismatchedInputException::class.java)
         }
+    }
+
+    enum class LenientLocalDateTimeTestCase(val string: String) {
+        DATE("1998-04-21"),
+        DATE_TIME("1998-04-21T04:00:00"),
+        ZONED_DATE_TIME_1("1998-04-21T04:00:00+03:00"),
+        ZONED_DATE_TIME_2("1998-04-21T04:00:00Z"),
+    }
+
+    @ParameterizedTest
+    @EnumSource
+    fun readLocalDateTime_lenient(testCase: LenientLocalDateTimeTestCase) {
+        val jsonMapper = jsonMapper()
+        val json = jsonMapper.writeValueAsString(testCase.string)
+
+        assertDoesNotThrow { jsonMapper().readValue<LocalDateTime>(json) }
     }
 }
