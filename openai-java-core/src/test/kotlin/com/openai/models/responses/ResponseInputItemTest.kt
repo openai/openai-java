@@ -2,15 +2,26 @@
 
 package com.openai.models.responses
 
+import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
+import com.openai.core.JsonValue
+import com.openai.core.jsonMapper
+import com.openai.errors.OpenAIInvalidDataException
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.EnumSource
 
 internal class ResponseInputItemTest {
 
     @Test
     fun ofEasyInputMessage() {
         val easyInputMessage =
-            EasyInputMessage.builder().content("string").role(EasyInputMessage.Role.USER).build()
+            EasyInputMessage.builder()
+                .content("string")
+                .role(EasyInputMessage.Role.USER)
+                .type(EasyInputMessage.Type.MESSAGE)
+                .build()
 
         val responseInputItem = ResponseInputItem.ofEasyInputMessage(easyInputMessage)
 
@@ -28,11 +39,34 @@ internal class ResponseInputItemTest {
     }
 
     @Test
+    fun ofEasyInputMessageRoundtrip() {
+        val jsonMapper = jsonMapper()
+        val responseInputItem =
+            ResponseInputItem.ofEasyInputMessage(
+                EasyInputMessage.builder()
+                    .content("string")
+                    .role(EasyInputMessage.Role.USER)
+                    .type(EasyInputMessage.Type.MESSAGE)
+                    .build()
+            )
+
+        val roundtrippedResponseInputItem =
+            jsonMapper.readValue(
+                jsonMapper.writeValueAsString(responseInputItem),
+                jacksonTypeRef<ResponseInputItem>(),
+            )
+
+        assertThat(roundtrippedResponseInputItem).isEqualTo(responseInputItem)
+    }
+
+    @Test
     fun ofMessage() {
         val message =
             ResponseInputItem.Message.builder()
                 .addInputTextContent("text")
                 .role(ResponseInputItem.Message.Role.USER)
+                .status(ResponseInputItem.Message.Status.IN_PROGRESS)
+                .type(ResponseInputItem.Message.Type.MESSAGE)
                 .build()
 
         val responseInputItem = ResponseInputItem.ofMessage(message)
@@ -48,6 +82,28 @@ internal class ResponseInputItemTest {
         assertThat(responseInputItem.functionCallOutput()).isEmpty
         assertThat(responseInputItem.reasoning()).isEmpty
         assertThat(responseInputItem.itemReference()).isEmpty
+    }
+
+    @Test
+    fun ofMessageRoundtrip() {
+        val jsonMapper = jsonMapper()
+        val responseInputItem =
+            ResponseInputItem.ofMessage(
+                ResponseInputItem.Message.builder()
+                    .addInputTextContent("text")
+                    .role(ResponseInputItem.Message.Role.USER)
+                    .status(ResponseInputItem.Message.Status.IN_PROGRESS)
+                    .type(ResponseInputItem.Message.Type.MESSAGE)
+                    .build()
+            )
+
+        val roundtrippedResponseInputItem =
+            jsonMapper.readValue(
+                jsonMapper.writeValueAsString(responseInputItem),
+                jacksonTypeRef<ResponseInputItem>(),
+            )
+
+        assertThat(roundtrippedResponseInputItem).isEqualTo(responseInputItem)
     }
 
     @Test
@@ -85,12 +141,56 @@ internal class ResponseInputItemTest {
     }
 
     @Test
+    fun ofResponseOutputMessageRoundtrip() {
+        val jsonMapper = jsonMapper()
+        val responseInputItem =
+            ResponseInputItem.ofResponseOutputMessage(
+                ResponseOutputMessage.builder()
+                    .id("id")
+                    .addContent(
+                        ResponseOutputText.builder()
+                            .addAnnotation(
+                                ResponseOutputText.Annotation.FileCitation.builder()
+                                    .fileId("file_id")
+                                    .index(0L)
+                                    .build()
+                            )
+                            .text("text")
+                            .build()
+                    )
+                    .status(ResponseOutputMessage.Status.IN_PROGRESS)
+                    .build()
+            )
+
+        val roundtrippedResponseInputItem =
+            jsonMapper.readValue(
+                jsonMapper.writeValueAsString(responseInputItem),
+                jacksonTypeRef<ResponseInputItem>(),
+            )
+
+        assertThat(roundtrippedResponseInputItem).isEqualTo(responseInputItem)
+    }
+
+    @Test
     fun ofFileSearchCall() {
         val fileSearchCall =
             ResponseFileSearchToolCall.builder()
                 .id("id")
                 .addQuery("string")
                 .status(ResponseFileSearchToolCall.Status.IN_PROGRESS)
+                .addResult(
+                    ResponseFileSearchToolCall.Result.builder()
+                        .attributes(
+                            ResponseFileSearchToolCall.Result.Attributes.builder()
+                                .putAdditionalProperty("foo", JsonValue.from("string"))
+                                .build()
+                        )
+                        .fileId("file_id")
+                        .filename("filename")
+                        .score(0.0)
+                        .text("text")
+                        .build()
+                )
                 .build()
 
         val responseInputItem = ResponseInputItem.ofFileSearchCall(fileSearchCall)
@@ -106,6 +206,40 @@ internal class ResponseInputItemTest {
         assertThat(responseInputItem.functionCallOutput()).isEmpty
         assertThat(responseInputItem.reasoning()).isEmpty
         assertThat(responseInputItem.itemReference()).isEmpty
+    }
+
+    @Test
+    fun ofFileSearchCallRoundtrip() {
+        val jsonMapper = jsonMapper()
+        val responseInputItem =
+            ResponseInputItem.ofFileSearchCall(
+                ResponseFileSearchToolCall.builder()
+                    .id("id")
+                    .addQuery("string")
+                    .status(ResponseFileSearchToolCall.Status.IN_PROGRESS)
+                    .addResult(
+                        ResponseFileSearchToolCall.Result.builder()
+                            .attributes(
+                                ResponseFileSearchToolCall.Result.Attributes.builder()
+                                    .putAdditionalProperty("foo", JsonValue.from("string"))
+                                    .build()
+                            )
+                            .fileId("file_id")
+                            .filename("filename")
+                            .score(0.0)
+                            .text("text")
+                            .build()
+                    )
+                    .build()
+            )
+
+        val roundtrippedResponseInputItem =
+            jsonMapper.readValue(
+                jsonMapper.writeValueAsString(responseInputItem),
+                jacksonTypeRef<ResponseInputItem>(),
+            )
+
+        assertThat(roundtrippedResponseInputItem).isEqualTo(responseInputItem)
     }
 
     @Test
@@ -148,11 +282,61 @@ internal class ResponseInputItemTest {
     }
 
     @Test
+    fun ofComputerCallRoundtrip() {
+        val jsonMapper = jsonMapper()
+        val responseInputItem =
+            ResponseInputItem.ofComputerCall(
+                ResponseComputerToolCall.builder()
+                    .id("id")
+                    .action(
+                        ResponseComputerToolCall.Action.Click.builder()
+                            .button(ResponseComputerToolCall.Action.Click.Button.LEFT)
+                            .x(0L)
+                            .y(0L)
+                            .build()
+                    )
+                    .callId("call_id")
+                    .addPendingSafetyCheck(
+                        ResponseComputerToolCall.PendingSafetyCheck.builder()
+                            .id("id")
+                            .code("code")
+                            .message("message")
+                            .build()
+                    )
+                    .status(ResponseComputerToolCall.Status.IN_PROGRESS)
+                    .type(ResponseComputerToolCall.Type.COMPUTER_CALL)
+                    .build()
+            )
+
+        val roundtrippedResponseInputItem =
+            jsonMapper.readValue(
+                jsonMapper.writeValueAsString(responseInputItem),
+                jacksonTypeRef<ResponseInputItem>(),
+            )
+
+        assertThat(roundtrippedResponseInputItem).isEqualTo(responseInputItem)
+    }
+
+    @Test
     fun ofComputerCallOutput() {
         val computerCallOutput =
             ResponseInputItem.ComputerCallOutput.builder()
                 .callId("call_id")
-                .output(ResponseComputerToolCallOutputScreenshot.builder().build())
+                .output(
+                    ResponseComputerToolCallOutputScreenshot.builder()
+                        .fileId("file_id")
+                        .imageUrl("image_url")
+                        .build()
+                )
+                .id("id")
+                .addAcknowledgedSafetyCheck(
+                    ResponseInputItem.ComputerCallOutput.AcknowledgedSafetyCheck.builder()
+                        .id("id")
+                        .code("code")
+                        .message("message")
+                        .build()
+                )
+                .status(ResponseInputItem.ComputerCallOutput.Status.IN_PROGRESS)
                 .build()
 
         val responseInputItem = ResponseInputItem.ofComputerCallOutput(computerCallOutput)
@@ -168,6 +352,40 @@ internal class ResponseInputItemTest {
         assertThat(responseInputItem.functionCallOutput()).isEmpty
         assertThat(responseInputItem.reasoning()).isEmpty
         assertThat(responseInputItem.itemReference()).isEmpty
+    }
+
+    @Test
+    fun ofComputerCallOutputRoundtrip() {
+        val jsonMapper = jsonMapper()
+        val responseInputItem =
+            ResponseInputItem.ofComputerCallOutput(
+                ResponseInputItem.ComputerCallOutput.builder()
+                    .callId("call_id")
+                    .output(
+                        ResponseComputerToolCallOutputScreenshot.builder()
+                            .fileId("file_id")
+                            .imageUrl("image_url")
+                            .build()
+                    )
+                    .id("id")
+                    .addAcknowledgedSafetyCheck(
+                        ResponseInputItem.ComputerCallOutput.AcknowledgedSafetyCheck.builder()
+                            .id("id")
+                            .code("code")
+                            .message("message")
+                            .build()
+                    )
+                    .status(ResponseInputItem.ComputerCallOutput.Status.IN_PROGRESS)
+                    .build()
+            )
+
+        val roundtrippedResponseInputItem =
+            jsonMapper.readValue(
+                jsonMapper.writeValueAsString(responseInputItem),
+                jacksonTypeRef<ResponseInputItem>(),
+            )
+
+        assertThat(roundtrippedResponseInputItem).isEqualTo(responseInputItem)
     }
 
     @Test
@@ -194,12 +412,34 @@ internal class ResponseInputItemTest {
     }
 
     @Test
+    fun ofWebSearchCallRoundtrip() {
+        val jsonMapper = jsonMapper()
+        val responseInputItem =
+            ResponseInputItem.ofWebSearchCall(
+                ResponseFunctionWebSearch.builder()
+                    .id("id")
+                    .status(ResponseFunctionWebSearch.Status.IN_PROGRESS)
+                    .build()
+            )
+
+        val roundtrippedResponseInputItem =
+            jsonMapper.readValue(
+                jsonMapper.writeValueAsString(responseInputItem),
+                jacksonTypeRef<ResponseInputItem>(),
+            )
+
+        assertThat(roundtrippedResponseInputItem).isEqualTo(responseInputItem)
+    }
+
+    @Test
     fun ofFunctionCall() {
         val functionCall =
             ResponseFunctionToolCall.builder()
                 .arguments("arguments")
                 .callId("call_id")
                 .name("name")
+                .id("id")
+                .status(ResponseFunctionToolCall.Status.IN_PROGRESS)
                 .build()
 
         val responseInputItem = ResponseInputItem.ofFunctionCall(functionCall)
@@ -218,11 +458,36 @@ internal class ResponseInputItemTest {
     }
 
     @Test
+    fun ofFunctionCallRoundtrip() {
+        val jsonMapper = jsonMapper()
+        val responseInputItem =
+            ResponseInputItem.ofFunctionCall(
+                ResponseFunctionToolCall.builder()
+                    .arguments("arguments")
+                    .callId("call_id")
+                    .name("name")
+                    .id("id")
+                    .status(ResponseFunctionToolCall.Status.IN_PROGRESS)
+                    .build()
+            )
+
+        val roundtrippedResponseInputItem =
+            jsonMapper.readValue(
+                jsonMapper.writeValueAsString(responseInputItem),
+                jacksonTypeRef<ResponseInputItem>(),
+            )
+
+        assertThat(roundtrippedResponseInputItem).isEqualTo(responseInputItem)
+    }
+
+    @Test
     fun ofFunctionCallOutput() {
         val functionCallOutput =
             ResponseInputItem.FunctionCallOutput.builder()
                 .callId("call_id")
                 .output("output")
+                .id("id")
+                .status(ResponseInputItem.FunctionCallOutput.Status.IN_PROGRESS)
                 .build()
 
         val responseInputItem = ResponseInputItem.ofFunctionCallOutput(functionCallOutput)
@@ -241,11 +506,34 @@ internal class ResponseInputItemTest {
     }
 
     @Test
+    fun ofFunctionCallOutputRoundtrip() {
+        val jsonMapper = jsonMapper()
+        val responseInputItem =
+            ResponseInputItem.ofFunctionCallOutput(
+                ResponseInputItem.FunctionCallOutput.builder()
+                    .callId("call_id")
+                    .output("output")
+                    .id("id")
+                    .status(ResponseInputItem.FunctionCallOutput.Status.IN_PROGRESS)
+                    .build()
+            )
+
+        val roundtrippedResponseInputItem =
+            jsonMapper.readValue(
+                jsonMapper.writeValueAsString(responseInputItem),
+                jacksonTypeRef<ResponseInputItem>(),
+            )
+
+        assertThat(roundtrippedResponseInputItem).isEqualTo(responseInputItem)
+    }
+
+    @Test
     fun ofReasoning() {
         val reasoning =
             ResponseReasoningItem.builder()
                 .id("id")
                 .addSummary(ResponseReasoningItem.Summary.builder().text("text").build())
+                .status(ResponseReasoningItem.Status.IN_PROGRESS)
                 .build()
 
         val responseInputItem = ResponseInputItem.ofReasoning(reasoning)
@@ -261,6 +549,27 @@ internal class ResponseInputItemTest {
         assertThat(responseInputItem.functionCallOutput()).isEmpty
         assertThat(responseInputItem.reasoning()).contains(reasoning)
         assertThat(responseInputItem.itemReference()).isEmpty
+    }
+
+    @Test
+    fun ofReasoningRoundtrip() {
+        val jsonMapper = jsonMapper()
+        val responseInputItem =
+            ResponseInputItem.ofReasoning(
+                ResponseReasoningItem.builder()
+                    .id("id")
+                    .addSummary(ResponseReasoningItem.Summary.builder().text("text").build())
+                    .status(ResponseReasoningItem.Status.IN_PROGRESS)
+                    .build()
+            )
+
+        val roundtrippedResponseInputItem =
+            jsonMapper.readValue(
+                jsonMapper.writeValueAsString(responseInputItem),
+                jacksonTypeRef<ResponseInputItem>(),
+            )
+
+        assertThat(roundtrippedResponseInputItem).isEqualTo(responseInputItem)
     }
 
     @Test
@@ -280,5 +589,40 @@ internal class ResponseInputItemTest {
         assertThat(responseInputItem.functionCallOutput()).isEmpty
         assertThat(responseInputItem.reasoning()).isEmpty
         assertThat(responseInputItem.itemReference()).contains(itemReference)
+    }
+
+    @Test
+    fun ofItemReferenceRoundtrip() {
+        val jsonMapper = jsonMapper()
+        val responseInputItem =
+            ResponseInputItem.ofItemReference(
+                ResponseInputItem.ItemReference.builder().id("id").build()
+            )
+
+        val roundtrippedResponseInputItem =
+            jsonMapper.readValue(
+                jsonMapper.writeValueAsString(responseInputItem),
+                jacksonTypeRef<ResponseInputItem>(),
+            )
+
+        assertThat(roundtrippedResponseInputItem).isEqualTo(responseInputItem)
+    }
+
+    enum class IncompatibleJsonShapeTestCase(val value: JsonValue) {
+        BOOLEAN(JsonValue.from(false)),
+        STRING(JsonValue.from("invalid")),
+        INTEGER(JsonValue.from(-1)),
+        FLOAT(JsonValue.from(3.14)),
+        ARRAY(JsonValue.from(listOf("invalid", "array"))),
+    }
+
+    @ParameterizedTest
+    @EnumSource
+    fun incompatibleJsonShapeDeserializesToUnknown(testCase: IncompatibleJsonShapeTestCase) {
+        val responseInputItem =
+            jsonMapper().convertValue(testCase.value, jacksonTypeRef<ResponseInputItem>())
+
+        val e = assertThrows<OpenAIInvalidDataException> { responseInputItem.validate() }
+        assertThat(e).hasMessageStartingWith("Unknown ")
     }
 }

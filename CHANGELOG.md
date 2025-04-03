@@ -1,5 +1,36 @@
 # Changelog
 
+## 0.43.0 (2025-04-02)
+
+Full Changelog: [v0.42.0...v0.43.0](https://github.com/openai/openai-java/compare/v0.42.0...v0.43.0)
+
+### Features
+
+* **api:** manual updates ([9679525](https://github.com/openai/openai-java/commit/967952553d5fd2e7f47cd7c82fac45cc9dcef43e))
+* **client:** expose request body setter and getter ([#392](https://github.com/openai/openai-java/issues/392)) ([eaa0bc9](https://github.com/openai/openai-java/commit/eaa0bc96ba8898e064709a571e97d6b99f478597))
+
+
+### Chores
+
+* **internal:** codegen related update ([#389](https://github.com/openai/openai-java/issues/389)) ([b0e9d31](https://github.com/openai/openai-java/commit/b0e9d316bde7866f0d6c9381a5bec5a6667f46f6))
+
+## 0.42.0 (2025-04-02)
+
+Full Changelog: [v0.41.1...v0.42.0](https://github.com/openai/openai-java/compare/v0.41.1...v0.42.0)
+
+### Features
+
+* **api:** manual updates ([0440105](https://github.com/openai/openai-java/commit/0440105162ce52cd187ce8ab8d5d1dc20682a4ed))
+* **client:** add enum validation method ([a641218](https://github.com/openai/openai-java/commit/a6412183ccea1ac3e9105793372693d5ec8c6d72))
+* **client:** make union deserialization more robust ([#385](https://github.com/openai/openai-java/issues/385)) ([a641218](https://github.com/openai/openai-java/commit/a6412183ccea1ac3e9105793372693d5ec8c6d72))
+
+
+### Chores
+
+* **client:** remove unnecessary json state from some query param classes ([a641218](https://github.com/openai/openai-java/commit/a6412183ccea1ac3e9105793372693d5ec8c6d72))
+* **internal:** add invalid json deserialization tests ([a641218](https://github.com/openai/openai-java/commit/a6412183ccea1ac3e9105793372693d5ec8c6d72))
+* **internal:** add json roundtripping tests ([a641218](https://github.com/openai/openai-java/commit/a6412183ccea1ac3e9105793372693d5ec8c6d72))
+
 ## 0.41.1 (2025-04-01)
 
 Full Changelog: [v0.41.0...v0.41.1](https://github.com/openai/openai-java/compare/v0.41.0...v0.41.1)

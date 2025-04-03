@@ -10,6 +10,7 @@ import com.openai.core.ExcludeMissing
 import com.openai.core.JsonField
 import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
+import com.openai.errors.OpenAIInvalidDataException
 import com.openai.services.blocking.FileService
 import java.util.Collections
 import java.util.Objects
@@ -113,6 +114,14 @@ private constructor(
             hasMore()
             validated = true
         }
+
+        fun isValid(): Boolean =
+            try {
+                validate()
+                true
+            } catch (e: OpenAIInvalidDataException) {
+                false
+            }
 
         fun toBuilder() = Builder().from(this)
 

@@ -78,15 +78,14 @@ private constructor(
 
     fun _json(): Optional<JsonValue> = Optional.ofNullable(_json)
 
-    fun <T> accept(visitor: Visitor<T>): T {
-        return when {
+    fun <T> accept(visitor: Visitor<T>): T =
+        when {
             text != null -> visitor.visitText(text)
             imageUrl != null -> visitor.visitImageUrl(imageUrl)
             inputAudio != null -> visitor.visitInputAudio(inputAudio)
             file != null -> visitor.visitFile(file)
             else -> visitor.unknown(_json)
         }
-    }
 
     private var validated: Boolean = false
 
@@ -116,6 +115,37 @@ private constructor(
         )
         validated = true
     }
+
+    fun isValid(): Boolean =
+        try {
+            validate()
+            true
+        } catch (e: OpenAIInvalidDataException) {
+            false
+        }
+
+    /**
+     * Returns a score indicating how many valid values are contained in this object recursively.
+     *
+     * Used for best match union deserialization.
+     */
+    @JvmSynthetic
+    internal fun validity(): Int =
+        accept(
+            object : Visitor<Int> {
+                override fun visitText(text: ChatCompletionContentPartText) = text.validity()
+
+                override fun visitImageUrl(imageUrl: ChatCompletionContentPartImage) =
+                    imageUrl.validity()
+
+                override fun visitInputAudio(inputAudio: ChatCompletionContentPartInputAudio) =
+                    inputAudio.validity()
+
+                override fun visitFile(file: File) = file.validity()
+
+                override fun unknown(json: JsonValue?) = 0
+            }
+        )
 
     override fun equals(other: Any?): Boolean {
         if (this === other) {
@@ -205,33 +235,27 @@ private constructor(
 
             when (type) {
                 "text" -> {
-                    return ChatCompletionContentPart(
-                        text = deserialize(node, jacksonTypeRef<ChatCompletionContentPartText>()),
-                        _json = json,
-                    )
+                    return tryDeserialize(node, jacksonTypeRef<ChatCompletionContentPartText>())
+                        ?.let { ChatCompletionContentPart(text = it, _json = json) }
+                        ?: ChatCompletionContentPart(_json = json)
                 }
                 "image_url" -> {
-                    return ChatCompletionContentPart(
-                        imageUrl =
-                            deserialize(node, jacksonTypeRef<ChatCompletionContentPartImage>()),
-                        _json = json,
-                    )
+                    return tryDeserialize(node, jacksonTypeRef<ChatCompletionContentPartImage>())
+                        ?.let { ChatCompletionContentPart(imageUrl = it, _json = json) }
+                        ?: ChatCompletionContentPart(_json = json)
                 }
                 "input_audio" -> {
-                    return ChatCompletionContentPart(
-                        inputAudio =
-                            deserialize(
-                                node,
-                                jacksonTypeRef<ChatCompletionContentPartInputAudio>(),
-                            ),
-                        _json = json,
-                    )
+                    return tryDeserialize(
+                            node,
+                            jacksonTypeRef<ChatCompletionContentPartInputAudio>(),
+                        )
+                        ?.let { ChatCompletionContentPart(inputAudio = it, _json = json) }
+                        ?: ChatCompletionContentPart(_json = json)
                 }
                 "file" -> {
-                    return ChatCompletionContentPart(
-                        file = deserialize(node, jacksonTypeRef<File>()),
-                        _json = json,
-                    )
+                    return tryDeserialize(node, jacksonTypeRef<File>())?.let {
+                        ChatCompletionContentPart(file = it, _json = json)
+                    } ?: ChatCompletionContentPart(_json = json)
                 }
             }
 
@@ -414,6 +438,25 @@ private constructor(
             }
             validated = true
         }
+
+        fun isValid(): Boolean =
+            try {
+                validate()
+                true
+            } catch (e: OpenAIInvalidDataException) {
+                false
+            }
+
+        /**
+         * Returns a score indicating how many valid values are contained in this object
+         * recursively.
+         *
+         * Used for best match union deserialization.
+         */
+        @JvmSynthetic
+        internal fun validity(): Int =
+            (file.asKnown().getOrNull()?.validity() ?: 0) +
+                type.let { if (it == JsonValue.from("file")) 1 else 0 }
 
         class FileObject
         private constructor(
@@ -600,6 +643,26 @@ private constructor(
                 filename()
                 validated = true
             }
+
+            fun isValid(): Boolean =
+                try {
+                    validate()
+                    true
+                } catch (e: OpenAIInvalidDataException) {
+                    false
+                }
+
+            /**
+             * Returns a score indicating how many valid values are contained in this object
+             * recursively.
+             *
+             * Used for best match union deserialization.
+             */
+            @JvmSynthetic
+            internal fun validity(): Int =
+                (if (fileData.asKnown().isPresent) 1 else 0) +
+                    (if (fileId.asKnown().isPresent) 1 else 0) +
+                    (if (filename.asKnown().isPresent) 1 else 0)
 
             override fun equals(other: Any?): Boolean {
                 if (this === other) {

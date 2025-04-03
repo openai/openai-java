@@ -409,10 +409,32 @@ private constructor(
         action().validate()
         callId()
         pendingSafetyChecks().forEach { it.validate() }
-        status()
-        type()
+        status().validate()
+        type().validate()
         validated = true
     }
+
+    fun isValid(): Boolean =
+        try {
+            validate()
+            true
+        } catch (e: OpenAIInvalidDataException) {
+            false
+        }
+
+    /**
+     * Returns a score indicating how many valid values are contained in this object recursively.
+     *
+     * Used for best match union deserialization.
+     */
+    @JvmSynthetic
+    internal fun validity(): Int =
+        (if (id.asKnown().isPresent) 1 else 0) +
+            (action.asKnown().getOrNull()?.validity() ?: 0) +
+            (if (callId.asKnown().isPresent) 1 else 0) +
+            (pendingSafetyChecks.asKnown().getOrNull()?.sumOf { it.validity().toInt() } ?: 0) +
+            (status.asKnown().getOrNull()?.validity() ?: 0) +
+            (type.asKnown().getOrNull()?.validity() ?: 0)
 
     /** A click action. */
     @JsonDeserialize(using = Action.Deserializer::class)
@@ -505,8 +527,8 @@ private constructor(
 
         fun _json(): Optional<JsonValue> = Optional.ofNullable(_json)
 
-        fun <T> accept(visitor: Visitor<T>): T {
-            return when {
+        fun <T> accept(visitor: Visitor<T>): T =
+            when {
                 click != null -> visitor.visitClick(click)
                 doubleClick != null -> visitor.visitDoubleClick(doubleClick)
                 drag != null -> visitor.visitDrag(drag)
@@ -518,7 +540,6 @@ private constructor(
                 wait != null -> visitor.visitWait(wait)
                 else -> visitor.unknown(_json)
             }
-        }
 
         private var validated: Boolean = false
 
@@ -578,6 +599,50 @@ private constructor(
             )
             validated = true
         }
+
+        fun isValid(): Boolean =
+            try {
+                validate()
+                true
+            } catch (e: OpenAIInvalidDataException) {
+                false
+            }
+
+        /**
+         * Returns a score indicating how many valid values are contained in this object
+         * recursively.
+         *
+         * Used for best match union deserialization.
+         */
+        @JvmSynthetic
+        internal fun validity(): Int =
+            accept(
+                object : Visitor<Int> {
+                    override fun visitClick(click: Click) = click.validity()
+
+                    override fun visitDoubleClick(doubleClick: DoubleClick) = doubleClick.validity()
+
+                    override fun visitDrag(drag: Drag) = drag.validity()
+
+                    override fun visitKeypress(keypress: Keypress) = keypress.validity()
+
+                    override fun visitMove(move: Move) = move.validity()
+
+                    override fun visitScreenshot(screenshot: JsonValue) =
+                        screenshot.let {
+                            if (it == JsonValue.from(mapOf("type" to "screenshot"))) 1 else 0
+                        }
+
+                    override fun visitScroll(scroll: Scroll) = scroll.validity()
+
+                    override fun visitType(type: Type) = type.validity()
+
+                    override fun visitWait(wait: JsonValue) =
+                        wait.let { if (it == JsonValue.from(mapOf("type" to "wait"))) 1 else 0 }
+
+                    override fun unknown(json: JsonValue?) = 0
+                }
+            )
 
         override fun equals(other: Any?): Boolean {
             if (this === other) {
@@ -689,58 +754,49 @@ private constructor(
 
                 when (type) {
                     "click" -> {
-                        return Action(
-                            click = deserialize(node, jacksonTypeRef<Click>()),
-                            _json = json,
-                        )
+                        return tryDeserialize(node, jacksonTypeRef<Click>())?.let {
+                            Action(click = it, _json = json)
+                        } ?: Action(_json = json)
                     }
                     "double_click" -> {
-                        return Action(
-                            doubleClick = deserialize(node, jacksonTypeRef<DoubleClick>()),
-                            _json = json,
-                        )
+                        return tryDeserialize(node, jacksonTypeRef<DoubleClick>())?.let {
+                            Action(doubleClick = it, _json = json)
+                        } ?: Action(_json = json)
                     }
                     "drag" -> {
-                        return Action(
-                            drag = deserialize(node, jacksonTypeRef<Drag>()),
-                            _json = json,
-                        )
+                        return tryDeserialize(node, jacksonTypeRef<Drag>())?.let {
+                            Action(drag = it, _json = json)
+                        } ?: Action(_json = json)
                     }
                     "keypress" -> {
-                        return Action(
-                            keypress = deserialize(node, jacksonTypeRef<Keypress>()),
-                            _json = json,
-                        )
+                        return tryDeserialize(node, jacksonTypeRef<Keypress>())?.let {
+                            Action(keypress = it, _json = json)
+                        } ?: Action(_json = json)
                     }
                     "move" -> {
-                        return Action(
-                            move = deserialize(node, jacksonTypeRef<Move>()),
-                            _json = json,
-                        )
+                        return tryDeserialize(node, jacksonTypeRef<Move>())?.let {
+                            Action(move = it, _json = json)
+                        } ?: Action(_json = json)
                     }
                     "screenshot" -> {
-                        return Action(
-                            screenshot = deserialize(node, jacksonTypeRef<JsonValue>()),
-                            _json = json,
-                        )
+                        return tryDeserialize(node, jacksonTypeRef<JsonValue>())
+                            ?.let { Action(screenshot = it, _json = json) }
+                            ?.takeIf { it.isValid() } ?: Action(_json = json)
                     }
                     "scroll" -> {
-                        return Action(
-                            scroll = deserialize(node, jacksonTypeRef<Scroll>()),
-                            _json = json,
-                        )
+                        return tryDeserialize(node, jacksonTypeRef<Scroll>())?.let {
+                            Action(scroll = it, _json = json)
+                        } ?: Action(_json = json)
                     }
                     "type" -> {
-                        return Action(
-                            type = deserialize(node, jacksonTypeRef<Type>()),
-                            _json = json,
-                        )
+                        return tryDeserialize(node, jacksonTypeRef<Type>())?.let {
+                            Action(type = it, _json = json)
+                        } ?: Action(_json = json)
                     }
                     "wait" -> {
-                        return Action(
-                            wait = deserialize(node, jacksonTypeRef<JsonValue>()),
-                            _json = json,
-                        )
+                        return tryDeserialize(node, jacksonTypeRef<JsonValue>())
+                            ?.let { Action(wait = it, _json = json) }
+                            ?.takeIf { it.isValid() } ?: Action(_json = json)
                     }
                 }
 
@@ -1004,7 +1060,7 @@ private constructor(
                     return@apply
                 }
 
-                button()
+                button().validate()
                 _type().let {
                     if (it != JsonValue.from("click")) {
                         throw OpenAIInvalidDataException("'type' is invalid, received $it")
@@ -1014,6 +1070,27 @@ private constructor(
                 y()
                 validated = true
             }
+
+            fun isValid(): Boolean =
+                try {
+                    validate()
+                    true
+                } catch (e: OpenAIInvalidDataException) {
+                    false
+                }
+
+            /**
+             * Returns a score indicating how many valid values are contained in this object
+             * recursively.
+             *
+             * Used for best match union deserialization.
+             */
+            @JvmSynthetic
+            internal fun validity(): Int =
+                (button.asKnown().getOrNull()?.validity() ?: 0) +
+                    type.let { if (it == JsonValue.from("click")) 1 else 0 } +
+                    (if (x.asKnown().isPresent) 1 else 0) +
+                    (if (y.asKnown().isPresent) 1 else 0)
 
             /**
              * Indicates which mouse button was pressed during the click. One of `left`, `right`,
@@ -1127,6 +1204,33 @@ private constructor(
                     _value().asString().orElseThrow {
                         OpenAIInvalidDataException("Value is not a String")
                     }
+
+                private var validated: Boolean = false
+
+                fun validate(): Button = apply {
+                    if (validated) {
+                        return@apply
+                    }
+
+                    known()
+                    validated = true
+                }
+
+                fun isValid(): Boolean =
+                    try {
+                        validate()
+                        true
+                    } catch (e: OpenAIInvalidDataException) {
+                        false
+                    }
+
+                /**
+                 * Returns a score indicating how many valid values are contained in this object
+                 * recursively.
+                 *
+                 * Used for best match union deserialization.
+                 */
+                @JvmSynthetic internal fun validity(): Int = if (value() == Value._UNKNOWN) 0 else 1
 
                 override fun equals(other: Any?): Boolean {
                     if (this === other) {
@@ -1362,6 +1466,26 @@ private constructor(
                 validated = true
             }
 
+            fun isValid(): Boolean =
+                try {
+                    validate()
+                    true
+                } catch (e: OpenAIInvalidDataException) {
+                    false
+                }
+
+            /**
+             * Returns a score indicating how many valid values are contained in this object
+             * recursively.
+             *
+             * Used for best match union deserialization.
+             */
+            @JvmSynthetic
+            internal fun validity(): Int =
+                type.let { if (it == JsonValue.from("double_click")) 1 else 0 } +
+                    (if (x.asKnown().isPresent) 1 else 0) +
+                    (if (y.asKnown().isPresent) 1 else 0)
+
             override fun equals(other: Any?): Boolean {
                 if (this === other) {
                     return true
@@ -1580,6 +1704,25 @@ private constructor(
                 validated = true
             }
 
+            fun isValid(): Boolean =
+                try {
+                    validate()
+                    true
+                } catch (e: OpenAIInvalidDataException) {
+                    false
+                }
+
+            /**
+             * Returns a score indicating how many valid values are contained in this object
+             * recursively.
+             *
+             * Used for best match union deserialization.
+             */
+            @JvmSynthetic
+            internal fun validity(): Int =
+                (path.asKnown().getOrNull()?.sumOf { it.validity().toInt() } ?: 0) +
+                    type.let { if (it == JsonValue.from("drag")) 1 else 0 }
+
             /** A series of x/y coordinate pairs in the drag path. */
             class Path
             private constructor(
@@ -1744,6 +1887,24 @@ private constructor(
                     y()
                     validated = true
                 }
+
+                fun isValid(): Boolean =
+                    try {
+                        validate()
+                        true
+                    } catch (e: OpenAIInvalidDataException) {
+                        false
+                    }
+
+                /**
+                 * Returns a score indicating how many valid values are contained in this object
+                 * recursively.
+                 *
+                 * Used for best match union deserialization.
+                 */
+                @JvmSynthetic
+                internal fun validity(): Int =
+                    (if (x.asKnown().isPresent) 1 else 0) + (if (y.asKnown().isPresent) 1 else 0)
 
                 override fun equals(other: Any?): Boolean {
                     if (this === other) {
@@ -1968,6 +2129,25 @@ private constructor(
                 validated = true
             }
 
+            fun isValid(): Boolean =
+                try {
+                    validate()
+                    true
+                } catch (e: OpenAIInvalidDataException) {
+                    false
+                }
+
+            /**
+             * Returns a score indicating how many valid values are contained in this object
+             * recursively.
+             *
+             * Used for best match union deserialization.
+             */
+            @JvmSynthetic
+            internal fun validity(): Int =
+                (keys.asKnown().getOrNull()?.size ?: 0) +
+                    type.let { if (it == JsonValue.from("keypress")) 1 else 0 }
+
             override fun equals(other: Any?): Boolean {
                 if (this === other) {
                     return true
@@ -2187,6 +2367,26 @@ private constructor(
                 y()
                 validated = true
             }
+
+            fun isValid(): Boolean =
+                try {
+                    validate()
+                    true
+                } catch (e: OpenAIInvalidDataException) {
+                    false
+                }
+
+            /**
+             * Returns a score indicating how many valid values are contained in this object
+             * recursively.
+             *
+             * Used for best match union deserialization.
+             */
+            @JvmSynthetic
+            internal fun validity(): Int =
+                type.let { if (it == JsonValue.from("move")) 1 else 0 } +
+                    (if (x.asKnown().isPresent) 1 else 0) +
+                    (if (y.asKnown().isPresent) 1 else 0)
 
             override fun equals(other: Any?): Boolean {
                 if (this === other) {
@@ -2485,6 +2685,28 @@ private constructor(
                 validated = true
             }
 
+            fun isValid(): Boolean =
+                try {
+                    validate()
+                    true
+                } catch (e: OpenAIInvalidDataException) {
+                    false
+                }
+
+            /**
+             * Returns a score indicating how many valid values are contained in this object
+             * recursively.
+             *
+             * Used for best match union deserialization.
+             */
+            @JvmSynthetic
+            internal fun validity(): Int =
+                (if (scrollX.asKnown().isPresent) 1 else 0) +
+                    (if (scrollY.asKnown().isPresent) 1 else 0) +
+                    type.let { if (it == JsonValue.from("scroll")) 1 else 0 } +
+                    (if (x.asKnown().isPresent) 1 else 0) +
+                    (if (y.asKnown().isPresent) 1 else 0)
+
             override fun equals(other: Any?): Boolean {
                 if (this === other) {
                     return true
@@ -2664,6 +2886,25 @@ private constructor(
                 }
                 validated = true
             }
+
+            fun isValid(): Boolean =
+                try {
+                    validate()
+                    true
+                } catch (e: OpenAIInvalidDataException) {
+                    false
+                }
+
+            /**
+             * Returns a score indicating how many valid values are contained in this object
+             * recursively.
+             *
+             * Used for best match union deserialization.
+             */
+            @JvmSynthetic
+            internal fun validity(): Int =
+                (if (text.asKnown().isPresent) 1 else 0) +
+                    type.let { if (it == JsonValue.from("type")) 1 else 0 }
 
             override fun equals(other: Any?): Boolean {
                 if (this === other) {
@@ -2879,6 +3120,26 @@ private constructor(
             validated = true
         }
 
+        fun isValid(): Boolean =
+            try {
+                validate()
+                true
+            } catch (e: OpenAIInvalidDataException) {
+                false
+            }
+
+        /**
+         * Returns a score indicating how many valid values are contained in this object
+         * recursively.
+         *
+         * Used for best match union deserialization.
+         */
+        @JvmSynthetic
+        internal fun validity(): Int =
+            (if (id.asKnown().isPresent) 1 else 0) +
+                (if (code.asKnown().isPresent) 1 else 0) +
+                (if (message.asKnown().isPresent) 1 else 0)
+
         override fun equals(other: Any?): Boolean {
             if (this === other) {
                 return true
@@ -2992,6 +3253,33 @@ private constructor(
         fun asString(): String =
             _value().asString().orElseThrow { OpenAIInvalidDataException("Value is not a String") }
 
+        private var validated: Boolean = false
+
+        fun validate(): Status = apply {
+            if (validated) {
+                return@apply
+            }
+
+            known()
+            validated = true
+        }
+
+        fun isValid(): Boolean =
+            try {
+                validate()
+                true
+            } catch (e: OpenAIInvalidDataException) {
+                false
+            }
+
+        /**
+         * Returns a score indicating how many valid values are contained in this object
+         * recursively.
+         *
+         * Used for best match union deserialization.
+         */
+        @JvmSynthetic internal fun validity(): Int = if (value() == Value._UNKNOWN) 0 else 1
+
         override fun equals(other: Any?): Boolean {
             if (this === other) {
                 return true
@@ -3084,6 +3372,33 @@ private constructor(
          */
         fun asString(): String =
             _value().asString().orElseThrow { OpenAIInvalidDataException("Value is not a String") }
+
+        private var validated: Boolean = false
+
+        fun validate(): Type = apply {
+            if (validated) {
+                return@apply
+            }
+
+            known()
+            validated = true
+        }
+
+        fun isValid(): Boolean =
+            try {
+                validate()
+                true
+            } catch (e: OpenAIInvalidDataException) {
+                false
+            }
+
+        /**
+         * Returns a score indicating how many valid values are contained in this object
+         * recursively.
+         *
+         * Used for best match union deserialization.
+         */
+        @JvmSynthetic internal fun validity(): Int = if (value() == Value._UNKNOWN) 0 else 1
 
         override fun equals(other: Any?): Boolean {
             if (this === other) {

@@ -21,6 +21,7 @@ import com.openai.core.JsonField
 import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
 import com.openai.core.Params
+import com.openai.core.allMaxBy
 import com.openai.core.checkKnown
 import com.openai.core.checkRequired
 import com.openai.core.getOrThrow
@@ -125,6 +126,17 @@ private constructor(
             additionalHeaders = threadCreateParams.additionalHeaders.toBuilder()
             additionalQueryParams = threadCreateParams.additionalQueryParams.toBuilder()
         }
+
+        /**
+         * Sets the entire request body.
+         *
+         * This is generally only useful if you are already constructing the body separately.
+         * Otherwise, it's more convenient to use the top-level setters instead:
+         * - [messages]
+         * - [metadata]
+         * - [toolResources]
+         */
+        fun body(body: Body) = apply { this.body = body.toBuilder() }
 
         /**
          * A list of [messages](https://platform.openai.com/docs/api-reference/messages) to start
@@ -325,7 +337,7 @@ private constructor(
             )
     }
 
-    @JvmSynthetic internal fun _body(): Body = body
+    fun _body(): Body = body
 
     override fun _headers(): Headers = additionalHeaders
 
@@ -571,6 +583,26 @@ private constructor(
             toolResources().ifPresent { it.validate() }
             validated = true
         }
+
+        fun isValid(): Boolean =
+            try {
+                validate()
+                true
+            } catch (e: OpenAIInvalidDataException) {
+                false
+            }
+
+        /**
+         * Returns a score indicating how many valid values are contained in this object
+         * recursively.
+         *
+         * Used for best match union deserialization.
+         */
+        @JvmSynthetic
+        internal fun validity(): Int =
+            (messages.asKnown().getOrNull()?.sumOf { it.validity().toInt() } ?: 0) +
+                (metadata.asKnown().getOrNull()?.validity() ?: 0) +
+                (toolResources.asKnown().getOrNull()?.validity() ?: 0)
 
         override fun equals(other: Any?): Boolean {
             if (this === other) {
@@ -870,11 +902,32 @@ private constructor(
             }
 
             content().validate()
-            role()
+            role().validate()
             attachments().ifPresent { it.forEach { it.validate() } }
             metadata().ifPresent { it.validate() }
             validated = true
         }
+
+        fun isValid(): Boolean =
+            try {
+                validate()
+                true
+            } catch (e: OpenAIInvalidDataException) {
+                false
+            }
+
+        /**
+         * Returns a score indicating how many valid values are contained in this object
+         * recursively.
+         *
+         * Used for best match union deserialization.
+         */
+        @JvmSynthetic
+        internal fun validity(): Int =
+            (content.asKnown().getOrNull()?.validity() ?: 0) +
+                (role.asKnown().getOrNull()?.validity() ?: 0) +
+                (attachments.asKnown().getOrNull()?.sumOf { it.validity().toInt() } ?: 0) +
+                (metadata.asKnown().getOrNull()?.validity() ?: 0)
 
         /** The text contents of the message. */
         @JsonDeserialize(using = Content.Deserializer::class)
@@ -914,14 +967,13 @@ private constructor(
 
             fun _json(): Optional<JsonValue> = Optional.ofNullable(_json)
 
-            fun <T> accept(visitor: Visitor<T>): T {
-                return when {
+            fun <T> accept(visitor: Visitor<T>): T =
+                when {
                     text != null -> visitor.visitText(text)
                     arrayOfContentParts != null ->
                         visitor.visitArrayOfContentParts(arrayOfContentParts)
                     else -> visitor.unknown(_json)
                 }
-            }
 
             private var validated: Boolean = false
 
@@ -943,6 +995,34 @@ private constructor(
                 )
                 validated = true
             }
+
+            fun isValid(): Boolean =
+                try {
+                    validate()
+                    true
+                } catch (e: OpenAIInvalidDataException) {
+                    false
+                }
+
+            /**
+             * Returns a score indicating how many valid values are contained in this object
+             * recursively.
+             *
+             * Used for best match union deserialization.
+             */
+            @JvmSynthetic
+            internal fun validity(): Int =
+                accept(
+                    object : Visitor<Int> {
+                        override fun visitText(text: String) = 1
+
+                        override fun visitArrayOfContentParts(
+                            arrayOfContentParts: List<MessageContentPartParam>
+                        ) = arrayOfContentParts.sumOf { it.validity().toInt() }
+
+                        override fun unknown(json: JsonValue?) = 0
+                    }
+                )
 
             override fun equals(other: Any?): Boolean {
                 if (this === other) {
@@ -1014,17 +1094,30 @@ private constructor(
                 override fun ObjectCodec.deserialize(node: JsonNode): Content {
                     val json = JsonValue.fromJsonNode(node)
 
-                    tryDeserialize(node, jacksonTypeRef<String>())?.let {
-                        return Content(text = it, _json = json)
+                    val bestMatches =
+                        sequenceOf(
+                                tryDeserialize(node, jacksonTypeRef<String>())?.let {
+                                    Content(text = it, _json = json)
+                                },
+                                tryDeserialize(
+                                        node,
+                                        jacksonTypeRef<List<MessageContentPartParam>>(),
+                                    )
+                                    ?.let { Content(arrayOfContentParts = it, _json = json) },
+                            )
+                            .filterNotNull()
+                            .allMaxBy { it.validity() }
+                            .toList()
+                    return when (bestMatches.size) {
+                        // This can happen if what we're deserializing is completely incompatible
+                        // with all the possible variants (e.g. deserializing from object).
+                        0 -> Content(_json = json)
+                        1 -> bestMatches.single()
+                        // If there's more than one match with the highest validity, then use the
+                        // first completely valid match, or simply the first match if none are
+                        // completely valid.
+                        else -> bestMatches.firstOrNull { it.isValid() } ?: bestMatches.first()
                     }
-                    tryDeserialize(node, jacksonTypeRef<List<MessageContentPartParam>>()) {
-                            it.forEach { it.validate() }
-                        }
-                        ?.let {
-                            return Content(arrayOfContentParts = it, _json = json)
-                        }
-
-                    return Content(_json = json)
                 }
             }
 
@@ -1139,6 +1232,33 @@ private constructor(
                 _value().asString().orElseThrow {
                     OpenAIInvalidDataException("Value is not a String")
                 }
+
+            private var validated: Boolean = false
+
+            fun validate(): Role = apply {
+                if (validated) {
+                    return@apply
+                }
+
+                known()
+                validated = true
+            }
+
+            fun isValid(): Boolean =
+                try {
+                    validate()
+                    true
+                } catch (e: OpenAIInvalidDataException) {
+                    false
+                }
+
+            /**
+             * Returns a score indicating how many valid values are contained in this object
+             * recursively.
+             *
+             * Used for best match union deserialization.
+             */
+            @JvmSynthetic internal fun validity(): Int = if (value() == Value._UNKNOWN) 0 else 1
 
             override fun equals(other: Any?): Boolean {
                 if (this === other) {
@@ -1324,6 +1444,25 @@ private constructor(
                 validated = true
             }
 
+            fun isValid(): Boolean =
+                try {
+                    validate()
+                    true
+                } catch (e: OpenAIInvalidDataException) {
+                    false
+                }
+
+            /**
+             * Returns a score indicating how many valid values are contained in this object
+             * recursively.
+             *
+             * Used for best match union deserialization.
+             */
+            @JvmSynthetic
+            internal fun validity(): Int =
+                (if (fileId.asKnown().isPresent) 1 else 0) +
+                    (tools.asKnown().getOrNull()?.sumOf { it.validity().toInt() } ?: 0)
+
             @JsonDeserialize(using = Tool.Deserializer::class)
             @JsonSerialize(using = Tool.Serializer::class)
             class Tool
@@ -1349,13 +1488,12 @@ private constructor(
 
                 fun _json(): Optional<JsonValue> = Optional.ofNullable(_json)
 
-                fun <T> accept(visitor: Visitor<T>): T {
-                    return when {
+                fun <T> accept(visitor: Visitor<T>): T =
+                    when {
                         codeInterpreter != null -> visitor.visitCodeInterpreter(codeInterpreter)
                         fileSearch != null -> visitor.visitFileSearch(fileSearch)
                         else -> visitor.unknown(_json)
                     }
-                }
 
                 private var validated: Boolean = false
 
@@ -1385,6 +1523,38 @@ private constructor(
                     )
                     validated = true
                 }
+
+                fun isValid(): Boolean =
+                    try {
+                        validate()
+                        true
+                    } catch (e: OpenAIInvalidDataException) {
+                        false
+                    }
+
+                /**
+                 * Returns a score indicating how many valid values are contained in this object
+                 * recursively.
+                 *
+                 * Used for best match union deserialization.
+                 */
+                @JvmSynthetic
+                internal fun validity(): Int =
+                    accept(
+                        object : Visitor<Int> {
+                            override fun visitCodeInterpreter(
+                                codeInterpreter: CodeInterpreterTool
+                            ) = codeInterpreter.validity()
+
+                            override fun visitFileSearch(fileSearch: JsonValue) =
+                                fileSearch.let {
+                                    if (it == JsonValue.from(mapOf("type" to "file_search"))) 1
+                                    else 0
+                                }
+
+                            override fun unknown(json: JsonValue?) = 0
+                        }
+                    )
 
                 override fun equals(other: Any?): Boolean {
                     if (this === other) {
@@ -1448,17 +1618,14 @@ private constructor(
 
                         when (type) {
                             "code_interpreter" -> {
-                                return Tool(
-                                    codeInterpreter =
-                                        deserialize(node, jacksonTypeRef<CodeInterpreterTool>()),
-                                    _json = json,
-                                )
+                                return tryDeserialize(node, jacksonTypeRef<CodeInterpreterTool>())
+                                    ?.let { Tool(codeInterpreter = it, _json = json) }
+                                    ?: Tool(_json = json)
                             }
                             "file_search" -> {
-                                return Tool(
-                                    fileSearch = deserialize(node, jacksonTypeRef<JsonValue>()),
-                                    _json = json,
-                                )
+                                return tryDeserialize(node, jacksonTypeRef<JsonValue>())
+                                    ?.let { Tool(fileSearch = it, _json = json) }
+                                    ?.takeIf { it.isValid() } ?: Tool(_json = json)
                             }
                         }
 
@@ -1579,6 +1746,24 @@ private constructor(
                 validated = true
             }
 
+            fun isValid(): Boolean =
+                try {
+                    validate()
+                    true
+                } catch (e: OpenAIInvalidDataException) {
+                    false
+                }
+
+            /**
+             * Returns a score indicating how many valid values are contained in this object
+             * recursively.
+             *
+             * Used for best match union deserialization.
+             */
+            @JvmSynthetic
+            internal fun validity(): Int =
+                additionalProperties.count { (_, value) -> !value.isNull() && !value.isMissing() }
+
             override fun equals(other: Any?): Boolean {
                 if (this === other) {
                     return true
@@ -1687,6 +1872,24 @@ private constructor(
 
             validated = true
         }
+
+        fun isValid(): Boolean =
+            try {
+                validate()
+                true
+            } catch (e: OpenAIInvalidDataException) {
+                false
+            }
+
+        /**
+         * Returns a score indicating how many valid values are contained in this object
+         * recursively.
+         *
+         * Used for best match union deserialization.
+         */
+        @JvmSynthetic
+        internal fun validity(): Int =
+            additionalProperties.count { (_, value) -> !value.isNull() && !value.isMissing() }
 
         override fun equals(other: Any?): Boolean {
             if (this === other) {
@@ -1859,6 +2062,25 @@ private constructor(
             validated = true
         }
 
+        fun isValid(): Boolean =
+            try {
+                validate()
+                true
+            } catch (e: OpenAIInvalidDataException) {
+                false
+            }
+
+        /**
+         * Returns a score indicating how many valid values are contained in this object
+         * recursively.
+         *
+         * Used for best match union deserialization.
+         */
+        @JvmSynthetic
+        internal fun validity(): Int =
+            (codeInterpreter.asKnown().getOrNull()?.validity() ?: 0) +
+                (fileSearch.asKnown().getOrNull()?.validity() ?: 0)
+
         class CodeInterpreter
         private constructor(
             private val fileIds: JsonField<List<String>>,
@@ -1996,6 +2218,22 @@ private constructor(
                 fileIds()
                 validated = true
             }
+
+            fun isValid(): Boolean =
+                try {
+                    validate()
+                    true
+                } catch (e: OpenAIInvalidDataException) {
+                    false
+                }
+
+            /**
+             * Returns a score indicating how many valid values are contained in this object
+             * recursively.
+             *
+             * Used for best match union deserialization.
+             */
+            @JvmSynthetic internal fun validity(): Int = (fileIds.asKnown().getOrNull()?.size ?: 0)
 
             override fun equals(other: Any?): Boolean {
                 if (this === other) {
@@ -2218,6 +2456,25 @@ private constructor(
                 vectorStores().ifPresent { it.forEach { it.validate() } }
                 validated = true
             }
+
+            fun isValid(): Boolean =
+                try {
+                    validate()
+                    true
+                } catch (e: OpenAIInvalidDataException) {
+                    false
+                }
+
+            /**
+             * Returns a score indicating how many valid values are contained in this object
+             * recursively.
+             *
+             * Used for best match union deserialization.
+             */
+            @JvmSynthetic
+            internal fun validity(): Int =
+                (vectorStoreIds.asKnown().getOrNull()?.size ?: 0) +
+                    (vectorStores.asKnown().getOrNull()?.sumOf { it.validity().toInt() } ?: 0)
 
             class VectorStore
             private constructor(
@@ -2480,6 +2737,26 @@ private constructor(
                     validated = true
                 }
 
+                fun isValid(): Boolean =
+                    try {
+                        validate()
+                        true
+                    } catch (e: OpenAIInvalidDataException) {
+                        false
+                    }
+
+                /**
+                 * Returns a score indicating how many valid values are contained in this object
+                 * recursively.
+                 *
+                 * Used for best match union deserialization.
+                 */
+                @JvmSynthetic
+                internal fun validity(): Int =
+                    (chunkingStrategy.asKnown().getOrNull()?.validity() ?: 0) +
+                        (fileIds.asKnown().getOrNull()?.size ?: 0) +
+                        (metadata.asKnown().getOrNull()?.validity() ?: 0)
+
                 /**
                  * The chunking strategy used to chunk the file(s). If not set, will use the `auto`
                  * strategy.
@@ -2515,13 +2792,12 @@ private constructor(
 
                     fun _json(): Optional<JsonValue> = Optional.ofNullable(_json)
 
-                    fun <T> accept(visitor: Visitor<T>): T {
-                        return when {
+                    fun <T> accept(visitor: Visitor<T>): T =
+                        when {
                             auto != null -> visitor.visitAuto(auto)
                             static_ != null -> visitor.visitStatic(static_)
                             else -> visitor.unknown(_json)
                         }
-                    }
 
                     private var validated: Boolean = false
 
@@ -2549,6 +2825,35 @@ private constructor(
                         )
                         validated = true
                     }
+
+                    fun isValid(): Boolean =
+                        try {
+                            validate()
+                            true
+                        } catch (e: OpenAIInvalidDataException) {
+                            false
+                        }
+
+                    /**
+                     * Returns a score indicating how many valid values are contained in this object
+                     * recursively.
+                     *
+                     * Used for best match union deserialization.
+                     */
+                    @JvmSynthetic
+                    internal fun validity(): Int =
+                        accept(
+                            object : Visitor<Int> {
+                                override fun visitAuto(auto: JsonValue) =
+                                    auto.let {
+                                        if (it == JsonValue.from(mapOf("type" to "auto"))) 1 else 0
+                                    }
+
+                                override fun visitStatic(static_: StaticObject) = static_.validity()
+
+                                override fun unknown(json: JsonValue?) = 0
+                            }
+                        )
 
                     override fun equals(other: Any?): Boolean {
                         if (this === other) {
@@ -2621,16 +2926,14 @@ private constructor(
 
                             when (type) {
                                 "auto" -> {
-                                    return ChunkingStrategy(
-                                        auto = deserialize(node, jacksonTypeRef<JsonValue>()),
-                                        _json = json,
-                                    )
+                                    return tryDeserialize(node, jacksonTypeRef<JsonValue>())
+                                        ?.let { ChunkingStrategy(auto = it, _json = json) }
+                                        ?.takeIf { it.isValid() } ?: ChunkingStrategy(_json = json)
                                 }
                                 "static" -> {
-                                    return ChunkingStrategy(
-                                        static_ = deserialize(node, jacksonTypeRef<StaticObject>()),
-                                        _json = json,
-                                    )
+                                    return tryDeserialize(node, jacksonTypeRef<StaticObject>())
+                                        ?.let { ChunkingStrategy(static_ = it, _json = json) }
+                                        ?: ChunkingStrategy(_json = json)
                                 }
                             }
 
@@ -2829,6 +3132,25 @@ private constructor(
                             }
                             validated = true
                         }
+
+                        fun isValid(): Boolean =
+                            try {
+                                validate()
+                                true
+                            } catch (e: OpenAIInvalidDataException) {
+                                false
+                            }
+
+                        /**
+                         * Returns a score indicating how many valid values are contained in this
+                         * object recursively.
+                         *
+                         * Used for best match union deserialization.
+                         */
+                        @JvmSynthetic
+                        internal fun validity(): Int =
+                            (static_.asKnown().getOrNull()?.validity() ?: 0) +
+                                type.let { if (it == JsonValue.from("static")) 1 else 0 }
 
                         class Static
                         private constructor(
@@ -3034,6 +3356,25 @@ private constructor(
                                 validated = true
                             }
 
+                            fun isValid(): Boolean =
+                                try {
+                                    validate()
+                                    true
+                                } catch (e: OpenAIInvalidDataException) {
+                                    false
+                                }
+
+                            /**
+                             * Returns a score indicating how many valid values are contained in
+                             * this object recursively.
+                             *
+                             * Used for best match union deserialization.
+                             */
+                            @JvmSynthetic
+                            internal fun validity(): Int =
+                                (if (chunkOverlapTokens.asKnown().isPresent) 1 else 0) +
+                                    (if (maxChunkSizeTokens.asKnown().isPresent) 1 else 0)
+
                             override fun equals(other: Any?): Boolean {
                                 if (this === other) {
                                     return true
@@ -3148,6 +3489,26 @@ private constructor(
 
                         validated = true
                     }
+
+                    fun isValid(): Boolean =
+                        try {
+                            validate()
+                            true
+                        } catch (e: OpenAIInvalidDataException) {
+                            false
+                        }
+
+                    /**
+                     * Returns a score indicating how many valid values are contained in this object
+                     * recursively.
+                     *
+                     * Used for best match union deserialization.
+                     */
+                    @JvmSynthetic
+                    internal fun validity(): Int =
+                        additionalProperties.count { (_, value) ->
+                            !value.isNull() && !value.isMissing()
+                        }
 
                     override fun equals(other: Any?): Boolean {
                         if (this === other) {

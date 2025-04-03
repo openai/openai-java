@@ -2,10 +2,20 @@
 
 package com.openai.models.responses
 
+import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
 import com.openai.core.JsonValue
+import com.openai.core.jsonMapper
+import com.openai.errors.OpenAIInvalidDataException
 import com.openai.models.ChatModel
+import com.openai.models.ComparisonFilter
+import com.openai.models.Reasoning
+import com.openai.models.ReasoningEffort
+import com.openai.models.ResponseFormatText
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.EnumSource
 
 internal class ResponseStreamEventTest {
 
@@ -50,6 +60,23 @@ internal class ResponseStreamEventTest {
     }
 
     @Test
+    fun ofAudioDeltaRoundtrip() {
+        val jsonMapper = jsonMapper()
+        val responseStreamEvent =
+            ResponseStreamEvent.ofAudioDelta(
+                ResponseAudioDeltaEvent.builder().delta("delta").build()
+            )
+
+        val roundtrippedResponseStreamEvent =
+            jsonMapper.readValue(
+                jsonMapper.writeValueAsString(responseStreamEvent),
+                jacksonTypeRef<ResponseStreamEvent>(),
+            )
+
+        assertThat(roundtrippedResponseStreamEvent).isEqualTo(responseStreamEvent)
+    }
+
+    @Test
     fun ofAudioDone() {
         val audioDone = ResponseAudioDoneEvent.builder().build()
 
@@ -87,6 +114,21 @@ internal class ResponseStreamEventTest {
         assertThat(responseStreamEvent.webSearchCallCompleted()).isEmpty
         assertThat(responseStreamEvent.webSearchCallInProgress()).isEmpty
         assertThat(responseStreamEvent.webSearchCallSearching()).isEmpty
+    }
+
+    @Test
+    fun ofAudioDoneRoundtrip() {
+        val jsonMapper = jsonMapper()
+        val responseStreamEvent =
+            ResponseStreamEvent.ofAudioDone(ResponseAudioDoneEvent.builder().build())
+
+        val roundtrippedResponseStreamEvent =
+            jsonMapper.readValue(
+                jsonMapper.writeValueAsString(responseStreamEvent),
+                jacksonTypeRef<ResponseStreamEvent>(),
+            )
+
+        assertThat(roundtrippedResponseStreamEvent).isEqualTo(responseStreamEvent)
     }
 
     @Test
@@ -131,6 +173,23 @@ internal class ResponseStreamEventTest {
     }
 
     @Test
+    fun ofAudioTranscriptDeltaRoundtrip() {
+        val jsonMapper = jsonMapper()
+        val responseStreamEvent =
+            ResponseStreamEvent.ofAudioTranscriptDelta(
+                ResponseAudioTranscriptDeltaEvent.builder().delta("delta").build()
+            )
+
+        val roundtrippedResponseStreamEvent =
+            jsonMapper.readValue(
+                jsonMapper.writeValueAsString(responseStreamEvent),
+                jacksonTypeRef<ResponseStreamEvent>(),
+            )
+
+        assertThat(roundtrippedResponseStreamEvent).isEqualTo(responseStreamEvent)
+    }
+
+    @Test
     fun ofAudioTranscriptDone() {
         val audioTranscriptDone = ResponseAudioTranscriptDoneEvent.builder().build()
 
@@ -168,6 +227,23 @@ internal class ResponseStreamEventTest {
         assertThat(responseStreamEvent.webSearchCallCompleted()).isEmpty
         assertThat(responseStreamEvent.webSearchCallInProgress()).isEmpty
         assertThat(responseStreamEvent.webSearchCallSearching()).isEmpty
+    }
+
+    @Test
+    fun ofAudioTranscriptDoneRoundtrip() {
+        val jsonMapper = jsonMapper()
+        val responseStreamEvent =
+            ResponseStreamEvent.ofAudioTranscriptDone(
+                ResponseAudioTranscriptDoneEvent.builder().build()
+            )
+
+        val roundtrippedResponseStreamEvent =
+            jsonMapper.readValue(
+                jsonMapper.writeValueAsString(responseStreamEvent),
+                jacksonTypeRef<ResponseStreamEvent>(),
+            )
+
+        assertThat(roundtrippedResponseStreamEvent).isEqualTo(responseStreamEvent)
     }
 
     @Test
@@ -217,6 +293,26 @@ internal class ResponseStreamEventTest {
     }
 
     @Test
+    fun ofCodeInterpreterCallCodeDeltaRoundtrip() {
+        val jsonMapper = jsonMapper()
+        val responseStreamEvent =
+            ResponseStreamEvent.ofCodeInterpreterCallCodeDelta(
+                ResponseCodeInterpreterCallCodeDeltaEvent.builder()
+                    .delta("delta")
+                    .outputIndex(0L)
+                    .build()
+            )
+
+        val roundtrippedResponseStreamEvent =
+            jsonMapper.readValue(
+                jsonMapper.writeValueAsString(responseStreamEvent),
+                jacksonTypeRef<ResponseStreamEvent>(),
+            )
+
+        assertThat(roundtrippedResponseStreamEvent).isEqualTo(responseStreamEvent)
+    }
+
+    @Test
     fun ofCodeInterpreterCallCodeDone() {
         val codeInterpreterCallCodeDone =
             ResponseCodeInterpreterCallCodeDoneEvent.builder().code("code").outputIndex(0L).build()
@@ -257,6 +353,26 @@ internal class ResponseStreamEventTest {
         assertThat(responseStreamEvent.webSearchCallCompleted()).isEmpty
         assertThat(responseStreamEvent.webSearchCallInProgress()).isEmpty
         assertThat(responseStreamEvent.webSearchCallSearching()).isEmpty
+    }
+
+    @Test
+    fun ofCodeInterpreterCallCodeDoneRoundtrip() {
+        val jsonMapper = jsonMapper()
+        val responseStreamEvent =
+            ResponseStreamEvent.ofCodeInterpreterCallCodeDone(
+                ResponseCodeInterpreterCallCodeDoneEvent.builder()
+                    .code("code")
+                    .outputIndex(0L)
+                    .build()
+            )
+
+        val roundtrippedResponseStreamEvent =
+            jsonMapper.readValue(
+                jsonMapper.writeValueAsString(responseStreamEvent),
+                jacksonTypeRef<ResponseStreamEvent>(),
+            )
+
+        assertThat(roundtrippedResponseStreamEvent).isEqualTo(responseStreamEvent)
     }
 
     @Test
@@ -313,6 +429,33 @@ internal class ResponseStreamEventTest {
     }
 
     @Test
+    fun ofCodeInterpreterCallCompletedRoundtrip() {
+        val jsonMapper = jsonMapper()
+        val responseStreamEvent =
+            ResponseStreamEvent.ofCodeInterpreterCallCompleted(
+                ResponseCodeInterpreterCallCompletedEvent.builder()
+                    .codeInterpreterCall(
+                        ResponseCodeInterpreterToolCall.builder()
+                            .id("id")
+                            .code("code")
+                            .addLogsResult("logs")
+                            .status(ResponseCodeInterpreterToolCall.Status.IN_PROGRESS)
+                            .build()
+                    )
+                    .outputIndex(0L)
+                    .build()
+            )
+
+        val roundtrippedResponseStreamEvent =
+            jsonMapper.readValue(
+                jsonMapper.writeValueAsString(responseStreamEvent),
+                jacksonTypeRef<ResponseStreamEvent>(),
+            )
+
+        assertThat(roundtrippedResponseStreamEvent).isEqualTo(responseStreamEvent)
+    }
+
+    @Test
     fun ofCodeInterpreterCallInProgress() {
         val codeInterpreterCallInProgress =
             ResponseCodeInterpreterCallInProgressEvent.builder()
@@ -363,6 +506,33 @@ internal class ResponseStreamEventTest {
         assertThat(responseStreamEvent.webSearchCallCompleted()).isEmpty
         assertThat(responseStreamEvent.webSearchCallInProgress()).isEmpty
         assertThat(responseStreamEvent.webSearchCallSearching()).isEmpty
+    }
+
+    @Test
+    fun ofCodeInterpreterCallInProgressRoundtrip() {
+        val jsonMapper = jsonMapper()
+        val responseStreamEvent =
+            ResponseStreamEvent.ofCodeInterpreterCallInProgress(
+                ResponseCodeInterpreterCallInProgressEvent.builder()
+                    .codeInterpreterCall(
+                        ResponseCodeInterpreterToolCall.builder()
+                            .id("id")
+                            .code("code")
+                            .addLogsResult("logs")
+                            .status(ResponseCodeInterpreterToolCall.Status.IN_PROGRESS)
+                            .build()
+                    )
+                    .outputIndex(0L)
+                    .build()
+            )
+
+        val roundtrippedResponseStreamEvent =
+            jsonMapper.readValue(
+                jsonMapper.writeValueAsString(responseStreamEvent),
+                jacksonTypeRef<ResponseStreamEvent>(),
+            )
+
+        assertThat(roundtrippedResponseStreamEvent).isEqualTo(responseStreamEvent)
     }
 
     @Test
@@ -419,6 +589,33 @@ internal class ResponseStreamEventTest {
     }
 
     @Test
+    fun ofCodeInterpreterCallInterpretingRoundtrip() {
+        val jsonMapper = jsonMapper()
+        val responseStreamEvent =
+            ResponseStreamEvent.ofCodeInterpreterCallInterpreting(
+                ResponseCodeInterpreterCallInterpretingEvent.builder()
+                    .codeInterpreterCall(
+                        ResponseCodeInterpreterToolCall.builder()
+                            .id("id")
+                            .code("code")
+                            .addLogsResult("logs")
+                            .status(ResponseCodeInterpreterToolCall.Status.IN_PROGRESS)
+                            .build()
+                    )
+                    .outputIndex(0L)
+                    .build()
+            )
+
+        val roundtrippedResponseStreamEvent =
+            jsonMapper.readValue(
+                jsonMapper.writeValueAsString(responseStreamEvent),
+                jacksonTypeRef<ResponseStreamEvent>(),
+            )
+
+        assertThat(roundtrippedResponseStreamEvent).isEqualTo(responseStreamEvent)
+    }
+
+    @Test
     fun ofCompleted() {
         val completed =
             ResponseCompletedEvent.builder()
@@ -432,7 +629,11 @@ internal class ResponseStreamEventTest {
                                 .message("message")
                                 .build()
                         )
-                        .incompleteDetails(Response.IncompleteDetails.builder().build())
+                        .incompleteDetails(
+                            Response.IncompleteDetails.builder()
+                                .reason(Response.IncompleteDetails.Reason.MAX_OUTPUT_TOKENS)
+                                .build()
+                        )
                         .instructions("instructions")
                         .metadata(
                             Response.Metadata.builder()
@@ -460,8 +661,59 @@ internal class ResponseStreamEventTest {
                         .parallelToolCalls(true)
                         .temperature(1.0)
                         .toolChoice(ToolChoiceOptions.NONE)
-                        .addFileSearchTool(listOf("string"))
+                        .addTool(
+                            FileSearchTool.builder()
+                                .addVectorStoreId("string")
+                                .filters(
+                                    ComparisonFilter.builder()
+                                        .key("key")
+                                        .type(ComparisonFilter.Type.EQ)
+                                        .value("string")
+                                        .build()
+                                )
+                                .maxNumResults(0L)
+                                .rankingOptions(
+                                    FileSearchTool.RankingOptions.builder()
+                                        .ranker(FileSearchTool.RankingOptions.Ranker.AUTO)
+                                        .scoreThreshold(0.0)
+                                        .build()
+                                )
+                                .build()
+                        )
                         .topP(1.0)
+                        .maxOutputTokens(0L)
+                        .previousResponseId("previous_response_id")
+                        .reasoning(
+                            Reasoning.builder()
+                                .effort(ReasoningEffort.LOW)
+                                .generateSummary(Reasoning.GenerateSummary.CONCISE)
+                                .build()
+                        )
+                        .status(ResponseStatus.COMPLETED)
+                        .text(
+                            ResponseTextConfig.builder()
+                                .format(ResponseFormatText.builder().build())
+                                .build()
+                        )
+                        .truncation(Response.Truncation.AUTO)
+                        .usage(
+                            ResponseUsage.builder()
+                                .inputTokens(0L)
+                                .inputTokensDetails(
+                                    ResponseUsage.InputTokensDetails.builder()
+                                        .cachedTokens(0L)
+                                        .build()
+                                )
+                                .outputTokens(0L)
+                                .outputTokensDetails(
+                                    ResponseUsage.OutputTokensDetails.builder()
+                                        .reasoningTokens(0L)
+                                        .build()
+                                )
+                                .totalTokens(0L)
+                                .build()
+                        )
+                        .user("user-1234")
                         .build()
                 )
                 .build()
@@ -500,6 +752,121 @@ internal class ResponseStreamEventTest {
         assertThat(responseStreamEvent.webSearchCallCompleted()).isEmpty
         assertThat(responseStreamEvent.webSearchCallInProgress()).isEmpty
         assertThat(responseStreamEvent.webSearchCallSearching()).isEmpty
+    }
+
+    @Test
+    fun ofCompletedRoundtrip() {
+        val jsonMapper = jsonMapper()
+        val responseStreamEvent =
+            ResponseStreamEvent.ofCompleted(
+                ResponseCompletedEvent.builder()
+                    .response(
+                        Response.builder()
+                            .id("id")
+                            .createdAt(0.0)
+                            .error(
+                                ResponseError.builder()
+                                    .code(ResponseError.Code.SERVER_ERROR)
+                                    .message("message")
+                                    .build()
+                            )
+                            .incompleteDetails(
+                                Response.IncompleteDetails.builder()
+                                    .reason(Response.IncompleteDetails.Reason.MAX_OUTPUT_TOKENS)
+                                    .build()
+                            )
+                            .instructions("instructions")
+                            .metadata(
+                                Response.Metadata.builder()
+                                    .putAdditionalProperty("foo", JsonValue.from("string"))
+                                    .build()
+                            )
+                            .model(ChatModel.GPT_4O)
+                            .addOutput(
+                                ResponseOutputMessage.builder()
+                                    .id("id")
+                                    .addContent(
+                                        ResponseOutputText.builder()
+                                            .addAnnotation(
+                                                ResponseOutputText.Annotation.FileCitation.builder()
+                                                    .fileId("file_id")
+                                                    .index(0L)
+                                                    .build()
+                                            )
+                                            .text("text")
+                                            .build()
+                                    )
+                                    .status(ResponseOutputMessage.Status.IN_PROGRESS)
+                                    .build()
+                            )
+                            .parallelToolCalls(true)
+                            .temperature(1.0)
+                            .toolChoice(ToolChoiceOptions.NONE)
+                            .addTool(
+                                FileSearchTool.builder()
+                                    .addVectorStoreId("string")
+                                    .filters(
+                                        ComparisonFilter.builder()
+                                            .key("key")
+                                            .type(ComparisonFilter.Type.EQ)
+                                            .value("string")
+                                            .build()
+                                    )
+                                    .maxNumResults(0L)
+                                    .rankingOptions(
+                                        FileSearchTool.RankingOptions.builder()
+                                            .ranker(FileSearchTool.RankingOptions.Ranker.AUTO)
+                                            .scoreThreshold(0.0)
+                                            .build()
+                                    )
+                                    .build()
+                            )
+                            .topP(1.0)
+                            .maxOutputTokens(0L)
+                            .previousResponseId("previous_response_id")
+                            .reasoning(
+                                Reasoning.builder()
+                                    .effort(ReasoningEffort.LOW)
+                                    .generateSummary(Reasoning.GenerateSummary.CONCISE)
+                                    .build()
+                            )
+                            .status(ResponseStatus.COMPLETED)
+                            .text(
+                                ResponseTextConfig.builder()
+                                    .format(ResponseFormatText.builder().build())
+                                    .build()
+                            )
+                            .truncation(Response.Truncation.AUTO)
+                            .usage(
+                                ResponseUsage.builder()
+                                    .inputTokens(0L)
+                                    .inputTokensDetails(
+                                        ResponseUsage.InputTokensDetails.builder()
+                                            .cachedTokens(0L)
+                                            .build()
+                                    )
+                                    .outputTokens(0L)
+                                    .outputTokensDetails(
+                                        ResponseUsage.OutputTokensDetails.builder()
+                                            .reasoningTokens(0L)
+                                            .build()
+                                    )
+                                    .totalTokens(0L)
+                                    .build()
+                            )
+                            .user("user-1234")
+                            .build()
+                    )
+                    .build()
+            )
+
+        val roundtrippedResponseStreamEvent =
+            jsonMapper.readValue(
+                jsonMapper.writeValueAsString(responseStreamEvent),
+                jacksonTypeRef<ResponseStreamEvent>(),
+            )
+
+        assertThat(roundtrippedResponseStreamEvent).isEqualTo(responseStreamEvent)
     }
 
     @Test
@@ -559,6 +926,38 @@ internal class ResponseStreamEventTest {
     }
 
     @Test
+    fun ofContentPartAddedRoundtrip() {
+        val jsonMapper = jsonMapper()
+        val responseStreamEvent =
+            ResponseStreamEvent.ofContentPartAdded(
+                ResponseContentPartAddedEvent.builder()
+                    .contentIndex(0L)
+                    .itemId("item_id")
+                    .outputIndex(0L)
+                    .part(
+                        ResponseOutputText.builder()
+                            .addAnnotation(
+                                ResponseOutputText.Annotation.FileCitation.builder()
+                                    .fileId("file_id")
+                                    .index(0L)
+                                    .build()
+                            )
+                            .text("text")
+                            .build()
+                    )
+                    .build()
+            )
+
+        val roundtrippedResponseStreamEvent =
+            jsonMapper.readValue(
+                jsonMapper.writeValueAsString(responseStreamEvent),
+                jacksonTypeRef<ResponseStreamEvent>(),
+            )
+
+        assertThat(roundtrippedResponseStreamEvent).isEqualTo(responseStreamEvent)
+    }
+
+    @Test
     fun ofContentPartDone() {
         val contentPartDone =
             ResponseContentPartDoneEvent.builder()
@@ -615,6 +1014,38 @@ internal class ResponseStreamEventTest {
     }
 
     @Test
+    fun ofContentPartDoneRoundtrip() {
+        val jsonMapper = jsonMapper()
+        val responseStreamEvent =
+            ResponseStreamEvent.ofContentPartDone(
+                ResponseContentPartDoneEvent.builder()
+                    .contentIndex(0L)
+                    .itemId("item_id")
+                    .outputIndex(0L)
+                    .part(
+                        ResponseOutputText.builder()
+                            .addAnnotation(
+                                ResponseOutputText.Annotation.FileCitation.builder()
+                                    .fileId("file_id")
+                                    .index(0L)
+                                    .build()
+                            )
+                            .text("text")
+                            .build()
+                    )
+                    .build()
+            )
+
+        val roundtrippedResponseStreamEvent =
+            jsonMapper.readValue(
+                jsonMapper.writeValueAsString(responseStreamEvent),
+                jacksonTypeRef<ResponseStreamEvent>(),
+            )
+
+        assertThat(roundtrippedResponseStreamEvent).isEqualTo(responseStreamEvent)
+    }
+
+    @Test
     fun ofCreated() {
         val created =
             ResponseCreatedEvent.builder()
@@ -628,7 +1059,11 @@ internal class ResponseStreamEventTest {
                                 .message("message")
                                 .build()
                         )
-                        .incompleteDetails(Response.IncompleteDetails.builder().build())
+                        .incompleteDetails(
+                            Response.IncompleteDetails.builder()
+                                .reason(Response.IncompleteDetails.Reason.MAX_OUTPUT_TOKENS)
+                                .build()
+                        )
                         .instructions("instructions")
                         .metadata(
                             Response.Metadata.builder()
@@ -656,8 +1091,59 @@ internal class ResponseStreamEventTest {
                         .parallelToolCalls(true)
                         .temperature(1.0)
                         .toolChoice(ToolChoiceOptions.NONE)
-                        .addFileSearchTool(listOf("string"))
+                        .addTool(
+                            FileSearchTool.builder()
+                                .addVectorStoreId("string")
+                                .filters(
+                                    ComparisonFilter.builder()
+                                        .key("key")
+                                        .type(ComparisonFilter.Type.EQ)
+                                        .value("string")
+                                        .build()
+                                )
+                                .maxNumResults(0L)
+                                .rankingOptions(
+                                    FileSearchTool.RankingOptions.builder()
+                                        .ranker(FileSearchTool.RankingOptions.Ranker.AUTO)
+                                        .scoreThreshold(0.0)
+                                        .build()
+                                )
+                                .build()
+                        )
                         .topP(1.0)
+                        .maxOutputTokens(0L)
+                        .previousResponseId("previous_response_id")
+                        .reasoning(
+                            Reasoning.builder()
+                                .effort(ReasoningEffort.LOW)
+                                .generateSummary(Reasoning.GenerateSummary.CONCISE)
+                                .build()
+                        )
+                        .status(ResponseStatus.COMPLETED)
+                        .text(
+                            ResponseTextConfig.builder()
+                                .format(ResponseFormatText.builder().build())
+                                .build()
+                        )
+                        .truncation(Response.Truncation.AUTO)
+                        .usage(
+                            ResponseUsage.builder()
+                                .inputTokens(0L)
+                                .inputTokensDetails(
+                                    ResponseUsage.InputTokensDetails.builder()
+                                        .cachedTokens(0L)
+                                        .build()
+                                )
+                                .outputTokens(0L)
+                                .outputTokensDetails(
+                                    ResponseUsage.OutputTokensDetails.builder()
+                                        .reasoningTokens(0L)
+                                        .build()
+                                )
+                                .totalTokens(0L)
+                                .build()
+                        )
+                        .user("user-1234")
                         .build()
                 )
                 .build()
@@ -696,6 +1182,121 @@ internal class ResponseStreamEventTest {
         assertThat(responseStreamEvent.webSearchCallCompleted()).isEmpty
         assertThat(responseStreamEvent.webSearchCallInProgress()).isEmpty
         assertThat(responseStreamEvent.webSearchCallSearching()).isEmpty
+    }
+
+    @Test
+    fun ofCreatedRoundtrip() {
+        val jsonMapper = jsonMapper()
+        val responseStreamEvent =
+            ResponseStreamEvent.ofCreated(
+                ResponseCreatedEvent.builder()
+                    .response(
+                        Response.builder()
+                            .id("id")
+                            .createdAt(0.0)
+                            .error(
+                                ResponseError.builder()
+                                    .code(ResponseError.Code.SERVER_ERROR)
+                                    .message("message")
+                                    .build()
+                            )
+                            .incompleteDetails(
+                                Response.IncompleteDetails.builder()
+                                    .reason(Response.IncompleteDetails.Reason.MAX_OUTPUT_TOKENS)
+                                    .build()
+                            )
+                            .instructions("instructions")
+                            .metadata(
+                                Response.Metadata.builder()
+                                    .putAdditionalProperty("foo", JsonValue.from("string"))
+                                    .build()
+                            )
+                            .model(ChatModel.GPT_4O)
+                            .addOutput(
+                                ResponseOutputMessage.builder()
+                                    .id("id")
+                                    .addContent(
+                                        ResponseOutputText.builder()
+                                            .addAnnotation(
+                                                ResponseOutputText.Annotation.FileCitation.builder()
+                                                    .fileId("file_id")
+                                                    .index(0L)
+                                                    .build()
+                                            )
+                                            .text("text")
+                                            .build()
+                                    )
+                                    .status(ResponseOutputMessage.Status.IN_PROGRESS)
+                                    .build()
+                            )
+                            .parallelToolCalls(true)
+                            .temperature(1.0)
+                            .toolChoice(ToolChoiceOptions.NONE)
+                            .addTool(
+                                FileSearchTool.builder()
+                                    .addVectorStoreId("string")
+                                    .filters(
+                                        ComparisonFilter.builder()
+                                            .key("key")
+                                            .type(ComparisonFilter.Type.EQ)
+                                            .value("string")
+                                            .build()
+                                    )
+                                    .maxNumResults(0L)
+                                    .rankingOptions(
+                                        FileSearchTool.RankingOptions.builder()
+                                            .ranker(FileSearchTool.RankingOptions.Ranker.AUTO)
+                                            .scoreThreshold(0.0)
+                                            .build()
+                                    )
+                                    .build()
+                            )
+                            .topP(1.0)
+                            .maxOutputTokens(0L)
+                            .previousResponseId("previous_response_id")
+                            .reasoning(
+                                Reasoning.builder()
+                                    .effort(ReasoningEffort.LOW)
+                                    .generateSummary(Reasoning.GenerateSummary.CONCISE)
+                                    .build()
+                            )
+                            .status(ResponseStatus.COMPLETED)
+                            .text(
+                                ResponseTextConfig.builder()
+                                    .format(ResponseFormatText.builder().build())
+                                    .build()
+                            )
+                            .truncation(Response.Truncation.AUTO)
+                            .usage(
+                                ResponseUsage.builder()
+                                    .inputTokens(0L)
+                                    .inputTokensDetails(
+                                        ResponseUsage.InputTokensDetails.builder()
+                                            .cachedTokens(0L)
+                                            .build()
+                                    )
+                                    .outputTokens(0L)
+                                    .outputTokensDetails(
+                                        ResponseUsage.OutputTokensDetails.builder()
+                                            .reasoningTokens(0L)
+                                            .build()
+                                    )
+                                    .totalTokens(0L)
+                                    .build()
+                            )
+                            .user("user-1234")
+                            .build()
+                    )
+                    .build()
+            )
+
+        val roundtrippedResponseStreamEvent =
+            jsonMapper.readValue(
+                jsonMapper.writeValueAsString(responseStreamEvent),
+                jacksonTypeRef<ResponseStreamEvent>(),
+            )
+
+        assertThat(roundtrippedResponseStreamEvent).isEqualTo(responseStreamEvent)
     }
 
     @Test
@@ -740,6 +1341,23 @@ internal class ResponseStreamEventTest {
     }
 
     @Test
+    fun ofErrorRoundtrip() {
+        val jsonMapper = jsonMapper()
+        val responseStreamEvent =
+            ResponseStreamEvent.ofError(
+                ResponseErrorEvent.builder().code("code").message("message").param("param").build()
+            )
+
+        val roundtrippedResponseStreamEvent =
+            jsonMapper.readValue(
+                jsonMapper.writeValueAsString(responseStreamEvent),
+                jacksonTypeRef<ResponseStreamEvent>(),
+            )
+
+        assertThat(roundtrippedResponseStreamEvent).isEqualTo(responseStreamEvent)
+    }
+
+    @Test
     fun ofFileSearchCallCompleted() {
         val fileSearchCallCompleted =
             ResponseFileSearchCallCompletedEvent.builder().itemId("item_id").outputIndex(0L).build()
@@ -779,6 +1397,26 @@ internal class ResponseStreamEventTest {
         assertThat(responseStreamEvent.webSearchCallCompleted()).isEmpty
         assertThat(responseStreamEvent.webSearchCallInProgress()).isEmpty
         assertThat(responseStreamEvent.webSearchCallSearching()).isEmpty
+    }
+
+    @Test
+    fun ofFileSearchCallCompletedRoundtrip() {
+        val jsonMapper = jsonMapper()
+        val responseStreamEvent =
+            ResponseStreamEvent.ofFileSearchCallCompleted(
+                ResponseFileSearchCallCompletedEvent.builder()
+                    .itemId("item_id")
+                    .outputIndex(0L)
+                    .build()
+            )
+
+        val roundtrippedResponseStreamEvent =
+            jsonMapper.readValue(
+                jsonMapper.writeValueAsString(responseStreamEvent),
+                jacksonTypeRef<ResponseStreamEvent>(),
+            )
+
+        assertThat(roundtrippedResponseStreamEvent).isEqualTo(responseStreamEvent)
     }
 
     @Test
@@ -828,6 +1466,26 @@ internal class ResponseStreamEventTest {
     }
 
     @Test
+    fun ofFileSearchCallInProgressRoundtrip() {
+        val jsonMapper = jsonMapper()
+        val responseStreamEvent =
+            ResponseStreamEvent.ofFileSearchCallInProgress(
+                ResponseFileSearchCallInProgressEvent.builder()
+                    .itemId("item_id")
+                    .outputIndex(0L)
+                    .build()
+            )
+
+        val roundtrippedResponseStreamEvent =
+            jsonMapper.readValue(
+                jsonMapper.writeValueAsString(responseStreamEvent),
+                jacksonTypeRef<ResponseStreamEvent>(),
+            )
+
+        assertThat(roundtrippedResponseStreamEvent).isEqualTo(responseStreamEvent)
+    }
+
+    @Test
     fun ofFileSearchCallSearching() {
         val fileSearchCallSearching =
             ResponseFileSearchCallSearchingEvent.builder().itemId("item_id").outputIndex(0L).build()
@@ -867,6 +1525,26 @@ internal class ResponseStreamEventTest {
         assertThat(responseStreamEvent.webSearchCallCompleted()).isEmpty
         assertThat(responseStreamEvent.webSearchCallInProgress()).isEmpty
         assertThat(responseStreamEvent.webSearchCallSearching()).isEmpty
+    }
+
+    @Test
+    fun ofFileSearchCallSearchingRoundtrip() {
+        val jsonMapper = jsonMapper()
+        val responseStreamEvent =
+            ResponseStreamEvent.ofFileSearchCallSearching(
+                ResponseFileSearchCallSearchingEvent.builder()
+                    .itemId("item_id")
+                    .outputIndex(0L)
+                    .build()
+            )
+
+        val roundtrippedResponseStreamEvent =
+            jsonMapper.readValue(
+                jsonMapper.writeValueAsString(responseStreamEvent),
+                jacksonTypeRef<ResponseStreamEvent>(),
+            )
+
+        assertThat(roundtrippedResponseStreamEvent).isEqualTo(responseStreamEvent)
     }
 
     @Test
@@ -917,6 +1595,27 @@ internal class ResponseStreamEventTest {
     }
 
     @Test
+    fun ofFunctionCallArgumentsDeltaRoundtrip() {
+        val jsonMapper = jsonMapper()
+        val responseStreamEvent =
+            ResponseStreamEvent.ofFunctionCallArgumentsDelta(
+                ResponseFunctionCallArgumentsDeltaEvent.builder()
+                    .delta("delta")
+                    .itemId("item_id")
+                    .outputIndex(0L)
+                    .build()
+            )
+
+        val roundtrippedResponseStreamEvent =
+            jsonMapper.readValue(
+                jsonMapper.writeValueAsString(responseStreamEvent),
+                jacksonTypeRef<ResponseStreamEvent>(),
+            )
+
+        assertThat(roundtrippedResponseStreamEvent).isEqualTo(responseStreamEvent)
+    }
+
+    @Test
     fun ofFunctionCallArgumentsDone() {
         val functionCallArgumentsDone =
             ResponseFunctionCallArgumentsDoneEvent.builder()
@@ -964,6 +1663,27 @@ internal class ResponseStreamEventTest {
     }
 
     @Test
+    fun ofFunctionCallArgumentsDoneRoundtrip() {
+        val jsonMapper = jsonMapper()
+        val responseStreamEvent =
+            ResponseStreamEvent.ofFunctionCallArgumentsDone(
+                ResponseFunctionCallArgumentsDoneEvent.builder()
+                    .arguments("arguments")
+                    .itemId("item_id")
+                    .outputIndex(0L)
+                    .build()
+            )
+
+        val roundtrippedResponseStreamEvent =
+            jsonMapper.readValue(
+                jsonMapper.writeValueAsString(responseStreamEvent),
+                jacksonTypeRef<ResponseStreamEvent>(),
+            )
+
+        assertThat(roundtrippedResponseStreamEvent).isEqualTo(responseStreamEvent)
+    }
+
+    @Test
     fun ofInProgress() {
         val inProgress =
             ResponseInProgressEvent.builder()
@@ -977,7 +1697,11 @@ internal class ResponseStreamEventTest {
                                 .message("message")
                                 .build()
                         )
-                        .incompleteDetails(Response.IncompleteDetails.builder().build())
+                        .incompleteDetails(
+                            Response.IncompleteDetails.builder()
+                                .reason(Response.IncompleteDetails.Reason.MAX_OUTPUT_TOKENS)
+                                .build()
+                        )
                         .instructions("instructions")
                         .metadata(
                             Response.Metadata.builder()
@@ -1005,8 +1729,59 @@ internal class ResponseStreamEventTest {
                         .parallelToolCalls(true)
                         .temperature(1.0)
                         .toolChoice(ToolChoiceOptions.NONE)
-                        .addFileSearchTool(listOf("string"))
+                        .addTool(
+                            FileSearchTool.builder()
+                                .addVectorStoreId("string")
+                                .filters(
+                                    ComparisonFilter.builder()
+                                        .key("key")
+                                        .type(ComparisonFilter.Type.EQ)
+                                        .value("string")
+                                        .build()
+                                )
+                                .maxNumResults(0L)
+                                .rankingOptions(
+                                    FileSearchTool.RankingOptions.builder()
+                                        .ranker(FileSearchTool.RankingOptions.Ranker.AUTO)
+                                        .scoreThreshold(0.0)
+                                        .build()
+                                )
+                                .build()
+                        )
                         .topP(1.0)
+                        .maxOutputTokens(0L)
+                        .previousResponseId("previous_response_id")
+                        .reasoning(
+                            Reasoning.builder()
+                                .effort(ReasoningEffort.LOW)
+                                .generateSummary(Reasoning.GenerateSummary.CONCISE)
+                                .build()
+                        )
+                        .status(ResponseStatus.COMPLETED)
+                        .text(
+                            ResponseTextConfig.builder()
+                                .format(ResponseFormatText.builder().build())
+                                .build()
+                        )
+                        .truncation(Response.Truncation.AUTO)
+                        .usage(
+                            ResponseUsage.builder()
+                                .inputTokens(0L)
+                                .inputTokensDetails(
+                                    ResponseUsage.InputTokensDetails.builder()
+                                        .cachedTokens(0L)
+                                        .build()
+                                )
+                                .outputTokens(0L)
+                                .outputTokensDetails(
+                                    ResponseUsage.OutputTokensDetails.builder()
+                                        .reasoningTokens(0L)
+                                        .build()
+                                )
+                                .totalTokens(0L)
+                                .build()
+                        )
+                        .user("user-1234")
                         .build()
                 )
                 .build()
@@ -1048,6 +1823,121 @@ internal class ResponseStreamEventTest {
     }
 
     @Test
+    fun ofInProgressRoundtrip() {
+        val jsonMapper = jsonMapper()
+        val responseStreamEvent =
+            ResponseStreamEvent.ofInProgress(
+                ResponseInProgressEvent.builder()
+                    .response(
+                        Response.builder()
+                            .id("id")
+                            .createdAt(0.0)
+                            .error(
+                                ResponseError.builder()
+                                    .code(ResponseError.Code.SERVER_ERROR)
+                                    .message("message")
+                                    .build()
+                            )
+                            .incompleteDetails(
+                                Response.IncompleteDetails.builder()
+                                    .reason(Response.IncompleteDetails.Reason.MAX_OUTPUT_TOKENS)
+                                    .build()
+                            )
+                            .instructions("instructions")
+                            .metadata(
+                                Response.Metadata.builder()
+                                    .putAdditionalProperty("foo", JsonValue.from("string"))
+                                    .build()
+                            )
+                            .model(ChatModel.GPT_4O)
+                            .addOutput(
+                                ResponseOutputMessage.builder()
+                                    .id("id")
+                                    .addContent(
+                                        ResponseOutputText.builder()
+                                            .addAnnotation(
+                                                ResponseOutputText.Annotation.FileCitation.builder()
+                                                    .fileId("file_id")
+                                                    .index(0L)
+                                                    .build()
+                                            )
+                                            .text("text")
+                                            .build()
+                                    )
+                                    .status(ResponseOutputMessage.Status.IN_PROGRESS)
+                                    .build()
+                            )
+                            .parallelToolCalls(true)
+                            .temperature(1.0)
+                            .toolChoice(ToolChoiceOptions.NONE)
+                            .addTool(
+                                FileSearchTool.builder()
+                                    .addVectorStoreId("string")
+                                    .filters(
+                                        ComparisonFilter.builder()
+                                            .key("key")
+                                            .type(ComparisonFilter.Type.EQ)
+                                            .value("string")
+                                            .build()
+                                    )
+                                    .maxNumResults(0L)
+                                    .rankingOptions(
+                                        FileSearchTool.RankingOptions.builder()
+                                            .ranker(FileSearchTool.RankingOptions.Ranker.AUTO)
+                                            .scoreThreshold(0.0)
+                                            .build()
+                                    )
+                                    .build()
+                            )
+                            .topP(1.0)
+                            .maxOutputTokens(0L)
+                            .previousResponseId("previous_response_id")
+                            .reasoning(
+                                Reasoning.builder()
+                                    .effort(ReasoningEffort.LOW)
+                                    .generateSummary(Reasoning.GenerateSummary.CONCISE)
+                                    .build()
+                            )
+                            .status(ResponseStatus.COMPLETED)
+                            .text(
+                                ResponseTextConfig.builder()
+                                    .format(ResponseFormatText.builder().build())
+                                    .build()
+                            )
+                            .truncation(Response.Truncation.AUTO)
+                            .usage(
+                                ResponseUsage.builder()
+                                    .inputTokens(0L)
+                                    .inputTokensDetails(
+                                        ResponseUsage.InputTokensDetails.builder()
+                                            .cachedTokens(0L)
+                                            .build()
+                                    )
+                                    .outputTokens(0L)
+                                    .outputTokensDetails(
+                                        ResponseUsage.OutputTokensDetails.builder()
+                                            .reasoningTokens(0L)
+                                            .build()
+                                    )
+                                    .totalTokens(0L)
+                                    .build()
+                            )
+                            .user("user-1234")
+                            .build()
+                    )
+                    .build()
+            )
+
+        val roundtrippedResponseStreamEvent =
+            jsonMapper.readValue(
+                jsonMapper.writeValueAsString(responseStreamEvent),
+                jacksonTypeRef<ResponseStreamEvent>(),
+            )
+
+        assertThat(roundtrippedResponseStreamEvent).isEqualTo(responseStreamEvent)
+    }
+
+    @Test
     fun ofFailed() {
         val failed =
             ResponseFailedEvent.builder()
@@ -1061,7 +1951,11 @@ internal class ResponseStreamEventTest {
                                 .message("message")
                                 .build()
                         )
-                        .incompleteDetails(Response.IncompleteDetails.builder().build())
+                        .incompleteDetails(
+                            Response.IncompleteDetails.builder()
+                                .reason(Response.IncompleteDetails.Reason.MAX_OUTPUT_TOKENS)
+                                .build()
+                        )
                         .instructions("instructions")
                         .metadata(
                             Response.Metadata.builder()
@@ -1089,8 +1983,59 @@ internal class ResponseStreamEventTest {
                         .parallelToolCalls(true)
                         .temperature(1.0)
                         .toolChoice(ToolChoiceOptions.NONE)
-                        .addFileSearchTool(listOf("string"))
+                        .addTool(
+                            FileSearchTool.builder()
+                                .addVectorStoreId("string")
+                                .filters(
+                                    ComparisonFilter.builder()
+                                        .key("key")
+                                        .type(ComparisonFilter.Type.EQ)
+                                        .value("string")
+                                        .build()
+                                )
+                                .maxNumResults(0L)
+                                .rankingOptions(
+                                    FileSearchTool.RankingOptions.builder()
+                                        .ranker(FileSearchTool.RankingOptions.Ranker.AUTO)
+                                        .scoreThreshold(0.0)
+                                        .build()
+                                )
+                                .build()
+                        )
                         .topP(1.0)
+                        .maxOutputTokens(0L)
+                        .previousResponseId("previous_response_id")
+                        .reasoning(
+                            Reasoning.builder()
+                                .effort(ReasoningEffort.LOW)
+                                .generateSummary(Reasoning.GenerateSummary.CONCISE)
+                                .build()
+                        )
+                        .status(ResponseStatus.COMPLETED)
+                        .text(
+                            ResponseTextConfig.builder()
+                                .format(ResponseFormatText.builder().build())
+                                .build()
+                        )
+                        .truncation(Response.Truncation.AUTO)
+                        .usage(
+                            ResponseUsage.builder()
+                                .inputTokens(0L)
+                                .inputTokensDetails(
+                                    ResponseUsage.InputTokensDetails.builder()
+                                        .cachedTokens(0L)
+                                        .build()
+                                )
+                                .outputTokens(0L)
+                                .outputTokensDetails(
+                                    ResponseUsage.OutputTokensDetails.builder()
+                                        .reasoningTokens(0L)
+                                        .build()
+                                )
+                                .totalTokens(0L)
+                                .build()
+                        )
+                        .user("user-1234")
                         .build()
                 )
                 .build()
@@ -1132,6 +2077,121 @@ internal class ResponseStreamEventTest {
     }
 
     @Test
+    fun ofFailedRoundtrip() {
+        val jsonMapper = jsonMapper()
+        val responseStreamEvent =
+            ResponseStreamEvent.ofFailed(
+                ResponseFailedEvent.builder()
+                    .response(
+                        Response.builder()
+                            .id("id")
+                            .createdAt(0.0)
+                            .error(
+                                ResponseError.builder()
+                                    .code(ResponseError.Code.SERVER_ERROR)
+                                    .message("message")
+                                    .build()
+                            )
+                            .incompleteDetails(
+                                Response.IncompleteDetails.builder()
+                                    .reason(Response.IncompleteDetails.Reason.MAX_OUTPUT_TOKENS)
+                                    .build()
+                            )
+                            .instructions("instructions")
+                            .metadata(
+                                Response.Metadata.builder()
+                                    .putAdditionalProperty("foo", JsonValue.from("string"))
+                                    .build()
+                            )
+                            .model(ChatModel.GPT_4O)
+                            .addOutput(
+                                ResponseOutputMessage.builder()
+                                    .id("id")
+                                    .addContent(
+                                        ResponseOutputText.builder()
+                                            .addAnnotation(
+                                                ResponseOutputText.Annotation.FileCitation.builder()
+                                                    .fileId("file_id")
+                                                    .index(0L)
+                                                    .build()
+                                            )
+                                            .text("text")
+                                            .build()
+                                    )
+                                    .status(ResponseOutputMessage.Status.IN_PROGRESS)
+                                    .build()
+                            )
+                            .parallelToolCalls(true)
+                            .temperature(1.0)
+                            .toolChoice(ToolChoiceOptions.NONE)
+                            .addTool(
+                                FileSearchTool.builder()
+                                    .addVectorStoreId("string")
+                                    .filters(
+                                        ComparisonFilter.builder()
+                                            .key("key")
+                                            .type(ComparisonFilter.Type.EQ)
+                                            .value("string")
+                                            .build()
+                                    )
+                                    .maxNumResults(0L)
+                                    .rankingOptions(
+                                        FileSearchTool.RankingOptions.builder()
+                                            .ranker(FileSearchTool.RankingOptions.Ranker.AUTO)
+                                            .scoreThreshold(0.0)
+                                            .build()
+                                    )
+                                    .build()
+                            )
+                            .topP(1.0)
+                            .maxOutputTokens(0L)
+                            .previousResponseId("previous_response_id")
+                            .reasoning(
+                                Reasoning.builder()
+                                    .effort(ReasoningEffort.LOW)
+                                    .generateSummary(Reasoning.GenerateSummary.CONCISE)
+                                    .build()
+                            )
+                            .status(ResponseStatus.COMPLETED)
+                            .text(
+                                ResponseTextConfig.builder()
+                                    .format(ResponseFormatText.builder().build())
+                                    .build()
+                            )
+                            .truncation(Response.Truncation.AUTO)
+                            .usage(
+                                ResponseUsage.builder()
+                                    .inputTokens(0L)
+                                    .inputTokensDetails(
+                                        ResponseUsage.InputTokensDetails.builder()
+                                            .cachedTokens(0L)
+                                            .build()
+                                    )
+                                    .outputTokens(0L)
+                                    .outputTokensDetails(
+                                        ResponseUsage.OutputTokensDetails.builder()
+                                            .reasoningTokens(0L)
+                                            .build()
+                                    )
+                                    .totalTokens(0L)
+                                    .build()
+                            )
+                            .user("user-1234")
+                            .build()
+                    )
+                    .build()
+            )
+
+        val roundtrippedResponseStreamEvent =
+            jsonMapper.readValue(
+                jsonMapper.writeValueAsString(responseStreamEvent),
+                jacksonTypeRef<ResponseStreamEvent>(),
+            )
+
+        assertThat(roundtrippedResponseStreamEvent).isEqualTo(responseStreamEvent)
+    }
+
+    @Test
     fun ofIncomplete() {
         val incomplete =
             ResponseIncompleteEvent.builder()
@@ -1145,7 +2205,11 @@ internal class ResponseStreamEventTest {
                                 .message("message")
                                 .build()
                         )
-                        .incompleteDetails(Response.IncompleteDetails.builder().build())
+                        .incompleteDetails(
+                            Response.IncompleteDetails.builder()
+                                .reason(Response.IncompleteDetails.Reason.MAX_OUTPUT_TOKENS)
+                                .build()
+                        )
                         .instructions("instructions")
                         .metadata(
                             Response.Metadata.builder()
@@ -1173,8 +2237,59 @@ internal class ResponseStreamEventTest {
                         .parallelToolCalls(true)
                         .temperature(1.0)
                         .toolChoice(ToolChoiceOptions.NONE)
-                        .addFileSearchTool(listOf("string"))
+                        .addTool(
+                            FileSearchTool.builder()
+                                .addVectorStoreId("string")
+                                .filters(
+                                    ComparisonFilter.builder()
+                                        .key("key")
+                                        .type(ComparisonFilter.Type.EQ)
+                                        .value("string")
+                                        .build()
+                                )
+                                .maxNumResults(0L)
+                                .rankingOptions(
+                                    FileSearchTool.RankingOptions.builder()
+                                        .ranker(FileSearchTool.RankingOptions.Ranker.AUTO)
+                                        .scoreThreshold(0.0)
+                                        .build()
+                                )
+                                .build()
+                        )
                         .topP(1.0)
+                        .maxOutputTokens(0L)
+                        .previousResponseId("previous_response_id")
+                        .reasoning(
+                            Reasoning.builder()
+                                .effort(ReasoningEffort.LOW)
+                                .generateSummary(Reasoning.GenerateSummary.CONCISE)
+                                .build()
+                        )
+                        .status(ResponseStatus.COMPLETED)
+                        .text(
+                            ResponseTextConfig.builder()
+                                .format(ResponseFormatText.builder().build())
+                                .build()
+                        )
+                        .truncation(Response.Truncation.AUTO)
+                        .usage(
+                            ResponseUsage.builder()
+                                .inputTokens(0L)
+                                .inputTokensDetails(
+                                    ResponseUsage.InputTokensDetails.builder()
+                                        .cachedTokens(0L)
+                                        .build()
+                                )
+                                .outputTokens(0L)
+                                .outputTokensDetails(
+                                    ResponseUsage.OutputTokensDetails.builder()
+                                        .reasoningTokens(0L)
+                                        .build()
+                                )
+                                .totalTokens(0L)
+                                .build()
+                        )
+                        .user("user-1234")
                         .build()
                 )
                 .build()
@@ -1213,6 +2328,121 @@ internal class ResponseStreamEventTest {
         assertThat(responseStreamEvent.webSearchCallCompleted()).isEmpty
         assertThat(responseStreamEvent.webSearchCallInProgress()).isEmpty
         assertThat(responseStreamEvent.webSearchCallSearching()).isEmpty
+    }
+
+    @Test
+    fun ofIncompleteRoundtrip() {
+        val jsonMapper = jsonMapper()
+        val responseStreamEvent =
+            ResponseStreamEvent.ofIncomplete(
+                ResponseIncompleteEvent.builder()
+                    .response(
+                        Response.builder()
+                            .id("id")
+                            .createdAt(0.0)
+                            .error(
+                                ResponseError.builder()
+                                    .code(ResponseError.Code.SERVER_ERROR)
+                                    .message("message")
+                                    .build()
+                            )
+                            .incompleteDetails(
+                                Response.IncompleteDetails.builder()
+                                    .reason(Response.IncompleteDetails.Reason.MAX_OUTPUT_TOKENS)
+                                    .build()
+                            )
+                            .instructions("instructions")
+                            .metadata(
+                                Response.Metadata.builder()
+                                    .putAdditionalProperty("foo", JsonValue.from("string"))
+                                    .build()
+                            )
+                            .model(ChatModel.GPT_4O)
+                            .addOutput(
+                                ResponseOutputMessage.builder()
+                                    .id("id")
+                                    .addContent(
+                                        ResponseOutputText.builder()
+                                            .addAnnotation(
+                                                ResponseOutputText.Annotation.FileCitation.builder()
+                                                    .fileId("file_id")
+                                                    .index(0L)
+                                                    .build()
+                                            )
+                                            .text("text")
+                                            .build()
+                                    )
+                                    .status(ResponseOutputMessage.Status.IN_PROGRESS)
+                                    .build()
+                            )
+                            .parallelToolCalls(true)
+                            .temperature(1.0)
+                            .toolChoice(ToolChoiceOptions.NONE)
+                            .addTool(
+                                FileSearchTool.builder()
+                                    .addVectorStoreId("string")
+                                    .filters(
+                                        ComparisonFilter.builder()
+                                            .key("key")
+                                            .type(ComparisonFilter.Type.EQ)
+                                            .value("string")
+                                            .build()
+                                    )
+                                    .maxNumResults(0L)
+                                    .rankingOptions(
+                                        FileSearchTool.RankingOptions.builder()
+                                            .ranker(FileSearchTool.RankingOptions.Ranker.AUTO)
+                                            .scoreThreshold(0.0)
+                                            .build()
+                                    )
+                                    .build()
+                            )
+                            .topP(1.0)
+                            .maxOutputTokens(0L)
+                            .previousResponseId("previous_response_id")
+                            .reasoning(
+                                Reasoning.builder()
+                                    .effort(ReasoningEffort.LOW)
+                                    .generateSummary(Reasoning.GenerateSummary.CONCISE)
+                                    .build()
+                            )
+                            .status(ResponseStatus.COMPLETED)
+                            .text(
+                                ResponseTextConfig.builder()
+                                    .format(ResponseFormatText.builder().build())
+                                    .build()
+                            )
+                            .truncation(Response.Truncation.AUTO)
+                            .usage(
+                                ResponseUsage.builder()
+                                    .inputTokens(0L)
+                                    .inputTokensDetails(
+                                        ResponseUsage.InputTokensDetails.builder()
+                                            .cachedTokens(0L)
+                                            .build()
+                                    )
+                                    .outputTokens(0L)
+                                    .outputTokensDetails(
+                                        ResponseUsage.OutputTokensDetails.builder()
+                                            .reasoningTokens(0L)
+                                            .build()
+                                    )
+                                    .totalTokens(0L)
+                                    .build()
+                            )
+                            .user("user-1234")
+                            .build()
+                    )
+                    .build()
+            )
+
+        val roundtrippedResponseStreamEvent =
+            jsonMapper.readValue(
+                jsonMapper.writeValueAsString(responseStreamEvent),
+                jacksonTypeRef<ResponseStreamEvent>(),
+            )
+
+        assertThat(roundtrippedResponseStreamEvent).isEqualTo(responseStreamEvent)
     }
 
     @Test
@@ -1276,6 +2506,42 @@ internal class ResponseStreamEventTest {
     }
 
     @Test
+    fun ofOutputItemAddedRoundtrip() {
+        val jsonMapper = jsonMapper()
+        val responseStreamEvent =
+            ResponseStreamEvent.ofOutputItemAdded(
+                ResponseOutputItemAddedEvent.builder()
+                    .item(
+                        ResponseOutputMessage.builder()
+                            .id("id")
+                            .addContent(
+                                ResponseOutputText.builder()
+                                    .addAnnotation(
+                                        ResponseOutputText.Annotation.FileCitation.builder()
+                                            .fileId("file_id")
+                                            .index(0L)
+                                            .build()
+                                    )
+                                    .text("text")
+                                    .build()
+                            )
+                            .status(ResponseOutputMessage.Status.IN_PROGRESS)
+                            .build()
+                    )
+                    .outputIndex(0L)
+                    .build()
+            )
+
+        val roundtrippedResponseStreamEvent =
+            jsonMapper.readValue(
+                jsonMapper.writeValueAsString(responseStreamEvent),
+                jacksonTypeRef<ResponseStreamEvent>(),
+            )
+
+        assertThat(roundtrippedResponseStreamEvent).isEqualTo(responseStreamEvent)
+    }
+
+    @Test
     fun ofOutputItemDone() {
         val outputItemDone =
             ResponseOutputItemDoneEvent.builder()
@@ -1336,6 +2602,42 @@ internal class ResponseStreamEventTest {
     }
 
     @Test
+    fun ofOutputItemDoneRoundtrip() {
+        val jsonMapper = jsonMapper()
+        val responseStreamEvent =
+            ResponseStreamEvent.ofOutputItemDone(
+                ResponseOutputItemDoneEvent.builder()
+                    .item(
+                        ResponseOutputMessage.builder()
+                            .id("id")
+                            .addContent(
+                                ResponseOutputText.builder()
+                                    .addAnnotation(
+                                        ResponseOutputText.Annotation.FileCitation.builder()
+                                            .fileId("file_id")
+                                            .index(0L)
+                                            .build()
+                                    )
+                                    .text("text")
+                                    .build()
+                            )
+                            .status(ResponseOutputMessage.Status.IN_PROGRESS)
+                            .build()
+                    )
+                    .outputIndex(0L)
+                    .build()
+            )
+
+        val roundtrippedResponseStreamEvent =
+            jsonMapper.readValue(
+                jsonMapper.writeValueAsString(responseStreamEvent),
+                jacksonTypeRef<ResponseStreamEvent>(),
+            )
+
+        assertThat(roundtrippedResponseStreamEvent).isEqualTo(responseStreamEvent)
+    }
+
+    @Test
     fun ofRefusalDelta() {
         val refusalDelta =
             ResponseRefusalDeltaEvent.builder()
@@ -1382,6 +2684,28 @@ internal class ResponseStreamEventTest {
     }
 
     @Test
+    fun ofRefusalDeltaRoundtrip() {
+        val jsonMapper = jsonMapper()
+        val responseStreamEvent =
+            ResponseStreamEvent.ofRefusalDelta(
+                ResponseRefusalDeltaEvent.builder()
+                    .contentIndex(0L)
+                    .delta("delta")
+                    .itemId("item_id")
+                    .outputIndex(0L)
+                    .build()
+            )
+
+        val roundtrippedResponseStreamEvent =
+            jsonMapper.readValue(
+                jsonMapper.writeValueAsString(responseStreamEvent),
+                jacksonTypeRef<ResponseStreamEvent>(),
+            )
+
+        assertThat(roundtrippedResponseStreamEvent).isEqualTo(responseStreamEvent)
+    }
+
+    @Test
     fun ofRefusalDone() {
         val refusalDone =
             ResponseRefusalDoneEvent.builder()
@@ -1425,6 +2749,28 @@ internal class ResponseStreamEventTest {
         assertThat(responseStreamEvent.webSearchCallCompleted()).isEmpty
         assertThat(responseStreamEvent.webSearchCallInProgress()).isEmpty
         assertThat(responseStreamEvent.webSearchCallSearching()).isEmpty
+    }
+
+    @Test
+    fun ofRefusalDoneRoundtrip() {
+        val jsonMapper = jsonMapper()
+        val responseStreamEvent =
+            ResponseStreamEvent.ofRefusalDone(
+                ResponseRefusalDoneEvent.builder()
+                    .contentIndex(0L)
+                    .itemId("item_id")
+                    .outputIndex(0L)
+                    .refusal("refusal")
+                    .build()
+            )
+
+        val roundtrippedResponseStreamEvent =
+            jsonMapper.readValue(
+                jsonMapper.writeValueAsString(responseStreamEvent),
+                jacksonTypeRef<ResponseStreamEvent>(),
+            )
+
+        assertThat(roundtrippedResponseStreamEvent).isEqualTo(responseStreamEvent)
     }
 
     @Test
@@ -1482,6 +2828,34 @@ internal class ResponseStreamEventTest {
     }
 
     @Test
+    fun ofOutputTextAnnotationAddedRoundtrip() {
+        val jsonMapper = jsonMapper()
+        val responseStreamEvent =
+            ResponseStreamEvent.ofOutputTextAnnotationAdded(
+                ResponseTextAnnotationDeltaEvent.builder()
+                    .annotation(
+                        ResponseTextAnnotationDeltaEvent.Annotation.FileCitation.builder()
+                            .fileId("file_id")
+                            .index(0L)
+                            .build()
+                    )
+                    .annotationIndex(0L)
+                    .contentIndex(0L)
+                    .itemId("item_id")
+                    .outputIndex(0L)
+                    .build()
+            )
+
+        val roundtrippedResponseStreamEvent =
+            jsonMapper.readValue(
+                jsonMapper.writeValueAsString(responseStreamEvent),
+                jacksonTypeRef<ResponseStreamEvent>(),
+            )
+
+        assertThat(roundtrippedResponseStreamEvent).isEqualTo(responseStreamEvent)
+    }
+
+    @Test
     fun ofOutputTextDelta() {
         val outputTextDelta =
             ResponseTextDeltaEvent.builder()
@@ -1525,6 +2899,28 @@ internal class ResponseStreamEventTest {
         assertThat(responseStreamEvent.webSearchCallCompleted()).isEmpty
         assertThat(responseStreamEvent.webSearchCallInProgress()).isEmpty
         assertThat(responseStreamEvent.webSearchCallSearching()).isEmpty
+    }
+
+    @Test
+    fun ofOutputTextDeltaRoundtrip() {
+        val jsonMapper = jsonMapper()
+        val responseStreamEvent =
+            ResponseStreamEvent.ofOutputTextDelta(
+                ResponseTextDeltaEvent.builder()
+                    .contentIndex(0L)
+                    .delta("delta")
+                    .itemId("item_id")
+                    .outputIndex(0L)
+                    .build()
+            )
+
+        val roundtrippedResponseStreamEvent =
+            jsonMapper.readValue(
+                jsonMapper.writeValueAsString(responseStreamEvent),
+                jacksonTypeRef<ResponseStreamEvent>(),
+            )
+
+        assertThat(roundtrippedResponseStreamEvent).isEqualTo(responseStreamEvent)
     }
 
     @Test
@@ -1574,6 +2970,28 @@ internal class ResponseStreamEventTest {
     }
 
     @Test
+    fun ofOutputTextDoneRoundtrip() {
+        val jsonMapper = jsonMapper()
+        val responseStreamEvent =
+            ResponseStreamEvent.ofOutputTextDone(
+                ResponseTextDoneEvent.builder()
+                    .contentIndex(0L)
+                    .itemId("item_id")
+                    .outputIndex(0L)
+                    .text("text")
+                    .build()
+            )
+
+        val roundtrippedResponseStreamEvent =
+            jsonMapper.readValue(
+                jsonMapper.writeValueAsString(responseStreamEvent),
+                jacksonTypeRef<ResponseStreamEvent>(),
+            )
+
+        assertThat(roundtrippedResponseStreamEvent).isEqualTo(responseStreamEvent)
+    }
+
+    @Test
     fun ofWebSearchCallCompleted() {
         val webSearchCallCompleted =
             ResponseWebSearchCallCompletedEvent.builder().itemId("item_id").outputIndex(0L).build()
@@ -1613,6 +3031,26 @@ internal class ResponseStreamEventTest {
         assertThat(responseStreamEvent.webSearchCallCompleted()).contains(webSearchCallCompleted)
         assertThat(responseStreamEvent.webSearchCallInProgress()).isEmpty
         assertThat(responseStreamEvent.webSearchCallSearching()).isEmpty
+    }
+
+    @Test
+    fun ofWebSearchCallCompletedRoundtrip() {
+        val jsonMapper = jsonMapper()
+        val responseStreamEvent =
+            ResponseStreamEvent.ofWebSearchCallCompleted(
+                ResponseWebSearchCallCompletedEvent.builder()
+                    .itemId("item_id")
+                    .outputIndex(0L)
+                    .build()
+            )
+
+        val roundtrippedResponseStreamEvent =
+            jsonMapper.readValue(
+                jsonMapper.writeValueAsString(responseStreamEvent),
+                jacksonTypeRef<ResponseStreamEvent>(),
+            )
+
+        assertThat(roundtrippedResponseStreamEvent).isEqualTo(responseStreamEvent)
     }
 
     @Test
@@ -1658,6 +3096,26 @@ internal class ResponseStreamEventTest {
     }
 
     @Test
+    fun ofWebSearchCallInProgressRoundtrip() {
+        val jsonMapper = jsonMapper()
+        val responseStreamEvent =
+            ResponseStreamEvent.ofWebSearchCallInProgress(
+                ResponseWebSearchCallInProgressEvent.builder()
+                    .itemId("item_id")
+                    .outputIndex(0L)
+                    .build()
+            )
+
+        val roundtrippedResponseStreamEvent =
+            jsonMapper.readValue(
+                jsonMapper.writeValueAsString(responseStreamEvent),
+                jacksonTypeRef<ResponseStreamEvent>(),
+            )
+
+        assertThat(roundtrippedResponseStreamEvent).isEqualTo(responseStreamEvent)
+    }
+
+    @Test
     fun ofWebSearchCallSearching() {
         val webSearchCallSearching =
             ResponseWebSearchCallSearchingEvent.builder().itemId("item_id").outputIndex(0L).build()
@@ -1697,5 +3155,43 @@ internal class ResponseStreamEventTest {
         assertThat(responseStreamEvent.webSearchCallCompleted()).isEmpty
         assertThat(responseStreamEvent.webSearchCallInProgress()).isEmpty
         assertThat(responseStreamEvent.webSearchCallSearching()).contains(webSearchCallSearching)
+    }
+
+    @Test
+    fun ofWebSearchCallSearchingRoundtrip() {
+        val jsonMapper = jsonMapper()
+        val responseStreamEvent =
+            ResponseStreamEvent.ofWebSearchCallSearching(
+                ResponseWebSearchCallSearchingEvent.builder()
+                    .itemId("item_id")
+                    .outputIndex(0L)
+                    .build()
+            )
+
+        val roundtrippedResponseStreamEvent =
+            jsonMapper.readValue(
+                jsonMapper.writeValueAsString(responseStreamEvent),
+                jacksonTypeRef<ResponseStreamEvent>(),
+            )
+
+        assertThat(roundtrippedResponseStreamEvent).isEqualTo(responseStreamEvent)
+    }
+
+    enum class IncompatibleJsonShapeTestCase(val value: JsonValue) {
+        BOOLEAN(JsonValue.from(false)),
+        STRING(JsonValue.from("invalid")),
+        INTEGER(JsonValue.from(-1)),
+        FLOAT(JsonValue.from(3.14)),
+        ARRAY(JsonValue.from(listOf("invalid", "array"))),
+    }
+
+    @ParameterizedTest
+    @EnumSource
+    fun incompatibleJsonShapeDeserializesToUnknown(testCase: IncompatibleJsonShapeTestCase) {
+        val responseStreamEvent =
+            jsonMapper().convertValue(testCase.value, jacksonTypeRef<ResponseStreamEvent>())
+
+        val e = assertThrows<OpenAIInvalidDataException> { responseStreamEvent.validate() }
+        assertThat(e).hasMessageStartingWith("Unknown ")
     }
 }

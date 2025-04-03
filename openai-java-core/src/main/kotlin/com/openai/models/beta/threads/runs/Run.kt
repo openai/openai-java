@@ -1470,7 +1470,7 @@ private constructor(
         requiredAction().ifPresent { it.validate() }
         responseFormat().ifPresent { it.validate() }
         startedAt()
-        status()
+        status().validate()
         threadId()
         toolChoice().ifPresent { it.validate() }
         tools().forEach { it.validate() }
@@ -1480,6 +1480,49 @@ private constructor(
         topP()
         validated = true
     }
+
+    fun isValid(): Boolean =
+        try {
+            validate()
+            true
+        } catch (e: OpenAIInvalidDataException) {
+            false
+        }
+
+    /**
+     * Returns a score indicating how many valid values are contained in this object recursively.
+     *
+     * Used for best match union deserialization.
+     */
+    @JvmSynthetic
+    internal fun validity(): Int =
+        (if (id.asKnown().isPresent) 1 else 0) +
+            (if (assistantId.asKnown().isPresent) 1 else 0) +
+            (if (cancelledAt.asKnown().isPresent) 1 else 0) +
+            (if (completedAt.asKnown().isPresent) 1 else 0) +
+            (if (createdAt.asKnown().isPresent) 1 else 0) +
+            (if (expiresAt.asKnown().isPresent) 1 else 0) +
+            (if (failedAt.asKnown().isPresent) 1 else 0) +
+            (incompleteDetails.asKnown().getOrNull()?.validity() ?: 0) +
+            (if (instructions.asKnown().isPresent) 1 else 0) +
+            (lastError.asKnown().getOrNull()?.validity() ?: 0) +
+            (if (maxCompletionTokens.asKnown().isPresent) 1 else 0) +
+            (if (maxPromptTokens.asKnown().isPresent) 1 else 0) +
+            (metadata.asKnown().getOrNull()?.validity() ?: 0) +
+            (if (model.asKnown().isPresent) 1 else 0) +
+            object_.let { if (it == JsonValue.from("thread.run")) 1 else 0 } +
+            (if (parallelToolCalls.asKnown().isPresent) 1 else 0) +
+            (requiredAction.asKnown().getOrNull()?.validity() ?: 0) +
+            (responseFormat.asKnown().getOrNull()?.validity() ?: 0) +
+            (if (startedAt.asKnown().isPresent) 1 else 0) +
+            (status.asKnown().getOrNull()?.validity() ?: 0) +
+            (if (threadId.asKnown().isPresent) 1 else 0) +
+            (toolChoice.asKnown().getOrNull()?.validity() ?: 0) +
+            (tools.asKnown().getOrNull()?.sumOf { it.validity().toInt() } ?: 0) +
+            (truncationStrategy.asKnown().getOrNull()?.validity() ?: 0) +
+            (usage.asKnown().getOrNull()?.validity() ?: 0) +
+            (if (temperature.asKnown().isPresent) 1 else 0) +
+            (if (topP.asKnown().isPresent) 1 else 0)
 
     /** Details on why the run is incomplete. Will be `null` if the run is not incomplete. */
     class IncompleteDetails
@@ -1589,9 +1632,25 @@ private constructor(
                 return@apply
             }
 
-            reason()
+            reason().ifPresent { it.validate() }
             validated = true
         }
+
+        fun isValid(): Boolean =
+            try {
+                validate()
+                true
+            } catch (e: OpenAIInvalidDataException) {
+                false
+            }
+
+        /**
+         * Returns a score indicating how many valid values are contained in this object
+         * recursively.
+         *
+         * Used for best match union deserialization.
+         */
+        @JvmSynthetic internal fun validity(): Int = (reason.asKnown().getOrNull()?.validity() ?: 0)
 
         /**
          * The reason why the run is incomplete. This will point to which specific token limit was
@@ -1685,6 +1744,33 @@ private constructor(
                 _value().asString().orElseThrow {
                     OpenAIInvalidDataException("Value is not a String")
                 }
+
+            private var validated: Boolean = false
+
+            fun validate(): Reason = apply {
+                if (validated) {
+                    return@apply
+                }
+
+                known()
+                validated = true
+            }
+
+            fun isValid(): Boolean =
+                try {
+                    validate()
+                    true
+                } catch (e: OpenAIInvalidDataException) {
+                    false
+                }
+
+            /**
+             * Returns a score indicating how many valid values are contained in this object
+             * recursively.
+             *
+             * Used for best match union deserialization.
+             */
+            @JvmSynthetic internal fun validity(): Int = if (value() == Value._UNKNOWN) 0 else 1
 
             override fun equals(other: Any?): Boolean {
                 if (this === other) {
@@ -1872,10 +1958,29 @@ private constructor(
                 return@apply
             }
 
-            code()
+            code().validate()
             message()
             validated = true
         }
+
+        fun isValid(): Boolean =
+            try {
+                validate()
+                true
+            } catch (e: OpenAIInvalidDataException) {
+                false
+            }
+
+        /**
+         * Returns a score indicating how many valid values are contained in this object
+         * recursively.
+         *
+         * Used for best match union deserialization.
+         */
+        @JvmSynthetic
+        internal fun validity(): Int =
+            (code.asKnown().getOrNull()?.validity() ?: 0) +
+                (if (message.asKnown().isPresent) 1 else 0)
 
         /** One of `server_error`, `rate_limit_exceeded`, or `invalid_prompt`. */
         class Code @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
@@ -1970,6 +2075,33 @@ private constructor(
                 _value().asString().orElseThrow {
                     OpenAIInvalidDataException("Value is not a String")
                 }
+
+            private var validated: Boolean = false
+
+            fun validate(): Code = apply {
+                if (validated) {
+                    return@apply
+                }
+
+                known()
+                validated = true
+            }
+
+            fun isValid(): Boolean =
+                try {
+                    validate()
+                    true
+                } catch (e: OpenAIInvalidDataException) {
+                    false
+                }
+
+            /**
+             * Returns a score indicating how many valid values are contained in this object
+             * recursively.
+             *
+             * Used for best match union deserialization.
+             */
+            @JvmSynthetic internal fun validity(): Int = if (value() == Value._UNKNOWN) 0 else 1
 
             override fun equals(other: Any?): Boolean {
                 if (this === other) {
@@ -2075,6 +2207,24 @@ private constructor(
 
             validated = true
         }
+
+        fun isValid(): Boolean =
+            try {
+                validate()
+                true
+            } catch (e: OpenAIInvalidDataException) {
+                false
+            }
+
+        /**
+         * Returns a score indicating how many valid values are contained in this object
+         * recursively.
+         *
+         * Used for best match union deserialization.
+         */
+        @JvmSynthetic
+        internal fun validity(): Int =
+            additionalProperties.count { (_, value) -> !value.isNull() && !value.isMissing() }
 
         override fun equals(other: Any?): Boolean {
             if (this === other) {
@@ -2266,6 +2416,25 @@ private constructor(
             validated = true
         }
 
+        fun isValid(): Boolean =
+            try {
+                validate()
+                true
+            } catch (e: OpenAIInvalidDataException) {
+                false
+            }
+
+        /**
+         * Returns a score indicating how many valid values are contained in this object
+         * recursively.
+         *
+         * Used for best match union deserialization.
+         */
+        @JvmSynthetic
+        internal fun validity(): Int =
+            (submitToolOutputs.asKnown().getOrNull()?.validity() ?: 0) +
+                type.let { if (it == JsonValue.from("submit_tool_outputs")) 1 else 0 }
+
         /** Details on the tool outputs needed for this run to continue. */
         class SubmitToolOutputs
         private constructor(
@@ -2416,6 +2585,24 @@ private constructor(
                 toolCalls().forEach { it.validate() }
                 validated = true
             }
+
+            fun isValid(): Boolean =
+                try {
+                    validate()
+                    true
+                } catch (e: OpenAIInvalidDataException) {
+                    false
+                }
+
+            /**
+             * Returns a score indicating how many valid values are contained in this object
+             * recursively.
+             *
+             * Used for best match union deserialization.
+             */
+            @JvmSynthetic
+            internal fun validity(): Int =
+                (toolCalls.asKnown().getOrNull()?.sumOf { it.validity().toInt() } ?: 0)
 
             override fun equals(other: Any?): Boolean {
                 if (this === other) {
@@ -2639,10 +2826,29 @@ private constructor(
                 return@apply
             }
 
-            type()
+            type().validate()
             lastMessages()
             validated = true
         }
+
+        fun isValid(): Boolean =
+            try {
+                validate()
+                true
+            } catch (e: OpenAIInvalidDataException) {
+                false
+            }
+
+        /**
+         * Returns a score indicating how many valid values are contained in this object
+         * recursively.
+         *
+         * Used for best match union deserialization.
+         */
+        @JvmSynthetic
+        internal fun validity(): Int =
+            (type.asKnown().getOrNull()?.validity() ?: 0) +
+                (if (lastMessages.asKnown().isPresent) 1 else 0)
 
         /**
          * The truncation strategy to use for the thread. The default is `auto`. If set to
@@ -2736,6 +2942,33 @@ private constructor(
                 _value().asString().orElseThrow {
                     OpenAIInvalidDataException("Value is not a String")
                 }
+
+            private var validated: Boolean = false
+
+            fun validate(): Type = apply {
+                if (validated) {
+                    return@apply
+                }
+
+                known()
+                validated = true
+            }
+
+            fun isValid(): Boolean =
+                try {
+                    validate()
+                    true
+                } catch (e: OpenAIInvalidDataException) {
+                    false
+                }
+
+            /**
+             * Returns a score indicating how many valid values are contained in this object
+             * recursively.
+             *
+             * Used for best match union deserialization.
+             */
+            @JvmSynthetic internal fun validity(): Int = if (value() == Value._UNKNOWN) 0 else 1
 
             override fun equals(other: Any?): Boolean {
                 if (this === other) {
@@ -2984,6 +3217,26 @@ private constructor(
             totalTokens()
             validated = true
         }
+
+        fun isValid(): Boolean =
+            try {
+                validate()
+                true
+            } catch (e: OpenAIInvalidDataException) {
+                false
+            }
+
+        /**
+         * Returns a score indicating how many valid values are contained in this object
+         * recursively.
+         *
+         * Used for best match union deserialization.
+         */
+        @JvmSynthetic
+        internal fun validity(): Int =
+            (if (completionTokens.asKnown().isPresent) 1 else 0) +
+                (if (promptTokens.asKnown().isPresent) 1 else 0) +
+                (if (totalTokens.asKnown().isPresent) 1 else 0)
 
         override fun equals(other: Any?): Boolean {
             if (this === other) {

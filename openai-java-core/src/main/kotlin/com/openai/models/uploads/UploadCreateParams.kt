@@ -18,6 +18,7 @@ import com.openai.errors.OpenAIInvalidDataException
 import com.openai.models.files.FilePurpose
 import java.util.Collections
 import java.util.Objects
+import kotlin.jvm.optionals.getOrNull
 
 /**
  * Creates an intermediate [Upload](https://platform.openai.com/docs/api-reference/uploads/object)
@@ -146,6 +147,18 @@ private constructor(
             additionalHeaders = uploadCreateParams.additionalHeaders.toBuilder()
             additionalQueryParams = uploadCreateParams.additionalQueryParams.toBuilder()
         }
+
+        /**
+         * Sets the entire request body.
+         *
+         * This is generally only useful if you are already constructing the body separately.
+         * Otherwise, it's more convenient to use the top-level setters instead:
+         * - [bytes]
+         * - [filename]
+         * - [mimeType]
+         * - [purpose]
+         */
+        fun body(body: Body) = apply { this.body = body.toBuilder() }
 
         /** The number of bytes in the file you are uploading. */
         fun bytes(bytes: Long) = apply { body.bytes(bytes) }
@@ -342,7 +355,7 @@ private constructor(
             )
     }
 
-    @JvmSynthetic internal fun _body(): Body = body
+    fun _body(): Body = body
 
     override fun _headers(): Headers = additionalHeaders
 
@@ -595,9 +608,30 @@ private constructor(
             bytes()
             filename()
             mimeType()
-            purpose()
+            purpose().validate()
             validated = true
         }
+
+        fun isValid(): Boolean =
+            try {
+                validate()
+                true
+            } catch (e: OpenAIInvalidDataException) {
+                false
+            }
+
+        /**
+         * Returns a score indicating how many valid values are contained in this object
+         * recursively.
+         *
+         * Used for best match union deserialization.
+         */
+        @JvmSynthetic
+        internal fun validity(): Int =
+            (if (bytes.asKnown().isPresent) 1 else 0) +
+                (if (filename.asKnown().isPresent) 1 else 0) +
+                (if (mimeType.asKnown().isPresent) 1 else 0) +
+                (purpose.asKnown().getOrNull()?.validity() ?: 0)
 
         override fun equals(other: Any?): Boolean {
             if (this === other) {

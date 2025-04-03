@@ -160,6 +160,20 @@ private constructor(
         }
 
         /**
+         * Sets the entire request body.
+         *
+         * This is generally only useful if you are already constructing the body separately.
+         * Otherwise, it's more convenient to use the top-level setters instead:
+         * - [image]
+         * - [model]
+         * - [n]
+         * - [responseFormat]
+         * - [size]
+         * - etc.
+         */
+        fun body(body: Body) = apply { this.body = body.toBuilder() }
+
+        /**
          * The image to use as the basis for the variation(s). Must be a valid PNG file, less than
          * 4MB, and square.
          */
@@ -405,8 +419,7 @@ private constructor(
             )
     }
 
-    @JvmSynthetic
-    internal fun _body(): Map<String, MultipartField<*>> =
+    fun _body(): Map<String, MultipartField<*>> =
         mapOf(
                 "image" to _image(),
                 "model" to _model(),
@@ -727,13 +740,21 @@ private constructor(
             }
 
             image()
-            model()
+            model().ifPresent { it.validate() }
             n()
-            responseFormat()
-            size()
+            responseFormat().ifPresent { it.validate() }
+            size().ifPresent { it.validate() }
             user()
             validated = true
         }
+
+        fun isValid(): Boolean =
+            try {
+                validate()
+                true
+            } catch (e: OpenAIInvalidDataException) {
+                false
+            }
 
         override fun equals(other: Any?): Boolean {
             if (this === other) {
@@ -846,6 +867,33 @@ private constructor(
         fun asString(): String =
             _value().asString().orElseThrow { OpenAIInvalidDataException("Value is not a String") }
 
+        private var validated: Boolean = false
+
+        fun validate(): ResponseFormat = apply {
+            if (validated) {
+                return@apply
+            }
+
+            known()
+            validated = true
+        }
+
+        fun isValid(): Boolean =
+            try {
+                validate()
+                true
+            } catch (e: OpenAIInvalidDataException) {
+                false
+            }
+
+        /**
+         * Returns a score indicating how many valid values are contained in this object
+         * recursively.
+         *
+         * Used for best match union deserialization.
+         */
+        @JvmSynthetic internal fun validity(): Int = if (value() == Value._UNKNOWN) 0 else 1
+
         override fun equals(other: Any?): Boolean {
             if (this === other) {
                 return true
@@ -950,6 +998,33 @@ private constructor(
          */
         fun asString(): String =
             _value().asString().orElseThrow { OpenAIInvalidDataException("Value is not a String") }
+
+        private var validated: Boolean = false
+
+        fun validate(): Size = apply {
+            if (validated) {
+                return@apply
+            }
+
+            known()
+            validated = true
+        }
+
+        fun isValid(): Boolean =
+            try {
+                validate()
+                true
+            } catch (e: OpenAIInvalidDataException) {
+                false
+            }
+
+        /**
+         * Returns a score indicating how many valid values are contained in this object
+         * recursively.
+         *
+         * Used for best match union deserialization.
+         */
+        @JvmSynthetic internal fun validity(): Int = if (value() == Value._UNKNOWN) 0 else 1
 
         override fun equals(other: Any?): Boolean {
             if (this === other) {

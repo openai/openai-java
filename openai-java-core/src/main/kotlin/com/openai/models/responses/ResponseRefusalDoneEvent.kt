@@ -286,6 +286,27 @@ private constructor(
         validated = true
     }
 
+    fun isValid(): Boolean =
+        try {
+            validate()
+            true
+        } catch (e: OpenAIInvalidDataException) {
+            false
+        }
+
+    /**
+     * Returns a score indicating how many valid values are contained in this object recursively.
+     *
+     * Used for best match union deserialization.
+     */
+    @JvmSynthetic
+    internal fun validity(): Int =
+        (if (contentIndex.asKnown().isPresent) 1 else 0) +
+            (if (itemId.asKnown().isPresent) 1 else 0) +
+            (if (outputIndex.asKnown().isPresent) 1 else 0) +
+            (if (refusal.asKnown().isPresent) 1 else 0) +
+            type.let { if (it == JsonValue.from("response.refusal.done")) 1 else 0 }
+
     override fun equals(other: Any?): Boolean {
         if (this === other) {
             return true

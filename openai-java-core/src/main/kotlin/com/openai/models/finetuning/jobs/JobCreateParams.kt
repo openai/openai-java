@@ -21,6 +21,7 @@ import com.openai.core.JsonField
 import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
 import com.openai.core.Params
+import com.openai.core.allMaxBy
 import com.openai.core.checkKnown
 import com.openai.core.checkRequired
 import com.openai.core.getOrThrow
@@ -258,6 +259,20 @@ private constructor(
             additionalHeaders = jobCreateParams.additionalHeaders.toBuilder()
             additionalQueryParams = jobCreateParams.additionalQueryParams.toBuilder()
         }
+
+        /**
+         * Sets the entire request body.
+         *
+         * This is generally only useful if you are already constructing the body separately.
+         * Otherwise, it's more convenient to use the top-level setters instead:
+         * - [model]
+         * - [trainingFile]
+         * - [hyperparameters]
+         * - [integrations]
+         * - [metadata]
+         * - etc.
+         */
+        fun body(body: Body) = apply { this.body = body.toBuilder() }
 
         /**
          * The name of the model to fine-tune. You can select one of the
@@ -602,7 +617,7 @@ private constructor(
             JobCreateParams(body.build(), additionalHeaders.build(), additionalQueryParams.build())
     }
 
-    @JvmSynthetic internal fun _body(): Body = body
+    fun _body(): Body = body
 
     override fun _headers(): Headers = additionalHeaders
 
@@ -1184,6 +1199,32 @@ private constructor(
             validated = true
         }
 
+        fun isValid(): Boolean =
+            try {
+                validate()
+                true
+            } catch (e: OpenAIInvalidDataException) {
+                false
+            }
+
+        /**
+         * Returns a score indicating how many valid values are contained in this object
+         * recursively.
+         *
+         * Used for best match union deserialization.
+         */
+        @JvmSynthetic
+        internal fun validity(): Int =
+            (if (model.asKnown().isPresent) 1 else 0) +
+                (if (trainingFile.asKnown().isPresent) 1 else 0) +
+                (hyperparameters.asKnown().getOrNull()?.validity() ?: 0) +
+                (integrations.asKnown().getOrNull()?.sumOf { it.validity().toInt() } ?: 0) +
+                (metadata.asKnown().getOrNull()?.validity() ?: 0) +
+                (method.asKnown().getOrNull()?.validity() ?: 0) +
+                (if (seed.asKnown().isPresent) 1 else 0) +
+                (if (suffix.asKnown().isPresent) 1 else 0) +
+                (if (validationFile.asKnown().isPresent) 1 else 0)
+
         override fun equals(other: Any?): Boolean {
             if (this === other) {
                 return true
@@ -1302,6 +1343,33 @@ private constructor(
          */
         fun asString(): String =
             _value().asString().orElseThrow { OpenAIInvalidDataException("Value is not a String") }
+
+        private var validated: Boolean = false
+
+        fun validate(): Model = apply {
+            if (validated) {
+                return@apply
+            }
+
+            known()
+            validated = true
+        }
+
+        fun isValid(): Boolean =
+            try {
+                validate()
+                true
+            } catch (e: OpenAIInvalidDataException) {
+                false
+            }
+
+        /**
+         * Returns a score indicating how many valid values are contained in this object
+         * recursively.
+         *
+         * Used for best match union deserialization.
+         */
+        @JvmSynthetic internal fun validity(): Int = if (value() == Value._UNKNOWN) 0 else 1
 
         override fun equals(other: Any?): Boolean {
             if (this === other) {
@@ -1549,6 +1617,26 @@ private constructor(
             validated = true
         }
 
+        fun isValid(): Boolean =
+            try {
+                validate()
+                true
+            } catch (e: OpenAIInvalidDataException) {
+                false
+            }
+
+        /**
+         * Returns a score indicating how many valid values are contained in this object
+         * recursively.
+         *
+         * Used for best match union deserialization.
+         */
+        @JvmSynthetic
+        internal fun validity(): Int =
+            (batchSize.asKnown().getOrNull()?.validity() ?: 0) +
+                (learningRateMultiplier.asKnown().getOrNull()?.validity() ?: 0) +
+                (nEpochs.asKnown().getOrNull()?.validity() ?: 0)
+
         /**
          * Number of examples in each batch. A larger batch size means that model parameters are
          * updated less frequently, but with lower variance.
@@ -1576,13 +1664,12 @@ private constructor(
 
             fun _json(): Optional<JsonValue> = Optional.ofNullable(_json)
 
-            fun <T> accept(visitor: Visitor<T>): T {
-                return when {
+            fun <T> accept(visitor: Visitor<T>): T =
+                when {
                     auto != null -> visitor.visitAuto(auto)
                     integer != null -> visitor.visitInteger(integer)
                     else -> visitor.unknown(_json)
                 }
-            }
 
             private var validated: Boolean = false
 
@@ -1608,6 +1695,33 @@ private constructor(
                 )
                 validated = true
             }
+
+            fun isValid(): Boolean =
+                try {
+                    validate()
+                    true
+                } catch (e: OpenAIInvalidDataException) {
+                    false
+                }
+
+            /**
+             * Returns a score indicating how many valid values are contained in this object
+             * recursively.
+             *
+             * Used for best match union deserialization.
+             */
+            @JvmSynthetic
+            internal fun validity(): Int =
+                accept(
+                    object : Visitor<Int> {
+                        override fun visitAuto(auto: JsonValue) =
+                            auto.let { if (it == JsonValue.from("auto")) 1 else 0 }
+
+                        override fun visitInteger(integer: Long) = 1
+
+                        override fun unknown(json: JsonValue?) = 0
+                    }
+                )
 
             override fun equals(other: Any?): Boolean {
                 if (this === other) {
@@ -1664,23 +1778,28 @@ private constructor(
                 override fun ObjectCodec.deserialize(node: JsonNode): BatchSize {
                     val json = JsonValue.fromJsonNode(node)
 
-                    tryDeserialize(node, jacksonTypeRef<JsonValue>()) {
-                            it.let {
-                                if (it != JsonValue.from("auto")) {
-                                    throw OpenAIInvalidDataException(
-                                        "'auto' is invalid, received $it"
-                                    )
-                                }
-                            }
-                        }
-                        ?.let {
-                            return BatchSize(auto = it, _json = json)
-                        }
-                    tryDeserialize(node, jacksonTypeRef<Long>())?.let {
-                        return BatchSize(integer = it, _json = json)
+                    val bestMatches =
+                        sequenceOf(
+                                tryDeserialize(node, jacksonTypeRef<JsonValue>())
+                                    ?.let { BatchSize(auto = it, _json = json) }
+                                    ?.takeIf { it.isValid() },
+                                tryDeserialize(node, jacksonTypeRef<Long>())?.let {
+                                    BatchSize(integer = it, _json = json)
+                                },
+                            )
+                            .filterNotNull()
+                            .allMaxBy { it.validity() }
+                            .toList()
+                    return when (bestMatches.size) {
+                        // This can happen if what we're deserializing is completely incompatible
+                        // with all the possible variants (e.g. deserializing from object).
+                        0 -> BatchSize(_json = json)
+                        1 -> bestMatches.single()
+                        // If there's more than one match with the highest validity, then use the
+                        // first completely valid match, or simply the first match if none are
+                        // completely valid.
+                        else -> bestMatches.firstOrNull { it.isValid() } ?: bestMatches.first()
                     }
-
-                    return BatchSize(_json = json)
                 }
             }
 
@@ -1728,13 +1847,12 @@ private constructor(
 
             fun _json(): Optional<JsonValue> = Optional.ofNullable(_json)
 
-            fun <T> accept(visitor: Visitor<T>): T {
-                return when {
+            fun <T> accept(visitor: Visitor<T>): T =
+                when {
                     auto != null -> visitor.visitAuto(auto)
                     number != null -> visitor.visitNumber(number)
                     else -> visitor.unknown(_json)
                 }
-            }
 
             private var validated: Boolean = false
 
@@ -1760,6 +1878,33 @@ private constructor(
                 )
                 validated = true
             }
+
+            fun isValid(): Boolean =
+                try {
+                    validate()
+                    true
+                } catch (e: OpenAIInvalidDataException) {
+                    false
+                }
+
+            /**
+             * Returns a score indicating how many valid values are contained in this object
+             * recursively.
+             *
+             * Used for best match union deserialization.
+             */
+            @JvmSynthetic
+            internal fun validity(): Int =
+                accept(
+                    object : Visitor<Int> {
+                        override fun visitAuto(auto: JsonValue) =
+                            auto.let { if (it == JsonValue.from("auto")) 1 else 0 }
+
+                        override fun visitNumber(number: Double) = 1
+
+                        override fun unknown(json: JsonValue?) = 0
+                    }
+                )
 
             override fun equals(other: Any?): Boolean {
                 if (this === other) {
@@ -1817,23 +1962,28 @@ private constructor(
                 override fun ObjectCodec.deserialize(node: JsonNode): LearningRateMultiplier {
                     val json = JsonValue.fromJsonNode(node)
 
-                    tryDeserialize(node, jacksonTypeRef<JsonValue>()) {
-                            it.let {
-                                if (it != JsonValue.from("auto")) {
-                                    throw OpenAIInvalidDataException(
-                                        "'auto' is invalid, received $it"
-                                    )
-                                }
-                            }
-                        }
-                        ?.let {
-                            return LearningRateMultiplier(auto = it, _json = json)
-                        }
-                    tryDeserialize(node, jacksonTypeRef<Double>())?.let {
-                        return LearningRateMultiplier(number = it, _json = json)
+                    val bestMatches =
+                        sequenceOf(
+                                tryDeserialize(node, jacksonTypeRef<JsonValue>())
+                                    ?.let { LearningRateMultiplier(auto = it, _json = json) }
+                                    ?.takeIf { it.isValid() },
+                                tryDeserialize(node, jacksonTypeRef<Double>())?.let {
+                                    LearningRateMultiplier(number = it, _json = json)
+                                },
+                            )
+                            .filterNotNull()
+                            .allMaxBy { it.validity() }
+                            .toList()
+                    return when (bestMatches.size) {
+                        // This can happen if what we're deserializing is completely incompatible
+                        // with all the possible variants (e.g. deserializing from object).
+                        0 -> LearningRateMultiplier(_json = json)
+                        1 -> bestMatches.single()
+                        // If there's more than one match with the highest validity, then use the
+                        // first completely valid match, or simply the first match if none are
+                        // completely valid.
+                        else -> bestMatches.firstOrNull { it.isValid() } ?: bestMatches.first()
                     }
-
-                    return LearningRateMultiplier(_json = json)
                 }
             }
 
@@ -1882,13 +2032,12 @@ private constructor(
 
             fun _json(): Optional<JsonValue> = Optional.ofNullable(_json)
 
-            fun <T> accept(visitor: Visitor<T>): T {
-                return when {
+            fun <T> accept(visitor: Visitor<T>): T =
+                when {
                     auto != null -> visitor.visitAuto(auto)
                     integer != null -> visitor.visitInteger(integer)
                     else -> visitor.unknown(_json)
                 }
-            }
 
             private var validated: Boolean = false
 
@@ -1914,6 +2063,33 @@ private constructor(
                 )
                 validated = true
             }
+
+            fun isValid(): Boolean =
+                try {
+                    validate()
+                    true
+                } catch (e: OpenAIInvalidDataException) {
+                    false
+                }
+
+            /**
+             * Returns a score indicating how many valid values are contained in this object
+             * recursively.
+             *
+             * Used for best match union deserialization.
+             */
+            @JvmSynthetic
+            internal fun validity(): Int =
+                accept(
+                    object : Visitor<Int> {
+                        override fun visitAuto(auto: JsonValue) =
+                            auto.let { if (it == JsonValue.from("auto")) 1 else 0 }
+
+                        override fun visitInteger(integer: Long) = 1
+
+                        override fun unknown(json: JsonValue?) = 0
+                    }
+                )
 
             override fun equals(other: Any?): Boolean {
                 if (this === other) {
@@ -1970,23 +2146,28 @@ private constructor(
                 override fun ObjectCodec.deserialize(node: JsonNode): NEpochs {
                     val json = JsonValue.fromJsonNode(node)
 
-                    tryDeserialize(node, jacksonTypeRef<JsonValue>()) {
-                            it.let {
-                                if (it != JsonValue.from("auto")) {
-                                    throw OpenAIInvalidDataException(
-                                        "'auto' is invalid, received $it"
-                                    )
-                                }
-                            }
-                        }
-                        ?.let {
-                            return NEpochs(auto = it, _json = json)
-                        }
-                    tryDeserialize(node, jacksonTypeRef<Long>())?.let {
-                        return NEpochs(integer = it, _json = json)
+                    val bestMatches =
+                        sequenceOf(
+                                tryDeserialize(node, jacksonTypeRef<JsonValue>())
+                                    ?.let { NEpochs(auto = it, _json = json) }
+                                    ?.takeIf { it.isValid() },
+                                tryDeserialize(node, jacksonTypeRef<Long>())?.let {
+                                    NEpochs(integer = it, _json = json)
+                                },
+                            )
+                            .filterNotNull()
+                            .allMaxBy { it.validity() }
+                            .toList()
+                    return when (bestMatches.size) {
+                        // This can happen if what we're deserializing is completely incompatible
+                        // with all the possible variants (e.g. deserializing from object).
+                        0 -> NEpochs(_json = json)
+                        1 -> bestMatches.single()
+                        // If there's more than one match with the highest validity, then use the
+                        // first completely valid match, or simply the first match if none are
+                        // completely valid.
+                        else -> bestMatches.firstOrNull { it.isValid() } ?: bestMatches.first()
                     }
-
-                    return NEpochs(_json = json)
                 }
             }
 
@@ -2194,6 +2375,25 @@ private constructor(
             wandb().validate()
             validated = true
         }
+
+        fun isValid(): Boolean =
+            try {
+                validate()
+                true
+            } catch (e: OpenAIInvalidDataException) {
+                false
+            }
+
+        /**
+         * Returns a score indicating how many valid values are contained in this object
+         * recursively.
+         *
+         * Used for best match union deserialization.
+         */
+        @JvmSynthetic
+        internal fun validity(): Int =
+            type.let { if (it == JsonValue.from("wandb")) 1 else 0 } +
+                (wandb.asKnown().getOrNull()?.validity() ?: 0)
 
         /**
          * The settings for your integration with Weights and Biases. This payload specifies the
@@ -2469,6 +2669,27 @@ private constructor(
                 validated = true
             }
 
+            fun isValid(): Boolean =
+                try {
+                    validate()
+                    true
+                } catch (e: OpenAIInvalidDataException) {
+                    false
+                }
+
+            /**
+             * Returns a score indicating how many valid values are contained in this object
+             * recursively.
+             *
+             * Used for best match union deserialization.
+             */
+            @JvmSynthetic
+            internal fun validity(): Int =
+                (if (project.asKnown().isPresent) 1 else 0) +
+                    (if (entity.asKnown().isPresent) 1 else 0) +
+                    (if (name.asKnown().isPresent) 1 else 0) +
+                    (tags.asKnown().getOrNull()?.size ?: 0)
+
             override fun equals(other: Any?): Boolean {
                 if (this === other) {
                     return true
@@ -2578,6 +2799,24 @@ private constructor(
 
             validated = true
         }
+
+        fun isValid(): Boolean =
+            try {
+                validate()
+                true
+            } catch (e: OpenAIInvalidDataException) {
+                false
+            }
+
+        /**
+         * Returns a score indicating how many valid values are contained in this object
+         * recursively.
+         *
+         * Used for best match union deserialization.
+         */
+        @JvmSynthetic
+        internal fun validity(): Int =
+            additionalProperties.count { (_, value) -> !value.isNull() && !value.isMissing() }
 
         override fun equals(other: Any?): Boolean {
             if (this === other) {
@@ -2770,9 +3009,29 @@ private constructor(
 
             dpo().ifPresent { it.validate() }
             supervised().ifPresent { it.validate() }
-            type()
+            type().ifPresent { it.validate() }
             validated = true
         }
+
+        fun isValid(): Boolean =
+            try {
+                validate()
+                true
+            } catch (e: OpenAIInvalidDataException) {
+                false
+            }
+
+        /**
+         * Returns a score indicating how many valid values are contained in this object
+         * recursively.
+         *
+         * Used for best match union deserialization.
+         */
+        @JvmSynthetic
+        internal fun validity(): Int =
+            (dpo.asKnown().getOrNull()?.validity() ?: 0) +
+                (supervised.asKnown().getOrNull()?.validity() ?: 0) +
+                (type.asKnown().getOrNull()?.validity() ?: 0)
 
         /** Configuration for the DPO fine-tuning method. */
         class Dpo
@@ -2892,6 +3151,23 @@ private constructor(
                 hyperparameters().ifPresent { it.validate() }
                 validated = true
             }
+
+            fun isValid(): Boolean =
+                try {
+                    validate()
+                    true
+                } catch (e: OpenAIInvalidDataException) {
+                    false
+                }
+
+            /**
+             * Returns a score indicating how many valid values are contained in this object
+             * recursively.
+             *
+             * Used for best match union deserialization.
+             */
+            @JvmSynthetic
+            internal fun validity(): Int = (hyperparameters.asKnown().getOrNull()?.validity() ?: 0)
 
             /** The hyperparameters used for the fine-tuning job. */
             class Hyperparameters
@@ -3184,6 +3460,27 @@ private constructor(
                     validated = true
                 }
 
+                fun isValid(): Boolean =
+                    try {
+                        validate()
+                        true
+                    } catch (e: OpenAIInvalidDataException) {
+                        false
+                    }
+
+                /**
+                 * Returns a score indicating how many valid values are contained in this object
+                 * recursively.
+                 *
+                 * Used for best match union deserialization.
+                 */
+                @JvmSynthetic
+                internal fun validity(): Int =
+                    (batchSize.asKnown().getOrNull()?.validity() ?: 0) +
+                        (beta.asKnown().getOrNull()?.validity() ?: 0) +
+                        (learningRateMultiplier.asKnown().getOrNull()?.validity() ?: 0) +
+                        (nEpochs.asKnown().getOrNull()?.validity() ?: 0)
+
                 /**
                  * Number of examples in each batch. A larger batch size means that model parameters
                  * are updated less frequently, but with lower variance.
@@ -3211,13 +3508,12 @@ private constructor(
 
                     fun _json(): Optional<JsonValue> = Optional.ofNullable(_json)
 
-                    fun <T> accept(visitor: Visitor<T>): T {
-                        return when {
+                    fun <T> accept(visitor: Visitor<T>): T =
+                        when {
                             auto != null -> visitor.visitAuto(auto)
                             manual != null -> visitor.visitManual(manual)
                             else -> visitor.unknown(_json)
                         }
-                    }
 
                     private var validated: Boolean = false
 
@@ -3243,6 +3539,33 @@ private constructor(
                         )
                         validated = true
                     }
+
+                    fun isValid(): Boolean =
+                        try {
+                            validate()
+                            true
+                        } catch (e: OpenAIInvalidDataException) {
+                            false
+                        }
+
+                    /**
+                     * Returns a score indicating how many valid values are contained in this object
+                     * recursively.
+                     *
+                     * Used for best match union deserialization.
+                     */
+                    @JvmSynthetic
+                    internal fun validity(): Int =
+                        accept(
+                            object : Visitor<Int> {
+                                override fun visitAuto(auto: JsonValue) =
+                                    auto.let { if (it == JsonValue.from("auto")) 1 else 0 }
+
+                                override fun visitManual(manual: Long) = 1
+
+                                override fun unknown(json: JsonValue?) = 0
+                            }
+                        )
 
                     override fun equals(other: Any?): Boolean {
                         if (this === other) {
@@ -3299,23 +3622,30 @@ private constructor(
                         override fun ObjectCodec.deserialize(node: JsonNode): BatchSize {
                             val json = JsonValue.fromJsonNode(node)
 
-                            tryDeserialize(node, jacksonTypeRef<JsonValue>()) {
-                                    it.let {
-                                        if (it != JsonValue.from("auto")) {
-                                            throw OpenAIInvalidDataException(
-                                                "'auto' is invalid, received $it"
-                                            )
-                                        }
-                                    }
-                                }
-                                ?.let {
-                                    return BatchSize(auto = it, _json = json)
-                                }
-                            tryDeserialize(node, jacksonTypeRef<Long>())?.let {
-                                return BatchSize(manual = it, _json = json)
+                            val bestMatches =
+                                sequenceOf(
+                                        tryDeserialize(node, jacksonTypeRef<JsonValue>())
+                                            ?.let { BatchSize(auto = it, _json = json) }
+                                            ?.takeIf { it.isValid() },
+                                        tryDeserialize(node, jacksonTypeRef<Long>())?.let {
+                                            BatchSize(manual = it, _json = json)
+                                        },
+                                    )
+                                    .filterNotNull()
+                                    .allMaxBy { it.validity() }
+                                    .toList()
+                            return when (bestMatches.size) {
+                                // This can happen if what we're deserializing is completely
+                                // incompatible with all the possible variants (e.g. deserializing
+                                // from object).
+                                0 -> BatchSize(_json = json)
+                                1 -> bestMatches.single()
+                                // If there's more than one match with the highest validity, then
+                                // use the first completely valid match, or simply the first match
+                                // if none are completely valid.
+                                else ->
+                                    bestMatches.firstOrNull { it.isValid() } ?: bestMatches.first()
                             }
-
-                            return BatchSize(_json = json)
                         }
                     }
 
@@ -3363,13 +3693,12 @@ private constructor(
 
                     fun _json(): Optional<JsonValue> = Optional.ofNullable(_json)
 
-                    fun <T> accept(visitor: Visitor<T>): T {
-                        return when {
+                    fun <T> accept(visitor: Visitor<T>): T =
+                        when {
                             auto != null -> visitor.visitAuto(auto)
                             manual != null -> visitor.visitManual(manual)
                             else -> visitor.unknown(_json)
                         }
-                    }
 
                     private var validated: Boolean = false
 
@@ -3395,6 +3724,33 @@ private constructor(
                         )
                         validated = true
                     }
+
+                    fun isValid(): Boolean =
+                        try {
+                            validate()
+                            true
+                        } catch (e: OpenAIInvalidDataException) {
+                            false
+                        }
+
+                    /**
+                     * Returns a score indicating how many valid values are contained in this object
+                     * recursively.
+                     *
+                     * Used for best match union deserialization.
+                     */
+                    @JvmSynthetic
+                    internal fun validity(): Int =
+                        accept(
+                            object : Visitor<Int> {
+                                override fun visitAuto(auto: JsonValue) =
+                                    auto.let { if (it == JsonValue.from("auto")) 1 else 0 }
+
+                                override fun visitManual(manual: Double) = 1
+
+                                override fun unknown(json: JsonValue?) = 0
+                            }
+                        )
 
                     override fun equals(other: Any?): Boolean {
                         if (this === other) {
@@ -3451,23 +3807,30 @@ private constructor(
                         override fun ObjectCodec.deserialize(node: JsonNode): Beta {
                             val json = JsonValue.fromJsonNode(node)
 
-                            tryDeserialize(node, jacksonTypeRef<JsonValue>()) {
-                                    it.let {
-                                        if (it != JsonValue.from("auto")) {
-                                            throw OpenAIInvalidDataException(
-                                                "'auto' is invalid, received $it"
-                                            )
-                                        }
-                                    }
-                                }
-                                ?.let {
-                                    return Beta(auto = it, _json = json)
-                                }
-                            tryDeserialize(node, jacksonTypeRef<Double>())?.let {
-                                return Beta(manual = it, _json = json)
+                            val bestMatches =
+                                sequenceOf(
+                                        tryDeserialize(node, jacksonTypeRef<JsonValue>())
+                                            ?.let { Beta(auto = it, _json = json) }
+                                            ?.takeIf { it.isValid() },
+                                        tryDeserialize(node, jacksonTypeRef<Double>())?.let {
+                                            Beta(manual = it, _json = json)
+                                        },
+                                    )
+                                    .filterNotNull()
+                                    .allMaxBy { it.validity() }
+                                    .toList()
+                            return when (bestMatches.size) {
+                                // This can happen if what we're deserializing is completely
+                                // incompatible with all the possible variants (e.g. deserializing
+                                // from object).
+                                0 -> Beta(_json = json)
+                                1 -> bestMatches.single()
+                                // If there's more than one match with the highest validity, then
+                                // use the first completely valid match, or simply the first match
+                                // if none are completely valid.
+                                else ->
+                                    bestMatches.firstOrNull { it.isValid() } ?: bestMatches.first()
                             }
-
-                            return Beta(_json = json)
                         }
                     }
 
@@ -3515,13 +3878,12 @@ private constructor(
 
                     fun _json(): Optional<JsonValue> = Optional.ofNullable(_json)
 
-                    fun <T> accept(visitor: Visitor<T>): T {
-                        return when {
+                    fun <T> accept(visitor: Visitor<T>): T =
+                        when {
                             auto != null -> visitor.visitAuto(auto)
                             manual != null -> visitor.visitManual(manual)
                             else -> visitor.unknown(_json)
                         }
-                    }
 
                     private var validated: Boolean = false
 
@@ -3547,6 +3909,33 @@ private constructor(
                         )
                         validated = true
                     }
+
+                    fun isValid(): Boolean =
+                        try {
+                            validate()
+                            true
+                        } catch (e: OpenAIInvalidDataException) {
+                            false
+                        }
+
+                    /**
+                     * Returns a score indicating how many valid values are contained in this object
+                     * recursively.
+                     *
+                     * Used for best match union deserialization.
+                     */
+                    @JvmSynthetic
+                    internal fun validity(): Int =
+                        accept(
+                            object : Visitor<Int> {
+                                override fun visitAuto(auto: JsonValue) =
+                                    auto.let { if (it == JsonValue.from("auto")) 1 else 0 }
+
+                                override fun visitManual(manual: Double) = 1
+
+                                override fun unknown(json: JsonValue?) = 0
+                            }
+                        )
 
                     override fun equals(other: Any?): Boolean {
                         if (this === other) {
@@ -3611,23 +4000,32 @@ private constructor(
                         ): LearningRateMultiplier {
                             val json = JsonValue.fromJsonNode(node)
 
-                            tryDeserialize(node, jacksonTypeRef<JsonValue>()) {
-                                    it.let {
-                                        if (it != JsonValue.from("auto")) {
-                                            throw OpenAIInvalidDataException(
-                                                "'auto' is invalid, received $it"
-                                            )
-                                        }
-                                    }
-                                }
-                                ?.let {
-                                    return LearningRateMultiplier(auto = it, _json = json)
-                                }
-                            tryDeserialize(node, jacksonTypeRef<Double>())?.let {
-                                return LearningRateMultiplier(manual = it, _json = json)
+                            val bestMatches =
+                                sequenceOf(
+                                        tryDeserialize(node, jacksonTypeRef<JsonValue>())
+                                            ?.let {
+                                                LearningRateMultiplier(auto = it, _json = json)
+                                            }
+                                            ?.takeIf { it.isValid() },
+                                        tryDeserialize(node, jacksonTypeRef<Double>())?.let {
+                                            LearningRateMultiplier(manual = it, _json = json)
+                                        },
+                                    )
+                                    .filterNotNull()
+                                    .allMaxBy { it.validity() }
+                                    .toList()
+                            return when (bestMatches.size) {
+                                // This can happen if what we're deserializing is completely
+                                // incompatible with all the possible variants (e.g. deserializing
+                                // from object).
+                                0 -> LearningRateMultiplier(_json = json)
+                                1 -> bestMatches.single()
+                                // If there's more than one match with the highest validity, then
+                                // use the first completely valid match, or simply the first match
+                                // if none are completely valid.
+                                else ->
+                                    bestMatches.firstOrNull { it.isValid() } ?: bestMatches.first()
                             }
-
-                            return LearningRateMultiplier(_json = json)
                         }
                     }
 
@@ -3677,13 +4075,12 @@ private constructor(
 
                     fun _json(): Optional<JsonValue> = Optional.ofNullable(_json)
 
-                    fun <T> accept(visitor: Visitor<T>): T {
-                        return when {
+                    fun <T> accept(visitor: Visitor<T>): T =
+                        when {
                             auto != null -> visitor.visitAuto(auto)
                             manual != null -> visitor.visitManual(manual)
                             else -> visitor.unknown(_json)
                         }
-                    }
 
                     private var validated: Boolean = false
 
@@ -3709,6 +4106,33 @@ private constructor(
                         )
                         validated = true
                     }
+
+                    fun isValid(): Boolean =
+                        try {
+                            validate()
+                            true
+                        } catch (e: OpenAIInvalidDataException) {
+                            false
+                        }
+
+                    /**
+                     * Returns a score indicating how many valid values are contained in this object
+                     * recursively.
+                     *
+                     * Used for best match union deserialization.
+                     */
+                    @JvmSynthetic
+                    internal fun validity(): Int =
+                        accept(
+                            object : Visitor<Int> {
+                                override fun visitAuto(auto: JsonValue) =
+                                    auto.let { if (it == JsonValue.from("auto")) 1 else 0 }
+
+                                override fun visitManual(manual: Long) = 1
+
+                                override fun unknown(json: JsonValue?) = 0
+                            }
+                        )
 
                     override fun equals(other: Any?): Boolean {
                         if (this === other) {
@@ -3765,23 +4189,30 @@ private constructor(
                         override fun ObjectCodec.deserialize(node: JsonNode): NEpochs {
                             val json = JsonValue.fromJsonNode(node)
 
-                            tryDeserialize(node, jacksonTypeRef<JsonValue>()) {
-                                    it.let {
-                                        if (it != JsonValue.from("auto")) {
-                                            throw OpenAIInvalidDataException(
-                                                "'auto' is invalid, received $it"
-                                            )
-                                        }
-                                    }
-                                }
-                                ?.let {
-                                    return NEpochs(auto = it, _json = json)
-                                }
-                            tryDeserialize(node, jacksonTypeRef<Long>())?.let {
-                                return NEpochs(manual = it, _json = json)
+                            val bestMatches =
+                                sequenceOf(
+                                        tryDeserialize(node, jacksonTypeRef<JsonValue>())
+                                            ?.let { NEpochs(auto = it, _json = json) }
+                                            ?.takeIf { it.isValid() },
+                                        tryDeserialize(node, jacksonTypeRef<Long>())?.let {
+                                            NEpochs(manual = it, _json = json)
+                                        },
+                                    )
+                                    .filterNotNull()
+                                    .allMaxBy { it.validity() }
+                                    .toList()
+                            return when (bestMatches.size) {
+                                // This can happen if what we're deserializing is completely
+                                // incompatible with all the possible variants (e.g. deserializing
+                                // from object).
+                                0 -> NEpochs(_json = json)
+                                1 -> bestMatches.single()
+                                // If there's more than one match with the highest validity, then
+                                // use the first completely valid match, or simply the first match
+                                // if none are completely valid.
+                                else ->
+                                    bestMatches.firstOrNull { it.isValid() } ?: bestMatches.first()
                             }
-
-                            return NEpochs(_json = json)
                         }
                     }
 
@@ -3957,6 +4388,23 @@ private constructor(
                 hyperparameters().ifPresent { it.validate() }
                 validated = true
             }
+
+            fun isValid(): Boolean =
+                try {
+                    validate()
+                    true
+                } catch (e: OpenAIInvalidDataException) {
+                    false
+                }
+
+            /**
+             * Returns a score indicating how many valid values are contained in this object
+             * recursively.
+             *
+             * Used for best match union deserialization.
+             */
+            @JvmSynthetic
+            internal fun validity(): Int = (hyperparameters.asKnown().getOrNull()?.validity() ?: 0)
 
             /** The hyperparameters used for the fine-tuning job. */
             class Hyperparameters
@@ -4205,6 +4653,26 @@ private constructor(
                     validated = true
                 }
 
+                fun isValid(): Boolean =
+                    try {
+                        validate()
+                        true
+                    } catch (e: OpenAIInvalidDataException) {
+                        false
+                    }
+
+                /**
+                 * Returns a score indicating how many valid values are contained in this object
+                 * recursively.
+                 *
+                 * Used for best match union deserialization.
+                 */
+                @JvmSynthetic
+                internal fun validity(): Int =
+                    (batchSize.asKnown().getOrNull()?.validity() ?: 0) +
+                        (learningRateMultiplier.asKnown().getOrNull()?.validity() ?: 0) +
+                        (nEpochs.asKnown().getOrNull()?.validity() ?: 0)
+
                 /**
                  * Number of examples in each batch. A larger batch size means that model parameters
                  * are updated less frequently, but with lower variance.
@@ -4232,13 +4700,12 @@ private constructor(
 
                     fun _json(): Optional<JsonValue> = Optional.ofNullable(_json)
 
-                    fun <T> accept(visitor: Visitor<T>): T {
-                        return when {
+                    fun <T> accept(visitor: Visitor<T>): T =
+                        when {
                             auto != null -> visitor.visitAuto(auto)
                             manual != null -> visitor.visitManual(manual)
                             else -> visitor.unknown(_json)
                         }
-                    }
 
                     private var validated: Boolean = false
 
@@ -4264,6 +4731,33 @@ private constructor(
                         )
                         validated = true
                     }
+
+                    fun isValid(): Boolean =
+                        try {
+                            validate()
+                            true
+                        } catch (e: OpenAIInvalidDataException) {
+                            false
+                        }
+
+                    /**
+                     * Returns a score indicating how many valid values are contained in this object
+                     * recursively.
+                     *
+                     * Used for best match union deserialization.
+                     */
+                    @JvmSynthetic
+                    internal fun validity(): Int =
+                        accept(
+                            object : Visitor<Int> {
+                                override fun visitAuto(auto: JsonValue) =
+                                    auto.let { if (it == JsonValue.from("auto")) 1 else 0 }
+
+                                override fun visitManual(manual: Long) = 1
+
+                                override fun unknown(json: JsonValue?) = 0
+                            }
+                        )
 
                     override fun equals(other: Any?): Boolean {
                         if (this === other) {
@@ -4320,23 +4814,30 @@ private constructor(
                         override fun ObjectCodec.deserialize(node: JsonNode): BatchSize {
                             val json = JsonValue.fromJsonNode(node)
 
-                            tryDeserialize(node, jacksonTypeRef<JsonValue>()) {
-                                    it.let {
-                                        if (it != JsonValue.from("auto")) {
-                                            throw OpenAIInvalidDataException(
-                                                "'auto' is invalid, received $it"
-                                            )
-                                        }
-                                    }
-                                }
-                                ?.let {
-                                    return BatchSize(auto = it, _json = json)
-                                }
-                            tryDeserialize(node, jacksonTypeRef<Long>())?.let {
-                                return BatchSize(manual = it, _json = json)
+                            val bestMatches =
+                                sequenceOf(
+                                        tryDeserialize(node, jacksonTypeRef<JsonValue>())
+                                            ?.let { BatchSize(auto = it, _json = json) }
+                                            ?.takeIf { it.isValid() },
+                                        tryDeserialize(node, jacksonTypeRef<Long>())?.let {
+                                            BatchSize(manual = it, _json = json)
+                                        },
+                                    )
+                                    .filterNotNull()
+                                    .allMaxBy { it.validity() }
+                                    .toList()
+                            return when (bestMatches.size) {
+                                // This can happen if what we're deserializing is completely
+                                // incompatible with all the possible variants (e.g. deserializing
+                                // from object).
+                                0 -> BatchSize(_json = json)
+                                1 -> bestMatches.single()
+                                // If there's more than one match with the highest validity, then
+                                // use the first completely valid match, or simply the first match
+                                // if none are completely valid.
+                                else ->
+                                    bestMatches.firstOrNull { it.isValid() } ?: bestMatches.first()
                             }
-
-                            return BatchSize(_json = json)
                         }
                     }
 
@@ -4384,13 +4885,12 @@ private constructor(
 
                     fun _json(): Optional<JsonValue> = Optional.ofNullable(_json)
 
-                    fun <T> accept(visitor: Visitor<T>): T {
-                        return when {
+                    fun <T> accept(visitor: Visitor<T>): T =
+                        when {
                             auto != null -> visitor.visitAuto(auto)
                             manual != null -> visitor.visitManual(manual)
                             else -> visitor.unknown(_json)
                         }
-                    }
 
                     private var validated: Boolean = false
 
@@ -4416,6 +4916,33 @@ private constructor(
                         )
                         validated = true
                     }
+
+                    fun isValid(): Boolean =
+                        try {
+                            validate()
+                            true
+                        } catch (e: OpenAIInvalidDataException) {
+                            false
+                        }
+
+                    /**
+                     * Returns a score indicating how many valid values are contained in this object
+                     * recursively.
+                     *
+                     * Used for best match union deserialization.
+                     */
+                    @JvmSynthetic
+                    internal fun validity(): Int =
+                        accept(
+                            object : Visitor<Int> {
+                                override fun visitAuto(auto: JsonValue) =
+                                    auto.let { if (it == JsonValue.from("auto")) 1 else 0 }
+
+                                override fun visitManual(manual: Double) = 1
+
+                                override fun unknown(json: JsonValue?) = 0
+                            }
+                        )
 
                     override fun equals(other: Any?): Boolean {
                         if (this === other) {
@@ -4480,23 +5007,32 @@ private constructor(
                         ): LearningRateMultiplier {
                             val json = JsonValue.fromJsonNode(node)
 
-                            tryDeserialize(node, jacksonTypeRef<JsonValue>()) {
-                                    it.let {
-                                        if (it != JsonValue.from("auto")) {
-                                            throw OpenAIInvalidDataException(
-                                                "'auto' is invalid, received $it"
-                                            )
-                                        }
-                                    }
-                                }
-                                ?.let {
-                                    return LearningRateMultiplier(auto = it, _json = json)
-                                }
-                            tryDeserialize(node, jacksonTypeRef<Double>())?.let {
-                                return LearningRateMultiplier(manual = it, _json = json)
+                            val bestMatches =
+                                sequenceOf(
+                                        tryDeserialize(node, jacksonTypeRef<JsonValue>())
+                                            ?.let {
+                                                LearningRateMultiplier(auto = it, _json = json)
+                                            }
+                                            ?.takeIf { it.isValid() },
+                                        tryDeserialize(node, jacksonTypeRef<Double>())?.let {
+                                            LearningRateMultiplier(manual = it, _json = json)
+                                        },
+                                    )
+                                    .filterNotNull()
+                                    .allMaxBy { it.validity() }
+                                    .toList()
+                            return when (bestMatches.size) {
+                                // This can happen if what we're deserializing is completely
+                                // incompatible with all the possible variants (e.g. deserializing
+                                // from object).
+                                0 -> LearningRateMultiplier(_json = json)
+                                1 -> bestMatches.single()
+                                // If there's more than one match with the highest validity, then
+                                // use the first completely valid match, or simply the first match
+                                // if none are completely valid.
+                                else ->
+                                    bestMatches.firstOrNull { it.isValid() } ?: bestMatches.first()
                             }
-
-                            return LearningRateMultiplier(_json = json)
                         }
                     }
 
@@ -4546,13 +5082,12 @@ private constructor(
 
                     fun _json(): Optional<JsonValue> = Optional.ofNullable(_json)
 
-                    fun <T> accept(visitor: Visitor<T>): T {
-                        return when {
+                    fun <T> accept(visitor: Visitor<T>): T =
+                        when {
                             auto != null -> visitor.visitAuto(auto)
                             manual != null -> visitor.visitManual(manual)
                             else -> visitor.unknown(_json)
                         }
-                    }
 
                     private var validated: Boolean = false
 
@@ -4578,6 +5113,33 @@ private constructor(
                         )
                         validated = true
                     }
+
+                    fun isValid(): Boolean =
+                        try {
+                            validate()
+                            true
+                        } catch (e: OpenAIInvalidDataException) {
+                            false
+                        }
+
+                    /**
+                     * Returns a score indicating how many valid values are contained in this object
+                     * recursively.
+                     *
+                     * Used for best match union deserialization.
+                     */
+                    @JvmSynthetic
+                    internal fun validity(): Int =
+                        accept(
+                            object : Visitor<Int> {
+                                override fun visitAuto(auto: JsonValue) =
+                                    auto.let { if (it == JsonValue.from("auto")) 1 else 0 }
+
+                                override fun visitManual(manual: Long) = 1
+
+                                override fun unknown(json: JsonValue?) = 0
+                            }
+                        )
 
                     override fun equals(other: Any?): Boolean {
                         if (this === other) {
@@ -4634,23 +5196,30 @@ private constructor(
                         override fun ObjectCodec.deserialize(node: JsonNode): NEpochs {
                             val json = JsonValue.fromJsonNode(node)
 
-                            tryDeserialize(node, jacksonTypeRef<JsonValue>()) {
-                                    it.let {
-                                        if (it != JsonValue.from("auto")) {
-                                            throw OpenAIInvalidDataException(
-                                                "'auto' is invalid, received $it"
-                                            )
-                                        }
-                                    }
-                                }
-                                ?.let {
-                                    return NEpochs(auto = it, _json = json)
-                                }
-                            tryDeserialize(node, jacksonTypeRef<Long>())?.let {
-                                return NEpochs(manual = it, _json = json)
+                            val bestMatches =
+                                sequenceOf(
+                                        tryDeserialize(node, jacksonTypeRef<JsonValue>())
+                                            ?.let { NEpochs(auto = it, _json = json) }
+                                            ?.takeIf { it.isValid() },
+                                        tryDeserialize(node, jacksonTypeRef<Long>())?.let {
+                                            NEpochs(manual = it, _json = json)
+                                        },
+                                    )
+                                    .filterNotNull()
+                                    .allMaxBy { it.validity() }
+                                    .toList()
+                            return when (bestMatches.size) {
+                                // This can happen if what we're deserializing is completely
+                                // incompatible with all the possible variants (e.g. deserializing
+                                // from object).
+                                0 -> NEpochs(_json = json)
+                                1 -> bestMatches.single()
+                                // If there's more than one match with the highest validity, then
+                                // use the first completely valid match, or simply the first match
+                                // if none are completely valid.
+                                else ->
+                                    bestMatches.firstOrNull { it.isValid() } ?: bestMatches.first()
                             }
-
-                            return NEpochs(_json = json)
                         }
                     }
 
@@ -4794,6 +5363,33 @@ private constructor(
                 _value().asString().orElseThrow {
                     OpenAIInvalidDataException("Value is not a String")
                 }
+
+            private var validated: Boolean = false
+
+            fun validate(): Type = apply {
+                if (validated) {
+                    return@apply
+                }
+
+                known()
+                validated = true
+            }
+
+            fun isValid(): Boolean =
+                try {
+                    validate()
+                    true
+                } catch (e: OpenAIInvalidDataException) {
+                    false
+                }
+
+            /**
+             * Returns a score indicating how many valid values are contained in this object
+             * recursively.
+             *
+             * Used for best match union deserialization.
+             */
+            @JvmSynthetic internal fun validity(): Int = if (value() == Value._UNKNOWN) 0 else 1
 
             override fun equals(other: Any?): Boolean {
                 if (this === other) {

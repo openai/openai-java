@@ -84,14 +84,13 @@ private constructor(
 
     fun _json(): Optional<JsonValue> = Optional.ofNullable(_json)
 
-    fun <T> accept(visitor: Visitor<T>): T {
-        return when {
+    fun <T> accept(visitor: Visitor<T>): T =
+        when {
             text != null -> visitor.visitText(text)
             jsonSchema != null -> visitor.visitJsonSchema(jsonSchema)
             jsonObject != null -> visitor.visitJsonObject(jsonObject)
             else -> visitor.unknown(_json)
         }
-    }
 
     private var validated: Boolean = false
 
@@ -117,6 +116,35 @@ private constructor(
         )
         validated = true
     }
+
+    fun isValid(): Boolean =
+        try {
+            validate()
+            true
+        } catch (e: OpenAIInvalidDataException) {
+            false
+        }
+
+    /**
+     * Returns a score indicating how many valid values are contained in this object recursively.
+     *
+     * Used for best match union deserialization.
+     */
+    @JvmSynthetic
+    internal fun validity(): Int =
+        accept(
+            object : Visitor<Int> {
+                override fun visitText(text: ResponseFormatText) = text.validity()
+
+                override fun visitJsonSchema(jsonSchema: ResponseFormatTextJsonSchemaConfig) =
+                    jsonSchema.validity()
+
+                override fun visitJsonObject(jsonObject: ResponseFormatJsonObject) =
+                    jsonObject.validity()
+
+                override fun unknown(json: JsonValue?) = 0
+            }
+        )
 
     override fun equals(other: Any?): Boolean {
         if (this === other) {
@@ -206,23 +234,22 @@ private constructor(
 
             when (type) {
                 "text" -> {
-                    return ResponseFormatTextConfig(
-                        text = deserialize(node, jacksonTypeRef<ResponseFormatText>()),
-                        _json = json,
-                    )
+                    return tryDeserialize(node, jacksonTypeRef<ResponseFormatText>())?.let {
+                        ResponseFormatTextConfig(text = it, _json = json)
+                    } ?: ResponseFormatTextConfig(_json = json)
                 }
                 "json_schema" -> {
-                    return ResponseFormatTextConfig(
-                        jsonSchema =
-                            deserialize(node, jacksonTypeRef<ResponseFormatTextJsonSchemaConfig>()),
-                        _json = json,
-                    )
+                    return tryDeserialize(
+                            node,
+                            jacksonTypeRef<ResponseFormatTextJsonSchemaConfig>(),
+                        )
+                        ?.let { ResponseFormatTextConfig(jsonSchema = it, _json = json) }
+                        ?: ResponseFormatTextConfig(_json = json)
                 }
                 "json_object" -> {
-                    return ResponseFormatTextConfig(
-                        jsonObject = deserialize(node, jacksonTypeRef<ResponseFormatJsonObject>()),
-                        _json = json,
-                    )
+                    return tryDeserialize(node, jacksonTypeRef<ResponseFormatJsonObject>())?.let {
+                        ResponseFormatTextConfig(jsonObject = it, _json = json)
+                    } ?: ResponseFormatTextConfig(_json = json)
                 }
             }
 

@@ -53,14 +53,13 @@ private constructor(
 
     fun _json(): Optional<JsonValue> = Optional.ofNullable(_json)
 
-    fun <T> accept(visitor: Visitor<T>): T {
-        return when {
+    fun <T> accept(visitor: Visitor<T>): T =
+        when {
             codeInterpreter != null -> visitor.visitCodeInterpreter(codeInterpreter)
             fileSearch != null -> visitor.visitFileSearch(fileSearch)
             function != null -> visitor.visitFunction(function)
             else -> visitor.unknown(_json)
         }
-    }
 
     private var validated: Boolean = false
 
@@ -86,6 +85,35 @@ private constructor(
         )
         validated = true
     }
+
+    fun isValid(): Boolean =
+        try {
+            validate()
+            true
+        } catch (e: OpenAIInvalidDataException) {
+            false
+        }
+
+    /**
+     * Returns a score indicating how many valid values are contained in this object recursively.
+     *
+     * Used for best match union deserialization.
+     */
+    @JvmSynthetic
+    internal fun validity(): Int =
+        accept(
+            object : Visitor<Int> {
+                override fun visitCodeInterpreter(codeInterpreter: CodeInterpreterToolCallDelta) =
+                    codeInterpreter.validity()
+
+                override fun visitFileSearch(fileSearch: FileSearchToolCallDelta) =
+                    fileSearch.validity()
+
+                override fun visitFunction(function: FunctionToolCallDelta) = function.validity()
+
+                override fun unknown(json: JsonValue?) = 0
+            }
+        )
 
     override fun equals(other: Any?): Boolean {
         if (this === other) {
@@ -155,23 +183,19 @@ private constructor(
 
             when (type) {
                 "code_interpreter" -> {
-                    return ToolCallDelta(
-                        codeInterpreter =
-                            deserialize(node, jacksonTypeRef<CodeInterpreterToolCallDelta>()),
-                        _json = json,
-                    )
+                    return tryDeserialize(node, jacksonTypeRef<CodeInterpreterToolCallDelta>())
+                        ?.let { ToolCallDelta(codeInterpreter = it, _json = json) }
+                        ?: ToolCallDelta(_json = json)
                 }
                 "file_search" -> {
-                    return ToolCallDelta(
-                        fileSearch = deserialize(node, jacksonTypeRef<FileSearchToolCallDelta>()),
-                        _json = json,
-                    )
+                    return tryDeserialize(node, jacksonTypeRef<FileSearchToolCallDelta>())?.let {
+                        ToolCallDelta(fileSearch = it, _json = json)
+                    } ?: ToolCallDelta(_json = json)
                 }
                 "function" -> {
-                    return ToolCallDelta(
-                        function = deserialize(node, jacksonTypeRef<FunctionToolCallDelta>()),
-                        _json = json,
-                    )
+                    return tryDeserialize(node, jacksonTypeRef<FunctionToolCallDelta>())?.let {
+                        ToolCallDelta(function = it, _json = json)
+                    } ?: ToolCallDelta(_json = json)
                 }
             }
 

@@ -46,13 +46,12 @@ private constructor(
 
     fun _json(): Optional<JsonValue> = Optional.ofNullable(_json)
 
-    fun <T> accept(visitor: Visitor<T>): T {
-        return when {
+    fun <T> accept(visitor: Visitor<T>): T =
+        when {
             imageUrl != null -> visitor.visitImageUrl(imageUrl)
             text != null -> visitor.visitText(text)
             else -> visitor.unknown(_json)
         }
-    }
 
     private var validated: Boolean = false
 
@@ -74,6 +73,31 @@ private constructor(
         )
         validated = true
     }
+
+    fun isValid(): Boolean =
+        try {
+            validate()
+            true
+        } catch (e: OpenAIInvalidDataException) {
+            false
+        }
+
+    /**
+     * Returns a score indicating how many valid values are contained in this object recursively.
+     *
+     * Used for best match union deserialization.
+     */
+    @JvmSynthetic
+    internal fun validity(): Int =
+        accept(
+            object : Visitor<Int> {
+                override fun visitImageUrl(imageUrl: ModerationImageUrlInput) = imageUrl.validity()
+
+                override fun visitText(text: ModerationTextInput) = text.validity()
+
+                override fun unknown(json: JsonValue?) = 0
+            }
+        )
 
     override fun equals(other: Any?): Boolean {
         if (this === other) {
@@ -140,16 +164,14 @@ private constructor(
 
             when (type) {
                 "image_url" -> {
-                    return ModerationMultiModalInput(
-                        imageUrl = deserialize(node, jacksonTypeRef<ModerationImageUrlInput>()),
-                        _json = json,
-                    )
+                    return tryDeserialize(node, jacksonTypeRef<ModerationImageUrlInput>())?.let {
+                        ModerationMultiModalInput(imageUrl = it, _json = json)
+                    } ?: ModerationMultiModalInput(_json = json)
                 }
                 "text" -> {
-                    return ModerationMultiModalInput(
-                        text = deserialize(node, jacksonTypeRef<ModerationTextInput>()),
-                        _json = json,
-                    )
+                    return tryDeserialize(node, jacksonTypeRef<ModerationTextInput>())?.let {
+                        ModerationMultiModalInput(text = it, _json = json)
+                    } ?: ModerationMultiModalInput(_json = json)
                 }
             }
 
