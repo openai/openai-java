@@ -35,6 +35,7 @@ private constructor(
     @get:JvmName("timeout") val timeout: Timeout,
     @get:JvmName("maxRetries") val maxRetries: Int,
     @get:JvmName("credential") val credential: Credential,
+    @get:JvmName("azureServiceVersion") val azureServiceVersion: AzureOpenAIServiceVersion?,
     private val organization: String?,
     private val project: String?,
 ) {
@@ -104,6 +105,7 @@ private constructor(
             credential = clientOptions.credential
             organization = clientOptions.organization
             project = clientOptions.project
+            azureServiceVersion = clientOptions.azureServiceVersion
         }
 
         fun httpClient(httpClient: HttpClient) = apply { this.httpClient = httpClient }
@@ -350,6 +352,7 @@ private constructor(
                 timeout,
                 maxRetries,
                 credential,
+                azureServiceVersion,
                 organization,
                 project,
             )
