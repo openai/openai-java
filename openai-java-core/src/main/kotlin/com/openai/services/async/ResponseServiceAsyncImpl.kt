@@ -106,7 +106,7 @@ class ResponseServiceAsyncImpl internal constructor(private val clientOptions: C
                     .prepareAsync(
                         clientOptions,
                         params,
-                        deploymentModel = params.model().toString(),
+                        deploymentModel = null,
                     )
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             return request
@@ -151,7 +151,7 @@ class ResponseServiceAsyncImpl internal constructor(private val clientOptions: C
                     .prepareAsync(
                         clientOptions,
                         params,
-                        deploymentModel = params.model().toString(),
+                        deploymentModel = null,
                     )
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             return request
