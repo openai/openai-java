@@ -1,6 +1,5 @@
 package com.openai.helpers
 
-import com.openai.core.JsonField
 import com.openai.core.JsonNull
 import com.openai.core.JsonValue
 import com.openai.errors.OpenAIInvalidDataException
@@ -69,6 +68,27 @@ class ChatCompletionAccumulator private constructor() {
     private val logprobsBuilders = mutableMapOf<Long, ChatCompletion.Choice.Logprobs.Builder>()
 
     /**
+     * The accumulated tool call builders for each message. The "outer" keys correspond to the
+     * indexes in [messageBuilders] (the choice index). The "inner" keys correspond to the position
+     * of each tool call in the message's list of tool calls (the tool call index).
+     */
+    private val toolCallBuilders =
+        mutableMapOf<Long, MutableMap<Long, ChatCompletionMessageToolCall.Builder>>()
+
+    /**
+     * The accumulated tool call function builders for the tool call builders of each message. The
+     * entries correspond to those in [toolCallBuilders].
+     */
+    private val toolCallFunctionBuilders =
+        mutableMapOf<Long, MutableMap<Long, ChatCompletionMessageToolCall.Function.Builder>>()
+
+    /**
+     * The accumulated tool call function arguments that will be set on the function builders when
+     * completed. The entries correspond to those in [toolCallFunctionBuilders].
+     */
+    private val toolCallFunctionArgs = mutableMapOf<Long, MutableMap<Long, String>>()
+
+    /**
      * The finished status of each of the `n` completions. When a chunk with a `finishReason` is
      * encountered, its index is recorded against a `true` value. When a `true` has been recorded
      * for all indexes, the chat completion is finished and no further chunks (except perhaps a
@@ -79,27 +99,6 @@ class ChatCompletionAccumulator private constructor() {
 
     companion object {
         @JvmStatic fun create() = ChatCompletionAccumulator()
-
-        @JvmSynthetic
-        internal fun convertToolCall(chunkToolCall: ChatCompletionChunk.Choice.Delta.ToolCall) =
-            ChatCompletionMessageToolCall.builder()
-                .id(chunkToolCall._id())
-                .function(convertToolCallFunction(chunkToolCall._function()))
-                .additionalProperties(chunkToolCall._additionalProperties())
-                // Let the `type` default to "function".
-                .build()
-
-        @JvmSynthetic
-        internal fun convertToolCallFunction(
-            chunkToolCallFunction: JsonField<ChatCompletionChunk.Choice.Delta.ToolCall.Function>
-        ): JsonField<ChatCompletionMessageToolCall.Function> =
-            chunkToolCallFunction.map { function ->
-                ChatCompletionMessageToolCall.Function.builder()
-                    .name(function._name())
-                    .arguments(function._arguments())
-                    .additionalProperties(function._additionalProperties())
-                    .build()
-            }
 
         @JvmSynthetic
         internal fun convertFunctionCall(
@@ -253,14 +252,48 @@ class ChatCompletionAccumulator private constructor() {
         delta.role().ifPresent { messageBuilder.role(JsonValue.from(it.asString())) }
         delta.functionCall().ifPresent { messageBuilder.functionCall(convertFunctionCall(it)) }
 
-        // Add the `ToolCall` objects in the order in which they are encountered.
-        // (`...Delta.ToolCall.index` is not documented, so it is ignored here.)
-        delta.toolCalls().ifPresent { it.map { messageBuilder.addToolCall(convertToolCall(it)) } }
+        delta.toolCalls().ifPresent {
+            it.map { deltaToolCall ->
+                // The first chunk delta will carry the tool call ID and the function name. Later
+                // deltas will carry only fragments of the function arguments, but the tool call
+                // index will identify the function to which those argument fragments belong.
+                val messageToolCallBuilders = toolCallBuilders.getOrPut(index) { mutableMapOf() }
+
+                messageToolCallBuilders.getOrPut(deltaToolCall.index()) {
+                    ChatCompletionMessageToolCall.builder()
+                        .id(deltaToolCall._id())
+                        .additionalProperties(deltaToolCall._additionalProperties())
+                    // Must wait until the `function` is accumulated and built before adding it to
+                    // the tool call later when `buildChoices` is called.
+                }
+
+                val messageToolCallFunctionBuilders =
+                    toolCallFunctionBuilders.getOrPut(index) { mutableMapOf() }
+
+                messageToolCallFunctionBuilders.getOrPut(deltaToolCall.index()) {
+                    ChatCompletionMessageToolCall.Function.builder()
+                        .name(ensureFunction(deltaToolCall.function())._name())
+                        .additionalProperties(deltaToolCall._additionalProperties())
+                }
+
+                val messageToolCallFunctionArgs =
+                    toolCallFunctionArgs.getOrPut(index) { mutableMapOf() }
+
+                messageToolCallFunctionArgs[deltaToolCall.index()] =
+                    (messageToolCallFunctionArgs[deltaToolCall.index()] ?: "") +
+                        (ensureFunction(deltaToolCall.function()).arguments().getOrNull() ?: "")
+            }
+        }
+
         messageBuilder.putAllAdditionalProperties(delta._additionalProperties())
     }
 
-    @JvmSynthetic
-    internal fun buildChoices() =
+    private fun ensureFunction(
+        function: Optional<ChatCompletionChunk.Choice.Delta.ToolCall.Function>
+    ): ChatCompletionChunk.Choice.Delta.ToolCall.Function =
+        function.orElseThrow { OpenAIInvalidDataException("Tool call chunk missing function.") }
+
+    private fun buildChoices() =
         choiceBuilders.entries
             .sortedBy { it.key }
             .map {
@@ -270,13 +303,41 @@ class ChatCompletionAccumulator private constructor() {
                     .build()
             }
 
-    @JvmSynthetic
-    internal fun buildMessage(index: Long) =
+    private fun buildMessage(index: Long) =
         messageBuilders
             .getOrElse(index) {
                 throw OpenAIInvalidDataException("Missing message for index $index.")
             }
             .content(messageContents[index])
             .refusal(messageRefusals[index])
+            .toolCalls(buildToolCalls(index))
             .build()
+
+    private fun buildToolCalls(index: Long): List<ChatCompletionMessageToolCall> =
+        // It is OK for a message not to have any tool calls; most will not and an empty list will
+        // be returned. An entry (if it exists) will be a collection of tool call builders and each
+        // has a function that needs to be set.
+        toolCallBuilders[index]
+            ?.entries
+            ?.sortedBy { it.key }
+            ?.map { messageToolCallBuilderEntry ->
+                messageToolCallBuilderEntry.value
+                    .function(buildFunction(index, messageToolCallBuilderEntry.key))
+                    .build()
+            } ?: listOf()
+
+    private fun buildFunction(index: Long, toolCallIndex: Long) =
+        // Every tool call is expected to have a function with arguments.
+        toolCallFunctionBuilders[index]
+            ?.get(toolCallIndex)
+            ?.arguments(
+                toolCallFunctionArgs[index]?.get(toolCallIndex)
+                    ?: throw OpenAIInvalidDataException(
+                        "Missing function arguments for index $index.$toolCallIndex."
+                    )
+            )
+            ?.build()
+            ?: throw OpenAIInvalidDataException(
+                "Missing function builder for index $index.$toolCallIndex."
+            )
 }
