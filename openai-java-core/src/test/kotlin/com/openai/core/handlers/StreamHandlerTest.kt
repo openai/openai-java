@@ -5,11 +5,41 @@ import com.openai.core.http.HttpResponse
 import com.openai.errors.OpenAIIoException
 import java.io.IOException
 import java.io.InputStream
+import kotlin.streams.asSequence
 import kotlin.test.Test
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.assertThrows
 
 internal class StreamHandlerTest {
+
+    @Test
+    fun streamHandler_splitsStreamOnNewlines() {
+        val handler = streamHandler { _, lines -> yieldAll(lines) }
+        val streamResponse = handler.handle(httpResponse("a\nbb\nccc\ndddd".byteInputStream()))
+
+        val lines = streamResponse.stream().asSequence().toList()
+
+        assertThat(lines).containsExactly("a", "bb", "ccc", "dddd")
+    }
+
+    @Test
+    fun streamHandler_whenClosedEarly_stopsYielding() {
+        val handler = streamHandler { _, lines -> yieldAll(lines) }
+        val streamResponse = handler.handle(httpResponse("a\nbb\nccc\ndddd".byteInputStream()))
+
+        val lines =
+            streamResponse
+                .stream()
+                .asSequence()
+                .onEach {
+                    if (it == "bb") {
+                        streamResponse.close()
+                    }
+                }
+                .toList()
+
+        assertThat(lines).containsExactly("a", "bb")
+    }
 
     @Test
     fun streamHandler_whenReaderThrowsIOException_wrapsException() {
