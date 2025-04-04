@@ -103,9 +103,9 @@ private constructor(
             timeout = clientOptions.timeout
             maxRetries = clientOptions.maxRetries
             credential = clientOptions.credential
+            azureServiceVersion = clientOptions.azureServiceVersion
             organization = clientOptions.organization
             project = clientOptions.project
-            azureServiceVersion = clientOptions.azureServiceVersion
         }
 
         fun httpClient(httpClient: HttpClient) = apply { this.httpClient = httpClient }

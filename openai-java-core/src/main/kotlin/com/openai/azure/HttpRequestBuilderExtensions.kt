@@ -12,9 +12,7 @@ internal fun HttpRequest.Builder.addPathSegmentsForAzure(
 ): HttpRequest.Builder = apply {
     if (isAzureEndpoint(clientOptions.baseUrl)) {
         addPathSegment("openai")
-        if (deploymentModel != null) {
-            addPathSegments("deployments", deploymentModel)
-        }
+        deploymentModel?.let { addPathSegments("deployments", it) }
     }
 }
 
