@@ -35,6 +35,7 @@ private constructor(
     @get:JvmName("timeout") val timeout: Timeout,
     @get:JvmName("maxRetries") val maxRetries: Int,
     @get:JvmName("credential") val credential: Credential,
+    @get:JvmName("azureServiceVersion") val azureServiceVersion: AzureOpenAIServiceVersion?,
     private val organization: String?,
     private val project: String?,
 ) {
@@ -102,6 +103,7 @@ private constructor(
             timeout = clientOptions.timeout
             maxRetries = clientOptions.maxRetries
             credential = clientOptions.credential
+            azureServiceVersion = clientOptions.azureServiceVersion
             organization = clientOptions.organization
             project = clientOptions.project
         }
@@ -350,6 +352,7 @@ private constructor(
                 timeout,
                 maxRetries,
                 credential,
+                azureServiceVersion,
                 organization,
                 project,
             )

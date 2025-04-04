@@ -17,7 +17,7 @@ class AzureOpenAIServiceVersion private constructor(@get:JvmName("value") val va
         @JvmStatic
         fun latestPreviewVersion(): AzureOpenAIServiceVersion {
             // We can update the value every preview announcement.
-            return V2025_01_01_PREVIEW
+            return V2025_03_01_PREVIEW
         }
 
         @JvmStatic
@@ -41,6 +41,8 @@ class AzureOpenAIServiceVersion private constructor(@get:JvmName("value") val va
         @JvmStatic val V2024_10_01_PREVIEW = fromString("2024-10-01-preview")
         @JvmStatic val V2024_12_01_PREVIEW = fromString("2024-12-01-preview")
         @JvmStatic val V2025_01_01_PREVIEW = fromString("2025-01-01-preview")
+        @JvmStatic val V2025_02_01_PREVIEW = fromString("2025-02-01-preview")
+        @JvmStatic val V2025_03_01_PREVIEW = fromString("2025-03-01-preview")
     }
 
     override fun equals(other: Any?): Boolean =
