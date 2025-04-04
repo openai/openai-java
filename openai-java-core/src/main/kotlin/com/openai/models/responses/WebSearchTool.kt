@@ -59,14 +59,13 @@ private constructor(
      *   server responded with an unexpected value).
      */
     fun searchContextSize(): Optional<SearchContextSize> =
-        Optional.ofNullable(searchContextSize.getNullable("search_context_size"))
+        searchContextSize.getOptional("search_context_size")
 
     /**
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
      */
-    fun userLocation(): Optional<UserLocation> =
-        Optional.ofNullable(userLocation.getNullable("user_location"))
+    fun userLocation(): Optional<UserLocation> = userLocation.getOptional("user_location")
 
     /**
      * Returns the raw JSON value of [type].
@@ -565,7 +564,7 @@ private constructor(
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
          */
-        fun city(): Optional<String> = Optional.ofNullable(city.getNullable("city"))
+        fun city(): Optional<String> = city.getOptional("city")
 
         /**
          * The two-letter [ISO country code](https://en.wikipedia.org/wiki/ISO_3166-1) of the user,
@@ -574,7 +573,7 @@ private constructor(
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
          */
-        fun country(): Optional<String> = Optional.ofNullable(country.getNullable("country"))
+        fun country(): Optional<String> = country.getOptional("country")
 
         /**
          * Free text input for the region of the user, e.g. `California`.
@@ -582,7 +581,7 @@ private constructor(
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
          */
-        fun region(): Optional<String> = Optional.ofNullable(region.getNullable("region"))
+        fun region(): Optional<String> = region.getOptional("region")
 
         /**
          * The [IANA timezone](https://timeapi.io/documentation/iana-timezones) of the user, e.g.
@@ -591,7 +590,7 @@ private constructor(
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
          */
-        fun timezone(): Optional<String> = Optional.ofNullable(timezone.getNullable("timezone"))
+        fun timezone(): Optional<String> = timezone.getOptional("timezone")
 
         /**
          * Returns the raw JSON value of [city].

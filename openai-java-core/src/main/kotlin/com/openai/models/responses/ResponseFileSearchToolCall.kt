@@ -90,7 +90,7 @@ private constructor(
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
      */
-    fun results(): Optional<List<Result>> = Optional.ofNullable(results.getNullable("results"))
+    fun results(): Optional<List<Result>> = results.getOptional("results")
 
     /**
      * Returns the raw JSON value of [id].
@@ -525,8 +525,7 @@ private constructor(
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
          */
-        fun attributes(): Optional<Attributes> =
-            Optional.ofNullable(attributes.getNullable("attributes"))
+        fun attributes(): Optional<Attributes> = attributes.getOptional("attributes")
 
         /**
          * The unique ID of the file.
@@ -534,7 +533,7 @@ private constructor(
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
          */
-        fun fileId(): Optional<String> = Optional.ofNullable(fileId.getNullable("file_id"))
+        fun fileId(): Optional<String> = fileId.getOptional("file_id")
 
         /**
          * The name of the file.
@@ -542,7 +541,7 @@ private constructor(
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
          */
-        fun filename(): Optional<String> = Optional.ofNullable(filename.getNullable("filename"))
+        fun filename(): Optional<String> = filename.getOptional("filename")
 
         /**
          * The relevance score of the file - a value between 0 and 1.
@@ -550,7 +549,7 @@ private constructor(
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
          */
-        fun score(): Optional<Double> = Optional.ofNullable(score.getNullable("score"))
+        fun score(): Optional<Double> = score.getOptional("score")
 
         /**
          * The text that was retrieved from the file.
@@ -558,7 +557,7 @@ private constructor(
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
          */
-        fun text(): Optional<String> = Optional.ofNullable(text.getNullable("text"))
+        fun text(): Optional<String> = text.getOptional("text")
 
         /**
          * Returns the raw JSON value of [attributes].

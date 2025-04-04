@@ -77,7 +77,7 @@ private constructor(
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
      */
-    fun id(): Optional<String> = Optional.ofNullable(id.getNullable("id"))
+    fun id(): Optional<String> = id.getOptional("id")
 
     /**
      * The Code Interpreter tool call definition.
@@ -86,7 +86,7 @@ private constructor(
      *   server responded with an unexpected value).
      */
     fun codeInterpreter(): Optional<CodeInterpreter> =
-        Optional.ofNullable(codeInterpreter.getNullable("code_interpreter"))
+        codeInterpreter.getOptional("code_interpreter")
 
     /**
      * Returns the raw JSON value of [index].
@@ -306,7 +306,7 @@ private constructor(
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
          */
-        fun input(): Optional<String> = Optional.ofNullable(input.getNullable("input"))
+        fun input(): Optional<String> = input.getOptional("input")
 
         /**
          * The outputs from the Code Interpreter tool call. Code Interpreter can output one or more
@@ -316,7 +316,7 @@ private constructor(
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
          */
-        fun outputs(): Optional<List<Output>> = Optional.ofNullable(outputs.getNullable("outputs"))
+        fun outputs(): Optional<List<Output>> = outputs.getOptional("outputs")
 
         /**
          * Returns the raw JSON value of [input].

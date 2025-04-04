@@ -339,7 +339,7 @@ private constructor(
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
          */
-        fun md5(): Optional<String> = Optional.ofNullable(md5.getNullable("md5"))
+        fun md5(): Optional<String> = md5.getOptional("md5")
 
         /**
          * Returns the raw JSON value of [partIds].

@@ -39,7 +39,7 @@ private constructor(
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
      */
-    fun content(): Optional<String> = Optional.ofNullable(content.getNullable("content"))
+    fun content(): Optional<String> = content.getOptional("content")
 
     /**
      * The name of the function to call.

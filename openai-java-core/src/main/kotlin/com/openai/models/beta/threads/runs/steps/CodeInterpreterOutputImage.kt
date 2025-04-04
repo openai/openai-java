@@ -57,7 +57,7 @@ private constructor(
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
      */
-    fun image(): Optional<Image> = Optional.ofNullable(image.getNullable("image"))
+    fun image(): Optional<Image> = image.getOptional("image")
 
     /**
      * Returns the raw JSON value of [index].
@@ -242,7 +242,7 @@ private constructor(
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
          */
-        fun fileId(): Optional<String> = Optional.ofNullable(fileId.getNullable("file_id"))
+        fun fileId(): Optional<String> = fileId.getOptional("file_id")
 
         /**
          * Returns the raw JSON value of [fileId].

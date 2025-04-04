@@ -489,7 +489,7 @@ private constructor(
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
          */
-        fun dimensions(): Optional<Long> = Optional.ofNullable(dimensions.getNullable("dimensions"))
+        fun dimensions(): Optional<Long> = dimensions.getOptional("dimensions")
 
         /**
          * The format to return the embeddings in. Can be either `float` or
@@ -499,7 +499,7 @@ private constructor(
          *   server responded with an unexpected value).
          */
         fun encodingFormat(): Optional<EncodingFormat> =
-            Optional.ofNullable(encodingFormat.getNullable("encoding_format"))
+            encodingFormat.getOptional("encoding_format")
 
         /**
          * A unique identifier representing your end-user, which can help OpenAI to monitor and
@@ -509,7 +509,7 @@ private constructor(
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
          */
-        fun user(): Optional<String> = Optional.ofNullable(user.getNullable("user"))
+        fun user(): Optional<String> = user.getOptional("user")
 
         /**
          * Returns the raw JSON value of [input].

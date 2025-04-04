@@ -54,8 +54,7 @@ private constructor(
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
      */
-    fun description(): Optional<String> =
-        Optional.ofNullable(description.getNullable("description"))
+    fun description(): Optional<String> = description.getOptional("description")
 
     /**
      * The parameters the functions accepts, described as a JSON Schema object. See the
@@ -68,8 +67,7 @@ private constructor(
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
      */
-    fun parameters(): Optional<FunctionParameters> =
-        Optional.ofNullable(parameters.getNullable("parameters"))
+    fun parameters(): Optional<FunctionParameters> = parameters.getOptional("parameters")
 
     /**
      * Whether to enable strict schema adherence when generating the function call. If set to true,
@@ -80,7 +78,7 @@ private constructor(
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
      */
-    fun strict(): Optional<Boolean> = Optional.ofNullable(strict.getNullable("strict"))
+    fun strict(): Optional<Boolean> = strict.getOptional("strict")
 
     /**
      * Returns the raw JSON value of [name].

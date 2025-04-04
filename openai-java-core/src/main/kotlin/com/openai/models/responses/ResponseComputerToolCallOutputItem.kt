@@ -89,7 +89,7 @@ private constructor(
      *   server responded with an unexpected value).
      */
     fun acknowledgedSafetyChecks(): Optional<List<AcknowledgedSafetyCheck>> =
-        Optional.ofNullable(acknowledgedSafetyChecks.getNullable("acknowledged_safety_checks"))
+        acknowledgedSafetyChecks.getOptional("acknowledged_safety_checks")
 
     /**
      * The status of the message input. One of `in_progress`, `completed`, or `incomplete`.
@@ -98,7 +98,7 @@ private constructor(
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
      */
-    fun status(): Optional<Status> = Optional.ofNullable(status.getNullable("status"))
+    fun status(): Optional<Status> = status.getOptional("status")
 
     /**
      * Returns the raw JSON value of [id].
