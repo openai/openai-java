@@ -109,8 +109,7 @@ private constructor(
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
      */
-    fun description(): Optional<String> =
-        Optional.ofNullable(description.getNullable("description"))
+    fun description(): Optional<String> = description.getOptional("description")
 
     /**
      * The system instructions that the assistant uses. The maximum length is 256,000 characters.
@@ -118,8 +117,7 @@ private constructor(
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
      */
-    fun instructions(): Optional<String> =
-        Optional.ofNullable(instructions.getNullable("instructions"))
+    fun instructions(): Optional<String> = instructions.getOptional("instructions")
 
     /**
      * Set of 16 key-value pairs that can be attached to an object. This can be useful for storing
@@ -132,7 +130,7 @@ private constructor(
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
      */
-    fun metadata(): Optional<Metadata> = Optional.ofNullable(metadata.getNullable("metadata"))
+    fun metadata(): Optional<Metadata> = metadata.getOptional("metadata")
 
     /**
      * ID of the model to use. You can use the
@@ -151,7 +149,7 @@ private constructor(
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
      */
-    fun name(): Optional<String> = Optional.ofNullable(name.getNullable("name"))
+    fun name(): Optional<String> = name.getOptional("name")
 
     /**
      * The object type, which is always `assistant`.
@@ -199,7 +197,7 @@ private constructor(
      *   server responded with an unexpected value).
      */
     fun responseFormat(): Optional<AssistantResponseFormatOption> =
-        Optional.ofNullable(responseFormat.getNullable("response_format"))
+        responseFormat.getOptional("response_format")
 
     /**
      * What sampling temperature to use, between 0 and 2. Higher values like 0.8 will make the
@@ -208,8 +206,7 @@ private constructor(
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
      */
-    fun temperature(): Optional<Double> =
-        Optional.ofNullable(temperature.getNullable("temperature"))
+    fun temperature(): Optional<Double> = temperature.getOptional("temperature")
 
     /**
      * A set of resources that are used by the assistant's tools. The resources are specific to the
@@ -219,8 +216,7 @@ private constructor(
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
      */
-    fun toolResources(): Optional<ToolResources> =
-        Optional.ofNullable(toolResources.getNullable("tool_resources"))
+    fun toolResources(): Optional<ToolResources> = toolResources.getOptional("tool_resources")
 
     /**
      * An alternative to sampling with temperature, called nucleus sampling, where the model
@@ -232,7 +228,7 @@ private constructor(
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
      */
-    fun topP(): Optional<Double> = Optional.ofNullable(topP.getNullable("top_p"))
+    fun topP(): Optional<Double> = topP.getOptional("top_p")
 
     /**
      * Returns the raw JSON value of [id].
@@ -954,14 +950,13 @@ private constructor(
          *   server responded with an unexpected value).
          */
         fun codeInterpreter(): Optional<CodeInterpreter> =
-            Optional.ofNullable(codeInterpreter.getNullable("code_interpreter"))
+            codeInterpreter.getOptional("code_interpreter")
 
         /**
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
          */
-        fun fileSearch(): Optional<FileSearch> =
-            Optional.ofNullable(fileSearch.getNullable("file_search"))
+        fun fileSearch(): Optional<FileSearch> = fileSearch.getOptional("file_search")
 
         /**
          * Returns the raw JSON value of [codeInterpreter].
@@ -1121,8 +1116,7 @@ private constructor(
              * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if
              *   the server responded with an unexpected value).
              */
-            fun fileIds(): Optional<List<String>> =
-                Optional.ofNullable(fileIds.getNullable("file_ids"))
+            fun fileIds(): Optional<List<String>> = fileIds.getOptional("file_ids")
 
             /**
              * Returns the raw JSON value of [fileIds].
@@ -1295,7 +1289,7 @@ private constructor(
              *   the server responded with an unexpected value).
              */
             fun vectorStoreIds(): Optional<List<String>> =
-                Optional.ofNullable(vectorStoreIds.getNullable("vector_store_ids"))
+                vectorStoreIds.getOptional("vector_store_ids")
 
             /**
              * Returns the raw JSON value of [vectorStoreIds].

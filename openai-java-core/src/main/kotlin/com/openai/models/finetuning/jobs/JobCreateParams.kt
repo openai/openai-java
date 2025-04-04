@@ -713,7 +713,7 @@ private constructor(
          */
         @Deprecated("deprecated")
         fun hyperparameters(): Optional<Hyperparameters> =
-            Optional.ofNullable(hyperparameters.getNullable("hyperparameters"))
+            hyperparameters.getOptional("hyperparameters")
 
         /**
          * A list of integrations to enable for your fine-tuning job.
@@ -721,8 +721,7 @@ private constructor(
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
          */
-        fun integrations(): Optional<List<Integration>> =
-            Optional.ofNullable(integrations.getNullable("integrations"))
+        fun integrations(): Optional<List<Integration>> = integrations.getOptional("integrations")
 
         /**
          * Set of 16 key-value pairs that can be attached to an object. This can be useful for
@@ -735,7 +734,7 @@ private constructor(
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
          */
-        fun metadata(): Optional<Metadata> = Optional.ofNullable(metadata.getNullable("metadata"))
+        fun metadata(): Optional<Metadata> = metadata.getOptional("metadata")
 
         /**
          * The method used for fine-tuning.
@@ -743,7 +742,7 @@ private constructor(
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
          */
-        fun method(): Optional<Method> = Optional.ofNullable(method.getNullable("method"))
+        fun method(): Optional<Method> = method.getOptional("method")
 
         /**
          * The seed controls the reproducibility of the job. Passing in the same seed and job
@@ -753,7 +752,7 @@ private constructor(
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
          */
-        fun seed(): Optional<Long> = Optional.ofNullable(seed.getNullable("seed"))
+        fun seed(): Optional<Long> = seed.getOptional("seed")
 
         /**
          * A string of up to 64 characters that will be added to your fine-tuned model name.
@@ -764,7 +763,7 @@ private constructor(
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
          */
-        fun suffix(): Optional<String> = Optional.ofNullable(suffix.getNullable("suffix"))
+        fun suffix(): Optional<String> = suffix.getOptional("suffix")
 
         /**
          * The ID of an uploaded file that contains validation data.
@@ -782,8 +781,7 @@ private constructor(
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
          */
-        fun validationFile(): Optional<String> =
-            Optional.ofNullable(validationFile.getNullable("validation_file"))
+        fun validationFile(): Optional<String> = validationFile.getOptional("validation_file")
 
         /**
          * Returns the raw JSON value of [model].
@@ -1415,8 +1413,7 @@ private constructor(
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
          */
-        fun batchSize(): Optional<BatchSize> =
-            Optional.ofNullable(batchSize.getNullable("batch_size"))
+        fun batchSize(): Optional<BatchSize> = batchSize.getOptional("batch_size")
 
         /**
          * Scaling factor for the learning rate. A smaller learning rate may be useful to avoid
@@ -1426,7 +1423,7 @@ private constructor(
          *   server responded with an unexpected value).
          */
         fun learningRateMultiplier(): Optional<LearningRateMultiplier> =
-            Optional.ofNullable(learningRateMultiplier.getNullable("learning_rate_multiplier"))
+            learningRateMultiplier.getOptional("learning_rate_multiplier")
 
         /**
          * The number of epochs to train the model for. An epoch refers to one full cycle through
@@ -1435,7 +1432,7 @@ private constructor(
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
          */
-        fun nEpochs(): Optional<NEpochs> = Optional.ofNullable(nEpochs.getNullable("n_epochs"))
+        fun nEpochs(): Optional<NEpochs> = nEpochs.getOptional("n_epochs")
 
         /**
          * Returns the raw JSON value of [batchSize].
@@ -2441,7 +2438,7 @@ private constructor(
              * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if
              *   the server responded with an unexpected value).
              */
-            fun entity(): Optional<String> = Optional.ofNullable(entity.getNullable("entity"))
+            fun entity(): Optional<String> = entity.getOptional("entity")
 
             /**
              * A display name to set for the run. If not set, we will use the Job ID as the name.
@@ -2449,7 +2446,7 @@ private constructor(
              * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if
              *   the server responded with an unexpected value).
              */
-            fun name(): Optional<String> = Optional.ofNullable(name.getNullable("name"))
+            fun name(): Optional<String> = name.getOptional("name")
 
             /**
              * A list of tags to be attached to the newly created run. These tags are passed through
@@ -2459,7 +2456,7 @@ private constructor(
              * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if
              *   the server responded with an unexpected value).
              */
-            fun tags(): Optional<List<String>> = Optional.ofNullable(tags.getNullable("tags"))
+            fun tags(): Optional<List<String>> = tags.getOptional("tags")
 
             /**
              * Returns the raw JSON value of [project].
@@ -2859,7 +2856,7 @@ private constructor(
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
          */
-        fun dpo(): Optional<Dpo> = Optional.ofNullable(dpo.getNullable("dpo"))
+        fun dpo(): Optional<Dpo> = dpo.getOptional("dpo")
 
         /**
          * Configuration for the supervised fine-tuning method.
@@ -2867,8 +2864,7 @@ private constructor(
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
          */
-        fun supervised(): Optional<Supervised> =
-            Optional.ofNullable(supervised.getNullable("supervised"))
+        fun supervised(): Optional<Supervised> = supervised.getOptional("supervised")
 
         /**
          * The type of method. Is either `supervised` or `dpo`.
@@ -2876,7 +2872,7 @@ private constructor(
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
          */
-        fun type(): Optional<Type> = Optional.ofNullable(type.getNullable("type"))
+        fun type(): Optional<Type> = type.getOptional("type")
 
         /**
          * Returns the raw JSON value of [dpo].
@@ -3054,7 +3050,7 @@ private constructor(
              *   the server responded with an unexpected value).
              */
             fun hyperparameters(): Optional<Hyperparameters> =
-                Optional.ofNullable(hyperparameters.getNullable("hyperparameters"))
+                hyperparameters.getOptional("hyperparameters")
 
             /**
              * Returns the raw JSON value of [hyperparameters].
@@ -3200,8 +3196,7 @@ private constructor(
                  * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g.
                  *   if the server responded with an unexpected value).
                  */
-                fun batchSize(): Optional<BatchSize> =
-                    Optional.ofNullable(batchSize.getNullable("batch_size"))
+                fun batchSize(): Optional<BatchSize> = batchSize.getOptional("batch_size")
 
                 /**
                  * The beta value for the DPO method. A higher beta value will increase the weight
@@ -3210,7 +3205,7 @@ private constructor(
                  * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g.
                  *   if the server responded with an unexpected value).
                  */
-                fun beta(): Optional<Beta> = Optional.ofNullable(beta.getNullable("beta"))
+                fun beta(): Optional<Beta> = beta.getOptional("beta")
 
                 /**
                  * Scaling factor for the learning rate. A smaller learning rate may be useful to
@@ -3220,9 +3215,7 @@ private constructor(
                  *   if the server responded with an unexpected value).
                  */
                 fun learningRateMultiplier(): Optional<LearningRateMultiplier> =
-                    Optional.ofNullable(
-                        learningRateMultiplier.getNullable("learning_rate_multiplier")
-                    )
+                    learningRateMultiplier.getOptional("learning_rate_multiplier")
 
                 /**
                  * The number of epochs to train the model for. An epoch refers to one full cycle
@@ -3231,8 +3224,7 @@ private constructor(
                  * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g.
                  *   if the server responded with an unexpected value).
                  */
-                fun nEpochs(): Optional<NEpochs> =
-                    Optional.ofNullable(nEpochs.getNullable("n_epochs"))
+                fun nEpochs(): Optional<NEpochs> = nEpochs.getOptional("n_epochs")
 
                 /**
                  * Returns the raw JSON value of [batchSize].
@@ -4290,7 +4282,7 @@ private constructor(
              *   the server responded with an unexpected value).
              */
             fun hyperparameters(): Optional<Hyperparameters> =
-                Optional.ofNullable(hyperparameters.getNullable("hyperparameters"))
+                hyperparameters.getOptional("hyperparameters")
 
             /**
              * Returns the raw JSON value of [hyperparameters].
@@ -4435,8 +4427,7 @@ private constructor(
                  * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g.
                  *   if the server responded with an unexpected value).
                  */
-                fun batchSize(): Optional<BatchSize> =
-                    Optional.ofNullable(batchSize.getNullable("batch_size"))
+                fun batchSize(): Optional<BatchSize> = batchSize.getOptional("batch_size")
 
                 /**
                  * Scaling factor for the learning rate. A smaller learning rate may be useful to
@@ -4446,9 +4437,7 @@ private constructor(
                  *   if the server responded with an unexpected value).
                  */
                 fun learningRateMultiplier(): Optional<LearningRateMultiplier> =
-                    Optional.ofNullable(
-                        learningRateMultiplier.getNullable("learning_rate_multiplier")
-                    )
+                    learningRateMultiplier.getOptional("learning_rate_multiplier")
 
                 /**
                  * The number of epochs to train the model for. An epoch refers to one full cycle
@@ -4457,8 +4446,7 @@ private constructor(
                  * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g.
                  *   if the server responded with an unexpected value).
                  */
-                fun nEpochs(): Optional<NEpochs> =
-                    Optional.ofNullable(nEpochs.getNullable("n_epochs"))
+                fun nEpochs(): Optional<NEpochs> = nEpochs.getOptional("n_epochs")
 
                 /**
                  * Returns the raw JSON value of [batchSize].

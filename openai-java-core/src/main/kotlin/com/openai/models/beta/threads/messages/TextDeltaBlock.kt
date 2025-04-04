@@ -58,7 +58,7 @@ private constructor(
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
      */
-    fun text(): Optional<TextDelta> = Optional.ofNullable(text.getNullable("text"))
+    fun text(): Optional<TextDelta> = text.getOptional("text")
 
     /**
      * Returns the raw JSON value of [index].

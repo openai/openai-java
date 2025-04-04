@@ -573,8 +573,7 @@ private constructor(
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
          */
-        fun include(): Optional<List<TranscriptionInclude>> =
-            Optional.ofNullable(include.value.getNullable("include"))
+        fun include(): Optional<List<TranscriptionInclude>> = include.value.getOptional("include")
 
         /**
          * The language of the input audio. Supplying the input language in
@@ -584,8 +583,7 @@ private constructor(
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
          */
-        fun language(): Optional<String> =
-            Optional.ofNullable(language.value.getNullable("language"))
+        fun language(): Optional<String> = language.value.getOptional("language")
 
         /**
          * An optional text to guide the model's style or continue a previous audio segment. The
@@ -595,7 +593,7 @@ private constructor(
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
          */
-        fun prompt(): Optional<String> = Optional.ofNullable(prompt.value.getNullable("prompt"))
+        fun prompt(): Optional<String> = prompt.value.getOptional("prompt")
 
         /**
          * The format of the output, in one of these options: `json`, `text`, `srt`, `verbose_json`,
@@ -606,7 +604,7 @@ private constructor(
          *   server responded with an unexpected value).
          */
         fun responseFormat(): Optional<AudioResponseFormat> =
-            Optional.ofNullable(responseFormat.value.getNullable("response_format"))
+            responseFormat.value.getOptional("response_format")
 
         /**
          * The sampling temperature, between 0 and 1. Higher values like 0.8 will make the output
@@ -618,8 +616,7 @@ private constructor(
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
          */
-        fun temperature(): Optional<Double> =
-            Optional.ofNullable(temperature.value.getNullable("temperature"))
+        fun temperature(): Optional<Double> = temperature.value.getOptional("temperature")
 
         /**
          * The timestamp granularities to populate for this transcription. `response_format` must be
@@ -631,7 +628,7 @@ private constructor(
          *   server responded with an unexpected value).
          */
         fun timestampGranularities(): Optional<List<TimestampGranularity>> =
-            Optional.ofNullable(timestampGranularities.value.getNullable("timestamp_granularities"))
+            timestampGranularities.value.getOptional("timestamp_granularities")
 
         /**
          * Returns the raw multipart value of [file].

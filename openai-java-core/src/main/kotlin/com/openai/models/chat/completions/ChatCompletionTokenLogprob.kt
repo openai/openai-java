@@ -55,7 +55,7 @@ private constructor(
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
      */
-    fun bytes(): Optional<List<Long>> = Optional.ofNullable(bytes.getNullable("bytes"))
+    fun bytes(): Optional<List<Long>> = bytes.getOptional("bytes")
 
     /**
      * The log probability of this token, if it is within the top 20 most likely tokens. Otherwise,
@@ -347,7 +347,7 @@ private constructor(
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
          */
-        fun bytes(): Optional<List<Long>> = Optional.ofNullable(bytes.getNullable("bytes"))
+        fun bytes(): Optional<List<Long>> = bytes.getOptional("bytes")
 
         /**
          * The log probability of this token, if it is within the top 20 most likely tokens.

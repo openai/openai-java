@@ -18,6 +18,7 @@ import java.util.Optional
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.Executor
 import java.util.function.Predicate
+import kotlin.jvm.optionals.getOrNull
 
 /** Search a vector store for relevant chunks based on a query and file attributes filter. */
 class VectorStoreSearchPageAsync
@@ -85,7 +86,8 @@ private constructor(
             @JsonProperty("object") object_: JsonField<String> = JsonMissing.of(),
         ) : this(data, object_, mutableMapOf())
 
-        fun data(): List<VectorStoreSearchResponse> = data.getNullable("data") ?: listOf()
+        fun data(): List<VectorStoreSearchResponse> =
+            data.getOptional("data").getOrNull() ?: listOf()
 
         fun object_(): String = object_.getRequired("object")
 

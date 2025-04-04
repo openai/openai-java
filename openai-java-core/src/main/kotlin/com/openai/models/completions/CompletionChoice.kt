@@ -60,7 +60,7 @@ private constructor(
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
      */
-    fun logprobs(): Optional<Logprobs> = Optional.ofNullable(logprobs.getNullable("logprobs"))
+    fun logprobs(): Optional<Logprobs> = logprobs.getOptional("logprobs")
 
     /**
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
@@ -444,28 +444,25 @@ private constructor(
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
          */
-        fun textOffset(): Optional<List<Long>> =
-            Optional.ofNullable(textOffset.getNullable("text_offset"))
+        fun textOffset(): Optional<List<Long>> = textOffset.getOptional("text_offset")
 
         /**
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
          */
-        fun tokenLogprobs(): Optional<List<Double>> =
-            Optional.ofNullable(tokenLogprobs.getNullable("token_logprobs"))
+        fun tokenLogprobs(): Optional<List<Double>> = tokenLogprobs.getOptional("token_logprobs")
 
         /**
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
          */
-        fun tokens(): Optional<List<String>> = Optional.ofNullable(tokens.getNullable("tokens"))
+        fun tokens(): Optional<List<String>> = tokens.getOptional("tokens")
 
         /**
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
          */
-        fun topLogprobs(): Optional<List<TopLogprob>> =
-            Optional.ofNullable(topLogprobs.getNullable("top_logprobs"))
+        fun topLogprobs(): Optional<List<TopLogprob>> = topLogprobs.getOptional("top_logprobs")
 
         /**
          * Returns the raw JSON value of [textOffset].

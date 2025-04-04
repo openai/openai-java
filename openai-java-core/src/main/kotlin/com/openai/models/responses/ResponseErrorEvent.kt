@@ -41,7 +41,7 @@ private constructor(
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
      */
-    fun code(): Optional<String> = Optional.ofNullable(code.getNullable("code"))
+    fun code(): Optional<String> = code.getOptional("code")
 
     /**
      * The error message.
@@ -57,7 +57,7 @@ private constructor(
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
      */
-    fun param(): Optional<String> = Optional.ofNullable(param.getNullable("param"))
+    fun param(): Optional<String> = param.getOptional("param")
 
     /**
      * The type of the event. Always `error`.

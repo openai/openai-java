@@ -344,7 +344,7 @@ private constructor(
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
          */
-        fun metadata(): Optional<Metadata> = Optional.ofNullable(metadata.getNullable("metadata"))
+        fun metadata(): Optional<Metadata> = metadata.getOptional("metadata")
 
         /**
          * A set of resources that are made available to the assistant's tools in this thread. The
@@ -355,8 +355,7 @@ private constructor(
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
          */
-        fun toolResources(): Optional<ToolResources> =
-            Optional.ofNullable(toolResources.getNullable("tool_resources"))
+        fun toolResources(): Optional<ToolResources> = toolResources.getOptional("tool_resources")
 
         /**
          * Returns the raw JSON value of [metadata].
@@ -665,14 +664,13 @@ private constructor(
          *   server responded with an unexpected value).
          */
         fun codeInterpreter(): Optional<CodeInterpreter> =
-            Optional.ofNullable(codeInterpreter.getNullable("code_interpreter"))
+            codeInterpreter.getOptional("code_interpreter")
 
         /**
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
          */
-        fun fileSearch(): Optional<FileSearch> =
-            Optional.ofNullable(fileSearch.getNullable("file_search"))
+        fun fileSearch(): Optional<FileSearch> = fileSearch.getOptional("file_search")
 
         /**
          * Returns the raw JSON value of [codeInterpreter].
@@ -832,8 +830,7 @@ private constructor(
              * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if
              *   the server responded with an unexpected value).
              */
-            fun fileIds(): Optional<List<String>> =
-                Optional.ofNullable(fileIds.getNullable("file_ids"))
+            fun fileIds(): Optional<List<String>> = fileIds.getOptional("file_ids")
 
             /**
              * Returns the raw JSON value of [fileIds].
@@ -1006,7 +1003,7 @@ private constructor(
              *   the server responded with an unexpected value).
              */
             fun vectorStoreIds(): Optional<List<String>> =
-                Optional.ofNullable(vectorStoreIds.getNullable("vector_store_ids"))
+                vectorStoreIds.getOptional("vector_store_ids")
 
             /**
              * Returns the raw JSON value of [vectorStoreIds].

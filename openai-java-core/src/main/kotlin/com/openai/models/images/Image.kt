@@ -39,7 +39,7 @@ private constructor(
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
      */
-    fun b64Json(): Optional<String> = Optional.ofNullable(b64Json.getNullable("b64_json"))
+    fun b64Json(): Optional<String> = b64Json.getOptional("b64_json")
 
     /**
      * The prompt that was used to generate the image, if there was any revision to the prompt.
@@ -47,8 +47,7 @@ private constructor(
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
      */
-    fun revisedPrompt(): Optional<String> =
-        Optional.ofNullable(revisedPrompt.getNullable("revised_prompt"))
+    fun revisedPrompt(): Optional<String> = revisedPrompt.getOptional("revised_prompt")
 
     /**
      * The URL of the generated image, if `response_format` is `url` (default).
@@ -56,7 +55,7 @@ private constructor(
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
      */
-    fun url(): Optional<String> = Optional.ofNullable(url.getNullable("url"))
+    fun url(): Optional<String> = url.getOptional("url")
 
     /**
      * Returns the raw JSON value of [b64Json].

@@ -680,7 +680,7 @@ private constructor(
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
          */
-        fun status(): Optional<Status> = Optional.ofNullable(status.getNullable("status"))
+        fun status(): Optional<Status> = status.getOptional("status")
 
         /**
          * The type of the message input. Always set to `message`.
@@ -688,7 +688,7 @@ private constructor(
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
          */
-        fun type(): Optional<Type> = Optional.ofNullable(type.getNullable("type"))
+        fun type(): Optional<Type> = type.getOptional("type")
 
         /**
          * Returns the raw JSON value of [content].
@@ -1422,7 +1422,7 @@ private constructor(
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
          */
-        fun id(): Optional<String> = Optional.ofNullable(id.getNullable("id"))
+        fun id(): Optional<String> = id.getOptional("id")
 
         /**
          * The safety checks reported by the API that have been acknowledged by the developer.
@@ -1431,7 +1431,7 @@ private constructor(
          *   server responded with an unexpected value).
          */
         fun acknowledgedSafetyChecks(): Optional<List<AcknowledgedSafetyCheck>> =
-            Optional.ofNullable(acknowledgedSafetyChecks.getNullable("acknowledged_safety_checks"))
+            acknowledgedSafetyChecks.getOptional("acknowledged_safety_checks")
 
         /**
          * The status of the message input. One of `in_progress`, `completed`, or `incomplete`.
@@ -1440,7 +1440,7 @@ private constructor(
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
          */
-        fun status(): Optional<Status> = Optional.ofNullable(status.getNullable("status"))
+        fun status(): Optional<Status> = status.getOptional("status")
 
         /**
          * Returns the raw JSON value of [callId].
@@ -2177,7 +2177,7 @@ private constructor(
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
          */
-        fun id(): Optional<String> = Optional.ofNullable(id.getNullable("id"))
+        fun id(): Optional<String> = id.getOptional("id")
 
         /**
          * The status of the item. One of `in_progress`, `completed`, or `incomplete`. Populated
@@ -2186,7 +2186,7 @@ private constructor(
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
          */
-        fun status(): Optional<Status> = Optional.ofNullable(status.getNullable("status"))
+        fun status(): Optional<Status> = status.getOptional("status")
 
         /**
          * Returns the raw JSON value of [callId].

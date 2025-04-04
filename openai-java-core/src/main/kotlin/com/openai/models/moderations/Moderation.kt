@@ -405,7 +405,7 @@ private constructor(
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
          */
-        fun illicit(): Optional<Boolean> = Optional.ofNullable(illicit.getNullable("illicit"))
+        fun illicit(): Optional<Boolean> = illicit.getOptional("illicit")
 
         /**
          * Content that includes instructions or advice that facilitate the planning or execution of
@@ -415,8 +415,7 @@ private constructor(
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
          */
-        fun illicitViolent(): Optional<Boolean> =
-            Optional.ofNullable(illicitViolent.getNullable("illicit/violent"))
+        fun illicitViolent(): Optional<Boolean> = illicitViolent.getOptional("illicit/violent")
 
         /**
          * Content that promotes, encourages, or depicts acts of self-harm, such as suicide,

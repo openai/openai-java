@@ -67,19 +67,19 @@ private constructor(
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
      */
-    fun endIndex(): Optional<Long> = Optional.ofNullable(endIndex.getNullable("end_index"))
+    fun endIndex(): Optional<Long> = endIndex.getOptional("end_index")
 
     /**
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
      */
-    fun filePath(): Optional<FilePath> = Optional.ofNullable(filePath.getNullable("file_path"))
+    fun filePath(): Optional<FilePath> = filePath.getOptional("file_path")
 
     /**
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
      */
-    fun startIndex(): Optional<Long> = Optional.ofNullable(startIndex.getNullable("start_index"))
+    fun startIndex(): Optional<Long> = startIndex.getOptional("start_index")
 
     /**
      * The text in the message content that needs to be replaced.
@@ -87,7 +87,7 @@ private constructor(
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
      */
-    fun text(): Optional<String> = Optional.ofNullable(text.getNullable("text"))
+    fun text(): Optional<String> = text.getOptional("text")
 
     /**
      * Returns the raw JSON value of [index].
@@ -340,7 +340,7 @@ private constructor(
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
          */
-        fun fileId(): Optional<String> = Optional.ofNullable(fileId.getNullable("file_id"))
+        fun fileId(): Optional<String> = fileId.getOptional("file_id")
 
         /**
          * Returns the raw JSON value of [fileId].

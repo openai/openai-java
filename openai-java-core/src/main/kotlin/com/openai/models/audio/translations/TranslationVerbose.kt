@@ -69,8 +69,7 @@ private constructor(
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
      */
-    fun segments(): Optional<List<TranscriptionSegment>> =
-        Optional.ofNullable(segments.getNullable("segments"))
+    fun segments(): Optional<List<TranscriptionSegment>> = segments.getOptional("segments")
 
     /**
      * Returns the raw JSON value of [duration].

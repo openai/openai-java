@@ -52,7 +52,7 @@ private constructor(
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
      */
-    fun fileData(): Optional<String> = Optional.ofNullable(fileData.getNullable("file_data"))
+    fun fileData(): Optional<String> = fileData.getOptional("file_data")
 
     /**
      * The ID of the file to be sent to the model.
@@ -60,7 +60,7 @@ private constructor(
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
      */
-    fun fileId(): Optional<String> = Optional.ofNullable(fileId.getNullable("file_id"))
+    fun fileId(): Optional<String> = fileId.getOptional("file_id")
 
     /**
      * The name of the file to be sent to the model.
@@ -68,7 +68,7 @@ private constructor(
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
      */
-    fun filename(): Optional<String> = Optional.ofNullable(filename.getNullable("filename"))
+    fun filename(): Optional<String> = filename.getOptional("filename")
 
     /**
      * Returns the raw JSON value of [fileData].

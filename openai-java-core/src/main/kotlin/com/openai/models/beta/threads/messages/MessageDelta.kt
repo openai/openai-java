@@ -41,8 +41,7 @@ private constructor(
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
      */
-    fun content(): Optional<List<MessageContentDelta>> =
-        Optional.ofNullable(content.getNullable("content"))
+    fun content(): Optional<List<MessageContentDelta>> = content.getOptional("content")
 
     /**
      * The entity that produced the message. One of `user` or `assistant`.
@@ -50,7 +49,7 @@ private constructor(
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
      */
-    fun role(): Optional<Role> = Optional.ofNullable(role.getNullable("role"))
+    fun role(): Optional<Role> = role.getOptional("role")
 
     /**
      * Returns the raw JSON value of [content].

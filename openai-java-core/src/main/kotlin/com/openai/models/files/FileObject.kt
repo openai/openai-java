@@ -128,7 +128,7 @@ private constructor(
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
      */
-    fun expiresAt(): Optional<Long> = Optional.ofNullable(expiresAt.getNullable("expires_at"))
+    fun expiresAt(): Optional<Long> = expiresAt.getOptional("expires_at")
 
     /**
      * Deprecated. For details on why a fine-tuning training file failed validation, see the `error`
@@ -138,8 +138,7 @@ private constructor(
      *   server responded with an unexpected value).
      */
     @Deprecated("deprecated")
-    fun statusDetails(): Optional<String> =
-        Optional.ofNullable(statusDetails.getNullable("status_details"))
+    fun statusDetails(): Optional<String> = statusDetails.getOptional("status_details")
 
     /**
      * Returns the raw JSON value of [id].

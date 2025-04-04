@@ -46,8 +46,7 @@ private constructor(
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
      */
-    fun function(): Optional<AssistantToolChoiceFunction> =
-        Optional.ofNullable(function.getNullable("function"))
+    fun function(): Optional<AssistantToolChoiceFunction> = function.getOptional("function")
 
     /**
      * Returns the raw JSON value of [type].

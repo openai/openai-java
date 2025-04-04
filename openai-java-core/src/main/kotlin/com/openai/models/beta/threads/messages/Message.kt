@@ -116,8 +116,7 @@ private constructor(
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
      */
-    fun assistantId(): Optional<String> =
-        Optional.ofNullable(assistantId.getNullable("assistant_id"))
+    fun assistantId(): Optional<String> = assistantId.getOptional("assistant_id")
 
     /**
      * A list of files attached to the message, and the tools they were added to.
@@ -125,8 +124,7 @@ private constructor(
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
      */
-    fun attachments(): Optional<List<Attachment>> =
-        Optional.ofNullable(attachments.getNullable("attachments"))
+    fun attachments(): Optional<List<Attachment>> = attachments.getOptional("attachments")
 
     /**
      * The Unix timestamp (in seconds) for when the message was completed.
@@ -134,7 +132,7 @@ private constructor(
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
      */
-    fun completedAt(): Optional<Long> = Optional.ofNullable(completedAt.getNullable("completed_at"))
+    fun completedAt(): Optional<Long> = completedAt.getOptional("completed_at")
 
     /**
      * The content of the message in array of text and/or images.
@@ -158,8 +156,7 @@ private constructor(
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
      */
-    fun incompleteAt(): Optional<Long> =
-        Optional.ofNullable(incompleteAt.getNullable("incomplete_at"))
+    fun incompleteAt(): Optional<Long> = incompleteAt.getOptional("incomplete_at")
 
     /**
      * On an incomplete message, details about why the message is incomplete.
@@ -168,7 +165,7 @@ private constructor(
      *   server responded with an unexpected value).
      */
     fun incompleteDetails(): Optional<IncompleteDetails> =
-        Optional.ofNullable(incompleteDetails.getNullable("incomplete_details"))
+        incompleteDetails.getOptional("incomplete_details")
 
     /**
      * Set of 16 key-value pairs that can be attached to an object. This can be useful for storing
@@ -181,7 +178,7 @@ private constructor(
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
      */
-    fun metadata(): Optional<Metadata> = Optional.ofNullable(metadata.getNullable("metadata"))
+    fun metadata(): Optional<Metadata> = metadata.getOptional("metadata")
 
     /**
      * The object type, which is always `thread.message`.
@@ -212,7 +209,7 @@ private constructor(
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
      */
-    fun runId(): Optional<String> = Optional.ofNullable(runId.getNullable("run_id"))
+    fun runId(): Optional<String> = runId.getOptional("run_id")
 
     /**
      * The status of the message, which can be either `in_progress`, `incomplete`, or `completed`.
@@ -859,7 +856,7 @@ private constructor(
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
          */
-        fun fileId(): Optional<String> = Optional.ofNullable(fileId.getNullable("file_id"))
+        fun fileId(): Optional<String> = fileId.getOptional("file_id")
 
         /**
          * The tools to add this file to.
@@ -867,7 +864,7 @@ private constructor(
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
          */
-        fun tools(): Optional<List<Tool>> = Optional.ofNullable(tools.getNullable("tools"))
+        fun tools(): Optional<List<Tool>> = tools.getOptional("tools")
 
         /**
          * Returns the raw JSON value of [fileId].

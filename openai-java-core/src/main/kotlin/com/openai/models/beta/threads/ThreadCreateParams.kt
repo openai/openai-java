@@ -375,8 +375,7 @@ private constructor(
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
          */
-        fun messages(): Optional<List<Message>> =
-            Optional.ofNullable(messages.getNullable("messages"))
+        fun messages(): Optional<List<Message>> = messages.getOptional("messages")
 
         /**
          * Set of 16 key-value pairs that can be attached to an object. This can be useful for
@@ -389,7 +388,7 @@ private constructor(
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
          */
-        fun metadata(): Optional<Metadata> = Optional.ofNullable(metadata.getNullable("metadata"))
+        fun metadata(): Optional<Metadata> = metadata.getOptional("metadata")
 
         /**
          * A set of resources that are made available to the assistant's tools in this thread. The
@@ -400,8 +399,7 @@ private constructor(
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
          */
-        fun toolResources(): Optional<ToolResources> =
-            Optional.ofNullable(toolResources.getNullable("tool_resources"))
+        fun toolResources(): Optional<ToolResources> = toolResources.getOptional("tool_resources")
 
         /**
          * Returns the raw JSON value of [messages].
@@ -669,8 +667,7 @@ private constructor(
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
          */
-        fun attachments(): Optional<List<Attachment>> =
-            Optional.ofNullable(attachments.getNullable("attachments"))
+        fun attachments(): Optional<List<Attachment>> = attachments.getOptional("attachments")
 
         /**
          * Set of 16 key-value pairs that can be attached to an object. This can be useful for
@@ -683,7 +680,7 @@ private constructor(
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
          */
-        fun metadata(): Optional<Metadata> = Optional.ofNullable(metadata.getNullable("metadata"))
+        fun metadata(): Optional<Metadata> = metadata.getOptional("metadata")
 
         /**
          * Returns the raw JSON value of [content].
@@ -1296,7 +1293,7 @@ private constructor(
              * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if
              *   the server responded with an unexpected value).
              */
-            fun fileId(): Optional<String> = Optional.ofNullable(fileId.getNullable("file_id"))
+            fun fileId(): Optional<String> = fileId.getOptional("file_id")
 
             /**
              * The tools to add this file to.
@@ -1304,7 +1301,7 @@ private constructor(
              * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if
              *   the server responded with an unexpected value).
              */
-            fun tools(): Optional<List<Tool>> = Optional.ofNullable(tools.getNullable("tools"))
+            fun tools(): Optional<List<Tool>> = tools.getOptional("tools")
 
             /**
              * Returns the raw JSON value of [fileId].
@@ -1935,14 +1932,13 @@ private constructor(
          *   server responded with an unexpected value).
          */
         fun codeInterpreter(): Optional<CodeInterpreter> =
-            Optional.ofNullable(codeInterpreter.getNullable("code_interpreter"))
+            codeInterpreter.getOptional("code_interpreter")
 
         /**
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
          */
-        fun fileSearch(): Optional<FileSearch> =
-            Optional.ofNullable(fileSearch.getNullable("file_search"))
+        fun fileSearch(): Optional<FileSearch> = fileSearch.getOptional("file_search")
 
         /**
          * Returns the raw JSON value of [codeInterpreter].
@@ -2102,8 +2098,7 @@ private constructor(
              * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if
              *   the server responded with an unexpected value).
              */
-            fun fileIds(): Optional<List<String>> =
-                Optional.ofNullable(fileIds.getNullable("file_ids"))
+            fun fileIds(): Optional<List<String>> = fileIds.getOptional("file_ids")
 
             /**
              * Returns the raw JSON value of [fileIds].
@@ -2280,7 +2275,7 @@ private constructor(
              *   the server responded with an unexpected value).
              */
             fun vectorStoreIds(): Optional<List<String>> =
-                Optional.ofNullable(vectorStoreIds.getNullable("vector_store_ids"))
+                vectorStoreIds.getOptional("vector_store_ids")
 
             /**
              * A helper to create a
@@ -2292,7 +2287,7 @@ private constructor(
              *   the server responded with an unexpected value).
              */
             fun vectorStores(): Optional<List<VectorStore>> =
-                Optional.ofNullable(vectorStores.getNullable("vector_stores"))
+                vectorStores.getOptional("vector_stores")
 
             /**
              * Returns the raw JSON value of [vectorStoreIds].
@@ -2505,7 +2500,7 @@ private constructor(
                  *   if the server responded with an unexpected value).
                  */
                 fun chunkingStrategy(): Optional<ChunkingStrategy> =
-                    Optional.ofNullable(chunkingStrategy.getNullable("chunking_strategy"))
+                    chunkingStrategy.getOptional("chunking_strategy")
 
                 /**
                  * A list of [file](https://platform.openai.com/docs/api-reference/files) IDs to add
@@ -2514,8 +2509,7 @@ private constructor(
                  * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g.
                  *   if the server responded with an unexpected value).
                  */
-                fun fileIds(): Optional<List<String>> =
-                    Optional.ofNullable(fileIds.getNullable("file_ids"))
+                fun fileIds(): Optional<List<String>> = fileIds.getOptional("file_ids")
 
                 /**
                  * Set of 16 key-value pairs that can be attached to an object. This can be useful
@@ -2528,8 +2522,7 @@ private constructor(
                  * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g.
                  *   if the server responded with an unexpected value).
                  */
-                fun metadata(): Optional<Metadata> =
-                    Optional.ofNullable(metadata.getNullable("metadata"))
+                fun metadata(): Optional<Metadata> = metadata.getOptional("metadata")
 
                 /**
                  * Returns the raw JSON value of [chunkingStrategy].

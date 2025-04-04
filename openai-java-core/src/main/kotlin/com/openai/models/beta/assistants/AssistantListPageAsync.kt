@@ -18,6 +18,7 @@ import java.util.Optional
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.Executor
 import java.util.function.Predicate
+import kotlin.jvm.optionals.getOrNull
 
 /** Returns a list of assistants. */
 class AssistantListPageAsync
@@ -88,9 +89,9 @@ private constructor(
             @JsonProperty("has_more") hasMore: JsonField<Boolean> = JsonMissing.of(),
         ) : this(data, hasMore, mutableMapOf())
 
-        fun data(): List<Assistant> = data.getNullable("data") ?: listOf()
+        fun data(): List<Assistant> = data.getOptional("data").getOrNull() ?: listOf()
 
-        fun hasMore(): Optional<Boolean> = Optional.ofNullable(hasMore.getNullable("has_more"))
+        fun hasMore(): Optional<Boolean> = hasMore.getOptional("has_more")
 
         @JsonProperty("data")
         fun _data(): Optional<JsonField<List<Assistant>>> = Optional.ofNullable(data)

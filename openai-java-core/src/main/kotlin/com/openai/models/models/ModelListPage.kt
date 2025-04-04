@@ -82,7 +82,7 @@ private constructor(
             @JsonProperty("object") object_: JsonField<String> = JsonMissing.of(),
         ) : this(data, object_, mutableMapOf())
 
-        fun data(): List<Model> = data.getNullable("data") ?: listOf()
+        fun data(): List<Model> = data.getOptional("data").getOrNull() ?: listOf()
 
         fun object_(): String = object_.getRequired("object")
 

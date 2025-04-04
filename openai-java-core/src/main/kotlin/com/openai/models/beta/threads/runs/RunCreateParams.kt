@@ -1196,7 +1196,7 @@ private constructor(
          *   server responded with an unexpected value).
          */
         fun additionalInstructions(): Optional<String> =
-            Optional.ofNullable(additionalInstructions.getNullable("additional_instructions"))
+            additionalInstructions.getOptional("additional_instructions")
 
         /**
          * Adds additional messages to the thread before creating the run.
@@ -1205,7 +1205,7 @@ private constructor(
          *   server responded with an unexpected value).
          */
         fun additionalMessages(): Optional<List<AdditionalMessage>> =
-            Optional.ofNullable(additionalMessages.getNullable("additional_messages"))
+            additionalMessages.getOptional("additional_messages")
 
         /**
          * Overrides the
@@ -1215,8 +1215,7 @@ private constructor(
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
          */
-        fun instructions(): Optional<String> =
-            Optional.ofNullable(instructions.getNullable("instructions"))
+        fun instructions(): Optional<String> = instructions.getOptional("instructions")
 
         /**
          * The maximum number of completion tokens that may be used over the course of the run. The
@@ -1228,7 +1227,7 @@ private constructor(
          *   server responded with an unexpected value).
          */
         fun maxCompletionTokens(): Optional<Long> =
-            Optional.ofNullable(maxCompletionTokens.getNullable("max_completion_tokens"))
+            maxCompletionTokens.getOptional("max_completion_tokens")
 
         /**
          * The maximum number of prompt tokens that may be used over the course of the run. The run
@@ -1239,8 +1238,7 @@ private constructor(
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
          */
-        fun maxPromptTokens(): Optional<Long> =
-            Optional.ofNullable(maxPromptTokens.getNullable("max_prompt_tokens"))
+        fun maxPromptTokens(): Optional<Long> = maxPromptTokens.getOptional("max_prompt_tokens")
 
         /**
          * Set of 16 key-value pairs that can be attached to an object. This can be useful for
@@ -1253,7 +1251,7 @@ private constructor(
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
          */
-        fun metadata(): Optional<Metadata> = Optional.ofNullable(metadata.getNullable("metadata"))
+        fun metadata(): Optional<Metadata> = metadata.getOptional("metadata")
 
         /**
          * The ID of the [Model](https://platform.openai.com/docs/api-reference/models) to be used
@@ -1263,7 +1261,7 @@ private constructor(
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
          */
-        fun model(): Optional<ChatModel> = Optional.ofNullable(model.getNullable("model"))
+        fun model(): Optional<ChatModel> = model.getOptional("model")
 
         /**
          * Whether to enable
@@ -1274,7 +1272,7 @@ private constructor(
          *   server responded with an unexpected value).
          */
         fun parallelToolCalls(): Optional<Boolean> =
-            Optional.ofNullable(parallelToolCalls.getNullable("parallel_tool_calls"))
+            parallelToolCalls.getOptional("parallel_tool_calls")
 
         /**
          * **o-series models only**
@@ -1288,7 +1286,7 @@ private constructor(
          *   server responded with an unexpected value).
          */
         fun reasoningEffort(): Optional<ReasoningEffort> =
-            Optional.ofNullable(reasoningEffort.getNullable("reasoning_effort"))
+            reasoningEffort.getOptional("reasoning_effort")
 
         /**
          * Specifies the format that the model must output. Compatible with
@@ -1314,7 +1312,7 @@ private constructor(
          *   server responded with an unexpected value).
          */
         fun responseFormat(): Optional<AssistantResponseFormatOption> =
-            Optional.ofNullable(responseFormat.getNullable("response_format"))
+            responseFormat.getOptional("response_format")
 
         /**
          * What sampling temperature to use, between 0 and 2. Higher values like 0.8 will make the
@@ -1324,8 +1322,7 @@ private constructor(
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
          */
-        fun temperature(): Optional<Double> =
-            Optional.ofNullable(temperature.getNullable("temperature"))
+        fun temperature(): Optional<Double> = temperature.getOptional("temperature")
 
         /**
          * Controls which (if any) tool is called by the model. `none` means the model will not call
@@ -1339,7 +1336,7 @@ private constructor(
          *   server responded with an unexpected value).
          */
         fun toolChoice(): Optional<AssistantToolChoiceOption> =
-            Optional.ofNullable(toolChoice.getNullable("tool_choice"))
+            toolChoice.getOptional("tool_choice")
 
         /**
          * Override the tools the assistant can use for this run. This is useful for modifying the
@@ -1348,7 +1345,7 @@ private constructor(
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
          */
-        fun tools(): Optional<List<AssistantTool>> = Optional.ofNullable(tools.getNullable("tools"))
+        fun tools(): Optional<List<AssistantTool>> = tools.getOptional("tools")
 
         /**
          * An alternative to sampling with temperature, called nucleus sampling, where the model
@@ -1360,7 +1357,7 @@ private constructor(
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
          */
-        fun topP(): Optional<Double> = Optional.ofNullable(topP.getNullable("top_p"))
+        fun topP(): Optional<Double> = topP.getOptional("top_p")
 
         /**
          * Controls for how a thread will be truncated prior to the run. Use this to control the
@@ -1370,7 +1367,7 @@ private constructor(
          *   server responded with an unexpected value).
          */
         fun truncationStrategy(): Optional<TruncationStrategy> =
-            Optional.ofNullable(truncationStrategy.getNullable("truncation_strategy"))
+            truncationStrategy.getOptional("truncation_strategy")
 
         /**
          * Returns the raw JSON value of [assistantId].
@@ -2271,8 +2268,7 @@ private constructor(
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
          */
-        fun attachments(): Optional<List<Attachment>> =
-            Optional.ofNullable(attachments.getNullable("attachments"))
+        fun attachments(): Optional<List<Attachment>> = attachments.getOptional("attachments")
 
         /**
          * Set of 16 key-value pairs that can be attached to an object. This can be useful for
@@ -2285,7 +2281,7 @@ private constructor(
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
          */
-        fun metadata(): Optional<Metadata> = Optional.ofNullable(metadata.getNullable("metadata"))
+        fun metadata(): Optional<Metadata> = metadata.getOptional("metadata")
 
         /**
          * Returns the raw JSON value of [content].
@@ -2898,7 +2894,7 @@ private constructor(
              * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if
              *   the server responded with an unexpected value).
              */
-            fun fileId(): Optional<String> = Optional.ofNullable(fileId.getNullable("file_id"))
+            fun fileId(): Optional<String> = fileId.getOptional("file_id")
 
             /**
              * The tools to add this file to.
@@ -2906,7 +2902,7 @@ private constructor(
              * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if
              *   the server responded with an unexpected value).
              */
-            fun tools(): Optional<List<Tool>> = Optional.ofNullable(tools.getNullable("tools"))
+            fun tools(): Optional<List<Tool>> = tools.getOptional("tools")
 
             /**
              * Returns the raw JSON value of [fileId].
@@ -3547,8 +3543,7 @@ private constructor(
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
          */
-        fun lastMessages(): Optional<Long> =
-            Optional.ofNullable(lastMessages.getNullable("last_messages"))
+        fun lastMessages(): Optional<Long> = lastMessages.getOptional("last_messages")
 
         /**
          * Returns the raw JSON value of [type].

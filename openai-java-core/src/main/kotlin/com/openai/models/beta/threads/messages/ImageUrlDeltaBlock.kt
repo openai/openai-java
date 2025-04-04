@@ -60,7 +60,7 @@ private constructor(
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
      */
-    fun imageUrl(): Optional<ImageUrlDelta> = Optional.ofNullable(imageUrl.getNullable("image_url"))
+    fun imageUrl(): Optional<ImageUrlDelta> = imageUrl.getOptional("image_url")
 
     /**
      * Returns the raw JSON value of [index].

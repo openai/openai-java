@@ -39,7 +39,7 @@ private constructor(
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
      */
-    fun code(): Optional<String> = Optional.ofNullable(code.getNullable("code"))
+    fun code(): Optional<String> = code.getOptional("code")
 
     /**
      * The line number of the input file where the error occurred, if applicable.
@@ -47,7 +47,7 @@ private constructor(
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
      */
-    fun line(): Optional<Long> = Optional.ofNullable(line.getNullable("line"))
+    fun line(): Optional<Long> = line.getOptional("line")
 
     /**
      * A human-readable message providing more details about the error.
@@ -55,7 +55,7 @@ private constructor(
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
      */
-    fun message(): Optional<String> = Optional.ofNullable(message.getNullable("message"))
+    fun message(): Optional<String> = message.getOptional("message")
 
     /**
      * The name of the parameter that caused the error, if applicable.
@@ -63,7 +63,7 @@ private constructor(
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
      */
-    fun param(): Optional<String> = Optional.ofNullable(param.getNullable("param"))
+    fun param(): Optional<String> = param.getOptional("param")
 
     /**
      * Returns the raw JSON value of [code].

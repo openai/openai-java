@@ -37,7 +37,7 @@ private constructor(
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
      */
-    fun detail(): Optional<Detail> = Optional.ofNullable(detail.getNullable("detail"))
+    fun detail(): Optional<Detail> = detail.getOptional("detail")
 
     /**
      * The [File](https://platform.openai.com/docs/api-reference/files) ID of the image in the
@@ -47,7 +47,7 @@ private constructor(
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
      */
-    fun fileId(): Optional<String> = Optional.ofNullable(fileId.getNullable("file_id"))
+    fun fileId(): Optional<String> = fileId.getOptional("file_id")
 
     /**
      * Returns the raw JSON value of [detail].

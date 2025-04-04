@@ -409,8 +409,7 @@ private constructor(
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
          */
-        fun attributes(): Optional<Attributes> =
-            Optional.ofNullable(attributes.getNullable("attributes"))
+        fun attributes(): Optional<Attributes> = attributes.getOptional("attributes")
 
         /**
          * The chunking strategy used to chunk the file(s). If not set, will use the `auto`
@@ -420,7 +419,7 @@ private constructor(
          *   server responded with an unexpected value).
          */
         fun chunkingStrategy(): Optional<FileChunkingStrategyParam> =
-            Optional.ofNullable(chunkingStrategy.getNullable("chunking_strategy"))
+            chunkingStrategy.getOptional("chunking_strategy")
 
         /**
          * Returns the raw JSON value of [fileId].

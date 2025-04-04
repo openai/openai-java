@@ -18,6 +18,7 @@ import java.util.Optional
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.Executor
 import java.util.function.Predicate
+import kotlin.jvm.optionals.getOrNull
 
 /** Retrieve the parsed contents of a vector store file. */
 class FileContentPageAsync
@@ -81,7 +82,7 @@ private constructor(
             @JsonProperty("object") object_: JsonField<String> = JsonMissing.of(),
         ) : this(data, object_, mutableMapOf())
 
-        fun data(): List<FileContentResponse> = data.getNullable("data") ?: listOf()
+        fun data(): List<FileContentResponse> = data.getOptional("data").getOrNull() ?: listOf()
 
         fun object_(): String = object_.getRequired("object")
 

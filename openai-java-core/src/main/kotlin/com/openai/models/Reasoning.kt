@@ -50,7 +50,7 @@ private constructor(
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
      */
-    fun effort(): Optional<ReasoningEffort> = Optional.ofNullable(effort.getNullable("effort"))
+    fun effort(): Optional<ReasoningEffort> = effort.getOptional("effort")
 
     /**
      * **computer_use_preview only**
@@ -62,7 +62,7 @@ private constructor(
      *   server responded with an unexpected value).
      */
     fun generateSummary(): Optional<GenerateSummary> =
-        Optional.ofNullable(generateSummary.getNullable("generate_summary"))
+        generateSummary.getOptional("generate_summary")
 
     /**
      * Returns the raw JSON value of [effort].

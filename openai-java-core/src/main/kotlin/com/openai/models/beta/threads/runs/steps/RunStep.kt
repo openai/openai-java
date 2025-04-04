@@ -122,7 +122,7 @@ private constructor(
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
      */
-    fun cancelledAt(): Optional<Long> = Optional.ofNullable(cancelledAt.getNullable("cancelled_at"))
+    fun cancelledAt(): Optional<Long> = cancelledAt.getOptional("cancelled_at")
 
     /**
      * The Unix timestamp (in seconds) for when the run step completed.
@@ -130,7 +130,7 @@ private constructor(
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
      */
-    fun completedAt(): Optional<Long> = Optional.ofNullable(completedAt.getNullable("completed_at"))
+    fun completedAt(): Optional<Long> = completedAt.getOptional("completed_at")
 
     /**
      * The Unix timestamp (in seconds) for when the run step was created.
@@ -147,7 +147,7 @@ private constructor(
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
      */
-    fun expiredAt(): Optional<Long> = Optional.ofNullable(expiredAt.getNullable("expired_at"))
+    fun expiredAt(): Optional<Long> = expiredAt.getOptional("expired_at")
 
     /**
      * The Unix timestamp (in seconds) for when the run step failed.
@@ -155,7 +155,7 @@ private constructor(
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
      */
-    fun failedAt(): Optional<Long> = Optional.ofNullable(failedAt.getNullable("failed_at"))
+    fun failedAt(): Optional<Long> = failedAt.getOptional("failed_at")
 
     /**
      * The last error associated with this run step. Will be `null` if there are no errors.
@@ -163,7 +163,7 @@ private constructor(
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
      */
-    fun lastError(): Optional<LastError> = Optional.ofNullable(lastError.getNullable("last_error"))
+    fun lastError(): Optional<LastError> = lastError.getOptional("last_error")
 
     /**
      * Set of 16 key-value pairs that can be attached to an object. This can be useful for storing
@@ -176,7 +176,7 @@ private constructor(
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
      */
-    fun metadata(): Optional<Metadata> = Optional.ofNullable(metadata.getNullable("metadata"))
+    fun metadata(): Optional<Metadata> = metadata.getOptional("metadata")
 
     /**
      * The object type, which is always `thread.run.step`.
@@ -240,7 +240,7 @@ private constructor(
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
      */
-    fun usage(): Optional<Usage> = Optional.ofNullable(usage.getNullable("usage"))
+    fun usage(): Optional<Usage> = usage.getOptional("usage")
 
     /**
      * Returns the raw JSON value of [id].

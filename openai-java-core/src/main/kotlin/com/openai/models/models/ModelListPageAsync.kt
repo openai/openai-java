@@ -18,6 +18,7 @@ import java.util.Optional
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.Executor
 import java.util.function.Predicate
+import kotlin.jvm.optionals.getOrNull
 
 /**
  * Lists the currently available models, and provides basic information about each one such as the
@@ -84,7 +85,7 @@ private constructor(
             @JsonProperty("object") object_: JsonField<String> = JsonMissing.of(),
         ) : this(data, object_, mutableMapOf())
 
-        fun data(): List<Model> = data.getNullable("data") ?: listOf()
+        fun data(): List<Model> = data.getOptional("data").getOrNull() ?: listOf()
 
         fun object_(): String = object_.getRequired("object")
 

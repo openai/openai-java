@@ -348,7 +348,7 @@ private constructor(
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
          */
-        fun model(): Optional<ModerationModel> = Optional.ofNullable(model.getNullable("model"))
+        fun model(): Optional<ModerationModel> = model.getOptional("model")
 
         /**
          * Returns the raw JSON value of [input].

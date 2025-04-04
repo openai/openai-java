@@ -59,7 +59,7 @@ private constructor(
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
      */
-    fun logs(): Optional<String> = Optional.ofNullable(logs.getNullable("logs"))
+    fun logs(): Optional<String> = logs.getOptional("logs")
 
     /**
      * Returns the raw JSON value of [index].

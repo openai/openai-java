@@ -37,8 +37,7 @@ private constructor(
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
      */
-    fun annotations(): Optional<List<AnnotationDelta>> =
-        Optional.ofNullable(annotations.getNullable("annotations"))
+    fun annotations(): Optional<List<AnnotationDelta>> = annotations.getOptional("annotations")
 
     /**
      * The data that makes up the text.
@@ -46,7 +45,7 @@ private constructor(
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
      */
-    fun value(): Optional<String> = Optional.ofNullable(value.getNullable("value"))
+    fun value(): Optional<String> = value.getOptional("value")
 
     /**
      * Returns the raw JSON value of [annotations].

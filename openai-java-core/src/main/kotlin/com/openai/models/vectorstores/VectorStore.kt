@@ -98,8 +98,7 @@ private constructor(
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
      */
-    fun lastActiveAt(): Optional<Long> =
-        Optional.ofNullable(lastActiveAt.getNullable("last_active_at"))
+    fun lastActiveAt(): Optional<Long> = lastActiveAt.getOptional("last_active_at")
 
     /**
      * Set of 16 key-value pairs that can be attached to an object. This can be useful for storing
@@ -112,7 +111,7 @@ private constructor(
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
      */
-    fun metadata(): Optional<Metadata> = Optional.ofNullable(metadata.getNullable("metadata"))
+    fun metadata(): Optional<Metadata> = metadata.getOptional("metadata")
 
     /**
      * The name of the vector store.
@@ -158,8 +157,7 @@ private constructor(
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
      */
-    fun expiresAfter(): Optional<ExpiresAfter> =
-        Optional.ofNullable(expiresAfter.getNullable("expires_after"))
+    fun expiresAfter(): Optional<ExpiresAfter> = expiresAfter.getOptional("expires_after")
 
     /**
      * The Unix timestamp (in seconds) for when the vector store will expire.
@@ -167,7 +165,7 @@ private constructor(
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
      */
-    fun expiresAt(): Optional<Long> = Optional.ofNullable(expiresAt.getNullable("expires_at"))
+    fun expiresAt(): Optional<Long> = expiresAt.getOptional("expires_at")
 
     /**
      * Returns the raw JSON value of [id].

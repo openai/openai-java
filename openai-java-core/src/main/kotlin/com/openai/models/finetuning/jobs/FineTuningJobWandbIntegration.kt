@@ -57,7 +57,7 @@ private constructor(
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
      */
-    fun entity(): Optional<String> = Optional.ofNullable(entity.getNullable("entity"))
+    fun entity(): Optional<String> = entity.getOptional("entity")
 
     /**
      * A display name to set for the run. If not set, we will use the Job ID as the name.
@@ -65,7 +65,7 @@ private constructor(
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
      */
-    fun name(): Optional<String> = Optional.ofNullable(name.getNullable("name"))
+    fun name(): Optional<String> = name.getOptional("name")
 
     /**
      * A list of tags to be attached to the newly created run. These tags are passed through
@@ -75,7 +75,7 @@ private constructor(
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
      */
-    fun tags(): Optional<List<String>> = Optional.ofNullable(tags.getNullable("tags"))
+    fun tags(): Optional<List<String>> = tags.getOptional("tags")
 
     /**
      * Returns the raw JSON value of [project].

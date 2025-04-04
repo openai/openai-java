@@ -71,7 +71,7 @@ private constructor(
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
      */
-    fun logprobs(): Optional<List<Logprob>> = Optional.ofNullable(logprobs.getNullable("logprobs"))
+    fun logprobs(): Optional<List<Logprob>> = logprobs.getOptional("logprobs")
 
     /**
      * Returns the raw JSON value of [delta].
@@ -282,7 +282,7 @@ private constructor(
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
          */
-        fun token(): Optional<String> = Optional.ofNullable(token.getNullable("token"))
+        fun token(): Optional<String> = token.getOptional("token")
 
         /**
          * The bytes that were used to generate the log probability.
@@ -290,7 +290,7 @@ private constructor(
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
          */
-        fun bytes(): Optional<List<JsonValue>> = Optional.ofNullable(bytes.getNullable("bytes"))
+        fun bytes(): Optional<List<JsonValue>> = bytes.getOptional("bytes")
 
         /**
          * The log probability of the token.
@@ -298,7 +298,7 @@ private constructor(
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
          */
-        fun logprob(): Optional<Double> = Optional.ofNullable(logprob.getNullable("logprob"))
+        fun logprob(): Optional<Double> = logprob.getOptional("logprob")
 
         /**
          * Returns the raw JSON value of [token].

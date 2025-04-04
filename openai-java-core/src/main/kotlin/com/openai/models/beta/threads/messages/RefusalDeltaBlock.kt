@@ -57,7 +57,7 @@ private constructor(
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
      */
-    fun refusal(): Optional<String> = Optional.ofNullable(refusal.getNullable("refusal"))
+    fun refusal(): Optional<String> = refusal.getOptional("refusal")
 
     /**
      * Returns the raw JSON value of [index].

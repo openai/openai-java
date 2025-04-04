@@ -51,7 +51,7 @@ private constructor(
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
      */
-    fun fileId(): Optional<String> = Optional.ofNullable(fileId.getNullable("file_id"))
+    fun fileId(): Optional<String> = fileId.getOptional("file_id")
 
     /**
      * The URL of the screenshot image.
@@ -59,7 +59,7 @@ private constructor(
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
      */
-    fun imageUrl(): Optional<String> = Optional.ofNullable(imageUrl.getNullable("image_url"))
+    fun imageUrl(): Optional<String> = imageUrl.getOptional("image_url")
 
     /**
      * Returns the raw JSON value of [fileId].

@@ -450,49 +450,46 @@ private constructor(
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
          */
-        fun fullValidLoss(): Optional<Double> =
-            Optional.ofNullable(fullValidLoss.getNullable("full_valid_loss"))
+        fun fullValidLoss(): Optional<Double> = fullValidLoss.getOptional("full_valid_loss")
 
         /**
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
          */
         fun fullValidMeanTokenAccuracy(): Optional<Double> =
-            Optional.ofNullable(
-                fullValidMeanTokenAccuracy.getNullable("full_valid_mean_token_accuracy")
-            )
+            fullValidMeanTokenAccuracy.getOptional("full_valid_mean_token_accuracy")
 
         /**
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
          */
-        fun step(): Optional<Double> = Optional.ofNullable(step.getNullable("step"))
+        fun step(): Optional<Double> = step.getOptional("step")
 
         /**
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
          */
-        fun trainLoss(): Optional<Double> = Optional.ofNullable(trainLoss.getNullable("train_loss"))
+        fun trainLoss(): Optional<Double> = trainLoss.getOptional("train_loss")
 
         /**
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
          */
         fun trainMeanTokenAccuracy(): Optional<Double> =
-            Optional.ofNullable(trainMeanTokenAccuracy.getNullable("train_mean_token_accuracy"))
+            trainMeanTokenAccuracy.getOptional("train_mean_token_accuracy")
 
         /**
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
          */
-        fun validLoss(): Optional<Double> = Optional.ofNullable(validLoss.getNullable("valid_loss"))
+        fun validLoss(): Optional<Double> = validLoss.getOptional("valid_loss")
 
         /**
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
          */
         fun validMeanTokenAccuracy(): Optional<Double> =
-            Optional.ofNullable(validMeanTokenAccuracy.getNullable("valid_mean_token_accuracy"))
+            validMeanTokenAccuracy.getOptional("valid_mean_token_accuracy")
 
         /**
          * Returns the raw JSON value of [fullValidLoss].

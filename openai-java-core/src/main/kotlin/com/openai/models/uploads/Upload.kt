@@ -135,7 +135,7 @@ private constructor(
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
      */
-    fun file(): Optional<FileObject> = Optional.ofNullable(file.getNullable("file"))
+    fun file(): Optional<FileObject> = file.getOptional("file")
 
     /**
      * Returns the raw JSON value of [id].

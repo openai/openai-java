@@ -52,8 +52,7 @@ private constructor(
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
      */
-    fun fileSearch(): Optional<FileSearch> =
-        Optional.ofNullable(fileSearch.getNullable("file_search"))
+    fun fileSearch(): Optional<FileSearch> = fileSearch.getOptional("file_search")
 
     /**
      * Returns the raw JSON value of [fileSearch].
@@ -214,8 +213,7 @@ private constructor(
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
          */
-        fun maxNumResults(): Optional<Long> =
-            Optional.ofNullable(maxNumResults.getNullable("max_num_results"))
+        fun maxNumResults(): Optional<Long> = maxNumResults.getOptional("max_num_results")
 
         /**
          * The ranking options for the file search. If not specified, the file search tool will use
@@ -229,7 +227,7 @@ private constructor(
          *   server responded with an unexpected value).
          */
         fun rankingOptions(): Optional<RankingOptions> =
-            Optional.ofNullable(rankingOptions.getNullable("ranking_options"))
+            rankingOptions.getOptional("ranking_options")
 
         /**
          * Returns the raw JSON value of [maxNumResults].
@@ -426,7 +424,7 @@ private constructor(
              * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if
              *   the server responded with an unexpected value).
              */
-            fun ranker(): Optional<Ranker> = Optional.ofNullable(ranker.getNullable("ranker"))
+            fun ranker(): Optional<Ranker> = ranker.getOptional("ranker")
 
             /**
              * Returns the raw JSON value of [scoreThreshold].
