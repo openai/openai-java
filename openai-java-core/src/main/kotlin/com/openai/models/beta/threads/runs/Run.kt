@@ -180,7 +180,7 @@ private constructor(
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
      */
-    fun cancelledAt(): Optional<Long> = Optional.ofNullable(cancelledAt.getNullable("cancelled_at"))
+    fun cancelledAt(): Optional<Long> = cancelledAt.getOptional("cancelled_at")
 
     /**
      * The Unix timestamp (in seconds) for when the run was completed.
@@ -188,7 +188,7 @@ private constructor(
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
      */
-    fun completedAt(): Optional<Long> = Optional.ofNullable(completedAt.getNullable("completed_at"))
+    fun completedAt(): Optional<Long> = completedAt.getOptional("completed_at")
 
     /**
      * The Unix timestamp (in seconds) for when the run was created.
@@ -204,7 +204,7 @@ private constructor(
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
      */
-    fun expiresAt(): Optional<Long> = Optional.ofNullable(expiresAt.getNullable("expires_at"))
+    fun expiresAt(): Optional<Long> = expiresAt.getOptional("expires_at")
 
     /**
      * The Unix timestamp (in seconds) for when the run failed.
@@ -212,7 +212,7 @@ private constructor(
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
      */
-    fun failedAt(): Optional<Long> = Optional.ofNullable(failedAt.getNullable("failed_at"))
+    fun failedAt(): Optional<Long> = failedAt.getOptional("failed_at")
 
     /**
      * Details on why the run is incomplete. Will be `null` if the run is not incomplete.
@@ -221,7 +221,7 @@ private constructor(
      *   server responded with an unexpected value).
      */
     fun incompleteDetails(): Optional<IncompleteDetails> =
-        Optional.ofNullable(incompleteDetails.getNullable("incomplete_details"))
+        incompleteDetails.getOptional("incomplete_details")
 
     /**
      * The instructions that the
@@ -238,7 +238,7 @@ private constructor(
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
      */
-    fun lastError(): Optional<LastError> = Optional.ofNullable(lastError.getNullable("last_error"))
+    fun lastError(): Optional<LastError> = lastError.getOptional("last_error")
 
     /**
      * The maximum number of completion tokens specified to have been used over the course of the
@@ -248,7 +248,7 @@ private constructor(
      *   server responded with an unexpected value).
      */
     fun maxCompletionTokens(): Optional<Long> =
-        Optional.ofNullable(maxCompletionTokens.getNullable("max_completion_tokens"))
+        maxCompletionTokens.getOptional("max_completion_tokens")
 
     /**
      * The maximum number of prompt tokens specified to have been used over the course of the run.
@@ -256,8 +256,7 @@ private constructor(
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
      */
-    fun maxPromptTokens(): Optional<Long> =
-        Optional.ofNullable(maxPromptTokens.getNullable("max_prompt_tokens"))
+    fun maxPromptTokens(): Optional<Long> = maxPromptTokens.getOptional("max_prompt_tokens")
 
     /**
      * Set of 16 key-value pairs that can be attached to an object. This can be useful for storing
@@ -270,7 +269,7 @@ private constructor(
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
      */
-    fun metadata(): Optional<Metadata> = Optional.ofNullable(metadata.getNullable("metadata"))
+    fun metadata(): Optional<Metadata> = metadata.getOptional("metadata")
 
     /**
      * The model that the [assistant](https://platform.openai.com/docs/api-reference/assistants)
@@ -310,8 +309,7 @@ private constructor(
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
      */
-    fun requiredAction(): Optional<RequiredAction> =
-        Optional.ofNullable(requiredAction.getNullable("required_action"))
+    fun requiredAction(): Optional<RequiredAction> = requiredAction.getOptional("required_action")
 
     /**
      * Specifies the format that the model must output. Compatible with
@@ -337,7 +335,7 @@ private constructor(
      *   server responded with an unexpected value).
      */
     fun responseFormat(): Optional<AssistantResponseFormatOption> =
-        Optional.ofNullable(responseFormat.getNullable("response_format"))
+        responseFormat.getOptional("response_format")
 
     /**
      * The Unix timestamp (in seconds) for when the run was started.
@@ -345,7 +343,7 @@ private constructor(
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
      */
-    fun startedAt(): Optional<Long> = Optional.ofNullable(startedAt.getNullable("started_at"))
+    fun startedAt(): Optional<Long> = startedAt.getOptional("started_at")
 
     /**
      * The status of the run, which can be either `queued`, `in_progress`, `requires_action`,
@@ -376,8 +374,7 @@ private constructor(
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
      */
-    fun toolChoice(): Optional<AssistantToolChoiceOption> =
-        Optional.ofNullable(toolChoice.getNullable("tool_choice"))
+    fun toolChoice(): Optional<AssistantToolChoiceOption> = toolChoice.getOptional("tool_choice")
 
     /**
      * The list of tools that the
@@ -396,7 +393,7 @@ private constructor(
      *   server responded with an unexpected value).
      */
     fun truncationStrategy(): Optional<TruncationStrategy> =
-        Optional.ofNullable(truncationStrategy.getNullable("truncation_strategy"))
+        truncationStrategy.getOptional("truncation_strategy")
 
     /**
      * Usage statistics related to the run. This value will be `null` if the run is not in a
@@ -405,7 +402,7 @@ private constructor(
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
      */
-    fun usage(): Optional<Usage> = Optional.ofNullable(usage.getNullable("usage"))
+    fun usage(): Optional<Usage> = usage.getOptional("usage")
 
     /**
      * The sampling temperature used for this run. If not set, defaults to 1.
@@ -413,8 +410,7 @@ private constructor(
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
      */
-    fun temperature(): Optional<Double> =
-        Optional.ofNullable(temperature.getNullable("temperature"))
+    fun temperature(): Optional<Double> = temperature.getOptional("temperature")
 
     /**
      * The nucleus sampling value used for this run. If not set, defaults to 1.
@@ -422,7 +418,7 @@ private constructor(
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
      */
-    fun topP(): Optional<Double> = Optional.ofNullable(topP.getNullable("top_p"))
+    fun topP(): Optional<Double> = topP.getOptional("top_p")
 
     /**
      * Returns the raw JSON value of [id].
@@ -1543,7 +1539,7 @@ private constructor(
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
          */
-        fun reason(): Optional<Reason> = Optional.ofNullable(reason.getNullable("reason"))
+        fun reason(): Optional<Reason> = reason.getOptional("reason")
 
         /**
          * Returns the raw JSON value of [reason].
@@ -2677,8 +2673,7 @@ private constructor(
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
          */
-        fun lastMessages(): Optional<Long> =
-            Optional.ofNullable(lastMessages.getNullable("last_messages"))
+        fun lastMessages(): Optional<Long> = lastMessages.getOptional("last_messages")
 
         /**
          * Returns the raw JSON value of [type].

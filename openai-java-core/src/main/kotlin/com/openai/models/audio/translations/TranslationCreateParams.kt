@@ -435,7 +435,7 @@ private constructor(
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
          */
-        fun prompt(): Optional<String> = Optional.ofNullable(prompt.value.getNullable("prompt"))
+        fun prompt(): Optional<String> = prompt.value.getOptional("prompt")
 
         /**
          * The format of the output, in one of these options: `json`, `text`, `srt`, `verbose_json`,
@@ -445,7 +445,7 @@ private constructor(
          *   server responded with an unexpected value).
          */
         fun responseFormat(): Optional<ResponseFormat> =
-            Optional.ofNullable(responseFormat.value.getNullable("response_format"))
+            responseFormat.value.getOptional("response_format")
 
         /**
          * The sampling temperature, between 0 and 1. Higher values like 0.8 will make the output
@@ -457,8 +457,7 @@ private constructor(
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
          */
-        fun temperature(): Optional<Double> =
-            Optional.ofNullable(temperature.value.getNullable("temperature"))
+        fun temperature(): Optional<Double> = temperature.value.getOptional("temperature")
 
         /**
          * Returns the raw multipart value of [file].

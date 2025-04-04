@@ -75,8 +75,7 @@ private constructor(
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
      */
-    fun segments(): Optional<List<TranscriptionSegment>> =
-        Optional.ofNullable(segments.getNullable("segments"))
+    fun segments(): Optional<List<TranscriptionSegment>> = segments.getOptional("segments")
 
     /**
      * Extracted words and their corresponding timestamps.
@@ -84,7 +83,7 @@ private constructor(
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
      */
-    fun words(): Optional<List<TranscriptionWord>> = Optional.ofNullable(words.getNullable("words"))
+    fun words(): Optional<List<TranscriptionWord>> = words.getOptional("words")
 
     /**
      * Returns the raw JSON value of [duration].

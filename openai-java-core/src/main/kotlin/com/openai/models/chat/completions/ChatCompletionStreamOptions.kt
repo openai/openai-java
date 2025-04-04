@@ -41,8 +41,7 @@ private constructor(
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
      */
-    fun includeUsage(): Optional<Boolean> =
-        Optional.ofNullable(includeUsage.getNullable("include_usage"))
+    fun includeUsage(): Optional<Boolean> = includeUsage.getOptional("include_usage")
 
     /**
      * Returns the raw JSON value of [includeUsage].

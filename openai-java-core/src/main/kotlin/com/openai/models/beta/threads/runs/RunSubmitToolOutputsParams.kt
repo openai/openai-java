@@ -483,7 +483,7 @@ private constructor(
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
          */
-        fun output(): Optional<String> = Optional.ofNullable(output.getNullable("output"))
+        fun output(): Optional<String> = output.getOptional("output")
 
         /**
          * The ID of the tool call in the `required_action` object within the run object the output
@@ -492,8 +492,7 @@ private constructor(
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
          */
-        fun toolCallId(): Optional<String> =
-            Optional.ofNullable(toolCallId.getNullable("tool_call_id"))
+        fun toolCallId(): Optional<String> = toolCallId.getOptional("tool_call_id")
 
         /**
          * Returns the raw JSON value of [output].

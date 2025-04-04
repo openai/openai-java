@@ -104,8 +104,7 @@ private constructor(
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
      */
-    fun systemFingerprint(): Optional<String> =
-        Optional.ofNullable(systemFingerprint.getNullable("system_fingerprint"))
+    fun systemFingerprint(): Optional<String> = systemFingerprint.getOptional("system_fingerprint")
 
     /**
      * Usage statistics for the completion request.
@@ -113,7 +112,7 @@ private constructor(
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
      */
-    fun usage(): Optional<CompletionUsage> = Optional.ofNullable(usage.getNullable("usage"))
+    fun usage(): Optional<CompletionUsage> = usage.getOptional("usage")
 
     /**
      * Returns the raw JSON value of [id].

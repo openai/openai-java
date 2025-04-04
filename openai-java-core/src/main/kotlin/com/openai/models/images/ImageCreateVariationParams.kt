@@ -459,7 +459,7 @@ private constructor(
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
          */
-        fun model(): Optional<ImageModel> = Optional.ofNullable(model.value.getNullable("model"))
+        fun model(): Optional<ImageModel> = model.value.getOptional("model")
 
         /**
          * The number of images to generate. Must be between 1 and 10. For `dall-e-3`, only `n=1` is
@@ -468,7 +468,7 @@ private constructor(
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
          */
-        fun n(): Optional<Long> = Optional.ofNullable(n.value.getNullable("n"))
+        fun n(): Optional<Long> = n.value.getOptional("n")
 
         /**
          * The format in which the generated images are returned. Must be one of `url` or
@@ -478,7 +478,7 @@ private constructor(
          *   server responded with an unexpected value).
          */
         fun responseFormat(): Optional<ResponseFormat> =
-            Optional.ofNullable(responseFormat.value.getNullable("response_format"))
+            responseFormat.value.getOptional("response_format")
 
         /**
          * The size of the generated images. Must be one of `256x256`, `512x512`, or `1024x1024`.
@@ -486,7 +486,7 @@ private constructor(
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
          */
-        fun size(): Optional<Size> = Optional.ofNullable(size.value.getNullable("size"))
+        fun size(): Optional<Size> = size.value.getOptional("size")
 
         /**
          * A unique identifier representing your end-user, which can help OpenAI to monitor and
@@ -496,7 +496,7 @@ private constructor(
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
          */
-        fun user(): Optional<String> = Optional.ofNullable(user.value.getNullable("user"))
+        fun user(): Optional<String> = user.value.getOptional("user")
 
         /**
          * Returns the raw multipart value of [image].

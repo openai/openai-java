@@ -50,7 +50,7 @@ private constructor(
      *   server responded with an unexpected value).
      */
     fun messageCreation(): Optional<MessageCreation> =
-        Optional.ofNullable(messageCreation.getNullable("message_creation"))
+        messageCreation.getOptional("message_creation")
 
     /**
      * Returns the raw JSON value of [messageCreation].
@@ -202,7 +202,7 @@ private constructor(
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
          */
-        fun messageId(): Optional<String> = Optional.ofNullable(messageId.getNullable("message_id"))
+        fun messageId(): Optional<String> = messageId.getOptional("message_id")
 
         /**
          * Returns the raw JSON value of [messageId].

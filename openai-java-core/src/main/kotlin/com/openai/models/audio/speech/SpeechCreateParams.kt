@@ -488,8 +488,7 @@ private constructor(
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
          */
-        fun instructions(): Optional<String> =
-            Optional.ofNullable(instructions.getNullable("instructions"))
+        fun instructions(): Optional<String> = instructions.getOptional("instructions")
 
         /**
          * The format to audio in. Supported formats are `mp3`, `opus`, `aac`, `flac`, `wav`, and
@@ -499,7 +498,7 @@ private constructor(
          *   server responded with an unexpected value).
          */
         fun responseFormat(): Optional<ResponseFormat> =
-            Optional.ofNullable(responseFormat.getNullable("response_format"))
+            responseFormat.getOptional("response_format")
 
         /**
          * The speed of the generated audio. Select a value from `0.25` to `4.0`. `1.0` is the
@@ -508,7 +507,7 @@ private constructor(
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
          */
-        fun speed(): Optional<Double> = Optional.ofNullable(speed.getNullable("speed"))
+        fun speed(): Optional<Double> = speed.getOptional("speed")
 
         /**
          * Returns the raw JSON value of [input].

@@ -27,6 +27,7 @@ import java.util.Optional
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.Executor
 import java.util.function.Predicate
+import kotlin.jvm.optionals.getOrNull
 
 /** Returns a list of input items for a given response. */
 class InputItemListPageAsync
@@ -140,9 +141,9 @@ private constructor(
             @JsonProperty("has_more") hasMore: JsonField<Boolean> = JsonMissing.of(),
         ) : this(data, hasMore, mutableMapOf())
 
-        fun data(): List<ResponseItem> = data.getNullable("data") ?: listOf()
+        fun data(): List<ResponseItem> = data.getOptional("data").getOrNull() ?: listOf()
 
-        fun hasMore(): Optional<Boolean> = Optional.ofNullable(hasMore.getNullable("has_more"))
+        fun hasMore(): Optional<Boolean> = hasMore.getOptional("has_more")
 
         @JsonProperty("data")
         fun _data(): Optional<JsonField<List<ResponseItem>>> = Optional.ofNullable(data)

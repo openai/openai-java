@@ -63,8 +63,7 @@ private constructor(
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
      */
-    fun imageFile(): Optional<ImageFileDelta> =
-        Optional.ofNullable(imageFile.getNullable("image_file"))
+    fun imageFile(): Optional<ImageFileDelta> = imageFile.getOptional("image_file")
 
     /**
      * Returns the raw JSON value of [index].

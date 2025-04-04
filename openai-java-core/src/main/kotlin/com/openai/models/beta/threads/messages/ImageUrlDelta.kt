@@ -37,7 +37,7 @@ private constructor(
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
      */
-    fun detail(): Optional<Detail> = Optional.ofNullable(detail.getNullable("detail"))
+    fun detail(): Optional<Detail> = detail.getOptional("detail")
 
     /**
      * The URL of the image, must be a supported image types: jpeg, jpg, png, gif, webp.
@@ -45,7 +45,7 @@ private constructor(
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
      */
-    fun url(): Optional<String> = Optional.ofNullable(url.getNullable("url"))
+    fun url(): Optional<String> = url.getOptional("url")
 
     /**
      * Returns the raw JSON value of [detail].
