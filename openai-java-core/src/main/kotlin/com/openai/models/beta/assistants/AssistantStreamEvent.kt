@@ -1361,7 +1361,7 @@ private constructor(
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
          */
-        fun enabled(): Optional<Boolean> = Optional.ofNullable(enabled.getNullable("enabled"))
+        fun enabled(): Optional<Boolean> = enabled.getOptional("enabled")
 
         /**
          * Returns the raw JSON value of [data].

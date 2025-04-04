@@ -263,7 +263,7 @@ private constructor(
          *   server responded with an unexpected value).
          */
         fun rankingOptions(): Optional<RankingOptions> =
-            Optional.ofNullable(rankingOptions.getNullable("ranking_options"))
+            rankingOptions.getOptional("ranking_options")
 
         /**
          * The results of the file search.
@@ -271,7 +271,7 @@ private constructor(
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
          */
-        fun results(): Optional<List<Result>> = Optional.ofNullable(results.getNullable("results"))
+        fun results(): Optional<List<Result>> = results.getOptional("results")
 
         /**
          * Returns the raw JSON value of [rankingOptions].
@@ -837,8 +837,7 @@ private constructor(
              * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if
              *   the server responded with an unexpected value).
              */
-            fun content(): Optional<List<Content>> =
-                Optional.ofNullable(content.getNullable("content"))
+            fun content(): Optional<List<Content>> = content.getOptional("content")
 
             /**
              * Returns the raw JSON value of [fileId].
@@ -1086,7 +1085,7 @@ private constructor(
                  * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g.
                  *   if the server responded with an unexpected value).
                  */
-                fun text(): Optional<String> = Optional.ofNullable(text.getNullable("text"))
+                fun text(): Optional<String> = text.getOptional("text")
 
                 /**
                  * The type of the content.
@@ -1094,7 +1093,7 @@ private constructor(
                  * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g.
                  *   if the server responded with an unexpected value).
                  */
-                fun type(): Optional<Type> = Optional.ofNullable(type.getNullable("type"))
+                fun type(): Optional<Type> = type.getOptional("type")
 
                 /**
                  * Returns the raw JSON value of [text].

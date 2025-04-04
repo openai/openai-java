@@ -440,7 +440,7 @@ private constructor(
          *   server responded with an unexpected value).
          */
         fun chunkingStrategy(): Optional<FileChunkingStrategyParam> =
-            Optional.ofNullable(chunkingStrategy.getNullable("chunking_strategy"))
+            chunkingStrategy.getOptional("chunking_strategy")
 
         /**
          * The expiration policy for a vector store.
@@ -448,8 +448,7 @@ private constructor(
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
          */
-        fun expiresAfter(): Optional<ExpiresAfter> =
-            Optional.ofNullable(expiresAfter.getNullable("expires_after"))
+        fun expiresAfter(): Optional<ExpiresAfter> = expiresAfter.getOptional("expires_after")
 
         /**
          * A list of [File](https://platform.openai.com/docs/api-reference/files) IDs that the
@@ -458,7 +457,7 @@ private constructor(
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
          */
-        fun fileIds(): Optional<List<String>> = Optional.ofNullable(fileIds.getNullable("file_ids"))
+        fun fileIds(): Optional<List<String>> = fileIds.getOptional("file_ids")
 
         /**
          * Set of 16 key-value pairs that can be attached to an object. This can be useful for
@@ -471,7 +470,7 @@ private constructor(
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
          */
-        fun metadata(): Optional<Metadata> = Optional.ofNullable(metadata.getNullable("metadata"))
+        fun metadata(): Optional<Metadata> = metadata.getOptional("metadata")
 
         /**
          * The name of the vector store.
@@ -479,7 +478,7 @@ private constructor(
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
          */
-        fun name(): Optional<String> = Optional.ofNullable(name.getNullable("name"))
+        fun name(): Optional<String> = name.getOptional("name")
 
         /**
          * Returns the raw JSON value of [chunkingStrategy].

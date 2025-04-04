@@ -54,8 +54,7 @@ private constructor(
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
      */
-    fun toolCalls(): Optional<List<ToolCallDelta>> =
-        Optional.ofNullable(toolCalls.getNullable("tool_calls"))
+    fun toolCalls(): Optional<List<ToolCallDelta>> = toolCalls.getOptional("tool_calls")
 
     /**
      * Returns the raw JSON value of [toolCalls].

@@ -92,7 +92,7 @@ private constructor(
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
      */
-    fun lastError(): Optional<LastError> = Optional.ofNullable(lastError.getNullable("last_error"))
+    fun lastError(): Optional<LastError> = lastError.getOptional("last_error")
 
     /**
      * The object type, which is always `vector_store.file`.
@@ -145,8 +145,7 @@ private constructor(
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
      */
-    fun attributes(): Optional<Attributes> =
-        Optional.ofNullable(attributes.getNullable("attributes"))
+    fun attributes(): Optional<Attributes> = attributes.getOptional("attributes")
 
     /**
      * The strategy used to chunk the file.
@@ -155,7 +154,7 @@ private constructor(
      *   server responded with an unexpected value).
      */
     fun chunkingStrategy(): Optional<FileChunkingStrategy> =
-        Optional.ofNullable(chunkingStrategy.getNullable("chunking_strategy"))
+        chunkingStrategy.getOptional("chunking_strategy")
 
     /**
      * Returns the raw JSON value of [id].

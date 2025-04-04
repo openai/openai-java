@@ -543,7 +543,7 @@ private constructor(
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
          */
-        fun model(): Optional<ImageModel> = Optional.ofNullable(model.getNullable("model"))
+        fun model(): Optional<ImageModel> = model.getOptional("model")
 
         /**
          * The number of images to generate. Must be between 1 and 10. For `dall-e-3`, only `n=1` is
@@ -552,7 +552,7 @@ private constructor(
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
          */
-        fun n(): Optional<Long> = Optional.ofNullable(n.getNullable("n"))
+        fun n(): Optional<Long> = n.getOptional("n")
 
         /**
          * The quality of the image that will be generated. `hd` creates images with finer details
@@ -561,7 +561,7 @@ private constructor(
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
          */
-        fun quality(): Optional<Quality> = Optional.ofNullable(quality.getNullable("quality"))
+        fun quality(): Optional<Quality> = quality.getOptional("quality")
 
         /**
          * The format in which the generated images are returned. Must be one of `url` or
@@ -571,7 +571,7 @@ private constructor(
          *   server responded with an unexpected value).
          */
         fun responseFormat(): Optional<ResponseFormat> =
-            Optional.ofNullable(responseFormat.getNullable("response_format"))
+            responseFormat.getOptional("response_format")
 
         /**
          * The size of the generated images. Must be one of `256x256`, `512x512`, or `1024x1024` for
@@ -581,7 +581,7 @@ private constructor(
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
          */
-        fun size(): Optional<Size> = Optional.ofNullable(size.getNullable("size"))
+        fun size(): Optional<Size> = size.getOptional("size")
 
         /**
          * The style of the generated images. Must be one of `vivid` or `natural`. Vivid causes the
@@ -592,7 +592,7 @@ private constructor(
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
          */
-        fun style(): Optional<Style> = Optional.ofNullable(style.getNullable("style"))
+        fun style(): Optional<Style> = style.getOptional("style")
 
         /**
          * A unique identifier representing your end-user, which can help OpenAI to monitor and
@@ -602,7 +602,7 @@ private constructor(
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
          */
-        fun user(): Optional<String> = Optional.ofNullable(user.getNullable("user"))
+        fun user(): Optional<String> = user.getOptional("user")
 
         /**
          * Returns the raw JSON value of [prompt].

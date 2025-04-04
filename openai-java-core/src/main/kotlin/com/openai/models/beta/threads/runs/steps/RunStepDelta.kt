@@ -46,8 +46,7 @@ private constructor(
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
      */
-    fun stepDetails(): Optional<StepDetails> =
-        Optional.ofNullable(stepDetails.getNullable("step_details"))
+    fun stepDetails(): Optional<StepDetails> = stepDetails.getOptional("step_details")
 
     /**
      * Returns the raw JSON value of [stepDetails].

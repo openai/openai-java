@@ -34,7 +34,7 @@ private constructor(
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
      */
-    fun text(): Optional<String> = Optional.ofNullable(text.getNullable("text"))
+    fun text(): Optional<String> = text.getOptional("text")
 
     /**
      * The content type (currently only `"text"`)
@@ -42,7 +42,7 @@ private constructor(
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
      */
-    fun type(): Optional<String> = Optional.ofNullable(type.getNullable("type"))
+    fun type(): Optional<String> = type.getOptional("type")
 
     /**
      * Returns the raw JSON value of [text].

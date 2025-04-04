@@ -176,7 +176,7 @@ private constructor(
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
      */
-    fun cancelledAt(): Optional<Long> = Optional.ofNullable(cancelledAt.getNullable("cancelled_at"))
+    fun cancelledAt(): Optional<Long> = cancelledAt.getOptional("cancelled_at")
 
     /**
      * The Unix timestamp (in seconds) for when the batch started cancelling.
@@ -184,8 +184,7 @@ private constructor(
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
      */
-    fun cancellingAt(): Optional<Long> =
-        Optional.ofNullable(cancellingAt.getNullable("cancelling_at"))
+    fun cancellingAt(): Optional<Long> = cancellingAt.getOptional("cancelling_at")
 
     /**
      * The Unix timestamp (in seconds) for when the batch was completed.
@@ -193,7 +192,7 @@ private constructor(
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
      */
-    fun completedAt(): Optional<Long> = Optional.ofNullable(completedAt.getNullable("completed_at"))
+    fun completedAt(): Optional<Long> = completedAt.getOptional("completed_at")
 
     /**
      * The ID of the file containing the outputs of requests with errors.
@@ -201,14 +200,13 @@ private constructor(
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
      */
-    fun errorFileId(): Optional<String> =
-        Optional.ofNullable(errorFileId.getNullable("error_file_id"))
+    fun errorFileId(): Optional<String> = errorFileId.getOptional("error_file_id")
 
     /**
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
      */
-    fun errors(): Optional<Errors> = Optional.ofNullable(errors.getNullable("errors"))
+    fun errors(): Optional<Errors> = errors.getOptional("errors")
 
     /**
      * The Unix timestamp (in seconds) for when the batch expired.
@@ -216,7 +214,7 @@ private constructor(
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
      */
-    fun expiredAt(): Optional<Long> = Optional.ofNullable(expiredAt.getNullable("expired_at"))
+    fun expiredAt(): Optional<Long> = expiredAt.getOptional("expired_at")
 
     /**
      * The Unix timestamp (in seconds) for when the batch will expire.
@@ -224,7 +222,7 @@ private constructor(
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
      */
-    fun expiresAt(): Optional<Long> = Optional.ofNullable(expiresAt.getNullable("expires_at"))
+    fun expiresAt(): Optional<Long> = expiresAt.getOptional("expires_at")
 
     /**
      * The Unix timestamp (in seconds) for when the batch failed.
@@ -232,7 +230,7 @@ private constructor(
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
      */
-    fun failedAt(): Optional<Long> = Optional.ofNullable(failedAt.getNullable("failed_at"))
+    fun failedAt(): Optional<Long> = failedAt.getOptional("failed_at")
 
     /**
      * The Unix timestamp (in seconds) for when the batch started finalizing.
@@ -240,8 +238,7 @@ private constructor(
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
      */
-    fun finalizingAt(): Optional<Long> =
-        Optional.ofNullable(finalizingAt.getNullable("finalizing_at"))
+    fun finalizingAt(): Optional<Long> = finalizingAt.getOptional("finalizing_at")
 
     /**
      * The Unix timestamp (in seconds) for when the batch started processing.
@@ -249,8 +246,7 @@ private constructor(
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
      */
-    fun inProgressAt(): Optional<Long> =
-        Optional.ofNullable(inProgressAt.getNullable("in_progress_at"))
+    fun inProgressAt(): Optional<Long> = inProgressAt.getOptional("in_progress_at")
 
     /**
      * Set of 16 key-value pairs that can be attached to an object. This can be useful for storing
@@ -263,7 +259,7 @@ private constructor(
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
      */
-    fun metadata(): Optional<Metadata> = Optional.ofNullable(metadata.getNullable("metadata"))
+    fun metadata(): Optional<Metadata> = metadata.getOptional("metadata")
 
     /**
      * The ID of the file containing the outputs of successfully executed requests.
@@ -271,8 +267,7 @@ private constructor(
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
      */
-    fun outputFileId(): Optional<String> =
-        Optional.ofNullable(outputFileId.getNullable("output_file_id"))
+    fun outputFileId(): Optional<String> = outputFileId.getOptional("output_file_id")
 
     /**
      * The request counts for different statuses within the batch.
@@ -280,8 +275,7 @@ private constructor(
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
      */
-    fun requestCounts(): Optional<BatchRequestCounts> =
-        Optional.ofNullable(requestCounts.getNullable("request_counts"))
+    fun requestCounts(): Optional<BatchRequestCounts> = requestCounts.getOptional("request_counts")
 
     /**
      * Returns the raw JSON value of [id].
@@ -1076,7 +1070,7 @@ private constructor(
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
          */
-        fun data(): Optional<List<BatchError>> = Optional.ofNullable(data.getNullable("data"))
+        fun data(): Optional<List<BatchError>> = data.getOptional("data")
 
         /**
          * The object type, which is always `list`.
@@ -1084,7 +1078,7 @@ private constructor(
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
          */
-        fun object_(): Optional<String> = Optional.ofNullable(object_.getNullable("object"))
+        fun object_(): Optional<String> = object_.getOptional("object")
 
         /**
          * Returns the raw JSON value of [data].

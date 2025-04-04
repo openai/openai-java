@@ -61,7 +61,7 @@ private constructor(
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
      */
-    fun id(): Optional<String> = Optional.ofNullable(id.getNullable("id"))
+    fun id(): Optional<String> = id.getOptional("id")
 
     /**
      * The definition of the function that was called.
@@ -69,7 +69,7 @@ private constructor(
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
      */
-    fun function(): Optional<Function> = Optional.ofNullable(function.getNullable("function"))
+    fun function(): Optional<Function> = function.getOptional("function")
 
     /**
      * Returns the raw JSON value of [index].
@@ -286,7 +286,7 @@ private constructor(
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
          */
-        fun arguments(): Optional<String> = Optional.ofNullable(arguments.getNullable("arguments"))
+        fun arguments(): Optional<String> = arguments.getOptional("arguments")
 
         /**
          * The name of the function.
@@ -294,7 +294,7 @@ private constructor(
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
          */
-        fun name(): Optional<String> = Optional.ofNullable(name.getNullable("name"))
+        fun name(): Optional<String> = name.getOptional("name")
 
         /**
          * The output of the function. This will be `null` if the outputs have not been
@@ -303,7 +303,7 @@ private constructor(
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
          */
-        fun output(): Optional<String> = Optional.ofNullable(output.getNullable("output"))
+        fun output(): Optional<String> = output.getOptional("output")
 
         /**
          * Returns the raw JSON value of [arguments].
