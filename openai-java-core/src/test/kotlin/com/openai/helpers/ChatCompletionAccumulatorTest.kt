@@ -1,8 +1,6 @@
 package com.openai.helpers
 
-import com.openai.core.JsonField
 import com.openai.core.JsonMissing
-import com.openai.core.JsonNull
 import com.openai.core.JsonValue
 import com.openai.models.chat.completions.ChatCompletion
 import com.openai.models.chat.completions.ChatCompletionChunk
@@ -14,78 +12,6 @@ import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.jupiter.api.Test
 
 internal class ChatCompletionAccumulatorTest {
-    @Test
-    fun convertToolCallFunctionWithoutAdditionalProperties() {
-        val jsonFunction = ChatCompletionAccumulator.convertToolCallFunction(_toolCallFunction())
-        val function: ChatCompletionMessageToolCall.Function = jsonFunction.getRequired("function")
-
-        assertThat(function.name()).isEqualTo("tc_fn_name")
-        assertThat(function.arguments()).isEqualTo("[arg1, arg2]")
-        assertThat(function._additionalProperties()).isEmpty()
-    }
-
-    @Test
-    fun convertToolCallFunctionWithNullFunction() {
-        val jsonFunction = ChatCompletionAccumulator.convertToolCallFunction(JsonNull.of())
-
-        assertThat(jsonFunction.isNull()).isTrue()
-    }
-
-    @Test
-    fun convertToolCallFunctionWithMissingFunction() {
-        val jsonFunction = ChatCompletionAccumulator.convertToolCallFunction(JsonMissing.of())
-
-        assertThat(jsonFunction.isMissing()).isTrue()
-    }
-
-    @Test
-    fun convertToolCallFunctionWithAdditionalProperties() {
-        val jsonFunction =
-            ChatCompletionAccumulator.convertToolCallFunction(
-                _toolCallFunction(
-                    additionalProperties =
-                        mapOf("a" to JsonValue.from("a-value"), "b" to JsonValue.from("b-value"))
-                )
-            )
-        val function = jsonFunction.getRequired("function")
-
-        assertThat(function.name()).isEqualTo("tc_fn_name")
-        assertThat(function.arguments()).isEqualTo("[arg1, arg2]")
-        assertThat(function._additionalProperties()).isNotEmpty()
-        assertThat(function._additionalProperties()["a"]!!.asString().get()).isEqualTo("a-value")
-        assertThat(function._additionalProperties()["b"]!!.asString().get()).isEqualTo("b-value")
-    }
-
-    @Test
-    fun convertToolCallWithoutAdditionalProperties() {
-        val toolCall = ChatCompletionAccumulator.convertToolCall(toolCall())
-
-        // If the function name is OK, the rest of the `Function` details should follow, as that
-        // is tested in detail in another test method.
-        assertThat(toolCall.function().name()).isEqualTo("tc_fn_name")
-        assertThat(toolCall.id()).isEqualTo("tool-call-id")
-        assertThat(toolCall._additionalProperties()).isEmpty()
-    }
-
-    @Test
-    fun convertToolCallWithAdditionalProperties() {
-        val toolCall =
-            ChatCompletionAccumulator.convertToolCall(
-                toolCall(
-                    additionalProperties =
-                        mapOf("a" to JsonValue.from("a-value"), "b" to JsonValue.from("b-value"))
-                )
-            )
-
-        // If the function name is OK, the rest of the `Function` details should follow, as that
-        // is tested in detail in another test method.
-        assertThat(toolCall.function().name()).isEqualTo("tc_fn_name")
-        assertThat(toolCall.id()).isEqualTo("tool-call-id")
-        assertThat(toolCall._additionalProperties()).isNotEmpty()
-        assertThat(toolCall._additionalProperties()["a"]!!.asString().get()).isEqualTo("a-value")
-        assertThat(toolCall._additionalProperties()["b"]!!.asString().get()).isEqualTo("b-value")
-    }
-
     @Test
     fun convertFunctionCallWithoutAdditionalProperties() {
         val functionCall =
@@ -345,8 +271,11 @@ internal class ChatCompletionAccumulatorTest {
     fun accumulateFunctionCallAndToolCall() {
         val accumulator = ChatCompletionAccumulator.create()
 
+        // Due to the way the test fixtures are created with a limited number of arguments (for
+        // legibility), the indexes are hard-coded.  If more than one tool call is added, it will
+        // overwrite the previous tool call with the same index.
         accumulator.accumulate(textChunk("hello", withToolCall = true))
-        accumulator.accumulate(textChunk(" world", withToolCall = true, withFunctionCall = true))
+        accumulator.accumulate(textChunk(" world", withFunctionCall = true))
         accumulator.accumulate(finalChunk())
 
         var chatCompletion = accumulator.chatCompletion()
@@ -354,10 +283,134 @@ internal class ChatCompletionAccumulatorTest {
         assertThat(chatCompletion.choices().size).isEqualTo(1)
         assertThat(chatCompletion.choices()[0].message().functionCall().get().name())
             .isEqualTo("fc_fn_name")
-        assertThat(chatCompletion.choices()[0].message().toolCalls().get().size).isEqualTo(2)
+        assertThat(chatCompletion.choices()[0].message().toolCalls().get().size).isEqualTo(1)
         assertThat(chatCompletion.choices()[0].message().toolCalls().get()[0].function().name())
             .isEqualTo("tc_fn_name")
         assertThat(chatCompletion.choices()[0].message().content().get()).isEqualTo("hello world")
+    }
+
+    @Test
+    fun accumulateToolCallsFromFragments() {
+        val accumulator = ChatCompletionAccumulator.create()
+
+        // Accumulate two choices/messages. Each has two tool calls. Each tool call is constructed
+        // from four chunks. The first chunk has the tool call ID and function name. The second,
+        // third and fourth chunks have the fragments of the function arguments. Naming relates to
+        // the choice index and the respective tool call index for that choice. The arguments are
+        // not expected to be parsed to JSON, just compared as a string. The accumulated result that
+        // is expected is as follows:
+        //
+        //   Choice 0
+        //      Tool Call 0: id=tc-id-0-0, function: name=fn-0-0, args={a-0-0-0, a-0-0-1}
+        //      Tool Call 1: id=tc-id-0-1, function: name=fn-0-1, args={a-0-1-0, a-0-1-1}
+        //
+        //   Choice 1
+        //      Tool Call 0: id=tc-id-1-0, function: name=fn-1-0, args={a-1-0-0, a-1-0-1}
+        //      Tool Call 1: id=tc-id-1-1, function: name=fn-1-1, args={a-1-1-0, a-1-1-1}
+        //
+        // The chunks are deliberately accumulated out-of-order to ensure that ordering is
+        // identified correctly from indexes, not from order of encounter. The chunks carrying the
+        // fragments of the arguments for one tool call must be in encounter order (just like for
+        // text chunks), but they are interleaved with other chunks.
+        accumulator.accumulate(
+            toolCallChunk(
+                choiceIndex = 0L,
+                toolCallIndex = 0L,
+                toolCallId = "tc-id-0-0",
+                functionName = "fn-0-0",
+            )
+        )
+        accumulator.accumulate(
+            toolCallChunk(choiceIndex = 0L, toolCallIndex = 0L, argsFragment = "{a-0-0-0")
+        )
+
+        accumulator.accumulate(
+            toolCallChunk(
+                choiceIndex = 0L,
+                toolCallIndex = 1L,
+                toolCallId = "tc-id-0-1",
+                functionName = "fn-0-1",
+            )
+        )
+        accumulator.accumulate(
+            toolCallChunk(choiceIndex = 0L, toolCallIndex = 0L, argsFragment = ", ")
+        )
+        accumulator.accumulate(
+            toolCallChunk(choiceIndex = 0L, toolCallIndex = 0L, argsFragment = "a-0-0-1}")
+        )
+        accumulator.accumulate(
+            toolCallChunk(choiceIndex = 0L, toolCallIndex = 1L, argsFragment = "{a-0-1-0")
+        )
+        accumulator.accumulate(
+            toolCallChunk(
+                choiceIndex = 1L,
+                toolCallIndex = 1L,
+                toolCallId = "tc-id-1-1",
+                functionName = "fn-1-1",
+            )
+        )
+
+        accumulator.accumulate(
+            toolCallChunk(
+                choiceIndex = 1L,
+                toolCallIndex = 0L,
+                toolCallId = "tc-id-1-0",
+                functionName = "fn-1-0",
+            )
+        )
+        accumulator.accumulate(
+            toolCallChunk(choiceIndex = 1L, toolCallIndex = 0L, argsFragment = "{a-1-0-0")
+        )
+        accumulator.accumulate(
+            toolCallChunk(choiceIndex = 0L, toolCallIndex = 1L, argsFragment = ", ")
+        )
+        accumulator.accumulate(
+            toolCallChunk(choiceIndex = 1L, toolCallIndex = 0L, argsFragment = ", ")
+        )
+
+        accumulator.accumulate(
+            toolCallChunk(choiceIndex = 1L, toolCallIndex = 1L, argsFragment = "{a-1-1-0")
+        )
+        accumulator.accumulate(
+            toolCallChunk(choiceIndex = 1L, toolCallIndex = 1L, argsFragment = ", ")
+        )
+        accumulator.accumulate(
+            toolCallChunk(choiceIndex = 1L, toolCallIndex = 0L, argsFragment = "a-1-0-1}")
+        )
+        accumulator.accumulate(
+            toolCallChunk(choiceIndex = 1L, toolCallIndex = 1L, argsFragment = "a-1-1-1}")
+        )
+        accumulator.accumulate(finalChunk(0L))
+        accumulator.accumulate(
+            toolCallChunk(choiceIndex = 0L, toolCallIndex = 1L, argsFragment = "a-0-1-1}")
+        )
+        accumulator.accumulate(finalChunk(1L))
+
+        val chatCompletion = accumulator.chatCompletion()
+        var tc: ChatCompletionMessageToolCall
+
+        // Not interested in much here except the order and details of the accumulated tool calls.
+        assertThat(chatCompletion.choices().size).isEqualTo(2)
+
+        assertThat(chatCompletion.choices()[0].message().toolCalls().get().size).isEqualTo(2)
+        tc = chatCompletion.choices()[0].message().toolCalls().get()[0]
+        assertThat(tc.id()).isEqualTo("tc-id-0-0")
+        assertThat(tc.function().name()).isEqualTo("fn-0-0")
+        assertThat(tc.function().arguments()).isEqualTo("{a-0-0-0, a-0-0-1}")
+        tc = chatCompletion.choices()[0].message().toolCalls().get()[1]
+        assertThat(tc.id()).isEqualTo("tc-id-0-1")
+        assertThat(tc.function().name()).isEqualTo("fn-0-1")
+        assertThat(tc.function().arguments()).isEqualTo("{a-0-1-0, a-0-1-1}")
+
+        assertThat(chatCompletion.choices()[1].message().toolCalls().get().size).isEqualTo(2)
+        tc = chatCompletion.choices()[1].message().toolCalls().get()[0]
+        assertThat(tc.id()).isEqualTo("tc-id-1-0")
+        assertThat(tc.function().name()).isEqualTo("fn-1-0")
+        assertThat(tc.function().arguments()).isEqualTo("{a-1-0-0, a-1-0-1}")
+        tc = chatCompletion.choices()[1].message().toolCalls().get()[1]
+        assertThat(tc.id()).isEqualTo("tc-id-1-1")
+        assertThat(tc.function().name()).isEqualTo("fn-1-1")
+        assertThat(tc.function().arguments()).isEqualTo("{a-1-1-0, a-1-1-1}")
     }
 
     // -------------------------------------------------------------------------
@@ -406,7 +459,7 @@ internal class ChatCompletionAccumulatorTest {
      * given. Each text string corresponds to a separate completion choice and will be accumulated
      * in a separate `ChatCompletionMessage` in each `Choice` of the final `ChatCompletion`. The
      * number of indexes corresponds to the `n` value in the request. For example, if there are
-     * three text chunks each with three text strings(: `["A", "B", "C"]`, `["D", "E", "F"]`, `["G",
+     * three text chunks each with three text strings: `["A", "B", "C"]`, `["D", "E", "F"]`, `["G",
      * "H", "I"]`, then the accumulation will contain three choices each with a single message with
      * the respective text `"ADG"`, `"BEH"`, or `"CFI"`.
      */
@@ -484,6 +537,84 @@ internal class ChatCompletionAccumulatorTest {
             .apply { role?.let { role(it) } }
             .build()
 
+    private fun toolCallChunk(
+        choiceIndex: Long,
+        toolCallIndex: Long,
+        toolCallId: String? = null,
+        functionName: String? = null,
+        argsFragment: String? = null,
+    ) =
+        ChatCompletionChunk.builder()
+            .id("tc-chunk-id")
+            .created(123_456_789L)
+            .model("model-id")
+            .addChoice(
+                toolCallChoice(choiceIndex, toolCallIndex, toolCallId, functionName, argsFragment)
+            )
+            .build()
+
+    private fun toolCallChoice(
+        choiceIndex: Long,
+        toolCallIndex: Long,
+        toolCallId: String? = null,
+        functionName: String? = null,
+        argsFragment: String? = null,
+    ) =
+        ChatCompletionChunk.Choice.builder()
+            .delta(toolCallDelta(toolCallIndex, toolCallId, functionName, argsFragment))
+            .index(choiceIndex)
+            .finishReason(null)
+            .build()
+
+    private fun toolCallDelta(
+        toolCallIndex: Long,
+        toolCallId: String? = null,
+        functionName: String? = null,
+        argsFragment: String? = null,
+    ) =
+        ChatCompletionChunk.Choice.Delta.builder()
+            .content("hello")
+            .addToolCall(
+                ChatCompletionChunk.Choice.Delta.ToolCall.builder()
+                    // Some validations to ensure the caller knows how this method is expected to
+                    // be used.
+                    .applyIf((toolCallId == null) != (functionName == null)) {
+                        throw IllegalArgumentException(
+                            "Set both toolCallId and functionName. or set neither."
+                        )
+                    }
+                    .applyIf(functionName != null && argsFragment != null) {
+                        throw IllegalArgumentException(
+                            "Set functionName or argsFragment, but not both."
+                        )
+                    }
+                    .applyIf(toolCallId == null && functionName == null && argsFragment == null) {
+                        throw IllegalArgumentException(
+                            "Set toolCallId and functionName, or set argsFragment."
+                        )
+                    }
+                    .applyIf(toolCallId != null) { id(toolCallId!!) }
+                    .applyIf(functionName != null) {
+                        function(
+                            ChatCompletionChunk.Choice.Delta.ToolCall.Function.builder()
+                                .name(functionName!!)
+                                .arguments(JsonMissing.of())
+                                .build()
+                        )
+                    }
+                    .applyIf(argsFragment != null) {
+                        function(
+                            ChatCompletionChunk.Choice.Delta.ToolCall.Function.builder()
+                                .name(JsonMissing.of())
+                                .arguments(argsFragment!!)
+                                .build()
+                        )
+                    }
+                    .index(toolCallIndex)
+                    .build()
+            )
+            .build()
+
     private fun refusalChunk(text: String) =
         ChatCompletionChunk.builder()
             .id("refusal-chunk-id")
@@ -527,19 +658,6 @@ internal class ChatCompletionAccumulatorTest {
             .arguments(functionArguments)
             .apply { additionalProperties?.let { additionalProperties(it) } }
             .build()
-
-    private fun _toolCallFunction(
-        functionName: JsonField<String> = JsonField.of("tc_fn_name"),
-        functionArguments: JsonField<String> = JsonField.of("[arg1, arg2]"),
-        additionalProperties: Map<String, JsonValue>? = null,
-    ) =
-        JsonField.of(
-            ChatCompletionChunk.Choice.Delta.ToolCall.Function.builder()
-                .name(functionName)
-                .arguments(functionArguments)
-                .apply { additionalProperties?.let { additionalProperties(it) } }
-                .build()
-        )
 
     private fun functionCall(
         functionName: String = "fc_fn_name",
