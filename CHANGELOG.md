@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.44.1 (2025-04-04)
+
+Full Changelog: [v0.44.0...v0.44.1](https://github.com/openai/openai-java/compare/v0.44.0...v0.44.1)
+
+### Bug Fixes
+
+* **client:** accumulation of tool call functions ([#382](https://github.com/openai/openai-java/issues/382)) ([#399](https://github.com/openai/openai-java/issues/399)) ([943e6fb](https://github.com/openai/openai-java/commit/943e6fbd65a5f318ebbb7895bdd8c68f6d8babe4))
+
 ## 0.44.0 (2025-04-04)
 
 Full Changelog: [v0.43.0...v0.44.0](https://github.com/openai/openai-java/compare/v0.43.0...v0.44.0)
