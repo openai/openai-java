@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.44.2 (2025-04-04)
+
+Full Changelog: [v0.44.1...v0.44.2](https://github.com/openai/openai-java/compare/v0.44.1...v0.44.2)
+
+### Bug Fixes
+
+* **client:** support responses API for Azure ([#387](https://github.com/openai/openai-java/issues/387)) ([f7f09aa](https://github.com/openai/openai-java/commit/f7f09aa1a3dd77f5565083ece85f8056b53e2e54))
+
 ## 0.44.1 (2025-04-04)
 
 Full Changelog: [v0.44.0...v0.44.1](https://github.com/openai/openai-java/compare/v0.44.0...v0.44.1)
