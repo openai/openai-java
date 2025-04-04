@@ -1,5 +1,23 @@
 # Changelog
 
+## 0.44.0 (2025-04-04)
+
+Full Changelog: [v0.43.0...v0.44.0](https://github.com/openai/openai-java/compare/v0.43.0...v0.44.0)
+
+### Features
+
+* **api:** manual updates ([331ec66](https://github.com/openai/openai-java/commit/331ec66baf6add46ec79ba56842f31065dffff33))
+
+
+### Bug Fixes
+
+* **client:** translate streaming `IOException` into custom exception ([#397](https://github.com/openai/openai-java/issues/397)) ([bc5c577](https://github.com/openai/openai-java/commit/bc5c57721fd7115800d7a9fd2e38631e695caa25))
+
+
+### Performance Improvements
+
+* **client:** cached parsed type in `HttpResponseFor` ([#395](https://github.com/openai/openai-java/issues/395)) ([259b75a](https://github.com/openai/openai-java/commit/259b75a9e3a3f6de2e123b171bd739facdecd819))
+
 ## 0.43.0 (2025-04-02)
 
 Full Changelog: [v0.42.0...v0.43.0](https://github.com/openai/openai-java/compare/v0.42.0...v0.43.0)
