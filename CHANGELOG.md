@@ -1,5 +1,26 @@
 # Changelog
 
+## 0.44.3 (2025-04-06)
+
+Full Changelog: [v0.44.2...v0.44.3](https://github.com/openai/openai-java/compare/v0.44.2...v0.44.3)
+
+### Bug Fixes
+
+* **client:** return `Optional&lt;T&gt;` instead of `Optional<? extends T>` ([#407](https://github.com/openai/openai-java/issues/407)) ([73eee4f](https://github.com/openai/openai-java/commit/73eee4fcf4859a48bb16c02dbcbc46adb9c691b1))
+
+
+### Chores
+
+* **internal:** add more `streamHandler` tests ([#404](https://github.com/openai/openai-java/issues/404)) ([a29b341](https://github.com/openai/openai-java/commit/a29b341b228c8cb28c9cfc18521a15697ee18649))
+* **internal:** swap from `getNullable` to `getOptional` ([#406](https://github.com/openai/openai-java/issues/406)) ([32b54f9](https://github.com/openai/openai-java/commit/32b54f95a356922fa0b3f1c5bddfefab19dde7a7))
+
+
+### Documentation
+
+* add comments to `JsonField` classes ([73eee4f](https://github.com/openai/openai-java/commit/73eee4fcf4859a48bb16c02dbcbc46adb9c691b1))
+* document how to forcibly omit required field ([a51c184](https://github.com/openai/openai-java/commit/a51c1840dd41682a4f9e7025058e0b6a1b8e7205))
+* swap examples used in readme ([#408](https://github.com/openai/openai-java/issues/408)) ([a51c184](https://github.com/openai/openai-java/commit/a51c1840dd41682a4f9e7025058e0b6a1b8e7205))
+
 ## 0.44.2 (2025-04-04)
 
 Full Changelog: [v0.44.1...v0.44.2](https://github.com/openai/openai-java/compare/v0.44.1...v0.44.2)
