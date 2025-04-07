@@ -954,8 +954,9 @@ private constructor(
             fun addTool(codeInterpreter: CodeInterpreterTool) =
                 addTool(Tool.ofCodeInterpreter(codeInterpreter))
 
-            /** Alias for calling [addTool] with `Tool.ofObject()`. */
-            fun addToolObject() = addTool(Tool.ofObject())
+            /** Alias for calling [addTool] with `Tool.ofAssistantToolsFileSearchTypeOnly()`. */
+            fun addToolAssistantToolsFileSearchTypeOnly() =
+                addTool(Tool.ofAssistantToolsFileSearchTypeOnly())
 
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.clear()
@@ -1025,30 +1026,36 @@ private constructor(
         class Tool
         private constructor(
             private val codeInterpreter: CodeInterpreterTool? = null,
-            private val object_: JsonValue? = null,
+            private val assistantToolsFileSearchTypeOnly: JsonValue? = null,
             private val _json: JsonValue? = null,
         ) {
 
             fun codeInterpreter(): Optional<CodeInterpreterTool> =
                 Optional.ofNullable(codeInterpreter)
 
-            fun object_(): Optional<JsonValue> = Optional.ofNullable(object_)
+            fun assistantToolsFileSearchTypeOnly(): Optional<JsonValue> =
+                Optional.ofNullable(assistantToolsFileSearchTypeOnly)
 
             fun isCodeInterpreter(): Boolean = codeInterpreter != null
 
-            fun isObject(): Boolean = object_ != null
+            fun isAssistantToolsFileSearchTypeOnly(): Boolean =
+                assistantToolsFileSearchTypeOnly != null
 
             fun asCodeInterpreter(): CodeInterpreterTool =
                 codeInterpreter.getOrThrow("codeInterpreter")
 
-            fun asObject(): JsonValue = object_.getOrThrow("object_")
+            fun asAssistantToolsFileSearchTypeOnly(): JsonValue =
+                assistantToolsFileSearchTypeOnly.getOrThrow("assistantToolsFileSearchTypeOnly")
 
             fun _json(): Optional<JsonValue> = Optional.ofNullable(_json)
 
             fun <T> accept(visitor: Visitor<T>): T =
                 when {
                     codeInterpreter != null -> visitor.visitCodeInterpreter(codeInterpreter)
-                    object_ != null -> visitor.visitObject(object_)
+                    assistantToolsFileSearchTypeOnly != null ->
+                        visitor.visitAssistantToolsFileSearchTypeOnly(
+                            assistantToolsFileSearchTypeOnly
+                        )
                     else -> visitor.unknown(_json)
                 }
 
@@ -1065,11 +1072,13 @@ private constructor(
                             codeInterpreter.validate()
                         }
 
-                        override fun visitObject(object_: JsonValue) {
-                            object_.let {
+                        override fun visitAssistantToolsFileSearchTypeOnly(
+                            assistantToolsFileSearchTypeOnly: JsonValue
+                        ) {
+                            assistantToolsFileSearchTypeOnly.let {
                                 if (it != JsonValue.from(mapOf("type" to "file_search"))) {
                                     throw OpenAIInvalidDataException(
-                                        "'object_' is invalid, received $it"
+                                        "'assistantToolsFileSearchTypeOnly' is invalid, received $it"
                                     )
                                 }
                             }
@@ -1100,8 +1109,10 @@ private constructor(
                         override fun visitCodeInterpreter(codeInterpreter: CodeInterpreterTool) =
                             codeInterpreter.validity()
 
-                        override fun visitObject(object_: JsonValue) =
-                            object_.let {
+                        override fun visitAssistantToolsFileSearchTypeOnly(
+                            assistantToolsFileSearchTypeOnly: JsonValue
+                        ) =
+                            assistantToolsFileSearchTypeOnly.let {
                                 if (it == JsonValue.from(mapOf("type" to "file_search"))) 1 else 0
                             }
 
@@ -1114,15 +1125,16 @@ private constructor(
                     return true
                 }
 
-                return /* spotless:off */ other is Tool && codeInterpreter == other.codeInterpreter && object_ == other.object_ /* spotless:on */
+                return /* spotless:off */ other is Tool && codeInterpreter == other.codeInterpreter && assistantToolsFileSearchTypeOnly == other.assistantToolsFileSearchTypeOnly /* spotless:on */
             }
 
-            override fun hashCode(): Int = /* spotless:off */ Objects.hash(codeInterpreter, object_) /* spotless:on */
+            override fun hashCode(): Int = /* spotless:off */ Objects.hash(codeInterpreter, assistantToolsFileSearchTypeOnly) /* spotless:on */
 
             override fun toString(): String =
                 when {
                     codeInterpreter != null -> "Tool{codeInterpreter=$codeInterpreter}"
-                    object_ != null -> "Tool{object_=$object_}"
+                    assistantToolsFileSearchTypeOnly != null ->
+                        "Tool{assistantToolsFileSearchTypeOnly=$assistantToolsFileSearchTypeOnly}"
                     _json != null -> "Tool{_unknown=$_json}"
                     else -> throw IllegalStateException("Invalid Tool")
                 }
@@ -1134,7 +1146,11 @@ private constructor(
                     Tool(codeInterpreter = codeInterpreter)
 
                 @JvmStatic
-                fun ofObject() = Tool(object_ = JsonValue.from(mapOf("type" to "file_search")))
+                fun ofAssistantToolsFileSearchTypeOnly() =
+                    Tool(
+                        assistantToolsFileSearchTypeOnly =
+                            JsonValue.from(mapOf("type" to "file_search"))
+                    )
             }
 
             /**
@@ -1144,7 +1160,9 @@ private constructor(
 
                 fun visitCodeInterpreter(codeInterpreter: CodeInterpreterTool): T
 
-                fun visitObject(object_: JsonValue): T
+                fun visitAssistantToolsFileSearchTypeOnly(
+                    assistantToolsFileSearchTypeOnly: JsonValue
+                ): T
 
                 /**
                  * Maps an unknown variant of [Tool] to a value of type [T].
@@ -1169,7 +1187,9 @@ private constructor(
                     val bestMatches =
                         sequenceOf(
                                 tryDeserialize(node, jacksonTypeRef<JsonValue>())
-                                    ?.let { Tool(object_ = it, _json = json) }
+                                    ?.let {
+                                        Tool(assistantToolsFileSearchTypeOnly = it, _json = json)
+                                    }
                                     ?.takeIf { it.isValid() },
                                 tryDeserialize(node, jacksonTypeRef<CodeInterpreterTool>())?.let {
                                     Tool(codeInterpreter = it, _json = json)
@@ -1201,7 +1221,8 @@ private constructor(
                     when {
                         value.codeInterpreter != null ->
                             generator.writeObject(value.codeInterpreter)
-                        value.object_ != null -> generator.writeObject(value.object_)
+                        value.assistantToolsFileSearchTypeOnly != null ->
+                            generator.writeObject(value.assistantToolsFileSearchTypeOnly)
                         value._json != null -> generator.writeObject(value._json)
                         else -> throw IllegalStateException("Invalid Tool")
                     }
