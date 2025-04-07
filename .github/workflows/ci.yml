@@ -55,6 +55,7 @@ jobs:
   examples:
     name: examples
     runs-on: ubuntu-latest
+    if: github.repository == 'openai/openai-java'
 
     steps:
       - uses: actions/checkout@v4
