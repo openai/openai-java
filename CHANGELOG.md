@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.44.4 (2025-04-07)
+
+Full Changelog: [v0.44.3...v0.44.4](https://github.com/openai/openai-java/compare/v0.44.3...v0.44.4)
+
+### Chores
+
+* **internal:** only run examples workflow in main repo ([#410](https://github.com/openai/openai-java/issues/410)) ([058008a](https://github.com/openai/openai-java/commit/058008a7901d476097bb93171c38924880024a25))
+
 ## 0.44.3 (2025-04-06)
 
 Full Changelog: [v0.44.2...v0.44.3](https://github.com/openai/openai-java/compare/v0.44.2...v0.44.3)
