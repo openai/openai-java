@@ -16,6 +16,8 @@ import com.openai.services.blocking.CompletionService
 import com.openai.services.blocking.CompletionServiceImpl
 import com.openai.services.blocking.EmbeddingService
 import com.openai.services.blocking.EmbeddingServiceImpl
+import com.openai.services.blocking.EvalService
+import com.openai.services.blocking.EvalServiceImpl
 import com.openai.services.blocking.FileService
 import com.openai.services.blocking.FileServiceImpl
 import com.openai.services.blocking.FineTuningService
@@ -90,6 +92,8 @@ class OpenAIClientImpl(private val clientOptions: ClientOptions) : OpenAIClient 
         ResponseServiceImpl(clientOptionsWithUserAgent)
     }
 
+    private val evals: EvalService by lazy { EvalServiceImpl(clientOptionsWithUserAgent) }
+
     override fun async(): OpenAIClientAsync = async
 
     override fun withRawResponse(): OpenAIClient.WithRawResponse = withRawResponse
@@ -121,6 +125,8 @@ class OpenAIClientImpl(private val clientOptions: ClientOptions) : OpenAIClient 
     override fun uploads(): UploadService = uploads
 
     override fun responses(): ResponseService = responses
+
+    override fun evals(): EvalService = evals
 
     override fun close() = clientOptions.httpClient.close()
 
@@ -183,6 +189,10 @@ class OpenAIClientImpl(private val clientOptions: ClientOptions) : OpenAIClient 
             ResponseServiceImpl.WithRawResponseImpl(clientOptions)
         }
 
+        private val evals: EvalService.WithRawResponse by lazy {
+            EvalServiceImpl.WithRawResponseImpl(clientOptions)
+        }
+
         override fun completions(): CompletionService.WithRawResponse = completions
 
         override fun chat(): ChatService.WithRawResponse = chat
@@ -210,5 +220,7 @@ class OpenAIClientImpl(private val clientOptions: ClientOptions) : OpenAIClient 
         override fun uploads(): UploadService.WithRawResponse = uploads
 
         override fun responses(): ResponseService.WithRawResponse = responses
+
+        override fun evals(): EvalService.WithRawResponse = evals
     }
 }

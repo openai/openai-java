@@ -27,7 +27,7 @@ class ResponsesModel
 private constructor(
     private val string: String? = null,
     private val chat: ChatModel? = null,
-    private val unionMember2: UnionMember2? = null,
+    private val only: ResponsesOnlyModel? = null,
     private val _json: JsonValue? = null,
 ) {
 
@@ -35,19 +35,19 @@ private constructor(
 
     fun chat(): Optional<ChatModel> = Optional.ofNullable(chat)
 
-    fun unionMember2(): Optional<UnionMember2> = Optional.ofNullable(unionMember2)
+    fun only(): Optional<ResponsesOnlyModel> = Optional.ofNullable(only)
 
     fun isString(): Boolean = string != null
 
     fun isChat(): Boolean = chat != null
 
-    fun isUnionMember2(): Boolean = unionMember2 != null
+    fun isOnly(): Boolean = only != null
 
     fun asString(): String = string.getOrThrow("string")
 
     fun asChat(): ChatModel = chat.getOrThrow("chat")
 
-    fun asUnionMember2(): UnionMember2 = unionMember2.getOrThrow("unionMember2")
+    fun asOnly(): ResponsesOnlyModel = only.getOrThrow("only")
 
     fun _json(): Optional<JsonValue> = Optional.ofNullable(_json)
 
@@ -55,7 +55,7 @@ private constructor(
         when {
             string != null -> visitor.visitString(string)
             chat != null -> visitor.visitChat(chat)
-            unionMember2 != null -> visitor.visitUnionMember2(unionMember2)
+            only != null -> visitor.visitOnly(only)
             else -> visitor.unknown(_json)
         }
 
@@ -74,8 +74,8 @@ private constructor(
                     chat.validate()
                 }
 
-                override fun visitUnionMember2(unionMember2: UnionMember2) {
-                    unionMember2.validate()
+                override fun visitOnly(only: ResponsesOnlyModel) {
+                    only.validate()
                 }
             }
         )
@@ -103,7 +103,7 @@ private constructor(
 
                 override fun visitChat(chat: ChatModel) = chat.validity()
 
-                override fun visitUnionMember2(unionMember2: UnionMember2) = unionMember2.validity()
+                override fun visitOnly(only: ResponsesOnlyModel) = only.validity()
 
                 override fun unknown(json: JsonValue?) = 0
             }
@@ -114,16 +114,16 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is ResponsesModel && string == other.string && chat == other.chat && unionMember2 == other.unionMember2 /* spotless:on */
+        return /* spotless:off */ other is ResponsesModel && string == other.string && chat == other.chat && only == other.only /* spotless:on */
     }
 
-    override fun hashCode(): Int = /* spotless:off */ Objects.hash(string, chat, unionMember2) /* spotless:on */
+    override fun hashCode(): Int = /* spotless:off */ Objects.hash(string, chat, only) /* spotless:on */
 
     override fun toString(): String =
         when {
             string != null -> "ResponsesModel{string=$string}"
             chat != null -> "ResponsesModel{chat=$chat}"
-            unionMember2 != null -> "ResponsesModel{unionMember2=$unionMember2}"
+            only != null -> "ResponsesModel{only=$only}"
             _json != null -> "ResponsesModel{_unknown=$_json}"
             else -> throw IllegalStateException("Invalid ResponsesModel")
         }
@@ -134,8 +134,7 @@ private constructor(
 
         @JvmStatic fun ofChat(chat: ChatModel) = ResponsesModel(chat = chat)
 
-        @JvmStatic
-        fun ofUnionMember2(unionMember2: UnionMember2) = ResponsesModel(unionMember2 = unionMember2)
+        @JvmStatic fun ofOnly(only: ResponsesOnlyModel) = ResponsesModel(only = only)
     }
 
     /**
@@ -147,7 +146,7 @@ private constructor(
 
         fun visitChat(chat: ChatModel): T
 
-        fun visitUnionMember2(unionMember2: UnionMember2): T
+        fun visitOnly(only: ResponsesOnlyModel): T
 
         /**
          * Maps an unknown variant of [ResponsesModel] to a value of type [T].
@@ -174,8 +173,8 @@ private constructor(
                         tryDeserialize(node, jacksonTypeRef<ChatModel>())?.let {
                             ResponsesModel(chat = it, _json = json)
                         },
-                        tryDeserialize(node, jacksonTypeRef<UnionMember2>())?.let {
-                            ResponsesModel(unionMember2 = it, _json = json)
+                        tryDeserialize(node, jacksonTypeRef<ResponsesOnlyModel>())?.let {
+                            ResponsesModel(only = it, _json = json)
                         },
                         tryDeserialize(node, jacksonTypeRef<String>())?.let {
                             ResponsesModel(string = it, _json = json)
@@ -206,15 +205,16 @@ private constructor(
             when {
                 value.string != null -> generator.writeObject(value.string)
                 value.chat != null -> generator.writeObject(value.chat)
-                value.unionMember2 != null -> generator.writeObject(value.unionMember2)
+                value.only != null -> generator.writeObject(value.only)
                 value._json != null -> generator.writeObject(value._json)
                 else -> throw IllegalStateException("Invalid ResponsesModel")
             }
         }
     }
 
-    class UnionMember2 @JsonCreator private constructor(private val value: JsonField<String>) :
-        Enum {
+    class ResponsesOnlyModel
+    @JsonCreator
+    private constructor(private val value: JsonField<String>) : Enum {
 
         /**
          * Returns this class instance's raw value.
@@ -236,10 +236,10 @@ private constructor(
 
             @JvmField val COMPUTER_USE_PREVIEW_2025_03_11 = of("computer-use-preview-2025-03-11")
 
-            @JvmStatic fun of(value: String) = UnionMember2(JsonField.of(value))
+            @JvmStatic fun of(value: String) = ResponsesOnlyModel(JsonField.of(value))
         }
 
-        /** An enum containing [UnionMember2]'s known values. */
+        /** An enum containing [ResponsesOnlyModel]'s known values. */
         enum class Known {
             O1_PRO,
             O1_PRO_2025_03_19,
@@ -248,9 +248,9 @@ private constructor(
         }
 
         /**
-         * An enum containing [UnionMember2]'s known values, as well as an [_UNKNOWN] member.
+         * An enum containing [ResponsesOnlyModel]'s known values, as well as an [_UNKNOWN] member.
          *
-         * An instance of [UnionMember2] can contain an unknown value in a couple of cases:
+         * An instance of [ResponsesOnlyModel] can contain an unknown value in a couple of cases:
          * - It was deserialized from data that doesn't match any known member. For example, if the
          *   SDK is on an older version than the API, then the API may respond with new members that
          *   the SDK is unaware of.
@@ -262,7 +262,8 @@ private constructor(
             COMPUTER_USE_PREVIEW,
             COMPUTER_USE_PREVIEW_2025_03_11,
             /**
-             * An enum member indicating that [UnionMember2] was instantiated with an unknown value.
+             * An enum member indicating that [ResponsesOnlyModel] was instantiated with an unknown
+             * value.
              */
             _UNKNOWN,
         }
@@ -298,7 +299,7 @@ private constructor(
                 O1_PRO_2025_03_19 -> Known.O1_PRO_2025_03_19
                 COMPUTER_USE_PREVIEW -> Known.COMPUTER_USE_PREVIEW
                 COMPUTER_USE_PREVIEW_2025_03_11 -> Known.COMPUTER_USE_PREVIEW_2025_03_11
-                else -> throw OpenAIInvalidDataException("Unknown UnionMember2: $value")
+                else -> throw OpenAIInvalidDataException("Unknown ResponsesOnlyModel: $value")
             }
 
         /**
@@ -315,7 +316,7 @@ private constructor(
 
         private var validated: Boolean = false
 
-        fun validate(): UnionMember2 = apply {
+        fun validate(): ResponsesOnlyModel = apply {
             if (validated) {
                 return@apply
             }
@@ -345,7 +346,7 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is UnionMember2 && value == other.value /* spotless:on */
+            return /* spotless:off */ other is ResponsesOnlyModel && value == other.value /* spotless:on */
         }
 
         override fun hashCode() = value.hashCode()

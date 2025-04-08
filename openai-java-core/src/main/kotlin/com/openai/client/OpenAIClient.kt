@@ -8,6 +8,7 @@ import com.openai.services.blocking.BetaService
 import com.openai.services.blocking.ChatService
 import com.openai.services.blocking.CompletionService
 import com.openai.services.blocking.EmbeddingService
+import com.openai.services.blocking.EvalService
 import com.openai.services.blocking.FileService
 import com.openai.services.blocking.FineTuningService
 import com.openai.services.blocking.ImageService
@@ -74,6 +75,8 @@ interface OpenAIClient {
 
     fun responses(): ResponseService
 
+    fun evals(): EvalService
+
     /**
      * Closes this client, relinquishing any underlying resources.
      *
@@ -117,5 +120,7 @@ interface OpenAIClient {
         fun uploads(): UploadService.WithRawResponse
 
         fun responses(): ResponseService.WithRawResponse
+
+        fun evals(): EvalService.WithRawResponse
     }
 }

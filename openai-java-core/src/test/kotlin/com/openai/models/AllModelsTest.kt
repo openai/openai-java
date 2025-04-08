@@ -22,7 +22,7 @@ internal class AllModelsTest {
 
         assertThat(allModels.string()).contains(string)
         assertThat(allModels.chatModel()).isEmpty
-        assertThat(allModels.unionMember2()).isEmpty
+        assertThat(allModels.responsesOnlyModel()).isEmpty
     }
 
     @Test
@@ -47,7 +47,7 @@ internal class AllModelsTest {
 
         assertThat(allModels.string()).isEmpty
         assertThat(allModels.chatModel()).contains(chatModel)
-        assertThat(allModels.unionMember2()).isEmpty
+        assertThat(allModels.responsesOnlyModel()).isEmpty
     }
 
     @Test
@@ -65,20 +65,20 @@ internal class AllModelsTest {
     }
 
     @Test
-    fun ofUnionMember2() {
-        val unionMember2 = AllModels.UnionMember2.O1_PRO
+    fun ofResponsesOnlyModel() {
+        val responsesOnlyModel = AllModels.ResponsesOnlyModel.O1_PRO
 
-        val allModels = AllModels.ofUnionMember2(unionMember2)
+        val allModels = AllModels.ofResponsesOnlyModel(responsesOnlyModel)
 
         assertThat(allModels.string()).isEmpty
         assertThat(allModels.chatModel()).isEmpty
-        assertThat(allModels.unionMember2()).contains(unionMember2)
+        assertThat(allModels.responsesOnlyModel()).contains(responsesOnlyModel)
     }
 
     @Test
-    fun ofUnionMember2Roundtrip() {
+    fun ofResponsesOnlyModelRoundtrip() {
         val jsonMapper = jsonMapper()
-        val allModels = AllModels.ofUnionMember2(AllModels.UnionMember2.O1_PRO)
+        val allModels = AllModels.ofResponsesOnlyModel(AllModels.ResponsesOnlyModel.O1_PRO)
 
         val roundtrippedAllModels =
             jsonMapper.readValue(
