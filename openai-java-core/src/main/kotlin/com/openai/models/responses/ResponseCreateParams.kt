@@ -470,8 +470,8 @@ private constructor(
         /** Alias for calling [model] with `ResponsesModel.ofChat(chat)`. */
         fun model(chat: ChatModel) = apply { body.model(chat) }
 
-        /** Alias for calling [model] with `ResponsesModel.ofUnionMember2(unionMember2)`. */
-        fun model(unionMember2: ResponsesModel.UnionMember2) = apply { body.model(unionMember2) }
+        /** Alias for calling [model] with `ResponsesModel.ofOnly(only)`. */
+        fun model(only: ResponsesModel.ResponsesOnlyModel) = apply { body.model(only) }
 
         /**
          * Specify additional output data to include in the model response. Currently supported
@@ -1549,9 +1549,8 @@ private constructor(
             /** Alias for calling [model] with `ResponsesModel.ofChat(chat)`. */
             fun model(chat: ChatModel) = model(ResponsesModel.ofChat(chat))
 
-            /** Alias for calling [model] with `ResponsesModel.ofUnionMember2(unionMember2)`. */
-            fun model(unionMember2: ResponsesModel.UnionMember2) =
-                model(ResponsesModel.ofUnionMember2(unionMember2))
+            /** Alias for calling [model] with `ResponsesModel.ofOnly(only)`. */
+            fun model(only: ResponsesModel.ResponsesOnlyModel) = model(ResponsesModel.ofOnly(only))
 
             /**
              * Specify additional output data to include in the model response. Currently supported
