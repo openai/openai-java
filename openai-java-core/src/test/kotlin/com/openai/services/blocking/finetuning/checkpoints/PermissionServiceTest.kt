@@ -7,6 +7,7 @@ import com.openai.client.okhttp.OpenAIOkHttpClient
 import com.openai.models.finetuning.checkpoints.permissions.PermissionCreateParams
 import com.openai.models.finetuning.checkpoints.permissions.PermissionDeleteParams
 import com.openai.models.finetuning.checkpoints.permissions.PermissionRetrieveParams
+import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 
@@ -56,6 +57,7 @@ internal class PermissionServiceTest {
         permission.validate()
     }
 
+    @Disabled("OpenAPI spec is slightly incorrect")
     @Test
     fun delete() {
         val client =
