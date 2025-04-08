@@ -16,7 +16,7 @@ internal class ImageCreateVariationParamsTest {
             .model(ImageModel.DALL_E_2)
             .n(1L)
             .responseFormat(ImageCreateVariationParams.ResponseFormat.URL)
-            .size(ImageCreateVariationParams.Size._256X256)
+            .size(ImageCreateVariationParams.Size._1024X1024)
             .user("user-1234")
             .build()
     }
@@ -29,7 +29,7 @@ internal class ImageCreateVariationParamsTest {
                 .model(ImageModel.DALL_E_2)
                 .n(1L)
                 .responseFormat(ImageCreateVariationParams.ResponseFormat.URL)
-                .size(ImageCreateVariationParams.Size._256X256)
+                .size(ImageCreateVariationParams.Size._1024X1024)
                 .user("user-1234")
                 .build()
 
@@ -50,7 +50,7 @@ internal class ImageCreateVariationParamsTest {
                         "n" to MultipartField.of(1L),
                         "response_format" to
                             MultipartField.of(ImageCreateVariationParams.ResponseFormat.URL),
-                        "size" to MultipartField.of(ImageCreateVariationParams.Size._256X256),
+                        "size" to MultipartField.of(ImageCreateVariationParams.Size._1024X1024),
                         "user" to MultipartField.of("user-1234"),
                     )
                     .mapValues { (_, field) ->
