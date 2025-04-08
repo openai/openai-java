@@ -752,9 +752,8 @@ private constructor(
         /** Alias for calling [model] with `ResponsesModel.ofChat(chat)`. */
         fun model(chat: ChatModel) = model(ResponsesModel.ofChat(chat))
 
-        /** Alias for calling [model] with `ResponsesModel.ofUnionMember2(unionMember2)`. */
-        fun model(unionMember2: ResponsesModel.UnionMember2) =
-            model(ResponsesModel.ofUnionMember2(unionMember2))
+        /** Alias for calling [model] with `ResponsesModel.ofOnly(only)`. */
+        fun model(only: ResponsesModel.ResponsesOnlyModel) = model(ResponsesModel.ofOnly(only))
 
         /**
          * Sets the field to an arbitrary JSON value.

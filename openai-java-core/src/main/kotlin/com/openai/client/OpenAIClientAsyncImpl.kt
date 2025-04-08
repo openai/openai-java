@@ -16,6 +16,8 @@ import com.openai.services.async.CompletionServiceAsync
 import com.openai.services.async.CompletionServiceAsyncImpl
 import com.openai.services.async.EmbeddingServiceAsync
 import com.openai.services.async.EmbeddingServiceAsyncImpl
+import com.openai.services.async.EvalServiceAsync
+import com.openai.services.async.EvalServiceAsyncImpl
 import com.openai.services.async.FileServiceAsync
 import com.openai.services.async.FileServiceAsyncImpl
 import com.openai.services.async.FineTuningServiceAsync
@@ -100,6 +102,8 @@ class OpenAIClientAsyncImpl(private val clientOptions: ClientOptions) : OpenAICl
         ResponseServiceAsyncImpl(clientOptionsWithUserAgent)
     }
 
+    private val evals: EvalServiceAsync by lazy { EvalServiceAsyncImpl(clientOptionsWithUserAgent) }
+
     override fun sync(): OpenAIClient = sync
 
     override fun withRawResponse(): OpenAIClientAsync.WithRawResponse = withRawResponse
@@ -131,6 +135,8 @@ class OpenAIClientAsyncImpl(private val clientOptions: ClientOptions) : OpenAICl
     override fun uploads(): UploadServiceAsync = uploads
 
     override fun responses(): ResponseServiceAsync = responses
+
+    override fun evals(): EvalServiceAsync = evals
 
     override fun close() = clientOptions.httpClient.close()
 
@@ -193,6 +199,10 @@ class OpenAIClientAsyncImpl(private val clientOptions: ClientOptions) : OpenAICl
             ResponseServiceAsyncImpl.WithRawResponseImpl(clientOptions)
         }
 
+        private val evals: EvalServiceAsync.WithRawResponse by lazy {
+            EvalServiceAsyncImpl.WithRawResponseImpl(clientOptions)
+        }
+
         override fun completions(): CompletionServiceAsync.WithRawResponse = completions
 
         override fun chat(): ChatServiceAsync.WithRawResponse = chat
@@ -220,5 +230,7 @@ class OpenAIClientAsyncImpl(private val clientOptions: ClientOptions) : OpenAICl
         override fun uploads(): UploadServiceAsync.WithRawResponse = uploads
 
         override fun responses(): ResponseServiceAsync.WithRawResponse = responses
+
+        override fun evals(): EvalServiceAsync.WithRawResponse = evals
     }
 }
