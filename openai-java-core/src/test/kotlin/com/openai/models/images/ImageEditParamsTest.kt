@@ -18,7 +18,7 @@ internal class ImageEditParamsTest {
             .model(ImageModel.DALL_E_2)
             .n(1L)
             .responseFormat(ImageEditParams.ResponseFormat.URL)
-            .size(ImageEditParams.Size._256X256)
+            .size(ImageEditParams.Size._1024X1024)
             .user("user-1234")
             .build()
     }
@@ -33,7 +33,7 @@ internal class ImageEditParamsTest {
                 .model(ImageModel.DALL_E_2)
                 .n(1L)
                 .responseFormat(ImageEditParams.ResponseFormat.URL)
-                .size(ImageEditParams.Size._256X256)
+                .size(ImageEditParams.Size._1024X1024)
                 .user("user-1234")
                 .build()
 
@@ -55,7 +55,7 @@ internal class ImageEditParamsTest {
                         "model" to MultipartField.of(ImageModel.DALL_E_2),
                         "n" to MultipartField.of(1L),
                         "response_format" to MultipartField.of(ImageEditParams.ResponseFormat.URL),
-                        "size" to MultipartField.of(ImageEditParams.Size._256X256),
+                        "size" to MultipartField.of(ImageEditParams.Size._1024X1024),
                         "user" to MultipartField.of("user-1234"),
                     )
                     .mapValues { (_, field) ->
