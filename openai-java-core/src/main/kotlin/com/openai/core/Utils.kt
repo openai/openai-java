@@ -94,7 +94,8 @@ internal fun isAzureEndpoint(baseUrl: String): Boolean {
     // Azure Endpoint should be in the format of `https://<region>.openai.azure.com`.
     // Or `https://<region>.azure-api.net` for Azure OpenAI Management URL.
     val trimmedBaseUrl = baseUrl.trim().trimEnd('/')
-    return trimmedBaseUrl.endsWith(".openai.azure.com", true) || trimmedBaseUrl.endsWith(".azure-api.net", true)
+    return trimmedBaseUrl.endsWith(".openai.azure.com", true) ||
+        trimmedBaseUrl.endsWith(".azure-api.net", true)
 }
 
 internal interface Enum
