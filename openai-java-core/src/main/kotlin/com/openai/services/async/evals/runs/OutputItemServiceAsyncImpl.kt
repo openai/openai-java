@@ -68,7 +68,7 @@ class OutputItemServiceAsyncImpl internal constructor(private val clientOptions:
                         params._pathParam(2),
                     )
                     .build()
-                    .prepareAsync(clientOptions, params)
+                    .prepareAsync(clientOptions, params, deploymentModel = null)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             return request
                 .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
@@ -104,7 +104,7 @@ class OutputItemServiceAsyncImpl internal constructor(private val clientOptions:
                         "output_items",
                     )
                     .build()
-                    .prepareAsync(clientOptions, params)
+                    .prepareAsync(clientOptions, params, deploymentModel = null)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             return request
                 .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }

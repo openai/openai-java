@@ -103,7 +103,7 @@ class RunServiceAsyncImpl internal constructor(private val clientOptions: Client
                     .addPathSegments("evals", params._pathParam(0), "runs")
                     .body(json(clientOptions.jsonMapper, params._body()))
                     .build()
-                    .prepareAsync(clientOptions, params)
+                    .prepareAsync(clientOptions, params, deploymentModel = null)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             return request
                 .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
@@ -133,7 +133,7 @@ class RunServiceAsyncImpl internal constructor(private val clientOptions: Client
                     .method(HttpMethod.GET)
                     .addPathSegments("evals", params._pathParam(0), "runs", params._pathParam(1))
                     .build()
-                    .prepareAsync(clientOptions, params)
+                    .prepareAsync(clientOptions, params, deploymentModel = null)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             return request
                 .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
@@ -163,7 +163,7 @@ class RunServiceAsyncImpl internal constructor(private val clientOptions: Client
                     .method(HttpMethod.GET)
                     .addPathSegments("evals", params._pathParam(0), "runs")
                     .build()
-                    .prepareAsync(clientOptions, params)
+                    .prepareAsync(clientOptions, params, deploymentModel = null)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             return request
                 .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
@@ -196,7 +196,7 @@ class RunServiceAsyncImpl internal constructor(private val clientOptions: Client
                     .addPathSegments("evals", params._pathParam(0), "runs", params._pathParam(1))
                     .apply { params._body().ifPresent { body(json(clientOptions.jsonMapper, it)) } }
                     .build()
-                    .prepareAsync(clientOptions, params)
+                    .prepareAsync(clientOptions, params, deploymentModel = null)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             return request
                 .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
@@ -226,7 +226,7 @@ class RunServiceAsyncImpl internal constructor(private val clientOptions: Client
                     .addPathSegments("evals", params._pathParam(0), "runs", params._pathParam(1))
                     .apply { params._body().ifPresent { body(json(clientOptions.jsonMapper, it)) } }
                     .build()
-                    .prepareAsync(clientOptions, params)
+                    .prepareAsync(clientOptions, params, deploymentModel = null)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             return request
                 .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }

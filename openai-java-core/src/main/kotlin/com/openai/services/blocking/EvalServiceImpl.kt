@@ -96,7 +96,7 @@ class EvalServiceImpl internal constructor(private val clientOptions: ClientOpti
                     .addPathSegments("evals")
                     .body(json(clientOptions.jsonMapper, params._body()))
                     .build()
-                    .prepare(clientOptions, params)
+                    .prepare(clientOptions, params, deploymentModel = null)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             val response = clientOptions.httpClient.execute(request, requestOptions)
             return response.parseable {
@@ -123,7 +123,7 @@ class EvalServiceImpl internal constructor(private val clientOptions: ClientOpti
                     .method(HttpMethod.GET)
                     .addPathSegments("evals", params._pathParam(0))
                     .build()
-                    .prepare(clientOptions, params)
+                    .prepare(clientOptions, params, deploymentModel = null)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             val response = clientOptions.httpClient.execute(request, requestOptions)
             return response.parseable {
@@ -150,7 +150,7 @@ class EvalServiceImpl internal constructor(private val clientOptions: ClientOpti
                     .addPathSegments("evals", params._pathParam(0))
                     .body(json(clientOptions.jsonMapper, params._body()))
                     .build()
-                    .prepare(clientOptions, params)
+                    .prepare(clientOptions, params, deploymentModel = null)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             val response = clientOptions.httpClient.execute(request, requestOptions)
             return response.parseable {
@@ -177,7 +177,7 @@ class EvalServiceImpl internal constructor(private val clientOptions: ClientOpti
                     .method(HttpMethod.GET)
                     .addPathSegments("evals")
                     .build()
-                    .prepare(clientOptions, params)
+                    .prepare(clientOptions, params, deploymentModel = null)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             val response = clientOptions.httpClient.execute(request, requestOptions)
             return response.parseable {
@@ -205,7 +205,7 @@ class EvalServiceImpl internal constructor(private val clientOptions: ClientOpti
                     .addPathSegments("evals", params._pathParam(0))
                     .apply { params._body().ifPresent { body(json(clientOptions.jsonMapper, it)) } }
                     .build()
-                    .prepare(clientOptions, params)
+                    .prepare(clientOptions, params, deploymentModel = null)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             val response = clientOptions.httpClient.execute(request, requestOptions)
             return response.parseable {
