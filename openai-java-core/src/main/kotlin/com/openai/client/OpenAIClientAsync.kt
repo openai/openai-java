@@ -8,6 +8,7 @@ import com.openai.services.async.BetaServiceAsync
 import com.openai.services.async.ChatServiceAsync
 import com.openai.services.async.CompletionServiceAsync
 import com.openai.services.async.EmbeddingServiceAsync
+import com.openai.services.async.EvalServiceAsync
 import com.openai.services.async.FileServiceAsync
 import com.openai.services.async.FineTuningServiceAsync
 import com.openai.services.async.ImageServiceAsync
@@ -74,6 +75,8 @@ interface OpenAIClientAsync {
 
     fun responses(): ResponseServiceAsync
 
+    fun evals(): EvalServiceAsync
+
     /**
      * Closes this client, relinquishing any underlying resources.
      *
@@ -117,5 +120,7 @@ interface OpenAIClientAsync {
         fun uploads(): UploadServiceAsync.WithRawResponse
 
         fun responses(): ResponseServiceAsync.WithRawResponse
+
+        fun evals(): EvalServiceAsync.WithRawResponse
     }
 }
