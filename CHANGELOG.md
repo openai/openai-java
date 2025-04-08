@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.44.5 (2025-04-08)
+
+Full Changelog: [v0.44.4...v0.44.5](https://github.com/openai/openai-java/compare/v0.44.4...v0.44.5)
+
+### Bug Fixes
+
+* **client:** fix some bad identifiers ([#413](https://github.com/openai/openai-java/issues/413)) ([e567213](https://github.com/openai/openai-java/commit/e56721365c94ae68daf307f49eeb00e151f67c94))
+
 ## 0.44.4 (2025-04-07)
 
 Full Changelog: [v0.44.3...v0.44.4](https://github.com/openai/openai-java/compare/v0.44.3...v0.44.4)
