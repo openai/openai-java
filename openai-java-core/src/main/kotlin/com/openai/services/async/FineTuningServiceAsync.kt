@@ -2,6 +2,7 @@
 
 package com.openai.services.async
 
+import com.openai.services.async.finetuning.CheckpointServiceAsync
 import com.openai.services.async.finetuning.JobServiceAsync
 
 interface FineTuningServiceAsync {
@@ -13,6 +14,8 @@ interface FineTuningServiceAsync {
 
     fun jobs(): JobServiceAsync
 
+    fun checkpoints(): CheckpointServiceAsync
+
     /**
      * A view of [FineTuningServiceAsync] that provides access to raw HTTP responses for each
      * method.
@@ -20,5 +23,7 @@ interface FineTuningServiceAsync {
     interface WithRawResponse {
 
         fun jobs(): JobServiceAsync.WithRawResponse
+
+        fun checkpoints(): CheckpointServiceAsync.WithRawResponse
     }
 }
