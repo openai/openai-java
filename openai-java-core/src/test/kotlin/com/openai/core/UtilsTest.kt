@@ -30,4 +30,20 @@ internal class UtilsTest {
         assertThat(arrayOf(byteArrayOf(1, 2), byteArrayOf(3)).contentToString())
             .isEqualTo("[[1, 2], [3]]")
     }
+
+    @Test
+    fun isAzureEndpoint() {
+        // Valid Azure endpoints
+        assertThat(isAzureEndpoint("https://region.openai.azure.com")).isTrue()
+        assertThat(isAzureEndpoint("https://region.openai.azure.com/")).isTrue()
+        assertThat(isAzureEndpoint("https://region.azure-api.net")).isTrue()
+        assertThat(isAzureEndpoint("https://region.azure-api.net/")).isTrue()
+
+        // Invalid Azure endpoints
+        assertThat(isAzureEndpoint("https://example.com")).isFalse()
+        assertThat(isAzureEndpoint("https://region.openai.com")).isFalse()
+        assertThat(isAzureEndpoint("https://region.azure.com")).isFalse()
+        assertThat(isAzureEndpoint("")).isFalse()
+        assertThat(isAzureEndpoint("   ")).isFalse()
+    }
 }
