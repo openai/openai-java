@@ -2,6 +2,7 @@
 
 package com.openai.models.vectorstores.filebatches
 
+import com.openai.core.checkRequired
 import com.openai.models.vectorstores.files.VectorStoreFile
 import com.openai.services.async.vectorstores.FileBatchServiceAsync
 import java.util.Objects
@@ -11,16 +12,13 @@ import java.util.concurrent.Executor
 import java.util.function.Predicate
 import kotlin.jvm.optionals.getOrNull
 
-/** Returns a list of vector store files in a batch. */
+/** @see [FileBatchServiceAsync.listFiles] */
 class FileBatchListFilesPageAsync
 private constructor(
-    private val fileBatchesService: FileBatchServiceAsync,
+    private val service: FileBatchServiceAsync,
     private val params: FileBatchListFilesParams,
     private val response: FileBatchListFilesPageResponse,
 ) {
-
-    /** Returns the response that this page was parsed from. */
-    fun response(): FileBatchListFilesPageResponse = response
 
     /**
      * Delegates to [FileBatchListFilesPageResponse], but gracefully handles missing data.
@@ -37,19 +35,6 @@ private constructor(
      */
     fun hasMore(): Optional<Boolean> = response._hasMore().getOptional("has_more")
 
-    override fun equals(other: Any?): Boolean {
-        if (this === other) {
-            return true
-        }
-
-        return /* spotless:off */ other is FileBatchListFilesPageAsync && fileBatchesService == other.fileBatchesService && params == other.params && response == other.response /* spotless:on */
-    }
-
-    override fun hashCode(): Int = /* spotless:off */ Objects.hash(fileBatchesService, params, response) /* spotless:on */
-
-    override fun toString() =
-        "FileBatchListFilesPageAsync{fileBatchesService=$fileBatchesService, params=$params, response=$response}"
-
     fun hasNextPage(): Boolean = data().isNotEmpty()
 
     fun getNextPageParams(): Optional<FileBatchListFilesParams> {
@@ -60,22 +45,78 @@ private constructor(
         return Optional.of(params.toBuilder().after(data().last()._id().getOptional("id")).build())
     }
 
-    fun getNextPage(): CompletableFuture<Optional<FileBatchListFilesPageAsync>> {
-        return getNextPageParams()
-            .map { fileBatchesService.listFiles(it).thenApply { Optional.of(it) } }
+    fun getNextPage(): CompletableFuture<Optional<FileBatchListFilesPageAsync>> =
+        getNextPageParams()
+            .map { service.listFiles(it).thenApply { Optional.of(it) } }
             .orElseGet { CompletableFuture.completedFuture(Optional.empty()) }
-    }
 
     fun autoPager(): AutoPager = AutoPager(this)
 
+    /** The parameters that were used to request this page. */
+    fun params(): FileBatchListFilesParams = params
+
+    /** The response that this page was parsed from. */
+    fun response(): FileBatchListFilesPageResponse = response
+
+    fun toBuilder() = Builder().from(this)
+
     companion object {
 
-        @JvmStatic
-        fun of(
-            fileBatchesService: FileBatchServiceAsync,
-            params: FileBatchListFilesParams,
-            response: FileBatchListFilesPageResponse,
-        ) = FileBatchListFilesPageAsync(fileBatchesService, params, response)
+        /**
+         * Returns a mutable builder for constructing an instance of [FileBatchListFilesPageAsync].
+         *
+         * The following fields are required:
+         * ```java
+         * .service()
+         * .params()
+         * .response()
+         * ```
+         */
+        @JvmStatic fun builder() = Builder()
+    }
+
+    /** A builder for [FileBatchListFilesPageAsync]. */
+    class Builder internal constructor() {
+
+        private var service: FileBatchServiceAsync? = null
+        private var params: FileBatchListFilesParams? = null
+        private var response: FileBatchListFilesPageResponse? = null
+
+        @JvmSynthetic
+        internal fun from(fileBatchListFilesPageAsync: FileBatchListFilesPageAsync) = apply {
+            service = fileBatchListFilesPageAsync.service
+            params = fileBatchListFilesPageAsync.params
+            response = fileBatchListFilesPageAsync.response
+        }
+
+        fun service(service: FileBatchServiceAsync) = apply { this.service = service }
+
+        /** The parameters that were used to request this page. */
+        fun params(params: FileBatchListFilesParams) = apply { this.params = params }
+
+        /** The response that this page was parsed from. */
+        fun response(response: FileBatchListFilesPageResponse) = apply { this.response = response }
+
+        /**
+         * Returns an immutable instance of [FileBatchListFilesPageAsync].
+         *
+         * Further updates to this [Builder] will not mutate the returned instance.
+         *
+         * The following fields are required:
+         * ```java
+         * .service()
+         * .params()
+         * .response()
+         * ```
+         *
+         * @throws IllegalStateException if any required field is unset.
+         */
+        fun build(): FileBatchListFilesPageAsync =
+            FileBatchListFilesPageAsync(
+                checkRequired("service", service),
+                checkRequired("params", params),
+                checkRequired("response", response),
+            )
     }
 
     class AutoPager(private val firstPage: FileBatchListFilesPageAsync) {
@@ -106,4 +147,17 @@ private constructor(
             return forEach(values::add, executor).thenApply { values }
         }
     }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) {
+            return true
+        }
+
+        return /* spotless:off */ other is FileBatchListFilesPageAsync && service == other.service && params == other.params && response == other.response /* spotless:on */
+    }
+
+    override fun hashCode(): Int = /* spotless:off */ Objects.hash(service, params, response) /* spotless:on */
+
+    override fun toString() =
+        "FileBatchListFilesPageAsync{service=$service, params=$params, response=$response}"
 }

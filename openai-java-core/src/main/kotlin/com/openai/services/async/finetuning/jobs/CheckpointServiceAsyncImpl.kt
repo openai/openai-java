@@ -67,11 +67,11 @@ class CheckpointServiceAsyncImpl internal constructor(private val clientOptions:
                                 }
                             }
                             .let {
-                                CheckpointListPageAsync.of(
-                                    CheckpointServiceAsyncImpl(clientOptions),
-                                    params,
-                                    it,
-                                )
+                                CheckpointListPageAsync.builder()
+                                    .service(CheckpointServiceAsyncImpl(clientOptions))
+                                    .params(params)
+                                    .response(it)
+                                    .build()
                             }
                     }
                 }

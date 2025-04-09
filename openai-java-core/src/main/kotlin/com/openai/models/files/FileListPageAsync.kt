@@ -2,6 +2,7 @@
 
 package com.openai.models.files
 
+import com.openai.core.checkRequired
 import com.openai.services.async.FileServiceAsync
 import java.util.Objects
 import java.util.Optional
@@ -10,16 +11,13 @@ import java.util.concurrent.Executor
 import java.util.function.Predicate
 import kotlin.jvm.optionals.getOrNull
 
-/** Returns a list of files. */
+/** @see [FileServiceAsync.list] */
 class FileListPageAsync
 private constructor(
-    private val filesService: FileServiceAsync,
+    private val service: FileServiceAsync,
     private val params: FileListParams,
     private val response: FileListPageResponse,
 ) {
-
-    /** Returns the response that this page was parsed from. */
-    fun response(): FileListPageResponse = response
 
     /**
      * Delegates to [FileListPageResponse], but gracefully handles missing data.
@@ -35,19 +33,6 @@ private constructor(
      */
     fun hasMore(): Optional<Boolean> = response._hasMore().getOptional("has_more")
 
-    override fun equals(other: Any?): Boolean {
-        if (this === other) {
-            return true
-        }
-
-        return /* spotless:off */ other is FileListPageAsync && filesService == other.filesService && params == other.params && response == other.response /* spotless:on */
-    }
-
-    override fun hashCode(): Int = /* spotless:off */ Objects.hash(filesService, params, response) /* spotless:on */
-
-    override fun toString() =
-        "FileListPageAsync{filesService=$filesService, params=$params, response=$response}"
-
     fun hasNextPage(): Boolean = data().isNotEmpty()
 
     fun getNextPageParams(): Optional<FileListParams> {
@@ -58,22 +43,78 @@ private constructor(
         return Optional.of(params.toBuilder().after(data().last()._id().getOptional("id")).build())
     }
 
-    fun getNextPage(): CompletableFuture<Optional<FileListPageAsync>> {
-        return getNextPageParams()
-            .map { filesService.list(it).thenApply { Optional.of(it) } }
+    fun getNextPage(): CompletableFuture<Optional<FileListPageAsync>> =
+        getNextPageParams()
+            .map { service.list(it).thenApply { Optional.of(it) } }
             .orElseGet { CompletableFuture.completedFuture(Optional.empty()) }
-    }
 
     fun autoPager(): AutoPager = AutoPager(this)
 
+    /** The parameters that were used to request this page. */
+    fun params(): FileListParams = params
+
+    /** The response that this page was parsed from. */
+    fun response(): FileListPageResponse = response
+
+    fun toBuilder() = Builder().from(this)
+
     companion object {
 
-        @JvmStatic
-        fun of(
-            filesService: FileServiceAsync,
-            params: FileListParams,
-            response: FileListPageResponse,
-        ) = FileListPageAsync(filesService, params, response)
+        /**
+         * Returns a mutable builder for constructing an instance of [FileListPageAsync].
+         *
+         * The following fields are required:
+         * ```java
+         * .service()
+         * .params()
+         * .response()
+         * ```
+         */
+        @JvmStatic fun builder() = Builder()
+    }
+
+    /** A builder for [FileListPageAsync]. */
+    class Builder internal constructor() {
+
+        private var service: FileServiceAsync? = null
+        private var params: FileListParams? = null
+        private var response: FileListPageResponse? = null
+
+        @JvmSynthetic
+        internal fun from(fileListPageAsync: FileListPageAsync) = apply {
+            service = fileListPageAsync.service
+            params = fileListPageAsync.params
+            response = fileListPageAsync.response
+        }
+
+        fun service(service: FileServiceAsync) = apply { this.service = service }
+
+        /** The parameters that were used to request this page. */
+        fun params(params: FileListParams) = apply { this.params = params }
+
+        /** The response that this page was parsed from. */
+        fun response(response: FileListPageResponse) = apply { this.response = response }
+
+        /**
+         * Returns an immutable instance of [FileListPageAsync].
+         *
+         * Further updates to this [Builder] will not mutate the returned instance.
+         *
+         * The following fields are required:
+         * ```java
+         * .service()
+         * .params()
+         * .response()
+         * ```
+         *
+         * @throws IllegalStateException if any required field is unset.
+         */
+        fun build(): FileListPageAsync =
+            FileListPageAsync(
+                checkRequired("service", service),
+                checkRequired("params", params),
+                checkRequired("response", response),
+            )
     }
 
     class AutoPager(private val firstPage: FileListPageAsync) {
@@ -101,4 +142,17 @@ private constructor(
             return forEach(values::add, executor).thenApply { values }
         }
     }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) {
+            return true
+        }
+
+        return /* spotless:off */ other is FileListPageAsync && service == other.service && params == other.params && response == other.response /* spotless:on */
+    }
+
+    override fun hashCode(): Int = /* spotless:off */ Objects.hash(service, params, response) /* spotless:on */
+
+    override fun toString() =
+        "FileListPageAsync{service=$service, params=$params, response=$response}"
 }

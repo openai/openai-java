@@ -200,7 +200,11 @@ class FileBatchServiceImpl internal constructor(private val clientOptions: Clien
                         }
                     }
                     .let {
-                        FileBatchListFilesPage.of(FileBatchServiceImpl(clientOptions), params, it)
+                        FileBatchListFilesPage.builder()
+                            .service(FileBatchServiceImpl(clientOptions))
+                            .params(params)
+                            .response(it)
+                            .build()
                     }
             }
         }

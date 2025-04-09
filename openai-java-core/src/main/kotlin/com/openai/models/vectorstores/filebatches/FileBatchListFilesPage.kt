@@ -2,6 +2,7 @@
 
 package com.openai.models.vectorstores.filebatches
 
+import com.openai.core.checkRequired
 import com.openai.models.vectorstores.files.VectorStoreFile
 import com.openai.services.blocking.vectorstores.FileBatchService
 import java.util.Objects
@@ -10,16 +11,13 @@ import java.util.stream.Stream
 import java.util.stream.StreamSupport
 import kotlin.jvm.optionals.getOrNull
 
-/** Returns a list of vector store files in a batch. */
+/** @see [FileBatchService.listFiles] */
 class FileBatchListFilesPage
 private constructor(
-    private val fileBatchesService: FileBatchService,
+    private val service: FileBatchService,
     private val params: FileBatchListFilesParams,
     private val response: FileBatchListFilesPageResponse,
 ) {
-
-    /** Returns the response that this page was parsed from. */
-    fun response(): FileBatchListFilesPageResponse = response
 
     /**
      * Delegates to [FileBatchListFilesPageResponse], but gracefully handles missing data.
@@ -36,19 +34,6 @@ private constructor(
      */
     fun hasMore(): Optional<Boolean> = response._hasMore().getOptional("has_more")
 
-    override fun equals(other: Any?): Boolean {
-        if (this === other) {
-            return true
-        }
-
-        return /* spotless:off */ other is FileBatchListFilesPage && fileBatchesService == other.fileBatchesService && params == other.params && response == other.response /* spotless:on */
-    }
-
-    override fun hashCode(): Int = /* spotless:off */ Objects.hash(fileBatchesService, params, response) /* spotless:on */
-
-    override fun toString() =
-        "FileBatchListFilesPage{fileBatchesService=$fileBatchesService, params=$params, response=$response}"
-
     fun hasNextPage(): Boolean = data().isNotEmpty()
 
     fun getNextPageParams(): Optional<FileBatchListFilesParams> {
@@ -59,20 +44,76 @@ private constructor(
         return Optional.of(params.toBuilder().after(data().last()._id().getOptional("id")).build())
     }
 
-    fun getNextPage(): Optional<FileBatchListFilesPage> {
-        return getNextPageParams().map { fileBatchesService.listFiles(it) }
-    }
+    fun getNextPage(): Optional<FileBatchListFilesPage> =
+        getNextPageParams().map { service.listFiles(it) }
 
     fun autoPager(): AutoPager = AutoPager(this)
 
+    /** The parameters that were used to request this page. */
+    fun params(): FileBatchListFilesParams = params
+
+    /** The response that this page was parsed from. */
+    fun response(): FileBatchListFilesPageResponse = response
+
+    fun toBuilder() = Builder().from(this)
+
     companion object {
 
-        @JvmStatic
-        fun of(
-            fileBatchesService: FileBatchService,
-            params: FileBatchListFilesParams,
-            response: FileBatchListFilesPageResponse,
-        ) = FileBatchListFilesPage(fileBatchesService, params, response)
+        /**
+         * Returns a mutable builder for constructing an instance of [FileBatchListFilesPage].
+         *
+         * The following fields are required:
+         * ```java
+         * .service()
+         * .params()
+         * .response()
+         * ```
+         */
+        @JvmStatic fun builder() = Builder()
+    }
+
+    /** A builder for [FileBatchListFilesPage]. */
+    class Builder internal constructor() {
+
+        private var service: FileBatchService? = null
+        private var params: FileBatchListFilesParams? = null
+        private var response: FileBatchListFilesPageResponse? = null
+
+        @JvmSynthetic
+        internal fun from(fileBatchListFilesPage: FileBatchListFilesPage) = apply {
+            service = fileBatchListFilesPage.service
+            params = fileBatchListFilesPage.params
+            response = fileBatchListFilesPage.response
+        }
+
+        fun service(service: FileBatchService) = apply { this.service = service }
+
+        /** The parameters that were used to request this page. */
+        fun params(params: FileBatchListFilesParams) = apply { this.params = params }
+
+        /** The response that this page was parsed from. */
+        fun response(response: FileBatchListFilesPageResponse) = apply { this.response = response }
+
+        /**
+         * Returns an immutable instance of [FileBatchListFilesPage].
+         *
+         * Further updates to this [Builder] will not mutate the returned instance.
+         *
+         * The following fields are required:
+         * ```java
+         * .service()
+         * .params()
+         * .response()
+         * ```
+         *
+         * @throws IllegalStateException if any required field is unset.
+         */
+        fun build(): FileBatchListFilesPage =
+            FileBatchListFilesPage(
+                checkRequired("service", service),
+                checkRequired("params", params),
+                checkRequired("response", response),
+            )
     }
 
     class AutoPager(private val firstPage: FileBatchListFilesPage) : Iterable<VectorStoreFile> {
@@ -93,4 +134,17 @@ private constructor(
             return StreamSupport.stream(spliterator(), false)
         }
     }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) {
+            return true
+        }
+
+        return /* spotless:off */ other is FileBatchListFilesPage && service == other.service && params == other.params && response == other.response /* spotless:on */
+    }
+
+    override fun hashCode(): Int = /* spotless:off */ Objects.hash(service, params, response) /* spotless:on */
+
+    override fun toString() =
+        "FileBatchListFilesPage{service=$service, params=$params, response=$response}"
 }

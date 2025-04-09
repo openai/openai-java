@@ -212,11 +212,11 @@ class FileBatchServiceAsyncImpl internal constructor(private val clientOptions: 
                                 }
                             }
                             .let {
-                                FileBatchListFilesPageAsync.of(
-                                    FileBatchServiceAsyncImpl(clientOptions),
-                                    params,
-                                    it,
-                                )
+                                FileBatchListFilesPageAsync.builder()
+                                    .service(FileBatchServiceAsyncImpl(clientOptions))
+                                    .params(params)
+                                    .response(it)
+                                    .build()
                             }
                     }
                 }

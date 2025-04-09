@@ -244,11 +244,11 @@ class ChatCompletionServiceImpl internal constructor(private val clientOptions: 
                         }
                     }
                     .let {
-                        ChatCompletionListPage.of(
-                            ChatCompletionServiceImpl(clientOptions),
-                            params,
-                            it,
-                        )
+                        ChatCompletionListPage.builder()
+                            .service(ChatCompletionServiceImpl(clientOptions))
+                            .params(params)
+                            .response(it)
+                            .build()
                     }
             }
         }

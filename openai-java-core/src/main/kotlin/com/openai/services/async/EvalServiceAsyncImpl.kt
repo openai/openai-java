@@ -206,11 +206,11 @@ class EvalServiceAsyncImpl internal constructor(private val clientOptions: Clien
                                 }
                             }
                             .let {
-                                EvalListPageAsync.of(
-                                    EvalServiceAsyncImpl(clientOptions),
-                                    params,
-                                    it,
-                                )
+                                EvalListPageAsync.builder()
+                                    .service(EvalServiceAsyncImpl(clientOptions))
+                                    .params(params)
+                                    .response(it)
+                                    .build()
                             }
                     }
                 }

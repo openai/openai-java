@@ -182,7 +182,13 @@ class AssistantServiceImpl internal constructor(private val clientOptions: Clien
                             it.validate()
                         }
                     }
-                    .let { AssistantListPage.of(AssistantServiceImpl(clientOptions), params, it) }
+                    .let {
+                        AssistantListPage.builder()
+                            .service(AssistantServiceImpl(clientOptions))
+                            .params(params)
+                            .response(it)
+                            .build()
+                    }
             }
         }
 
