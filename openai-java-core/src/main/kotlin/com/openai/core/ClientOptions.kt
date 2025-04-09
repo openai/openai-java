@@ -217,7 +217,10 @@ private constructor(
 
         fun removeAllQueryParams(keys: Set<String>) = apply { queryParams.removeAll(keys) }
 
+        fun baseUrl(): String = baseUrl
+
         fun fromEnv() = apply {
+            System.getenv("OPENAI_BASE_URL")?.let { baseUrl(it) }
             System.getenv("OPENAI_API_KEY")?.let { apiKey(it) }
             System.getenv("OPENAI_ORG_ID")?.let { organization(it) }
             System.getenv("OPENAI_PROJECT_ID")?.let { project(it) }
