@@ -13,7 +13,7 @@ public final class AudioTranscriptionsAsyncExample {
     public static void main(String[] args) throws Exception {
         // Configures using one of:
         // - The `OPENAI_API_KEY` environment variable
-        // - The `AZURE_OPENAI_ENDPOINT` and `AZURE_OPENAI_KEY` environment variables
+        // - The `OPENAI_BASE_URL` and `AZURE_OPENAI_KEY` environment variables
         OpenAIClientAsync client = OpenAIOkHttpClientAsync.fromEnv();
 
         ClassLoader classloader = Thread.currentThread().getContextClassLoader();

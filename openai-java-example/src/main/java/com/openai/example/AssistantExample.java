@@ -19,7 +19,7 @@ public final class AssistantExample {
     public static void main(String[] args) throws Exception {
         // Configures using one of:
         // - The `OPENAI_API_KEY` environment variable
-        // - The `AZURE_OPENAI_ENDPOINT` and `AZURE_OPENAI_KEY` environment variables
+        // - The `OPENAI_BASE_URL` and `AZURE_OPENAI_KEY` environment variables
         OpenAIClient client = OpenAIOkHttpClient.fromEnv();
 
         Assistant assistant = client.beta()

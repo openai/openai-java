@@ -232,12 +232,14 @@ private constructor(
 
         fun removeAllQueryParams(keys: Set<String>) = apply { queryParams.removeAll(keys) }
 
+        fun baseUrl(): String = baseUrl
+
         fun fromEnv() = apply {
+            System.getenv("OPENAI_BASE_URL")?.let { baseUrl(it) }
             val openAIKey = System.getenv("OPENAI_API_KEY")
             val openAIOrgId = System.getenv("OPENAI_ORG_ID")
             val openAIProjectId = System.getenv("OPENAI_PROJECT_ID")
             val azureOpenAIKey = System.getenv("AZURE_OPENAI_KEY")
-            val azureEndpoint = System.getenv("AZURE_OPENAI_ENDPOINT")
 
             when {
                 !openAIKey.isNullOrEmpty() && !azureOpenAIKey.isNullOrEmpty() -> {
@@ -252,15 +254,6 @@ private constructor(
                 }
                 !azureOpenAIKey.isNullOrEmpty() -> {
                     credential(AzureApiKeyCredential.create(azureOpenAIKey))
-                    baseUrl(azureEndpoint)
-                }
-                !azureEndpoint.isNullOrEmpty() -> {
-                    // Both 'openAIKey' and 'azureOpenAIKey' are not set.
-                    // Only 'azureEndpoint' is set here, and user still needs to call method
-                    // '.credential(BearerTokenCredential(Supplier<String>))'
-                    // to get the token through the supplier, which requires Azure Entra ID as a
-                    // dependency.
-                    baseUrl(azureEndpoint)
                 }
             }
         }

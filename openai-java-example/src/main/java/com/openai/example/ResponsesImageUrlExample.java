@@ -16,7 +16,7 @@ public final class ResponsesImageUrlExample {
     public static void main(String[] args) throws IOException {
         // Configures using one of:
         // - The `OPENAI_API_KEY` environment variable
-        // - The `AZURE_OPENAI_ENDPOINT` and `AZURE_OPENAI_KEY` environment variables
+        // - The `OPENAI_BASE_URL` and `AZURE_OPENAI_KEY` environment variables
         OpenAIClient client = OpenAIOkHttpClient.fromEnv();
 
         ClassLoader classloader = Thread.currentThread().getContextClassLoader();

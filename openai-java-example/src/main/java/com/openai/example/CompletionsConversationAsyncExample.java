@@ -17,7 +17,7 @@ public final class CompletionsConversationAsyncExample {
     public static void main(String[] args) {
         // Configures using one of:
         // - The `OPENAI_API_KEY` environment variable
-        // - The `AZURE_OPENAI_ENDPOINT` and `AZURE_OPENAI_KEY` environment variables
+        // - The `OPENAI_BASE_URL` and `AZURE_OPENAI_KEY` environment variables
         OpenAIClientAsync client = OpenAIOkHttpClientAsync.fromEnv();
 
         // Use a builder so that we can append more messages to it below.

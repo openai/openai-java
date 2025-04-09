@@ -73,7 +73,7 @@ import com.openai.models.ChatModel;
 import com.openai.models.chat.completions.ChatCompletion;
 import com.openai.models.chat.completions.ChatCompletionCreateParams;
 
-// Configures using the `OPENAI_API_KEY`, `OPENAI_ORG_ID` and `OPENAI_PROJECT_ID` environment variables
+// Configures using the `OPENAI_API_KEY`, `OPENAI_ORG_ID`, `OPENAI_PROJECT_ID` and `OPENAI_BASE_URL` environment variables
 OpenAIClient client = OpenAIOkHttpClient.fromEnv();
 
 ChatCompletionCreateParams params = ChatCompletionCreateParams.builder()
@@ -91,7 +91,7 @@ Configure the client using environment variables:
 import com.openai.client.OpenAIClient;
 import com.openai.client.okhttp.OpenAIOkHttpClient;
 
-// Configures using the `OPENAI_API_KEY`, `OPENAI_ORG_ID` and `OPENAI_PROJECT_ID` environment variables
+// Configures using the `OPENAI_API_KEY`, `OPENAI_ORG_ID`, `OPENAI_PROJECT_ID` and `OPENAI_BASE_URL` environment variables
 OpenAIClient client = OpenAIOkHttpClient.fromEnv();
 ```
 
@@ -113,7 +113,7 @@ import com.openai.client.OpenAIClient;
 import com.openai.client.okhttp.OpenAIOkHttpClient;
 
 OpenAIClient client = OpenAIOkHttpClient.builder()
-    // Configures using the `OPENAI_API_KEY`, `OPENAI_ORG_ID` and `OPENAI_PROJECT_ID` environment variables
+    // Configures using the `OPENAI_API_KEY`, `OPENAI_ORG_ID`, `OPENAI_PROJECT_ID` and `OPENAI_BASE_URL` environment variables
     .fromEnv()
     .apiKey("My API Key")
     .build();
@@ -121,11 +121,12 @@ OpenAIClient client = OpenAIOkHttpClient.builder()
 
 See this table for the available options:
 
-| Setter         | Environment variable | Required | Default value |
-| -------------- | -------------------- | -------- | ------------- |
-| `apiKey`       | `OPENAI_API_KEY`     | true     | -             |
-| `organization` | `OPENAI_ORG_ID`      | false    | -             |
-| `project`      | `OPENAI_PROJECT_ID`  | false    | -             |
+| Setter         | Environment variable | Required | Default value                 |
+| -------------- | -------------------- | -------- | ----------------------------- |
+| `apiKey`       | `OPENAI_API_KEY`     | true     | -                             |
+| `organization` | `OPENAI_ORG_ID`      | false    | -                             |
+| `project`      | `OPENAI_PROJECT_ID`  | false    | -                             |
+| `baseUrl`      | `OPENAI_BASE_URL`    | true     | `"https://api.openai.com/v1"` |
 
 > [!TIP]
 > Don't create more than one client in the same application. Each client has a connection pool and
@@ -157,7 +158,7 @@ import com.openai.models.chat.completions.ChatCompletion;
 import com.openai.models.chat.completions.ChatCompletionCreateParams;
 import java.util.concurrent.CompletableFuture;
 
-// Configures using the `OPENAI_API_KEY`, `OPENAI_ORG_ID` and `OPENAI_PROJECT_ID` environment variables
+// Configures using the `OPENAI_API_KEY`, `OPENAI_ORG_ID`, `OPENAI_PROJECT_ID` and `OPENAI_BASE_URL` environment variables
 OpenAIClient client = OpenAIOkHttpClient.fromEnv();
 
 ChatCompletionCreateParams params = ChatCompletionCreateParams.builder()
@@ -177,7 +178,7 @@ import com.openai.models.chat.completions.ChatCompletion;
 import com.openai.models.chat.completions.ChatCompletionCreateParams;
 import java.util.concurrent.CompletableFuture;
 
-// Configures using the `OPENAI_API_KEY`, `OPENAI_ORG_ID` and `OPENAI_PROJECT_ID` environment variables
+// Configures using the `OPENAI_API_KEY`, `OPENAI_ORG_ID`, `OPENAI_PROJECT_ID` and `OPENAI_BASE_URL` environment variables
 OpenAIClientAsync client = OpenAIOkHttpClientAsync.fromEnv();
 
 ChatCompletionCreateParams params = ChatCompletionCreateParams.builder()
@@ -600,7 +601,7 @@ OpenAI client builder but with the Azure-specific configuration.
 
 ```java
 OpenAIClient client = OpenAIOkHttpClient.builder()
-        // Gets the API key from the `AZURE_OPENAI_KEY` environment variable
+        // Gets the API key and endpoint from the `AZURE_OPENAI_KEY` and `OPENAI_BASE_URL` environment variables, respectively
         .fromEnv()
         // Set the Azure Entra ID
         .credential(BearerTokenCredential.create(AuthenticationUtil.getBearerTokenSupplier(

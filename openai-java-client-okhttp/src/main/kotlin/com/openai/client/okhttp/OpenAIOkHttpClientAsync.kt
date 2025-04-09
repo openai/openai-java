@@ -32,14 +32,10 @@ class OpenAIOkHttpClientAsync private constructor() {
     class Builder internal constructor() {
 
         private var clientOptions: ClientOptions.Builder = ClientOptions.builder()
-        private var baseUrl: String = ClientOptions.PRODUCTION_URL
         private var timeout: Timeout = Timeout.default()
         private var proxy: Proxy? = null
 
-        fun baseUrl(baseUrl: String) = apply {
-            clientOptions.baseUrl(baseUrl)
-            this.baseUrl = baseUrl
-        }
+        fun baseUrl(baseUrl: String) = apply { clientOptions.baseUrl(baseUrl) }
 
         /**
          * Whether to throw an exception if any of the Jackson versions detected at runtime are
@@ -192,7 +188,7 @@ class OpenAIOkHttpClientAsync private constructor() {
                 clientOptions
                     .httpClient(
                         OkHttpClient.builder()
-                            .baseUrl(baseUrl)
+                            .baseUrl(clientOptions.baseUrl())
                             .timeout(timeout)
                             .proxy(proxy)
                             .build()
