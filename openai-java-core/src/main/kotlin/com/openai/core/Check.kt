@@ -47,6 +47,7 @@ internal fun checkMaxLength(name: String, value: String, maxLength: Int): String
 internal fun checkJacksonVersionCompatibility() {
     val incompatibleJacksonVersions =
         RUNTIME_JACKSON_VERSIONS.mapNotNull {
+            val badVersionReason = BAD_JACKSON_VERSIONS[it.toString()]
             when {
                 it.majorVersion != MINIMUM_JACKSON_VERSION.majorVersion ->
                     it to "incompatible major version"
@@ -55,6 +56,7 @@ internal fun checkJacksonVersionCompatibility() {
                 it.minorVersion == MINIMUM_JACKSON_VERSION.minorVersion &&
                     it.patchLevel < MINIMUM_JACKSON_VERSION.patchLevel ->
                     it to "patch version too low"
+                badVersionReason != null -> it to badVersionReason
                 else -> null
             }
         }
@@ -77,6 +79,8 @@ Double-check that you are depending on compatible Jackson versions.
 }
 
 private val MINIMUM_JACKSON_VERSION: Version = VersionUtil.parseVersion("2.13.4", null, null)
+private val BAD_JACKSON_VERSIONS: Map<String, String> =
+    mapOf("2.18.1" to "due to https://github.com/FasterXML/jackson-databind/issues/4639")
 private val RUNTIME_JACKSON_VERSIONS: List<Version> =
     listOf(
         com.fasterxml.jackson.core.json.PackageVersion.VERSION,
