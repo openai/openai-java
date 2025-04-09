@@ -1,5 +1,18 @@
 # Changelog
 
+## 1.1.1 (2025-04-09)
+
+Full Changelog: [v1.1.0...v1.1.1](https://github.com/openai/openai-java/compare/v1.1.0...v1.1.1)
+
+### Bug Fixes
+
+* **client:** bump to better jackson version ([#432](https://github.com/openai/openai-java/issues/432)) ([b4ec1d1](https://github.com/openai/openai-java/commit/b4ec1d17e9cace4971d330b945925a299a04aa38))
+
+
+### Chores
+
+* **internal:** expand CI branch coverage ([#429](https://github.com/openai/openai-java/issues/429)) ([7ecece7](https://github.com/openai/openai-java/commit/7ecece7d4cd6ed495ca4fd2daa1f7d726954695a))
+
 ## 1.1.0 (2025-04-09)
 
 Full Changelog: [v1.0.0...v1.1.0](https://github.com/openai/openai-java/compare/v1.0.0...v1.1.0)
