@@ -19,6 +19,7 @@ import com.openai.models.batches.Batch
 import com.openai.models.batches.BatchCancelParams
 import com.openai.models.batches.BatchCreateParams
 import com.openai.models.batches.BatchListPageAsync
+import com.openai.models.batches.BatchListPageResponse
 import com.openai.models.batches.BatchListParams
 import com.openai.models.batches.BatchRetrieveParams
 import java.util.concurrent.CompletableFuture
@@ -124,8 +125,8 @@ class BatchServiceAsyncImpl internal constructor(private val clientOptions: Clie
                 }
         }
 
-        private val listHandler: Handler<BatchListPageAsync.Response> =
-            jsonHandler<BatchListPageAsync.Response>(clientOptions.jsonMapper)
+        private val listHandler: Handler<BatchListPageResponse> =
+            jsonHandler<BatchListPageResponse>(clientOptions.jsonMapper)
                 .withErrorHandler(errorHandler)
 
         override fun list(

@@ -2,17 +2,7 @@
 
 package com.openai.models.batches
 
-import com.fasterxml.jackson.annotation.JsonAnyGetter
-import com.fasterxml.jackson.annotation.JsonAnySetter
-import com.fasterxml.jackson.annotation.JsonCreator
-import com.fasterxml.jackson.annotation.JsonProperty
-import com.openai.core.ExcludeMissing
-import com.openai.core.JsonField
-import com.openai.core.JsonMissing
-import com.openai.core.JsonValue
-import com.openai.errors.OpenAIInvalidDataException
 import com.openai.services.async.BatchServiceAsync
-import java.util.Collections
 import java.util.Objects
 import java.util.Optional
 import java.util.concurrent.CompletableFuture
@@ -25,14 +15,25 @@ class BatchListPageAsync
 private constructor(
     private val batchesService: BatchServiceAsync,
     private val params: BatchListParams,
-    private val response: Response,
+    private val response: BatchListPageResponse,
 ) {
 
-    fun response(): Response = response
+    /** Returns the response that this page was parsed from. */
+    fun response(): BatchListPageResponse = response
 
-    fun data(): List<Batch> = response().data()
+    /**
+     * Delegates to [BatchListPageResponse], but gracefully handles missing data.
+     *
+     * @see [BatchListPageResponse.data]
+     */
+    fun data(): List<Batch> = response._data().getOptional("data").getOrNull() ?: emptyList()
 
-    fun hasMore(): Optional<Boolean> = response().hasMore()
+    /**
+     * Delegates to [BatchListPageResponse], but gracefully handles missing data.
+     *
+     * @see [BatchListPageResponse.hasMore]
+     */
+    fun hasMore(): Optional<Boolean> = response._hasMore().getOptional("has_more")
 
     override fun equals(other: Any?): Boolean {
         if (this === other) {
@@ -47,16 +48,14 @@ private constructor(
     override fun toString() =
         "BatchListPageAsync{batchesService=$batchesService, params=$params, response=$response}"
 
-    fun hasNextPage(): Boolean {
-        return !data().isEmpty()
-    }
+    fun hasNextPage(): Boolean = data().isNotEmpty()
 
     fun getNextPageParams(): Optional<BatchListParams> {
         if (!hasNextPage()) {
             return Optional.empty()
         }
 
-        return Optional.of(params.toBuilder().after(data().last().id()).build())
+        return Optional.of(params.toBuilder().after(data().last()._id().getOptional("id")).build())
     }
 
     fun getNextPage(): CompletableFuture<Optional<BatchListPageAsync>> {
@@ -70,115 +69,11 @@ private constructor(
     companion object {
 
         @JvmStatic
-        fun of(batchesService: BatchServiceAsync, params: BatchListParams, response: Response) =
-            BatchListPageAsync(batchesService, params, response)
-    }
-
-    class Response(
-        private val data: JsonField<List<Batch>>,
-        private val hasMore: JsonField<Boolean>,
-        private val additionalProperties: MutableMap<String, JsonValue>,
-    ) {
-
-        @JsonCreator
-        private constructor(
-            @JsonProperty("data") data: JsonField<List<Batch>> = JsonMissing.of(),
-            @JsonProperty("has_more") hasMore: JsonField<Boolean> = JsonMissing.of(),
-        ) : this(data, hasMore, mutableMapOf())
-
-        fun data(): List<Batch> = data.getOptional("data").getOrNull() ?: listOf()
-
-        fun hasMore(): Optional<Boolean> = hasMore.getOptional("has_more")
-
-        @JsonProperty("data")
-        fun _data(): Optional<JsonField<List<Batch>>> = Optional.ofNullable(data)
-
-        @JsonProperty("has_more")
-        fun _hasMore(): Optional<JsonField<Boolean>> = Optional.ofNullable(hasMore)
-
-        @JsonAnySetter
-        private fun putAdditionalProperty(key: String, value: JsonValue) {
-            additionalProperties.put(key, value)
-        }
-
-        @JsonAnyGetter
-        @ExcludeMissing
-        fun _additionalProperties(): Map<String, JsonValue> =
-            Collections.unmodifiableMap(additionalProperties)
-
-        private var validated: Boolean = false
-
-        fun validate(): Response = apply {
-            if (validated) {
-                return@apply
-            }
-
-            data().map { it.validate() }
-            hasMore()
-            validated = true
-        }
-
-        fun isValid(): Boolean =
-            try {
-                validate()
-                true
-            } catch (e: OpenAIInvalidDataException) {
-                false
-            }
-
-        fun toBuilder() = Builder().from(this)
-
-        override fun equals(other: Any?): Boolean {
-            if (this === other) {
-                return true
-            }
-
-            return /* spotless:off */ other is Response && data == other.data && hasMore == other.hasMore && additionalProperties == other.additionalProperties /* spotless:on */
-        }
-
-        override fun hashCode(): Int = /* spotless:off */ Objects.hash(data, hasMore, additionalProperties) /* spotless:on */
-
-        override fun toString() =
-            "Response{data=$data, hasMore=$hasMore, additionalProperties=$additionalProperties}"
-
-        companion object {
-
-            /** Returns a mutable builder for constructing an instance of [BatchListPageAsync]. */
-            @JvmStatic fun builder() = Builder()
-        }
-
-        class Builder {
-
-            private var data: JsonField<List<Batch>> = JsonMissing.of()
-            private var hasMore: JsonField<Boolean> = JsonMissing.of()
-            private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
-
-            @JvmSynthetic
-            internal fun from(page: Response) = apply {
-                this.data = page.data
-                this.hasMore = page.hasMore
-                this.additionalProperties.putAll(page.additionalProperties)
-            }
-
-            fun data(data: List<Batch>) = data(JsonField.of(data))
-
-            fun data(data: JsonField<List<Batch>>) = apply { this.data = data }
-
-            fun hasMore(hasMore: Boolean) = hasMore(JsonField.of(hasMore))
-
-            fun hasMore(hasMore: JsonField<Boolean>) = apply { this.hasMore = hasMore }
-
-            fun putAdditionalProperty(key: String, value: JsonValue) = apply {
-                this.additionalProperties.put(key, value)
-            }
-
-            /**
-             * Returns an immutable instance of [Response].
-             *
-             * Further updates to this [Builder] will not mutate the returned instance.
-             */
-            fun build(): Response = Response(data, hasMore, additionalProperties.toMutableMap())
-        }
+        fun of(
+            batchesService: BatchServiceAsync,
+            params: BatchListParams,
+            response: BatchListPageResponse,
+        ) = BatchListPageAsync(batchesService, params, response)
     }
 
     class AutoPager(private val firstPage: BatchListPageAsync) {

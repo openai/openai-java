@@ -17,6 +17,7 @@ import com.openai.core.prepareAsync
 import com.openai.models.ErrorObject
 import com.openai.models.beta.threads.runs.steps.RunStep
 import com.openai.models.beta.threads.runs.steps.StepListPageAsync
+import com.openai.models.beta.threads.runs.steps.StepListPageResponse
 import com.openai.models.beta.threads.runs.steps.StepListParams
 import com.openai.models.beta.threads.runs.steps.StepRetrieveParams
 import java.util.concurrent.CompletableFuture
@@ -91,8 +92,8 @@ class StepServiceAsyncImpl internal constructor(private val clientOptions: Clien
                 }
         }
 
-        private val listHandler: Handler<StepListPageAsync.Response> =
-            jsonHandler<StepListPageAsync.Response>(clientOptions.jsonMapper)
+        private val listHandler: Handler<StepListPageResponse> =
+            jsonHandler<StepListPageResponse>(clientOptions.jsonMapper)
                 .withErrorHandler(errorHandler)
 
         override fun list(

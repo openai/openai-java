@@ -16,6 +16,7 @@ import com.openai.core.prepareAsync
 import com.openai.models.ErrorObject
 import com.openai.models.responses.inputitems.InputItemListPageAsync
 import com.openai.models.responses.inputitems.InputItemListParams
+import com.openai.models.responses.inputitems.ResponseItemList
 import java.util.concurrent.CompletableFuture
 
 class InputItemServiceAsyncImpl internal constructor(private val clientOptions: ClientOptions) :
@@ -39,9 +40,8 @@ class InputItemServiceAsyncImpl internal constructor(private val clientOptions: 
 
         private val errorHandler: Handler<ErrorObject?> = errorHandler(clientOptions.jsonMapper)
 
-        private val listHandler: Handler<InputItemListPageAsync.Response> =
-            jsonHandler<InputItemListPageAsync.Response>(clientOptions.jsonMapper)
-                .withErrorHandler(errorHandler)
+        private val listHandler: Handler<ResponseItemList> =
+            jsonHandler<ResponseItemList>(clientOptions.jsonMapper).withErrorHandler(errorHandler)
 
         override fun list(
             params: InputItemListParams,

@@ -19,6 +19,7 @@ import com.openai.models.models.Model
 import com.openai.models.models.ModelDeleteParams
 import com.openai.models.models.ModelDeleted
 import com.openai.models.models.ModelListPageAsync
+import com.openai.models.models.ModelListPageResponse
 import com.openai.models.models.ModelListParams
 import com.openai.models.models.ModelRetrieveParams
 import java.util.concurrent.CompletableFuture
@@ -87,8 +88,8 @@ class ModelServiceAsyncImpl internal constructor(private val clientOptions: Clie
                 }
         }
 
-        private val listHandler: Handler<ModelListPageAsync.Response> =
-            jsonHandler<ModelListPageAsync.Response>(clientOptions.jsonMapper)
+        private val listHandler: Handler<ModelListPageResponse> =
+            jsonHandler<ModelListPageResponse>(clientOptions.jsonMapper)
                 .withErrorHandler(errorHandler)
 
         override fun list(

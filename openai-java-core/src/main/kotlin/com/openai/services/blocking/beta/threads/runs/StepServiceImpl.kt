@@ -17,6 +17,7 @@ import com.openai.core.prepare
 import com.openai.models.ErrorObject
 import com.openai.models.beta.threads.runs.steps.RunStep
 import com.openai.models.beta.threads.runs.steps.StepListPage
+import com.openai.models.beta.threads.runs.steps.StepListPageResponse
 import com.openai.models.beta.threads.runs.steps.StepListParams
 import com.openai.models.beta.threads.runs.steps.StepRetrieveParams
 
@@ -80,8 +81,8 @@ class StepServiceImpl internal constructor(private val clientOptions: ClientOpti
             }
         }
 
-        private val listHandler: Handler<StepListPage.Response> =
-            jsonHandler<StepListPage.Response>(clientOptions.jsonMapper)
+        private val listHandler: Handler<StepListPageResponse> =
+            jsonHandler<StepListPageResponse>(clientOptions.jsonMapper)
                 .withErrorHandler(errorHandler)
 
         override fun list(

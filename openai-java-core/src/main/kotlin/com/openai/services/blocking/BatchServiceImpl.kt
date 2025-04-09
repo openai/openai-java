@@ -19,6 +19,7 @@ import com.openai.models.batches.Batch
 import com.openai.models.batches.BatchCancelParams
 import com.openai.models.batches.BatchCreateParams
 import com.openai.models.batches.BatchListPage
+import com.openai.models.batches.BatchListPageResponse
 import com.openai.models.batches.BatchListParams
 import com.openai.models.batches.BatchRetrieveParams
 
@@ -105,8 +106,8 @@ class BatchServiceImpl internal constructor(private val clientOptions: ClientOpt
             }
         }
 
-        private val listHandler: Handler<BatchListPage.Response> =
-            jsonHandler<BatchListPage.Response>(clientOptions.jsonMapper)
+        private val listHandler: Handler<BatchListPageResponse> =
+            jsonHandler<BatchListPageResponse>(clientOptions.jsonMapper)
                 .withErrorHandler(errorHandler)
 
         override fun list(

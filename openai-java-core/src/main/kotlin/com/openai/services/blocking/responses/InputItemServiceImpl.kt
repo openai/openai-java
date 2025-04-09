@@ -16,6 +16,7 @@ import com.openai.core.prepare
 import com.openai.models.ErrorObject
 import com.openai.models.responses.inputitems.InputItemListPage
 import com.openai.models.responses.inputitems.InputItemListParams
+import com.openai.models.responses.inputitems.ResponseItemList
 
 class InputItemServiceImpl internal constructor(private val clientOptions: ClientOptions) :
     InputItemService {
@@ -38,9 +39,8 @@ class InputItemServiceImpl internal constructor(private val clientOptions: Clien
 
         private val errorHandler: Handler<ErrorObject?> = errorHandler(clientOptions.jsonMapper)
 
-        private val listHandler: Handler<InputItemListPage.Response> =
-            jsonHandler<InputItemListPage.Response>(clientOptions.jsonMapper)
-                .withErrorHandler(errorHandler)
+        private val listHandler: Handler<ResponseItemList> =
+            jsonHandler<ResponseItemList>(clientOptions.jsonMapper).withErrorHandler(errorHandler)
 
         override fun list(
             params: InputItemListParams,

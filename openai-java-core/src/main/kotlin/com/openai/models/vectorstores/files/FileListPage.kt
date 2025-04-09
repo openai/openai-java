@@ -2,17 +2,7 @@
 
 package com.openai.models.vectorstores.files
 
-import com.fasterxml.jackson.annotation.JsonAnyGetter
-import com.fasterxml.jackson.annotation.JsonAnySetter
-import com.fasterxml.jackson.annotation.JsonCreator
-import com.fasterxml.jackson.annotation.JsonProperty
-import com.openai.core.ExcludeMissing
-import com.openai.core.JsonField
-import com.openai.core.JsonMissing
-import com.openai.core.JsonValue
-import com.openai.errors.OpenAIInvalidDataException
 import com.openai.services.blocking.vectorstores.FileService
-import java.util.Collections
 import java.util.Objects
 import java.util.Optional
 import java.util.stream.Stream
@@ -24,14 +14,26 @@ class FileListPage
 private constructor(
     private val filesService: FileService,
     private val params: FileListParams,
-    private val response: Response,
+    private val response: FileListPageResponse,
 ) {
 
-    fun response(): Response = response
+    /** Returns the response that this page was parsed from. */
+    fun response(): FileListPageResponse = response
 
-    fun data(): List<VectorStoreFile> = response().data()
+    /**
+     * Delegates to [FileListPageResponse], but gracefully handles missing data.
+     *
+     * @see [FileListPageResponse.data]
+     */
+    fun data(): List<VectorStoreFile> =
+        response._data().getOptional("data").getOrNull() ?: emptyList()
 
-    fun hasMore(): Optional<Boolean> = response().hasMore()
+    /**
+     * Delegates to [FileListPageResponse], but gracefully handles missing data.
+     *
+     * @see [FileListPageResponse.hasMore]
+     */
+    fun hasMore(): Optional<Boolean> = response._hasMore().getOptional("has_more")
 
     override fun equals(other: Any?): Boolean {
         if (this === other) {
@@ -46,16 +48,14 @@ private constructor(
     override fun toString() =
         "FileListPage{filesService=$filesService, params=$params, response=$response}"
 
-    fun hasNextPage(): Boolean {
-        return !data().isEmpty()
-    }
+    fun hasNextPage(): Boolean = data().isNotEmpty()
 
     fun getNextPageParams(): Optional<FileListParams> {
         if (!hasNextPage()) {
             return Optional.empty()
         }
 
-        return Optional.of(params.toBuilder().after(data().last().id()).build())
+        return Optional.of(params.toBuilder().after(data().last()._id().getOptional("id")).build())
     }
 
     fun getNextPage(): Optional<FileListPage> {
@@ -67,115 +67,8 @@ private constructor(
     companion object {
 
         @JvmStatic
-        fun of(filesService: FileService, params: FileListParams, response: Response) =
+        fun of(filesService: FileService, params: FileListParams, response: FileListPageResponse) =
             FileListPage(filesService, params, response)
-    }
-
-    class Response(
-        private val data: JsonField<List<VectorStoreFile>>,
-        private val hasMore: JsonField<Boolean>,
-        private val additionalProperties: MutableMap<String, JsonValue>,
-    ) {
-
-        @JsonCreator
-        private constructor(
-            @JsonProperty("data") data: JsonField<List<VectorStoreFile>> = JsonMissing.of(),
-            @JsonProperty("has_more") hasMore: JsonField<Boolean> = JsonMissing.of(),
-        ) : this(data, hasMore, mutableMapOf())
-
-        fun data(): List<VectorStoreFile> = data.getOptional("data").getOrNull() ?: listOf()
-
-        fun hasMore(): Optional<Boolean> = hasMore.getOptional("has_more")
-
-        @JsonProperty("data")
-        fun _data(): Optional<JsonField<List<VectorStoreFile>>> = Optional.ofNullable(data)
-
-        @JsonProperty("has_more")
-        fun _hasMore(): Optional<JsonField<Boolean>> = Optional.ofNullable(hasMore)
-
-        @JsonAnySetter
-        private fun putAdditionalProperty(key: String, value: JsonValue) {
-            additionalProperties.put(key, value)
-        }
-
-        @JsonAnyGetter
-        @ExcludeMissing
-        fun _additionalProperties(): Map<String, JsonValue> =
-            Collections.unmodifiableMap(additionalProperties)
-
-        private var validated: Boolean = false
-
-        fun validate(): Response = apply {
-            if (validated) {
-                return@apply
-            }
-
-            data().map { it.validate() }
-            hasMore()
-            validated = true
-        }
-
-        fun isValid(): Boolean =
-            try {
-                validate()
-                true
-            } catch (e: OpenAIInvalidDataException) {
-                false
-            }
-
-        fun toBuilder() = Builder().from(this)
-
-        override fun equals(other: Any?): Boolean {
-            if (this === other) {
-                return true
-            }
-
-            return /* spotless:off */ other is Response && data == other.data && hasMore == other.hasMore && additionalProperties == other.additionalProperties /* spotless:on */
-        }
-
-        override fun hashCode(): Int = /* spotless:off */ Objects.hash(data, hasMore, additionalProperties) /* spotless:on */
-
-        override fun toString() =
-            "Response{data=$data, hasMore=$hasMore, additionalProperties=$additionalProperties}"
-
-        companion object {
-
-            /** Returns a mutable builder for constructing an instance of [FileListPage]. */
-            @JvmStatic fun builder() = Builder()
-        }
-
-        class Builder {
-
-            private var data: JsonField<List<VectorStoreFile>> = JsonMissing.of()
-            private var hasMore: JsonField<Boolean> = JsonMissing.of()
-            private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
-
-            @JvmSynthetic
-            internal fun from(page: Response) = apply {
-                this.data = page.data
-                this.hasMore = page.hasMore
-                this.additionalProperties.putAll(page.additionalProperties)
-            }
-
-            fun data(data: List<VectorStoreFile>) = data(JsonField.of(data))
-
-            fun data(data: JsonField<List<VectorStoreFile>>) = apply { this.data = data }
-
-            fun hasMore(hasMore: Boolean) = hasMore(JsonField.of(hasMore))
-
-            fun hasMore(hasMore: JsonField<Boolean>) = apply { this.hasMore = hasMore }
-
-            fun putAdditionalProperty(key: String, value: JsonValue) = apply {
-                this.additionalProperties.put(key, value)
-            }
-
-            /**
-             * Returns an immutable instance of [Response].
-             *
-             * Further updates to this [Builder] will not mutate the returned instance.
-             */
-            fun build(): Response = Response(data, hasMore, additionalProperties.toMutableMap())
-        }
     }
 
     class AutoPager(private val firstPage: FileListPage) : Iterable<VectorStoreFile> {
