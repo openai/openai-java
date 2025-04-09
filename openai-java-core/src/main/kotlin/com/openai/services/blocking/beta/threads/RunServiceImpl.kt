@@ -260,7 +260,13 @@ class RunServiceImpl internal constructor(private val clientOptions: ClientOptio
                             it.validate()
                         }
                     }
-                    .let { RunListPage.of(RunServiceImpl(clientOptions), params, it) }
+                    .let {
+                        RunListPage.builder()
+                            .service(RunServiceImpl(clientOptions))
+                            .params(params)
+                            .response(it)
+                            .build()
+                    }
             }
         }
 

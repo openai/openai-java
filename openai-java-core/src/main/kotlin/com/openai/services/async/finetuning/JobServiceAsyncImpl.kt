@@ -176,7 +176,11 @@ class JobServiceAsyncImpl internal constructor(private val clientOptions: Client
                                 }
                             }
                             .let {
-                                JobListPageAsync.of(JobServiceAsyncImpl(clientOptions), params, it)
+                                JobListPageAsync.builder()
+                                    .service(JobServiceAsyncImpl(clientOptions))
+                                    .params(params)
+                                    .response(it)
+                                    .build()
                             }
                     }
                 }
@@ -239,11 +243,11 @@ class JobServiceAsyncImpl internal constructor(private val clientOptions: Client
                                 }
                             }
                             .let {
-                                JobListEventsPageAsync.of(
-                                    JobServiceAsyncImpl(clientOptions),
-                                    params,
-                                    it,
-                                )
+                                JobListEventsPageAsync.builder()
+                                    .service(JobServiceAsyncImpl(clientOptions))
+                                    .params(params)
+                                    .response(it)
+                                    .build()
                             }
                     }
                 }

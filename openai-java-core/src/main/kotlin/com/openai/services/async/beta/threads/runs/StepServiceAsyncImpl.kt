@@ -126,11 +126,11 @@ class StepServiceAsyncImpl internal constructor(private val clientOptions: Clien
                                 }
                             }
                             .let {
-                                StepListPageAsync.of(
-                                    StepServiceAsyncImpl(clientOptions),
-                                    params,
-                                    it,
-                                )
+                                StepListPageAsync.builder()
+                                    .service(StepServiceAsyncImpl(clientOptions))
+                                    .params(params)
+                                    .response(it)
+                                    .build()
                             }
                     }
                 }

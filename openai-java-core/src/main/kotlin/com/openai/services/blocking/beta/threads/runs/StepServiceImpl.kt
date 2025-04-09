@@ -112,7 +112,13 @@ class StepServiceImpl internal constructor(private val clientOptions: ClientOpti
                             it.validate()
                         }
                     }
-                    .let { StepListPage.of(StepServiceImpl(clientOptions), params, it) }
+                    .let {
+                        StepListPage.builder()
+                            .service(StepServiceImpl(clientOptions))
+                            .params(params)
+                            .response(it)
+                            .build()
+                    }
             }
         }
     }

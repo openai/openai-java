@@ -62,7 +62,13 @@ class InputItemServiceImpl internal constructor(private val clientOptions: Clien
                             it.validate()
                         }
                     }
-                    .let { InputItemListPage.of(InputItemServiceImpl(clientOptions), params, it) }
+                    .let {
+                        InputItemListPage.builder()
+                            .service(InputItemServiceImpl(clientOptions))
+                            .params(params)
+                            .response(it)
+                            .build()
+                    }
             }
         }
     }

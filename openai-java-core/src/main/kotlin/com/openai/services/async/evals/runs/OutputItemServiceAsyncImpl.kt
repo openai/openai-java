@@ -119,11 +119,11 @@ class OutputItemServiceAsyncImpl internal constructor(private val clientOptions:
                                 }
                             }
                             .let {
-                                OutputItemListPageAsync.of(
-                                    OutputItemServiceAsyncImpl(clientOptions),
-                                    params,
-                                    it,
-                                )
+                                OutputItemListPageAsync.builder()
+                                    .service(OutputItemServiceAsyncImpl(clientOptions))
+                                    .params(params)
+                                    .response(it)
+                                    .build()
                             }
                     }
                 }

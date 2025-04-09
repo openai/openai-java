@@ -223,7 +223,11 @@ class VectorStoreServiceImpl internal constructor(private val clientOptions: Cli
                         }
                     }
                     .let {
-                        VectorStoreListPage.of(VectorStoreServiceImpl(clientOptions), params, it)
+                        VectorStoreListPage.builder()
+                            .service(VectorStoreServiceImpl(clientOptions))
+                            .params(params)
+                            .response(it)
+                            .build()
                     }
             }
         }
@@ -283,7 +287,11 @@ class VectorStoreServiceImpl internal constructor(private val clientOptions: Cli
                         }
                     }
                     .let {
-                        VectorStoreSearchPage.of(VectorStoreServiceImpl(clientOptions), params, it)
+                        VectorStoreSearchPage.builder()
+                            .service(VectorStoreServiceImpl(clientOptions))
+                            .params(params)
+                            .response(it)
+                            .build()
                     }
             }
         }

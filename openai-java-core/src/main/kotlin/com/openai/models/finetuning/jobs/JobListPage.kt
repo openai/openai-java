@@ -2,6 +2,7 @@
 
 package com.openai.models.finetuning.jobs
 
+import com.openai.core.checkRequired
 import com.openai.services.blocking.finetuning.JobService
 import java.util.Objects
 import java.util.Optional
@@ -9,16 +10,13 @@ import java.util.stream.Stream
 import java.util.stream.StreamSupport
 import kotlin.jvm.optionals.getOrNull
 
-/** List your organization's fine-tuning jobs */
+/** @see [JobService.list] */
 class JobListPage
 private constructor(
-    private val jobsService: JobService,
+    private val service: JobService,
     private val params: JobListParams,
     private val response: JobListPageResponse,
 ) {
-
-    /** Returns the response that this page was parsed from. */
-    fun response(): JobListPageResponse = response
 
     /**
      * Delegates to [JobListPageResponse], but gracefully handles missing data.
@@ -35,19 +33,6 @@ private constructor(
      */
     fun hasMore(): Optional<Boolean> = response._hasMore().getOptional("has_more")
 
-    override fun equals(other: Any?): Boolean {
-        if (this === other) {
-            return true
-        }
-
-        return /* spotless:off */ other is JobListPage && jobsService == other.jobsService && params == other.params && response == other.response /* spotless:on */
-    }
-
-    override fun hashCode(): Int = /* spotless:off */ Objects.hash(jobsService, params, response) /* spotless:on */
-
-    override fun toString() =
-        "JobListPage{jobsService=$jobsService, params=$params, response=$response}"
-
     fun hasNextPage(): Boolean = data().isNotEmpty()
 
     fun getNextPageParams(): Optional<JobListParams> {
@@ -58,17 +43,75 @@ private constructor(
         return Optional.of(params.toBuilder().after(data().last()._id().getOptional("id")).build())
     }
 
-    fun getNextPage(): Optional<JobListPage> {
-        return getNextPageParams().map { jobsService.list(it) }
-    }
+    fun getNextPage(): Optional<JobListPage> = getNextPageParams().map { service.list(it) }
 
     fun autoPager(): AutoPager = AutoPager(this)
 
+    /** The parameters that were used to request this page. */
+    fun params(): JobListParams = params
+
+    /** The response that this page was parsed from. */
+    fun response(): JobListPageResponse = response
+
+    fun toBuilder() = Builder().from(this)
+
     companion object {
 
-        @JvmStatic
-        fun of(jobsService: JobService, params: JobListParams, response: JobListPageResponse) =
-            JobListPage(jobsService, params, response)
+        /**
+         * Returns a mutable builder for constructing an instance of [JobListPage].
+         *
+         * The following fields are required:
+         * ```java
+         * .service()
+         * .params()
+         * .response()
+         * ```
+         */
+        @JvmStatic fun builder() = Builder()
+    }
+
+    /** A builder for [JobListPage]. */
+    class Builder internal constructor() {
+
+        private var service: JobService? = null
+        private var params: JobListParams? = null
+        private var response: JobListPageResponse? = null
+
+        @JvmSynthetic
+        internal fun from(jobListPage: JobListPage) = apply {
+            service = jobListPage.service
+            params = jobListPage.params
+            response = jobListPage.response
+        }
+
+        fun service(service: JobService) = apply { this.service = service }
+
+        /** The parameters that were used to request this page. */
+        fun params(params: JobListParams) = apply { this.params = params }
+
+        /** The response that this page was parsed from. */
+        fun response(response: JobListPageResponse) = apply { this.response = response }
+
+        /**
+         * Returns an immutable instance of [JobListPage].
+         *
+         * Further updates to this [Builder] will not mutate the returned instance.
+         *
+         * The following fields are required:
+         * ```java
+         * .service()
+         * .params()
+         * .response()
+         * ```
+         *
+         * @throws IllegalStateException if any required field is unset.
+         */
+        fun build(): JobListPage =
+            JobListPage(
+                checkRequired("service", service),
+                checkRequired("params", params),
+                checkRequired("response", response),
+            )
     }
 
     class AutoPager(private val firstPage: JobListPage) : Iterable<FineTuningJob> {
@@ -89,4 +132,16 @@ private constructor(
             return StreamSupport.stream(spliterator(), false)
         }
     }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) {
+            return true
+        }
+
+        return /* spotless:off */ other is JobListPage && service == other.service && params == other.params && response == other.response /* spotless:on */
+    }
+
+    override fun hashCode(): Int = /* spotless:off */ Objects.hash(service, params, response) /* spotless:on */
+
+    override fun toString() = "JobListPage{service=$service, params=$params, response=$response}"
 }

@@ -137,7 +137,13 @@ class FileServiceImpl internal constructor(private val clientOptions: ClientOpti
                             it.validate()
                         }
                     }
-                    .let { FileListPage.of(FileServiceImpl(clientOptions), params, it) }
+                    .let {
+                        FileListPage.builder()
+                            .service(FileServiceImpl(clientOptions))
+                            .params(params)
+                            .response(it)
+                            .build()
+                    }
             }
         }
 

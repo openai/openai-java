@@ -211,11 +211,11 @@ class MessageServiceAsyncImpl internal constructor(private val clientOptions: Cl
                                 }
                             }
                             .let {
-                                MessageListPageAsync.of(
-                                    MessageServiceAsyncImpl(clientOptions),
-                                    params,
-                                    it,
-                                )
+                                MessageListPageAsync.builder()
+                                    .service(MessageServiceAsyncImpl(clientOptions))
+                                    .params(params)
+                                    .response(it)
+                                    .build()
                             }
                     }
                 }

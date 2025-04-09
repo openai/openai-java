@@ -2,6 +2,7 @@
 
 package com.openai.models.beta.assistants
 
+import com.openai.core.checkRequired
 import com.openai.services.async.beta.AssistantServiceAsync
 import java.util.Objects
 import java.util.Optional
@@ -10,16 +11,13 @@ import java.util.concurrent.Executor
 import java.util.function.Predicate
 import kotlin.jvm.optionals.getOrNull
 
-/** Returns a list of assistants. */
+/** @see [AssistantServiceAsync.list] */
 class AssistantListPageAsync
 private constructor(
-    private val assistantsService: AssistantServiceAsync,
+    private val service: AssistantServiceAsync,
     private val params: AssistantListParams,
     private val response: AssistantListPageResponse,
 ) {
-
-    /** Returns the response that this page was parsed from. */
-    fun response(): AssistantListPageResponse = response
 
     /**
      * Delegates to [AssistantListPageResponse], but gracefully handles missing data.
@@ -35,19 +33,6 @@ private constructor(
      */
     fun hasMore(): Optional<Boolean> = response._hasMore().getOptional("has_more")
 
-    override fun equals(other: Any?): Boolean {
-        if (this === other) {
-            return true
-        }
-
-        return /* spotless:off */ other is AssistantListPageAsync && assistantsService == other.assistantsService && params == other.params && response == other.response /* spotless:on */
-    }
-
-    override fun hashCode(): Int = /* spotless:off */ Objects.hash(assistantsService, params, response) /* spotless:on */
-
-    override fun toString() =
-        "AssistantListPageAsync{assistantsService=$assistantsService, params=$params, response=$response}"
-
     fun hasNextPage(): Boolean = data().isNotEmpty()
 
     fun getNextPageParams(): Optional<AssistantListParams> {
@@ -58,22 +43,78 @@ private constructor(
         return Optional.of(params.toBuilder().after(data().last()._id().getOptional("id")).build())
     }
 
-    fun getNextPage(): CompletableFuture<Optional<AssistantListPageAsync>> {
-        return getNextPageParams()
-            .map { assistantsService.list(it).thenApply { Optional.of(it) } }
+    fun getNextPage(): CompletableFuture<Optional<AssistantListPageAsync>> =
+        getNextPageParams()
+            .map { service.list(it).thenApply { Optional.of(it) } }
             .orElseGet { CompletableFuture.completedFuture(Optional.empty()) }
-    }
 
     fun autoPager(): AutoPager = AutoPager(this)
 
+    /** The parameters that were used to request this page. */
+    fun params(): AssistantListParams = params
+
+    /** The response that this page was parsed from. */
+    fun response(): AssistantListPageResponse = response
+
+    fun toBuilder() = Builder().from(this)
+
     companion object {
 
-        @JvmStatic
-        fun of(
-            assistantsService: AssistantServiceAsync,
-            params: AssistantListParams,
-            response: AssistantListPageResponse,
-        ) = AssistantListPageAsync(assistantsService, params, response)
+        /**
+         * Returns a mutable builder for constructing an instance of [AssistantListPageAsync].
+         *
+         * The following fields are required:
+         * ```java
+         * .service()
+         * .params()
+         * .response()
+         * ```
+         */
+        @JvmStatic fun builder() = Builder()
+    }
+
+    /** A builder for [AssistantListPageAsync]. */
+    class Builder internal constructor() {
+
+        private var service: AssistantServiceAsync? = null
+        private var params: AssistantListParams? = null
+        private var response: AssistantListPageResponse? = null
+
+        @JvmSynthetic
+        internal fun from(assistantListPageAsync: AssistantListPageAsync) = apply {
+            service = assistantListPageAsync.service
+            params = assistantListPageAsync.params
+            response = assistantListPageAsync.response
+        }
+
+        fun service(service: AssistantServiceAsync) = apply { this.service = service }
+
+        /** The parameters that were used to request this page. */
+        fun params(params: AssistantListParams) = apply { this.params = params }
+
+        /** The response that this page was parsed from. */
+        fun response(response: AssistantListPageResponse) = apply { this.response = response }
+
+        /**
+         * Returns an immutable instance of [AssistantListPageAsync].
+         *
+         * Further updates to this [Builder] will not mutate the returned instance.
+         *
+         * The following fields are required:
+         * ```java
+         * .service()
+         * .params()
+         * .response()
+         * ```
+         *
+         * @throws IllegalStateException if any required field is unset.
+         */
+        fun build(): AssistantListPageAsync =
+            AssistantListPageAsync(
+                checkRequired("service", service),
+                checkRequired("params", params),
+                checkRequired("response", response),
+            )
     }
 
     class AutoPager(private val firstPage: AssistantListPageAsync) {
@@ -101,4 +142,17 @@ private constructor(
             return forEach(values::add, executor).thenApply { values }
         }
     }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) {
+            return true
+        }
+
+        return /* spotless:off */ other is AssistantListPageAsync && service == other.service && params == other.params && response == other.response /* spotless:on */
+    }
+
+    override fun hashCode(): Int = /* spotless:off */ Objects.hash(service, params, response) /* spotless:on */
+
+    override fun toString() =
+        "AssistantListPageAsync{service=$service, params=$params, response=$response}"
 }

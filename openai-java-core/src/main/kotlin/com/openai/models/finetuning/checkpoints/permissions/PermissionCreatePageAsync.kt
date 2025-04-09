@@ -3,6 +3,7 @@
 package com.openai.models.finetuning.checkpoints.permissions
 
 import com.openai.core.JsonValue
+import com.openai.core.checkRequired
 import com.openai.services.async.finetuning.checkpoints.PermissionServiceAsync
 import java.util.Objects
 import java.util.Optional
@@ -11,21 +12,13 @@ import java.util.concurrent.Executor
 import java.util.function.Predicate
 import kotlin.jvm.optionals.getOrNull
 
-/**
- * **NOTE:** Calling this endpoint requires an [admin API key](../admin-api-keys).
- *
- * This enables organization owners to share fine-tuned models with other projects in their
- * organization.
- */
+/** @see [PermissionServiceAsync.create] */
 class PermissionCreatePageAsync
 private constructor(
-    private val permissionsService: PermissionServiceAsync,
+    private val service: PermissionServiceAsync,
     private val params: PermissionCreateParams,
     private val response: PermissionCreatePageResponse,
 ) {
-
-    /** Returns the response that this page was parsed from. */
-    fun response(): PermissionCreatePageResponse = response
 
     /**
      * Delegates to [PermissionCreatePageResponse], but gracefully handles missing data.
@@ -38,39 +31,82 @@ private constructor(
     /** @see [PermissionCreatePageResponse.object_] */
     fun object_(): JsonValue = response._object_()
 
-    override fun equals(other: Any?): Boolean {
-        if (this === other) {
-            return true
-        }
-
-        return /* spotless:off */ other is PermissionCreatePageAsync && permissionsService == other.permissionsService && params == other.params && response == other.response /* spotless:on */
-    }
-
-    override fun hashCode(): Int = /* spotless:off */ Objects.hash(permissionsService, params, response) /* spotless:on */
-
-    override fun toString() =
-        "PermissionCreatePageAsync{permissionsService=$permissionsService, params=$params, response=$response}"
-
     fun hasNextPage(): Boolean = data().isNotEmpty()
 
     fun getNextPageParams(): Optional<PermissionCreateParams> = Optional.empty()
 
-    fun getNextPage(): CompletableFuture<Optional<PermissionCreatePageAsync>> {
-        return getNextPageParams()
-            .map { permissionsService.create(it).thenApply { Optional.of(it) } }
+    fun getNextPage(): CompletableFuture<Optional<PermissionCreatePageAsync>> =
+        getNextPageParams()
+            .map { service.create(it).thenApply { Optional.of(it) } }
             .orElseGet { CompletableFuture.completedFuture(Optional.empty()) }
-    }
 
     fun autoPager(): AutoPager = AutoPager(this)
 
+    /** The parameters that were used to request this page. */
+    fun params(): PermissionCreateParams = params
+
+    /** The response that this page was parsed from. */
+    fun response(): PermissionCreatePageResponse = response
+
+    fun toBuilder() = Builder().from(this)
+
     companion object {
 
-        @JvmStatic
-        fun of(
-            permissionsService: PermissionServiceAsync,
-            params: PermissionCreateParams,
-            response: PermissionCreatePageResponse,
-        ) = PermissionCreatePageAsync(permissionsService, params, response)
+        /**
+         * Returns a mutable builder for constructing an instance of [PermissionCreatePageAsync].
+         *
+         * The following fields are required:
+         * ```java
+         * .service()
+         * .params()
+         * .response()
+         * ```
+         */
+        @JvmStatic fun builder() = Builder()
+    }
+
+    /** A builder for [PermissionCreatePageAsync]. */
+    class Builder internal constructor() {
+
+        private var service: PermissionServiceAsync? = null
+        private var params: PermissionCreateParams? = null
+        private var response: PermissionCreatePageResponse? = null
+
+        @JvmSynthetic
+        internal fun from(permissionCreatePageAsync: PermissionCreatePageAsync) = apply {
+            service = permissionCreatePageAsync.service
+            params = permissionCreatePageAsync.params
+            response = permissionCreatePageAsync.response
+        }
+
+        fun service(service: PermissionServiceAsync) = apply { this.service = service }
+
+        /** The parameters that were used to request this page. */
+        fun params(params: PermissionCreateParams) = apply { this.params = params }
+
+        /** The response that this page was parsed from. */
+        fun response(response: PermissionCreatePageResponse) = apply { this.response = response }
+
+        /**
+         * Returns an immutable instance of [PermissionCreatePageAsync].
+         *
+         * Further updates to this [Builder] will not mutate the returned instance.
+         *
+         * The following fields are required:
+         * ```java
+         * .service()
+         * .params()
+         * .response()
+         * ```
+         *
+         * @throws IllegalStateException if any required field is unset.
+         */
+        fun build(): PermissionCreatePageAsync =
+            PermissionCreatePageAsync(
+                checkRequired("service", service),
+                checkRequired("params", params),
+                checkRequired("response", response),
+            )
     }
 
     class AutoPager(private val firstPage: PermissionCreatePageAsync) {
@@ -101,4 +137,17 @@ private constructor(
             return forEach(values::add, executor).thenApply { values }
         }
     }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) {
+            return true
+        }
+
+        return /* spotless:off */ other is PermissionCreatePageAsync && service == other.service && params == other.params && response == other.response /* spotless:on */
+    }
+
+    override fun hashCode(): Int = /* spotless:off */ Objects.hash(service, params, response) /* spotless:on */
+
+    override fun toString() =
+        "PermissionCreatePageAsync{service=$service, params=$params, response=$response}"
 }

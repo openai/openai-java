@@ -300,7 +300,11 @@ class RunServiceAsyncImpl internal constructor(private val clientOptions: Client
                                 }
                             }
                             .let {
-                                RunListPageAsync.of(RunServiceAsyncImpl(clientOptions), params, it)
+                                RunListPageAsync.builder()
+                                    .service(RunServiceAsyncImpl(clientOptions))
+                                    .params(params)
+                                    .response(it)
+                                    .build()
                             }
                     }
                 }

@@ -2,6 +2,7 @@
 
 package com.openai.models.vectorstores
 
+import com.openai.core.checkRequired
 import com.openai.services.async.VectorStoreServiceAsync
 import java.util.Objects
 import java.util.Optional
@@ -10,16 +11,13 @@ import java.util.concurrent.Executor
 import java.util.function.Predicate
 import kotlin.jvm.optionals.getOrNull
 
-/** Returns a list of vector stores. */
+/** @see [VectorStoreServiceAsync.list] */
 class VectorStoreListPageAsync
 private constructor(
-    private val vectorStoresService: VectorStoreServiceAsync,
+    private val service: VectorStoreServiceAsync,
     private val params: VectorStoreListParams,
     private val response: VectorStoreListPageResponse,
 ) {
-
-    /** Returns the response that this page was parsed from. */
-    fun response(): VectorStoreListPageResponse = response
 
     /**
      * Delegates to [VectorStoreListPageResponse], but gracefully handles missing data.
@@ -35,19 +33,6 @@ private constructor(
      */
     fun hasMore(): Optional<Boolean> = response._hasMore().getOptional("has_more")
 
-    override fun equals(other: Any?): Boolean {
-        if (this === other) {
-            return true
-        }
-
-        return /* spotless:off */ other is VectorStoreListPageAsync && vectorStoresService == other.vectorStoresService && params == other.params && response == other.response /* spotless:on */
-    }
-
-    override fun hashCode(): Int = /* spotless:off */ Objects.hash(vectorStoresService, params, response) /* spotless:on */
-
-    override fun toString() =
-        "VectorStoreListPageAsync{vectorStoresService=$vectorStoresService, params=$params, response=$response}"
-
     fun hasNextPage(): Boolean = data().isNotEmpty()
 
     fun getNextPageParams(): Optional<VectorStoreListParams> {
@@ -58,22 +43,78 @@ private constructor(
         return Optional.of(params.toBuilder().after(data().last()._id().getOptional("id")).build())
     }
 
-    fun getNextPage(): CompletableFuture<Optional<VectorStoreListPageAsync>> {
-        return getNextPageParams()
-            .map { vectorStoresService.list(it).thenApply { Optional.of(it) } }
+    fun getNextPage(): CompletableFuture<Optional<VectorStoreListPageAsync>> =
+        getNextPageParams()
+            .map { service.list(it).thenApply { Optional.of(it) } }
             .orElseGet { CompletableFuture.completedFuture(Optional.empty()) }
-    }
 
     fun autoPager(): AutoPager = AutoPager(this)
 
+    /** The parameters that were used to request this page. */
+    fun params(): VectorStoreListParams = params
+
+    /** The response that this page was parsed from. */
+    fun response(): VectorStoreListPageResponse = response
+
+    fun toBuilder() = Builder().from(this)
+
     companion object {
 
-        @JvmStatic
-        fun of(
-            vectorStoresService: VectorStoreServiceAsync,
-            params: VectorStoreListParams,
-            response: VectorStoreListPageResponse,
-        ) = VectorStoreListPageAsync(vectorStoresService, params, response)
+        /**
+         * Returns a mutable builder for constructing an instance of [VectorStoreListPageAsync].
+         *
+         * The following fields are required:
+         * ```java
+         * .service()
+         * .params()
+         * .response()
+         * ```
+         */
+        @JvmStatic fun builder() = Builder()
+    }
+
+    /** A builder for [VectorStoreListPageAsync]. */
+    class Builder internal constructor() {
+
+        private var service: VectorStoreServiceAsync? = null
+        private var params: VectorStoreListParams? = null
+        private var response: VectorStoreListPageResponse? = null
+
+        @JvmSynthetic
+        internal fun from(vectorStoreListPageAsync: VectorStoreListPageAsync) = apply {
+            service = vectorStoreListPageAsync.service
+            params = vectorStoreListPageAsync.params
+            response = vectorStoreListPageAsync.response
+        }
+
+        fun service(service: VectorStoreServiceAsync) = apply { this.service = service }
+
+        /** The parameters that were used to request this page. */
+        fun params(params: VectorStoreListParams) = apply { this.params = params }
+
+        /** The response that this page was parsed from. */
+        fun response(response: VectorStoreListPageResponse) = apply { this.response = response }
+
+        /**
+         * Returns an immutable instance of [VectorStoreListPageAsync].
+         *
+         * Further updates to this [Builder] will not mutate the returned instance.
+         *
+         * The following fields are required:
+         * ```java
+         * .service()
+         * .params()
+         * .response()
+         * ```
+         *
+         * @throws IllegalStateException if any required field is unset.
+         */
+        fun build(): VectorStoreListPageAsync =
+            VectorStoreListPageAsync(
+                checkRequired("service", service),
+                checkRequired("params", params),
+                checkRequired("response", response),
+            )
     }
 
     class AutoPager(private val firstPage: VectorStoreListPageAsync) {
@@ -101,4 +142,17 @@ private constructor(
             return forEach(values::add, executor).thenApply { values }
         }
     }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) {
+            return true
+        }
+
+        return /* spotless:off */ other is VectorStoreListPageAsync && service == other.service && params == other.params && response == other.response /* spotless:on */
+    }
+
+    override fun hashCode(): Int = /* spotless:off */ Objects.hash(service, params, response) /* spotless:on */
+
+    override fun toString() =
+        "VectorStoreListPageAsync{service=$service, params=$params, response=$response}"
 }

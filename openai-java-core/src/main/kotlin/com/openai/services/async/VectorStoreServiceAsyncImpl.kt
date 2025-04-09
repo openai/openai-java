@@ -237,11 +237,11 @@ class VectorStoreServiceAsyncImpl internal constructor(private val clientOptions
                                 }
                             }
                             .let {
-                                VectorStoreListPageAsync.of(
-                                    VectorStoreServiceAsyncImpl(clientOptions),
-                                    params,
-                                    it,
-                                )
+                                VectorStoreListPageAsync.builder()
+                                    .service(VectorStoreServiceAsyncImpl(clientOptions))
+                                    .params(params)
+                                    .response(it)
+                                    .build()
                             }
                     }
                 }
@@ -307,11 +307,11 @@ class VectorStoreServiceAsyncImpl internal constructor(private val clientOptions
                                 }
                             }
                             .let {
-                                VectorStoreSearchPageAsync.of(
-                                    VectorStoreServiceAsyncImpl(clientOptions),
-                                    params,
-                                    it,
-                                )
+                                VectorStoreSearchPageAsync.builder()
+                                    .service(VectorStoreServiceAsyncImpl(clientOptions))
+                                    .params(params)
+                                    .response(it)
+                                    .build()
                             }
                     }
                 }

@@ -112,7 +112,13 @@ class OutputItemServiceImpl internal constructor(private val clientOptions: Clie
                             it.validate()
                         }
                     }
-                    .let { OutputItemListPage.of(OutputItemServiceImpl(clientOptions), params, it) }
+                    .let {
+                        OutputItemListPage.builder()
+                            .service(OutputItemServiceImpl(clientOptions))
+                            .params(params)
+                            .response(it)
+                            .build()
+                    }
             }
         }
     }

@@ -163,11 +163,11 @@ class FileServiceAsyncImpl internal constructor(private val clientOptions: Clien
                                 }
                             }
                             .let {
-                                FileListPageAsync.of(
-                                    FileServiceAsyncImpl(clientOptions),
-                                    params,
-                                    it,
-                                )
+                                FileListPageAsync.builder()
+                                    .service(FileServiceAsyncImpl(clientOptions))
+                                    .params(params)
+                                    .response(it)
+                                    .build()
                             }
                     }
                 }
