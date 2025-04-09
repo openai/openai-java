@@ -130,7 +130,13 @@ class BatchServiceImpl internal constructor(private val clientOptions: ClientOpt
                             it.validate()
                         }
                     }
-                    .let { BatchListPage.of(BatchServiceImpl(clientOptions), params, it) }
+                    .let {
+                        BatchListPage.builder()
+                            .service(BatchServiceImpl(clientOptions))
+                            .params(params)
+                            .response(it)
+                            .build()
+                    }
             }
         }
 

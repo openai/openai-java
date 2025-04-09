@@ -152,11 +152,11 @@ class BatchServiceAsyncImpl internal constructor(private val clientOptions: Clie
                                 }
                             }
                             .let {
-                                BatchListPageAsync.of(
-                                    BatchServiceAsyncImpl(clientOptions),
-                                    params,
-                                    it,
-                                )
+                                BatchListPageAsync.builder()
+                                    .service(BatchServiceAsyncImpl(clientOptions))
+                                    .params(params)
+                                    .response(it)
+                                    .build()
                             }
                     }
                 }

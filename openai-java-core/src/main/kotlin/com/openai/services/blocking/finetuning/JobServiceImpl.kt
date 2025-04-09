@@ -154,7 +154,13 @@ class JobServiceImpl internal constructor(private val clientOptions: ClientOptio
                             it.validate()
                         }
                     }
-                    .let { JobListPage.of(JobServiceImpl(clientOptions), params, it) }
+                    .let {
+                        JobListPage.builder()
+                            .service(JobServiceImpl(clientOptions))
+                            .params(params)
+                            .response(it)
+                            .build()
+                    }
             }
         }
 
@@ -209,7 +215,13 @@ class JobServiceImpl internal constructor(private val clientOptions: ClientOptio
                             it.validate()
                         }
                     }
-                    .let { JobListEventsPage.of(JobServiceImpl(clientOptions), params, it) }
+                    .let {
+                        JobListEventsPage.builder()
+                            .service(JobServiceImpl(clientOptions))
+                            .params(params)
+                            .response(it)
+                            .build()
+                    }
             }
         }
     }

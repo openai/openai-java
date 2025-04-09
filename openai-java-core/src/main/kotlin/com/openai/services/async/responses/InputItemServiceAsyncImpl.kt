@@ -66,11 +66,11 @@ class InputItemServiceAsyncImpl internal constructor(private val clientOptions: 
                                 }
                             }
                             .let {
-                                InputItemListPageAsync.of(
-                                    InputItemServiceAsyncImpl(clientOptions),
-                                    params,
-                                    it,
-                                )
+                                InputItemListPageAsync.builder()
+                                    .service(InputItemServiceAsyncImpl(clientOptions))
+                                    .params(params)
+                                    .response(it)
+                                    .build()
                             }
                     }
                 }

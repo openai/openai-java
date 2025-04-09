@@ -189,7 +189,13 @@ class EvalServiceImpl internal constructor(private val clientOptions: ClientOpti
                             it.validate()
                         }
                     }
-                    .let { EvalListPage.of(EvalServiceImpl(clientOptions), params, it) }
+                    .let {
+                        EvalListPage.builder()
+                            .service(EvalServiceImpl(clientOptions))
+                            .params(params)
+                            .response(it)
+                            .build()
+                    }
             }
         }
 

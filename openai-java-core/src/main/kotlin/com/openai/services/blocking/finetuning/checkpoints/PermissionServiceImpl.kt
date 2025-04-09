@@ -89,7 +89,11 @@ class PermissionServiceImpl internal constructor(private val clientOptions: Clie
                         }
                     }
                     .let {
-                        PermissionCreatePage.of(PermissionServiceImpl(clientOptions), params, it)
+                        PermissionCreatePage.builder()
+                            .service(PermissionServiceImpl(clientOptions))
+                            .params(params)
+                            .response(it)
+                            .build()
                     }
             }
         }

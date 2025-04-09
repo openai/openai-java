@@ -2,6 +2,7 @@
 
 package com.openai.models.evals.runs.outputitems
 
+import com.openai.core.checkRequired
 import com.openai.services.blocking.evals.runs.OutputItemService
 import java.util.Objects
 import java.util.Optional
@@ -9,16 +10,13 @@ import java.util.stream.Stream
 import java.util.stream.StreamSupport
 import kotlin.jvm.optionals.getOrNull
 
-/** Get a list of output items for an evaluation run. */
+/** @see [OutputItemService.list] */
 class OutputItemListPage
 private constructor(
-    private val outputItemsService: OutputItemService,
+    private val service: OutputItemService,
     private val params: OutputItemListParams,
     private val response: OutputItemListPageResponse,
 ) {
-
-    /** Returns the response that this page was parsed from. */
-    fun response(): OutputItemListPageResponse = response
 
     /**
      * Delegates to [OutputItemListPageResponse], but gracefully handles missing data.
@@ -35,19 +33,6 @@ private constructor(
      */
     fun hasMore(): Optional<Boolean> = response._hasMore().getOptional("has_more")
 
-    override fun equals(other: Any?): Boolean {
-        if (this === other) {
-            return true
-        }
-
-        return /* spotless:off */ other is OutputItemListPage && outputItemsService == other.outputItemsService && params == other.params && response == other.response /* spotless:on */
-    }
-
-    override fun hashCode(): Int = /* spotless:off */ Objects.hash(outputItemsService, params, response) /* spotless:on */
-
-    override fun toString() =
-        "OutputItemListPage{outputItemsService=$outputItemsService, params=$params, response=$response}"
-
     fun hasNextPage(): Boolean = data().isNotEmpty()
 
     fun getNextPageParams(): Optional<OutputItemListParams> {
@@ -58,20 +43,75 @@ private constructor(
         return Optional.of(params.toBuilder().after(data().last()._id().getOptional("id")).build())
     }
 
-    fun getNextPage(): Optional<OutputItemListPage> {
-        return getNextPageParams().map { outputItemsService.list(it) }
-    }
+    fun getNextPage(): Optional<OutputItemListPage> = getNextPageParams().map { service.list(it) }
 
     fun autoPager(): AutoPager = AutoPager(this)
 
+    /** The parameters that were used to request this page. */
+    fun params(): OutputItemListParams = params
+
+    /** The response that this page was parsed from. */
+    fun response(): OutputItemListPageResponse = response
+
+    fun toBuilder() = Builder().from(this)
+
     companion object {
 
-        @JvmStatic
-        fun of(
-            outputItemsService: OutputItemService,
-            params: OutputItemListParams,
-            response: OutputItemListPageResponse,
-        ) = OutputItemListPage(outputItemsService, params, response)
+        /**
+         * Returns a mutable builder for constructing an instance of [OutputItemListPage].
+         *
+         * The following fields are required:
+         * ```java
+         * .service()
+         * .params()
+         * .response()
+         * ```
+         */
+        @JvmStatic fun builder() = Builder()
+    }
+
+    /** A builder for [OutputItemListPage]. */
+    class Builder internal constructor() {
+
+        private var service: OutputItemService? = null
+        private var params: OutputItemListParams? = null
+        private var response: OutputItemListPageResponse? = null
+
+        @JvmSynthetic
+        internal fun from(outputItemListPage: OutputItemListPage) = apply {
+            service = outputItemListPage.service
+            params = outputItemListPage.params
+            response = outputItemListPage.response
+        }
+
+        fun service(service: OutputItemService) = apply { this.service = service }
+
+        /** The parameters that were used to request this page. */
+        fun params(params: OutputItemListParams) = apply { this.params = params }
+
+        /** The response that this page was parsed from. */
+        fun response(response: OutputItemListPageResponse) = apply { this.response = response }
+
+        /**
+         * Returns an immutable instance of [OutputItemListPage].
+         *
+         * Further updates to this [Builder] will not mutate the returned instance.
+         *
+         * The following fields are required:
+         * ```java
+         * .service()
+         * .params()
+         * .response()
+         * ```
+         *
+         * @throws IllegalStateException if any required field is unset.
+         */
+        fun build(): OutputItemListPage =
+            OutputItemListPage(
+                checkRequired("service", service),
+                checkRequired("params", params),
+                checkRequired("response", response),
+            )
     }
 
     class AutoPager(private val firstPage: OutputItemListPage) : Iterable<OutputItemListResponse> {
@@ -92,4 +132,17 @@ private constructor(
             return StreamSupport.stream(spliterator(), false)
         }
     }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) {
+            return true
+        }
+
+        return /* spotless:off */ other is OutputItemListPage && service == other.service && params == other.params && response == other.response /* spotless:on */
+    }
+
+    override fun hashCode(): Int = /* spotless:off */ Objects.hash(service, params, response) /* spotless:on */
+
+    override fun toString() =
+        "OutputItemListPage{service=$service, params=$params, response=$response}"
 }

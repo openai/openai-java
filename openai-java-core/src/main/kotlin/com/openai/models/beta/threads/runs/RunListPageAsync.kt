@@ -2,6 +2,7 @@
 
 package com.openai.models.beta.threads.runs
 
+import com.openai.core.checkRequired
 import com.openai.services.async.beta.threads.RunServiceAsync
 import java.util.Objects
 import java.util.Optional
@@ -10,16 +11,13 @@ import java.util.concurrent.Executor
 import java.util.function.Predicate
 import kotlin.jvm.optionals.getOrNull
 
-/** Returns a list of runs belonging to a thread. */
+/** @see [RunServiceAsync.list] */
 class RunListPageAsync
 private constructor(
-    private val runsService: RunServiceAsync,
+    private val service: RunServiceAsync,
     private val params: RunListParams,
     private val response: RunListPageResponse,
 ) {
-
-    /** Returns the response that this page was parsed from. */
-    fun response(): RunListPageResponse = response
 
     /**
      * Delegates to [RunListPageResponse], but gracefully handles missing data.
@@ -35,19 +33,6 @@ private constructor(
      */
     fun hasMore(): Optional<Boolean> = response._hasMore().getOptional("has_more")
 
-    override fun equals(other: Any?): Boolean {
-        if (this === other) {
-            return true
-        }
-
-        return /* spotless:off */ other is RunListPageAsync && runsService == other.runsService && params == other.params && response == other.response /* spotless:on */
-    }
-
-    override fun hashCode(): Int = /* spotless:off */ Objects.hash(runsService, params, response) /* spotless:on */
-
-    override fun toString() =
-        "RunListPageAsync{runsService=$runsService, params=$params, response=$response}"
-
     fun hasNextPage(): Boolean = data().isNotEmpty()
 
     fun getNextPageParams(): Optional<RunListParams> {
@@ -58,19 +43,78 @@ private constructor(
         return Optional.of(params.toBuilder().after(data().last()._id().getOptional("id")).build())
     }
 
-    fun getNextPage(): CompletableFuture<Optional<RunListPageAsync>> {
-        return getNextPageParams()
-            .map { runsService.list(it).thenApply { Optional.of(it) } }
+    fun getNextPage(): CompletableFuture<Optional<RunListPageAsync>> =
+        getNextPageParams()
+            .map { service.list(it).thenApply { Optional.of(it) } }
             .orElseGet { CompletableFuture.completedFuture(Optional.empty()) }
-    }
 
     fun autoPager(): AutoPager = AutoPager(this)
 
+    /** The parameters that were used to request this page. */
+    fun params(): RunListParams = params
+
+    /** The response that this page was parsed from. */
+    fun response(): RunListPageResponse = response
+
+    fun toBuilder() = Builder().from(this)
+
     companion object {
 
-        @JvmStatic
-        fun of(runsService: RunServiceAsync, params: RunListParams, response: RunListPageResponse) =
-            RunListPageAsync(runsService, params, response)
+        /**
+         * Returns a mutable builder for constructing an instance of [RunListPageAsync].
+         *
+         * The following fields are required:
+         * ```java
+         * .service()
+         * .params()
+         * .response()
+         * ```
+         */
+        @JvmStatic fun builder() = Builder()
+    }
+
+    /** A builder for [RunListPageAsync]. */
+    class Builder internal constructor() {
+
+        private var service: RunServiceAsync? = null
+        private var params: RunListParams? = null
+        private var response: RunListPageResponse? = null
+
+        @JvmSynthetic
+        internal fun from(runListPageAsync: RunListPageAsync) = apply {
+            service = runListPageAsync.service
+            params = runListPageAsync.params
+            response = runListPageAsync.response
+        }
+
+        fun service(service: RunServiceAsync) = apply { this.service = service }
+
+        /** The parameters that were used to request this page. */
+        fun params(params: RunListParams) = apply { this.params = params }
+
+        /** The response that this page was parsed from. */
+        fun response(response: RunListPageResponse) = apply { this.response = response }
+
+        /**
+         * Returns an immutable instance of [RunListPageAsync].
+         *
+         * Further updates to this [Builder] will not mutate the returned instance.
+         *
+         * The following fields are required:
+         * ```java
+         * .service()
+         * .params()
+         * .response()
+         * ```
+         *
+         * @throws IllegalStateException if any required field is unset.
+         */
+        fun build(): RunListPageAsync =
+            RunListPageAsync(
+                checkRequired("service", service),
+                checkRequired("params", params),
+                checkRequired("response", response),
+            )
     }
 
     class AutoPager(private val firstPage: RunListPageAsync) {
@@ -98,4 +142,17 @@ private constructor(
             return forEach(values::add, executor).thenApply { values }
         }
     }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) {
+            return true
+        }
+
+        return /* spotless:off */ other is RunListPageAsync && service == other.service && params == other.params && response == other.response /* spotless:on */
+    }
+
+    override fun hashCode(): Int = /* spotless:off */ Objects.hash(service, params, response) /* spotless:on */
+
+    override fun toString() =
+        "RunListPageAsync{service=$service, params=$params, response=$response}"
 }

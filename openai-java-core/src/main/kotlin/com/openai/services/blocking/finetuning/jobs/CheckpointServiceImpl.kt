@@ -63,7 +63,13 @@ class CheckpointServiceImpl internal constructor(private val clientOptions: Clie
                             it.validate()
                         }
                     }
-                    .let { CheckpointListPage.of(CheckpointServiceImpl(clientOptions), params, it) }
+                    .let {
+                        CheckpointListPage.builder()
+                            .service(CheckpointServiceImpl(clientOptions))
+                            .params(params)
+                            .response(it)
+                            .build()
+                    }
             }
         }
     }

@@ -2,6 +2,7 @@
 
 package com.openai.models.finetuning.jobs.checkpoints
 
+import com.openai.core.checkRequired
 import com.openai.services.async.finetuning.jobs.CheckpointServiceAsync
 import java.util.Objects
 import java.util.Optional
@@ -10,16 +11,13 @@ import java.util.concurrent.Executor
 import java.util.function.Predicate
 import kotlin.jvm.optionals.getOrNull
 
-/** List checkpoints for a fine-tuning job. */
+/** @see [CheckpointServiceAsync.list] */
 class CheckpointListPageAsync
 private constructor(
-    private val checkpointsService: CheckpointServiceAsync,
+    private val service: CheckpointServiceAsync,
     private val params: CheckpointListParams,
     private val response: CheckpointListPageResponse,
 ) {
-
-    /** Returns the response that this page was parsed from. */
-    fun response(): CheckpointListPageResponse = response
 
     /**
      * Delegates to [CheckpointListPageResponse], but gracefully handles missing data.
@@ -36,19 +34,6 @@ private constructor(
      */
     fun hasMore(): Optional<Boolean> = response._hasMore().getOptional("has_more")
 
-    override fun equals(other: Any?): Boolean {
-        if (this === other) {
-            return true
-        }
-
-        return /* spotless:off */ other is CheckpointListPageAsync && checkpointsService == other.checkpointsService && params == other.params && response == other.response /* spotless:on */
-    }
-
-    override fun hashCode(): Int = /* spotless:off */ Objects.hash(checkpointsService, params, response) /* spotless:on */
-
-    override fun toString() =
-        "CheckpointListPageAsync{checkpointsService=$checkpointsService, params=$params, response=$response}"
-
     fun hasNextPage(): Boolean = data().isNotEmpty()
 
     fun getNextPageParams(): Optional<CheckpointListParams> {
@@ -59,22 +44,78 @@ private constructor(
         return Optional.of(params.toBuilder().after(data().last()._id().getOptional("id")).build())
     }
 
-    fun getNextPage(): CompletableFuture<Optional<CheckpointListPageAsync>> {
-        return getNextPageParams()
-            .map { checkpointsService.list(it).thenApply { Optional.of(it) } }
+    fun getNextPage(): CompletableFuture<Optional<CheckpointListPageAsync>> =
+        getNextPageParams()
+            .map { service.list(it).thenApply { Optional.of(it) } }
             .orElseGet { CompletableFuture.completedFuture(Optional.empty()) }
-    }
 
     fun autoPager(): AutoPager = AutoPager(this)
 
+    /** The parameters that were used to request this page. */
+    fun params(): CheckpointListParams = params
+
+    /** The response that this page was parsed from. */
+    fun response(): CheckpointListPageResponse = response
+
+    fun toBuilder() = Builder().from(this)
+
     companion object {
 
-        @JvmStatic
-        fun of(
-            checkpointsService: CheckpointServiceAsync,
-            params: CheckpointListParams,
-            response: CheckpointListPageResponse,
-        ) = CheckpointListPageAsync(checkpointsService, params, response)
+        /**
+         * Returns a mutable builder for constructing an instance of [CheckpointListPageAsync].
+         *
+         * The following fields are required:
+         * ```java
+         * .service()
+         * .params()
+         * .response()
+         * ```
+         */
+        @JvmStatic fun builder() = Builder()
+    }
+
+    /** A builder for [CheckpointListPageAsync]. */
+    class Builder internal constructor() {
+
+        private var service: CheckpointServiceAsync? = null
+        private var params: CheckpointListParams? = null
+        private var response: CheckpointListPageResponse? = null
+
+        @JvmSynthetic
+        internal fun from(checkpointListPageAsync: CheckpointListPageAsync) = apply {
+            service = checkpointListPageAsync.service
+            params = checkpointListPageAsync.params
+            response = checkpointListPageAsync.response
+        }
+
+        fun service(service: CheckpointServiceAsync) = apply { this.service = service }
+
+        /** The parameters that were used to request this page. */
+        fun params(params: CheckpointListParams) = apply { this.params = params }
+
+        /** The response that this page was parsed from. */
+        fun response(response: CheckpointListPageResponse) = apply { this.response = response }
+
+        /**
+         * Returns an immutable instance of [CheckpointListPageAsync].
+         *
+         * Further updates to this [Builder] will not mutate the returned instance.
+         *
+         * The following fields are required:
+         * ```java
+         * .service()
+         * .params()
+         * .response()
+         * ```
+         *
+         * @throws IllegalStateException if any required field is unset.
+         */
+        fun build(): CheckpointListPageAsync =
+            CheckpointListPageAsync(
+                checkRequired("service", service),
+                checkRequired("params", params),
+                checkRequired("response", response),
+            )
     }
 
     class AutoPager(private val firstPage: CheckpointListPageAsync) {
@@ -105,4 +146,17 @@ private constructor(
             return forEach(values::add, executor).thenApply { values }
         }
     }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) {
+            return true
+        }
+
+        return /* spotless:off */ other is CheckpointListPageAsync && service == other.service && params == other.params && response == other.response /* spotless:on */
+    }
+
+    override fun hashCode(): Int = /* spotless:off */ Objects.hash(service, params, response) /* spotless:on */
+
+    override fun toString() =
+        "CheckpointListPageAsync{service=$service, params=$params, response=$response}"
 }

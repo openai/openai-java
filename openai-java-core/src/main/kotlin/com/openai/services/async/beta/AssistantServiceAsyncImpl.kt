@@ -201,11 +201,11 @@ class AssistantServiceAsyncImpl internal constructor(private val clientOptions: 
                                 }
                             }
                             .let {
-                                AssistantListPageAsync.of(
-                                    AssistantServiceAsyncImpl(clientOptions),
-                                    params,
-                                    it,
-                                )
+                                AssistantListPageAsync.builder()
+                                    .service(AssistantServiceAsyncImpl(clientOptions))
+                                    .params(params)
+                                    .response(it)
+                                    .build()
                             }
                     }
                 }

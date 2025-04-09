@@ -92,11 +92,11 @@ class PermissionServiceAsyncImpl internal constructor(private val clientOptions:
                                 }
                             }
                             .let {
-                                PermissionCreatePageAsync.of(
-                                    PermissionServiceAsyncImpl(clientOptions),
-                                    params,
-                                    it,
-                                )
+                                PermissionCreatePageAsync.builder()
+                                    .service(PermissionServiceAsyncImpl(clientOptions))
+                                    .params(params)
+                                    .response(it)
+                                    .build()
                             }
                     }
                 }

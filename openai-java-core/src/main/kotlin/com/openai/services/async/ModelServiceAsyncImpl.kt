@@ -115,11 +115,11 @@ class ModelServiceAsyncImpl internal constructor(private val clientOptions: Clie
                                 }
                             }
                             .let {
-                                ModelListPageAsync.of(
-                                    ModelServiceAsyncImpl(clientOptions),
-                                    params,
-                                    it,
-                                )
+                                ModelListPageAsync.builder()
+                                    .service(ModelServiceAsyncImpl(clientOptions))
+                                    .params(params)
+                                    .response(it)
+                                    .build()
                             }
                     }
                 }

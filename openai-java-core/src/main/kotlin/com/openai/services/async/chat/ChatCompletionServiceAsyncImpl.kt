@@ -264,11 +264,11 @@ internal constructor(private val clientOptions: ClientOptions) : ChatCompletionS
                                 }
                             }
                             .let {
-                                ChatCompletionListPageAsync.of(
-                                    ChatCompletionServiceAsyncImpl(clientOptions),
-                                    params,
-                                    it,
-                                )
+                                ChatCompletionListPageAsync.builder()
+                                    .service(ChatCompletionServiceAsyncImpl(clientOptions))
+                                    .params(params)
+                                    .response(it)
+                                    .build()
                             }
                     }
                 }
