@@ -1,12 +1,5 @@
 # OpenAI Java API Library
 
-> [!NOTE]  
-> The OpenAI Java API Library is currently in _beta_.
->
-> There may be minor breaking changes.
->
-> Have thoughts or feedback? [File an issue](https://github.com/openai/openai-java/issues/new) or comment on [this thread](https://community.openai.com/t/your-feedback-requested-java-sdk/1061029).
-
 <!-- x-release-please-start-version -->
 
 [![Maven Central](https://img.shields.io/maven-central/v/com.openai/openai-java)](https://central.sonatype.com/artifact/com.openai/openai-java/0.45.0)
