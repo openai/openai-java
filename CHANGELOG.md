@@ -1,5 +1,18 @@
 # Changelog
 
+## 1.0.0 (2025-04-09)
+
+Full Changelog: [v0.45.0...v1.0.0](https://github.com/openai/openai-java/compare/v0.45.0...v1.0.0)
+
+### Chores
+
+* workaround build errors ([6c6faa0](https://github.com/openai/openai-java/commit/6c6faa0e8273f10ed9d85378f4cb9d2ef8fc360c))
+
+
+### Documentation
+
+* remove beta readme note ([829fb0a](https://github.com/openai/openai-java/commit/829fb0a8a307659e00defc3a6c39e72b7cf4dab7))
+
 ## 0.45.0 (2025-04-09)
 
 Full Changelog: [v0.44.5...v0.45.0](https://github.com/openai/openai-java/compare/v0.44.5...v0.45.0)
