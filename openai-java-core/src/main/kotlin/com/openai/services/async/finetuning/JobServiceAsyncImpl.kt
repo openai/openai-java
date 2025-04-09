@@ -19,8 +19,10 @@ import com.openai.models.finetuning.jobs.FineTuningJob
 import com.openai.models.finetuning.jobs.JobCancelParams
 import com.openai.models.finetuning.jobs.JobCreateParams
 import com.openai.models.finetuning.jobs.JobListEventsPageAsync
+import com.openai.models.finetuning.jobs.JobListEventsPageResponse
 import com.openai.models.finetuning.jobs.JobListEventsParams
 import com.openai.models.finetuning.jobs.JobListPageAsync
+import com.openai.models.finetuning.jobs.JobListPageResponse
 import com.openai.models.finetuning.jobs.JobListParams
 import com.openai.models.finetuning.jobs.JobRetrieveParams
 import com.openai.services.async.finetuning.jobs.CheckpointServiceAsync
@@ -147,8 +149,8 @@ class JobServiceAsyncImpl internal constructor(private val clientOptions: Client
                 }
         }
 
-        private val listHandler: Handler<JobListPageAsync.Response> =
-            jsonHandler<JobListPageAsync.Response>(clientOptions.jsonMapper)
+        private val listHandler: Handler<JobListPageResponse> =
+            jsonHandler<JobListPageResponse>(clientOptions.jsonMapper)
                 .withErrorHandler(errorHandler)
 
         override fun list(
@@ -210,8 +212,8 @@ class JobServiceAsyncImpl internal constructor(private val clientOptions: Client
                 }
         }
 
-        private val listEventsHandler: Handler<JobListEventsPageAsync.Response> =
-            jsonHandler<JobListEventsPageAsync.Response>(clientOptions.jsonMapper)
+        private val listEventsHandler: Handler<JobListEventsPageResponse> =
+            jsonHandler<JobListEventsPageResponse>(clientOptions.jsonMapper)
                 .withErrorHandler(errorHandler)
 
         override fun listEvents(

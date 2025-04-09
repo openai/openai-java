@@ -21,6 +21,7 @@ import com.openai.models.beta.threads.messages.MessageCreateParams
 import com.openai.models.beta.threads.messages.MessageDeleteParams
 import com.openai.models.beta.threads.messages.MessageDeleted
 import com.openai.models.beta.threads.messages.MessageListPage
+import com.openai.models.beta.threads.messages.MessageListPageResponse
 import com.openai.models.beta.threads.messages.MessageListParams
 import com.openai.models.beta.threads.messages.MessageRetrieveParams
 import com.openai.models.beta.threads.messages.MessageUpdateParams
@@ -160,8 +161,8 @@ class MessageServiceImpl internal constructor(private val clientOptions: ClientO
             }
         }
 
-        private val listHandler: Handler<MessageListPage.Response> =
-            jsonHandler<MessageListPage.Response>(clientOptions.jsonMapper)
+        private val listHandler: Handler<MessageListPageResponse> =
+            jsonHandler<MessageListPageResponse>(clientOptions.jsonMapper)
                 .withErrorHandler(errorHandler)
 
         override fun list(

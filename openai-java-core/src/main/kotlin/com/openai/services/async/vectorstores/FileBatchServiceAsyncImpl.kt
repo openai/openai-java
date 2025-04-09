@@ -19,6 +19,7 @@ import com.openai.models.ErrorObject
 import com.openai.models.vectorstores.filebatches.FileBatchCancelParams
 import com.openai.models.vectorstores.filebatches.FileBatchCreateParams
 import com.openai.models.vectorstores.filebatches.FileBatchListFilesPageAsync
+import com.openai.models.vectorstores.filebatches.FileBatchListFilesPageResponse
 import com.openai.models.vectorstores.filebatches.FileBatchListFilesParams
 import com.openai.models.vectorstores.filebatches.FileBatchRetrieveParams
 import com.openai.models.vectorstores.filebatches.VectorStoreFileBatch
@@ -177,8 +178,8 @@ class FileBatchServiceAsyncImpl internal constructor(private val clientOptions: 
                 }
         }
 
-        private val listFilesHandler: Handler<FileBatchListFilesPageAsync.Response> =
-            jsonHandler<FileBatchListFilesPageAsync.Response>(clientOptions.jsonMapper)
+        private val listFilesHandler: Handler<FileBatchListFilesPageResponse> =
+            jsonHandler<FileBatchListFilesPageResponse>(clientOptions.jsonMapper)
                 .withErrorHandler(errorHandler)
 
         override fun listFiles(

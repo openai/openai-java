@@ -21,6 +21,7 @@ import com.openai.models.beta.assistants.AssistantCreateParams
 import com.openai.models.beta.assistants.AssistantDeleteParams
 import com.openai.models.beta.assistants.AssistantDeleted
 import com.openai.models.beta.assistants.AssistantListPageAsync
+import com.openai.models.beta.assistants.AssistantListPageResponse
 import com.openai.models.beta.assistants.AssistantListParams
 import com.openai.models.beta.assistants.AssistantRetrieveParams
 import com.openai.models.beta.assistants.AssistantUpdateParams
@@ -176,8 +177,8 @@ class AssistantServiceAsyncImpl internal constructor(private val clientOptions: 
                 }
         }
 
-        private val listHandler: Handler<AssistantListPageAsync.Response> =
-            jsonHandler<AssistantListPageAsync.Response>(clientOptions.jsonMapper)
+        private val listHandler: Handler<AssistantListPageResponse> =
+            jsonHandler<AssistantListPageResponse>(clientOptions.jsonMapper)
                 .withErrorHandler(errorHandler)
 
         override fun list(

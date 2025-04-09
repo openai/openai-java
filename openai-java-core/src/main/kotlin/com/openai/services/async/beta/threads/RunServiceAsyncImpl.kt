@@ -28,6 +28,7 @@ import com.openai.models.beta.threads.runs.Run
 import com.openai.models.beta.threads.runs.RunCancelParams
 import com.openai.models.beta.threads.runs.RunCreateParams
 import com.openai.models.beta.threads.runs.RunListPageAsync
+import com.openai.models.beta.threads.runs.RunListPageResponse
 import com.openai.models.beta.threads.runs.RunListParams
 import com.openai.models.beta.threads.runs.RunRetrieveParams
 import com.openai.models.beta.threads.runs.RunSubmitToolOutputsParams
@@ -271,8 +272,8 @@ class RunServiceAsyncImpl internal constructor(private val clientOptions: Client
                 }
         }
 
-        private val listHandler: Handler<RunListPageAsync.Response> =
-            jsonHandler<RunListPageAsync.Response>(clientOptions.jsonMapper)
+        private val listHandler: Handler<RunListPageResponse> =
+            jsonHandler<RunListPageResponse>(clientOptions.jsonMapper)
                 .withErrorHandler(errorHandler)
 
         override fun list(

@@ -16,6 +16,7 @@ import com.openai.core.http.parseable
 import com.openai.core.prepare
 import com.openai.models.ErrorObject
 import com.openai.models.finetuning.checkpoints.permissions.PermissionCreatePage
+import com.openai.models.finetuning.checkpoints.permissions.PermissionCreatePageResponse
 import com.openai.models.finetuning.checkpoints.permissions.PermissionCreateParams
 import com.openai.models.finetuning.checkpoints.permissions.PermissionDeleteParams
 import com.openai.models.finetuning.checkpoints.permissions.PermissionDeleteResponse
@@ -57,8 +58,8 @@ class PermissionServiceImpl internal constructor(private val clientOptions: Clie
 
         private val errorHandler: Handler<ErrorObject?> = errorHandler(clientOptions.jsonMapper)
 
-        private val createHandler: Handler<PermissionCreatePage.Response> =
-            jsonHandler<PermissionCreatePage.Response>(clientOptions.jsonMapper)
+        private val createHandler: Handler<PermissionCreatePageResponse> =
+            jsonHandler<PermissionCreatePageResponse>(clientOptions.jsonMapper)
                 .withErrorHandler(errorHandler)
 
         override fun create(

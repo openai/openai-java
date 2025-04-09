@@ -15,6 +15,7 @@ import com.openai.core.http.parseable
 import com.openai.core.prepareAsync
 import com.openai.models.ErrorObject
 import com.openai.models.evals.runs.outputitems.OutputItemListPageAsync
+import com.openai.models.evals.runs.outputitems.OutputItemListPageResponse
 import com.openai.models.evals.runs.outputitems.OutputItemListParams
 import com.openai.models.evals.runs.outputitems.OutputItemRetrieveParams
 import com.openai.models.evals.runs.outputitems.OutputItemRetrieveResponse
@@ -85,8 +86,8 @@ class OutputItemServiceAsyncImpl internal constructor(private val clientOptions:
                 }
         }
 
-        private val listHandler: Handler<OutputItemListPageAsync.Response> =
-            jsonHandler<OutputItemListPageAsync.Response>(clientOptions.jsonMapper)
+        private val listHandler: Handler<OutputItemListPageResponse> =
+            jsonHandler<OutputItemListPageResponse>(clientOptions.jsonMapper)
                 .withErrorHandler(errorHandler)
 
         override fun list(

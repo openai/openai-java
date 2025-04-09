@@ -22,6 +22,7 @@ import com.openai.models.files.FileCreateParams
 import com.openai.models.files.FileDeleteParams
 import com.openai.models.files.FileDeleted
 import com.openai.models.files.FileListPageAsync
+import com.openai.models.files.FileListPageResponse
 import com.openai.models.files.FileListParams
 import com.openai.models.files.FileObject
 import com.openai.models.files.FileRetrieveParams
@@ -135,8 +136,8 @@ class FileServiceAsyncImpl internal constructor(private val clientOptions: Clien
                 }
         }
 
-        private val listHandler: Handler<FileListPageAsync.Response> =
-            jsonHandler<FileListPageAsync.Response>(clientOptions.jsonMapper)
+        private val listHandler: Handler<FileListPageResponse> =
+            jsonHandler<FileListPageResponse>(clientOptions.jsonMapper)
                 .withErrorHandler(errorHandler)
 
         override fun list(

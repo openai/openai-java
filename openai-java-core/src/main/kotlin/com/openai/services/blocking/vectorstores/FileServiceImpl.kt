@@ -17,10 +17,12 @@ import com.openai.core.http.parseable
 import com.openai.core.prepare
 import com.openai.models.ErrorObject
 import com.openai.models.vectorstores.files.FileContentPage
+import com.openai.models.vectorstores.files.FileContentPageResponse
 import com.openai.models.vectorstores.files.FileContentParams
 import com.openai.models.vectorstores.files.FileCreateParams
 import com.openai.models.vectorstores.files.FileDeleteParams
 import com.openai.models.vectorstores.files.FileListPage
+import com.openai.models.vectorstores.files.FileListPageResponse
 import com.openai.models.vectorstores.files.FileListParams
 import com.openai.models.vectorstores.files.FileRetrieveParams
 import com.openai.models.vectorstores.files.FileUpdateParams
@@ -171,8 +173,8 @@ class FileServiceImpl internal constructor(private val clientOptions: ClientOpti
             }
         }
 
-        private val listHandler: Handler<FileListPage.Response> =
-            jsonHandler<FileListPage.Response>(clientOptions.jsonMapper)
+        private val listHandler: Handler<FileListPageResponse> =
+            jsonHandler<FileListPageResponse>(clientOptions.jsonMapper)
                 .withErrorHandler(errorHandler)
 
         override fun list(
@@ -234,8 +236,8 @@ class FileServiceImpl internal constructor(private val clientOptions: ClientOpti
             }
         }
 
-        private val contentHandler: Handler<FileContentPage.Response> =
-            jsonHandler<FileContentPage.Response>(clientOptions.jsonMapper)
+        private val contentHandler: Handler<FileContentPageResponse> =
+            jsonHandler<FileContentPageResponse>(clientOptions.jsonMapper)
                 .withErrorHandler(errorHandler)
 
         override fun content(

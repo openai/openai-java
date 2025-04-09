@@ -22,6 +22,7 @@ import com.openai.models.evals.runs.RunCreateResponse
 import com.openai.models.evals.runs.RunDeleteParams
 import com.openai.models.evals.runs.RunDeleteResponse
 import com.openai.models.evals.runs.RunListPageAsync
+import com.openai.models.evals.runs.RunListPageResponse
 import com.openai.models.evals.runs.RunListParams
 import com.openai.models.evals.runs.RunRetrieveParams
 import com.openai.models.evals.runs.RunRetrieveResponse
@@ -150,8 +151,8 @@ class RunServiceAsyncImpl internal constructor(private val clientOptions: Client
                 }
         }
 
-        private val listHandler: Handler<RunListPageAsync.Response> =
-            jsonHandler<RunListPageAsync.Response>(clientOptions.jsonMapper)
+        private val listHandler: Handler<RunListPageResponse> =
+            jsonHandler<RunListPageResponse>(clientOptions.jsonMapper)
                 .withErrorHandler(errorHandler)
 
         override fun list(

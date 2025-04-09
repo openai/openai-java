@@ -16,6 +16,7 @@ import com.openai.core.http.parseable
 import com.openai.core.prepareAsync
 import com.openai.models.ErrorObject
 import com.openai.models.finetuning.checkpoints.permissions.PermissionCreatePageAsync
+import com.openai.models.finetuning.checkpoints.permissions.PermissionCreatePageResponse
 import com.openai.models.finetuning.checkpoints.permissions.PermissionCreateParams
 import com.openai.models.finetuning.checkpoints.permissions.PermissionDeleteParams
 import com.openai.models.finetuning.checkpoints.permissions.PermissionDeleteResponse
@@ -58,8 +59,8 @@ class PermissionServiceAsyncImpl internal constructor(private val clientOptions:
 
         private val errorHandler: Handler<ErrorObject?> = errorHandler(clientOptions.jsonMapper)
 
-        private val createHandler: Handler<PermissionCreatePageAsync.Response> =
-            jsonHandler<PermissionCreatePageAsync.Response>(clientOptions.jsonMapper)
+        private val createHandler: Handler<PermissionCreatePageResponse> =
+            jsonHandler<PermissionCreatePageResponse>(clientOptions.jsonMapper)
                 .withErrorHandler(errorHandler)
 
         override fun create(
