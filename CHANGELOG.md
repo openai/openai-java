@@ -1,5 +1,24 @@
 # Changelog
 
+## 1.2.0 (2025-04-09)
+
+Full Changelog: [v1.1.1...v1.2.0](https://github.com/openai/openai-java/compare/v1.1.1...v1.2.0)
+
+### Features
+
+* **client:** make pagination robust to missing data ([cbccde5](https://github.com/openai/openai-java/commit/cbccde5bbbea40289a7143d40ce5e8c7ac7643ff))
+
+
+### Documentation
+
+* add comments for page methods ([cbccde5](https://github.com/openai/openai-java/commit/cbccde5bbbea40289a7143d40ce5e8c7ac7643ff))
+
+
+### Refactors
+
+* **client:** deduplicate page response classes ([#433](https://github.com/openai/openai-java/issues/433)) ([cbccde5](https://github.com/openai/openai-java/commit/cbccde5bbbea40289a7143d40ce5e8c7ac7643ff))
+* **client:** migrate pages to builder pattern ([#435](https://github.com/openai/openai-java/issues/435)) ([8cb8878](https://github.com/openai/openai-java/commit/8cb8878becd07e31844f981bafd147c630606c07))
+
 ## 1.1.1 (2025-04-09)
 
 Full Changelog: [v1.1.0...v1.1.1](https://github.com/openai/openai-java/compare/v1.1.0...v1.1.1)
