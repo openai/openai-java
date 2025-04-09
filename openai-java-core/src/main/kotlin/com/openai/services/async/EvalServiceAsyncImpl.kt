@@ -20,6 +20,7 @@ import com.openai.models.evals.EvalCreateResponse
 import com.openai.models.evals.EvalDeleteParams
 import com.openai.models.evals.EvalDeleteResponse
 import com.openai.models.evals.EvalListPageAsync
+import com.openai.models.evals.EvalListPageResponse
 import com.openai.models.evals.EvalListParams
 import com.openai.models.evals.EvalRetrieveParams
 import com.openai.models.evals.EvalRetrieveResponse
@@ -178,8 +179,8 @@ class EvalServiceAsyncImpl internal constructor(private val clientOptions: Clien
                 }
         }
 
-        private val listHandler: Handler<EvalListPageAsync.Response> =
-            jsonHandler<EvalListPageAsync.Response>(clientOptions.jsonMapper)
+        private val listHandler: Handler<EvalListPageResponse> =
+            jsonHandler<EvalListPageResponse>(clientOptions.jsonMapper)
                 .withErrorHandler(errorHandler)
 
         override fun list(

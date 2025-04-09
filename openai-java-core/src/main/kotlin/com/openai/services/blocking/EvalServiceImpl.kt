@@ -20,6 +20,7 @@ import com.openai.models.evals.EvalCreateResponse
 import com.openai.models.evals.EvalDeleteParams
 import com.openai.models.evals.EvalDeleteResponse
 import com.openai.models.evals.EvalListPage
+import com.openai.models.evals.EvalListPageResponse
 import com.openai.models.evals.EvalListParams
 import com.openai.models.evals.EvalRetrieveParams
 import com.openai.models.evals.EvalRetrieveResponse
@@ -164,8 +165,8 @@ class EvalServiceImpl internal constructor(private val clientOptions: ClientOpti
             }
         }
 
-        private val listHandler: Handler<EvalListPage.Response> =
-            jsonHandler<EvalListPage.Response>(clientOptions.jsonMapper)
+        private val listHandler: Handler<EvalListPageResponse> =
+            jsonHandler<EvalListPageResponse>(clientOptions.jsonMapper)
                 .withErrorHandler(errorHandler)
 
         override fun list(

@@ -26,6 +26,7 @@ import com.openai.models.chat.completions.ChatCompletionCreateParams
 import com.openai.models.chat.completions.ChatCompletionDeleteParams
 import com.openai.models.chat.completions.ChatCompletionDeleted
 import com.openai.models.chat.completions.ChatCompletionListPage
+import com.openai.models.chat.completions.ChatCompletionListPageResponse
 import com.openai.models.chat.completions.ChatCompletionListParams
 import com.openai.models.chat.completions.ChatCompletionRetrieveParams
 import com.openai.models.chat.completions.ChatCompletionUpdateParams
@@ -218,8 +219,8 @@ class ChatCompletionServiceImpl internal constructor(private val clientOptions: 
             }
         }
 
-        private val listHandler: Handler<ChatCompletionListPage.Response> =
-            jsonHandler<ChatCompletionListPage.Response>(clientOptions.jsonMapper)
+        private val listHandler: Handler<ChatCompletionListPageResponse> =
+            jsonHandler<ChatCompletionListPageResponse>(clientOptions.jsonMapper)
                 .withErrorHandler(errorHandler)
 
         override fun list(

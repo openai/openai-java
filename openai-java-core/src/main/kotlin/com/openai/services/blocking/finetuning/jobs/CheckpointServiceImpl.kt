@@ -15,6 +15,7 @@ import com.openai.core.http.parseable
 import com.openai.core.prepare
 import com.openai.models.ErrorObject
 import com.openai.models.finetuning.jobs.checkpoints.CheckpointListPage
+import com.openai.models.finetuning.jobs.checkpoints.CheckpointListPageResponse
 import com.openai.models.finetuning.jobs.checkpoints.CheckpointListParams
 
 class CheckpointServiceImpl internal constructor(private val clientOptions: ClientOptions) :
@@ -38,8 +39,8 @@ class CheckpointServiceImpl internal constructor(private val clientOptions: Clie
 
         private val errorHandler: Handler<ErrorObject?> = errorHandler(clientOptions.jsonMapper)
 
-        private val listHandler: Handler<CheckpointListPage.Response> =
-            jsonHandler<CheckpointListPage.Response>(clientOptions.jsonMapper)
+        private val listHandler: Handler<CheckpointListPageResponse> =
+            jsonHandler<CheckpointListPageResponse>(clientOptions.jsonMapper)
                 .withErrorHandler(errorHandler)
 
         override fun list(

@@ -17,10 +17,12 @@ import com.openai.core.http.parseable
 import com.openai.core.prepareAsync
 import com.openai.models.ErrorObject
 import com.openai.models.vectorstores.files.FileContentPageAsync
+import com.openai.models.vectorstores.files.FileContentPageResponse
 import com.openai.models.vectorstores.files.FileContentParams
 import com.openai.models.vectorstores.files.FileCreateParams
 import com.openai.models.vectorstores.files.FileDeleteParams
 import com.openai.models.vectorstores.files.FileListPageAsync
+import com.openai.models.vectorstores.files.FileListPageResponse
 import com.openai.models.vectorstores.files.FileListParams
 import com.openai.models.vectorstores.files.FileRetrieveParams
 import com.openai.models.vectorstores.files.FileUpdateParams
@@ -191,8 +193,8 @@ class FileServiceAsyncImpl internal constructor(private val clientOptions: Clien
                 }
         }
 
-        private val listHandler: Handler<FileListPageAsync.Response> =
-            jsonHandler<FileListPageAsync.Response>(clientOptions.jsonMapper)
+        private val listHandler: Handler<FileListPageResponse> =
+            jsonHandler<FileListPageResponse>(clientOptions.jsonMapper)
                 .withErrorHandler(errorHandler)
 
         override fun list(
@@ -266,8 +268,8 @@ class FileServiceAsyncImpl internal constructor(private val clientOptions: Clien
                 }
         }
 
-        private val contentHandler: Handler<FileContentPageAsync.Response> =
-            jsonHandler<FileContentPageAsync.Response>(clientOptions.jsonMapper)
+        private val contentHandler: Handler<FileContentPageResponse> =
+            jsonHandler<FileContentPageResponse>(clientOptions.jsonMapper)
                 .withErrorHandler(errorHandler)
 
         override fun content(

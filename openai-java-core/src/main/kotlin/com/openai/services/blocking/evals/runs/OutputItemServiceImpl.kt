@@ -15,6 +15,7 @@ import com.openai.core.http.parseable
 import com.openai.core.prepare
 import com.openai.models.ErrorObject
 import com.openai.models.evals.runs.outputitems.OutputItemListPage
+import com.openai.models.evals.runs.outputitems.OutputItemListPageResponse
 import com.openai.models.evals.runs.outputitems.OutputItemListParams
 import com.openai.models.evals.runs.outputitems.OutputItemRetrieveParams
 import com.openai.models.evals.runs.outputitems.OutputItemRetrieveResponse
@@ -81,8 +82,8 @@ class OutputItemServiceImpl internal constructor(private val clientOptions: Clie
             }
         }
 
-        private val listHandler: Handler<OutputItemListPage.Response> =
-            jsonHandler<OutputItemListPage.Response>(clientOptions.jsonMapper)
+        private val listHandler: Handler<OutputItemListPageResponse> =
+            jsonHandler<OutputItemListPageResponse>(clientOptions.jsonMapper)
                 .withErrorHandler(errorHandler)
 
         override fun list(
