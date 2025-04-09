@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.1.0 (2025-04-09)
+
+Full Changelog: [v1.0.0...v1.1.0](https://github.com/openai/openai-java/compare/v1.0.0...v1.1.0)
+
+### Features
+
+* **client:** support setting base URL via env var ([#427](https://github.com/openai/openai-java/issues/427)) ([d462b34](https://github.com/openai/openai-java/commit/d462b3476e032ea02fa45c4afde19e1b62455224))
+
 ## 1.0.0 (2025-04-09)
 
 Full Changelog: [v0.45.0...v1.0.0](https://github.com/openai/openai-java/compare/v0.45.0...v1.0.0)
