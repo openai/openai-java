@@ -1,5 +1,24 @@
 # Changelog
 
+## 0.45.0 (2025-04-09)
+
+Full Changelog: [v0.44.5...v0.45.0](https://github.com/openai/openai-java/compare/v0.44.5...v0.45.0)
+
+### Features
+
+* **api:** Add evalapi to sdk ([b567998](https://github.com/openai/openai-java/commit/b56799843d71a81b8d99fae6fb04c0dff731afce))
+
+
+### Bug Fixes
+
+* **client:** trim '/' and empty character in base URL ([#424](https://github.com/openai/openai-java/issues/424)) ([37370df](https://github.com/openai/openai-java/commit/37370df673921c01a511dab2f87e0fe62107a151))
+
+
+### Chores
+
+* add missing `deploymentModel` ([acb132e](https://github.com/openai/openai-java/commit/acb132e45467fd74f5860c54d93a66ad8e1216a3))
+* **tests:** improve enum examples ([#416](https://github.com/openai/openai-java/issues/416)) ([a698758](https://github.com/openai/openai-java/commit/a69875817d67a60a612df14bf3ea06352e2fa265))
+
 ## 0.44.5 (2025-04-08)
 
 Full Changelog: [v0.44.4...v0.44.5](https://github.com/openai/openai-java/compare/v0.44.4...v0.44.5)
