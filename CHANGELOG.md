@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.2.1 (2025-04-11)
+
+Full Changelog: [v1.2.0...v1.2.1](https://github.com/openai/openai-java/compare/v1.2.0...v1.2.1)
+
+### Chores
+
+* **internal:** reduce CI branch coverage ([ac1f4e9](https://github.com/openai/openai-java/commit/ac1f4e909381ac8d93256b90417d119d062c87c4))
+
 ## 1.2.0 (2025-04-09)
 
 Full Changelog: [v1.1.1...v1.2.0](https://github.com/openai/openai-java/compare/v1.1.1...v1.2.0)
