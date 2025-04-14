@@ -55,7 +55,7 @@ OpenAIClient client = OpenAIOkHttpClient.fromEnv();
 
 ChatCompletionCreateParams params = ChatCompletionCreateParams.builder()
     .addUserMessage("Say this is a test")
-    .model(ChatModel.O3_MINI)
+    .model(ChatModel.GPT_4_1)
     .build();
 ChatCompletion chatCompletion = client.chat().completions().create(params);
 ```
@@ -140,7 +140,7 @@ OpenAIClient client = OpenAIOkHttpClient.fromEnv();
 
 ChatCompletionCreateParams params = ChatCompletionCreateParams.builder()
     .addUserMessage("Say this is a test")
-    .model(ChatModel.O3_MINI)
+    .model(ChatModel.GPT_4_1)
     .build();
 CompletableFuture<ChatCompletion> chatCompletion = client.async().chat().completions().create(params);
 ```
@@ -160,7 +160,7 @@ OpenAIClientAsync client = OpenAIOkHttpClientAsync.fromEnv();
 
 ChatCompletionCreateParams params = ChatCompletionCreateParams.builder()
     .addUserMessage("Say this is a test")
-    .model(ChatModel.O3_MINI)
+    .model(ChatModel.GPT_4_1)
     .build();
 CompletableFuture<ChatCompletion> chatCompletion = client.chat().completions().create(params);
 ```
@@ -393,7 +393,7 @@ import com.openai.models.chat.completions.ChatCompletionCreateParams;
 
 ChatCompletionCreateParams params = ChatCompletionCreateParams.builder()
     .addUserMessage("Say this is a test")
-    .model(ChatModel.O3_MINI)
+    .model(ChatModel.GPT_4_1)
     .build();
 HttpResponseFor<ChatCompletion> chatCompletion = client.chat().completions().withRawResponse().create(params);
 
@@ -676,7 +676,7 @@ import com.openai.models.ChatModel;
 import com.openai.models.chat.completions.ChatCompletionCreateParams;
 
 ChatCompletionCreateParams params = ChatCompletionCreateParams.builder()
-    .model(ChatModel.O3_MINI)
+    .model(ChatModel.GPT_4_1)
     .messages(JsonMissing.of())
     .build();
 ```

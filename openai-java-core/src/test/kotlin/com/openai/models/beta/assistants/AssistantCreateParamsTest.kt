@@ -15,7 +15,7 @@ internal class AssistantCreateParamsTest {
     @Test
     fun create() {
         AssistantCreateParams.builder()
-            .model(ChatModel.O3_MINI)
+            .model(ChatModel.GPT_4_1)
             .description("description")
             .instructions("instructions")
             .metadata(
@@ -63,7 +63,7 @@ internal class AssistantCreateParamsTest {
     fun body() {
         val params =
             AssistantCreateParams.builder()
-                .model(ChatModel.O3_MINI)
+                .model(ChatModel.GPT_4_1)
                 .description("description")
                 .instructions("instructions")
                 .metadata(
@@ -113,7 +113,7 @@ internal class AssistantCreateParamsTest {
 
         val body = params._body()
 
-        assertThat(body.model()).isEqualTo(ChatModel.O3_MINI)
+        assertThat(body.model()).isEqualTo(ChatModel.GPT_4_1)
         assertThat(body.description()).contains("description")
         assertThat(body.instructions()).contains("instructions")
         assertThat(body.metadata())
@@ -161,10 +161,10 @@ internal class AssistantCreateParamsTest {
 
     @Test
     fun bodyWithoutOptionalFields() {
-        val params = AssistantCreateParams.builder().model(ChatModel.O3_MINI).build()
+        val params = AssistantCreateParams.builder().model(ChatModel.GPT_4_1).build()
 
         val body = params._body()
 
-        assertThat(body.model()).isEqualTo(ChatModel.O3_MINI)
+        assertThat(body.model()).isEqualTo(ChatModel.GPT_4_1)
     }
 }
