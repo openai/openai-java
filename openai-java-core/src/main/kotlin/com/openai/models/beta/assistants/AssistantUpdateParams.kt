@@ -1655,6 +1655,18 @@ private constructor(
 
         companion object {
 
+            @JvmField val GPT_4_1 = of("gpt-4.1")
+
+            @JvmField val GPT_4_1_MINI = of("gpt-4.1-mini")
+
+            @JvmField val GPT_4_1_NANO = of("gpt-4.1-nano")
+
+            @JvmField val GPT_4_1_2025_04_14 = of("gpt-4.1-2025-04-14")
+
+            @JvmField val GPT_4_1_MINI_2025_04_14 = of("gpt-4.1-mini-2025-04-14")
+
+            @JvmField val GPT_4_1_NANO_2025_04_14 = of("gpt-4.1-nano-2025-04-14")
+
             @JvmField val O3_MINI = of("o3-mini")
 
             @JvmField val O3_MINI_2025_01_31 = of("o3-mini-2025-01-31")
@@ -1720,6 +1732,12 @@ private constructor(
 
         /** An enum containing [Model]'s known values. */
         enum class Known {
+            GPT_4_1,
+            GPT_4_1_MINI,
+            GPT_4_1_NANO,
+            GPT_4_1_2025_04_14,
+            GPT_4_1_MINI_2025_04_14,
+            GPT_4_1_NANO_2025_04_14,
             O3_MINI,
             O3_MINI_2025_01_31,
             O1,
@@ -1762,6 +1780,12 @@ private constructor(
          * - It was constructed with an arbitrary value using the [of] method.
          */
         enum class Value {
+            GPT_4_1,
+            GPT_4_1_MINI,
+            GPT_4_1_NANO,
+            GPT_4_1_2025_04_14,
+            GPT_4_1_MINI_2025_04_14,
+            GPT_4_1_NANO_2025_04_14,
             O3_MINI,
             O3_MINI_2025_01_31,
             O1,
@@ -1805,6 +1829,12 @@ private constructor(
          */
         fun value(): Value =
             when (this) {
+                GPT_4_1 -> Value.GPT_4_1
+                GPT_4_1_MINI -> Value.GPT_4_1_MINI
+                GPT_4_1_NANO -> Value.GPT_4_1_NANO
+                GPT_4_1_2025_04_14 -> Value.GPT_4_1_2025_04_14
+                GPT_4_1_MINI_2025_04_14 -> Value.GPT_4_1_MINI_2025_04_14
+                GPT_4_1_NANO_2025_04_14 -> Value.GPT_4_1_NANO_2025_04_14
                 O3_MINI -> Value.O3_MINI
                 O3_MINI_2025_01_31 -> Value.O3_MINI_2025_01_31
                 O1 -> Value.O1
@@ -1849,6 +1879,12 @@ private constructor(
          */
         fun known(): Known =
             when (this) {
+                GPT_4_1 -> Known.GPT_4_1
+                GPT_4_1_MINI -> Known.GPT_4_1_MINI
+                GPT_4_1_NANO -> Known.GPT_4_1_NANO
+                GPT_4_1_2025_04_14 -> Known.GPT_4_1_2025_04_14
+                GPT_4_1_MINI_2025_04_14 -> Known.GPT_4_1_MINI_2025_04_14
+                GPT_4_1_NANO_2025_04_14 -> Known.GPT_4_1_NANO_2025_04_14
                 O3_MINI -> Known.O3_MINI
                 O3_MINI_2025_01_31 -> Known.O3_MINI_2025_01_31
                 O1 -> Known.O1

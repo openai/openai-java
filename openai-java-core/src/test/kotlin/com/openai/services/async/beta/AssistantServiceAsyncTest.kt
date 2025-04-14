@@ -30,7 +30,7 @@ internal class AssistantServiceAsyncTest {
         val assistantFuture =
             assistantServiceAsync.create(
                 AssistantCreateParams.builder()
-                    .model(ChatModel.O3_MINI)
+                    .model(ChatModel.GPT_4_1)
                     .description("description")
                     .instructions("instructions")
                     .metadata(
@@ -121,7 +121,7 @@ internal class AssistantServiceAsyncTest {
                             .putAdditionalProperty("foo", JsonValue.from("string"))
                             .build()
                     )
-                    .model(AssistantUpdateParams.Model.O3_MINI)
+                    .model(AssistantUpdateParams.Model.GPT_4_1)
                     .name("name")
                     .reasoningEffort(ReasoningEffort.LOW)
                     .responseFormatAuto()

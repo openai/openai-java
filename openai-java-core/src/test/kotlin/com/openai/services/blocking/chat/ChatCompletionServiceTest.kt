@@ -44,7 +44,7 @@ internal class ChatCompletionServiceTest {
                             .name("name")
                             .build()
                     )
-                    .model(ChatModel.O3_MINI)
+                    .model(ChatModel.GPT_4_1)
                     .audio(
                         ChatCompletionAudioParam.builder()
                             .format(ChatCompletionAudioParam.Format.WAV)
@@ -155,7 +155,7 @@ internal class ChatCompletionServiceTest {
                             .name("name")
                             .build()
                     )
-                    .model(ChatModel.O3_MINI)
+                    .model(ChatModel.GPT_4_1)
                     .audio(
                         ChatCompletionAudioParam.builder()
                             .format(ChatCompletionAudioParam.Format.WAV)
