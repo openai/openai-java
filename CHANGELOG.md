@@ -1,5 +1,18 @@
 # Changelog
 
+## 1.3.0 (2025-04-14)
+
+Full Changelog: [v1.2.0...v1.3.0](https://github.com/openai/openai-java/compare/v1.2.0...v1.3.0)
+
+### Features
+
+* **api:** adding gpt-4.1 family of model IDs ([cdddc6a](https://github.com/openai/openai-java/commit/cdddc6a4b7447a75983cd4eede5759f2594a4a59))
+
+
+### Chores
+
+* **internal:** reduce CI branch coverage ([ac1f4e9](https://github.com/openai/openai-java/commit/ac1f4e909381ac8d93256b90417d119d062c87c4))
+
 ## 1.2.0 (2025-04-09)
 
 Full Changelog: [v1.1.1...v1.2.0](https://github.com/openai/openai-java/compare/v1.1.1...v1.2.0)
