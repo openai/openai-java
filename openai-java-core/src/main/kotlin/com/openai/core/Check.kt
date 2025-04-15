@@ -62,7 +62,7 @@ internal fun checkJacksonVersionCompatibility() {
         }
     check(incompatibleJacksonVersions.isEmpty()) {
         """
-This SDK depends on Jackson version $MINIMUM_JACKSON_VERSION, but the following incompatible Jackson versions were detected at runtime:
+This SDK requires a minimum Jackson version of $MINIMUM_JACKSON_VERSION, but the following incompatible Jackson versions were detected at runtime:
 
 ${incompatibleJacksonVersions.asSequence().map { (version, incompatibilityReason) ->
     "- `${version.toFullString().replace("/", ":")}` ($incompatibilityReason)"
