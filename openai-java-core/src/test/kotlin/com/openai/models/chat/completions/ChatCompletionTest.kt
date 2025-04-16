@@ -98,7 +98,7 @@ internal class ChatCompletionTest {
                 )
                 .created(0L)
                 .model("model")
-                .serviceTier(ChatCompletion.ServiceTier.SCALE)
+                .serviceTier(ChatCompletion.ServiceTier.AUTO)
                 .systemFingerprint("system_fingerprint")
                 .usage(
                     CompletionUsage.builder()
@@ -208,7 +208,7 @@ internal class ChatCompletionTest {
             )
         assertThat(chatCompletion.created()).isEqualTo(0L)
         assertThat(chatCompletion.model()).isEqualTo("model")
-        assertThat(chatCompletion.serviceTier()).contains(ChatCompletion.ServiceTier.SCALE)
+        assertThat(chatCompletion.serviceTier()).contains(ChatCompletion.ServiceTier.AUTO)
         assertThat(chatCompletion.systemFingerprint()).contains("system_fingerprint")
         assertThat(chatCompletion.usage())
             .contains(
@@ -323,7 +323,7 @@ internal class ChatCompletionTest {
                 )
                 .created(0L)
                 .model("model")
-                .serviceTier(ChatCompletion.ServiceTier.SCALE)
+                .serviceTier(ChatCompletion.ServiceTier.AUTO)
                 .systemFingerprint("system_fingerprint")
                 .usage(
                     CompletionUsage.builder()

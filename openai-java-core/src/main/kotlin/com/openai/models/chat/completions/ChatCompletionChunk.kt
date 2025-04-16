@@ -115,7 +115,19 @@ private constructor(
     @JsonProperty("object") @ExcludeMissing fun _object_(): JsonValue = object_
 
     /**
-     * The service tier used for processing the request.
+     * Specifies the latency tier to use for processing the request. This parameter is relevant for
+     * customers subscribed to the scale tier service:
+     * - If set to 'auto', and the Project is Scale tier enabled, the system will utilize scale tier
+     *   credits until they are exhausted.
+     * - If set to 'auto', and the Project is not Scale tier enabled, the request will be processed
+     *   using the default service tier with a lower uptime SLA and no latency guarentee.
+     * - If set to 'default', the request will be processed using the default service tier with a
+     *   lower uptime SLA and no latency guarentee.
+     * - If set to 'flex', the request will be processed with the Flex Processing service tier.
+     *   [Learn more](https://platform.openai.com/docs/guides/flex-processing).
+     * - When not set, the default behavior is 'auto'.
+     *
+     * When this parameter is set, the response body will include the `service_tier` utilized.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -333,7 +345,22 @@ private constructor(
          */
         fun object_(object_: JsonValue) = apply { this.object_ = object_ }
 
-        /** The service tier used for processing the request. */
+        /**
+         * Specifies the latency tier to use for processing the request. This parameter is relevant
+         * for customers subscribed to the scale tier service:
+         * - If set to 'auto', and the Project is Scale tier enabled, the system will utilize scale
+         *   tier credits until they are exhausted.
+         * - If set to 'auto', and the Project is not Scale tier enabled, the request will be
+         *   processed using the default service tier with a lower uptime SLA and no latency
+         *   guarentee.
+         * - If set to 'default', the request will be processed using the default service tier with
+         *   a lower uptime SLA and no latency guarentee.
+         * - If set to 'flex', the request will be processed with the Flex Processing service tier.
+         *   [Learn more](https://platform.openai.com/docs/guides/flex-processing).
+         * - When not set, the default behavior is 'auto'.
+         *
+         * When this parameter is set, the response body will include the `service_tier` utilized.
+         */
         fun serviceTier(serviceTier: ServiceTier?) = serviceTier(JsonField.ofNullable(serviceTier))
 
         /** Alias for calling [Builder.serviceTier] with `serviceTier.orElse(null)`. */
@@ -2454,7 +2481,21 @@ private constructor(
             "Choice{delta=$delta, finishReason=$finishReason, index=$index, logprobs=$logprobs, additionalProperties=$additionalProperties}"
     }
 
-    /** The service tier used for processing the request. */
+    /**
+     * Specifies the latency tier to use for processing the request. This parameter is relevant for
+     * customers subscribed to the scale tier service:
+     * - If set to 'auto', and the Project is Scale tier enabled, the system will utilize scale tier
+     *   credits until they are exhausted.
+     * - If set to 'auto', and the Project is not Scale tier enabled, the request will be processed
+     *   using the default service tier with a lower uptime SLA and no latency guarentee.
+     * - If set to 'default', the request will be processed using the default service tier with a
+     *   lower uptime SLA and no latency guarentee.
+     * - If set to 'flex', the request will be processed with the Flex Processing service tier.
+     *   [Learn more](https://platform.openai.com/docs/guides/flex-processing).
+     * - When not set, the default behavior is 'auto'.
+     *
+     * When this parameter is set, the response body will include the `service_tier` utilized.
+     */
     class ServiceTier @JsonCreator private constructor(private val value: JsonField<String>) :
         Enum {
 
@@ -2470,17 +2511,20 @@ private constructor(
 
         companion object {
 
-            @JvmField val SCALE = of("scale")
+            @JvmField val AUTO = of("auto")
 
             @JvmField val DEFAULT = of("default")
+
+            @JvmField val FLEX = of("flex")
 
             @JvmStatic fun of(value: String) = ServiceTier(JsonField.of(value))
         }
 
         /** An enum containing [ServiceTier]'s known values. */
         enum class Known {
-            SCALE,
+            AUTO,
             DEFAULT,
+            FLEX,
         }
 
         /**
@@ -2493,8 +2537,9 @@ private constructor(
          * - It was constructed with an arbitrary value using the [of] method.
          */
         enum class Value {
-            SCALE,
+            AUTO,
             DEFAULT,
+            FLEX,
             /**
              * An enum member indicating that [ServiceTier] was instantiated with an unknown value.
              */
@@ -2510,8 +2555,9 @@ private constructor(
          */
         fun value(): Value =
             when (this) {
-                SCALE -> Value.SCALE
+                AUTO -> Value.AUTO
                 DEFAULT -> Value.DEFAULT
+                FLEX -> Value.FLEX
                 else -> Value._UNKNOWN
             }
 
@@ -2526,8 +2572,9 @@ private constructor(
          */
         fun known(): Known =
             when (this) {
-                SCALE -> Known.SCALE
+                AUTO -> Known.AUTO
                 DEFAULT -> Known.DEFAULT
+                FLEX -> Known.FLEX
                 else -> throw OpenAIInvalidDataException("Unknown ServiceTier: $value")
             }
 

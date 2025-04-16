@@ -79,7 +79,7 @@ private constructor(
     fun messages(): List<ChatCompletionMessageParam> = body.messages()
 
     /**
-     * Model ID used to generate the response, like `gpt-4o` or `o1`. OpenAI offers a wide range of
+     * Model ID used to generate the response, like `gpt-4o` or `o3`. OpenAI offers a wide range of
      * models with different capabilities, performance characteristics, and price points. Refer to
      * the [model guide](https://platform.openai.com/docs/models) to browse and compare available
      * models.
@@ -177,7 +177,7 @@ private constructor(
      * API.
      *
      * This value is now deprecated in favor of `max_completion_tokens`, and is not compatible with
-     * [o1 series models](https://platform.openai.com/docs/guides/reasoning).
+     * [o-series models](https://platform.openai.com/docs/guides/reasoning).
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -301,6 +301,8 @@ private constructor(
      *   using the default service tier with a lower uptime SLA and no latency guarentee.
      * - If set to 'default', the request will be processed using the default service tier with a
      *   lower uptime SLA and no latency guarentee.
+     * - If set to 'flex', the request will be processed with the Flex Processing service tier.
+     *   [Learn more](https://platform.openai.com/docs/guides/flex-processing).
      * - When not set, the default behavior is 'auto'.
      *
      * When this parameter is set, the response body will include the `service_tier` utilized.
@@ -311,6 +313,8 @@ private constructor(
     fun serviceTier(): Optional<ServiceTier> = body.serviceTier()
 
     /**
+     * Not supported with latest reasoning models `o3` and `o4-mini`.
+     *
      * Up to 4 sequences where the API will stop generating further tokens. The returned text will
      * not contain the stop sequence.
      *
@@ -817,7 +821,7 @@ private constructor(
         }
 
         /**
-         * Model ID used to generate the response, like `gpt-4o` or `o1`. OpenAI offers a wide range
+         * Model ID used to generate the response, like `gpt-4o` or `o3`. OpenAI offers a wide range
          * of models with different capabilities, performance characteristics, and price points.
          * Refer to the [model guide](https://platform.openai.com/docs/models) to browse and compare
          * available models.
@@ -1047,7 +1051,7 @@ private constructor(
          * generated via API.
          *
          * This value is now deprecated in favor of `max_completion_tokens`, and is not compatible
-         * with [o1 series models](https://platform.openai.com/docs/guides/reasoning).
+         * with [o-series models](https://platform.openai.com/docs/guides/reasoning).
          */
         @Deprecated("deprecated")
         fun maxTokens(maxTokens: Long?) = apply { body.maxTokens(maxTokens) }
@@ -1329,6 +1333,8 @@ private constructor(
          *   guarentee.
          * - If set to 'default', the request will be processed using the default service tier with
          *   a lower uptime SLA and no latency guarentee.
+         * - If set to 'flex', the request will be processed with the Flex Processing service tier.
+         *   [Learn more](https://platform.openai.com/docs/guides/flex-processing).
          * - When not set, the default behavior is 'auto'.
          *
          * When this parameter is set, the response body will include the `service_tier` utilized.
@@ -1350,6 +1356,8 @@ private constructor(
         }
 
         /**
+         * Not supported with latest reasoning models `o3` and `o4-mini`.
+         *
          * Up to 4 sequences where the API will stop generating further tokens. The returned text
          * will not contain the stop sequence.
          */
@@ -1895,7 +1903,7 @@ private constructor(
         fun messages(): List<ChatCompletionMessageParam> = messages.getRequired("messages")
 
         /**
-         * Model ID used to generate the response, like `gpt-4o` or `o1`. OpenAI offers a wide range
+         * Model ID used to generate the response, like `gpt-4o` or `o3`. OpenAI offers a wide range
          * of models with different capabilities, performance characteristics, and price points.
          * Refer to the [model guide](https://platform.openai.com/docs/models) to browse and compare
          * available models.
@@ -1996,7 +2004,7 @@ private constructor(
          * generated via API.
          *
          * This value is now deprecated in favor of `max_completion_tokens`, and is not compatible
-         * with [o1 series models](https://platform.openai.com/docs/guides/reasoning).
+         * with [o-series models](https://platform.openai.com/docs/guides/reasoning).
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
@@ -2126,6 +2134,8 @@ private constructor(
          *   guarentee.
          * - If set to 'default', the request will be processed using the default service tier with
          *   a lower uptime SLA and no latency guarentee.
+         * - If set to 'flex', the request will be processed with the Flex Processing service tier.
+         *   [Learn more](https://platform.openai.com/docs/guides/flex-processing).
          * - When not set, the default behavior is 'auto'.
          *
          * When this parameter is set, the response body will include the `service_tier` utilized.
@@ -2136,6 +2146,8 @@ private constructor(
         fun serviceTier(): Optional<ServiceTier> = serviceTier.getOptional("service_tier")
 
         /**
+         * Not supported with latest reasoning models `o3` and `o4-mini`.
+         *
          * Up to 4 sequences where the API will stop generating further tokens. The returned text
          * will not contain the stop sequence.
          *
@@ -2769,7 +2781,7 @@ private constructor(
                 addMessage(ChatCompletionMessageParam.ofFunction(function))
 
             /**
-             * Model ID used to generate the response, like `gpt-4o` or `o1`. OpenAI offers a wide
+             * Model ID used to generate the response, like `gpt-4o` or `o3`. OpenAI offers a wide
              * range of models with different capabilities, performance characteristics, and price
              * points. Refer to the [model guide](https://platform.openai.com/docs/models) to browse
              * and compare available models.
@@ -3010,8 +3022,7 @@ private constructor(
              * [costs](https://openai.com/api/pricing/) for text generated via API.
              *
              * This value is now deprecated in favor of `max_completion_tokens`, and is not
-             * compatible with
-             * [o1 series models](https://platform.openai.com/docs/guides/reasoning).
+             * compatible with [o-series models](https://platform.openai.com/docs/guides/reasoning).
              */
             @Deprecated("deprecated")
             fun maxTokens(maxTokens: Long?) = maxTokens(JsonField.ofNullable(maxTokens))
@@ -3304,6 +3315,8 @@ private constructor(
              *   guarentee.
              * - If set to 'default', the request will be processed using the default service tier
              *   with a lower uptime SLA and no latency guarentee.
+             * - If set to 'flex', the request will be processed with the Flex Processing service
+             *   tier. [Learn more](https://platform.openai.com/docs/guides/flex-processing).
              * - When not set, the default behavior is 'auto'.
              *
              * When this parameter is set, the response body will include the `service_tier`
@@ -3328,6 +3341,8 @@ private constructor(
             }
 
             /**
+             * Not supported with latest reasoning models `o3` and `o4-mini`.
+             *
              * Up to 4 sequences where the API will stop generating further tokens. The returned
              * text will not contain the stop sequence.
              */
@@ -4990,6 +5005,8 @@ private constructor(
      *   using the default service tier with a lower uptime SLA and no latency guarentee.
      * - If set to 'default', the request will be processed using the default service tier with a
      *   lower uptime SLA and no latency guarentee.
+     * - If set to 'flex', the request will be processed with the Flex Processing service tier.
+     *   [Learn more](https://platform.openai.com/docs/guides/flex-processing).
      * - When not set, the default behavior is 'auto'.
      *
      * When this parameter is set, the response body will include the `service_tier` utilized.
@@ -5013,6 +5030,8 @@ private constructor(
 
             @JvmField val DEFAULT = of("default")
 
+            @JvmField val FLEX = of("flex")
+
             @JvmStatic fun of(value: String) = ServiceTier(JsonField.of(value))
         }
 
@@ -5020,6 +5039,7 @@ private constructor(
         enum class Known {
             AUTO,
             DEFAULT,
+            FLEX,
         }
 
         /**
@@ -5034,6 +5054,7 @@ private constructor(
         enum class Value {
             AUTO,
             DEFAULT,
+            FLEX,
             /**
              * An enum member indicating that [ServiceTier] was instantiated with an unknown value.
              */
@@ -5051,6 +5072,7 @@ private constructor(
             when (this) {
                 AUTO -> Value.AUTO
                 DEFAULT -> Value.DEFAULT
+                FLEX -> Value.FLEX
                 else -> Value._UNKNOWN
             }
 
@@ -5067,6 +5089,7 @@ private constructor(
             when (this) {
                 AUTO -> Known.AUTO
                 DEFAULT -> Known.DEFAULT
+                FLEX -> Known.FLEX
                 else -> throw OpenAIInvalidDataException("Unknown ServiceTier: $value")
             }
 
@@ -5123,6 +5146,8 @@ private constructor(
     }
 
     /**
+     * Not supported with latest reasoning models `o3` and `o4-mini`.
+     *
      * Up to 4 sequences where the API will stop generating further tokens. The returned text will
      * not contain the stop sequence.
      */

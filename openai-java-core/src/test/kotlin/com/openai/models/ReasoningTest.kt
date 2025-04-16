@@ -14,11 +14,13 @@ internal class ReasoningTest {
         val reasoning =
             Reasoning.builder()
                 .effort(ReasoningEffort.LOW)
-                .generateSummary(Reasoning.GenerateSummary.CONCISE)
+                .generateSummary(Reasoning.GenerateSummary.AUTO)
+                .summary(Reasoning.Summary.AUTO)
                 .build()
 
         assertThat(reasoning.effort()).contains(ReasoningEffort.LOW)
-        assertThat(reasoning.generateSummary()).contains(Reasoning.GenerateSummary.CONCISE)
+        assertThat(reasoning.generateSummary()).contains(Reasoning.GenerateSummary.AUTO)
+        assertThat(reasoning.summary()).contains(Reasoning.Summary.AUTO)
     }
 
     @Test
@@ -27,7 +29,8 @@ internal class ReasoningTest {
         val reasoning =
             Reasoning.builder()
                 .effort(ReasoningEffort.LOW)
-                .generateSummary(Reasoning.GenerateSummary.CONCISE)
+                .generateSummary(Reasoning.GenerateSummary.AUTO)
+                .summary(Reasoning.Summary.AUTO)
                 .build()
 
         val roundtrippedReasoning =

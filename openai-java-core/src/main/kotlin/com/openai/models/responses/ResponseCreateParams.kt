@@ -71,7 +71,7 @@ private constructor(
     fun input(): Input = body.input()
 
     /**
-     * Model ID used to generate the response, like `gpt-4o` or `o1`. OpenAI offers a wide range of
+     * Model ID used to generate the response, like `gpt-4o` or `o3`. OpenAI offers a wide range of
      * models with different capabilities, performance characteristics, and price points. Refer to
      * the [model guide](https://platform.openai.com/docs/models) to browse and compare available
      * models.
@@ -156,6 +156,26 @@ private constructor(
      *   server responded with an unexpected value).
      */
     fun reasoning(): Optional<Reasoning> = body.reasoning()
+
+    /**
+     * Specifies the latency tier to use for processing the request. This parameter is relevant for
+     * customers subscribed to the scale tier service:
+     * - If set to 'auto', and the Project is Scale tier enabled, the system will utilize scale tier
+     *   credits until they are exhausted.
+     * - If set to 'auto', and the Project is not Scale tier enabled, the request will be processed
+     *   using the default service tier with a lower uptime SLA and no latency guarentee.
+     * - If set to 'default', the request will be processed using the default service tier with a
+     *   lower uptime SLA and no latency guarentee.
+     * - If set to 'flex', the request will be processed with the Flex Processing service tier.
+     *   [Learn more](https://platform.openai.com/docs/guides/flex-processing).
+     * - When not set, the default behavior is 'auto'.
+     *
+     * When this parameter is set, the response body will include the `service_tier` utilized.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun serviceTier(): Optional<ServiceTier> = body.serviceTier()
 
     /**
      * Whether to store the generated model response for later retrieval via API.
@@ -314,6 +334,13 @@ private constructor(
     fun _reasoning(): JsonField<Reasoning> = body._reasoning()
 
     /**
+     * Returns the raw JSON value of [serviceTier].
+     *
+     * Unlike [serviceTier], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    fun _serviceTier(): JsonField<ServiceTier> = body._serviceTier()
+
+    /**
      * Returns the raw JSON value of [store].
      *
      * Unlike [store], this method doesn't throw if the JSON field has an unexpected type.
@@ -448,7 +475,7 @@ private constructor(
         }
 
         /**
-         * Model ID used to generate the response, like `gpt-4o` or `o1`. OpenAI offers a wide range
+         * Model ID used to generate the response, like `gpt-4o` or `o3`. OpenAI offers a wide range
          * of models with different capabilities, performance characteristics, and price points.
          * Refer to the [model guide](https://platform.openai.com/docs/models) to browse and compare
          * available models.
@@ -651,6 +678,38 @@ private constructor(
          * value.
          */
         fun reasoning(reasoning: JsonField<Reasoning>) = apply { body.reasoning(reasoning) }
+
+        /**
+         * Specifies the latency tier to use for processing the request. This parameter is relevant
+         * for customers subscribed to the scale tier service:
+         * - If set to 'auto', and the Project is Scale tier enabled, the system will utilize scale
+         *   tier credits until they are exhausted.
+         * - If set to 'auto', and the Project is not Scale tier enabled, the request will be
+         *   processed using the default service tier with a lower uptime SLA and no latency
+         *   guarentee.
+         * - If set to 'default', the request will be processed using the default service tier with
+         *   a lower uptime SLA and no latency guarentee.
+         * - If set to 'flex', the request will be processed with the Flex Processing service tier.
+         *   [Learn more](https://platform.openai.com/docs/guides/flex-processing).
+         * - When not set, the default behavior is 'auto'.
+         *
+         * When this parameter is set, the response body will include the `service_tier` utilized.
+         */
+        fun serviceTier(serviceTier: ServiceTier?) = apply { body.serviceTier(serviceTier) }
+
+        /** Alias for calling [Builder.serviceTier] with `serviceTier.orElse(null)`. */
+        fun serviceTier(serviceTier: Optional<ServiceTier>) = serviceTier(serviceTier.getOrNull())
+
+        /**
+         * Sets [Builder.serviceTier] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.serviceTier] with a well-typed [ServiceTier] value
+         * instead. This method is primarily for setting the field to an undocumented or not yet
+         * supported value.
+         */
+        fun serviceTier(serviceTier: JsonField<ServiceTier>) = apply {
+            body.serviceTier(serviceTier)
+        }
 
         /** Whether to store the generated model response for later retrieval via API. */
         fun store(store: Boolean?) = apply { body.store(store) }
@@ -1015,6 +1074,7 @@ private constructor(
         private val parallelToolCalls: JsonField<Boolean>,
         private val previousResponseId: JsonField<String>,
         private val reasoning: JsonField<Reasoning>,
+        private val serviceTier: JsonField<ServiceTier>,
         private val store: JsonField<Boolean>,
         private val temperature: JsonField<Double>,
         private val text: JsonField<ResponseTextConfig>,
@@ -1053,6 +1113,9 @@ private constructor(
             @JsonProperty("reasoning")
             @ExcludeMissing
             reasoning: JsonField<Reasoning> = JsonMissing.of(),
+            @JsonProperty("service_tier")
+            @ExcludeMissing
+            serviceTier: JsonField<ServiceTier> = JsonMissing.of(),
             @JsonProperty("store") @ExcludeMissing store: JsonField<Boolean> = JsonMissing.of(),
             @JsonProperty("temperature")
             @ExcludeMissing
@@ -1079,6 +1142,7 @@ private constructor(
             parallelToolCalls,
             previousResponseId,
             reasoning,
+            serviceTier,
             store,
             temperature,
             text,
@@ -1106,7 +1170,7 @@ private constructor(
         fun input(): Input = input.getRequired("input")
 
         /**
-         * Model ID used to generate the response, like `gpt-4o` or `o1`. OpenAI offers a wide range
+         * Model ID used to generate the response, like `gpt-4o` or `o3`. OpenAI offers a wide range
          * of models with different capabilities, performance characteristics, and price points.
          * Refer to the [model guide](https://platform.openai.com/docs/models) to browse and compare
          * available models.
@@ -1194,6 +1258,27 @@ private constructor(
          *   server responded with an unexpected value).
          */
         fun reasoning(): Optional<Reasoning> = reasoning.getOptional("reasoning")
+
+        /**
+         * Specifies the latency tier to use for processing the request. This parameter is relevant
+         * for customers subscribed to the scale tier service:
+         * - If set to 'auto', and the Project is Scale tier enabled, the system will utilize scale
+         *   tier credits until they are exhausted.
+         * - If set to 'auto', and the Project is not Scale tier enabled, the request will be
+         *   processed using the default service tier with a lower uptime SLA and no latency
+         *   guarentee.
+         * - If set to 'default', the request will be processed using the default service tier with
+         *   a lower uptime SLA and no latency guarentee.
+         * - If set to 'flex', the request will be processed with the Flex Processing service tier.
+         *   [Learn more](https://platform.openai.com/docs/guides/flex-processing).
+         * - When not set, the default behavior is 'auto'.
+         *
+         * When this parameter is set, the response body will include the `service_tier` utilized.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun serviceTier(): Optional<ServiceTier> = serviceTier.getOptional("service_tier")
 
         /**
          * Whether to store the generated model response for later retrieval via API.
@@ -1367,6 +1452,15 @@ private constructor(
         fun _reasoning(): JsonField<Reasoning> = reasoning
 
         /**
+         * Returns the raw JSON value of [serviceTier].
+         *
+         * Unlike [serviceTier], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("service_tier")
+        @ExcludeMissing
+        fun _serviceTier(): JsonField<ServiceTier> = serviceTier
+
+        /**
          * Returns the raw JSON value of [store].
          *
          * Unlike [store], this method doesn't throw if the JSON field has an unexpected type.
@@ -1466,6 +1560,7 @@ private constructor(
             private var parallelToolCalls: JsonField<Boolean> = JsonMissing.of()
             private var previousResponseId: JsonField<String> = JsonMissing.of()
             private var reasoning: JsonField<Reasoning> = JsonMissing.of()
+            private var serviceTier: JsonField<ServiceTier> = JsonMissing.of()
             private var store: JsonField<Boolean> = JsonMissing.of()
             private var temperature: JsonField<Double> = JsonMissing.of()
             private var text: JsonField<ResponseTextConfig> = JsonMissing.of()
@@ -1487,6 +1582,7 @@ private constructor(
                 parallelToolCalls = body.parallelToolCalls
                 previousResponseId = body.previousResponseId
                 reasoning = body.reasoning
+                serviceTier = body.serviceTier
                 store = body.store
                 temperature = body.temperature
                 text = body.text
@@ -1527,7 +1623,7 @@ private constructor(
                 input(Input.ofResponse(response))
 
             /**
-             * Model ID used to generate the response, like `gpt-4o` or `o1`. OpenAI offers a wide
+             * Model ID used to generate the response, like `gpt-4o` or `o3`. OpenAI offers a wide
              * range of models with different capabilities, performance characteristics, and price
              * points. Refer to the [model guide](https://platform.openai.com/docs/models) to browse
              * and compare available models.
@@ -1740,6 +1836,41 @@ private constructor(
              * supported value.
              */
             fun reasoning(reasoning: JsonField<Reasoning>) = apply { this.reasoning = reasoning }
+
+            /**
+             * Specifies the latency tier to use for processing the request. This parameter is
+             * relevant for customers subscribed to the scale tier service:
+             * - If set to 'auto', and the Project is Scale tier enabled, the system will utilize
+             *   scale tier credits until they are exhausted.
+             * - If set to 'auto', and the Project is not Scale tier enabled, the request will be
+             *   processed using the default service tier with a lower uptime SLA and no latency
+             *   guarentee.
+             * - If set to 'default', the request will be processed using the default service tier
+             *   with a lower uptime SLA and no latency guarentee.
+             * - If set to 'flex', the request will be processed with the Flex Processing service
+             *   tier. [Learn more](https://platform.openai.com/docs/guides/flex-processing).
+             * - When not set, the default behavior is 'auto'.
+             *
+             * When this parameter is set, the response body will include the `service_tier`
+             * utilized.
+             */
+            fun serviceTier(serviceTier: ServiceTier?) =
+                serviceTier(JsonField.ofNullable(serviceTier))
+
+            /** Alias for calling [Builder.serviceTier] with `serviceTier.orElse(null)`. */
+            fun serviceTier(serviceTier: Optional<ServiceTier>) =
+                serviceTier(serviceTier.getOrNull())
+
+            /**
+             * Sets [Builder.serviceTier] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.serviceTier] with a well-typed [ServiceTier] value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun serviceTier(serviceTier: JsonField<ServiceTier>) = apply {
+                this.serviceTier = serviceTier
+            }
 
             /** Whether to store the generated model response for later retrieval via API. */
             fun store(store: Boolean?) = store(JsonField.ofNullable(store))
@@ -2009,6 +2140,7 @@ private constructor(
                     parallelToolCalls,
                     previousResponseId,
                     reasoning,
+                    serviceTier,
                     store,
                     temperature,
                     text,
@@ -2037,6 +2169,7 @@ private constructor(
             parallelToolCalls()
             previousResponseId()
             reasoning().ifPresent { it.validate() }
+            serviceTier().ifPresent { it.validate() }
             store()
             temperature()
             text().ifPresent { it.validate() }
@@ -2073,6 +2206,7 @@ private constructor(
                 (if (parallelToolCalls.asKnown().isPresent) 1 else 0) +
                 (if (previousResponseId.asKnown().isPresent) 1 else 0) +
                 (reasoning.asKnown().getOrNull()?.validity() ?: 0) +
+                (serviceTier.asKnown().getOrNull()?.validity() ?: 0) +
                 (if (store.asKnown().isPresent) 1 else 0) +
                 (if (temperature.asKnown().isPresent) 1 else 0) +
                 (text.asKnown().getOrNull()?.validity() ?: 0) +
@@ -2087,17 +2221,17 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is Body && input == other.input && model == other.model && include == other.include && instructions == other.instructions && maxOutputTokens == other.maxOutputTokens && metadata == other.metadata && parallelToolCalls == other.parallelToolCalls && previousResponseId == other.previousResponseId && reasoning == other.reasoning && store == other.store && temperature == other.temperature && text == other.text && toolChoice == other.toolChoice && tools == other.tools && topP == other.topP && truncation == other.truncation && user == other.user && additionalProperties == other.additionalProperties /* spotless:on */
+            return /* spotless:off */ other is Body && input == other.input && model == other.model && include == other.include && instructions == other.instructions && maxOutputTokens == other.maxOutputTokens && metadata == other.metadata && parallelToolCalls == other.parallelToolCalls && previousResponseId == other.previousResponseId && reasoning == other.reasoning && serviceTier == other.serviceTier && store == other.store && temperature == other.temperature && text == other.text && toolChoice == other.toolChoice && tools == other.tools && topP == other.topP && truncation == other.truncation && user == other.user && additionalProperties == other.additionalProperties /* spotless:on */
         }
 
         /* spotless:off */
-        private val hashCode: Int by lazy { Objects.hash(input, model, include, instructions, maxOutputTokens, metadata, parallelToolCalls, previousResponseId, reasoning, store, temperature, text, toolChoice, tools, topP, truncation, user, additionalProperties) }
+        private val hashCode: Int by lazy { Objects.hash(input, model, include, instructions, maxOutputTokens, metadata, parallelToolCalls, previousResponseId, reasoning, serviceTier, store, temperature, text, toolChoice, tools, topP, truncation, user, additionalProperties) }
         /* spotless:on */
 
         override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "Body{input=$input, model=$model, include=$include, instructions=$instructions, maxOutputTokens=$maxOutputTokens, metadata=$metadata, parallelToolCalls=$parallelToolCalls, previousResponseId=$previousResponseId, reasoning=$reasoning, store=$store, temperature=$temperature, text=$text, toolChoice=$toolChoice, tools=$tools, topP=$topP, truncation=$truncation, user=$user, additionalProperties=$additionalProperties}"
+            "Body{input=$input, model=$model, include=$include, instructions=$instructions, maxOutputTokens=$maxOutputTokens, metadata=$metadata, parallelToolCalls=$parallelToolCalls, previousResponseId=$previousResponseId, reasoning=$reasoning, serviceTier=$serviceTier, store=$store, temperature=$temperature, text=$text, toolChoice=$toolChoice, tools=$tools, topP=$topP, truncation=$truncation, user=$user, additionalProperties=$additionalProperties}"
     }
 
     /**
@@ -2400,6 +2534,155 @@ private constructor(
         override fun hashCode(): Int = hashCode
 
         override fun toString() = "Metadata{additionalProperties=$additionalProperties}"
+    }
+
+    /**
+     * Specifies the latency tier to use for processing the request. This parameter is relevant for
+     * customers subscribed to the scale tier service:
+     * - If set to 'auto', and the Project is Scale tier enabled, the system will utilize scale tier
+     *   credits until they are exhausted.
+     * - If set to 'auto', and the Project is not Scale tier enabled, the request will be processed
+     *   using the default service tier with a lower uptime SLA and no latency guarentee.
+     * - If set to 'default', the request will be processed using the default service tier with a
+     *   lower uptime SLA and no latency guarentee.
+     * - If set to 'flex', the request will be processed with the Flex Processing service tier.
+     *   [Learn more](https://platform.openai.com/docs/guides/flex-processing).
+     * - When not set, the default behavior is 'auto'.
+     *
+     * When this parameter is set, the response body will include the `service_tier` utilized.
+     */
+    class ServiceTier @JsonCreator private constructor(private val value: JsonField<String>) :
+        Enum {
+
+        /**
+         * Returns this class instance's raw value.
+         *
+         * This is usually only useful if this instance was deserialized from data that doesn't
+         * match any known member, and you want to know that value. For example, if the SDK is on an
+         * older version than the API, then the API may respond with new members that the SDK is
+         * unaware of.
+         */
+        @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
+
+        companion object {
+
+            @JvmField val AUTO = of("auto")
+
+            @JvmField val DEFAULT = of("default")
+
+            @JvmField val FLEX = of("flex")
+
+            @JvmStatic fun of(value: String) = ServiceTier(JsonField.of(value))
+        }
+
+        /** An enum containing [ServiceTier]'s known values. */
+        enum class Known {
+            AUTO,
+            DEFAULT,
+            FLEX,
+        }
+
+        /**
+         * An enum containing [ServiceTier]'s known values, as well as an [_UNKNOWN] member.
+         *
+         * An instance of [ServiceTier] can contain an unknown value in a couple of cases:
+         * - It was deserialized from data that doesn't match any known member. For example, if the
+         *   SDK is on an older version than the API, then the API may respond with new members that
+         *   the SDK is unaware of.
+         * - It was constructed with an arbitrary value using the [of] method.
+         */
+        enum class Value {
+            AUTO,
+            DEFAULT,
+            FLEX,
+            /**
+             * An enum member indicating that [ServiceTier] was instantiated with an unknown value.
+             */
+            _UNKNOWN,
+        }
+
+        /**
+         * Returns an enum member corresponding to this class instance's value, or [Value._UNKNOWN]
+         * if the class was instantiated with an unknown value.
+         *
+         * Use the [known] method instead if you're certain the value is always known or if you want
+         * to throw for the unknown case.
+         */
+        fun value(): Value =
+            when (this) {
+                AUTO -> Value.AUTO
+                DEFAULT -> Value.DEFAULT
+                FLEX -> Value.FLEX
+                else -> Value._UNKNOWN
+            }
+
+        /**
+         * Returns an enum member corresponding to this class instance's value.
+         *
+         * Use the [value] method instead if you're uncertain the value is always known and don't
+         * want to throw for the unknown case.
+         *
+         * @throws OpenAIInvalidDataException if this class instance's value is a not a known
+         *   member.
+         */
+        fun known(): Known =
+            when (this) {
+                AUTO -> Known.AUTO
+                DEFAULT -> Known.DEFAULT
+                FLEX -> Known.FLEX
+                else -> throw OpenAIInvalidDataException("Unknown ServiceTier: $value")
+            }
+
+        /**
+         * Returns this class instance's primitive wire representation.
+         *
+         * This differs from the [toString] method because that method is primarily for debugging
+         * and generally doesn't throw.
+         *
+         * @throws OpenAIInvalidDataException if this class instance's value does not have the
+         *   expected primitive type.
+         */
+        fun asString(): String =
+            _value().asString().orElseThrow { OpenAIInvalidDataException("Value is not a String") }
+
+        private var validated: Boolean = false
+
+        fun validate(): ServiceTier = apply {
+            if (validated) {
+                return@apply
+            }
+
+            known()
+            validated = true
+        }
+
+        fun isValid(): Boolean =
+            try {
+                validate()
+                true
+            } catch (e: OpenAIInvalidDataException) {
+                false
+            }
+
+        /**
+         * Returns a score indicating how many valid values are contained in this object
+         * recursively.
+         *
+         * Used for best match union deserialization.
+         */
+        @JvmSynthetic internal fun validity(): Int = if (value() == Value._UNKNOWN) 0 else 1
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) {
+                return true
+            }
+
+            return /* spotless:off */ other is ServiceTier && value == other.value /* spotless:on */
+        }
+
+        override fun hashCode() = value.hashCode()
+
+        override fun toString() = value.toString()
     }
 
     /**

@@ -101,7 +101,7 @@ internal class ChatCompletionListPageResponseTest {
                         )
                         .created(0L)
                         .model("model")
-                        .serviceTier(ChatCompletion.ServiceTier.SCALE)
+                        .serviceTier(ChatCompletion.ServiceTier.AUTO)
                         .systemFingerprint("system_fingerprint")
                         .usage(
                             CompletionUsage.builder()
@@ -219,7 +219,7 @@ internal class ChatCompletionListPageResponseTest {
                     )
                     .created(0L)
                     .model("model")
-                    .serviceTier(ChatCompletion.ServiceTier.SCALE)
+                    .serviceTier(ChatCompletion.ServiceTier.AUTO)
                     .systemFingerprint("system_fingerprint")
                     .usage(
                         CompletionUsage.builder()
@@ -341,7 +341,7 @@ internal class ChatCompletionListPageResponseTest {
                         )
                         .created(0L)
                         .model("model")
-                        .serviceTier(ChatCompletion.ServiceTier.SCALE)
+                        .serviceTier(ChatCompletion.ServiceTier.AUTO)
                         .systemFingerprint("system_fingerprint")
                         .usage(
                             CompletionUsage.builder()

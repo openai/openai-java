@@ -50,9 +50,11 @@ internal class ResponseServiceTest {
                     .reasoning(
                         Reasoning.builder()
                             .effort(ReasoningEffort.LOW)
-                            .generateSummary(Reasoning.GenerateSummary.CONCISE)
+                            .generateSummary(Reasoning.GenerateSummary.AUTO)
+                            .summary(Reasoning.Summary.AUTO)
                             .build()
                     )
+                    .serviceTier(ResponseCreateParams.ServiceTier.AUTO)
                     .store(true)
                     .temperature(1.0)
                     .text(
@@ -116,9 +118,11 @@ internal class ResponseServiceTest {
                     .reasoning(
                         Reasoning.builder()
                             .effort(ReasoningEffort.LOW)
-                            .generateSummary(Reasoning.GenerateSummary.CONCISE)
+                            .generateSummary(Reasoning.GenerateSummary.AUTO)
+                            .summary(Reasoning.Summary.AUTO)
                             .build()
                     )
+                    .serviceTier(ResponseCreateParams.ServiceTier.AUTO)
                     .store(true)
                     .temperature(1.0)
                     .text(
