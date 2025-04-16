@@ -20,7 +20,7 @@ internal class PhantomReachableTest {
         assertThat(closed).isFalse()
 
         System.gc()
-        Thread.sleep(3000)
+        Thread.sleep(100)
 
         assertThat(closed).isTrue()
     }

@@ -9,7 +9,7 @@ plugins {
 
 kotlin {
     jvmToolchain {
-        languageVersion.set(JavaLanguageVersion.of(17))
+        languageVersion.set(JavaLanguageVersion.of(21))
     }
 
     compilerOptions {
@@ -19,6 +19,8 @@ kotlin {
             // Suppress deprecation warnings because we may still reference and test deprecated members.
             // TODO: Replace with `-Xsuppress-warning=DEPRECATION` once we use Kotlin compiler 2.1.0+.
             "-nowarn",
+            // Use as many threads as there are CPU cores on the machine for compilation.
+            "-Xbackend-threads=0",
         )
         jvmTarget.set(JvmTarget.JVM_1_8)
         languageVersion.set(KotlinVersion.KOTLIN_1_8)
@@ -34,8 +36,7 @@ configure<SpotlessExtension> {
     }
 }
 
-// Run tests in parallel to some degree.
 tasks.withType<Test>().configureEach {
-    maxParallelForks = (Runtime.getRuntime().availableProcessors() / 2).coerceAtLeast(1)
-    forkEvery = 100
+    systemProperty("junit.jupiter.execution.parallel.enabled", true)
+    systemProperty("junit.jupiter.execution.parallel.mode.default", "concurrent")
 }

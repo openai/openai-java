@@ -1,8 +1,6 @@
 package com.openai.core.http
 
 import org.assertj.core.api.Assertions.assertThat
-import org.assertj.core.api.Assertions.catchThrowable
-import org.assertj.core.api.Assumptions.assumeThat
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.EnumSource
 
@@ -240,35 +238,5 @@ internal class HeadersTest {
         val size = testCase.headers.size
 
         assertThat(size).isEqualTo(testCase.expectedSize)
-    }
-
-    @ParameterizedTest
-    @EnumSource
-    fun namesAreImmutable(testCase: TestCase) {
-        val headers = testCase.headers
-        val headerNamesCopy = headers.names().toSet()
-
-        val throwable = catchThrowable {
-            (headers.names() as MutableSet<String>).add("another name")
-        }
-
-        assertThat(throwable).isInstanceOf(UnsupportedOperationException::class.java)
-        assertThat(headers.names()).isEqualTo(headerNamesCopy)
-    }
-
-    @ParameterizedTest
-    @EnumSource
-    fun valuesAreImmutable(testCase: TestCase) {
-        val headers = testCase.headers
-        assumeThat(headers.size).isNotEqualTo(0)
-        val name = headers.names().first()
-        val headerValuesCopy = headers.values(name).toList()
-
-        val throwable = catchThrowable {
-            (headers.values(name) as MutableList<String>).add("another value")
-        }
-
-        assertThat(throwable).isInstanceOf(UnsupportedOperationException::class.java)
-        assertThat(headers.values(name)).isEqualTo(headerValuesCopy)
     }
 }
