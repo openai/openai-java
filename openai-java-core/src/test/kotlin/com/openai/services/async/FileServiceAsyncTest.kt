@@ -18,9 +18,11 @@ import com.openai.models.files.FileRetrieveParams
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
+import org.junit.jupiter.api.parallel.ResourceLock
 
 @ExtendWith(TestServerExtension::class)
 @WireMockTest
+@ResourceLock("https://github.com/wiremock/wiremock/issues/169")
 internal class FileServiceAsyncTest {
 
     @Test

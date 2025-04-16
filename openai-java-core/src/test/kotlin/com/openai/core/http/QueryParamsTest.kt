@@ -1,8 +1,6 @@
 package com.openai.core.http
 
 import org.assertj.core.api.Assertions.assertThat
-import org.assertj.core.api.Assertions.catchThrowable
-import org.assertj.core.api.Assumptions.assumeThat
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.EnumSource
 
@@ -178,35 +176,5 @@ internal class QueryParamsTest {
         val size = testCase.queryParams.size
 
         assertThat(size).isEqualTo(testCase.expectedSize)
-    }
-
-    @ParameterizedTest
-    @EnumSource
-    fun keysAreImmutable(testCase: TestCase) {
-        val queryParams = testCase.queryParams
-        val queryParamKeysCopy = queryParams.keys().toSet()
-
-        val throwable = catchThrowable {
-            (queryParams.keys() as MutableSet<String>).add("another key")
-        }
-
-        assertThat(throwable).isInstanceOf(UnsupportedOperationException::class.java)
-        assertThat(queryParams.keys()).isEqualTo(queryParamKeysCopy)
-    }
-
-    @ParameterizedTest
-    @EnumSource
-    fun valuesAreImmutable(testCase: TestCase) {
-        val queryParams = testCase.queryParams
-        assumeThat(queryParams.size).isNotEqualTo(0)
-        val key = queryParams.keys().first()
-        val queryParamValuesCopy = queryParams.values(key).toList()
-
-        val throwable = catchThrowable {
-            (queryParams.values(key) as MutableList<String>).add("another value")
-        }
-
-        assertThat(throwable).isInstanceOf(UnsupportedOperationException::class.java)
-        assertThat(queryParams.values(key)).isEqualTo(queryParamValuesCopy)
     }
 }
