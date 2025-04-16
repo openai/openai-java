@@ -1,5 +1,14 @@
 # Changelog
 
+## 1.3.1 (2025-04-16)
+
+Full Changelog: [v1.3.0...v1.3.1](https://github.com/openai/openai-java/compare/v1.3.0...v1.3.1)
+
+### Documentation
+
+* **client:** update jackson compat error message ([e928c2d](https://github.com/openai/openai-java/commit/e928c2d9d607a40d363297e2b675a3ffc48a3cea))
+* update documentation links to be more uniform ([e9bb6bf](https://github.com/openai/openai-java/commit/e9bb6bf7b8f42e1bed10d6029d957b06a0c149e5))
+
 ## 1.3.0 (2025-04-14)
 
 Full Changelog: [v1.2.0...v1.3.0](https://github.com/openai/openai-java/compare/v1.2.0...v1.3.0)
