@@ -44,7 +44,7 @@ private constructor(
 
     /**
      * The voice the model uses to respond. Supported voices are `alloy`, `ash`, `ballad`, `coral`,
-     * `echo`, `sage`, and `shimmer`.
+     * `echo`, `fable`, `nova`, `onyx`, `sage`, and `shimmer`.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
      *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
@@ -121,7 +121,7 @@ private constructor(
 
         /**
          * The voice the model uses to respond. Supported voices are `alloy`, `ash`, `ballad`,
-         * `coral`, `echo`, `sage`, and `shimmer`.
+         * `coral`, `echo`, `fable`, `nova`, `onyx`, `sage`, and `shimmer`.
          */
         fun voice(voice: Voice) = voice(JsonField.of(voice))
 
@@ -229,6 +229,8 @@ private constructor(
 
             @JvmField val WAV = of("wav")
 
+            @JvmField val AAC = of("aac")
+
             @JvmField val MP3 = of("mp3")
 
             @JvmField val FLAC = of("flac")
@@ -243,6 +245,7 @@ private constructor(
         /** An enum containing [Format]'s known values. */
         enum class Known {
             WAV,
+            AAC,
             MP3,
             FLAC,
             OPUS,
@@ -260,6 +263,7 @@ private constructor(
          */
         enum class Value {
             WAV,
+            AAC,
             MP3,
             FLAC,
             OPUS,
@@ -278,6 +282,7 @@ private constructor(
         fun value(): Value =
             when (this) {
                 WAV -> Value.WAV
+                AAC -> Value.AAC
                 MP3 -> Value.MP3
                 FLAC -> Value.FLAC
                 OPUS -> Value.OPUS
@@ -297,6 +302,7 @@ private constructor(
         fun known(): Known =
             when (this) {
                 WAV -> Known.WAV
+                AAC -> Known.AAC
                 MP3 -> Known.MP3
                 FLAC -> Known.FLAC
                 OPUS -> Known.OPUS
@@ -358,7 +364,7 @@ private constructor(
 
     /**
      * The voice the model uses to respond. Supported voices are `alloy`, `ash`, `ballad`, `coral`,
-     * `echo`, `sage`, and `shimmer`.
+     * `echo`, `fable`, `nova`, `onyx`, `sage`, and `shimmer`.
      */
     class Voice @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
 

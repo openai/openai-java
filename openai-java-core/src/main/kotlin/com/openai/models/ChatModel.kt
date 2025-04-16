@@ -32,6 +32,14 @@ class ChatModel @JsonCreator private constructor(private val value: JsonField<St
 
         @JvmField val GPT_4_1_NANO_2025_04_14 = of("gpt-4.1-nano-2025-04-14")
 
+        @JvmField val O4_MINI = of("o4-mini")
+
+        @JvmField val O4_MINI_2025_04_16 = of("o4-mini-2025-04-16")
+
+        @JvmField val O3 = of("o3")
+
+        @JvmField val O3_2025_04_16 = of("o3-2025-04-16")
+
         @JvmField val O3_MINI = of("o3-mini")
 
         @JvmField val O3_MINI_2025_01_31 = of("o3-mini-2025-01-31")
@@ -131,6 +139,10 @@ class ChatModel @JsonCreator private constructor(private val value: JsonField<St
         GPT_4_1_2025_04_14,
         GPT_4_1_MINI_2025_04_14,
         GPT_4_1_NANO_2025_04_14,
+        O4_MINI,
+        O4_MINI_2025_04_16,
+        O3,
+        O3_2025_04_16,
         O3_MINI,
         O3_MINI_2025_01_31,
         O1,
@@ -192,6 +204,10 @@ class ChatModel @JsonCreator private constructor(private val value: JsonField<St
         GPT_4_1_2025_04_14,
         GPT_4_1_MINI_2025_04_14,
         GPT_4_1_NANO_2025_04_14,
+        O4_MINI,
+        O4_MINI_2025_04_16,
+        O3,
+        O3_2025_04_16,
         O3_MINI,
         O3_MINI_2025_01_31,
         O1,
@@ -254,6 +270,10 @@ class ChatModel @JsonCreator private constructor(private val value: JsonField<St
             GPT_4_1_2025_04_14 -> Value.GPT_4_1_2025_04_14
             GPT_4_1_MINI_2025_04_14 -> Value.GPT_4_1_MINI_2025_04_14
             GPT_4_1_NANO_2025_04_14 -> Value.GPT_4_1_NANO_2025_04_14
+            O4_MINI -> Value.O4_MINI
+            O4_MINI_2025_04_16 -> Value.O4_MINI_2025_04_16
+            O3 -> Value.O3
+            O3_2025_04_16 -> Value.O3_2025_04_16
             O3_MINI -> Value.O3_MINI
             O3_MINI_2025_01_31 -> Value.O3_MINI_2025_01_31
             O1 -> Value.O1
@@ -316,6 +336,10 @@ class ChatModel @JsonCreator private constructor(private val value: JsonField<St
             GPT_4_1_2025_04_14 -> Known.GPT_4_1_2025_04_14
             GPT_4_1_MINI_2025_04_14 -> Known.GPT_4_1_MINI_2025_04_14
             GPT_4_1_NANO_2025_04_14 -> Known.GPT_4_1_NANO_2025_04_14
+            O4_MINI -> Known.O4_MINI
+            O4_MINI_2025_04_16 -> Known.O4_MINI_2025_04_16
+            O3 -> Known.O3
+            O3_2025_04_16 -> Known.O3_2025_04_16
             O3_MINI -> Known.O3_MINI
             O3_MINI_2025_01_31 -> Known.O3_MINI_2025_01_31
             O1 -> Known.O1

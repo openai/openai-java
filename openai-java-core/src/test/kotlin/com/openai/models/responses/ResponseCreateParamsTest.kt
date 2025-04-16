@@ -33,9 +33,11 @@ internal class ResponseCreateParamsTest {
             .reasoning(
                 Reasoning.builder()
                     .effort(ReasoningEffort.LOW)
-                    .generateSummary(Reasoning.GenerateSummary.CONCISE)
+                    .generateSummary(Reasoning.GenerateSummary.AUTO)
+                    .summary(Reasoning.Summary.AUTO)
                     .build()
             )
+            .serviceTier(ResponseCreateParams.ServiceTier.AUTO)
             .store(true)
             .temperature(1.0)
             .text(ResponseTextConfig.builder().format(ResponseFormatText.builder().build()).build())
@@ -84,9 +86,11 @@ internal class ResponseCreateParamsTest {
                 .reasoning(
                     Reasoning.builder()
                         .effort(ReasoningEffort.LOW)
-                        .generateSummary(Reasoning.GenerateSummary.CONCISE)
+                        .generateSummary(Reasoning.GenerateSummary.AUTO)
+                        .summary(Reasoning.Summary.AUTO)
                         .build()
                 )
+                .serviceTier(ResponseCreateParams.ServiceTier.AUTO)
                 .store(true)
                 .temperature(1.0)
                 .text(
@@ -139,9 +143,11 @@ internal class ResponseCreateParamsTest {
             .contains(
                 Reasoning.builder()
                     .effort(ReasoningEffort.LOW)
-                    .generateSummary(Reasoning.GenerateSummary.CONCISE)
+                    .generateSummary(Reasoning.GenerateSummary.AUTO)
+                    .summary(Reasoning.Summary.AUTO)
                     .build()
             )
+        assertThat(body.serviceTier()).contains(ResponseCreateParams.ServiceTier.AUTO)
         assertThat(body.store()).contains(true)
         assertThat(body.temperature()).contains(1.0)
         assertThat(body.text())

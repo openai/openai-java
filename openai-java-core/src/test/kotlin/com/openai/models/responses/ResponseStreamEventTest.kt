@@ -686,9 +686,11 @@ internal class ResponseStreamEventTest {
                         .reasoning(
                             Reasoning.builder()
                                 .effort(ReasoningEffort.LOW)
-                                .generateSummary(Reasoning.GenerateSummary.CONCISE)
+                                .generateSummary(Reasoning.GenerateSummary.AUTO)
+                                .summary(Reasoning.Summary.AUTO)
                                 .build()
                         )
+                        .serviceTier(Response.ServiceTier.AUTO)
                         .status(ResponseStatus.COMPLETED)
                         .text(
                             ResponseTextConfig.builder()
@@ -827,9 +829,11 @@ internal class ResponseStreamEventTest {
                             .reasoning(
                                 Reasoning.builder()
                                     .effort(ReasoningEffort.LOW)
-                                    .generateSummary(Reasoning.GenerateSummary.CONCISE)
+                                    .generateSummary(Reasoning.GenerateSummary.AUTO)
+                                    .summary(Reasoning.Summary.AUTO)
                                     .build()
                             )
+                            .serviceTier(Response.ServiceTier.AUTO)
                             .status(ResponseStatus.COMPLETED)
                             .text(
                                 ResponseTextConfig.builder()
@@ -1116,9 +1120,11 @@ internal class ResponseStreamEventTest {
                         .reasoning(
                             Reasoning.builder()
                                 .effort(ReasoningEffort.LOW)
-                                .generateSummary(Reasoning.GenerateSummary.CONCISE)
+                                .generateSummary(Reasoning.GenerateSummary.AUTO)
+                                .summary(Reasoning.Summary.AUTO)
                                 .build()
                         )
+                        .serviceTier(Response.ServiceTier.AUTO)
                         .status(ResponseStatus.COMPLETED)
                         .text(
                             ResponseTextConfig.builder()
@@ -1257,9 +1263,11 @@ internal class ResponseStreamEventTest {
                             .reasoning(
                                 Reasoning.builder()
                                     .effort(ReasoningEffort.LOW)
-                                    .generateSummary(Reasoning.GenerateSummary.CONCISE)
+                                    .generateSummary(Reasoning.GenerateSummary.AUTO)
+                                    .summary(Reasoning.Summary.AUTO)
                                     .build()
                             )
+                            .serviceTier(Response.ServiceTier.AUTO)
                             .status(ResponseStatus.COMPLETED)
                             .text(
                                 ResponseTextConfig.builder()
@@ -1754,9 +1762,11 @@ internal class ResponseStreamEventTest {
                         .reasoning(
                             Reasoning.builder()
                                 .effort(ReasoningEffort.LOW)
-                                .generateSummary(Reasoning.GenerateSummary.CONCISE)
+                                .generateSummary(Reasoning.GenerateSummary.AUTO)
+                                .summary(Reasoning.Summary.AUTO)
                                 .build()
                         )
+                        .serviceTier(Response.ServiceTier.AUTO)
                         .status(ResponseStatus.COMPLETED)
                         .text(
                             ResponseTextConfig.builder()
@@ -1895,9 +1905,11 @@ internal class ResponseStreamEventTest {
                             .reasoning(
                                 Reasoning.builder()
                                     .effort(ReasoningEffort.LOW)
-                                    .generateSummary(Reasoning.GenerateSummary.CONCISE)
+                                    .generateSummary(Reasoning.GenerateSummary.AUTO)
+                                    .summary(Reasoning.Summary.AUTO)
                                     .build()
                             )
+                            .serviceTier(Response.ServiceTier.AUTO)
                             .status(ResponseStatus.COMPLETED)
                             .text(
                                 ResponseTextConfig.builder()
@@ -2008,9 +2020,11 @@ internal class ResponseStreamEventTest {
                         .reasoning(
                             Reasoning.builder()
                                 .effort(ReasoningEffort.LOW)
-                                .generateSummary(Reasoning.GenerateSummary.CONCISE)
+                                .generateSummary(Reasoning.GenerateSummary.AUTO)
+                                .summary(Reasoning.Summary.AUTO)
                                 .build()
                         )
+                        .serviceTier(Response.ServiceTier.AUTO)
                         .status(ResponseStatus.COMPLETED)
                         .text(
                             ResponseTextConfig.builder()
@@ -2149,9 +2163,11 @@ internal class ResponseStreamEventTest {
                             .reasoning(
                                 Reasoning.builder()
                                     .effort(ReasoningEffort.LOW)
-                                    .generateSummary(Reasoning.GenerateSummary.CONCISE)
+                                    .generateSummary(Reasoning.GenerateSummary.AUTO)
+                                    .summary(Reasoning.Summary.AUTO)
                                     .build()
                             )
+                            .serviceTier(Response.ServiceTier.AUTO)
                             .status(ResponseStatus.COMPLETED)
                             .text(
                                 ResponseTextConfig.builder()
@@ -2262,9 +2278,11 @@ internal class ResponseStreamEventTest {
                         .reasoning(
                             Reasoning.builder()
                                 .effort(ReasoningEffort.LOW)
-                                .generateSummary(Reasoning.GenerateSummary.CONCISE)
+                                .generateSummary(Reasoning.GenerateSummary.AUTO)
+                                .summary(Reasoning.Summary.AUTO)
                                 .build()
                         )
+                        .serviceTier(Response.ServiceTier.AUTO)
                         .status(ResponseStatus.COMPLETED)
                         .text(
                             ResponseTextConfig.builder()
@@ -2403,9 +2421,11 @@ internal class ResponseStreamEventTest {
                             .reasoning(
                                 Reasoning.builder()
                                     .effort(ReasoningEffort.LOW)
-                                    .generateSummary(Reasoning.GenerateSummary.CONCISE)
+                                    .generateSummary(Reasoning.GenerateSummary.AUTO)
+                                    .summary(Reasoning.Summary.AUTO)
                                     .build()
                             )
+                            .serviceTier(Response.ServiceTier.AUTO)
                             .status(ResponseStatus.COMPLETED)
                             .text(
                                 ResponseTextConfig.builder()

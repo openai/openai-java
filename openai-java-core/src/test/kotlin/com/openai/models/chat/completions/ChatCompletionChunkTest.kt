@@ -84,7 +84,7 @@ internal class ChatCompletionChunkTest {
                 )
                 .created(0L)
                 .model("model")
-                .serviceTier(ChatCompletionChunk.ServiceTier.SCALE)
+                .serviceTier(ChatCompletionChunk.ServiceTier.AUTO)
                 .systemFingerprint("system_fingerprint")
                 .usage(
                     CompletionUsage.builder()
@@ -177,8 +177,7 @@ internal class ChatCompletionChunkTest {
             )
         assertThat(chatCompletionChunk.created()).isEqualTo(0L)
         assertThat(chatCompletionChunk.model()).isEqualTo("model")
-        assertThat(chatCompletionChunk.serviceTier())
-            .contains(ChatCompletionChunk.ServiceTier.SCALE)
+        assertThat(chatCompletionChunk.serviceTier()).contains(ChatCompletionChunk.ServiceTier.AUTO)
         assertThat(chatCompletionChunk.systemFingerprint()).contains("system_fingerprint")
         assertThat(chatCompletionChunk.usage())
             .contains(
@@ -279,7 +278,7 @@ internal class ChatCompletionChunkTest {
                 )
                 .created(0L)
                 .model("model")
-                .serviceTier(ChatCompletionChunk.ServiceTier.SCALE)
+                .serviceTier(ChatCompletionChunk.ServiceTier.AUTO)
                 .systemFingerprint("system_fingerprint")
                 .usage(
                     CompletionUsage.builder()
