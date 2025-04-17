@@ -1,5 +1,24 @@
 # Changelog
 
+## 1.4.0 (2025-04-17)
+
+Full Changelog: [v1.3.1...v1.4.0](https://github.com/openai/openai-java/compare/v1.3.1...v1.4.0)
+
+### Features
+
+* **api:** add o3 and o4-mini model IDs ([069db4f](https://github.com/openai/openai-java/commit/069db4f94021cfc2f8d3a5a969453efae5f126a1))
+
+
+### Performance Improvements
+
+* **internal:** improve compilation+test speed ([ef38b5b](https://github.com/openai/openai-java/commit/ef38b5bfd278774e056d21a795845fb5c3a99f0a))
+
+
+### Documentation
+
+* explain http client customization ([da22f7d](https://github.com/openai/openai-java/commit/da22f7d3f717882c555fbb6626ec842fc953def4))
+* explain jackson compat in readme ([6bc1dbd](https://github.com/openai/openai-java/commit/6bc1dbd2d95d2fb235bb9506a766b9f083017bc2))
+
 ## 1.3.1 (2025-04-16)
 
 Full Changelog: [v1.3.0...v1.3.1](https://github.com/openai/openai-java/compare/v1.3.0...v1.3.1)
