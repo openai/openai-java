@@ -1,5 +1,14 @@
 # Changelog
 
+## 1.4.1 (2025-04-17)
+
+Full Changelog: [v1.4.0...v1.4.1](https://github.com/openai/openai-java/compare/v1.4.0...v1.4.1)
+
+### Bug Fixes
+
+* **internal:** release flow ([777a756](https://github.com/openai/openai-java/commit/777a7565f14d86c00611880ee143b522a9af2698))
+* **internal:** test compilation error ([544a4ce](https://github.com/openai/openai-java/commit/544a4cebb5b34a55354e06431dd4a966a5213aa2))
+
 ## 1.4.0 (2025-04-17)
 
 Full Changelog: [v1.3.1...v1.4.0](https://github.com/openai/openai-java/compare/v1.3.1...v1.4.0)
