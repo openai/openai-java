@@ -61,7 +61,7 @@ internal class ChatCompletionAccumulatorTest {
             .isEqualTo(ChatCompletion.Choice.FinishReason.STOP)
         assertThat(chatCompletion.usage()).isNotPresent()
         assertThat(chatCompletion.systemFingerprint().get()).isEqualTo("fingerprint")
-        assertThat(chatCompletion.serviceTier().get()).isEqualTo(ChatCompletion.ServiceTier.SCALE)
+        assertThat(chatCompletion.serviceTier().get()).isEqualTo(ChatCompletion.ServiceTier.AUTO)
     }
 
     @Test
@@ -84,7 +84,7 @@ internal class ChatCompletionAccumulatorTest {
             .isEqualTo(ChatCompletion.Choice.FinishReason.STOP)
         assertThat(chatCompletionA.usage()).isNotPresent()
         assertThat(chatCompletionA.systemFingerprint().get()).isEqualTo("fingerprint")
-        assertThat(chatCompletionA.serviceTier().get()).isEqualTo(ChatCompletion.ServiceTier.SCALE)
+        assertThat(chatCompletionA.serviceTier().get()).isEqualTo(ChatCompletion.ServiceTier.AUTO)
 
         assertThat(chatCompletionB.choices()[0].finishReason())
             .isEqualTo(ChatCompletion.Choice.FinishReason.STOP)
@@ -95,7 +95,7 @@ internal class ChatCompletionAccumulatorTest {
         // The `finalUsageChunk()` had `null` values for `systemFingerprint` and `serviceTier`, but
         // those should _not_ have overwritten the non-`null` values on the `finalChunk()`.
         assertThat(chatCompletionB.systemFingerprint().get()).isEqualTo("fingerprint")
-        assertThat(chatCompletionB.serviceTier().get()).isEqualTo(ChatCompletion.ServiceTier.SCALE)
+        assertThat(chatCompletionB.serviceTier().get()).isEqualTo(ChatCompletion.ServiceTier.AUTO)
     }
 
     @Test
@@ -426,7 +426,7 @@ internal class ChatCompletionAccumulatorTest {
             .created(123_456_789L)
             .model("model-id")
             .systemFingerprint("fingerprint")
-            .serviceTier(ChatCompletionChunk.ServiceTier.SCALE)
+            .serviceTier(ChatCompletionChunk.ServiceTier.AUTO)
             .addChoice(
                 ChatCompletionChunk.Choice.builder()
                     .finishReason(finishReason)
