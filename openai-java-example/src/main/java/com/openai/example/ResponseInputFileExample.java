@@ -6,7 +6,6 @@ import com.openai.models.ChatModel;
 import com.openai.models.responses.ResponseCreateParams;
 import com.openai.models.responses.ResponseInputFile;
 import com.openai.models.responses.ResponseInputItem;
-
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -22,7 +21,7 @@ public final class ResponseInputFileExample {
         OpenAIClient client = OpenAIOkHttpClient.fromEnv();
 
         // Read file content and construct data URI String
-        File file = new File("/absolute/path/to/your/file.pdf");
+        File file = new File("openai-java-example/src/main/resources/pdflatex-image.pdf");
         byte[] fileContent = Files.readAllBytes(file.toPath());
         String base64String = Base64.getEncoder().encodeToString(fileContent);
         String dataUri = "data:application/pdf;base64," + base64String;
@@ -49,5 +48,4 @@ public final class ResponseInputFileExample {
                 .flatMap(content -> content.outputText().stream())
                 .forEach(outputText -> System.out.println(outputText.text()));
     }
-
 }
