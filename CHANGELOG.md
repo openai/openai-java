@@ -1,5 +1,18 @@
 # Changelog
 
+## 1.5.0 (2025-04-23)
+
+Full Changelog: [v1.4.1...v1.5.0](https://github.com/openai/openai-java/compare/v1.4.1...v1.5.0)
+
+### Features
+
+* **api:** adding new image model support ([545b900](https://github.com/openai/openai-java/commit/545b9004c09de82f1aa1ee12333d5fa7bb67ecd5))
+
+
+### Chores
+
+* **ci:** add timeout thresholds for CI jobs ([579da9b](https://github.com/openai/openai-java/commit/579da9b321ee3a6360c0c7aca39fb4ffbd12fc3b))
+
 ## 1.4.1 (2025-04-17)
 
 Full Changelog: [v1.4.0...v1.4.1](https://github.com/openai/openai-java/compare/v1.4.0...v1.4.1)
