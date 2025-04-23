@@ -14,7 +14,7 @@ internal class TranscriptionCreateParamsTest {
     @Test
     fun create() {
         TranscriptionCreateParams.builder()
-            .file("some content".toByteArray())
+            .file("some content".byteInputStream())
             .model(AudioModel.WHISPER_1)
             .addInclude(TranscriptionInclude.LOGPROBS)
             .language("language")
@@ -29,7 +29,7 @@ internal class TranscriptionCreateParamsTest {
     fun body() {
         val params =
             TranscriptionCreateParams.builder()
-                .file("some content".toByteArray())
+                .file("some content".byteInputStream())
                 .model(AudioModel.WHISPER_1)
                 .addInclude(TranscriptionInclude.LOGPROBS)
                 .language("language")
@@ -51,7 +51,7 @@ internal class TranscriptionCreateParamsTest {
             )
             .isEqualTo(
                 mapOf(
-                        "file" to MultipartField.of("some content".toByteArray()),
+                        "file" to MultipartField.of("some content".byteInputStream()),
                         "model" to MultipartField.of(AudioModel.WHISPER_1),
                         "include" to MultipartField.of(listOf(TranscriptionInclude.LOGPROBS)),
                         "language" to MultipartField.of("language"),
@@ -73,7 +73,7 @@ internal class TranscriptionCreateParamsTest {
     fun bodyWithoutOptionalFields() {
         val params =
             TranscriptionCreateParams.builder()
-                .file("some content".toByteArray())
+                .file("some content".byteInputStream())
                 .model(AudioModel.WHISPER_1)
                 .build()
 
@@ -89,7 +89,7 @@ internal class TranscriptionCreateParamsTest {
             )
             .isEqualTo(
                 mapOf(
-                        "file" to MultipartField.of("some content".toByteArray()),
+                        "file" to MultipartField.of("some content".byteInputStream()),
                         "model" to MultipartField.of(AudioModel.WHISPER_1),
                     )
                     .mapValues { (_, field) ->

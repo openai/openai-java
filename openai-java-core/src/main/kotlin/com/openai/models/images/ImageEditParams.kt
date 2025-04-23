@@ -263,6 +263,22 @@ private constructor(
         /** Alias for calling [image] with `Image.ofInputStream(inputStream)`. */
         fun image(inputStream: InputStream) = apply { body.image(inputStream) }
 
+        /**
+         * The image(s) to edit. Must be a supported image file or an array of images. For
+         * `gpt-image-1`, each image should be a `png`, `webp`, or `jpg` file less than 25MB. For
+         * `dall-e-2`, you can only provide one image, and it should be a square `png` file less
+         * than 4MB.
+         */
+        fun image(inputStream: ByteArray) = apply { body.image(inputStream) }
+
+        /**
+         * The image(s) to edit. Must be a supported image file or an array of images. For
+         * `gpt-image-1`, each image should be a `png`, `webp`, or `jpg` file less than 25MB. For
+         * `dall-e-2`, you can only provide one image, and it should be a square `png` file less
+         * than 4MB.
+         */
+        fun image(inputStream: Path) = apply { body.image(inputStream) }
+
         /** Alias for calling [image] with `Image.ofInputStreams(inputStreams)`. */
         fun imageOfInputStreams(inputStreams: List<InputStream>) = apply {
             body.imageOfInputStreams(inputStreams)
@@ -802,6 +818,28 @@ private constructor(
 
             /** Alias for calling [image] with `Image.ofInputStream(inputStream)`. */
             fun image(inputStream: InputStream) = image(Image.ofInputStream(inputStream))
+
+            /**
+             * The image(s) to edit. Must be a supported image file or an array of images. For
+             * `gpt-image-1`, each image should be a `png`, `webp`, or `jpg` file less than 25MB.
+             * For `dall-e-2`, you can only provide one image, and it should be a square `png` file
+             * less than 4MB.
+             */
+            fun image(inputStream: ByteArray) = image(inputStream.inputStream())
+
+            /**
+             * The image(s) to edit. Must be a supported image file or an array of images. For
+             * `gpt-image-1`, each image should be a `png`, `webp`, or `jpg` file less than 25MB.
+             * For `dall-e-2`, you can only provide one image, and it should be a square `png` file
+             * less than 4MB.
+             */
+            fun image(inputStream: Path) =
+                image(
+                    MultipartField.builder<Image>()
+                        .value(Image.ofInputStream(inputStream.inputStream()))
+                        .filename(inputStream.name)
+                        .build()
+                )
 
             /** Alias for calling [image] with `Image.ofInputStreams(inputStreams)`. */
             fun imageOfInputStreams(inputStreams: List<InputStream>) =

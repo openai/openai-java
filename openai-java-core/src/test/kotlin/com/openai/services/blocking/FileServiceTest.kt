@@ -37,7 +37,7 @@ internal class FileServiceTest {
         val fileObject =
             fileService.create(
                 FileCreateParams.builder()
-                    .file("some content".toByteArray())
+                    .file("some content".byteInputStream())
                     .purpose(FilePurpose.ASSISTANTS)
                     .build()
             )

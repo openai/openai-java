@@ -24,7 +24,7 @@ internal class TranslationServiceTest {
         val translation =
             translationService.create(
                 TranslationCreateParams.builder()
-                    .file("some content".toByteArray())
+                    .file("some content".byteInputStream())
                     .model(AudioModel.WHISPER_1)
                     .prompt("prompt")
                     .responseFormat(TranslationCreateParams.ResponseFormat.JSON)

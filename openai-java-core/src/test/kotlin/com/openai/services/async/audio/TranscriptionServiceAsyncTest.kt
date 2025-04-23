@@ -26,7 +26,7 @@ internal class TranscriptionServiceAsyncTest {
         val transcriptionFuture =
             transcriptionServiceAsync.create(
                 TranscriptionCreateParams.builder()
-                    .file("some content".toByteArray())
+                    .file("some content".byteInputStream())
                     .model(AudioModel.WHISPER_1)
                     .addInclude(TranscriptionInclude.LOGPROBS)
                     .language("language")
@@ -53,7 +53,7 @@ internal class TranscriptionServiceAsyncTest {
         val transcriptionStreamResponse =
             transcriptionServiceAsync.createStreaming(
                 TranscriptionCreateParams.builder()
-                    .file("some content".toByteArray())
+                    .file("some content".byteInputStream())
                     .model(AudioModel.WHISPER_1)
                     .addInclude(TranscriptionInclude.LOGPROBS)
                     .language("language")
