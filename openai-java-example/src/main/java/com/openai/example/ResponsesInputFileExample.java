@@ -12,9 +12,9 @@ import java.nio.file.Files;
 import java.util.Base64;
 import java.util.List;
 
-public final class ResponseInputFileExample {
+public final class ResponsesInputFileExample {
 
-    private ResponseInputFileExample() {}
+    private ResponsesInputFileExample() {}
 
     public static void main(String[] args) throws IOException {
         // Configures using the `OPENAI_API_KEY`, `OPENAI_ORG_ID` and `OPENAI_PROJECT_ID` environment variables
