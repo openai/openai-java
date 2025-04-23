@@ -48,6 +48,10 @@ private constructor(
     private val incomplete: ResponseIncompleteEvent? = null,
     private val outputItemAdded: ResponseOutputItemAddedEvent? = null,
     private val outputItemDone: ResponseOutputItemDoneEvent? = null,
+    private val reasoningSummaryPartAdded: ResponseReasoningSummaryPartAddedEvent? = null,
+    private val reasoningSummaryPartDone: ResponseReasoningSummaryPartDoneEvent? = null,
+    private val reasoningSummaryTextDelta: ResponseReasoningSummaryTextDeltaEvent? = null,
+    private val reasoningSummaryTextDone: ResponseReasoningSummaryTextDoneEvent? = null,
     private val refusalDelta: ResponseRefusalDeltaEvent? = null,
     private val refusalDone: ResponseRefusalDoneEvent? = null,
     private val outputTextAnnotationAdded: ResponseTextAnnotationDeltaEvent? = null,
@@ -147,6 +151,22 @@ private constructor(
     fun outputItemDone(): Optional<ResponseOutputItemDoneEvent> =
         Optional.ofNullable(outputItemDone)
 
+    /** Emitted when a new reasoning summary part is added. */
+    fun reasoningSummaryPartAdded(): Optional<ResponseReasoningSummaryPartAddedEvent> =
+        Optional.ofNullable(reasoningSummaryPartAdded)
+
+    /** Emitted when a reasoning summary part is completed. */
+    fun reasoningSummaryPartDone(): Optional<ResponseReasoningSummaryPartDoneEvent> =
+        Optional.ofNullable(reasoningSummaryPartDone)
+
+    /** Emitted when a delta is added to a reasoning summary text. */
+    fun reasoningSummaryTextDelta(): Optional<ResponseReasoningSummaryTextDeltaEvent> =
+        Optional.ofNullable(reasoningSummaryTextDelta)
+
+    /** Emitted when a reasoning summary text is completed. */
+    fun reasoningSummaryTextDone(): Optional<ResponseReasoningSummaryTextDoneEvent> =
+        Optional.ofNullable(reasoningSummaryTextDone)
+
     /** Emitted when there is a partial refusal text. */
     fun refusalDelta(): Optional<ResponseRefusalDeltaEvent> = Optional.ofNullable(refusalDelta)
 
@@ -222,6 +242,14 @@ private constructor(
     fun isOutputItemAdded(): Boolean = outputItemAdded != null
 
     fun isOutputItemDone(): Boolean = outputItemDone != null
+
+    fun isReasoningSummaryPartAdded(): Boolean = reasoningSummaryPartAdded != null
+
+    fun isReasoningSummaryPartDone(): Boolean = reasoningSummaryPartDone != null
+
+    fun isReasoningSummaryTextDelta(): Boolean = reasoningSummaryTextDelta != null
+
+    fun isReasoningSummaryTextDone(): Boolean = reasoningSummaryTextDone != null
 
     fun isRefusalDelta(): Boolean = refusalDelta != null
 
@@ -327,6 +355,22 @@ private constructor(
     fun asOutputItemDone(): ResponseOutputItemDoneEvent =
         outputItemDone.getOrThrow("outputItemDone")
 
+    /** Emitted when a new reasoning summary part is added. */
+    fun asReasoningSummaryPartAdded(): ResponseReasoningSummaryPartAddedEvent =
+        reasoningSummaryPartAdded.getOrThrow("reasoningSummaryPartAdded")
+
+    /** Emitted when a reasoning summary part is completed. */
+    fun asReasoningSummaryPartDone(): ResponseReasoningSummaryPartDoneEvent =
+        reasoningSummaryPartDone.getOrThrow("reasoningSummaryPartDone")
+
+    /** Emitted when a delta is added to a reasoning summary text. */
+    fun asReasoningSummaryTextDelta(): ResponseReasoningSummaryTextDeltaEvent =
+        reasoningSummaryTextDelta.getOrThrow("reasoningSummaryTextDelta")
+
+    /** Emitted when a reasoning summary text is completed. */
+    fun asReasoningSummaryTextDone(): ResponseReasoningSummaryTextDoneEvent =
+        reasoningSummaryTextDone.getOrThrow("reasoningSummaryTextDone")
+
     /** Emitted when there is a partial refusal text. */
     fun asRefusalDelta(): ResponseRefusalDeltaEvent = refusalDelta.getOrThrow("refusalDelta")
 
@@ -393,6 +437,14 @@ private constructor(
             incomplete != null -> visitor.visitIncomplete(incomplete)
             outputItemAdded != null -> visitor.visitOutputItemAdded(outputItemAdded)
             outputItemDone != null -> visitor.visitOutputItemDone(outputItemDone)
+            reasoningSummaryPartAdded != null ->
+                visitor.visitReasoningSummaryPartAdded(reasoningSummaryPartAdded)
+            reasoningSummaryPartDone != null ->
+                visitor.visitReasoningSummaryPartDone(reasoningSummaryPartDone)
+            reasoningSummaryTextDelta != null ->
+                visitor.visitReasoningSummaryTextDelta(reasoningSummaryTextDelta)
+            reasoningSummaryTextDone != null ->
+                visitor.visitReasoningSummaryTextDone(reasoningSummaryTextDone)
             refusalDelta != null -> visitor.visitRefusalDelta(refusalDelta)
             refusalDone != null -> visitor.visitRefusalDone(refusalDone)
             outputTextAnnotationAdded != null ->
@@ -539,6 +591,30 @@ private constructor(
                     outputItemDone.validate()
                 }
 
+                override fun visitReasoningSummaryPartAdded(
+                    reasoningSummaryPartAdded: ResponseReasoningSummaryPartAddedEvent
+                ) {
+                    reasoningSummaryPartAdded.validate()
+                }
+
+                override fun visitReasoningSummaryPartDone(
+                    reasoningSummaryPartDone: ResponseReasoningSummaryPartDoneEvent
+                ) {
+                    reasoningSummaryPartDone.validate()
+                }
+
+                override fun visitReasoningSummaryTextDelta(
+                    reasoningSummaryTextDelta: ResponseReasoningSummaryTextDeltaEvent
+                ) {
+                    reasoningSummaryTextDelta.validate()
+                }
+
+                override fun visitReasoningSummaryTextDone(
+                    reasoningSummaryTextDone: ResponseReasoningSummaryTextDoneEvent
+                ) {
+                    reasoningSummaryTextDone.validate()
+                }
+
                 override fun visitRefusalDelta(refusalDelta: ResponseRefusalDeltaEvent) {
                     refusalDelta.validate()
                 }
@@ -682,6 +758,22 @@ private constructor(
                 override fun visitOutputItemDone(outputItemDone: ResponseOutputItemDoneEvent) =
                     outputItemDone.validity()
 
+                override fun visitReasoningSummaryPartAdded(
+                    reasoningSummaryPartAdded: ResponseReasoningSummaryPartAddedEvent
+                ) = reasoningSummaryPartAdded.validity()
+
+                override fun visitReasoningSummaryPartDone(
+                    reasoningSummaryPartDone: ResponseReasoningSummaryPartDoneEvent
+                ) = reasoningSummaryPartDone.validity()
+
+                override fun visitReasoningSummaryTextDelta(
+                    reasoningSummaryTextDelta: ResponseReasoningSummaryTextDeltaEvent
+                ) = reasoningSummaryTextDelta.validity()
+
+                override fun visitReasoningSummaryTextDone(
+                    reasoningSummaryTextDone: ResponseReasoningSummaryTextDoneEvent
+                ) = reasoningSummaryTextDone.validity()
+
                 override fun visitRefusalDelta(refusalDelta: ResponseRefusalDeltaEvent) =
                     refusalDelta.validity()
 
@@ -719,10 +811,10 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is ResponseStreamEvent && audioDelta == other.audioDelta && audioDone == other.audioDone && audioTranscriptDelta == other.audioTranscriptDelta && audioTranscriptDone == other.audioTranscriptDone && codeInterpreterCallCodeDelta == other.codeInterpreterCallCodeDelta && codeInterpreterCallCodeDone == other.codeInterpreterCallCodeDone && codeInterpreterCallCompleted == other.codeInterpreterCallCompleted && codeInterpreterCallInProgress == other.codeInterpreterCallInProgress && codeInterpreterCallInterpreting == other.codeInterpreterCallInterpreting && completed == other.completed && contentPartAdded == other.contentPartAdded && contentPartDone == other.contentPartDone && created == other.created && error == other.error && fileSearchCallCompleted == other.fileSearchCallCompleted && fileSearchCallInProgress == other.fileSearchCallInProgress && fileSearchCallSearching == other.fileSearchCallSearching && functionCallArgumentsDelta == other.functionCallArgumentsDelta && functionCallArgumentsDone == other.functionCallArgumentsDone && inProgress == other.inProgress && failed == other.failed && incomplete == other.incomplete && outputItemAdded == other.outputItemAdded && outputItemDone == other.outputItemDone && refusalDelta == other.refusalDelta && refusalDone == other.refusalDone && outputTextAnnotationAdded == other.outputTextAnnotationAdded && outputTextDelta == other.outputTextDelta && outputTextDone == other.outputTextDone && webSearchCallCompleted == other.webSearchCallCompleted && webSearchCallInProgress == other.webSearchCallInProgress && webSearchCallSearching == other.webSearchCallSearching /* spotless:on */
+        return /* spotless:off */ other is ResponseStreamEvent && audioDelta == other.audioDelta && audioDone == other.audioDone && audioTranscriptDelta == other.audioTranscriptDelta && audioTranscriptDone == other.audioTranscriptDone && codeInterpreterCallCodeDelta == other.codeInterpreterCallCodeDelta && codeInterpreterCallCodeDone == other.codeInterpreterCallCodeDone && codeInterpreterCallCompleted == other.codeInterpreterCallCompleted && codeInterpreterCallInProgress == other.codeInterpreterCallInProgress && codeInterpreterCallInterpreting == other.codeInterpreterCallInterpreting && completed == other.completed && contentPartAdded == other.contentPartAdded && contentPartDone == other.contentPartDone && created == other.created && error == other.error && fileSearchCallCompleted == other.fileSearchCallCompleted && fileSearchCallInProgress == other.fileSearchCallInProgress && fileSearchCallSearching == other.fileSearchCallSearching && functionCallArgumentsDelta == other.functionCallArgumentsDelta && functionCallArgumentsDone == other.functionCallArgumentsDone && inProgress == other.inProgress && failed == other.failed && incomplete == other.incomplete && outputItemAdded == other.outputItemAdded && outputItemDone == other.outputItemDone && reasoningSummaryPartAdded == other.reasoningSummaryPartAdded && reasoningSummaryPartDone == other.reasoningSummaryPartDone && reasoningSummaryTextDelta == other.reasoningSummaryTextDelta && reasoningSummaryTextDone == other.reasoningSummaryTextDone && refusalDelta == other.refusalDelta && refusalDone == other.refusalDone && outputTextAnnotationAdded == other.outputTextAnnotationAdded && outputTextDelta == other.outputTextDelta && outputTextDone == other.outputTextDone && webSearchCallCompleted == other.webSearchCallCompleted && webSearchCallInProgress == other.webSearchCallInProgress && webSearchCallSearching == other.webSearchCallSearching /* spotless:on */
     }
 
-    override fun hashCode(): Int = /* spotless:off */ Objects.hash(audioDelta, audioDone, audioTranscriptDelta, audioTranscriptDone, codeInterpreterCallCodeDelta, codeInterpreterCallCodeDone, codeInterpreterCallCompleted, codeInterpreterCallInProgress, codeInterpreterCallInterpreting, completed, contentPartAdded, contentPartDone, created, error, fileSearchCallCompleted, fileSearchCallInProgress, fileSearchCallSearching, functionCallArgumentsDelta, functionCallArgumentsDone, inProgress, failed, incomplete, outputItemAdded, outputItemDone, refusalDelta, refusalDone, outputTextAnnotationAdded, outputTextDelta, outputTextDone, webSearchCallCompleted, webSearchCallInProgress, webSearchCallSearching) /* spotless:on */
+    override fun hashCode(): Int = /* spotless:off */ Objects.hash(audioDelta, audioDone, audioTranscriptDelta, audioTranscriptDone, codeInterpreterCallCodeDelta, codeInterpreterCallCodeDone, codeInterpreterCallCompleted, codeInterpreterCallInProgress, codeInterpreterCallInterpreting, completed, contentPartAdded, contentPartDone, created, error, fileSearchCallCompleted, fileSearchCallInProgress, fileSearchCallSearching, functionCallArgumentsDelta, functionCallArgumentsDone, inProgress, failed, incomplete, outputItemAdded, outputItemDone, reasoningSummaryPartAdded, reasoningSummaryPartDone, reasoningSummaryTextDelta, reasoningSummaryTextDone, refusalDelta, refusalDone, outputTextAnnotationAdded, outputTextDelta, outputTextDone, webSearchCallCompleted, webSearchCallInProgress, webSearchCallSearching) /* spotless:on */
 
     override fun toString(): String =
         when {
@@ -762,6 +854,14 @@ private constructor(
             incomplete != null -> "ResponseStreamEvent{incomplete=$incomplete}"
             outputItemAdded != null -> "ResponseStreamEvent{outputItemAdded=$outputItemAdded}"
             outputItemDone != null -> "ResponseStreamEvent{outputItemDone=$outputItemDone}"
+            reasoningSummaryPartAdded != null ->
+                "ResponseStreamEvent{reasoningSummaryPartAdded=$reasoningSummaryPartAdded}"
+            reasoningSummaryPartDone != null ->
+                "ResponseStreamEvent{reasoningSummaryPartDone=$reasoningSummaryPartDone}"
+            reasoningSummaryTextDelta != null ->
+                "ResponseStreamEvent{reasoningSummaryTextDelta=$reasoningSummaryTextDelta}"
+            reasoningSummaryTextDone != null ->
+                "ResponseStreamEvent{reasoningSummaryTextDone=$reasoningSummaryTextDone}"
             refusalDelta != null -> "ResponseStreamEvent{refusalDelta=$refusalDelta}"
             refusalDone != null -> "ResponseStreamEvent{refusalDone=$refusalDone}"
             outputTextAnnotationAdded != null ->
@@ -905,6 +1005,30 @@ private constructor(
         fun ofOutputItemDone(outputItemDone: ResponseOutputItemDoneEvent) =
             ResponseStreamEvent(outputItemDone = outputItemDone)
 
+        /** Emitted when a new reasoning summary part is added. */
+        @JvmStatic
+        fun ofReasoningSummaryPartAdded(
+            reasoningSummaryPartAdded: ResponseReasoningSummaryPartAddedEvent
+        ) = ResponseStreamEvent(reasoningSummaryPartAdded = reasoningSummaryPartAdded)
+
+        /** Emitted when a reasoning summary part is completed. */
+        @JvmStatic
+        fun ofReasoningSummaryPartDone(
+            reasoningSummaryPartDone: ResponseReasoningSummaryPartDoneEvent
+        ) = ResponseStreamEvent(reasoningSummaryPartDone = reasoningSummaryPartDone)
+
+        /** Emitted when a delta is added to a reasoning summary text. */
+        @JvmStatic
+        fun ofReasoningSummaryTextDelta(
+            reasoningSummaryTextDelta: ResponseReasoningSummaryTextDeltaEvent
+        ) = ResponseStreamEvent(reasoningSummaryTextDelta = reasoningSummaryTextDelta)
+
+        /** Emitted when a reasoning summary text is completed. */
+        @JvmStatic
+        fun ofReasoningSummaryTextDone(
+            reasoningSummaryTextDone: ResponseReasoningSummaryTextDoneEvent
+        ) = ResponseStreamEvent(reasoningSummaryTextDone = reasoningSummaryTextDone)
+
         /** Emitted when there is a partial refusal text. */
         @JvmStatic
         fun ofRefusalDelta(refusalDelta: ResponseRefusalDeltaEvent) =
@@ -1045,6 +1169,26 @@ private constructor(
 
         /** Emitted when an output item is marked done. */
         fun visitOutputItemDone(outputItemDone: ResponseOutputItemDoneEvent): T
+
+        /** Emitted when a new reasoning summary part is added. */
+        fun visitReasoningSummaryPartAdded(
+            reasoningSummaryPartAdded: ResponseReasoningSummaryPartAddedEvent
+        ): T
+
+        /** Emitted when a reasoning summary part is completed. */
+        fun visitReasoningSummaryPartDone(
+            reasoningSummaryPartDone: ResponseReasoningSummaryPartDoneEvent
+        ): T
+
+        /** Emitted when a delta is added to a reasoning summary text. */
+        fun visitReasoningSummaryTextDelta(
+            reasoningSummaryTextDelta: ResponseReasoningSummaryTextDeltaEvent
+        ): T
+
+        /** Emitted when a reasoning summary text is completed. */
+        fun visitReasoningSummaryTextDone(
+            reasoningSummaryTextDone: ResponseReasoningSummaryTextDoneEvent
+        ): T
 
         /** Emitted when there is a partial refusal text. */
         fun visitRefusalDelta(refusalDelta: ResponseRefusalDeltaEvent): T
@@ -1256,6 +1400,38 @@ private constructor(
                         ?.let { ResponseStreamEvent(outputItemDone = it, _json = json) }
                         ?: ResponseStreamEvent(_json = json)
                 }
+                "response.reasoning_summary_part.added" -> {
+                    return tryDeserialize(
+                            node,
+                            jacksonTypeRef<ResponseReasoningSummaryPartAddedEvent>(),
+                        )
+                        ?.let { ResponseStreamEvent(reasoningSummaryPartAdded = it, _json = json) }
+                        ?: ResponseStreamEvent(_json = json)
+                }
+                "response.reasoning_summary_part.done" -> {
+                    return tryDeserialize(
+                            node,
+                            jacksonTypeRef<ResponseReasoningSummaryPartDoneEvent>(),
+                        )
+                        ?.let { ResponseStreamEvent(reasoningSummaryPartDone = it, _json = json) }
+                        ?: ResponseStreamEvent(_json = json)
+                }
+                "response.reasoning_summary_text.delta" -> {
+                    return tryDeserialize(
+                            node,
+                            jacksonTypeRef<ResponseReasoningSummaryTextDeltaEvent>(),
+                        )
+                        ?.let { ResponseStreamEvent(reasoningSummaryTextDelta = it, _json = json) }
+                        ?: ResponseStreamEvent(_json = json)
+                }
+                "response.reasoning_summary_text.done" -> {
+                    return tryDeserialize(
+                            node,
+                            jacksonTypeRef<ResponseReasoningSummaryTextDoneEvent>(),
+                        )
+                        ?.let { ResponseStreamEvent(reasoningSummaryTextDone = it, _json = json) }
+                        ?: ResponseStreamEvent(_json = json)
+                }
                 "response.refusal.delta" -> {
                     return tryDeserialize(node, jacksonTypeRef<ResponseRefusalDeltaEvent>())?.let {
                         ResponseStreamEvent(refusalDelta = it, _json = json)
@@ -1355,6 +1531,14 @@ private constructor(
                 value.incomplete != null -> generator.writeObject(value.incomplete)
                 value.outputItemAdded != null -> generator.writeObject(value.outputItemAdded)
                 value.outputItemDone != null -> generator.writeObject(value.outputItemDone)
+                value.reasoningSummaryPartAdded != null ->
+                    generator.writeObject(value.reasoningSummaryPartAdded)
+                value.reasoningSummaryPartDone != null ->
+                    generator.writeObject(value.reasoningSummaryPartDone)
+                value.reasoningSummaryTextDelta != null ->
+                    generator.writeObject(value.reasoningSummaryTextDelta)
+                value.reasoningSummaryTextDone != null ->
+                    generator.writeObject(value.reasoningSummaryTextDone)
                 value.refusalDelta != null -> generator.writeObject(value.refusalDelta)
                 value.refusalDone != null -> generator.writeObject(value.refusalDone)
                 value.outputTextAnnotationAdded != null ->

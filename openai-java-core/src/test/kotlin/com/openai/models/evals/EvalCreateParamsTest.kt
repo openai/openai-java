@@ -42,7 +42,6 @@ internal class EvalCreateParamsTest {
                     .build()
             )
             .name("name")
-            .shareWithOpenAI(true)
             .build()
     }
 
@@ -81,7 +80,6 @@ internal class EvalCreateParamsTest {
                         .build()
                 )
                 .name("name")
-                .shareWithOpenAI(true)
                 .build()
 
         val body = params._body()
@@ -124,7 +122,6 @@ internal class EvalCreateParamsTest {
                     .build()
             )
         assertThat(body.name()).contains("name")
-        assertThat(body.shareWithOpenAI()).contains(true)
     }
 
     @Test

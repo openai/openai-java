@@ -22,7 +22,7 @@ import kotlin.io.path.inputStream
 import kotlin.io.path.name
 import kotlin.jvm.optionals.getOrNull
 
-/** Creates a variation of a given image. */
+/** Creates a variation of a given image. This endpoint only supports `dall-e-2`. */
 class ImageCreateVariationParams
 private constructor(
     private val body: Body,
@@ -48,8 +48,7 @@ private constructor(
     fun model(): Optional<ImageModel> = body.model()
 
     /**
-     * The number of images to generate. Must be between 1 and 10. For `dall-e-3`, only `n=1` is
-     * supported.
+     * The number of images to generate. Must be between 1 and 10.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -223,10 +222,7 @@ private constructor(
          */
         fun model(value: String) = apply { body.model(value) }
 
-        /**
-         * The number of images to generate. Must be between 1 and 10. For `dall-e-3`, only `n=1` is
-         * supported.
-         */
+        /** The number of images to generate. Must be between 1 and 10. */
         fun n(n: Long?) = apply { body.n(n) }
 
         /**
@@ -462,8 +458,7 @@ private constructor(
         fun model(): Optional<ImageModel> = model.value.getOptional("model")
 
         /**
-         * The number of images to generate. Must be between 1 and 10. For `dall-e-3`, only `n=1` is
-         * supported.
+         * The number of images to generate. Must be between 1 and 10.
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
@@ -635,10 +630,7 @@ private constructor(
              */
             fun model(value: String) = model(ImageModel.of(value))
 
-            /**
-             * The number of images to generate. Must be between 1 and 10. For `dall-e-3`, only
-             * `n=1` is supported.
-             */
+            /** The number of images to generate. Must be between 1 and 10. */
             fun n(n: Long?) = n(MultipartField.of(n))
 
             /**

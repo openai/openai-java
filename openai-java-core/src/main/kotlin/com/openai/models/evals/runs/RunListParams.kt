@@ -41,7 +41,7 @@ private constructor(
     fun order(): Optional<Order> = Optional.ofNullable(order)
 
     /**
-     * Filter runs by status. Use "queued" | "in_progress" | "failed" | "completed" | "canceled".
+     * Filter runs by status. One of `queued` | `in_progress` | `failed` | `completed` | `canceled`.
      */
     fun status(): Optional<Status> = Optional.ofNullable(status)
 
@@ -117,8 +117,8 @@ private constructor(
         fun order(order: Optional<Order>) = order(order.getOrNull())
 
         /**
-         * Filter runs by status. Use "queued" | "in_progress" | "failed" | "completed" |
-         * "canceled".
+         * Filter runs by status. One of `queued` | `in_progress` | `failed` | `completed` |
+         * `canceled`.
          */
         fun status(status: Status?) = apply { this.status = status }
 
@@ -396,7 +396,7 @@ private constructor(
     }
 
     /**
-     * Filter runs by status. Use "queued" | "in_progress" | "failed" | "completed" | "canceled".
+     * Filter runs by status. One of `queued` | `in_progress` | `failed` | `completed` | `canceled`.
      */
     class Status @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
 

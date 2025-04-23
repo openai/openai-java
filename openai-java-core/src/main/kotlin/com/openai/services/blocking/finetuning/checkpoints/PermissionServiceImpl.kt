@@ -50,7 +50,7 @@ class PermissionServiceImpl internal constructor(private val clientOptions: Clie
         params: PermissionDeleteParams,
         requestOptions: RequestOptions,
     ): PermissionDeleteResponse =
-        // delete /fine_tuning/checkpoints/{fine_tuned_model_checkpoint}/permissions
+        // delete /fine_tuning/checkpoints/{fine_tuned_model_checkpoint}/permissions/{permission_id}
         withRawResponse().delete(params, requestOptions).parse()
 
     class WithRawResponseImpl internal constructor(private val clientOptions: ClientOptions) :
@@ -146,6 +146,7 @@ class PermissionServiceImpl internal constructor(private val clientOptions: Clie
                         "checkpoints",
                         params._pathParam(0),
                         "permissions",
+                        params._pathParam(1),
                     )
                     .apply { params._body().ifPresent { body(json(clientOptions.jsonMapper, it)) } }
                     .build()

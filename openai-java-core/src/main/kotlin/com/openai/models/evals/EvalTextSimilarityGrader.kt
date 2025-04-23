@@ -45,8 +45,8 @@ private constructor(
     ) : this(evaluationMetric, input, passThreshold, reference, type, name, mutableMapOf())
 
     /**
-     * The evaluation metric to use. One of `cosine`, `fuzzy_match`, `bleu`, `gleu`, `meteor`,
-     * `rouge_1`, `rouge_2`, `rouge_3`, `rouge_4`, `rouge_5`, or `rouge_l`.
+     * The evaluation metric to use. One of `fuzzy_match`, `bleu`, `gleu`, `meteor`, `rouge_1`,
+     * `rouge_2`, `rouge_3`, `rouge_4`, `rouge_5`, or `rouge_l`.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
      *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
@@ -189,8 +189,8 @@ private constructor(
         }
 
         /**
-         * The evaluation metric to use. One of `cosine`, `fuzzy_match`, `bleu`, `gleu`, `meteor`,
-         * `rouge_1`, `rouge_2`, `rouge_3`, `rouge_4`, `rouge_5`, or `rouge_l`.
+         * The evaluation metric to use. One of `fuzzy_match`, `bleu`, `gleu`, `meteor`, `rouge_1`,
+         * `rouge_2`, `rouge_3`, `rouge_4`, `rouge_5`, or `rouge_l`.
          */
         fun evaluationMetric(evaluationMetric: EvaluationMetric) =
             evaluationMetric(JsonField.of(evaluationMetric))
@@ -357,8 +357,8 @@ private constructor(
             (if (name.asKnown().isPresent) 1 else 0)
 
     /**
-     * The evaluation metric to use. One of `cosine`, `fuzzy_match`, `bleu`, `gleu`, `meteor`,
-     * `rouge_1`, `rouge_2`, `rouge_3`, `rouge_4`, `rouge_5`, or `rouge_l`.
+     * The evaluation metric to use. One of `fuzzy_match`, `bleu`, `gleu`, `meteor`, `rouge_1`,
+     * `rouge_2`, `rouge_3`, `rouge_4`, `rouge_5`, or `rouge_l`.
      */
     class EvaluationMetric @JsonCreator private constructor(private val value: JsonField<String>) :
         Enum {
@@ -395,8 +395,6 @@ private constructor(
 
             @JvmField val ROUGE_L = of("rouge_l")
 
-            @JvmField val COSINE = of("cosine")
-
             @JvmStatic fun of(value: String) = EvaluationMetric(JsonField.of(value))
         }
 
@@ -412,7 +410,6 @@ private constructor(
             ROUGE_4,
             ROUGE_5,
             ROUGE_L,
-            COSINE,
         }
 
         /**
@@ -435,7 +432,6 @@ private constructor(
             ROUGE_4,
             ROUGE_5,
             ROUGE_L,
-            COSINE,
             /**
              * An enum member indicating that [EvaluationMetric] was instantiated with an unknown
              * value.
@@ -462,7 +458,6 @@ private constructor(
                 ROUGE_4 -> Value.ROUGE_4
                 ROUGE_5 -> Value.ROUGE_5
                 ROUGE_L -> Value.ROUGE_L
-                COSINE -> Value.COSINE
                 else -> Value._UNKNOWN
             }
 
@@ -487,7 +482,6 @@ private constructor(
                 ROUGE_4 -> Known.ROUGE_4
                 ROUGE_5 -> Known.ROUGE_5
                 ROUGE_L -> Known.ROUGE_L
-                COSINE -> Known.COSINE
                 else -> throw OpenAIInvalidDataException("Unknown EvaluationMetric: $value")
             }
 

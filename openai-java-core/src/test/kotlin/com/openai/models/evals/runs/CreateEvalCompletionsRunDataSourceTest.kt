@@ -5,6 +5,7 @@ package com.openai.models.evals.runs
 import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
 import com.openai.core.JsonValue
 import com.openai.core.jsonMapper
+import com.openai.models.responses.EasyInputMessage
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
@@ -14,21 +15,6 @@ internal class CreateEvalCompletionsRunDataSourceTest {
     fun create() {
         val createEvalCompletionsRunDataSource =
             CreateEvalCompletionsRunDataSource.builder()
-                .templateInputMessages(
-                    listOf(
-                        CreateEvalCompletionsRunDataSource.InputMessages.Template.InnerTemplate
-                            .ofChatMessage(
-                                CreateEvalCompletionsRunDataSource.InputMessages.Template
-                                    .InnerTemplate
-                                    .ChatMessage
-                                    .builder()
-                                    .content("content")
-                                    .role("role")
-                                    .build()
-                            )
-                    )
-                )
-                .model("model")
                 .fileContentSource(
                     listOf(
                         CreateEvalCompletionsRunDataSource.Source.FileContent.Content.builder()
@@ -48,6 +34,19 @@ internal class CreateEvalCompletionsRunDataSourceTest {
                     )
                 )
                 .type(CreateEvalCompletionsRunDataSource.Type.COMPLETIONS)
+                .templateInputMessages(
+                    listOf(
+                        CreateEvalCompletionsRunDataSource.InputMessages.Template.InnerTemplate
+                            .ofEasyInputMessage(
+                                EasyInputMessage.builder()
+                                    .content("string")
+                                    .role(EasyInputMessage.Role.USER)
+                                    .type(EasyInputMessage.Type.MESSAGE)
+                                    .build()
+                            )
+                    )
+                )
+                .model("model")
                 .samplingParams(
                     CreateEvalCompletionsRunDataSource.SamplingParams.builder()
                         .maxCompletionTokens(0L)
@@ -58,22 +57,6 @@ internal class CreateEvalCompletionsRunDataSourceTest {
                 )
                 .build()
 
-        assertThat(createEvalCompletionsRunDataSource.inputMessages())
-            .isEqualTo(
-                CreateEvalCompletionsRunDataSource.InputMessages.ofTemplate(
-                    CreateEvalCompletionsRunDataSource.InputMessages.Template.builder()
-                        .addTemplate(
-                            CreateEvalCompletionsRunDataSource.InputMessages.Template.InnerTemplate
-                                .ChatMessage
-                                .builder()
-                                .content("content")
-                                .role("role")
-                                .build()
-                        )
-                        .build()
-                )
-            )
-        assertThat(createEvalCompletionsRunDataSource.model()).isEqualTo("model")
         assertThat(createEvalCompletionsRunDataSource.source())
             .isEqualTo(
                 CreateEvalCompletionsRunDataSource.Source.ofFileContent(
@@ -101,6 +84,21 @@ internal class CreateEvalCompletionsRunDataSourceTest {
             )
         assertThat(createEvalCompletionsRunDataSource.type())
             .isEqualTo(CreateEvalCompletionsRunDataSource.Type.COMPLETIONS)
+        assertThat(createEvalCompletionsRunDataSource.inputMessages())
+            .contains(
+                CreateEvalCompletionsRunDataSource.InputMessages.ofTemplate(
+                    CreateEvalCompletionsRunDataSource.InputMessages.Template.builder()
+                        .addTemplate(
+                            EasyInputMessage.builder()
+                                .content("string")
+                                .role(EasyInputMessage.Role.USER)
+                                .type(EasyInputMessage.Type.MESSAGE)
+                                .build()
+                        )
+                        .build()
+                )
+            )
+        assertThat(createEvalCompletionsRunDataSource.model()).contains("model")
         assertThat(createEvalCompletionsRunDataSource.samplingParams())
             .contains(
                 CreateEvalCompletionsRunDataSource.SamplingParams.builder()
@@ -117,21 +115,6 @@ internal class CreateEvalCompletionsRunDataSourceTest {
         val jsonMapper = jsonMapper()
         val createEvalCompletionsRunDataSource =
             CreateEvalCompletionsRunDataSource.builder()
-                .templateInputMessages(
-                    listOf(
-                        CreateEvalCompletionsRunDataSource.InputMessages.Template.InnerTemplate
-                            .ofChatMessage(
-                                CreateEvalCompletionsRunDataSource.InputMessages.Template
-                                    .InnerTemplate
-                                    .ChatMessage
-                                    .builder()
-                                    .content("content")
-                                    .role("role")
-                                    .build()
-                            )
-                    )
-                )
-                .model("model")
                 .fileContentSource(
                     listOf(
                         CreateEvalCompletionsRunDataSource.Source.FileContent.Content.builder()
@@ -151,6 +134,19 @@ internal class CreateEvalCompletionsRunDataSourceTest {
                     )
                 )
                 .type(CreateEvalCompletionsRunDataSource.Type.COMPLETIONS)
+                .templateInputMessages(
+                    listOf(
+                        CreateEvalCompletionsRunDataSource.InputMessages.Template.InnerTemplate
+                            .ofEasyInputMessage(
+                                EasyInputMessage.builder()
+                                    .content("string")
+                                    .role(EasyInputMessage.Role.USER)
+                                    .type(EasyInputMessage.Type.MESSAGE)
+                                    .build()
+                            )
+                    )
+                )
+                .model("model")
                 .samplingParams(
                     CreateEvalCompletionsRunDataSource.SamplingParams.builder()
                         .maxCompletionTokens(0L)

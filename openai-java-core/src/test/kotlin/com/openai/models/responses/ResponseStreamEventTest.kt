@@ -49,6 +49,10 @@ internal class ResponseStreamEventTest {
         assertThat(responseStreamEvent.incomplete()).isEmpty
         assertThat(responseStreamEvent.outputItemAdded()).isEmpty
         assertThat(responseStreamEvent.outputItemDone()).isEmpty
+        assertThat(responseStreamEvent.reasoningSummaryPartAdded()).isEmpty
+        assertThat(responseStreamEvent.reasoningSummaryPartDone()).isEmpty
+        assertThat(responseStreamEvent.reasoningSummaryTextDelta()).isEmpty
+        assertThat(responseStreamEvent.reasoningSummaryTextDone()).isEmpty
         assertThat(responseStreamEvent.refusalDelta()).isEmpty
         assertThat(responseStreamEvent.refusalDone()).isEmpty
         assertThat(responseStreamEvent.outputTextAnnotationAdded()).isEmpty
@@ -106,6 +110,10 @@ internal class ResponseStreamEventTest {
         assertThat(responseStreamEvent.incomplete()).isEmpty
         assertThat(responseStreamEvent.outputItemAdded()).isEmpty
         assertThat(responseStreamEvent.outputItemDone()).isEmpty
+        assertThat(responseStreamEvent.reasoningSummaryPartAdded()).isEmpty
+        assertThat(responseStreamEvent.reasoningSummaryPartDone()).isEmpty
+        assertThat(responseStreamEvent.reasoningSummaryTextDelta()).isEmpty
+        assertThat(responseStreamEvent.reasoningSummaryTextDone()).isEmpty
         assertThat(responseStreamEvent.refusalDelta()).isEmpty
         assertThat(responseStreamEvent.refusalDone()).isEmpty
         assertThat(responseStreamEvent.outputTextAnnotationAdded()).isEmpty
@@ -162,6 +170,10 @@ internal class ResponseStreamEventTest {
         assertThat(responseStreamEvent.incomplete()).isEmpty
         assertThat(responseStreamEvent.outputItemAdded()).isEmpty
         assertThat(responseStreamEvent.outputItemDone()).isEmpty
+        assertThat(responseStreamEvent.reasoningSummaryPartAdded()).isEmpty
+        assertThat(responseStreamEvent.reasoningSummaryPartDone()).isEmpty
+        assertThat(responseStreamEvent.reasoningSummaryTextDelta()).isEmpty
+        assertThat(responseStreamEvent.reasoningSummaryTextDone()).isEmpty
         assertThat(responseStreamEvent.refusalDelta()).isEmpty
         assertThat(responseStreamEvent.refusalDone()).isEmpty
         assertThat(responseStreamEvent.outputTextAnnotationAdded()).isEmpty
@@ -219,6 +231,10 @@ internal class ResponseStreamEventTest {
         assertThat(responseStreamEvent.incomplete()).isEmpty
         assertThat(responseStreamEvent.outputItemAdded()).isEmpty
         assertThat(responseStreamEvent.outputItemDone()).isEmpty
+        assertThat(responseStreamEvent.reasoningSummaryPartAdded()).isEmpty
+        assertThat(responseStreamEvent.reasoningSummaryPartDone()).isEmpty
+        assertThat(responseStreamEvent.reasoningSummaryTextDelta()).isEmpty
+        assertThat(responseStreamEvent.reasoningSummaryTextDone()).isEmpty
         assertThat(responseStreamEvent.refusalDelta()).isEmpty
         assertThat(responseStreamEvent.refusalDone()).isEmpty
         assertThat(responseStreamEvent.outputTextAnnotationAdded()).isEmpty
@@ -282,6 +298,10 @@ internal class ResponseStreamEventTest {
         assertThat(responseStreamEvent.incomplete()).isEmpty
         assertThat(responseStreamEvent.outputItemAdded()).isEmpty
         assertThat(responseStreamEvent.outputItemDone()).isEmpty
+        assertThat(responseStreamEvent.reasoningSummaryPartAdded()).isEmpty
+        assertThat(responseStreamEvent.reasoningSummaryPartDone()).isEmpty
+        assertThat(responseStreamEvent.reasoningSummaryTextDelta()).isEmpty
+        assertThat(responseStreamEvent.reasoningSummaryTextDone()).isEmpty
         assertThat(responseStreamEvent.refusalDelta()).isEmpty
         assertThat(responseStreamEvent.refusalDone()).isEmpty
         assertThat(responseStreamEvent.outputTextAnnotationAdded()).isEmpty
@@ -345,6 +365,10 @@ internal class ResponseStreamEventTest {
         assertThat(responseStreamEvent.incomplete()).isEmpty
         assertThat(responseStreamEvent.outputItemAdded()).isEmpty
         assertThat(responseStreamEvent.outputItemDone()).isEmpty
+        assertThat(responseStreamEvent.reasoningSummaryPartAdded()).isEmpty
+        assertThat(responseStreamEvent.reasoningSummaryPartDone()).isEmpty
+        assertThat(responseStreamEvent.reasoningSummaryTextDelta()).isEmpty
+        assertThat(responseStreamEvent.reasoningSummaryTextDone()).isEmpty
         assertThat(responseStreamEvent.refusalDelta()).isEmpty
         assertThat(responseStreamEvent.refusalDone()).isEmpty
         assertThat(responseStreamEvent.outputTextAnnotationAdded()).isEmpty
@@ -418,6 +442,10 @@ internal class ResponseStreamEventTest {
         assertThat(responseStreamEvent.incomplete()).isEmpty
         assertThat(responseStreamEvent.outputItemAdded()).isEmpty
         assertThat(responseStreamEvent.outputItemDone()).isEmpty
+        assertThat(responseStreamEvent.reasoningSummaryPartAdded()).isEmpty
+        assertThat(responseStreamEvent.reasoningSummaryPartDone()).isEmpty
+        assertThat(responseStreamEvent.reasoningSummaryTextDelta()).isEmpty
+        assertThat(responseStreamEvent.reasoningSummaryTextDone()).isEmpty
         assertThat(responseStreamEvent.refusalDelta()).isEmpty
         assertThat(responseStreamEvent.refusalDone()).isEmpty
         assertThat(responseStreamEvent.outputTextAnnotationAdded()).isEmpty
@@ -498,6 +526,10 @@ internal class ResponseStreamEventTest {
         assertThat(responseStreamEvent.incomplete()).isEmpty
         assertThat(responseStreamEvent.outputItemAdded()).isEmpty
         assertThat(responseStreamEvent.outputItemDone()).isEmpty
+        assertThat(responseStreamEvent.reasoningSummaryPartAdded()).isEmpty
+        assertThat(responseStreamEvent.reasoningSummaryPartDone()).isEmpty
+        assertThat(responseStreamEvent.reasoningSummaryTextDelta()).isEmpty
+        assertThat(responseStreamEvent.reasoningSummaryTextDone()).isEmpty
         assertThat(responseStreamEvent.refusalDelta()).isEmpty
         assertThat(responseStreamEvent.refusalDone()).isEmpty
         assertThat(responseStreamEvent.outputTextAnnotationAdded()).isEmpty
@@ -578,6 +610,10 @@ internal class ResponseStreamEventTest {
         assertThat(responseStreamEvent.incomplete()).isEmpty
         assertThat(responseStreamEvent.outputItemAdded()).isEmpty
         assertThat(responseStreamEvent.outputItemDone()).isEmpty
+        assertThat(responseStreamEvent.reasoningSummaryPartAdded()).isEmpty
+        assertThat(responseStreamEvent.reasoningSummaryPartDone()).isEmpty
+        assertThat(responseStreamEvent.reasoningSummaryTextDelta()).isEmpty
+        assertThat(responseStreamEvent.reasoningSummaryTextDone()).isEmpty
         assertThat(responseStreamEvent.refusalDelta()).isEmpty
         assertThat(responseStreamEvent.refusalDone()).isEmpty
         assertThat(responseStreamEvent.outputTextAnnotationAdded()).isEmpty
@@ -746,6 +782,10 @@ internal class ResponseStreamEventTest {
         assertThat(responseStreamEvent.incomplete()).isEmpty
         assertThat(responseStreamEvent.outputItemAdded()).isEmpty
         assertThat(responseStreamEvent.outputItemDone()).isEmpty
+        assertThat(responseStreamEvent.reasoningSummaryPartAdded()).isEmpty
+        assertThat(responseStreamEvent.reasoningSummaryPartDone()).isEmpty
+        assertThat(responseStreamEvent.reasoningSummaryTextDelta()).isEmpty
+        assertThat(responseStreamEvent.reasoningSummaryTextDone()).isEmpty
         assertThat(responseStreamEvent.refusalDelta()).isEmpty
         assertThat(responseStreamEvent.refusalDone()).isEmpty
         assertThat(responseStreamEvent.outputTextAnnotationAdded()).isEmpty
@@ -919,6 +959,10 @@ internal class ResponseStreamEventTest {
         assertThat(responseStreamEvent.incomplete()).isEmpty
         assertThat(responseStreamEvent.outputItemAdded()).isEmpty
         assertThat(responseStreamEvent.outputItemDone()).isEmpty
+        assertThat(responseStreamEvent.reasoningSummaryPartAdded()).isEmpty
+        assertThat(responseStreamEvent.reasoningSummaryPartDone()).isEmpty
+        assertThat(responseStreamEvent.reasoningSummaryTextDelta()).isEmpty
+        assertThat(responseStreamEvent.reasoningSummaryTextDone()).isEmpty
         assertThat(responseStreamEvent.refusalDelta()).isEmpty
         assertThat(responseStreamEvent.refusalDone()).isEmpty
         assertThat(responseStreamEvent.outputTextAnnotationAdded()).isEmpty
@@ -1007,6 +1051,10 @@ internal class ResponseStreamEventTest {
         assertThat(responseStreamEvent.incomplete()).isEmpty
         assertThat(responseStreamEvent.outputItemAdded()).isEmpty
         assertThat(responseStreamEvent.outputItemDone()).isEmpty
+        assertThat(responseStreamEvent.reasoningSummaryPartAdded()).isEmpty
+        assertThat(responseStreamEvent.reasoningSummaryPartDone()).isEmpty
+        assertThat(responseStreamEvent.reasoningSummaryTextDelta()).isEmpty
+        assertThat(responseStreamEvent.reasoningSummaryTextDone()).isEmpty
         assertThat(responseStreamEvent.refusalDelta()).isEmpty
         assertThat(responseStreamEvent.refusalDone()).isEmpty
         assertThat(responseStreamEvent.outputTextAnnotationAdded()).isEmpty
@@ -1180,6 +1228,10 @@ internal class ResponseStreamEventTest {
         assertThat(responseStreamEvent.incomplete()).isEmpty
         assertThat(responseStreamEvent.outputItemAdded()).isEmpty
         assertThat(responseStreamEvent.outputItemDone()).isEmpty
+        assertThat(responseStreamEvent.reasoningSummaryPartAdded()).isEmpty
+        assertThat(responseStreamEvent.reasoningSummaryPartDone()).isEmpty
+        assertThat(responseStreamEvent.reasoningSummaryTextDelta()).isEmpty
+        assertThat(responseStreamEvent.reasoningSummaryTextDone()).isEmpty
         assertThat(responseStreamEvent.refusalDelta()).isEmpty
         assertThat(responseStreamEvent.refusalDone()).isEmpty
         assertThat(responseStreamEvent.outputTextAnnotationAdded()).isEmpty
@@ -1338,6 +1390,10 @@ internal class ResponseStreamEventTest {
         assertThat(responseStreamEvent.incomplete()).isEmpty
         assertThat(responseStreamEvent.outputItemAdded()).isEmpty
         assertThat(responseStreamEvent.outputItemDone()).isEmpty
+        assertThat(responseStreamEvent.reasoningSummaryPartAdded()).isEmpty
+        assertThat(responseStreamEvent.reasoningSummaryPartDone()).isEmpty
+        assertThat(responseStreamEvent.reasoningSummaryTextDelta()).isEmpty
+        assertThat(responseStreamEvent.reasoningSummaryTextDone()).isEmpty
         assertThat(responseStreamEvent.refusalDelta()).isEmpty
         assertThat(responseStreamEvent.refusalDone()).isEmpty
         assertThat(responseStreamEvent.outputTextAnnotationAdded()).isEmpty
@@ -1397,6 +1453,10 @@ internal class ResponseStreamEventTest {
         assertThat(responseStreamEvent.incomplete()).isEmpty
         assertThat(responseStreamEvent.outputItemAdded()).isEmpty
         assertThat(responseStreamEvent.outputItemDone()).isEmpty
+        assertThat(responseStreamEvent.reasoningSummaryPartAdded()).isEmpty
+        assertThat(responseStreamEvent.reasoningSummaryPartDone()).isEmpty
+        assertThat(responseStreamEvent.reasoningSummaryTextDelta()).isEmpty
+        assertThat(responseStreamEvent.reasoningSummaryTextDone()).isEmpty
         assertThat(responseStreamEvent.refusalDelta()).isEmpty
         assertThat(responseStreamEvent.refusalDone()).isEmpty
         assertThat(responseStreamEvent.outputTextAnnotationAdded()).isEmpty
@@ -1463,6 +1523,10 @@ internal class ResponseStreamEventTest {
         assertThat(responseStreamEvent.incomplete()).isEmpty
         assertThat(responseStreamEvent.outputItemAdded()).isEmpty
         assertThat(responseStreamEvent.outputItemDone()).isEmpty
+        assertThat(responseStreamEvent.reasoningSummaryPartAdded()).isEmpty
+        assertThat(responseStreamEvent.reasoningSummaryPartDone()).isEmpty
+        assertThat(responseStreamEvent.reasoningSummaryTextDelta()).isEmpty
+        assertThat(responseStreamEvent.reasoningSummaryTextDone()).isEmpty
         assertThat(responseStreamEvent.refusalDelta()).isEmpty
         assertThat(responseStreamEvent.refusalDone()).isEmpty
         assertThat(responseStreamEvent.outputTextAnnotationAdded()).isEmpty
@@ -1525,6 +1589,10 @@ internal class ResponseStreamEventTest {
         assertThat(responseStreamEvent.incomplete()).isEmpty
         assertThat(responseStreamEvent.outputItemAdded()).isEmpty
         assertThat(responseStreamEvent.outputItemDone()).isEmpty
+        assertThat(responseStreamEvent.reasoningSummaryPartAdded()).isEmpty
+        assertThat(responseStreamEvent.reasoningSummaryPartDone()).isEmpty
+        assertThat(responseStreamEvent.reasoningSummaryTextDelta()).isEmpty
+        assertThat(responseStreamEvent.reasoningSummaryTextDone()).isEmpty
         assertThat(responseStreamEvent.refusalDelta()).isEmpty
         assertThat(responseStreamEvent.refusalDone()).isEmpty
         assertThat(responseStreamEvent.outputTextAnnotationAdded()).isEmpty
@@ -1592,6 +1660,10 @@ internal class ResponseStreamEventTest {
         assertThat(responseStreamEvent.incomplete()).isEmpty
         assertThat(responseStreamEvent.outputItemAdded()).isEmpty
         assertThat(responseStreamEvent.outputItemDone()).isEmpty
+        assertThat(responseStreamEvent.reasoningSummaryPartAdded()).isEmpty
+        assertThat(responseStreamEvent.reasoningSummaryPartDone()).isEmpty
+        assertThat(responseStreamEvent.reasoningSummaryTextDelta()).isEmpty
+        assertThat(responseStreamEvent.reasoningSummaryTextDone()).isEmpty
         assertThat(responseStreamEvent.refusalDelta()).isEmpty
         assertThat(responseStreamEvent.refusalDone()).isEmpty
         assertThat(responseStreamEvent.outputTextAnnotationAdded()).isEmpty
@@ -1660,6 +1732,10 @@ internal class ResponseStreamEventTest {
         assertThat(responseStreamEvent.incomplete()).isEmpty
         assertThat(responseStreamEvent.outputItemAdded()).isEmpty
         assertThat(responseStreamEvent.outputItemDone()).isEmpty
+        assertThat(responseStreamEvent.reasoningSummaryPartAdded()).isEmpty
+        assertThat(responseStreamEvent.reasoningSummaryPartDone()).isEmpty
+        assertThat(responseStreamEvent.reasoningSummaryTextDelta()).isEmpty
+        assertThat(responseStreamEvent.reasoningSummaryTextDone()).isEmpty
         assertThat(responseStreamEvent.refusalDelta()).isEmpty
         assertThat(responseStreamEvent.refusalDone()).isEmpty
         assertThat(responseStreamEvent.outputTextAnnotationAdded()).isEmpty
@@ -1822,6 +1898,10 @@ internal class ResponseStreamEventTest {
         assertThat(responseStreamEvent.incomplete()).isEmpty
         assertThat(responseStreamEvent.outputItemAdded()).isEmpty
         assertThat(responseStreamEvent.outputItemDone()).isEmpty
+        assertThat(responseStreamEvent.reasoningSummaryPartAdded()).isEmpty
+        assertThat(responseStreamEvent.reasoningSummaryPartDone()).isEmpty
+        assertThat(responseStreamEvent.reasoningSummaryTextDelta()).isEmpty
+        assertThat(responseStreamEvent.reasoningSummaryTextDone()).isEmpty
         assertThat(responseStreamEvent.refusalDelta()).isEmpty
         assertThat(responseStreamEvent.refusalDone()).isEmpty
         assertThat(responseStreamEvent.outputTextAnnotationAdded()).isEmpty
@@ -2080,6 +2160,10 @@ internal class ResponseStreamEventTest {
         assertThat(responseStreamEvent.incomplete()).isEmpty
         assertThat(responseStreamEvent.outputItemAdded()).isEmpty
         assertThat(responseStreamEvent.outputItemDone()).isEmpty
+        assertThat(responseStreamEvent.reasoningSummaryPartAdded()).isEmpty
+        assertThat(responseStreamEvent.reasoningSummaryPartDone()).isEmpty
+        assertThat(responseStreamEvent.reasoningSummaryTextDelta()).isEmpty
+        assertThat(responseStreamEvent.reasoningSummaryTextDone()).isEmpty
         assertThat(responseStreamEvent.refusalDelta()).isEmpty
         assertThat(responseStreamEvent.refusalDone()).isEmpty
         assertThat(responseStreamEvent.outputTextAnnotationAdded()).isEmpty
@@ -2338,6 +2422,10 @@ internal class ResponseStreamEventTest {
         assertThat(responseStreamEvent.incomplete()).contains(incomplete)
         assertThat(responseStreamEvent.outputItemAdded()).isEmpty
         assertThat(responseStreamEvent.outputItemDone()).isEmpty
+        assertThat(responseStreamEvent.reasoningSummaryPartAdded()).isEmpty
+        assertThat(responseStreamEvent.reasoningSummaryPartDone()).isEmpty
+        assertThat(responseStreamEvent.reasoningSummaryTextDelta()).isEmpty
+        assertThat(responseStreamEvent.reasoningSummaryTextDone()).isEmpty
         assertThat(responseStreamEvent.refusalDelta()).isEmpty
         assertThat(responseStreamEvent.refusalDone()).isEmpty
         assertThat(responseStreamEvent.outputTextAnnotationAdded()).isEmpty
@@ -2515,6 +2603,10 @@ internal class ResponseStreamEventTest {
         assertThat(responseStreamEvent.incomplete()).isEmpty
         assertThat(responseStreamEvent.outputItemAdded()).contains(outputItemAdded)
         assertThat(responseStreamEvent.outputItemDone()).isEmpty
+        assertThat(responseStreamEvent.reasoningSummaryPartAdded()).isEmpty
+        assertThat(responseStreamEvent.reasoningSummaryPartDone()).isEmpty
+        assertThat(responseStreamEvent.reasoningSummaryTextDelta()).isEmpty
+        assertThat(responseStreamEvent.reasoningSummaryTextDone()).isEmpty
         assertThat(responseStreamEvent.refusalDelta()).isEmpty
         assertThat(responseStreamEvent.refusalDone()).isEmpty
         assertThat(responseStreamEvent.outputTextAnnotationAdded()).isEmpty
@@ -2611,6 +2703,10 @@ internal class ResponseStreamEventTest {
         assertThat(responseStreamEvent.incomplete()).isEmpty
         assertThat(responseStreamEvent.outputItemAdded()).isEmpty
         assertThat(responseStreamEvent.outputItemDone()).contains(outputItemDone)
+        assertThat(responseStreamEvent.reasoningSummaryPartAdded()).isEmpty
+        assertThat(responseStreamEvent.reasoningSummaryPartDone()).isEmpty
+        assertThat(responseStreamEvent.reasoningSummaryTextDelta()).isEmpty
+        assertThat(responseStreamEvent.reasoningSummaryTextDone()).isEmpty
         assertThat(responseStreamEvent.refusalDelta()).isEmpty
         assertThat(responseStreamEvent.refusalDone()).isEmpty
         assertThat(responseStreamEvent.outputTextAnnotationAdded()).isEmpty
@@ -2645,6 +2741,304 @@ internal class ResponseStreamEventTest {
                             .build()
                     )
                     .outputIndex(0L)
+                    .build()
+            )
+
+        val roundtrippedResponseStreamEvent =
+            jsonMapper.readValue(
+                jsonMapper.writeValueAsString(responseStreamEvent),
+                jacksonTypeRef<ResponseStreamEvent>(),
+            )
+
+        assertThat(roundtrippedResponseStreamEvent).isEqualTo(responseStreamEvent)
+    }
+
+    @Test
+    fun ofReasoningSummaryPartAdded() {
+        val reasoningSummaryPartAdded =
+            ResponseReasoningSummaryPartAddedEvent.builder()
+                .itemId("item_id")
+                .outputIndex(0L)
+                .part(ResponseReasoningSummaryPartAddedEvent.Part.builder().text("text").build())
+                .summaryIndex(0L)
+                .build()
+
+        val responseStreamEvent =
+            ResponseStreamEvent.ofReasoningSummaryPartAdded(reasoningSummaryPartAdded)
+
+        assertThat(responseStreamEvent.audioDelta()).isEmpty
+        assertThat(responseStreamEvent.audioDone()).isEmpty
+        assertThat(responseStreamEvent.audioTranscriptDelta()).isEmpty
+        assertThat(responseStreamEvent.audioTranscriptDone()).isEmpty
+        assertThat(responseStreamEvent.codeInterpreterCallCodeDelta()).isEmpty
+        assertThat(responseStreamEvent.codeInterpreterCallCodeDone()).isEmpty
+        assertThat(responseStreamEvent.codeInterpreterCallCompleted()).isEmpty
+        assertThat(responseStreamEvent.codeInterpreterCallInProgress()).isEmpty
+        assertThat(responseStreamEvent.codeInterpreterCallInterpreting()).isEmpty
+        assertThat(responseStreamEvent.completed()).isEmpty
+        assertThat(responseStreamEvent.contentPartAdded()).isEmpty
+        assertThat(responseStreamEvent.contentPartDone()).isEmpty
+        assertThat(responseStreamEvent.created()).isEmpty
+        assertThat(responseStreamEvent.error()).isEmpty
+        assertThat(responseStreamEvent.fileSearchCallCompleted()).isEmpty
+        assertThat(responseStreamEvent.fileSearchCallInProgress()).isEmpty
+        assertThat(responseStreamEvent.fileSearchCallSearching()).isEmpty
+        assertThat(responseStreamEvent.functionCallArgumentsDelta()).isEmpty
+        assertThat(responseStreamEvent.functionCallArgumentsDone()).isEmpty
+        assertThat(responseStreamEvent.inProgress()).isEmpty
+        assertThat(responseStreamEvent.failed()).isEmpty
+        assertThat(responseStreamEvent.incomplete()).isEmpty
+        assertThat(responseStreamEvent.outputItemAdded()).isEmpty
+        assertThat(responseStreamEvent.outputItemDone()).isEmpty
+        assertThat(responseStreamEvent.reasoningSummaryPartAdded())
+            .contains(reasoningSummaryPartAdded)
+        assertThat(responseStreamEvent.reasoningSummaryPartDone()).isEmpty
+        assertThat(responseStreamEvent.reasoningSummaryTextDelta()).isEmpty
+        assertThat(responseStreamEvent.reasoningSummaryTextDone()).isEmpty
+        assertThat(responseStreamEvent.refusalDelta()).isEmpty
+        assertThat(responseStreamEvent.refusalDone()).isEmpty
+        assertThat(responseStreamEvent.outputTextAnnotationAdded()).isEmpty
+        assertThat(responseStreamEvent.outputTextDelta()).isEmpty
+        assertThat(responseStreamEvent.outputTextDone()).isEmpty
+        assertThat(responseStreamEvent.webSearchCallCompleted()).isEmpty
+        assertThat(responseStreamEvent.webSearchCallInProgress()).isEmpty
+        assertThat(responseStreamEvent.webSearchCallSearching()).isEmpty
+    }
+
+    @Test
+    fun ofReasoningSummaryPartAddedRoundtrip() {
+        val jsonMapper = jsonMapper()
+        val responseStreamEvent =
+            ResponseStreamEvent.ofReasoningSummaryPartAdded(
+                ResponseReasoningSummaryPartAddedEvent.builder()
+                    .itemId("item_id")
+                    .outputIndex(0L)
+                    .part(
+                        ResponseReasoningSummaryPartAddedEvent.Part.builder().text("text").build()
+                    )
+                    .summaryIndex(0L)
+                    .build()
+            )
+
+        val roundtrippedResponseStreamEvent =
+            jsonMapper.readValue(
+                jsonMapper.writeValueAsString(responseStreamEvent),
+                jacksonTypeRef<ResponseStreamEvent>(),
+            )
+
+        assertThat(roundtrippedResponseStreamEvent).isEqualTo(responseStreamEvent)
+    }
+
+    @Test
+    fun ofReasoningSummaryPartDone() {
+        val reasoningSummaryPartDone =
+            ResponseReasoningSummaryPartDoneEvent.builder()
+                .itemId("item_id")
+                .outputIndex(0L)
+                .part(ResponseReasoningSummaryPartDoneEvent.Part.builder().text("text").build())
+                .summaryIndex(0L)
+                .build()
+
+        val responseStreamEvent =
+            ResponseStreamEvent.ofReasoningSummaryPartDone(reasoningSummaryPartDone)
+
+        assertThat(responseStreamEvent.audioDelta()).isEmpty
+        assertThat(responseStreamEvent.audioDone()).isEmpty
+        assertThat(responseStreamEvent.audioTranscriptDelta()).isEmpty
+        assertThat(responseStreamEvent.audioTranscriptDone()).isEmpty
+        assertThat(responseStreamEvent.codeInterpreterCallCodeDelta()).isEmpty
+        assertThat(responseStreamEvent.codeInterpreterCallCodeDone()).isEmpty
+        assertThat(responseStreamEvent.codeInterpreterCallCompleted()).isEmpty
+        assertThat(responseStreamEvent.codeInterpreterCallInProgress()).isEmpty
+        assertThat(responseStreamEvent.codeInterpreterCallInterpreting()).isEmpty
+        assertThat(responseStreamEvent.completed()).isEmpty
+        assertThat(responseStreamEvent.contentPartAdded()).isEmpty
+        assertThat(responseStreamEvent.contentPartDone()).isEmpty
+        assertThat(responseStreamEvent.created()).isEmpty
+        assertThat(responseStreamEvent.error()).isEmpty
+        assertThat(responseStreamEvent.fileSearchCallCompleted()).isEmpty
+        assertThat(responseStreamEvent.fileSearchCallInProgress()).isEmpty
+        assertThat(responseStreamEvent.fileSearchCallSearching()).isEmpty
+        assertThat(responseStreamEvent.functionCallArgumentsDelta()).isEmpty
+        assertThat(responseStreamEvent.functionCallArgumentsDone()).isEmpty
+        assertThat(responseStreamEvent.inProgress()).isEmpty
+        assertThat(responseStreamEvent.failed()).isEmpty
+        assertThat(responseStreamEvent.incomplete()).isEmpty
+        assertThat(responseStreamEvent.outputItemAdded()).isEmpty
+        assertThat(responseStreamEvent.outputItemDone()).isEmpty
+        assertThat(responseStreamEvent.reasoningSummaryPartAdded()).isEmpty
+        assertThat(responseStreamEvent.reasoningSummaryPartDone())
+            .contains(reasoningSummaryPartDone)
+        assertThat(responseStreamEvent.reasoningSummaryTextDelta()).isEmpty
+        assertThat(responseStreamEvent.reasoningSummaryTextDone()).isEmpty
+        assertThat(responseStreamEvent.refusalDelta()).isEmpty
+        assertThat(responseStreamEvent.refusalDone()).isEmpty
+        assertThat(responseStreamEvent.outputTextAnnotationAdded()).isEmpty
+        assertThat(responseStreamEvent.outputTextDelta()).isEmpty
+        assertThat(responseStreamEvent.outputTextDone()).isEmpty
+        assertThat(responseStreamEvent.webSearchCallCompleted()).isEmpty
+        assertThat(responseStreamEvent.webSearchCallInProgress()).isEmpty
+        assertThat(responseStreamEvent.webSearchCallSearching()).isEmpty
+    }
+
+    @Test
+    fun ofReasoningSummaryPartDoneRoundtrip() {
+        val jsonMapper = jsonMapper()
+        val responseStreamEvent =
+            ResponseStreamEvent.ofReasoningSummaryPartDone(
+                ResponseReasoningSummaryPartDoneEvent.builder()
+                    .itemId("item_id")
+                    .outputIndex(0L)
+                    .part(ResponseReasoningSummaryPartDoneEvent.Part.builder().text("text").build())
+                    .summaryIndex(0L)
+                    .build()
+            )
+
+        val roundtrippedResponseStreamEvent =
+            jsonMapper.readValue(
+                jsonMapper.writeValueAsString(responseStreamEvent),
+                jacksonTypeRef<ResponseStreamEvent>(),
+            )
+
+        assertThat(roundtrippedResponseStreamEvent).isEqualTo(responseStreamEvent)
+    }
+
+    @Test
+    fun ofReasoningSummaryTextDelta() {
+        val reasoningSummaryTextDelta =
+            ResponseReasoningSummaryTextDeltaEvent.builder()
+                .delta("delta")
+                .itemId("item_id")
+                .outputIndex(0L)
+                .summaryIndex(0L)
+                .build()
+
+        val responseStreamEvent =
+            ResponseStreamEvent.ofReasoningSummaryTextDelta(reasoningSummaryTextDelta)
+
+        assertThat(responseStreamEvent.audioDelta()).isEmpty
+        assertThat(responseStreamEvent.audioDone()).isEmpty
+        assertThat(responseStreamEvent.audioTranscriptDelta()).isEmpty
+        assertThat(responseStreamEvent.audioTranscriptDone()).isEmpty
+        assertThat(responseStreamEvent.codeInterpreterCallCodeDelta()).isEmpty
+        assertThat(responseStreamEvent.codeInterpreterCallCodeDone()).isEmpty
+        assertThat(responseStreamEvent.codeInterpreterCallCompleted()).isEmpty
+        assertThat(responseStreamEvent.codeInterpreterCallInProgress()).isEmpty
+        assertThat(responseStreamEvent.codeInterpreterCallInterpreting()).isEmpty
+        assertThat(responseStreamEvent.completed()).isEmpty
+        assertThat(responseStreamEvent.contentPartAdded()).isEmpty
+        assertThat(responseStreamEvent.contentPartDone()).isEmpty
+        assertThat(responseStreamEvent.created()).isEmpty
+        assertThat(responseStreamEvent.error()).isEmpty
+        assertThat(responseStreamEvent.fileSearchCallCompleted()).isEmpty
+        assertThat(responseStreamEvent.fileSearchCallInProgress()).isEmpty
+        assertThat(responseStreamEvent.fileSearchCallSearching()).isEmpty
+        assertThat(responseStreamEvent.functionCallArgumentsDelta()).isEmpty
+        assertThat(responseStreamEvent.functionCallArgumentsDone()).isEmpty
+        assertThat(responseStreamEvent.inProgress()).isEmpty
+        assertThat(responseStreamEvent.failed()).isEmpty
+        assertThat(responseStreamEvent.incomplete()).isEmpty
+        assertThat(responseStreamEvent.outputItemAdded()).isEmpty
+        assertThat(responseStreamEvent.outputItemDone()).isEmpty
+        assertThat(responseStreamEvent.reasoningSummaryPartAdded()).isEmpty
+        assertThat(responseStreamEvent.reasoningSummaryPartDone()).isEmpty
+        assertThat(responseStreamEvent.reasoningSummaryTextDelta())
+            .contains(reasoningSummaryTextDelta)
+        assertThat(responseStreamEvent.reasoningSummaryTextDone()).isEmpty
+        assertThat(responseStreamEvent.refusalDelta()).isEmpty
+        assertThat(responseStreamEvent.refusalDone()).isEmpty
+        assertThat(responseStreamEvent.outputTextAnnotationAdded()).isEmpty
+        assertThat(responseStreamEvent.outputTextDelta()).isEmpty
+        assertThat(responseStreamEvent.outputTextDone()).isEmpty
+        assertThat(responseStreamEvent.webSearchCallCompleted()).isEmpty
+        assertThat(responseStreamEvent.webSearchCallInProgress()).isEmpty
+        assertThat(responseStreamEvent.webSearchCallSearching()).isEmpty
+    }
+
+    @Test
+    fun ofReasoningSummaryTextDeltaRoundtrip() {
+        val jsonMapper = jsonMapper()
+        val responseStreamEvent =
+            ResponseStreamEvent.ofReasoningSummaryTextDelta(
+                ResponseReasoningSummaryTextDeltaEvent.builder()
+                    .delta("delta")
+                    .itemId("item_id")
+                    .outputIndex(0L)
+                    .summaryIndex(0L)
+                    .build()
+            )
+
+        val roundtrippedResponseStreamEvent =
+            jsonMapper.readValue(
+                jsonMapper.writeValueAsString(responseStreamEvent),
+                jacksonTypeRef<ResponseStreamEvent>(),
+            )
+
+        assertThat(roundtrippedResponseStreamEvent).isEqualTo(responseStreamEvent)
+    }
+
+    @Test
+    fun ofReasoningSummaryTextDone() {
+        val reasoningSummaryTextDone =
+            ResponseReasoningSummaryTextDoneEvent.builder()
+                .itemId("item_id")
+                .outputIndex(0L)
+                .summaryIndex(0L)
+                .text("text")
+                .build()
+
+        val responseStreamEvent =
+            ResponseStreamEvent.ofReasoningSummaryTextDone(reasoningSummaryTextDone)
+
+        assertThat(responseStreamEvent.audioDelta()).isEmpty
+        assertThat(responseStreamEvent.audioDone()).isEmpty
+        assertThat(responseStreamEvent.audioTranscriptDelta()).isEmpty
+        assertThat(responseStreamEvent.audioTranscriptDone()).isEmpty
+        assertThat(responseStreamEvent.codeInterpreterCallCodeDelta()).isEmpty
+        assertThat(responseStreamEvent.codeInterpreterCallCodeDone()).isEmpty
+        assertThat(responseStreamEvent.codeInterpreterCallCompleted()).isEmpty
+        assertThat(responseStreamEvent.codeInterpreterCallInProgress()).isEmpty
+        assertThat(responseStreamEvent.codeInterpreterCallInterpreting()).isEmpty
+        assertThat(responseStreamEvent.completed()).isEmpty
+        assertThat(responseStreamEvent.contentPartAdded()).isEmpty
+        assertThat(responseStreamEvent.contentPartDone()).isEmpty
+        assertThat(responseStreamEvent.created()).isEmpty
+        assertThat(responseStreamEvent.error()).isEmpty
+        assertThat(responseStreamEvent.fileSearchCallCompleted()).isEmpty
+        assertThat(responseStreamEvent.fileSearchCallInProgress()).isEmpty
+        assertThat(responseStreamEvent.fileSearchCallSearching()).isEmpty
+        assertThat(responseStreamEvent.functionCallArgumentsDelta()).isEmpty
+        assertThat(responseStreamEvent.functionCallArgumentsDone()).isEmpty
+        assertThat(responseStreamEvent.inProgress()).isEmpty
+        assertThat(responseStreamEvent.failed()).isEmpty
+        assertThat(responseStreamEvent.incomplete()).isEmpty
+        assertThat(responseStreamEvent.outputItemAdded()).isEmpty
+        assertThat(responseStreamEvent.outputItemDone()).isEmpty
+        assertThat(responseStreamEvent.reasoningSummaryPartAdded()).isEmpty
+        assertThat(responseStreamEvent.reasoningSummaryPartDone()).isEmpty
+        assertThat(responseStreamEvent.reasoningSummaryTextDelta()).isEmpty
+        assertThat(responseStreamEvent.reasoningSummaryTextDone())
+            .contains(reasoningSummaryTextDone)
+        assertThat(responseStreamEvent.refusalDelta()).isEmpty
+        assertThat(responseStreamEvent.refusalDone()).isEmpty
+        assertThat(responseStreamEvent.outputTextAnnotationAdded()).isEmpty
+        assertThat(responseStreamEvent.outputTextDelta()).isEmpty
+        assertThat(responseStreamEvent.outputTextDone()).isEmpty
+        assertThat(responseStreamEvent.webSearchCallCompleted()).isEmpty
+        assertThat(responseStreamEvent.webSearchCallInProgress()).isEmpty
+        assertThat(responseStreamEvent.webSearchCallSearching()).isEmpty
+    }
+
+    @Test
+    fun ofReasoningSummaryTextDoneRoundtrip() {
+        val jsonMapper = jsonMapper()
+        val responseStreamEvent =
+            ResponseStreamEvent.ofReasoningSummaryTextDone(
+                ResponseReasoningSummaryTextDoneEvent.builder()
+                    .itemId("item_id")
+                    .outputIndex(0L)
+                    .summaryIndex(0L)
+                    .text("text")
                     .build()
             )
 
@@ -2693,6 +3087,10 @@ internal class ResponseStreamEventTest {
         assertThat(responseStreamEvent.incomplete()).isEmpty
         assertThat(responseStreamEvent.outputItemAdded()).isEmpty
         assertThat(responseStreamEvent.outputItemDone()).isEmpty
+        assertThat(responseStreamEvent.reasoningSummaryPartAdded()).isEmpty
+        assertThat(responseStreamEvent.reasoningSummaryPartDone()).isEmpty
+        assertThat(responseStreamEvent.reasoningSummaryTextDelta()).isEmpty
+        assertThat(responseStreamEvent.reasoningSummaryTextDone()).isEmpty
         assertThat(responseStreamEvent.refusalDelta()).contains(refusalDelta)
         assertThat(responseStreamEvent.refusalDone()).isEmpty
         assertThat(responseStreamEvent.outputTextAnnotationAdded()).isEmpty
@@ -2761,6 +3159,10 @@ internal class ResponseStreamEventTest {
         assertThat(responseStreamEvent.incomplete()).isEmpty
         assertThat(responseStreamEvent.outputItemAdded()).isEmpty
         assertThat(responseStreamEvent.outputItemDone()).isEmpty
+        assertThat(responseStreamEvent.reasoningSummaryPartAdded()).isEmpty
+        assertThat(responseStreamEvent.reasoningSummaryPartDone()).isEmpty
+        assertThat(responseStreamEvent.reasoningSummaryTextDelta()).isEmpty
+        assertThat(responseStreamEvent.reasoningSummaryTextDone()).isEmpty
         assertThat(responseStreamEvent.refusalDelta()).isEmpty
         assertThat(responseStreamEvent.refusalDone()).contains(refusalDone)
         assertThat(responseStreamEvent.outputTextAnnotationAdded()).isEmpty
@@ -2836,6 +3238,10 @@ internal class ResponseStreamEventTest {
         assertThat(responseStreamEvent.incomplete()).isEmpty
         assertThat(responseStreamEvent.outputItemAdded()).isEmpty
         assertThat(responseStreamEvent.outputItemDone()).isEmpty
+        assertThat(responseStreamEvent.reasoningSummaryPartAdded()).isEmpty
+        assertThat(responseStreamEvent.reasoningSummaryPartDone()).isEmpty
+        assertThat(responseStreamEvent.reasoningSummaryTextDelta()).isEmpty
+        assertThat(responseStreamEvent.reasoningSummaryTextDone()).isEmpty
         assertThat(responseStreamEvent.refusalDelta()).isEmpty
         assertThat(responseStreamEvent.refusalDone()).isEmpty
         assertThat(responseStreamEvent.outputTextAnnotationAdded())
@@ -2911,6 +3317,10 @@ internal class ResponseStreamEventTest {
         assertThat(responseStreamEvent.incomplete()).isEmpty
         assertThat(responseStreamEvent.outputItemAdded()).isEmpty
         assertThat(responseStreamEvent.outputItemDone()).isEmpty
+        assertThat(responseStreamEvent.reasoningSummaryPartAdded()).isEmpty
+        assertThat(responseStreamEvent.reasoningSummaryPartDone()).isEmpty
+        assertThat(responseStreamEvent.reasoningSummaryTextDelta()).isEmpty
+        assertThat(responseStreamEvent.reasoningSummaryTextDone()).isEmpty
         assertThat(responseStreamEvent.refusalDelta()).isEmpty
         assertThat(responseStreamEvent.refusalDone()).isEmpty
         assertThat(responseStreamEvent.outputTextAnnotationAdded()).isEmpty
@@ -2979,6 +3389,10 @@ internal class ResponseStreamEventTest {
         assertThat(responseStreamEvent.incomplete()).isEmpty
         assertThat(responseStreamEvent.outputItemAdded()).isEmpty
         assertThat(responseStreamEvent.outputItemDone()).isEmpty
+        assertThat(responseStreamEvent.reasoningSummaryPartAdded()).isEmpty
+        assertThat(responseStreamEvent.reasoningSummaryPartDone()).isEmpty
+        assertThat(responseStreamEvent.reasoningSummaryTextDelta()).isEmpty
+        assertThat(responseStreamEvent.reasoningSummaryTextDone()).isEmpty
         assertThat(responseStreamEvent.refusalDelta()).isEmpty
         assertThat(responseStreamEvent.refusalDone()).isEmpty
         assertThat(responseStreamEvent.outputTextAnnotationAdded()).isEmpty
@@ -3043,6 +3457,10 @@ internal class ResponseStreamEventTest {
         assertThat(responseStreamEvent.incomplete()).isEmpty
         assertThat(responseStreamEvent.outputItemAdded()).isEmpty
         assertThat(responseStreamEvent.outputItemDone()).isEmpty
+        assertThat(responseStreamEvent.reasoningSummaryPartAdded()).isEmpty
+        assertThat(responseStreamEvent.reasoningSummaryPartDone()).isEmpty
+        assertThat(responseStreamEvent.reasoningSummaryTextDelta()).isEmpty
+        assertThat(responseStreamEvent.reasoningSummaryTextDone()).isEmpty
         assertThat(responseStreamEvent.refusalDelta()).isEmpty
         assertThat(responseStreamEvent.refusalDone()).isEmpty
         assertThat(responseStreamEvent.outputTextAnnotationAdded()).isEmpty
@@ -3105,6 +3523,10 @@ internal class ResponseStreamEventTest {
         assertThat(responseStreamEvent.incomplete()).isEmpty
         assertThat(responseStreamEvent.outputItemAdded()).isEmpty
         assertThat(responseStreamEvent.outputItemDone()).isEmpty
+        assertThat(responseStreamEvent.reasoningSummaryPartAdded()).isEmpty
+        assertThat(responseStreamEvent.reasoningSummaryPartDone()).isEmpty
+        assertThat(responseStreamEvent.reasoningSummaryTextDelta()).isEmpty
+        assertThat(responseStreamEvent.reasoningSummaryTextDone()).isEmpty
         assertThat(responseStreamEvent.refusalDelta()).isEmpty
         assertThat(responseStreamEvent.refusalDone()).isEmpty
         assertThat(responseStreamEvent.outputTextAnnotationAdded()).isEmpty
@@ -3167,6 +3589,10 @@ internal class ResponseStreamEventTest {
         assertThat(responseStreamEvent.incomplete()).isEmpty
         assertThat(responseStreamEvent.outputItemAdded()).isEmpty
         assertThat(responseStreamEvent.outputItemDone()).isEmpty
+        assertThat(responseStreamEvent.reasoningSummaryPartAdded()).isEmpty
+        assertThat(responseStreamEvent.reasoningSummaryPartDone()).isEmpty
+        assertThat(responseStreamEvent.reasoningSummaryTextDelta()).isEmpty
+        assertThat(responseStreamEvent.reasoningSummaryTextDone()).isEmpty
         assertThat(responseStreamEvent.refusalDelta()).isEmpty
         assertThat(responseStreamEvent.refusalDone()).isEmpty
         assertThat(responseStreamEvent.outputTextAnnotationAdded()).isEmpty
