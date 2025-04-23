@@ -12,9 +12,9 @@ internal class ImageEditParamsTest {
     @Test
     fun create() {
         ImageEditParams.builder()
-            .image("some content".toByteArray())
+            .image("some content".byteInputStream())
             .prompt("A cute baby sea otter wearing a beret")
-            .mask("some content".toByteArray())
+            .mask("some content".byteInputStream())
             .model(ImageModel.DALL_E_2)
             .n(1L)
             .quality(ImageEditParams.Quality.HIGH)
@@ -28,9 +28,9 @@ internal class ImageEditParamsTest {
     fun body() {
         val params =
             ImageEditParams.builder()
-                .image("some content".toByteArray())
+                .image("some content".byteInputStream())
                 .prompt("A cute baby sea otter wearing a beret")
-                .mask("some content".toByteArray())
+                .mask("some content".byteInputStream())
                 .model(ImageModel.DALL_E_2)
                 .n(1L)
                 .quality(ImageEditParams.Quality.HIGH)
@@ -53,10 +53,12 @@ internal class ImageEditParamsTest {
                 mapOf(
                         "image" to
                             MultipartField.of(
-                                ImageEditParams.Image.ofInputStream("some content".toByteArray())
+                                ImageEditParams.Image.ofInputStream(
+                                    "some content".byteInputStream()
+                                )
                             ),
                         "prompt" to MultipartField.of("A cute baby sea otter wearing a beret"),
-                        "mask" to MultipartField.of("some content".toByteArray()),
+                        "mask" to MultipartField.of("some content".byteInputStream()),
                         "model" to MultipartField.of(ImageModel.DALL_E_2),
                         "n" to MultipartField.of(1L),
                         "quality" to MultipartField.of(ImageEditParams.Quality.HIGH),
@@ -74,7 +76,7 @@ internal class ImageEditParamsTest {
     fun bodyWithoutOptionalFields() {
         val params =
             ImageEditParams.builder()
-                .image("some content".toByteArray())
+                .image("some content".byteInputStream())
                 .prompt("A cute baby sea otter wearing a beret")
                 .build()
 
@@ -92,7 +94,9 @@ internal class ImageEditParamsTest {
                 mapOf(
                         "image" to
                             MultipartField.of(
-                                ImageEditParams.Image.ofInputStream("some content".toByteArray())
+                                ImageEditParams.Image.ofInputStream(
+                                    "some content".byteInputStream()
+                                )
                             ),
                         "prompt" to MultipartField.of("A cute baby sea otter wearing a beret"),
                     )

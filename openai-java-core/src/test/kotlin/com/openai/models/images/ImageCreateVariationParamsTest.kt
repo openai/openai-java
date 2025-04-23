@@ -12,7 +12,7 @@ internal class ImageCreateVariationParamsTest {
     @Test
     fun create() {
         ImageCreateVariationParams.builder()
-            .image("some content".toByteArray())
+            .image("some content".byteInputStream())
             .model(ImageModel.DALL_E_2)
             .n(1L)
             .responseFormat(ImageCreateVariationParams.ResponseFormat.URL)
@@ -25,7 +25,7 @@ internal class ImageCreateVariationParamsTest {
     fun body() {
         val params =
             ImageCreateVariationParams.builder()
-                .image("some content".toByteArray())
+                .image("some content".byteInputStream())
                 .model(ImageModel.DALL_E_2)
                 .n(1L)
                 .responseFormat(ImageCreateVariationParams.ResponseFormat.URL)
@@ -45,7 +45,7 @@ internal class ImageCreateVariationParamsTest {
             )
             .isEqualTo(
                 mapOf(
-                        "image" to MultipartField.of("some content".toByteArray()),
+                        "image" to MultipartField.of("some content".byteInputStream()),
                         "model" to MultipartField.of(ImageModel.DALL_E_2),
                         "n" to MultipartField.of(1L),
                         "response_format" to
@@ -62,7 +62,7 @@ internal class ImageCreateVariationParamsTest {
     @Test
     fun bodyWithoutOptionalFields() {
         val params =
-            ImageCreateVariationParams.builder().image("some content".toByteArray()).build()
+            ImageCreateVariationParams.builder().image("some content".byteInputStream()).build()
 
         val body = params._body()
 
@@ -75,7 +75,7 @@ internal class ImageCreateVariationParamsTest {
                 InputStream::class.java,
             )
             .isEqualTo(
-                mapOf("image" to MultipartField.of("some content".toByteArray())).mapValues {
+                mapOf("image" to MultipartField.of("some content".byteInputStream())).mapValues {
                     (_, field) ->
                     field.map { (it as? ByteArray)?.inputStream() ?: it }
                 }

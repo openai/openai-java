@@ -24,7 +24,7 @@ internal class PartServiceAsyncTest {
             partServiceAsync.create(
                 PartCreateParams.builder()
                     .uploadId("upload_abc123")
-                    .data("some content".toByteArray())
+                    .data("some content".byteInputStream())
                     .build()
             )
 

@@ -26,7 +26,7 @@ internal class TranscriptionServiceTest {
         val transcription =
             transcriptionService.create(
                 TranscriptionCreateParams.builder()
-                    .file("some content".toByteArray())
+                    .file("some content".byteInputStream())
                     .model(AudioModel.WHISPER_1)
                     .addInclude(TranscriptionInclude.LOGPROBS)
                     .language("language")
@@ -52,7 +52,7 @@ internal class TranscriptionServiceTest {
         val transcriptionStreamResponse =
             transcriptionService.createStreaming(
                 TranscriptionCreateParams.builder()
-                    .file("some content".toByteArray())
+                    .file("some content".byteInputStream())
                     .model(AudioModel.WHISPER_1)
                     .addInclude(TranscriptionInclude.LOGPROBS)
                     .language("language")

@@ -26,7 +26,7 @@ internal class ImageServiceTest {
         val imagesResponse =
             imageService.createVariation(
                 ImageCreateVariationParams.builder()
-                    .image("some content".toByteArray())
+                    .image("some content".byteInputStream())
                     .model(ImageModel.DALL_E_2)
                     .n(1L)
                     .responseFormat(ImageCreateVariationParams.ResponseFormat.URL)
@@ -50,9 +50,9 @@ internal class ImageServiceTest {
         val imagesResponse =
             imageService.edit(
                 ImageEditParams.builder()
-                    .image("some content".toByteArray())
+                    .image("some content".byteInputStream())
                     .prompt("A cute baby sea otter wearing a beret")
-                    .mask("some content".toByteArray())
+                    .mask("some content".byteInputStream())
                     .model(ImageModel.DALL_E_2)
                     .n(1L)
                     .quality(ImageEditParams.Quality.HIGH)

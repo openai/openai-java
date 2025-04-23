@@ -13,7 +13,7 @@ internal class TranslationCreateParamsTest {
     @Test
     fun create() {
         TranslationCreateParams.builder()
-            .file("some content".toByteArray())
+            .file("some content".byteInputStream())
             .model(AudioModel.WHISPER_1)
             .prompt("prompt")
             .responseFormat(TranslationCreateParams.ResponseFormat.JSON)
@@ -25,7 +25,7 @@ internal class TranslationCreateParamsTest {
     fun body() {
         val params =
             TranslationCreateParams.builder()
-                .file("some content".toByteArray())
+                .file("some content".byteInputStream())
                 .model(AudioModel.WHISPER_1)
                 .prompt("prompt")
                 .responseFormat(TranslationCreateParams.ResponseFormat.JSON)
@@ -44,7 +44,7 @@ internal class TranslationCreateParamsTest {
             )
             .isEqualTo(
                 mapOf(
-                        "file" to MultipartField.of("some content".toByteArray()),
+                        "file" to MultipartField.of("some content".byteInputStream()),
                         "model" to MultipartField.of(AudioModel.WHISPER_1),
                         "prompt" to MultipartField.of("prompt"),
                         "response_format" to
@@ -61,7 +61,7 @@ internal class TranslationCreateParamsTest {
     fun bodyWithoutOptionalFields() {
         val params =
             TranslationCreateParams.builder()
-                .file("some content".toByteArray())
+                .file("some content".byteInputStream())
                 .model(AudioModel.WHISPER_1)
                 .build()
 
@@ -77,7 +77,7 @@ internal class TranslationCreateParamsTest {
             )
             .isEqualTo(
                 mapOf(
-                        "file" to MultipartField.of("some content".toByteArray()),
+                        "file" to MultipartField.of("some content".byteInputStream()),
                         "model" to MultipartField.of(AudioModel.WHISPER_1),
                     )
                     .mapValues { (_, field) ->

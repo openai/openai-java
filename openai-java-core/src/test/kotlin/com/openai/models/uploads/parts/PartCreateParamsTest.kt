@@ -13,7 +13,7 @@ internal class PartCreateParamsTest {
     fun create() {
         PartCreateParams.builder()
             .uploadId("upload_abc123")
-            .data("some content".toByteArray())
+            .data("some content".byteInputStream())
             .build()
     }
 
@@ -22,7 +22,7 @@ internal class PartCreateParamsTest {
         val params =
             PartCreateParams.builder()
                 .uploadId("upload_abc123")
-                .data("some content".toByteArray())
+                .data("some content".byteInputStream())
                 .build()
 
         assertThat(params._pathParam(0)).isEqualTo("upload_abc123")
@@ -35,7 +35,7 @@ internal class PartCreateParamsTest {
         val params =
             PartCreateParams.builder()
                 .uploadId("upload_abc123")
-                .data("some content".toByteArray())
+                .data("some content".byteInputStream())
                 .build()
 
         val body = params._body()
@@ -49,7 +49,7 @@ internal class PartCreateParamsTest {
                 InputStream::class.java,
             )
             .isEqualTo(
-                mapOf("data" to MultipartField.of("some content".toByteArray())).mapValues {
+                mapOf("data" to MultipartField.of("some content".byteInputStream())).mapValues {
                     (_, field) ->
                     field.map { (it as? ByteArray)?.inputStream() ?: it }
                 }
