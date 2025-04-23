@@ -14,17 +14,10 @@ internal class EvalLabelModelGraderTest {
         val evalLabelModelGrader =
             EvalLabelModelGrader.builder()
                 .addInput(
-                    EvalLabelModelGrader.Input.InputMessage.builder()
-                        .content(
-                            EvalLabelModelGrader.Input.InputMessage.Content.builder()
-                                .text("text")
-                                .type(
-                                    EvalLabelModelGrader.Input.InputMessage.Content.Type.INPUT_TEXT
-                                )
-                                .build()
-                        )
-                        .role(EvalLabelModelGrader.Input.InputMessage.Role.USER)
-                        .type(EvalLabelModelGrader.Input.InputMessage.Type.MESSAGE)
+                    EvalLabelModelGrader.Input.builder()
+                        .content("string")
+                        .role(EvalLabelModelGrader.Input.Role.USER)
+                        .type(EvalLabelModelGrader.Input.Type.MESSAGE)
                         .build()
                 )
                 .addLabel("string")
@@ -35,20 +28,11 @@ internal class EvalLabelModelGraderTest {
 
         assertThat(evalLabelModelGrader.input())
             .containsExactly(
-                EvalLabelModelGrader.Input.ofMessage(
-                    EvalLabelModelGrader.Input.InputMessage.builder()
-                        .content(
-                            EvalLabelModelGrader.Input.InputMessage.Content.builder()
-                                .text("text")
-                                .type(
-                                    EvalLabelModelGrader.Input.InputMessage.Content.Type.INPUT_TEXT
-                                )
-                                .build()
-                        )
-                        .role(EvalLabelModelGrader.Input.InputMessage.Role.USER)
-                        .type(EvalLabelModelGrader.Input.InputMessage.Type.MESSAGE)
-                        .build()
-                )
+                EvalLabelModelGrader.Input.builder()
+                    .content("string")
+                    .role(EvalLabelModelGrader.Input.Role.USER)
+                    .type(EvalLabelModelGrader.Input.Type.MESSAGE)
+                    .build()
             )
         assertThat(evalLabelModelGrader.labels()).containsExactly("string")
         assertThat(evalLabelModelGrader.model()).isEqualTo("model")
@@ -62,17 +46,10 @@ internal class EvalLabelModelGraderTest {
         val evalLabelModelGrader =
             EvalLabelModelGrader.builder()
                 .addInput(
-                    EvalLabelModelGrader.Input.InputMessage.builder()
-                        .content(
-                            EvalLabelModelGrader.Input.InputMessage.Content.builder()
-                                .text("text")
-                                .type(
-                                    EvalLabelModelGrader.Input.InputMessage.Content.Type.INPUT_TEXT
-                                )
-                                .build()
-                        )
-                        .role(EvalLabelModelGrader.Input.InputMessage.Role.USER)
-                        .type(EvalLabelModelGrader.Input.InputMessage.Type.MESSAGE)
+                    EvalLabelModelGrader.Input.builder()
+                        .content("string")
+                        .role(EvalLabelModelGrader.Input.Role.USER)
+                        .type(EvalLabelModelGrader.Input.Type.MESSAGE)
                         .build()
                 )
                 .addLabel("string")

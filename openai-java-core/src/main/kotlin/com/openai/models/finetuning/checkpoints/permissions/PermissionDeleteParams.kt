@@ -20,12 +20,15 @@ import java.util.Optional
 class PermissionDeleteParams
 private constructor(
     private val fineTunedModelCheckpoint: String,
+    private val permissionId: String,
     private val additionalHeaders: Headers,
     private val additionalQueryParams: QueryParams,
     private val additionalBodyProperties: Map<String, JsonValue>,
 ) : Params {
 
     fun fineTunedModelCheckpoint(): String = fineTunedModelCheckpoint
+
+    fun permissionId(): String = permissionId
 
     fun _additionalBodyProperties(): Map<String, JsonValue> = additionalBodyProperties
 
@@ -43,6 +46,7 @@ private constructor(
          * The following fields are required:
          * ```java
          * .fineTunedModelCheckpoint()
+         * .permissionId()
          * ```
          */
         @JvmStatic fun builder() = Builder()
@@ -52,6 +56,7 @@ private constructor(
     class Builder internal constructor() {
 
         private var fineTunedModelCheckpoint: String? = null
+        private var permissionId: String? = null
         private var additionalHeaders: Headers.Builder = Headers.builder()
         private var additionalQueryParams: QueryParams.Builder = QueryParams.builder()
         private var additionalBodyProperties: MutableMap<String, JsonValue> = mutableMapOf()
@@ -59,6 +64,7 @@ private constructor(
         @JvmSynthetic
         internal fun from(permissionDeleteParams: PermissionDeleteParams) = apply {
             fineTunedModelCheckpoint = permissionDeleteParams.fineTunedModelCheckpoint
+            permissionId = permissionDeleteParams.permissionId
             additionalHeaders = permissionDeleteParams.additionalHeaders.toBuilder()
             additionalQueryParams = permissionDeleteParams.additionalQueryParams.toBuilder()
             additionalBodyProperties =
@@ -68,6 +74,8 @@ private constructor(
         fun fineTunedModelCheckpoint(fineTunedModelCheckpoint: String) = apply {
             this.fineTunedModelCheckpoint = fineTunedModelCheckpoint
         }
+
+        fun permissionId(permissionId: String) = apply { this.permissionId = permissionId }
 
         fun additionalHeaders(additionalHeaders: Headers) = apply {
             this.additionalHeaders.clear()
@@ -197,6 +205,7 @@ private constructor(
          * The following fields are required:
          * ```java
          * .fineTunedModelCheckpoint()
+         * .permissionId()
          * ```
          *
          * @throws IllegalStateException if any required field is unset.
@@ -204,6 +213,7 @@ private constructor(
         fun build(): PermissionDeleteParams =
             PermissionDeleteParams(
                 checkRequired("fineTunedModelCheckpoint", fineTunedModelCheckpoint),
+                checkRequired("permissionId", permissionId),
                 additionalHeaders.build(),
                 additionalQueryParams.build(),
                 additionalBodyProperties.toImmutable(),
@@ -216,6 +226,7 @@ private constructor(
     fun _pathParam(index: Int): String =
         when (index) {
             0 -> fineTunedModelCheckpoint
+            1 -> permissionId
             else -> ""
         }
 
@@ -228,11 +239,11 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is PermissionDeleteParams && fineTunedModelCheckpoint == other.fineTunedModelCheckpoint && additionalHeaders == other.additionalHeaders && additionalQueryParams == other.additionalQueryParams && additionalBodyProperties == other.additionalBodyProperties /* spotless:on */
+        return /* spotless:off */ other is PermissionDeleteParams && fineTunedModelCheckpoint == other.fineTunedModelCheckpoint && permissionId == other.permissionId && additionalHeaders == other.additionalHeaders && additionalQueryParams == other.additionalQueryParams && additionalBodyProperties == other.additionalBodyProperties /* spotless:on */
     }
 
-    override fun hashCode(): Int = /* spotless:off */ Objects.hash(fineTunedModelCheckpoint, additionalHeaders, additionalQueryParams, additionalBodyProperties) /* spotless:on */
+    override fun hashCode(): Int = /* spotless:off */ Objects.hash(fineTunedModelCheckpoint, permissionId, additionalHeaders, additionalQueryParams, additionalBodyProperties) /* spotless:on */
 
     override fun toString() =
-        "PermissionDeleteParams{fineTunedModelCheckpoint=$fineTunedModelCheckpoint, additionalHeaders=$additionalHeaders, additionalQueryParams=$additionalQueryParams, additionalBodyProperties=$additionalBodyProperties}"
+        "PermissionDeleteParams{fineTunedModelCheckpoint=$fineTunedModelCheckpoint, permissionId=$permissionId, additionalHeaders=$additionalHeaders, additionalQueryParams=$additionalQueryParams, additionalBodyProperties=$additionalBodyProperties}"
 }

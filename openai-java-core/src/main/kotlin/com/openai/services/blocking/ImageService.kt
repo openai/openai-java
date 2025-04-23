@@ -17,7 +17,7 @@ interface ImageService {
      */
     fun withRawResponse(): WithRawResponse
 
-    /** Creates a variation of a given image. */
+    /** Creates a variation of a given image. This endpoint only supports `dall-e-2`. */
     fun createVariation(params: ImageCreateVariationParams): ImagesResponse =
         createVariation(params, RequestOptions.none())
 
@@ -27,7 +27,10 @@ interface ImageService {
         requestOptions: RequestOptions = RequestOptions.none(),
     ): ImagesResponse
 
-    /** Creates an edited or extended image given an original image and a prompt. */
+    /**
+     * Creates an edited or extended image given one or more source images and a prompt. This
+     * endpoint only supports `gpt-image-1` and `dall-e-2`.
+     */
     fun edit(params: ImageEditParams): ImagesResponse = edit(params, RequestOptions.none())
 
     /** @see [edit] */
@@ -36,7 +39,10 @@ interface ImageService {
         requestOptions: RequestOptions = RequestOptions.none(),
     ): ImagesResponse
 
-    /** Creates an image given a prompt. */
+    /**
+     * Creates an image given a prompt.
+     * [Learn more](https://platform.openai.com/docs/guides/images).
+     */
     fun generate(params: ImageGenerateParams): ImagesResponse =
         generate(params, RequestOptions.none())
 

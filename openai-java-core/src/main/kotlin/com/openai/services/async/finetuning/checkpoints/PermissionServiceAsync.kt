@@ -109,8 +109,8 @@ interface PermissionServiceAsync {
 
         /**
          * Returns a raw HTTP response for `delete
-         * /fine_tuning/checkpoints/{fine_tuned_model_checkpoint}/permissions`, but is otherwise the
-         * same as [PermissionServiceAsync.delete].
+         * /fine_tuning/checkpoints/{fine_tuned_model_checkpoint}/permissions/{permission_id}`, but
+         * is otherwise the same as [PermissionServiceAsync.delete].
          */
         @MustBeClosed
         fun delete(

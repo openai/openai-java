@@ -30,9 +30,11 @@ import com.openai.core.http.QueryParams
 import com.openai.core.toImmutable
 import com.openai.errors.OpenAIInvalidDataException
 import com.openai.models.ChatModel
+import com.openai.models.FunctionDefinition
 import com.openai.models.ResponseFormatJsonObject
 import com.openai.models.ResponseFormatJsonSchema
 import com.openai.models.ResponseFormatText
+import com.openai.models.beta.assistants.AssistantTool
 import com.openai.models.beta.assistants.CodeInterpreterTool
 import com.openai.models.beta.assistants.FileSearchTool
 import com.openai.models.beta.assistants.FunctionTool
@@ -196,7 +198,7 @@ private constructor(
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
      */
-    fun tools(): Optional<List<Tool>> = body.tools()
+    fun tools(): Optional<List<AssistantTool>> = body.tools()
 
     /**
      * An alternative to sampling with temperature, called nucleus sampling, where the model
@@ -310,7 +312,7 @@ private constructor(
      *
      * Unlike [tools], this method doesn't throw if the JSON field has an unexpected type.
      */
-    fun _tools(): JsonField<List<Tool>> = body._tools()
+    fun _tools(): JsonField<List<AssistantTool>> = body._tools()
 
     /**
      * Returns the raw JSON value of [topP].
@@ -718,35 +720,45 @@ private constructor(
          * Override the tools the assistant can use for this run. This is useful for modifying the
          * behavior on a per-run basis.
          */
-        fun tools(tools: List<Tool>?) = apply { body.tools(tools) }
+        fun tools(tools: List<AssistantTool>?) = apply { body.tools(tools) }
 
         /** Alias for calling [Builder.tools] with `tools.orElse(null)`. */
-        fun tools(tools: Optional<List<Tool>>) = tools(tools.getOrNull())
+        fun tools(tools: Optional<List<AssistantTool>>) = tools(tools.getOrNull())
 
         /**
          * Sets [Builder.tools] to an arbitrary JSON value.
          *
-         * You should usually call [Builder.tools] with a well-typed `List<Tool>` value instead.
-         * This method is primarily for setting the field to an undocumented or not yet supported
-         * value.
+         * You should usually call [Builder.tools] with a well-typed `List<AssistantTool>` value
+         * instead. This method is primarily for setting the field to an undocumented or not yet
+         * supported value.
          */
-        fun tools(tools: JsonField<List<Tool>>) = apply { body.tools(tools) }
+        fun tools(tools: JsonField<List<AssistantTool>>) = apply { body.tools(tools) }
 
         /**
-         * Adds a single [Tool] to [tools].
+         * Adds a single [AssistantTool] to [tools].
          *
          * @throws IllegalStateException if the field was previously set to a non-list.
          */
-        fun addTool(tool: Tool) = apply { body.addTool(tool) }
+        fun addTool(tool: AssistantTool) = apply { body.addTool(tool) }
 
-        /** Alias for calling [addTool] with `Tool.ofCodeInterpreter(codeInterpreter)`. */
+        /** Alias for calling [addTool] with `AssistantTool.ofCodeInterpreter(codeInterpreter)`. */
         fun addTool(codeInterpreter: CodeInterpreterTool) = apply { body.addTool(codeInterpreter) }
 
-        /** Alias for calling [addTool] with `Tool.ofFileSearch(fileSearch)`. */
+        /** Alias for calling [addTool] with `AssistantTool.ofFileSearch(fileSearch)`. */
         fun addTool(fileSearch: FileSearchTool) = apply { body.addTool(fileSearch) }
 
-        /** Alias for calling [addTool] with `Tool.ofFunction(function)`. */
+        /** Alias for calling [addTool] with `AssistantTool.ofFunction(function)`. */
         fun addTool(function: FunctionTool) = apply { body.addTool(function) }
+
+        /**
+         * Alias for calling [addTool] with the following:
+         * ```java
+         * FunctionTool.builder()
+         *     .function(function)
+         *     .build()
+         * ```
+         */
+        fun addFunctionTool(function: FunctionDefinition) = apply { body.addFunctionTool(function) }
 
         /**
          * An alternative to sampling with temperature, called nucleus sampling, where the model
@@ -957,7 +969,7 @@ private constructor(
         private val thread: JsonField<Thread>,
         private val toolChoice: JsonField<AssistantToolChoiceOption>,
         private val toolResources: JsonField<ToolResources>,
-        private val tools: JsonField<List<Tool>>,
+        private val tools: JsonField<List<AssistantTool>>,
         private val topP: JsonField<Double>,
         private val truncationStrategy: JsonField<TruncationStrategy>,
         private val additionalProperties: MutableMap<String, JsonValue>,
@@ -997,7 +1009,9 @@ private constructor(
             @JsonProperty("tool_resources")
             @ExcludeMissing
             toolResources: JsonField<ToolResources> = JsonMissing.of(),
-            @JsonProperty("tools") @ExcludeMissing tools: JsonField<List<Tool>> = JsonMissing.of(),
+            @JsonProperty("tools")
+            @ExcludeMissing
+            tools: JsonField<List<AssistantTool>> = JsonMissing.of(),
             @JsonProperty("top_p") @ExcludeMissing topP: JsonField<Double> = JsonMissing.of(),
             @JsonProperty("truncation_strategy")
             @ExcludeMissing
@@ -1172,7 +1186,7 @@ private constructor(
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
          */
-        fun tools(): Optional<List<Tool>> = tools.getOptional("tools")
+        fun tools(): Optional<List<AssistantTool>> = tools.getOptional("tools")
 
         /**
          * An alternative to sampling with temperature, called nucleus sampling, where the model
@@ -1309,7 +1323,7 @@ private constructor(
          *
          * Unlike [tools], this method doesn't throw if the JSON field has an unexpected type.
          */
-        @JsonProperty("tools") @ExcludeMissing fun _tools(): JsonField<List<Tool>> = tools
+        @JsonProperty("tools") @ExcludeMissing fun _tools(): JsonField<List<AssistantTool>> = tools
 
         /**
          * Returns the raw JSON value of [topP].
@@ -1368,7 +1382,7 @@ private constructor(
             private var thread: JsonField<Thread> = JsonMissing.of()
             private var toolChoice: JsonField<AssistantToolChoiceOption> = JsonMissing.of()
             private var toolResources: JsonField<ToolResources> = JsonMissing.of()
-            private var tools: JsonField<MutableList<Tool>>? = null
+            private var tools: JsonField<MutableList<AssistantTool>>? = null
             private var topP: JsonField<Double> = JsonMissing.of()
             private var truncationStrategy: JsonField<TruncationStrategy> = JsonMissing.of()
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
@@ -1749,43 +1763,57 @@ private constructor(
              * Override the tools the assistant can use for this run. This is useful for modifying
              * the behavior on a per-run basis.
              */
-            fun tools(tools: List<Tool>?) = tools(JsonField.ofNullable(tools))
+            fun tools(tools: List<AssistantTool>?) = tools(JsonField.ofNullable(tools))
 
             /** Alias for calling [Builder.tools] with `tools.orElse(null)`. */
-            fun tools(tools: Optional<List<Tool>>) = tools(tools.getOrNull())
+            fun tools(tools: Optional<List<AssistantTool>>) = tools(tools.getOrNull())
 
             /**
              * Sets [Builder.tools] to an arbitrary JSON value.
              *
-             * You should usually call [Builder.tools] with a well-typed `List<Tool>` value instead.
-             * This method is primarily for setting the field to an undocumented or not yet
+             * You should usually call [Builder.tools] with a well-typed `List<AssistantTool>` value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
              * supported value.
              */
-            fun tools(tools: JsonField<List<Tool>>) = apply {
+            fun tools(tools: JsonField<List<AssistantTool>>) = apply {
                 this.tools = tools.map { it.toMutableList() }
             }
 
             /**
-             * Adds a single [Tool] to [tools].
+             * Adds a single [AssistantTool] to [tools].
              *
              * @throws IllegalStateException if the field was previously set to a non-list.
              */
-            fun addTool(tool: Tool) = apply {
+            fun addTool(tool: AssistantTool) = apply {
                 tools =
                     (tools ?: JsonField.of(mutableListOf())).also {
                         checkKnown("tools", it).add(tool)
                     }
             }
 
-            /** Alias for calling [addTool] with `Tool.ofCodeInterpreter(codeInterpreter)`. */
+            /**
+             * Alias for calling [addTool] with `AssistantTool.ofCodeInterpreter(codeInterpreter)`.
+             */
             fun addTool(codeInterpreter: CodeInterpreterTool) =
-                addTool(Tool.ofCodeInterpreter(codeInterpreter))
+                addTool(AssistantTool.ofCodeInterpreter(codeInterpreter))
 
-            /** Alias for calling [addTool] with `Tool.ofFileSearch(fileSearch)`. */
-            fun addTool(fileSearch: FileSearchTool) = addTool(Tool.ofFileSearch(fileSearch))
+            /** Alias for calling [addTool] with `AssistantTool.ofFileSearch(fileSearch)`. */
+            fun addTool(fileSearch: FileSearchTool) =
+                addTool(AssistantTool.ofFileSearch(fileSearch))
 
-            /** Alias for calling [addTool] with `Tool.ofFunction(function)`. */
-            fun addTool(function: FunctionTool) = addTool(Tool.ofFunction(function))
+            /** Alias for calling [addTool] with `AssistantTool.ofFunction(function)`. */
+            fun addTool(function: FunctionTool) = addTool(AssistantTool.ofFunction(function))
+
+            /**
+             * Alias for calling [addTool] with the following:
+             * ```java
+             * FunctionTool.builder()
+             *     .function(function)
+             *     .build()
+             * ```
+             */
+            fun addFunctionTool(function: FunctionDefinition) =
+                addTool(FunctionTool.builder().function(function).build())
 
             /**
              * An alternative to sampling with temperature, called nucleus sampling, where the model
@@ -5920,202 +5948,6 @@ private constructor(
 
         override fun toString() =
             "ToolResources{codeInterpreter=$codeInterpreter, fileSearch=$fileSearch, additionalProperties=$additionalProperties}"
-    }
-
-    @JsonDeserialize(using = Tool.Deserializer::class)
-    @JsonSerialize(using = Tool.Serializer::class)
-    class Tool
-    private constructor(
-        private val codeInterpreter: CodeInterpreterTool? = null,
-        private val fileSearch: FileSearchTool? = null,
-        private val function: FunctionTool? = null,
-        private val _json: JsonValue? = null,
-    ) {
-
-        fun codeInterpreter(): Optional<CodeInterpreterTool> = Optional.ofNullable(codeInterpreter)
-
-        fun fileSearch(): Optional<FileSearchTool> = Optional.ofNullable(fileSearch)
-
-        fun function(): Optional<FunctionTool> = Optional.ofNullable(function)
-
-        fun isCodeInterpreter(): Boolean = codeInterpreter != null
-
-        fun isFileSearch(): Boolean = fileSearch != null
-
-        fun isFunction(): Boolean = function != null
-
-        fun asCodeInterpreter(): CodeInterpreterTool = codeInterpreter.getOrThrow("codeInterpreter")
-
-        fun asFileSearch(): FileSearchTool = fileSearch.getOrThrow("fileSearch")
-
-        fun asFunction(): FunctionTool = function.getOrThrow("function")
-
-        fun _json(): Optional<JsonValue> = Optional.ofNullable(_json)
-
-        fun <T> accept(visitor: Visitor<T>): T =
-            when {
-                codeInterpreter != null -> visitor.visitCodeInterpreter(codeInterpreter)
-                fileSearch != null -> visitor.visitFileSearch(fileSearch)
-                function != null -> visitor.visitFunction(function)
-                else -> visitor.unknown(_json)
-            }
-
-        private var validated: Boolean = false
-
-        fun validate(): Tool = apply {
-            if (validated) {
-                return@apply
-            }
-
-            accept(
-                object : Visitor<Unit> {
-                    override fun visitCodeInterpreter(codeInterpreter: CodeInterpreterTool) {
-                        codeInterpreter.validate()
-                    }
-
-                    override fun visitFileSearch(fileSearch: FileSearchTool) {
-                        fileSearch.validate()
-                    }
-
-                    override fun visitFunction(function: FunctionTool) {
-                        function.validate()
-                    }
-                }
-            )
-            validated = true
-        }
-
-        fun isValid(): Boolean =
-            try {
-                validate()
-                true
-            } catch (e: OpenAIInvalidDataException) {
-                false
-            }
-
-        /**
-         * Returns a score indicating how many valid values are contained in this object
-         * recursively.
-         *
-         * Used for best match union deserialization.
-         */
-        @JvmSynthetic
-        internal fun validity(): Int =
-            accept(
-                object : Visitor<Int> {
-                    override fun visitCodeInterpreter(codeInterpreter: CodeInterpreterTool) =
-                        codeInterpreter.validity()
-
-                    override fun visitFileSearch(fileSearch: FileSearchTool) = fileSearch.validity()
-
-                    override fun visitFunction(function: FunctionTool) = function.validity()
-
-                    override fun unknown(json: JsonValue?) = 0
-                }
-            )
-
-        override fun equals(other: Any?): Boolean {
-            if (this === other) {
-                return true
-            }
-
-            return /* spotless:off */ other is Tool && codeInterpreter == other.codeInterpreter && fileSearch == other.fileSearch && function == other.function /* spotless:on */
-        }
-
-        override fun hashCode(): Int = /* spotless:off */ Objects.hash(codeInterpreter, fileSearch, function) /* spotless:on */
-
-        override fun toString(): String =
-            when {
-                codeInterpreter != null -> "Tool{codeInterpreter=$codeInterpreter}"
-                fileSearch != null -> "Tool{fileSearch=$fileSearch}"
-                function != null -> "Tool{function=$function}"
-                _json != null -> "Tool{_unknown=$_json}"
-                else -> throw IllegalStateException("Invalid Tool")
-            }
-
-        companion object {
-
-            @JvmStatic
-            fun ofCodeInterpreter(codeInterpreter: CodeInterpreterTool) =
-                Tool(codeInterpreter = codeInterpreter)
-
-            @JvmStatic fun ofFileSearch(fileSearch: FileSearchTool) = Tool(fileSearch = fileSearch)
-
-            @JvmStatic fun ofFunction(function: FunctionTool) = Tool(function = function)
-        }
-
-        /** An interface that defines how to map each variant of [Tool] to a value of type [T]. */
-        interface Visitor<out T> {
-
-            fun visitCodeInterpreter(codeInterpreter: CodeInterpreterTool): T
-
-            fun visitFileSearch(fileSearch: FileSearchTool): T
-
-            fun visitFunction(function: FunctionTool): T
-
-            /**
-             * Maps an unknown variant of [Tool] to a value of type [T].
-             *
-             * An instance of [Tool] can contain an unknown variant if it was deserialized from data
-             * that doesn't match any known variant. For example, if the SDK is on an older version
-             * than the API, then the API may respond with new variants that the SDK is unaware of.
-             *
-             * @throws OpenAIInvalidDataException in the default implementation.
-             */
-            fun unknown(json: JsonValue?): T {
-                throw OpenAIInvalidDataException("Unknown Tool: $json")
-            }
-        }
-
-        internal class Deserializer : BaseDeserializer<Tool>(Tool::class) {
-
-            override fun ObjectCodec.deserialize(node: JsonNode): Tool {
-                val json = JsonValue.fromJsonNode(node)
-
-                val bestMatches =
-                    sequenceOf(
-                            tryDeserialize(node, jacksonTypeRef<CodeInterpreterTool>())?.let {
-                                Tool(codeInterpreter = it, _json = json)
-                            },
-                            tryDeserialize(node, jacksonTypeRef<FileSearchTool>())?.let {
-                                Tool(fileSearch = it, _json = json)
-                            },
-                            tryDeserialize(node, jacksonTypeRef<FunctionTool>())?.let {
-                                Tool(function = it, _json = json)
-                            },
-                        )
-                        .filterNotNull()
-                        .allMaxBy { it.validity() }
-                        .toList()
-                return when (bestMatches.size) {
-                    // This can happen if what we're deserializing is completely incompatible with
-                    // all the possible variants (e.g. deserializing from boolean).
-                    0 -> Tool(_json = json)
-                    1 -> bestMatches.single()
-                    // If there's more than one match with the highest validity, then use the first
-                    // completely valid match, or simply the first match if none are completely
-                    // valid.
-                    else -> bestMatches.firstOrNull { it.isValid() } ?: bestMatches.first()
-                }
-            }
-        }
-
-        internal class Serializer : BaseSerializer<Tool>(Tool::class) {
-
-            override fun serialize(
-                value: Tool,
-                generator: JsonGenerator,
-                provider: SerializerProvider,
-            ) {
-                when {
-                    value.codeInterpreter != null -> generator.writeObject(value.codeInterpreter)
-                    value.fileSearch != null -> generator.writeObject(value.fileSearch)
-                    value.function != null -> generator.writeObject(value.function)
-                    value._json != null -> generator.writeObject(value._json)
-                    else -> throw IllegalStateException("Invalid Tool")
-                }
-            }
-        }
     }
 
     /**

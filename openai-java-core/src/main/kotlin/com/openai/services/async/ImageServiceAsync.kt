@@ -18,7 +18,7 @@ interface ImageServiceAsync {
      */
     fun withRawResponse(): WithRawResponse
 
-    /** Creates a variation of a given image. */
+    /** Creates a variation of a given image. This endpoint only supports `dall-e-2`. */
     fun createVariation(params: ImageCreateVariationParams): CompletableFuture<ImagesResponse> =
         createVariation(params, RequestOptions.none())
 
@@ -28,7 +28,10 @@ interface ImageServiceAsync {
         requestOptions: RequestOptions = RequestOptions.none(),
     ): CompletableFuture<ImagesResponse>
 
-    /** Creates an edited or extended image given an original image and a prompt. */
+    /**
+     * Creates an edited or extended image given one or more source images and a prompt. This
+     * endpoint only supports `gpt-image-1` and `dall-e-2`.
+     */
     fun edit(params: ImageEditParams): CompletableFuture<ImagesResponse> =
         edit(params, RequestOptions.none())
 
@@ -38,7 +41,10 @@ interface ImageServiceAsync {
         requestOptions: RequestOptions = RequestOptions.none(),
     ): CompletableFuture<ImagesResponse>
 
-    /** Creates an image given a prompt. */
+    /**
+     * Creates an image given a prompt.
+     * [Learn more](https://platform.openai.com/docs/guides/images).
+     */
     fun generate(params: ImageGenerateParams): CompletableFuture<ImagesResponse> =
         generate(params, RequestOptions.none())
 

@@ -29,24 +29,13 @@ internal class EvalListPageResponseTest {
                                 .build()
                         )
                         .name("Chatbot effectiveness Evaluation")
-                        .shareWithOpenAI(true)
                         .addTestingCriterion(
                             EvalLabelModelGrader.builder()
                                 .addInput(
-                                    EvalLabelModelGrader.Input.InputMessage.builder()
-                                        .content(
-                                            EvalLabelModelGrader.Input.InputMessage.Content
-                                                .builder()
-                                                .text("text")
-                                                .type(
-                                                    EvalLabelModelGrader.Input.InputMessage.Content
-                                                        .Type
-                                                        .INPUT_TEXT
-                                                )
-                                                .build()
-                                        )
-                                        .role(EvalLabelModelGrader.Input.InputMessage.Role.USER)
-                                        .type(EvalLabelModelGrader.Input.InputMessage.Type.MESSAGE)
+                                    EvalLabelModelGrader.Input.builder()
+                                        .content("string")
+                                        .role(EvalLabelModelGrader.Input.Role.USER)
+                                        .type(EvalLabelModelGrader.Input.Type.MESSAGE)
                                         .build()
                                 )
                                 .addLabel("string")
@@ -78,22 +67,13 @@ internal class EvalListPageResponseTest {
                             .build()
                     )
                     .name("Chatbot effectiveness Evaluation")
-                    .shareWithOpenAI(true)
                     .addTestingCriterion(
                         EvalLabelModelGrader.builder()
                             .addInput(
-                                EvalLabelModelGrader.Input.InputMessage.builder()
-                                    .content(
-                                        EvalLabelModelGrader.Input.InputMessage.Content.builder()
-                                            .text("text")
-                                            .type(
-                                                EvalLabelModelGrader.Input.InputMessage.Content.Type
-                                                    .INPUT_TEXT
-                                            )
-                                            .build()
-                                    )
-                                    .role(EvalLabelModelGrader.Input.InputMessage.Role.USER)
-                                    .type(EvalLabelModelGrader.Input.InputMessage.Type.MESSAGE)
+                                EvalLabelModelGrader.Input.builder()
+                                    .content("string")
+                                    .role(EvalLabelModelGrader.Input.Role.USER)
+                                    .type(EvalLabelModelGrader.Input.Type.MESSAGE)
                                     .build()
                             )
                             .addLabel("string")
@@ -129,24 +109,13 @@ internal class EvalListPageResponseTest {
                                 .build()
                         )
                         .name("Chatbot effectiveness Evaluation")
-                        .shareWithOpenAI(true)
                         .addTestingCriterion(
                             EvalLabelModelGrader.builder()
                                 .addInput(
-                                    EvalLabelModelGrader.Input.InputMessage.builder()
-                                        .content(
-                                            EvalLabelModelGrader.Input.InputMessage.Content
-                                                .builder()
-                                                .text("text")
-                                                .type(
-                                                    EvalLabelModelGrader.Input.InputMessage.Content
-                                                        .Type
-                                                        .INPUT_TEXT
-                                                )
-                                                .build()
-                                        )
-                                        .role(EvalLabelModelGrader.Input.InputMessage.Role.USER)
-                                        .type(EvalLabelModelGrader.Input.InputMessage.Type.MESSAGE)
+                                    EvalLabelModelGrader.Input.builder()
+                                        .content("string")
+                                        .role(EvalLabelModelGrader.Input.Role.USER)
+                                        .type(EvalLabelModelGrader.Input.Type.MESSAGE)
                                         .build()
                                 )
                                 .addLabel("string")

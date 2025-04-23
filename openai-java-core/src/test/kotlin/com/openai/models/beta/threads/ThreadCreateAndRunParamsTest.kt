@@ -4,6 +4,7 @@ package com.openai.models.beta.threads
 
 import com.openai.core.JsonValue
 import com.openai.models.ChatModel
+import com.openai.models.beta.assistants.AssistantTool
 import com.openai.models.beta.assistants.CodeInterpreterTool
 import kotlin.jvm.optionals.getOrNull
 import org.assertj.core.api.Assertions.assertThat
@@ -314,11 +315,7 @@ internal class ThreadCreateAndRunParamsTest {
                     .build()
             )
         assertThat(body.tools().getOrNull())
-            .containsExactly(
-                ThreadCreateAndRunParams.Tool.ofCodeInterpreter(
-                    CodeInterpreterTool.builder().build()
-                )
-            )
+            .containsExactly(AssistantTool.ofCodeInterpreter(CodeInterpreterTool.builder().build()))
         assertThat(body.topP()).contains(1.0)
         assertThat(body.truncationStrategy())
             .contains(

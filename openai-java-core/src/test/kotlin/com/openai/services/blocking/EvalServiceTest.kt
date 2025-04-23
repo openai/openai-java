@@ -59,7 +59,6 @@ internal class EvalServiceTest {
                             .build()
                     )
                     .name("name")
-                    .shareWithOpenAI(true)
                     .build()
             )
 
