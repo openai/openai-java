@@ -1,5 +1,27 @@
 # Changelog
 
+## 1.5.1 (2025-04-27)
+
+Full Changelog: [v1.5.0...v1.5.1](https://github.com/openai/openai-java/compare/v1.5.0...v1.5.1)
+
+### Bug Fixes
+
+* **client:** add missing convenience methods ([616d69a](https://github.com/openai/openai-java/commit/616d69a27a914e30d6cb2c4fa96613bf64488742))
+
+
+### Chores
+
+* **ci:** only use depot for staging repos ([7835140](https://github.com/openai/openai-java/commit/78351404be50f6e535028a98d14d64257eeb2002))
+* **ci:** run on more branches and use depot runners ([8b7a805](https://github.com/openai/openai-java/commit/8b7a805083123a222ebc623e4c405d2f1ccf228b))
+* **internal:** java 17 -&gt; 21 on ci ([9f690e4](https://github.com/openai/openai-java/commit/9f690e42c91642bcda690bd398803ba401958397))
+* **internal:** use `byteInputStream()` in tests ([616d69a](https://github.com/openai/openai-java/commit/616d69a27a914e30d6cb2c4fa96613bf64488742))
+* run formatter ([5e78fa5](https://github.com/openai/openai-java/commit/5e78fa544ddc7942795bf5055c2010f9b42b198e))
+
+
+### Documentation
+
+* add responses input file example ([#446](https://github.com/openai/openai-java/issues/446)) ([b94d404](https://github.com/openai/openai-java/commit/b94d4044ba764de789af3d19ac406ad8667c029d))
+
 ## 1.5.0 (2025-04-23)
 
 Full Changelog: [v1.4.1...v1.5.0](https://github.com/openai/openai-java/compare/v1.4.1...v1.5.0)
