@@ -2,11 +2,9 @@ package com.openai.example;
 
 import com.openai.client.OpenAIClient;
 import com.openai.client.okhttp.OpenAIOkHttpClient;
-import com.openai.models.images.Image;
 import com.openai.models.images.ImageGenerateParams;
 import com.openai.models.images.ImageModel;
 import java.io.IOException;
-import java.util.Optional;
 
 public final class ImageGenerationExample {
     private ImageGenerationExample() {}
@@ -25,10 +23,8 @@ public final class ImageGenerationExample {
                 .n(1)
                 .build();
 
-        client.images().generate(imageGenerateParams).data().orElseThrow(IOException::new).stream()
-                .map(Image::url)
-                .filter(Optional::isPresent)
-                .map(Optional::get)
+        client.images().generate(imageGenerateParams).data().orElseThrow().stream()
+                .flatMap(image -> image.url().stream())
                 .forEach(System.out::println);
     }
 }
