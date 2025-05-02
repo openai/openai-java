@@ -21,7 +21,7 @@ configure<SpotlessExtension> {
 
 java {
     toolchain {
-        languageVersion.set(JavaLanguageVersion.of(17))
+        languageVersion.set(JavaLanguageVersion.of(21))
     }
 
     sourceCompatibility = JavaVersion.VERSION_1_8
