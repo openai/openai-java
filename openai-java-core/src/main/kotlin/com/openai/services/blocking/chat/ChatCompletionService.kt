@@ -15,6 +15,8 @@ import com.openai.models.chat.completions.ChatCompletionListPage
 import com.openai.models.chat.completions.ChatCompletionListParams
 import com.openai.models.chat.completions.ChatCompletionRetrieveParams
 import com.openai.models.chat.completions.ChatCompletionUpdateParams
+import com.openai.models.chat.completions.StructuredChatCompletion
+import com.openai.models.chat.completions.StructuredChatCompletionCreateParams
 import com.openai.services.blocking.chat.completions.MessageService
 
 interface ChatCompletionService {
@@ -52,6 +54,16 @@ interface ChatCompletionService {
         params: ChatCompletionCreateParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): ChatCompletion
+
+    /** @see create */
+    fun <T : Any> create(
+        params: StructuredChatCompletionCreateParams<T>
+    ): StructuredChatCompletion<T> =
+        StructuredChatCompletion<T>(
+            params.responseFormat,
+            // Normal, non-generic create method call via `ChatCompletionCreateParams`.
+            create(params.rawParams),
+        )
 
     /**
      * **Starting a new project?** We recommend trying
