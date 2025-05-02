@@ -1298,6 +1298,14 @@ private constructor(
         }
 
         /**
+         * Sets the class that defines the structured outputs response format. This changes the
+         * builder to a type-safe [StructuredChatCompletionCreateParams.Builder] that will build a
+         * [StructuredChatCompletionCreateParams] instance when `build()` is called.
+         */
+        fun <T : Any> responseFormat(responseFormat: Class<T>) =
+            StructuredChatCompletionCreateParams.builder<T>().wrap(responseFormat, this)
+
+        /**
          * This feature is in Beta. If specified, our system will make a best effort to sample
          * deterministically, such that repeated requests with the same `seed` and parameters should
          * return the same result. Determinism is not guaranteed, and you should refer to the
