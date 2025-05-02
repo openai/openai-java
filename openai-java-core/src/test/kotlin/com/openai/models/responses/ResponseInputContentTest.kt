@@ -44,7 +44,7 @@ internal class ResponseInputContentTest {
     fun ofInputImage() {
         val inputImage =
             ResponseInputImage.builder()
-                .detail(ResponseInputImage.Detail.HIGH)
+                .detail(ResponseInputImage.Detail.LOW)
                 .fileId("file_id")
                 .imageUrl("image_url")
                 .build()
@@ -62,7 +62,7 @@ internal class ResponseInputContentTest {
         val responseInputContent =
             ResponseInputContent.ofInputImage(
                 ResponseInputImage.builder()
-                    .detail(ResponseInputImage.Detail.HIGH)
+                    .detail(ResponseInputImage.Detail.LOW)
                     .fileId("file_id")
                     .imageUrl("image_url")
                     .build()

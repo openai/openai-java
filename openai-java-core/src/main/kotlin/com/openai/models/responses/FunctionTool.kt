@@ -56,18 +56,18 @@ private constructor(
     /**
      * A JSON schema object describing the parameters of the function.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
      */
-    fun parameters(): Parameters = parameters.getRequired("parameters")
+    fun parameters(): Optional<Parameters> = parameters.getOptional("parameters")
 
     /**
      * Whether to enforce strict parameter validation. Default `true`.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
      */
-    fun strict(): Boolean = strict.getRequired("strict")
+    fun strict(): Optional<Boolean> = strict.getOptional("strict")
 
     /**
      * The type of the function tool. Always `function`.
@@ -180,7 +180,10 @@ private constructor(
         fun name(name: JsonField<String>) = apply { this.name = name }
 
         /** A JSON schema object describing the parameters of the function. */
-        fun parameters(parameters: Parameters) = parameters(JsonField.of(parameters))
+        fun parameters(parameters: Parameters?) = parameters(JsonField.ofNullable(parameters))
+
+        /** Alias for calling [Builder.parameters] with `parameters.orElse(null)`. */
+        fun parameters(parameters: Optional<Parameters>) = parameters(parameters.getOrNull())
 
         /**
          * Sets [Builder.parameters] to an arbitrary JSON value.
@@ -192,7 +195,17 @@ private constructor(
         fun parameters(parameters: JsonField<Parameters>) = apply { this.parameters = parameters }
 
         /** Whether to enforce strict parameter validation. Default `true`. */
-        fun strict(strict: Boolean) = strict(JsonField.of(strict))
+        fun strict(strict: Boolean?) = strict(JsonField.ofNullable(strict))
+
+        /**
+         * Alias for [Builder.strict].
+         *
+         * This unboxed primitive overload exists for backwards compatibility.
+         */
+        fun strict(strict: Boolean) = strict(strict as Boolean?)
+
+        /** Alias for calling [Builder.strict] with `strict.orElse(null)`. */
+        fun strict(strict: Optional<Boolean>) = strict(strict.getOrNull())
 
         /**
          * Sets [Builder.strict] to an arbitrary JSON value.
@@ -286,7 +299,7 @@ private constructor(
         }
 
         name()
-        parameters().validate()
+        parameters().ifPresent { it.validate() }
         strict()
         _type().let {
             if (it != JsonValue.from("function")) {

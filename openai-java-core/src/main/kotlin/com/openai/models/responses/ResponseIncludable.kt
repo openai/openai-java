@@ -12,6 +12,10 @@ import com.openai.errors.OpenAIInvalidDataException
  * - `file_search_call.results`: Include the search results of the file search tool call.
  * - `message.input_image.image_url`: Include image urls from the input message.
  * - `computer_call_output.output.image_url`: Include image urls from the computer call output.
+ * - `reasoning.encrypted_content`: Includes an encrypted version of reasoning tokens in reasoning
+ *   item outputs. This enables reasoning items to be used in multi-turn conversations when using
+ *   the Responses API statelessly (like when the `store` parameter is set to `false`, or when an
+ *   organization is enrolled in the zero data retention program).
  */
 class ResponseIncludable @JsonCreator private constructor(private val value: JsonField<String>) :
     Enum {
@@ -34,6 +38,8 @@ class ResponseIncludable @JsonCreator private constructor(private val value: Jso
         @JvmField
         val COMPUTER_CALL_OUTPUT_OUTPUT_IMAGE_URL = of("computer_call_output.output.image_url")
 
+        @JvmField val REASONING_ENCRYPTED_CONTENT = of("reasoning.encrypted_content")
+
         @JvmStatic fun of(value: String) = ResponseIncludable(JsonField.of(value))
     }
 
@@ -42,6 +48,7 @@ class ResponseIncludable @JsonCreator private constructor(private val value: Jso
         FILE_SEARCH_CALL_RESULTS,
         MESSAGE_INPUT_IMAGE_IMAGE_URL,
         COMPUTER_CALL_OUTPUT_OUTPUT_IMAGE_URL,
+        REASONING_ENCRYPTED_CONTENT,
     }
 
     /**
@@ -57,6 +64,7 @@ class ResponseIncludable @JsonCreator private constructor(private val value: Jso
         FILE_SEARCH_CALL_RESULTS,
         MESSAGE_INPUT_IMAGE_IMAGE_URL,
         COMPUTER_CALL_OUTPUT_OUTPUT_IMAGE_URL,
+        REASONING_ENCRYPTED_CONTENT,
         /**
          * An enum member indicating that [ResponseIncludable] was instantiated with an unknown
          * value.
@@ -76,6 +84,7 @@ class ResponseIncludable @JsonCreator private constructor(private val value: Jso
             FILE_SEARCH_CALL_RESULTS -> Value.FILE_SEARCH_CALL_RESULTS
             MESSAGE_INPUT_IMAGE_IMAGE_URL -> Value.MESSAGE_INPUT_IMAGE_IMAGE_URL
             COMPUTER_CALL_OUTPUT_OUTPUT_IMAGE_URL -> Value.COMPUTER_CALL_OUTPUT_OUTPUT_IMAGE_URL
+            REASONING_ENCRYPTED_CONTENT -> Value.REASONING_ENCRYPTED_CONTENT
             else -> Value._UNKNOWN
         }
 
@@ -92,6 +101,7 @@ class ResponseIncludable @JsonCreator private constructor(private val value: Jso
             FILE_SEARCH_CALL_RESULTS -> Known.FILE_SEARCH_CALL_RESULTS
             MESSAGE_INPUT_IMAGE_IMAGE_URL -> Known.MESSAGE_INPUT_IMAGE_IMAGE_URL
             COMPUTER_CALL_OUTPUT_OUTPUT_IMAGE_URL -> Known.COMPUTER_CALL_OUTPUT_OUTPUT_IMAGE_URL
+            REASONING_ENCRYPTED_CONTENT -> Known.REASONING_ENCRYPTED_CONTENT
             else -> throw OpenAIInvalidDataException("Unknown ResponseIncludable: $value")
         }
 

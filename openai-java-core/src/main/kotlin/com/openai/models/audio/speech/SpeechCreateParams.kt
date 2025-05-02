@@ -76,6 +76,7 @@ private constructor(
 
     /**
      * The speed of the generated audio. Select a value from `0.25` to `4.0`. `1.0` is the default.
+     * Does not work with `gpt-4o-mini-tts`.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -271,7 +272,7 @@ private constructor(
 
         /**
          * The speed of the generated audio. Select a value from `0.25` to `4.0`. `1.0` is the
-         * default.
+         * default. Does not work with `gpt-4o-mini-tts`.
          */
         fun speed(speed: Double) = apply { body.speed(speed) }
 
@@ -502,7 +503,7 @@ private constructor(
 
         /**
          * The speed of the generated audio. Select a value from `0.25` to `4.0`. `1.0` is the
-         * default.
+         * default. Does not work with `gpt-4o-mini-tts`.
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
@@ -705,7 +706,7 @@ private constructor(
 
             /**
              * The speed of the generated audio. Select a value from `0.25` to `4.0`. `1.0` is the
-             * default.
+             * default. Does not work with `gpt-4o-mini-tts`.
              */
             fun speed(speed: Double) = speed(JsonField.of(speed))
 

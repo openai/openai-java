@@ -14,6 +14,7 @@ import com.openai.errors.OpenAIInvalidDataException
 import java.util.Collections
 import java.util.Objects
 import java.util.Optional
+import kotlin.jvm.optionals.getOrNull
 
 /** A file input to the model. */
 class ResponseInputFile
@@ -153,7 +154,10 @@ private constructor(
         fun fileData(fileData: JsonField<String>) = apply { this.fileData = fileData }
 
         /** The ID of the file to be sent to the model. */
-        fun fileId(fileId: String) = fileId(JsonField.of(fileId))
+        fun fileId(fileId: String?) = fileId(JsonField.ofNullable(fileId))
+
+        /** Alias for calling [Builder.fileId] with `fileId.orElse(null)`. */
+        fun fileId(fileId: Optional<String>) = fileId(fileId.getOrNull())
 
         /**
          * Sets [Builder.fileId] to an arbitrary JSON value.

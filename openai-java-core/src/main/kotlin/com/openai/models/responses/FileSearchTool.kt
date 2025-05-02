@@ -84,7 +84,7 @@ private constructor(
     fun vectorStoreIds(): List<String> = vectorStoreIds.getRequired("vector_store_ids")
 
     /**
-     * A filter to apply based on file attributes.
+     * A filter to apply.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -227,8 +227,11 @@ private constructor(
                 }
         }
 
-        /** A filter to apply based on file attributes. */
-        fun filters(filters: Filters) = filters(JsonField.of(filters))
+        /** A filter to apply. */
+        fun filters(filters: Filters?) = filters(JsonField.ofNullable(filters))
+
+        /** Alias for calling [Builder.filters] with `filters.orElse(null)`. */
+        fun filters(filters: Optional<Filters>) = filters(filters.getOrNull())
 
         /**
          * Sets [Builder.filters] to an arbitrary JSON value.
@@ -360,7 +363,7 @@ private constructor(
             (if (maxNumResults.asKnown().isPresent) 1 else 0) +
             (rankingOptions.asKnown().getOrNull()?.validity() ?: 0)
 
-    /** A filter to apply based on file attributes. */
+    /** A filter to apply. */
     @JsonDeserialize(using = Filters.Deserializer::class)
     @JsonSerialize(using = Filters.Serializer::class)
     class Filters

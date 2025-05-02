@@ -42,9 +42,8 @@ private constructor(
     ) : this(type, searchContextSize, userLocation, mutableMapOf())
 
     /**
-     * The type of the web search tool. One of:
-     * - `web_search_preview`
-     * - `web_search_preview_2025_03_11`
+     * The type of the web search tool. One of `web_search_preview` or
+     * `web_search_preview_2025_03_11`.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
      *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
@@ -62,6 +61,8 @@ private constructor(
         searchContextSize.getOptional("search_context_size")
 
     /**
+     * The user's location.
+     *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
      */
@@ -135,9 +136,8 @@ private constructor(
         }
 
         /**
-         * The type of the web search tool. One of:
-         * - `web_search_preview`
-         * - `web_search_preview_2025_03_11`
+         * The type of the web search tool. One of `web_search_preview` or
+         * `web_search_preview_2025_03_11`.
          */
         fun type(type: Type) = type(JsonField.of(type))
 
@@ -167,6 +167,7 @@ private constructor(
             this.searchContextSize = searchContextSize
         }
 
+        /** The user's location. */
         fun userLocation(userLocation: UserLocation?) =
             userLocation(JsonField.ofNullable(userLocation))
 
@@ -258,9 +259,8 @@ private constructor(
             (userLocation.asKnown().getOrNull()?.validity() ?: 0)
 
     /**
-     * The type of the web search tool. One of:
-     * - `web_search_preview`
-     * - `web_search_preview_2025_03_11`
+     * The type of the web search tool. One of `web_search_preview` or
+     * `web_search_preview_2025_03_11`.
      */
     class Type @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
 
@@ -526,6 +526,7 @@ private constructor(
         override fun toString() = value.toString()
     }
 
+    /** The user's location. */
     class UserLocation
     private constructor(
         private val type: JsonValue,
@@ -673,7 +674,10 @@ private constructor(
             fun type(type: JsonValue) = apply { this.type = type }
 
             /** Free text input for the city of the user, e.g. `San Francisco`. */
-            fun city(city: String) = city(JsonField.of(city))
+            fun city(city: String?) = city(JsonField.ofNullable(city))
+
+            /** Alias for calling [Builder.city] with `city.orElse(null)`. */
+            fun city(city: Optional<String>) = city(city.getOrNull())
 
             /**
              * Sets [Builder.city] to an arbitrary JSON value.
@@ -688,7 +692,10 @@ private constructor(
              * The two-letter [ISO country code](https://en.wikipedia.org/wiki/ISO_3166-1) of the
              * user, e.g. `US`.
              */
-            fun country(country: String) = country(JsonField.of(country))
+            fun country(country: String?) = country(JsonField.ofNullable(country))
+
+            /** Alias for calling [Builder.country] with `country.orElse(null)`. */
+            fun country(country: Optional<String>) = country(country.getOrNull())
 
             /**
              * Sets [Builder.country] to an arbitrary JSON value.
@@ -700,7 +707,10 @@ private constructor(
             fun country(country: JsonField<String>) = apply { this.country = country }
 
             /** Free text input for the region of the user, e.g. `California`. */
-            fun region(region: String) = region(JsonField.of(region))
+            fun region(region: String?) = region(JsonField.ofNullable(region))
+
+            /** Alias for calling [Builder.region] with `region.orElse(null)`. */
+            fun region(region: Optional<String>) = region(region.getOrNull())
 
             /**
              * Sets [Builder.region] to an arbitrary JSON value.
@@ -715,7 +725,10 @@ private constructor(
              * The [IANA timezone](https://timeapi.io/documentation/iana-timezones) of the user,
              * e.g. `America/Los_Angeles`.
              */
-            fun timezone(timezone: String) = timezone(JsonField.of(timezone))
+            fun timezone(timezone: String?) = timezone(JsonField.ofNullable(timezone))
+
+            /** Alias for calling [Builder.timezone] with `timezone.orElse(null)`. */
+            fun timezone(timezone: Optional<String>) = timezone(timezone.getOrNull())
 
             /**
              * Sets [Builder.timezone] to an arbitrary JSON value.

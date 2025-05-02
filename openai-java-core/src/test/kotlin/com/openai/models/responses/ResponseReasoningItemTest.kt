@@ -15,12 +15,14 @@ internal class ResponseReasoningItemTest {
             ResponseReasoningItem.builder()
                 .id("id")
                 .addSummary(ResponseReasoningItem.Summary.builder().text("text").build())
+                .encryptedContent("encrypted_content")
                 .status(ResponseReasoningItem.Status.IN_PROGRESS)
                 .build()
 
         assertThat(responseReasoningItem.id()).isEqualTo("id")
         assertThat(responseReasoningItem.summary())
             .containsExactly(ResponseReasoningItem.Summary.builder().text("text").build())
+        assertThat(responseReasoningItem.encryptedContent()).contains("encrypted_content")
         assertThat(responseReasoningItem.status())
             .contains(ResponseReasoningItem.Status.IN_PROGRESS)
     }
@@ -32,6 +34,7 @@ internal class ResponseReasoningItemTest {
             ResponseReasoningItem.builder()
                 .id("id")
                 .addSummary(ResponseReasoningItem.Summary.builder().text("text").build())
+                .encryptedContent("encrypted_content")
                 .status(ResponseReasoningItem.Status.IN_PROGRESS)
                 .build()
 

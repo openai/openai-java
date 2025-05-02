@@ -14,6 +14,7 @@ internal class ImageEditParamsTest {
         ImageEditParams.builder()
             .image("some content".byteInputStream())
             .prompt("A cute baby sea otter wearing a beret")
+            .background(ImageEditParams.Background.TRANSPARENT)
             .mask("some content".byteInputStream())
             .model(ImageModel.DALL_E_2)
             .n(1L)
@@ -30,6 +31,7 @@ internal class ImageEditParamsTest {
             ImageEditParams.builder()
                 .image("some content".byteInputStream())
                 .prompt("A cute baby sea otter wearing a beret")
+                .background(ImageEditParams.Background.TRANSPARENT)
                 .mask("some content".byteInputStream())
                 .model(ImageModel.DALL_E_2)
                 .n(1L)
@@ -58,6 +60,7 @@ internal class ImageEditParamsTest {
                                 )
                             ),
                         "prompt" to MultipartField.of("A cute baby sea otter wearing a beret"),
+                        "background" to MultipartField.of(ImageEditParams.Background.TRANSPARENT),
                         "mask" to MultipartField.of("some content".byteInputStream()),
                         "model" to MultipartField.of(ImageModel.DALL_E_2),
                         "n" to MultipartField.of(1L),

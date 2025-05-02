@@ -13,12 +13,12 @@ internal class ResponseInputImageTest {
     fun create() {
         val responseInputImage =
             ResponseInputImage.builder()
-                .detail(ResponseInputImage.Detail.HIGH)
+                .detail(ResponseInputImage.Detail.LOW)
                 .fileId("file_id")
                 .imageUrl("image_url")
                 .build()
 
-        assertThat(responseInputImage.detail()).isEqualTo(ResponseInputImage.Detail.HIGH)
+        assertThat(responseInputImage.detail()).isEqualTo(ResponseInputImage.Detail.LOW)
         assertThat(responseInputImage.fileId()).contains("file_id")
         assertThat(responseInputImage.imageUrl()).contains("image_url")
     }
@@ -28,7 +28,7 @@ internal class ResponseInputImageTest {
         val jsonMapper = jsonMapper()
         val responseInputImage =
             ResponseInputImage.builder()
-                .detail(ResponseInputImage.Detail.HIGH)
+                .detail(ResponseInputImage.Detail.LOW)
                 .fileId("file_id")
                 .imageUrl("image_url")
                 .build()

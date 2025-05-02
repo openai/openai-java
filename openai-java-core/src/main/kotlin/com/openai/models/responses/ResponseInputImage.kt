@@ -298,9 +298,9 @@ private constructor(
 
         companion object {
 
-            @JvmField val HIGH = of("high")
-
             @JvmField val LOW = of("low")
+
+            @JvmField val HIGH = of("high")
 
             @JvmField val AUTO = of("auto")
 
@@ -309,8 +309,8 @@ private constructor(
 
         /** An enum containing [Detail]'s known values. */
         enum class Known {
-            HIGH,
             LOW,
+            HIGH,
             AUTO,
         }
 
@@ -324,8 +324,8 @@ private constructor(
          * - It was constructed with an arbitrary value using the [of] method.
          */
         enum class Value {
-            HIGH,
             LOW,
+            HIGH,
             AUTO,
             /** An enum member indicating that [Detail] was instantiated with an unknown value. */
             _UNKNOWN,
@@ -340,8 +340,8 @@ private constructor(
          */
         fun value(): Value =
             when (this) {
-                HIGH -> Value.HIGH
                 LOW -> Value.LOW
+                HIGH -> Value.HIGH
                 AUTO -> Value.AUTO
                 else -> Value._UNKNOWN
             }
@@ -357,8 +357,8 @@ private constructor(
          */
         fun known(): Known =
             when (this) {
-                HIGH -> Known.HIGH
                 LOW -> Known.LOW
+                HIGH -> Known.HIGH
                 AUTO -> Known.AUTO
                 else -> throw OpenAIInvalidDataException("Unknown Detail: $value")
             }

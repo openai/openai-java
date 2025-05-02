@@ -23,8 +23,8 @@ import kotlin.jvm.optionals.getOrNull
  */
 class ComputerTool
 private constructor(
-    private val displayHeight: JsonField<Double>,
-    private val displayWidth: JsonField<Double>,
+    private val displayHeight: JsonField<Long>,
+    private val displayWidth: JsonField<Long>,
     private val environment: JsonField<Environment>,
     private val type: JsonValue,
     private val additionalProperties: MutableMap<String, JsonValue>,
@@ -34,10 +34,10 @@ private constructor(
     private constructor(
         @JsonProperty("display_height")
         @ExcludeMissing
-        displayHeight: JsonField<Double> = JsonMissing.of(),
+        displayHeight: JsonField<Long> = JsonMissing.of(),
         @JsonProperty("display_width")
         @ExcludeMissing
-        displayWidth: JsonField<Double> = JsonMissing.of(),
+        displayWidth: JsonField<Long> = JsonMissing.of(),
         @JsonProperty("environment")
         @ExcludeMissing
         environment: JsonField<Environment> = JsonMissing.of(),
@@ -50,7 +50,7 @@ private constructor(
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
      *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
      */
-    fun displayHeight(): Double = displayHeight.getRequired("display_height")
+    fun displayHeight(): Long = displayHeight.getRequired("display_height")
 
     /**
      * The width of the computer display.
@@ -58,7 +58,7 @@ private constructor(
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
      *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
      */
-    fun displayWidth(): Double = displayWidth.getRequired("display_width")
+    fun displayWidth(): Long = displayWidth.getRequired("display_width")
 
     /**
      * The type of computer environment to control.
@@ -88,7 +88,7 @@ private constructor(
      */
     @JsonProperty("display_height")
     @ExcludeMissing
-    fun _displayHeight(): JsonField<Double> = displayHeight
+    fun _displayHeight(): JsonField<Long> = displayHeight
 
     /**
      * Returns the raw JSON value of [displayWidth].
@@ -97,7 +97,7 @@ private constructor(
      */
     @JsonProperty("display_width")
     @ExcludeMissing
-    fun _displayWidth(): JsonField<Double> = displayWidth
+    fun _displayWidth(): JsonField<Long> = displayWidth
 
     /**
      * Returns the raw JSON value of [environment].
@@ -138,8 +138,8 @@ private constructor(
     /** A builder for [ComputerTool]. */
     class Builder internal constructor() {
 
-        private var displayHeight: JsonField<Double>? = null
-        private var displayWidth: JsonField<Double>? = null
+        private var displayHeight: JsonField<Long>? = null
+        private var displayWidth: JsonField<Long>? = null
         private var environment: JsonField<Environment>? = null
         private var type: JsonValue = JsonValue.from("computer_use_preview")
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
@@ -154,32 +154,30 @@ private constructor(
         }
 
         /** The height of the computer display. */
-        fun displayHeight(displayHeight: Double) = displayHeight(JsonField.of(displayHeight))
+        fun displayHeight(displayHeight: Long) = displayHeight(JsonField.of(displayHeight))
 
         /**
          * Sets [Builder.displayHeight] to an arbitrary JSON value.
          *
-         * You should usually call [Builder.displayHeight] with a well-typed [Double] value instead.
+         * You should usually call [Builder.displayHeight] with a well-typed [Long] value instead.
          * This method is primarily for setting the field to an undocumented or not yet supported
          * value.
          */
-        fun displayHeight(displayHeight: JsonField<Double>) = apply {
+        fun displayHeight(displayHeight: JsonField<Long>) = apply {
             this.displayHeight = displayHeight
         }
 
         /** The width of the computer display. */
-        fun displayWidth(displayWidth: Double) = displayWidth(JsonField.of(displayWidth))
+        fun displayWidth(displayWidth: Long) = displayWidth(JsonField.of(displayWidth))
 
         /**
          * Sets [Builder.displayWidth] to an arbitrary JSON value.
          *
-         * You should usually call [Builder.displayWidth] with a well-typed [Double] value instead.
+         * You should usually call [Builder.displayWidth] with a well-typed [Long] value instead.
          * This method is primarily for setting the field to an undocumented or not yet supported
          * value.
          */
-        fun displayWidth(displayWidth: JsonField<Double>) = apply {
-            this.displayWidth = displayWidth
-        }
+        fun displayWidth(displayWidth: JsonField<Long>) = apply { this.displayWidth = displayWidth }
 
         /** The type of computer environment to control. */
         fun environment(environment: Environment) = environment(JsonField.of(environment))
@@ -306,9 +304,11 @@ private constructor(
 
         companion object {
 
+            @JvmField val WINDOWS = of("windows")
+
             @JvmField val MAC = of("mac")
 
-            @JvmField val WINDOWS = of("windows")
+            @JvmField val LINUX = of("linux")
 
             @JvmField val UBUNTU = of("ubuntu")
 
@@ -319,8 +319,9 @@ private constructor(
 
         /** An enum containing [Environment]'s known values. */
         enum class Known {
-            MAC,
             WINDOWS,
+            MAC,
+            LINUX,
             UBUNTU,
             BROWSER,
         }
@@ -335,8 +336,9 @@ private constructor(
          * - It was constructed with an arbitrary value using the [of] method.
          */
         enum class Value {
-            MAC,
             WINDOWS,
+            MAC,
+            LINUX,
             UBUNTU,
             BROWSER,
             /**
@@ -354,8 +356,9 @@ private constructor(
          */
         fun value(): Value =
             when (this) {
-                MAC -> Value.MAC
                 WINDOWS -> Value.WINDOWS
+                MAC -> Value.MAC
+                LINUX -> Value.LINUX
                 UBUNTU -> Value.UBUNTU
                 BROWSER -> Value.BROWSER
                 else -> Value._UNKNOWN
@@ -372,8 +375,9 @@ private constructor(
          */
         fun known(): Known =
             when (this) {
-                MAC -> Known.MAC
                 WINDOWS -> Known.WINDOWS
+                MAC -> Known.MAC
+                LINUX -> Known.LINUX
                 UBUNTU -> Known.UBUNTU
                 BROWSER -> Known.BROWSER
                 else -> throw OpenAIInvalidDataException("Unknown Environment: $value")

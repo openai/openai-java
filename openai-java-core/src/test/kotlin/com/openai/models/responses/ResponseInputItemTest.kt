@@ -321,7 +321,7 @@ internal class ResponseInputItemTest {
     fun ofComputerCallOutput() {
         val computerCallOutput =
             ResponseInputItem.ComputerCallOutput.builder()
-                .callId("call_id")
+                .callId("x")
                 .output(
                     ResponseComputerToolCallOutputScreenshot.builder()
                         .fileId("file_id")
@@ -360,7 +360,7 @@ internal class ResponseInputItemTest {
         val responseInputItem =
             ResponseInputItem.ofComputerCallOutput(
                 ResponseInputItem.ComputerCallOutput.builder()
-                    .callId("call_id")
+                    .callId("x")
                     .output(
                         ResponseComputerToolCallOutputScreenshot.builder()
                             .fileId("file_id")
@@ -484,7 +484,7 @@ internal class ResponseInputItemTest {
     fun ofFunctionCallOutput() {
         val functionCallOutput =
             ResponseInputItem.FunctionCallOutput.builder()
-                .callId("call_id")
+                .callId("x")
                 .output("output")
                 .id("id")
                 .status(ResponseInputItem.FunctionCallOutput.Status.IN_PROGRESS)
@@ -511,7 +511,7 @@ internal class ResponseInputItemTest {
         val responseInputItem =
             ResponseInputItem.ofFunctionCallOutput(
                 ResponseInputItem.FunctionCallOutput.builder()
-                    .callId("call_id")
+                    .callId("x")
                     .output("output")
                     .id("id")
                     .status(ResponseInputItem.FunctionCallOutput.Status.IN_PROGRESS)
@@ -533,6 +533,7 @@ internal class ResponseInputItemTest {
             ResponseReasoningItem.builder()
                 .id("id")
                 .addSummary(ResponseReasoningItem.Summary.builder().text("text").build())
+                .encryptedContent("encrypted_content")
                 .status(ResponseReasoningItem.Status.IN_PROGRESS)
                 .build()
 
@@ -559,6 +560,7 @@ internal class ResponseInputItemTest {
                 ResponseReasoningItem.builder()
                     .id("id")
                     .addSummary(ResponseReasoningItem.Summary.builder().text("text").build())
+                    .encryptedContent("encrypted_content")
                     .status(ResponseReasoningItem.Status.IN_PROGRESS)
                     .build()
             )
@@ -574,7 +576,11 @@ internal class ResponseInputItemTest {
 
     @Test
     fun ofItemReference() {
-        val itemReference = ResponseInputItem.ItemReference.builder().id("id").build()
+        val itemReference =
+            ResponseInputItem.ItemReference.builder()
+                .id("id")
+                .type(ResponseInputItem.ItemReference.Type.ITEM_REFERENCE)
+                .build()
 
         val responseInputItem = ResponseInputItem.ofItemReference(itemReference)
 
@@ -596,7 +602,10 @@ internal class ResponseInputItemTest {
         val jsonMapper = jsonMapper()
         val responseInputItem =
             ResponseInputItem.ofItemReference(
-                ResponseInputItem.ItemReference.builder().id("id").build()
+                ResponseInputItem.ItemReference.builder()
+                    .id("id")
+                    .type(ResponseInputItem.ItemReference.Type.ITEM_REFERENCE)
+                    .build()
             )
 
         val roundtrippedResponseInputItem =

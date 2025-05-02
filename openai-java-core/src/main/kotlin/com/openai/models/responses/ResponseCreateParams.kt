@@ -87,6 +87,10 @@ private constructor(
      * - `file_search_call.results`: Include the search results of the file search tool call.
      * - `message.input_image.image_url`: Include image urls from the input message.
      * - `computer_call_output.output.image_url`: Include image urls from the computer call output.
+     * - `reasoning.encrypted_content`: Includes an encrypted version of reasoning tokens in
+     *   reasoning item outputs. This enables reasoning items to be used in multi-turn conversations
+     *   when using the Responses API statelessly (like when the `store` parameter is set to
+     *   `false`, or when an organization is enrolled in the zero data retention program).
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -507,6 +511,11 @@ private constructor(
          * - `message.input_image.image_url`: Include image urls from the input message.
          * - `computer_call_output.output.image_url`: Include image urls from the computer call
          *   output.
+         * - `reasoning.encrypted_content`: Includes an encrypted version of reasoning tokens in
+         *   reasoning item outputs. This enables reasoning items to be used in multi-turn
+         *   conversations when using the Responses API statelessly (like when the `store` parameter
+         *   is set to `false`, or when an organization is enrolled in the zero data retention
+         *   program).
          */
         fun include(include: List<ResponseIncludable>?) = apply { body.include(include) }
 
@@ -849,11 +858,11 @@ private constructor(
         /** Alias for calling [addTool] with `Tool.ofFunction(function)`. */
         fun addTool(function: FunctionTool) = apply { body.addTool(function) }
 
-        /** Alias for calling [addTool] with `Tool.ofComputerUsePreview(computerUsePreview)`. */
-        fun addTool(computerUsePreview: ComputerTool) = apply { body.addTool(computerUsePreview) }
-
         /** Alias for calling [addTool] with `Tool.ofWebSearch(webSearch)`. */
         fun addTool(webSearch: WebSearchTool) = apply { body.addTool(webSearch) }
+
+        /** Alias for calling [addTool] with `Tool.ofComputerUsePreview(computerUsePreview)`. */
+        fun addTool(computerUsePreview: ComputerTool) = apply { body.addTool(computerUsePreview) }
 
         /**
          * An alternative to sampling with temperature, called nucleus sampling, where the model
@@ -1187,6 +1196,11 @@ private constructor(
          * - `message.input_image.image_url`: Include image urls from the input message.
          * - `computer_call_output.output.image_url`: Include image urls from the computer call
          *   output.
+         * - `reasoning.encrypted_content`: Includes an encrypted version of reasoning tokens in
+         *   reasoning item outputs. This enables reasoning items to be used in multi-turn
+         *   conversations when using the Responses API statelessly (like when the `store` parameter
+         *   is set to `false`, or when an organization is enrolled in the zero data retention
+         *   program).
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
@@ -1656,6 +1670,11 @@ private constructor(
              * - `message.input_image.image_url`: Include image urls from the input message.
              * - `computer_call_output.output.image_url`: Include image urls from the computer call
              *   output.
+             * - `reasoning.encrypted_content`: Includes an encrypted version of reasoning tokens in
+             *   reasoning item outputs. This enables reasoning items to be used in multi-turn
+             *   conversations when using the Responses API statelessly (like when the `store`
+             *   parameter is set to `false`, or when an organization is enrolled in the zero data
+             *   retention program).
              */
             fun include(include: List<ResponseIncludable>?) = include(JsonField.ofNullable(include))
 
@@ -2022,12 +2041,12 @@ private constructor(
             /** Alias for calling [addTool] with `Tool.ofFunction(function)`. */
             fun addTool(function: FunctionTool) = addTool(Tool.ofFunction(function))
 
+            /** Alias for calling [addTool] with `Tool.ofWebSearch(webSearch)`. */
+            fun addTool(webSearch: WebSearchTool) = addTool(Tool.ofWebSearch(webSearch))
+
             /** Alias for calling [addTool] with `Tool.ofComputerUsePreview(computerUsePreview)`. */
             fun addTool(computerUsePreview: ComputerTool) =
                 addTool(Tool.ofComputerUsePreview(computerUsePreview))
-
-            /** Alias for calling [addTool] with `Tool.ofWebSearch(webSearch)`. */
-            fun addTool(webSearch: WebSearchTool) = addTool(Tool.ofWebSearch(webSearch))
 
             /**
              * An alternative to sampling with temperature, called nucleus sampling, where the model

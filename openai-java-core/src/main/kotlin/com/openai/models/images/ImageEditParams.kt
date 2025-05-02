@@ -46,10 +46,13 @@ private constructor(
 ) : Params {
 
     /**
-     * The image(s) to edit. Must be a supported image file or an array of images. For
-     * `gpt-image-1`, each image should be a `png`, `webp`, or `jpg` file less than 25MB. For
-     * `dall-e-2`, you can only provide one image, and it should be a square `png` file less than
-     * 4MB.
+     * The image(s) to edit. Must be a supported image file or an array of images.
+     *
+     * For `gpt-image-1`, each image should be a `png`, `webp`, or `jpg` file less than 25MB. You
+     * can provide up to 16 images.
+     *
+     * For `dall-e-2`, you can only provide one image, and it should be a square `png` file less
+     * than 4MB.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
      *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
@@ -64,6 +67,20 @@ private constructor(
      *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
      */
     fun prompt(): String = body.prompt()
+
+    /**
+     * Allows to set transparency for the background of the generated image(s). This parameter is
+     * only supported for `gpt-image-1`. Must be one of `transparent`, `opaque` or `auto` (default
+     * value). When `auto` is used, the model will automatically determine the best background for
+     * the image.
+     *
+     * If `transparent`, the output format needs to support transparency, so it should be set to
+     * either `png` (default value) or `webp`.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun background(): Optional<Background> = body.background()
 
     /**
      * An additional image whose fully transparent areas (e.g. where alpha is zero) indicate where
@@ -145,6 +162,13 @@ private constructor(
      * Unlike [prompt], this method doesn't throw if the multipart field has an unexpected type.
      */
     fun _prompt(): MultipartField<String> = body._prompt()
+
+    /**
+     * Returns the raw multipart value of [background].
+     *
+     * Unlike [background], this method doesn't throw if the multipart field has an unexpected type.
+     */
+    fun _background(): MultipartField<Background> = body._background()
 
     /**
      * Returns the raw multipart value of [mask].
@@ -237,17 +261,20 @@ private constructor(
          * Otherwise, it's more convenient to use the top-level setters instead:
          * - [image]
          * - [prompt]
+         * - [background]
          * - [mask]
          * - [model]
-         * - [n]
          * - etc.
          */
         fun body(body: Body) = apply { this.body = body.toBuilder() }
 
         /**
-         * The image(s) to edit. Must be a supported image file or an array of images. For
-         * `gpt-image-1`, each image should be a `png`, `webp`, or `jpg` file less than 25MB. For
-         * `dall-e-2`, you can only provide one image, and it should be a square `png` file less
+         * The image(s) to edit. Must be a supported image file or an array of images.
+         *
+         * For `gpt-image-1`, each image should be a `png`, `webp`, or `jpg` file less than 25MB.
+         * You can provide up to 16 images.
+         *
+         * For `dall-e-2`, you can only provide one image, and it should be a square `png` file less
          * than 4MB.
          */
         fun image(image: Image) = apply { body.image(image) }
@@ -264,17 +291,23 @@ private constructor(
         fun image(inputStream: InputStream) = apply { body.image(inputStream) }
 
         /**
-         * The image(s) to edit. Must be a supported image file or an array of images. For
-         * `gpt-image-1`, each image should be a `png`, `webp`, or `jpg` file less than 25MB. For
-         * `dall-e-2`, you can only provide one image, and it should be a square `png` file less
+         * The image(s) to edit. Must be a supported image file or an array of images.
+         *
+         * For `gpt-image-1`, each image should be a `png`, `webp`, or `jpg` file less than 25MB.
+         * You can provide up to 16 images.
+         *
+         * For `dall-e-2`, you can only provide one image, and it should be a square `png` file less
          * than 4MB.
          */
         fun image(inputStream: ByteArray) = apply { body.image(inputStream) }
 
         /**
-         * The image(s) to edit. Must be a supported image file or an array of images. For
-         * `gpt-image-1`, each image should be a `png`, `webp`, or `jpg` file less than 25MB. For
-         * `dall-e-2`, you can only provide one image, and it should be a square `png` file less
+         * The image(s) to edit. Must be a supported image file or an array of images.
+         *
+         * For `gpt-image-1`, each image should be a `png`, `webp`, or `jpg` file less than 25MB.
+         * You can provide up to 16 images.
+         *
+         * For `dall-e-2`, you can only provide one image, and it should be a square `png` file less
          * than 4MB.
          */
         fun image(inputStream: Path) = apply { body.image(inputStream) }
@@ -297,6 +330,31 @@ private constructor(
          * method is primarily for setting the field to an undocumented or not yet supported value.
          */
         fun prompt(prompt: MultipartField<String>) = apply { body.prompt(prompt) }
+
+        /**
+         * Allows to set transparency for the background of the generated image(s). This parameter
+         * is only supported for `gpt-image-1`. Must be one of `transparent`, `opaque` or `auto`
+         * (default value). When `auto` is used, the model will automatically determine the best
+         * background for the image.
+         *
+         * If `transparent`, the output format needs to support transparency, so it should be set to
+         * either `png` (default value) or `webp`.
+         */
+        fun background(background: Background?) = apply { body.background(background) }
+
+        /** Alias for calling [Builder.background] with `background.orElse(null)`. */
+        fun background(background: Optional<Background>) = background(background.getOrNull())
+
+        /**
+         * Sets [Builder.background] to an arbitrary multipart value.
+         *
+         * You should usually call [Builder.background] with a well-typed [Background] value
+         * instead. This method is primarily for setting the field to an undocumented or not yet
+         * supported value.
+         */
+        fun background(background: MultipartField<Background>) = apply {
+            body.background(background)
+        }
 
         /**
          * An additional image whose fully transparent areas (e.g. where alpha is zero) indicate
@@ -573,6 +631,7 @@ private constructor(
         mapOf(
                 "image" to _image(),
                 "prompt" to _prompt(),
+                "background" to _background(),
                 "mask" to _mask(),
                 "model" to _model(),
                 "n" to _n(),
@@ -591,6 +650,7 @@ private constructor(
     private constructor(
         private val image: MultipartField<Image>,
         private val prompt: MultipartField<String>,
+        private val background: MultipartField<Background>,
         private val mask: MultipartField<InputStream>,
         private val model: MultipartField<ImageModel>,
         private val n: MultipartField<Long>,
@@ -601,9 +661,12 @@ private constructor(
     ) {
 
         /**
-         * The image(s) to edit. Must be a supported image file or an array of images. For
-         * `gpt-image-1`, each image should be a `png`, `webp`, or `jpg` file less than 25MB. For
-         * `dall-e-2`, you can only provide one image, and it should be a square `png` file less
+         * The image(s) to edit. Must be a supported image file or an array of images.
+         *
+         * For `gpt-image-1`, each image should be a `png`, `webp`, or `jpg` file less than 25MB.
+         * You can provide up to 16 images.
+         *
+         * For `dall-e-2`, you can only provide one image, and it should be a square `png` file less
          * than 4MB.
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
@@ -619,6 +682,20 @@ private constructor(
          *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
          */
         fun prompt(): String = prompt.value.getRequired("prompt")
+
+        /**
+         * Allows to set transparency for the background of the generated image(s). This parameter
+         * is only supported for `gpt-image-1`. Must be one of `transparent`, `opaque` or `auto`
+         * (default value). When `auto` is used, the model will automatically determine the best
+         * background for the image.
+         *
+         * If `transparent`, the output format needs to support transparency, so it should be set to
+         * either `png` (default value) or `webp`.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun background(): Optional<Background> = background.value.getOptional("background")
 
         /**
          * An additional image whose fully transparent areas (e.g. where alpha is zero) indicate
@@ -705,6 +782,16 @@ private constructor(
         @JsonProperty("prompt") @ExcludeMissing fun _prompt(): MultipartField<String> = prompt
 
         /**
+         * Returns the raw multipart value of [background].
+         *
+         * Unlike [background], this method doesn't throw if the multipart field has an unexpected
+         * type.
+         */
+        @JsonProperty("background")
+        @ExcludeMissing
+        fun _background(): MultipartField<Background> = background
+
+        /**
          * Returns the raw multipart value of [mask].
          *
          * Unlike [mask], this method doesn't throw if the multipart field has an unexpected type.
@@ -778,6 +865,7 @@ private constructor(
 
             private var image: MultipartField<Image>? = null
             private var prompt: MultipartField<String>? = null
+            private var background: MultipartField<Background> = MultipartField.of(null)
             private var mask: MultipartField<InputStream> = MultipartField.of(null)
             private var model: MultipartField<ImageModel> = MultipartField.of(null)
             private var n: MultipartField<Long> = MultipartField.of(null)
@@ -790,6 +878,7 @@ private constructor(
             internal fun from(body: Body) = apply {
                 image = body.image
                 prompt = body.prompt
+                background = body.background
                 mask = body.mask
                 model = body.model
                 n = body.n
@@ -800,8 +889,11 @@ private constructor(
             }
 
             /**
-             * The image(s) to edit. Must be a supported image file or an array of images. For
-             * `gpt-image-1`, each image should be a `png`, `webp`, or `jpg` file less than 25MB.
+             * The image(s) to edit. Must be a supported image file or an array of images.
+             *
+             * For `gpt-image-1`, each image should be a `png`, `webp`, or `jpg` file less than
+             * 25MB. You can provide up to 16 images.
+             *
              * For `dall-e-2`, you can only provide one image, and it should be a square `png` file
              * less than 4MB.
              */
@@ -820,16 +912,22 @@ private constructor(
             fun image(inputStream: InputStream) = image(Image.ofInputStream(inputStream))
 
             /**
-             * The image(s) to edit. Must be a supported image file or an array of images. For
-             * `gpt-image-1`, each image should be a `png`, `webp`, or `jpg` file less than 25MB.
+             * The image(s) to edit. Must be a supported image file or an array of images.
+             *
+             * For `gpt-image-1`, each image should be a `png`, `webp`, or `jpg` file less than
+             * 25MB. You can provide up to 16 images.
+             *
              * For `dall-e-2`, you can only provide one image, and it should be a square `png` file
              * less than 4MB.
              */
             fun image(inputStream: ByteArray) = image(inputStream.inputStream())
 
             /**
-             * The image(s) to edit. Must be a supported image file or an array of images. For
-             * `gpt-image-1`, each image should be a `png`, `webp`, or `jpg` file less than 25MB.
+             * The image(s) to edit. Must be a supported image file or an array of images.
+             *
+             * For `gpt-image-1`, each image should be a `png`, `webp`, or `jpg` file less than
+             * 25MB. You can provide up to 16 images.
+             *
              * For `dall-e-2`, you can only provide one image, and it should be a square `png` file
              * less than 4MB.
              */
@@ -859,6 +957,31 @@ private constructor(
              * supported value.
              */
             fun prompt(prompt: MultipartField<String>) = apply { this.prompt = prompt }
+
+            /**
+             * Allows to set transparency for the background of the generated image(s). This
+             * parameter is only supported for `gpt-image-1`. Must be one of `transparent`, `opaque`
+             * or `auto` (default value). When `auto` is used, the model will automatically
+             * determine the best background for the image.
+             *
+             * If `transparent`, the output format needs to support transparency, so it should be
+             * set to either `png` (default value) or `webp`.
+             */
+            fun background(background: Background?) = background(MultipartField.of(background))
+
+            /** Alias for calling [Builder.background] with `background.orElse(null)`. */
+            fun background(background: Optional<Background>) = background(background.getOrNull())
+
+            /**
+             * Sets [Builder.background] to an arbitrary multipart value.
+             *
+             * You should usually call [Builder.background] with a well-typed [Background] value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun background(background: MultipartField<Background>) = apply {
+                this.background = background
+            }
 
             /**
              * An additional image whose fully transparent areas (e.g. where alpha is zero) indicate
@@ -1044,6 +1167,7 @@ private constructor(
                 Body(
                     checkRequired("image", image),
                     checkRequired("prompt", prompt),
+                    background,
                     mask,
                     model,
                     n,
@@ -1063,6 +1187,7 @@ private constructor(
 
             image().validate()
             prompt()
+            background().ifPresent { it.validate() }
             mask()
             model().ifPresent { it.validate() }
             n()
@@ -1086,24 +1211,27 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is Body && image == other.image && prompt == other.prompt && mask == other.mask && model == other.model && n == other.n && quality == other.quality && responseFormat == other.responseFormat && size == other.size && user == other.user /* spotless:on */
+            return /* spotless:off */ other is Body && image == other.image && prompt == other.prompt && background == other.background && mask == other.mask && model == other.model && n == other.n && quality == other.quality && responseFormat == other.responseFormat && size == other.size && user == other.user /* spotless:on */
         }
 
         /* spotless:off */
-        private val hashCode: Int by lazy { Objects.hash(image, prompt, mask, model, n, quality, responseFormat, size, user) }
+        private val hashCode: Int by lazy { Objects.hash(image, prompt, background, mask, model, n, quality, responseFormat, size, user) }
         /* spotless:on */
 
         override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "Body{image=$image, prompt=$prompt, mask=$mask, model=$model, n=$n, quality=$quality, responseFormat=$responseFormat, size=$size, user=$user}"
+            "Body{image=$image, prompt=$prompt, background=$background, mask=$mask, model=$model, n=$n, quality=$quality, responseFormat=$responseFormat, size=$size, user=$user}"
     }
 
     /**
-     * The image(s) to edit. Must be a supported image file or an array of images. For
-     * `gpt-image-1`, each image should be a `png`, `webp`, or `jpg` file less than 25MB. For
-     * `dall-e-2`, you can only provide one image, and it should be a square `png` file less than
-     * 4MB.
+     * The image(s) to edit. Must be a supported image file or an array of images.
+     *
+     * For `gpt-image-1`, each image should be a `png`, `webp`, or `jpg` file less than 25MB. You
+     * can provide up to 16 images.
+     *
+     * For `dall-e-2`, you can only provide one image, and it should be a square `png` file less
+     * than 4MB.
      */
     @JsonDeserialize(using = Image.Deserializer::class)
     @JsonSerialize(using = Image.Serializer::class)
@@ -1273,6 +1401,148 @@ private constructor(
                 }
             }
         }
+    }
+
+    /**
+     * Allows to set transparency for the background of the generated image(s). This parameter is
+     * only supported for `gpt-image-1`. Must be one of `transparent`, `opaque` or `auto` (default
+     * value). When `auto` is used, the model will automatically determine the best background for
+     * the image.
+     *
+     * If `transparent`, the output format needs to support transparency, so it should be set to
+     * either `png` (default value) or `webp`.
+     */
+    class Background @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
+
+        /**
+         * Returns this class instance's raw value.
+         *
+         * This is usually only useful if this instance was deserialized from data that doesn't
+         * match any known member, and you want to know that value. For example, if the SDK is on an
+         * older version than the API, then the API may respond with new members that the SDK is
+         * unaware of.
+         */
+        @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
+
+        companion object {
+
+            @JvmField val TRANSPARENT = of("transparent")
+
+            @JvmField val OPAQUE = of("opaque")
+
+            @JvmField val AUTO = of("auto")
+
+            @JvmStatic fun of(value: String) = Background(JsonField.of(value))
+        }
+
+        /** An enum containing [Background]'s known values. */
+        enum class Known {
+            TRANSPARENT,
+            OPAQUE,
+            AUTO,
+        }
+
+        /**
+         * An enum containing [Background]'s known values, as well as an [_UNKNOWN] member.
+         *
+         * An instance of [Background] can contain an unknown value in a couple of cases:
+         * - It was deserialized from data that doesn't match any known member. For example, if the
+         *   SDK is on an older version than the API, then the API may respond with new members that
+         *   the SDK is unaware of.
+         * - It was constructed with an arbitrary value using the [of] method.
+         */
+        enum class Value {
+            TRANSPARENT,
+            OPAQUE,
+            AUTO,
+            /**
+             * An enum member indicating that [Background] was instantiated with an unknown value.
+             */
+            _UNKNOWN,
+        }
+
+        /**
+         * Returns an enum member corresponding to this class instance's value, or [Value._UNKNOWN]
+         * if the class was instantiated with an unknown value.
+         *
+         * Use the [known] method instead if you're certain the value is always known or if you want
+         * to throw for the unknown case.
+         */
+        fun value(): Value =
+            when (this) {
+                TRANSPARENT -> Value.TRANSPARENT
+                OPAQUE -> Value.OPAQUE
+                AUTO -> Value.AUTO
+                else -> Value._UNKNOWN
+            }
+
+        /**
+         * Returns an enum member corresponding to this class instance's value.
+         *
+         * Use the [value] method instead if you're uncertain the value is always known and don't
+         * want to throw for the unknown case.
+         *
+         * @throws OpenAIInvalidDataException if this class instance's value is a not a known
+         *   member.
+         */
+        fun known(): Known =
+            when (this) {
+                TRANSPARENT -> Known.TRANSPARENT
+                OPAQUE -> Known.OPAQUE
+                AUTO -> Known.AUTO
+                else -> throw OpenAIInvalidDataException("Unknown Background: $value")
+            }
+
+        /**
+         * Returns this class instance's primitive wire representation.
+         *
+         * This differs from the [toString] method because that method is primarily for debugging
+         * and generally doesn't throw.
+         *
+         * @throws OpenAIInvalidDataException if this class instance's value does not have the
+         *   expected primitive type.
+         */
+        fun asString(): String =
+            _value().asString().orElseThrow { OpenAIInvalidDataException("Value is not a String") }
+
+        private var validated: Boolean = false
+
+        fun validate(): Background = apply {
+            if (validated) {
+                return@apply
+            }
+
+            known()
+            validated = true
+        }
+
+        fun isValid(): Boolean =
+            try {
+                validate()
+                true
+            } catch (e: OpenAIInvalidDataException) {
+                false
+            }
+
+        /**
+         * Returns a score indicating how many valid values are contained in this object
+         * recursively.
+         *
+         * Used for best match union deserialization.
+         */
+        @JvmSynthetic internal fun validity(): Int = if (value() == Value._UNKNOWN) 0 else 1
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) {
+                return true
+            }
+
+            return /* spotless:off */ other is Background && value == other.value /* spotless:on */
+        }
+
+        override fun hashCode() = value.hashCode()
+
+        override fun toString() = value.toString()
     }
 
     /**
@@ -1581,6 +1851,12 @@ private constructor(
 
             @JvmField val _1024X1024 = of("1024x1024")
 
+            @JvmField val _1536X1024 = of("1536x1024")
+
+            @JvmField val _1024X1536 = of("1024x1536")
+
+            @JvmField val AUTO = of("auto")
+
             @JvmStatic fun of(value: String) = Size(JsonField.of(value))
         }
 
@@ -1589,6 +1865,9 @@ private constructor(
             _256X256,
             _512X512,
             _1024X1024,
+            _1536X1024,
+            _1024X1536,
+            AUTO,
         }
 
         /**
@@ -1604,6 +1883,9 @@ private constructor(
             _256X256,
             _512X512,
             _1024X1024,
+            _1536X1024,
+            _1024X1536,
+            AUTO,
             /** An enum member indicating that [Size] was instantiated with an unknown value. */
             _UNKNOWN,
         }
@@ -1620,6 +1902,9 @@ private constructor(
                 _256X256 -> Value._256X256
                 _512X512 -> Value._512X512
                 _1024X1024 -> Value._1024X1024
+                _1536X1024 -> Value._1536X1024
+                _1024X1536 -> Value._1024X1536
+                AUTO -> Value.AUTO
                 else -> Value._UNKNOWN
             }
 
@@ -1637,6 +1922,9 @@ private constructor(
                 _256X256 -> Known._256X256
                 _512X512 -> Known._512X512
                 _1024X1024 -> Known._1024X1024
+                _1536X1024 -> Known._1536X1024
+                _1024X1536 -> Known._1024X1536
+                AUTO -> Known.AUTO
                 else -> throw OpenAIInvalidDataException("Unknown Size: $value")
             }
 

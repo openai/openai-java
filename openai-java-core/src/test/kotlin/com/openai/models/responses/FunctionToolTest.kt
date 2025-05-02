@@ -26,12 +26,12 @@ internal class FunctionToolTest {
 
         assertThat(functionTool.name()).isEqualTo("name")
         assertThat(functionTool.parameters())
-            .isEqualTo(
+            .contains(
                 FunctionTool.Parameters.builder()
                     .putAdditionalProperty("foo", JsonValue.from("bar"))
                     .build()
             )
-        assertThat(functionTool.strict()).isEqualTo(true)
+        assertThat(functionTool.strict()).contains(true)
         assertThat(functionTool.description()).contains("description")
     }
 

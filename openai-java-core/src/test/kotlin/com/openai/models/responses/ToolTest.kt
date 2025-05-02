@@ -40,8 +40,8 @@ internal class ToolTest {
 
         assertThat(tool.fileSearch()).contains(fileSearch)
         assertThat(tool.function()).isEmpty
-        assertThat(tool.computerUsePreview()).isEmpty
         assertThat(tool.webSearch()).isEmpty
+        assertThat(tool.computerUsePreview()).isEmpty
     }
 
     @Test
@@ -92,8 +92,8 @@ internal class ToolTest {
 
         assertThat(tool.fileSearch()).isEmpty
         assertThat(tool.function()).contains(function)
-        assertThat(tool.computerUsePreview()).isEmpty
         assertThat(tool.webSearch()).isEmpty
+        assertThat(tool.computerUsePreview()).isEmpty
     }
 
     @Test
@@ -110,41 +110,6 @@ internal class ToolTest {
                     )
                     .strict(true)
                     .description("description")
-                    .build()
-            )
-
-        val roundtrippedTool =
-            jsonMapper.readValue(jsonMapper.writeValueAsString(tool), jacksonTypeRef<Tool>())
-
-        assertThat(roundtrippedTool).isEqualTo(tool)
-    }
-
-    @Test
-    fun ofComputerUsePreview() {
-        val computerUsePreview =
-            ComputerTool.builder()
-                .displayHeight(0.0)
-                .displayWidth(0.0)
-                .environment(ComputerTool.Environment.MAC)
-                .build()
-
-        val tool = Tool.ofComputerUsePreview(computerUsePreview)
-
-        assertThat(tool.fileSearch()).isEmpty
-        assertThat(tool.function()).isEmpty
-        assertThat(tool.computerUsePreview()).contains(computerUsePreview)
-        assertThat(tool.webSearch()).isEmpty
-    }
-
-    @Test
-    fun ofComputerUsePreviewRoundtrip() {
-        val jsonMapper = jsonMapper()
-        val tool =
-            Tool.ofComputerUsePreview(
-                ComputerTool.builder()
-                    .displayHeight(0.0)
-                    .displayWidth(0.0)
-                    .environment(ComputerTool.Environment.MAC)
                     .build()
             )
 
@@ -174,8 +139,8 @@ internal class ToolTest {
 
         assertThat(tool.fileSearch()).isEmpty
         assertThat(tool.function()).isEmpty
-        assertThat(tool.computerUsePreview()).isEmpty
         assertThat(tool.webSearch()).contains(webSearch)
+        assertThat(tool.computerUsePreview()).isEmpty
     }
 
     @Test
@@ -194,6 +159,41 @@ internal class ToolTest {
                             .timezone("timezone")
                             .build()
                     )
+                    .build()
+            )
+
+        val roundtrippedTool =
+            jsonMapper.readValue(jsonMapper.writeValueAsString(tool), jacksonTypeRef<Tool>())
+
+        assertThat(roundtrippedTool).isEqualTo(tool)
+    }
+
+    @Test
+    fun ofComputerUsePreview() {
+        val computerUsePreview =
+            ComputerTool.builder()
+                .displayHeight(0L)
+                .displayWidth(0L)
+                .environment(ComputerTool.Environment.WINDOWS)
+                .build()
+
+        val tool = Tool.ofComputerUsePreview(computerUsePreview)
+
+        assertThat(tool.fileSearch()).isEmpty
+        assertThat(tool.function()).isEmpty
+        assertThat(tool.webSearch()).isEmpty
+        assertThat(tool.computerUsePreview()).contains(computerUsePreview)
+    }
+
+    @Test
+    fun ofComputerUsePreviewRoundtrip() {
+        val jsonMapper = jsonMapper()
+        val tool =
+            Tool.ofComputerUsePreview(
+                ComputerTool.builder()
+                    .displayHeight(0L)
+                    .displayWidth(0L)
+                    .environment(ComputerTool.Environment.WINDOWS)
                     .build()
             )
 

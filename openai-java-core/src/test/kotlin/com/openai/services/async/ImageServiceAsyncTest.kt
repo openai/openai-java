@@ -53,6 +53,7 @@ internal class ImageServiceAsyncTest {
                 ImageEditParams.builder()
                     .image("some content".byteInputStream())
                     .prompt("A cute baby sea otter wearing a beret")
+                    .background(ImageEditParams.Background.TRANSPARENT)
                     .mask("some content".byteInputStream())
                     .model(ImageModel.DALL_E_2)
                     .n(1L)

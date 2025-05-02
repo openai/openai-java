@@ -985,12 +985,12 @@ private constructor(
         /** Alias for calling [addTool] with `Tool.ofFunction(function)`. */
         fun addTool(function: FunctionTool) = addTool(Tool.ofFunction(function))
 
+        /** Alias for calling [addTool] with `Tool.ofWebSearch(webSearch)`. */
+        fun addTool(webSearch: WebSearchTool) = addTool(Tool.ofWebSearch(webSearch))
+
         /** Alias for calling [addTool] with `Tool.ofComputerUsePreview(computerUsePreview)`. */
         fun addTool(computerUsePreview: ComputerTool) =
             addTool(Tool.ofComputerUsePreview(computerUsePreview))
-
-        /** Alias for calling [addTool] with `Tool.ofWebSearch(webSearch)`. */
-        fun addTool(webSearch: WebSearchTool) = addTool(Tool.ofWebSearch(webSearch))
 
         /**
          * An alternative to sampling with temperature, called nucleus sampling, where the model

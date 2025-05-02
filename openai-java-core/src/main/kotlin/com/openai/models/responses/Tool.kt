@@ -18,18 +18,15 @@ import java.util.Objects
 import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
-/**
- * A tool that searches for relevant content from uploaded files. Learn more about the
- * [file search tool](https://platform.openai.com/docs/guides/tools-file-search).
- */
+/** A tool that can be used to generate a response. */
 @JsonDeserialize(using = Tool.Deserializer::class)
 @JsonSerialize(using = Tool.Serializer::class)
 class Tool
 private constructor(
     private val fileSearch: FileSearchTool? = null,
     private val function: FunctionTool? = null,
-    private val computerUsePreview: ComputerTool? = null,
     private val webSearch: WebSearchTool? = null,
+    private val computerUsePreview: ComputerTool? = null,
     private val _json: JsonValue? = null,
 ) {
 
@@ -46,24 +43,24 @@ private constructor(
     fun function(): Optional<FunctionTool> = Optional.ofNullable(function)
 
     /**
-     * A tool that controls a virtual computer. Learn more about the
-     * [computer tool](https://platform.openai.com/docs/guides/tools-computer-use).
-     */
-    fun computerUsePreview(): Optional<ComputerTool> = Optional.ofNullable(computerUsePreview)
-
-    /**
      * This tool searches the web for relevant results to use in a response. Learn more about the
      * [web search tool](https://platform.openai.com/docs/guides/tools-web-search).
      */
     fun webSearch(): Optional<WebSearchTool> = Optional.ofNullable(webSearch)
 
+    /**
+     * A tool that controls a virtual computer. Learn more about the
+     * [computer tool](https://platform.openai.com/docs/guides/tools-computer-use).
+     */
+    fun computerUsePreview(): Optional<ComputerTool> = Optional.ofNullable(computerUsePreview)
+
     fun isFileSearch(): Boolean = fileSearch != null
 
     fun isFunction(): Boolean = function != null
 
-    fun isComputerUsePreview(): Boolean = computerUsePreview != null
-
     fun isWebSearch(): Boolean = webSearch != null
+
+    fun isComputerUsePreview(): Boolean = computerUsePreview != null
 
     /**
      * A tool that searches for relevant content from uploaded files. Learn more about the
@@ -78,16 +75,16 @@ private constructor(
     fun asFunction(): FunctionTool = function.getOrThrow("function")
 
     /**
-     * A tool that controls a virtual computer. Learn more about the
-     * [computer tool](https://platform.openai.com/docs/guides/tools-computer-use).
-     */
-    fun asComputerUsePreview(): ComputerTool = computerUsePreview.getOrThrow("computerUsePreview")
-
-    /**
      * This tool searches the web for relevant results to use in a response. Learn more about the
      * [web search tool](https://platform.openai.com/docs/guides/tools-web-search).
      */
     fun asWebSearch(): WebSearchTool = webSearch.getOrThrow("webSearch")
+
+    /**
+     * A tool that controls a virtual computer. Learn more about the
+     * [computer tool](https://platform.openai.com/docs/guides/tools-computer-use).
+     */
+    fun asComputerUsePreview(): ComputerTool = computerUsePreview.getOrThrow("computerUsePreview")
 
     fun _json(): Optional<JsonValue> = Optional.ofNullable(_json)
 
@@ -95,8 +92,8 @@ private constructor(
         when {
             fileSearch != null -> visitor.visitFileSearch(fileSearch)
             function != null -> visitor.visitFunction(function)
-            computerUsePreview != null -> visitor.visitComputerUsePreview(computerUsePreview)
             webSearch != null -> visitor.visitWebSearch(webSearch)
+            computerUsePreview != null -> visitor.visitComputerUsePreview(computerUsePreview)
             else -> visitor.unknown(_json)
         }
 
@@ -117,12 +114,12 @@ private constructor(
                     function.validate()
                 }
 
-                override fun visitComputerUsePreview(computerUsePreview: ComputerTool) {
-                    computerUsePreview.validate()
-                }
-
                 override fun visitWebSearch(webSearch: WebSearchTool) {
                     webSearch.validate()
+                }
+
+                override fun visitComputerUsePreview(computerUsePreview: ComputerTool) {
+                    computerUsePreview.validate()
                 }
             }
         )
@@ -150,10 +147,10 @@ private constructor(
 
                 override fun visitFunction(function: FunctionTool) = function.validity()
 
+                override fun visitWebSearch(webSearch: WebSearchTool) = webSearch.validity()
+
                 override fun visitComputerUsePreview(computerUsePreview: ComputerTool) =
                     computerUsePreview.validity()
-
-                override fun visitWebSearch(webSearch: WebSearchTool) = webSearch.validity()
 
                 override fun unknown(json: JsonValue?) = 0
             }
@@ -164,17 +161,17 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is Tool && fileSearch == other.fileSearch && function == other.function && computerUsePreview == other.computerUsePreview && webSearch == other.webSearch /* spotless:on */
+        return /* spotless:off */ other is Tool && fileSearch == other.fileSearch && function == other.function && webSearch == other.webSearch && computerUsePreview == other.computerUsePreview /* spotless:on */
     }
 
-    override fun hashCode(): Int = /* spotless:off */ Objects.hash(fileSearch, function, computerUsePreview, webSearch) /* spotless:on */
+    override fun hashCode(): Int = /* spotless:off */ Objects.hash(fileSearch, function, webSearch, computerUsePreview) /* spotless:on */
 
     override fun toString(): String =
         when {
             fileSearch != null -> "Tool{fileSearch=$fileSearch}"
             function != null -> "Tool{function=$function}"
-            computerUsePreview != null -> "Tool{computerUsePreview=$computerUsePreview}"
             webSearch != null -> "Tool{webSearch=$webSearch}"
+            computerUsePreview != null -> "Tool{computerUsePreview=$computerUsePreview}"
             _json != null -> "Tool{_unknown=$_json}"
             else -> throw IllegalStateException("Invalid Tool")
         }
@@ -194,18 +191,18 @@ private constructor(
         @JvmStatic fun ofFunction(function: FunctionTool) = Tool(function = function)
 
         /**
+         * This tool searches the web for relevant results to use in a response. Learn more about
+         * the [web search tool](https://platform.openai.com/docs/guides/tools-web-search).
+         */
+        @JvmStatic fun ofWebSearch(webSearch: WebSearchTool) = Tool(webSearch = webSearch)
+
+        /**
          * A tool that controls a virtual computer. Learn more about the
          * [computer tool](https://platform.openai.com/docs/guides/tools-computer-use).
          */
         @JvmStatic
         fun ofComputerUsePreview(computerUsePreview: ComputerTool) =
             Tool(computerUsePreview = computerUsePreview)
-
-        /**
-         * This tool searches the web for relevant results to use in a response. Learn more about
-         * the [web search tool](https://platform.openai.com/docs/guides/tools-web-search).
-         */
-        @JvmStatic fun ofWebSearch(webSearch: WebSearchTool) = Tool(webSearch = webSearch)
     }
 
     /** An interface that defines how to map each variant of [Tool] to a value of type [T]. */
@@ -224,16 +221,16 @@ private constructor(
         fun visitFunction(function: FunctionTool): T
 
         /**
-         * A tool that controls a virtual computer. Learn more about the
-         * [computer tool](https://platform.openai.com/docs/guides/tools-computer-use).
-         */
-        fun visitComputerUsePreview(computerUsePreview: ComputerTool): T
-
-        /**
          * This tool searches the web for relevant results to use in a response. Learn more about
          * the [web search tool](https://platform.openai.com/docs/guides/tools-web-search).
          */
         fun visitWebSearch(webSearch: WebSearchTool): T
+
+        /**
+         * A tool that controls a virtual computer. Learn more about the
+         * [computer tool](https://platform.openai.com/docs/guides/tools-computer-use).
+         */
+        fun visitComputerUsePreview(computerUsePreview: ComputerTool): T
 
         /**
          * Maps an unknown variant of [Tool] to a value of type [T].
@@ -289,8 +286,8 @@ private constructor(
             when {
                 value.fileSearch != null -> generator.writeObject(value.fileSearch)
                 value.function != null -> generator.writeObject(value.function)
-                value.computerUsePreview != null -> generator.writeObject(value.computerUsePreview)
                 value.webSearch != null -> generator.writeObject(value.webSearch)
+                value.computerUsePreview != null -> generator.writeObject(value.computerUsePreview)
                 value._json != null -> generator.writeObject(value._json)
                 else -> throw IllegalStateException("Invalid Tool")
             }

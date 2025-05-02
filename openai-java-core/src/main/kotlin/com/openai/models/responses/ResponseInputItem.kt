@@ -110,6 +110,9 @@ private constructor(
 
     /**
      * A description of the chain of thought used by a reasoning model while generating a response.
+     * Be sure to include these items in your `input` to the Responses API for subsequent turns of a
+     * conversation if you are manually
+     * [managing context](https://platform.openai.com/docs/guides/conversation-state).
      */
     fun reasoning(): Optional<ResponseReasoningItem> = Optional.ofNullable(reasoning)
 
@@ -195,6 +198,9 @@ private constructor(
 
     /**
      * A description of the chain of thought used by a reasoning model while generating a response.
+     * Be sure to include these items in your `input` to the Responses API for subsequent turns of a
+     * conversation if you are manually
+     * [managing context](https://platform.openai.com/docs/guides/conversation-state).
      */
     fun asReasoning(): ResponseReasoningItem = reasoning.getOrThrow("reasoning")
 
@@ -434,7 +440,9 @@ private constructor(
 
         /**
          * A description of the chain of thought used by a reasoning model while generating a
-         * response.
+         * response. Be sure to include these items in your `input` to the Responses API for
+         * subsequent turns of a conversation if you are manually
+         * [managing context](https://platform.openai.com/docs/guides/conversation-state).
          */
         @JvmStatic
         fun ofReasoning(reasoning: ResponseReasoningItem) = ResponseInputItem(reasoning = reasoning)
@@ -505,7 +513,9 @@ private constructor(
 
         /**
          * A description of the chain of thought used by a reasoning model while generating a
-         * response.
+         * response. Be sure to include these items in your `input` to the Responses API for
+         * subsequent turns of a conversation if you are manually
+         * [managing context](https://platform.openai.com/docs/guides/conversation-state).
          */
         fun visitReasoning(reasoning: ResponseReasoningItem): T
 
@@ -1575,7 +1585,10 @@ private constructor(
             fun type(type: JsonValue) = apply { this.type = type }
 
             /** The ID of the computer tool call output. */
-            fun id(id: String) = id(JsonField.of(id))
+            fun id(id: String?) = id(JsonField.ofNullable(id))
+
+            /** Alias for calling [Builder.id] with `id.orElse(null)`. */
+            fun id(id: Optional<String>) = id(id.getOrNull())
 
             /**
              * Sets [Builder.id] to an arbitrary JSON value.
@@ -1589,8 +1602,16 @@ private constructor(
             /**
              * The safety checks reported by the API that have been acknowledged by the developer.
              */
-            fun acknowledgedSafetyChecks(acknowledgedSafetyChecks: List<AcknowledgedSafetyCheck>) =
-                acknowledgedSafetyChecks(JsonField.of(acknowledgedSafetyChecks))
+            fun acknowledgedSafetyChecks(acknowledgedSafetyChecks: List<AcknowledgedSafetyCheck>?) =
+                acknowledgedSafetyChecks(JsonField.ofNullable(acknowledgedSafetyChecks))
+
+            /**
+             * Alias for calling [Builder.acknowledgedSafetyChecks] with
+             * `acknowledgedSafetyChecks.orElse(null)`.
+             */
+            fun acknowledgedSafetyChecks(
+                acknowledgedSafetyChecks: Optional<List<AcknowledgedSafetyCheck>>
+            ) = acknowledgedSafetyChecks(acknowledgedSafetyChecks.getOrNull())
 
             /**
              * Sets [Builder.acknowledgedSafetyChecks] to an arbitrary JSON value.
@@ -1622,7 +1643,10 @@ private constructor(
              * The status of the message input. One of `in_progress`, `completed`, or `incomplete`.
              * Populated when input items are returned via API.
              */
-            fun status(status: Status) = status(JsonField.of(status))
+            fun status(status: Status?) = status(JsonField.ofNullable(status))
+
+            /** Alias for calling [Builder.status] with `status.orElse(null)`. */
+            fun status(status: Optional<Status>) = status(status.getOrNull())
 
             /**
              * Sets [Builder.status] to an arbitrary JSON value.
@@ -1751,20 +1775,18 @@ private constructor(
             /**
              * The type of the pending safety check.
              *
-             * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-             *   unexpectedly missing or null (e.g. if the server responded with an unexpected
-             *   value).
+             * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if
+             *   the server responded with an unexpected value).
              */
-            fun code(): String = code.getRequired("code")
+            fun code(): Optional<String> = code.getOptional("code")
 
             /**
              * Details about the pending safety check.
              *
-             * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-             *   unexpectedly missing or null (e.g. if the server responded with an unexpected
-             *   value).
+             * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if
+             *   the server responded with an unexpected value).
              */
-            fun message(): String = message.getRequired("message")
+            fun message(): Optional<String> = message.getOptional("message")
 
             /**
              * Returns the raw JSON value of [id].
@@ -1808,8 +1830,6 @@ private constructor(
                  * The following fields are required:
                  * ```java
                  * .id()
-                 * .code()
-                 * .message()
                  * ```
                  */
                 @JvmStatic fun builder() = Builder()
@@ -1819,8 +1839,8 @@ private constructor(
             class Builder internal constructor() {
 
                 private var id: JsonField<String>? = null
-                private var code: JsonField<String>? = null
-                private var message: JsonField<String>? = null
+                private var code: JsonField<String> = JsonMissing.of()
+                private var message: JsonField<String> = JsonMissing.of()
                 private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
                 @JvmSynthetic
@@ -1845,7 +1865,10 @@ private constructor(
                 fun id(id: JsonField<String>) = apply { this.id = id }
 
                 /** The type of the pending safety check. */
-                fun code(code: String) = code(JsonField.of(code))
+                fun code(code: String?) = code(JsonField.ofNullable(code))
+
+                /** Alias for calling [Builder.code] with `code.orElse(null)`. */
+                fun code(code: Optional<String>) = code(code.getOrNull())
 
                 /**
                  * Sets [Builder.code] to an arbitrary JSON value.
@@ -1857,7 +1880,10 @@ private constructor(
                 fun code(code: JsonField<String>) = apply { this.code = code }
 
                 /** Details about the pending safety check. */
-                fun message(message: String) = message(JsonField.of(message))
+                fun message(message: String?) = message(JsonField.ofNullable(message))
+
+                /** Alias for calling [Builder.message] with `message.orElse(null)`. */
+                fun message(message: Optional<String>) = message(message.getOrNull())
 
                 /**
                  * Sets [Builder.message] to an arbitrary JSON value.
@@ -1898,8 +1924,6 @@ private constructor(
                  * The following fields are required:
                  * ```java
                  * .id()
-                 * .code()
-                 * .message()
                  * ```
                  *
                  * @throws IllegalStateException if any required field is unset.
@@ -1907,8 +1931,8 @@ private constructor(
                 fun build(): AcknowledgedSafetyCheck =
                     AcknowledgedSafetyCheck(
                         checkRequired("id", id),
-                        checkRequired("code", code),
-                        checkRequired("message", message),
+                        code,
+                        message,
                         additionalProperties.toMutableMap(),
                     )
             }
@@ -2304,7 +2328,10 @@ private constructor(
              * The unique ID of the function tool call output. Populated when this item is returned
              * via API.
              */
-            fun id(id: String) = id(JsonField.of(id))
+            fun id(id: String?) = id(JsonField.ofNullable(id))
+
+            /** Alias for calling [Builder.id] with `id.orElse(null)`. */
+            fun id(id: Optional<String>) = id(id.getOrNull())
 
             /**
              * Sets [Builder.id] to an arbitrary JSON value.
@@ -2319,7 +2346,10 @@ private constructor(
              * The status of the item. One of `in_progress`, `completed`, or `incomplete`. Populated
              * when items are returned via API.
              */
-            fun status(status: Status) = status(JsonField.of(status))
+            fun status(status: Status?) = status(JsonField.ofNullable(status))
+
+            /** Alias for calling [Builder.status] with `status.orElse(null)`. */
+            fun status(status: Optional<Status>) = status(status.getOrNull())
 
             /**
              * Sets [Builder.status] to an arbitrary JSON value.
@@ -2575,14 +2605,14 @@ private constructor(
     class ItemReference
     private constructor(
         private val id: JsonField<String>,
-        private val type: JsonValue,
+        private val type: JsonField<Type>,
         private val additionalProperties: MutableMap<String, JsonValue>,
     ) {
 
         @JsonCreator
         private constructor(
             @JsonProperty("id") @ExcludeMissing id: JsonField<String> = JsonMissing.of(),
-            @JsonProperty("type") @ExcludeMissing type: JsonValue = JsonMissing.of(),
+            @JsonProperty("type") @ExcludeMissing type: JsonField<Type> = JsonMissing.of(),
         ) : this(id, type, mutableMapOf())
 
         /**
@@ -2596,15 +2626,10 @@ private constructor(
         /**
          * The type of item to reference. Always `item_reference`.
          *
-         * Expected to always return the following:
-         * ```java
-         * JsonValue.from("item_reference")
-         * ```
-         *
-         * However, this method can be useful for debugging and logging (e.g. if the server
-         * responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
          */
-        @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
+        fun type(): Optional<Type> = type.getOptional("type")
 
         /**
          * Returns the raw JSON value of [id].
@@ -2612,6 +2637,13 @@ private constructor(
          * Unlike [id], this method doesn't throw if the JSON field has an unexpected type.
          */
         @JsonProperty("id") @ExcludeMissing fun _id(): JsonField<String> = id
+
+        /**
+         * Returns the raw JSON value of [type].
+         *
+         * Unlike [type], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<Type> = type
 
         @JsonAnySetter
         private fun putAdditionalProperty(key: String, value: JsonValue) {
@@ -2642,7 +2674,7 @@ private constructor(
         class Builder internal constructor() {
 
             private var id: JsonField<String>? = null
-            private var type: JsonValue = JsonValue.from("item_reference")
+            private var type: JsonField<Type> = JsonMissing.of()
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
             @JvmSynthetic
@@ -2664,19 +2696,20 @@ private constructor(
              */
             fun id(id: JsonField<String>) = apply { this.id = id }
 
+            /** The type of item to reference. Always `item_reference`. */
+            fun type(type: Type?) = type(JsonField.ofNullable(type))
+
+            /** Alias for calling [Builder.type] with `type.orElse(null)`. */
+            fun type(type: Optional<Type>) = type(type.getOrNull())
+
             /**
-             * Sets the field to an arbitrary JSON value.
+             * Sets [Builder.type] to an arbitrary JSON value.
              *
-             * It is usually unnecessary to call this method because the field defaults to the
-             * following:
-             * ```java
-             * JsonValue.from("item_reference")
-             * ```
-             *
-             * This method is primarily for setting the field to an undocumented or not yet
-             * supported value.
+             * You should usually call [Builder.type] with a well-typed [Type] value instead. This
+             * method is primarily for setting the field to an undocumented or not yet supported
+             * value.
              */
-            fun type(type: JsonValue) = apply { this.type = type }
+            fun type(type: JsonField<Type>) = apply { this.type = type }
 
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.clear()
@@ -2721,11 +2754,7 @@ private constructor(
             }
 
             id()
-            _type().let {
-                if (it != JsonValue.from("item_reference")) {
-                    throw OpenAIInvalidDataException("'type' is invalid, received $it")
-                }
-            }
+            type().ifPresent { it.validate() }
             validated = true
         }
 
@@ -2745,8 +2774,129 @@ private constructor(
          */
         @JvmSynthetic
         internal fun validity(): Int =
-            (if (id.asKnown().isPresent) 1 else 0) +
-                type.let { if (it == JsonValue.from("item_reference")) 1 else 0 }
+            (if (id.asKnown().isPresent) 1 else 0) + (type.asKnown().getOrNull()?.validity() ?: 0)
+
+        /** The type of item to reference. Always `item_reference`. */
+        class Type @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
+
+            /**
+             * Returns this class instance's raw value.
+             *
+             * This is usually only useful if this instance was deserialized from data that doesn't
+             * match any known member, and you want to know that value. For example, if the SDK is
+             * on an older version than the API, then the API may respond with new members that the
+             * SDK is unaware of.
+             */
+            @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
+
+            companion object {
+
+                @JvmField val ITEM_REFERENCE = of("item_reference")
+
+                @JvmStatic fun of(value: String) = Type(JsonField.of(value))
+            }
+
+            /** An enum containing [Type]'s known values. */
+            enum class Known {
+                ITEM_REFERENCE
+            }
+
+            /**
+             * An enum containing [Type]'s known values, as well as an [_UNKNOWN] member.
+             *
+             * An instance of [Type] can contain an unknown value in a couple of cases:
+             * - It was deserialized from data that doesn't match any known member. For example, if
+             *   the SDK is on an older version than the API, then the API may respond with new
+             *   members that the SDK is unaware of.
+             * - It was constructed with an arbitrary value using the [of] method.
+             */
+            enum class Value {
+                ITEM_REFERENCE,
+                /** An enum member indicating that [Type] was instantiated with an unknown value. */
+                _UNKNOWN,
+            }
+
+            /**
+             * Returns an enum member corresponding to this class instance's value, or
+             * [Value._UNKNOWN] if the class was instantiated with an unknown value.
+             *
+             * Use the [known] method instead if you're certain the value is always known or if you
+             * want to throw for the unknown case.
+             */
+            fun value(): Value =
+                when (this) {
+                    ITEM_REFERENCE -> Value.ITEM_REFERENCE
+                    else -> Value._UNKNOWN
+                }
+
+            /**
+             * Returns an enum member corresponding to this class instance's value.
+             *
+             * Use the [value] method instead if you're uncertain the value is always known and
+             * don't want to throw for the unknown case.
+             *
+             * @throws OpenAIInvalidDataException if this class instance's value is a not a known
+             *   member.
+             */
+            fun known(): Known =
+                when (this) {
+                    ITEM_REFERENCE -> Known.ITEM_REFERENCE
+                    else -> throw OpenAIInvalidDataException("Unknown Type: $value")
+                }
+
+            /**
+             * Returns this class instance's primitive wire representation.
+             *
+             * This differs from the [toString] method because that method is primarily for
+             * debugging and generally doesn't throw.
+             *
+             * @throws OpenAIInvalidDataException if this class instance's value does not have the
+             *   expected primitive type.
+             */
+            fun asString(): String =
+                _value().asString().orElseThrow {
+                    OpenAIInvalidDataException("Value is not a String")
+                }
+
+            private var validated: Boolean = false
+
+            fun validate(): Type = apply {
+                if (validated) {
+                    return@apply
+                }
+
+                known()
+                validated = true
+            }
+
+            fun isValid(): Boolean =
+                try {
+                    validate()
+                    true
+                } catch (e: OpenAIInvalidDataException) {
+                    false
+                }
+
+            /**
+             * Returns a score indicating how many valid values are contained in this object
+             * recursively.
+             *
+             * Used for best match union deserialization.
+             */
+            @JvmSynthetic internal fun validity(): Int = if (value() == Value._UNKNOWN) 0 else 1
+
+            override fun equals(other: Any?): Boolean {
+                if (this === other) {
+                    return true
+                }
+
+                return /* spotless:off */ other is Type && value == other.value /* spotless:on */
+            }
+
+            override fun hashCode() = value.hashCode()
+
+            override fun toString() = value.toString()
+        }
 
         override fun equals(other: Any?): Boolean {
             if (this === other) {

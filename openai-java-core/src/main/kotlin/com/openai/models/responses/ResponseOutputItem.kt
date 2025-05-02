@@ -65,6 +65,9 @@ private constructor(
 
     /**
      * A description of the chain of thought used by a reasoning model while generating a response.
+     * Be sure to include these items in your `input` to the Responses API for subsequent turns of a
+     * conversation if you are manually
+     * [managing context](https://platform.openai.com/docs/guides/conversation-state).
      */
     fun reasoning(): Optional<ResponseReasoningItem> = Optional.ofNullable(reasoning)
 
@@ -113,6 +116,9 @@ private constructor(
 
     /**
      * A description of the chain of thought used by a reasoning model while generating a response.
+     * Be sure to include these items in your `input` to the Responses API for subsequent turns of a
+     * conversation if you are manually
+     * [managing context](https://platform.openai.com/docs/guides/conversation-state).
      */
     fun asReasoning(): ResponseReasoningItem = reasoning.getOrThrow("reasoning")
 
@@ -269,7 +275,9 @@ private constructor(
 
         /**
          * A description of the chain of thought used by a reasoning model while generating a
-         * response.
+         * response. Be sure to include these items in your `input` to the Responses API for
+         * subsequent turns of a conversation if you are manually
+         * [managing context](https://platform.openai.com/docs/guides/conversation-state).
          */
         @JvmStatic
         fun ofReasoning(reasoning: ResponseReasoningItem) =
@@ -315,7 +323,9 @@ private constructor(
 
         /**
          * A description of the chain of thought used by a reasoning model while generating a
-         * response.
+         * response. Be sure to include these items in your `input` to the Responses API for
+         * subsequent turns of a conversation if you are manually
+         * [managing context](https://platform.openai.com/docs/guides/conversation-state).
          */
         fun visitReasoning(reasoning: ResponseReasoningItem): T
 

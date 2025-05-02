@@ -20,12 +20,18 @@ import java.util.Objects
 import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
-/** A description of the chain of thought used by a reasoning model while generating a response. */
+/**
+ * A description of the chain of thought used by a reasoning model while generating a response. Be
+ * sure to include these items in your `input` to the Responses API for subsequent turns of a
+ * conversation if you are manually
+ * [managing context](https://platform.openai.com/docs/guides/conversation-state).
+ */
 class ResponseReasoningItem
 private constructor(
     private val id: JsonField<String>,
     private val summary: JsonField<List<Summary>>,
     private val type: JsonValue,
+    private val encryptedContent: JsonField<String>,
     private val status: JsonField<Status>,
     private val additionalProperties: MutableMap<String, JsonValue>,
 ) {
@@ -37,8 +43,11 @@ private constructor(
         @ExcludeMissing
         summary: JsonField<List<Summary>> = JsonMissing.of(),
         @JsonProperty("type") @ExcludeMissing type: JsonValue = JsonMissing.of(),
+        @JsonProperty("encrypted_content")
+        @ExcludeMissing
+        encryptedContent: JsonField<String> = JsonMissing.of(),
         @JsonProperty("status") @ExcludeMissing status: JsonField<Status> = JsonMissing.of(),
-    ) : this(id, summary, type, status, mutableMapOf())
+    ) : this(id, summary, type, encryptedContent, status, mutableMapOf())
 
     /**
      * The unique identifier of the reasoning content.
@@ -70,6 +79,15 @@ private constructor(
     @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
 
     /**
+     * The encrypted content of the reasoning item - populated when a response is generated with
+     * `reasoning.encrypted_content` in the `include` parameter.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun encryptedContent(): Optional<String> = encryptedContent.getOptional("encrypted_content")
+
+    /**
      * The status of the item. One of `in_progress`, `completed`, or `incomplete`. Populated when
      * items are returned via API.
      *
@@ -91,6 +109,16 @@ private constructor(
      * Unlike [summary], this method doesn't throw if the JSON field has an unexpected type.
      */
     @JsonProperty("summary") @ExcludeMissing fun _summary(): JsonField<List<Summary>> = summary
+
+    /**
+     * Returns the raw JSON value of [encryptedContent].
+     *
+     * Unlike [encryptedContent], this method doesn't throw if the JSON field has an unexpected
+     * type.
+     */
+    @JsonProperty("encrypted_content")
+    @ExcludeMissing
+    fun _encryptedContent(): JsonField<String> = encryptedContent
 
     /**
      * Returns the raw JSON value of [status].
@@ -131,6 +159,7 @@ private constructor(
         private var id: JsonField<String>? = null
         private var summary: JsonField<MutableList<Summary>>? = null
         private var type: JsonValue = JsonValue.from("reasoning")
+        private var encryptedContent: JsonField<String> = JsonMissing.of()
         private var status: JsonField<Status> = JsonMissing.of()
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
@@ -139,6 +168,7 @@ private constructor(
             id = responseReasoningItem.id
             summary = responseReasoningItem.summary.map { it.toMutableList() }
             type = responseReasoningItem.type
+            encryptedContent = responseReasoningItem.encryptedContent
             status = responseReasoningItem.status
             additionalProperties = responseReasoningItem.additionalProperties.toMutableMap()
         }
@@ -195,6 +225,28 @@ private constructor(
         fun type(type: JsonValue) = apply { this.type = type }
 
         /**
+         * The encrypted content of the reasoning item - populated when a response is generated with
+         * `reasoning.encrypted_content` in the `include` parameter.
+         */
+        fun encryptedContent(encryptedContent: String?) =
+            encryptedContent(JsonField.ofNullable(encryptedContent))
+
+        /** Alias for calling [Builder.encryptedContent] with `encryptedContent.orElse(null)`. */
+        fun encryptedContent(encryptedContent: Optional<String>) =
+            encryptedContent(encryptedContent.getOrNull())
+
+        /**
+         * Sets [Builder.encryptedContent] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.encryptedContent] with a well-typed [String] value
+         * instead. This method is primarily for setting the field to an undocumented or not yet
+         * supported value.
+         */
+        fun encryptedContent(encryptedContent: JsonField<String>) = apply {
+            this.encryptedContent = encryptedContent
+        }
+
+        /**
          * The status of the item. One of `in_progress`, `completed`, or `incomplete`. Populated
          * when items are returned via API.
          */
@@ -245,6 +297,7 @@ private constructor(
                 checkRequired("id", id),
                 checkRequired("summary", summary).map { it.toImmutable() },
                 type,
+                encryptedContent,
                 status,
                 additionalProperties.toMutableMap(),
             )
@@ -264,6 +317,7 @@ private constructor(
                 throw OpenAIInvalidDataException("'type' is invalid, received $it")
             }
         }
+        encryptedContent()
         status().ifPresent { it.validate() }
         validated = true
     }
@@ -286,6 +340,7 @@ private constructor(
         (if (id.asKnown().isPresent) 1 else 0) +
             (summary.asKnown().getOrNull()?.sumOf { it.validity().toInt() } ?: 0) +
             type.let { if (it == JsonValue.from("reasoning")) 1 else 0 } +
+            (if (encryptedContent.asKnown().isPresent) 1 else 0) +
             (status.asKnown().getOrNull()?.validity() ?: 0)
 
     class Summary
@@ -622,15 +677,15 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is ResponseReasoningItem && id == other.id && summary == other.summary && type == other.type && status == other.status && additionalProperties == other.additionalProperties /* spotless:on */
+        return /* spotless:off */ other is ResponseReasoningItem && id == other.id && summary == other.summary && type == other.type && encryptedContent == other.encryptedContent && status == other.status && additionalProperties == other.additionalProperties /* spotless:on */
     }
 
     /* spotless:off */
-    private val hashCode: Int by lazy { Objects.hash(id, summary, type, status, additionalProperties) }
+    private val hashCode: Int by lazy { Objects.hash(id, summary, type, encryptedContent, status, additionalProperties) }
     /* spotless:on */
 
     override fun hashCode(): Int = hashCode
 
     override fun toString() =
-        "ResponseReasoningItem{id=$id, summary=$summary, type=$type, status=$status, additionalProperties=$additionalProperties}"
+        "ResponseReasoningItem{id=$id, summary=$summary, type=$type, encryptedContent=$encryptedContent, status=$status, additionalProperties=$additionalProperties}"
 }

@@ -298,6 +298,7 @@ internal class ResponseOutputItemTest {
             ResponseReasoningItem.builder()
                 .id("id")
                 .addSummary(ResponseReasoningItem.Summary.builder().text("text").build())
+                .encryptedContent("encrypted_content")
                 .status(ResponseReasoningItem.Status.IN_PROGRESS)
                 .build()
 
@@ -319,6 +320,7 @@ internal class ResponseOutputItemTest {
                 ResponseReasoningItem.builder()
                     .id("id")
                     .addSummary(ResponseReasoningItem.Summary.builder().text("text").build())
+                    .encryptedContent("encrypted_content")
                     .status(ResponseReasoningItem.Status.IN_PROGRESS)
                     .build()
             )
