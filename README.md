@@ -286,7 +286,7 @@ OpenAIClient client = OpenAIOkHttpClient.builder()
 
 The SDK provides conveniences for streamed chat completions. A
 [`ChatCompletionAccumulator`](openai-java-core/src/main/kotlin/com/openai/helpers/ChatCompletionAccumulator.kt)
-can record the stream of chat completion chunks in the response as they are processed and accumulate 
+can record the stream of chat completion chunks in the response as they are processed and accumulate
 a [`ChatCompletion`](openai-java-core/src/main/kotlin/com/openai/models/chat/completions/ChatCompletion.kt)
 object similar to that which would have been returned by the non-streaming API.
 
@@ -333,6 +333,166 @@ client.chat()
 
 ChatCompletion chatCompletion = chatCompletionAccumulator.chatCompletion();
 ```
+
+## Structured outputs with JSON schemas
+
+Open AI [Structured Outputs](https://platform.openai.com/docs/guides/structured-outputs?api-mode=chat)
+is a feature that ensures that the model will always generate responses that adhere to a supplied
+[JSON schema](https://json-schema.org/overview/what-is-jsonschema).
+
+A JSON schema can be defined by creating a
+[`ResponseFormatJsonSchema`](openai-java-core/src/main/kotlin/com/openai/models/ResponseFormatJsonSchema.kt)
+and setting it on the input parameters. However, for greater convenience, a JSON schema can instead
+be derived automatically from the structure of an arbitrary Java class. The response will then
+automatically convert the generated JSON content to an instance of that Java class.
+
+Java classes can contain fields declared to be instances of other classes and can use collections:
+
+```java
+class Person {
+    public String name;
+    public int yearOfBirth;
+}
+
+class Book {
+    public String title;
+    public Person author;
+    public int yearPublished;
+}
+
+class BookList {
+    public List<Book> books;
+}
+```
+
+Pass the top-level class—`BookList` in this example—to `responseFormat(Class<T>)` when building the
+parameters and then access an instance of `BookList` from the generated message content in the
+response:
+
+```java
+import com.openai.models.ChatModel;
+import com.openai.models.chat.completions.ChatCompletionCreateParams;
+import com.openai.models.chat.completions.StructuredChatCompletionCreateParams;
+
+StructuredChatCompletionCreateParams<BookList> params = ChatCompletionCreateParams.builder()
+        .addUserMessage("List six famous nineteenth century novels.")
+        .model(ChatModel.GPT_4_1)
+        .responseFormat(BookList.class)
+        .build();
+
+client.chat().completions().create(params).choices().stream()
+        .flatMap(choice -> choice.message().content().stream())
+        .flatMap(bookList -> bookList.books.stream())
+        .forEach(book -> System.out.println(book.title + " by " + book.author.name));
+```
+
+You can start building the parameters with an instance of
+[`ChatCompletionCreateParams.Builder`](openai-java-core/src/main/kotlin/com/openai/models/chat/completions/ChatCompletionCreateParams.kt)
+or
+[`StructuredChatCompletionCreateParams.Builder`](openai-java-core/src/main/kotlin/com/openai/models/chat/completions/StructuredChatCompletionCreateParams.kt).
+If you start with the former (which allows for more compact code) the builder type will change to
+the latter when `ChatCompletionCreateParams.Builder.responseFormat(Class<T>)` is called.
+
+If a field in a class is optional and does not require a defined value, you can represent this using
+the [`java.util.Optional`](https://docs.oracle.com/javase/8/docs/api/java/util/Optional.html) class.
+It is up to the AI model to decide whether to provide a value for that field or leave it empty.
+
+```java
+import java.util.Optional;
+
+class Book {
+    public String title;
+    public Person author;
+    public int yearPublished;
+    public Optional<String> isbn;
+}
+```
+
+If an error occurs while converting a JSON response to an instance of a Java class, the error
+message will include the JSON response to assist in diagnosis. For instance, if the response is
+truncated, the JSON data will be incomplete and cannot be converted to a class instance. If your
+JSON response may contain sensitive information, avoid logging it directly, or ensure that you
+redact any sensitive details from the error message.
+
+### Local JSON schema validation
+
+Structured Outputs supports a
+[subset](https://platform.openai.com/docs/guides/structured-outputs#supported-schemas) of the JSON
+Schema language. Schemas are generated automatically from classes to align with this subset.
+However, due to the inherent structure of the classes, the generated schema may still violate
+certain OpenAI schema restrictions, such as exceeding the maximum nesting depth or utilizing
+unsupported data types.
+
+To facilitate compliance, the method `responseFormat(Class<T>)` performs a validation check on the
+schema derived from the specified class. This validation ensures that all restrictions are adhered
+to. If any issues are detected, an exception will be thrown, providing a detailed message outlining
+the reasons for the validation failure.
+
+- **Local Validation**: The validation process occurs locally, meaning no requests are sent to the
+remote AI model. If the schema passes local validation, it is likely to pass remote validation as
+well.
+- **Remote Validation**: The remote AI model will conduct its own validation upon receiving the JSON
+schema in the request.
+- **Version Compatibility**: There may be instances where local validation fails while remote
+validation succeeds. This can occur if the SDK version is outdated compared to the restrictions
+enforced by the remote model.
+- **Disabling Local Validation**: If you encounter compatibility issues and wish to bypass local
+validation, you can disable it by passing `false` to the `responseFormat(Class<T>, boolean)` method
+when building the parameters. (The default value for this parameter is `true`.)
+
+```java
+import com.openai.models.ChatModel;
+import com.openai.models.chat.completions.ChatCompletionCreateParams;
+import com.openai.models.chat.completions.StructuredChatCompletionCreateParams;
+
+StructuredChatCompletionCreateParams<BookList> params = ChatCompletionCreateParams.builder()
+        .addUserMessage("List six famous nineteenth century novels.")
+        .model(ChatModel.GPT_4_1)
+        .responseFormat(BookList.class, false) // Disable local validation.
+        .build();
+```
+
+By following these guidelines, you can ensure that your structured outputs conform to the necessary
+schema requirements and minimize the risk of remote validation errors.
+
+### Annotating classes and JSON schemas
+
+You can use annotations to add further information to the JSON schema derived from your Java
+classes, or to exclude individual fields from the schema. Details from annotations captured in the
+JSON schema may be used by the AI model to improve its response. The SDK supports the use of
+[Jackson Databind](https://github.com/FasterXML/jackson-databind) annotations.
+
+```java
+import com.fasterxml.jackson.annotation.JsonClassDescription;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonPropertyDescription;
+
+class Person {
+    @JsonPropertyDescription("The first name and surname of the person")
+    public String name;
+    public int yearOfBirth;
+}
+
+@JsonClassDescription("The details of one published book")
+class Book {
+    public String title;
+    public Person author;
+    public int yearPublished;
+    @JsonIgnore public String genre;
+}
+
+class BookList {
+    public List<Book> books;
+}
+```
+
+- Use `@JsonClassDescription` to add a detailed description to a class.
+- Use `@JsonPropertyDescription` to add a detailed description to a field of a class.
+- Use `@JsonIgnore` to omit a field of a class from the generated JSON schema.
+
+If you use `@JsonProperty(required = false)`, the `false` value will be ignored. OpenAI JSON schemas
+must mark all properties as _required_, so the schema generated from your Java classes will respect
+that restriction and ignore any annotation that would violate it.
 
 ## File uploads
 
@@ -652,7 +812,7 @@ If the SDK threw an exception, but you're _certain_ the version is compatible, t
 
 ## Microsoft Azure
 
-To use this library with [Azure OpenAI](https://learn.microsoft.com/azure/ai-services/openai/overview), use the same 
+To use this library with [Azure OpenAI](https://learn.microsoft.com/azure/ai-services/openai/overview), use the same
 OpenAI client builder but with the Azure-specific configuration.
 
 ```java
@@ -665,7 +825,7 @@ OpenAIClient client = OpenAIOkHttpClient.builder()
         .build();
 ```
 
-See the complete Azure OpenAI example in the [`openai-java-example`](openai-java-example/src/main/java/com/openai/example/AzureEntraIdExample.java) directory. The other examples in the directory also work with Azure as long as the client is configured to use it.  
+See the complete Azure OpenAI example in the [`openai-java-example`](openai-java-example/src/main/java/com/openai/example/AzureEntraIdExample.java) directory. The other examples in the directory also work with Azure as long as the client is configured to use it.
 
 ## Network options
 

@@ -13,8 +13,6 @@ public final class StructuredOutputsClassExample {
     public static class Person {
         public String firstName;
         public String surname;
-
-        @JsonPropertyDescription("The date of birth of the person.")
         public String dateOfBirth;
 
         @Override
@@ -44,11 +42,6 @@ public final class StructuredOutputsClassExample {
     public static class Laureates {
         @JsonPropertyDescription("A list of winners of a Nobel Prize.")
         public List<Laureate> laureates;
-
-        @Override
-        public String toString() {
-            return "Laureates{laureates=" + laureates + '}';
-        }
     }
 
     private StructuredOutputsClassExample() {}
@@ -63,11 +56,12 @@ public final class StructuredOutputsClassExample {
                 .model(ChatModel.GPT_4O_MINI)
                 .maxCompletionTokens(2048)
                 .responseFormat(Laureates.class)
-                .addUserMessage("List some winners of the Nobel Prize in Physics since 2000.")
+                .addUserMessage("List five winners of the Nobel Prize in Physics.")
                 .build();
 
         client.chat().completions().create(createParams).choices().stream()
                 .flatMap(choice -> choice.message().content().stream())
+                .flatMap(laureates -> laureates.laureates.stream())
                 .forEach(System.out::println);
     }
 }
