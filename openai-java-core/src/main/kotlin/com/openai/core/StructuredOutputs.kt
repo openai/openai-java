@@ -23,17 +23,37 @@ private val MAPPER =
         .addModule(JavaTimeModule())
         .build()
 
-fun <T> fromClass(type: Class<T>) =
-    ResponseFormatJsonSchema.builder()
+internal fun <T> fromClass(
+    type: Class<T>,
+    localValidation: Boolean = true,
+): ResponseFormatJsonSchema {
+    val schema = extractSchema(type)
+
+    if (localValidation) {
+        val validator = JsonSchemaValidator.create().validate(schema)
+
+        if (!validator.isValid()) {
+            throw IllegalArgumentException(
+                "Local validation failed for JSON schema derived from $type:\n" +
+                    validator.errors().joinToString("\n") { " - $it" }
+            )
+        }
+    }
+
+    return ResponseFormatJsonSchema.builder()
         .jsonSchema(
             ResponseFormatJsonSchema.JsonSchema.builder()
                 .name("json-schema-from-${type.simpleName}")
-                .schema(JsonValue.from(extractSchema(type)))
+                .schema(JsonValue.from(schema))
                 .build()
         )
         .build()
+}
 
 internal fun <T> extractSchema(type: Class<T>): JsonNode {
+    // Validation is not performed by this function, as it allows extraction of the schema and
+    // validation of the schema to be controlled more easily when unit testing, as no exceptions
+    // will be thrown and any recorded validation errors can be inspected at leisure by the tests.
     val configBuilder =
         SchemaGeneratorConfigBuilder(
                 com.github.victools.jsonschema.generator.SchemaVersion.DRAFT_2020_12,
@@ -56,7 +76,7 @@ internal fun <T> extractSchema(type: Class<T>): JsonNode {
     return SchemaGenerator(configBuilder.build()).generateSchema(type)
 }
 
-fun <T> fromJson(json: String, type: Class<T>): T =
+internal fun <T> fromJson(json: String, type: Class<T>): T =
     try {
         MAPPER.readValue(json, type)
     } catch (e: Exception) {

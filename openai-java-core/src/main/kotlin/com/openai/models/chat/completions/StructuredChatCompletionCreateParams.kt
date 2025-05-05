@@ -33,11 +33,12 @@ internal constructor(
         internal fun wrap(
             responseFormat: Class<T>,
             paramsBuilder: ChatCompletionCreateParams.Builder,
+            localValidation: Boolean,
         ) = apply {
             this.responseFormat = responseFormat
             this.paramsBuilder = paramsBuilder
             // Convert the class to a JSON schema and apply it to the delegate `Builder`.
-            responseFormat(responseFormat)
+            responseFormat(responseFormat, localValidation)
         }
 
         /** Injects a given `ChatCompletionCreateParams.Builder`. For use only when testing. */
@@ -389,10 +390,15 @@ internal constructor(
             paramsBuilder.reasoningEffort(reasoningEffort)
         }
 
-        /** Sets the response format to a JSON schema derived from the given class. */
-        fun responseFormat(responseFormat: Class<T>) = apply {
+        /**
+         * Sets the response format to a JSON schema derived from the structure of the given class.
+         *
+         * @see ChatCompletionCreateParams.Builder.responseFormat
+         */
+        @JvmOverloads
+        fun responseFormat(responseFormat: Class<T>, localValidation: Boolean = true) = apply {
             this.responseFormat = responseFormat
-            paramsBuilder.responseFormat(fromClass(responseFormat))
+            paramsBuilder.responseFormat(fromClass(responseFormat, localValidation))
         }
 
         /** @see ChatCompletionCreateParams.Builder.seed */

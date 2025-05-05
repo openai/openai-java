@@ -7,16 +7,18 @@ import com.fasterxml.jackson.annotation.JsonPropertyDescription
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.node.ObjectNode
+import com.openai.errors.OpenAIInvalidDataException
 import java.util.Optional
 import org.assertj.core.api.Assertions.assertThat
+import org.assertj.core.api.Assertions.assertThatNoException
 import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.AfterTestExecutionCallback
 import org.junit.jupiter.api.extension.ExtensionContext
 import org.junit.jupiter.api.extension.RegisterExtension
 
-/** Tests the [JsonSchemaValidator] and, in passing, tests the [extractSchema] function. */
-internal class JsonSchemaValidatorTest {
+/** Tests for the `StructuredOutputs` functions and the [JsonSchemaValidator]. */
+internal class StructuredOutputsTest {
     companion object {
         private const val SCHEMA = "\$schema"
         private const val SCHEMA_VER = "https://json-schema.org/draft/2020-12/schema"
@@ -28,6 +30,8 @@ internal class JsonSchemaValidatorTest {
          * print them only for failed tests.
          */
         private const val VERBOSE_MODE = false
+
+        private fun parseJson(schemaString: String) = ObjectMapper().readTree(schemaString)
     }
 
     /**
@@ -82,7 +86,7 @@ internal class JsonSchemaValidatorTest {
         assertThat(validator.isValid()).isTrue
     }
 
-    // FIXME: Disabled test until issues (noted below) are resolved.
+    // TODO: Disabled test until issues (noted below) are resolved.
     // @Test
     fun schemaTest_minimalListSchema() {
         val s: List<String> = listOf()
@@ -90,7 +94,7 @@ internal class JsonSchemaValidatorTest {
         schema = extractSchema(s.javaClass)
         validator.validate(schema)
 
-        // FIXME: Currently, the generated schema looks like this:
+        // TODO: Currently, the generated schema looks like this:
         //     {
         //         "$schema" : "https://json-schema.org/draft/2020-12/schema",
         //         "type" : "array",
@@ -1400,5 +1404,94 @@ internal class JsonSchemaValidatorTest {
         assertThat(validator.isValid()).isTrue
     }
 
-    private fun parseJson(schemaString: String) = ObjectMapper().readTree(schemaString)
+    @Test
+    fun fromJsonSuccess() {
+        @Suppress("unused") class X(val s: String)
+
+        val x = fromJson("{\"s\" : \"hello\"}", X::class.java)
+
+        assertThat(x.s).isEqualTo("hello")
+    }
+
+    @Test
+    fun fromJsonFailure1() {
+        @Suppress("unused") class X(val s: String)
+
+        // Well-formed JSON, but it does not match the schema of class `X`.
+        assertThatThrownBy { fromJson("{\"wrong\" : \"hello\"}", X::class.java) }
+            .isExactlyInstanceOf(OpenAIInvalidDataException::class.java)
+            .hasMessage("Error parsing JSON: {\"wrong\" : \"hello\"}")
+    }
+
+    @Test
+    fun fromJsonFailure2() {
+        @Suppress("unused") class X(val s: String)
+
+        // Malformed JSON.
+        assertThatThrownBy { fromJson("{\"truncated", X::class.java) }
+            .isExactlyInstanceOf(OpenAIInvalidDataException::class.java)
+            .hasMessage("Error parsing JSON: {\"truncated")
+    }
+
+    @Test
+    @Suppress("unused")
+    fun fromClassSuccessWithoutValidation() {
+        // Exceed the maximum nesting depth, but do not enable validation.
+        class U(val s: String)
+        class V(val u: U)
+        class W(val v: V)
+        class X(val w: W)
+        class Y(val x: X)
+        class Z(val y: Y)
+
+        assertThatNoException().isThrownBy { fromClass(X::class.java, false) }
+    }
+
+    @Test
+    fun fromClassSuccessWithValidation() {
+        @Suppress("unused") class X(val s: String)
+
+        assertThatNoException().isThrownBy { fromClass(X::class.java, true) }
+    }
+
+    @Test
+    @Suppress("unused")
+    fun fromClassFailureWithValidation() {
+        // Exceed the maximum nesting depth and enable validation.
+        class U(val s: String)
+        class V(val u: U)
+        class W(val v: V)
+        class X(val w: W)
+        class Y(val x: X)
+        class Z(val y: Y)
+
+        assertThatThrownBy { fromClass(Z::class.java, true) }
+            .isExactlyInstanceOf(IllegalArgumentException::class.java)
+            .hasMessage(
+                "Local validation failed for JSON schema derived from ${Z::class.java}:\n" +
+                    " - #/properties/y/properties/x/properties/w/properties/v/properties/u" +
+                    "/properties/s: Current nesting depth is 6, but maximum is 5."
+            )
+    }
+
+    @Test
+    @Suppress("unused")
+    fun fromClassFailureWithValidationDefault() {
+        // Confirm that the default value of the `localValidation` argument is `true` by expecting
+        // a validation error when that argument is not given an explicit value.
+        class U(val s: String)
+        class V(val u: U)
+        class W(val v: V)
+        class X(val w: W)
+        class Y(val x: X)
+        class Z(val y: Y)
+
+        assertThatThrownBy { fromClass(Z::class.java) } // Use default for `localValidation` flag.
+            .isExactlyInstanceOf(IllegalArgumentException::class.java)
+            .hasMessage(
+                "Local validation failed for JSON schema derived from ${Z::class.java}:\n" +
+                    " - #/properties/y/properties/x/properties/w/properties/v/properties/u" +
+                    "/properties/s: Current nesting depth is 6, but maximum is 5."
+            )
+    }
 }
