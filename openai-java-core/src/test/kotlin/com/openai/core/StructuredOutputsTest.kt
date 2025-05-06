@@ -86,22 +86,24 @@ internal class StructuredOutputsTest {
         assertThat(validator.isValid()).isTrue
     }
 
-    // TODO: Disabled test until issues (noted below) are resolved.
-    // @Test
+    @Test
     fun schemaTest_minimalListSchema() {
         val s: List<String> = listOf()
 
         schema = extractSchema(s.javaClass)
         validator.validate(schema)
 
-        // TODO: Currently, the generated schema looks like this:
+        // Currently, the generated schema looks like this:
+        //
         //     {
         //         "$schema" : "https://json-schema.org/draft/2020-12/schema",
         //         "type" : "array",
         //         "items" : { }
         //     }
-        //   That causes an error, as the `"items"` object is empty when it should be a valid
-        //   sub-schema. Something like this is what is expected:
+        //
+        // That causes an error, as the `"items"` object is empty when it should be a valid
+        // sub-schema. Something like this is what would be valid:
+        //
         //     {
         //         "$schema" : "https://json-schema.org/draft/2020-12/schema",
         //         "type" : "array",
@@ -109,10 +111,15 @@ internal class StructuredOutputsTest {
         //             "type" : "string"
         //         }
         //     }
-        //   It might be presumed that type erasure is the cause of the missing field. However, the
-        //   `schemaTest_listFieldSchema` method (below) seems to be able to produce the expected
-        //   `"items"` object when it is defined as a class property, so, well ... huh?
-        assertThat(validator.isValid()).isTrue
+        //
+        // The reason for the failure is that generic type information is erased for scopes like
+        // local variables, but generic type information for fields is retained as part of the class
+        // metadata. This is the expected behavior in Java, so this test expects an invalid schema.
+        assertThat(validator.isValid()).isFalse
+        assertThat(validator.errors()).hasSize(2)
+        assertThat(validator.errors()[0]).isEqualTo("#/items: Schema or sub-schema is empty.")
+        assertThat(validator.errors()[1])
+            .isEqualTo("#/items: Expected exactly one of 'type' or 'anyOf' or '$REF'.")
     }
 
     @Test
@@ -1444,14 +1451,18 @@ internal class StructuredOutputsTest {
         class Y(val x: X)
         class Z(val y: Y)
 
-        assertThatNoException().isThrownBy { fromClass(X::class.java, false) }
+        assertThatNoException().isThrownBy {
+            fromClass(X::class.java, JsonSchemaLocalValidation.NO)
+        }
     }
 
     @Test
     fun fromClassSuccessWithValidation() {
         @Suppress("unused") class X(val s: String)
 
-        assertThatNoException().isThrownBy { fromClass(X::class.java, true) }
+        assertThatNoException().isThrownBy {
+            fromClass(X::class.java, JsonSchemaLocalValidation.YES)
+        }
     }
 
     @Test
@@ -1465,7 +1476,7 @@ internal class StructuredOutputsTest {
         class Y(val x: X)
         class Z(val y: Y)
 
-        assertThatThrownBy { fromClass(Z::class.java, true) }
+        assertThatThrownBy { fromClass(Z::class.java, JsonSchemaLocalValidation.YES) }
             .isExactlyInstanceOf(IllegalArgumentException::class.java)
             .hasMessage(
                 "Local validation failed for JSON schema derived from ${Z::class.java}:\n" +

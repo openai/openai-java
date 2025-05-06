@@ -1,6 +1,7 @@
 package com.openai.models.chat.completions
 
 import com.openai.core.JsonField
+import com.openai.core.JsonSchemaLocalValidation
 import com.openai.core.JsonValue
 import com.openai.core.checkRequired
 import com.openai.core.fromClass
@@ -11,9 +12,18 @@ import com.openai.models.ReasoningEffort
 import java.util.Objects
 import java.util.Optional
 
+/**
+ * A wrapper for [ChatCompletionCreateParams] that provides a type-safe [Builder] that can record
+ * the type of the [responseFormat] used to derive a JSON schema from an arbitrary class when using
+ * the _Structured Outputs_ feature. When a JSON response is received, it is deserialized to am
+ * instance of that type. See the SDK documentation for more details on _Structured Outputs_.
+ *
+ * @param T The type of the class that will be used to derive the JSON schema in the request and to
+ *   which the JSON response will be deserialized.
+ */
 class StructuredChatCompletionCreateParams<T : Any>
 internal constructor(
-    val responseFormat: Class<T>,
+    @get:JvmName("responseFormat") val responseFormat: Class<T>,
     /**
      * The raw, underlying chat completion create parameters wrapped by this structured instance of
      * the parameters.
@@ -33,7 +43,7 @@ internal constructor(
         internal fun wrap(
             responseFormat: Class<T>,
             paramsBuilder: ChatCompletionCreateParams.Builder,
-            localValidation: Boolean,
+            localValidation: JsonSchemaLocalValidation,
         ) = apply {
             this.responseFormat = responseFormat
             this.paramsBuilder = paramsBuilder
@@ -396,7 +406,10 @@ internal constructor(
          * @see ChatCompletionCreateParams.Builder.responseFormat
          */
         @JvmOverloads
-        fun responseFormat(responseFormat: Class<T>, localValidation: Boolean = true) = apply {
+        fun responseFormat(
+            responseFormat: Class<T>,
+            localValidation: JsonSchemaLocalValidation = JsonSchemaLocalValidation.YES,
+        ) = apply {
             this.responseFormat = responseFormat
             paramsBuilder.responseFormat(fromClass(responseFormat, localValidation))
         }
