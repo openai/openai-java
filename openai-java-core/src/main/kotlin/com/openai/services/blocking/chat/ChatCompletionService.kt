@@ -58,12 +58,14 @@ interface ChatCompletionService {
     /** @see create */
     fun <T : Any> create(
         params: StructuredChatCompletionCreateParams<T>
+    ): StructuredChatCompletion<T> = create(params, RequestOptions.none())
+
+    /** @see create */
+    fun <T : Any> create(
+        params: StructuredChatCompletionCreateParams<T>,
+        requestOptions: RequestOptions = RequestOptions.none(),
     ): StructuredChatCompletion<T> =
-        StructuredChatCompletion<T>(
-            params.responseFormat,
-            // Normal, non-generic create method call via `ChatCompletionCreateParams`.
-            create(params.rawParams),
-        )
+        StructuredChatCompletion<T>(params.responseFormat, create(params.rawParams, requestOptions))
 
     /**
      * **Starting a new project?** We recommend trying

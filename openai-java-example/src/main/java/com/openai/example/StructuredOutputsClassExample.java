@@ -1,5 +1,6 @@
 package com.openai.example;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 import com.openai.client.OpenAIClient;
 import com.openai.client.okhttp.OpenAIOkHttpClient;
@@ -11,37 +12,41 @@ import java.util.List;
 public final class StructuredOutputsClassExample {
 
     public static class Person {
-        public String firstName;
-        public String surname;
-        public String dateOfBirth;
+        @JsonPropertyDescription("The first name and surname of the person.")
+        public String name;
+
+        public int birthYear;
+
+        @JsonPropertyDescription("The year the person died, or 'present' if the person is living.")
+        public String deathYear;
 
         @Override
         public String toString() {
-            return "Person{firstName=" + firstName + ", surname=" + surname + ", dateOfBirth=" + dateOfBirth + '}';
+            return name + " (" + birthYear + '-' + deathYear + ')';
         }
     }
 
-    public static class Laureate {
-        public Person person;
-        public String majorAchievement;
-        public int yearWon;
+    public static class Book {
+        public String title;
 
-        @JsonPropertyDescription("The share of the prize money won by the Nobel Laureate.")
-        public double prizeMoney;
+        public Person author;
+
+        @JsonPropertyDescription("The year in which the book was first published.")
+        public int publicationYear;
+
+        public String genre;
+
+        @JsonIgnore
+        public String isbn;
 
         @Override
         public String toString() {
-            return "Laureate{person="
-                    + person + ", majorAchievement="
-                    + majorAchievement + ", yearWon="
-                    + yearWon + ", prizeMoney="
-                    + prizeMoney + '}';
+            return '"' + title + "\" (" + publicationYear + ") [" + genre + "] by " + author;
         }
     }
 
-    public static class Laureates {
-        @JsonPropertyDescription("A list of winners of a Nobel Prize.")
-        public List<Laureate> laureates;
+    public static class BookList {
+        public List<Book> books;
     }
 
     private StructuredOutputsClassExample() {}
@@ -52,16 +57,16 @@ public final class StructuredOutputsClassExample {
         // - The `OPENAI_BASE_URL` and `AZURE_OPENAI_KEY` environment variables
         OpenAIClient client = OpenAIOkHttpClient.fromEnv();
 
-        StructuredChatCompletionCreateParams<Laureates> createParams = ChatCompletionCreateParams.builder()
+        StructuredChatCompletionCreateParams<BookList> createParams = ChatCompletionCreateParams.builder()
                 .model(ChatModel.GPT_4O_MINI)
                 .maxCompletionTokens(2048)
-                .responseFormat(Laureates.class)
-                .addUserMessage("List five winners of the Nobel Prize in Physics.")
+                .responseFormat(BookList.class)
+                .addUserMessage("List some famous late twentieth century novels.")
                 .build();
 
         client.chat().completions().create(createParams).choices().stream()
                 .flatMap(choice -> choice.message().content().stream())
-                .flatMap(laureates -> laureates.laureates.stream())
-                .forEach(System.out::println);
+                .flatMap(bookList -> bookList.books.stream())
+                .forEach(book -> System.out.println(" - " + book));
     }
 }

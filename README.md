@@ -343,21 +343,23 @@ is a feature that ensures that the model will always generate responses that adh
 A JSON schema can be defined by creating a
 [`ResponseFormatJsonSchema`](openai-java-core/src/main/kotlin/com/openai/models/ResponseFormatJsonSchema.kt)
 and setting it on the input parameters. However, for greater convenience, a JSON schema can instead
-be derived automatically from the structure of an arbitrary Java class. The response will then
-automatically convert the generated JSON content to an instance of that Java class.
+be derived automatically from the structure of an arbitrary Java class. The JSON content from the
+response will then be converted automatically to an instance of that Java class. A full, working
+example of the use of Structured Outputs with arbitrary Java classes can be seen in
+[`StructuredOutputsClassExample`](openai-java-example/src/main/java/com/openai/example/StructuredOutputsClassExample.java).
 
 Java classes can contain fields declared to be instances of other classes and can use collections:
 
 ```java
 class Person {
     public String name;
-    public int yearOfBirth;
+    public int birthYear;
 }
 
 class Book {
     public String title;
     public Person author;
-    public int yearPublished;
+    public int publicationYear;
 }
 
 class BookList {
@@ -375,7 +377,7 @@ import com.openai.models.chat.completions.ChatCompletionCreateParams;
 import com.openai.models.chat.completions.StructuredChatCompletionCreateParams;
 
 StructuredChatCompletionCreateParams<BookList> params = ChatCompletionCreateParams.builder()
-        .addUserMessage("List six famous nineteenth century novels.")
+        .addUserMessage("List some famous late twentieth century novels.")
         .model(ChatModel.GPT_4_1)
         .responseFormat(BookList.class)
         .build();
@@ -403,9 +405,23 @@ import java.util.Optional;
 class Book {
     public String title;
     public Person author;
-    public int yearPublished;
+    public int publicationYear;
     public Optional<String> isbn;
 }
+```
+
+Generic type information for fields is retained in the class's metadata, but _generic type erasure_
+applies in other scopes. While, for example, a JSON schema defining an array of strings can be
+derived from the `BoolList.books` field with type `List<String>`, a valid JSON schema cannot be
+derived from a local variable of that same type, so the following will _not_ work:
+
+```java
+List<String> books = new ArrayList<>();
+
+StructuredChatCompletionCreateParams<BookList> params = ChatCompletionCreateParams.builder()
+        .responseFormat(books.class)
+        // ...
+        .build();
 ```
 
 If an error occurs while converting a JSON response to an instance of a Java class, the error
@@ -435,20 +451,23 @@ well.
 schema in the request.
 - **Version Compatibility**: There may be instances where local validation fails while remote
 validation succeeds. This can occur if the SDK version is outdated compared to the restrictions
-enforced by the remote model.
+enforced by the remote AI model.
 - **Disabling Local Validation**: If you encounter compatibility issues and wish to bypass local
-validation, you can disable it by passing `false` to the `responseFormat(Class<T>, boolean)` method
-when building the parameters. (The default value for this parameter is `true`.)
+validation, you can disable it by passing
+[`JsonSchemaLocalValidation.NO`](openai-java-core/src/main/kotlin/com/openai/core/JsonSchemaLocalValidation.kt)
+to the `responseFormat(Class<T>, JsonSchemaLocalValidation)` method when building the parameters.
+(The default value for this parameter is `JsonSchemaLocalValidation.YES`.)
 
 ```java
+import com.openai.core.JsonSchemaLocalValidation;
 import com.openai.models.ChatModel;
 import com.openai.models.chat.completions.ChatCompletionCreateParams;
 import com.openai.models.chat.completions.StructuredChatCompletionCreateParams;
 
 StructuredChatCompletionCreateParams<BookList> params = ChatCompletionCreateParams.builder()
-        .addUserMessage("List six famous nineteenth century novels.")
+        .addUserMessage("List some famous late twentieth century novels.")
         .model(ChatModel.GPT_4_1)
-        .responseFormat(BookList.class, false) // Disable local validation.
+        .responseFormat(BookList.class, JsonSchemaLocalValidation.NO)
         .build();
 ```
 
@@ -470,14 +489,17 @@ import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 class Person {
     @JsonPropertyDescription("The first name and surname of the person")
     public String name;
-    public int yearOfBirth;
+    public int birthYear;
+    @JsonPropertyDescription("The year the person died, or 'present' if the person is living.")
+    public String deathYear;
 }
 
 @JsonClassDescription("The details of one published book")
 class Book {
     public String title;
     public Person author;
-    public int yearPublished;
+    @JsonPropertyDescription("The year in which the book was first published.")
+    public int publicationYear;
     @JsonIgnore public String genre;
 }
 

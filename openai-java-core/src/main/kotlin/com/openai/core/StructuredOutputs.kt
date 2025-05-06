@@ -23,20 +23,19 @@ private val MAPPER =
         .addModule(JavaTimeModule())
         .build()
 
+@JvmSynthetic
 internal fun <T> fromClass(
     type: Class<T>,
-    localValidation: Boolean = true,
+    localValidation: JsonSchemaLocalValidation = JsonSchemaLocalValidation.YES,
 ): ResponseFormatJsonSchema {
     val schema = extractSchema(type)
 
-    if (localValidation) {
+    if (localValidation == JsonSchemaLocalValidation.YES) {
         val validator = JsonSchemaValidator.create().validate(schema)
 
-        if (!validator.isValid()) {
-            throw IllegalArgumentException(
-                "Local validation failed for JSON schema derived from $type:\n" +
-                    validator.errors().joinToString("\n") { " - $it" }
-            )
+        require(validator.isValid()) {
+            "Local validation failed for JSON schema derived from $type:\n" +
+                validator.errors().joinToString("\n") { " - $it" }
         }
     }
 
@@ -44,12 +43,13 @@ internal fun <T> fromClass(
         .jsonSchema(
             ResponseFormatJsonSchema.JsonSchema.builder()
                 .name("json-schema-from-${type.simpleName}")
-                .schema(JsonValue.from(schema))
+                .schema(JsonValue.fromJsonNode(schema))
                 .build()
         )
         .build()
 }
 
+@JvmSynthetic
 internal fun <T> extractSchema(type: Class<T>): JsonNode {
     // Validation is not performed by this function, as it allows extraction of the schema and
     // validation of the schema to be controlled more easily when unit testing, as no exceptions
@@ -76,6 +76,7 @@ internal fun <T> extractSchema(type: Class<T>): JsonNode {
     return SchemaGenerator(configBuilder.build()).generateSchema(type)
 }
 
+@JvmSynthetic
 internal fun <T> fromJson(json: String, type: Class<T>): T =
     try {
         MAPPER.readValue(json, type)

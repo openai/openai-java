@@ -201,9 +201,7 @@ internal class JsonSchemaValidator private constructor() {
      *   each new schema.
      */
     fun validate(rootSchema: JsonNode): JsonSchemaValidator {
-        if (isValidationComplete) {
-            throw IllegalStateException("Validation already complete.")
-        }
+        check(!isValidationComplete) { "Validation already complete." }
         isValidationComplete = true
 
         validateSchema(rootSchema, ROOT_PATH, ROOT_DEPTH)

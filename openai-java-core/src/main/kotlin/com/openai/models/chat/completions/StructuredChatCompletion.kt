@@ -10,9 +10,16 @@ import com.openai.models.completions.CompletionUsage
 import java.util.Objects
 import java.util.Optional
 
+/**
+ * A wrapper for [ChatCompletion] that provides type-safe access to the [choices] when using the
+ * _Structured Outputs_ feature to deserialize a JSON response to an instance of an arbitrary class.
+ * See the SDK documentation for more details on _Structured Outputs_.
+ *
+ * @param T The type of the class to which the JSON data in the response will be deserialized.
+ */
 class StructuredChatCompletion<T : Any>(
-    val responseFormat: Class<T>,
-    val chatCompletion: ChatCompletion,
+    @get:JvmName("responseFormat") val responseFormat: Class<T>,
+    @get:JvmName("chatCompletion") val chatCompletion: ChatCompletion,
 ) {
     /** @see ChatCompletion.id */
     fun id(): String = chatCompletion.id()
@@ -68,8 +75,8 @@ class StructuredChatCompletion<T : Any>(
 
     class Choice<T : Any>
     internal constructor(
-        internal val responseFormat: Class<T>,
-        internal val choice: ChatCompletion.Choice,
+        @get:JvmName("responseFormat") val responseFormat: Class<T>,
+        @get:JvmName("choice") val choice: ChatCompletion.Choice,
     ) {
         /** @see ChatCompletion.Choice.finishReason */
         fun finishReason(): FinishReason = choice.finishReason()

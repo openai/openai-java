@@ -7,10 +7,18 @@ import com.openai.models.chat.completions.ChatCompletionMessage.FunctionCall
 import java.util.Objects
 import java.util.Optional
 
+/**
+ * A wrapper for [ChatCompletionMessage] that provides type-safe access to the [content] when using
+ * the _Structured Outputs_ feature to deserialize a JSON response to an instance of an arbitrary
+ * class. See the SDK documentation for more details on _Structured Outputs_.
+ *
+ * @param T The type of the class to which the JSON data in the content will be deserialized when
+ *   [content] is called.
+ */
 class StructuredChatCompletionMessage<T : Any>
 internal constructor(
-    val responseFormat: Class<T>,
-    val chatCompletionMessage: ChatCompletionMessage,
+    @get:JvmName("responseFormat") val responseFormat: Class<T>,
+    @get:JvmName("chatCompletionMessage") val chatCompletionMessage: ChatCompletionMessage,
 ) {
 
     private val content: JsonField<T> by lazy {
