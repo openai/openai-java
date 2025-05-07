@@ -44,6 +44,9 @@ internal fun <T> fromClass(
             ResponseFormatJsonSchema.JsonSchema.builder()
                 .name("json-schema-from-${type.simpleName}")
                 .schema(JsonValue.fromJsonNode(schema))
+                // Ensure the model's output strictly adheres to this JSON schema. This is the
+                // essential "ON switch" for Structured Outputs.
+                .strict(true)
                 .build()
         )
         .build()
