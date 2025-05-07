@@ -1441,6 +1441,18 @@ internal class StructuredOutputsTest {
     }
 
     @Test
+    fun fromClassEnablesStrictAdherenceToSchema() {
+        @Suppress("unused") class X(val s: String)
+
+        val jsonSchema = fromClass(X::class.java)
+
+        // The "strict" flag _must_ be set to ensure that the model's output will _always_ conform
+        // to the JSON schema.
+        assertThat(jsonSchema.jsonSchema().strict()).isPresent
+        assertThat(jsonSchema.jsonSchema().strict().get()).isTrue
+    }
+
+    @Test
     @Suppress("unused")
     fun fromClassSuccessWithoutValidation() {
         // Exceed the maximum nesting depth, but do not enable validation.
@@ -1452,7 +1464,7 @@ internal class StructuredOutputsTest {
         class Z(val y: Y)
 
         assertThatNoException().isThrownBy {
-            fromClass(X::class.java, JsonSchemaLocalValidation.NO)
+            fromClass(Z::class.java, JsonSchemaLocalValidation.NO)
         }
     }
 
