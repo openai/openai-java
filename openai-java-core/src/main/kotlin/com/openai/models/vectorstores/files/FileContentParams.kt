@@ -7,19 +7,21 @@ import com.openai.core.checkRequired
 import com.openai.core.http.Headers
 import com.openai.core.http.QueryParams
 import java.util.Objects
+import java.util.Optional
+import kotlin.jvm.optionals.getOrNull
 
 /** Retrieve the parsed contents of a vector store file. */
 class FileContentParams
 private constructor(
     private val vectorStoreId: String,
-    private val fileId: String,
+    private val fileId: String?,
     private val additionalHeaders: Headers,
     private val additionalQueryParams: QueryParams,
 ) : Params {
 
     fun vectorStoreId(): String = vectorStoreId
 
-    fun fileId(): String = fileId
+    fun fileId(): Optional<String> = Optional.ofNullable(fileId)
 
     fun _additionalHeaders(): Headers = additionalHeaders
 
@@ -35,7 +37,6 @@ private constructor(
          * The following fields are required:
          * ```java
          * .vectorStoreId()
-         * .fileId()
          * ```
          */
         @JvmStatic fun builder() = Builder()
@@ -59,7 +60,10 @@ private constructor(
 
         fun vectorStoreId(vectorStoreId: String) = apply { this.vectorStoreId = vectorStoreId }
 
-        fun fileId(fileId: String) = apply { this.fileId = fileId }
+        fun fileId(fileId: String?) = apply { this.fileId = fileId }
+
+        /** Alias for calling [Builder.fileId] with `fileId.orElse(null)`. */
+        fun fileId(fileId: Optional<String>) = fileId(fileId.getOrNull())
 
         fun additionalHeaders(additionalHeaders: Headers) = apply {
             this.additionalHeaders.clear()
@@ -167,7 +171,6 @@ private constructor(
          * The following fields are required:
          * ```java
          * .vectorStoreId()
-         * .fileId()
          * ```
          *
          * @throws IllegalStateException if any required field is unset.
@@ -175,7 +178,7 @@ private constructor(
         fun build(): FileContentParams =
             FileContentParams(
                 checkRequired("vectorStoreId", vectorStoreId),
-                checkRequired("fileId", fileId),
+                fileId,
                 additionalHeaders.build(),
                 additionalQueryParams.build(),
             )
@@ -184,7 +187,7 @@ private constructor(
     fun _pathParam(index: Int): String =
         when (index) {
             0 -> vectorStoreId
-            1 -> fileId
+            1 -> fileId ?: ""
             else -> ""
         }
 

@@ -29,13 +29,13 @@ import kotlin.jvm.optionals.getOrNull
 /** Create a vector store file batch. */
 class FileBatchCreateParams
 private constructor(
-    private val vectorStoreId: String,
+    private val vectorStoreId: String?,
     private val body: Body,
     private val additionalHeaders: Headers,
     private val additionalQueryParams: QueryParams,
 ) : Params {
 
-    fun vectorStoreId(): String = vectorStoreId
+    fun vectorStoreId(): Optional<String> = Optional.ofNullable(vectorStoreId)
 
     /**
      * A list of [File](https://platform.openai.com/docs/api-reference/files) IDs that the vector
@@ -103,7 +103,6 @@ private constructor(
          *
          * The following fields are required:
          * ```java
-         * .vectorStoreId()
          * .fileIds()
          * ```
          */
@@ -126,7 +125,11 @@ private constructor(
             additionalQueryParams = fileBatchCreateParams.additionalQueryParams.toBuilder()
         }
 
-        fun vectorStoreId(vectorStoreId: String) = apply { this.vectorStoreId = vectorStoreId }
+        fun vectorStoreId(vectorStoreId: String?) = apply { this.vectorStoreId = vectorStoreId }
+
+        /** Alias for calling [Builder.vectorStoreId] with `vectorStoreId.orElse(null)`. */
+        fun vectorStoreId(vectorStoreId: Optional<String>) =
+            vectorStoreId(vectorStoreId.getOrNull())
 
         /**
          * Sets the entire request body.
@@ -349,7 +352,6 @@ private constructor(
          *
          * The following fields are required:
          * ```java
-         * .vectorStoreId()
          * .fileIds()
          * ```
          *
@@ -357,7 +359,7 @@ private constructor(
          */
         fun build(): FileBatchCreateParams =
             FileBatchCreateParams(
-                checkRequired("vectorStoreId", vectorStoreId),
+                vectorStoreId,
                 body.build(),
                 additionalHeaders.build(),
                 additionalQueryParams.build(),
@@ -368,7 +370,7 @@ private constructor(
 
     fun _pathParam(index: Int): String =
         when (index) {
-            0 -> vectorStoreId
+            0 -> vectorStoreId ?: ""
             else -> ""
         }
 

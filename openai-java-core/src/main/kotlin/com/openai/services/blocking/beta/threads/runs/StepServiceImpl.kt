@@ -4,6 +4,7 @@ package com.openai.services.blocking.beta.threads.runs
 
 import com.openai.core.ClientOptions
 import com.openai.core.RequestOptions
+import com.openai.core.checkRequired
 import com.openai.core.handlers.errorHandler
 import com.openai.core.handlers.jsonHandler
 import com.openai.core.handlers.withErrorHandler
@@ -20,6 +21,7 @@ import com.openai.models.beta.threads.runs.steps.StepListPage
 import com.openai.models.beta.threads.runs.steps.StepListPageResponse
 import com.openai.models.beta.threads.runs.steps.StepListParams
 import com.openai.models.beta.threads.runs.steps.StepRetrieveParams
+import kotlin.jvm.optionals.getOrNull
 
 class StepServiceImpl internal constructor(private val clientOptions: ClientOptions) : StepService {
 
@@ -54,6 +56,9 @@ class StepServiceImpl internal constructor(private val clientOptions: ClientOpti
             params: StepRetrieveParams,
             requestOptions: RequestOptions,
         ): HttpResponseFor<RunStep> {
+            // We check here instead of in the params builder because this can be specified
+            // positionally or in the params class.
+            checkRequired("stepId", params.stepId().getOrNull())
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.GET)
@@ -89,6 +94,9 @@ class StepServiceImpl internal constructor(private val clientOptions: ClientOpti
             params: StepListParams,
             requestOptions: RequestOptions,
         ): HttpResponseFor<StepListPage> {
+            // We check here instead of in the params builder because this can be specified
+            // positionally or in the params class.
+            checkRequired("runId", params.runId().getOrNull())
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.GET)

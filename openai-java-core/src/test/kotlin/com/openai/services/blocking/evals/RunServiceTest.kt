@@ -9,7 +9,6 @@ import com.openai.models.evals.runs.CreateEvalJsonlRunDataSource
 import com.openai.models.evals.runs.RunCancelParams
 import com.openai.models.evals.runs.RunCreateParams
 import com.openai.models.evals.runs.RunDeleteParams
-import com.openai.models.evals.runs.RunListParams
 import com.openai.models.evals.runs.RunRetrieveParams
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
@@ -93,7 +92,7 @@ internal class RunServiceTest {
                 .build()
         val runService = client.evals().runs()
 
-        val page = runService.list(RunListParams.builder().evalId("eval_id").build())
+        val page = runService.list("eval_id")
 
         page.response().validate()
     }

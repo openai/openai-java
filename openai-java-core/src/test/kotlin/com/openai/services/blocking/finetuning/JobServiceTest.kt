@@ -5,12 +5,7 @@ package com.openai.services.blocking.finetuning
 import com.openai.TestServerExtension
 import com.openai.client.okhttp.OpenAIOkHttpClient
 import com.openai.core.JsonValue
-import com.openai.models.finetuning.jobs.JobCancelParams
 import com.openai.models.finetuning.jobs.JobCreateParams
-import com.openai.models.finetuning.jobs.JobListEventsParams
-import com.openai.models.finetuning.jobs.JobPauseParams
-import com.openai.models.finetuning.jobs.JobResumeParams
-import com.openai.models.finetuning.jobs.JobRetrieveParams
 import com.openai.models.finetuning.methods.DpoHyperparameters
 import com.openai.models.finetuning.methods.DpoMethod
 import com.openai.models.finetuning.methods.ReinforcementHyperparameters
@@ -133,10 +128,7 @@ internal class JobServiceTest {
                 .build()
         val jobService = client.fineTuning().jobs()
 
-        val fineTuningJob =
-            jobService.retrieve(
-                JobRetrieveParams.builder().fineTuningJobId("ft-AF1WoRqd3aJAHsqc9NY7iL8F").build()
-            )
+        val fineTuningJob = jobService.retrieve("ft-AF1WoRqd3aJAHsqc9NY7iL8F")
 
         fineTuningJob.validate()
     }
@@ -164,10 +156,7 @@ internal class JobServiceTest {
                 .build()
         val jobService = client.fineTuning().jobs()
 
-        val fineTuningJob =
-            jobService.cancel(
-                JobCancelParams.builder().fineTuningJobId("ft-AF1WoRqd3aJAHsqc9NY7iL8F").build()
-            )
+        val fineTuningJob = jobService.cancel("ft-AF1WoRqd3aJAHsqc9NY7iL8F")
 
         fineTuningJob.validate()
     }
@@ -181,10 +170,7 @@ internal class JobServiceTest {
                 .build()
         val jobService = client.fineTuning().jobs()
 
-        val page =
-            jobService.listEvents(
-                JobListEventsParams.builder().fineTuningJobId("ft-AF1WoRqd3aJAHsqc9NY7iL8F").build()
-            )
+        val page = jobService.listEvents("ft-AF1WoRqd3aJAHsqc9NY7iL8F")
 
         page.response().validate()
     }
@@ -198,10 +184,7 @@ internal class JobServiceTest {
                 .build()
         val jobService = client.fineTuning().jobs()
 
-        val fineTuningJob =
-            jobService.pause(
-                JobPauseParams.builder().fineTuningJobId("ft-AF1WoRqd3aJAHsqc9NY7iL8F").build()
-            )
+        val fineTuningJob = jobService.pause("ft-AF1WoRqd3aJAHsqc9NY7iL8F")
 
         fineTuningJob.validate()
     }
@@ -215,10 +198,7 @@ internal class JobServiceTest {
                 .build()
         val jobService = client.fineTuning().jobs()
 
-        val fineTuningJob =
-            jobService.resume(
-                JobResumeParams.builder().fineTuningJobId("ft-AF1WoRqd3aJAHsqc9NY7iL8F").build()
-            )
+        val fineTuningJob = jobService.resume("ft-AF1WoRqd3aJAHsqc9NY7iL8F")
 
         fineTuningJob.validate()
     }

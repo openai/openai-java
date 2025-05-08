@@ -25,7 +25,7 @@ import kotlin.jvm.optionals.getOrNull
 class RunUpdateParams
 private constructor(
     private val threadId: String,
-    private val runId: String,
+    private val runId: String?,
     private val body: Body,
     private val additionalHeaders: Headers,
     private val additionalQueryParams: QueryParams,
@@ -33,7 +33,7 @@ private constructor(
 
     fun threadId(): String = threadId
 
-    fun runId(): String = runId
+    fun runId(): Optional<String> = Optional.ofNullable(runId)
 
     /**
      * Set of 16 key-value pairs that can be attached to an object. This can be useful for storing
@@ -71,7 +71,6 @@ private constructor(
          * The following fields are required:
          * ```java
          * .threadId()
-         * .runId()
          * ```
          */
         @JvmStatic fun builder() = Builder()
@@ -97,7 +96,10 @@ private constructor(
 
         fun threadId(threadId: String) = apply { this.threadId = threadId }
 
-        fun runId(runId: String) = apply { this.runId = runId }
+        fun runId(runId: String?) = apply { this.runId = runId }
+
+        /** Alias for calling [Builder.runId] with `runId.orElse(null)`. */
+        fun runId(runId: Optional<String>) = runId(runId.getOrNull())
 
         /**
          * Sets the entire request body.
@@ -255,7 +257,6 @@ private constructor(
          * The following fields are required:
          * ```java
          * .threadId()
-         * .runId()
          * ```
          *
          * @throws IllegalStateException if any required field is unset.
@@ -263,7 +264,7 @@ private constructor(
         fun build(): RunUpdateParams =
             RunUpdateParams(
                 checkRequired("threadId", threadId),
-                checkRequired("runId", runId),
+                runId,
                 body.build(),
                 additionalHeaders.build(),
                 additionalQueryParams.build(),
@@ -275,7 +276,7 @@ private constructor(
     fun _pathParam(index: Int): String =
         when (index) {
             0 -> threadId
-            1 -> runId
+            1 -> runId ?: ""
             else -> ""
         }
 

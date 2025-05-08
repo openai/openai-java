@@ -4,12 +4,12 @@ package com.openai.models.chat.completions
 
 import com.openai.core.JsonValue
 import com.openai.core.Params
-import com.openai.core.checkRequired
 import com.openai.core.http.Headers
 import com.openai.core.http.QueryParams
 import com.openai.core.toImmutable
 import java.util.Objects
 import java.util.Optional
+import kotlin.jvm.optionals.getOrNull
 
 /**
  * Delete a stored chat completion. Only Chat Completions that have been created with the `store`
@@ -17,13 +17,13 @@ import java.util.Optional
  */
 class ChatCompletionDeleteParams
 private constructor(
-    private val completionId: String,
+    private val completionId: String?,
     private val additionalHeaders: Headers,
     private val additionalQueryParams: QueryParams,
     private val additionalBodyProperties: Map<String, JsonValue>,
 ) : Params {
 
-    fun completionId(): String = completionId
+    fun completionId(): Optional<String> = Optional.ofNullable(completionId)
 
     fun _additionalBodyProperties(): Map<String, JsonValue> = additionalBodyProperties
 
@@ -35,13 +35,10 @@ private constructor(
 
     companion object {
 
+        @JvmStatic fun none(): ChatCompletionDeleteParams = builder().build()
+
         /**
          * Returns a mutable builder for constructing an instance of [ChatCompletionDeleteParams].
-         *
-         * The following fields are required:
-         * ```java
-         * .completionId()
-         * ```
          */
         @JvmStatic fun builder() = Builder()
     }
@@ -63,7 +60,10 @@ private constructor(
                 chatCompletionDeleteParams.additionalBodyProperties.toMutableMap()
         }
 
-        fun completionId(completionId: String) = apply { this.completionId = completionId }
+        fun completionId(completionId: String?) = apply { this.completionId = completionId }
+
+        /** Alias for calling [Builder.completionId] with `completionId.orElse(null)`. */
+        fun completionId(completionId: Optional<String>) = completionId(completionId.getOrNull())
 
         fun additionalHeaders(additionalHeaders: Headers) = apply {
             this.additionalHeaders.clear()
@@ -189,17 +189,10 @@ private constructor(
          * Returns an immutable instance of [ChatCompletionDeleteParams].
          *
          * Further updates to this [Builder] will not mutate the returned instance.
-         *
-         * The following fields are required:
-         * ```java
-         * .completionId()
-         * ```
-         *
-         * @throws IllegalStateException if any required field is unset.
          */
         fun build(): ChatCompletionDeleteParams =
             ChatCompletionDeleteParams(
-                checkRequired("completionId", completionId),
+                completionId,
                 additionalHeaders.build(),
                 additionalQueryParams.build(),
                 additionalBodyProperties.toImmutable(),
@@ -211,7 +204,7 @@ private constructor(
 
     fun _pathParam(index: Int): String =
         when (index) {
-            0 -> completionId
+            0 -> completionId ?: ""
             else -> ""
         }
 

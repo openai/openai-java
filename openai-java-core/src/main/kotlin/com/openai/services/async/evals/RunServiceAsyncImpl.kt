@@ -4,6 +4,7 @@ package com.openai.services.async.evals
 
 import com.openai.core.ClientOptions
 import com.openai.core.RequestOptions
+import com.openai.core.checkRequired
 import com.openai.core.handlers.errorHandler
 import com.openai.core.handlers.jsonHandler
 import com.openai.core.handlers.withErrorHandler
@@ -29,6 +30,7 @@ import com.openai.models.evals.runs.RunRetrieveResponse
 import com.openai.services.async.evals.runs.OutputItemServiceAsync
 import com.openai.services.async.evals.runs.OutputItemServiceAsyncImpl
 import java.util.concurrent.CompletableFuture
+import kotlin.jvm.optionals.getOrNull
 
 class RunServiceAsyncImpl internal constructor(private val clientOptions: ClientOptions) :
     RunServiceAsync {
@@ -98,6 +100,9 @@ class RunServiceAsyncImpl internal constructor(private val clientOptions: Client
             params: RunCreateParams,
             requestOptions: RequestOptions,
         ): CompletableFuture<HttpResponseFor<RunCreateResponse>> {
+            // We check here instead of in the params builder because this can be specified
+            // positionally or in the params class.
+            checkRequired("evalId", params.evalId().getOrNull())
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.POST)
@@ -129,6 +134,9 @@ class RunServiceAsyncImpl internal constructor(private val clientOptions: Client
             params: RunRetrieveParams,
             requestOptions: RequestOptions,
         ): CompletableFuture<HttpResponseFor<RunRetrieveResponse>> {
+            // We check here instead of in the params builder because this can be specified
+            // positionally or in the params class.
+            checkRequired("runId", params.runId().getOrNull())
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.GET)
@@ -159,6 +167,9 @@ class RunServiceAsyncImpl internal constructor(private val clientOptions: Client
             params: RunListParams,
             requestOptions: RequestOptions,
         ): CompletableFuture<HttpResponseFor<RunListPageAsync>> {
+            // We check here instead of in the params builder because this can be specified
+            // positionally or in the params class.
+            checkRequired("evalId", params.evalId().getOrNull())
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.GET)
@@ -195,6 +206,9 @@ class RunServiceAsyncImpl internal constructor(private val clientOptions: Client
             params: RunDeleteParams,
             requestOptions: RequestOptions,
         ): CompletableFuture<HttpResponseFor<RunDeleteResponse>> {
+            // We check here instead of in the params builder because this can be specified
+            // positionally or in the params class.
+            checkRequired("runId", params.runId().getOrNull())
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.DELETE)
@@ -225,6 +239,9 @@ class RunServiceAsyncImpl internal constructor(private val clientOptions: Client
             params: RunCancelParams,
             requestOptions: RequestOptions,
         ): CompletableFuture<HttpResponseFor<RunCancelResponse>> {
+            // We check here instead of in the params builder because this can be specified
+            // positionally or in the params class.
+            checkRequired("runId", params.runId().getOrNull())
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.POST)

@@ -4,6 +4,7 @@ package com.openai.services.async.finetuning
 
 import com.openai.core.ClientOptions
 import com.openai.core.RequestOptions
+import com.openai.core.checkRequired
 import com.openai.core.handlers.errorHandler
 import com.openai.core.handlers.jsonHandler
 import com.openai.core.handlers.withErrorHandler
@@ -30,6 +31,7 @@ import com.openai.models.finetuning.jobs.JobRetrieveParams
 import com.openai.services.async.finetuning.jobs.CheckpointServiceAsync
 import com.openai.services.async.finetuning.jobs.CheckpointServiceAsyncImpl
 import java.util.concurrent.CompletableFuture
+import kotlin.jvm.optionals.getOrNull
 
 class JobServiceAsyncImpl internal constructor(private val clientOptions: ClientOptions) :
     JobServiceAsync {
@@ -143,6 +145,9 @@ class JobServiceAsyncImpl internal constructor(private val clientOptions: Client
             params: JobRetrieveParams,
             requestOptions: RequestOptions,
         ): CompletableFuture<HttpResponseFor<FineTuningJob>> {
+            // We check here instead of in the params builder because this can be specified
+            // positionally or in the params class.
+            checkRequired("fineTuningJobId", params.fineTuningJobId().getOrNull())
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.GET)
@@ -209,6 +214,9 @@ class JobServiceAsyncImpl internal constructor(private val clientOptions: Client
             params: JobCancelParams,
             requestOptions: RequestOptions,
         ): CompletableFuture<HttpResponseFor<FineTuningJob>> {
+            // We check here instead of in the params builder because this can be specified
+            // positionally or in the params class.
+            checkRequired("fineTuningJobId", params.fineTuningJobId().getOrNull())
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.POST)
@@ -240,6 +248,9 @@ class JobServiceAsyncImpl internal constructor(private val clientOptions: Client
             params: JobListEventsParams,
             requestOptions: RequestOptions,
         ): CompletableFuture<HttpResponseFor<JobListEventsPageAsync>> {
+            // We check here instead of in the params builder because this can be specified
+            // positionally or in the params class.
+            checkRequired("fineTuningJobId", params.fineTuningJobId().getOrNull())
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.GET)
@@ -276,6 +287,9 @@ class JobServiceAsyncImpl internal constructor(private val clientOptions: Client
             params: JobPauseParams,
             requestOptions: RequestOptions,
         ): CompletableFuture<HttpResponseFor<FineTuningJob>> {
+            // We check here instead of in the params builder because this can be specified
+            // positionally or in the params class.
+            checkRequired("fineTuningJobId", params.fineTuningJobId().getOrNull())
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.POST)
@@ -306,6 +320,9 @@ class JobServiceAsyncImpl internal constructor(private val clientOptions: Client
             params: JobResumeParams,
             requestOptions: RequestOptions,
         ): CompletableFuture<HttpResponseFor<FineTuningJob>> {
+            // We check here instead of in the params builder because this can be specified
+            // positionally or in the params class.
+            checkRequired("fineTuningJobId", params.fineTuningJobId().getOrNull())
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.POST)

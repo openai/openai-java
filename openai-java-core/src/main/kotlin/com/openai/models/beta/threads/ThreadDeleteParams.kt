@@ -4,23 +4,23 @@ package com.openai.models.beta.threads
 
 import com.openai.core.JsonValue
 import com.openai.core.Params
-import com.openai.core.checkRequired
 import com.openai.core.http.Headers
 import com.openai.core.http.QueryParams
 import com.openai.core.toImmutable
 import java.util.Objects
 import java.util.Optional
+import kotlin.jvm.optionals.getOrNull
 
 /** Delete a thread. */
 class ThreadDeleteParams
 private constructor(
-    private val threadId: String,
+    private val threadId: String?,
     private val additionalHeaders: Headers,
     private val additionalQueryParams: QueryParams,
     private val additionalBodyProperties: Map<String, JsonValue>,
 ) : Params {
 
-    fun threadId(): String = threadId
+    fun threadId(): Optional<String> = Optional.ofNullable(threadId)
 
     fun _additionalBodyProperties(): Map<String, JsonValue> = additionalBodyProperties
 
@@ -32,14 +32,9 @@ private constructor(
 
     companion object {
 
-        /**
-         * Returns a mutable builder for constructing an instance of [ThreadDeleteParams].
-         *
-         * The following fields are required:
-         * ```java
-         * .threadId()
-         * ```
-         */
+        @JvmStatic fun none(): ThreadDeleteParams = builder().build()
+
+        /** Returns a mutable builder for constructing an instance of [ThreadDeleteParams]. */
         @JvmStatic fun builder() = Builder()
     }
 
@@ -59,7 +54,10 @@ private constructor(
             additionalBodyProperties = threadDeleteParams.additionalBodyProperties.toMutableMap()
         }
 
-        fun threadId(threadId: String) = apply { this.threadId = threadId }
+        fun threadId(threadId: String?) = apply { this.threadId = threadId }
+
+        /** Alias for calling [Builder.threadId] with `threadId.orElse(null)`. */
+        fun threadId(threadId: Optional<String>) = threadId(threadId.getOrNull())
 
         fun additionalHeaders(additionalHeaders: Headers) = apply {
             this.additionalHeaders.clear()
@@ -185,17 +183,10 @@ private constructor(
          * Returns an immutable instance of [ThreadDeleteParams].
          *
          * Further updates to this [Builder] will not mutate the returned instance.
-         *
-         * The following fields are required:
-         * ```java
-         * .threadId()
-         * ```
-         *
-         * @throws IllegalStateException if any required field is unset.
          */
         fun build(): ThreadDeleteParams =
             ThreadDeleteParams(
-                checkRequired("threadId", threadId),
+                threadId,
                 additionalHeaders.build(),
                 additionalQueryParams.build(),
                 additionalBodyProperties.toImmutable(),
@@ -207,7 +198,7 @@ private constructor(
 
     fun _pathParam(index: Int): String =
         when (index) {
-            0 -> threadId
+            0 -> threadId ?: ""
             else -> ""
         }
 

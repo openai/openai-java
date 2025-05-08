@@ -4,7 +4,6 @@ package com.openai.services.blocking.responses
 
 import com.openai.TestServerExtension
 import com.openai.client.okhttp.OpenAIOkHttpClient
-import com.openai.models.responses.inputitems.InputItemListParams
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 
@@ -20,8 +19,7 @@ internal class InputItemServiceTest {
                 .build()
         val inputItemService = client.responses().inputItems()
 
-        val page =
-            inputItemService.list(InputItemListParams.builder().responseId("response_id").build())
+        val page = inputItemService.list("response_id")
 
         page.response().validate()
     }

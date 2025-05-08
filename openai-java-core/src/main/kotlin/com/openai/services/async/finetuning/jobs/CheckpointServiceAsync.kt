@@ -17,14 +17,40 @@ interface CheckpointServiceAsync {
     fun withRawResponse(): WithRawResponse
 
     /** List checkpoints for a fine-tuning job. */
-    fun list(params: CheckpointListParams): CompletableFuture<CheckpointListPageAsync> =
-        list(params, RequestOptions.none())
+    fun list(fineTuningJobId: String): CompletableFuture<CheckpointListPageAsync> =
+        list(fineTuningJobId, CheckpointListParams.none())
+
+    /** @see [list] */
+    fun list(
+        fineTuningJobId: String,
+        params: CheckpointListParams = CheckpointListParams.none(),
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): CompletableFuture<CheckpointListPageAsync> =
+        list(params.toBuilder().fineTuningJobId(fineTuningJobId).build(), requestOptions)
+
+    /** @see [list] */
+    fun list(
+        fineTuningJobId: String,
+        params: CheckpointListParams = CheckpointListParams.none(),
+    ): CompletableFuture<CheckpointListPageAsync> =
+        list(fineTuningJobId, params, RequestOptions.none())
 
     /** @see [list] */
     fun list(
         params: CheckpointListParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): CompletableFuture<CheckpointListPageAsync>
+
+    /** @see [list] */
+    fun list(params: CheckpointListParams): CompletableFuture<CheckpointListPageAsync> =
+        list(params, RequestOptions.none())
+
+    /** @see [list] */
+    fun list(
+        fineTuningJobId: String,
+        requestOptions: RequestOptions,
+    ): CompletableFuture<CheckpointListPageAsync> =
+        list(fineTuningJobId, CheckpointListParams.none(), requestOptions)
 
     /**
      * A view of [CheckpointServiceAsync] that provides access to raw HTTP responses for each
@@ -38,9 +64,26 @@ interface CheckpointServiceAsync {
          */
         @MustBeClosed
         fun list(
-            params: CheckpointListParams
+            fineTuningJobId: String
         ): CompletableFuture<HttpResponseFor<CheckpointListPageAsync>> =
-            list(params, RequestOptions.none())
+            list(fineTuningJobId, CheckpointListParams.none())
+
+        /** @see [list] */
+        @MustBeClosed
+        fun list(
+            fineTuningJobId: String,
+            params: CheckpointListParams = CheckpointListParams.none(),
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): CompletableFuture<HttpResponseFor<CheckpointListPageAsync>> =
+            list(params.toBuilder().fineTuningJobId(fineTuningJobId).build(), requestOptions)
+
+        /** @see [list] */
+        @MustBeClosed
+        fun list(
+            fineTuningJobId: String,
+            params: CheckpointListParams = CheckpointListParams.none(),
+        ): CompletableFuture<HttpResponseFor<CheckpointListPageAsync>> =
+            list(fineTuningJobId, params, RequestOptions.none())
 
         /** @see [list] */
         @MustBeClosed
@@ -48,5 +91,20 @@ interface CheckpointServiceAsync {
             params: CheckpointListParams,
             requestOptions: RequestOptions = RequestOptions.none(),
         ): CompletableFuture<HttpResponseFor<CheckpointListPageAsync>>
+
+        /** @see [list] */
+        @MustBeClosed
+        fun list(
+            params: CheckpointListParams
+        ): CompletableFuture<HttpResponseFor<CheckpointListPageAsync>> =
+            list(params, RequestOptions.none())
+
+        /** @see [list] */
+        @MustBeClosed
+        fun list(
+            fineTuningJobId: String,
+            requestOptions: RequestOptions,
+        ): CompletableFuture<HttpResponseFor<CheckpointListPageAsync>> =
+            list(fineTuningJobId, CheckpointListParams.none(), requestOptions)
     }
 }

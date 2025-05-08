@@ -12,10 +12,8 @@ import com.openai.models.ReasoningEffort
 import com.openai.models.ResponseFormatText
 import com.openai.models.chat.completions.ChatCompletionAudioParam
 import com.openai.models.chat.completions.ChatCompletionCreateParams
-import com.openai.models.chat.completions.ChatCompletionDeleteParams
 import com.openai.models.chat.completions.ChatCompletionDeveloperMessageParam
 import com.openai.models.chat.completions.ChatCompletionPredictionContent
-import com.openai.models.chat.completions.ChatCompletionRetrieveParams
 import com.openai.models.chat.completions.ChatCompletionStreamOptions
 import com.openai.models.chat.completions.ChatCompletionTool
 import com.openai.models.chat.completions.ChatCompletionToolChoiceOption
@@ -261,10 +259,7 @@ internal class ChatCompletionServiceTest {
                 .build()
         val chatCompletionService = client.chat().completions()
 
-        val chatCompletion =
-            chatCompletionService.retrieve(
-                ChatCompletionRetrieveParams.builder().completionId("completion_id").build()
-            )
+        val chatCompletion = chatCompletionService.retrieve("completion_id")
 
         chatCompletion.validate()
     }
@@ -316,10 +311,7 @@ internal class ChatCompletionServiceTest {
                 .build()
         val chatCompletionService = client.chat().completions()
 
-        val chatCompletionDeleted =
-            chatCompletionService.delete(
-                ChatCompletionDeleteParams.builder().completionId("completion_id").build()
-            )
+        val chatCompletionDeleted = chatCompletionService.delete("completion_id")
 
         chatCompletionDeleted.validate()
     }

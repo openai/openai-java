@@ -29,6 +29,18 @@ interface RunServiceAsync {
     fun steps(): StepServiceAsync
 
     /** Create a run. */
+    fun create(threadId: String, params: RunCreateParams): CompletableFuture<Run> =
+        create(threadId, params, RequestOptions.none())
+
+    /** @see [create] */
+    fun create(
+        threadId: String,
+        params: RunCreateParams,
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): CompletableFuture<Run> =
+        create(params.toBuilder().threadId(threadId).build(), requestOptions)
+
+    /** @see [create] */
     fun create(params: RunCreateParams): CompletableFuture<Run> =
         create(params, RequestOptions.none())
 
@@ -39,6 +51,21 @@ interface RunServiceAsync {
     ): CompletableFuture<Run>
 
     /** Create a run. */
+    fun createStreaming(
+        threadId: String,
+        params: RunCreateParams,
+    ): AsyncStreamResponse<AssistantStreamEvent> =
+        createStreaming(threadId, params, RequestOptions.none())
+
+    /** @see [createStreaming] */
+    fun createStreaming(
+        threadId: String,
+        params: RunCreateParams,
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): AsyncStreamResponse<AssistantStreamEvent> =
+        createStreaming(params.toBuilder().threadId(threadId).build(), requestOptions)
+
+    /** @see [createStreaming] */
     fun createStreaming(params: RunCreateParams): AsyncStreamResponse<AssistantStreamEvent> =
         createStreaming(params, RequestOptions.none())
 
@@ -49,6 +76,17 @@ interface RunServiceAsync {
     ): AsyncStreamResponse<AssistantStreamEvent>
 
     /** Retrieves a run. */
+    fun retrieve(runId: String, params: RunRetrieveParams): CompletableFuture<Run> =
+        retrieve(runId, params, RequestOptions.none())
+
+    /** @see [retrieve] */
+    fun retrieve(
+        runId: String,
+        params: RunRetrieveParams,
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): CompletableFuture<Run> = retrieve(params.toBuilder().runId(runId).build(), requestOptions)
+
+    /** @see [retrieve] */
     fun retrieve(params: RunRetrieveParams): CompletableFuture<Run> =
         retrieve(params, RequestOptions.none())
 
@@ -59,6 +97,17 @@ interface RunServiceAsync {
     ): CompletableFuture<Run>
 
     /** Modifies a run. */
+    fun update(runId: String, params: RunUpdateParams): CompletableFuture<Run> =
+        update(runId, params, RequestOptions.none())
+
+    /** @see [update] */
+    fun update(
+        runId: String,
+        params: RunUpdateParams,
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): CompletableFuture<Run> = update(params.toBuilder().runId(runId).build(), requestOptions)
+
+    /** @see [update] */
     fun update(params: RunUpdateParams): CompletableFuture<Run> =
         update(params, RequestOptions.none())
 
@@ -69,8 +118,22 @@ interface RunServiceAsync {
     ): CompletableFuture<Run>
 
     /** Returns a list of runs belonging to a thread. */
-    fun list(params: RunListParams): CompletableFuture<RunListPageAsync> =
-        list(params, RequestOptions.none())
+    fun list(threadId: String): CompletableFuture<RunListPageAsync> =
+        list(threadId, RunListParams.none())
+
+    /** @see [list] */
+    fun list(
+        threadId: String,
+        params: RunListParams = RunListParams.none(),
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): CompletableFuture<RunListPageAsync> =
+        list(params.toBuilder().threadId(threadId).build(), requestOptions)
+
+    /** @see [list] */
+    fun list(
+        threadId: String,
+        params: RunListParams = RunListParams.none(),
+    ): CompletableFuture<RunListPageAsync> = list(threadId, params, RequestOptions.none())
 
     /** @see [list] */
     fun list(
@@ -78,7 +141,28 @@ interface RunServiceAsync {
         requestOptions: RequestOptions = RequestOptions.none(),
     ): CompletableFuture<RunListPageAsync>
 
+    /** @see [list] */
+    fun list(params: RunListParams): CompletableFuture<RunListPageAsync> =
+        list(params, RequestOptions.none())
+
+    /** @see [list] */
+    fun list(
+        threadId: String,
+        requestOptions: RequestOptions,
+    ): CompletableFuture<RunListPageAsync> = list(threadId, RunListParams.none(), requestOptions)
+
     /** Cancels a run that is `in_progress`. */
+    fun cancel(runId: String, params: RunCancelParams): CompletableFuture<Run> =
+        cancel(runId, params, RequestOptions.none())
+
+    /** @see [cancel] */
+    fun cancel(
+        runId: String,
+        params: RunCancelParams,
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): CompletableFuture<Run> = cancel(params.toBuilder().runId(runId).build(), requestOptions)
+
+    /** @see [cancel] */
     fun cancel(params: RunCancelParams): CompletableFuture<Run> =
         cancel(params, RequestOptions.none())
 
@@ -93,6 +177,20 @@ interface RunServiceAsync {
      * `submit_tool_outputs`, this endpoint can be used to submit the outputs from the tool calls
      * once they're all completed. All outputs must be submitted in a single request.
      */
+    fun submitToolOutputs(
+        runId: String,
+        params: RunSubmitToolOutputsParams,
+    ): CompletableFuture<Run> = submitToolOutputs(runId, params, RequestOptions.none())
+
+    /** @see [submitToolOutputs] */
+    fun submitToolOutputs(
+        runId: String,
+        params: RunSubmitToolOutputsParams,
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): CompletableFuture<Run> =
+        submitToolOutputs(params.toBuilder().runId(runId).build(), requestOptions)
+
+    /** @see [submitToolOutputs] */
     fun submitToolOutputs(params: RunSubmitToolOutputsParams): CompletableFuture<Run> =
         submitToolOutputs(params, RequestOptions.none())
 
@@ -107,6 +205,21 @@ interface RunServiceAsync {
      * `submit_tool_outputs`, this endpoint can be used to submit the outputs from the tool calls
      * once they're all completed. All outputs must be submitted in a single request.
      */
+    fun submitToolOutputsStreaming(
+        runId: String,
+        params: RunSubmitToolOutputsParams,
+    ): AsyncStreamResponse<AssistantStreamEvent> =
+        submitToolOutputsStreaming(runId, params, RequestOptions.none())
+
+    /** @see [submitToolOutputsStreaming] */
+    fun submitToolOutputsStreaming(
+        runId: String,
+        params: RunSubmitToolOutputsParams,
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): AsyncStreamResponse<AssistantStreamEvent> =
+        submitToolOutputsStreaming(params.toBuilder().runId(runId).build(), requestOptions)
+
+    /** @see [submitToolOutputsStreaming] */
     fun submitToolOutputsStreaming(
         params: RunSubmitToolOutputsParams
     ): AsyncStreamResponse<AssistantStreamEvent> =
@@ -128,6 +241,22 @@ interface RunServiceAsync {
          * same as [RunServiceAsync.create].
          */
         @MustBeClosed
+        fun create(
+            threadId: String,
+            params: RunCreateParams,
+        ): CompletableFuture<HttpResponseFor<Run>> = create(threadId, params, RequestOptions.none())
+
+        /** @see [create] */
+        @MustBeClosed
+        fun create(
+            threadId: String,
+            params: RunCreateParams,
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): CompletableFuture<HttpResponseFor<Run>> =
+            create(params.toBuilder().threadId(threadId).build(), requestOptions)
+
+        /** @see [create] */
+        @MustBeClosed
         fun create(params: RunCreateParams): CompletableFuture<HttpResponseFor<Run>> =
             create(params, RequestOptions.none())
 
@@ -142,6 +271,23 @@ interface RunServiceAsync {
          * Returns a raw HTTP response for `post /threads/{thread_id}/runs`, but is otherwise the
          * same as [RunServiceAsync.createStreaming].
          */
+        @MustBeClosed
+        fun createStreaming(
+            threadId: String,
+            params: RunCreateParams,
+        ): CompletableFuture<HttpResponseFor<StreamResponse<AssistantStreamEvent>>> =
+            createStreaming(threadId, params, RequestOptions.none())
+
+        /** @see [createStreaming] */
+        @MustBeClosed
+        fun createStreaming(
+            threadId: String,
+            params: RunCreateParams,
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): CompletableFuture<HttpResponseFor<StreamResponse<AssistantStreamEvent>>> =
+            createStreaming(params.toBuilder().threadId(threadId).build(), requestOptions)
+
+        /** @see [createStreaming] */
         @MustBeClosed
         fun createStreaming(
             params: RunCreateParams
@@ -160,6 +306,22 @@ interface RunServiceAsync {
          * otherwise the same as [RunServiceAsync.retrieve].
          */
         @MustBeClosed
+        fun retrieve(
+            runId: String,
+            params: RunRetrieveParams,
+        ): CompletableFuture<HttpResponseFor<Run>> = retrieve(runId, params, RequestOptions.none())
+
+        /** @see [retrieve] */
+        @MustBeClosed
+        fun retrieve(
+            runId: String,
+            params: RunRetrieveParams,
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): CompletableFuture<HttpResponseFor<Run>> =
+            retrieve(params.toBuilder().runId(runId).build(), requestOptions)
+
+        /** @see [retrieve] */
+        @MustBeClosed
         fun retrieve(params: RunRetrieveParams): CompletableFuture<HttpResponseFor<Run>> =
             retrieve(params, RequestOptions.none())
 
@@ -174,6 +336,22 @@ interface RunServiceAsync {
          * Returns a raw HTTP response for `post /threads/{thread_id}/runs/{run_id}`, but is
          * otherwise the same as [RunServiceAsync.update].
          */
+        @MustBeClosed
+        fun update(
+            runId: String,
+            params: RunUpdateParams,
+        ): CompletableFuture<HttpResponseFor<Run>> = update(runId, params, RequestOptions.none())
+
+        /** @see [update] */
+        @MustBeClosed
+        fun update(
+            runId: String,
+            params: RunUpdateParams,
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): CompletableFuture<HttpResponseFor<Run>> =
+            update(params.toBuilder().runId(runId).build(), requestOptions)
+
+        /** @see [update] */
         @MustBeClosed
         fun update(params: RunUpdateParams): CompletableFuture<HttpResponseFor<Run>> =
             update(params, RequestOptions.none())
@@ -190,8 +368,25 @@ interface RunServiceAsync {
          * same as [RunServiceAsync.list].
          */
         @MustBeClosed
-        fun list(params: RunListParams): CompletableFuture<HttpResponseFor<RunListPageAsync>> =
-            list(params, RequestOptions.none())
+        fun list(threadId: String): CompletableFuture<HttpResponseFor<RunListPageAsync>> =
+            list(threadId, RunListParams.none())
+
+        /** @see [list] */
+        @MustBeClosed
+        fun list(
+            threadId: String,
+            params: RunListParams = RunListParams.none(),
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): CompletableFuture<HttpResponseFor<RunListPageAsync>> =
+            list(params.toBuilder().threadId(threadId).build(), requestOptions)
+
+        /** @see [list] */
+        @MustBeClosed
+        fun list(
+            threadId: String,
+            params: RunListParams = RunListParams.none(),
+        ): CompletableFuture<HttpResponseFor<RunListPageAsync>> =
+            list(threadId, params, RequestOptions.none())
 
         /** @see [list] */
         @MustBeClosed
@@ -200,10 +395,39 @@ interface RunServiceAsync {
             requestOptions: RequestOptions = RequestOptions.none(),
         ): CompletableFuture<HttpResponseFor<RunListPageAsync>>
 
+        /** @see [list] */
+        @MustBeClosed
+        fun list(params: RunListParams): CompletableFuture<HttpResponseFor<RunListPageAsync>> =
+            list(params, RequestOptions.none())
+
+        /** @see [list] */
+        @MustBeClosed
+        fun list(
+            threadId: String,
+            requestOptions: RequestOptions,
+        ): CompletableFuture<HttpResponseFor<RunListPageAsync>> =
+            list(threadId, RunListParams.none(), requestOptions)
+
         /**
          * Returns a raw HTTP response for `post /threads/{thread_id}/runs/{run_id}/cancel`, but is
          * otherwise the same as [RunServiceAsync.cancel].
          */
+        @MustBeClosed
+        fun cancel(
+            runId: String,
+            params: RunCancelParams,
+        ): CompletableFuture<HttpResponseFor<Run>> = cancel(runId, params, RequestOptions.none())
+
+        /** @see [cancel] */
+        @MustBeClosed
+        fun cancel(
+            runId: String,
+            params: RunCancelParams,
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): CompletableFuture<HttpResponseFor<Run>> =
+            cancel(params.toBuilder().runId(runId).build(), requestOptions)
+
+        /** @see [cancel] */
         @MustBeClosed
         fun cancel(params: RunCancelParams): CompletableFuture<HttpResponseFor<Run>> =
             cancel(params, RequestOptions.none())
@@ -222,6 +446,23 @@ interface RunServiceAsync {
          */
         @MustBeClosed
         fun submitToolOutputs(
+            runId: String,
+            params: RunSubmitToolOutputsParams,
+        ): CompletableFuture<HttpResponseFor<Run>> =
+            submitToolOutputs(runId, params, RequestOptions.none())
+
+        /** @see [submitToolOutputs] */
+        @MustBeClosed
+        fun submitToolOutputs(
+            runId: String,
+            params: RunSubmitToolOutputsParams,
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): CompletableFuture<HttpResponseFor<Run>> =
+            submitToolOutputs(params.toBuilder().runId(runId).build(), requestOptions)
+
+        /** @see [submitToolOutputs] */
+        @MustBeClosed
+        fun submitToolOutputs(
             params: RunSubmitToolOutputsParams
         ): CompletableFuture<HttpResponseFor<Run>> =
             submitToolOutputs(params, RequestOptions.none())
@@ -238,6 +479,23 @@ interface RunServiceAsync {
          * /threads/{thread_id}/runs/{run_id}/submit_tool_outputs`, but is otherwise the same as
          * [RunServiceAsync.submitToolOutputsStreaming].
          */
+        @MustBeClosed
+        fun submitToolOutputsStreaming(
+            runId: String,
+            params: RunSubmitToolOutputsParams,
+        ): CompletableFuture<HttpResponseFor<StreamResponse<AssistantStreamEvent>>> =
+            submitToolOutputsStreaming(runId, params, RequestOptions.none())
+
+        /** @see [submitToolOutputsStreaming] */
+        @MustBeClosed
+        fun submitToolOutputsStreaming(
+            runId: String,
+            params: RunSubmitToolOutputsParams,
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): CompletableFuture<HttpResponseFor<StreamResponse<AssistantStreamEvent>>> =
+            submitToolOutputsStreaming(params.toBuilder().runId(runId).build(), requestOptions)
+
+        /** @see [submitToolOutputsStreaming] */
         @MustBeClosed
         fun submitToolOutputsStreaming(
             params: RunSubmitToolOutputsParams
