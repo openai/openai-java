@@ -191,6 +191,7 @@ class RunServiceAsyncImpl internal constructor(private val clientOptions: Client
                             .let {
                                 RunListPageAsync.builder()
                                     .service(RunServiceAsyncImpl(clientOptions))
+                                    .streamHandlerExecutor(clientOptions.streamHandlerExecutor)
                                     .params(params)
                                     .response(it)
                                     .build()

@@ -129,6 +129,7 @@ class OutputItemServiceAsyncImpl internal constructor(private val clientOptions:
                             .let {
                                 OutputItemListPageAsync.builder()
                                     .service(OutputItemServiceAsyncImpl(clientOptions))
+                                    .streamHandlerExecutor(clientOptions.streamHandlerExecutor)
                                     .params(params)
                                     .response(it)
                                     .build()

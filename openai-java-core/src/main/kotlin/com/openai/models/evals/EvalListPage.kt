@@ -2,12 +2,12 @@
 
 package com.openai.models.evals
 
+import com.openai.core.AutoPager
+import com.openai.core.Page
 import com.openai.core.checkRequired
 import com.openai.services.blocking.EvalService
 import java.util.Objects
 import java.util.Optional
-import java.util.stream.Stream
-import java.util.stream.StreamSupport
 import kotlin.jvm.optionals.getOrNull
 
 /** @see [EvalService.list] */
@@ -16,7 +16,7 @@ private constructor(
     private val service: EvalService,
     private val params: EvalListParams,
     private val response: EvalListPageResponse,
-) {
+) : Page<EvalListResponse> {
 
     /**
      * Delegates to [EvalListPageResponse], but gracefully handles missing data.
@@ -33,19 +33,16 @@ private constructor(
      */
     fun hasMore(): Optional<Boolean> = response._hasMore().getOptional("has_more")
 
-    fun hasNextPage(): Boolean = data().isNotEmpty()
+    override fun items(): List<EvalListResponse> = data()
 
-    fun getNextPageParams(): Optional<EvalListParams> {
-        if (!hasNextPage()) {
-            return Optional.empty()
-        }
+    override fun hasNextPage(): Boolean = items().isNotEmpty()
 
-        return Optional.of(params.toBuilder().after(data().last()._id().getOptional("id")).build())
-    }
+    fun nextPageParams(): EvalListParams =
+        params.toBuilder().after(items().last()._id().getOptional("id")).build()
 
-    fun getNextPage(): Optional<EvalListPage> = getNextPageParams().map { service.list(it) }
+    override fun nextPage(): EvalListPage = service.list(nextPageParams())
 
-    fun autoPager(): AutoPager = AutoPager(this)
+    fun autoPager(): AutoPager<EvalListResponse> = AutoPager.from(this)
 
     /** The parameters that were used to request this page. */
     fun params(): EvalListParams = params
@@ -112,25 +109,6 @@ private constructor(
                 checkRequired("params", params),
                 checkRequired("response", response),
             )
-    }
-
-    class AutoPager(private val firstPage: EvalListPage) : Iterable<EvalListResponse> {
-
-        override fun iterator(): Iterator<EvalListResponse> = iterator {
-            var page = firstPage
-            var index = 0
-            while (true) {
-                while (index < page.data().size) {
-                    yield(page.data()[index++])
-                }
-                page = page.getNextPage().getOrNull() ?: break
-                index = 0
-            }
-        }
-
-        fun stream(): Stream<EvalListResponse> {
-            return StreamSupport.stream(spliterator(), false)
-        }
     }
 
     override fun equals(other: Any?): Boolean {

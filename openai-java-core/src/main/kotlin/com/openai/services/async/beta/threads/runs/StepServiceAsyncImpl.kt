@@ -136,6 +136,7 @@ class StepServiceAsyncImpl internal constructor(private val clientOptions: Clien
                             .let {
                                 StepListPageAsync.builder()
                                     .service(StepServiceAsyncImpl(clientOptions))
+                                    .streamHandlerExecutor(clientOptions.streamHandlerExecutor)
                                     .params(params)
                                     .response(it)
                                     .build()

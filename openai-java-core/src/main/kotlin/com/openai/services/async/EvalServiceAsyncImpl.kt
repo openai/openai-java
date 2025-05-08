@@ -216,6 +216,7 @@ class EvalServiceAsyncImpl internal constructor(private val clientOptions: Clien
                             .let {
                                 EvalListPageAsync.builder()
                                     .service(EvalServiceAsyncImpl(clientOptions))
+                                    .streamHandlerExecutor(clientOptions.streamHandlerExecutor)
                                     .params(params)
                                     .response(it)
                                     .build()

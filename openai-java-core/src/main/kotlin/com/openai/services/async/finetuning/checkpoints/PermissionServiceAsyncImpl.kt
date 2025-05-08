@@ -99,6 +99,7 @@ class PermissionServiceAsyncImpl internal constructor(private val clientOptions:
                             .let {
                                 PermissionCreatePageAsync.builder()
                                     .service(PermissionServiceAsyncImpl(clientOptions))
+                                    .streamHandlerExecutor(clientOptions.streamHandlerExecutor)
                                     .params(params)
                                     .response(it)
                                     .build()

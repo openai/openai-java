@@ -73,6 +73,7 @@ class InputItemServiceAsyncImpl internal constructor(private val clientOptions: 
                             .let {
                                 InputItemListPageAsync.builder()
                                     .service(InputItemServiceAsyncImpl(clientOptions))
+                                    .streamHandlerExecutor(clientOptions.streamHandlerExecutor)
                                     .params(params)
                                     .response(it)
                                     .build()

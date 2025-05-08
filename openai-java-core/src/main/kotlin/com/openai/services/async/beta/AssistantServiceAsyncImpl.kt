@@ -211,6 +211,7 @@ class AssistantServiceAsyncImpl internal constructor(private val clientOptions: 
                             .let {
                                 AssistantListPageAsync.builder()
                                     .service(AssistantServiceAsyncImpl(clientOptions))
+                                    .streamHandlerExecutor(clientOptions.streamHandlerExecutor)
                                     .params(params)
                                     .response(it)
                                     .build()

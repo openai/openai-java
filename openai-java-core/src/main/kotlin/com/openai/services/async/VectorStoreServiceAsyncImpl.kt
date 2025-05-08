@@ -247,6 +247,7 @@ class VectorStoreServiceAsyncImpl internal constructor(private val clientOptions
                             .let {
                                 VectorStoreListPageAsync.builder()
                                     .service(VectorStoreServiceAsyncImpl(clientOptions))
+                                    .streamHandlerExecutor(clientOptions.streamHandlerExecutor)
                                     .params(params)
                                     .response(it)
                                     .build()
@@ -323,6 +324,7 @@ class VectorStoreServiceAsyncImpl internal constructor(private val clientOptions
                             .let {
                                 VectorStoreSearchPageAsync.builder()
                                     .service(VectorStoreServiceAsyncImpl(clientOptions))
+                                    .streamHandlerExecutor(clientOptions.streamHandlerExecutor)
                                     .params(params)
                                     .response(it)
                                     .build()

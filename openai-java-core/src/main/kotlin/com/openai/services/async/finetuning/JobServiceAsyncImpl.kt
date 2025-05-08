@@ -199,6 +199,7 @@ class JobServiceAsyncImpl internal constructor(private val clientOptions: Client
                             .let {
                                 JobListPageAsync.builder()
                                     .service(JobServiceAsyncImpl(clientOptions))
+                                    .streamHandlerExecutor(clientOptions.streamHandlerExecutor)
                                     .params(params)
                                     .response(it)
                                     .build()
@@ -272,6 +273,7 @@ class JobServiceAsyncImpl internal constructor(private val clientOptions: Client
                             .let {
                                 JobListEventsPageAsync.builder()
                                     .service(JobServiceAsyncImpl(clientOptions))
+                                    .streamHandlerExecutor(clientOptions.streamHandlerExecutor)
                                     .params(params)
                                     .response(it)
                                     .build()

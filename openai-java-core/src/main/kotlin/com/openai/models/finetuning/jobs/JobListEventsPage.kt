@@ -2,12 +2,12 @@
 
 package com.openai.models.finetuning.jobs
 
+import com.openai.core.AutoPager
+import com.openai.core.Page
 import com.openai.core.checkRequired
 import com.openai.services.blocking.finetuning.JobService
 import java.util.Objects
 import java.util.Optional
-import java.util.stream.Stream
-import java.util.stream.StreamSupport
 import kotlin.jvm.optionals.getOrNull
 
 /** @see [JobService.listEvents] */
@@ -16,7 +16,7 @@ private constructor(
     private val service: JobService,
     private val params: JobListEventsParams,
     private val response: JobListEventsPageResponse,
-) {
+) : Page<FineTuningJobEvent> {
 
     /**
      * Delegates to [JobListEventsPageResponse], but gracefully handles missing data.
@@ -33,20 +33,16 @@ private constructor(
      */
     fun hasMore(): Optional<Boolean> = response._hasMore().getOptional("has_more")
 
-    fun hasNextPage(): Boolean = data().isNotEmpty()
+    override fun items(): List<FineTuningJobEvent> = data()
 
-    fun getNextPageParams(): Optional<JobListEventsParams> {
-        if (!hasNextPage()) {
-            return Optional.empty()
-        }
+    override fun hasNextPage(): Boolean = items().isNotEmpty()
 
-        return Optional.of(params.toBuilder().after(data().last()._id().getOptional("id")).build())
-    }
+    fun nextPageParams(): JobListEventsParams =
+        params.toBuilder().after(items().last()._id().getOptional("id")).build()
 
-    fun getNextPage(): Optional<JobListEventsPage> =
-        getNextPageParams().map { service.listEvents(it) }
+    override fun nextPage(): JobListEventsPage = service.listEvents(nextPageParams())
 
-    fun autoPager(): AutoPager = AutoPager(this)
+    fun autoPager(): AutoPager<FineTuningJobEvent> = AutoPager.from(this)
 
     /** The parameters that were used to request this page. */
     fun params(): JobListEventsParams = params
@@ -113,25 +109,6 @@ private constructor(
                 checkRequired("params", params),
                 checkRequired("response", response),
             )
-    }
-
-    class AutoPager(private val firstPage: JobListEventsPage) : Iterable<FineTuningJobEvent> {
-
-        override fun iterator(): Iterator<FineTuningJobEvent> = iterator {
-            var page = firstPage
-            var index = 0
-            while (true) {
-                while (index < page.data().size) {
-                    yield(page.data()[index++])
-                }
-                page = page.getNextPage().getOrNull() ?: break
-                index = 0
-            }
-        }
-
-        fun stream(): Stream<FineTuningJobEvent> {
-            return StreamSupport.stream(spliterator(), false)
-        }
     }
 
     override fun equals(other: Any?): Boolean {
