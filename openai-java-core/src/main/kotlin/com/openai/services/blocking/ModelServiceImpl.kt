@@ -66,7 +66,7 @@ class ModelServiceImpl internal constructor(private val clientOptions: ClientOpt
                     .method(HttpMethod.GET)
                     .addPathSegments("models", params._pathParam(0))
                     .build()
-                    .prepare(clientOptions, params, params.model())
+                    .prepare(clientOptions, params, params.model().get())
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             val response = clientOptions.httpClient.execute(request, requestOptions)
             return response.parseable {
@@ -130,7 +130,7 @@ class ModelServiceImpl internal constructor(private val clientOptions: ClientOpt
                     .addPathSegments("models", params._pathParam(0))
                     .apply { params._body().ifPresent { body(json(clientOptions.jsonMapper, it)) } }
                     .build()
-                    .prepare(clientOptions, params, params.model())
+                    .prepare(clientOptions, params, params.model().get())
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             val response = clientOptions.httpClient.execute(request, requestOptions)
             return response.parseable {
