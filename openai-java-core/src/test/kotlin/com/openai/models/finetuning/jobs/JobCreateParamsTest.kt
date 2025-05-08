@@ -3,6 +3,13 @@
 package com.openai.models.finetuning.jobs
 
 import com.openai.core.JsonValue
+import com.openai.models.finetuning.methods.DpoHyperparameters
+import com.openai.models.finetuning.methods.DpoMethod
+import com.openai.models.finetuning.methods.ReinforcementHyperparameters
+import com.openai.models.finetuning.methods.ReinforcementMethod
+import com.openai.models.finetuning.methods.SupervisedHyperparameters
+import com.openai.models.finetuning.methods.SupervisedMethod
+import com.openai.models.graders.gradermodels.StringCheckGrader
 import kotlin.jvm.optionals.getOrNull
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
@@ -40,10 +47,11 @@ internal class JobCreateParamsTest {
             )
             .method(
                 JobCreateParams.Method.builder()
+                    .type(JobCreateParams.Method.Type.SUPERVISED)
                     .dpo(
-                        JobCreateParams.Method.Dpo.builder()
+                        DpoMethod.builder()
                             .hyperparameters(
-                                JobCreateParams.Method.Dpo.Hyperparameters.builder()
+                                DpoHyperparameters.builder()
                                     .batchSizeAuto()
                                     .betaAuto()
                                     .learningRateMultiplierAuto()
@@ -52,10 +60,35 @@ internal class JobCreateParamsTest {
                             )
                             .build()
                     )
-                    .supervised(
-                        JobCreateParams.Method.Supervised.builder()
+                    .reinforcement(
+                        ReinforcementMethod.builder()
+                            .grader(
+                                StringCheckGrader.builder()
+                                    .input("input")
+                                    .name("name")
+                                    .operation(StringCheckGrader.Operation.EQ)
+                                    .reference("reference")
+                                    .build()
+                            )
                             .hyperparameters(
-                                JobCreateParams.Method.Supervised.Hyperparameters.builder()
+                                ReinforcementHyperparameters.builder()
+                                    .batchSizeAuto()
+                                    .computeMultiplierAuto()
+                                    .evalIntervalAuto()
+                                    .evalSamplesAuto()
+                                    .learningRateMultiplierAuto()
+                                    .nEpochsAuto()
+                                    .reasoningEffort(
+                                        ReinforcementHyperparameters.ReasoningEffort.DEFAULT
+                                    )
+                                    .build()
+                            )
+                            .build()
+                    )
+                    .supervised(
+                        SupervisedMethod.builder()
+                            .hyperparameters(
+                                SupervisedHyperparameters.builder()
                                     .batchSizeAuto()
                                     .learningRateMultiplierAuto()
                                     .nEpochsAuto()
@@ -63,7 +96,6 @@ internal class JobCreateParamsTest {
                             )
                             .build()
                     )
-                    .type(JobCreateParams.Method.Type.SUPERVISED)
                     .build()
             )
             .seed(42L)
@@ -104,10 +136,11 @@ internal class JobCreateParamsTest {
                 )
                 .method(
                     JobCreateParams.Method.builder()
+                        .type(JobCreateParams.Method.Type.SUPERVISED)
                         .dpo(
-                            JobCreateParams.Method.Dpo.builder()
+                            DpoMethod.builder()
                                 .hyperparameters(
-                                    JobCreateParams.Method.Dpo.Hyperparameters.builder()
+                                    DpoHyperparameters.builder()
                                         .batchSizeAuto()
                                         .betaAuto()
                                         .learningRateMultiplierAuto()
@@ -116,10 +149,35 @@ internal class JobCreateParamsTest {
                                 )
                                 .build()
                         )
-                        .supervised(
-                            JobCreateParams.Method.Supervised.builder()
+                        .reinforcement(
+                            ReinforcementMethod.builder()
+                                .grader(
+                                    StringCheckGrader.builder()
+                                        .input("input")
+                                        .name("name")
+                                        .operation(StringCheckGrader.Operation.EQ)
+                                        .reference("reference")
+                                        .build()
+                                )
                                 .hyperparameters(
-                                    JobCreateParams.Method.Supervised.Hyperparameters.builder()
+                                    ReinforcementHyperparameters.builder()
+                                        .batchSizeAuto()
+                                        .computeMultiplierAuto()
+                                        .evalIntervalAuto()
+                                        .evalSamplesAuto()
+                                        .learningRateMultiplierAuto()
+                                        .nEpochsAuto()
+                                        .reasoningEffort(
+                                            ReinforcementHyperparameters.ReasoningEffort.DEFAULT
+                                        )
+                                        .build()
+                                )
+                                .build()
+                        )
+                        .supervised(
+                            SupervisedMethod.builder()
+                                .hyperparameters(
+                                    SupervisedHyperparameters.builder()
                                         .batchSizeAuto()
                                         .learningRateMultiplierAuto()
                                         .nEpochsAuto()
@@ -127,7 +185,6 @@ internal class JobCreateParamsTest {
                                 )
                                 .build()
                         )
-                        .type(JobCreateParams.Method.Type.SUPERVISED)
                         .build()
                 )
                 .seed(42L)
@@ -169,10 +226,11 @@ internal class JobCreateParamsTest {
         assertThat(body.method())
             .contains(
                 JobCreateParams.Method.builder()
+                    .type(JobCreateParams.Method.Type.SUPERVISED)
                     .dpo(
-                        JobCreateParams.Method.Dpo.builder()
+                        DpoMethod.builder()
                             .hyperparameters(
-                                JobCreateParams.Method.Dpo.Hyperparameters.builder()
+                                DpoHyperparameters.builder()
                                     .batchSizeAuto()
                                     .betaAuto()
                                     .learningRateMultiplierAuto()
@@ -181,10 +239,35 @@ internal class JobCreateParamsTest {
                             )
                             .build()
                     )
-                    .supervised(
-                        JobCreateParams.Method.Supervised.builder()
+                    .reinforcement(
+                        ReinforcementMethod.builder()
+                            .grader(
+                                StringCheckGrader.builder()
+                                    .input("input")
+                                    .name("name")
+                                    .operation(StringCheckGrader.Operation.EQ)
+                                    .reference("reference")
+                                    .build()
+                            )
                             .hyperparameters(
-                                JobCreateParams.Method.Supervised.Hyperparameters.builder()
+                                ReinforcementHyperparameters.builder()
+                                    .batchSizeAuto()
+                                    .computeMultiplierAuto()
+                                    .evalIntervalAuto()
+                                    .evalSamplesAuto()
+                                    .learningRateMultiplierAuto()
+                                    .nEpochsAuto()
+                                    .reasoningEffort(
+                                        ReinforcementHyperparameters.ReasoningEffort.DEFAULT
+                                    )
+                                    .build()
+                            )
+                            .build()
+                    )
+                    .supervised(
+                        SupervisedMethod.builder()
+                            .hyperparameters(
+                                SupervisedHyperparameters.builder()
                                     .batchSizeAuto()
                                     .learningRateMultiplierAuto()
                                     .nEpochsAuto()
@@ -192,7 +275,6 @@ internal class JobCreateParamsTest {
                             )
                             .build()
                     )
-                    .type(JobCreateParams.Method.Type.SUPERVISED)
                     .build()
             )
         assertThat(body.seed()).contains(42L)

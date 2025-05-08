@@ -5,6 +5,7 @@ package com.openai.models.evals
 import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
 import com.openai.core.JsonValue
 import com.openai.core.jsonMapper
+import com.openai.models.graders.gradermodels.LabelModelGrader
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
@@ -28,12 +29,12 @@ internal class EvalRetrieveResponseTest {
                 )
                 .name("Chatbot effectiveness Evaluation")
                 .addTestingCriterion(
-                    EvalLabelModelGrader.builder()
+                    LabelModelGrader.builder()
                         .addInput(
-                            EvalLabelModelGrader.Input.builder()
+                            LabelModelGrader.Input.builder()
                                 .content("string")
-                                .role(EvalLabelModelGrader.Input.Role.USER)
-                                .type(EvalLabelModelGrader.Input.Type.MESSAGE)
+                                .role(LabelModelGrader.Input.Role.USER)
+                                .type(LabelModelGrader.Input.Type.MESSAGE)
                                 .build()
                         )
                         .addLabel("string")
@@ -67,13 +68,13 @@ internal class EvalRetrieveResponseTest {
         assertThat(evalRetrieveResponse.name()).isEqualTo("Chatbot effectiveness Evaluation")
         assertThat(evalRetrieveResponse.testingCriteria())
             .containsExactly(
-                EvalRetrieveResponse.TestingCriterion.ofLabelModel(
-                    EvalLabelModelGrader.builder()
+                EvalRetrieveResponse.TestingCriterion.ofLabelModelGrader(
+                    LabelModelGrader.builder()
                         .addInput(
-                            EvalLabelModelGrader.Input.builder()
+                            LabelModelGrader.Input.builder()
                                 .content("string")
-                                .role(EvalLabelModelGrader.Input.Role.USER)
-                                .type(EvalLabelModelGrader.Input.Type.MESSAGE)
+                                .role(LabelModelGrader.Input.Role.USER)
+                                .type(LabelModelGrader.Input.Type.MESSAGE)
                                 .build()
                         )
                         .addLabel("string")
@@ -104,12 +105,12 @@ internal class EvalRetrieveResponseTest {
                 )
                 .name("Chatbot effectiveness Evaluation")
                 .addTestingCriterion(
-                    EvalLabelModelGrader.builder()
+                    LabelModelGrader.builder()
                         .addInput(
-                            EvalLabelModelGrader.Input.builder()
+                            LabelModelGrader.Input.builder()
                                 .content("string")
-                                .role(EvalLabelModelGrader.Input.Role.USER)
-                                .type(EvalLabelModelGrader.Input.Type.MESSAGE)
+                                .role(LabelModelGrader.Input.Role.USER)
+                                .type(LabelModelGrader.Input.Type.MESSAGE)
                                 .build()
                         )
                         .addLabel("string")

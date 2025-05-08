@@ -8,7 +8,16 @@ import com.openai.core.JsonValue
 import com.openai.models.finetuning.jobs.JobCancelParams
 import com.openai.models.finetuning.jobs.JobCreateParams
 import com.openai.models.finetuning.jobs.JobListEventsParams
+import com.openai.models.finetuning.jobs.JobPauseParams
+import com.openai.models.finetuning.jobs.JobResumeParams
 import com.openai.models.finetuning.jobs.JobRetrieveParams
+import com.openai.models.finetuning.methods.DpoHyperparameters
+import com.openai.models.finetuning.methods.DpoMethod
+import com.openai.models.finetuning.methods.ReinforcementHyperparameters
+import com.openai.models.finetuning.methods.ReinforcementMethod
+import com.openai.models.finetuning.methods.SupervisedHyperparameters
+import com.openai.models.finetuning.methods.SupervisedMethod
+import com.openai.models.graders.gradermodels.StringCheckGrader
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 
@@ -55,10 +64,11 @@ internal class JobServiceAsyncTest {
                     )
                     .method(
                         JobCreateParams.Method.builder()
+                            .type(JobCreateParams.Method.Type.SUPERVISED)
                             .dpo(
-                                JobCreateParams.Method.Dpo.builder()
+                                DpoMethod.builder()
                                     .hyperparameters(
-                                        JobCreateParams.Method.Dpo.Hyperparameters.builder()
+                                        DpoHyperparameters.builder()
                                             .batchSizeAuto()
                                             .betaAuto()
                                             .learningRateMultiplierAuto()
@@ -67,10 +77,35 @@ internal class JobServiceAsyncTest {
                                     )
                                     .build()
                             )
-                            .supervised(
-                                JobCreateParams.Method.Supervised.builder()
+                            .reinforcement(
+                                ReinforcementMethod.builder()
+                                    .grader(
+                                        StringCheckGrader.builder()
+                                            .input("input")
+                                            .name("name")
+                                            .operation(StringCheckGrader.Operation.EQ)
+                                            .reference("reference")
+                                            .build()
+                                    )
                                     .hyperparameters(
-                                        JobCreateParams.Method.Supervised.Hyperparameters.builder()
+                                        ReinforcementHyperparameters.builder()
+                                            .batchSizeAuto()
+                                            .computeMultiplierAuto()
+                                            .evalIntervalAuto()
+                                            .evalSamplesAuto()
+                                            .learningRateMultiplierAuto()
+                                            .nEpochsAuto()
+                                            .reasoningEffort(
+                                                ReinforcementHyperparameters.ReasoningEffort.DEFAULT
+                                            )
+                                            .build()
+                                    )
+                                    .build()
+                            )
+                            .supervised(
+                                SupervisedMethod.builder()
+                                    .hyperparameters(
+                                        SupervisedHyperparameters.builder()
                                             .batchSizeAuto()
                                             .learningRateMultiplierAuto()
                                             .nEpochsAuto()
@@ -78,7 +113,6 @@ internal class JobServiceAsyncTest {
                                     )
                                     .build()
                             )
-                            .type(JobCreateParams.Method.Type.SUPERVISED)
                             .build()
                     )
                     .seed(42L)
@@ -158,5 +192,41 @@ internal class JobServiceAsyncTest {
 
         val page = pageFuture.get()
         page.response().validate()
+    }
+
+    @Test
+    fun pause() {
+        val client =
+            OpenAIOkHttpClientAsync.builder()
+                .baseUrl(TestServerExtension.BASE_URL)
+                .apiKey("My API Key")
+                .build()
+        val jobServiceAsync = client.fineTuning().jobs()
+
+        val fineTuningJobFuture =
+            jobServiceAsync.pause(
+                JobPauseParams.builder().fineTuningJobId("ft-AF1WoRqd3aJAHsqc9NY7iL8F").build()
+            )
+
+        val fineTuningJob = fineTuningJobFuture.get()
+        fineTuningJob.validate()
+    }
+
+    @Test
+    fun resume() {
+        val client =
+            OpenAIOkHttpClientAsync.builder()
+                .baseUrl(TestServerExtension.BASE_URL)
+                .apiKey("My API Key")
+                .build()
+        val jobServiceAsync = client.fineTuning().jobs()
+
+        val fineTuningJobFuture =
+            jobServiceAsync.resume(
+                JobResumeParams.builder().fineTuningJobId("ft-AF1WoRqd3aJAHsqc9NY7iL8F").build()
+            )
+
+        val fineTuningJob = fineTuningJobFuture.get()
+        fineTuningJob.validate()
     }
 }
