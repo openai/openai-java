@@ -74,6 +74,7 @@ class MessageServiceAsyncImpl internal constructor(private val clientOptions: Cl
                             .let {
                                 MessageListPageAsync.builder()
                                     .service(MessageServiceAsyncImpl(clientOptions))
+                                    .streamHandlerExecutor(clientOptions.streamHandlerExecutor)
                                     .params(params)
                                     .response(it)
                                     .build()

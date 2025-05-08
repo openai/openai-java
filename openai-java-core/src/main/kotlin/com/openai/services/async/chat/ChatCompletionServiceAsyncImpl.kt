@@ -278,6 +278,7 @@ internal constructor(private val clientOptions: ClientOptions) : ChatCompletionS
                             .let {
                                 ChatCompletionListPageAsync.builder()
                                     .service(ChatCompletionServiceAsyncImpl(clientOptions))
+                                    .streamHandlerExecutor(clientOptions.streamHandlerExecutor)
                                     .params(params)
                                     .response(it)
                                     .build()

@@ -2,13 +2,12 @@
 
 package com.openai.models.vectorstores
 
+import com.openai.core.AutoPager
 import com.openai.core.JsonValue
+import com.openai.core.Page
 import com.openai.core.checkRequired
 import com.openai.services.blocking.VectorStoreService
 import java.util.Objects
-import java.util.Optional
-import java.util.stream.Stream
-import java.util.stream.StreamSupport
 import kotlin.jvm.optionals.getOrNull
 
 /** @see [VectorStoreService.search] */
@@ -17,7 +16,7 @@ private constructor(
     private val service: VectorStoreService,
     private val params: VectorStoreSearchParams,
     private val response: VectorStoreSearchPageResponse,
-) {
+) : Page<VectorStoreSearchResponse> {
 
     /**
      * Delegates to [VectorStoreSearchPageResponse], but gracefully handles missing data.
@@ -30,14 +29,16 @@ private constructor(
     /** @see [VectorStoreSearchPageResponse.object_] */
     fun object_(): JsonValue = response._object_()
 
-    fun hasNextPage(): Boolean = data().isNotEmpty()
+    override fun items(): List<VectorStoreSearchResponse> = data()
 
-    fun getNextPageParams(): Optional<VectorStoreSearchParams> = Optional.empty()
+    override fun hasNextPage(): Boolean = items().isNotEmpty()
 
-    fun getNextPage(): Optional<VectorStoreSearchPage> =
-        getNextPageParams().map { service.search(it) }
+    fun nextPageParams(): VectorStoreSearchParams =
+        throw IllegalStateException("Cannot construct next page params")
 
-    fun autoPager(): AutoPager = AutoPager(this)
+    override fun nextPage(): VectorStoreSearchPage = service.search(nextPageParams())
+
+    fun autoPager(): AutoPager<VectorStoreSearchResponse> = AutoPager.from(this)
 
     /** The parameters that were used to request this page. */
     fun params(): VectorStoreSearchParams = params
@@ -104,26 +105,6 @@ private constructor(
                 checkRequired("params", params),
                 checkRequired("response", response),
             )
-    }
-
-    class AutoPager(private val firstPage: VectorStoreSearchPage) :
-        Iterable<VectorStoreSearchResponse> {
-
-        override fun iterator(): Iterator<VectorStoreSearchResponse> = iterator {
-            var page = firstPage
-            var index = 0
-            while (true) {
-                while (index < page.data().size) {
-                    yield(page.data()[index++])
-                }
-                page = page.getNextPage().getOrNull() ?: break
-                index = 0
-            }
-        }
-
-        fun stream(): Stream<VectorStoreSearchResponse> {
-            return StreamSupport.stream(spliterator(), false)
-        }
     }
 
     override fun equals(other: Any?): Boolean {

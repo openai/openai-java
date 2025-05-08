@@ -228,6 +228,7 @@ class FileBatchServiceAsyncImpl internal constructor(private val clientOptions: 
                             .let {
                                 FileBatchListFilesPageAsync.builder()
                                     .service(FileBatchServiceAsyncImpl(clientOptions))
+                                    .streamHandlerExecutor(clientOptions.streamHandlerExecutor)
                                     .params(params)
                                     .response(it)
                                     .build()
