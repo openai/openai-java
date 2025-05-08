@@ -19,6 +19,7 @@ import com.openai.core.toImmutable
 import com.openai.errors.OpenAIInvalidDataException
 import java.util.Collections
 import java.util.Objects
+import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
 /**
@@ -29,13 +30,13 @@ import kotlin.jvm.optionals.getOrNull
  */
 class PermissionCreateParams
 private constructor(
-    private val fineTunedModelCheckpoint: String,
+    private val fineTunedModelCheckpoint: String?,
     private val body: Body,
     private val additionalHeaders: Headers,
     private val additionalQueryParams: QueryParams,
 ) : Params {
 
-    fun fineTunedModelCheckpoint(): String = fineTunedModelCheckpoint
+    fun fineTunedModelCheckpoint(): Optional<String> = Optional.ofNullable(fineTunedModelCheckpoint)
 
     /**
      * The project identifiers to grant access to.
@@ -67,7 +68,6 @@ private constructor(
          *
          * The following fields are required:
          * ```java
-         * .fineTunedModelCheckpoint()
          * .projectIds()
          * ```
          */
@@ -90,9 +90,16 @@ private constructor(
             additionalQueryParams = permissionCreateParams.additionalQueryParams.toBuilder()
         }
 
-        fun fineTunedModelCheckpoint(fineTunedModelCheckpoint: String) = apply {
+        fun fineTunedModelCheckpoint(fineTunedModelCheckpoint: String?) = apply {
             this.fineTunedModelCheckpoint = fineTunedModelCheckpoint
         }
+
+        /**
+         * Alias for calling [Builder.fineTunedModelCheckpoint] with
+         * `fineTunedModelCheckpoint.orElse(null)`.
+         */
+        fun fineTunedModelCheckpoint(fineTunedModelCheckpoint: Optional<String>) =
+            fineTunedModelCheckpoint(fineTunedModelCheckpoint.getOrNull())
 
         /**
          * Sets the entire request body.
@@ -246,7 +253,6 @@ private constructor(
          *
          * The following fields are required:
          * ```java
-         * .fineTunedModelCheckpoint()
          * .projectIds()
          * ```
          *
@@ -254,7 +260,7 @@ private constructor(
          */
         fun build(): PermissionCreateParams =
             PermissionCreateParams(
-                checkRequired("fineTunedModelCheckpoint", fineTunedModelCheckpoint),
+                fineTunedModelCheckpoint,
                 body.build(),
                 additionalHeaders.build(),
                 additionalQueryParams.build(),
@@ -265,7 +271,7 @@ private constructor(
 
     fun _pathParam(index: Int): String =
         when (index) {
-            0 -> fineTunedModelCheckpoint
+            0 -> fineTunedModelCheckpoint ?: ""
             else -> ""
         }
 

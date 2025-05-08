@@ -4,6 +4,7 @@ package com.openai.services.blocking.responses
 
 import com.openai.core.ClientOptions
 import com.openai.core.RequestOptions
+import com.openai.core.checkRequired
 import com.openai.core.handlers.errorHandler
 import com.openai.core.handlers.jsonHandler
 import com.openai.core.handlers.withErrorHandler
@@ -17,6 +18,7 @@ import com.openai.models.ErrorObject
 import com.openai.models.responses.inputitems.InputItemListPage
 import com.openai.models.responses.inputitems.InputItemListParams
 import com.openai.models.responses.inputitems.ResponseItemList
+import kotlin.jvm.optionals.getOrNull
 
 class InputItemServiceImpl internal constructor(private val clientOptions: ClientOptions) :
     InputItemService {
@@ -46,6 +48,9 @@ class InputItemServiceImpl internal constructor(private val clientOptions: Clien
             params: InputItemListParams,
             requestOptions: RequestOptions,
         ): HttpResponseFor<InputItemListPage> {
+            // We check here instead of in the params builder because this can be specified
+            // positionally or in the params class.
+            checkRequired("responseId", params.responseId().getOrNull())
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.GET)

@@ -5,9 +5,7 @@ package com.openai.services.blocking
 import com.openai.TestServerExtension
 import com.openai.client.okhttp.OpenAIOkHttpClient
 import com.openai.core.JsonValue
-import com.openai.models.batches.BatchCancelParams
 import com.openai.models.batches.BatchCreateParams
-import com.openai.models.batches.BatchRetrieveParams
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 
@@ -49,7 +47,7 @@ internal class BatchServiceTest {
                 .build()
         val batchService = client.batches()
 
-        val batch = batchService.retrieve(BatchRetrieveParams.builder().batchId("batch_id").build())
+        val batch = batchService.retrieve("batch_id")
 
         batch.validate()
     }
@@ -77,7 +75,7 @@ internal class BatchServiceTest {
                 .build()
         val batchService = client.batches()
 
-        val batch = batchService.cancel(BatchCancelParams.builder().batchId("batch_id").build())
+        val batch = batchService.cancel("batch_id")
 
         batch.validate()
     }

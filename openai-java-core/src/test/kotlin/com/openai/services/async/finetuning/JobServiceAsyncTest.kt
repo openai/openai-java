@@ -5,12 +5,7 @@ package com.openai.services.async.finetuning
 import com.openai.TestServerExtension
 import com.openai.client.okhttp.OpenAIOkHttpClientAsync
 import com.openai.core.JsonValue
-import com.openai.models.finetuning.jobs.JobCancelParams
 import com.openai.models.finetuning.jobs.JobCreateParams
-import com.openai.models.finetuning.jobs.JobListEventsParams
-import com.openai.models.finetuning.jobs.JobPauseParams
-import com.openai.models.finetuning.jobs.JobResumeParams
-import com.openai.models.finetuning.jobs.JobRetrieveParams
 import com.openai.models.finetuning.methods.DpoHyperparameters
 import com.openai.models.finetuning.methods.DpoMethod
 import com.openai.models.finetuning.methods.ReinforcementHyperparameters
@@ -134,10 +129,7 @@ internal class JobServiceAsyncTest {
                 .build()
         val jobServiceAsync = client.fineTuning().jobs()
 
-        val fineTuningJobFuture =
-            jobServiceAsync.retrieve(
-                JobRetrieveParams.builder().fineTuningJobId("ft-AF1WoRqd3aJAHsqc9NY7iL8F").build()
-            )
+        val fineTuningJobFuture = jobServiceAsync.retrieve("ft-AF1WoRqd3aJAHsqc9NY7iL8F")
 
         val fineTuningJob = fineTuningJobFuture.get()
         fineTuningJob.validate()
@@ -167,10 +159,7 @@ internal class JobServiceAsyncTest {
                 .build()
         val jobServiceAsync = client.fineTuning().jobs()
 
-        val fineTuningJobFuture =
-            jobServiceAsync.cancel(
-                JobCancelParams.builder().fineTuningJobId("ft-AF1WoRqd3aJAHsqc9NY7iL8F").build()
-            )
+        val fineTuningJobFuture = jobServiceAsync.cancel("ft-AF1WoRqd3aJAHsqc9NY7iL8F")
 
         val fineTuningJob = fineTuningJobFuture.get()
         fineTuningJob.validate()
@@ -185,10 +174,7 @@ internal class JobServiceAsyncTest {
                 .build()
         val jobServiceAsync = client.fineTuning().jobs()
 
-        val pageFuture =
-            jobServiceAsync.listEvents(
-                JobListEventsParams.builder().fineTuningJobId("ft-AF1WoRqd3aJAHsqc9NY7iL8F").build()
-            )
+        val pageFuture = jobServiceAsync.listEvents("ft-AF1WoRqd3aJAHsqc9NY7iL8F")
 
         val page = pageFuture.get()
         page.response().validate()
@@ -203,10 +189,7 @@ internal class JobServiceAsyncTest {
                 .build()
         val jobServiceAsync = client.fineTuning().jobs()
 
-        val fineTuningJobFuture =
-            jobServiceAsync.pause(
-                JobPauseParams.builder().fineTuningJobId("ft-AF1WoRqd3aJAHsqc9NY7iL8F").build()
-            )
+        val fineTuningJobFuture = jobServiceAsync.pause("ft-AF1WoRqd3aJAHsqc9NY7iL8F")
 
         val fineTuningJob = fineTuningJobFuture.get()
         fineTuningJob.validate()
@@ -221,10 +204,7 @@ internal class JobServiceAsyncTest {
                 .build()
         val jobServiceAsync = client.fineTuning().jobs()
 
-        val fineTuningJobFuture =
-            jobServiceAsync.resume(
-                JobResumeParams.builder().fineTuningJobId("ft-AF1WoRqd3aJAHsqc9NY7iL8F").build()
-            )
+        val fineTuningJobFuture = jobServiceAsync.resume("ft-AF1WoRqd3aJAHsqc9NY7iL8F")
 
         val fineTuningJob = fineTuningJobFuture.get()
         fineTuningJob.validate()

@@ -4,23 +4,23 @@ package com.openai.models.uploads
 
 import com.openai.core.JsonValue
 import com.openai.core.Params
-import com.openai.core.checkRequired
 import com.openai.core.http.Headers
 import com.openai.core.http.QueryParams
 import com.openai.core.toImmutable
 import java.util.Objects
 import java.util.Optional
+import kotlin.jvm.optionals.getOrNull
 
 /** Cancels the Upload. No Parts may be added after an Upload is cancelled. */
 class UploadCancelParams
 private constructor(
-    private val uploadId: String,
+    private val uploadId: String?,
     private val additionalHeaders: Headers,
     private val additionalQueryParams: QueryParams,
     private val additionalBodyProperties: Map<String, JsonValue>,
 ) : Params {
 
-    fun uploadId(): String = uploadId
+    fun uploadId(): Optional<String> = Optional.ofNullable(uploadId)
 
     fun _additionalBodyProperties(): Map<String, JsonValue> = additionalBodyProperties
 
@@ -32,14 +32,9 @@ private constructor(
 
     companion object {
 
-        /**
-         * Returns a mutable builder for constructing an instance of [UploadCancelParams].
-         *
-         * The following fields are required:
-         * ```java
-         * .uploadId()
-         * ```
-         */
+        @JvmStatic fun none(): UploadCancelParams = builder().build()
+
+        /** Returns a mutable builder for constructing an instance of [UploadCancelParams]. */
         @JvmStatic fun builder() = Builder()
     }
 
@@ -59,7 +54,10 @@ private constructor(
             additionalBodyProperties = uploadCancelParams.additionalBodyProperties.toMutableMap()
         }
 
-        fun uploadId(uploadId: String) = apply { this.uploadId = uploadId }
+        fun uploadId(uploadId: String?) = apply { this.uploadId = uploadId }
+
+        /** Alias for calling [Builder.uploadId] with `uploadId.orElse(null)`. */
+        fun uploadId(uploadId: Optional<String>) = uploadId(uploadId.getOrNull())
 
         fun additionalHeaders(additionalHeaders: Headers) = apply {
             this.additionalHeaders.clear()
@@ -185,17 +183,10 @@ private constructor(
          * Returns an immutable instance of [UploadCancelParams].
          *
          * Further updates to this [Builder] will not mutate the returned instance.
-         *
-         * The following fields are required:
-         * ```java
-         * .uploadId()
-         * ```
-         *
-         * @throws IllegalStateException if any required field is unset.
          */
         fun build(): UploadCancelParams =
             UploadCancelParams(
-                checkRequired("uploadId", uploadId),
+                uploadId,
                 additionalHeaders.build(),
                 additionalQueryParams.build(),
                 additionalBodyProperties.toImmutable(),
@@ -207,7 +198,7 @@ private constructor(
 
     fun _pathParam(index: Int): String =
         when (index) {
-            0 -> uploadId
+            0 -> uploadId ?: ""
             else -> ""
         }
 

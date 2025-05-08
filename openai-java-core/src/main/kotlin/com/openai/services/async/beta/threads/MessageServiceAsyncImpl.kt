@@ -4,6 +4,7 @@ package com.openai.services.async.beta.threads
 
 import com.openai.core.ClientOptions
 import com.openai.core.RequestOptions
+import com.openai.core.checkRequired
 import com.openai.core.handlers.errorHandler
 import com.openai.core.handlers.jsonHandler
 import com.openai.core.handlers.withErrorHandler
@@ -26,6 +27,7 @@ import com.openai.models.beta.threads.messages.MessageListParams
 import com.openai.models.beta.threads.messages.MessageRetrieveParams
 import com.openai.models.beta.threads.messages.MessageUpdateParams
 import java.util.concurrent.CompletableFuture
+import kotlin.jvm.optionals.getOrNull
 
 class MessageServiceAsyncImpl internal constructor(private val clientOptions: ClientOptions) :
     MessageServiceAsync {
@@ -88,6 +90,9 @@ class MessageServiceAsyncImpl internal constructor(private val clientOptions: Cl
             params: MessageCreateParams,
             requestOptions: RequestOptions,
         ): CompletableFuture<HttpResponseFor<Message>> {
+            // We check here instead of in the params builder because this can be specified
+            // positionally or in the params class.
+            checkRequired("threadId", params.threadId().getOrNull())
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.POST)
@@ -119,6 +124,9 @@ class MessageServiceAsyncImpl internal constructor(private val clientOptions: Cl
             params: MessageRetrieveParams,
             requestOptions: RequestOptions,
         ): CompletableFuture<HttpResponseFor<Message>> {
+            // We check here instead of in the params builder because this can be specified
+            // positionally or in the params class.
+            checkRequired("messageId", params.messageId().getOrNull())
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.GET)
@@ -154,6 +162,9 @@ class MessageServiceAsyncImpl internal constructor(private val clientOptions: Cl
             params: MessageUpdateParams,
             requestOptions: RequestOptions,
         ): CompletableFuture<HttpResponseFor<Message>> {
+            // We check here instead of in the params builder because this can be specified
+            // positionally or in the params class.
+            checkRequired("messageId", params.messageId().getOrNull())
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.POST)
@@ -191,6 +202,9 @@ class MessageServiceAsyncImpl internal constructor(private val clientOptions: Cl
             params: MessageListParams,
             requestOptions: RequestOptions,
         ): CompletableFuture<HttpResponseFor<MessageListPageAsync>> {
+            // We check here instead of in the params builder because this can be specified
+            // positionally or in the params class.
+            checkRequired("threadId", params.threadId().getOrNull())
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.GET)
@@ -228,6 +242,9 @@ class MessageServiceAsyncImpl internal constructor(private val clientOptions: Cl
             params: MessageDeleteParams,
             requestOptions: RequestOptions,
         ): CompletableFuture<HttpResponseFor<MessageDeleted>> {
+            // We check here instead of in the params builder because this can be specified
+            // positionally or in the params class.
+            checkRequired("messageId", params.messageId().getOrNull())
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.DELETE)

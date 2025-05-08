@@ -7,19 +7,21 @@ import com.openai.core.checkRequired
 import com.openai.core.http.Headers
 import com.openai.core.http.QueryParams
 import java.util.Objects
+import java.util.Optional
+import kotlin.jvm.optionals.getOrNull
 
 /** Retrieves a run. */
 class RunRetrieveParams
 private constructor(
     private val threadId: String,
-    private val runId: String,
+    private val runId: String?,
     private val additionalHeaders: Headers,
     private val additionalQueryParams: QueryParams,
 ) : Params {
 
     fun threadId(): String = threadId
 
-    fun runId(): String = runId
+    fun runId(): Optional<String> = Optional.ofNullable(runId)
 
     fun _additionalHeaders(): Headers = additionalHeaders
 
@@ -35,7 +37,6 @@ private constructor(
          * The following fields are required:
          * ```java
          * .threadId()
-         * .runId()
          * ```
          */
         @JvmStatic fun builder() = Builder()
@@ -59,7 +60,10 @@ private constructor(
 
         fun threadId(threadId: String) = apply { this.threadId = threadId }
 
-        fun runId(runId: String) = apply { this.runId = runId }
+        fun runId(runId: String?) = apply { this.runId = runId }
+
+        /** Alias for calling [Builder.runId] with `runId.orElse(null)`. */
+        fun runId(runId: Optional<String>) = runId(runId.getOrNull())
 
         fun additionalHeaders(additionalHeaders: Headers) = apply {
             this.additionalHeaders.clear()
@@ -167,7 +171,6 @@ private constructor(
          * The following fields are required:
          * ```java
          * .threadId()
-         * .runId()
          * ```
          *
          * @throws IllegalStateException if any required field is unset.
@@ -175,7 +178,7 @@ private constructor(
         fun build(): RunRetrieveParams =
             RunRetrieveParams(
                 checkRequired("threadId", threadId),
-                checkRequired("runId", runId),
+                runId,
                 additionalHeaders.build(),
                 additionalQueryParams.build(),
             )
@@ -184,7 +187,7 @@ private constructor(
     fun _pathParam(index: Int): String =
         when (index) {
             0 -> threadId
-            1 -> runId
+            1 -> runId ?: ""
             else -> ""
         }
 

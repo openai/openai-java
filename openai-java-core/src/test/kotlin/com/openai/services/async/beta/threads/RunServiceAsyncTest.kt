@@ -11,7 +11,6 @@ import com.openai.models.beta.assistants.CodeInterpreterTool
 import com.openai.models.beta.threads.AssistantToolChoiceOption
 import com.openai.models.beta.threads.runs.RunCancelParams
 import com.openai.models.beta.threads.runs.RunCreateParams
-import com.openai.models.beta.threads.runs.RunListParams
 import com.openai.models.beta.threads.runs.RunRetrieveParams
 import com.openai.models.beta.threads.runs.RunSubmitToolOutputsParams
 import com.openai.models.beta.threads.runs.RunUpdateParams
@@ -200,7 +199,7 @@ internal class RunServiceAsyncTest {
                 .build()
         val runServiceAsync = client.beta().threads().runs()
 
-        val pageFuture = runServiceAsync.list(RunListParams.builder().threadId("thread_id").build())
+        val pageFuture = runServiceAsync.list("thread_id")
 
         val page = pageFuture.get()
         page.response().validate()

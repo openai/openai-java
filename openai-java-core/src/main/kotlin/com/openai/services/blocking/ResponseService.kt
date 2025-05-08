@@ -65,7 +65,20 @@ interface ResponseService {
     ): StreamResponse<ResponseStreamEvent>
 
     /** Retrieves a model response with the given ID. */
-    fun retrieve(params: ResponseRetrieveParams): Response = retrieve(params, RequestOptions.none())
+    fun retrieve(responseId: String): Response = retrieve(responseId, ResponseRetrieveParams.none())
+
+    /** @see [retrieve] */
+    fun retrieve(
+        responseId: String,
+        params: ResponseRetrieveParams = ResponseRetrieveParams.none(),
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): Response = retrieve(params.toBuilder().responseId(responseId).build(), requestOptions)
+
+    /** @see [retrieve] */
+    fun retrieve(
+        responseId: String,
+        params: ResponseRetrieveParams = ResponseRetrieveParams.none(),
+    ): Response = retrieve(responseId, params, RequestOptions.none())
 
     /** @see [retrieve] */
     fun retrieve(
@@ -73,11 +86,36 @@ interface ResponseService {
         requestOptions: RequestOptions = RequestOptions.none(),
     ): Response
 
+    /** @see [retrieve] */
+    fun retrieve(params: ResponseRetrieveParams): Response = retrieve(params, RequestOptions.none())
+
+    /** @see [retrieve] */
+    fun retrieve(responseId: String, requestOptions: RequestOptions): Response =
+        retrieve(responseId, ResponseRetrieveParams.none(), requestOptions)
+
     /** Deletes a model response with the given ID. */
-    fun delete(params: ResponseDeleteParams) = delete(params, RequestOptions.none())
+    fun delete(responseId: String) = delete(responseId, ResponseDeleteParams.none())
+
+    /** @see [delete] */
+    fun delete(
+        responseId: String,
+        params: ResponseDeleteParams = ResponseDeleteParams.none(),
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ) = delete(params.toBuilder().responseId(responseId).build(), requestOptions)
+
+    /** @see [delete] */
+    fun delete(responseId: String, params: ResponseDeleteParams = ResponseDeleteParams.none()) =
+        delete(responseId, params, RequestOptions.none())
 
     /** @see [delete] */
     fun delete(params: ResponseDeleteParams, requestOptions: RequestOptions = RequestOptions.none())
+
+    /** @see [delete] */
+    fun delete(params: ResponseDeleteParams) = delete(params, RequestOptions.none())
+
+    /** @see [delete] */
+    fun delete(responseId: String, requestOptions: RequestOptions) =
+        delete(responseId, ResponseDeleteParams.none(), requestOptions)
 
     /** A view of [ResponseService] that provides access to raw HTTP responses for each method. */
     interface WithRawResponse {
@@ -121,8 +159,24 @@ interface ResponseService {
          * as [ResponseService.retrieve].
          */
         @MustBeClosed
-        fun retrieve(params: ResponseRetrieveParams): HttpResponseFor<Response> =
-            retrieve(params, RequestOptions.none())
+        fun retrieve(responseId: String): HttpResponseFor<Response> =
+            retrieve(responseId, ResponseRetrieveParams.none())
+
+        /** @see [retrieve] */
+        @MustBeClosed
+        fun retrieve(
+            responseId: String,
+            params: ResponseRetrieveParams = ResponseRetrieveParams.none(),
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): HttpResponseFor<Response> =
+            retrieve(params.toBuilder().responseId(responseId).build(), requestOptions)
+
+        /** @see [retrieve] */
+        @MustBeClosed
+        fun retrieve(
+            responseId: String,
+            params: ResponseRetrieveParams = ResponseRetrieveParams.none(),
+        ): HttpResponseFor<Response> = retrieve(responseId, params, RequestOptions.none())
 
         /** @see [retrieve] */
         @MustBeClosed
@@ -131,13 +185,41 @@ interface ResponseService {
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<Response>
 
+        /** @see [retrieve] */
+        @MustBeClosed
+        fun retrieve(params: ResponseRetrieveParams): HttpResponseFor<Response> =
+            retrieve(params, RequestOptions.none())
+
+        /** @see [retrieve] */
+        @MustBeClosed
+        fun retrieve(
+            responseId: String,
+            requestOptions: RequestOptions,
+        ): HttpResponseFor<Response> =
+            retrieve(responseId, ResponseRetrieveParams.none(), requestOptions)
+
         /**
          * Returns a raw HTTP response for `delete /responses/{response_id}`, but is otherwise the
          * same as [ResponseService.delete].
          */
         @MustBeClosed
-        fun delete(params: ResponseDeleteParams): HttpResponse =
-            delete(params, RequestOptions.none())
+        fun delete(responseId: String): HttpResponse =
+            delete(responseId, ResponseDeleteParams.none())
+
+        /** @see [delete] */
+        @MustBeClosed
+        fun delete(
+            responseId: String,
+            params: ResponseDeleteParams = ResponseDeleteParams.none(),
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): HttpResponse = delete(params.toBuilder().responseId(responseId).build(), requestOptions)
+
+        /** @see [delete] */
+        @MustBeClosed
+        fun delete(
+            responseId: String,
+            params: ResponseDeleteParams = ResponseDeleteParams.none(),
+        ): HttpResponse = delete(responseId, params, RequestOptions.none())
 
         /** @see [delete] */
         @MustBeClosed
@@ -145,5 +227,15 @@ interface ResponseService {
             params: ResponseDeleteParams,
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponse
+
+        /** @see [delete] */
+        @MustBeClosed
+        fun delete(params: ResponseDeleteParams): HttpResponse =
+            delete(params, RequestOptions.none())
+
+        /** @see [delete] */
+        @MustBeClosed
+        fun delete(responseId: String, requestOptions: RequestOptions): HttpResponse =
+            delete(responseId, ResponseDeleteParams.none(), requestOptions)
     }
 }

@@ -4,6 +4,7 @@ package com.openai.services.async.finetuning.checkpoints
 
 import com.openai.core.ClientOptions
 import com.openai.core.RequestOptions
+import com.openai.core.checkRequired
 import com.openai.core.handlers.errorHandler
 import com.openai.core.handlers.jsonHandler
 import com.openai.core.handlers.withErrorHandler
@@ -23,6 +24,7 @@ import com.openai.models.finetuning.checkpoints.permissions.PermissionDeleteResp
 import com.openai.models.finetuning.checkpoints.permissions.PermissionRetrieveParams
 import com.openai.models.finetuning.checkpoints.permissions.PermissionRetrieveResponse
 import java.util.concurrent.CompletableFuture
+import kotlin.jvm.optionals.getOrNull
 
 class PermissionServiceAsyncImpl internal constructor(private val clientOptions: ClientOptions) :
     PermissionServiceAsync {
@@ -67,6 +69,9 @@ class PermissionServiceAsyncImpl internal constructor(private val clientOptions:
             params: PermissionCreateParams,
             requestOptions: RequestOptions,
         ): CompletableFuture<HttpResponseFor<PermissionCreatePageAsync>> {
+            // We check here instead of in the params builder because this can be specified
+            // positionally or in the params class.
+            checkRequired("fineTunedModelCheckpoint", params.fineTunedModelCheckpoint().getOrNull())
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.POST)
@@ -110,6 +115,9 @@ class PermissionServiceAsyncImpl internal constructor(private val clientOptions:
             params: PermissionRetrieveParams,
             requestOptions: RequestOptions,
         ): CompletableFuture<HttpResponseFor<PermissionRetrieveResponse>> {
+            // We check here instead of in the params builder because this can be specified
+            // positionally or in the params class.
+            checkRequired("fineTunedModelCheckpoint", params.fineTunedModelCheckpoint().getOrNull())
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.GET)
@@ -145,6 +153,9 @@ class PermissionServiceAsyncImpl internal constructor(private val clientOptions:
             params: PermissionDeleteParams,
             requestOptions: RequestOptions,
         ): CompletableFuture<HttpResponseFor<PermissionDeleteResponse>> {
+            // We check here instead of in the params builder because this can be specified
+            // positionally or in the params class.
+            checkRequired("permissionId", params.permissionId().getOrNull())
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.DELETE)

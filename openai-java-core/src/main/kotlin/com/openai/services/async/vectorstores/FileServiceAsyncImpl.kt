@@ -4,6 +4,7 @@ package com.openai.services.async.vectorstores
 
 import com.openai.core.ClientOptions
 import com.openai.core.RequestOptions
+import com.openai.core.checkRequired
 import com.openai.core.handlers.errorHandler
 import com.openai.core.handlers.jsonHandler
 import com.openai.core.handlers.withErrorHandler
@@ -29,6 +30,7 @@ import com.openai.models.vectorstores.files.FileUpdateParams
 import com.openai.models.vectorstores.files.VectorStoreFile
 import com.openai.models.vectorstores.files.VectorStoreFileDeleted
 import java.util.concurrent.CompletableFuture
+import kotlin.jvm.optionals.getOrNull
 
 class FileServiceAsyncImpl internal constructor(private val clientOptions: ClientOptions) :
     FileServiceAsync {
@@ -98,6 +100,9 @@ class FileServiceAsyncImpl internal constructor(private val clientOptions: Clien
             params: FileCreateParams,
             requestOptions: RequestOptions,
         ): CompletableFuture<HttpResponseFor<VectorStoreFile>> {
+            // We check here instead of in the params builder because this can be specified
+            // positionally or in the params class.
+            checkRequired("vectorStoreId", params.vectorStoreId().getOrNull())
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.POST)
@@ -129,6 +134,9 @@ class FileServiceAsyncImpl internal constructor(private val clientOptions: Clien
             params: FileRetrieveParams,
             requestOptions: RequestOptions,
         ): CompletableFuture<HttpResponseFor<VectorStoreFile>> {
+            // We check here instead of in the params builder because this can be specified
+            // positionally or in the params class.
+            checkRequired("fileId", params.fileId().getOrNull())
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.GET)
@@ -164,6 +172,9 @@ class FileServiceAsyncImpl internal constructor(private val clientOptions: Clien
             params: FileUpdateParams,
             requestOptions: RequestOptions,
         ): CompletableFuture<HttpResponseFor<VectorStoreFile>> {
+            // We check here instead of in the params builder because this can be specified
+            // positionally or in the params class.
+            checkRequired("fileId", params.fileId().getOrNull())
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.POST)
@@ -201,6 +212,9 @@ class FileServiceAsyncImpl internal constructor(private val clientOptions: Clien
             params: FileListParams,
             requestOptions: RequestOptions,
         ): CompletableFuture<HttpResponseFor<FileListPageAsync>> {
+            // We check here instead of in the params builder because this can be specified
+            // positionally or in the params class.
+            checkRequired("vectorStoreId", params.vectorStoreId().getOrNull())
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.GET)
@@ -239,6 +253,9 @@ class FileServiceAsyncImpl internal constructor(private val clientOptions: Clien
             params: FileDeleteParams,
             requestOptions: RequestOptions,
         ): CompletableFuture<HttpResponseFor<VectorStoreFileDeleted>> {
+            // We check here instead of in the params builder because this can be specified
+            // positionally or in the params class.
+            checkRequired("fileId", params.fileId().getOrNull())
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.DELETE)
@@ -276,6 +293,9 @@ class FileServiceAsyncImpl internal constructor(private val clientOptions: Clien
             params: FileContentParams,
             requestOptions: RequestOptions,
         ): CompletableFuture<HttpResponseFor<FileContentPageAsync>> {
+            // We check here instead of in the params builder because this can be specified
+            // positionally or in the params class.
+            checkRequired("fileId", params.fileId().getOrNull())
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.GET)

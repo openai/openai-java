@@ -5,6 +5,7 @@ package com.openai.services.blocking.beta.threads
 import com.openai.core.ClientOptions
 import com.openai.core.JsonValue
 import com.openai.core.RequestOptions
+import com.openai.core.checkRequired
 import com.openai.core.handlers.errorHandler
 import com.openai.core.handlers.jsonHandler
 import com.openai.core.handlers.mapJson
@@ -33,6 +34,7 @@ import com.openai.models.beta.threads.runs.RunSubmitToolOutputsParams
 import com.openai.models.beta.threads.runs.RunUpdateParams
 import com.openai.services.blocking.beta.threads.runs.StepService
 import com.openai.services.blocking.beta.threads.runs.StepServiceImpl
+import kotlin.jvm.optionals.getOrNull
 
 class RunServiceImpl internal constructor(private val clientOptions: ClientOptions) : RunService {
 
@@ -110,6 +112,9 @@ class RunServiceImpl internal constructor(private val clientOptions: ClientOptio
             params: RunCreateParams,
             requestOptions: RequestOptions,
         ): HttpResponseFor<Run> {
+            // We check here instead of in the params builder because this can be specified
+            // positionally or in the params class.
+            checkRequired("threadId", params.threadId().getOrNull())
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.POST)
@@ -140,6 +145,9 @@ class RunServiceImpl internal constructor(private val clientOptions: ClientOptio
             params: RunCreateParams,
             requestOptions: RequestOptions,
         ): HttpResponseFor<StreamResponse<AssistantStreamEvent>> {
+            // We check here instead of in the params builder because this can be specified
+            // positionally or in the params class.
+            checkRequired("threadId", params.threadId().getOrNull())
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.POST)
@@ -179,6 +187,9 @@ class RunServiceImpl internal constructor(private val clientOptions: ClientOptio
             params: RunRetrieveParams,
             requestOptions: RequestOptions,
         ): HttpResponseFor<Run> {
+            // We check here instead of in the params builder because this can be specified
+            // positionally or in the params class.
+            checkRequired("runId", params.runId().getOrNull())
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.GET)
@@ -206,6 +217,9 @@ class RunServiceImpl internal constructor(private val clientOptions: ClientOptio
             params: RunUpdateParams,
             requestOptions: RequestOptions,
         ): HttpResponseFor<Run> {
+            // We check here instead of in the params builder because this can be specified
+            // positionally or in the params class.
+            checkRequired("runId", params.runId().getOrNull())
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.POST)
@@ -235,6 +249,9 @@ class RunServiceImpl internal constructor(private val clientOptions: ClientOptio
             params: RunListParams,
             requestOptions: RequestOptions,
         ): HttpResponseFor<RunListPage> {
+            // We check here instead of in the params builder because this can be specified
+            // positionally or in the params class.
+            checkRequired("threadId", params.threadId().getOrNull())
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.GET)
@@ -269,6 +286,9 @@ class RunServiceImpl internal constructor(private val clientOptions: ClientOptio
             params: RunCancelParams,
             requestOptions: RequestOptions,
         ): HttpResponseFor<Run> {
+            // We check here instead of in the params builder because this can be specified
+            // positionally or in the params class.
+            checkRequired("runId", params.runId().getOrNull())
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.POST)
@@ -303,6 +323,9 @@ class RunServiceImpl internal constructor(private val clientOptions: ClientOptio
             params: RunSubmitToolOutputsParams,
             requestOptions: RequestOptions,
         ): HttpResponseFor<Run> {
+            // We check here instead of in the params builder because this can be specified
+            // positionally or in the params class.
+            checkRequired("runId", params.runId().getOrNull())
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.POST)
@@ -340,6 +363,9 @@ class RunServiceImpl internal constructor(private val clientOptions: ClientOptio
             params: RunSubmitToolOutputsParams,
             requestOptions: RequestOptions,
         ): HttpResponseFor<StreamResponse<AssistantStreamEvent>> {
+            // We check here instead of in the params builder because this can be specified
+            // positionally or in the params class.
+            checkRequired("runId", params.runId().getOrNull())
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.POST)

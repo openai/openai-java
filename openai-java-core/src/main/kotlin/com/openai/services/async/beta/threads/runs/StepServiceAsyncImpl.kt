@@ -4,6 +4,7 @@ package com.openai.services.async.beta.threads.runs
 
 import com.openai.core.ClientOptions
 import com.openai.core.RequestOptions
+import com.openai.core.checkRequired
 import com.openai.core.handlers.errorHandler
 import com.openai.core.handlers.jsonHandler
 import com.openai.core.handlers.withErrorHandler
@@ -21,6 +22,7 @@ import com.openai.models.beta.threads.runs.steps.StepListPageResponse
 import com.openai.models.beta.threads.runs.steps.StepListParams
 import com.openai.models.beta.threads.runs.steps.StepRetrieveParams
 import java.util.concurrent.CompletableFuture
+import kotlin.jvm.optionals.getOrNull
 
 class StepServiceAsyncImpl internal constructor(private val clientOptions: ClientOptions) :
     StepServiceAsync {
@@ -62,6 +64,9 @@ class StepServiceAsyncImpl internal constructor(private val clientOptions: Clien
             params: StepRetrieveParams,
             requestOptions: RequestOptions,
         ): CompletableFuture<HttpResponseFor<RunStep>> {
+            // We check here instead of in the params builder because this can be specified
+            // positionally or in the params class.
+            checkRequired("stepId", params.stepId().getOrNull())
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.GET)
@@ -100,6 +105,9 @@ class StepServiceAsyncImpl internal constructor(private val clientOptions: Clien
             params: StepListParams,
             requestOptions: RequestOptions,
         ): CompletableFuture<HttpResponseFor<StepListPageAsync>> {
+            // We check here instead of in the params builder because this can be specified
+            // positionally or in the params class.
+            checkRequired("runId", params.runId().getOrNull())
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.GET)

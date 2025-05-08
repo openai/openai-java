@@ -4,23 +4,23 @@ package com.openai.models.responses
 
 import com.openai.core.JsonValue
 import com.openai.core.Params
-import com.openai.core.checkRequired
 import com.openai.core.http.Headers
 import com.openai.core.http.QueryParams
 import com.openai.core.toImmutable
 import java.util.Objects
 import java.util.Optional
+import kotlin.jvm.optionals.getOrNull
 
 /** Deletes a model response with the given ID. */
 class ResponseDeleteParams
 private constructor(
-    private val responseId: String,
+    private val responseId: String?,
     private val additionalHeaders: Headers,
     private val additionalQueryParams: QueryParams,
     private val additionalBodyProperties: Map<String, JsonValue>,
 ) : Params {
 
-    fun responseId(): String = responseId
+    fun responseId(): Optional<String> = Optional.ofNullable(responseId)
 
     fun _additionalBodyProperties(): Map<String, JsonValue> = additionalBodyProperties
 
@@ -32,14 +32,9 @@ private constructor(
 
     companion object {
 
-        /**
-         * Returns a mutable builder for constructing an instance of [ResponseDeleteParams].
-         *
-         * The following fields are required:
-         * ```java
-         * .responseId()
-         * ```
-         */
+        @JvmStatic fun none(): ResponseDeleteParams = builder().build()
+
+        /** Returns a mutable builder for constructing an instance of [ResponseDeleteParams]. */
         @JvmStatic fun builder() = Builder()
     }
 
@@ -59,7 +54,10 @@ private constructor(
             additionalBodyProperties = responseDeleteParams.additionalBodyProperties.toMutableMap()
         }
 
-        fun responseId(responseId: String) = apply { this.responseId = responseId }
+        fun responseId(responseId: String?) = apply { this.responseId = responseId }
+
+        /** Alias for calling [Builder.responseId] with `responseId.orElse(null)`. */
+        fun responseId(responseId: Optional<String>) = responseId(responseId.getOrNull())
 
         fun additionalHeaders(additionalHeaders: Headers) = apply {
             this.additionalHeaders.clear()
@@ -185,17 +183,10 @@ private constructor(
          * Returns an immutable instance of [ResponseDeleteParams].
          *
          * Further updates to this [Builder] will not mutate the returned instance.
-         *
-         * The following fields are required:
-         * ```java
-         * .responseId()
-         * ```
-         *
-         * @throws IllegalStateException if any required field is unset.
          */
         fun build(): ResponseDeleteParams =
             ResponseDeleteParams(
-                checkRequired("responseId", responseId),
+                responseId,
                 additionalHeaders.build(),
                 additionalQueryParams.build(),
                 additionalBodyProperties.toImmutable(),
@@ -207,7 +198,7 @@ private constructor(
 
     fun _pathParam(index: Int): String =
         when (index) {
-            0 -> responseId
+            0 -> responseId ?: ""
             else -> ""
         }
 

@@ -4,6 +4,7 @@ package com.openai.services.blocking.beta
 
 import com.openai.core.ClientOptions
 import com.openai.core.RequestOptions
+import com.openai.core.checkRequired
 import com.openai.core.handlers.errorHandler
 import com.openai.core.handlers.jsonHandler
 import com.openai.core.handlers.withErrorHandler
@@ -25,6 +26,7 @@ import com.openai.models.beta.assistants.AssistantListPageResponse
 import com.openai.models.beta.assistants.AssistantListParams
 import com.openai.models.beta.assistants.AssistantRetrieveParams
 import com.openai.models.beta.assistants.AssistantUpdateParams
+import kotlin.jvm.optionals.getOrNull
 
 class AssistantServiceImpl internal constructor(private val clientOptions: ClientOptions) :
     AssistantService {
@@ -109,6 +111,9 @@ class AssistantServiceImpl internal constructor(private val clientOptions: Clien
             params: AssistantRetrieveParams,
             requestOptions: RequestOptions,
         ): HttpResponseFor<Assistant> {
+            // We check here instead of in the params builder because this can be specified
+            // positionally or in the params class.
+            checkRequired("assistantId", params.assistantId().getOrNull())
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.GET)
@@ -136,6 +141,9 @@ class AssistantServiceImpl internal constructor(private val clientOptions: Clien
             params: AssistantUpdateParams,
             requestOptions: RequestOptions,
         ): HttpResponseFor<Assistant> {
+            // We check here instead of in the params builder because this can be specified
+            // positionally or in the params class.
+            checkRequired("assistantId", params.assistantId().getOrNull())
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.POST)
@@ -199,6 +207,9 @@ class AssistantServiceImpl internal constructor(private val clientOptions: Clien
             params: AssistantDeleteParams,
             requestOptions: RequestOptions,
         ): HttpResponseFor<AssistantDeleted> {
+            // We check here instead of in the params builder because this can be specified
+            // positionally or in the params class.
+            checkRequired("assistantId", params.assistantId().getOrNull())
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.DELETE)

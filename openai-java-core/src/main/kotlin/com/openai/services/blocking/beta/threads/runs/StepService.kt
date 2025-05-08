@@ -18,6 +18,17 @@ interface StepService {
     fun withRawResponse(): WithRawResponse
 
     /** Retrieves a run step. */
+    fun retrieve(stepId: String, params: StepRetrieveParams): RunStep =
+        retrieve(stepId, params, RequestOptions.none())
+
+    /** @see [retrieve] */
+    fun retrieve(
+        stepId: String,
+        params: StepRetrieveParams,
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): RunStep = retrieve(params.toBuilder().stepId(stepId).build(), requestOptions)
+
+    /** @see [retrieve] */
     fun retrieve(params: StepRetrieveParams): RunStep = retrieve(params, RequestOptions.none())
 
     /** @see [retrieve] */
@@ -27,6 +38,17 @@ interface StepService {
     ): RunStep
 
     /** Returns a list of run steps belonging to a run. */
+    fun list(runId: String, params: StepListParams): StepListPage =
+        list(runId, params, RequestOptions.none())
+
+    /** @see [list] */
+    fun list(
+        runId: String,
+        params: StepListParams,
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): StepListPage = list(params.toBuilder().runId(runId).build(), requestOptions)
+
+    /** @see [list] */
     fun list(params: StepListParams): StepListPage = list(params, RequestOptions.none())
 
     /** @see [list] */
@@ -43,6 +65,20 @@ interface StepService {
          * but is otherwise the same as [StepService.retrieve].
          */
         @MustBeClosed
+        fun retrieve(stepId: String, params: StepRetrieveParams): HttpResponseFor<RunStep> =
+            retrieve(stepId, params, RequestOptions.none())
+
+        /** @see [retrieve] */
+        @MustBeClosed
+        fun retrieve(
+            stepId: String,
+            params: StepRetrieveParams,
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): HttpResponseFor<RunStep> =
+            retrieve(params.toBuilder().stepId(stepId).build(), requestOptions)
+
+        /** @see [retrieve] */
+        @MustBeClosed
         fun retrieve(params: StepRetrieveParams): HttpResponseFor<RunStep> =
             retrieve(params, RequestOptions.none())
 
@@ -57,6 +93,20 @@ interface StepService {
          * Returns a raw HTTP response for `get /threads/{thread_id}/runs/{run_id}/steps`, but is
          * otherwise the same as [StepService.list].
          */
+        @MustBeClosed
+        fun list(runId: String, params: StepListParams): HttpResponseFor<StepListPage> =
+            list(runId, params, RequestOptions.none())
+
+        /** @see [list] */
+        @MustBeClosed
+        fun list(
+            runId: String,
+            params: StepListParams,
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): HttpResponseFor<StepListPage> =
+            list(params.toBuilder().runId(runId).build(), requestOptions)
+
+        /** @see [list] */
         @MustBeClosed
         fun list(params: StepListParams): HttpResponseFor<StepListPage> =
             list(params, RequestOptions.none())

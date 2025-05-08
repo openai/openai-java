@@ -6,7 +6,6 @@ import com.fasterxml.jackson.annotation.JsonCreator
 import com.openai.core.Enum
 import com.openai.core.JsonField
 import com.openai.core.Params
-import com.openai.core.checkRequired
 import com.openai.core.http.Headers
 import com.openai.core.http.QueryParams
 import com.openai.errors.OpenAIInvalidDataException
@@ -17,7 +16,7 @@ import kotlin.jvm.optionals.getOrNull
 /** Returns a list of vector store files. */
 class FileListParams
 private constructor(
-    private val vectorStoreId: String,
+    private val vectorStoreId: String?,
     private val after: String?,
     private val before: String?,
     private val filter: Filter?,
@@ -27,7 +26,7 @@ private constructor(
     private val additionalQueryParams: QueryParams,
 ) : Params {
 
-    fun vectorStoreId(): String = vectorStoreId
+    fun vectorStoreId(): Optional<String> = Optional.ofNullable(vectorStoreId)
 
     /**
      * A cursor for use in pagination. `after` is an object ID that defines your place in the list.
@@ -66,14 +65,9 @@ private constructor(
 
     companion object {
 
-        /**
-         * Returns a mutable builder for constructing an instance of [FileListParams].
-         *
-         * The following fields are required:
-         * ```java
-         * .vectorStoreId()
-         * ```
-         */
+        @JvmStatic fun none(): FileListParams = builder().build()
+
+        /** Returns a mutable builder for constructing an instance of [FileListParams]. */
         @JvmStatic fun builder() = Builder()
     }
 
@@ -101,7 +95,11 @@ private constructor(
             additionalQueryParams = fileListParams.additionalQueryParams.toBuilder()
         }
 
-        fun vectorStoreId(vectorStoreId: String) = apply { this.vectorStoreId = vectorStoreId }
+        fun vectorStoreId(vectorStoreId: String?) = apply { this.vectorStoreId = vectorStoreId }
+
+        /** Alias for calling [Builder.vectorStoreId] with `vectorStoreId.orElse(null)`. */
+        fun vectorStoreId(vectorStoreId: Optional<String>) =
+            vectorStoreId(vectorStoreId.getOrNull())
 
         /**
          * A cursor for use in pagination. `after` is an object ID that defines your place in the
@@ -258,17 +256,10 @@ private constructor(
          * Returns an immutable instance of [FileListParams].
          *
          * Further updates to this [Builder] will not mutate the returned instance.
-         *
-         * The following fields are required:
-         * ```java
-         * .vectorStoreId()
-         * ```
-         *
-         * @throws IllegalStateException if any required field is unset.
          */
         fun build(): FileListParams =
             FileListParams(
-                checkRequired("vectorStoreId", vectorStoreId),
+                vectorStoreId,
                 after,
                 before,
                 filter,
@@ -281,7 +272,7 @@ private constructor(
 
     fun _pathParam(index: Int): String =
         when (index) {
-            0 -> vectorStoreId
+            0 -> vectorStoreId ?: ""
             else -> ""
         }
 

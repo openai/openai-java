@@ -4,6 +4,7 @@ package com.openai.services.blocking.beta.threads
 
 import com.openai.core.ClientOptions
 import com.openai.core.RequestOptions
+import com.openai.core.checkRequired
 import com.openai.core.handlers.errorHandler
 import com.openai.core.handlers.jsonHandler
 import com.openai.core.handlers.withErrorHandler
@@ -25,6 +26,7 @@ import com.openai.models.beta.threads.messages.MessageListPageResponse
 import com.openai.models.beta.threads.messages.MessageListParams
 import com.openai.models.beta.threads.messages.MessageRetrieveParams
 import com.openai.models.beta.threads.messages.MessageUpdateParams
+import kotlin.jvm.optionals.getOrNull
 
 class MessageServiceImpl internal constructor(private val clientOptions: ClientOptions) :
     MessageService {
@@ -75,6 +77,9 @@ class MessageServiceImpl internal constructor(private val clientOptions: ClientO
             params: MessageCreateParams,
             requestOptions: RequestOptions,
         ): HttpResponseFor<Message> {
+            // We check here instead of in the params builder because this can be specified
+            // positionally or in the params class.
+            checkRequired("threadId", params.threadId().getOrNull())
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.POST)
@@ -103,6 +108,9 @@ class MessageServiceImpl internal constructor(private val clientOptions: ClientO
             params: MessageRetrieveParams,
             requestOptions: RequestOptions,
         ): HttpResponseFor<Message> {
+            // We check here instead of in the params builder because this can be specified
+            // positionally or in the params class.
+            checkRequired("messageId", params.messageId().getOrNull())
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.GET)
@@ -135,6 +143,9 @@ class MessageServiceImpl internal constructor(private val clientOptions: ClientO
             params: MessageUpdateParams,
             requestOptions: RequestOptions,
         ): HttpResponseFor<Message> {
+            // We check here instead of in the params builder because this can be specified
+            // positionally or in the params class.
+            checkRequired("messageId", params.messageId().getOrNull())
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.POST)
@@ -169,6 +180,9 @@ class MessageServiceImpl internal constructor(private val clientOptions: ClientO
             params: MessageListParams,
             requestOptions: RequestOptions,
         ): HttpResponseFor<MessageListPage> {
+            // We check here instead of in the params builder because this can be specified
+            // positionally or in the params class.
+            checkRequired("threadId", params.threadId().getOrNull())
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.GET)
@@ -203,6 +217,9 @@ class MessageServiceImpl internal constructor(private val clientOptions: ClientO
             params: MessageDeleteParams,
             requestOptions: RequestOptions,
         ): HttpResponseFor<MessageDeleted> {
+            // We check here instead of in the params builder because this can be specified
+            // positionally or in the params class.
+            checkRequired("messageId", params.messageId().getOrNull())
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.DELETE)

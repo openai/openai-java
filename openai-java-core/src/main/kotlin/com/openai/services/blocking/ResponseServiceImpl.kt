@@ -5,6 +5,7 @@ package com.openai.services.blocking
 import com.openai.core.ClientOptions
 import com.openai.core.JsonValue
 import com.openai.core.RequestOptions
+import com.openai.core.checkRequired
 import com.openai.core.handlers.emptyHandler
 import com.openai.core.handlers.errorHandler
 import com.openai.core.handlers.jsonHandler
@@ -29,6 +30,7 @@ import com.openai.models.responses.ResponseRetrieveParams
 import com.openai.models.responses.ResponseStreamEvent
 import com.openai.services.blocking.responses.InputItemService
 import com.openai.services.blocking.responses.InputItemServiceImpl
+import kotlin.jvm.optionals.getOrNull
 
 class ResponseServiceImpl internal constructor(private val clientOptions: ClientOptions) :
     ResponseService {
@@ -151,6 +153,9 @@ class ResponseServiceImpl internal constructor(private val clientOptions: Client
             params: ResponseRetrieveParams,
             requestOptions: RequestOptions,
         ): HttpResponseFor<Response> {
+            // We check here instead of in the params builder because this can be specified
+            // positionally or in the params class.
+            checkRequired("responseId", params.responseId().getOrNull())
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.GET)
@@ -176,6 +181,9 @@ class ResponseServiceImpl internal constructor(private val clientOptions: Client
             params: ResponseDeleteParams,
             requestOptions: RequestOptions,
         ): HttpResponse {
+            // We check here instead of in the params builder because this can be specified
+            // positionally or in the params class.
+            checkRequired("responseId", params.responseId().getOrNull())
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.DELETE)

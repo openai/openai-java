@@ -5,6 +5,7 @@ package com.openai.services.blocking.beta
 import com.openai.core.ClientOptions
 import com.openai.core.JsonValue
 import com.openai.core.RequestOptions
+import com.openai.core.checkRequired
 import com.openai.core.handlers.errorHandler
 import com.openai.core.handlers.jsonHandler
 import com.openai.core.handlers.mapJson
@@ -34,6 +35,7 @@ import com.openai.services.blocking.beta.threads.MessageService
 import com.openai.services.blocking.beta.threads.MessageServiceImpl
 import com.openai.services.blocking.beta.threads.RunService
 import com.openai.services.blocking.beta.threads.RunServiceImpl
+import kotlin.jvm.optionals.getOrNull
 
 class ThreadServiceImpl internal constructor(private val clientOptions: ClientOptions) :
     ThreadService {
@@ -139,6 +141,9 @@ class ThreadServiceImpl internal constructor(private val clientOptions: ClientOp
             params: ThreadRetrieveParams,
             requestOptions: RequestOptions,
         ): HttpResponseFor<Thread> {
+            // We check here instead of in the params builder because this can be specified
+            // positionally or in the params class.
+            checkRequired("threadId", params.threadId().getOrNull())
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.GET)
@@ -166,6 +171,9 @@ class ThreadServiceImpl internal constructor(private val clientOptions: ClientOp
             params: ThreadUpdateParams,
             requestOptions: RequestOptions,
         ): HttpResponseFor<Thread> {
+            // We check here instead of in the params builder because this can be specified
+            // positionally or in the params class.
+            checkRequired("threadId", params.threadId().getOrNull())
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.POST)
@@ -194,6 +202,9 @@ class ThreadServiceImpl internal constructor(private val clientOptions: ClientOp
             params: ThreadDeleteParams,
             requestOptions: RequestOptions,
         ): HttpResponseFor<ThreadDeleted> {
+            // We check here instead of in the params builder because this can be specified
+            // positionally or in the params class.
+            checkRequired("threadId", params.threadId().getOrNull())
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.DELETE)
