@@ -4,23 +4,23 @@ package com.openai.models.vectorstores
 
 import com.openai.core.JsonValue
 import com.openai.core.Params
-import com.openai.core.checkRequired
 import com.openai.core.http.Headers
 import com.openai.core.http.QueryParams
 import com.openai.core.toImmutable
 import java.util.Objects
 import java.util.Optional
+import kotlin.jvm.optionals.getOrNull
 
 /** Delete a vector store. */
 class VectorStoreDeleteParams
 private constructor(
-    private val vectorStoreId: String,
+    private val vectorStoreId: String?,
     private val additionalHeaders: Headers,
     private val additionalQueryParams: QueryParams,
     private val additionalBodyProperties: Map<String, JsonValue>,
 ) : Params {
 
-    fun vectorStoreId(): String = vectorStoreId
+    fun vectorStoreId(): Optional<String> = Optional.ofNullable(vectorStoreId)
 
     fun _additionalBodyProperties(): Map<String, JsonValue> = additionalBodyProperties
 
@@ -32,14 +32,9 @@ private constructor(
 
     companion object {
 
-        /**
-         * Returns a mutable builder for constructing an instance of [VectorStoreDeleteParams].
-         *
-         * The following fields are required:
-         * ```java
-         * .vectorStoreId()
-         * ```
-         */
+        @JvmStatic fun none(): VectorStoreDeleteParams = builder().build()
+
+        /** Returns a mutable builder for constructing an instance of [VectorStoreDeleteParams]. */
         @JvmStatic fun builder() = Builder()
     }
 
@@ -60,7 +55,11 @@ private constructor(
                 vectorStoreDeleteParams.additionalBodyProperties.toMutableMap()
         }
 
-        fun vectorStoreId(vectorStoreId: String) = apply { this.vectorStoreId = vectorStoreId }
+        fun vectorStoreId(vectorStoreId: String?) = apply { this.vectorStoreId = vectorStoreId }
+
+        /** Alias for calling [Builder.vectorStoreId] with `vectorStoreId.orElse(null)`. */
+        fun vectorStoreId(vectorStoreId: Optional<String>) =
+            vectorStoreId(vectorStoreId.getOrNull())
 
         fun additionalHeaders(additionalHeaders: Headers) = apply {
             this.additionalHeaders.clear()
@@ -186,17 +185,10 @@ private constructor(
          * Returns an immutable instance of [VectorStoreDeleteParams].
          *
          * Further updates to this [Builder] will not mutate the returned instance.
-         *
-         * The following fields are required:
-         * ```java
-         * .vectorStoreId()
-         * ```
-         *
-         * @throws IllegalStateException if any required field is unset.
          */
         fun build(): VectorStoreDeleteParams =
             VectorStoreDeleteParams(
-                checkRequired("vectorStoreId", vectorStoreId),
+                vectorStoreId,
                 additionalHeaders.build(),
                 additionalQueryParams.build(),
                 additionalBodyProperties.toImmutable(),
@@ -208,7 +200,7 @@ private constructor(
 
     fun _pathParam(index: Int): String =
         when (index) {
-            0 -> vectorStoreId
+            0 -> vectorStoreId ?: ""
             else -> ""
         }
 

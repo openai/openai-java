@@ -30,7 +30,7 @@ import kotlin.jvm.optionals.getOrNull
 class RunSubmitToolOutputsParams
 private constructor(
     private val threadId: String,
-    private val runId: String,
+    private val runId: String?,
     private val body: Body,
     private val additionalHeaders: Headers,
     private val additionalQueryParams: QueryParams,
@@ -38,7 +38,7 @@ private constructor(
 
     fun threadId(): String = threadId
 
-    fun runId(): String = runId
+    fun runId(): Optional<String> = Optional.ofNullable(runId)
 
     /**
      * A list of tools for which the outputs are being submitted.
@@ -71,7 +71,6 @@ private constructor(
          * The following fields are required:
          * ```java
          * .threadId()
-         * .runId()
          * .toolOutputs()
          * ```
          */
@@ -98,7 +97,10 @@ private constructor(
 
         fun threadId(threadId: String) = apply { this.threadId = threadId }
 
-        fun runId(runId: String) = apply { this.runId = runId }
+        fun runId(runId: String?) = apply { this.runId = runId }
+
+        /** Alias for calling [Builder.runId] with `runId.orElse(null)`. */
+        fun runId(runId: Optional<String>) = runId(runId.getOrNull())
 
         /**
          * Sets the entire request body.
@@ -255,7 +257,6 @@ private constructor(
          * The following fields are required:
          * ```java
          * .threadId()
-         * .runId()
          * .toolOutputs()
          * ```
          *
@@ -264,7 +265,7 @@ private constructor(
         fun build(): RunSubmitToolOutputsParams =
             RunSubmitToolOutputsParams(
                 checkRequired("threadId", threadId),
-                checkRequired("runId", runId),
+                runId,
                 body.build(),
                 additionalHeaders.build(),
                 additionalQueryParams.build(),
@@ -276,7 +277,7 @@ private constructor(
     fun _pathParam(index: Int): String =
         when (index) {
             0 -> threadId
-            1 -> runId
+            1 -> runId ?: ""
             else -> ""
         }
 

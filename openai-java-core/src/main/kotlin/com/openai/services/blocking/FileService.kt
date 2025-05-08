@@ -50,13 +50,33 @@ interface FileService {
     ): FileObject
 
     /** Returns information about a specific file. */
-    fun retrieve(params: FileRetrieveParams): FileObject = retrieve(params, RequestOptions.none())
+    fun retrieve(fileId: String): FileObject = retrieve(fileId, FileRetrieveParams.none())
+
+    /** @see [retrieve] */
+    fun retrieve(
+        fileId: String,
+        params: FileRetrieveParams = FileRetrieveParams.none(),
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): FileObject = retrieve(params.toBuilder().fileId(fileId).build(), requestOptions)
+
+    /** @see [retrieve] */
+    fun retrieve(
+        fileId: String,
+        params: FileRetrieveParams = FileRetrieveParams.none(),
+    ): FileObject = retrieve(fileId, params, RequestOptions.none())
 
     /** @see [retrieve] */
     fun retrieve(
         params: FileRetrieveParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): FileObject
+
+    /** @see [retrieve] */
+    fun retrieve(params: FileRetrieveParams): FileObject = retrieve(params, RequestOptions.none())
+
+    /** @see [retrieve] */
+    fun retrieve(fileId: String, requestOptions: RequestOptions): FileObject =
+        retrieve(fileId, FileRetrieveParams.none(), requestOptions)
 
     /** Returns a list of files. */
     fun list(): FileListPage = list(FileListParams.none())
@@ -76,7 +96,18 @@ interface FileService {
         list(FileListParams.none(), requestOptions)
 
     /** Delete a file. */
-    fun delete(params: FileDeleteParams): FileDeleted = delete(params, RequestOptions.none())
+    fun delete(fileId: String): FileDeleted = delete(fileId, FileDeleteParams.none())
+
+    /** @see [delete] */
+    fun delete(
+        fileId: String,
+        params: FileDeleteParams = FileDeleteParams.none(),
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): FileDeleted = delete(params.toBuilder().fileId(fileId).build(), requestOptions)
+
+    /** @see [delete] */
+    fun delete(fileId: String, params: FileDeleteParams = FileDeleteParams.none()): FileDeleted =
+        delete(fileId, params, RequestOptions.none())
 
     /** @see [delete] */
     fun delete(
@@ -84,9 +115,31 @@ interface FileService {
         requestOptions: RequestOptions = RequestOptions.none(),
     ): FileDeleted
 
+    /** @see [delete] */
+    fun delete(params: FileDeleteParams): FileDeleted = delete(params, RequestOptions.none())
+
+    /** @see [delete] */
+    fun delete(fileId: String, requestOptions: RequestOptions): FileDeleted =
+        delete(fileId, FileDeleteParams.none(), requestOptions)
+
     /** Returns the contents of the specified file. */
     @MustBeClosed
-    fun content(params: FileContentParams): HttpResponse = content(params, RequestOptions.none())
+    fun content(fileId: String): HttpResponse = content(fileId, FileContentParams.none())
+
+    /** @see [content] */
+    @MustBeClosed
+    fun content(
+        fileId: String,
+        params: FileContentParams = FileContentParams.none(),
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): HttpResponse = content(params.toBuilder().fileId(fileId).build(), requestOptions)
+
+    /** @see [content] */
+    @MustBeClosed
+    fun content(
+        fileId: String,
+        params: FileContentParams = FileContentParams.none(),
+    ): HttpResponse = content(fileId, params, RequestOptions.none())
 
     /** @see [content] */
     @MustBeClosed
@@ -94,6 +147,15 @@ interface FileService {
         params: FileContentParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): HttpResponse
+
+    /** @see [content] */
+    @MustBeClosed
+    fun content(params: FileContentParams): HttpResponse = content(params, RequestOptions.none())
+
+    /** @see [content] */
+    @MustBeClosed
+    fun content(fileId: String, requestOptions: RequestOptions): HttpResponse =
+        content(fileId, FileContentParams.none(), requestOptions)
 
     /** A view of [FileService] that provides access to raw HTTP responses for each method. */
     interface WithRawResponse {
@@ -118,8 +180,24 @@ interface FileService {
          * [FileService.retrieve].
          */
         @MustBeClosed
-        fun retrieve(params: FileRetrieveParams): HttpResponseFor<FileObject> =
-            retrieve(params, RequestOptions.none())
+        fun retrieve(fileId: String): HttpResponseFor<FileObject> =
+            retrieve(fileId, FileRetrieveParams.none())
+
+        /** @see [retrieve] */
+        @MustBeClosed
+        fun retrieve(
+            fileId: String,
+            params: FileRetrieveParams = FileRetrieveParams.none(),
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): HttpResponseFor<FileObject> =
+            retrieve(params.toBuilder().fileId(fileId).build(), requestOptions)
+
+        /** @see [retrieve] */
+        @MustBeClosed
+        fun retrieve(
+            fileId: String,
+            params: FileRetrieveParams = FileRetrieveParams.none(),
+        ): HttpResponseFor<FileObject> = retrieve(fileId, params, RequestOptions.none())
 
         /** @see [retrieve] */
         @MustBeClosed
@@ -127,6 +205,16 @@ interface FileService {
             params: FileRetrieveParams,
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<FileObject>
+
+        /** @see [retrieve] */
+        @MustBeClosed
+        fun retrieve(params: FileRetrieveParams): HttpResponseFor<FileObject> =
+            retrieve(params, RequestOptions.none())
+
+        /** @see [retrieve] */
+        @MustBeClosed
+        fun retrieve(fileId: String, requestOptions: RequestOptions): HttpResponseFor<FileObject> =
+            retrieve(fileId, FileRetrieveParams.none(), requestOptions)
 
         /**
          * Returns a raw HTTP response for `get /files`, but is otherwise the same as
@@ -156,8 +244,24 @@ interface FileService {
          * [FileService.delete].
          */
         @MustBeClosed
-        fun delete(params: FileDeleteParams): HttpResponseFor<FileDeleted> =
-            delete(params, RequestOptions.none())
+        fun delete(fileId: String): HttpResponseFor<FileDeleted> =
+            delete(fileId, FileDeleteParams.none())
+
+        /** @see [delete] */
+        @MustBeClosed
+        fun delete(
+            fileId: String,
+            params: FileDeleteParams = FileDeleteParams.none(),
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): HttpResponseFor<FileDeleted> =
+            delete(params.toBuilder().fileId(fileId).build(), requestOptions)
+
+        /** @see [delete] */
+        @MustBeClosed
+        fun delete(
+            fileId: String,
+            params: FileDeleteParams = FileDeleteParams.none(),
+        ): HttpResponseFor<FileDeleted> = delete(fileId, params, RequestOptions.none())
 
         /** @see [delete] */
         @MustBeClosed
@@ -166,13 +270,37 @@ interface FileService {
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<FileDeleted>
 
+        /** @see [delete] */
+        @MustBeClosed
+        fun delete(params: FileDeleteParams): HttpResponseFor<FileDeleted> =
+            delete(params, RequestOptions.none())
+
+        /** @see [delete] */
+        @MustBeClosed
+        fun delete(fileId: String, requestOptions: RequestOptions): HttpResponseFor<FileDeleted> =
+            delete(fileId, FileDeleteParams.none(), requestOptions)
+
         /**
          * Returns a raw HTTP response for `get /files/{file_id}/content`, but is otherwise the same
          * as [FileService.content].
          */
         @MustBeClosed
-        fun content(params: FileContentParams): HttpResponse =
-            content(params, RequestOptions.none())
+        fun content(fileId: String): HttpResponse = content(fileId, FileContentParams.none())
+
+        /** @see [content] */
+        @MustBeClosed
+        fun content(
+            fileId: String,
+            params: FileContentParams = FileContentParams.none(),
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): HttpResponse = content(params.toBuilder().fileId(fileId).build(), requestOptions)
+
+        /** @see [content] */
+        @MustBeClosed
+        fun content(
+            fileId: String,
+            params: FileContentParams = FileContentParams.none(),
+        ): HttpResponse = content(fileId, params, RequestOptions.none())
 
         /** @see [content] */
         @MustBeClosed
@@ -180,5 +308,15 @@ interface FileService {
             params: FileContentParams,
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponse
+
+        /** @see [content] */
+        @MustBeClosed
+        fun content(params: FileContentParams): HttpResponse =
+            content(params, RequestOptions.none())
+
+        /** @see [content] */
+        @MustBeClosed
+        fun content(fileId: String, requestOptions: RequestOptions): HttpResponse =
+            content(fileId, FileContentParams.none(), requestOptions)
     }
 }

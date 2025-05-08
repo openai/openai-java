@@ -3,7 +3,6 @@
 package com.openai.models.responses
 
 import com.openai.core.Params
-import com.openai.core.checkRequired
 import com.openai.core.http.Headers
 import com.openai.core.http.QueryParams
 import com.openai.core.toImmutable
@@ -14,13 +13,13 @@ import kotlin.jvm.optionals.getOrNull
 /** Retrieves a model response with the given ID. */
 class ResponseRetrieveParams
 private constructor(
-    private val responseId: String,
+    private val responseId: String?,
     private val include: List<ResponseIncludable>?,
     private val additionalHeaders: Headers,
     private val additionalQueryParams: QueryParams,
 ) : Params {
 
-    fun responseId(): String = responseId
+    fun responseId(): Optional<String> = Optional.ofNullable(responseId)
 
     /**
      * Additional fields to include in the response. See the `include` parameter for Response
@@ -36,14 +35,9 @@ private constructor(
 
     companion object {
 
-        /**
-         * Returns a mutable builder for constructing an instance of [ResponseRetrieveParams].
-         *
-         * The following fields are required:
-         * ```java
-         * .responseId()
-         * ```
-         */
+        @JvmStatic fun none(): ResponseRetrieveParams = builder().build()
+
+        /** Returns a mutable builder for constructing an instance of [ResponseRetrieveParams]. */
         @JvmStatic fun builder() = Builder()
     }
 
@@ -63,7 +57,10 @@ private constructor(
             additionalQueryParams = responseRetrieveParams.additionalQueryParams.toBuilder()
         }
 
-        fun responseId(responseId: String) = apply { this.responseId = responseId }
+        fun responseId(responseId: String?) = apply { this.responseId = responseId }
+
+        /** Alias for calling [Builder.responseId] with `responseId.orElse(null)`. */
+        fun responseId(responseId: Optional<String>) = responseId(responseId.getOrNull())
 
         /**
          * Additional fields to include in the response. See the `include` parameter for Response
@@ -187,17 +184,10 @@ private constructor(
          * Returns an immutable instance of [ResponseRetrieveParams].
          *
          * Further updates to this [Builder] will not mutate the returned instance.
-         *
-         * The following fields are required:
-         * ```java
-         * .responseId()
-         * ```
-         *
-         * @throws IllegalStateException if any required field is unset.
          */
         fun build(): ResponseRetrieveParams =
             ResponseRetrieveParams(
-                checkRequired("responseId", responseId),
+                responseId,
                 include?.toImmutable(),
                 additionalHeaders.build(),
                 additionalQueryParams.build(),
@@ -206,7 +196,7 @@ private constructor(
 
     fun _pathParam(index: Int): String =
         when (index) {
-            0 -> responseId
+            0 -> responseId ?: ""
             else -> ""
         }
 

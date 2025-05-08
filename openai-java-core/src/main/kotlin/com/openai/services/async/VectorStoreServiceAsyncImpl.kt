@@ -4,6 +4,7 @@ package com.openai.services.async
 
 import com.openai.core.ClientOptions
 import com.openai.core.RequestOptions
+import com.openai.core.checkRequired
 import com.openai.core.handlers.errorHandler
 import com.openai.core.handlers.jsonHandler
 import com.openai.core.handlers.withErrorHandler
@@ -33,6 +34,7 @@ import com.openai.services.async.vectorstores.FileBatchServiceAsyncImpl
 import com.openai.services.async.vectorstores.FileServiceAsync
 import com.openai.services.async.vectorstores.FileServiceAsyncImpl
 import java.util.concurrent.CompletableFuture
+import kotlin.jvm.optionals.getOrNull
 
 class VectorStoreServiceAsyncImpl internal constructor(private val clientOptions: ClientOptions) :
     VectorStoreServiceAsync {
@@ -155,6 +157,9 @@ class VectorStoreServiceAsyncImpl internal constructor(private val clientOptions
             params: VectorStoreRetrieveParams,
             requestOptions: RequestOptions,
         ): CompletableFuture<HttpResponseFor<VectorStore>> {
+            // We check here instead of in the params builder because this can be specified
+            // positionally or in the params class.
+            checkRequired("vectorStoreId", params.vectorStoreId().getOrNull())
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.GET)
@@ -185,6 +190,9 @@ class VectorStoreServiceAsyncImpl internal constructor(private val clientOptions
             params: VectorStoreUpdateParams,
             requestOptions: RequestOptions,
         ): CompletableFuture<HttpResponseFor<VectorStore>> {
+            // We check here instead of in the params builder because this can be specified
+            // positionally or in the params class.
+            checkRequired("vectorStoreId", params.vectorStoreId().getOrNull())
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.POST)
@@ -254,6 +262,9 @@ class VectorStoreServiceAsyncImpl internal constructor(private val clientOptions
             params: VectorStoreDeleteParams,
             requestOptions: RequestOptions,
         ): CompletableFuture<HttpResponseFor<VectorStoreDeleted>> {
+            // We check here instead of in the params builder because this can be specified
+            // positionally or in the params class.
+            checkRequired("vectorStoreId", params.vectorStoreId().getOrNull())
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.DELETE)
@@ -286,6 +297,9 @@ class VectorStoreServiceAsyncImpl internal constructor(private val clientOptions
             params: VectorStoreSearchParams,
             requestOptions: RequestOptions,
         ): CompletableFuture<HttpResponseFor<VectorStoreSearchPageAsync>> {
+            // We check here instead of in the params builder because this can be specified
+            // positionally or in the params class.
+            checkRequired("vectorStoreId", params.vectorStoreId().getOrNull())
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.POST)

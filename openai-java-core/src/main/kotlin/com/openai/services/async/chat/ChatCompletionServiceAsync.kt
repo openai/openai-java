@@ -87,8 +87,22 @@ interface ChatCompletionServiceAsync {
      * Get a stored chat completion. Only Chat Completions that have been created with the `store`
      * parameter set to `true` will be returned.
      */
-    fun retrieve(params: ChatCompletionRetrieveParams): CompletableFuture<ChatCompletion> =
-        retrieve(params, RequestOptions.none())
+    fun retrieve(completionId: String): CompletableFuture<ChatCompletion> =
+        retrieve(completionId, ChatCompletionRetrieveParams.none())
+
+    /** @see [retrieve] */
+    fun retrieve(
+        completionId: String,
+        params: ChatCompletionRetrieveParams = ChatCompletionRetrieveParams.none(),
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): CompletableFuture<ChatCompletion> =
+        retrieve(params.toBuilder().completionId(completionId).build(), requestOptions)
+
+    /** @see [retrieve] */
+    fun retrieve(
+        completionId: String,
+        params: ChatCompletionRetrieveParams = ChatCompletionRetrieveParams.none(),
+    ): CompletableFuture<ChatCompletion> = retrieve(completionId, params, RequestOptions.none())
 
     /** @see [retrieve] */
     fun retrieve(
@@ -96,11 +110,36 @@ interface ChatCompletionServiceAsync {
         requestOptions: RequestOptions = RequestOptions.none(),
     ): CompletableFuture<ChatCompletion>
 
+    /** @see [retrieve] */
+    fun retrieve(params: ChatCompletionRetrieveParams): CompletableFuture<ChatCompletion> =
+        retrieve(params, RequestOptions.none())
+
+    /** @see [retrieve] */
+    fun retrieve(
+        completionId: String,
+        requestOptions: RequestOptions,
+    ): CompletableFuture<ChatCompletion> =
+        retrieve(completionId, ChatCompletionRetrieveParams.none(), requestOptions)
+
     /**
      * Modify a stored chat completion. Only Chat Completions that have been created with the
      * `store` parameter set to `true` can be modified. Currently, the only supported modification
      * is to update the `metadata` field.
      */
+    fun update(
+        completionId: String,
+        params: ChatCompletionUpdateParams,
+    ): CompletableFuture<ChatCompletion> = update(completionId, params, RequestOptions.none())
+
+    /** @see [update] */
+    fun update(
+        completionId: String,
+        params: ChatCompletionUpdateParams,
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): CompletableFuture<ChatCompletion> =
+        update(params.toBuilder().completionId(completionId).build(), requestOptions)
+
+    /** @see [update] */
     fun update(params: ChatCompletionUpdateParams): CompletableFuture<ChatCompletion> =
         update(params, RequestOptions.none())
 
@@ -136,14 +175,40 @@ interface ChatCompletionServiceAsync {
      * Delete a stored chat completion. Only Chat Completions that have been created with the
      * `store` parameter set to `true` can be deleted.
      */
-    fun delete(params: ChatCompletionDeleteParams): CompletableFuture<ChatCompletionDeleted> =
-        delete(params, RequestOptions.none())
+    fun delete(completionId: String): CompletableFuture<ChatCompletionDeleted> =
+        delete(completionId, ChatCompletionDeleteParams.none())
+
+    /** @see [delete] */
+    fun delete(
+        completionId: String,
+        params: ChatCompletionDeleteParams = ChatCompletionDeleteParams.none(),
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): CompletableFuture<ChatCompletionDeleted> =
+        delete(params.toBuilder().completionId(completionId).build(), requestOptions)
+
+    /** @see [delete] */
+    fun delete(
+        completionId: String,
+        params: ChatCompletionDeleteParams = ChatCompletionDeleteParams.none(),
+    ): CompletableFuture<ChatCompletionDeleted> =
+        delete(completionId, params, RequestOptions.none())
 
     /** @see [delete] */
     fun delete(
         params: ChatCompletionDeleteParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): CompletableFuture<ChatCompletionDeleted>
+
+    /** @see [delete] */
+    fun delete(params: ChatCompletionDeleteParams): CompletableFuture<ChatCompletionDeleted> =
+        delete(params, RequestOptions.none())
+
+    /** @see [delete] */
+    fun delete(
+        completionId: String,
+        requestOptions: RequestOptions,
+    ): CompletableFuture<ChatCompletionDeleted> =
+        delete(completionId, ChatCompletionDeleteParams.none(), requestOptions)
 
     /**
      * A view of [ChatCompletionServiceAsync] that provides access to raw HTTP responses for each
@@ -192,10 +257,25 @@ interface ChatCompletionServiceAsync {
          * the same as [ChatCompletionServiceAsync.retrieve].
          */
         @MustBeClosed
+        fun retrieve(completionId: String): CompletableFuture<HttpResponseFor<ChatCompletion>> =
+            retrieve(completionId, ChatCompletionRetrieveParams.none())
+
+        /** @see [retrieve] */
+        @MustBeClosed
         fun retrieve(
-            params: ChatCompletionRetrieveParams
+            completionId: String,
+            params: ChatCompletionRetrieveParams = ChatCompletionRetrieveParams.none(),
+            requestOptions: RequestOptions = RequestOptions.none(),
         ): CompletableFuture<HttpResponseFor<ChatCompletion>> =
-            retrieve(params, RequestOptions.none())
+            retrieve(params.toBuilder().completionId(completionId).build(), requestOptions)
+
+        /** @see [retrieve] */
+        @MustBeClosed
+        fun retrieve(
+            completionId: String,
+            params: ChatCompletionRetrieveParams = ChatCompletionRetrieveParams.none(),
+        ): CompletableFuture<HttpResponseFor<ChatCompletion>> =
+            retrieve(completionId, params, RequestOptions.none())
 
         /** @see [retrieve] */
         @MustBeClosed
@@ -204,10 +284,42 @@ interface ChatCompletionServiceAsync {
             requestOptions: RequestOptions = RequestOptions.none(),
         ): CompletableFuture<HttpResponseFor<ChatCompletion>>
 
+        /** @see [retrieve] */
+        @MustBeClosed
+        fun retrieve(
+            params: ChatCompletionRetrieveParams
+        ): CompletableFuture<HttpResponseFor<ChatCompletion>> =
+            retrieve(params, RequestOptions.none())
+
+        /** @see [retrieve] */
+        @MustBeClosed
+        fun retrieve(
+            completionId: String,
+            requestOptions: RequestOptions,
+        ): CompletableFuture<HttpResponseFor<ChatCompletion>> =
+            retrieve(completionId, ChatCompletionRetrieveParams.none(), requestOptions)
+
         /**
          * Returns a raw HTTP response for `post /chat/completions/{completion_id}`, but is
          * otherwise the same as [ChatCompletionServiceAsync.update].
          */
+        @MustBeClosed
+        fun update(
+            completionId: String,
+            params: ChatCompletionUpdateParams,
+        ): CompletableFuture<HttpResponseFor<ChatCompletion>> =
+            update(completionId, params, RequestOptions.none())
+
+        /** @see [update] */
+        @MustBeClosed
+        fun update(
+            completionId: String,
+            params: ChatCompletionUpdateParams,
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): CompletableFuture<HttpResponseFor<ChatCompletion>> =
+            update(params.toBuilder().completionId(completionId).build(), requestOptions)
+
+        /** @see [update] */
         @MustBeClosed
         fun update(
             params: ChatCompletionUpdateParams
@@ -256,9 +368,26 @@ interface ChatCompletionServiceAsync {
          */
         @MustBeClosed
         fun delete(
-            params: ChatCompletionDeleteParams
+            completionId: String
         ): CompletableFuture<HttpResponseFor<ChatCompletionDeleted>> =
-            delete(params, RequestOptions.none())
+            delete(completionId, ChatCompletionDeleteParams.none())
+
+        /** @see [delete] */
+        @MustBeClosed
+        fun delete(
+            completionId: String,
+            params: ChatCompletionDeleteParams = ChatCompletionDeleteParams.none(),
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): CompletableFuture<HttpResponseFor<ChatCompletionDeleted>> =
+            delete(params.toBuilder().completionId(completionId).build(), requestOptions)
+
+        /** @see [delete] */
+        @MustBeClosed
+        fun delete(
+            completionId: String,
+            params: ChatCompletionDeleteParams = ChatCompletionDeleteParams.none(),
+        ): CompletableFuture<HttpResponseFor<ChatCompletionDeleted>> =
+            delete(completionId, params, RequestOptions.none())
 
         /** @see [delete] */
         @MustBeClosed
@@ -266,5 +395,20 @@ interface ChatCompletionServiceAsync {
             params: ChatCompletionDeleteParams,
             requestOptions: RequestOptions = RequestOptions.none(),
         ): CompletableFuture<HttpResponseFor<ChatCompletionDeleted>>
+
+        /** @see [delete] */
+        @MustBeClosed
+        fun delete(
+            params: ChatCompletionDeleteParams
+        ): CompletableFuture<HttpResponseFor<ChatCompletionDeleted>> =
+            delete(params, RequestOptions.none())
+
+        /** @see [delete] */
+        @MustBeClosed
+        fun delete(
+            completionId: String,
+            requestOptions: RequestOptions,
+        ): CompletableFuture<HttpResponseFor<ChatCompletionDeleted>> =
+            delete(completionId, ChatCompletionDeleteParams.none(), requestOptions)
     }
 }

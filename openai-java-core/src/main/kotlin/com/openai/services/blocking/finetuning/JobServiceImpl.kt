@@ -4,6 +4,7 @@ package com.openai.services.blocking.finetuning
 
 import com.openai.core.ClientOptions
 import com.openai.core.RequestOptions
+import com.openai.core.checkRequired
 import com.openai.core.handlers.errorHandler
 import com.openai.core.handlers.jsonHandler
 import com.openai.core.handlers.withErrorHandler
@@ -29,6 +30,7 @@ import com.openai.models.finetuning.jobs.JobResumeParams
 import com.openai.models.finetuning.jobs.JobRetrieveParams
 import com.openai.services.blocking.finetuning.jobs.CheckpointService
 import com.openai.services.blocking.finetuning.jobs.CheckpointServiceImpl
+import kotlin.jvm.optionals.getOrNull
 
 class JobServiceImpl internal constructor(private val clientOptions: ClientOptions) : JobService {
 
@@ -121,6 +123,9 @@ class JobServiceImpl internal constructor(private val clientOptions: ClientOptio
             params: JobRetrieveParams,
             requestOptions: RequestOptions,
         ): HttpResponseFor<FineTuningJob> {
+            // We check here instead of in the params builder because this can be specified
+            // positionally or in the params class.
+            checkRequired("fineTuningJobId", params.fineTuningJobId().getOrNull())
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.GET)
@@ -181,6 +186,9 @@ class JobServiceImpl internal constructor(private val clientOptions: ClientOptio
             params: JobCancelParams,
             requestOptions: RequestOptions,
         ): HttpResponseFor<FineTuningJob> {
+            // We check here instead of in the params builder because this can be specified
+            // positionally or in the params class.
+            checkRequired("fineTuningJobId", params.fineTuningJobId().getOrNull())
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.POST)
@@ -209,6 +217,9 @@ class JobServiceImpl internal constructor(private val clientOptions: ClientOptio
             params: JobListEventsParams,
             requestOptions: RequestOptions,
         ): HttpResponseFor<JobListEventsPage> {
+            // We check here instead of in the params builder because this can be specified
+            // positionally or in the params class.
+            checkRequired("fineTuningJobId", params.fineTuningJobId().getOrNull())
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.GET)
@@ -242,6 +253,9 @@ class JobServiceImpl internal constructor(private val clientOptions: ClientOptio
             params: JobPauseParams,
             requestOptions: RequestOptions,
         ): HttpResponseFor<FineTuningJob> {
+            // We check here instead of in the params builder because this can be specified
+            // positionally or in the params class.
+            checkRequired("fineTuningJobId", params.fineTuningJobId().getOrNull())
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.POST)
@@ -269,6 +283,9 @@ class JobServiceImpl internal constructor(private val clientOptions: ClientOptio
             params: JobResumeParams,
             requestOptions: RequestOptions,
         ): HttpResponseFor<FineTuningJob> {
+            // We check here instead of in the params builder because this can be specified
+            // positionally or in the params class.
+            checkRequired("fineTuningJobId", params.fineTuningJobId().getOrNull())
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.POST)

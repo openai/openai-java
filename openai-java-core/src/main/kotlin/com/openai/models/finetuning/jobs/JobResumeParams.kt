@@ -4,23 +4,23 @@ package com.openai.models.finetuning.jobs
 
 import com.openai.core.JsonValue
 import com.openai.core.Params
-import com.openai.core.checkRequired
 import com.openai.core.http.Headers
 import com.openai.core.http.QueryParams
 import com.openai.core.toImmutable
 import java.util.Objects
 import java.util.Optional
+import kotlin.jvm.optionals.getOrNull
 
 /** Resume a fine-tune job. */
 class JobResumeParams
 private constructor(
-    private val fineTuningJobId: String,
+    private val fineTuningJobId: String?,
     private val additionalHeaders: Headers,
     private val additionalQueryParams: QueryParams,
     private val additionalBodyProperties: Map<String, JsonValue>,
 ) : Params {
 
-    fun fineTuningJobId(): String = fineTuningJobId
+    fun fineTuningJobId(): Optional<String> = Optional.ofNullable(fineTuningJobId)
 
     fun _additionalBodyProperties(): Map<String, JsonValue> = additionalBodyProperties
 
@@ -32,14 +32,9 @@ private constructor(
 
     companion object {
 
-        /**
-         * Returns a mutable builder for constructing an instance of [JobResumeParams].
-         *
-         * The following fields are required:
-         * ```java
-         * .fineTuningJobId()
-         * ```
-         */
+        @JvmStatic fun none(): JobResumeParams = builder().build()
+
+        /** Returns a mutable builder for constructing an instance of [JobResumeParams]. */
         @JvmStatic fun builder() = Builder()
     }
 
@@ -59,9 +54,13 @@ private constructor(
             additionalBodyProperties = jobResumeParams.additionalBodyProperties.toMutableMap()
         }
 
-        fun fineTuningJobId(fineTuningJobId: String) = apply {
+        fun fineTuningJobId(fineTuningJobId: String?) = apply {
             this.fineTuningJobId = fineTuningJobId
         }
+
+        /** Alias for calling [Builder.fineTuningJobId] with `fineTuningJobId.orElse(null)`. */
+        fun fineTuningJobId(fineTuningJobId: Optional<String>) =
+            fineTuningJobId(fineTuningJobId.getOrNull())
 
         fun additionalHeaders(additionalHeaders: Headers) = apply {
             this.additionalHeaders.clear()
@@ -187,17 +186,10 @@ private constructor(
          * Returns an immutable instance of [JobResumeParams].
          *
          * Further updates to this [Builder] will not mutate the returned instance.
-         *
-         * The following fields are required:
-         * ```java
-         * .fineTuningJobId()
-         * ```
-         *
-         * @throws IllegalStateException if any required field is unset.
          */
         fun build(): JobResumeParams =
             JobResumeParams(
-                checkRequired("fineTuningJobId", fineTuningJobId),
+                fineTuningJobId,
                 additionalHeaders.build(),
                 additionalQueryParams.build(),
                 additionalBodyProperties.toImmutable(),
@@ -209,7 +201,7 @@ private constructor(
 
     fun _pathParam(index: Int): String =
         when (index) {
-            0 -> fineTuningJobId
+            0 -> fineTuningJobId ?: ""
             else -> ""
         }
 

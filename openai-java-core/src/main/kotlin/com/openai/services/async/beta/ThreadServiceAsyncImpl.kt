@@ -5,6 +5,7 @@ package com.openai.services.async.beta
 import com.openai.core.ClientOptions
 import com.openai.core.JsonValue
 import com.openai.core.RequestOptions
+import com.openai.core.checkRequired
 import com.openai.core.handlers.errorHandler
 import com.openai.core.handlers.jsonHandler
 import com.openai.core.handlers.mapJson
@@ -37,6 +38,7 @@ import com.openai.services.async.beta.threads.MessageServiceAsyncImpl
 import com.openai.services.async.beta.threads.RunServiceAsync
 import com.openai.services.async.beta.threads.RunServiceAsyncImpl
 import java.util.concurrent.CompletableFuture
+import kotlin.jvm.optionals.getOrNull
 
 class ThreadServiceAsyncImpl internal constructor(private val clientOptions: ClientOptions) :
     ThreadServiceAsync {
@@ -160,6 +162,9 @@ class ThreadServiceAsyncImpl internal constructor(private val clientOptions: Cli
             params: ThreadRetrieveParams,
             requestOptions: RequestOptions,
         ): CompletableFuture<HttpResponseFor<Thread>> {
+            // We check here instead of in the params builder because this can be specified
+            // positionally or in the params class.
+            checkRequired("threadId", params.threadId().getOrNull())
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.GET)
@@ -190,6 +195,9 @@ class ThreadServiceAsyncImpl internal constructor(private val clientOptions: Cli
             params: ThreadUpdateParams,
             requestOptions: RequestOptions,
         ): CompletableFuture<HttpResponseFor<Thread>> {
+            // We check here instead of in the params builder because this can be specified
+            // positionally or in the params class.
+            checkRequired("threadId", params.threadId().getOrNull())
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.POST)
@@ -221,6 +229,9 @@ class ThreadServiceAsyncImpl internal constructor(private val clientOptions: Cli
             params: ThreadDeleteParams,
             requestOptions: RequestOptions,
         ): CompletableFuture<HttpResponseFor<ThreadDeleted>> {
+            // We check here instead of in the params builder because this can be specified
+            // positionally or in the params class.
+            checkRequired("threadId", params.threadId().getOrNull())
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.DELETE)

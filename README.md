@@ -412,10 +412,7 @@ These methods return [`HttpResponse`](openai-java-core/src/main/kotlin/com/opena
 import com.openai.core.http.HttpResponse;
 import com.openai.models.files.FileContentParams;
 
-FileContentParams params = FileContentParams.builder()
-    .fileId("file_id")
-    .build();
-HttpResponse response = client.files().content(params);
+HttpResponse response = client.files().content("file_id");
 ```
 
 To save the response content to a file, use the [`Files.copy(...)`](https://docs.oracle.com/javase/8/docs/api/java/nio/file/Files.html#copy-java.io.InputStream-java.nio.file.Path-java.nio.file.CopyOption...-) method:

@@ -4,6 +4,7 @@ package com.openai.services.async.uploads
 
 import com.openai.core.ClientOptions
 import com.openai.core.RequestOptions
+import com.openai.core.checkRequired
 import com.openai.core.handlers.errorHandler
 import com.openai.core.handlers.jsonHandler
 import com.openai.core.handlers.withErrorHandler
@@ -18,6 +19,7 @@ import com.openai.models.ErrorObject
 import com.openai.models.uploads.parts.PartCreateParams
 import com.openai.models.uploads.parts.UploadPart
 import java.util.concurrent.CompletableFuture
+import kotlin.jvm.optionals.getOrNull
 
 class PartServiceAsyncImpl internal constructor(private val clientOptions: ClientOptions) :
     PartServiceAsync {
@@ -47,6 +49,9 @@ class PartServiceAsyncImpl internal constructor(private val clientOptions: Clien
             params: PartCreateParams,
             requestOptions: RequestOptions,
         ): CompletableFuture<HttpResponseFor<UploadPart>> {
+            // We check here instead of in the params builder because this can be specified
+            // positionally or in the params class.
+            checkRequired("uploadId", params.uploadId().getOrNull())
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.POST)

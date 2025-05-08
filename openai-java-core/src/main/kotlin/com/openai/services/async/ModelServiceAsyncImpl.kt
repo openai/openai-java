@@ -4,6 +4,7 @@ package com.openai.services.async
 
 import com.openai.core.ClientOptions
 import com.openai.core.RequestOptions
+import com.openai.core.checkRequired
 import com.openai.core.handlers.errorHandler
 import com.openai.core.handlers.jsonHandler
 import com.openai.core.handlers.withErrorHandler
@@ -23,6 +24,7 @@ import com.openai.models.models.ModelListPageResponse
 import com.openai.models.models.ModelListParams
 import com.openai.models.models.ModelRetrieveParams
 import java.util.concurrent.CompletableFuture
+import kotlin.jvm.optionals.getOrNull
 
 class ModelServiceAsyncImpl internal constructor(private val clientOptions: ClientOptions) :
     ModelServiceAsync {
@@ -66,6 +68,9 @@ class ModelServiceAsyncImpl internal constructor(private val clientOptions: Clie
             params: ModelRetrieveParams,
             requestOptions: RequestOptions,
         ): CompletableFuture<HttpResponseFor<Model>> {
+            // We check here instead of in the params builder because this can be specified
+            // positionally or in the params class.
+            checkRequired("model", params.model().getOrNull())
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.GET)
@@ -132,6 +137,9 @@ class ModelServiceAsyncImpl internal constructor(private val clientOptions: Clie
             params: ModelDeleteParams,
             requestOptions: RequestOptions,
         ): CompletableFuture<HttpResponseFor<ModelDeleted>> {
+            // We check here instead of in the params builder because this can be specified
+            // positionally or in the params class.
+            checkRequired("model", params.model().getOrNull())
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.DELETE)

@@ -5,6 +5,7 @@ package com.openai.services.blocking.chat
 import com.openai.core.ClientOptions
 import com.openai.core.JsonValue
 import com.openai.core.RequestOptions
+import com.openai.core.checkRequired
 import com.openai.core.handlers.errorHandler
 import com.openai.core.handlers.jsonHandler
 import com.openai.core.handlers.mapJson
@@ -174,6 +175,9 @@ class ChatCompletionServiceImpl internal constructor(private val clientOptions: 
             params: ChatCompletionRetrieveParams,
             requestOptions: RequestOptions,
         ): HttpResponseFor<ChatCompletion> {
+            // We check here instead of in the params builder because this can be specified
+            // positionally or in the params class.
+            checkRequired("completionId", params.completionId().getOrNull())
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.GET)
@@ -200,6 +204,9 @@ class ChatCompletionServiceImpl internal constructor(private val clientOptions: 
             params: ChatCompletionUpdateParams,
             requestOptions: RequestOptions,
         ): HttpResponseFor<ChatCompletion> {
+            // We check here instead of in the params builder because this can be specified
+            // positionally or in the params class.
+            checkRequired("completionId", params.completionId().getOrNull())
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.POST)
@@ -266,6 +273,9 @@ class ChatCompletionServiceImpl internal constructor(private val clientOptions: 
             params: ChatCompletionDeleteParams,
             requestOptions: RequestOptions,
         ): HttpResponseFor<ChatCompletionDeleted> {
+            // We check here instead of in the params builder because this can be specified
+            // positionally or in the params class.
+            checkRequired("completionId", params.completionId().getOrNull())
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.DELETE)

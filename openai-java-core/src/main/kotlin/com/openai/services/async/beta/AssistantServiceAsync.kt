@@ -33,8 +33,22 @@ interface AssistantServiceAsync {
     ): CompletableFuture<Assistant>
 
     /** Retrieves an assistant. */
-    fun retrieve(params: AssistantRetrieveParams): CompletableFuture<Assistant> =
-        retrieve(params, RequestOptions.none())
+    fun retrieve(assistantId: String): CompletableFuture<Assistant> =
+        retrieve(assistantId, AssistantRetrieveParams.none())
+
+    /** @see [retrieve] */
+    fun retrieve(
+        assistantId: String,
+        params: AssistantRetrieveParams = AssistantRetrieveParams.none(),
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): CompletableFuture<Assistant> =
+        retrieve(params.toBuilder().assistantId(assistantId).build(), requestOptions)
+
+    /** @see [retrieve] */
+    fun retrieve(
+        assistantId: String,
+        params: AssistantRetrieveParams = AssistantRetrieveParams.none(),
+    ): CompletableFuture<Assistant> = retrieve(assistantId, params, RequestOptions.none())
 
     /** @see [retrieve] */
     fun retrieve(
@@ -42,15 +56,48 @@ interface AssistantServiceAsync {
         requestOptions: RequestOptions = RequestOptions.none(),
     ): CompletableFuture<Assistant>
 
+    /** @see [retrieve] */
+    fun retrieve(params: AssistantRetrieveParams): CompletableFuture<Assistant> =
+        retrieve(params, RequestOptions.none())
+
+    /** @see [retrieve] */
+    fun retrieve(
+        assistantId: String,
+        requestOptions: RequestOptions,
+    ): CompletableFuture<Assistant> =
+        retrieve(assistantId, AssistantRetrieveParams.none(), requestOptions)
+
     /** Modifies an assistant. */
-    fun update(params: AssistantUpdateParams): CompletableFuture<Assistant> =
-        update(params, RequestOptions.none())
+    fun update(assistantId: String): CompletableFuture<Assistant> =
+        update(assistantId, AssistantUpdateParams.none())
+
+    /** @see [update] */
+    fun update(
+        assistantId: String,
+        params: AssistantUpdateParams = AssistantUpdateParams.none(),
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): CompletableFuture<Assistant> =
+        update(params.toBuilder().assistantId(assistantId).build(), requestOptions)
+
+    /** @see [update] */
+    fun update(
+        assistantId: String,
+        params: AssistantUpdateParams = AssistantUpdateParams.none(),
+    ): CompletableFuture<Assistant> = update(assistantId, params, RequestOptions.none())
 
     /** @see [update] */
     fun update(
         params: AssistantUpdateParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): CompletableFuture<Assistant>
+
+    /** @see [update] */
+    fun update(params: AssistantUpdateParams): CompletableFuture<Assistant> =
+        update(params, RequestOptions.none())
+
+    /** @see [update] */
+    fun update(assistantId: String, requestOptions: RequestOptions): CompletableFuture<Assistant> =
+        update(assistantId, AssistantUpdateParams.none(), requestOptions)
 
     /** Returns a list of assistants. */
     fun list(): CompletableFuture<AssistantListPageAsync> = list(AssistantListParams.none())
@@ -71,14 +118,39 @@ interface AssistantServiceAsync {
         list(AssistantListParams.none(), requestOptions)
 
     /** Delete an assistant. */
-    fun delete(params: AssistantDeleteParams): CompletableFuture<AssistantDeleted> =
-        delete(params, RequestOptions.none())
+    fun delete(assistantId: String): CompletableFuture<AssistantDeleted> =
+        delete(assistantId, AssistantDeleteParams.none())
+
+    /** @see [delete] */
+    fun delete(
+        assistantId: String,
+        params: AssistantDeleteParams = AssistantDeleteParams.none(),
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): CompletableFuture<AssistantDeleted> =
+        delete(params.toBuilder().assistantId(assistantId).build(), requestOptions)
+
+    /** @see [delete] */
+    fun delete(
+        assistantId: String,
+        params: AssistantDeleteParams = AssistantDeleteParams.none(),
+    ): CompletableFuture<AssistantDeleted> = delete(assistantId, params, RequestOptions.none())
 
     /** @see [delete] */
     fun delete(
         params: AssistantDeleteParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): CompletableFuture<AssistantDeleted>
+
+    /** @see [delete] */
+    fun delete(params: AssistantDeleteParams): CompletableFuture<AssistantDeleted> =
+        delete(params, RequestOptions.none())
+
+    /** @see [delete] */
+    fun delete(
+        assistantId: String,
+        requestOptions: RequestOptions,
+    ): CompletableFuture<AssistantDeleted> =
+        delete(assistantId, AssistantDeleteParams.none(), requestOptions)
 
     /**
      * A view of [AssistantServiceAsync] that provides access to raw HTTP responses for each method.
@@ -105,9 +177,25 @@ interface AssistantServiceAsync {
          * same as [AssistantServiceAsync.retrieve].
          */
         @MustBeClosed
+        fun retrieve(assistantId: String): CompletableFuture<HttpResponseFor<Assistant>> =
+            retrieve(assistantId, AssistantRetrieveParams.none())
+
+        /** @see [retrieve] */
+        @MustBeClosed
         fun retrieve(
-            params: AssistantRetrieveParams
-        ): CompletableFuture<HttpResponseFor<Assistant>> = retrieve(params, RequestOptions.none())
+            assistantId: String,
+            params: AssistantRetrieveParams = AssistantRetrieveParams.none(),
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): CompletableFuture<HttpResponseFor<Assistant>> =
+            retrieve(params.toBuilder().assistantId(assistantId).build(), requestOptions)
+
+        /** @see [retrieve] */
+        @MustBeClosed
+        fun retrieve(
+            assistantId: String,
+            params: AssistantRetrieveParams = AssistantRetrieveParams.none(),
+        ): CompletableFuture<HttpResponseFor<Assistant>> =
+            retrieve(assistantId, params, RequestOptions.none())
 
         /** @see [retrieve] */
         @MustBeClosed
@@ -116,13 +204,44 @@ interface AssistantServiceAsync {
             requestOptions: RequestOptions = RequestOptions.none(),
         ): CompletableFuture<HttpResponseFor<Assistant>>
 
+        /** @see [retrieve] */
+        @MustBeClosed
+        fun retrieve(
+            params: AssistantRetrieveParams
+        ): CompletableFuture<HttpResponseFor<Assistant>> = retrieve(params, RequestOptions.none())
+
+        /** @see [retrieve] */
+        @MustBeClosed
+        fun retrieve(
+            assistantId: String,
+            requestOptions: RequestOptions,
+        ): CompletableFuture<HttpResponseFor<Assistant>> =
+            retrieve(assistantId, AssistantRetrieveParams.none(), requestOptions)
+
         /**
          * Returns a raw HTTP response for `post /assistants/{assistant_id}`, but is otherwise the
          * same as [AssistantServiceAsync.update].
          */
         @MustBeClosed
-        fun update(params: AssistantUpdateParams): CompletableFuture<HttpResponseFor<Assistant>> =
-            update(params, RequestOptions.none())
+        fun update(assistantId: String): CompletableFuture<HttpResponseFor<Assistant>> =
+            update(assistantId, AssistantUpdateParams.none())
+
+        /** @see [update] */
+        @MustBeClosed
+        fun update(
+            assistantId: String,
+            params: AssistantUpdateParams = AssistantUpdateParams.none(),
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): CompletableFuture<HttpResponseFor<Assistant>> =
+            update(params.toBuilder().assistantId(assistantId).build(), requestOptions)
+
+        /** @see [update] */
+        @MustBeClosed
+        fun update(
+            assistantId: String,
+            params: AssistantUpdateParams = AssistantUpdateParams.none(),
+        ): CompletableFuture<HttpResponseFor<Assistant>> =
+            update(assistantId, params, RequestOptions.none())
 
         /** @see [update] */
         @MustBeClosed
@@ -130,6 +249,19 @@ interface AssistantServiceAsync {
             params: AssistantUpdateParams,
             requestOptions: RequestOptions = RequestOptions.none(),
         ): CompletableFuture<HttpResponseFor<Assistant>>
+
+        /** @see [update] */
+        @MustBeClosed
+        fun update(params: AssistantUpdateParams): CompletableFuture<HttpResponseFor<Assistant>> =
+            update(params, RequestOptions.none())
+
+        /** @see [update] */
+        @MustBeClosed
+        fun update(
+            assistantId: String,
+            requestOptions: RequestOptions,
+        ): CompletableFuture<HttpResponseFor<Assistant>> =
+            update(assistantId, AssistantUpdateParams.none(), requestOptions)
 
         /**
          * Returns a raw HTTP response for `get /assistants`, but is otherwise the same as
@@ -165,6 +297,35 @@ interface AssistantServiceAsync {
          * same as [AssistantServiceAsync.delete].
          */
         @MustBeClosed
+        fun delete(assistantId: String): CompletableFuture<HttpResponseFor<AssistantDeleted>> =
+            delete(assistantId, AssistantDeleteParams.none())
+
+        /** @see [delete] */
+        @MustBeClosed
+        fun delete(
+            assistantId: String,
+            params: AssistantDeleteParams = AssistantDeleteParams.none(),
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): CompletableFuture<HttpResponseFor<AssistantDeleted>> =
+            delete(params.toBuilder().assistantId(assistantId).build(), requestOptions)
+
+        /** @see [delete] */
+        @MustBeClosed
+        fun delete(
+            assistantId: String,
+            params: AssistantDeleteParams = AssistantDeleteParams.none(),
+        ): CompletableFuture<HttpResponseFor<AssistantDeleted>> =
+            delete(assistantId, params, RequestOptions.none())
+
+        /** @see [delete] */
+        @MustBeClosed
+        fun delete(
+            params: AssistantDeleteParams,
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): CompletableFuture<HttpResponseFor<AssistantDeleted>>
+
+        /** @see [delete] */
+        @MustBeClosed
         fun delete(
             params: AssistantDeleteParams
         ): CompletableFuture<HttpResponseFor<AssistantDeleted>> =
@@ -173,8 +334,9 @@ interface AssistantServiceAsync {
         /** @see [delete] */
         @MustBeClosed
         fun delete(
-            params: AssistantDeleteParams,
-            requestOptions: RequestOptions = RequestOptions.none(),
-        ): CompletableFuture<HttpResponseFor<AssistantDeleted>>
+            assistantId: String,
+            requestOptions: RequestOptions,
+        ): CompletableFuture<HttpResponseFor<AssistantDeleted>> =
+            delete(assistantId, AssistantDeleteParams.none(), requestOptions)
     }
 }
