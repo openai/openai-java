@@ -12,6 +12,8 @@ import com.openai.models.finetuning.jobs.JobListEventsPage
 import com.openai.models.finetuning.jobs.JobListEventsParams
 import com.openai.models.finetuning.jobs.JobListPage
 import com.openai.models.finetuning.jobs.JobListParams
+import com.openai.models.finetuning.jobs.JobPauseParams
+import com.openai.models.finetuning.jobs.JobResumeParams
 import com.openai.models.finetuning.jobs.JobRetrieveParams
 import com.openai.services.blocking.finetuning.jobs.CheckpointService
 
@@ -89,6 +91,24 @@ interface JobService {
         params: JobListEventsParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): JobListEventsPage
+
+    /** Pause a fine-tune job. */
+    fun pause(params: JobPauseParams): FineTuningJob = pause(params, RequestOptions.none())
+
+    /** @see [pause] */
+    fun pause(
+        params: JobPauseParams,
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): FineTuningJob
+
+    /** Resume a fine-tune job. */
+    fun resume(params: JobResumeParams): FineTuningJob = resume(params, RequestOptions.none())
+
+    /** @see [resume] */
+    fun resume(
+        params: JobResumeParams,
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): FineTuningJob
 
     /** A view of [JobService] that provides access to raw HTTP responses for each method. */
     interface WithRawResponse {
@@ -177,5 +197,35 @@ interface JobService {
             params: JobListEventsParams,
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<JobListEventsPage>
+
+        /**
+         * Returns a raw HTTP response for `post /fine_tuning/jobs/{fine_tuning_job_id}/pause`, but
+         * is otherwise the same as [JobService.pause].
+         */
+        @MustBeClosed
+        fun pause(params: JobPauseParams): HttpResponseFor<FineTuningJob> =
+            pause(params, RequestOptions.none())
+
+        /** @see [pause] */
+        @MustBeClosed
+        fun pause(
+            params: JobPauseParams,
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): HttpResponseFor<FineTuningJob>
+
+        /**
+         * Returns a raw HTTP response for `post /fine_tuning/jobs/{fine_tuning_job_id}/resume`, but
+         * is otherwise the same as [JobService.resume].
+         */
+        @MustBeClosed
+        fun resume(params: JobResumeParams): HttpResponseFor<FineTuningJob> =
+            resume(params, RequestOptions.none())
+
+        /** @see [resume] */
+        @MustBeClosed
+        fun resume(
+            params: JobResumeParams,
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): HttpResponseFor<FineTuningJob>
     }
 }

@@ -24,6 +24,8 @@ import com.openai.models.finetuning.jobs.JobListEventsParams
 import com.openai.models.finetuning.jobs.JobListPageAsync
 import com.openai.models.finetuning.jobs.JobListPageResponse
 import com.openai.models.finetuning.jobs.JobListParams
+import com.openai.models.finetuning.jobs.JobPauseParams
+import com.openai.models.finetuning.jobs.JobResumeParams
 import com.openai.models.finetuning.jobs.JobRetrieveParams
 import com.openai.services.async.finetuning.jobs.CheckpointServiceAsync
 import com.openai.services.async.finetuning.jobs.CheckpointServiceAsyncImpl
@@ -78,6 +80,20 @@ class JobServiceAsyncImpl internal constructor(private val clientOptions: Client
     ): CompletableFuture<JobListEventsPageAsync> =
         // get /fine_tuning/jobs/{fine_tuning_job_id}/events
         withRawResponse().listEvents(params, requestOptions).thenApply { it.parse() }
+
+    override fun pause(
+        params: JobPauseParams,
+        requestOptions: RequestOptions,
+    ): CompletableFuture<FineTuningJob> =
+        // post /fine_tuning/jobs/{fine_tuning_job_id}/pause
+        withRawResponse().pause(params, requestOptions).thenApply { it.parse() }
+
+    override fun resume(
+        params: JobResumeParams,
+        requestOptions: RequestOptions,
+    ): CompletableFuture<FineTuningJob> =
+        // post /fine_tuning/jobs/{fine_tuning_job_id}/resume
+        withRawResponse().resume(params, requestOptions).thenApply { it.parse() }
 
     class WithRawResponseImpl internal constructor(private val clientOptions: ClientOptions) :
         JobServiceAsync.WithRawResponse {
@@ -248,6 +264,66 @@ class JobServiceAsyncImpl internal constructor(private val clientOptions: Client
                                     .params(params)
                                     .response(it)
                                     .build()
+                            }
+                    }
+                }
+        }
+
+        private val pauseHandler: Handler<FineTuningJob> =
+            jsonHandler<FineTuningJob>(clientOptions.jsonMapper).withErrorHandler(errorHandler)
+
+        override fun pause(
+            params: JobPauseParams,
+            requestOptions: RequestOptions,
+        ): CompletableFuture<HttpResponseFor<FineTuningJob>> {
+            val request =
+                HttpRequest.builder()
+                    .method(HttpMethod.POST)
+                    .addPathSegments("fine_tuning", "jobs", params._pathParam(0), "pause")
+                    .apply { params._body().ifPresent { body(json(clientOptions.jsonMapper, it)) } }
+                    .build()
+                    .prepareAsync(clientOptions, params)
+            val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
+            return request
+                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
+                .thenApply { response ->
+                    response.parseable {
+                        response
+                            .use { pauseHandler.handle(it) }
+                            .also {
+                                if (requestOptions.responseValidation!!) {
+                                    it.validate()
+                                }
+                            }
+                    }
+                }
+        }
+
+        private val resumeHandler: Handler<FineTuningJob> =
+            jsonHandler<FineTuningJob>(clientOptions.jsonMapper).withErrorHandler(errorHandler)
+
+        override fun resume(
+            params: JobResumeParams,
+            requestOptions: RequestOptions,
+        ): CompletableFuture<HttpResponseFor<FineTuningJob>> {
+            val request =
+                HttpRequest.builder()
+                    .method(HttpMethod.POST)
+                    .addPathSegments("fine_tuning", "jobs", params._pathParam(0), "resume")
+                    .apply { params._body().ifPresent { body(json(clientOptions.jsonMapper, it)) } }
+                    .build()
+                    .prepareAsync(clientOptions, params)
+            val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
+            return request
+                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
+                .thenApply { response ->
+                    response.parseable {
+                        response
+                            .use { resumeHandler.handle(it) }
+                            .also {
+                                if (requestOptions.responseValidation!!) {
+                                    it.validate()
+                                }
                             }
                     }
                 }

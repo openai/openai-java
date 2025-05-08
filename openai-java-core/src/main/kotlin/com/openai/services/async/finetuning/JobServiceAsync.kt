@@ -12,6 +12,8 @@ import com.openai.models.finetuning.jobs.JobListEventsPageAsync
 import com.openai.models.finetuning.jobs.JobListEventsParams
 import com.openai.models.finetuning.jobs.JobListPageAsync
 import com.openai.models.finetuning.jobs.JobListParams
+import com.openai.models.finetuning.jobs.JobPauseParams
+import com.openai.models.finetuning.jobs.JobResumeParams
 import com.openai.models.finetuning.jobs.JobRetrieveParams
 import com.openai.services.async.finetuning.jobs.CheckpointServiceAsync
 import java.util.concurrent.CompletableFuture
@@ -93,6 +95,26 @@ interface JobServiceAsync {
         params: JobListEventsParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): CompletableFuture<JobListEventsPageAsync>
+
+    /** Pause a fine-tune job. */
+    fun pause(params: JobPauseParams): CompletableFuture<FineTuningJob> =
+        pause(params, RequestOptions.none())
+
+    /** @see [pause] */
+    fun pause(
+        params: JobPauseParams,
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): CompletableFuture<FineTuningJob>
+
+    /** Resume a fine-tune job. */
+    fun resume(params: JobResumeParams): CompletableFuture<FineTuningJob> =
+        resume(params, RequestOptions.none())
+
+    /** @see [resume] */
+    fun resume(
+        params: JobResumeParams,
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): CompletableFuture<FineTuningJob>
 
     /** A view of [JobServiceAsync] that provides access to raw HTTP responses for each method. */
     interface WithRawResponse {
@@ -189,5 +211,35 @@ interface JobServiceAsync {
             params: JobListEventsParams,
             requestOptions: RequestOptions = RequestOptions.none(),
         ): CompletableFuture<HttpResponseFor<JobListEventsPageAsync>>
+
+        /**
+         * Returns a raw HTTP response for `post /fine_tuning/jobs/{fine_tuning_job_id}/pause`, but
+         * is otherwise the same as [JobServiceAsync.pause].
+         */
+        @MustBeClosed
+        fun pause(params: JobPauseParams): CompletableFuture<HttpResponseFor<FineTuningJob>> =
+            pause(params, RequestOptions.none())
+
+        /** @see [pause] */
+        @MustBeClosed
+        fun pause(
+            params: JobPauseParams,
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): CompletableFuture<HttpResponseFor<FineTuningJob>>
+
+        /**
+         * Returns a raw HTTP response for `post /fine_tuning/jobs/{fine_tuning_job_id}/resume`, but
+         * is otherwise the same as [JobServiceAsync.resume].
+         */
+        @MustBeClosed
+        fun resume(params: JobResumeParams): CompletableFuture<HttpResponseFor<FineTuningJob>> =
+            resume(params, RequestOptions.none())
+
+        /** @see [resume] */
+        @MustBeClosed
+        fun resume(
+            params: JobResumeParams,
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): CompletableFuture<HttpResponseFor<FineTuningJob>>
     }
 }
