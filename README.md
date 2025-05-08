@@ -772,11 +772,12 @@ To set a documented parameter or property to an undocumented or not yet supporte
 
 ```java
 import com.openai.core.JsonValue;
+import com.openai.models.ChatModel;
 import com.openai.models.chat.completions.ChatCompletionCreateParams;
 
 ChatCompletionCreateParams params = ChatCompletionCreateParams.builder()
-    .addUserMessage("Say this is a test")
-    .model(JsonValue.from(42))
+    .messages(JsonValue.from(42))
+    .model(ChatModel.GPT_4_1)
     .build();
 ```
 
