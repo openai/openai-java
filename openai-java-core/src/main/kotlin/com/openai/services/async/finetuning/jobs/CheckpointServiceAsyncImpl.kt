@@ -74,6 +74,7 @@ class CheckpointServiceAsyncImpl internal constructor(private val clientOptions:
                             .let {
                                 CheckpointListPageAsync.builder()
                                     .service(CheckpointServiceAsyncImpl(clientOptions))
+                                    .streamHandlerExecutor(clientOptions.streamHandlerExecutor)
                                     .params(params)
                                     .response(it)
                                     .build()
