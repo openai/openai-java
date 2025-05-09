@@ -109,18 +109,14 @@ public final class AssistantAsyncExample {
                         .order(MessageListParams.Order.ASC)
                         .build());
         return pageFuture.thenComposeAsync(page -> page.autoPager()
-                .forEach(
-                        currentMessage -> {
-                            System.out.println(currentMessage.role().toString().toUpperCase());
-                            currentMessage.content().stream()
-                                    .flatMap(content -> content.text().stream())
-                                    .forEach(textBlock ->
-                                            System.out.println(textBlock.text().value()));
-                            System.out.println();
-
-                            // Keep iterating
-                            return true;
-                        },
-                        pageFuture.defaultExecutor()));
+                .subscribe(currentMessage -> {
+                    System.out.println(currentMessage.role().toString().toUpperCase());
+                    currentMessage.content().stream()
+                            .flatMap(content -> content.text().stream())
+                            .forEach(textBlock ->
+                                    System.out.println(textBlock.text().value()));
+                    System.out.println();
+                })
+                .onCompleteFuture());
     }
 }
