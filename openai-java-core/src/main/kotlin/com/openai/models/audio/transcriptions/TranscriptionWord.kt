@@ -17,16 +17,16 @@ import java.util.Objects
 
 class TranscriptionWord
 private constructor(
-    private val end: JsonField<Double>,
-    private val start: JsonField<Double>,
+    private val end: JsonField<Float>,
+    private val start: JsonField<Float>,
     private val word: JsonField<String>,
     private val additionalProperties: MutableMap<String, JsonValue>,
 ) {
 
     @JsonCreator
     private constructor(
-        @JsonProperty("end") @ExcludeMissing end: JsonField<Double> = JsonMissing.of(),
-        @JsonProperty("start") @ExcludeMissing start: JsonField<Double> = JsonMissing.of(),
+        @JsonProperty("end") @ExcludeMissing end: JsonField<Float> = JsonMissing.of(),
+        @JsonProperty("start") @ExcludeMissing start: JsonField<Float> = JsonMissing.of(),
         @JsonProperty("word") @ExcludeMissing word: JsonField<String> = JsonMissing.of(),
     ) : this(end, start, word, mutableMapOf())
 
@@ -36,7 +36,7 @@ private constructor(
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
      *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
      */
-    fun end(): Double = end.getRequired("end")
+    fun end(): Float = end.getRequired("end")
 
     /**
      * Start time of the word in seconds.
@@ -44,7 +44,7 @@ private constructor(
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
      *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
      */
-    fun start(): Double = start.getRequired("start")
+    fun start(): Float = start.getRequired("start")
 
     /**
      * The text content of the word.
@@ -59,14 +59,14 @@ private constructor(
      *
      * Unlike [end], this method doesn't throw if the JSON field has an unexpected type.
      */
-    @JsonProperty("end") @ExcludeMissing fun _end(): JsonField<Double> = end
+    @JsonProperty("end") @ExcludeMissing fun _end(): JsonField<Float> = end
 
     /**
      * Returns the raw JSON value of [start].
      *
      * Unlike [start], this method doesn't throw if the JSON field has an unexpected type.
      */
-    @JsonProperty("start") @ExcludeMissing fun _start(): JsonField<Double> = start
+    @JsonProperty("start") @ExcludeMissing fun _start(): JsonField<Float> = start
 
     /**
      * Returns the raw JSON value of [word].
@@ -105,8 +105,8 @@ private constructor(
     /** A builder for [TranscriptionWord]. */
     class Builder internal constructor() {
 
-        private var end: JsonField<Double>? = null
-        private var start: JsonField<Double>? = null
+        private var end: JsonField<Float>? = null
+        private var start: JsonField<Float>? = null
         private var word: JsonField<String>? = null
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
@@ -119,26 +119,26 @@ private constructor(
         }
 
         /** End time of the word in seconds. */
-        fun end(end: Double) = end(JsonField.of(end))
+        fun end(end: Float) = end(JsonField.of(end))
 
         /**
          * Sets [Builder.end] to an arbitrary JSON value.
          *
-         * You should usually call [Builder.end] with a well-typed [Double] value instead. This
+         * You should usually call [Builder.end] with a well-typed [Float] value instead. This
          * method is primarily for setting the field to an undocumented or not yet supported value.
          */
-        fun end(end: JsonField<Double>) = apply { this.end = end }
+        fun end(end: JsonField<Float>) = apply { this.end = end }
 
         /** Start time of the word in seconds. */
-        fun start(start: Double) = start(JsonField.of(start))
+        fun start(start: Float) = start(JsonField.of(start))
 
         /**
          * Sets [Builder.start] to an arbitrary JSON value.
          *
-         * You should usually call [Builder.start] with a well-typed [Double] value instead. This
+         * You should usually call [Builder.start] with a well-typed [Float] value instead. This
          * method is primarily for setting the field to an undocumented or not yet supported value.
          */
-        fun start(start: JsonField<Double>) = apply { this.start = start }
+        fun start(start: JsonField<Float>) = apply { this.start = start }
 
         /** The text content of the word. */
         fun word(word: String) = word(JsonField.of(word))

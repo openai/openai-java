@@ -497,7 +497,7 @@ private constructor(
         private val attributes: JsonField<Attributes>,
         private val fileId: JsonField<String>,
         private val filename: JsonField<String>,
-        private val score: JsonField<Double>,
+        private val score: JsonField<Float>,
         private val text: JsonField<String>,
         private val additionalProperties: MutableMap<String, JsonValue>,
     ) {
@@ -511,7 +511,7 @@ private constructor(
             @JsonProperty("filename")
             @ExcludeMissing
             filename: JsonField<String> = JsonMissing.of(),
-            @JsonProperty("score") @ExcludeMissing score: JsonField<Double> = JsonMissing.of(),
+            @JsonProperty("score") @ExcludeMissing score: JsonField<Float> = JsonMissing.of(),
             @JsonProperty("text") @ExcludeMissing text: JsonField<String> = JsonMissing.of(),
         ) : this(attributes, fileId, filename, score, text, mutableMapOf())
 
@@ -549,7 +549,7 @@ private constructor(
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
          */
-        fun score(): Optional<Double> = score.getOptional("score")
+        fun score(): Optional<Float> = score.getOptional("score")
 
         /**
          * The text that was retrieved from the file.
@@ -587,7 +587,7 @@ private constructor(
          *
          * Unlike [score], this method doesn't throw if the JSON field has an unexpected type.
          */
-        @JsonProperty("score") @ExcludeMissing fun _score(): JsonField<Double> = score
+        @JsonProperty("score") @ExcludeMissing fun _score(): JsonField<Float> = score
 
         /**
          * Returns the raw JSON value of [text].
@@ -620,7 +620,7 @@ private constructor(
             private var attributes: JsonField<Attributes> = JsonMissing.of()
             private var fileId: JsonField<String> = JsonMissing.of()
             private var filename: JsonField<String> = JsonMissing.of()
-            private var score: JsonField<Double> = JsonMissing.of()
+            private var score: JsonField<Float> = JsonMissing.of()
             private var text: JsonField<String> = JsonMissing.of()
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
@@ -682,16 +682,16 @@ private constructor(
             fun filename(filename: JsonField<String>) = apply { this.filename = filename }
 
             /** The relevance score of the file - a value between 0 and 1. */
-            fun score(score: Double) = score(JsonField.of(score))
+            fun score(score: Float) = score(JsonField.of(score))
 
             /**
              * Sets [Builder.score] to an arbitrary JSON value.
              *
-             * You should usually call [Builder.score] with a well-typed [Double] value instead.
-             * This method is primarily for setting the field to an undocumented or not yet
-             * supported value.
+             * You should usually call [Builder.score] with a well-typed [Float] value instead. This
+             * method is primarily for setting the field to an undocumented or not yet supported
+             * value.
              */
-            fun score(score: JsonField<Double>) = apply { this.score = score }
+            fun score(score: JsonField<Float>) = apply { this.score = score }
 
             /** The text that was retrieved from the file. */
             fun text(text: String) = text(JsonField.of(text))
