@@ -1,5 +1,46 @@
 # Changelog
 
+## 2.0.0 (2025-05-10)
+
+Full Changelog: [v1.6.1...v2.0.0](https://github.com/openai/openai-java/compare/v1.6.1...v2.0.0)
+
+### ⚠ BREAKING CHANGES
+
+* **client:** change precision of some numeric types
+* **client:** extract auto pagination to shared classes
+* **client:** **Migration:** - If you were referencing the `AutoPager` class on a specific `*Page` or `*PageAsync` type, then you should instead reference the shared `AutoPager` and `AutoPagerAsync` types, under the `core` package
+    - `AutoPagerAsync` now has different usage. You can call `.subscribe(...)` on the returned object instead to get called back each page item. You can also call `onCompleteFuture()` to get a future that completes when all items have been processed. Finally, you can call `.close()` on the returned object to stop auto-paginating early
+    - If you were referencing `getNextPage` or `getNextPageParams`:
+       - Swap to `nextPage()` and `nextPageParams()`
+       - Note that these both now return non-optional types (use `hasNextPage()` before calling these, since they will throw if it's impossible to get another page)
+
+### Features
+
+* **api:** Add reinforcement fine-tuning api support ([d243892](https://github.com/openai/openai-java/commit/d2438923c2f53a76879464ab3816732b5c4b5718))
+* **client:** allow providing some params positionally ([7200cf6](https://github.com/openai/openai-java/commit/7200cf61d31fcc16b15d01cd83d3a0bcc53eba4d))
+* **client:** extract auto pagination to shared classes ([f623bca](https://github.com/openai/openai-java/commit/f623bcac1e66ed15f8ba6c89375468b764cb900f))
+
+
+### Bug Fixes
+
+* add missing `deploymentModel` params ([bb85d0d](https://github.com/openai/openai-java/commit/bb85d0d1a899b3981f5c1f818dc4200939cb571d))
+* merge conflict ([4587737](https://github.com/openai/openai-java/commit/458773748bba0efefce9e67d17b8d2879338cb61))
+
+
+### Chores
+
+* **internal:** fix custom code ([1da6c92](https://github.com/openai/openai-java/commit/1da6c92fc964837aec19a3688ffb9a1089b3d91c))
+
+
+### Documentation
+
+* remove or fix invalid readme examples ([4bf868a](https://github.com/openai/openai-java/commit/4bf868a717f9f782cd2f288bffc74bb24b2bb0e7))
+
+
+### Refactors
+
+* **client:** change precision of some numeric types ([6cdb671](https://github.com/openai/openai-java/commit/6cdb6717e047e96f9f4186bec3beca0744f27a3a))
+
 ## 1.6.1 (2025-05-08)
 
 Full Changelog: [v1.6.0...v1.6.1](https://github.com/openai/openai-java/compare/v1.6.0...v1.6.1)
