@@ -39,13 +39,13 @@ import kotlin.jvm.optionals.getOrNull
 /** Create a new evaluation run. This is the endpoint that will kick off grading. */
 class RunCreateParams
 private constructor(
-    private val evalId: String,
+    private val evalId: String?,
     private val body: Body,
     private val additionalHeaders: Headers,
     private val additionalQueryParams: QueryParams,
 ) : Params {
 
-    fun evalId(): String = evalId
+    fun evalId(): Optional<String> = Optional.ofNullable(evalId)
 
     /**
      * Details about the run's data source.
@@ -112,7 +112,6 @@ private constructor(
          *
          * The following fields are required:
          * ```java
-         * .evalId()
          * .dataSource()
          * ```
          */
@@ -135,7 +134,10 @@ private constructor(
             additionalQueryParams = runCreateParams.additionalQueryParams.toBuilder()
         }
 
-        fun evalId(evalId: String) = apply { this.evalId = evalId }
+        fun evalId(evalId: String?) = apply { this.evalId = evalId }
+
+        /** Alias for calling [Builder.evalId] with `evalId.orElse(null)`. */
+        fun evalId(evalId: Optional<String>) = evalId(evalId.getOrNull())
 
         /**
          * Sets the entire request body.
@@ -342,7 +344,6 @@ private constructor(
          *
          * The following fields are required:
          * ```java
-         * .evalId()
          * .dataSource()
          * ```
          *
@@ -350,7 +351,7 @@ private constructor(
          */
         fun build(): RunCreateParams =
             RunCreateParams(
-                checkRequired("evalId", evalId),
+                evalId,
                 body.build(),
                 additionalHeaders.build(),
                 additionalQueryParams.build(),
@@ -361,7 +362,7 @@ private constructor(
 
     fun _pathParam(index: Int): String =
         when (index) {
-            0 -> evalId
+            0 -> evalId ?: ""
             else -> ""
         }
 

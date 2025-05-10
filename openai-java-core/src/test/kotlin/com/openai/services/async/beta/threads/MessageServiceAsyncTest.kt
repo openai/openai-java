@@ -8,7 +8,6 @@ import com.openai.core.JsonValue
 import com.openai.models.beta.assistants.CodeInterpreterTool
 import com.openai.models.beta.threads.messages.MessageCreateParams
 import com.openai.models.beta.threads.messages.MessageDeleteParams
-import com.openai.models.beta.threads.messages.MessageListParams
 import com.openai.models.beta.threads.messages.MessageRetrieveParams
 import com.openai.models.beta.threads.messages.MessageUpdateParams
 import org.junit.jupiter.api.Test
@@ -106,8 +105,7 @@ internal class MessageServiceAsyncTest {
                 .build()
         val messageServiceAsync = client.beta().threads().messages()
 
-        val pageFuture =
-            messageServiceAsync.list(MessageListParams.builder().threadId("thread_id").build())
+        val pageFuture = messageServiceAsync.list("thread_id")
 
         val page = pageFuture.get()
         page.response().validate()

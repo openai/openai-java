@@ -4,7 +4,6 @@ package com.openai.services.blocking.chat.completions
 
 import com.openai.TestServerExtension
 import com.openai.client.okhttp.OpenAIOkHttpClient
-import com.openai.models.chat.completions.messages.MessageListParams
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 
@@ -20,8 +19,7 @@ internal class MessageServiceTest {
                 .build()
         val messageService = client.chat().completions().messages()
 
-        val page =
-            messageService.list(MessageListParams.builder().completionId("completion_id").build())
+        val page = messageService.list("completion_id")
 
         page.response().validate()
     }

@@ -10,12 +10,13 @@ import com.openai.core.http.QueryParams
 import com.openai.core.toImmutable
 import java.util.Objects
 import java.util.Optional
+import kotlin.jvm.optionals.getOrNull
 
 /** Deletes a message. */
 class MessageDeleteParams
 private constructor(
     private val threadId: String,
-    private val messageId: String,
+    private val messageId: String?,
     private val additionalHeaders: Headers,
     private val additionalQueryParams: QueryParams,
     private val additionalBodyProperties: Map<String, JsonValue>,
@@ -23,7 +24,7 @@ private constructor(
 
     fun threadId(): String = threadId
 
-    fun messageId(): String = messageId
+    fun messageId(): Optional<String> = Optional.ofNullable(messageId)
 
     fun _additionalBodyProperties(): Map<String, JsonValue> = additionalBodyProperties
 
@@ -41,7 +42,6 @@ private constructor(
          * The following fields are required:
          * ```java
          * .threadId()
-         * .messageId()
          * ```
          */
         @JvmStatic fun builder() = Builder()
@@ -67,7 +67,10 @@ private constructor(
 
         fun threadId(threadId: String) = apply { this.threadId = threadId }
 
-        fun messageId(messageId: String) = apply { this.messageId = messageId }
+        fun messageId(messageId: String?) = apply { this.messageId = messageId }
+
+        /** Alias for calling [Builder.messageId] with `messageId.orElse(null)`. */
+        fun messageId(messageId: Optional<String>) = messageId(messageId.getOrNull())
 
         fun additionalHeaders(additionalHeaders: Headers) = apply {
             this.additionalHeaders.clear()
@@ -197,7 +200,6 @@ private constructor(
          * The following fields are required:
          * ```java
          * .threadId()
-         * .messageId()
          * ```
          *
          * @throws IllegalStateException if any required field is unset.
@@ -205,7 +207,7 @@ private constructor(
         fun build(): MessageDeleteParams =
             MessageDeleteParams(
                 checkRequired("threadId", threadId),
-                checkRequired("messageId", messageId),
+                messageId,
                 additionalHeaders.build(),
                 additionalQueryParams.build(),
                 additionalBodyProperties.toImmutable(),
@@ -218,7 +220,7 @@ private constructor(
     fun _pathParam(index: Int): String =
         when (index) {
             0 -> threadId
-            1 -> messageId
+            1 -> messageId ?: ""
             else -> ""
         }
 

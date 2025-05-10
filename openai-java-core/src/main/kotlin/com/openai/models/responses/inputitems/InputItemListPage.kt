@@ -2,6 +2,8 @@
 
 package com.openai.models.responses.inputitems
 
+import com.openai.core.AutoPager
+import com.openai.core.Page
 import com.openai.core.checkRequired
 import com.openai.models.responses.ResponseComputerToolCall
 import com.openai.models.responses.ResponseComputerToolCallOutputItem
@@ -15,8 +17,6 @@ import com.openai.models.responses.ResponseOutputMessage
 import com.openai.services.blocking.responses.InputItemService
 import java.util.Objects
 import java.util.Optional
-import java.util.stream.Stream
-import java.util.stream.StreamSupport
 import kotlin.jvm.optionals.getOrNull
 
 /** @see [InputItemService.list] */
@@ -25,7 +25,7 @@ private constructor(
     private val service: InputItemService,
     private val params: InputItemListParams,
     private val response: ResponseItemList,
-) {
+) : Page<ResponseItem> {
 
     /**
      * Delegates to [ResponseItemList], but gracefully handles missing data.
@@ -41,63 +41,57 @@ private constructor(
      */
     fun hasMore(): Optional<Boolean> = response._hasMore().getOptional("has_more")
 
-    fun hasNextPage(): Boolean = data().isNotEmpty()
+    override fun items(): List<ResponseItem> = data()
 
-    fun getNextPageParams(): Optional<InputItemListParams> {
-        if (!hasNextPage()) {
-            return Optional.empty()
-        }
+    override fun hasNextPage(): Boolean = items().isNotEmpty()
 
-        return Optional.of(
-            params
-                .toBuilder()
-                .after(
-                    data()
-                        .last()
-                        .accept(
-                            object : ResponseItem.Visitor<Optional<String>> {
-                                override fun visitResponseInputMessageItem(
-                                    responseInputMessageItem: ResponseInputMessageItem
-                                ): Optional<String> =
-                                    responseInputMessageItem._id().getOptional("id")
+    fun nextPageParams(): InputItemListParams =
+        params
+            .toBuilder()
+            .after(
+                items()
+                    .last()
+                    .accept(
+                        object : ResponseItem.Visitor<Optional<String>> {
+                            override fun visitResponseInputMessageItem(
+                                responseInputMessageItem: ResponseInputMessageItem
+                            ): Optional<String> = responseInputMessageItem._id().getOptional("id")
 
-                                override fun visitResponseOutputMessage(
-                                    responseOutputMessage: ResponseOutputMessage
-                                ): Optional<String> = responseOutputMessage._id().getOptional("id")
+                            override fun visitResponseOutputMessage(
+                                responseOutputMessage: ResponseOutputMessage
+                            ): Optional<String> = responseOutputMessage._id().getOptional("id")
 
-                                override fun visitFileSearchCall(
-                                    fileSearchCall: ResponseFileSearchToolCall
-                                ): Optional<String> = fileSearchCall._id().getOptional("id")
+                            override fun visitFileSearchCall(
+                                fileSearchCall: ResponseFileSearchToolCall
+                            ): Optional<String> = fileSearchCall._id().getOptional("id")
 
-                                override fun visitComputerCall(
-                                    computerCall: ResponseComputerToolCall
-                                ): Optional<String> = computerCall._id().getOptional("id")
+                            override fun visitComputerCall(
+                                computerCall: ResponseComputerToolCall
+                            ): Optional<String> = computerCall._id().getOptional("id")
 
-                                override fun visitComputerCallOutput(
-                                    computerCallOutput: ResponseComputerToolCallOutputItem
-                                ): Optional<String> = computerCallOutput._id().getOptional("id")
+                            override fun visitComputerCallOutput(
+                                computerCallOutput: ResponseComputerToolCallOutputItem
+                            ): Optional<String> = computerCallOutput._id().getOptional("id")
 
-                                override fun visitWebSearchCall(
-                                    webSearchCall: ResponseFunctionWebSearch
-                                ): Optional<String> = webSearchCall._id().getOptional("id")
+                            override fun visitWebSearchCall(
+                                webSearchCall: ResponseFunctionWebSearch
+                            ): Optional<String> = webSearchCall._id().getOptional("id")
 
-                                override fun visitFunctionCall(
-                                    functionCall: ResponseFunctionToolCallItem
-                                ): Optional<String> = functionCall._id().getOptional("id")
+                            override fun visitFunctionCall(
+                                functionCall: ResponseFunctionToolCallItem
+                            ): Optional<String> = functionCall._id().getOptional("id")
 
-                                override fun visitFunctionCallOutput(
-                                    functionCallOutput: ResponseFunctionToolCallOutputItem
-                                ): Optional<String> = functionCallOutput._id().getOptional("id")
-                            }
-                        )
-                )
-                .build()
-        )
-    }
+                            override fun visitFunctionCallOutput(
+                                functionCallOutput: ResponseFunctionToolCallOutputItem
+                            ): Optional<String> = functionCallOutput._id().getOptional("id")
+                        }
+                    )
+            )
+            .build()
 
-    fun getNextPage(): Optional<InputItemListPage> = getNextPageParams().map { service.list(it) }
+    override fun nextPage(): InputItemListPage = service.list(nextPageParams())
 
-    fun autoPager(): AutoPager = AutoPager(this)
+    fun autoPager(): AutoPager<ResponseItem> = AutoPager.from(this)
 
     /** The parameters that were used to request this page. */
     fun params(): InputItemListParams = params
@@ -164,25 +158,6 @@ private constructor(
                 checkRequired("params", params),
                 checkRequired("response", response),
             )
-    }
-
-    class AutoPager(private val firstPage: InputItemListPage) : Iterable<ResponseItem> {
-
-        override fun iterator(): Iterator<ResponseItem> = iterator {
-            var page = firstPage
-            var index = 0
-            while (true) {
-                while (index < page.data().size) {
-                    yield(page.data()[index++])
-                }
-                page = page.getNextPage().getOrNull() ?: break
-                index = 0
-            }
-        }
-
-        fun stream(): Stream<ResponseItem> {
-            return StreamSupport.stream(spliterator(), false)
-        }
     }
 
     override fun equals(other: Any?): Boolean {

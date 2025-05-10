@@ -2,22 +2,24 @@
 
 package com.openai.models.beta.threads.runs.steps
 
+import com.openai.core.AutoPagerAsync
+import com.openai.core.PageAsync
 import com.openai.core.checkRequired
 import com.openai.services.async.beta.threads.runs.StepServiceAsync
 import java.util.Objects
 import java.util.Optional
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.Executor
-import java.util.function.Predicate
 import kotlin.jvm.optionals.getOrNull
 
 /** @see [StepServiceAsync.list] */
 class StepListPageAsync
 private constructor(
     private val service: StepServiceAsync,
+    private val streamHandlerExecutor: Executor,
     private val params: StepListParams,
     private val response: StepListPageResponse,
-) {
+) : PageAsync<RunStep> {
 
     /**
      * Delegates to [StepListPageResponse], but gracefully handles missing data.
@@ -33,22 +35,16 @@ private constructor(
      */
     fun hasMore(): Optional<Boolean> = response._hasMore().getOptional("has_more")
 
-    fun hasNextPage(): Boolean = data().isNotEmpty()
+    override fun items(): List<RunStep> = data()
 
-    fun getNextPageParams(): Optional<StepListParams> {
-        if (!hasNextPage()) {
-            return Optional.empty()
-        }
+    override fun hasNextPage(): Boolean = items().isNotEmpty()
 
-        return Optional.of(params.toBuilder().after(data().last()._id().getOptional("id")).build())
-    }
+    fun nextPageParams(): StepListParams =
+        params.toBuilder().after(items().last()._id().getOptional("id")).build()
 
-    fun getNextPage(): CompletableFuture<Optional<StepListPageAsync>> =
-        getNextPageParams()
-            .map { service.list(it).thenApply { Optional.of(it) } }
-            .orElseGet { CompletableFuture.completedFuture(Optional.empty()) }
+    override fun nextPage(): CompletableFuture<StepListPageAsync> = service.list(nextPageParams())
 
-    fun autoPager(): AutoPager = AutoPager(this)
+    fun autoPager(): AutoPagerAsync<RunStep> = AutoPagerAsync.from(this, streamHandlerExecutor)
 
     /** The parameters that were used to request this page. */
     fun params(): StepListParams = params
@@ -66,6 +62,7 @@ private constructor(
          * The following fields are required:
          * ```java
          * .service()
+         * .streamHandlerExecutor()
          * .params()
          * .response()
          * ```
@@ -77,17 +74,23 @@ private constructor(
     class Builder internal constructor() {
 
         private var service: StepServiceAsync? = null
+        private var streamHandlerExecutor: Executor? = null
         private var params: StepListParams? = null
         private var response: StepListPageResponse? = null
 
         @JvmSynthetic
         internal fun from(stepListPageAsync: StepListPageAsync) = apply {
             service = stepListPageAsync.service
+            streamHandlerExecutor = stepListPageAsync.streamHandlerExecutor
             params = stepListPageAsync.params
             response = stepListPageAsync.response
         }
 
         fun service(service: StepServiceAsync) = apply { this.service = service }
+
+        fun streamHandlerExecutor(streamHandlerExecutor: Executor) = apply {
+            this.streamHandlerExecutor = streamHandlerExecutor
+        }
 
         /** The parameters that were used to request this page. */
         fun params(params: StepListParams) = apply { this.params = params }
@@ -103,6 +106,7 @@ private constructor(
          * The following fields are required:
          * ```java
          * .service()
+         * .streamHandlerExecutor()
          * .params()
          * .response()
          * ```
@@ -112,35 +116,10 @@ private constructor(
         fun build(): StepListPageAsync =
             StepListPageAsync(
                 checkRequired("service", service),
+                checkRequired("streamHandlerExecutor", streamHandlerExecutor),
                 checkRequired("params", params),
                 checkRequired("response", response),
             )
-    }
-
-    class AutoPager(private val firstPage: StepListPageAsync) {
-
-        fun forEach(action: Predicate<RunStep>, executor: Executor): CompletableFuture<Void> {
-            fun CompletableFuture<Optional<StepListPageAsync>>.forEach(
-                action: (RunStep) -> Boolean,
-                executor: Executor,
-            ): CompletableFuture<Void> =
-                thenComposeAsync(
-                    { page ->
-                        page
-                            .filter { it.data().all(action) }
-                            .map { it.getNextPage().forEach(action, executor) }
-                            .orElseGet { CompletableFuture.completedFuture(null) }
-                    },
-                    executor,
-                )
-            return CompletableFuture.completedFuture(Optional.of(firstPage))
-                .forEach(action::test, executor)
-        }
-
-        fun toList(executor: Executor): CompletableFuture<List<RunStep>> {
-            val values = mutableListOf<RunStep>()
-            return forEach(values::add, executor).thenApply { values }
-        }
     }
 
     override fun equals(other: Any?): Boolean {
@@ -148,11 +127,11 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is StepListPageAsync && service == other.service && params == other.params && response == other.response /* spotless:on */
+        return /* spotless:off */ other is StepListPageAsync && service == other.service && streamHandlerExecutor == other.streamHandlerExecutor && params == other.params && response == other.response /* spotless:on */
     }
 
-    override fun hashCode(): Int = /* spotless:off */ Objects.hash(service, params, response) /* spotless:on */
+    override fun hashCode(): Int = /* spotless:off */ Objects.hash(service, streamHandlerExecutor, params, response) /* spotless:on */
 
     override fun toString() =
-        "StepListPageAsync{service=$service, params=$params, response=$response}"
+        "StepListPageAsync{service=$service, streamHandlerExecutor=$streamHandlerExecutor, params=$params, response=$response}"
 }

@@ -4,6 +4,7 @@ package com.openai.services.blocking.evals.runs
 
 import com.openai.core.ClientOptions
 import com.openai.core.RequestOptions
+import com.openai.core.checkRequired
 import com.openai.core.handlers.errorHandler
 import com.openai.core.handlers.jsonHandler
 import com.openai.core.handlers.withErrorHandler
@@ -19,6 +20,7 @@ import com.openai.models.evals.runs.outputitems.OutputItemListPageResponse
 import com.openai.models.evals.runs.outputitems.OutputItemListParams
 import com.openai.models.evals.runs.outputitems.OutputItemRetrieveParams
 import com.openai.models.evals.runs.outputitems.OutputItemRetrieveResponse
+import kotlin.jvm.optionals.getOrNull
 
 class OutputItemServiceImpl internal constructor(private val clientOptions: ClientOptions) :
     OutputItemService {
@@ -56,6 +58,9 @@ class OutputItemServiceImpl internal constructor(private val clientOptions: Clie
             params: OutputItemRetrieveParams,
             requestOptions: RequestOptions,
         ): HttpResponseFor<OutputItemRetrieveResponse> {
+            // We check here instead of in the params builder because this can be specified
+            // positionally or in the params class.
+            checkRequired("outputItemId", params.outputItemId().getOrNull())
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.GET)
@@ -90,6 +95,9 @@ class OutputItemServiceImpl internal constructor(private val clientOptions: Clie
             params: OutputItemListParams,
             requestOptions: RequestOptions,
         ): HttpResponseFor<OutputItemListPage> {
+            // We check here instead of in the params builder because this can be specified
+            // positionally or in the params class.
+            checkRequired("runId", params.runId().getOrNull())
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.GET)

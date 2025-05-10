@@ -1,6 +1,6 @@
 // File generated from our OpenAPI spec by Stainless.
 
-package com.openai.models.evals
+package com.openai.models.graders.gradermodels
 
 import com.fasterxml.jackson.annotation.JsonAnyGetter
 import com.fasterxml.jackson.annotation.JsonAnySetter
@@ -32,46 +32,40 @@ import java.util.Objects
 import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
-/** A LabelModelGrader object which uses a model to assign labels to each item in the evaluation. */
-class EvalLabelModelGrader
+/** A ScoreModelGrader object that uses a model to assign a score to the input. */
+class ScoreModelGrader
 private constructor(
     private val input: JsonField<List<Input>>,
-    private val labels: JsonField<List<String>>,
     private val model: JsonField<String>,
     private val name: JsonField<String>,
-    private val passingLabels: JsonField<List<String>>,
     private val type: JsonValue,
+    private val range: JsonField<List<Double>>,
+    private val samplingParams: JsonValue,
     private val additionalProperties: MutableMap<String, JsonValue>,
 ) {
 
     @JsonCreator
     private constructor(
         @JsonProperty("input") @ExcludeMissing input: JsonField<List<Input>> = JsonMissing.of(),
-        @JsonProperty("labels") @ExcludeMissing labels: JsonField<List<String>> = JsonMissing.of(),
         @JsonProperty("model") @ExcludeMissing model: JsonField<String> = JsonMissing.of(),
         @JsonProperty("name") @ExcludeMissing name: JsonField<String> = JsonMissing.of(),
-        @JsonProperty("passing_labels")
-        @ExcludeMissing
-        passingLabels: JsonField<List<String>> = JsonMissing.of(),
         @JsonProperty("type") @ExcludeMissing type: JsonValue = JsonMissing.of(),
-    ) : this(input, labels, model, name, passingLabels, type, mutableMapOf())
+        @JsonProperty("range") @ExcludeMissing range: JsonField<List<Double>> = JsonMissing.of(),
+        @JsonProperty("sampling_params")
+        @ExcludeMissing
+        samplingParams: JsonValue = JsonMissing.of(),
+    ) : this(input, model, name, type, range, samplingParams, mutableMapOf())
 
     /**
+     * The input text. This may include template strings.
+     *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
      *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
      */
     fun input(): List<Input> = input.getRequired("input")
 
     /**
-     * The labels to assign to each item in the evaluation.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
-     */
-    fun labels(): List<String> = labels.getRequired("labels")
-
-    /**
-     * The model to use for the evaluation. Must support structured outputs.
+     * The model to use for the evaluation.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
      *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
@@ -87,19 +81,11 @@ private constructor(
     fun name(): String = name.getRequired("name")
 
     /**
-     * The labels that indicate a passing result. Must be a subset of labels.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
-     */
-    fun passingLabels(): List<String> = passingLabels.getRequired("passing_labels")
-
-    /**
-     * The object type, which is always `label_model`.
+     * The object type, which is always `score_model`.
      *
      * Expected to always return the following:
      * ```java
-     * JsonValue.from("label_model")
+     * JsonValue.from("score_model")
      * ```
      *
      * However, this method can be useful for debugging and logging (e.g. if the server responded
@@ -108,18 +94,24 @@ private constructor(
     @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
 
     /**
+     * The range of the score. Defaults to `[0, 1]`.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun range(): Optional<List<Double>> = range.getOptional("range")
+
+    /** The sampling parameters for the model. */
+    @JsonProperty("sampling_params")
+    @ExcludeMissing
+    fun _samplingParams(): JsonValue = samplingParams
+
+    /**
      * Returns the raw JSON value of [input].
      *
      * Unlike [input], this method doesn't throw if the JSON field has an unexpected type.
      */
     @JsonProperty("input") @ExcludeMissing fun _input(): JsonField<List<Input>> = input
-
-    /**
-     * Returns the raw JSON value of [labels].
-     *
-     * Unlike [labels], this method doesn't throw if the JSON field has an unexpected type.
-     */
-    @JsonProperty("labels") @ExcludeMissing fun _labels(): JsonField<List<String>> = labels
 
     /**
      * Returns the raw JSON value of [model].
@@ -136,13 +128,11 @@ private constructor(
     @JsonProperty("name") @ExcludeMissing fun _name(): JsonField<String> = name
 
     /**
-     * Returns the raw JSON value of [passingLabels].
+     * Returns the raw JSON value of [range].
      *
-     * Unlike [passingLabels], this method doesn't throw if the JSON field has an unexpected type.
+     * Unlike [range], this method doesn't throw if the JSON field has an unexpected type.
      */
-    @JsonProperty("passing_labels")
-    @ExcludeMissing
-    fun _passingLabels(): JsonField<List<String>> = passingLabels
+    @JsonProperty("range") @ExcludeMissing fun _range(): JsonField<List<Double>> = range
 
     @JsonAnySetter
     private fun putAdditionalProperty(key: String, value: JsonValue) {
@@ -159,42 +149,41 @@ private constructor(
     companion object {
 
         /**
-         * Returns a mutable builder for constructing an instance of [EvalLabelModelGrader].
+         * Returns a mutable builder for constructing an instance of [ScoreModelGrader].
          *
          * The following fields are required:
          * ```java
          * .input()
-         * .labels()
          * .model()
          * .name()
-         * .passingLabels()
          * ```
          */
         @JvmStatic fun builder() = Builder()
     }
 
-    /** A builder for [EvalLabelModelGrader]. */
+    /** A builder for [ScoreModelGrader]. */
     class Builder internal constructor() {
 
         private var input: JsonField<MutableList<Input>>? = null
-        private var labels: JsonField<MutableList<String>>? = null
         private var model: JsonField<String>? = null
         private var name: JsonField<String>? = null
-        private var passingLabels: JsonField<MutableList<String>>? = null
-        private var type: JsonValue = JsonValue.from("label_model")
+        private var type: JsonValue = JsonValue.from("score_model")
+        private var range: JsonField<MutableList<Double>>? = null
+        private var samplingParams: JsonValue = JsonMissing.of()
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
         @JvmSynthetic
-        internal fun from(evalLabelModelGrader: EvalLabelModelGrader) = apply {
-            input = evalLabelModelGrader.input.map { it.toMutableList() }
-            labels = evalLabelModelGrader.labels.map { it.toMutableList() }
-            model = evalLabelModelGrader.model
-            name = evalLabelModelGrader.name
-            passingLabels = evalLabelModelGrader.passingLabels.map { it.toMutableList() }
-            type = evalLabelModelGrader.type
-            additionalProperties = evalLabelModelGrader.additionalProperties.toMutableMap()
+        internal fun from(scoreModelGrader: ScoreModelGrader) = apply {
+            input = scoreModelGrader.input.map { it.toMutableList() }
+            model = scoreModelGrader.model
+            name = scoreModelGrader.name
+            type = scoreModelGrader.type
+            range = scoreModelGrader.range.map { it.toMutableList() }
+            samplingParams = scoreModelGrader.samplingParams
+            additionalProperties = scoreModelGrader.additionalProperties.toMutableMap()
         }
 
+        /** The input text. This may include template strings. */
         fun input(input: List<Input>) = input(JsonField.of(input))
 
         /**
@@ -220,33 +209,7 @@ private constructor(
                 }
         }
 
-        /** The labels to assign to each item in the evaluation. */
-        fun labels(labels: List<String>) = labels(JsonField.of(labels))
-
-        /**
-         * Sets [Builder.labels] to an arbitrary JSON value.
-         *
-         * You should usually call [Builder.labels] with a well-typed `List<String>` value instead.
-         * This method is primarily for setting the field to an undocumented or not yet supported
-         * value.
-         */
-        fun labels(labels: JsonField<List<String>>) = apply {
-            this.labels = labels.map { it.toMutableList() }
-        }
-
-        /**
-         * Adds a single [String] to [labels].
-         *
-         * @throws IllegalStateException if the field was previously set to a non-list.
-         */
-        fun addLabel(label: String) = apply {
-            labels =
-                (labels ?: JsonField.of(mutableListOf())).also {
-                    checkKnown("labels", it).add(label)
-                }
-        }
-
-        /** The model to use for the evaluation. Must support structured outputs. */
+        /** The model to use for the evaluation. */
         fun model(model: String) = model(JsonField.of(model))
 
         /**
@@ -268,45 +231,50 @@ private constructor(
          */
         fun name(name: JsonField<String>) = apply { this.name = name }
 
-        /** The labels that indicate a passing result. Must be a subset of labels. */
-        fun passingLabels(passingLabels: List<String>) = passingLabels(JsonField.of(passingLabels))
-
-        /**
-         * Sets [Builder.passingLabels] to an arbitrary JSON value.
-         *
-         * You should usually call [Builder.passingLabels] with a well-typed `List<String>` value
-         * instead. This method is primarily for setting the field to an undocumented or not yet
-         * supported value.
-         */
-        fun passingLabels(passingLabels: JsonField<List<String>>) = apply {
-            this.passingLabels = passingLabels.map { it.toMutableList() }
-        }
-
-        /**
-         * Adds a single [String] to [passingLabels].
-         *
-         * @throws IllegalStateException if the field was previously set to a non-list.
-         */
-        fun addPassingLabel(passingLabel: String) = apply {
-            passingLabels =
-                (passingLabels ?: JsonField.of(mutableListOf())).also {
-                    checkKnown("passingLabels", it).add(passingLabel)
-                }
-        }
-
         /**
          * Sets the field to an arbitrary JSON value.
          *
          * It is usually unnecessary to call this method because the field defaults to the
          * following:
          * ```java
-         * JsonValue.from("label_model")
+         * JsonValue.from("score_model")
          * ```
          *
          * This method is primarily for setting the field to an undocumented or not yet supported
          * value.
          */
         fun type(type: JsonValue) = apply { this.type = type }
+
+        /** The range of the score. Defaults to `[0, 1]`. */
+        fun range(range: List<Double>) = range(JsonField.of(range))
+
+        /**
+         * Sets [Builder.range] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.range] with a well-typed `List<Double>` value instead.
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
+         */
+        fun range(range: JsonField<List<Double>>) = apply {
+            this.range = range.map { it.toMutableList() }
+        }
+
+        /**
+         * Adds a single [Double] to [Builder.range].
+         *
+         * @throws IllegalStateException if the field was previously set to a non-list.
+         */
+        fun addRange(range: Double) = apply {
+            this.range =
+                (this.range ?: JsonField.of(mutableListOf())).also {
+                    checkKnown("range", it).add(range)
+                }
+        }
+
+        /** The sampling parameters for the model. */
+        fun samplingParams(samplingParams: JsonValue) = apply {
+            this.samplingParams = samplingParams
+        }
 
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
             this.additionalProperties.clear()
@@ -328,50 +296,47 @@ private constructor(
         }
 
         /**
-         * Returns an immutable instance of [EvalLabelModelGrader].
+         * Returns an immutable instance of [ScoreModelGrader].
          *
          * Further updates to this [Builder] will not mutate the returned instance.
          *
          * The following fields are required:
          * ```java
          * .input()
-         * .labels()
          * .model()
          * .name()
-         * .passingLabels()
          * ```
          *
          * @throws IllegalStateException if any required field is unset.
          */
-        fun build(): EvalLabelModelGrader =
-            EvalLabelModelGrader(
+        fun build(): ScoreModelGrader =
+            ScoreModelGrader(
                 checkRequired("input", input).map { it.toImmutable() },
-                checkRequired("labels", labels).map { it.toImmutable() },
                 checkRequired("model", model),
                 checkRequired("name", name),
-                checkRequired("passingLabels", passingLabels).map { it.toImmutable() },
                 type,
+                (range ?: JsonMissing.of()).map { it.toImmutable() },
+                samplingParams,
                 additionalProperties.toMutableMap(),
             )
     }
 
     private var validated: Boolean = false
 
-    fun validate(): EvalLabelModelGrader = apply {
+    fun validate(): ScoreModelGrader = apply {
         if (validated) {
             return@apply
         }
 
         input().forEach { it.validate() }
-        labels()
         model()
         name()
-        passingLabels()
         _type().let {
-            if (it != JsonValue.from("label_model")) {
+            if (it != JsonValue.from("score_model")) {
                 throw OpenAIInvalidDataException("'type' is invalid, received $it")
             }
         }
+        range()
         validated = true
     }
 
@@ -391,11 +356,10 @@ private constructor(
     @JvmSynthetic
     internal fun validity(): Int =
         (input.asKnown().getOrNull()?.sumOf { it.validity().toInt() } ?: 0) +
-            (labels.asKnown().getOrNull()?.size ?: 0) +
             (if (model.asKnown().isPresent) 1 else 0) +
             (if (name.asKnown().isPresent) 1 else 0) +
-            (passingLabels.asKnown().getOrNull()?.size ?: 0) +
-            type.let { if (it == JsonValue.from("label_model")) 1 else 0 }
+            type.let { if (it == JsonValue.from("score_model")) 1 else 0 } +
+            (range.asKnown().getOrNull()?.size ?: 0)
 
     /**
      * A message input to the model with a role indicating instruction following hierarchy.
@@ -1335,15 +1299,15 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is EvalLabelModelGrader && input == other.input && labels == other.labels && model == other.model && name == other.name && passingLabels == other.passingLabels && type == other.type && additionalProperties == other.additionalProperties /* spotless:on */
+        return /* spotless:off */ other is ScoreModelGrader && input == other.input && model == other.model && name == other.name && type == other.type && range == other.range && samplingParams == other.samplingParams && additionalProperties == other.additionalProperties /* spotless:on */
     }
 
     /* spotless:off */
-    private val hashCode: Int by lazy { Objects.hash(input, labels, model, name, passingLabels, type, additionalProperties) }
+    private val hashCode: Int by lazy { Objects.hash(input, model, name, type, range, samplingParams, additionalProperties) }
     /* spotless:on */
 
     override fun hashCode(): Int = hashCode
 
     override fun toString() =
-        "EvalLabelModelGrader{input=$input, labels=$labels, model=$model, name=$name, passingLabels=$passingLabels, type=$type, additionalProperties=$additionalProperties}"
+        "ScoreModelGrader{input=$input, model=$model, name=$name, type=$type, range=$range, samplingParams=$samplingParams, additionalProperties=$additionalProperties}"
 }

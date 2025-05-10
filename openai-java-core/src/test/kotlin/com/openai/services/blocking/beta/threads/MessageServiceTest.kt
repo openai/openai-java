@@ -8,7 +8,6 @@ import com.openai.core.JsonValue
 import com.openai.models.beta.assistants.CodeInterpreterTool
 import com.openai.models.beta.threads.messages.MessageCreateParams
 import com.openai.models.beta.threads.messages.MessageDeleteParams
-import com.openai.models.beta.threads.messages.MessageListParams
 import com.openai.models.beta.threads.messages.MessageRetrieveParams
 import com.openai.models.beta.threads.messages.MessageUpdateParams
 import org.junit.jupiter.api.Test
@@ -103,7 +102,7 @@ internal class MessageServiceTest {
                 .build()
         val messageService = client.beta().threads().messages()
 
-        val page = messageService.list(MessageListParams.builder().threadId("thread_id").build())
+        val page = messageService.list("thread_id")
 
         page.response().validate()
     }

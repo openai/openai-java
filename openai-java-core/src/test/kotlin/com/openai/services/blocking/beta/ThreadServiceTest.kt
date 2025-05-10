@@ -10,8 +10,6 @@ import com.openai.models.beta.assistants.CodeInterpreterTool
 import com.openai.models.beta.threads.AssistantToolChoiceOption
 import com.openai.models.beta.threads.ThreadCreateAndRunParams
 import com.openai.models.beta.threads.ThreadCreateParams
-import com.openai.models.beta.threads.ThreadDeleteParams
-import com.openai.models.beta.threads.ThreadRetrieveParams
 import com.openai.models.beta.threads.ThreadUpdateParams
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
@@ -100,8 +98,7 @@ internal class ThreadServiceTest {
                 .build()
         val threadService = client.beta().threads()
 
-        val thread =
-            threadService.retrieve(ThreadRetrieveParams.builder().threadId("thread_id").build())
+        val thread = threadService.retrieve("thread_id")
 
         thread.validate()
     }
@@ -153,8 +150,7 @@ internal class ThreadServiceTest {
                 .build()
         val threadService = client.beta().threads()
 
-        val threadDeleted =
-            threadService.delete(ThreadDeleteParams.builder().threadId("thread_id").build())
+        val threadDeleted = threadService.delete("thread_id")
 
         threadDeleted.validate()
     }

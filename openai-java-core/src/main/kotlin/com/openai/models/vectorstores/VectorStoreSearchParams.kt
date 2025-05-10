@@ -37,13 +37,13 @@ import kotlin.jvm.optionals.getOrNull
 /** Search a vector store for relevant chunks based on a query and file attributes filter. */
 class VectorStoreSearchParams
 private constructor(
-    private val vectorStoreId: String,
+    private val vectorStoreId: String?,
     private val body: Body,
     private val additionalHeaders: Headers,
     private val additionalQueryParams: QueryParams,
 ) : Params {
 
-    fun vectorStoreId(): String = vectorStoreId
+    fun vectorStoreId(): Optional<String> = Optional.ofNullable(vectorStoreId)
 
     /**
      * A query string for a search
@@ -135,7 +135,6 @@ private constructor(
          *
          * The following fields are required:
          * ```java
-         * .vectorStoreId()
          * .query()
          * ```
          */
@@ -158,7 +157,11 @@ private constructor(
             additionalQueryParams = vectorStoreSearchParams.additionalQueryParams.toBuilder()
         }
 
-        fun vectorStoreId(vectorStoreId: String) = apply { this.vectorStoreId = vectorStoreId }
+        fun vectorStoreId(vectorStoreId: String?) = apply { this.vectorStoreId = vectorStoreId }
+
+        /** Alias for calling [Builder.vectorStoreId] with `vectorStoreId.orElse(null)`. */
+        fun vectorStoreId(vectorStoreId: Optional<String>) =
+            vectorStoreId(vectorStoreId.getOrNull())
 
         /**
          * Sets the entire request body.
@@ -379,7 +382,6 @@ private constructor(
          *
          * The following fields are required:
          * ```java
-         * .vectorStoreId()
          * .query()
          * ```
          *
@@ -387,7 +389,7 @@ private constructor(
          */
         fun build(): VectorStoreSearchParams =
             VectorStoreSearchParams(
-                checkRequired("vectorStoreId", vectorStoreId),
+                vectorStoreId,
                 body.build(),
                 additionalHeaders.build(),
                 additionalQueryParams.build(),
@@ -398,7 +400,7 @@ private constructor(
 
     fun _pathParam(index: Int): String =
         when (index) {
-            0 -> vectorStoreId
+            0 -> vectorStoreId ?: ""
             else -> ""
         }
 

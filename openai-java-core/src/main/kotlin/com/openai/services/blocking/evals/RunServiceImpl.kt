@@ -4,6 +4,7 @@ package com.openai.services.blocking.evals
 
 import com.openai.core.ClientOptions
 import com.openai.core.RequestOptions
+import com.openai.core.checkRequired
 import com.openai.core.handlers.errorHandler
 import com.openai.core.handlers.jsonHandler
 import com.openai.core.handlers.withErrorHandler
@@ -28,6 +29,7 @@ import com.openai.models.evals.runs.RunRetrieveParams
 import com.openai.models.evals.runs.RunRetrieveResponse
 import com.openai.services.blocking.evals.runs.OutputItemService
 import com.openai.services.blocking.evals.runs.OutputItemServiceImpl
+import kotlin.jvm.optionals.getOrNull
 
 class RunServiceImpl internal constructor(private val clientOptions: ClientOptions) : RunService {
 
@@ -91,6 +93,9 @@ class RunServiceImpl internal constructor(private val clientOptions: ClientOptio
             params: RunCreateParams,
             requestOptions: RequestOptions,
         ): HttpResponseFor<RunCreateResponse> {
+            // We check here instead of in the params builder because this can be specified
+            // positionally or in the params class.
+            checkRequired("evalId", params.evalId().getOrNull())
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.POST)
@@ -119,6 +124,9 @@ class RunServiceImpl internal constructor(private val clientOptions: ClientOptio
             params: RunRetrieveParams,
             requestOptions: RequestOptions,
         ): HttpResponseFor<RunRetrieveResponse> {
+            // We check here instead of in the params builder because this can be specified
+            // positionally or in the params class.
+            checkRequired("runId", params.runId().getOrNull())
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.GET)
@@ -146,6 +154,9 @@ class RunServiceImpl internal constructor(private val clientOptions: ClientOptio
             params: RunListParams,
             requestOptions: RequestOptions,
         ): HttpResponseFor<RunListPage> {
+            // We check here instead of in the params builder because this can be specified
+            // positionally or in the params class.
+            checkRequired("evalId", params.evalId().getOrNull())
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.GET)
@@ -179,6 +190,9 @@ class RunServiceImpl internal constructor(private val clientOptions: ClientOptio
             params: RunDeleteParams,
             requestOptions: RequestOptions,
         ): HttpResponseFor<RunDeleteResponse> {
+            // We check here instead of in the params builder because this can be specified
+            // positionally or in the params class.
+            checkRequired("runId", params.runId().getOrNull())
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.DELETE)
@@ -206,6 +220,9 @@ class RunServiceImpl internal constructor(private val clientOptions: ClientOptio
             params: RunCancelParams,
             requestOptions: RequestOptions,
         ): HttpResponseFor<RunCancelResponse> {
+            // We check here instead of in the params builder because this can be specified
+            // positionally or in the params class.
+            checkRequired("runId", params.runId().getOrNull())
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.POST)

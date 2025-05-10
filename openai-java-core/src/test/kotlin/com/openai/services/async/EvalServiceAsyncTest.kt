@@ -6,8 +6,6 @@ import com.openai.TestServerExtension
 import com.openai.client.okhttp.OpenAIOkHttpClientAsync
 import com.openai.core.JsonValue
 import com.openai.models.evals.EvalCreateParams
-import com.openai.models.evals.EvalDeleteParams
-import com.openai.models.evals.EvalRetrieveParams
 import com.openai.models.evals.EvalUpdateParams
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
@@ -75,8 +73,7 @@ internal class EvalServiceAsyncTest {
                 .build()
         val evalServiceAsync = client.evals()
 
-        val evalFuture =
-            evalServiceAsync.retrieve(EvalRetrieveParams.builder().evalId("eval_id").build())
+        val evalFuture = evalServiceAsync.retrieve("eval_id")
 
         val eval = evalFuture.get()
         eval.validate()
@@ -132,8 +129,7 @@ internal class EvalServiceAsyncTest {
                 .build()
         val evalServiceAsync = client.evals()
 
-        val evalFuture =
-            evalServiceAsync.delete(EvalDeleteParams.builder().evalId("eval_id").build())
+        val evalFuture = evalServiceAsync.delete("eval_id")
 
         val eval = evalFuture.get()
         eval.validate()

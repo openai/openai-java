@@ -4,6 +4,7 @@ package com.openai.services.async
 
 import com.openai.core.ClientOptions
 import com.openai.core.RequestOptions
+import com.openai.core.checkRequired
 import com.openai.core.handlers.errorHandler
 import com.openai.core.handlers.jsonHandler
 import com.openai.core.handlers.withErrorHandler
@@ -29,6 +30,7 @@ import com.openai.models.evals.EvalUpdateResponse
 import com.openai.services.async.evals.RunServiceAsync
 import com.openai.services.async.evals.RunServiceAsyncImpl
 import java.util.concurrent.CompletableFuture
+import kotlin.jvm.optionals.getOrNull
 
 class EvalServiceAsyncImpl internal constructor(private val clientOptions: ClientOptions) :
     EvalServiceAsync {
@@ -127,6 +129,9 @@ class EvalServiceAsyncImpl internal constructor(private val clientOptions: Clien
             params: EvalRetrieveParams,
             requestOptions: RequestOptions,
         ): CompletableFuture<HttpResponseFor<EvalRetrieveResponse>> {
+            // We check here instead of in the params builder because this can be specified
+            // positionally or in the params class.
+            checkRequired("evalId", params.evalId().getOrNull())
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.GET)
@@ -156,6 +161,9 @@ class EvalServiceAsyncImpl internal constructor(private val clientOptions: Clien
             params: EvalUpdateParams,
             requestOptions: RequestOptions,
         ): CompletableFuture<HttpResponseFor<EvalUpdateResponse>> {
+            // We check here instead of in the params builder because this can be specified
+            // positionally or in the params class.
+            checkRequired("evalId", params.evalId().getOrNull())
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.POST)
@@ -208,6 +216,7 @@ class EvalServiceAsyncImpl internal constructor(private val clientOptions: Clien
                             .let {
                                 EvalListPageAsync.builder()
                                     .service(EvalServiceAsyncImpl(clientOptions))
+                                    .streamHandlerExecutor(clientOptions.streamHandlerExecutor)
                                     .params(params)
                                     .response(it)
                                     .build()
@@ -223,6 +232,9 @@ class EvalServiceAsyncImpl internal constructor(private val clientOptions: Clien
             params: EvalDeleteParams,
             requestOptions: RequestOptions,
         ): CompletableFuture<HttpResponseFor<EvalDeleteResponse>> {
+            // We check here instead of in the params builder because this can be specified
+            // positionally or in the params class.
+            checkRequired("evalId", params.evalId().getOrNull())
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.DELETE)

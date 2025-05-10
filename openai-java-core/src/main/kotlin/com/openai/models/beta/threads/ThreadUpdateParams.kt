@@ -12,7 +12,6 @@ import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
 import com.openai.core.Params
 import com.openai.core.checkKnown
-import com.openai.core.checkRequired
 import com.openai.core.http.Headers
 import com.openai.core.http.QueryParams
 import com.openai.core.toImmutable
@@ -25,13 +24,13 @@ import kotlin.jvm.optionals.getOrNull
 /** Modifies a thread. */
 class ThreadUpdateParams
 private constructor(
-    private val threadId: String,
+    private val threadId: String?,
     private val body: Body,
     private val additionalHeaders: Headers,
     private val additionalQueryParams: QueryParams,
 ) : Params {
 
-    fun threadId(): String = threadId
+    fun threadId(): Optional<String> = Optional.ofNullable(threadId)
 
     /**
      * Set of 16 key-value pairs that can be attached to an object. This can be useful for storing
@@ -80,14 +79,9 @@ private constructor(
 
     companion object {
 
-        /**
-         * Returns a mutable builder for constructing an instance of [ThreadUpdateParams].
-         *
-         * The following fields are required:
-         * ```java
-         * .threadId()
-         * ```
-         */
+        @JvmStatic fun none(): ThreadUpdateParams = builder().build()
+
+        /** Returns a mutable builder for constructing an instance of [ThreadUpdateParams]. */
         @JvmStatic fun builder() = Builder()
     }
 
@@ -107,7 +101,10 @@ private constructor(
             additionalQueryParams = threadUpdateParams.additionalQueryParams.toBuilder()
         }
 
-        fun threadId(threadId: String) = apply { this.threadId = threadId }
+        fun threadId(threadId: String?) = apply { this.threadId = threadId }
+
+        /** Alias for calling [Builder.threadId] with `threadId.orElse(null)`. */
+        fun threadId(threadId: Optional<String>) = threadId(threadId.getOrNull())
 
         /**
          * Sets the entire request body.
@@ -287,17 +284,10 @@ private constructor(
          * Returns an immutable instance of [ThreadUpdateParams].
          *
          * Further updates to this [Builder] will not mutate the returned instance.
-         *
-         * The following fields are required:
-         * ```java
-         * .threadId()
-         * ```
-         *
-         * @throws IllegalStateException if any required field is unset.
          */
         fun build(): ThreadUpdateParams =
             ThreadUpdateParams(
-                checkRequired("threadId", threadId),
+                threadId,
                 body.build(),
                 additionalHeaders.build(),
                 additionalQueryParams.build(),
@@ -308,7 +298,7 @@ private constructor(
 
     fun _pathParam(index: Int): String =
         when (index) {
-            0 -> threadId
+            0 -> threadId ?: ""
             else -> ""
         }
 

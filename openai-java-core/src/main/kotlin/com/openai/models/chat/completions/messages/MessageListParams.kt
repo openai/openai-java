@@ -6,7 +6,6 @@ import com.fasterxml.jackson.annotation.JsonCreator
 import com.openai.core.Enum
 import com.openai.core.JsonField
 import com.openai.core.Params
-import com.openai.core.checkRequired
 import com.openai.core.http.Headers
 import com.openai.core.http.QueryParams
 import com.openai.errors.OpenAIInvalidDataException
@@ -20,7 +19,7 @@ import kotlin.jvm.optionals.getOrNull
  */
 class MessageListParams
 private constructor(
-    private val completionId: String,
+    private val completionId: String?,
     private val after: String?,
     private val limit: Long?,
     private val order: Order?,
@@ -28,7 +27,7 @@ private constructor(
     private val additionalQueryParams: QueryParams,
 ) : Params {
 
-    fun completionId(): String = completionId
+    fun completionId(): Optional<String> = Optional.ofNullable(completionId)
 
     /** Identifier for the last message from the previous pagination request. */
     fun after(): Optional<String> = Optional.ofNullable(after)
@@ -50,14 +49,9 @@ private constructor(
 
     companion object {
 
-        /**
-         * Returns a mutable builder for constructing an instance of [MessageListParams].
-         *
-         * The following fields are required:
-         * ```java
-         * .completionId()
-         * ```
-         */
+        @JvmStatic fun none(): MessageListParams = builder().build()
+
+        /** Returns a mutable builder for constructing an instance of [MessageListParams]. */
         @JvmStatic fun builder() = Builder()
     }
 
@@ -81,7 +75,10 @@ private constructor(
             additionalQueryParams = messageListParams.additionalQueryParams.toBuilder()
         }
 
-        fun completionId(completionId: String) = apply { this.completionId = completionId }
+        fun completionId(completionId: String?) = apply { this.completionId = completionId }
+
+        /** Alias for calling [Builder.completionId] with `completionId.orElse(null)`. */
+        fun completionId(completionId: Optional<String>) = completionId(completionId.getOrNull())
 
         /** Identifier for the last message from the previous pagination request. */
         fun after(after: String?) = apply { this.after = after }
@@ -213,17 +210,10 @@ private constructor(
          * Returns an immutable instance of [MessageListParams].
          *
          * Further updates to this [Builder] will not mutate the returned instance.
-         *
-         * The following fields are required:
-         * ```java
-         * .completionId()
-         * ```
-         *
-         * @throws IllegalStateException if any required field is unset.
          */
         fun build(): MessageListParams =
             MessageListParams(
-                checkRequired("completionId", completionId),
+                completionId,
                 after,
                 limit,
                 order,
@@ -234,7 +224,7 @@ private constructor(
 
     fun _pathParam(index: Int): String =
         when (index) {
-            0 -> completionId
+            0 -> completionId ?: ""
             else -> ""
         }
 

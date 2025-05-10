@@ -2,8 +2,8 @@
 
 <!-- x-release-please-start-version -->
 
-[![Maven Central](https://img.shields.io/maven-central/v/com.openai/openai-java)](https://central.sonatype.com/artifact/com.openai/openai-java/1.6.1)
-[![javadoc](https://javadoc.io/badge2/com.openai/openai-java/1.6.1/javadoc.svg)](https://javadoc.io/doc/com.openai/openai-java/1.6.1)
+[![Maven Central](https://img.shields.io/maven-central/v/com.openai/openai-java)](https://central.sonatype.com/artifact/com.openai/openai-java/2.0.0)
+[![javadoc](https://javadoc.io/badge2/com.openai/openai-java/2.0.0/javadoc.svg)](https://javadoc.io/doc/com.openai/openai-java/2.0.0)
 
 <!-- x-release-please-end -->
 
@@ -11,7 +11,7 @@ The OpenAI Java SDK provides convenient access to the [OpenAI REST API](https://
 
 <!-- x-release-please-start-version -->
 
-The REST API documentation can be found on [platform.openai.com](https://platform.openai.com/docs). Javadocs are available on [javadoc.io](https://javadoc.io/doc/com.openai/openai-java/1.6.1).
+The REST API documentation can be found on [platform.openai.com](https://platform.openai.com/docs). Javadocs are available on [javadoc.io](https://javadoc.io/doc/com.openai/openai-java/2.0.0).
 
 <!-- x-release-please-end -->
 
@@ -22,7 +22,7 @@ The REST API documentation can be found on [platform.openai.com](https://platfor
 ### Gradle
 
 ```kotlin
-implementation("com.openai:openai-java:1.6.1")
+implementation("com.openai:openai-java:2.0.0")
 ```
 
 ### Maven
@@ -31,7 +31,7 @@ implementation("com.openai:openai-java:1.6.1")
 <dependency>
   <groupId>com.openai</groupId>
   <artifactId>openai-java</artifactId>
-  <version>1.6.1</version>
+  <version>2.0.0</version>
 </dependency>
 ```
 
@@ -412,10 +412,7 @@ These methods return [`HttpResponse`](openai-java-core/src/main/kotlin/com/opena
 import com.openai.core.http.HttpResponse;
 import com.openai.models.files.FileContentParams;
 
-FileContentParams params = FileContentParams.builder()
-    .fileId("file_id")
-    .build();
-HttpResponse response = client.files().content(params);
+HttpResponse response = client.files().content("file_id");
 ```
 
 To save the response content to a file, use the [`Files.copy(...)`](https://docs.oracle.com/javase/8/docs/api/java/nio/file/Files.html#copy-java.io.InputStream-java.nio.file.Path-java.nio.file.CopyOption...-) method:
@@ -528,53 +525,101 @@ The SDK throws custom unchecked exception types:
 
 ## Pagination
 
-For methods that return a paginated list of results, this library provides convenient ways access the results either one page at a time, or item-by-item across all pages.
+The SDK defines methods that return a paginated lists of results. It provides convenient ways to access the results either one page at a time or item-by-item across all pages.
 
 ### Auto-pagination
 
-To iterate through all results across all pages, you can use `autoPager`, which automatically handles fetching more pages for you:
+To iterate through all results across all pages, use the `autoPager()` method, which automatically fetches more pages as needed.
 
-### Synchronous
+When using the synchronous client, the method returns an [`Iterable`](https://docs.oracle.com/javase/8/docs/api/java/lang/Iterable.html)
 
 ```java
 import com.openai.models.finetuning.jobs.FineTuningJob;
 import com.openai.models.finetuning.jobs.JobListPage;
 
-// As an Iterable:
-JobListPage page = client.fineTuning().jobs().list(params);
+JobListPage page = client.fineTuning().jobs().list();
+
+// Process as an Iterable
 for (FineTuningJob job : page.autoPager()) {
     System.out.println(job);
-};
+}
 
-// As a Stream:
-client.fineTuning().jobs().list(params).autoPager().stream()
+// Process as a Stream
+page.autoPager()
+    .stream()
     .limit(50)
     .forEach(job -> System.out.println(job));
 ```
 
-### Asynchronous
+When using the asynchronous client, the method returns an [`AsyncStreamResponse`](openai-java-core/src/main/kotlin/com/openai/core/http/AsyncStreamResponse.kt):
 
 ```java
-// Using forEach, which returns CompletableFuture<Void>:
-asyncClient.fineTuning().jobs().list(params).autoPager()
-    .forEach(job -> System.out.println(job), executor);
+import com.openai.core.http.AsyncStreamResponse;
+import com.openai.models.finetuning.jobs.FineTuningJob;
+import com.openai.models.finetuning.jobs.JobListPageAsync;
+import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
+
+CompletableFuture<JobListPageAsync> pageFuture = client.async().fineTuning().jobs().list();
+
+pageFuture.thenRun(page -> page.autoPager().subscribe(job -> {
+    System.out.println(job);
+}));
+
+// If you need to handle errors or completion of the stream
+pageFuture.thenRun(page -> page.autoPager().subscribe(new AsyncStreamResponse.Handler<>() {
+    @Override
+    public void onNext(FineTuningJob job) {
+        System.out.println(job);
+    }
+
+    @Override
+    public void onComplete(Optional<Throwable> error) {
+        if (error.isPresent()) {
+            System.out.println("Something went wrong!");
+            throw new RuntimeException(error.get());
+        } else {
+            System.out.println("No more!");
+        }
+    }
+}));
+
+// Or use futures
+pageFuture.thenRun(page -> page.autoPager()
+    .subscribe(job -> {
+        System.out.println(job);
+    })
+    .onCompleteFuture()
+    .whenComplete((unused, error) -> {
+        if (error != null) {
+            System.out.println("Something went wrong!");
+            throw new RuntimeException(error);
+        } else {
+            System.out.println("No more!");
+        }
+    }));
 ```
 
 ### Manual pagination
 
-If none of the above helpers meet your needs, you can also manually request pages one-by-one. A page of results has a `data()` method to fetch the list of objects, as well as top-level `response` and other methods to fetch top-level data about the page. It also has methods `hasNextPage`, `getNextPage`, and `getNextPageParams` methods to help with pagination.
+To access individual page items and manually request the next page, use the `items()`,
+`hasNextPage()`, and `nextPage()` methods:
 
 ```java
 import com.openai.models.finetuning.jobs.FineTuningJob;
 import com.openai.models.finetuning.jobs.JobListPage;
 
-JobListPage page = client.fineTuning().jobs().list(params);
-while (page != null) {
-    for (FineTuningJob job : page.data()) {
+JobListPage page = client.fineTuning().jobs().list();
+while (true) {
+    for (FineTuningJob job : page.items()) {
         System.out.println(job);
     }
 
-    page = page.getNextPage().orElse(null);
+    if (!page.hasNextPage()) {
+        break;
+    }
+
+    page = page.nextPage();
 }
 ```
 
@@ -657,9 +702,7 @@ Requests time out after 10 minutes by default.
 To set a custom timeout, configure the method call using the `timeout` method:
 
 ```java
-import com.openai.models.ChatModel;
 import com.openai.models.chat.completions.ChatCompletion;
-import com.openai.models.chat.completions.ChatCompletionCreateParams;
 
 ChatCompletion chatCompletion = client.chat().completions().create(
   params, RequestOptions.builder().timeout(Duration.ofSeconds(30)).build()
@@ -775,11 +818,12 @@ To set a documented parameter or property to an undocumented or not yet supporte
 
 ```java
 import com.openai.core.JsonValue;
+import com.openai.models.ChatModel;
 import com.openai.models.chat.completions.ChatCompletionCreateParams;
 
 ChatCompletionCreateParams params = ChatCompletionCreateParams.builder()
-    .addUserMessage("Say this is a test")
-    .model(JsonValue.from(42))
+    .messages(JsonValue.from(42))
+    .model(ChatModel.GPT_4_1)
     .build();
 ```
 
@@ -909,9 +953,7 @@ ChatCompletion chatCompletion = client.chat().completions().create(params).valid
 Or configure the method call to validate the response using the `responseValidation` method:
 
 ```java
-import com.openai.models.ChatModel;
 import com.openai.models.chat.completions.ChatCompletion;
-import com.openai.models.chat.completions.ChatCompletionCreateParams;
 
 ChatCompletion chatCompletion = client.chat().completions().create(
   params, RequestOptions.builder().responseValidation(true).build()

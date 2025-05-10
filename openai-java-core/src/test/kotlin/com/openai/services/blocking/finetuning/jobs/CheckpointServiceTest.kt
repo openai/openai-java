@@ -4,7 +4,6 @@ package com.openai.services.blocking.finetuning.jobs
 
 import com.openai.TestServerExtension
 import com.openai.client.okhttp.OpenAIOkHttpClient
-import com.openai.models.finetuning.jobs.checkpoints.CheckpointListParams
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 
@@ -20,12 +19,7 @@ internal class CheckpointServiceTest {
                 .build()
         val checkpointService = client.fineTuning().jobs().checkpoints()
 
-        val page =
-            checkpointService.list(
-                CheckpointListParams.builder()
-                    .fineTuningJobId("ft-AF1WoRqd3aJAHsqc9NY7iL8F")
-                    .build()
-            )
+        val page = checkpointService.list("ft-AF1WoRqd3aJAHsqc9NY7iL8F")
 
         page.response().validate()
     }

@@ -3,20 +3,21 @@
 package com.openai.models.batches
 
 import com.openai.core.Params
-import com.openai.core.checkRequired
 import com.openai.core.http.Headers
 import com.openai.core.http.QueryParams
 import java.util.Objects
+import java.util.Optional
+import kotlin.jvm.optionals.getOrNull
 
 /** Retrieves a batch. */
 class BatchRetrieveParams
 private constructor(
-    private val batchId: String,
+    private val batchId: String?,
     private val additionalHeaders: Headers,
     private val additionalQueryParams: QueryParams,
 ) : Params {
 
-    fun batchId(): String = batchId
+    fun batchId(): Optional<String> = Optional.ofNullable(batchId)
 
     fun _additionalHeaders(): Headers = additionalHeaders
 
@@ -26,14 +27,9 @@ private constructor(
 
     companion object {
 
-        /**
-         * Returns a mutable builder for constructing an instance of [BatchRetrieveParams].
-         *
-         * The following fields are required:
-         * ```java
-         * .batchId()
-         * ```
-         */
+        @JvmStatic fun none(): BatchRetrieveParams = builder().build()
+
+        /** Returns a mutable builder for constructing an instance of [BatchRetrieveParams]. */
         @JvmStatic fun builder() = Builder()
     }
 
@@ -51,7 +47,10 @@ private constructor(
             additionalQueryParams = batchRetrieveParams.additionalQueryParams.toBuilder()
         }
 
-        fun batchId(batchId: String) = apply { this.batchId = batchId }
+        fun batchId(batchId: String?) = apply { this.batchId = batchId }
+
+        /** Alias for calling [Builder.batchId] with `batchId.orElse(null)`. */
+        fun batchId(batchId: Optional<String>) = batchId(batchId.getOrNull())
 
         fun additionalHeaders(additionalHeaders: Headers) = apply {
             this.additionalHeaders.clear()
@@ -155,25 +154,14 @@ private constructor(
          * Returns an immutable instance of [BatchRetrieveParams].
          *
          * Further updates to this [Builder] will not mutate the returned instance.
-         *
-         * The following fields are required:
-         * ```java
-         * .batchId()
-         * ```
-         *
-         * @throws IllegalStateException if any required field is unset.
          */
         fun build(): BatchRetrieveParams =
-            BatchRetrieveParams(
-                checkRequired("batchId", batchId),
-                additionalHeaders.build(),
-                additionalQueryParams.build(),
-            )
+            BatchRetrieveParams(batchId, additionalHeaders.build(), additionalQueryParams.build())
     }
 
     fun _pathParam(index: Int): String =
         when (index) {
-            0 -> batchId
+            0 -> batchId ?: ""
             else -> ""
         }
 

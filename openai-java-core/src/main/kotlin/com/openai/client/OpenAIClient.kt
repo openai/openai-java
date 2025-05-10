@@ -11,6 +11,7 @@ import com.openai.services.blocking.EmbeddingService
 import com.openai.services.blocking.EvalService
 import com.openai.services.blocking.FileService
 import com.openai.services.blocking.FineTuningService
+import com.openai.services.blocking.GraderService
 import com.openai.services.blocking.ImageService
 import com.openai.services.blocking.ModelService
 import com.openai.services.blocking.ModerationService
@@ -65,6 +66,8 @@ interface OpenAIClient {
 
     fun fineTuning(): FineTuningService
 
+    fun graders(): GraderService
+
     fun vectorStores(): VectorStoreService
 
     fun beta(): BetaService
@@ -110,6 +113,8 @@ interface OpenAIClient {
         fun models(): ModelService.WithRawResponse
 
         fun fineTuning(): FineTuningService.WithRawResponse
+
+        fun graders(): GraderService.WithRawResponse
 
         fun vectorStores(): VectorStoreService.WithRawResponse
 

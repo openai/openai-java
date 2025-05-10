@@ -12,10 +12,8 @@ import com.openai.models.ReasoningEffort
 import com.openai.models.ResponseFormatText
 import com.openai.models.chat.completions.ChatCompletionAudioParam
 import com.openai.models.chat.completions.ChatCompletionCreateParams
-import com.openai.models.chat.completions.ChatCompletionDeleteParams
 import com.openai.models.chat.completions.ChatCompletionDeveloperMessageParam
 import com.openai.models.chat.completions.ChatCompletionPredictionContent
-import com.openai.models.chat.completions.ChatCompletionRetrieveParams
 import com.openai.models.chat.completions.ChatCompletionStreamOptions
 import com.openai.models.chat.completions.ChatCompletionTool
 import com.openai.models.chat.completions.ChatCompletionToolChoiceOption
@@ -262,10 +260,7 @@ internal class ChatCompletionServiceAsyncTest {
                 .build()
         val chatCompletionServiceAsync = client.chat().completions()
 
-        val chatCompletionFuture =
-            chatCompletionServiceAsync.retrieve(
-                ChatCompletionRetrieveParams.builder().completionId("completion_id").build()
-            )
+        val chatCompletionFuture = chatCompletionServiceAsync.retrieve("completion_id")
 
         val chatCompletion = chatCompletionFuture.get()
         chatCompletion.validate()
@@ -320,10 +315,7 @@ internal class ChatCompletionServiceAsyncTest {
                 .build()
         val chatCompletionServiceAsync = client.chat().completions()
 
-        val chatCompletionDeletedFuture =
-            chatCompletionServiceAsync.delete(
-                ChatCompletionDeleteParams.builder().completionId("completion_id").build()
-            )
+        val chatCompletionDeletedFuture = chatCompletionServiceAsync.delete("completion_id")
 
         val chatCompletionDeleted = chatCompletionDeletedFuture.get()
         chatCompletionDeleted.validate()

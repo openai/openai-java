@@ -2,6 +2,8 @@
 
 package com.openai.models.responses.inputitems
 
+import com.openai.core.AutoPagerAsync
+import com.openai.core.PageAsync
 import com.openai.core.checkRequired
 import com.openai.models.responses.ResponseComputerToolCall
 import com.openai.models.responses.ResponseComputerToolCallOutputItem
@@ -17,16 +19,16 @@ import java.util.Objects
 import java.util.Optional
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.Executor
-import java.util.function.Predicate
 import kotlin.jvm.optionals.getOrNull
 
 /** @see [InputItemServiceAsync.list] */
 class InputItemListPageAsync
 private constructor(
     private val service: InputItemServiceAsync,
+    private val streamHandlerExecutor: Executor,
     private val params: InputItemListParams,
     private val response: ResponseItemList,
-) {
+) : PageAsync<ResponseItem> {
 
     /**
      * Delegates to [ResponseItemList], but gracefully handles missing data.
@@ -42,66 +44,58 @@ private constructor(
      */
     fun hasMore(): Optional<Boolean> = response._hasMore().getOptional("has_more")
 
-    fun hasNextPage(): Boolean = data().isNotEmpty()
+    override fun items(): List<ResponseItem> = data()
 
-    fun getNextPageParams(): Optional<InputItemListParams> {
-        if (!hasNextPage()) {
-            return Optional.empty()
-        }
+    override fun hasNextPage(): Boolean = items().isNotEmpty()
 
-        return Optional.of(
-            params
-                .toBuilder()
-                .after(
-                    data()
-                        .last()
-                        .accept(
-                            object : ResponseItem.Visitor<Optional<String>> {
-                                override fun visitResponseInputMessageItem(
-                                    responseInputMessageItem: ResponseInputMessageItem
-                                ): Optional<String> =
-                                    responseInputMessageItem._id().getOptional("id")
+    fun nextPageParams(): InputItemListParams =
+        params
+            .toBuilder()
+            .after(
+                items()
+                    .last()
+                    .accept(
+                        object : ResponseItem.Visitor<Optional<String>> {
+                            override fun visitResponseInputMessageItem(
+                                responseInputMessageItem: ResponseInputMessageItem
+                            ): Optional<String> = responseInputMessageItem._id().getOptional("id")
 
-                                override fun visitResponseOutputMessage(
-                                    responseOutputMessage: ResponseOutputMessage
-                                ): Optional<String> = responseOutputMessage._id().getOptional("id")
+                            override fun visitResponseOutputMessage(
+                                responseOutputMessage: ResponseOutputMessage
+                            ): Optional<String> = responseOutputMessage._id().getOptional("id")
 
-                                override fun visitFileSearchCall(
-                                    fileSearchCall: ResponseFileSearchToolCall
-                                ): Optional<String> = fileSearchCall._id().getOptional("id")
+                            override fun visitFileSearchCall(
+                                fileSearchCall: ResponseFileSearchToolCall
+                            ): Optional<String> = fileSearchCall._id().getOptional("id")
 
-                                override fun visitComputerCall(
-                                    computerCall: ResponseComputerToolCall
-                                ): Optional<String> = computerCall._id().getOptional("id")
+                            override fun visitComputerCall(
+                                computerCall: ResponseComputerToolCall
+                            ): Optional<String> = computerCall._id().getOptional("id")
 
-                                override fun visitComputerCallOutput(
-                                    computerCallOutput: ResponseComputerToolCallOutputItem
-                                ): Optional<String> = computerCallOutput._id().getOptional("id")
+                            override fun visitComputerCallOutput(
+                                computerCallOutput: ResponseComputerToolCallOutputItem
+                            ): Optional<String> = computerCallOutput._id().getOptional("id")
 
-                                override fun visitWebSearchCall(
-                                    webSearchCall: ResponseFunctionWebSearch
-                                ): Optional<String> = webSearchCall._id().getOptional("id")
+                            override fun visitWebSearchCall(
+                                webSearchCall: ResponseFunctionWebSearch
+                            ): Optional<String> = webSearchCall._id().getOptional("id")
 
-                                override fun visitFunctionCall(
-                                    functionCall: ResponseFunctionToolCallItem
-                                ): Optional<String> = functionCall._id().getOptional("id")
+                            override fun visitFunctionCall(
+                                functionCall: ResponseFunctionToolCallItem
+                            ): Optional<String> = functionCall._id().getOptional("id")
 
-                                override fun visitFunctionCallOutput(
-                                    functionCallOutput: ResponseFunctionToolCallOutputItem
-                                ): Optional<String> = functionCallOutput._id().getOptional("id")
-                            }
-                        )
-                )
-                .build()
-        )
-    }
+                            override fun visitFunctionCallOutput(
+                                functionCallOutput: ResponseFunctionToolCallOutputItem
+                            ): Optional<String> = functionCallOutput._id().getOptional("id")
+                        }
+                    )
+            )
+            .build()
 
-    fun getNextPage(): CompletableFuture<Optional<InputItemListPageAsync>> =
-        getNextPageParams()
-            .map { service.list(it).thenApply { Optional.of(it) } }
-            .orElseGet { CompletableFuture.completedFuture(Optional.empty()) }
+    override fun nextPage(): CompletableFuture<InputItemListPageAsync> =
+        service.list(nextPageParams())
 
-    fun autoPager(): AutoPager = AutoPager(this)
+    fun autoPager(): AutoPagerAsync<ResponseItem> = AutoPagerAsync.from(this, streamHandlerExecutor)
 
     /** The parameters that were used to request this page. */
     fun params(): InputItemListParams = params
@@ -119,6 +113,7 @@ private constructor(
          * The following fields are required:
          * ```java
          * .service()
+         * .streamHandlerExecutor()
          * .params()
          * .response()
          * ```
@@ -130,17 +125,23 @@ private constructor(
     class Builder internal constructor() {
 
         private var service: InputItemServiceAsync? = null
+        private var streamHandlerExecutor: Executor? = null
         private var params: InputItemListParams? = null
         private var response: ResponseItemList? = null
 
         @JvmSynthetic
         internal fun from(inputItemListPageAsync: InputItemListPageAsync) = apply {
             service = inputItemListPageAsync.service
+            streamHandlerExecutor = inputItemListPageAsync.streamHandlerExecutor
             params = inputItemListPageAsync.params
             response = inputItemListPageAsync.response
         }
 
         fun service(service: InputItemServiceAsync) = apply { this.service = service }
+
+        fun streamHandlerExecutor(streamHandlerExecutor: Executor) = apply {
+            this.streamHandlerExecutor = streamHandlerExecutor
+        }
 
         /** The parameters that were used to request this page. */
         fun params(params: InputItemListParams) = apply { this.params = params }
@@ -156,6 +157,7 @@ private constructor(
          * The following fields are required:
          * ```java
          * .service()
+         * .streamHandlerExecutor()
          * .params()
          * .response()
          * ```
@@ -165,35 +167,10 @@ private constructor(
         fun build(): InputItemListPageAsync =
             InputItemListPageAsync(
                 checkRequired("service", service),
+                checkRequired("streamHandlerExecutor", streamHandlerExecutor),
                 checkRequired("params", params),
                 checkRequired("response", response),
             )
-    }
-
-    class AutoPager(private val firstPage: InputItemListPageAsync) {
-
-        fun forEach(action: Predicate<ResponseItem>, executor: Executor): CompletableFuture<Void> {
-            fun CompletableFuture<Optional<InputItemListPageAsync>>.forEach(
-                action: (ResponseItem) -> Boolean,
-                executor: Executor,
-            ): CompletableFuture<Void> =
-                thenComposeAsync(
-                    { page ->
-                        page
-                            .filter { it.data().all(action) }
-                            .map { it.getNextPage().forEach(action, executor) }
-                            .orElseGet { CompletableFuture.completedFuture(null) }
-                    },
-                    executor,
-                )
-            return CompletableFuture.completedFuture(Optional.of(firstPage))
-                .forEach(action::test, executor)
-        }
-
-        fun toList(executor: Executor): CompletableFuture<List<ResponseItem>> {
-            val values = mutableListOf<ResponseItem>()
-            return forEach(values::add, executor).thenApply { values }
-        }
     }
 
     override fun equals(other: Any?): Boolean {
@@ -201,11 +178,11 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is InputItemListPageAsync && service == other.service && params == other.params && response == other.response /* spotless:on */
+        return /* spotless:off */ other is InputItemListPageAsync && service == other.service && streamHandlerExecutor == other.streamHandlerExecutor && params == other.params && response == other.response /* spotless:on */
     }
 
-    override fun hashCode(): Int = /* spotless:off */ Objects.hash(service, params, response) /* spotless:on */
+    override fun hashCode(): Int = /* spotless:off */ Objects.hash(service, streamHandlerExecutor, params, response) /* spotless:on */
 
     override fun toString() =
-        "InputItemListPageAsync{service=$service, params=$params, response=$response}"
+        "InputItemListPageAsync{service=$service, streamHandlerExecutor=$streamHandlerExecutor, params=$params, response=$response}"
 }

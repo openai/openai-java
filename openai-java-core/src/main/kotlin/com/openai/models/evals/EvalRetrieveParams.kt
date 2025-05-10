@@ -3,20 +3,21 @@
 package com.openai.models.evals
 
 import com.openai.core.Params
-import com.openai.core.checkRequired
 import com.openai.core.http.Headers
 import com.openai.core.http.QueryParams
 import java.util.Objects
+import java.util.Optional
+import kotlin.jvm.optionals.getOrNull
 
 /** Get an evaluation by ID. */
 class EvalRetrieveParams
 private constructor(
-    private val evalId: String,
+    private val evalId: String?,
     private val additionalHeaders: Headers,
     private val additionalQueryParams: QueryParams,
 ) : Params {
 
-    fun evalId(): String = evalId
+    fun evalId(): Optional<String> = Optional.ofNullable(evalId)
 
     fun _additionalHeaders(): Headers = additionalHeaders
 
@@ -26,14 +27,9 @@ private constructor(
 
     companion object {
 
-        /**
-         * Returns a mutable builder for constructing an instance of [EvalRetrieveParams].
-         *
-         * The following fields are required:
-         * ```java
-         * .evalId()
-         * ```
-         */
+        @JvmStatic fun none(): EvalRetrieveParams = builder().build()
+
+        /** Returns a mutable builder for constructing an instance of [EvalRetrieveParams]. */
         @JvmStatic fun builder() = Builder()
     }
 
@@ -51,7 +47,10 @@ private constructor(
             additionalQueryParams = evalRetrieveParams.additionalQueryParams.toBuilder()
         }
 
-        fun evalId(evalId: String) = apply { this.evalId = evalId }
+        fun evalId(evalId: String?) = apply { this.evalId = evalId }
+
+        /** Alias for calling [Builder.evalId] with `evalId.orElse(null)`. */
+        fun evalId(evalId: Optional<String>) = evalId(evalId.getOrNull())
 
         fun additionalHeaders(additionalHeaders: Headers) = apply {
             this.additionalHeaders.clear()
@@ -155,25 +154,14 @@ private constructor(
          * Returns an immutable instance of [EvalRetrieveParams].
          *
          * Further updates to this [Builder] will not mutate the returned instance.
-         *
-         * The following fields are required:
-         * ```java
-         * .evalId()
-         * ```
-         *
-         * @throws IllegalStateException if any required field is unset.
          */
         fun build(): EvalRetrieveParams =
-            EvalRetrieveParams(
-                checkRequired("evalId", evalId),
-                additionalHeaders.build(),
-                additionalQueryParams.build(),
-            )
+            EvalRetrieveParams(evalId, additionalHeaders.build(), additionalQueryParams.build())
     }
 
     fun _pathParam(index: Int): String =
         when (index) {
-            0 -> evalId
+            0 -> evalId ?: ""
             else -> ""
         }
 

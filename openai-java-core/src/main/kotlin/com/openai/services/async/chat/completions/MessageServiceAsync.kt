@@ -20,14 +20,39 @@ interface MessageServiceAsync {
      * Get the messages in a stored chat completion. Only Chat Completions that have been created
      * with the `store` parameter set to `true` will be returned.
      */
-    fun list(params: MessageListParams): CompletableFuture<MessageListPageAsync> =
-        list(params, RequestOptions.none())
+    fun list(completionId: String): CompletableFuture<MessageListPageAsync> =
+        list(completionId, MessageListParams.none())
+
+    /** @see [list] */
+    fun list(
+        completionId: String,
+        params: MessageListParams = MessageListParams.none(),
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): CompletableFuture<MessageListPageAsync> =
+        list(params.toBuilder().completionId(completionId).build(), requestOptions)
+
+    /** @see [list] */
+    fun list(
+        completionId: String,
+        params: MessageListParams = MessageListParams.none(),
+    ): CompletableFuture<MessageListPageAsync> = list(completionId, params, RequestOptions.none())
 
     /** @see [list] */
     fun list(
         params: MessageListParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): CompletableFuture<MessageListPageAsync>
+
+    /** @see [list] */
+    fun list(params: MessageListParams): CompletableFuture<MessageListPageAsync> =
+        list(params, RequestOptions.none())
+
+    /** @see [list] */
+    fun list(
+        completionId: String,
+        requestOptions: RequestOptions,
+    ): CompletableFuture<MessageListPageAsync> =
+        list(completionId, MessageListParams.none(), requestOptions)
 
     /**
      * A view of [MessageServiceAsync] that provides access to raw HTTP responses for each method.
@@ -39,6 +64,35 @@ interface MessageServiceAsync {
          * otherwise the same as [MessageServiceAsync.list].
          */
         @MustBeClosed
+        fun list(completionId: String): CompletableFuture<HttpResponseFor<MessageListPageAsync>> =
+            list(completionId, MessageListParams.none())
+
+        /** @see [list] */
+        @MustBeClosed
+        fun list(
+            completionId: String,
+            params: MessageListParams = MessageListParams.none(),
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): CompletableFuture<HttpResponseFor<MessageListPageAsync>> =
+            list(params.toBuilder().completionId(completionId).build(), requestOptions)
+
+        /** @see [list] */
+        @MustBeClosed
+        fun list(
+            completionId: String,
+            params: MessageListParams = MessageListParams.none(),
+        ): CompletableFuture<HttpResponseFor<MessageListPageAsync>> =
+            list(completionId, params, RequestOptions.none())
+
+        /** @see [list] */
+        @MustBeClosed
+        fun list(
+            params: MessageListParams,
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): CompletableFuture<HttpResponseFor<MessageListPageAsync>>
+
+        /** @see [list] */
+        @MustBeClosed
         fun list(
             params: MessageListParams
         ): CompletableFuture<HttpResponseFor<MessageListPageAsync>> =
@@ -47,8 +101,9 @@ interface MessageServiceAsync {
         /** @see [list] */
         @MustBeClosed
         fun list(
-            params: MessageListParams,
-            requestOptions: RequestOptions = RequestOptions.none(),
-        ): CompletableFuture<HttpResponseFor<MessageListPageAsync>>
+            completionId: String,
+            requestOptions: RequestOptions,
+        ): CompletableFuture<HttpResponseFor<MessageListPageAsync>> =
+            list(completionId, MessageListParams.none(), requestOptions)
     }
 }

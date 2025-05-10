@@ -4,6 +4,7 @@ package com.openai.services.blocking.chat.completions
 
 import com.openai.core.ClientOptions
 import com.openai.core.RequestOptions
+import com.openai.core.checkRequired
 import com.openai.core.handlers.errorHandler
 import com.openai.core.handlers.jsonHandler
 import com.openai.core.handlers.withErrorHandler
@@ -17,6 +18,7 @@ import com.openai.models.ErrorObject
 import com.openai.models.chat.completions.messages.MessageListPage
 import com.openai.models.chat.completions.messages.MessageListPageResponse
 import com.openai.models.chat.completions.messages.MessageListParams
+import kotlin.jvm.optionals.getOrNull
 
 class MessageServiceImpl internal constructor(private val clientOptions: ClientOptions) :
     MessageService {
@@ -44,6 +46,9 @@ class MessageServiceImpl internal constructor(private val clientOptions: ClientO
             params: MessageListParams,
             requestOptions: RequestOptions,
         ): HttpResponseFor<MessageListPage> {
+            // We check here instead of in the params builder because this can be specified
+            // positionally or in the params class.
+            checkRequired("completionId", params.completionId().getOrNull())
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.GET)

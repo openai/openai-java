@@ -2,22 +2,24 @@
 
 package com.openai.models.finetuning.jobs
 
+import com.openai.core.AutoPagerAsync
+import com.openai.core.PageAsync
 import com.openai.core.checkRequired
 import com.openai.services.async.finetuning.JobServiceAsync
 import java.util.Objects
 import java.util.Optional
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.Executor
-import java.util.function.Predicate
 import kotlin.jvm.optionals.getOrNull
 
 /** @see [JobServiceAsync.list] */
 class JobListPageAsync
 private constructor(
     private val service: JobServiceAsync,
+    private val streamHandlerExecutor: Executor,
     private val params: JobListParams,
     private val response: JobListPageResponse,
-) {
+) : PageAsync<FineTuningJob> {
 
     /**
      * Delegates to [JobListPageResponse], but gracefully handles missing data.
@@ -34,22 +36,17 @@ private constructor(
      */
     fun hasMore(): Optional<Boolean> = response._hasMore().getOptional("has_more")
 
-    fun hasNextPage(): Boolean = data().isNotEmpty()
+    override fun items(): List<FineTuningJob> = data()
 
-    fun getNextPageParams(): Optional<JobListParams> {
-        if (!hasNextPage()) {
-            return Optional.empty()
-        }
+    override fun hasNextPage(): Boolean = items().isNotEmpty()
 
-        return Optional.of(params.toBuilder().after(data().last()._id().getOptional("id")).build())
-    }
+    fun nextPageParams(): JobListParams =
+        params.toBuilder().after(items().last()._id().getOptional("id")).build()
 
-    fun getNextPage(): CompletableFuture<Optional<JobListPageAsync>> =
-        getNextPageParams()
-            .map { service.list(it).thenApply { Optional.of(it) } }
-            .orElseGet { CompletableFuture.completedFuture(Optional.empty()) }
+    override fun nextPage(): CompletableFuture<JobListPageAsync> = service.list(nextPageParams())
 
-    fun autoPager(): AutoPager = AutoPager(this)
+    fun autoPager(): AutoPagerAsync<FineTuningJob> =
+        AutoPagerAsync.from(this, streamHandlerExecutor)
 
     /** The parameters that were used to request this page. */
     fun params(): JobListParams = params
@@ -67,6 +64,7 @@ private constructor(
          * The following fields are required:
          * ```java
          * .service()
+         * .streamHandlerExecutor()
          * .params()
          * .response()
          * ```
@@ -78,17 +76,23 @@ private constructor(
     class Builder internal constructor() {
 
         private var service: JobServiceAsync? = null
+        private var streamHandlerExecutor: Executor? = null
         private var params: JobListParams? = null
         private var response: JobListPageResponse? = null
 
         @JvmSynthetic
         internal fun from(jobListPageAsync: JobListPageAsync) = apply {
             service = jobListPageAsync.service
+            streamHandlerExecutor = jobListPageAsync.streamHandlerExecutor
             params = jobListPageAsync.params
             response = jobListPageAsync.response
         }
 
         fun service(service: JobServiceAsync) = apply { this.service = service }
+
+        fun streamHandlerExecutor(streamHandlerExecutor: Executor) = apply {
+            this.streamHandlerExecutor = streamHandlerExecutor
+        }
 
         /** The parameters that were used to request this page. */
         fun params(params: JobListParams) = apply { this.params = params }
@@ -104,6 +108,7 @@ private constructor(
          * The following fields are required:
          * ```java
          * .service()
+         * .streamHandlerExecutor()
          * .params()
          * .response()
          * ```
@@ -113,35 +118,10 @@ private constructor(
         fun build(): JobListPageAsync =
             JobListPageAsync(
                 checkRequired("service", service),
+                checkRequired("streamHandlerExecutor", streamHandlerExecutor),
                 checkRequired("params", params),
                 checkRequired("response", response),
             )
-    }
-
-    class AutoPager(private val firstPage: JobListPageAsync) {
-
-        fun forEach(action: Predicate<FineTuningJob>, executor: Executor): CompletableFuture<Void> {
-            fun CompletableFuture<Optional<JobListPageAsync>>.forEach(
-                action: (FineTuningJob) -> Boolean,
-                executor: Executor,
-            ): CompletableFuture<Void> =
-                thenComposeAsync(
-                    { page ->
-                        page
-                            .filter { it.data().all(action) }
-                            .map { it.getNextPage().forEach(action, executor) }
-                            .orElseGet { CompletableFuture.completedFuture(null) }
-                    },
-                    executor,
-                )
-            return CompletableFuture.completedFuture(Optional.of(firstPage))
-                .forEach(action::test, executor)
-        }
-
-        fun toList(executor: Executor): CompletableFuture<List<FineTuningJob>> {
-            val values = mutableListOf<FineTuningJob>()
-            return forEach(values::add, executor).thenApply { values }
-        }
     }
 
     override fun equals(other: Any?): Boolean {
@@ -149,11 +129,11 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is JobListPageAsync && service == other.service && params == other.params && response == other.response /* spotless:on */
+        return /* spotless:off */ other is JobListPageAsync && service == other.service && streamHandlerExecutor == other.streamHandlerExecutor && params == other.params && response == other.response /* spotless:on */
     }
 
-    override fun hashCode(): Int = /* spotless:off */ Objects.hash(service, params, response) /* spotless:on */
+    override fun hashCode(): Int = /* spotless:off */ Objects.hash(service, streamHandlerExecutor, params, response) /* spotless:on */
 
     override fun toString() =
-        "JobListPageAsync{service=$service, params=$params, response=$response}"
+        "JobListPageAsync{service=$service, streamHandlerExecutor=$streamHandlerExecutor, params=$params, response=$response}"
 }

@@ -5,7 +5,6 @@ package com.openai.services.blocking
 import com.openai.TestServerExtension
 import com.openai.client.okhttp.OpenAIOkHttpClient
 import com.openai.models.files.FilePurpose
-import com.openai.models.uploads.UploadCancelParams
 import com.openai.models.uploads.UploadCompleteParams
 import com.openai.models.uploads.UploadCreateParams
 import org.junit.jupiter.api.Test
@@ -45,8 +44,7 @@ internal class UploadServiceTest {
                 .build()
         val uploadService = client.uploads()
 
-        val upload =
-            uploadService.cancel(UploadCancelParams.builder().uploadId("upload_abc123").build())
+        val upload = uploadService.cancel("upload_abc123")
 
         upload.validate()
     }

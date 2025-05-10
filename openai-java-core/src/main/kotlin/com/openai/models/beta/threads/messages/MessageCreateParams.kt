@@ -38,13 +38,13 @@ import kotlin.jvm.optionals.getOrNull
 /** Create a message. */
 class MessageCreateParams
 private constructor(
-    private val threadId: String,
+    private val threadId: String?,
     private val body: Body,
     private val additionalHeaders: Headers,
     private val additionalQueryParams: QueryParams,
 ) : Params {
 
-    fun threadId(): String = threadId
+    fun threadId(): Optional<String> = Optional.ofNullable(threadId)
 
     /**
      * The text contents of the message.
@@ -130,7 +130,6 @@ private constructor(
          *
          * The following fields are required:
          * ```java
-         * .threadId()
          * .content()
          * .role()
          * ```
@@ -154,7 +153,10 @@ private constructor(
             additionalQueryParams = messageCreateParams.additionalQueryParams.toBuilder()
         }
 
-        fun threadId(threadId: String) = apply { this.threadId = threadId }
+        fun threadId(threadId: String?) = apply { this.threadId = threadId }
+
+        /** Alias for calling [Builder.threadId] with `threadId.orElse(null)`. */
+        fun threadId(threadId: Optional<String>) = threadId(threadId.getOrNull())
 
         /**
          * Sets the entire request body.
@@ -378,7 +380,6 @@ private constructor(
          *
          * The following fields are required:
          * ```java
-         * .threadId()
          * .content()
          * .role()
          * ```
@@ -387,7 +388,7 @@ private constructor(
          */
         fun build(): MessageCreateParams =
             MessageCreateParams(
-                checkRequired("threadId", threadId),
+                threadId,
                 body.build(),
                 additionalHeaders.build(),
                 additionalQueryParams.build(),
@@ -398,7 +399,7 @@ private constructor(
 
     fun _pathParam(index: Int): String =
         when (index) {
-            0 -> threadId
+            0 -> threadId ?: ""
             else -> ""
         }
 

@@ -19,7 +19,7 @@ import kotlin.jvm.optionals.getOrNull
 class StepListParams
 private constructor(
     private val threadId: String,
-    private val runId: String,
+    private val runId: String?,
     private val after: String?,
     private val before: String?,
     private val include: List<RunStepInclude>?,
@@ -31,7 +31,7 @@ private constructor(
 
     fun threadId(): String = threadId
 
-    fun runId(): String = runId
+    fun runId(): Optional<String> = Optional.ofNullable(runId)
 
     /**
      * A cursor for use in pagination. `after` is an object ID that defines your place in the list.
@@ -84,7 +84,6 @@ private constructor(
          * The following fields are required:
          * ```java
          * .threadId()
-         * .runId()
          * ```
          */
         @JvmStatic fun builder() = Builder()
@@ -118,7 +117,10 @@ private constructor(
 
         fun threadId(threadId: String) = apply { this.threadId = threadId }
 
-        fun runId(runId: String) = apply { this.runId = runId }
+        fun runId(runId: String?) = apply { this.runId = runId }
+
+        /** Alias for calling [Builder.runId] with `runId.orElse(null)`. */
+        fun runId(runId: Optional<String>) = runId(runId.getOrNull())
 
         /**
          * A cursor for use in pagination. `after` is an object ID that defines your place in the
@@ -298,7 +300,6 @@ private constructor(
          * The following fields are required:
          * ```java
          * .threadId()
-         * .runId()
          * ```
          *
          * @throws IllegalStateException if any required field is unset.
@@ -306,7 +307,7 @@ private constructor(
         fun build(): StepListParams =
             StepListParams(
                 checkRequired("threadId", threadId),
-                checkRequired("runId", runId),
+                runId,
                 after,
                 before,
                 include?.toImmutable(),
@@ -320,7 +321,7 @@ private constructor(
     fun _pathParam(index: Int): String =
         when (index) {
             0 -> threadId
-            1 -> runId
+            1 -> runId ?: ""
             else -> ""
         }
 

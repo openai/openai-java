@@ -18,6 +18,20 @@ interface OutputItemService {
     fun withRawResponse(): WithRawResponse
 
     /** Get an evaluation run output item by ID. */
+    fun retrieve(
+        outputItemId: String,
+        params: OutputItemRetrieveParams,
+    ): OutputItemRetrieveResponse = retrieve(outputItemId, params, RequestOptions.none())
+
+    /** @see [retrieve] */
+    fun retrieve(
+        outputItemId: String,
+        params: OutputItemRetrieveParams,
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): OutputItemRetrieveResponse =
+        retrieve(params.toBuilder().outputItemId(outputItemId).build(), requestOptions)
+
+    /** @see [retrieve] */
     fun retrieve(params: OutputItemRetrieveParams): OutputItemRetrieveResponse =
         retrieve(params, RequestOptions.none())
 
@@ -28,6 +42,17 @@ interface OutputItemService {
     ): OutputItemRetrieveResponse
 
     /** Get a list of output items for an evaluation run. */
+    fun list(runId: String, params: OutputItemListParams): OutputItemListPage =
+        list(runId, params, RequestOptions.none())
+
+    /** @see [list] */
+    fun list(
+        runId: String,
+        params: OutputItemListParams,
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): OutputItemListPage = list(params.toBuilder().runId(runId).build(), requestOptions)
+
+    /** @see [list] */
     fun list(params: OutputItemListParams): OutputItemListPage = list(params, RequestOptions.none())
 
     /** @see [list] */
@@ -46,6 +71,23 @@ interface OutputItemService {
          */
         @MustBeClosed
         fun retrieve(
+            outputItemId: String,
+            params: OutputItemRetrieveParams,
+        ): HttpResponseFor<OutputItemRetrieveResponse> =
+            retrieve(outputItemId, params, RequestOptions.none())
+
+        /** @see [retrieve] */
+        @MustBeClosed
+        fun retrieve(
+            outputItemId: String,
+            params: OutputItemRetrieveParams,
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): HttpResponseFor<OutputItemRetrieveResponse> =
+            retrieve(params.toBuilder().outputItemId(outputItemId).build(), requestOptions)
+
+        /** @see [retrieve] */
+        @MustBeClosed
+        fun retrieve(
             params: OutputItemRetrieveParams
         ): HttpResponseFor<OutputItemRetrieveResponse> = retrieve(params, RequestOptions.none())
 
@@ -60,6 +102,20 @@ interface OutputItemService {
          * Returns a raw HTTP response for `get /evals/{eval_id}/runs/{run_id}/output_items`, but is
          * otherwise the same as [OutputItemService.list].
          */
+        @MustBeClosed
+        fun list(runId: String, params: OutputItemListParams): HttpResponseFor<OutputItemListPage> =
+            list(runId, params, RequestOptions.none())
+
+        /** @see [list] */
+        @MustBeClosed
+        fun list(
+            runId: String,
+            params: OutputItemListParams,
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): HttpResponseFor<OutputItemListPage> =
+            list(params.toBuilder().runId(runId).build(), requestOptions)
+
+        /** @see [list] */
         @MustBeClosed
         fun list(params: OutputItemListParams): HttpResponseFor<OutputItemListPage> =
             list(params, RequestOptions.none())

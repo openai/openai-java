@@ -5,9 +5,7 @@ package com.openai.services.async
 import com.openai.TestServerExtension
 import com.openai.client.okhttp.OpenAIOkHttpClientAsync
 import com.openai.core.JsonValue
-import com.openai.models.batches.BatchCancelParams
 import com.openai.models.batches.BatchCreateParams
-import com.openai.models.batches.BatchRetrieveParams
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 
@@ -50,8 +48,7 @@ internal class BatchServiceAsyncTest {
                 .build()
         val batchServiceAsync = client.batches()
 
-        val batchFuture =
-            batchServiceAsync.retrieve(BatchRetrieveParams.builder().batchId("batch_id").build())
+        val batchFuture = batchServiceAsync.retrieve("batch_id")
 
         val batch = batchFuture.get()
         batch.validate()
@@ -81,8 +78,7 @@ internal class BatchServiceAsyncTest {
                 .build()
         val batchServiceAsync = client.batches()
 
-        val batchFuture =
-            batchServiceAsync.cancel(BatchCancelParams.builder().batchId("batch_id").build())
+        val batchFuture = batchServiceAsync.cancel("batch_id")
 
         val batch = batchFuture.get()
         batch.validate()

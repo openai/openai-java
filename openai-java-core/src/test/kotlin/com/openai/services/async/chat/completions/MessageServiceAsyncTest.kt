@@ -4,7 +4,6 @@ package com.openai.services.async.chat.completions
 
 import com.openai.TestServerExtension
 import com.openai.client.okhttp.OpenAIOkHttpClientAsync
-import com.openai.models.chat.completions.messages.MessageListParams
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 
@@ -20,10 +19,7 @@ internal class MessageServiceAsyncTest {
                 .build()
         val messageServiceAsync = client.chat().completions().messages()
 
-        val pageFuture =
-            messageServiceAsync.list(
-                MessageListParams.builder().completionId("completion_id").build()
-            )
+        val pageFuture = messageServiceAsync.list("completion_id")
 
         val page = pageFuture.get()
         page.response().validate()

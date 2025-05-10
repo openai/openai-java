@@ -4,6 +4,7 @@ package com.openai.services.blocking
 
 import com.openai.core.ClientOptions
 import com.openai.core.RequestOptions
+import com.openai.core.checkRequired
 import com.openai.core.handlers.errorHandler
 import com.openai.core.handlers.jsonHandler
 import com.openai.core.handlers.withErrorHandler
@@ -22,6 +23,7 @@ import com.openai.models.models.ModelListPage
 import com.openai.models.models.ModelListPageResponse
 import com.openai.models.models.ModelListParams
 import com.openai.models.models.ModelRetrieveParams
+import kotlin.jvm.optionals.getOrNull
 
 class ModelServiceImpl internal constructor(private val clientOptions: ClientOptions) :
     ModelService {
@@ -56,12 +58,15 @@ class ModelServiceImpl internal constructor(private val clientOptions: ClientOpt
             params: ModelRetrieveParams,
             requestOptions: RequestOptions,
         ): HttpResponseFor<Model> {
+            // We check here instead of in the params builder because this can be specified
+            // positionally or in the params class.
+            checkRequired("model", params.model().getOrNull())
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.GET)
                     .addPathSegments("models", params._pathParam(0))
                     .build()
-                    .prepare(clientOptions, params, params.model())
+                    .prepare(clientOptions, params, params.model().get())
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             val response = clientOptions.httpClient.execute(request, requestOptions)
             return response.parseable {
@@ -116,13 +121,16 @@ class ModelServiceImpl internal constructor(private val clientOptions: ClientOpt
             params: ModelDeleteParams,
             requestOptions: RequestOptions,
         ): HttpResponseFor<ModelDeleted> {
+            // We check here instead of in the params builder because this can be specified
+            // positionally or in the params class.
+            checkRequired("model", params.model().getOrNull())
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.DELETE)
                     .addPathSegments("models", params._pathParam(0))
                     .apply { params._body().ifPresent { body(json(clientOptions.jsonMapper, it)) } }
                     .build()
-                    .prepare(clientOptions, params, params.model())
+                    .prepare(clientOptions, params, params.model().get())
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             val response = clientOptions.httpClient.execute(request, requestOptions)
             return response.parseable {

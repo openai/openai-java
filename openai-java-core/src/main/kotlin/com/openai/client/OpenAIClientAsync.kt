@@ -11,6 +11,7 @@ import com.openai.services.async.EmbeddingServiceAsync
 import com.openai.services.async.EvalServiceAsync
 import com.openai.services.async.FileServiceAsync
 import com.openai.services.async.FineTuningServiceAsync
+import com.openai.services.async.GraderServiceAsync
 import com.openai.services.async.ImageServiceAsync
 import com.openai.services.async.ModelServiceAsync
 import com.openai.services.async.ModerationServiceAsync
@@ -65,6 +66,8 @@ interface OpenAIClientAsync {
 
     fun fineTuning(): FineTuningServiceAsync
 
+    fun graders(): GraderServiceAsync
+
     fun vectorStores(): VectorStoreServiceAsync
 
     fun beta(): BetaServiceAsync
@@ -110,6 +113,8 @@ interface OpenAIClientAsync {
         fun models(): ModelServiceAsync.WithRawResponse
 
         fun fineTuning(): FineTuningServiceAsync.WithRawResponse
+
+        fun graders(): GraderServiceAsync.WithRawResponse
 
         fun vectorStores(): VectorStoreServiceAsync.WithRawResponse
 

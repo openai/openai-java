@@ -29,13 +29,31 @@ interface BatchService {
     ): Batch
 
     /** Retrieves a batch. */
-    fun retrieve(params: BatchRetrieveParams): Batch = retrieve(params, RequestOptions.none())
+    fun retrieve(batchId: String): Batch = retrieve(batchId, BatchRetrieveParams.none())
+
+    /** @see [retrieve] */
+    fun retrieve(
+        batchId: String,
+        params: BatchRetrieveParams = BatchRetrieveParams.none(),
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): Batch = retrieve(params.toBuilder().batchId(batchId).build(), requestOptions)
+
+    /** @see [retrieve] */
+    fun retrieve(batchId: String, params: BatchRetrieveParams = BatchRetrieveParams.none()): Batch =
+        retrieve(batchId, params, RequestOptions.none())
 
     /** @see [retrieve] */
     fun retrieve(
         params: BatchRetrieveParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): Batch
+
+    /** @see [retrieve] */
+    fun retrieve(params: BatchRetrieveParams): Batch = retrieve(params, RequestOptions.none())
+
+    /** @see [retrieve] */
+    fun retrieve(batchId: String, requestOptions: RequestOptions): Batch =
+        retrieve(batchId, BatchRetrieveParams.none(), requestOptions)
 
     /** List your organization's batches. */
     fun list(): BatchListPage = list(BatchListParams.none())
@@ -59,13 +77,31 @@ interface BatchService {
      * before changing to `cancelled`, where it will have partial results (if any) available in the
      * output file.
      */
-    fun cancel(params: BatchCancelParams): Batch = cancel(params, RequestOptions.none())
+    fun cancel(batchId: String): Batch = cancel(batchId, BatchCancelParams.none())
+
+    /** @see [cancel] */
+    fun cancel(
+        batchId: String,
+        params: BatchCancelParams = BatchCancelParams.none(),
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): Batch = cancel(params.toBuilder().batchId(batchId).build(), requestOptions)
+
+    /** @see [cancel] */
+    fun cancel(batchId: String, params: BatchCancelParams = BatchCancelParams.none()): Batch =
+        cancel(batchId, params, RequestOptions.none())
 
     /** @see [cancel] */
     fun cancel(
         params: BatchCancelParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): Batch
+
+    /** @see [cancel] */
+    fun cancel(params: BatchCancelParams): Batch = cancel(params, RequestOptions.none())
+
+    /** @see [cancel] */
+    fun cancel(batchId: String, requestOptions: RequestOptions): Batch =
+        cancel(batchId, BatchCancelParams.none(), requestOptions)
 
     /** A view of [BatchService] that provides access to raw HTTP responses for each method. */
     interface WithRawResponse {
@@ -90,8 +126,24 @@ interface BatchService {
          * [BatchService.retrieve].
          */
         @MustBeClosed
-        fun retrieve(params: BatchRetrieveParams): HttpResponseFor<Batch> =
-            retrieve(params, RequestOptions.none())
+        fun retrieve(batchId: String): HttpResponseFor<Batch> =
+            retrieve(batchId, BatchRetrieveParams.none())
+
+        /** @see [retrieve] */
+        @MustBeClosed
+        fun retrieve(
+            batchId: String,
+            params: BatchRetrieveParams = BatchRetrieveParams.none(),
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): HttpResponseFor<Batch> =
+            retrieve(params.toBuilder().batchId(batchId).build(), requestOptions)
+
+        /** @see [retrieve] */
+        @MustBeClosed
+        fun retrieve(
+            batchId: String,
+            params: BatchRetrieveParams = BatchRetrieveParams.none(),
+        ): HttpResponseFor<Batch> = retrieve(batchId, params, RequestOptions.none())
 
         /** @see [retrieve] */
         @MustBeClosed
@@ -99,6 +151,16 @@ interface BatchService {
             params: BatchRetrieveParams,
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<Batch>
+
+        /** @see [retrieve] */
+        @MustBeClosed
+        fun retrieve(params: BatchRetrieveParams): HttpResponseFor<Batch> =
+            retrieve(params, RequestOptions.none())
+
+        /** @see [retrieve] */
+        @MustBeClosed
+        fun retrieve(batchId: String, requestOptions: RequestOptions): HttpResponseFor<Batch> =
+            retrieve(batchId, BatchRetrieveParams.none(), requestOptions)
 
         /**
          * Returns a raw HTTP response for `get /batches`, but is otherwise the same as
@@ -128,8 +190,24 @@ interface BatchService {
          * same as [BatchService.cancel].
          */
         @MustBeClosed
-        fun cancel(params: BatchCancelParams): HttpResponseFor<Batch> =
-            cancel(params, RequestOptions.none())
+        fun cancel(batchId: String): HttpResponseFor<Batch> =
+            cancel(batchId, BatchCancelParams.none())
+
+        /** @see [cancel] */
+        @MustBeClosed
+        fun cancel(
+            batchId: String,
+            params: BatchCancelParams = BatchCancelParams.none(),
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): HttpResponseFor<Batch> =
+            cancel(params.toBuilder().batchId(batchId).build(), requestOptions)
+
+        /** @see [cancel] */
+        @MustBeClosed
+        fun cancel(
+            batchId: String,
+            params: BatchCancelParams = BatchCancelParams.none(),
+        ): HttpResponseFor<Batch> = cancel(batchId, params, RequestOptions.none())
 
         /** @see [cancel] */
         @MustBeClosed
@@ -137,5 +215,15 @@ interface BatchService {
             params: BatchCancelParams,
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<Batch>
+
+        /** @see [cancel] */
+        @MustBeClosed
+        fun cancel(params: BatchCancelParams): HttpResponseFor<Batch> =
+            cancel(params, RequestOptions.none())
+
+        /** @see [cancel] */
+        @MustBeClosed
+        fun cancel(batchId: String, requestOptions: RequestOptions): HttpResponseFor<Batch> =
+            cancel(batchId, BatchCancelParams.none(), requestOptions)
     }
 }

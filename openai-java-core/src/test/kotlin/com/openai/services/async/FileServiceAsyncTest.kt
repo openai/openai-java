@@ -10,11 +10,8 @@ import com.github.tomakehurst.wiremock.junit5.WireMockRuntimeInfo
 import com.github.tomakehurst.wiremock.junit5.WireMockTest
 import com.openai.TestServerExtension
 import com.openai.client.okhttp.OpenAIOkHttpClientAsync
-import com.openai.models.files.FileContentParams
 import com.openai.models.files.FileCreateParams
-import com.openai.models.files.FileDeleteParams
 import com.openai.models.files.FilePurpose
-import com.openai.models.files.FileRetrieveParams
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
@@ -55,8 +52,7 @@ internal class FileServiceAsyncTest {
                 .build()
         val fileServiceAsync = client.files()
 
-        val fileObjectFuture =
-            fileServiceAsync.retrieve(FileRetrieveParams.builder().fileId("file_id").build())
+        val fileObjectFuture = fileServiceAsync.retrieve("file_id")
 
         val fileObject = fileObjectFuture.get()
         fileObject.validate()
@@ -86,8 +82,7 @@ internal class FileServiceAsyncTest {
                 .build()
         val fileServiceAsync = client.files()
 
-        val fileDeletedFuture =
-            fileServiceAsync.delete(FileDeleteParams.builder().fileId("file_id").build())
+        val fileDeletedFuture = fileServiceAsync.delete("file_id")
 
         val fileDeleted = fileDeletedFuture.get()
         fileDeleted.validate()
@@ -103,8 +98,7 @@ internal class FileServiceAsyncTest {
         val fileServiceAsync = client.files()
         stubFor(get(anyUrl()).willReturn(ok().withBody("abc")))
 
-        val responseFuture =
-            fileServiceAsync.content(FileContentParams.builder().fileId("file_id").build())
+        val responseFuture = fileServiceAsync.content("file_id")
 
         val response = responseFuture.get()
         assertThat(response.body()).hasContent("abc")
