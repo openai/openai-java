@@ -9,6 +9,7 @@ import com.openai.core.handlers.errorHandler
 import com.openai.core.handlers.jsonHandler
 import com.openai.core.handlers.mapJson
 import com.openai.core.handlers.sseHandler
+import com.openai.core.handlers.audioTextHandler
 import com.openai.core.handlers.withErrorHandler
 import com.openai.core.http.HttpMethod
 import com.openai.core.http.HttpRequest
@@ -20,6 +21,7 @@ import com.openai.core.http.multipartFormData
 import com.openai.core.http.parseable
 import com.openai.core.prepare
 import com.openai.models.ErrorObject
+import com.openai.models.audio.AudioResponseFormat
 import com.openai.models.audio.transcriptions.TranscriptionCreateParams
 import com.openai.models.audio.transcriptions.TranscriptionCreateResponse
 import com.openai.models.audio.transcriptions.TranscriptionStreamEvent
@@ -52,14 +54,21 @@ class TranscriptionServiceImpl internal constructor(private val clientOptions: C
 
         private val errorHandler: Handler<ErrorObject?> = errorHandler(clientOptions.jsonMapper)
 
-        private val createHandler: Handler<TranscriptionCreateResponse> =
+        private val jsonHandler: Handler<TranscriptionCreateResponse> =
             jsonHandler<TranscriptionCreateResponse>(clientOptions.jsonMapper)
                 .withErrorHandler(errorHandler)
+        private val textHandler: Handler<TranscriptionCreateResponse> = audioTextHandler().withErrorHandler(errorHandler)
 
         override fun create(
             params: TranscriptionCreateParams,
             requestOptions: RequestOptions,
         ): HttpResponseFor<TranscriptionCreateResponse> {
+            val handler = if (params.responseFormat().isPresent && listOf(
+                    AudioResponseFormat.VTT,
+                    AudioResponseFormat.SRT,
+                    AudioResponseFormat.TEXT
+                ).contains(params.responseFormat().get())
+            ) textHandler else jsonHandler
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.POST)
@@ -71,7 +80,7 @@ class TranscriptionServiceImpl internal constructor(private val clientOptions: C
             val response = clientOptions.httpClient.execute(request, requestOptions)
             return response.parseable {
                 response
-                    .use { createHandler.handle(it) }
+                    .use { handler.handle(it) }
                     .also {
                         if (requestOptions.responseValidation!!) {
                             it.validate()

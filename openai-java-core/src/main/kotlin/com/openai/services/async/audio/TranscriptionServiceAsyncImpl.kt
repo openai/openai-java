@@ -9,6 +9,7 @@ import com.openai.core.handlers.errorHandler
 import com.openai.core.handlers.jsonHandler
 import com.openai.core.handlers.mapJson
 import com.openai.core.handlers.sseHandler
+import com.openai.core.handlers.audioTextHandler
 import com.openai.core.handlers.withErrorHandler
 import com.openai.core.http.AsyncStreamResponse
 import com.openai.core.http.HttpMethod
@@ -22,6 +23,7 @@ import com.openai.core.http.parseable
 import com.openai.core.http.toAsync
 import com.openai.core.prepareAsync
 import com.openai.models.ErrorObject
+import com.openai.models.audio.AudioResponseFormat
 import com.openai.models.audio.transcriptions.TranscriptionCreateParams
 import com.openai.models.audio.transcriptions.TranscriptionCreateResponse
 import com.openai.models.audio.transcriptions.TranscriptionStreamEvent
@@ -58,14 +60,22 @@ class TranscriptionServiceAsyncImpl internal constructor(private val clientOptio
 
         private val errorHandler: Handler<ErrorObject?> = errorHandler(clientOptions.jsonMapper)
 
-        private val createHandler: Handler<TranscriptionCreateResponse> =
+        private val jsonHandler: Handler<TranscriptionCreateResponse> =
             jsonHandler<TranscriptionCreateResponse>(clientOptions.jsonMapper)
                 .withErrorHandler(errorHandler)
+        private val textHandler: Handler<TranscriptionCreateResponse> = audioTextHandler().withErrorHandler(errorHandler)
 
         override fun create(
             params: TranscriptionCreateParams,
             requestOptions: RequestOptions,
         ): CompletableFuture<HttpResponseFor<TranscriptionCreateResponse>> {
+            val handler = if (params.responseFormat().isPresent && listOf(
+                    AudioResponseFormat.VTT,
+                    AudioResponseFormat.SRT,
+                    AudioResponseFormat.TEXT
+                ).contains(params.responseFormat().get())
+            ) textHandler else jsonHandler
+
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.POST)
@@ -83,7 +93,7 @@ class TranscriptionServiceAsyncImpl internal constructor(private val clientOptio
                 .thenApply { response ->
                     response.parseable {
                         response
-                            .use { createHandler.handle(it) }
+                            .use { handler.handle(it) }
                             .also {
                                 if (requestOptions.responseValidation!!) {
                                     it.validate()
