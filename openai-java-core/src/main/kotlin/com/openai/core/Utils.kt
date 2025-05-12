@@ -93,6 +93,7 @@ internal fun Any?.contentToString(): String {
 internal fun isAzureEndpoint(baseUrl: String): Boolean {
     // Azure Endpoint should be in the format of `https://<region>.openai.azure.com`.
     // Or `https://<region>.azure-api.net` for Azure OpenAI Management URL.
+    // Or `<user>-random-<region>.cognitiveservices.azure.com`.
     val trimmedBaseUrl = baseUrl.trim().trimEnd('/')
     return trimmedBaseUrl.endsWith(".openai.azure.com", true) ||
         trimmedBaseUrl.endsWith(".azure-api.net", true) ||
