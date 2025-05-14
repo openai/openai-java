@@ -52,29 +52,11 @@ class StructuredResponseOutputMessage<T : Any>(
     /** @see ResponseOutputMessage._additionalProperties */
     fun _additionalProperties(): Map<String, JsonValue> = rawMessage._additionalProperties()
 
-    private var validated: Boolean = false
-
     /** @see ResponseOutputMessage.validate */
     fun validate(): StructuredResponseOutputMessage<T> = apply {
-        if (validated) {
-            return@apply
-        }
-
-        id()
         // `content()` is a different type to that in the delegate class.
         content().forEach { it.validate() }
-        _role().let {
-            if (it != JsonValue.from("assistant")) {
-                throw OpenAIInvalidDataException("'role' is invalid, received $it")
-            }
-        }
-        status().validate()
-        _type().let {
-            if (it != JsonValue.from("message")) {
-                throw OpenAIInvalidDataException("'type' is invalid, received $it")
-            }
-        }
-        validated = true
+        rawMessage.validate()
     }
 
     /** @see ResponseOutputMessage.isValid */

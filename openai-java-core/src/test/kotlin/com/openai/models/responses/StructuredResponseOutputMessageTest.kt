@@ -4,7 +4,6 @@ import com.openai.core.DelegationReadTestCase
 import com.openai.core.JSON_FIELD
 import com.openai.core.JSON_VALUE
 import com.openai.core.JsonField
-import com.openai.core.JsonValue
 import com.openai.core.MAP
 import com.openai.core.OPTIONAL
 import com.openai.core.STRING
@@ -188,19 +187,13 @@ internal class StructuredResponseOutputMessageTest {
     @Test
     fun `delegation of validate`() {
         `when`(mockDelegate._content()).thenReturn(JsonField.of(listOf(CONTENT)))
-        `when`(mockDelegate._role()).thenReturn(JsonValue.from("assistant"))
-        `when`(mockDelegate.status()).thenReturn(ResponseOutputMessage.Status.COMPLETED)
-        `when`(mockDelegate._type()).thenReturn(JsonValue.from("message"))
 
         delegator.validate()
 
-        // Delegator's `validate()` does not call delegate's `validate()`. `_content` is called
-        // indirectly via the `content` field initializer.
+        // Delegator's `validate()` calls delegate's `validate()`. `_content` is called indirectly
+        // via the `content` field initializer.
         verify(mockDelegate, times(1))._content()
-        verify(mockDelegate, times(1)).id()
-        verify(mockDelegate, times(1))._role()
-        verify(mockDelegate, times(1)).status()
-        verify(mockDelegate, times(1))._type()
+        verify(mockDelegate, times(1)).validate()
         verifyNoMoreInteractions(mockDelegate)
     }
 
@@ -208,17 +201,11 @@ internal class StructuredResponseOutputMessageTest {
     fun `delegation of isValid`() {
         // `isValid` calls `validate()`, so the test is similar to that for `validate()`.
         `when`(mockDelegate._content()).thenReturn(JsonField.of(listOf(CONTENT)))
-        `when`(mockDelegate._role()).thenReturn(JsonValue.from("assistant"))
-        `when`(mockDelegate.status()).thenReturn(ResponseOutputMessage.Status.COMPLETED)
-        `when`(mockDelegate._type()).thenReturn(JsonValue.from("message"))
 
         delegator.isValid()
 
         verify(mockDelegate, times(1))._content()
-        verify(mockDelegate, times(1)).id()
-        verify(mockDelegate, times(1))._role()
-        verify(mockDelegate, times(1)).status()
-        verify(mockDelegate, times(1))._type()
+        verify(mockDelegate, times(1)).validate()
         verifyNoMoreInteractions(mockDelegate)
     }
 

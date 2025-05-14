@@ -6,7 +6,6 @@ import com.openai.core.DelegationReadTestCase
 import com.openai.core.JSON_FIELD
 import com.openai.core.JSON_VALUE
 import com.openai.core.JsonField
-import com.openai.core.JsonValue
 import com.openai.core.LIST
 import com.openai.core.MAP
 import com.openai.core.OPTIONAL
@@ -172,74 +171,27 @@ internal class StructuredResponseTest {
 
     @Test
     fun `delegation of validate`() {
-        `when`(mockDelegate.model()).thenReturn(RESPONSES_MODEL)
-        `when`(mockDelegate._object_()).thenReturn(JsonValue.from("response"))
         `when`(mockDelegate._output()).thenReturn(JsonField.of(listOf(OUTPUT_ITEM)))
-        `when`(mockDelegate.toolChoice()).thenReturn(TOOL_CHOICE)
 
         delegator.validate()
 
-        // Delegator's `validate()` does not call delegate's `validate()`. `_content` is called
-        // indirectly via the `content` field initializer.
-        verify(mockDelegate, times(1)).id()
-        verify(mockDelegate, times(1)).createdAt()
-        verify(mockDelegate, times(1)).error()
-        verify(mockDelegate, times(1)).incompleteDetails()
-        verify(mockDelegate, times(1)).instructions()
-        verify(mockDelegate, times(1)).metadata()
-        verify(mockDelegate, times(1)).model()
-        verify(mockDelegate, times(1))._object_()
+        // Delegator's `validate()` calls the delegate's `validate()`. Delegate's `_output()` is
+        // called indirectly via the `output` field initializer.
         verify(mockDelegate, times(1))._output() // Indirect
-        verify(mockDelegate, times(1)).parallelToolCalls()
-        verify(mockDelegate, times(1)).temperature()
-        verify(mockDelegate, times(1)).toolChoice()
-        verify(mockDelegate, times(1)).tools()
-        verify(mockDelegate, times(1)).topP()
-        verify(mockDelegate, times(1)).maxOutputTokens()
-        verify(mockDelegate, times(1)).previousResponseId()
-        verify(mockDelegate, times(1)).reasoning()
-        verify(mockDelegate, times(1)).serviceTier()
-        verify(mockDelegate, times(1)).status()
-        verify(mockDelegate, times(1)).text()
-        verify(mockDelegate, times(1)).truncation()
-        verify(mockDelegate, times(1)).usage()
-        verify(mockDelegate, times(1)).user()
+        verify(mockDelegate, times(1)).validate()
         verifyNoMoreInteractions(mockDelegate)
     }
 
     @Test
     fun `delegation of isValid`() {
-        `when`(mockDelegate.model()).thenReturn(RESPONSES_MODEL)
-        `when`(mockDelegate._object_()).thenReturn(JsonValue.from("response"))
+        // `isValid()` calls `validate()` which delegates to `validate()`, so the test is
+        // more-or-less the same as for `validate()`.
         `when`(mockDelegate._output()).thenReturn(JsonField.of(listOf(OUTPUT_ITEM)))
-        `when`(mockDelegate.toolChoice()).thenReturn(TOOL_CHOICE)
 
-        // `isValid()` calls `validate()`, so the test is more-or-less the same.
         delegator.isValid()
 
-        verify(mockDelegate, times(1)).id()
-        verify(mockDelegate, times(1)).createdAt()
-        verify(mockDelegate, times(1)).error()
-        verify(mockDelegate, times(1)).incompleteDetails()
-        verify(mockDelegate, times(1)).instructions()
-        verify(mockDelegate, times(1)).metadata()
-        verify(mockDelegate, times(1)).model()
-        verify(mockDelegate, times(1))._object_()
         verify(mockDelegate, times(1))._output() // Indirect
-        verify(mockDelegate, times(1)).parallelToolCalls()
-        verify(mockDelegate, times(1)).temperature()
-        verify(mockDelegate, times(1)).toolChoice()
-        verify(mockDelegate, times(1)).tools()
-        verify(mockDelegate, times(1)).topP()
-        verify(mockDelegate, times(1)).maxOutputTokens()
-        verify(mockDelegate, times(1)).previousResponseId()
-        verify(mockDelegate, times(1)).reasoning()
-        verify(mockDelegate, times(1)).serviceTier()
-        verify(mockDelegate, times(1)).status()
-        verify(mockDelegate, times(1)).text()
-        verify(mockDelegate, times(1)).truncation()
-        verify(mockDelegate, times(1)).usage()
-        verify(mockDelegate, times(1)).user()
+        verify(mockDelegate, times(1)).validate()
         verifyNoMoreInteractions(mockDelegate)
     }
 }

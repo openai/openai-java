@@ -77,16 +77,7 @@ internal fun <T> textConfigFromClass(
         .format(
             ResponseFormatTextJsonSchemaConfig.builder()
                 .name("json-schema-from-${type.simpleName}")
-                .schema(
-                    ResponseFormatTextJsonSchemaConfig.Schema.builder()
-                        .additionalProperties(
-                            extractAndValidateSchema(type, localValidation)
-                                .fields()
-                                .asSequence()
-                                .associate { it.key to JsonValue.fromJsonNode(it.value) }
-                        )
-                        .build()
-                )
+                .schema(JsonValue.fromJsonNode(extractAndValidateSchema(type, localValidation)))
                 // Ensure the model's output strictly adheres to this JSON schema. This is the
                 // essential "ON switch" for Structured Outputs.
                 .strict(true)

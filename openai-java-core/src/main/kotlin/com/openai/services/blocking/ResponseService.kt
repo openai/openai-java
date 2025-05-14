@@ -44,11 +44,21 @@ interface ResponseService {
         requestOptions: RequestOptions = RequestOptions.none(),
     ): Response
 
-    /** @see create */
+    /**
+     * Creates a model response. The model's structured output in JSON form will be deserialized
+     * automatically into an instance of the class `T`. See the SDK documentation for more details.
+     *
+     * @see create
+     */
     fun <T : Any> create(params: StructuredResponseCreateParams<T>): StructuredResponse<T> =
         create(params, RequestOptions.none())
 
-    /** @see create */
+    /**
+     * Creates a model response. The model's structured output in JSON form will be deserialized
+     * automatically into an instance of the class `T`. See the SDK documentation for more details.
+     *
+     * @see create
+     */
     fun <T : Any> create(
         params: StructuredResponseCreateParams<T>,
         requestOptions: RequestOptions = RequestOptions.none(),

@@ -164,43 +164,10 @@ class StructuredResponse<T : Any>(
     /** @see Response._additionalProperties */
     fun _additionalProperties(): Map<String, JsonValue> = rawResponse._additionalProperties()
 
-    private var validated: Boolean = false
-
     /** @see Response.validate */
     fun validate(): StructuredResponse<T> = apply {
-        if (validated) {
-            return@apply
-        }
-
-        id()
-        createdAt()
-        error().ifPresent { it.validate() }
-        incompleteDetails().ifPresent { it.validate() }
-        instructions()
-        metadata().ifPresent { it.validate() }
-        model().validate()
-        _object_().let {
-            if (it != JsonValue.from("response")) {
-                throw OpenAIInvalidDataException("'object_' is invalid, received $it")
-            }
-        }
-        // `output()` is a different type to that in the delegate class.
         output().forEach { it.validate() }
-        parallelToolCalls()
-        temperature()
-        toolChoice().validate()
-        tools().forEach { it.validate() }
-        topP()
-        maxOutputTokens()
-        previousResponseId()
-        reasoning().ifPresent { it.validate() }
-        serviceTier().ifPresent { it.validate() }
-        status().ifPresent { it.validate() }
-        text().ifPresent { it.validate() }
-        truncation().ifPresent { it.validate() }
-        usage().ifPresent { it.validate() }
-        user()
-        validated = true
+        rawResponse.validate()
     }
 
     /** @see Response.isValid */

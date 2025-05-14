@@ -55,12 +55,24 @@ interface ChatCompletionService {
         requestOptions: RequestOptions = RequestOptions.none(),
     ): ChatCompletion
 
-    /** @see create */
+    /**
+     * Creates a model response for the given chat conversation. The model's structured output in
+     * JSON form will be deserialized automatically into an instance of the class `T`. See the SDK
+     * documentation for more details.
+     *
+     * @see create
+     */
     fun <T : Any> create(
         params: StructuredChatCompletionCreateParams<T>
     ): StructuredChatCompletion<T> = create(params, RequestOptions.none())
 
-    /** @see create */
+    /**
+     * Creates a model response for the given chat conversation. The model's structured output in
+     * JSON form will be deserialized automatically into an instance of the class `T`. See the SDK
+     * documentation for more details.
+     *
+     * @see create
+     */
     fun <T : Any> create(
         params: StructuredChatCompletionCreateParams<T>,
         requestOptions: RequestOptions = RequestOptions.none(),
