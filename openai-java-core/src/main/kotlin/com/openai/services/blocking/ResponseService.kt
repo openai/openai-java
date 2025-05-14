@@ -12,6 +12,8 @@ import com.openai.models.responses.ResponseCreateParams
 import com.openai.models.responses.ResponseDeleteParams
 import com.openai.models.responses.ResponseRetrieveParams
 import com.openai.models.responses.ResponseStreamEvent
+import com.openai.models.responses.StructuredResponse
+import com.openai.models.responses.StructuredResponseCreateParams
 import com.openai.services.blocking.responses.InputItemService
 
 interface ResponseService {
@@ -41,6 +43,27 @@ interface ResponseService {
         params: ResponseCreateParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): Response
+
+    /**
+     * Creates a model response. The model's structured output in JSON form will be deserialized
+     * automatically into an instance of the class `T`. See the SDK documentation for more details.
+     *
+     * @see create
+     */
+    fun <T : Any> create(params: StructuredResponseCreateParams<T>): StructuredResponse<T> =
+        create(params, RequestOptions.none())
+
+    /**
+     * Creates a model response. The model's structured output in JSON form will be deserialized
+     * automatically into an instance of the class `T`. See the SDK documentation for more details.
+     *
+     * @see create
+     */
+    fun <T : Any> create(
+        params: StructuredResponseCreateParams<T>,
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): StructuredResponse<T> =
+        StructuredResponse<T>(params.responseType, create(params.rawParams, requestOptions))
 
     /**
      * Creates a model response. Provide [text](https://platform.openai.com/docs/guides/text) or

@@ -15,6 +15,8 @@ import com.openai.models.chat.completions.ChatCompletionListPage
 import com.openai.models.chat.completions.ChatCompletionListParams
 import com.openai.models.chat.completions.ChatCompletionRetrieveParams
 import com.openai.models.chat.completions.ChatCompletionUpdateParams
+import com.openai.models.chat.completions.StructuredChatCompletion
+import com.openai.models.chat.completions.StructuredChatCompletionCreateParams
 import com.openai.services.blocking.chat.completions.MessageService
 
 interface ChatCompletionService {
@@ -52,6 +54,30 @@ interface ChatCompletionService {
         params: ChatCompletionCreateParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): ChatCompletion
+
+    /**
+     * Creates a model response for the given chat conversation. The model's structured output in
+     * JSON form will be deserialized automatically into an instance of the class `T`. See the SDK
+     * documentation for more details.
+     *
+     * @see create
+     */
+    fun <T : Any> create(
+        params: StructuredChatCompletionCreateParams<T>
+    ): StructuredChatCompletion<T> = create(params, RequestOptions.none())
+
+    /**
+     * Creates a model response for the given chat conversation. The model's structured output in
+     * JSON form will be deserialized automatically into an instance of the class `T`. See the SDK
+     * documentation for more details.
+     *
+     * @see create
+     */
+    fun <T : Any> create(
+        params: StructuredChatCompletionCreateParams<T>,
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): StructuredChatCompletion<T> =
+        StructuredChatCompletion<T>(params.responseType, create(params.rawParams, requestOptions))
 
     /**
      * **Starting a new project?** We recommend trying

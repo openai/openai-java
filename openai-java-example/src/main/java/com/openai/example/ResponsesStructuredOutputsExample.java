@@ -5,11 +5,11 @@ import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 import com.openai.client.OpenAIClient;
 import com.openai.client.okhttp.OpenAIOkHttpClient;
 import com.openai.models.ChatModel;
-import com.openai.models.chat.completions.ChatCompletionCreateParams;
-import com.openai.models.chat.completions.StructuredChatCompletionCreateParams;
+import com.openai.models.responses.ResponseCreateParams;
+import com.openai.models.responses.StructuredResponseCreateParams;
 import java.util.List;
 
-public final class StructuredOutputsExample {
+public final class ResponsesStructuredOutputsExample {
 
     public static class Person {
         @JsonPropertyDescription("The first name and surname of the person.")
@@ -49,7 +49,7 @@ public final class StructuredOutputsExample {
         public List<Book> books;
     }
 
-    private StructuredOutputsExample() {}
+    private ResponsesStructuredOutputsExample() {}
 
     public static void main(String[] args) {
         // Configures using one of:
@@ -57,15 +57,16 @@ public final class StructuredOutputsExample {
         // - The `OPENAI_BASE_URL` and `AZURE_OPENAI_KEY` environment variables
         OpenAIClient client = OpenAIOkHttpClient.fromEnv();
 
-        StructuredChatCompletionCreateParams<BookList> createParams = ChatCompletionCreateParams.builder()
-                .model(ChatModel.GPT_4O_MINI)
-                .maxCompletionTokens(2048)
-                .responseFormat(BookList.class)
-                .addUserMessage("List some famous late twentieth century novels.")
+        StructuredResponseCreateParams<BookList> createParams = ResponseCreateParams.builder()
+                .input("List some famous late twentieth century novels.")
+                .text(BookList.class)
+                .model(ChatModel.GPT_4O)
                 .build();
 
-        client.chat().completions().create(createParams).choices().stream()
-                .flatMap(choice -> choice.message().content().stream())
+        client.responses().create(createParams).output().stream()
+                .flatMap(item -> item.message().stream())
+                .flatMap(message -> message.content().stream())
+                .flatMap(content -> content.outputText().stream())
                 .flatMap(bookList -> bookList.books.stream())
                 .forEach(book -> System.out.println(" - " + book));
     }
