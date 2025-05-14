@@ -52,8 +52,6 @@ internal class StructuredResponseCreateParamsTest {
         private val RESPONSES_MODEL = ResponsesModel.ofChat(CHAT_MODEL)
         private val RESPONSES_ONLY_MODEL = ResponsesModel.ResponsesOnlyModel.O1_PRO
         private val PARAMS_INPUT = ResponseCreateParams.Input.ofText(STRING)
-        private val PARAMS_BODY =
-            ResponseCreateParams.Body.builder().input(PARAMS_INPUT).model(RESPONSES_MODEL).build()
 
         private val INCLUDABLE = ResponseIncludable.of(STRING)
         private val METADATA = ResponseCreateParams.Metadata.builder().build()
@@ -87,7 +85,7 @@ internal class StructuredResponseCreateParamsTest {
         @JvmStatic
         private fun builderDelegationTestCases() =
             listOf(
-                DelegationWriteTestCase("body", PARAMS_BODY),
+                // The `body(...)` function is deliberately not supported: too messy.
                 DelegationWriteTestCase("input", PARAMS_INPUT),
                 DelegationWriteTestCase("input", JSON_FIELD),
                 DelegationWriteTestCase("input", STRING),
@@ -196,9 +194,9 @@ internal class StructuredResponseCreateParamsTest {
 
     @Test
     fun allBuilderDelegateFunctionsExistInDelegator() {
-        // The delegator class does not implement the various `text` functions of the delegate
-        // class.
-        checkAllDelegation(mockBuilderDelegate::class, builderDelegator::class, "text")
+        // The delegator class does not implement the various `text` functions or the `body`
+        // function of the delegate class.
+        checkAllDelegation(mockBuilderDelegate::class, builderDelegator::class, "body", "text")
     }
 
     @Test

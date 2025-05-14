@@ -57,9 +57,7 @@ class StructuredResponseCreateParams<T : Any>(
             this.paramsBuilder = paramsBuilder
         }
 
-        // TODO: Probably not correct, as text config could be overwritten.
-        /** @see ResponseCreateParams.Builder.body */
-        fun body(body: ResponseCreateParams.Body) = apply { paramsBuilder.body(body) }
+        // The `body(...)` function is deliberately not supported.
 
         /** @see ResponseCreateParams.Builder.input */
         fun input(input: ResponseCreateParams.Input) = apply { paramsBuilder.input(input) }
