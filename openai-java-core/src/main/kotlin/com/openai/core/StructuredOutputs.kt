@@ -12,6 +12,8 @@ import com.github.victools.jsonschema.generator.SchemaGeneratorConfigBuilder
 import com.github.victools.jsonschema.module.jackson.JacksonModule
 import com.openai.errors.OpenAIInvalidDataException
 import com.openai.models.ResponseFormatJsonSchema
+import com.openai.models.responses.ResponseFormatTextJsonSchemaConfig
+import com.openai.models.responses.ResponseTextConfig
 
 // The SDK `ObjectMappers.jsonMapper()` requires that all fields of classes be marked with
 // `@JsonProperty`, which is not desirable in this context, as it impedes usability. Therefore, a
@@ -23,11 +25,31 @@ private val MAPPER =
         .addModule(JavaTimeModule())
         .build()
 
+/**
+ * Builds a response format using a JSON schema derived from the structure of an arbitrary Java
+ * class.
+ */
 @JvmSynthetic
-internal fun <T> fromClass(
+internal fun <T> responseFormatFromClass(
     type: Class<T>,
     localValidation: JsonSchemaLocalValidation = JsonSchemaLocalValidation.YES,
-): ResponseFormatJsonSchema {
+): ResponseFormatJsonSchema =
+    ResponseFormatJsonSchema.builder()
+        .jsonSchema(
+            ResponseFormatJsonSchema.JsonSchema.builder()
+                .name("json-schema-from-${type.simpleName}")
+                .schema(JsonValue.fromJsonNode(extractAndValidateSchema(type, localValidation)))
+                // Ensure the model's output strictly adheres to this JSON schema. This is the
+                // essential "ON switch" for Structured Outputs.
+                .strict(true)
+                .build()
+        )
+        .build()
+
+private fun <T> extractAndValidateSchema(
+    type: Class<T>,
+    localValidation: JsonSchemaLocalValidation,
+): JsonNode {
     val schema = extractSchema(type)
 
     if (localValidation == JsonSchemaLocalValidation.YES) {
@@ -39,24 +61,48 @@ internal fun <T> fromClass(
         }
     }
 
-    return ResponseFormatJsonSchema.builder()
-        .jsonSchema(
-            ResponseFormatJsonSchema.JsonSchema.builder()
+    return schema
+}
+
+/**
+ * Builds a text configuration with its format set to a JSON schema derived from the structure of an
+ * arbitrary Java class.
+ */
+@JvmSynthetic
+internal fun <T> textConfigFromClass(
+    type: Class<T>,
+    localValidation: JsonSchemaLocalValidation = JsonSchemaLocalValidation.YES,
+): ResponseTextConfig =
+    ResponseTextConfig.builder()
+        .format(
+            ResponseFormatTextJsonSchemaConfig.builder()
                 .name("json-schema-from-${type.simpleName}")
-                .schema(JsonValue.fromJsonNode(schema))
+                .schema(
+                    ResponseFormatTextJsonSchemaConfig.Schema.builder()
+                        .additionalProperties(
+                            extractAndValidateSchema(type, localValidation)
+                                .fields()
+                                .asSequence()
+                                .associate { it.key to JsonValue.fromJsonNode(it.value) }
+                        )
+                        .build()
+                )
                 // Ensure the model's output strictly adheres to this JSON schema. This is the
                 // essential "ON switch" for Structured Outputs.
                 .strict(true)
                 .build()
         )
         .build()
-}
 
+/**
+ * Derives a JSON schema from the structure of an arbitrary Java class.
+ *
+ * Validation is not performed by this function, as it allows extraction of the schema and
+ * validation of the schema to be controlled more easily when unit testing, as no exceptions will be
+ * thrown and any recorded validation errors can be inspected at leisure by the tests.
+ */
 @JvmSynthetic
 internal fun <T> extractSchema(type: Class<T>): JsonNode {
-    // Validation is not performed by this function, as it allows extraction of the schema and
-    // validation of the schema to be controlled more easily when unit testing, as no exceptions
-    // will be thrown and any recorded validation errors can be inspected at leisure by the tests.
     val configBuilder =
         SchemaGeneratorConfigBuilder(
                 com.github.victools.jsonschema.generator.SchemaVersion.DRAFT_2020_12,
@@ -79,10 +125,14 @@ internal fun <T> extractSchema(type: Class<T>): JsonNode {
     return SchemaGenerator(configBuilder.build()).generateSchema(type)
 }
 
+/**
+ * Creates an instance of a Java class using data from a JSON. The JSON data should conform to the
+ * JSON schema previously extracted from the Java class.
+ */
 @JvmSynthetic
-internal fun <T> fromJson(json: String, type: Class<T>): T =
+internal fun <T> responseTypeFromJson(json: String, responseType: Class<T>): T =
     try {
-        MAPPER.readValue(json, type)
+        MAPPER.readValue(json, responseType)
     } catch (e: Exception) {
         // The JSON document is included in the exception message to aid diagnosis of the problem.
         // It is the responsibility of the SDK user to ensure that exceptions that may contain

@@ -2,7 +2,7 @@ package com.openai.models.chat.completions
 
 import com.openai.core.JsonField
 import com.openai.core.JsonValue
-import com.openai.core.fromJson
+import com.openai.core.responseTypeFromJson
 import com.openai.models.chat.completions.ChatCompletionMessage.FunctionCall
 import java.util.Objects
 import java.util.Optional
@@ -17,69 +17,64 @@ import java.util.Optional
  */
 class StructuredChatCompletionMessage<T : Any>
 internal constructor(
-    @get:JvmName("responseFormat") val responseFormat: Class<T>,
-    @get:JvmName("chatCompletionMessage") val chatCompletionMessage: ChatCompletionMessage,
+    @get:JvmName("responseType") val responseType: Class<T>,
+    @get:JvmName("rawMessage") val rawMessage: ChatCompletionMessage,
 ) {
 
     private val content: JsonField<T> by lazy {
-        chatCompletionMessage._content().map { fromJson<T>(it, responseFormat) }
+        rawMessage._content().map { responseTypeFromJson<T>(it, responseType) }
     }
 
     /** @see ChatCompletionMessage.content */
     fun content(): Optional<T> = content.getOptional("content")
 
     /** @see ChatCompletionMessage.refusal */
-    fun refusal(): Optional<String> = chatCompletionMessage.refusal()
+    fun refusal(): Optional<String> = rawMessage.refusal()
 
     /** @see ChatCompletionMessage._role */
-    fun _role(): JsonValue = chatCompletionMessage._role()
+    fun _role(): JsonValue = rawMessage._role()
 
     /** @see ChatCompletionMessage.annotations */
-    fun annotations(): Optional<List<ChatCompletionMessage.Annotation>> =
-        chatCompletionMessage.annotations()
+    fun annotations(): Optional<List<ChatCompletionMessage.Annotation>> = rawMessage.annotations()
 
     /** @see ChatCompletionMessage.audio */
-    fun audio(): Optional<ChatCompletionAudio> = chatCompletionMessage.audio()
+    fun audio(): Optional<ChatCompletionAudio> = rawMessage.audio()
 
     /** @see ChatCompletionMessage.functionCall */
-    @Deprecated("deprecated")
-    fun functionCall(): Optional<FunctionCall> = chatCompletionMessage.functionCall()
+    @Deprecated("deprecated") fun functionCall(): Optional<FunctionCall> = rawMessage.functionCall()
 
     /** @see ChatCompletionMessage.toolCalls */
-    fun toolCalls(): Optional<List<ChatCompletionMessageToolCall>> =
-        chatCompletionMessage.toolCalls()
+    fun toolCalls(): Optional<List<ChatCompletionMessageToolCall>> = rawMessage.toolCalls()
 
     /** @see ChatCompletionMessage._content */
     fun _content(): JsonField<T> = content
 
     /** @see ChatCompletionMessage._refusal */
-    fun _refusal(): JsonField<String> = chatCompletionMessage._refusal()
+    fun _refusal(): JsonField<String> = rawMessage._refusal()
 
     /** @see ChatCompletionMessage._annotations */
     fun _annotations(): JsonField<List<ChatCompletionMessage.Annotation>> =
-        chatCompletionMessage._annotations()
+        rawMessage._annotations()
 
     /** @see ChatCompletionMessage._audio */
-    fun _audio(): JsonField<ChatCompletionAudio> = chatCompletionMessage._audio()
+    fun _audio(): JsonField<ChatCompletionAudio> = rawMessage._audio()
 
     /** @see ChatCompletionMessage._functionCall */
     @Deprecated("deprecated")
-    fun _functionCall(): JsonField<FunctionCall> = chatCompletionMessage._functionCall()
+    fun _functionCall(): JsonField<FunctionCall> = rawMessage._functionCall()
 
     /** @see ChatCompletionMessage._toolCalls */
-    fun _toolCalls(): JsonField<List<ChatCompletionMessageToolCall>> =
-        chatCompletionMessage._toolCalls()
+    fun _toolCalls(): JsonField<List<ChatCompletionMessageToolCall>> = rawMessage._toolCalls()
 
     /** @see ChatCompletionMessage._additionalProperties */
-    fun _additionalProperties(): Map<String, JsonValue> =
-        chatCompletionMessage._additionalProperties()
+    fun _additionalProperties(): Map<String, JsonValue> = rawMessage._additionalProperties()
 
     /** @see ChatCompletionMessage.validate */
     // `content()` is not included in the validation by the delegate method, so just call it.
-    fun validate(): ChatCompletionMessage = chatCompletionMessage.validate()
+    fun validate(): ChatCompletionMessage = rawMessage.validate()
 
     /** @see ChatCompletionMessage.isValid */
-    fun isValid(): Boolean = chatCompletionMessage.isValid()
+    fun isValid(): Boolean = rawMessage.isValid()
 
     override fun equals(other: Any?): Boolean {
         if (this === other) {
@@ -87,14 +82,14 @@ internal constructor(
         }
 
         return other is StructuredChatCompletionMessage<*> &&
-            responseFormat == other.responseFormat &&
-            chatCompletionMessage == other.chatCompletionMessage
+            responseType == other.responseType &&
+            rawMessage == other.rawMessage
     }
 
-    private val hashCode: Int by lazy { Objects.hash(responseFormat, chatCompletionMessage) }
+    private val hashCode: Int by lazy { Objects.hash(responseType, rawMessage) }
 
     override fun hashCode(): Int = hashCode
 
     override fun toString() =
-        "${javaClass.simpleName}{responseFormat=$responseFormat, chatCompletionMessage=$chatCompletionMessage}"
+        "${javaClass.simpleName}{responseType=$responseType, rawMessage=$rawMessage}"
 }

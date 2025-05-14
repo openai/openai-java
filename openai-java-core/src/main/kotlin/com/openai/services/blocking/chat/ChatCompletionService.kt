@@ -65,7 +65,7 @@ interface ChatCompletionService {
         params: StructuredChatCompletionCreateParams<T>,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): StructuredChatCompletion<T> =
-        StructuredChatCompletion<T>(params.responseFormat, create(params.rawParams, requestOptions))
+        StructuredChatCompletion<T>(params.responseType, create(params.rawParams, requestOptions))
 
     /**
      * **Starting a new project?** We recommend trying

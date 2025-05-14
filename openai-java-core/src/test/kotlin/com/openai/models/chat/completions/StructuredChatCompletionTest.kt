@@ -1,12 +1,17 @@
 package com.openai.models.chat.completions
 
+import com.openai.core.DelegationReadTestCase
+import com.openai.core.JSON_FIELD
+import com.openai.core.JSON_VALUE
 import com.openai.core.JsonField
-import com.openai.core.JsonValue
+import com.openai.core.LONG
+import com.openai.core.OPTIONAL
+import com.openai.core.STRING
+import com.openai.core.X
+import com.openai.core.checkAllDelegation
+import com.openai.core.checkAllDelegatorReadFunctionsAreTested
+import com.openai.core.checkOneDelegationRead
 import com.openai.errors.OpenAIInvalidDataException
-import java.util.Optional
-import kotlin.reflect.KClass
-import kotlin.reflect.KVisibility
-import kotlin.reflect.full.declaredFunctions
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
@@ -30,75 +35,7 @@ import org.mockito.kotlin.verify
  */
 internal class StructuredChatCompletionTest {
     companion object {
-        internal fun checkAllDelegation(
-            delegateClass: KClass<*>,
-            delegatorClass: KClass<*>,
-            vararg exceptFunctionNames: String,
-        ) {
-            assertThat(delegateClass != delegatorClass)
-                .describedAs { "Delegate and delegator classes should not be the same." }
-                .isTrue
-
-            val delegateFunctions = delegateClass.declaredFunctions
-
-            for (delegateFunction in delegateFunctions) {
-                if (delegateFunction.visibility != KVisibility.PUBLIC) {
-                    // Non-public methods are just implementation details of each class.
-                    continue
-                }
-
-                if (delegateFunction.name in exceptFunctionNames) {
-                    // Ignore functions that are known exceptions (e.g., `toBuilder`).
-                    continue
-                }
-
-                // Drop the first parameter from each function, as it is the implicit "this" object
-                // and has the type of the class declaring the function, which will never match.
-                val delegatorFunction =
-                    delegatorClass.declaredFunctions.find {
-                        it.name == delegateFunction.name &&
-                            it.parameters.drop(1).map { it.type } ==
-                                delegateFunction.parameters.drop(1).map { it.type }
-                    }
-
-                assertThat(delegatorFunction != null)
-                    .describedAs {
-                        "Function $delegateFunction is not found in ${delegatorClass.simpleName}."
-                    }
-                    .isTrue
-            }
-        }
-
-        internal fun checkOneDelegationRead(
-            delegator: Any,
-            mockDelegate: Any,
-            testCase: DelegationReadTestCase,
-        ) {
-            // Stub the method in the mock delegate using reflection
-            val delegateMethod = mockDelegate::class.java.getMethod(testCase.functionName)
-            `when`(delegateMethod.invoke(mockDelegate)).thenReturn(testCase.expectedValue)
-
-            // Call the corresponding method on the delegator using reflection
-            val delegatorMethod = delegator::class.java.getMethod(testCase.functionName)
-            val result = delegatorMethod.invoke(delegator)
-
-            // Verify that the corresponding method on the mock delegate was called exactly once
-            verify(mockDelegate, times(1)).apply { delegateMethod.invoke(mockDelegate) }
-            verifyNoMoreInteractions(mockDelegate)
-
-            // Assert that the result matches the expected value
-            assertThat(result).isEqualTo(testCase.expectedValue)
-        }
-
-        // Where a function returns `Optional<T>`, `JsonField<T>` or `JsonValue` There is no need to
-        // provide a value that matches the type `<T>`, a simple `String` value of `"a-string"` will
-        // work OK with the test. Constants have been provided for this purpose.
-        internal const val STRING = "a-string"
-
-        internal val OPTIONAL = Optional.of(STRING)
-        internal val JSON_FIELD = JsonField.of(STRING)
-        internal val JSON_VALUE = JsonValue.from(STRING)
-        internal val MESSAGE =
+        private val MESSAGE =
             ChatCompletionMessage.builder().content(STRING).refusal(STRING).build()
         private val FINISH_REASON = ChatCompletion.Choice.FinishReason.STOP
         private val CHOICE =
@@ -111,16 +48,13 @@ internal class StructuredChatCompletionTest {
                 )
                 .build()
 
-        data class DelegationReadTestCase(val functionName: String, val expectedValue: Any)
-
-        // The list order follows the declaration order in `StructuredChatCompletionMessage` for
-        // easier maintenance.
+        // The list order follows the declaration order in `ChatCompletion` for easier maintenance.
         @JvmStatic
-        fun delegationTestCases() =
+        private fun delegationTestCases() =
             listOf(
                 DelegationReadTestCase("id", STRING),
                 // `choices()` is a special case and has its own test function.
-                DelegationReadTestCase("created", 123L),
+                DelegationReadTestCase("created", LONG),
                 DelegationReadTestCase("model", STRING),
                 DelegationReadTestCase("_object_", JSON_VALUE),
                 DelegationReadTestCase("serviceTier", OPTIONAL),
@@ -139,10 +73,10 @@ internal class StructuredChatCompletionTest {
             )
 
         @JvmStatic
-        fun choiceDelegationTestCases() =
+        private fun choiceDelegationTestCases() =
             listOf(
                 DelegationReadTestCase("finishReason", FINISH_REASON),
-                DelegationReadTestCase("index", 123L),
+                DelegationReadTestCase("index", LONG),
                 DelegationReadTestCase("logprobs", OPTIONAL),
                 DelegationReadTestCase("_finishReason", JSON_FIELD),
                 // `message()` is a special case and has its own test function.
@@ -153,90 +87,58 @@ internal class StructuredChatCompletionTest {
                 // `validate()` and `isValid()` (which calls `validate()`) are tested separately,
                 // as they require special handling.
             )
-
-        /** A basic class used as the generic type when testing. */
-        internal class X(val s: String) {
-            override fun equals(other: Any?) = other is X && other.s == s
-
-            override fun hashCode() = s.hashCode()
-        }
     }
 
     // New instances of the `mockDelegate` and `delegator` are required for each test case (each
     // test case runs in its own instance of the test class).
-    val mockDelegate: ChatCompletion = mock(ChatCompletion::class.java)
-    val delegator = StructuredChatCompletion<X>(X::class.java, mockDelegate)
+    private val mockDelegate: ChatCompletion = mock(ChatCompletion::class.java)
+    private val delegator = StructuredChatCompletion<X>(X::class.java, mockDelegate)
 
-    val mockChoiceDelegate: ChatCompletion.Choice = mock(ChatCompletion.Choice::class.java)
-    val choiceDelegator = StructuredChatCompletion.Choice<X>(X::class.java, mockChoiceDelegate)
+    private val mockChoiceDelegate: ChatCompletion.Choice = mock(ChatCompletion.Choice::class.java)
+    private val choiceDelegator =
+        StructuredChatCompletion.Choice<X>(X::class.java, mockChoiceDelegate)
 
     @Test
     fun allChatCompletionDelegateFunctionsExistInDelegator() {
-        checkAllDelegation(ChatCompletion::class, StructuredChatCompletion::class, "toBuilder")
+        checkAllDelegation(mockDelegate::class, delegator::class, "toBuilder")
     }
 
     @Test
     fun allChatCompletionDelegatorFunctionsExistInDelegate() {
-        checkAllDelegation(StructuredChatCompletion::class, ChatCompletion::class)
+        checkAllDelegation(delegator::class, mockDelegate::class)
     }
 
     @Test
     fun allChoiceDelegateFunctionsExistInDelegator() {
-        checkAllDelegation(
-            ChatCompletion.Choice::class,
-            StructuredChatCompletion.Choice::class,
-            "toBuilder",
-        )
+        checkAllDelegation(mockChoiceDelegate::class, choiceDelegator::class, "toBuilder")
     }
 
     @Test
     fun allChoiceDelegatorFunctionsExistInDelegate() {
-        checkAllDelegation(StructuredChatCompletion.Choice::class, ChatCompletion.Choice::class)
+        checkAllDelegation(choiceDelegator::class, mockChoiceDelegate::class)
     }
 
     @Test
     fun allDelegatorFunctionsAreTested() {
         // There are exceptional test cases for some functions. Most other functions are part of the
-        // list of those using the parameterized test.
-        val exceptionalTestedFns = setOf("choices", "_choices", "validate", "isValid")
-        val testedFns = delegationTestCases().map { it.functionName }.toSet() + exceptionalTestedFns
-        // A few delegator functions do not delegate, so no test function is necessary.
-        val nonDelegatingFns = listOf("equals", "hashCode", "toString")
-
-        val delegatorFunctions = StructuredChatCompletion::class.declaredFunctions
-
-        for (delegatorFunction in delegatorFunctions) {
-            assertThat(
-                    delegatorFunction.name in testedFns ||
-                        delegatorFunction.name in nonDelegatingFns
-                )
-                .describedAs("Delegation is not tested for function '${delegatorFunction.name}.")
-                .isTrue
-        }
+        // list of those using the parameterized test. A few delegator functions do not delegate, so
+        // no test function is necessary.
+        checkAllDelegatorReadFunctionsAreTested(
+            delegator::class,
+            delegationTestCases(),
+            exceptionalTestedFns = setOf("choices", "_choices", "validate", "isValid"),
+            nonDelegatingFns = setOf("equals", "hashCode", "toString"),
+        )
     }
 
     @Test
     fun allChoiceDelegatorFunctionsAreTested() {
-        // There are exceptional test cases for some functions. Most other functions are part of the
-        // list of those using the parameterized test.
-        val exceptionalTestedFns = setOf("message", "_message", "validate", "isValid")
-        val testedFns =
-            choiceDelegationTestCases().map { it.functionName }.toSet() + exceptionalTestedFns
-        // A few delegator functions do not delegate, so no test function is necessary.
-        val nonDelegatingFns = listOf("equals", "hashCode", "toString")
-
-        val delegatorFunctions = StructuredChatCompletion.Choice::class.declaredFunctions
-
-        for (delegatorFunction in delegatorFunctions) {
-            assertThat(
-                    delegatorFunction.name in testedFns ||
-                        delegatorFunction.name in nonDelegatingFns
-                )
-                .describedAs(
-                    "Delegation is not tested for function 'Choice.${delegatorFunction.name}."
-                )
-                .isTrue
-        }
+        checkAllDelegatorReadFunctionsAreTested(
+            choiceDelegator::class,
+            choiceDelegationTestCases(),
+            exceptionalTestedFns = setOf("message", "_message", "validate", "isValid"),
+            nonDelegatingFns = setOf("equals", "hashCode", "toString"),
+        )
     }
 
     @ParameterizedTest
@@ -263,7 +165,7 @@ internal class StructuredChatCompletionTest {
         verify(mockDelegate, times(1))._choices()
         verifyNoMoreInteractions(mockDelegate)
 
-        assertThat(output[0].choice).isEqualTo(CHOICE)
+        assertThat(output[0].rawChoice).isEqualTo(CHOICE)
     }
 
     @Test
@@ -277,7 +179,7 @@ internal class StructuredChatCompletionTest {
         verify(mockDelegate, times(1))._choices()
         verifyNoMoreInteractions(mockDelegate)
 
-        assertThat(output.getRequired("_choices")[0].choice).isEqualTo(CHOICE)
+        assertThat(output.getRequired("_choices")[0].rawChoice).isEqualTo(CHOICE)
     }
 
     @Test
@@ -339,7 +241,7 @@ internal class StructuredChatCompletionTest {
         verify(mockChoiceDelegate, times(1))._message()
         verifyNoMoreInteractions(mockChoiceDelegate)
 
-        assertThat(output.chatCompletionMessage).isEqualTo(MESSAGE)
+        assertThat(output.rawMessage).isEqualTo(MESSAGE)
     }
 
     @Test
@@ -353,7 +255,7 @@ internal class StructuredChatCompletionTest {
         verify(mockChoiceDelegate, times(1))._message()
         verifyNoMoreInteractions(mockChoiceDelegate)
 
-        assertThat(output.getRequired("_message").chatCompletionMessage).isEqualTo(MESSAGE)
+        assertThat(output.getRequired("_message").rawMessage).isEqualTo(MESSAGE)
     }
 
     @Test

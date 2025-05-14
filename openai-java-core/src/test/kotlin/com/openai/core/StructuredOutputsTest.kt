@@ -447,7 +447,7 @@ internal class StructuredOutputsTest {
 
     @Test
     fun schemaTest_tinyRecursiveSchema() {
-        @Suppress("unused") class X(val s: String, val x: X)
+        @Suppress("unused") class X(val s: String, val x: X?)
 
         schema = extractSchema(X::class.java)
         validator.validate(schema)
@@ -633,8 +633,7 @@ internal class StructuredOutputsTest {
             )
         validator.validate(schema)
 
-        // TODO: Decide if this is the expected behavior, i.e., that it is OK for an "object" schema
-        //   to have no "properties".
+        // For now, allow that an object may have no properties. Update this if that is revised.
         assertThat(validator.isValid()).isTrue()
     }
 
@@ -1415,7 +1414,7 @@ internal class StructuredOutputsTest {
     fun fromJsonSuccess() {
         @Suppress("unused") class X(val s: String)
 
-        val x = fromJson("{\"s\" : \"hello\"}", X::class.java)
+        val x = responseTypeFromJson("{\"s\" : \"hello\"}", X::class.java)
 
         assertThat(x.s).isEqualTo("hello")
     }
@@ -1425,7 +1424,7 @@ internal class StructuredOutputsTest {
         @Suppress("unused") class X(val s: String)
 
         // Well-formed JSON, but it does not match the schema of class `X`.
-        assertThatThrownBy { fromJson("{\"wrong\" : \"hello\"}", X::class.java) }
+        assertThatThrownBy { responseTypeFromJson("{\"wrong\" : \"hello\"}", X::class.java) }
             .isExactlyInstanceOf(OpenAIInvalidDataException::class.java)
             .hasMessage("Error parsing JSON: {\"wrong\" : \"hello\"}")
     }
@@ -1435,7 +1434,7 @@ internal class StructuredOutputsTest {
         @Suppress("unused") class X(val s: String)
 
         // Malformed JSON.
-        assertThatThrownBy { fromJson("{\"truncated", X::class.java) }
+        assertThatThrownBy { responseTypeFromJson("{\"truncated", X::class.java) }
             .isExactlyInstanceOf(OpenAIInvalidDataException::class.java)
             .hasMessage("Error parsing JSON: {\"truncated")
     }
@@ -1444,7 +1443,7 @@ internal class StructuredOutputsTest {
     fun fromClassEnablesStrictAdherenceToSchema() {
         @Suppress("unused") class X(val s: String)
 
-        val jsonSchema = fromClass(X::class.java)
+        val jsonSchema = responseFormatFromClass(X::class.java)
 
         // The "strict" flag _must_ be set to ensure that the model's output will _always_ conform
         // to the JSON schema.
@@ -1464,7 +1463,7 @@ internal class StructuredOutputsTest {
         class Z(val y: Y)
 
         assertThatNoException().isThrownBy {
-            fromClass(Z::class.java, JsonSchemaLocalValidation.NO)
+            responseFormatFromClass(Z::class.java, JsonSchemaLocalValidation.NO)
         }
     }
 
@@ -1473,7 +1472,7 @@ internal class StructuredOutputsTest {
         @Suppress("unused") class X(val s: String)
 
         assertThatNoException().isThrownBy {
-            fromClass(X::class.java, JsonSchemaLocalValidation.YES)
+            responseFormatFromClass(X::class.java, JsonSchemaLocalValidation.YES)
         }
     }
 
@@ -1488,7 +1487,7 @@ internal class StructuredOutputsTest {
         class Y(val x: X)
         class Z(val y: Y)
 
-        assertThatThrownBy { fromClass(Z::class.java, JsonSchemaLocalValidation.YES) }
+        assertThatThrownBy { responseFormatFromClass(Z::class.java, JsonSchemaLocalValidation.YES) }
             .isExactlyInstanceOf(IllegalArgumentException::class.java)
             .hasMessage(
                 "Local validation failed for JSON schema derived from ${Z::class.java}:\n" +
@@ -1509,7 +1508,8 @@ internal class StructuredOutputsTest {
         class Y(val x: X)
         class Z(val y: Y)
 
-        assertThatThrownBy { fromClass(Z::class.java) } // Use default for `localValidation` flag.
+        // Use default for `localValidation` flag.
+        assertThatThrownBy { responseFormatFromClass(Z::class.java) }
             .isExactlyInstanceOf(IllegalArgumentException::class.java)
             .hasMessage(
                 "Local validation failed for JSON schema derived from ${Z::class.java}:\n" +

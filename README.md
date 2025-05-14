@@ -411,15 +411,15 @@ class Book {
 ```
 
 Generic type information for fields is retained in the class's metadata, but _generic type erasure_
-applies in other scopes. While, for example, a JSON schema defining an array of strings can be
-derived from the `BoolList.books` field with type `List<String>`, a valid JSON schema cannot be
-derived from a local variable of that same type, so the following will _not_ work:
+applies in other scopes. While, for example, a JSON schema defining an array of books can be derived
+from the `BookList.books` field with type `List<Book>`, a valid JSON schema cannot be derived from a
+local variable of that same type, so the following will _not_ work:
 
 ```java
-List<String> books = new ArrayList<>();
+List<Book> books = new ArrayList<>();
 
-StructuredChatCompletionCreateParams<BookList> params = ChatCompletionCreateParams.builder()
-        .responseFormat(books.class)
+StructuredChatCompletionCreateParams<List<Book>> params = ChatCompletionCreateParams.builder()
+        .responseFormat(books.getClass())
         // ...
         .build();
 ```
@@ -473,6 +473,23 @@ StructuredChatCompletionCreateParams<BookList> params = ChatCompletionCreatePara
 
 By following these guidelines, you can ensure that your structured outputs conform to the necessary
 schema requirements and minimize the risk of remote validation errors.
+
+### Usage with the Responses API
+
+_Structured Outputs_ are also supported for the Responses API. The usage is the same as described
+except where the Responses API differs slightly from the Chat Completions API. Pass the top-level
+class to `text(Class<T>)` when building the parameters and then access an instance of the class from
+the generated message content in the response.
+
+You can start building the parameters with an instance of
+[`ResponseCreateParams.Builder`](openai-java-core/src/main/kotlin/com/openai/models/responses/ResponseCreateParams.kt)
+or
+[`StructuredResponseCreateParams.Builder`](openai-java-core/src/main/kotlin/com/openai/models/responses/StructuredResponseCreateParams.kt).
+If you start with the former (which allows for more compact code) the builder type will change to
+the latter when `ResponseCreateParams.Builder.text(Class<T>)` is called.
+
+For a full example of the usage of _Structured Outputs_ with the Responses API, see
+[`ResponsesStructuredOutputsExample`](openai-java-example/src/main/java/com/openai/example/ResponsesStructuredOutputsExample.java).
 
 ### Annotating classes and JSON schemas
 

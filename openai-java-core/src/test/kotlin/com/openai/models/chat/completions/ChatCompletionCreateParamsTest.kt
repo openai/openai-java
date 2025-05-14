@@ -367,7 +367,7 @@ internal class ChatCompletionCreateParamsTest {
         val body = params.rawParams._body()
 
         assertThat(params).isInstanceOf(StructuredChatCompletionCreateParams::class.java)
-        assertThat(params.responseFormat).isEqualTo(X::class.java)
+        assertThat(params.responseType).isEqualTo(X::class.java)
         assertThat(body.messages())
             .containsExactly(
                 ChatCompletionMessageParam.ofDeveloper(

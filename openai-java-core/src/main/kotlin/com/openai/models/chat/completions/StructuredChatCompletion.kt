@@ -18,101 +18,101 @@ import java.util.Optional
  * @param T The type of the class to which the JSON data in the response will be deserialized.
  */
 class StructuredChatCompletion<T : Any>(
-    @get:JvmName("responseFormat") val responseFormat: Class<T>,
-    @get:JvmName("chatCompletion") val chatCompletion: ChatCompletion,
+    @get:JvmName("responseType") val responseType: Class<T>,
+    @get:JvmName("rawChatCompletion") val rawChatCompletion: ChatCompletion,
 ) {
     /** @see ChatCompletion.id */
-    fun id(): String = chatCompletion.id()
+    fun id(): String = rawChatCompletion.id()
 
     private val choices by lazy {
-        chatCompletion._choices().map { choices -> choices.map { Choice<T>(responseFormat, it) } }
+        rawChatCompletion._choices().map { choices -> choices.map { Choice<T>(responseType, it) } }
     }
 
     /** @see ChatCompletion.choices */
     fun choices(): List<Choice<T>> = choices.getRequired("choices")
 
     /** @see ChatCompletion.created */
-    fun created(): Long = chatCompletion.created()
+    fun created(): Long = rawChatCompletion.created()
 
     /** @see ChatCompletion.model */
-    fun model(): String = chatCompletion.model()
+    fun model(): String = rawChatCompletion.model()
 
     /** @see ChatCompletion._object_ */
-    fun _object_(): JsonValue = chatCompletion._object_()
+    fun _object_(): JsonValue = rawChatCompletion._object_()
 
     /** @see ChatCompletion.serviceTier */
-    fun serviceTier(): Optional<ServiceTier> = chatCompletion.serviceTier()
+    fun serviceTier(): Optional<ServiceTier> = rawChatCompletion.serviceTier()
 
     /** @see ChatCompletion.systemFingerprint */
-    fun systemFingerprint(): Optional<String> = chatCompletion.systemFingerprint()
+    fun systemFingerprint(): Optional<String> = rawChatCompletion.systemFingerprint()
 
     /** @see ChatCompletion.usage */
-    fun usage(): Optional<CompletionUsage> = chatCompletion.usage()
+    fun usage(): Optional<CompletionUsage> = rawChatCompletion.usage()
 
     /** @see ChatCompletion._id */
-    fun _id(): JsonField<String> = chatCompletion._id()
+    fun _id(): JsonField<String> = rawChatCompletion._id()
 
     /** @see ChatCompletion._choices */
     fun _choices(): JsonField<List<Choice<T>>> = choices
 
     /** @see ChatCompletion._created */
-    fun _created(): JsonField<Long> = chatCompletion._created()
+    fun _created(): JsonField<Long> = rawChatCompletion._created()
 
     /** @see ChatCompletion._model */
-    fun _model(): JsonField<String> = chatCompletion._model()
+    fun _model(): JsonField<String> = rawChatCompletion._model()
 
     /** @see ChatCompletion._serviceTier */
-    fun _serviceTier(): JsonField<ServiceTier> = chatCompletion._serviceTier()
+    fun _serviceTier(): JsonField<ServiceTier> = rawChatCompletion._serviceTier()
 
     /** @see ChatCompletion._systemFingerprint */
-    fun _systemFingerprint(): JsonField<String> = chatCompletion._systemFingerprint()
+    fun _systemFingerprint(): JsonField<String> = rawChatCompletion._systemFingerprint()
 
     /** @see ChatCompletion._usage */
-    fun _usage(): JsonField<CompletionUsage> = chatCompletion._usage()
+    fun _usage(): JsonField<CompletionUsage> = rawChatCompletion._usage()
 
     /** @see ChatCompletion._additionalProperties */
-    fun _additionalProperties(): Map<String, JsonValue> = chatCompletion._additionalProperties()
+    fun _additionalProperties(): Map<String, JsonValue> = rawChatCompletion._additionalProperties()
 
     class Choice<T : Any>
     internal constructor(
-        @get:JvmName("responseFormat") val responseFormat: Class<T>,
-        @get:JvmName("choice") val choice: ChatCompletion.Choice,
+        @get:JvmName("responseType") val responseType: Class<T>,
+        @get:JvmName("rawChoice") val rawChoice: ChatCompletion.Choice,
     ) {
         /** @see ChatCompletion.Choice.finishReason */
-        fun finishReason(): FinishReason = choice.finishReason()
+        fun finishReason(): FinishReason = rawChoice.finishReason()
 
         /** @see ChatCompletion.Choice.index */
-        fun index(): Long = choice.index()
+        fun index(): Long = rawChoice.index()
 
         /** @see ChatCompletion.Choice.logprobs */
-        fun logprobs(): Optional<Logprobs> = choice.logprobs()
+        fun logprobs(): Optional<Logprobs> = rawChoice.logprobs()
 
         /** @see ChatCompletion.Choice._finishReason */
-        fun _finishReason(): JsonField<FinishReason> = choice._finishReason()
+        fun _finishReason(): JsonField<FinishReason> = rawChoice._finishReason()
 
         private val message by lazy {
-            choice._message().map { StructuredChatCompletionMessage<T>(responseFormat, it) }
+            rawChoice._message().map { StructuredChatCompletionMessage<T>(responseType, it) }
         }
 
         /** @see ChatCompletion.Choice.message */
         fun message(): StructuredChatCompletionMessage<T> = message.getRequired("message")
 
         /** @see ChatCompletion.Choice._index */
-        fun _index(): JsonField<Long> = choice._index()
+        fun _index(): JsonField<Long> = rawChoice._index()
 
         /** @see ChatCompletion.Choice._logprobs */
-        fun _logprobs(): JsonField<Logprobs> = choice._logprobs()
+        fun _logprobs(): JsonField<Logprobs> = rawChoice._logprobs()
 
         /** @see ChatCompletion.Choice._message */
         fun _message(): JsonField<StructuredChatCompletionMessage<T>> = message
 
         /** @see ChatCompletion.Choice._additionalProperties */
-        fun _additionalProperties(): Map<String, JsonValue> = choice._additionalProperties()
+        fun _additionalProperties(): Map<String, JsonValue> = rawChoice._additionalProperties()
 
         /** @see ChatCompletion.Choice.validate */
         fun validate(): Choice<T> = apply {
             message().validate()
-            choice.validate()
+            rawChoice.validate()
         }
 
         /** @see ChatCompletion.Choice.isValid */
@@ -130,22 +130,22 @@ class StructuredChatCompletion<T : Any>(
             }
 
             return other is Choice<*> &&
-                responseFormat == other.responseFormat &&
-                choice == other.choice
+                responseType == other.responseType &&
+                rawChoice == other.rawChoice
         }
 
-        private val hashCode: Int by lazy { Objects.hash(responseFormat, choice) }
+        private val hashCode: Int by lazy { Objects.hash(responseType, rawChoice) }
 
         override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "${javaClass.simpleName}{responseFormat=$responseFormat, choice=$choice}"
+            "${javaClass.simpleName}{responseType=$responseType, rawChoice=$rawChoice}"
     }
 
     /** @see ChatCompletion.validate */
     fun validate() = apply {
         choices().forEach { it.validate() }
-        chatCompletion.validate()
+        rawChatCompletion.validate()
     }
 
     /** @see ChatCompletion.isValid */
@@ -163,14 +163,14 @@ class StructuredChatCompletion<T : Any>(
         }
 
         return other is StructuredChatCompletion<*> &&
-            responseFormat == other.responseFormat &&
-            chatCompletion == other.chatCompletion
+            responseType == other.responseType &&
+            rawChatCompletion == other.rawChatCompletion
     }
 
-    private val hashCode: Int by lazy { Objects.hash(responseFormat, chatCompletion) }
+    private val hashCode: Int by lazy { Objects.hash(responseType, rawChatCompletion) }
 
     override fun hashCode(): Int = hashCode
 
     override fun toString() =
-        "${javaClass.simpleName}{responseFormat=$responseFormat, chatCompletion=$chatCompletion}"
+        "${javaClass.simpleName}{responseType=$responseType, rawChatCompletion=$rawChatCompletion}"
 }

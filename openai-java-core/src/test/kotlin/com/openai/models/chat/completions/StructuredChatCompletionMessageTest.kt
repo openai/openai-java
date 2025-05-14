@@ -1,15 +1,16 @@
 package com.openai.models.chat.completions
 
+import com.openai.core.DelegationReadTestCase
+import com.openai.core.JSON_FIELD
+import com.openai.core.JSON_VALUE
 import com.openai.core.JsonField
-import com.openai.models.chat.completions.StructuredChatCompletionTest.Companion.DelegationReadTestCase
-import com.openai.models.chat.completions.StructuredChatCompletionTest.Companion.JSON_FIELD
-import com.openai.models.chat.completions.StructuredChatCompletionTest.Companion.JSON_VALUE
-import com.openai.models.chat.completions.StructuredChatCompletionTest.Companion.MESSAGE
-import com.openai.models.chat.completions.StructuredChatCompletionTest.Companion.OPTIONAL
-import com.openai.models.chat.completions.StructuredChatCompletionTest.Companion.X
-import com.openai.models.chat.completions.StructuredChatCompletionTest.Companion.checkOneDelegationRead
+import com.openai.core.OPTIONAL
+import com.openai.core.STRING
+import com.openai.core.X
+import com.openai.core.checkAllDelegation
+import com.openai.core.checkAllDelegatorReadFunctionsAreTested
+import com.openai.core.checkOneDelegationRead
 import java.util.Optional
-import kotlin.reflect.full.declaredFunctions
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
@@ -33,10 +34,13 @@ import org.mockito.kotlin.verify
  */
 internal class StructuredChatCompletionMessageTest {
     companion object {
-        // The list order follows the declaration order in `StructuredChatCompletionMessage` for
-        // easier maintenance. See `StructuredChatCompletionTest` for details on the values used.
+        private val MESSAGE =
+            ChatCompletionMessage.builder().content(STRING).refusal(STRING).build()
+
+        // The list order follows the declaration order in `ChatCompletionMessage` for easier
+        // maintenance.
         @JvmStatic
-        fun delegationTestCases() =
+        private fun delegationTestCases() =
             listOf(
                 // `content()` is a special case and has its own test function.
                 DelegationReadTestCase("refusal", OPTIONAL),
@@ -62,46 +66,30 @@ internal class StructuredChatCompletionMessageTest {
 
     // New instances of the `mockDelegate` and `delegator` are required for each test case (each
     // test case runs in its own instance of the test class).
-    val mockDelegate: ChatCompletionMessage = mock(ChatCompletionMessage::class.java)
-    val delegator = StructuredChatCompletionMessage<X>(X::class.java, mockDelegate)
+    private val mockDelegate: ChatCompletionMessage = mock(ChatCompletionMessage::class.java)
+    private val delegator = StructuredChatCompletionMessage<X>(X::class.java, mockDelegate)
 
     @Test
     fun allDelegateFunctionsExistInDelegator() {
-        StructuredChatCompletionTest.checkAllDelegation(
-            ChatCompletionMessage::class,
-            StructuredChatCompletionMessage::class,
-            "toBuilder",
-            "toParam",
-        )
+        checkAllDelegation(mockDelegate::class, delegator::class, "toBuilder", "toParam")
     }
 
     @Test
     fun allDelegatorFunctionsExistInDelegate() {
-        StructuredChatCompletionTest.checkAllDelegation(
-            StructuredChatCompletionMessage::class,
-            ChatCompletionMessage::class,
-        )
+        checkAllDelegation(delegator::class, mockDelegate::class)
     }
 
     @Test
     fun allDelegatorFunctionsAreTested() {
         // There are exceptional test cases for some functions. Most other functions are part of the
-        // list of those using the parameterized test.
-        val exceptionalTestedFns = setOf("content", "_content")
-        val testedFns = delegationTestCases().map { it.functionName }.toSet() + exceptionalTestedFns
-        // A few delegator functions do not delegate, so no test function is necessary.
-        val nonDelegatingFns = listOf("equals", "hashCode", "toString")
-
-        val delegatorFunctions = StructuredChatCompletionMessage::class.declaredFunctions
-
-        for (delegatorFunction in delegatorFunctions) {
-            assertThat(
-                    delegatorFunction.name in testedFns ||
-                        delegatorFunction.name in nonDelegatingFns
-                )
-                .describedAs("Delegation is not tested for function '${delegatorFunction.name}.")
-                .isTrue
-        }
+        // list of those using the parameterized test. A few delegator functions do not delegate, so
+        // no test function is necessary.
+        checkAllDelegatorReadFunctionsAreTested(
+            delegator::class,
+            delegationTestCases(),
+            exceptionalTestedFns = setOf("content", "_content"),
+            nonDelegatingFns = setOf("equals", "hashCode", "toString"),
+        )
     }
 
     @ParameterizedTest

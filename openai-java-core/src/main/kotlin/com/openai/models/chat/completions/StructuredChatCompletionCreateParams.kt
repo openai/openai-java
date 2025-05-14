@@ -4,9 +4,9 @@ import com.openai.core.JsonField
 import com.openai.core.JsonSchemaLocalValidation
 import com.openai.core.JsonValue
 import com.openai.core.checkRequired
-import com.openai.core.fromClass
 import com.openai.core.http.Headers
 import com.openai.core.http.QueryParams
+import com.openai.core.responseFormatFromClass
 import com.openai.models.ChatModel
 import com.openai.models.ReasoningEffort
 import java.util.Objects
@@ -14,16 +14,16 @@ import java.util.Optional
 
 /**
  * A wrapper for [ChatCompletionCreateParams] that provides a type-safe [Builder] that can record
- * the type of the [responseFormat] used to derive a JSON schema from an arbitrary class when using
- * the _Structured Outputs_ feature. When a JSON response is received, it is deserialized to am
- * instance of that type. See the SDK documentation for more details on _Structured Outputs_.
+ * the [responseType] used to derive a JSON schema from an arbitrary class when using the
+ * _Structured Outputs_ feature. When a JSON response is received, it is deserialized to am instance
+ * of that type. See the SDK documentation for more details on _Structured Outputs_.
  *
  * @param T The type of the class that will be used to derive the JSON schema in the request and to
  *   which the JSON response will be deserialized.
  */
 class StructuredChatCompletionCreateParams<T : Any>
 internal constructor(
-    @get:JvmName("responseFormat") val responseFormat: Class<T>,
+    @get:JvmName("responseType") val responseType: Class<T>,
     /**
      * The raw, underlying chat completion create parameters wrapped by this structured instance of
      * the parameters.
@@ -36,19 +36,19 @@ internal constructor(
     }
 
     class Builder<T : Any> internal constructor() {
-        private var responseFormat: Class<T>? = null
+        private var responseType: Class<T>? = null
         private var paramsBuilder = ChatCompletionCreateParams.builder()
 
         @JvmSynthetic
         internal fun wrap(
-            responseFormat: Class<T>,
+            responseType: Class<T>,
             paramsBuilder: ChatCompletionCreateParams.Builder,
             localValidation: JsonSchemaLocalValidation,
         ) = apply {
-            this.responseFormat = responseFormat
+            this.responseType = responseType
             this.paramsBuilder = paramsBuilder
             // Convert the class to a JSON schema and apply it to the delegate `Builder`.
-            responseFormat(responseFormat, localValidation)
+            responseFormat(responseType, localValidation)
         }
 
         /** Injects a given `ChatCompletionCreateParams.Builder`. For use only when testing. */
@@ -407,11 +407,11 @@ internal constructor(
          */
         @JvmOverloads
         fun responseFormat(
-            responseFormat: Class<T>,
+            responseType: Class<T>,
             localValidation: JsonSchemaLocalValidation = JsonSchemaLocalValidation.YES,
         ) = apply {
-            this.responseFormat = responseFormat
-            paramsBuilder.responseFormat(fromClass(responseFormat, localValidation))
+            this.responseType = responseType
+            paramsBuilder.responseFormat(responseFormatFromClass(responseType, localValidation))
         }
 
         /** @see ChatCompletionCreateParams.Builder.seed */
@@ -741,7 +741,7 @@ internal constructor(
          */
         fun build() =
             StructuredChatCompletionCreateParams<T>(
-                checkRequired("responseFormat", responseFormat),
+                checkRequired("responseType", responseType),
                 paramsBuilder.build(),
             )
     }
@@ -752,12 +752,14 @@ internal constructor(
         }
 
         return other is StructuredChatCompletionCreateParams<*> &&
-            responseFormat == other.responseFormat &&
+            responseType == other.responseType &&
             rawParams == other.rawParams
     }
 
-    override fun hashCode(): Int = Objects.hash(responseFormat, rawParams)
+    private val hashCode: Int by lazy { Objects.hash(responseType, rawParams) }
+
+    override fun hashCode(): Int = hashCode
 
     override fun toString() =
-        "${javaClass.simpleName}{responseFormat=$responseFormat, params=$rawParams}"
+        "${javaClass.simpleName}{responseType=$responseType, rawParams=$rawParams}"
 }
