@@ -346,7 +346,7 @@ and setting it on the input parameters. However, for greater convenience, a JSON
 be derived automatically from the structure of an arbitrary Java class. The JSON content from the
 response will then be converted automatically to an instance of that Java class. A full, working
 example of the use of Structured Outputs with arbitrary Java classes can be seen in
-[`StructuredOutputsClassExample`](openai-java-example/src/main/java/com/openai/example/StructuredOutputsClassExample.java).
+[`StructuredOutputsExample`](openai-java-example/src/main/java/com/openai/example/StructuredOutputsExample.java).
 
 Java classes can contain fields declared to be instances of other classes and can use collections:
 
