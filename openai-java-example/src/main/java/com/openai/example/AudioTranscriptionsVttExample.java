@@ -3,13 +3,14 @@ package com.openai.example;
 import com.openai.client.OpenAIClient;
 import com.openai.client.okhttp.OpenAIOkHttpClient;
 import com.openai.models.audio.AudioModel;
+import com.openai.models.audio.AudioResponseFormat;
 import com.openai.models.audio.transcriptions.Transcription;
 import com.openai.models.audio.transcriptions.TranscriptionCreateParams;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-public final class AudioTranscriptionsExample {
-    private AudioTranscriptionsExample() {}
+public final class AudioTranscriptionsVttExample {
+    private AudioTranscriptionsVttExample() {}
 
     public static void main(String[] args) throws Exception {
         // Configures using one of:
@@ -23,6 +24,7 @@ public final class AudioTranscriptionsExample {
         TranscriptionCreateParams createParams = TranscriptionCreateParams.builder()
                 .file(path)
                 .model(AudioModel.WHISPER_1)
+                .responseFormat(AudioResponseFormat.VTT)
                 .build();
 
         Transcription transcription =
