@@ -18,9 +18,13 @@ import java.util.Objects
 import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
-/** Deprecated in favor of LogsDataSourceConfig. */
-@Deprecated("deprecated")
-class EvalStoredCompletionsDataSourceConfig
+/**
+ * A LogsDataSourceConfig which specifies the metadata property of your logs query. This is usually
+ * metadata like `usecase=chatbot` or `prompt-version=v2`, etc. The schema returned by this data
+ * source config is used to defined what variables are available in your evals. `item` and `sample`
+ * are both defined when using this data source config.
+ */
+class EvalLogsDataSourceConfig
 private constructor(
     private val schema: JsonField<Schema>,
     private val type: JsonValue,
@@ -45,11 +49,11 @@ private constructor(
     fun schema(): Schema = schema.getRequired("schema")
 
     /**
-     * The type of data source. Always `stored-completions`.
+     * The type of data source. Always `logs`.
      *
      * Expected to always return the following:
      * ```java
-     * JsonValue.from("stored-completions")
+     * JsonValue.from("logs")
      * ```
      *
      * However, this method can be useful for debugging and logging (e.g. if the server responded
@@ -99,8 +103,7 @@ private constructor(
     companion object {
 
         /**
-         * Returns a mutable builder for constructing an instance of
-         * [EvalStoredCompletionsDataSourceConfig].
+         * Returns a mutable builder for constructing an instance of [EvalLogsDataSourceConfig].
          *
          * The following fields are required:
          * ```java
@@ -110,23 +113,20 @@ private constructor(
         @JvmStatic fun builder() = Builder()
     }
 
-    /** A builder for [EvalStoredCompletionsDataSourceConfig]. */
+    /** A builder for [EvalLogsDataSourceConfig]. */
     class Builder internal constructor() {
 
         private var schema: JsonField<Schema>? = null
-        private var type: JsonValue = JsonValue.from("stored-completions")
+        private var type: JsonValue = JsonValue.from("logs")
         private var metadata: JsonField<Metadata> = JsonMissing.of()
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
         @JvmSynthetic
-        internal fun from(
-            evalStoredCompletionsDataSourceConfig: EvalStoredCompletionsDataSourceConfig
-        ) = apply {
-            schema = evalStoredCompletionsDataSourceConfig.schema
-            type = evalStoredCompletionsDataSourceConfig.type
-            metadata = evalStoredCompletionsDataSourceConfig.metadata
-            additionalProperties =
-                evalStoredCompletionsDataSourceConfig.additionalProperties.toMutableMap()
+        internal fun from(evalLogsDataSourceConfig: EvalLogsDataSourceConfig) = apply {
+            schema = evalLogsDataSourceConfig.schema
+            type = evalLogsDataSourceConfig.type
+            metadata = evalLogsDataSourceConfig.metadata
+            additionalProperties = evalLogsDataSourceConfig.additionalProperties.toMutableMap()
         }
 
         /**
@@ -149,7 +149,7 @@ private constructor(
          * It is usually unnecessary to call this method because the field defaults to the
          * following:
          * ```java
-         * JsonValue.from("stored-completions")
+         * JsonValue.from("logs")
          * ```
          *
          * This method is primarily for setting the field to an undocumented or not yet supported
@@ -199,7 +199,7 @@ private constructor(
         }
 
         /**
-         * Returns an immutable instance of [EvalStoredCompletionsDataSourceConfig].
+         * Returns an immutable instance of [EvalLogsDataSourceConfig].
          *
          * Further updates to this [Builder] will not mutate the returned instance.
          *
@@ -210,8 +210,8 @@ private constructor(
          *
          * @throws IllegalStateException if any required field is unset.
          */
-        fun build(): EvalStoredCompletionsDataSourceConfig =
-            EvalStoredCompletionsDataSourceConfig(
+        fun build(): EvalLogsDataSourceConfig =
+            EvalLogsDataSourceConfig(
                 checkRequired("schema", schema),
                 type,
                 metadata,
@@ -221,14 +221,14 @@ private constructor(
 
     private var validated: Boolean = false
 
-    fun validate(): EvalStoredCompletionsDataSourceConfig = apply {
+    fun validate(): EvalLogsDataSourceConfig = apply {
         if (validated) {
             return@apply
         }
 
         schema().validate()
         _type().let {
-            if (it != JsonValue.from("stored-completions")) {
+            if (it != JsonValue.from("logs")) {
                 throw OpenAIInvalidDataException("'type' is invalid, received $it")
             }
         }
@@ -252,7 +252,7 @@ private constructor(
     @JvmSynthetic
     internal fun validity(): Int =
         (schema.asKnown().getOrNull()?.validity() ?: 0) +
-            type.let { if (it == JsonValue.from("stored-completions")) 1 else 0 } +
+            type.let { if (it == JsonValue.from("logs")) 1 else 0 } +
             (metadata.asKnown().getOrNull()?.validity() ?: 0)
 
     /**
@@ -474,7 +474,7 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is EvalStoredCompletionsDataSourceConfig && schema == other.schema && type == other.type && metadata == other.metadata && additionalProperties == other.additionalProperties /* spotless:on */
+        return /* spotless:off */ other is EvalLogsDataSourceConfig && schema == other.schema && type == other.type && metadata == other.metadata && additionalProperties == other.additionalProperties /* spotless:on */
     }
 
     /* spotless:off */
@@ -484,5 +484,5 @@ private constructor(
     override fun hashCode(): Int = hashCode
 
     override fun toString() =
-        "EvalStoredCompletionsDataSourceConfig{schema=$schema, type=$type, metadata=$metadata, additionalProperties=$additionalProperties}"
+        "EvalLogsDataSourceConfig{schema=$schema, type=$type, metadata=$metadata, additionalProperties=$additionalProperties}"
 }

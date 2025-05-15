@@ -2,15 +2,29 @@
 
 package com.openai.models.audio.transcriptions
 
+import com.fasterxml.jackson.annotation.JsonAnyGetter
+import com.fasterxml.jackson.annotation.JsonAnySetter
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonProperty
+import com.fasterxml.jackson.core.JsonGenerator
+import com.fasterxml.jackson.core.ObjectCodec
+import com.fasterxml.jackson.databind.JsonNode
+import com.fasterxml.jackson.databind.SerializerProvider
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize
+import com.fasterxml.jackson.databind.annotation.JsonSerialize
+import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
+import com.openai.core.BaseDeserializer
+import com.openai.core.BaseSerializer
 import com.openai.core.Enum
 import com.openai.core.ExcludeMissing
 import com.openai.core.JsonField
+import com.openai.core.JsonValue
 import com.openai.core.MultipartField
 import com.openai.core.Params
+import com.openai.core.allMaxBy
 import com.openai.core.checkKnown
 import com.openai.core.checkRequired
+import com.openai.core.getOrThrow
 import com.openai.core.http.Headers
 import com.openai.core.http.QueryParams
 import com.openai.core.toImmutable
@@ -19,10 +33,12 @@ import com.openai.models.audio.AudioModel
 import com.openai.models.audio.AudioResponseFormat
 import java.io.InputStream
 import java.nio.file.Path
+import java.util.Collections
 import java.util.Objects
 import java.util.Optional
 import kotlin.io.path.inputStream
 import kotlin.io.path.name
+import kotlin.jvm.optionals.getOrNull
 
 /** Transcribes audio into the input language. */
 class TranscriptionCreateParams
@@ -49,6 +65,17 @@ private constructor(
      *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
      */
     fun model(): AudioModel = body.model()
+
+    /**
+     * Controls how the audio is cut into chunks. When set to `"auto"`, the server first normalizes
+     * loudness and then uses voice activity detection (VAD) to choose boundaries. `server_vad`
+     * object can be provided to tweak VAD detection parameters manually. If unset, the audio is
+     * transcribed as a single block.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun chunkingStrategy(): Optional<ChunkingStrategy> = body.chunkingStrategy()
 
     /**
      * Additional information to include in the transcription response. `logprobs` will return the
@@ -127,6 +154,14 @@ private constructor(
      * Unlike [model], this method doesn't throw if the multipart field has an unexpected type.
      */
     fun _model(): MultipartField<AudioModel> = body._model()
+
+    /**
+     * Returns the raw multipart value of [chunkingStrategy].
+     *
+     * Unlike [chunkingStrategy], this method doesn't throw if the multipart field has an unexpected
+     * type.
+     */
+    fun _chunkingStrategy(): MultipartField<ChunkingStrategy> = body._chunkingStrategy()
 
     /**
      * Returns the raw multipart value of [include].
@@ -215,9 +250,9 @@ private constructor(
          * Otherwise, it's more convenient to use the top-level setters instead:
          * - [file]
          * - [model]
+         * - [chunkingStrategy]
          * - [include]
          * - [language]
-         * - [prompt]
          * - etc.
          */
         fun body(body: Body) = apply { this.body = body.toBuilder() }
@@ -271,6 +306,39 @@ private constructor(
          * method is primarily for setting the field to an undocumented or not yet supported value.
          */
         fun model(value: String) = apply { body.model(value) }
+
+        /**
+         * Controls how the audio is cut into chunks. When set to `"auto"`, the server first
+         * normalizes loudness and then uses voice activity detection (VAD) to choose boundaries.
+         * `server_vad` object can be provided to tweak VAD detection parameters manually. If unset,
+         * the audio is transcribed as a single block.
+         */
+        fun chunkingStrategy(chunkingStrategy: ChunkingStrategy?) = apply {
+            body.chunkingStrategy(chunkingStrategy)
+        }
+
+        /** Alias for calling [Builder.chunkingStrategy] with `chunkingStrategy.orElse(null)`. */
+        fun chunkingStrategy(chunkingStrategy: Optional<ChunkingStrategy>) =
+            chunkingStrategy(chunkingStrategy.getOrNull())
+
+        /**
+         * Sets [Builder.chunkingStrategy] to an arbitrary multipart value.
+         *
+         * You should usually call [Builder.chunkingStrategy] with a well-typed [ChunkingStrategy]
+         * value instead. This method is primarily for setting the field to an undocumented or not
+         * yet supported value.
+         */
+        fun chunkingStrategy(chunkingStrategy: MultipartField<ChunkingStrategy>) = apply {
+            body.chunkingStrategy(chunkingStrategy)
+        }
+
+        /** Alias for calling [chunkingStrategy] with `ChunkingStrategy.ofAuto()`. */
+        fun chunkingStrategyAuto() = apply { body.chunkingStrategyAuto() }
+
+        /** Alias for calling [chunkingStrategy] with `ChunkingStrategy.ofVadConfig(vadConfig)`. */
+        fun chunkingStrategy(vadConfig: ChunkingStrategy.VadConfig) = apply {
+            body.chunkingStrategy(vadConfig)
+        }
 
         /**
          * Additional information to include in the transcription response. `logprobs` will return
@@ -521,6 +589,7 @@ private constructor(
         mapOf(
                 "file" to _file(),
                 "model" to _model(),
+                "chunking_strategy" to _chunkingStrategy(),
                 "include" to _include(),
                 "language" to _language(),
                 "prompt" to _prompt(),
@@ -538,6 +607,7 @@ private constructor(
     private constructor(
         private val file: MultipartField<InputStream>,
         private val model: MultipartField<AudioModel>,
+        private val chunkingStrategy: MultipartField<ChunkingStrategy>,
         private val include: MultipartField<List<TranscriptionInclude>>,
         private val language: MultipartField<String>,
         private val prompt: MultipartField<String>,
@@ -563,6 +633,18 @@ private constructor(
          *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
          */
         fun model(): AudioModel = model.value.getRequired("model")
+
+        /**
+         * Controls how the audio is cut into chunks. When set to `"auto"`, the server first
+         * normalizes loudness and then uses voice activity detection (VAD) to choose boundaries.
+         * `server_vad` object can be provided to tweak VAD detection parameters manually. If unset,
+         * the audio is transcribed as a single block.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun chunkingStrategy(): Optional<ChunkingStrategy> =
+            chunkingStrategy.value.getOptional("chunking_strategy")
 
         /**
          * Additional information to include in the transcription response. `logprobs` will return
@@ -645,6 +727,16 @@ private constructor(
         @JsonProperty("model") @ExcludeMissing fun _model(): MultipartField<AudioModel> = model
 
         /**
+         * Returns the raw multipart value of [chunkingStrategy].
+         *
+         * Unlike [chunkingStrategy], this method doesn't throw if the multipart field has an
+         * unexpected type.
+         */
+        @JsonProperty("chunking_strategy")
+        @ExcludeMissing
+        fun _chunkingStrategy(): MultipartField<ChunkingStrategy> = chunkingStrategy
+
+        /**
          * Returns the raw multipart value of [include].
          *
          * Unlike [include], this method doesn't throw if the multipart field has an unexpected
@@ -721,6 +813,7 @@ private constructor(
 
             private var file: MultipartField<InputStream>? = null
             private var model: MultipartField<AudioModel>? = null
+            private var chunkingStrategy: MultipartField<ChunkingStrategy> = MultipartField.of(null)
             private var include: MultipartField<MutableList<TranscriptionInclude>>? = null
             private var language: MultipartField<String> = MultipartField.of(null)
             private var prompt: MultipartField<String> = MultipartField.of(null)
@@ -734,6 +827,7 @@ private constructor(
             internal fun from(body: Body) = apply {
                 file = body.file
                 model = body.model
+                chunkingStrategy = body.chunkingStrategy
                 include = body.include.map { it.toMutableList() }
                 language = body.language
                 prompt = body.prompt
@@ -799,6 +893,41 @@ private constructor(
              * value.
              */
             fun model(value: String) = model(AudioModel.of(value))
+
+            /**
+             * Controls how the audio is cut into chunks. When set to `"auto"`, the server first
+             * normalizes loudness and then uses voice activity detection (VAD) to choose
+             * boundaries. `server_vad` object can be provided to tweak VAD detection parameters
+             * manually. If unset, the audio is transcribed as a single block.
+             */
+            fun chunkingStrategy(chunkingStrategy: ChunkingStrategy?) =
+                chunkingStrategy(MultipartField.of(chunkingStrategy))
+
+            /**
+             * Alias for calling [Builder.chunkingStrategy] with `chunkingStrategy.orElse(null)`.
+             */
+            fun chunkingStrategy(chunkingStrategy: Optional<ChunkingStrategy>) =
+                chunkingStrategy(chunkingStrategy.getOrNull())
+
+            /**
+             * Sets [Builder.chunkingStrategy] to an arbitrary multipart value.
+             *
+             * You should usually call [Builder.chunkingStrategy] with a well-typed
+             * [ChunkingStrategy] value instead. This method is primarily for setting the field to
+             * an undocumented or not yet supported value.
+             */
+            fun chunkingStrategy(chunkingStrategy: MultipartField<ChunkingStrategy>) = apply {
+                this.chunkingStrategy = chunkingStrategy
+            }
+
+            /** Alias for calling [chunkingStrategy] with `ChunkingStrategy.ofAuto()`. */
+            fun chunkingStrategyAuto() = chunkingStrategy(ChunkingStrategy.ofAuto())
+
+            /**
+             * Alias for calling [chunkingStrategy] with `ChunkingStrategy.ofVadConfig(vadConfig)`.
+             */
+            fun chunkingStrategy(vadConfig: ChunkingStrategy.VadConfig) =
+                chunkingStrategy(ChunkingStrategy.ofVadConfig(vadConfig))
 
             /**
              * Additional information to include in the transcription response. `logprobs` will
@@ -953,6 +1082,7 @@ private constructor(
                 Body(
                     checkRequired("file", file),
                     checkRequired("model", model),
+                    chunkingStrategy,
                     (include ?: MultipartField.of(null)).map { it.toImmutable() },
                     language,
                     prompt,
@@ -971,6 +1101,7 @@ private constructor(
 
             file()
             model().validate()
+            chunkingStrategy().ifPresent { it.validate() }
             include().ifPresent { it.forEach { it.validate() } }
             language()
             prompt()
@@ -993,17 +1124,612 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is Body && file == other.file && model == other.model && include == other.include && language == other.language && prompt == other.prompt && responseFormat == other.responseFormat && temperature == other.temperature && timestampGranularities == other.timestampGranularities /* spotless:on */
+            return /* spotless:off */ other is Body && file == other.file && model == other.model && chunkingStrategy == other.chunkingStrategy && include == other.include && language == other.language && prompt == other.prompt && responseFormat == other.responseFormat && temperature == other.temperature && timestampGranularities == other.timestampGranularities /* spotless:on */
         }
 
         /* spotless:off */
-        private val hashCode: Int by lazy { Objects.hash(file, model, include, language, prompt, responseFormat, temperature, timestampGranularities) }
+        private val hashCode: Int by lazy { Objects.hash(file, model, chunkingStrategy, include, language, prompt, responseFormat, temperature, timestampGranularities) }
         /* spotless:on */
 
         override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "Body{file=$file, model=$model, include=$include, language=$language, prompt=$prompt, responseFormat=$responseFormat, temperature=$temperature, timestampGranularities=$timestampGranularities}"
+            "Body{file=$file, model=$model, chunkingStrategy=$chunkingStrategy, include=$include, language=$language, prompt=$prompt, responseFormat=$responseFormat, temperature=$temperature, timestampGranularities=$timestampGranularities}"
+    }
+
+    /**
+     * Controls how the audio is cut into chunks. When set to `"auto"`, the server first normalizes
+     * loudness and then uses voice activity detection (VAD) to choose boundaries. `server_vad`
+     * object can be provided to tweak VAD detection parameters manually. If unset, the audio is
+     * transcribed as a single block.
+     */
+    @JsonDeserialize(using = ChunkingStrategy.Deserializer::class)
+    @JsonSerialize(using = ChunkingStrategy.Serializer::class)
+    class ChunkingStrategy
+    private constructor(
+        private val auto: JsonValue? = null,
+        private val vadConfig: VadConfig? = null,
+        private val _json: JsonValue? = null,
+    ) {
+
+        /** Automatically set chunking parameters based on the audio. Must be set to `"auto"`. */
+        fun auto(): Optional<JsonValue> = Optional.ofNullable(auto)
+
+        fun vadConfig(): Optional<VadConfig> = Optional.ofNullable(vadConfig)
+
+        fun isAuto(): Boolean = auto != null
+
+        fun isVadConfig(): Boolean = vadConfig != null
+
+        /** Automatically set chunking parameters based on the audio. Must be set to `"auto"`. */
+        fun asAuto(): JsonValue = auto.getOrThrow("auto")
+
+        fun asVadConfig(): VadConfig = vadConfig.getOrThrow("vadConfig")
+
+        fun _json(): Optional<JsonValue> = Optional.ofNullable(_json)
+
+        fun <T> accept(visitor: Visitor<T>): T =
+            when {
+                auto != null -> visitor.visitAuto(auto)
+                vadConfig != null -> visitor.visitVadConfig(vadConfig)
+                else -> visitor.unknown(_json)
+            }
+
+        private var validated: Boolean = false
+
+        fun validate(): ChunkingStrategy = apply {
+            if (validated) {
+                return@apply
+            }
+
+            accept(
+                object : Visitor<Unit> {
+                    override fun visitAuto(auto: JsonValue) {
+                        auto.let {
+                            if (it != JsonValue.from("auto")) {
+                                throw OpenAIInvalidDataException("'auto' is invalid, received $it")
+                            }
+                        }
+                    }
+
+                    override fun visitVadConfig(vadConfig: VadConfig) {
+                        vadConfig.validate()
+                    }
+                }
+            )
+            validated = true
+        }
+
+        fun isValid(): Boolean =
+            try {
+                validate()
+                true
+            } catch (e: OpenAIInvalidDataException) {
+                false
+            }
+
+        /**
+         * Returns a score indicating how many valid values are contained in this object
+         * recursively.
+         *
+         * Used for best match union deserialization.
+         */
+        @JvmSynthetic
+        internal fun validity(): Int =
+            accept(
+                object : Visitor<Int> {
+                    override fun visitAuto(auto: JsonValue) =
+                        auto.let { if (it == JsonValue.from("auto")) 1 else 0 }
+
+                    override fun visitVadConfig(vadConfig: VadConfig) = vadConfig.validity()
+
+                    override fun unknown(json: JsonValue?) = 0
+                }
+            )
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) {
+                return true
+            }
+
+            return /* spotless:off */ other is ChunkingStrategy && auto == other.auto && vadConfig == other.vadConfig /* spotless:on */
+        }
+
+        override fun hashCode(): Int = /* spotless:off */ Objects.hash(auto, vadConfig) /* spotless:on */
+
+        override fun toString(): String =
+            when {
+                auto != null -> "ChunkingStrategy{auto=$auto}"
+                vadConfig != null -> "ChunkingStrategy{vadConfig=$vadConfig}"
+                _json != null -> "ChunkingStrategy{_unknown=$_json}"
+                else -> throw IllegalStateException("Invalid ChunkingStrategy")
+            }
+
+        companion object {
+
+            /**
+             * Automatically set chunking parameters based on the audio. Must be set to `"auto"`.
+             */
+            @JvmStatic fun ofAuto() = ChunkingStrategy(auto = JsonValue.from("auto"))
+
+            @JvmStatic
+            fun ofVadConfig(vadConfig: VadConfig) = ChunkingStrategy(vadConfig = vadConfig)
+        }
+
+        /**
+         * An interface that defines how to map each variant of [ChunkingStrategy] to a value of
+         * type [T].
+         */
+        interface Visitor<out T> {
+
+            /**
+             * Automatically set chunking parameters based on the audio. Must be set to `"auto"`.
+             */
+            fun visitAuto(auto: JsonValue): T
+
+            fun visitVadConfig(vadConfig: VadConfig): T
+
+            /**
+             * Maps an unknown variant of [ChunkingStrategy] to a value of type [T].
+             *
+             * An instance of [ChunkingStrategy] can contain an unknown variant if it was
+             * deserialized from data that doesn't match any known variant. For example, if the SDK
+             * is on an older version than the API, then the API may respond with new variants that
+             * the SDK is unaware of.
+             *
+             * @throws OpenAIInvalidDataException in the default implementation.
+             */
+            fun unknown(json: JsonValue?): T {
+                throw OpenAIInvalidDataException("Unknown ChunkingStrategy: $json")
+            }
+        }
+
+        internal class Deserializer : BaseDeserializer<ChunkingStrategy>(ChunkingStrategy::class) {
+
+            override fun ObjectCodec.deserialize(node: JsonNode): ChunkingStrategy {
+                val json = JsonValue.fromJsonNode(node)
+
+                val bestMatches =
+                    sequenceOf(
+                            tryDeserialize(node, jacksonTypeRef<JsonValue>())
+                                ?.let { ChunkingStrategy(auto = it, _json = json) }
+                                ?.takeIf { it.isValid() },
+                            tryDeserialize(node, jacksonTypeRef<VadConfig>())?.let {
+                                ChunkingStrategy(vadConfig = it, _json = json)
+                            },
+                        )
+                        .filterNotNull()
+                        .allMaxBy { it.validity() }
+                        .toList()
+                return when (bestMatches.size) {
+                    // This can happen if what we're deserializing is completely incompatible with
+                    // all the possible variants (e.g. deserializing from array).
+                    0 -> ChunkingStrategy(_json = json)
+                    1 -> bestMatches.single()
+                    // If there's more than one match with the highest validity, then use the first
+                    // completely valid match, or simply the first match if none are completely
+                    // valid.
+                    else -> bestMatches.firstOrNull { it.isValid() } ?: bestMatches.first()
+                }
+            }
+        }
+
+        internal class Serializer : BaseSerializer<ChunkingStrategy>(ChunkingStrategy::class) {
+
+            override fun serialize(
+                value: ChunkingStrategy,
+                generator: JsonGenerator,
+                provider: SerializerProvider,
+            ) {
+                when {
+                    value.auto != null -> generator.writeObject(value.auto)
+                    value.vadConfig != null -> generator.writeObject(value.vadConfig)
+                    value._json != null -> generator.writeObject(value._json)
+                    else -> throw IllegalStateException("Invalid ChunkingStrategy")
+                }
+            }
+        }
+
+        class VadConfig
+        private constructor(
+            private val type: MultipartField<Type>,
+            private val prefixPaddingMs: MultipartField<Long>,
+            private val silenceDurationMs: MultipartField<Long>,
+            private val threshold: MultipartField<Double>,
+            private val additionalProperties: MutableMap<String, JsonValue>,
+        ) {
+
+            /**
+             * Must be set to `server_vad` to enable manual chunking using server side VAD.
+             *
+             * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+             *   unexpectedly missing or null (e.g. if the server responded with an unexpected
+             *   value).
+             */
+            fun type(): Type = type.value.getRequired("type")
+
+            /**
+             * Amount of audio to include before the VAD detected speech (in milliseconds).
+             *
+             * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if
+             *   the server responded with an unexpected value).
+             */
+            fun prefixPaddingMs(): Optional<Long> =
+                prefixPaddingMs.value.getOptional("prefix_padding_ms")
+
+            /**
+             * Duration of silence to detect speech stop (in milliseconds). With shorter values the
+             * model will respond more quickly, but may jump in on short pauses from the user.
+             *
+             * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if
+             *   the server responded with an unexpected value).
+             */
+            fun silenceDurationMs(): Optional<Long> =
+                silenceDurationMs.value.getOptional("silence_duration_ms")
+
+            /**
+             * Sensitivity threshold (0.0 to 1.0) for voice activity detection. A higher threshold
+             * will require louder audio to activate the model, and thus might perform better in
+             * noisy environments.
+             *
+             * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if
+             *   the server responded with an unexpected value).
+             */
+            fun threshold(): Optional<Double> = threshold.value.getOptional("threshold")
+
+            /**
+             * Returns the raw multipart value of [type].
+             *
+             * Unlike [type], this method doesn't throw if the multipart field has an unexpected
+             * type.
+             */
+            @JsonProperty("type") @ExcludeMissing fun _type(): MultipartField<Type> = type
+
+            /**
+             * Returns the raw multipart value of [prefixPaddingMs].
+             *
+             * Unlike [prefixPaddingMs], this method doesn't throw if the multipart field has an
+             * unexpected type.
+             */
+            @JsonProperty("prefix_padding_ms")
+            @ExcludeMissing
+            fun _prefixPaddingMs(): MultipartField<Long> = prefixPaddingMs
+
+            /**
+             * Returns the raw multipart value of [silenceDurationMs].
+             *
+             * Unlike [silenceDurationMs], this method doesn't throw if the multipart field has an
+             * unexpected type.
+             */
+            @JsonProperty("silence_duration_ms")
+            @ExcludeMissing
+            fun _silenceDurationMs(): MultipartField<Long> = silenceDurationMs
+
+            /**
+             * Returns the raw multipart value of [threshold].
+             *
+             * Unlike [threshold], this method doesn't throw if the multipart field has an
+             * unexpected type.
+             */
+            @JsonProperty("threshold")
+            @ExcludeMissing
+            fun _threshold(): MultipartField<Double> = threshold
+
+            @JsonAnySetter
+            private fun putAdditionalProperty(key: String, value: JsonValue) {
+                additionalProperties.put(key, value)
+            }
+
+            @JsonAnyGetter
+            @ExcludeMissing
+            fun _additionalProperties(): Map<String, JsonValue> =
+                Collections.unmodifiableMap(additionalProperties)
+
+            fun toBuilder() = Builder().from(this)
+
+            companion object {
+
+                /**
+                 * Returns a mutable builder for constructing an instance of [VadConfig].
+                 *
+                 * The following fields are required:
+                 * ```java
+                 * .type()
+                 * ```
+                 */
+                @JvmStatic fun builder() = Builder()
+            }
+
+            /** A builder for [VadConfig]. */
+            class Builder internal constructor() {
+
+                private var type: MultipartField<Type>? = null
+                private var prefixPaddingMs: MultipartField<Long> = MultipartField.of(null)
+                private var silenceDurationMs: MultipartField<Long> = MultipartField.of(null)
+                private var threshold: MultipartField<Double> = MultipartField.of(null)
+                private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
+
+                @JvmSynthetic
+                internal fun from(vadConfig: VadConfig) = apply {
+                    type = vadConfig.type
+                    prefixPaddingMs = vadConfig.prefixPaddingMs
+                    silenceDurationMs = vadConfig.silenceDurationMs
+                    threshold = vadConfig.threshold
+                    additionalProperties = vadConfig.additionalProperties.toMutableMap()
+                }
+
+                /** Must be set to `server_vad` to enable manual chunking using server side VAD. */
+                fun type(type: Type) = type(MultipartField.of(type))
+
+                /**
+                 * Sets [Builder.type] to an arbitrary multipart value.
+                 *
+                 * You should usually call [Builder.type] with a well-typed [Type] value instead.
+                 * This method is primarily for setting the field to an undocumented or not yet
+                 * supported value.
+                 */
+                fun type(type: MultipartField<Type>) = apply { this.type = type }
+
+                /** Amount of audio to include before the VAD detected speech (in milliseconds). */
+                fun prefixPaddingMs(prefixPaddingMs: Long) =
+                    prefixPaddingMs(MultipartField.of(prefixPaddingMs))
+
+                /**
+                 * Sets [Builder.prefixPaddingMs] to an arbitrary multipart value.
+                 *
+                 * You should usually call [Builder.prefixPaddingMs] with a well-typed [Long] value
+                 * instead. This method is primarily for setting the field to an undocumented or not
+                 * yet supported value.
+                 */
+                fun prefixPaddingMs(prefixPaddingMs: MultipartField<Long>) = apply {
+                    this.prefixPaddingMs = prefixPaddingMs
+                }
+
+                /**
+                 * Duration of silence to detect speech stop (in milliseconds). With shorter values
+                 * the model will respond more quickly, but may jump in on short pauses from the
+                 * user.
+                 */
+                fun silenceDurationMs(silenceDurationMs: Long) =
+                    silenceDurationMs(MultipartField.of(silenceDurationMs))
+
+                /**
+                 * Sets [Builder.silenceDurationMs] to an arbitrary multipart value.
+                 *
+                 * You should usually call [Builder.silenceDurationMs] with a well-typed [Long]
+                 * value instead. This method is primarily for setting the field to an undocumented
+                 * or not yet supported value.
+                 */
+                fun silenceDurationMs(silenceDurationMs: MultipartField<Long>) = apply {
+                    this.silenceDurationMs = silenceDurationMs
+                }
+
+                /**
+                 * Sensitivity threshold (0.0 to 1.0) for voice activity detection. A higher
+                 * threshold will require louder audio to activate the model, and thus might perform
+                 * better in noisy environments.
+                 */
+                fun threshold(threshold: Double) = threshold(MultipartField.of(threshold))
+
+                /**
+                 * Sets [Builder.threshold] to an arbitrary multipart value.
+                 *
+                 * You should usually call [Builder.threshold] with a well-typed [Double] value
+                 * instead. This method is primarily for setting the field to an undocumented or not
+                 * yet supported value.
+                 */
+                fun threshold(threshold: MultipartField<Double>) = apply {
+                    this.threshold = threshold
+                }
+
+                fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                    this.additionalProperties.clear()
+                    putAllAdditionalProperties(additionalProperties)
+                }
+
+                fun putAdditionalProperty(key: String, value: JsonValue) = apply {
+                    additionalProperties.put(key, value)
+                }
+
+                fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) =
+                    apply {
+                        this.additionalProperties.putAll(additionalProperties)
+                    }
+
+                fun removeAdditionalProperty(key: String) = apply {
+                    additionalProperties.remove(key)
+                }
+
+                fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                    keys.forEach(::removeAdditionalProperty)
+                }
+
+                /**
+                 * Returns an immutable instance of [VadConfig].
+                 *
+                 * Further updates to this [Builder] will not mutate the returned instance.
+                 *
+                 * The following fields are required:
+                 * ```java
+                 * .type()
+                 * ```
+                 *
+                 * @throws IllegalStateException if any required field is unset.
+                 */
+                fun build(): VadConfig =
+                    VadConfig(
+                        checkRequired("type", type),
+                        prefixPaddingMs,
+                        silenceDurationMs,
+                        threshold,
+                        additionalProperties.toMutableMap(),
+                    )
+            }
+
+            private var validated: Boolean = false
+
+            fun validate(): VadConfig = apply {
+                if (validated) {
+                    return@apply
+                }
+
+                type().validate()
+                prefixPaddingMs()
+                silenceDurationMs()
+                threshold()
+                validated = true
+            }
+
+            fun isValid(): Boolean =
+                try {
+                    validate()
+                    true
+                } catch (e: OpenAIInvalidDataException) {
+                    false
+                }
+
+            /** Must be set to `server_vad` to enable manual chunking using server side VAD. */
+            class Type @JsonCreator private constructor(private val value: JsonField<String>) :
+                Enum {
+
+                /**
+                 * Returns this class instance's raw value.
+                 *
+                 * This is usually only useful if this instance was deserialized from data that
+                 * doesn't match any known member, and you want to know that value. For example, if
+                 * the SDK is on an older version than the API, then the API may respond with new
+                 * members that the SDK is unaware of.
+                 */
+                @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
+
+                companion object {
+
+                    @JvmField val SERVER_VAD = of("server_vad")
+
+                    @JvmStatic fun of(value: String) = Type(JsonField.of(value))
+                }
+
+                /** An enum containing [Type]'s known values. */
+                enum class Known {
+                    SERVER_VAD
+                }
+
+                /**
+                 * An enum containing [Type]'s known values, as well as an [_UNKNOWN] member.
+                 *
+                 * An instance of [Type] can contain an unknown value in a couple of cases:
+                 * - It was deserialized from data that doesn't match any known member. For example,
+                 *   if the SDK is on an older version than the API, then the API may respond with
+                 *   new members that the SDK is unaware of.
+                 * - It was constructed with an arbitrary value using the [of] method.
+                 */
+                enum class Value {
+                    SERVER_VAD,
+                    /**
+                     * An enum member indicating that [Type] was instantiated with an unknown value.
+                     */
+                    _UNKNOWN,
+                }
+
+                /**
+                 * Returns an enum member corresponding to this class instance's value, or
+                 * [Value._UNKNOWN] if the class was instantiated with an unknown value.
+                 *
+                 * Use the [known] method instead if you're certain the value is always known or if
+                 * you want to throw for the unknown case.
+                 */
+                fun value(): Value =
+                    when (this) {
+                        SERVER_VAD -> Value.SERVER_VAD
+                        else -> Value._UNKNOWN
+                    }
+
+                /**
+                 * Returns an enum member corresponding to this class instance's value.
+                 *
+                 * Use the [value] method instead if you're uncertain the value is always known and
+                 * don't want to throw for the unknown case.
+                 *
+                 * @throws OpenAIInvalidDataException if this class instance's value is a not a
+                 *   known member.
+                 */
+                fun known(): Known =
+                    when (this) {
+                        SERVER_VAD -> Known.SERVER_VAD
+                        else -> throw OpenAIInvalidDataException("Unknown Type: $value")
+                    }
+
+                /**
+                 * Returns this class instance's primitive wire representation.
+                 *
+                 * This differs from the [toString] method because that method is primarily for
+                 * debugging and generally doesn't throw.
+                 *
+                 * @throws OpenAIInvalidDataException if this class instance's value does not have
+                 *   the expected primitive type.
+                 */
+                fun asString(): String =
+                    _value().asString().orElseThrow {
+                        OpenAIInvalidDataException("Value is not a String")
+                    }
+
+                private var validated: Boolean = false
+
+                fun validate(): Type = apply {
+                    if (validated) {
+                        return@apply
+                    }
+
+                    known()
+                    validated = true
+                }
+
+                fun isValid(): Boolean =
+                    try {
+                        validate()
+                        true
+                    } catch (e: OpenAIInvalidDataException) {
+                        false
+                    }
+
+                /**
+                 * Returns a score indicating how many valid values are contained in this object
+                 * recursively.
+                 *
+                 * Used for best match union deserialization.
+                 */
+                @JvmSynthetic internal fun validity(): Int = if (value() == Value._UNKNOWN) 0 else 1
+
+                override fun equals(other: Any?): Boolean {
+                    if (this === other) {
+                        return true
+                    }
+
+                    return /* spotless:off */ other is Type && value == other.value /* spotless:on */
+                }
+
+                override fun hashCode() = value.hashCode()
+
+                override fun toString() = value.toString()
+            }
+
+            override fun equals(other: Any?): Boolean {
+                if (this === other) {
+                    return true
+                }
+
+                return /* spotless:off */ other is VadConfig && type == other.type && prefixPaddingMs == other.prefixPaddingMs && silenceDurationMs == other.silenceDurationMs && threshold == other.threshold && additionalProperties == other.additionalProperties /* spotless:on */
+            }
+
+            /* spotless:off */
+            private val hashCode: Int by lazy { Objects.hash(type, prefixPaddingMs, silenceDurationMs, threshold, additionalProperties) }
+            /* spotless:on */
+
+            override fun hashCode(): Int = hashCode
+
+            override fun toString() =
+                "VadConfig{type=$type, prefixPaddingMs=$prefixPaddingMs, silenceDurationMs=$silenceDurationMs, threshold=$threshold, additionalProperties=$additionalProperties}"
+        }
     }
 
     class TimestampGranularity

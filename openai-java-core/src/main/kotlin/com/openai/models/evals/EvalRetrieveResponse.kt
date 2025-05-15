@@ -297,10 +297,26 @@ private constructor(
         fun customDataSourceConfig(schema: EvalCustomDataSourceConfig.Schema) =
             dataSourceConfig(EvalCustomDataSourceConfig.builder().schema(schema).build())
 
+        /** Alias for calling [dataSourceConfig] with `DataSourceConfig.ofLogs(logs)`. */
+        fun dataSourceConfig(logs: EvalLogsDataSourceConfig) =
+            dataSourceConfig(DataSourceConfig.ofLogs(logs))
+
+        /**
+         * Alias for calling [dataSourceConfig] with the following:
+         * ```java
+         * EvalLogsDataSourceConfig.builder()
+         *     .schema(schema)
+         *     .build()
+         * ```
+         */
+        fun logsDataSourceConfig(schema: EvalLogsDataSourceConfig.Schema) =
+            dataSourceConfig(EvalLogsDataSourceConfig.builder().schema(schema).build())
+
         /**
          * Alias for calling [dataSourceConfig] with
          * `DataSourceConfig.ofStoredCompletions(storedCompletions)`.
          */
+        @Deprecated("deprecated")
         fun dataSourceConfig(storedCompletions: EvalStoredCompletionsDataSourceConfig) =
             dataSourceConfig(DataSourceConfig.ofStoredCompletions(storedCompletions))
 
@@ -312,6 +328,7 @@ private constructor(
          *     .build()
          * ```
          */
+        @Deprecated("deprecated")
         fun storedCompletionsDataSourceConfig(
             schema: EvalStoredCompletionsDataSourceConfig.Schema
         ) = dataSourceConfig(EvalStoredCompletionsDataSourceConfig.builder().schema(schema).build())
@@ -528,6 +545,7 @@ private constructor(
     class DataSourceConfig
     private constructor(
         private val custom: EvalCustomDataSourceConfig? = null,
+        private val logs: EvalLogsDataSourceConfig? = null,
         private val storedCompletions: EvalStoredCompletionsDataSourceConfig? = null,
         private val _json: JsonValue? = null,
     ) {
@@ -541,18 +559,23 @@ private constructor(
         fun custom(): Optional<EvalCustomDataSourceConfig> = Optional.ofNullable(custom)
 
         /**
-         * A StoredCompletionsDataSourceConfig which specifies the metadata property of your stored
-         * completions query. This is usually metadata like `usecase=chatbot` or
-         * `prompt-version=v2`, etc. The schema returned by this data source config is used to
-         * defined what variables are available in your evals. `item` and `sample` are both defined
-         * when using this data source config.
+         * A LogsDataSourceConfig which specifies the metadata property of your logs query. This is
+         * usually metadata like `usecase=chatbot` or `prompt-version=v2`, etc. The schema returned
+         * by this data source config is used to defined what variables are available in your evals.
+         * `item` and `sample` are both defined when using this data source config.
          */
+        fun logs(): Optional<EvalLogsDataSourceConfig> = Optional.ofNullable(logs)
+
+        /** Deprecated in favor of LogsDataSourceConfig. */
+        @Deprecated("deprecated")
         fun storedCompletions(): Optional<EvalStoredCompletionsDataSourceConfig> =
             Optional.ofNullable(storedCompletions)
 
         fun isCustom(): Boolean = custom != null
 
-        fun isStoredCompletions(): Boolean = storedCompletions != null
+        fun isLogs(): Boolean = logs != null
+
+        @Deprecated("deprecated") fun isStoredCompletions(): Boolean = storedCompletions != null
 
         /**
          * A CustomDataSourceConfig which specifies the schema of your `item` and optionally
@@ -563,12 +586,15 @@ private constructor(
         fun asCustom(): EvalCustomDataSourceConfig = custom.getOrThrow("custom")
 
         /**
-         * A StoredCompletionsDataSourceConfig which specifies the metadata property of your stored
-         * completions query. This is usually metadata like `usecase=chatbot` or
-         * `prompt-version=v2`, etc. The schema returned by this data source config is used to
-         * defined what variables are available in your evals. `item` and `sample` are both defined
-         * when using this data source config.
+         * A LogsDataSourceConfig which specifies the metadata property of your logs query. This is
+         * usually metadata like `usecase=chatbot` or `prompt-version=v2`, etc. The schema returned
+         * by this data source config is used to defined what variables are available in your evals.
+         * `item` and `sample` are both defined when using this data source config.
          */
+        fun asLogs(): EvalLogsDataSourceConfig = logs.getOrThrow("logs")
+
+        /** Deprecated in favor of LogsDataSourceConfig. */
+        @Deprecated("deprecated")
         fun asStoredCompletions(): EvalStoredCompletionsDataSourceConfig =
             storedCompletions.getOrThrow("storedCompletions")
 
@@ -577,6 +603,7 @@ private constructor(
         fun <T> accept(visitor: Visitor<T>): T =
             when {
                 custom != null -> visitor.visitCustom(custom)
+                logs != null -> visitor.visitLogs(logs)
                 storedCompletions != null -> visitor.visitStoredCompletions(storedCompletions)
                 else -> visitor.unknown(_json)
             }
@@ -592,6 +619,10 @@ private constructor(
                 object : Visitor<Unit> {
                     override fun visitCustom(custom: EvalCustomDataSourceConfig) {
                         custom.validate()
+                    }
+
+                    override fun visitLogs(logs: EvalLogsDataSourceConfig) {
+                        logs.validate()
                     }
 
                     override fun visitStoredCompletions(
@@ -624,6 +655,8 @@ private constructor(
                 object : Visitor<Int> {
                     override fun visitCustom(custom: EvalCustomDataSourceConfig) = custom.validity()
 
+                    override fun visitLogs(logs: EvalLogsDataSourceConfig) = logs.validity()
+
                     override fun visitStoredCompletions(
                         storedCompletions: EvalStoredCompletionsDataSourceConfig
                     ) = storedCompletions.validity()
@@ -637,14 +670,15 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is DataSourceConfig && custom == other.custom && storedCompletions == other.storedCompletions /* spotless:on */
+            return /* spotless:off */ other is DataSourceConfig && custom == other.custom && logs == other.logs && storedCompletions == other.storedCompletions /* spotless:on */
         }
 
-        override fun hashCode(): Int = /* spotless:off */ Objects.hash(custom, storedCompletions) /* spotless:on */
+        override fun hashCode(): Int = /* spotless:off */ Objects.hash(custom, logs, storedCompletions) /* spotless:on */
 
         override fun toString(): String =
             when {
                 custom != null -> "DataSourceConfig{custom=$custom}"
+                logs != null -> "DataSourceConfig{logs=$logs}"
                 storedCompletions != null ->
                     "DataSourceConfig{storedCompletions=$storedCompletions}"
                 _json != null -> "DataSourceConfig{_unknown=$_json}"
@@ -663,12 +697,16 @@ private constructor(
             fun ofCustom(custom: EvalCustomDataSourceConfig) = DataSourceConfig(custom = custom)
 
             /**
-             * A StoredCompletionsDataSourceConfig which specifies the metadata property of your
-             * stored completions query. This is usually metadata like `usecase=chatbot` or
-             * `prompt-version=v2`, etc. The schema returned by this data source config is used to
-             * defined what variables are available in your evals. `item` and `sample` are both
-             * defined when using this data source config.
+             * A LogsDataSourceConfig which specifies the metadata property of your logs query. This
+             * is usually metadata like `usecase=chatbot` or `prompt-version=v2`, etc. The schema
+             * returned by this data source config is used to defined what variables are available
+             * in your evals. `item` and `sample` are both defined when using this data source
+             * config.
              */
+            @JvmStatic fun ofLogs(logs: EvalLogsDataSourceConfig) = DataSourceConfig(logs = logs)
+
+            /** Deprecated in favor of LogsDataSourceConfig. */
+            @Deprecated("deprecated")
             @JvmStatic
             fun ofStoredCompletions(storedCompletions: EvalStoredCompletionsDataSourceConfig) =
                 DataSourceConfig(storedCompletions = storedCompletions)
@@ -689,12 +727,16 @@ private constructor(
             fun visitCustom(custom: EvalCustomDataSourceConfig): T
 
             /**
-             * A StoredCompletionsDataSourceConfig which specifies the metadata property of your
-             * stored completions query. This is usually metadata like `usecase=chatbot` or
-             * `prompt-version=v2`, etc. The schema returned by this data source config is used to
-             * defined what variables are available in your evals. `item` and `sample` are both
-             * defined when using this data source config.
+             * A LogsDataSourceConfig which specifies the metadata property of your logs query. This
+             * is usually metadata like `usecase=chatbot` or `prompt-version=v2`, etc. The schema
+             * returned by this data source config is used to defined what variables are available
+             * in your evals. `item` and `sample` are both defined when using this data source
+             * config.
              */
+            fun visitLogs(logs: EvalLogsDataSourceConfig): T
+
+            /** Deprecated in favor of LogsDataSourceConfig. */
+            @Deprecated("deprecated")
             fun visitStoredCompletions(storedCompletions: EvalStoredCompletionsDataSourceConfig): T
 
             /**
@@ -724,7 +766,12 @@ private constructor(
                             ?.let { DataSourceConfig(custom = it, _json = json) }
                             ?: DataSourceConfig(_json = json)
                     }
-                    "stored_completions" -> {
+                    "logs" -> {
+                        return tryDeserialize(node, jacksonTypeRef<EvalLogsDataSourceConfig>())
+                            ?.let { DataSourceConfig(logs = it, _json = json) }
+                            ?: DataSourceConfig(_json = json)
+                    }
+                    "stored-completions" -> {
                         return tryDeserialize(
                                 node,
                                 jacksonTypeRef<EvalStoredCompletionsDataSourceConfig>(),
@@ -747,6 +794,7 @@ private constructor(
             ) {
                 when {
                     value.custom != null -> generator.writeObject(value.custom)
+                    value.logs != null -> generator.writeObject(value.logs)
                     value.storedCompletions != null ->
                         generator.writeObject(value.storedCompletions)
                     value._json != null -> generator.writeObject(value._json)
