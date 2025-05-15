@@ -9,6 +9,7 @@ import com.openai.errors.OpenAIInvalidDataException
 import com.openai.models.ErrorObject
 import com.openai.models.beta.threads.AssistantToolChoiceOption
 import com.openai.models.beta.threads.Thread
+import com.openai.models.beta.threads.TruncationObject
 import com.openai.models.beta.threads.messages.ImageFile
 import com.openai.models.beta.threads.messages.ImageFileDelta
 import com.openai.models.beta.threads.messages.ImageFileDeltaBlock
@@ -196,8 +197,8 @@ internal class AssistantStreamEventTest {
                         .toolChoice(AssistantToolChoiceOption.Auto.NONE)
                         .addTool(CodeInterpreterTool.builder().build())
                         .truncationStrategy(
-                            Run.TruncationStrategy.builder()
-                                .type(Run.TruncationStrategy.Type.AUTO)
+                            TruncationObject.builder()
+                                .type(TruncationObject.Type.AUTO)
                                 .lastMessages(1L)
                                 .build()
                         )
@@ -305,8 +306,8 @@ internal class AssistantStreamEventTest {
                             .toolChoice(AssistantToolChoiceOption.Auto.NONE)
                             .addTool(CodeInterpreterTool.builder().build())
                             .truncationStrategy(
-                                Run.TruncationStrategy.builder()
-                                    .type(Run.TruncationStrategy.Type.AUTO)
+                                TruncationObject.builder()
+                                    .type(TruncationObject.Type.AUTO)
                                     .lastMessages(1L)
                                     .build()
                             )
@@ -394,8 +395,8 @@ internal class AssistantStreamEventTest {
                         .toolChoice(AssistantToolChoiceOption.Auto.NONE)
                         .addTool(CodeInterpreterTool.builder().build())
                         .truncationStrategy(
-                            Run.TruncationStrategy.builder()
-                                .type(Run.TruncationStrategy.Type.AUTO)
+                            TruncationObject.builder()
+                                .type(TruncationObject.Type.AUTO)
                                 .lastMessages(1L)
                                 .build()
                         )
@@ -503,8 +504,8 @@ internal class AssistantStreamEventTest {
                             .toolChoice(AssistantToolChoiceOption.Auto.NONE)
                             .addTool(CodeInterpreterTool.builder().build())
                             .truncationStrategy(
-                                Run.TruncationStrategy.builder()
-                                    .type(Run.TruncationStrategy.Type.AUTO)
+                                TruncationObject.builder()
+                                    .type(TruncationObject.Type.AUTO)
                                     .lastMessages(1L)
                                     .build()
                             )
@@ -592,8 +593,8 @@ internal class AssistantStreamEventTest {
                         .toolChoice(AssistantToolChoiceOption.Auto.NONE)
                         .addTool(CodeInterpreterTool.builder().build())
                         .truncationStrategy(
-                            Run.TruncationStrategy.builder()
-                                .type(Run.TruncationStrategy.Type.AUTO)
+                            TruncationObject.builder()
+                                .type(TruncationObject.Type.AUTO)
                                 .lastMessages(1L)
                                 .build()
                         )
@@ -701,8 +702,8 @@ internal class AssistantStreamEventTest {
                             .toolChoice(AssistantToolChoiceOption.Auto.NONE)
                             .addTool(CodeInterpreterTool.builder().build())
                             .truncationStrategy(
-                                Run.TruncationStrategy.builder()
-                                    .type(Run.TruncationStrategy.Type.AUTO)
+                                TruncationObject.builder()
+                                    .type(TruncationObject.Type.AUTO)
                                     .lastMessages(1L)
                                     .build()
                             )
@@ -790,8 +791,8 @@ internal class AssistantStreamEventTest {
                         .toolChoice(AssistantToolChoiceOption.Auto.NONE)
                         .addTool(CodeInterpreterTool.builder().build())
                         .truncationStrategy(
-                            Run.TruncationStrategy.builder()
-                                .type(Run.TruncationStrategy.Type.AUTO)
+                            TruncationObject.builder()
+                                .type(TruncationObject.Type.AUTO)
                                 .lastMessages(1L)
                                 .build()
                         )
@@ -900,8 +901,8 @@ internal class AssistantStreamEventTest {
                             .toolChoice(AssistantToolChoiceOption.Auto.NONE)
                             .addTool(CodeInterpreterTool.builder().build())
                             .truncationStrategy(
-                                Run.TruncationStrategy.builder()
-                                    .type(Run.TruncationStrategy.Type.AUTO)
+                                TruncationObject.builder()
+                                    .type(TruncationObject.Type.AUTO)
                                     .lastMessages(1L)
                                     .build()
                             )
@@ -989,8 +990,8 @@ internal class AssistantStreamEventTest {
                         .toolChoice(AssistantToolChoiceOption.Auto.NONE)
                         .addTool(CodeInterpreterTool.builder().build())
                         .truncationStrategy(
-                            Run.TruncationStrategy.builder()
-                                .type(Run.TruncationStrategy.Type.AUTO)
+                            TruncationObject.builder()
+                                .type(TruncationObject.Type.AUTO)
                                 .lastMessages(1L)
                                 .build()
                         )
@@ -1098,8 +1099,8 @@ internal class AssistantStreamEventTest {
                             .toolChoice(AssistantToolChoiceOption.Auto.NONE)
                             .addTool(CodeInterpreterTool.builder().build())
                             .truncationStrategy(
-                                Run.TruncationStrategy.builder()
-                                    .type(Run.TruncationStrategy.Type.AUTO)
+                                TruncationObject.builder()
+                                    .type(TruncationObject.Type.AUTO)
                                     .lastMessages(1L)
                                     .build()
                             )
@@ -1187,8 +1188,8 @@ internal class AssistantStreamEventTest {
                         .toolChoice(AssistantToolChoiceOption.Auto.NONE)
                         .addTool(CodeInterpreterTool.builder().build())
                         .truncationStrategy(
-                            Run.TruncationStrategy.builder()
-                                .type(Run.TruncationStrategy.Type.AUTO)
+                            TruncationObject.builder()
+                                .type(TruncationObject.Type.AUTO)
                                 .lastMessages(1L)
                                 .build()
                         )
@@ -1296,8 +1297,8 @@ internal class AssistantStreamEventTest {
                             .toolChoice(AssistantToolChoiceOption.Auto.NONE)
                             .addTool(CodeInterpreterTool.builder().build())
                             .truncationStrategy(
-                                Run.TruncationStrategy.builder()
-                                    .type(Run.TruncationStrategy.Type.AUTO)
+                                TruncationObject.builder()
+                                    .type(TruncationObject.Type.AUTO)
                                     .lastMessages(1L)
                                     .build()
                             )
@@ -1385,8 +1386,8 @@ internal class AssistantStreamEventTest {
                         .toolChoice(AssistantToolChoiceOption.Auto.NONE)
                         .addTool(CodeInterpreterTool.builder().build())
                         .truncationStrategy(
-                            Run.TruncationStrategy.builder()
-                                .type(Run.TruncationStrategy.Type.AUTO)
+                            TruncationObject.builder()
+                                .type(TruncationObject.Type.AUTO)
                                 .lastMessages(1L)
                                 .build()
                         )
@@ -1494,8 +1495,8 @@ internal class AssistantStreamEventTest {
                             .toolChoice(AssistantToolChoiceOption.Auto.NONE)
                             .addTool(CodeInterpreterTool.builder().build())
                             .truncationStrategy(
-                                Run.TruncationStrategy.builder()
-                                    .type(Run.TruncationStrategy.Type.AUTO)
+                                TruncationObject.builder()
+                                    .type(TruncationObject.Type.AUTO)
                                     .lastMessages(1L)
                                     .build()
                             )
@@ -1583,8 +1584,8 @@ internal class AssistantStreamEventTest {
                         .toolChoice(AssistantToolChoiceOption.Auto.NONE)
                         .addTool(CodeInterpreterTool.builder().build())
                         .truncationStrategy(
-                            Run.TruncationStrategy.builder()
-                                .type(Run.TruncationStrategy.Type.AUTO)
+                            TruncationObject.builder()
+                                .type(TruncationObject.Type.AUTO)
                                 .lastMessages(1L)
                                 .build()
                         )
@@ -1692,8 +1693,8 @@ internal class AssistantStreamEventTest {
                             .toolChoice(AssistantToolChoiceOption.Auto.NONE)
                             .addTool(CodeInterpreterTool.builder().build())
                             .truncationStrategy(
-                                Run.TruncationStrategy.builder()
-                                    .type(Run.TruncationStrategy.Type.AUTO)
+                                TruncationObject.builder()
+                                    .type(TruncationObject.Type.AUTO)
                                     .lastMessages(1L)
                                     .build()
                             )
@@ -1781,8 +1782,8 @@ internal class AssistantStreamEventTest {
                         .toolChoice(AssistantToolChoiceOption.Auto.NONE)
                         .addTool(CodeInterpreterTool.builder().build())
                         .truncationStrategy(
-                            Run.TruncationStrategy.builder()
-                                .type(Run.TruncationStrategy.Type.AUTO)
+                            TruncationObject.builder()
+                                .type(TruncationObject.Type.AUTO)
                                 .lastMessages(1L)
                                 .build()
                         )
@@ -1890,8 +1891,8 @@ internal class AssistantStreamEventTest {
                             .toolChoice(AssistantToolChoiceOption.Auto.NONE)
                             .addTool(CodeInterpreterTool.builder().build())
                             .truncationStrategy(
-                                Run.TruncationStrategy.builder()
-                                    .type(Run.TruncationStrategy.Type.AUTO)
+                                TruncationObject.builder()
+                                    .type(TruncationObject.Type.AUTO)
                                     .lastMessages(1L)
                                     .build()
                             )
@@ -1979,8 +1980,8 @@ internal class AssistantStreamEventTest {
                         .toolChoice(AssistantToolChoiceOption.Auto.NONE)
                         .addTool(CodeInterpreterTool.builder().build())
                         .truncationStrategy(
-                            Run.TruncationStrategy.builder()
-                                .type(Run.TruncationStrategy.Type.AUTO)
+                            TruncationObject.builder()
+                                .type(TruncationObject.Type.AUTO)
                                 .lastMessages(1L)
                                 .build()
                         )
@@ -2088,8 +2089,8 @@ internal class AssistantStreamEventTest {
                             .toolChoice(AssistantToolChoiceOption.Auto.NONE)
                             .addTool(CodeInterpreterTool.builder().build())
                             .truncationStrategy(
-                                Run.TruncationStrategy.builder()
-                                    .type(Run.TruncationStrategy.Type.AUTO)
+                                TruncationObject.builder()
+                                    .type(TruncationObject.Type.AUTO)
                                     .lastMessages(1L)
                                     .build()
                             )

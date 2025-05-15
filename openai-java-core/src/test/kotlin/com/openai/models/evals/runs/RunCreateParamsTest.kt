@@ -16,16 +16,14 @@ internal class RunCreateParamsTest {
                 CreateEvalJsonlRunDataSource.builder()
                     .fileContentSource(
                         listOf(
-                            CreateEvalJsonlRunDataSource.Source.FileContent.Content.builder()
+                            EvalJsonlFileContentSource.Content.builder()
                                 .item(
-                                    CreateEvalJsonlRunDataSource.Source.FileContent.Content.Item
-                                        .builder()
+                                    EvalJsonlFileContentSource.Content.Item.builder()
                                         .putAdditionalProperty("foo", JsonValue.from("bar"))
                                         .build()
                                 )
                                 .sample(
-                                    CreateEvalJsonlRunDataSource.Source.FileContent.Content.Sample
-                                        .builder()
+                                    EvalJsonlFileContentSource.Content.Sample.builder()
                                         .putAdditionalProperty("foo", JsonValue.from("bar"))
                                         .build()
                                 )
@@ -52,10 +50,9 @@ internal class RunCreateParamsTest {
                     CreateEvalJsonlRunDataSource.builder()
                         .fileContentSource(
                             listOf(
-                                CreateEvalJsonlRunDataSource.Source.FileContent.Content.builder()
+                                EvalJsonlFileContentSource.Content.builder()
                                     .item(
-                                        CreateEvalJsonlRunDataSource.Source.FileContent.Content.Item
-                                            .builder()
+                                        EvalJsonlFileContentSource.Content.Item.builder()
                                             .putAdditionalProperty("foo", JsonValue.from("bar"))
                                             .build()
                                     )
@@ -80,17 +77,14 @@ internal class RunCreateParamsTest {
                     CreateEvalJsonlRunDataSource.builder()
                         .fileContentSource(
                             listOf(
-                                CreateEvalJsonlRunDataSource.Source.FileContent.Content.builder()
+                                EvalJsonlFileContentSource.Content.builder()
                                     .item(
-                                        CreateEvalJsonlRunDataSource.Source.FileContent.Content.Item
-                                            .builder()
+                                        EvalJsonlFileContentSource.Content.Item.builder()
                                             .putAdditionalProperty("foo", JsonValue.from("bar"))
                                             .build()
                                     )
                                     .sample(
-                                        CreateEvalJsonlRunDataSource.Source.FileContent.Content
-                                            .Sample
-                                            .builder()
+                                        EvalJsonlFileContentSource.Content.Sample.builder()
                                             .putAdditionalProperty("foo", JsonValue.from("bar"))
                                             .build()
                                     )
@@ -115,17 +109,14 @@ internal class RunCreateParamsTest {
                     CreateEvalJsonlRunDataSource.builder()
                         .fileContentSource(
                             listOf(
-                                CreateEvalJsonlRunDataSource.Source.FileContent.Content.builder()
+                                EvalJsonlFileContentSource.Content.builder()
                                     .item(
-                                        CreateEvalJsonlRunDataSource.Source.FileContent.Content.Item
-                                            .builder()
+                                        EvalJsonlFileContentSource.Content.Item.builder()
                                             .putAdditionalProperty("foo", JsonValue.from("bar"))
                                             .build()
                                     )
                                     .sample(
-                                        CreateEvalJsonlRunDataSource.Source.FileContent.Content
-                                            .Sample
-                                            .builder()
+                                        EvalJsonlFileContentSource.Content.Sample.builder()
                                             .putAdditionalProperty("foo", JsonValue.from("bar"))
                                             .build()
                                     )
@@ -153,10 +144,9 @@ internal class RunCreateParamsTest {
                     CreateEvalJsonlRunDataSource.builder()
                         .fileContentSource(
                             listOf(
-                                CreateEvalJsonlRunDataSource.Source.FileContent.Content.builder()
+                                EvalJsonlFileContentSource.Content.builder()
                                     .item(
-                                        CreateEvalJsonlRunDataSource.Source.FileContent.Content.Item
-                                            .builder()
+                                        EvalJsonlFileContentSource.Content.Item.builder()
                                             .putAdditionalProperty("foo", JsonValue.from("bar"))
                                             .build()
                                     )
@@ -175,10 +165,9 @@ internal class RunCreateParamsTest {
                     CreateEvalJsonlRunDataSource.builder()
                         .fileContentSource(
                             listOf(
-                                CreateEvalJsonlRunDataSource.Source.FileContent.Content.builder()
+                                EvalJsonlFileContentSource.Content.builder()
                                     .item(
-                                        CreateEvalJsonlRunDataSource.Source.FileContent.Content.Item
-                                            .builder()
+                                        EvalJsonlFileContentSource.Content.Item.builder()
                                             .putAdditionalProperty("foo", JsonValue.from("bar"))
                                             .build()
                                     )

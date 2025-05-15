@@ -7,6 +7,7 @@ import com.openai.core.JsonValue
 import com.openai.core.jsonMapper
 import com.openai.models.beta.assistants.CodeInterpreterTool
 import com.openai.models.beta.threads.AssistantToolChoiceOption
+import com.openai.models.beta.threads.TruncationObject
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
@@ -73,8 +74,8 @@ internal class RunListPageResponseTest {
                         .toolChoice(AssistantToolChoiceOption.Auto.NONE)
                         .addTool(CodeInterpreterTool.builder().build())
                         .truncationStrategy(
-                            Run.TruncationStrategy.builder()
-                                .type(Run.TruncationStrategy.Type.AUTO)
+                            TruncationObject.builder()
+                                .type(TruncationObject.Type.AUTO)
                                 .lastMessages(1L)
                                 .build()
                         )
@@ -152,8 +153,8 @@ internal class RunListPageResponseTest {
                     .toolChoice(AssistantToolChoiceOption.Auto.NONE)
                     .addTool(CodeInterpreterTool.builder().build())
                     .truncationStrategy(
-                        Run.TruncationStrategy.builder()
-                            .type(Run.TruncationStrategy.Type.AUTO)
+                        TruncationObject.builder()
+                            .type(TruncationObject.Type.AUTO)
                             .lastMessages(1L)
                             .build()
                     )
@@ -236,8 +237,8 @@ internal class RunListPageResponseTest {
                         .toolChoice(AssistantToolChoiceOption.Auto.NONE)
                         .addTool(CodeInterpreterTool.builder().build())
                         .truncationStrategy(
-                            Run.TruncationStrategy.builder()
-                                .type(Run.TruncationStrategy.Type.AUTO)
+                            TruncationObject.builder()
+                                .type(TruncationObject.Type.AUTO)
                                 .lastMessages(1L)
                                 .build()
                         )

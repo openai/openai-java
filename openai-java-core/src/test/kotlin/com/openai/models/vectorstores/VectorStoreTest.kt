@@ -34,7 +34,7 @@ internal class VectorStoreTest {
                 .name("name")
                 .status(VectorStore.Status.EXPIRED)
                 .usageBytes(0L)
-                .expiresAfter(VectorStore.ExpiresAfter.builder().days(1L).build())
+                .expiresAfter(VectorStoreExpirationAfter.builder().days(1L).build())
                 .expiresAt(0L)
                 .build()
 
@@ -61,7 +61,7 @@ internal class VectorStoreTest {
         assertThat(vectorStore.status()).isEqualTo(VectorStore.Status.EXPIRED)
         assertThat(vectorStore.usageBytes()).isEqualTo(0L)
         assertThat(vectorStore.expiresAfter())
-            .contains(VectorStore.ExpiresAfter.builder().days(1L).build())
+            .contains(VectorStoreExpirationAfter.builder().days(1L).build())
         assertThat(vectorStore.expiresAt()).contains(0L)
     }
 
@@ -90,7 +90,7 @@ internal class VectorStoreTest {
                 .name("name")
                 .status(VectorStore.Status.EXPIRED)
                 .usageBytes(0L)
-                .expiresAfter(VectorStore.ExpiresAfter.builder().days(1L).build())
+                .expiresAfter(VectorStoreExpirationAfter.builder().days(1L).build())
                 .expiresAt(0L)
                 .build()
 

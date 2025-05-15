@@ -12,7 +12,7 @@ internal class VectorStoreUpdateParamsTest {
     fun create() {
         VectorStoreUpdateParams.builder()
             .vectorStoreId("vector_store_id")
-            .expiresAfter(VectorStoreUpdateParams.ExpiresAfter.builder().days(1L).build())
+            .expiresAfter(VectorStoreExpirationAfter.builder().days(1L).build())
             .metadata(
                 VectorStoreUpdateParams.Metadata.builder()
                     .putAdditionalProperty("foo", JsonValue.from("string"))
@@ -36,7 +36,7 @@ internal class VectorStoreUpdateParamsTest {
         val params =
             VectorStoreUpdateParams.builder()
                 .vectorStoreId("vector_store_id")
-                .expiresAfter(VectorStoreUpdateParams.ExpiresAfter.builder().days(1L).build())
+                .expiresAfter(VectorStoreExpirationAfter.builder().days(1L).build())
                 .metadata(
                     VectorStoreUpdateParams.Metadata.builder()
                         .putAdditionalProperty("foo", JsonValue.from("string"))
@@ -48,7 +48,7 @@ internal class VectorStoreUpdateParamsTest {
         val body = params._body()
 
         assertThat(body.expiresAfter())
-            .contains(VectorStoreUpdateParams.ExpiresAfter.builder().days(1L).build())
+            .contains(VectorStoreExpirationAfter.builder().days(1L).build())
         assertThat(body.metadata())
             .contains(
                 VectorStoreUpdateParams.Metadata.builder()
