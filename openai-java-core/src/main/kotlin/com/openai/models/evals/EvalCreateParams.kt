@@ -200,6 +200,9 @@ private constructor(
             body.customDataSourceConfig(itemSchema)
         }
 
+        /** Alias for calling [dataSourceConfig] with `DataSourceConfig.ofLogs(logs)`. */
+        fun dataSourceConfig(logs: DataSourceConfig.Logs) = apply { body.dataSourceConfig(logs) }
+
         /**
          * Alias for calling [dataSourceConfig] with
          * `DataSourceConfig.ofStoredCompletions(storedCompletions)`.
@@ -611,6 +614,10 @@ private constructor(
             fun customDataSourceConfig(itemSchema: DataSourceConfig.Custom.ItemSchema) =
                 dataSourceConfig(DataSourceConfig.Custom.builder().itemSchema(itemSchema).build())
 
+            /** Alias for calling [dataSourceConfig] with `DataSourceConfig.ofLogs(logs)`. */
+            fun dataSourceConfig(logs: DataSourceConfig.Logs) =
+                dataSourceConfig(DataSourceConfig.ofLogs(logs))
+
             /**
              * Alias for calling [dataSourceConfig] with
              * `DataSourceConfig.ofStoredCompletions(storedCompletions)`.
@@ -812,6 +819,7 @@ private constructor(
     class DataSourceConfig
     private constructor(
         private val custom: Custom? = null,
+        private val logs: Logs? = null,
         private val storedCompletions: StoredCompletions? = null,
         private val _json: JsonValue? = null,
     ) {
@@ -825,13 +833,18 @@ private constructor(
         fun custom(): Optional<Custom> = Optional.ofNullable(custom)
 
         /**
-         * A data source config which specifies the metadata property of your stored completions
-         * query. This is usually metadata like `usecase=chatbot` or `prompt-version=v2`, etc.
+         * A data source config which specifies the metadata property of your logs query. This is
+         * usually metadata like `usecase=chatbot` or `prompt-version=v2`, etc.
          */
+        fun logs(): Optional<Logs> = Optional.ofNullable(logs)
+
+        /** Deprecated in favor of LogsDataSourceConfig. */
         fun storedCompletions(): Optional<StoredCompletions> =
             Optional.ofNullable(storedCompletions)
 
         fun isCustom(): Boolean = custom != null
+
+        fun isLogs(): Boolean = logs != null
 
         fun isStoredCompletions(): Boolean = storedCompletions != null
 
@@ -844,9 +857,12 @@ private constructor(
         fun asCustom(): Custom = custom.getOrThrow("custom")
 
         /**
-         * A data source config which specifies the metadata property of your stored completions
-         * query. This is usually metadata like `usecase=chatbot` or `prompt-version=v2`, etc.
+         * A data source config which specifies the metadata property of your logs query. This is
+         * usually metadata like `usecase=chatbot` or `prompt-version=v2`, etc.
          */
+        fun asLogs(): Logs = logs.getOrThrow("logs")
+
+        /** Deprecated in favor of LogsDataSourceConfig. */
         fun asStoredCompletions(): StoredCompletions =
             storedCompletions.getOrThrow("storedCompletions")
 
@@ -855,6 +871,7 @@ private constructor(
         fun <T> accept(visitor: Visitor<T>): T =
             when {
                 custom != null -> visitor.visitCustom(custom)
+                logs != null -> visitor.visitLogs(logs)
                 storedCompletions != null -> visitor.visitStoredCompletions(storedCompletions)
                 else -> visitor.unknown(_json)
             }
@@ -870,6 +887,10 @@ private constructor(
                 object : Visitor<Unit> {
                     override fun visitCustom(custom: Custom) {
                         custom.validate()
+                    }
+
+                    override fun visitLogs(logs: Logs) {
+                        logs.validate()
                     }
 
                     override fun visitStoredCompletions(storedCompletions: StoredCompletions) {
@@ -900,6 +921,8 @@ private constructor(
                 object : Visitor<Int> {
                     override fun visitCustom(custom: Custom) = custom.validity()
 
+                    override fun visitLogs(logs: Logs) = logs.validity()
+
                     override fun visitStoredCompletions(storedCompletions: StoredCompletions) =
                         storedCompletions.validity()
 
@@ -912,14 +935,15 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is DataSourceConfig && custom == other.custom && storedCompletions == other.storedCompletions /* spotless:on */
+            return /* spotless:off */ other is DataSourceConfig && custom == other.custom && logs == other.logs && storedCompletions == other.storedCompletions /* spotless:on */
         }
 
-        override fun hashCode(): Int = /* spotless:off */ Objects.hash(custom, storedCompletions) /* spotless:on */
+        override fun hashCode(): Int = /* spotless:off */ Objects.hash(custom, logs, storedCompletions) /* spotless:on */
 
         override fun toString(): String =
             when {
                 custom != null -> "DataSourceConfig{custom=$custom}"
+                logs != null -> "DataSourceConfig{logs=$logs}"
                 storedCompletions != null ->
                     "DataSourceConfig{storedCompletions=$storedCompletions}"
                 _json != null -> "DataSourceConfig{_unknown=$_json}"
@@ -938,9 +962,12 @@ private constructor(
             @JvmStatic fun ofCustom(custom: Custom) = DataSourceConfig(custom = custom)
 
             /**
-             * A data source config which specifies the metadata property of your stored completions
-             * query. This is usually metadata like `usecase=chatbot` or `prompt-version=v2`, etc.
+             * A data source config which specifies the metadata property of your logs query. This
+             * is usually metadata like `usecase=chatbot` or `prompt-version=v2`, etc.
              */
+            @JvmStatic fun ofLogs(logs: Logs) = DataSourceConfig(logs = logs)
+
+            /** Deprecated in favor of LogsDataSourceConfig. */
             @JvmStatic
             fun ofStoredCompletions(storedCompletions: StoredCompletions) =
                 DataSourceConfig(storedCompletions = storedCompletions)
@@ -962,9 +989,12 @@ private constructor(
             fun visitCustom(custom: Custom): T
 
             /**
-             * A data source config which specifies the metadata property of your stored completions
-             * query. This is usually metadata like `usecase=chatbot` or `prompt-version=v2`, etc.
+             * A data source config which specifies the metadata property of your logs query. This
+             * is usually metadata like `usecase=chatbot` or `prompt-version=v2`, etc.
              */
+            fun visitLogs(logs: Logs): T
+
+            /** Deprecated in favor of LogsDataSourceConfig. */
             fun visitStoredCompletions(storedCompletions: StoredCompletions): T
 
             /**
@@ -994,7 +1024,12 @@ private constructor(
                             DataSourceConfig(custom = it, _json = json)
                         } ?: DataSourceConfig(_json = json)
                     }
-                    "stored_completions" -> {
+                    "logs" -> {
+                        return tryDeserialize(node, jacksonTypeRef<Logs>())?.let {
+                            DataSourceConfig(logs = it, _json = json)
+                        } ?: DataSourceConfig(_json = json)
+                    }
+                    "stored-completions" -> {
                         return tryDeserialize(node, jacksonTypeRef<StoredCompletions>())?.let {
                             DataSourceConfig(storedCompletions = it, _json = json)
                         } ?: DataSourceConfig(_json = json)
@@ -1014,6 +1049,7 @@ private constructor(
             ) {
                 when {
                     value.custom != null -> generator.writeObject(value.custom)
+                    value.logs != null -> generator.writeObject(value.logs)
                     value.storedCompletions != null ->
                         generator.writeObject(value.storedCompletions)
                     value._json != null -> generator.writeObject(value._json)
@@ -1392,9 +1428,304 @@ private constructor(
         }
 
         /**
-         * A data source config which specifies the metadata property of your stored completions
-         * query. This is usually metadata like `usecase=chatbot` or `prompt-version=v2`, etc.
+         * A data source config which specifies the metadata property of your logs query. This is
+         * usually metadata like `usecase=chatbot` or `prompt-version=v2`, etc.
          */
+        class Logs
+        private constructor(
+            private val type: JsonValue,
+            private val metadata: JsonField<Metadata>,
+            private val additionalProperties: MutableMap<String, JsonValue>,
+        ) {
+
+            @JsonCreator
+            private constructor(
+                @JsonProperty("type") @ExcludeMissing type: JsonValue = JsonMissing.of(),
+                @JsonProperty("metadata")
+                @ExcludeMissing
+                metadata: JsonField<Metadata> = JsonMissing.of(),
+            ) : this(type, metadata, mutableMapOf())
+
+            /**
+             * The type of data source. Always `logs`.
+             *
+             * Expected to always return the following:
+             * ```java
+             * JsonValue.from("logs")
+             * ```
+             *
+             * However, this method can be useful for debugging and logging (e.g. if the server
+             * responded with an unexpected value).
+             */
+            @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
+
+            /**
+             * Metadata filters for the logs data source.
+             *
+             * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if
+             *   the server responded with an unexpected value).
+             */
+            fun metadata(): Optional<Metadata> = metadata.getOptional("metadata")
+
+            /**
+             * Returns the raw JSON value of [metadata].
+             *
+             * Unlike [metadata], this method doesn't throw if the JSON field has an unexpected
+             * type.
+             */
+            @JsonProperty("metadata")
+            @ExcludeMissing
+            fun _metadata(): JsonField<Metadata> = metadata
+
+            @JsonAnySetter
+            private fun putAdditionalProperty(key: String, value: JsonValue) {
+                additionalProperties.put(key, value)
+            }
+
+            @JsonAnyGetter
+            @ExcludeMissing
+            fun _additionalProperties(): Map<String, JsonValue> =
+                Collections.unmodifiableMap(additionalProperties)
+
+            fun toBuilder() = Builder().from(this)
+
+            companion object {
+
+                /** Returns a mutable builder for constructing an instance of [Logs]. */
+                @JvmStatic fun builder() = Builder()
+            }
+
+            /** A builder for [Logs]. */
+            class Builder internal constructor() {
+
+                private var type: JsonValue = JsonValue.from("logs")
+                private var metadata: JsonField<Metadata> = JsonMissing.of()
+                private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
+
+                @JvmSynthetic
+                internal fun from(logs: Logs) = apply {
+                    type = logs.type
+                    metadata = logs.metadata
+                    additionalProperties = logs.additionalProperties.toMutableMap()
+                }
+
+                /**
+                 * Sets the field to an arbitrary JSON value.
+                 *
+                 * It is usually unnecessary to call this method because the field defaults to the
+                 * following:
+                 * ```java
+                 * JsonValue.from("logs")
+                 * ```
+                 *
+                 * This method is primarily for setting the field to an undocumented or not yet
+                 * supported value.
+                 */
+                fun type(type: JsonValue) = apply { this.type = type }
+
+                /** Metadata filters for the logs data source. */
+                fun metadata(metadata: Metadata) = metadata(JsonField.of(metadata))
+
+                /**
+                 * Sets [Builder.metadata] to an arbitrary JSON value.
+                 *
+                 * You should usually call [Builder.metadata] with a well-typed [Metadata] value
+                 * instead. This method is primarily for setting the field to an undocumented or not
+                 * yet supported value.
+                 */
+                fun metadata(metadata: JsonField<Metadata>) = apply { this.metadata = metadata }
+
+                fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                    this.additionalProperties.clear()
+                    putAllAdditionalProperties(additionalProperties)
+                }
+
+                fun putAdditionalProperty(key: String, value: JsonValue) = apply {
+                    additionalProperties.put(key, value)
+                }
+
+                fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) =
+                    apply {
+                        this.additionalProperties.putAll(additionalProperties)
+                    }
+
+                fun removeAdditionalProperty(key: String) = apply {
+                    additionalProperties.remove(key)
+                }
+
+                fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                    keys.forEach(::removeAdditionalProperty)
+                }
+
+                /**
+                 * Returns an immutable instance of [Logs].
+                 *
+                 * Further updates to this [Builder] will not mutate the returned instance.
+                 */
+                fun build(): Logs = Logs(type, metadata, additionalProperties.toMutableMap())
+            }
+
+            private var validated: Boolean = false
+
+            fun validate(): Logs = apply {
+                if (validated) {
+                    return@apply
+                }
+
+                _type().let {
+                    if (it != JsonValue.from("logs")) {
+                        throw OpenAIInvalidDataException("'type' is invalid, received $it")
+                    }
+                }
+                metadata().ifPresent { it.validate() }
+                validated = true
+            }
+
+            fun isValid(): Boolean =
+                try {
+                    validate()
+                    true
+                } catch (e: OpenAIInvalidDataException) {
+                    false
+                }
+
+            /**
+             * Returns a score indicating how many valid values are contained in this object
+             * recursively.
+             *
+             * Used for best match union deserialization.
+             */
+            @JvmSynthetic
+            internal fun validity(): Int =
+                type.let { if (it == JsonValue.from("logs")) 1 else 0 } +
+                    (metadata.asKnown().getOrNull()?.validity() ?: 0)
+
+            /** Metadata filters for the logs data source. */
+            class Metadata
+            @JsonCreator
+            private constructor(
+                @com.fasterxml.jackson.annotation.JsonValue
+                private val additionalProperties: Map<String, JsonValue>
+            ) {
+
+                @JsonAnyGetter
+                @ExcludeMissing
+                fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
+
+                fun toBuilder() = Builder().from(this)
+
+                companion object {
+
+                    /** Returns a mutable builder for constructing an instance of [Metadata]. */
+                    @JvmStatic fun builder() = Builder()
+                }
+
+                /** A builder for [Metadata]. */
+                class Builder internal constructor() {
+
+                    private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
+
+                    @JvmSynthetic
+                    internal fun from(metadata: Metadata) = apply {
+                        additionalProperties = metadata.additionalProperties.toMutableMap()
+                    }
+
+                    fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                        this.additionalProperties.clear()
+                        putAllAdditionalProperties(additionalProperties)
+                    }
+
+                    fun putAdditionalProperty(key: String, value: JsonValue) = apply {
+                        additionalProperties.put(key, value)
+                    }
+
+                    fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) =
+                        apply {
+                            this.additionalProperties.putAll(additionalProperties)
+                        }
+
+                    fun removeAdditionalProperty(key: String) = apply {
+                        additionalProperties.remove(key)
+                    }
+
+                    fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                        keys.forEach(::removeAdditionalProperty)
+                    }
+
+                    /**
+                     * Returns an immutable instance of [Metadata].
+                     *
+                     * Further updates to this [Builder] will not mutate the returned instance.
+                     */
+                    fun build(): Metadata = Metadata(additionalProperties.toImmutable())
+                }
+
+                private var validated: Boolean = false
+
+                fun validate(): Metadata = apply {
+                    if (validated) {
+                        return@apply
+                    }
+
+                    validated = true
+                }
+
+                fun isValid(): Boolean =
+                    try {
+                        validate()
+                        true
+                    } catch (e: OpenAIInvalidDataException) {
+                        false
+                    }
+
+                /**
+                 * Returns a score indicating how many valid values are contained in this object
+                 * recursively.
+                 *
+                 * Used for best match union deserialization.
+                 */
+                @JvmSynthetic
+                internal fun validity(): Int =
+                    additionalProperties.count { (_, value) ->
+                        !value.isNull() && !value.isMissing()
+                    }
+
+                override fun equals(other: Any?): Boolean {
+                    if (this === other) {
+                        return true
+                    }
+
+                    return /* spotless:off */ other is Metadata && additionalProperties == other.additionalProperties /* spotless:on */
+                }
+
+                /* spotless:off */
+                private val hashCode: Int by lazy { Objects.hash(additionalProperties) }
+                /* spotless:on */
+
+                override fun hashCode(): Int = hashCode
+
+                override fun toString() = "Metadata{additionalProperties=$additionalProperties}"
+            }
+
+            override fun equals(other: Any?): Boolean {
+                if (this === other) {
+                    return true
+                }
+
+                return /* spotless:off */ other is Logs && type == other.type && metadata == other.metadata && additionalProperties == other.additionalProperties /* spotless:on */
+            }
+
+            /* spotless:off */
+            private val hashCode: Int by lazy { Objects.hash(type, metadata, additionalProperties) }
+            /* spotless:on */
+
+            override fun hashCode(): Int = hashCode
+
+            override fun toString() =
+                "Logs{type=$type, metadata=$metadata, additionalProperties=$additionalProperties}"
+        }
+
+        /** Deprecated in favor of LogsDataSourceConfig. */
         class StoredCompletions
         private constructor(
             private val type: JsonValue,
@@ -1411,11 +1742,11 @@ private constructor(
             ) : this(type, metadata, mutableMapOf())
 
             /**
-             * The type of data source. Always `stored_completions`.
+             * The type of data source. Always `stored-completions`.
              *
              * Expected to always return the following:
              * ```java
-             * JsonValue.from("stored_completions")
+             * JsonValue.from("stored-completions")
              * ```
              *
              * However, this method can be useful for debugging and logging (e.g. if the server
@@ -1464,7 +1795,7 @@ private constructor(
             /** A builder for [StoredCompletions]. */
             class Builder internal constructor() {
 
-                private var type: JsonValue = JsonValue.from("stored_completions")
+                private var type: JsonValue = JsonValue.from("stored-completions")
                 private var metadata: JsonField<Metadata> = JsonMissing.of()
                 private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
@@ -1481,7 +1812,7 @@ private constructor(
                  * It is usually unnecessary to call this method because the field defaults to the
                  * following:
                  * ```java
-                 * JsonValue.from("stored_completions")
+                 * JsonValue.from("stored-completions")
                  * ```
                  *
                  * This method is primarily for setting the field to an undocumented or not yet
@@ -1540,7 +1871,7 @@ private constructor(
                 }
 
                 _type().let {
-                    if (it != JsonValue.from("stored_completions")) {
+                    if (it != JsonValue.from("stored-completions")) {
                         throw OpenAIInvalidDataException("'type' is invalid, received $it")
                     }
                 }
@@ -1564,7 +1895,7 @@ private constructor(
              */
             @JvmSynthetic
             internal fun validity(): Int =
-                type.let { if (it == JsonValue.from("stored_completions")) 1 else 0 } +
+                type.let { if (it == JsonValue.from("stored-completions")) 1 else 0 } +
                     (metadata.asKnown().getOrNull()?.validity() ?: 0)
 
             /** Metadata filters for the stored completions data source. */

@@ -36,7 +36,7 @@ internal class JobListPageResponseTest {
                         .finishedAt(0L)
                         .hyperparameters(
                             FineTuningJob.Hyperparameters.builder()
-                                .batchSizeAuto()
+                                .batchSize(JsonValue.from(mapOf<String, Any>()))
                                 .learningRateMultiplierAuto()
                                 .nEpochsAuto()
                                 .build()
@@ -142,7 +142,7 @@ internal class JobListPageResponseTest {
                     .finishedAt(0L)
                     .hyperparameters(
                         FineTuningJob.Hyperparameters.builder()
-                            .batchSizeAuto()
+                            .batchSize(JsonValue.from(mapOf<String, Any>()))
                             .learningRateMultiplierAuto()
                             .nEpochsAuto()
                             .build()
@@ -251,7 +251,7 @@ internal class JobListPageResponseTest {
                         .finishedAt(0L)
                         .hyperparameters(
                             FineTuningJob.Hyperparameters.builder()
-                                .batchSizeAuto()
+                                .batchSize(JsonValue.from(mapOf<String, Any>()))
                                 .learningRateMultiplierAuto()
                                 .nEpochsAuto()
                                 .build()

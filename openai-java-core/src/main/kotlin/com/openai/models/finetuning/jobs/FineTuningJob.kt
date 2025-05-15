@@ -1390,7 +1390,10 @@ private constructor(
              * Number of examples in each batch. A larger batch size means that model parameters are
              * updated less frequently, but with lower variance.
              */
-            fun batchSize(batchSize: BatchSize) = batchSize(JsonField.of(batchSize))
+            fun batchSize(batchSize: BatchSize?) = batchSize(JsonField.ofNullable(batchSize))
+
+            /** Alias for calling [Builder.batchSize] with `batchSize.orElse(null)`. */
+            fun batchSize(batchSize: Optional<BatchSize>) = batchSize(batchSize.getOrNull())
 
             /**
              * Sets [Builder.batchSize] to an arbitrary JSON value.
@@ -1401,11 +1404,14 @@ private constructor(
              */
             fun batchSize(batchSize: JsonField<BatchSize>) = apply { this.batchSize = batchSize }
 
-            /** Alias for calling [batchSize] with `BatchSize.ofAuto()`. */
-            fun batchSizeAuto() = batchSize(BatchSize.ofAuto())
+            /** Alias for calling [batchSize] with `BatchSize.ofAuto(auto)`. */
+            fun batchSize(auto: JsonValue) = batchSize(BatchSize.ofAuto(auto))
 
-            /** Alias for calling [batchSize] with `BatchSize.ofManual(manual)`. */
-            fun batchSize(manual: Long) = batchSize(BatchSize.ofManual(manual))
+            /** Alias for calling [batchSize] with `BatchSize.ofManual()`. */
+            fun batchSizeManual() = batchSize(BatchSize.ofManual())
+
+            /** Alias for calling [batchSize] with `BatchSize.ofInteger(integer)`. */
+            fun batchSize(integer: Long) = batchSize(BatchSize.ofInteger(integer))
 
             /**
              * Scaling factor for the learning rate. A smaller learning rate may be useful to avoid
@@ -1535,21 +1541,28 @@ private constructor(
         class BatchSize
         private constructor(
             private val auto: JsonValue? = null,
-            private val manual: Long? = null,
+            private val manual: JsonValue? = null,
+            private val integer: Long? = null,
             private val _json: JsonValue? = null,
         ) {
 
             fun auto(): Optional<JsonValue> = Optional.ofNullable(auto)
 
-            fun manual(): Optional<Long> = Optional.ofNullable(manual)
+            fun manual(): Optional<JsonValue> = Optional.ofNullable(manual)
+
+            fun integer(): Optional<Long> = Optional.ofNullable(integer)
 
             fun isAuto(): Boolean = auto != null
 
             fun isManual(): Boolean = manual != null
 
+            fun isInteger(): Boolean = integer != null
+
             fun asAuto(): JsonValue = auto.getOrThrow("auto")
 
-            fun asManual(): Long = manual.getOrThrow("manual")
+            fun asManual(): JsonValue = manual.getOrThrow("manual")
+
+            fun asInteger(): Long = integer.getOrThrow("integer")
 
             fun _json(): Optional<JsonValue> = Optional.ofNullable(_json)
 
@@ -1557,6 +1570,7 @@ private constructor(
                 when {
                     auto != null -> visitor.visitAuto(auto)
                     manual != null -> visitor.visitManual(manual)
+                    integer != null -> visitor.visitInteger(integer)
                     else -> visitor.unknown(_json)
                 }
 
@@ -1569,17 +1583,19 @@ private constructor(
 
                 accept(
                     object : Visitor<Unit> {
-                        override fun visitAuto(auto: JsonValue) {
-                            auto.let {
+                        override fun visitAuto(auto: JsonValue) {}
+
+                        override fun visitManual(manual: JsonValue) {
+                            manual.let {
                                 if (it != JsonValue.from("auto")) {
                                     throw OpenAIInvalidDataException(
-                                        "'auto' is invalid, received $it"
+                                        "'manual' is invalid, received $it"
                                     )
                                 }
                             }
                         }
 
-                        override fun visitManual(manual: Long) {}
+                        override fun visitInteger(integer: Long) {}
                     }
                 )
                 validated = true
@@ -1603,10 +1619,12 @@ private constructor(
             internal fun validity(): Int =
                 accept(
                     object : Visitor<Int> {
-                        override fun visitAuto(auto: JsonValue) =
-                            auto.let { if (it == JsonValue.from("auto")) 1 else 0 }
+                        override fun visitAuto(auto: JsonValue) = 1
 
-                        override fun visitManual(manual: Long) = 1
+                        override fun visitManual(manual: JsonValue) =
+                            manual.let { if (it == JsonValue.from("auto")) 1 else 0 }
+
+                        override fun visitInteger(integer: Long) = 1
 
                         override fun unknown(json: JsonValue?) = 0
                     }
@@ -1617,24 +1635,27 @@ private constructor(
                     return true
                 }
 
-                return /* spotless:off */ other is BatchSize && auto == other.auto && manual == other.manual /* spotless:on */
+                return /* spotless:off */ other is BatchSize && auto == other.auto && manual == other.manual && integer == other.integer /* spotless:on */
             }
 
-            override fun hashCode(): Int = /* spotless:off */ Objects.hash(auto, manual) /* spotless:on */
+            override fun hashCode(): Int = /* spotless:off */ Objects.hash(auto, manual, integer) /* spotless:on */
 
             override fun toString(): String =
                 when {
                     auto != null -> "BatchSize{auto=$auto}"
                     manual != null -> "BatchSize{manual=$manual}"
+                    integer != null -> "BatchSize{integer=$integer}"
                     _json != null -> "BatchSize{_unknown=$_json}"
                     else -> throw IllegalStateException("Invalid BatchSize")
                 }
 
             companion object {
 
-                @JvmStatic fun ofAuto() = BatchSize(auto = JsonValue.from("auto"))
+                @JvmStatic fun ofAuto(auto: JsonValue) = BatchSize(auto = auto)
 
-                @JvmStatic fun ofManual(manual: Long) = BatchSize(manual = manual)
+                @JvmStatic fun ofManual() = BatchSize(manual = JsonValue.from("auto"))
+
+                @JvmStatic fun ofInteger(integer: Long) = BatchSize(integer = integer)
             }
 
             /**
@@ -1645,7 +1666,9 @@ private constructor(
 
                 fun visitAuto(auto: JsonValue): T
 
-                fun visitManual(manual: Long): T
+                fun visitManual(manual: JsonValue): T
+
+                fun visitInteger(integer: Long): T
 
                 /**
                  * Maps an unknown variant of [BatchSize] to a value of type [T].
@@ -1670,10 +1693,13 @@ private constructor(
                     val bestMatches =
                         sequenceOf(
                                 tryDeserialize(node, jacksonTypeRef<JsonValue>())
-                                    ?.let { BatchSize(auto = it, _json = json) }
+                                    ?.let { BatchSize(manual = it, _json = json) }
                                     ?.takeIf { it.isValid() },
                                 tryDeserialize(node, jacksonTypeRef<Long>())?.let {
-                                    BatchSize(manual = it, _json = json)
+                                    BatchSize(integer = it, _json = json)
+                                },
+                                tryDeserialize(node, jacksonTypeRef<JsonValue>())?.let {
+                                    BatchSize(auto = it, _json = json)
                                 },
                             )
                             .filterNotNull()
@@ -1681,7 +1707,7 @@ private constructor(
                             .toList()
                     return when (bestMatches.size) {
                         // This can happen if what we're deserializing is completely incompatible
-                        // with all the possible variants (e.g. deserializing from object).
+                        // with all the possible variants.
                         0 -> BatchSize(_json = json)
                         1 -> bestMatches.single()
                         // If there's more than one match with the highest validity, then use the
@@ -1702,6 +1728,7 @@ private constructor(
                     when {
                         value.auto != null -> generator.writeObject(value.auto)
                         value.manual != null -> generator.writeObject(value.manual)
+                        value.integer != null -> generator.writeObject(value.integer)
                         value._json != null -> generator.writeObject(value._json)
                         else -> throw IllegalStateException("Invalid BatchSize")
                     }
