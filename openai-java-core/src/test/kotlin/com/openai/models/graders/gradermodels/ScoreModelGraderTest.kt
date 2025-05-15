@@ -5,6 +5,7 @@ package com.openai.models.graders.gradermodels
 import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
 import com.openai.core.JsonValue
 import com.openai.core.jsonMapper
+import com.openai.models.EvalItem
 import kotlin.jvm.optionals.getOrNull
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
@@ -16,10 +17,10 @@ internal class ScoreModelGraderTest {
         val scoreModelGrader =
             ScoreModelGrader.builder()
                 .addInput(
-                    ScoreModelGrader.Input.builder()
+                    EvalItem.builder()
                         .content("string")
-                        .role(ScoreModelGrader.Input.Role.USER)
-                        .type(ScoreModelGrader.Input.Type.MESSAGE)
+                        .role(EvalItem.Role.USER)
+                        .type(EvalItem.Type.MESSAGE)
                         .build()
                 )
                 .model("model")
@@ -30,10 +31,10 @@ internal class ScoreModelGraderTest {
 
         assertThat(scoreModelGrader.input())
             .containsExactly(
-                ScoreModelGrader.Input.builder()
+                EvalItem.builder()
                     .content("string")
-                    .role(ScoreModelGrader.Input.Role.USER)
-                    .type(ScoreModelGrader.Input.Type.MESSAGE)
+                    .role(EvalItem.Role.USER)
+                    .type(EvalItem.Type.MESSAGE)
                     .build()
             )
         assertThat(scoreModelGrader.model()).isEqualTo("model")
@@ -49,10 +50,10 @@ internal class ScoreModelGraderTest {
         val scoreModelGrader =
             ScoreModelGrader.builder()
                 .addInput(
-                    ScoreModelGrader.Input.builder()
+                    EvalItem.builder()
                         .content("string")
-                        .role(ScoreModelGrader.Input.Role.USER)
-                        .type(ScoreModelGrader.Input.Type.MESSAGE)
+                        .role(EvalItem.Role.USER)
+                        .type(EvalItem.Type.MESSAGE)
                         .build()
                 )
                 .model("model")

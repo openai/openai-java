@@ -444,41 +444,37 @@ private constructor(
          * Alias for calling [jsonlDataSource] with
          * `CreateEvalJsonlRunDataSource.Source.ofFileContent(fileContent)`.
          */
-        fun jsonlDataSource(fileContent: CreateEvalJsonlRunDataSource.Source.FileContent) =
+        fun jsonlDataSource(fileContent: EvalJsonlFileContentSource) =
             jsonlDataSource(CreateEvalJsonlRunDataSource.Source.ofFileContent(fileContent))
 
         /**
          * Alias for calling [jsonlDataSource] with the following:
          * ```java
-         * CreateEvalJsonlRunDataSource.Source.FileContent.builder()
+         * EvalJsonlFileContentSource.builder()
          *     .content(content)
          *     .build()
          * ```
          */
-        fun fileContentJsonlDataSource(
-            content: List<CreateEvalJsonlRunDataSource.Source.FileContent.Content>
-        ) =
-            jsonlDataSource(
-                CreateEvalJsonlRunDataSource.Source.FileContent.builder().content(content).build()
-            )
+        fun fileContentJsonlDataSource(content: List<EvalJsonlFileContentSource.Content>) =
+            jsonlDataSource(EvalJsonlFileContentSource.builder().content(content).build())
 
         /**
          * Alias for calling [jsonlDataSource] with
          * `CreateEvalJsonlRunDataSource.Source.ofFileId(fileId)`.
          */
-        fun jsonlDataSource(fileId: CreateEvalJsonlRunDataSource.Source.FileId) =
+        fun jsonlDataSource(fileId: EvalJsonlFileIdSource) =
             jsonlDataSource(CreateEvalJsonlRunDataSource.Source.ofFileId(fileId))
 
         /**
          * Alias for calling [jsonlDataSource] with the following:
          * ```java
-         * CreateEvalJsonlRunDataSource.Source.FileId.builder()
+         * EvalJsonlFileIdSource.builder()
          *     .id(id)
          *     .build()
          * ```
          */
         fun fileIdJsonlDataSource(id: String) =
-            jsonlDataSource(CreateEvalJsonlRunDataSource.Source.FileId.builder().id(id).build())
+            jsonlDataSource(EvalJsonlFileIdSource.builder().id(id).build())
 
         /** Alias for calling [dataSource] with `DataSource.ofCompletions(completions)`. */
         fun dataSource(completions: CreateEvalCompletionsRunDataSource) =
@@ -505,9 +501,7 @@ private constructor(
          * Alias for calling [completionsDataSource] with
          * `CreateEvalCompletionsRunDataSource.Source.ofFileContent(fileContent)`.
          */
-        fun completionsDataSource(
-            fileContent: CreateEvalCompletionsRunDataSource.Source.FileContent
-        ) =
+        fun completionsDataSource(fileContent: EvalJsonlFileContentSource) =
             completionsDataSource(
                 CreateEvalCompletionsRunDataSource.Source.ofFileContent(fileContent)
             )
@@ -515,39 +509,31 @@ private constructor(
         /**
          * Alias for calling [completionsDataSource] with the following:
          * ```java
-         * CreateEvalCompletionsRunDataSource.Source.FileContent.builder()
+         * EvalJsonlFileContentSource.builder()
          *     .content(content)
          *     .build()
          * ```
          */
-        fun fileContentCompletionsDataSource(
-            content: List<CreateEvalCompletionsRunDataSource.Source.FileContent.Content>
-        ) =
-            completionsDataSource(
-                CreateEvalCompletionsRunDataSource.Source.FileContent.builder()
-                    .content(content)
-                    .build()
-            )
+        fun fileContentCompletionsDataSource(content: List<EvalJsonlFileContentSource.Content>) =
+            completionsDataSource(EvalJsonlFileContentSource.builder().content(content).build())
 
         /**
          * Alias for calling [completionsDataSource] with
          * `CreateEvalCompletionsRunDataSource.Source.ofFileId(fileId)`.
          */
-        fun completionsDataSource(fileId: CreateEvalCompletionsRunDataSource.Source.FileId) =
+        fun completionsDataSource(fileId: EvalJsonlFileIdSource) =
             completionsDataSource(CreateEvalCompletionsRunDataSource.Source.ofFileId(fileId))
 
         /**
          * Alias for calling [completionsDataSource] with the following:
          * ```java
-         * CreateEvalCompletionsRunDataSource.Source.FileId.builder()
+         * EvalJsonlFileIdSource.builder()
          *     .id(id)
          *     .build()
          * ```
          */
         fun fileIdCompletionsDataSource(id: String) =
-            completionsDataSource(
-                CreateEvalCompletionsRunDataSource.Source.FileId.builder().id(id).build()
-            )
+            completionsDataSource(EvalJsonlFileIdSource.builder().id(id).build())
 
         /**
          * Alias for calling [completionsDataSource] with
@@ -585,45 +571,37 @@ private constructor(
          * Alias for calling [responsesDataSource] with
          * `CreateEvalResponsesRunDataSource.Source.ofFileContent(fileContent)`.
          */
-        fun responsesDataSource(fileContent: CreateEvalResponsesRunDataSource.Source.FileContent) =
+        fun responsesDataSource(fileContent: EvalJsonlFileContentSource) =
             responsesDataSource(CreateEvalResponsesRunDataSource.Source.ofFileContent(fileContent))
 
         /**
          * Alias for calling [responsesDataSource] with the following:
          * ```java
-         * CreateEvalResponsesRunDataSource.Source.FileContent.builder()
+         * EvalJsonlFileContentSource.builder()
          *     .content(content)
          *     .build()
          * ```
          */
-        fun fileContentResponsesDataSource(
-            content: List<CreateEvalResponsesRunDataSource.Source.FileContent.Content>
-        ) =
-            responsesDataSource(
-                CreateEvalResponsesRunDataSource.Source.FileContent.builder()
-                    .content(content)
-                    .build()
-            )
+        fun fileContentResponsesDataSource(content: List<EvalJsonlFileContentSource.Content>) =
+            responsesDataSource(EvalJsonlFileContentSource.builder().content(content).build())
 
         /**
          * Alias for calling [responsesDataSource] with
          * `CreateEvalResponsesRunDataSource.Source.ofFileId(fileId)`.
          */
-        fun responsesDataSource(fileId: CreateEvalResponsesRunDataSource.Source.FileId) =
+        fun responsesDataSource(fileId: EvalJsonlFileIdSource) =
             responsesDataSource(CreateEvalResponsesRunDataSource.Source.ofFileId(fileId))
 
         /**
          * Alias for calling [responsesDataSource] with the following:
          * ```java
-         * CreateEvalResponsesRunDataSource.Source.FileId.builder()
+         * EvalJsonlFileIdSource.builder()
          *     .id(id)
          *     .build()
          * ```
          */
         fun fileIdResponsesDataSource(id: String) =
-            responsesDataSource(
-                CreateEvalResponsesRunDataSource.Source.FileId.builder().id(id).build()
-            )
+            responsesDataSource(EvalJsonlFileIdSource.builder().id(id).build())
 
         /**
          * Alias for calling [responsesDataSource] with

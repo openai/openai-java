@@ -9,6 +9,7 @@ import com.openai.models.ChatModel
 import com.openai.models.ReasoningEffort
 import com.openai.models.beta.assistants.CodeInterpreterTool
 import com.openai.models.beta.threads.AssistantToolChoiceOption
+import com.openai.models.beta.threads.TruncationObject
 import com.openai.models.beta.threads.runs.RunCancelParams
 import com.openai.models.beta.threads.runs.RunCreateParams
 import com.openai.models.beta.threads.runs.RunRetrieveParams
@@ -71,8 +72,8 @@ internal class RunServiceTest {
                     .addTool(CodeInterpreterTool.builder().build())
                     .topP(1.0)
                     .truncationStrategy(
-                        RunCreateParams.TruncationStrategy.builder()
-                            .type(RunCreateParams.TruncationStrategy.Type.AUTO)
+                        TruncationObject.builder()
+                            .type(TruncationObject.Type.AUTO)
                             .lastMessages(1L)
                             .build()
                     )
@@ -132,8 +133,8 @@ internal class RunServiceTest {
                     .addTool(CodeInterpreterTool.builder().build())
                     .topP(1.0)
                     .truncationStrategy(
-                        RunCreateParams.TruncationStrategy.builder()
-                            .type(RunCreateParams.TruncationStrategy.Type.AUTO)
+                        TruncationObject.builder()
+                            .type(TruncationObject.Type.AUTO)
                             .lastMessages(1L)
                             .build()
                     )

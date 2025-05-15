@@ -25,6 +25,7 @@ import com.openai.core.checkRequired
 import com.openai.core.getOrThrow
 import com.openai.core.toImmutable
 import com.openai.errors.OpenAIInvalidDataException
+import com.openai.models.EvalItem
 import com.openai.models.graders.gradermodels.LabelModelGrader
 import com.openai.models.graders.gradermodels.PythonGrader
 import com.openai.models.graders.gradermodels.ScoreModelGrader
@@ -1960,7 +1961,7 @@ private constructor(
         /** A ScoreModelGrader object that uses a model to assign a score to the input. */
         class EvalGraderScoreModel
         private constructor(
-            private val input: JsonField<List<ScoreModelGrader.Input>>,
+            private val input: JsonField<List<EvalItem>>,
             private val model: JsonField<String>,
             private val name: JsonField<String>,
             private val type: JsonValue,
@@ -1974,7 +1975,7 @@ private constructor(
             private constructor(
                 @JsonProperty("input")
                 @ExcludeMissing
-                input: JsonField<List<ScoreModelGrader.Input>> = JsonMissing.of(),
+                input: JsonField<List<EvalItem>> = JsonMissing.of(),
                 @JsonProperty("model") @ExcludeMissing model: JsonField<String> = JsonMissing.of(),
                 @JsonProperty("name") @ExcludeMissing name: JsonField<String> = JsonMissing.of(),
                 @JsonProperty("type") @ExcludeMissing type: JsonValue = JsonMissing.of(),
@@ -2006,7 +2007,7 @@ private constructor(
              *   unexpectedly missing or null (e.g. if the server responded with an unexpected
              *   value).
              */
-            fun input(): List<ScoreModelGrader.Input> = input.getRequired("input")
+            fun input(): List<EvalItem> = input.getRequired("input")
 
             /**
              * The model to use for the evaluation.
@@ -2065,9 +2066,7 @@ private constructor(
              *
              * Unlike [input], this method doesn't throw if the JSON field has an unexpected type.
              */
-            @JsonProperty("input")
-            @ExcludeMissing
-            fun _input(): JsonField<List<ScoreModelGrader.Input>> = input
+            @JsonProperty("input") @ExcludeMissing fun _input(): JsonField<List<EvalItem>> = input
 
             /**
              * Returns the raw JSON value of [model].
@@ -2130,7 +2129,7 @@ private constructor(
             /** A builder for [EvalGraderScoreModel]. */
             class Builder internal constructor() {
 
-                private var input: JsonField<MutableList<ScoreModelGrader.Input>>? = null
+                private var input: JsonField<MutableList<EvalItem>>? = null
                 private var model: JsonField<String>? = null
                 private var name: JsonField<String>? = null
                 private var type: JsonValue = JsonValue.from("score_model")
@@ -2152,25 +2151,25 @@ private constructor(
                 }
 
                 /** The input text. This may include template strings. */
-                fun input(input: List<ScoreModelGrader.Input>) = input(JsonField.of(input))
+                fun input(input: List<EvalItem>) = input(JsonField.of(input))
 
                 /**
                  * Sets [Builder.input] to an arbitrary JSON value.
                  *
-                 * You should usually call [Builder.input] with a well-typed
-                 * `List<ScoreModelGrader.Input>` value instead. This method is primarily for
-                 * setting the field to an undocumented or not yet supported value.
+                 * You should usually call [Builder.input] with a well-typed `List<EvalItem>` value
+                 * instead. This method is primarily for setting the field to an undocumented or not
+                 * yet supported value.
                  */
-                fun input(input: JsonField<List<ScoreModelGrader.Input>>) = apply {
+                fun input(input: JsonField<List<EvalItem>>) = apply {
                     this.input = input.map { it.toMutableList() }
                 }
 
                 /**
-                 * Adds a single [ScoreModelGrader.Input] to [Builder.input].
+                 * Adds a single [EvalItem] to [Builder.input].
                  *
                  * @throws IllegalStateException if the field was previously set to a non-list.
                  */
-                fun addInput(input: ScoreModelGrader.Input) = apply {
+                fun addInput(input: EvalItem) = apply {
                     this.input =
                         (this.input ?: JsonField.of(mutableListOf())).also {
                             checkKnown("input", it).add(input)
