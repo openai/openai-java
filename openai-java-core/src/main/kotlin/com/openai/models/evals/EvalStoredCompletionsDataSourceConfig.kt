@@ -45,11 +45,11 @@ private constructor(
     fun schema(): Schema = schema.getRequired("schema")
 
     /**
-     * The type of data source. Always `stored-completions`.
+     * The type of data source. Always `stored_completions`.
      *
      * Expected to always return the following:
      * ```java
-     * JsonValue.from("stored-completions")
+     * JsonValue.from("stored_completions")
      * ```
      *
      * However, this method can be useful for debugging and logging (e.g. if the server responded
@@ -114,7 +114,7 @@ private constructor(
     class Builder internal constructor() {
 
         private var schema: JsonField<Schema>? = null
-        private var type: JsonValue = JsonValue.from("stored-completions")
+        private var type: JsonValue = JsonValue.from("stored_completions")
         private var metadata: JsonField<Metadata> = JsonMissing.of()
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
@@ -149,7 +149,7 @@ private constructor(
          * It is usually unnecessary to call this method because the field defaults to the
          * following:
          * ```java
-         * JsonValue.from("stored-completions")
+         * JsonValue.from("stored_completions")
          * ```
          *
          * This method is primarily for setting the field to an undocumented or not yet supported
@@ -228,7 +228,7 @@ private constructor(
 
         schema().validate()
         _type().let {
-            if (it != JsonValue.from("stored-completions")) {
+            if (it != JsonValue.from("stored_completions")) {
                 throw OpenAIInvalidDataException("'type' is invalid, received $it")
             }
         }
@@ -252,7 +252,7 @@ private constructor(
     @JvmSynthetic
     internal fun validity(): Int =
         (schema.asKnown().getOrNull()?.validity() ?: 0) +
-            type.let { if (it == JsonValue.from("stored-completions")) 1 else 0 } +
+            type.let { if (it == JsonValue.from("stored_completions")) 1 else 0 } +
             (metadata.asKnown().getOrNull()?.validity() ?: 0)
 
     /**
