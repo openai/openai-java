@@ -27,7 +27,11 @@ interface RunServiceAsync {
 
     fun outputItems(): OutputItemServiceAsync
 
-    /** Create a new evaluation run. This is the endpoint that will kick off grading. */
+    /**
+     * Kicks off a new run for a given evaluation, specifying the data source, and what model
+     * configuration to use to test. The datasource will be validated against the schema specified
+     * in the config of the evaluation.
+     */
     fun create(evalId: String, params: RunCreateParams): CompletableFuture<RunCreateResponse> =
         create(evalId, params, RequestOptions.none())
 

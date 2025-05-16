@@ -1167,7 +1167,7 @@ private constructor(
             ) : this(source, type, inputMessages, model, samplingParams, mutableMapOf())
 
             /**
-             * A EvalResponsesSource object describing a run data source configuration.
+             * Determines what populates the `item` namespace in this run's data source.
              *
              * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
              *   unexpectedly missing or null (e.g. if the server responded with an unexpected
@@ -1189,6 +1189,11 @@ private constructor(
             @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
 
             /**
+             * Used when sampling from a model. Dictates the structure of the messages passed into
+             * the model. Can either be a reference to a prebuilt trajectory (ie,
+             * `item.input_trajectory`), or a template with variable references to the `item`
+             * namespace.
+             *
              * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if
              *   the server responded with an unexpected value).
              */
@@ -1289,7 +1294,7 @@ private constructor(
                     additionalProperties = responses.additionalProperties.toMutableMap()
                 }
 
-                /** A EvalResponsesSource object describing a run data source configuration. */
+                /** Determines what populates the `item` namespace in this run's data source. */
                 fun source(source: Source) = source(JsonField.of(source))
 
                 /**
@@ -1346,6 +1351,12 @@ private constructor(
                  */
                 fun type(type: JsonValue) = apply { this.type = type }
 
+                /**
+                 * Used when sampling from a model. Dictates the structure of the messages passed
+                 * into the model. Can either be a reference to a prebuilt trajectory (ie,
+                 * `item.input_trajectory`), or a template with variable references to the `item`
+                 * namespace.
+                 */
                 fun inputMessages(inputMessages: InputMessages) =
                     inputMessages(JsonField.of(inputMessages))
 
@@ -1507,7 +1518,7 @@ private constructor(
                     (if (model.asKnown().isPresent) 1 else 0) +
                     (samplingParams.asKnown().getOrNull()?.validity() ?: 0)
 
-            /** A EvalResponsesSource object describing a run data source configuration. */
+            /** Determines what populates the `item` namespace in this run's data source. */
             @JsonDeserialize(using = Source.Deserializer::class)
             @JsonSerialize(using = Source.Serializer::class)
             class Source
@@ -2572,7 +2583,6 @@ private constructor(
                     private val type: JsonValue,
                     private val createdAfter: JsonField<Long>,
                     private val createdBefore: JsonField<Long>,
-                    private val hasToolCalls: JsonField<Boolean>,
                     private val instructionsSearch: JsonField<String>,
                     private val metadata: JsonValue,
                     private val model: JsonField<String>,
@@ -2593,9 +2603,6 @@ private constructor(
                         @JsonProperty("created_before")
                         @ExcludeMissing
                         createdBefore: JsonField<Long> = JsonMissing.of(),
-                        @JsonProperty("has_tool_calls")
-                        @ExcludeMissing
-                        hasToolCalls: JsonField<Boolean> = JsonMissing.of(),
                         @JsonProperty("instructions_search")
                         @ExcludeMissing
                         instructionsSearch: JsonField<String> = JsonMissing.of(),
@@ -2624,7 +2631,6 @@ private constructor(
                         type,
                         createdAfter,
                         createdBefore,
-                        hasToolCalls,
                         instructionsSearch,
                         metadata,
                         model,
@@ -2667,16 +2673,6 @@ private constructor(
                      */
                     fun createdBefore(): Optional<Long> =
                         createdBefore.getOptional("created_before")
-
-                    /**
-                     * Whether the response has tool calls. This is a query parameter used to select
-                     * responses.
-                     *
-                     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type
-                     *   (e.g. if the server responded with an unexpected value).
-                     */
-                    fun hasToolCalls(): Optional<Boolean> =
-                        hasToolCalls.getOptional("has_tool_calls")
 
                     /**
                      * Optional string to search the 'instructions' field. This is a query parameter
@@ -2765,16 +2761,6 @@ private constructor(
                     @JsonProperty("created_before")
                     @ExcludeMissing
                     fun _createdBefore(): JsonField<Long> = createdBefore
-
-                    /**
-                     * Returns the raw JSON value of [hasToolCalls].
-                     *
-                     * Unlike [hasToolCalls], this method doesn't throw if the JSON field has an
-                     * unexpected type.
-                     */
-                    @JsonProperty("has_tool_calls")
-                    @ExcludeMissing
-                    fun _hasToolCalls(): JsonField<Boolean> = hasToolCalls
 
                     /**
                      * Returns the raw JSON value of [instructionsSearch].
@@ -2869,7 +2855,6 @@ private constructor(
                         private var type: JsonValue = JsonValue.from("responses")
                         private var createdAfter: JsonField<Long> = JsonMissing.of()
                         private var createdBefore: JsonField<Long> = JsonMissing.of()
-                        private var hasToolCalls: JsonField<Boolean> = JsonMissing.of()
                         private var instructionsSearch: JsonField<String> = JsonMissing.of()
                         private var metadata: JsonValue = JsonMissing.of()
                         private var model: JsonField<String> = JsonMissing.of()
@@ -2886,7 +2871,6 @@ private constructor(
                             type = innerResponses.type
                             createdAfter = innerResponses.createdAfter
                             createdBefore = innerResponses.createdBefore
-                            hasToolCalls = innerResponses.hasToolCalls
                             instructionsSearch = innerResponses.instructionsSearch
                             metadata = innerResponses.metadata
                             model = innerResponses.model
@@ -2976,39 +2960,6 @@ private constructor(
                          */
                         fun createdBefore(createdBefore: JsonField<Long>) = apply {
                             this.createdBefore = createdBefore
-                        }
-
-                        /**
-                         * Whether the response has tool calls. This is a query parameter used to
-                         * select responses.
-                         */
-                        fun hasToolCalls(hasToolCalls: Boolean?) =
-                            hasToolCalls(JsonField.ofNullable(hasToolCalls))
-
-                        /**
-                         * Alias for [Builder.hasToolCalls].
-                         *
-                         * This unboxed primitive overload exists for backwards compatibility.
-                         */
-                        fun hasToolCalls(hasToolCalls: Boolean) =
-                            hasToolCalls(hasToolCalls as Boolean?)
-
-                        /**
-                         * Alias for calling [Builder.hasToolCalls] with
-                         * `hasToolCalls.orElse(null)`.
-                         */
-                        fun hasToolCalls(hasToolCalls: Optional<Boolean>) =
-                            hasToolCalls(hasToolCalls.getOrNull())
-
-                        /**
-                         * Sets [Builder.hasToolCalls] to an arbitrary JSON value.
-                         *
-                         * You should usually call [Builder.hasToolCalls] with a well-typed
-                         * [Boolean] value instead. This method is primarily for setting the field
-                         * to an undocumented or not yet supported value.
-                         */
-                        fun hasToolCalls(hasToolCalls: JsonField<Boolean>) = apply {
-                            this.hasToolCalls = hasToolCalls
                         }
 
                         /**
@@ -3237,7 +3188,6 @@ private constructor(
                                 type,
                                 createdAfter,
                                 createdBefore,
-                                hasToolCalls,
                                 instructionsSearch,
                                 metadata,
                                 model,
@@ -3264,7 +3214,6 @@ private constructor(
                         }
                         createdAfter()
                         createdBefore()
-                        hasToolCalls()
                         instructionsSearch()
                         model()
                         reasoningEffort().ifPresent { it.validate() }
@@ -3294,7 +3243,6 @@ private constructor(
                         type.let { if (it == JsonValue.from("responses")) 1 else 0 } +
                             (if (createdAfter.asKnown().isPresent) 1 else 0) +
                             (if (createdBefore.asKnown().isPresent) 1 else 0) +
-                            (if (hasToolCalls.asKnown().isPresent) 1 else 0) +
                             (if (instructionsSearch.asKnown().isPresent) 1 else 0) +
                             (if (model.asKnown().isPresent) 1 else 0) +
                             (reasoningEffort.asKnown().getOrNull()?.validity() ?: 0) +
@@ -3308,20 +3256,26 @@ private constructor(
                             return true
                         }
 
-                        return /* spotless:off */ other is InnerResponses && type == other.type && createdAfter == other.createdAfter && createdBefore == other.createdBefore && hasToolCalls == other.hasToolCalls && instructionsSearch == other.instructionsSearch && metadata == other.metadata && model == other.model && reasoningEffort == other.reasoningEffort && temperature == other.temperature && tools == other.tools && topP == other.topP && users == other.users && additionalProperties == other.additionalProperties /* spotless:on */
+                        return /* spotless:off */ other is InnerResponses && type == other.type && createdAfter == other.createdAfter && createdBefore == other.createdBefore && instructionsSearch == other.instructionsSearch && metadata == other.metadata && model == other.model && reasoningEffort == other.reasoningEffort && temperature == other.temperature && tools == other.tools && topP == other.topP && users == other.users && additionalProperties == other.additionalProperties /* spotless:on */
                     }
 
                     /* spotless:off */
-                    private val hashCode: Int by lazy { Objects.hash(type, createdAfter, createdBefore, hasToolCalls, instructionsSearch, metadata, model, reasoningEffort, temperature, tools, topP, users, additionalProperties) }
+                    private val hashCode: Int by lazy { Objects.hash(type, createdAfter, createdBefore, instructionsSearch, metadata, model, reasoningEffort, temperature, tools, topP, users, additionalProperties) }
                     /* spotless:on */
 
                     override fun hashCode(): Int = hashCode
 
                     override fun toString() =
-                        "InnerResponses{type=$type, createdAfter=$createdAfter, createdBefore=$createdBefore, hasToolCalls=$hasToolCalls, instructionsSearch=$instructionsSearch, metadata=$metadata, model=$model, reasoningEffort=$reasoningEffort, temperature=$temperature, tools=$tools, topP=$topP, users=$users, additionalProperties=$additionalProperties}"
+                        "InnerResponses{type=$type, createdAfter=$createdAfter, createdBefore=$createdBefore, instructionsSearch=$instructionsSearch, metadata=$metadata, model=$model, reasoningEffort=$reasoningEffort, temperature=$temperature, tools=$tools, topP=$topP, users=$users, additionalProperties=$additionalProperties}"
                 }
             }
 
+            /**
+             * Used when sampling from a model. Dictates the structure of the messages passed into
+             * the model. Can either be a reference to a prebuilt trajectory (ie,
+             * `item.input_trajectory`), or a template with variable references to the `item`
+             * namespace.
+             */
             @JsonDeserialize(using = InputMessages.Deserializer::class)
             @JsonSerialize(using = InputMessages.Serializer::class)
             class InputMessages
@@ -3511,7 +3465,7 @@ private constructor(
 
                     /**
                      * A list of chat messages forming the prompt or context. May include variable
-                     * references to the "item" namespace, ie {{item.name}}.
+                     * references to the `item` namespace, ie {{item.name}}.
                      *
                      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type
                      *   or is unexpectedly missing or null (e.g. if the server responded with an
@@ -3584,7 +3538,7 @@ private constructor(
 
                         /**
                          * A list of chat messages forming the prompt or context. May include
-                         * variable references to the "item" namespace, ie {{item.name}}.
+                         * variable references to the `item` namespace, ie {{item.name}}.
                          */
                         fun template(template: List<InnerTemplate>) =
                             template(JsonField.of(template))
@@ -5261,7 +5215,7 @@ private constructor(
                     ) : this(itemReference, type, mutableMapOf())
 
                     /**
-                     * A reference to a variable in the "item" namespace. Ie, "item.name"
+                     * A reference to a variable in the `item` namespace. Ie, "item.name"
                      *
                      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type
                      *   or is unexpectedly missing or null (e.g. if the server responded with an
@@ -5333,7 +5287,7 @@ private constructor(
                             additionalProperties = itemReference.additionalProperties.toMutableMap()
                         }
 
-                        /** A reference to a variable in the "item" namespace. Ie, "item.name" */
+                        /** A reference to a variable in the `item` namespace. Ie, "item.name" */
                         fun itemReference(itemReference: String) =
                             itemReference(JsonField.of(itemReference))
 

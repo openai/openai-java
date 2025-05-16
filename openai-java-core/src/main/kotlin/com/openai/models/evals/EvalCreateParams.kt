@@ -41,10 +41,10 @@ import kotlin.jvm.optionals.getOrNull
 
 /**
  * Create the structure of an evaluation that can be used to test a model's performance. An
- * evaluation is a set of testing criteria and a datasource. After creating an evaluation, you can
- * run it on different models and model parameters. We support several types of graders and
- * datasources. For more information, see the
- * [Evals guide](https://platform.openai.com/docs/guides/evals).
+ * evaluation is a set of testing criteria and the config for a data source, which dictates the
+ * schema of the data used in the evaluation. After creating an evaluation, you can run it on
+ * different models and model parameters. We support several types of graders and datasources. For
+ * more information, see the [Evals guide](https://platform.openai.com/docs/guides/evals).
  */
 class EvalCreateParams
 private constructor(
@@ -54,7 +54,8 @@ private constructor(
 ) : Params {
 
     /**
-     * The configuration for the data source used for the evaluation runs.
+     * The configuration for the data source used for the evaluation runs. Dictates the schema of
+     * the data used in the evaluation.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
      *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
@@ -62,7 +63,9 @@ private constructor(
     fun dataSourceConfig(): DataSourceConfig = body.dataSourceConfig()
 
     /**
-     * A list of graders for all eval runs in this group.
+     * A list of graders for all eval runs in this group. Graders can reference variables in the
+     * data source using double curly braces notation, like `{{item.variable_name}}`. To reference
+     * the model's output, use the `sample` namespace (ie, `{{sample.output_text}}`).
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
      *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
@@ -167,7 +170,10 @@ private constructor(
          */
         fun body(body: Body) = apply { this.body = body.toBuilder() }
 
-        /** The configuration for the data source used for the evaluation runs. */
+        /**
+         * The configuration for the data source used for the evaluation runs. Dictates the schema
+         * of the data used in the evaluation.
+         */
         fun dataSourceConfig(dataSourceConfig: DataSourceConfig) = apply {
             body.dataSourceConfig(dataSourceConfig)
         }
@@ -207,11 +213,16 @@ private constructor(
          * Alias for calling [dataSourceConfig] with
          * `DataSourceConfig.ofStoredCompletions(storedCompletions)`.
          */
+        @Deprecated("deprecated")
         fun dataSourceConfig(storedCompletions: DataSourceConfig.StoredCompletions) = apply {
             body.dataSourceConfig(storedCompletions)
         }
 
-        /** A list of graders for all eval runs in this group. */
+        /**
+         * A list of graders for all eval runs in this group. Graders can reference variables in the
+         * data source using double curly braces notation, like `{{item.variable_name}}`. To
+         * reference the model's output, use the `sample` namespace (ie, `{{sample.output_text}}`).
+         */
         fun testingCriteria(testingCriteria: List<TestingCriterion>) = apply {
             body.testingCriteria(testingCriteria)
         }
@@ -468,7 +479,8 @@ private constructor(
         ) : this(dataSourceConfig, testingCriteria, metadata, name, mutableMapOf())
 
         /**
-         * The configuration for the data source used for the evaluation runs.
+         * The configuration for the data source used for the evaluation runs. Dictates the schema
+         * of the data used in the evaluation.
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
          *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
@@ -477,7 +489,9 @@ private constructor(
             dataSourceConfig.getRequired("data_source_config")
 
         /**
-         * A list of graders for all eval runs in this group.
+         * A list of graders for all eval runs in this group. Graders can reference variables in the
+         * data source using double curly braces notation, like `{{item.variable_name}}`. To
+         * reference the model's output, use the `sample` namespace (ie, `{{sample.output_text}}`).
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
          *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
@@ -584,7 +598,10 @@ private constructor(
                 additionalProperties = body.additionalProperties.toMutableMap()
             }
 
-            /** The configuration for the data source used for the evaluation runs. */
+            /**
+             * The configuration for the data source used for the evaluation runs. Dictates the
+             * schema of the data used in the evaluation.
+             */
             fun dataSourceConfig(dataSourceConfig: DataSourceConfig) =
                 dataSourceConfig(JsonField.of(dataSourceConfig))
 
@@ -622,10 +639,16 @@ private constructor(
              * Alias for calling [dataSourceConfig] with
              * `DataSourceConfig.ofStoredCompletions(storedCompletions)`.
              */
+            @Deprecated("deprecated")
             fun dataSourceConfig(storedCompletions: DataSourceConfig.StoredCompletions) =
                 dataSourceConfig(DataSourceConfig.ofStoredCompletions(storedCompletions))
 
-            /** A list of graders for all eval runs in this group. */
+            /**
+             * A list of graders for all eval runs in this group. Graders can reference variables in
+             * the data source using double curly braces notation, like `{{item.variable_name}}`. To
+             * reference the model's output, use the `sample` namespace (ie,
+             * `{{sample.output_text}}`).
+             */
             fun testingCriteria(testingCriteria: List<TestingCriterion>) =
                 testingCriteria(JsonField.of(testingCriteria))
 
@@ -813,7 +836,10 @@ private constructor(
             "Body{dataSourceConfig=$dataSourceConfig, testingCriteria=$testingCriteria, metadata=$metadata, name=$name, additionalProperties=$additionalProperties}"
     }
 
-    /** The configuration for the data source used for the evaluation runs. */
+    /**
+     * The configuration for the data source used for the evaluation runs. Dictates the schema of
+     * the data used in the evaluation.
+     */
     @JsonDeserialize(using = DataSourceConfig.Deserializer::class)
     @JsonSerialize(using = DataSourceConfig.Serializer::class)
     class DataSourceConfig
@@ -839,6 +865,7 @@ private constructor(
         fun logs(): Optional<Logs> = Optional.ofNullable(logs)
 
         /** Deprecated in favor of LogsDataSourceConfig. */
+        @Deprecated("deprecated")
         fun storedCompletions(): Optional<StoredCompletions> =
             Optional.ofNullable(storedCompletions)
 
@@ -846,7 +873,7 @@ private constructor(
 
         fun isLogs(): Boolean = logs != null
 
-        fun isStoredCompletions(): Boolean = storedCompletions != null
+        @Deprecated("deprecated") fun isStoredCompletions(): Boolean = storedCompletions != null
 
         /**
          * A CustomDataSourceConfig object that defines the schema for the data source used for the
@@ -863,6 +890,7 @@ private constructor(
         fun asLogs(): Logs = logs.getOrThrow("logs")
 
         /** Deprecated in favor of LogsDataSourceConfig. */
+        @Deprecated("deprecated")
         fun asStoredCompletions(): StoredCompletions =
             storedCompletions.getOrThrow("storedCompletions")
 
@@ -968,6 +996,7 @@ private constructor(
             @JvmStatic fun ofLogs(logs: Logs) = DataSourceConfig(logs = logs)
 
             /** Deprecated in favor of LogsDataSourceConfig. */
+            @Deprecated("deprecated")
             @JvmStatic
             fun ofStoredCompletions(storedCompletions: StoredCompletions) =
                 DataSourceConfig(storedCompletions = storedCompletions)
@@ -995,6 +1024,7 @@ private constructor(
             fun visitLogs(logs: Logs): T
 
             /** Deprecated in favor of LogsDataSourceConfig. */
+            @Deprecated("deprecated")
             fun visitStoredCompletions(storedCompletions: StoredCompletions): T
 
             /**
@@ -1029,7 +1059,7 @@ private constructor(
                             DataSourceConfig(logs = it, _json = json)
                         } ?: DataSourceConfig(_json = json)
                     }
-                    "stored-completions" -> {
+                    "stored_completions" -> {
                         return tryDeserialize(node, jacksonTypeRef<StoredCompletions>())?.let {
                             DataSourceConfig(storedCompletions = it, _json = json)
                         } ?: DataSourceConfig(_json = json)
@@ -1726,6 +1756,7 @@ private constructor(
         }
 
         /** Deprecated in favor of LogsDataSourceConfig. */
+        @Deprecated("deprecated")
         class StoredCompletions
         private constructor(
             private val type: JsonValue,
@@ -1742,11 +1773,11 @@ private constructor(
             ) : this(type, metadata, mutableMapOf())
 
             /**
-             * The type of data source. Always `stored-completions`.
+             * The type of data source. Always `stored_completions`.
              *
              * Expected to always return the following:
              * ```java
-             * JsonValue.from("stored-completions")
+             * JsonValue.from("stored_completions")
              * ```
              *
              * However, this method can be useful for debugging and logging (e.g. if the server
@@ -1795,7 +1826,7 @@ private constructor(
             /** A builder for [StoredCompletions]. */
             class Builder internal constructor() {
 
-                private var type: JsonValue = JsonValue.from("stored-completions")
+                private var type: JsonValue = JsonValue.from("stored_completions")
                 private var metadata: JsonField<Metadata> = JsonMissing.of()
                 private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
@@ -1812,7 +1843,7 @@ private constructor(
                  * It is usually unnecessary to call this method because the field defaults to the
                  * following:
                  * ```java
-                 * JsonValue.from("stored-completions")
+                 * JsonValue.from("stored_completions")
                  * ```
                  *
                  * This method is primarily for setting the field to an undocumented or not yet
@@ -1871,7 +1902,7 @@ private constructor(
                 }
 
                 _type().let {
-                    if (it != JsonValue.from("stored-completions")) {
+                    if (it != JsonValue.from("stored_completions")) {
                         throw OpenAIInvalidDataException("'type' is invalid, received $it")
                     }
                 }
@@ -1895,7 +1926,7 @@ private constructor(
              */
             @JvmSynthetic
             internal fun validity(): Int =
-                type.let { if (it == JsonValue.from("stored-completions")) 1 else 0 } +
+                type.let { if (it == JsonValue.from("stored_completions")) 1 else 0 } +
                     (metadata.asKnown().getOrNull()?.validity() ?: 0)
 
             /** Metadata filters for the stored completions data source. */
@@ -2353,7 +2384,7 @@ private constructor(
 
             /**
              * A list of chat messages forming the prompt or context. May include variable
-             * references to the "item" namespace, ie {{item.name}}.
+             * references to the `item` namespace, ie {{item.name}}.
              *
              * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
              *   unexpectedly missing or null (e.g. if the server responded with an unexpected
@@ -2501,7 +2532,7 @@ private constructor(
 
                 /**
                  * A list of chat messages forming the prompt or context. May include variable
-                 * references to the "item" namespace, ie {{item.name}}.
+                 * references to the `item` namespace, ie {{item.name}}.
                  */
                 fun input(input: List<Input>) = input(JsonField.of(input))
 
@@ -2724,7 +2755,7 @@ private constructor(
 
             /**
              * A chat message that makes up the prompt or context. May include variable references
-             * to the "item" namespace, ie {{item.name}}.
+             * to the `item` namespace, ie {{item.name}}.
              */
             @JsonDeserialize(using = Input.Deserializer::class)
             @JsonSerialize(using = Input.Serializer::class)
