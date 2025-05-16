@@ -11,7 +11,6 @@ import com.openai.models.beta.threads.AssistantToolChoiceOption
 import com.openai.models.beta.threads.ThreadCreateAndRunParams
 import com.openai.models.beta.threads.ThreadCreateParams
 import com.openai.models.beta.threads.ThreadUpdateParams
-import com.openai.models.beta.threads.TruncationObject
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 
@@ -264,8 +263,8 @@ internal class ThreadServiceTest {
                     .addTool(CodeInterpreterTool.builder().build())
                     .topP(1.0)
                     .truncationStrategy(
-                        TruncationObject.builder()
-                            .type(TruncationObject.Type.AUTO)
+                        ThreadCreateAndRunParams.TruncationStrategy.builder()
+                            .type(ThreadCreateAndRunParams.TruncationStrategy.Type.AUTO)
                             .lastMessages(1L)
                             .build()
                     )
@@ -383,8 +382,8 @@ internal class ThreadServiceTest {
                     .addTool(CodeInterpreterTool.builder().build())
                     .topP(1.0)
                     .truncationStrategy(
-                        TruncationObject.builder()
-                            .type(TruncationObject.Type.AUTO)
+                        ThreadCreateAndRunParams.TruncationStrategy.builder()
+                            .type(ThreadCreateAndRunParams.TruncationStrategy.Type.AUTO)
                             .lastMessages(1L)
                             .build()
                     )

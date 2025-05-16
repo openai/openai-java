@@ -26,8 +26,8 @@ import com.openai.core.checkRequired
 import com.openai.core.getOrThrow
 import com.openai.core.toImmutable
 import com.openai.errors.OpenAIInvalidDataException
-import com.openai.models.EvalItem
 import com.openai.models.responses.EasyInputMessage
+import com.openai.models.responses.ResponseInputText
 import java.util.Collections
 import java.util.Objects
 import java.util.Optional
@@ -193,32 +193,31 @@ private constructor(
         fun source(source: JsonField<Source>) = apply { this.source = source }
 
         /** Alias for calling [source] with `Source.ofFileContent(fileContent)`. */
-        fun source(fileContent: EvalJsonlFileContentSource) =
-            source(Source.ofFileContent(fileContent))
+        fun source(fileContent: Source.FileContent) = source(Source.ofFileContent(fileContent))
 
         /**
          * Alias for calling [source] with the following:
          * ```java
-         * EvalJsonlFileContentSource.builder()
+         * Source.FileContent.builder()
          *     .content(content)
          *     .build()
          * ```
          */
-        fun fileContentSource(content: List<EvalJsonlFileContentSource.Content>) =
-            source(EvalJsonlFileContentSource.builder().content(content).build())
+        fun fileContentSource(content: List<Source.FileContent.Content>) =
+            source(Source.FileContent.builder().content(content).build())
 
         /** Alias for calling [source] with `Source.ofFileId(fileId)`. */
-        fun source(fileId: EvalJsonlFileIdSource) = source(Source.ofFileId(fileId))
+        fun source(fileId: Source.FileId) = source(Source.ofFileId(fileId))
 
         /**
          * Alias for calling [source] with the following:
          * ```java
-         * EvalJsonlFileIdSource.builder()
+         * Source.FileId.builder()
          *     .id(id)
          *     .build()
          * ```
          */
-        fun fileIdSource(id: String) = source(EvalJsonlFileIdSource.builder().id(id).build())
+        fun fileIdSource(id: String) = source(Source.FileId.builder().id(id).build())
 
         /** Alias for calling [source] with `Source.ofStoredCompletions(storedCompletions)`. */
         fun source(storedCompletions: Source.StoredCompletions) =
@@ -391,15 +390,15 @@ private constructor(
     @JsonSerialize(using = Source.Serializer::class)
     class Source
     private constructor(
-        private val fileContent: EvalJsonlFileContentSource? = null,
-        private val fileId: EvalJsonlFileIdSource? = null,
+        private val fileContent: FileContent? = null,
+        private val fileId: FileId? = null,
         private val storedCompletions: StoredCompletions? = null,
         private val _json: JsonValue? = null,
     ) {
 
-        fun fileContent(): Optional<EvalJsonlFileContentSource> = Optional.ofNullable(fileContent)
+        fun fileContent(): Optional<FileContent> = Optional.ofNullable(fileContent)
 
-        fun fileId(): Optional<EvalJsonlFileIdSource> = Optional.ofNullable(fileId)
+        fun fileId(): Optional<FileId> = Optional.ofNullable(fileId)
 
         /** A StoredCompletionsRunDataSource configuration describing a set of filters */
         fun storedCompletions(): Optional<StoredCompletions> =
@@ -411,9 +410,9 @@ private constructor(
 
         fun isStoredCompletions(): Boolean = storedCompletions != null
 
-        fun asFileContent(): EvalJsonlFileContentSource = fileContent.getOrThrow("fileContent")
+        fun asFileContent(): FileContent = fileContent.getOrThrow("fileContent")
 
-        fun asFileId(): EvalJsonlFileIdSource = fileId.getOrThrow("fileId")
+        fun asFileId(): FileId = fileId.getOrThrow("fileId")
 
         /** A StoredCompletionsRunDataSource configuration describing a set of filters */
         fun asStoredCompletions(): StoredCompletions =
@@ -438,11 +437,11 @@ private constructor(
 
             accept(
                 object : Visitor<Unit> {
-                    override fun visitFileContent(fileContent: EvalJsonlFileContentSource) {
+                    override fun visitFileContent(fileContent: FileContent) {
                         fileContent.validate()
                     }
 
-                    override fun visitFileId(fileId: EvalJsonlFileIdSource) {
+                    override fun visitFileId(fileId: FileId) {
                         fileId.validate()
                     }
 
@@ -472,10 +471,9 @@ private constructor(
         internal fun validity(): Int =
             accept(
                 object : Visitor<Int> {
-                    override fun visitFileContent(fileContent: EvalJsonlFileContentSource) =
-                        fileContent.validity()
+                    override fun visitFileContent(fileContent: FileContent) = fileContent.validity()
 
-                    override fun visitFileId(fileId: EvalJsonlFileIdSource) = fileId.validity()
+                    override fun visitFileId(fileId: FileId) = fileId.validity()
 
                     override fun visitStoredCompletions(storedCompletions: StoredCompletions) =
                         storedCompletions.validity()
@@ -506,10 +504,9 @@ private constructor(
         companion object {
 
             @JvmStatic
-            fun ofFileContent(fileContent: EvalJsonlFileContentSource) =
-                Source(fileContent = fileContent)
+            fun ofFileContent(fileContent: FileContent) = Source(fileContent = fileContent)
 
-            @JvmStatic fun ofFileId(fileId: EvalJsonlFileIdSource) = Source(fileId = fileId)
+            @JvmStatic fun ofFileId(fileId: FileId) = Source(fileId = fileId)
 
             /** A StoredCompletionsRunDataSource configuration describing a set of filters */
             @JvmStatic
@@ -520,9 +517,9 @@ private constructor(
         /** An interface that defines how to map each variant of [Source] to a value of type [T]. */
         interface Visitor<out T> {
 
-            fun visitFileContent(fileContent: EvalJsonlFileContentSource): T
+            fun visitFileContent(fileContent: FileContent): T
 
-            fun visitFileId(fileId: EvalJsonlFileIdSource): T
+            fun visitFileId(fileId: FileId): T
 
             /** A StoredCompletionsRunDataSource configuration describing a set of filters */
             fun visitStoredCompletions(storedCompletions: StoredCompletions): T
@@ -550,11 +547,12 @@ private constructor(
 
                 when (type) {
                     "file_content" -> {
-                        return tryDeserialize(node, jacksonTypeRef<EvalJsonlFileContentSource>())
-                            ?.let { Source(fileContent = it, _json = json) } ?: Source(_json = json)
+                        return tryDeserialize(node, jacksonTypeRef<FileContent>())?.let {
+                            Source(fileContent = it, _json = json)
+                        } ?: Source(_json = json)
                     }
                     "file_id" -> {
-                        return tryDeserialize(node, jacksonTypeRef<EvalJsonlFileIdSource>())?.let {
+                        return tryDeserialize(node, jacksonTypeRef<FileId>())?.let {
                             Source(fileId = it, _json = json)
                         } ?: Source(_json = json)
                     }
@@ -585,6 +583,834 @@ private constructor(
                     else -> throw IllegalStateException("Invalid Source")
                 }
             }
+        }
+
+        class FileContent
+        private constructor(
+            private val content: JsonField<List<Content>>,
+            private val type: JsonValue,
+            private val additionalProperties: MutableMap<String, JsonValue>,
+        ) {
+
+            @JsonCreator
+            private constructor(
+                @JsonProperty("content")
+                @ExcludeMissing
+                content: JsonField<List<Content>> = JsonMissing.of(),
+                @JsonProperty("type") @ExcludeMissing type: JsonValue = JsonMissing.of(),
+            ) : this(content, type, mutableMapOf())
+
+            /**
+             * The content of the jsonl file.
+             *
+             * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+             *   unexpectedly missing or null (e.g. if the server responded with an unexpected
+             *   value).
+             */
+            fun content(): List<Content> = content.getRequired("content")
+
+            /**
+             * The type of jsonl source. Always `file_content`.
+             *
+             * Expected to always return the following:
+             * ```java
+             * JsonValue.from("file_content")
+             * ```
+             *
+             * However, this method can be useful for debugging and logging (e.g. if the server
+             * responded with an unexpected value).
+             */
+            @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
+
+            /**
+             * Returns the raw JSON value of [content].
+             *
+             * Unlike [content], this method doesn't throw if the JSON field has an unexpected type.
+             */
+            @JsonProperty("content")
+            @ExcludeMissing
+            fun _content(): JsonField<List<Content>> = content
+
+            @JsonAnySetter
+            private fun putAdditionalProperty(key: String, value: JsonValue) {
+                additionalProperties.put(key, value)
+            }
+
+            @JsonAnyGetter
+            @ExcludeMissing
+            fun _additionalProperties(): Map<String, JsonValue> =
+                Collections.unmodifiableMap(additionalProperties)
+
+            fun toBuilder() = Builder().from(this)
+
+            companion object {
+
+                /**
+                 * Returns a mutable builder for constructing an instance of [FileContent].
+                 *
+                 * The following fields are required:
+                 * ```java
+                 * .content()
+                 * ```
+                 */
+                @JvmStatic fun builder() = Builder()
+            }
+
+            /** A builder for [FileContent]. */
+            class Builder internal constructor() {
+
+                private var content: JsonField<MutableList<Content>>? = null
+                private var type: JsonValue = JsonValue.from("file_content")
+                private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
+
+                @JvmSynthetic
+                internal fun from(fileContent: FileContent) = apply {
+                    content = fileContent.content.map { it.toMutableList() }
+                    type = fileContent.type
+                    additionalProperties = fileContent.additionalProperties.toMutableMap()
+                }
+
+                /** The content of the jsonl file. */
+                fun content(content: List<Content>) = content(JsonField.of(content))
+
+                /**
+                 * Sets [Builder.content] to an arbitrary JSON value.
+                 *
+                 * You should usually call [Builder.content] with a well-typed `List<Content>` value
+                 * instead. This method is primarily for setting the field to an undocumented or not
+                 * yet supported value.
+                 */
+                fun content(content: JsonField<List<Content>>) = apply {
+                    this.content = content.map { it.toMutableList() }
+                }
+
+                /**
+                 * Adds a single [Content] to [Builder.content].
+                 *
+                 * @throws IllegalStateException if the field was previously set to a non-list.
+                 */
+                fun addContent(content: Content) = apply {
+                    this.content =
+                        (this.content ?: JsonField.of(mutableListOf())).also {
+                            checkKnown("content", it).add(content)
+                        }
+                }
+
+                /**
+                 * Sets the field to an arbitrary JSON value.
+                 *
+                 * It is usually unnecessary to call this method because the field defaults to the
+                 * following:
+                 * ```java
+                 * JsonValue.from("file_content")
+                 * ```
+                 *
+                 * This method is primarily for setting the field to an undocumented or not yet
+                 * supported value.
+                 */
+                fun type(type: JsonValue) = apply { this.type = type }
+
+                fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                    this.additionalProperties.clear()
+                    putAllAdditionalProperties(additionalProperties)
+                }
+
+                fun putAdditionalProperty(key: String, value: JsonValue) = apply {
+                    additionalProperties.put(key, value)
+                }
+
+                fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) =
+                    apply {
+                        this.additionalProperties.putAll(additionalProperties)
+                    }
+
+                fun removeAdditionalProperty(key: String) = apply {
+                    additionalProperties.remove(key)
+                }
+
+                fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                    keys.forEach(::removeAdditionalProperty)
+                }
+
+                /**
+                 * Returns an immutable instance of [FileContent].
+                 *
+                 * Further updates to this [Builder] will not mutate the returned instance.
+                 *
+                 * The following fields are required:
+                 * ```java
+                 * .content()
+                 * ```
+                 *
+                 * @throws IllegalStateException if any required field is unset.
+                 */
+                fun build(): FileContent =
+                    FileContent(
+                        checkRequired("content", content).map { it.toImmutable() },
+                        type,
+                        additionalProperties.toMutableMap(),
+                    )
+            }
+
+            private var validated: Boolean = false
+
+            fun validate(): FileContent = apply {
+                if (validated) {
+                    return@apply
+                }
+
+                content().forEach { it.validate() }
+                _type().let {
+                    if (it != JsonValue.from("file_content")) {
+                        throw OpenAIInvalidDataException("'type' is invalid, received $it")
+                    }
+                }
+                validated = true
+            }
+
+            fun isValid(): Boolean =
+                try {
+                    validate()
+                    true
+                } catch (e: OpenAIInvalidDataException) {
+                    false
+                }
+
+            /**
+             * Returns a score indicating how many valid values are contained in this object
+             * recursively.
+             *
+             * Used for best match union deserialization.
+             */
+            @JvmSynthetic
+            internal fun validity(): Int =
+                (content.asKnown().getOrNull()?.sumOf { it.validity().toInt() } ?: 0) +
+                    type.let { if (it == JsonValue.from("file_content")) 1 else 0 }
+
+            class Content
+            private constructor(
+                private val item: JsonField<Item>,
+                private val sample: JsonField<Sample>,
+                private val additionalProperties: MutableMap<String, JsonValue>,
+            ) {
+
+                @JsonCreator
+                private constructor(
+                    @JsonProperty("item") @ExcludeMissing item: JsonField<Item> = JsonMissing.of(),
+                    @JsonProperty("sample")
+                    @ExcludeMissing
+                    sample: JsonField<Sample> = JsonMissing.of(),
+                ) : this(item, sample, mutableMapOf())
+
+                /**
+                 * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+                 *   unexpectedly missing or null (e.g. if the server responded with an unexpected
+                 *   value).
+                 */
+                fun item(): Item = item.getRequired("item")
+
+                /**
+                 * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g.
+                 *   if the server responded with an unexpected value).
+                 */
+                fun sample(): Optional<Sample> = sample.getOptional("sample")
+
+                /**
+                 * Returns the raw JSON value of [item].
+                 *
+                 * Unlike [item], this method doesn't throw if the JSON field has an unexpected
+                 * type.
+                 */
+                @JsonProperty("item") @ExcludeMissing fun _item(): JsonField<Item> = item
+
+                /**
+                 * Returns the raw JSON value of [sample].
+                 *
+                 * Unlike [sample], this method doesn't throw if the JSON field has an unexpected
+                 * type.
+                 */
+                @JsonProperty("sample") @ExcludeMissing fun _sample(): JsonField<Sample> = sample
+
+                @JsonAnySetter
+                private fun putAdditionalProperty(key: String, value: JsonValue) {
+                    additionalProperties.put(key, value)
+                }
+
+                @JsonAnyGetter
+                @ExcludeMissing
+                fun _additionalProperties(): Map<String, JsonValue> =
+                    Collections.unmodifiableMap(additionalProperties)
+
+                fun toBuilder() = Builder().from(this)
+
+                companion object {
+
+                    /**
+                     * Returns a mutable builder for constructing an instance of [Content].
+                     *
+                     * The following fields are required:
+                     * ```java
+                     * .item()
+                     * ```
+                     */
+                    @JvmStatic fun builder() = Builder()
+                }
+
+                /** A builder for [Content]. */
+                class Builder internal constructor() {
+
+                    private var item: JsonField<Item>? = null
+                    private var sample: JsonField<Sample> = JsonMissing.of()
+                    private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
+
+                    @JvmSynthetic
+                    internal fun from(content: Content) = apply {
+                        item = content.item
+                        sample = content.sample
+                        additionalProperties = content.additionalProperties.toMutableMap()
+                    }
+
+                    fun item(item: Item) = item(JsonField.of(item))
+
+                    /**
+                     * Sets [Builder.item] to an arbitrary JSON value.
+                     *
+                     * You should usually call [Builder.item] with a well-typed [Item] value
+                     * instead. This method is primarily for setting the field to an undocumented or
+                     * not yet supported value.
+                     */
+                    fun item(item: JsonField<Item>) = apply { this.item = item }
+
+                    fun sample(sample: Sample) = sample(JsonField.of(sample))
+
+                    /**
+                     * Sets [Builder.sample] to an arbitrary JSON value.
+                     *
+                     * You should usually call [Builder.sample] with a well-typed [Sample] value
+                     * instead. This method is primarily for setting the field to an undocumented or
+                     * not yet supported value.
+                     */
+                    fun sample(sample: JsonField<Sample>) = apply { this.sample = sample }
+
+                    fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                        this.additionalProperties.clear()
+                        putAllAdditionalProperties(additionalProperties)
+                    }
+
+                    fun putAdditionalProperty(key: String, value: JsonValue) = apply {
+                        additionalProperties.put(key, value)
+                    }
+
+                    fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) =
+                        apply {
+                            this.additionalProperties.putAll(additionalProperties)
+                        }
+
+                    fun removeAdditionalProperty(key: String) = apply {
+                        additionalProperties.remove(key)
+                    }
+
+                    fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                        keys.forEach(::removeAdditionalProperty)
+                    }
+
+                    /**
+                     * Returns an immutable instance of [Content].
+                     *
+                     * Further updates to this [Builder] will not mutate the returned instance.
+                     *
+                     * The following fields are required:
+                     * ```java
+                     * .item()
+                     * ```
+                     *
+                     * @throws IllegalStateException if any required field is unset.
+                     */
+                    fun build(): Content =
+                        Content(
+                            checkRequired("item", item),
+                            sample,
+                            additionalProperties.toMutableMap(),
+                        )
+                }
+
+                private var validated: Boolean = false
+
+                fun validate(): Content = apply {
+                    if (validated) {
+                        return@apply
+                    }
+
+                    item().validate()
+                    sample().ifPresent { it.validate() }
+                    validated = true
+                }
+
+                fun isValid(): Boolean =
+                    try {
+                        validate()
+                        true
+                    } catch (e: OpenAIInvalidDataException) {
+                        false
+                    }
+
+                /**
+                 * Returns a score indicating how many valid values are contained in this object
+                 * recursively.
+                 *
+                 * Used for best match union deserialization.
+                 */
+                @JvmSynthetic
+                internal fun validity(): Int =
+                    (item.asKnown().getOrNull()?.validity() ?: 0) +
+                        (sample.asKnown().getOrNull()?.validity() ?: 0)
+
+                class Item
+                @JsonCreator
+                private constructor(
+                    @com.fasterxml.jackson.annotation.JsonValue
+                    private val additionalProperties: Map<String, JsonValue>
+                ) {
+
+                    @JsonAnyGetter
+                    @ExcludeMissing
+                    fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
+
+                    fun toBuilder() = Builder().from(this)
+
+                    companion object {
+
+                        /** Returns a mutable builder for constructing an instance of [Item]. */
+                        @JvmStatic fun builder() = Builder()
+                    }
+
+                    /** A builder for [Item]. */
+                    class Builder internal constructor() {
+
+                        private var additionalProperties: MutableMap<String, JsonValue> =
+                            mutableMapOf()
+
+                        @JvmSynthetic
+                        internal fun from(item: Item) = apply {
+                            additionalProperties = item.additionalProperties.toMutableMap()
+                        }
+
+                        fun additionalProperties(additionalProperties: Map<String, JsonValue>) =
+                            apply {
+                                this.additionalProperties.clear()
+                                putAllAdditionalProperties(additionalProperties)
+                            }
+
+                        fun putAdditionalProperty(key: String, value: JsonValue) = apply {
+                            additionalProperties.put(key, value)
+                        }
+
+                        fun putAllAdditionalProperties(
+                            additionalProperties: Map<String, JsonValue>
+                        ) = apply { this.additionalProperties.putAll(additionalProperties) }
+
+                        fun removeAdditionalProperty(key: String) = apply {
+                            additionalProperties.remove(key)
+                        }
+
+                        fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                            keys.forEach(::removeAdditionalProperty)
+                        }
+
+                        /**
+                         * Returns an immutable instance of [Item].
+                         *
+                         * Further updates to this [Builder] will not mutate the returned instance.
+                         */
+                        fun build(): Item = Item(additionalProperties.toImmutable())
+                    }
+
+                    private var validated: Boolean = false
+
+                    fun validate(): Item = apply {
+                        if (validated) {
+                            return@apply
+                        }
+
+                        validated = true
+                    }
+
+                    fun isValid(): Boolean =
+                        try {
+                            validate()
+                            true
+                        } catch (e: OpenAIInvalidDataException) {
+                            false
+                        }
+
+                    /**
+                     * Returns a score indicating how many valid values are contained in this object
+                     * recursively.
+                     *
+                     * Used for best match union deserialization.
+                     */
+                    @JvmSynthetic
+                    internal fun validity(): Int =
+                        additionalProperties.count { (_, value) ->
+                            !value.isNull() && !value.isMissing()
+                        }
+
+                    override fun equals(other: Any?): Boolean {
+                        if (this === other) {
+                            return true
+                        }
+
+                        return /* spotless:off */ other is Item && additionalProperties == other.additionalProperties /* spotless:on */
+                    }
+
+                    /* spotless:off */
+                    private val hashCode: Int by lazy { Objects.hash(additionalProperties) }
+                    /* spotless:on */
+
+                    override fun hashCode(): Int = hashCode
+
+                    override fun toString() = "Item{additionalProperties=$additionalProperties}"
+                }
+
+                class Sample
+                @JsonCreator
+                private constructor(
+                    @com.fasterxml.jackson.annotation.JsonValue
+                    private val additionalProperties: Map<String, JsonValue>
+                ) {
+
+                    @JsonAnyGetter
+                    @ExcludeMissing
+                    fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
+
+                    fun toBuilder() = Builder().from(this)
+
+                    companion object {
+
+                        /** Returns a mutable builder for constructing an instance of [Sample]. */
+                        @JvmStatic fun builder() = Builder()
+                    }
+
+                    /** A builder for [Sample]. */
+                    class Builder internal constructor() {
+
+                        private var additionalProperties: MutableMap<String, JsonValue> =
+                            mutableMapOf()
+
+                        @JvmSynthetic
+                        internal fun from(sample: Sample) = apply {
+                            additionalProperties = sample.additionalProperties.toMutableMap()
+                        }
+
+                        fun additionalProperties(additionalProperties: Map<String, JsonValue>) =
+                            apply {
+                                this.additionalProperties.clear()
+                                putAllAdditionalProperties(additionalProperties)
+                            }
+
+                        fun putAdditionalProperty(key: String, value: JsonValue) = apply {
+                            additionalProperties.put(key, value)
+                        }
+
+                        fun putAllAdditionalProperties(
+                            additionalProperties: Map<String, JsonValue>
+                        ) = apply { this.additionalProperties.putAll(additionalProperties) }
+
+                        fun removeAdditionalProperty(key: String) = apply {
+                            additionalProperties.remove(key)
+                        }
+
+                        fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                            keys.forEach(::removeAdditionalProperty)
+                        }
+
+                        /**
+                         * Returns an immutable instance of [Sample].
+                         *
+                         * Further updates to this [Builder] will not mutate the returned instance.
+                         */
+                        fun build(): Sample = Sample(additionalProperties.toImmutable())
+                    }
+
+                    private var validated: Boolean = false
+
+                    fun validate(): Sample = apply {
+                        if (validated) {
+                            return@apply
+                        }
+
+                        validated = true
+                    }
+
+                    fun isValid(): Boolean =
+                        try {
+                            validate()
+                            true
+                        } catch (e: OpenAIInvalidDataException) {
+                            false
+                        }
+
+                    /**
+                     * Returns a score indicating how many valid values are contained in this object
+                     * recursively.
+                     *
+                     * Used for best match union deserialization.
+                     */
+                    @JvmSynthetic
+                    internal fun validity(): Int =
+                        additionalProperties.count { (_, value) ->
+                            !value.isNull() && !value.isMissing()
+                        }
+
+                    override fun equals(other: Any?): Boolean {
+                        if (this === other) {
+                            return true
+                        }
+
+                        return /* spotless:off */ other is Sample && additionalProperties == other.additionalProperties /* spotless:on */
+                    }
+
+                    /* spotless:off */
+                    private val hashCode: Int by lazy { Objects.hash(additionalProperties) }
+                    /* spotless:on */
+
+                    override fun hashCode(): Int = hashCode
+
+                    override fun toString() = "Sample{additionalProperties=$additionalProperties}"
+                }
+
+                override fun equals(other: Any?): Boolean {
+                    if (this === other) {
+                        return true
+                    }
+
+                    return /* spotless:off */ other is Content && item == other.item && sample == other.sample && additionalProperties == other.additionalProperties /* spotless:on */
+                }
+
+                /* spotless:off */
+                private val hashCode: Int by lazy { Objects.hash(item, sample, additionalProperties) }
+                /* spotless:on */
+
+                override fun hashCode(): Int = hashCode
+
+                override fun toString() =
+                    "Content{item=$item, sample=$sample, additionalProperties=$additionalProperties}"
+            }
+
+            override fun equals(other: Any?): Boolean {
+                if (this === other) {
+                    return true
+                }
+
+                return /* spotless:off */ other is FileContent && content == other.content && type == other.type && additionalProperties == other.additionalProperties /* spotless:on */
+            }
+
+            /* spotless:off */
+            private val hashCode: Int by lazy { Objects.hash(content, type, additionalProperties) }
+            /* spotless:on */
+
+            override fun hashCode(): Int = hashCode
+
+            override fun toString() =
+                "FileContent{content=$content, type=$type, additionalProperties=$additionalProperties}"
+        }
+
+        class FileId
+        private constructor(
+            private val id: JsonField<String>,
+            private val type: JsonValue,
+            private val additionalProperties: MutableMap<String, JsonValue>,
+        ) {
+
+            @JsonCreator
+            private constructor(
+                @JsonProperty("id") @ExcludeMissing id: JsonField<String> = JsonMissing.of(),
+                @JsonProperty("type") @ExcludeMissing type: JsonValue = JsonMissing.of(),
+            ) : this(id, type, mutableMapOf())
+
+            /**
+             * The identifier of the file.
+             *
+             * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+             *   unexpectedly missing or null (e.g. if the server responded with an unexpected
+             *   value).
+             */
+            fun id(): String = id.getRequired("id")
+
+            /**
+             * The type of jsonl source. Always `file_id`.
+             *
+             * Expected to always return the following:
+             * ```java
+             * JsonValue.from("file_id")
+             * ```
+             *
+             * However, this method can be useful for debugging and logging (e.g. if the server
+             * responded with an unexpected value).
+             */
+            @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
+
+            /**
+             * Returns the raw JSON value of [id].
+             *
+             * Unlike [id], this method doesn't throw if the JSON field has an unexpected type.
+             */
+            @JsonProperty("id") @ExcludeMissing fun _id(): JsonField<String> = id
+
+            @JsonAnySetter
+            private fun putAdditionalProperty(key: String, value: JsonValue) {
+                additionalProperties.put(key, value)
+            }
+
+            @JsonAnyGetter
+            @ExcludeMissing
+            fun _additionalProperties(): Map<String, JsonValue> =
+                Collections.unmodifiableMap(additionalProperties)
+
+            fun toBuilder() = Builder().from(this)
+
+            companion object {
+
+                /**
+                 * Returns a mutable builder for constructing an instance of [FileId].
+                 *
+                 * The following fields are required:
+                 * ```java
+                 * .id()
+                 * ```
+                 */
+                @JvmStatic fun builder() = Builder()
+            }
+
+            /** A builder for [FileId]. */
+            class Builder internal constructor() {
+
+                private var id: JsonField<String>? = null
+                private var type: JsonValue = JsonValue.from("file_id")
+                private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
+
+                @JvmSynthetic
+                internal fun from(fileId: FileId) = apply {
+                    id = fileId.id
+                    type = fileId.type
+                    additionalProperties = fileId.additionalProperties.toMutableMap()
+                }
+
+                /** The identifier of the file. */
+                fun id(id: String) = id(JsonField.of(id))
+
+                /**
+                 * Sets [Builder.id] to an arbitrary JSON value.
+                 *
+                 * You should usually call [Builder.id] with a well-typed [String] value instead.
+                 * This method is primarily for setting the field to an undocumented or not yet
+                 * supported value.
+                 */
+                fun id(id: JsonField<String>) = apply { this.id = id }
+
+                /**
+                 * Sets the field to an arbitrary JSON value.
+                 *
+                 * It is usually unnecessary to call this method because the field defaults to the
+                 * following:
+                 * ```java
+                 * JsonValue.from("file_id")
+                 * ```
+                 *
+                 * This method is primarily for setting the field to an undocumented or not yet
+                 * supported value.
+                 */
+                fun type(type: JsonValue) = apply { this.type = type }
+
+                fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                    this.additionalProperties.clear()
+                    putAllAdditionalProperties(additionalProperties)
+                }
+
+                fun putAdditionalProperty(key: String, value: JsonValue) = apply {
+                    additionalProperties.put(key, value)
+                }
+
+                fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) =
+                    apply {
+                        this.additionalProperties.putAll(additionalProperties)
+                    }
+
+                fun removeAdditionalProperty(key: String) = apply {
+                    additionalProperties.remove(key)
+                }
+
+                fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                    keys.forEach(::removeAdditionalProperty)
+                }
+
+                /**
+                 * Returns an immutable instance of [FileId].
+                 *
+                 * Further updates to this [Builder] will not mutate the returned instance.
+                 *
+                 * The following fields are required:
+                 * ```java
+                 * .id()
+                 * ```
+                 *
+                 * @throws IllegalStateException if any required field is unset.
+                 */
+                fun build(): FileId =
+                    FileId(checkRequired("id", id), type, additionalProperties.toMutableMap())
+            }
+
+            private var validated: Boolean = false
+
+            fun validate(): FileId = apply {
+                if (validated) {
+                    return@apply
+                }
+
+                id()
+                _type().let {
+                    if (it != JsonValue.from("file_id")) {
+                        throw OpenAIInvalidDataException("'type' is invalid, received $it")
+                    }
+                }
+                validated = true
+            }
+
+            fun isValid(): Boolean =
+                try {
+                    validate()
+                    true
+                } catch (e: OpenAIInvalidDataException) {
+                    false
+                }
+
+            /**
+             * Returns a score indicating how many valid values are contained in this object
+             * recursively.
+             *
+             * Used for best match union deserialization.
+             */
+            @JvmSynthetic
+            internal fun validity(): Int =
+                (if (id.asKnown().isPresent) 1 else 0) +
+                    type.let { if (it == JsonValue.from("file_id")) 1 else 0 }
+
+            override fun equals(other: Any?): Boolean {
+                if (this === other) {
+                    return true
+                }
+
+                return /* spotless:off */ other is FileId && id == other.id && type == other.type && additionalProperties == other.additionalProperties /* spotless:on */
+            }
+
+            /* spotless:off */
+            private val hashCode: Int by lazy { Objects.hash(id, type, additionalProperties) }
+            /* spotless:on */
+
+            override fun hashCode(): Int = hashCode
+
+            override fun toString() =
+                "FileId{id=$id, type=$type, additionalProperties=$additionalProperties}"
         }
 
         /** A StoredCompletionsRunDataSource configuration describing a set of filters */
@@ -1511,9 +2337,9 @@ private constructor(
                 fun addTemplate(easyInputMessage: EasyInputMessage) =
                     addTemplate(InnerTemplate.ofEasyInputMessage(easyInputMessage))
 
-                /** Alias for calling [addTemplate] with `InnerTemplate.ofEvalItem(evalItem)`. */
-                fun addTemplate(evalItem: EvalItem) =
-                    addTemplate(InnerTemplate.ofEvalItem(evalItem))
+                /** Alias for calling [addTemplate] with `InnerTemplate.ofMessage(message)`. */
+                fun addTemplate(message: InnerTemplate.Message) =
+                    addTemplate(InnerTemplate.ofMessage(message))
 
                 /**
                  * Sets the field to an arbitrary JSON value.
@@ -1617,7 +2443,7 @@ private constructor(
             class InnerTemplate
             private constructor(
                 private val easyInputMessage: EasyInputMessage? = null,
-                private val evalItem: EvalItem? = null,
+                private val message: Message? = null,
                 private val _json: JsonValue? = null,
             ) {
 
@@ -1638,11 +2464,11 @@ private constructor(
                  * `assistant` role are presumed to have been generated by the model in previous
                  * interactions.
                  */
-                fun evalItem(): Optional<EvalItem> = Optional.ofNullable(evalItem)
+                fun message(): Optional<Message> = Optional.ofNullable(message)
 
                 fun isEasyInputMessage(): Boolean = easyInputMessage != null
 
-                fun isEvalItem(): Boolean = evalItem != null
+                fun isMessage(): Boolean = message != null
 
                 /**
                  * A message input to the model with a role indicating instruction following
@@ -1661,14 +2487,14 @@ private constructor(
                  * `assistant` role are presumed to have been generated by the model in previous
                  * interactions.
                  */
-                fun asEvalItem(): EvalItem = evalItem.getOrThrow("evalItem")
+                fun asMessage(): Message = message.getOrThrow("message")
 
                 fun _json(): Optional<JsonValue> = Optional.ofNullable(_json)
 
                 fun <T> accept(visitor: Visitor<T>): T =
                     when {
                         easyInputMessage != null -> visitor.visitEasyInputMessage(easyInputMessage)
-                        evalItem != null -> visitor.visitEvalItem(evalItem)
+                        message != null -> visitor.visitMessage(message)
                         else -> visitor.unknown(_json)
                     }
 
@@ -1685,8 +2511,8 @@ private constructor(
                                 easyInputMessage.validate()
                             }
 
-                            override fun visitEvalItem(evalItem: EvalItem) {
-                                evalItem.validate()
+                            override fun visitMessage(message: Message) {
+                                message.validate()
                             }
                         }
                     )
@@ -1714,7 +2540,7 @@ private constructor(
                             override fun visitEasyInputMessage(easyInputMessage: EasyInputMessage) =
                                 easyInputMessage.validity()
 
-                            override fun visitEvalItem(evalItem: EvalItem) = evalItem.validity()
+                            override fun visitMessage(message: Message) = message.validity()
 
                             override fun unknown(json: JsonValue?) = 0
                         }
@@ -1725,16 +2551,16 @@ private constructor(
                         return true
                     }
 
-                    return /* spotless:off */ other is InnerTemplate && easyInputMessage == other.easyInputMessage && evalItem == other.evalItem /* spotless:on */
+                    return /* spotless:off */ other is InnerTemplate && easyInputMessage == other.easyInputMessage && message == other.message /* spotless:on */
                 }
 
-                override fun hashCode(): Int = /* spotless:off */ Objects.hash(easyInputMessage, evalItem) /* spotless:on */
+                override fun hashCode(): Int = /* spotless:off */ Objects.hash(easyInputMessage, message) /* spotless:on */
 
                 override fun toString(): String =
                     when {
                         easyInputMessage != null ->
                             "InnerTemplate{easyInputMessage=$easyInputMessage}"
-                        evalItem != null -> "InnerTemplate{evalItem=$evalItem}"
+                        message != null -> "InnerTemplate{message=$message}"
                         _json != null -> "InnerTemplate{_unknown=$_json}"
                         else -> throw IllegalStateException("Invalid InnerTemplate")
                     }
@@ -1759,8 +2585,7 @@ private constructor(
                      * `assistant` role are presumed to have been generated by the model in previous
                      * interactions.
                      */
-                    @JvmStatic
-                    fun ofEvalItem(evalItem: EvalItem) = InnerTemplate(evalItem = evalItem)
+                    @JvmStatic fun ofMessage(message: Message) = InnerTemplate(message = message)
                 }
 
                 /**
@@ -1785,7 +2610,7 @@ private constructor(
                      * `assistant` role are presumed to have been generated by the model in previous
                      * interactions.
                      */
-                    fun visitEvalItem(evalItem: EvalItem): T
+                    fun visitMessage(message: Message): T
 
                     /**
                      * Maps an unknown variant of [InnerTemplate] to a value of type [T].
@@ -1816,8 +2641,8 @@ private constructor(
                                             ?.let {
                                                 InnerTemplate(easyInputMessage = it, _json = json)
                                             },
-                                        tryDeserialize(node, jacksonTypeRef<EvalItem>())?.let {
-                                            InnerTemplate(evalItem = it, _json = json)
+                                        tryDeserialize(node, jacksonTypeRef<Message>())?.let {
+                                            InnerTemplate(message = it, _json = json)
                                         },
                                     )
                                     .filterNotNull()
@@ -1851,11 +2676,1012 @@ private constructor(
                         when {
                             value.easyInputMessage != null ->
                                 generator.writeObject(value.easyInputMessage)
-                            value.evalItem != null -> generator.writeObject(value.evalItem)
+                            value.message != null -> generator.writeObject(value.message)
                             value._json != null -> generator.writeObject(value._json)
                             else -> throw IllegalStateException("Invalid InnerTemplate")
                         }
                     }
+                }
+
+                /**
+                 * A message input to the model with a role indicating instruction following
+                 * hierarchy. Instructions given with the `developer` or `system` role take
+                 * precedence over instructions given with the `user` role. Messages with the
+                 * `assistant` role are presumed to have been generated by the model in previous
+                 * interactions.
+                 */
+                class Message
+                private constructor(
+                    private val content: JsonField<Content>,
+                    private val role: JsonField<Role>,
+                    private val type: JsonField<Type>,
+                    private val additionalProperties: MutableMap<String, JsonValue>,
+                ) {
+
+                    @JsonCreator
+                    private constructor(
+                        @JsonProperty("content")
+                        @ExcludeMissing
+                        content: JsonField<Content> = JsonMissing.of(),
+                        @JsonProperty("role")
+                        @ExcludeMissing
+                        role: JsonField<Role> = JsonMissing.of(),
+                        @JsonProperty("type")
+                        @ExcludeMissing
+                        type: JsonField<Type> = JsonMissing.of(),
+                    ) : this(content, role, type, mutableMapOf())
+
+                    /**
+                     * Text inputs to the model - can contain template strings.
+                     *
+                     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type
+                     *   or is unexpectedly missing or null (e.g. if the server responded with an
+                     *   unexpected value).
+                     */
+                    fun content(): Content = content.getRequired("content")
+
+                    /**
+                     * The role of the message input. One of `user`, `assistant`, `system`, or
+                     * `developer`.
+                     *
+                     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type
+                     *   or is unexpectedly missing or null (e.g. if the server responded with an
+                     *   unexpected value).
+                     */
+                    fun role(): Role = role.getRequired("role")
+
+                    /**
+                     * The type of the message input. Always `message`.
+                     *
+                     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type
+                     *   (e.g. if the server responded with an unexpected value).
+                     */
+                    fun type(): Optional<Type> = type.getOptional("type")
+
+                    /**
+                     * Returns the raw JSON value of [content].
+                     *
+                     * Unlike [content], this method doesn't throw if the JSON field has an
+                     * unexpected type.
+                     */
+                    @JsonProperty("content")
+                    @ExcludeMissing
+                    fun _content(): JsonField<Content> = content
+
+                    /**
+                     * Returns the raw JSON value of [role].
+                     *
+                     * Unlike [role], this method doesn't throw if the JSON field has an unexpected
+                     * type.
+                     */
+                    @JsonProperty("role") @ExcludeMissing fun _role(): JsonField<Role> = role
+
+                    /**
+                     * Returns the raw JSON value of [type].
+                     *
+                     * Unlike [type], this method doesn't throw if the JSON field has an unexpected
+                     * type.
+                     */
+                    @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<Type> = type
+
+                    @JsonAnySetter
+                    private fun putAdditionalProperty(key: String, value: JsonValue) {
+                        additionalProperties.put(key, value)
+                    }
+
+                    @JsonAnyGetter
+                    @ExcludeMissing
+                    fun _additionalProperties(): Map<String, JsonValue> =
+                        Collections.unmodifiableMap(additionalProperties)
+
+                    fun toBuilder() = Builder().from(this)
+
+                    companion object {
+
+                        /**
+                         * Returns a mutable builder for constructing an instance of [Message].
+                         *
+                         * The following fields are required:
+                         * ```java
+                         * .content()
+                         * .role()
+                         * ```
+                         */
+                        @JvmStatic fun builder() = Builder()
+                    }
+
+                    /** A builder for [Message]. */
+                    class Builder internal constructor() {
+
+                        private var content: JsonField<Content>? = null
+                        private var role: JsonField<Role>? = null
+                        private var type: JsonField<Type> = JsonMissing.of()
+                        private var additionalProperties: MutableMap<String, JsonValue> =
+                            mutableMapOf()
+
+                        @JvmSynthetic
+                        internal fun from(message: Message) = apply {
+                            content = message.content
+                            role = message.role
+                            type = message.type
+                            additionalProperties = message.additionalProperties.toMutableMap()
+                        }
+
+                        /** Text inputs to the model - can contain template strings. */
+                        fun content(content: Content) = content(JsonField.of(content))
+
+                        /**
+                         * Sets [Builder.content] to an arbitrary JSON value.
+                         *
+                         * You should usually call [Builder.content] with a well-typed [Content]
+                         * value instead. This method is primarily for setting the field to an
+                         * undocumented or not yet supported value.
+                         */
+                        fun content(content: JsonField<Content>) = apply { this.content = content }
+
+                        /** Alias for calling [content] with `Content.ofTextInput(textInput)`. */
+                        fun content(textInput: String) = content(Content.ofTextInput(textInput))
+
+                        /**
+                         * Alias for calling [content] with
+                         * `Content.ofResponseInputText(responseInputText)`.
+                         */
+                        fun content(responseInputText: ResponseInputText) =
+                            content(Content.ofResponseInputText(responseInputText))
+
+                        /** Alias for calling [content] with `Content.ofOutputText(outputText)`. */
+                        fun content(outputText: Content.OutputText) =
+                            content(Content.ofOutputText(outputText))
+
+                        /**
+                         * The role of the message input. One of `user`, `assistant`, `system`, or
+                         * `developer`.
+                         */
+                        fun role(role: Role) = role(JsonField.of(role))
+
+                        /**
+                         * Sets [Builder.role] to an arbitrary JSON value.
+                         *
+                         * You should usually call [Builder.role] with a well-typed [Role] value
+                         * instead. This method is primarily for setting the field to an
+                         * undocumented or not yet supported value.
+                         */
+                        fun role(role: JsonField<Role>) = apply { this.role = role }
+
+                        /** The type of the message input. Always `message`. */
+                        fun type(type: Type) = type(JsonField.of(type))
+
+                        /**
+                         * Sets [Builder.type] to an arbitrary JSON value.
+                         *
+                         * You should usually call [Builder.type] with a well-typed [Type] value
+                         * instead. This method is primarily for setting the field to an
+                         * undocumented or not yet supported value.
+                         */
+                        fun type(type: JsonField<Type>) = apply { this.type = type }
+
+                        fun additionalProperties(additionalProperties: Map<String, JsonValue>) =
+                            apply {
+                                this.additionalProperties.clear()
+                                putAllAdditionalProperties(additionalProperties)
+                            }
+
+                        fun putAdditionalProperty(key: String, value: JsonValue) = apply {
+                            additionalProperties.put(key, value)
+                        }
+
+                        fun putAllAdditionalProperties(
+                            additionalProperties: Map<String, JsonValue>
+                        ) = apply { this.additionalProperties.putAll(additionalProperties) }
+
+                        fun removeAdditionalProperty(key: String) = apply {
+                            additionalProperties.remove(key)
+                        }
+
+                        fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                            keys.forEach(::removeAdditionalProperty)
+                        }
+
+                        /**
+                         * Returns an immutable instance of [Message].
+                         *
+                         * Further updates to this [Builder] will not mutate the returned instance.
+                         *
+                         * The following fields are required:
+                         * ```java
+                         * .content()
+                         * .role()
+                         * ```
+                         *
+                         * @throws IllegalStateException if any required field is unset.
+                         */
+                        fun build(): Message =
+                            Message(
+                                checkRequired("content", content),
+                                checkRequired("role", role),
+                                type,
+                                additionalProperties.toMutableMap(),
+                            )
+                    }
+
+                    private var validated: Boolean = false
+
+                    fun validate(): Message = apply {
+                        if (validated) {
+                            return@apply
+                        }
+
+                        content().validate()
+                        role().validate()
+                        type().ifPresent { it.validate() }
+                        validated = true
+                    }
+
+                    fun isValid(): Boolean =
+                        try {
+                            validate()
+                            true
+                        } catch (e: OpenAIInvalidDataException) {
+                            false
+                        }
+
+                    /**
+                     * Returns a score indicating how many valid values are contained in this object
+                     * recursively.
+                     *
+                     * Used for best match union deserialization.
+                     */
+                    @JvmSynthetic
+                    internal fun validity(): Int =
+                        (content.asKnown().getOrNull()?.validity() ?: 0) +
+                            (role.asKnown().getOrNull()?.validity() ?: 0) +
+                            (type.asKnown().getOrNull()?.validity() ?: 0)
+
+                    /** Text inputs to the model - can contain template strings. */
+                    @JsonDeserialize(using = Content.Deserializer::class)
+                    @JsonSerialize(using = Content.Serializer::class)
+                    class Content
+                    private constructor(
+                        private val textInput: String? = null,
+                        private val responseInputText: ResponseInputText? = null,
+                        private val outputText: OutputText? = null,
+                        private val _json: JsonValue? = null,
+                    ) {
+
+                        /** A text input to the model. */
+                        fun textInput(): Optional<String> = Optional.ofNullable(textInput)
+
+                        /** A text input to the model. */
+                        fun responseInputText(): Optional<ResponseInputText> =
+                            Optional.ofNullable(responseInputText)
+
+                        /** A text output from the model. */
+                        fun outputText(): Optional<OutputText> = Optional.ofNullable(outputText)
+
+                        fun isTextInput(): Boolean = textInput != null
+
+                        fun isResponseInputText(): Boolean = responseInputText != null
+
+                        fun isOutputText(): Boolean = outputText != null
+
+                        /** A text input to the model. */
+                        fun asTextInput(): String = textInput.getOrThrow("textInput")
+
+                        /** A text input to the model. */
+                        fun asResponseInputText(): ResponseInputText =
+                            responseInputText.getOrThrow("responseInputText")
+
+                        /** A text output from the model. */
+                        fun asOutputText(): OutputText = outputText.getOrThrow("outputText")
+
+                        fun _json(): Optional<JsonValue> = Optional.ofNullable(_json)
+
+                        fun <T> accept(visitor: Visitor<T>): T =
+                            when {
+                                textInput != null -> visitor.visitTextInput(textInput)
+                                responseInputText != null ->
+                                    visitor.visitResponseInputText(responseInputText)
+                                outputText != null -> visitor.visitOutputText(outputText)
+                                else -> visitor.unknown(_json)
+                            }
+
+                        private var validated: Boolean = false
+
+                        fun validate(): Content = apply {
+                            if (validated) {
+                                return@apply
+                            }
+
+                            accept(
+                                object : Visitor<Unit> {
+                                    override fun visitTextInput(textInput: String) {}
+
+                                    override fun visitResponseInputText(
+                                        responseInputText: ResponseInputText
+                                    ) {
+                                        responseInputText.validate()
+                                    }
+
+                                    override fun visitOutputText(outputText: OutputText) {
+                                        outputText.validate()
+                                    }
+                                }
+                            )
+                            validated = true
+                        }
+
+                        fun isValid(): Boolean =
+                            try {
+                                validate()
+                                true
+                            } catch (e: OpenAIInvalidDataException) {
+                                false
+                            }
+
+                        /**
+                         * Returns a score indicating how many valid values are contained in this
+                         * object recursively.
+                         *
+                         * Used for best match union deserialization.
+                         */
+                        @JvmSynthetic
+                        internal fun validity(): Int =
+                            accept(
+                                object : Visitor<Int> {
+                                    override fun visitTextInput(textInput: String) = 1
+
+                                    override fun visitResponseInputText(
+                                        responseInputText: ResponseInputText
+                                    ) = responseInputText.validity()
+
+                                    override fun visitOutputText(outputText: OutputText) =
+                                        outputText.validity()
+
+                                    override fun unknown(json: JsonValue?) = 0
+                                }
+                            )
+
+                        override fun equals(other: Any?): Boolean {
+                            if (this === other) {
+                                return true
+                            }
+
+                            return /* spotless:off */ other is Content && textInput == other.textInput && responseInputText == other.responseInputText && outputText == other.outputText /* spotless:on */
+                        }
+
+                        override fun hashCode(): Int = /* spotless:off */ Objects.hash(textInput, responseInputText, outputText) /* spotless:on */
+
+                        override fun toString(): String =
+                            when {
+                                textInput != null -> "Content{textInput=$textInput}"
+                                responseInputText != null ->
+                                    "Content{responseInputText=$responseInputText}"
+                                outputText != null -> "Content{outputText=$outputText}"
+                                _json != null -> "Content{_unknown=$_json}"
+                                else -> throw IllegalStateException("Invalid Content")
+                            }
+
+                        companion object {
+
+                            /** A text input to the model. */
+                            @JvmStatic
+                            fun ofTextInput(textInput: String) = Content(textInput = textInput)
+
+                            /** A text input to the model. */
+                            @JvmStatic
+                            fun ofResponseInputText(responseInputText: ResponseInputText) =
+                                Content(responseInputText = responseInputText)
+
+                            /** A text output from the model. */
+                            @JvmStatic
+                            fun ofOutputText(outputText: OutputText) =
+                                Content(outputText = outputText)
+                        }
+
+                        /**
+                         * An interface that defines how to map each variant of [Content] to a value
+                         * of type [T].
+                         */
+                        interface Visitor<out T> {
+
+                            /** A text input to the model. */
+                            fun visitTextInput(textInput: String): T
+
+                            /** A text input to the model. */
+                            fun visitResponseInputText(responseInputText: ResponseInputText): T
+
+                            /** A text output from the model. */
+                            fun visitOutputText(outputText: OutputText): T
+
+                            /**
+                             * Maps an unknown variant of [Content] to a value of type [T].
+                             *
+                             * An instance of [Content] can contain an unknown variant if it was
+                             * deserialized from data that doesn't match any known variant. For
+                             * example, if the SDK is on an older version than the API, then the API
+                             * may respond with new variants that the SDK is unaware of.
+                             *
+                             * @throws OpenAIInvalidDataException in the default implementation.
+                             */
+                            fun unknown(json: JsonValue?): T {
+                                throw OpenAIInvalidDataException("Unknown Content: $json")
+                            }
+                        }
+
+                        internal class Deserializer : BaseDeserializer<Content>(Content::class) {
+
+                            override fun ObjectCodec.deserialize(node: JsonNode): Content {
+                                val json = JsonValue.fromJsonNode(node)
+
+                                val bestMatches =
+                                    sequenceOf(
+                                            tryDeserialize(
+                                                    node,
+                                                    jacksonTypeRef<ResponseInputText>(),
+                                                )
+                                                ?.let {
+                                                    Content(responseInputText = it, _json = json)
+                                                },
+                                            tryDeserialize(node, jacksonTypeRef<OutputText>())
+                                                ?.let { Content(outputText = it, _json = json) },
+                                            tryDeserialize(node, jacksonTypeRef<String>())?.let {
+                                                Content(textInput = it, _json = json)
+                                            },
+                                        )
+                                        .filterNotNull()
+                                        .allMaxBy { it.validity() }
+                                        .toList()
+                                return when (bestMatches.size) {
+                                    // This can happen if what we're deserializing is completely
+                                    // incompatible with all the possible variants (e.g.
+                                    // deserializing from array).
+                                    0 -> Content(_json = json)
+                                    1 -> bestMatches.single()
+                                    // If there's more than one match with the highest validity,
+                                    // then use the first completely valid match, or simply the
+                                    // first match if none are completely valid.
+                                    else ->
+                                        bestMatches.firstOrNull { it.isValid() }
+                                            ?: bestMatches.first()
+                                }
+                            }
+                        }
+
+                        internal class Serializer : BaseSerializer<Content>(Content::class) {
+
+                            override fun serialize(
+                                value: Content,
+                                generator: JsonGenerator,
+                                provider: SerializerProvider,
+                            ) {
+                                when {
+                                    value.textInput != null ->
+                                        generator.writeObject(value.textInput)
+                                    value.responseInputText != null ->
+                                        generator.writeObject(value.responseInputText)
+                                    value.outputText != null ->
+                                        generator.writeObject(value.outputText)
+                                    value._json != null -> generator.writeObject(value._json)
+                                    else -> throw IllegalStateException("Invalid Content")
+                                }
+                            }
+                        }
+
+                        /** A text output from the model. */
+                        class OutputText
+                        private constructor(
+                            private val text: JsonField<String>,
+                            private val type: JsonValue,
+                            private val additionalProperties: MutableMap<String, JsonValue>,
+                        ) {
+
+                            @JsonCreator
+                            private constructor(
+                                @JsonProperty("text")
+                                @ExcludeMissing
+                                text: JsonField<String> = JsonMissing.of(),
+                                @JsonProperty("type")
+                                @ExcludeMissing
+                                type: JsonValue = JsonMissing.of(),
+                            ) : this(text, type, mutableMapOf())
+
+                            /**
+                             * The text output from the model.
+                             *
+                             * @throws OpenAIInvalidDataException if the JSON field has an
+                             *   unexpected type or is unexpectedly missing or null (e.g. if the
+                             *   server responded with an unexpected value).
+                             */
+                            fun text(): String = text.getRequired("text")
+
+                            /**
+                             * The type of the output text. Always `output_text`.
+                             *
+                             * Expected to always return the following:
+                             * ```java
+                             * JsonValue.from("output_text")
+                             * ```
+                             *
+                             * However, this method can be useful for debugging and logging (e.g. if
+                             * the server responded with an unexpected value).
+                             */
+                            @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
+
+                            /**
+                             * Returns the raw JSON value of [text].
+                             *
+                             * Unlike [text], this method doesn't throw if the JSON field has an
+                             * unexpected type.
+                             */
+                            @JsonProperty("text")
+                            @ExcludeMissing
+                            fun _text(): JsonField<String> = text
+
+                            @JsonAnySetter
+                            private fun putAdditionalProperty(key: String, value: JsonValue) {
+                                additionalProperties.put(key, value)
+                            }
+
+                            @JsonAnyGetter
+                            @ExcludeMissing
+                            fun _additionalProperties(): Map<String, JsonValue> =
+                                Collections.unmodifiableMap(additionalProperties)
+
+                            fun toBuilder() = Builder().from(this)
+
+                            companion object {
+
+                                /**
+                                 * Returns a mutable builder for constructing an instance of
+                                 * [OutputText].
+                                 *
+                                 * The following fields are required:
+                                 * ```java
+                                 * .text()
+                                 * ```
+                                 */
+                                @JvmStatic fun builder() = Builder()
+                            }
+
+                            /** A builder for [OutputText]. */
+                            class Builder internal constructor() {
+
+                                private var text: JsonField<String>? = null
+                                private var type: JsonValue = JsonValue.from("output_text")
+                                private var additionalProperties: MutableMap<String, JsonValue> =
+                                    mutableMapOf()
+
+                                @JvmSynthetic
+                                internal fun from(outputText: OutputText) = apply {
+                                    text = outputText.text
+                                    type = outputText.type
+                                    additionalProperties =
+                                        outputText.additionalProperties.toMutableMap()
+                                }
+
+                                /** The text output from the model. */
+                                fun text(text: String) = text(JsonField.of(text))
+
+                                /**
+                                 * Sets [Builder.text] to an arbitrary JSON value.
+                                 *
+                                 * You should usually call [Builder.text] with a well-typed [String]
+                                 * value instead. This method is primarily for setting the field to
+                                 * an undocumented or not yet supported value.
+                                 */
+                                fun text(text: JsonField<String>) = apply { this.text = text }
+
+                                /**
+                                 * Sets the field to an arbitrary JSON value.
+                                 *
+                                 * It is usually unnecessary to call this method because the field
+                                 * defaults to the following:
+                                 * ```java
+                                 * JsonValue.from("output_text")
+                                 * ```
+                                 *
+                                 * This method is primarily for setting the field to an undocumented
+                                 * or not yet supported value.
+                                 */
+                                fun type(type: JsonValue) = apply { this.type = type }
+
+                                fun additionalProperties(
+                                    additionalProperties: Map<String, JsonValue>
+                                ) = apply {
+                                    this.additionalProperties.clear()
+                                    putAllAdditionalProperties(additionalProperties)
+                                }
+
+                                fun putAdditionalProperty(key: String, value: JsonValue) = apply {
+                                    additionalProperties.put(key, value)
+                                }
+
+                                fun putAllAdditionalProperties(
+                                    additionalProperties: Map<String, JsonValue>
+                                ) = apply { this.additionalProperties.putAll(additionalProperties) }
+
+                                fun removeAdditionalProperty(key: String) = apply {
+                                    additionalProperties.remove(key)
+                                }
+
+                                fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                                    keys.forEach(::removeAdditionalProperty)
+                                }
+
+                                /**
+                                 * Returns an immutable instance of [OutputText].
+                                 *
+                                 * Further updates to this [Builder] will not mutate the returned
+                                 * instance.
+                                 *
+                                 * The following fields are required:
+                                 * ```java
+                                 * .text()
+                                 * ```
+                                 *
+                                 * @throws IllegalStateException if any required field is unset.
+                                 */
+                                fun build(): OutputText =
+                                    OutputText(
+                                        checkRequired("text", text),
+                                        type,
+                                        additionalProperties.toMutableMap(),
+                                    )
+                            }
+
+                            private var validated: Boolean = false
+
+                            fun validate(): OutputText = apply {
+                                if (validated) {
+                                    return@apply
+                                }
+
+                                text()
+                                _type().let {
+                                    if (it != JsonValue.from("output_text")) {
+                                        throw OpenAIInvalidDataException(
+                                            "'type' is invalid, received $it"
+                                        )
+                                    }
+                                }
+                                validated = true
+                            }
+
+                            fun isValid(): Boolean =
+                                try {
+                                    validate()
+                                    true
+                                } catch (e: OpenAIInvalidDataException) {
+                                    false
+                                }
+
+                            /**
+                             * Returns a score indicating how many valid values are contained in
+                             * this object recursively.
+                             *
+                             * Used for best match union deserialization.
+                             */
+                            @JvmSynthetic
+                            internal fun validity(): Int =
+                                (if (text.asKnown().isPresent) 1 else 0) +
+                                    type.let { if (it == JsonValue.from("output_text")) 1 else 0 }
+
+                            override fun equals(other: Any?): Boolean {
+                                if (this === other) {
+                                    return true
+                                }
+
+                                return /* spotless:off */ other is OutputText && text == other.text && type == other.type && additionalProperties == other.additionalProperties /* spotless:on */
+                            }
+
+                            /* spotless:off */
+                            private val hashCode: Int by lazy { Objects.hash(text, type, additionalProperties) }
+                            /* spotless:on */
+
+                            override fun hashCode(): Int = hashCode
+
+                            override fun toString() =
+                                "OutputText{text=$text, type=$type, additionalProperties=$additionalProperties}"
+                        }
+                    }
+
+                    /**
+                     * The role of the message input. One of `user`, `assistant`, `system`, or
+                     * `developer`.
+                     */
+                    class Role
+                    @JsonCreator
+                    private constructor(private val value: JsonField<String>) : Enum {
+
+                        /**
+                         * Returns this class instance's raw value.
+                         *
+                         * This is usually only useful if this instance was deserialized from data
+                         * that doesn't match any known member, and you want to know that value. For
+                         * example, if the SDK is on an older version than the API, then the API may
+                         * respond with new members that the SDK is unaware of.
+                         */
+                        @com.fasterxml.jackson.annotation.JsonValue
+                        fun _value(): JsonField<String> = value
+
+                        companion object {
+
+                            @JvmField val USER = of("user")
+
+                            @JvmField val ASSISTANT = of("assistant")
+
+                            @JvmField val SYSTEM = of("system")
+
+                            @JvmField val DEVELOPER = of("developer")
+
+                            @JvmStatic fun of(value: String) = Role(JsonField.of(value))
+                        }
+
+                        /** An enum containing [Role]'s known values. */
+                        enum class Known {
+                            USER,
+                            ASSISTANT,
+                            SYSTEM,
+                            DEVELOPER,
+                        }
+
+                        /**
+                         * An enum containing [Role]'s known values, as well as an [_UNKNOWN]
+                         * member.
+                         *
+                         * An instance of [Role] can contain an unknown value in a couple of cases:
+                         * - It was deserialized from data that doesn't match any known member. For
+                         *   example, if the SDK is on an older version than the API, then the API
+                         *   may respond with new members that the SDK is unaware of.
+                         * - It was constructed with an arbitrary value using the [of] method.
+                         */
+                        enum class Value {
+                            USER,
+                            ASSISTANT,
+                            SYSTEM,
+                            DEVELOPER,
+                            /**
+                             * An enum member indicating that [Role] was instantiated with an
+                             * unknown value.
+                             */
+                            _UNKNOWN,
+                        }
+
+                        /**
+                         * Returns an enum member corresponding to this class instance's value, or
+                         * [Value._UNKNOWN] if the class was instantiated with an unknown value.
+                         *
+                         * Use the [known] method instead if you're certain the value is always
+                         * known or if you want to throw for the unknown case.
+                         */
+                        fun value(): Value =
+                            when (this) {
+                                USER -> Value.USER
+                                ASSISTANT -> Value.ASSISTANT
+                                SYSTEM -> Value.SYSTEM
+                                DEVELOPER -> Value.DEVELOPER
+                                else -> Value._UNKNOWN
+                            }
+
+                        /**
+                         * Returns an enum member corresponding to this class instance's value.
+                         *
+                         * Use the [value] method instead if you're uncertain the value is always
+                         * known and don't want to throw for the unknown case.
+                         *
+                         * @throws OpenAIInvalidDataException if this class instance's value is a
+                         *   not a known member.
+                         */
+                        fun known(): Known =
+                            when (this) {
+                                USER -> Known.USER
+                                ASSISTANT -> Known.ASSISTANT
+                                SYSTEM -> Known.SYSTEM
+                                DEVELOPER -> Known.DEVELOPER
+                                else -> throw OpenAIInvalidDataException("Unknown Role: $value")
+                            }
+
+                        /**
+                         * Returns this class instance's primitive wire representation.
+                         *
+                         * This differs from the [toString] method because that method is primarily
+                         * for debugging and generally doesn't throw.
+                         *
+                         * @throws OpenAIInvalidDataException if this class instance's value does
+                         *   not have the expected primitive type.
+                         */
+                        fun asString(): String =
+                            _value().asString().orElseThrow {
+                                OpenAIInvalidDataException("Value is not a String")
+                            }
+
+                        private var validated: Boolean = false
+
+                        fun validate(): Role = apply {
+                            if (validated) {
+                                return@apply
+                            }
+
+                            known()
+                            validated = true
+                        }
+
+                        fun isValid(): Boolean =
+                            try {
+                                validate()
+                                true
+                            } catch (e: OpenAIInvalidDataException) {
+                                false
+                            }
+
+                        /**
+                         * Returns a score indicating how many valid values are contained in this
+                         * object recursively.
+                         *
+                         * Used for best match union deserialization.
+                         */
+                        @JvmSynthetic
+                        internal fun validity(): Int = if (value() == Value._UNKNOWN) 0 else 1
+
+                        override fun equals(other: Any?): Boolean {
+                            if (this === other) {
+                                return true
+                            }
+
+                            return /* spotless:off */ other is Role && value == other.value /* spotless:on */
+                        }
+
+                        override fun hashCode() = value.hashCode()
+
+                        override fun toString() = value.toString()
+                    }
+
+                    /** The type of the message input. Always `message`. */
+                    class Type
+                    @JsonCreator
+                    private constructor(private val value: JsonField<String>) : Enum {
+
+                        /**
+                         * Returns this class instance's raw value.
+                         *
+                         * This is usually only useful if this instance was deserialized from data
+                         * that doesn't match any known member, and you want to know that value. For
+                         * example, if the SDK is on an older version than the API, then the API may
+                         * respond with new members that the SDK is unaware of.
+                         */
+                        @com.fasterxml.jackson.annotation.JsonValue
+                        fun _value(): JsonField<String> = value
+
+                        companion object {
+
+                            @JvmField val MESSAGE = of("message")
+
+                            @JvmStatic fun of(value: String) = Type(JsonField.of(value))
+                        }
+
+                        /** An enum containing [Type]'s known values. */
+                        enum class Known {
+                            MESSAGE
+                        }
+
+                        /**
+                         * An enum containing [Type]'s known values, as well as an [_UNKNOWN]
+                         * member.
+                         *
+                         * An instance of [Type] can contain an unknown value in a couple of cases:
+                         * - It was deserialized from data that doesn't match any known member. For
+                         *   example, if the SDK is on an older version than the API, then the API
+                         *   may respond with new members that the SDK is unaware of.
+                         * - It was constructed with an arbitrary value using the [of] method.
+                         */
+                        enum class Value {
+                            MESSAGE,
+                            /**
+                             * An enum member indicating that [Type] was instantiated with an
+                             * unknown value.
+                             */
+                            _UNKNOWN,
+                        }
+
+                        /**
+                         * Returns an enum member corresponding to this class instance's value, or
+                         * [Value._UNKNOWN] if the class was instantiated with an unknown value.
+                         *
+                         * Use the [known] method instead if you're certain the value is always
+                         * known or if you want to throw for the unknown case.
+                         */
+                        fun value(): Value =
+                            when (this) {
+                                MESSAGE -> Value.MESSAGE
+                                else -> Value._UNKNOWN
+                            }
+
+                        /**
+                         * Returns an enum member corresponding to this class instance's value.
+                         *
+                         * Use the [value] method instead if you're uncertain the value is always
+                         * known and don't want to throw for the unknown case.
+                         *
+                         * @throws OpenAIInvalidDataException if this class instance's value is a
+                         *   not a known member.
+                         */
+                        fun known(): Known =
+                            when (this) {
+                                MESSAGE -> Known.MESSAGE
+                                else -> throw OpenAIInvalidDataException("Unknown Type: $value")
+                            }
+
+                        /**
+                         * Returns this class instance's primitive wire representation.
+                         *
+                         * This differs from the [toString] method because that method is primarily
+                         * for debugging and generally doesn't throw.
+                         *
+                         * @throws OpenAIInvalidDataException if this class instance's value does
+                         *   not have the expected primitive type.
+                         */
+                        fun asString(): String =
+                            _value().asString().orElseThrow {
+                                OpenAIInvalidDataException("Value is not a String")
+                            }
+
+                        private var validated: Boolean = false
+
+                        fun validate(): Type = apply {
+                            if (validated) {
+                                return@apply
+                            }
+
+                            known()
+                            validated = true
+                        }
+
+                        fun isValid(): Boolean =
+                            try {
+                                validate()
+                                true
+                            } catch (e: OpenAIInvalidDataException) {
+                                false
+                            }
+
+                        /**
+                         * Returns a score indicating how many valid values are contained in this
+                         * object recursively.
+                         *
+                         * Used for best match union deserialization.
+                         */
+                        @JvmSynthetic
+                        internal fun validity(): Int = if (value() == Value._UNKNOWN) 0 else 1
+
+                        override fun equals(other: Any?): Boolean {
+                            if (this === other) {
+                                return true
+                            }
+
+                            return /* spotless:off */ other is Type && value == other.value /* spotless:on */
+                        }
+
+                        override fun hashCode() = value.hashCode()
+
+                        override fun toString() = value.toString()
+                    }
+
+                    override fun equals(other: Any?): Boolean {
+                        if (this === other) {
+                            return true
+                        }
+
+                        return /* spotless:off */ other is Message && content == other.content && role == other.role && type == other.type && additionalProperties == other.additionalProperties /* spotless:on */
+                    }
+
+                    /* spotless:off */
+                    private val hashCode: Int by lazy { Objects.hash(content, role, type, additionalProperties) }
+                    /* spotless:on */
+
+                    override fun hashCode(): Int = hashCode
+
+                    override fun toString() =
+                        "Message{content=$content, role=$role, type=$type, additionalProperties=$additionalProperties}"
                 }
             }
 

@@ -10,7 +10,6 @@ import com.openai.models.beta.assistants.AssistantTool
 import com.openai.models.beta.assistants.CodeInterpreterTool
 import com.openai.models.beta.threads.AssistantResponseFormatOption
 import com.openai.models.beta.threads.AssistantToolChoiceOption
-import com.openai.models.beta.threads.TruncationObject
 import com.openai.models.beta.threads.runs.steps.RunStepInclude
 import kotlin.jvm.optionals.getOrNull
 import org.assertj.core.api.Assertions.assertThat
@@ -59,7 +58,10 @@ internal class RunCreateParamsTest {
             .addTool(CodeInterpreterTool.builder().build())
             .topP(1.0)
             .truncationStrategy(
-                TruncationObject.builder().type(TruncationObject.Type.AUTO).lastMessages(1L).build()
+                RunCreateParams.TruncationStrategy.builder()
+                    .type(RunCreateParams.TruncationStrategy.Type.AUTO)
+                    .lastMessages(1L)
+                    .build()
             )
             .build()
     }
@@ -116,8 +118,8 @@ internal class RunCreateParamsTest {
                 .addTool(CodeInterpreterTool.builder().build())
                 .topP(1.0)
                 .truncationStrategy(
-                    TruncationObject.builder()
-                        .type(TruncationObject.Type.AUTO)
+                    RunCreateParams.TruncationStrategy.builder()
+                        .type(RunCreateParams.TruncationStrategy.Type.AUTO)
                         .lastMessages(1L)
                         .build()
                 )
@@ -185,8 +187,8 @@ internal class RunCreateParamsTest {
                 .addTool(CodeInterpreterTool.builder().build())
                 .topP(1.0)
                 .truncationStrategy(
-                    TruncationObject.builder()
-                        .type(TruncationObject.Type.AUTO)
+                    RunCreateParams.TruncationStrategy.builder()
+                        .type(RunCreateParams.TruncationStrategy.Type.AUTO)
                         .lastMessages(1L)
                         .build()
                 )
@@ -235,7 +237,10 @@ internal class RunCreateParamsTest {
         assertThat(body.topP()).contains(1.0)
         assertThat(body.truncationStrategy())
             .contains(
-                TruncationObject.builder().type(TruncationObject.Type.AUTO).lastMessages(1L).build()
+                RunCreateParams.TruncationStrategy.builder()
+                    .type(RunCreateParams.TruncationStrategy.Type.AUTO)
+                    .lastMessages(1L)
+                    .build()
             )
     }
 

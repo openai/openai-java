@@ -107,7 +107,10 @@ internal class ThreadCreateAndRunParamsTest {
             .addTool(CodeInterpreterTool.builder().build())
             .topP(1.0)
             .truncationStrategy(
-                TruncationObject.builder().type(TruncationObject.Type.AUTO).lastMessages(1L).build()
+                ThreadCreateAndRunParams.TruncationStrategy.builder()
+                    .type(ThreadCreateAndRunParams.TruncationStrategy.Type.AUTO)
+                    .lastMessages(1L)
+                    .build()
             )
             .build()
     }
@@ -209,8 +212,8 @@ internal class ThreadCreateAndRunParamsTest {
                 .addTool(CodeInterpreterTool.builder().build())
                 .topP(1.0)
                 .truncationStrategy(
-                    TruncationObject.builder()
-                        .type(TruncationObject.Type.AUTO)
+                    ThreadCreateAndRunParams.TruncationStrategy.builder()
+                        .type(ThreadCreateAndRunParams.TruncationStrategy.Type.AUTO)
                         .lastMessages(1L)
                         .build()
                 )
@@ -316,7 +319,10 @@ internal class ThreadCreateAndRunParamsTest {
         assertThat(body.topP()).contains(1.0)
         assertThat(body.truncationStrategy())
             .contains(
-                TruncationObject.builder().type(TruncationObject.Type.AUTO).lastMessages(1L).build()
+                ThreadCreateAndRunParams.TruncationStrategy.builder()
+                    .type(ThreadCreateAndRunParams.TruncationStrategy.Type.AUTO)
+                    .lastMessages(1L)
+                    .build()
             )
     }
 

@@ -60,7 +60,7 @@ private constructor(
     fun name(): String = name.getRequired("name")
 
     /**
-     * The type of grader.
+     * The object type, which is always `multi`.
      *
      * Expected to always return the following:
      * ```java

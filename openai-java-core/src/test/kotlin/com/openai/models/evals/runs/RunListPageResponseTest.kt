@@ -20,14 +20,17 @@ internal class RunListPageResponseTest {
                         .createdAt(0L)
                         .fileContentJsonlDataSource(
                             listOf(
-                                EvalJsonlFileContentSource.Content.builder()
+                                CreateEvalJsonlRunDataSource.Source.FileContent.Content.builder()
                                     .item(
-                                        EvalJsonlFileContentSource.Content.Item.builder()
+                                        CreateEvalJsonlRunDataSource.Source.FileContent.Content.Item
+                                            .builder()
                                             .putAdditionalProperty("foo", JsonValue.from("bar"))
                                             .build()
                                     )
                                     .sample(
-                                        EvalJsonlFileContentSource.Content.Sample.builder()
+                                        CreateEvalJsonlRunDataSource.Source.FileContent.Content
+                                            .Sample
+                                            .builder()
                                             .putAdditionalProperty("foo", JsonValue.from("bar"))
                                             .build()
                                     )
@@ -84,14 +87,16 @@ internal class RunListPageResponseTest {
                     .createdAt(0L)
                     .fileContentJsonlDataSource(
                         listOf(
-                            EvalJsonlFileContentSource.Content.builder()
+                            CreateEvalJsonlRunDataSource.Source.FileContent.Content.builder()
                                 .item(
-                                    EvalJsonlFileContentSource.Content.Item.builder()
+                                    CreateEvalJsonlRunDataSource.Source.FileContent.Content.Item
+                                        .builder()
                                         .putAdditionalProperty("foo", JsonValue.from("bar"))
                                         .build()
                                 )
                                 .sample(
-                                    EvalJsonlFileContentSource.Content.Sample.builder()
+                                    CreateEvalJsonlRunDataSource.Source.FileContent.Content.Sample
+                                        .builder()
                                         .putAdditionalProperty("foo", JsonValue.from("bar"))
                                         .build()
                                 )
@@ -152,14 +157,17 @@ internal class RunListPageResponseTest {
                         .createdAt(0L)
                         .fileContentJsonlDataSource(
                             listOf(
-                                EvalJsonlFileContentSource.Content.builder()
+                                CreateEvalJsonlRunDataSource.Source.FileContent.Content.builder()
                                     .item(
-                                        EvalJsonlFileContentSource.Content.Item.builder()
+                                        CreateEvalJsonlRunDataSource.Source.FileContent.Content.Item
+                                            .builder()
                                             .putAdditionalProperty("foo", JsonValue.from("bar"))
                                             .build()
                                     )
                                     .sample(
-                                        EvalJsonlFileContentSource.Content.Sample.builder()
+                                        CreateEvalJsonlRunDataSource.Source.FileContent.Content
+                                            .Sample
+                                            .builder()
                                             .putAdditionalProperty("foo", JsonValue.from("bar"))
                                             .build()
                                     )

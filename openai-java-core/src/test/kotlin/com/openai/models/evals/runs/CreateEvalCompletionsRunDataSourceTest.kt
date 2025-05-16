@@ -17,14 +17,16 @@ internal class CreateEvalCompletionsRunDataSourceTest {
             CreateEvalCompletionsRunDataSource.builder()
                 .fileContentSource(
                     listOf(
-                        EvalJsonlFileContentSource.Content.builder()
+                        CreateEvalCompletionsRunDataSource.Source.FileContent.Content.builder()
                             .item(
-                                EvalJsonlFileContentSource.Content.Item.builder()
+                                CreateEvalCompletionsRunDataSource.Source.FileContent.Content.Item
+                                    .builder()
                                     .putAdditionalProperty("foo", JsonValue.from("bar"))
                                     .build()
                             )
                             .sample(
-                                EvalJsonlFileContentSource.Content.Sample.builder()
+                                CreateEvalCompletionsRunDataSource.Source.FileContent.Content.Sample
+                                    .builder()
                                     .putAdditionalProperty("foo", JsonValue.from("bar"))
                                     .build()
                             )
@@ -58,16 +60,20 @@ internal class CreateEvalCompletionsRunDataSourceTest {
         assertThat(createEvalCompletionsRunDataSource.source())
             .isEqualTo(
                 CreateEvalCompletionsRunDataSource.Source.ofFileContent(
-                    EvalJsonlFileContentSource.builder()
+                    CreateEvalCompletionsRunDataSource.Source.FileContent.builder()
                         .addContent(
-                            EvalJsonlFileContentSource.Content.builder()
+                            CreateEvalCompletionsRunDataSource.Source.FileContent.Content.builder()
                                 .item(
-                                    EvalJsonlFileContentSource.Content.Item.builder()
+                                    CreateEvalCompletionsRunDataSource.Source.FileContent.Content
+                                        .Item
+                                        .builder()
                                         .putAdditionalProperty("foo", JsonValue.from("bar"))
                                         .build()
                                 )
                                 .sample(
-                                    EvalJsonlFileContentSource.Content.Sample.builder()
+                                    CreateEvalCompletionsRunDataSource.Source.FileContent.Content
+                                        .Sample
+                                        .builder()
                                         .putAdditionalProperty("foo", JsonValue.from("bar"))
                                         .build()
                                 )
@@ -111,14 +117,16 @@ internal class CreateEvalCompletionsRunDataSourceTest {
             CreateEvalCompletionsRunDataSource.builder()
                 .fileContentSource(
                     listOf(
-                        EvalJsonlFileContentSource.Content.builder()
+                        CreateEvalCompletionsRunDataSource.Source.FileContent.Content.builder()
                             .item(
-                                EvalJsonlFileContentSource.Content.Item.builder()
+                                CreateEvalCompletionsRunDataSource.Source.FileContent.Content.Item
+                                    .builder()
                                     .putAdditionalProperty("foo", JsonValue.from("bar"))
                                     .build()
                             )
                             .sample(
-                                EvalJsonlFileContentSource.Content.Sample.builder()
+                                CreateEvalCompletionsRunDataSource.Source.FileContent.Content.Sample
+                                    .builder()
                                     .putAdditionalProperty("foo", JsonValue.from("bar"))
                                     .build()
                             )
