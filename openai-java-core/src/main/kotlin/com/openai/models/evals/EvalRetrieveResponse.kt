@@ -25,7 +25,6 @@ import com.openai.core.checkRequired
 import com.openai.core.getOrThrow
 import com.openai.core.toImmutable
 import com.openai.errors.OpenAIInvalidDataException
-import com.openai.models.EvalItem
 import com.openai.models.graders.gradermodels.LabelModelGrader
 import com.openai.models.graders.gradermodels.PythonGrader
 import com.openai.models.graders.gradermodels.ScoreModelGrader
@@ -299,19 +298,19 @@ private constructor(
             dataSourceConfig(EvalCustomDataSourceConfig.builder().schema(schema).build())
 
         /** Alias for calling [dataSourceConfig] with `DataSourceConfig.ofLogs(logs)`. */
-        fun dataSourceConfig(logs: EvalLogsDataSourceConfig) =
+        fun dataSourceConfig(logs: DataSourceConfig.Logs) =
             dataSourceConfig(DataSourceConfig.ofLogs(logs))
 
         /**
          * Alias for calling [dataSourceConfig] with the following:
          * ```java
-         * EvalLogsDataSourceConfig.builder()
+         * DataSourceConfig.Logs.builder()
          *     .schema(schema)
          *     .build()
          * ```
          */
-        fun logsDataSourceConfig(schema: EvalLogsDataSourceConfig.Schema) =
-            dataSourceConfig(EvalLogsDataSourceConfig.builder().schema(schema).build())
+        fun logsDataSourceConfig(schema: DataSourceConfig.Logs.Schema) =
+            dataSourceConfig(DataSourceConfig.Logs.builder().schema(schema).build())
 
         /**
          * Alias for calling [dataSourceConfig] with
@@ -546,7 +545,7 @@ private constructor(
     class DataSourceConfig
     private constructor(
         private val custom: EvalCustomDataSourceConfig? = null,
-        private val logs: EvalLogsDataSourceConfig? = null,
+        private val logs: Logs? = null,
         private val storedCompletions: EvalStoredCompletionsDataSourceConfig? = null,
         private val _json: JsonValue? = null,
     ) {
@@ -565,7 +564,7 @@ private constructor(
          * by this data source config is used to defined what variables are available in your evals.
          * `item` and `sample` are both defined when using this data source config.
          */
-        fun logs(): Optional<EvalLogsDataSourceConfig> = Optional.ofNullable(logs)
+        fun logs(): Optional<Logs> = Optional.ofNullable(logs)
 
         /** Deprecated in favor of LogsDataSourceConfig. */
         @Deprecated("deprecated")
@@ -592,7 +591,7 @@ private constructor(
          * by this data source config is used to defined what variables are available in your evals.
          * `item` and `sample` are both defined when using this data source config.
          */
-        fun asLogs(): EvalLogsDataSourceConfig = logs.getOrThrow("logs")
+        fun asLogs(): Logs = logs.getOrThrow("logs")
 
         /** Deprecated in favor of LogsDataSourceConfig. */
         @Deprecated("deprecated")
@@ -622,7 +621,7 @@ private constructor(
                         custom.validate()
                     }
 
-                    override fun visitLogs(logs: EvalLogsDataSourceConfig) {
+                    override fun visitLogs(logs: Logs) {
                         logs.validate()
                     }
 
@@ -656,7 +655,7 @@ private constructor(
                 object : Visitor<Int> {
                     override fun visitCustom(custom: EvalCustomDataSourceConfig) = custom.validity()
 
-                    override fun visitLogs(logs: EvalLogsDataSourceConfig) = logs.validity()
+                    override fun visitLogs(logs: Logs) = logs.validity()
 
                     override fun visitStoredCompletions(
                         storedCompletions: EvalStoredCompletionsDataSourceConfig
@@ -704,7 +703,7 @@ private constructor(
              * in your evals. `item` and `sample` are both defined when using this data source
              * config.
              */
-            @JvmStatic fun ofLogs(logs: EvalLogsDataSourceConfig) = DataSourceConfig(logs = logs)
+            @JvmStatic fun ofLogs(logs: Logs) = DataSourceConfig(logs = logs)
 
             /** Deprecated in favor of LogsDataSourceConfig. */
             @Deprecated("deprecated")
@@ -734,7 +733,7 @@ private constructor(
              * in your evals. `item` and `sample` are both defined when using this data source
              * config.
              */
-            fun visitLogs(logs: EvalLogsDataSourceConfig): T
+            fun visitLogs(logs: Logs): T
 
             /** Deprecated in favor of LogsDataSourceConfig. */
             @Deprecated("deprecated")
@@ -768,9 +767,9 @@ private constructor(
                             ?: DataSourceConfig(_json = json)
                     }
                     "logs" -> {
-                        return tryDeserialize(node, jacksonTypeRef<EvalLogsDataSourceConfig>())
-                            ?.let { DataSourceConfig(logs = it, _json = json) }
-                            ?: DataSourceConfig(_json = json)
+                        return tryDeserialize(node, jacksonTypeRef<Logs>())?.let {
+                            DataSourceConfig(logs = it, _json = json)
+                        } ?: DataSourceConfig(_json = json)
                     }
                     "stored-completions" -> {
                         return tryDeserialize(
@@ -802,6 +801,498 @@ private constructor(
                     else -> throw IllegalStateException("Invalid DataSourceConfig")
                 }
             }
+        }
+
+        /**
+         * A LogsDataSourceConfig which specifies the metadata property of your logs query. This is
+         * usually metadata like `usecase=chatbot` or `prompt-version=v2`, etc. The schema returned
+         * by this data source config is used to defined what variables are available in your evals.
+         * `item` and `sample` are both defined when using this data source config.
+         */
+        class Logs
+        private constructor(
+            private val schema: JsonField<Schema>,
+            private val type: JsonValue,
+            private val metadata: JsonField<Metadata>,
+            private val additionalProperties: MutableMap<String, JsonValue>,
+        ) {
+
+            @JsonCreator
+            private constructor(
+                @JsonProperty("schema")
+                @ExcludeMissing
+                schema: JsonField<Schema> = JsonMissing.of(),
+                @JsonProperty("type") @ExcludeMissing type: JsonValue = JsonMissing.of(),
+                @JsonProperty("metadata")
+                @ExcludeMissing
+                metadata: JsonField<Metadata> = JsonMissing.of(),
+            ) : this(schema, type, metadata, mutableMapOf())
+
+            /**
+             * The json schema for the run data source items. Learn how to build JSON schemas
+             * [here](https://json-schema.org/).
+             *
+             * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+             *   unexpectedly missing or null (e.g. if the server responded with an unexpected
+             *   value).
+             */
+            fun schema(): Schema = schema.getRequired("schema")
+
+            /**
+             * The type of data source. Always `logs`.
+             *
+             * Expected to always return the following:
+             * ```java
+             * JsonValue.from("logs")
+             * ```
+             *
+             * However, this method can be useful for debugging and logging (e.g. if the server
+             * responded with an unexpected value).
+             */
+            @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
+
+            /**
+             * Set of 16 key-value pairs that can be attached to an object. This can be useful for
+             * storing additional information about the object in a structured format, and querying
+             * for objects via API or the dashboard.
+             *
+             * Keys are strings with a maximum length of 64 characters. Values are strings with a
+             * maximum length of 512 characters.
+             *
+             * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if
+             *   the server responded with an unexpected value).
+             */
+            fun metadata(): Optional<Metadata> = metadata.getOptional("metadata")
+
+            /**
+             * Returns the raw JSON value of [schema].
+             *
+             * Unlike [schema], this method doesn't throw if the JSON field has an unexpected type.
+             */
+            @JsonProperty("schema") @ExcludeMissing fun _schema(): JsonField<Schema> = schema
+
+            /**
+             * Returns the raw JSON value of [metadata].
+             *
+             * Unlike [metadata], this method doesn't throw if the JSON field has an unexpected
+             * type.
+             */
+            @JsonProperty("metadata")
+            @ExcludeMissing
+            fun _metadata(): JsonField<Metadata> = metadata
+
+            @JsonAnySetter
+            private fun putAdditionalProperty(key: String, value: JsonValue) {
+                additionalProperties.put(key, value)
+            }
+
+            @JsonAnyGetter
+            @ExcludeMissing
+            fun _additionalProperties(): Map<String, JsonValue> =
+                Collections.unmodifiableMap(additionalProperties)
+
+            fun toBuilder() = Builder().from(this)
+
+            companion object {
+
+                /**
+                 * Returns a mutable builder for constructing an instance of [Logs].
+                 *
+                 * The following fields are required:
+                 * ```java
+                 * .schema()
+                 * ```
+                 */
+                @JvmStatic fun builder() = Builder()
+            }
+
+            /** A builder for [Logs]. */
+            class Builder internal constructor() {
+
+                private var schema: JsonField<Schema>? = null
+                private var type: JsonValue = JsonValue.from("logs")
+                private var metadata: JsonField<Metadata> = JsonMissing.of()
+                private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
+
+                @JvmSynthetic
+                internal fun from(logs: Logs) = apply {
+                    schema = logs.schema
+                    type = logs.type
+                    metadata = logs.metadata
+                    additionalProperties = logs.additionalProperties.toMutableMap()
+                }
+
+                /**
+                 * The json schema for the run data source items. Learn how to build JSON schemas
+                 * [here](https://json-schema.org/).
+                 */
+                fun schema(schema: Schema) = schema(JsonField.of(schema))
+
+                /**
+                 * Sets [Builder.schema] to an arbitrary JSON value.
+                 *
+                 * You should usually call [Builder.schema] with a well-typed [Schema] value
+                 * instead. This method is primarily for setting the field to an undocumented or not
+                 * yet supported value.
+                 */
+                fun schema(schema: JsonField<Schema>) = apply { this.schema = schema }
+
+                /**
+                 * Sets the field to an arbitrary JSON value.
+                 *
+                 * It is usually unnecessary to call this method because the field defaults to the
+                 * following:
+                 * ```java
+                 * JsonValue.from("logs")
+                 * ```
+                 *
+                 * This method is primarily for setting the field to an undocumented or not yet
+                 * supported value.
+                 */
+                fun type(type: JsonValue) = apply { this.type = type }
+
+                /**
+                 * Set of 16 key-value pairs that can be attached to an object. This can be useful
+                 * for storing additional information about the object in a structured format, and
+                 * querying for objects via API or the dashboard.
+                 *
+                 * Keys are strings with a maximum length of 64 characters. Values are strings with
+                 * a maximum length of 512 characters.
+                 */
+                fun metadata(metadata: Metadata?) = metadata(JsonField.ofNullable(metadata))
+
+                /** Alias for calling [Builder.metadata] with `metadata.orElse(null)`. */
+                fun metadata(metadata: Optional<Metadata>) = metadata(metadata.getOrNull())
+
+                /**
+                 * Sets [Builder.metadata] to an arbitrary JSON value.
+                 *
+                 * You should usually call [Builder.metadata] with a well-typed [Metadata] value
+                 * instead. This method is primarily for setting the field to an undocumented or not
+                 * yet supported value.
+                 */
+                fun metadata(metadata: JsonField<Metadata>) = apply { this.metadata = metadata }
+
+                fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                    this.additionalProperties.clear()
+                    putAllAdditionalProperties(additionalProperties)
+                }
+
+                fun putAdditionalProperty(key: String, value: JsonValue) = apply {
+                    additionalProperties.put(key, value)
+                }
+
+                fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) =
+                    apply {
+                        this.additionalProperties.putAll(additionalProperties)
+                    }
+
+                fun removeAdditionalProperty(key: String) = apply {
+                    additionalProperties.remove(key)
+                }
+
+                fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                    keys.forEach(::removeAdditionalProperty)
+                }
+
+                /**
+                 * Returns an immutable instance of [Logs].
+                 *
+                 * Further updates to this [Builder] will not mutate the returned instance.
+                 *
+                 * The following fields are required:
+                 * ```java
+                 * .schema()
+                 * ```
+                 *
+                 * @throws IllegalStateException if any required field is unset.
+                 */
+                fun build(): Logs =
+                    Logs(
+                        checkRequired("schema", schema),
+                        type,
+                        metadata,
+                        additionalProperties.toMutableMap(),
+                    )
+            }
+
+            private var validated: Boolean = false
+
+            fun validate(): Logs = apply {
+                if (validated) {
+                    return@apply
+                }
+
+                schema().validate()
+                _type().let {
+                    if (it != JsonValue.from("logs")) {
+                        throw OpenAIInvalidDataException("'type' is invalid, received $it")
+                    }
+                }
+                metadata().ifPresent { it.validate() }
+                validated = true
+            }
+
+            fun isValid(): Boolean =
+                try {
+                    validate()
+                    true
+                } catch (e: OpenAIInvalidDataException) {
+                    false
+                }
+
+            /**
+             * Returns a score indicating how many valid values are contained in this object
+             * recursively.
+             *
+             * Used for best match union deserialization.
+             */
+            @JvmSynthetic
+            internal fun validity(): Int =
+                (schema.asKnown().getOrNull()?.validity() ?: 0) +
+                    type.let { if (it == JsonValue.from("logs")) 1 else 0 } +
+                    (metadata.asKnown().getOrNull()?.validity() ?: 0)
+
+            /**
+             * The json schema for the run data source items. Learn how to build JSON schemas
+             * [here](https://json-schema.org/).
+             */
+            class Schema
+            @JsonCreator
+            private constructor(
+                @com.fasterxml.jackson.annotation.JsonValue
+                private val additionalProperties: Map<String, JsonValue>
+            ) {
+
+                @JsonAnyGetter
+                @ExcludeMissing
+                fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
+
+                fun toBuilder() = Builder().from(this)
+
+                companion object {
+
+                    /** Returns a mutable builder for constructing an instance of [Schema]. */
+                    @JvmStatic fun builder() = Builder()
+                }
+
+                /** A builder for [Schema]. */
+                class Builder internal constructor() {
+
+                    private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
+
+                    @JvmSynthetic
+                    internal fun from(schema: Schema) = apply {
+                        additionalProperties = schema.additionalProperties.toMutableMap()
+                    }
+
+                    fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                        this.additionalProperties.clear()
+                        putAllAdditionalProperties(additionalProperties)
+                    }
+
+                    fun putAdditionalProperty(key: String, value: JsonValue) = apply {
+                        additionalProperties.put(key, value)
+                    }
+
+                    fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) =
+                        apply {
+                            this.additionalProperties.putAll(additionalProperties)
+                        }
+
+                    fun removeAdditionalProperty(key: String) = apply {
+                        additionalProperties.remove(key)
+                    }
+
+                    fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                        keys.forEach(::removeAdditionalProperty)
+                    }
+
+                    /**
+                     * Returns an immutable instance of [Schema].
+                     *
+                     * Further updates to this [Builder] will not mutate the returned instance.
+                     */
+                    fun build(): Schema = Schema(additionalProperties.toImmutable())
+                }
+
+                private var validated: Boolean = false
+
+                fun validate(): Schema = apply {
+                    if (validated) {
+                        return@apply
+                    }
+
+                    validated = true
+                }
+
+                fun isValid(): Boolean =
+                    try {
+                        validate()
+                        true
+                    } catch (e: OpenAIInvalidDataException) {
+                        false
+                    }
+
+                /**
+                 * Returns a score indicating how many valid values are contained in this object
+                 * recursively.
+                 *
+                 * Used for best match union deserialization.
+                 */
+                @JvmSynthetic
+                internal fun validity(): Int =
+                    additionalProperties.count { (_, value) ->
+                        !value.isNull() && !value.isMissing()
+                    }
+
+                override fun equals(other: Any?): Boolean {
+                    if (this === other) {
+                        return true
+                    }
+
+                    return /* spotless:off */ other is Schema && additionalProperties == other.additionalProperties /* spotless:on */
+                }
+
+                /* spotless:off */
+                private val hashCode: Int by lazy { Objects.hash(additionalProperties) }
+                /* spotless:on */
+
+                override fun hashCode(): Int = hashCode
+
+                override fun toString() = "Schema{additionalProperties=$additionalProperties}"
+            }
+
+            /**
+             * Set of 16 key-value pairs that can be attached to an object. This can be useful for
+             * storing additional information about the object in a structured format, and querying
+             * for objects via API or the dashboard.
+             *
+             * Keys are strings with a maximum length of 64 characters. Values are strings with a
+             * maximum length of 512 characters.
+             */
+            class Metadata
+            @JsonCreator
+            private constructor(
+                @com.fasterxml.jackson.annotation.JsonValue
+                private val additionalProperties: Map<String, JsonValue>
+            ) {
+
+                @JsonAnyGetter
+                @ExcludeMissing
+                fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
+
+                fun toBuilder() = Builder().from(this)
+
+                companion object {
+
+                    /** Returns a mutable builder for constructing an instance of [Metadata]. */
+                    @JvmStatic fun builder() = Builder()
+                }
+
+                /** A builder for [Metadata]. */
+                class Builder internal constructor() {
+
+                    private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
+
+                    @JvmSynthetic
+                    internal fun from(metadata: Metadata) = apply {
+                        additionalProperties = metadata.additionalProperties.toMutableMap()
+                    }
+
+                    fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                        this.additionalProperties.clear()
+                        putAllAdditionalProperties(additionalProperties)
+                    }
+
+                    fun putAdditionalProperty(key: String, value: JsonValue) = apply {
+                        additionalProperties.put(key, value)
+                    }
+
+                    fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) =
+                        apply {
+                            this.additionalProperties.putAll(additionalProperties)
+                        }
+
+                    fun removeAdditionalProperty(key: String) = apply {
+                        additionalProperties.remove(key)
+                    }
+
+                    fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                        keys.forEach(::removeAdditionalProperty)
+                    }
+
+                    /**
+                     * Returns an immutable instance of [Metadata].
+                     *
+                     * Further updates to this [Builder] will not mutate the returned instance.
+                     */
+                    fun build(): Metadata = Metadata(additionalProperties.toImmutable())
+                }
+
+                private var validated: Boolean = false
+
+                fun validate(): Metadata = apply {
+                    if (validated) {
+                        return@apply
+                    }
+
+                    validated = true
+                }
+
+                fun isValid(): Boolean =
+                    try {
+                        validate()
+                        true
+                    } catch (e: OpenAIInvalidDataException) {
+                        false
+                    }
+
+                /**
+                 * Returns a score indicating how many valid values are contained in this object
+                 * recursively.
+                 *
+                 * Used for best match union deserialization.
+                 */
+                @JvmSynthetic
+                internal fun validity(): Int =
+                    additionalProperties.count { (_, value) ->
+                        !value.isNull() && !value.isMissing()
+                    }
+
+                override fun equals(other: Any?): Boolean {
+                    if (this === other) {
+                        return true
+                    }
+
+                    return /* spotless:off */ other is Metadata && additionalProperties == other.additionalProperties /* spotless:on */
+                }
+
+                /* spotless:off */
+                private val hashCode: Int by lazy { Objects.hash(additionalProperties) }
+                /* spotless:on */
+
+                override fun hashCode(): Int = hashCode
+
+                override fun toString() = "Metadata{additionalProperties=$additionalProperties}"
+            }
+
+            override fun equals(other: Any?): Boolean {
+                if (this === other) {
+                    return true
+                }
+
+                return /* spotless:off */ other is Logs && schema == other.schema && type == other.type && metadata == other.metadata && additionalProperties == other.additionalProperties /* spotless:on */
+            }
+
+            /* spotless:off */
+            private val hashCode: Int by lazy { Objects.hash(schema, type, metadata, additionalProperties) }
+            /* spotless:on */
+
+            override fun hashCode(): Int = hashCode
+
+            override fun toString() =
+                "Logs{schema=$schema, type=$type, metadata=$metadata, additionalProperties=$additionalProperties}"
         }
     }
 
@@ -1961,7 +2452,7 @@ private constructor(
         /** A ScoreModelGrader object that uses a model to assign a score to the input. */
         class EvalGraderScoreModel
         private constructor(
-            private val input: JsonField<List<EvalItem>>,
+            private val input: JsonField<List<ScoreModelGrader.Input>>,
             private val model: JsonField<String>,
             private val name: JsonField<String>,
             private val type: JsonValue,
@@ -1975,7 +2466,7 @@ private constructor(
             private constructor(
                 @JsonProperty("input")
                 @ExcludeMissing
-                input: JsonField<List<EvalItem>> = JsonMissing.of(),
+                input: JsonField<List<ScoreModelGrader.Input>> = JsonMissing.of(),
                 @JsonProperty("model") @ExcludeMissing model: JsonField<String> = JsonMissing.of(),
                 @JsonProperty("name") @ExcludeMissing name: JsonField<String> = JsonMissing.of(),
                 @JsonProperty("type") @ExcludeMissing type: JsonValue = JsonMissing.of(),
@@ -2007,7 +2498,7 @@ private constructor(
              *   unexpectedly missing or null (e.g. if the server responded with an unexpected
              *   value).
              */
-            fun input(): List<EvalItem> = input.getRequired("input")
+            fun input(): List<ScoreModelGrader.Input> = input.getRequired("input")
 
             /**
              * The model to use for the evaluation.
@@ -2066,7 +2557,9 @@ private constructor(
              *
              * Unlike [input], this method doesn't throw if the JSON field has an unexpected type.
              */
-            @JsonProperty("input") @ExcludeMissing fun _input(): JsonField<List<EvalItem>> = input
+            @JsonProperty("input")
+            @ExcludeMissing
+            fun _input(): JsonField<List<ScoreModelGrader.Input>> = input
 
             /**
              * Returns the raw JSON value of [model].
@@ -2129,7 +2622,7 @@ private constructor(
             /** A builder for [EvalGraderScoreModel]. */
             class Builder internal constructor() {
 
-                private var input: JsonField<MutableList<EvalItem>>? = null
+                private var input: JsonField<MutableList<ScoreModelGrader.Input>>? = null
                 private var model: JsonField<String>? = null
                 private var name: JsonField<String>? = null
                 private var type: JsonValue = JsonValue.from("score_model")
@@ -2151,25 +2644,25 @@ private constructor(
                 }
 
                 /** The input text. This may include template strings. */
-                fun input(input: List<EvalItem>) = input(JsonField.of(input))
+                fun input(input: List<ScoreModelGrader.Input>) = input(JsonField.of(input))
 
                 /**
                  * Sets [Builder.input] to an arbitrary JSON value.
                  *
-                 * You should usually call [Builder.input] with a well-typed `List<EvalItem>` value
-                 * instead. This method is primarily for setting the field to an undocumented or not
-                 * yet supported value.
+                 * You should usually call [Builder.input] with a well-typed
+                 * `List<ScoreModelGrader.Input>` value instead. This method is primarily for
+                 * setting the field to an undocumented or not yet supported value.
                  */
-                fun input(input: JsonField<List<EvalItem>>) = apply {
+                fun input(input: JsonField<List<ScoreModelGrader.Input>>) = apply {
                     this.input = input.map { it.toMutableList() }
                 }
 
                 /**
-                 * Adds a single [EvalItem] to [Builder.input].
+                 * Adds a single [ScoreModelGrader.Input] to [Builder.input].
                  *
                  * @throws IllegalStateException if the field was previously set to a non-list.
                  */
-                fun addInput(input: EvalItem) = apply {
+                fun addInput(input: ScoreModelGrader.Input) = apply {
                     this.input =
                         (this.input ?: JsonField.of(mutableListOf())).also {
                             checkKnown("input", it).add(input)

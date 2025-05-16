@@ -5,7 +5,6 @@ package com.openai.models.evals
 import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
 import com.openai.core.JsonValue
 import com.openai.core.jsonMapper
-import com.openai.models.EvalItem
 import com.openai.models.graders.gradermodels.LabelModelGrader
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
@@ -32,10 +31,10 @@ internal class EvalUpdateResponseTest {
                 .addTestingCriterion(
                     LabelModelGrader.builder()
                         .addInput(
-                            EvalItem.builder()
+                            LabelModelGrader.Input.builder()
                                 .content("string")
-                                .role(EvalItem.Role.USER)
-                                .type(EvalItem.Type.MESSAGE)
+                                .role(LabelModelGrader.Input.Role.USER)
+                                .type(LabelModelGrader.Input.Type.MESSAGE)
                                 .build()
                         )
                         .addLabel("string")
@@ -72,10 +71,10 @@ internal class EvalUpdateResponseTest {
                 EvalUpdateResponse.TestingCriterion.ofLabelModelGrader(
                     LabelModelGrader.builder()
                         .addInput(
-                            EvalItem.builder()
+                            LabelModelGrader.Input.builder()
                                 .content("string")
-                                .role(EvalItem.Role.USER)
-                                .type(EvalItem.Type.MESSAGE)
+                                .role(LabelModelGrader.Input.Role.USER)
+                                .type(LabelModelGrader.Input.Type.MESSAGE)
                                 .build()
                         )
                         .addLabel("string")
@@ -108,10 +107,10 @@ internal class EvalUpdateResponseTest {
                 .addTestingCriterion(
                     LabelModelGrader.builder()
                         .addInput(
-                            EvalItem.builder()
+                            LabelModelGrader.Input.builder()
                                 .content("string")
-                                .role(EvalItem.Role.USER)
-                                .type(EvalItem.Type.MESSAGE)
+                                .role(LabelModelGrader.Input.Role.USER)
+                                .type(LabelModelGrader.Input.Type.MESSAGE)
                                 .build()
                         )
                         .addLabel("string")

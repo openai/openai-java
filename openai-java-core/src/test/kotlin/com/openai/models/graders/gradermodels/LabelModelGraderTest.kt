@@ -4,7 +4,6 @@ package com.openai.models.graders.gradermodels
 
 import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
 import com.openai.core.jsonMapper
-import com.openai.models.EvalItem
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
@@ -15,10 +14,10 @@ internal class LabelModelGraderTest {
         val labelModelGrader =
             LabelModelGrader.builder()
                 .addInput(
-                    EvalItem.builder()
+                    LabelModelGrader.Input.builder()
                         .content("string")
-                        .role(EvalItem.Role.USER)
-                        .type(EvalItem.Type.MESSAGE)
+                        .role(LabelModelGrader.Input.Role.USER)
+                        .type(LabelModelGrader.Input.Type.MESSAGE)
                         .build()
                 )
                 .addLabel("string")
@@ -29,10 +28,10 @@ internal class LabelModelGraderTest {
 
         assertThat(labelModelGrader.input())
             .containsExactly(
-                EvalItem.builder()
+                LabelModelGrader.Input.builder()
                     .content("string")
-                    .role(EvalItem.Role.USER)
-                    .type(EvalItem.Type.MESSAGE)
+                    .role(LabelModelGrader.Input.Role.USER)
+                    .type(LabelModelGrader.Input.Type.MESSAGE)
                     .build()
             )
         assertThat(labelModelGrader.labels()).containsExactly("string")
@@ -47,10 +46,10 @@ internal class LabelModelGraderTest {
         val labelModelGrader =
             LabelModelGrader.builder()
                 .addInput(
-                    EvalItem.builder()
+                    LabelModelGrader.Input.builder()
                         .content("string")
-                        .role(EvalItem.Role.USER)
-                        .type(EvalItem.Type.MESSAGE)
+                        .role(LabelModelGrader.Input.Role.USER)
+                        .type(LabelModelGrader.Input.Type.MESSAGE)
                         .build()
                 )
                 .addLabel("string")

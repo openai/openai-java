@@ -6,7 +6,6 @@ import com.openai.TestServerExtension
 import com.openai.client.okhttp.OpenAIOkHttpClientAsync
 import com.openai.core.JsonValue
 import com.openai.models.evals.runs.CreateEvalJsonlRunDataSource
-import com.openai.models.evals.runs.EvalJsonlFileContentSource
 import com.openai.models.evals.runs.RunCancelParams
 import com.openai.models.evals.runs.RunCreateParams
 import com.openai.models.evals.runs.RunDeleteParams
@@ -34,14 +33,19 @@ internal class RunServiceAsyncTest {
                         CreateEvalJsonlRunDataSource.builder()
                             .fileContentSource(
                                 listOf(
-                                    EvalJsonlFileContentSource.Content.builder()
+                                    CreateEvalJsonlRunDataSource.Source.FileContent.Content
+                                        .builder()
                                         .item(
-                                            EvalJsonlFileContentSource.Content.Item.builder()
+                                            CreateEvalJsonlRunDataSource.Source.FileContent.Content
+                                                .Item
+                                                .builder()
                                                 .putAdditionalProperty("foo", JsonValue.from("bar"))
                                                 .build()
                                         )
                                         .sample(
-                                            EvalJsonlFileContentSource.Content.Sample.builder()
+                                            CreateEvalJsonlRunDataSource.Source.FileContent.Content
+                                                .Sample
+                                                .builder()
                                                 .putAdditionalProperty("foo", JsonValue.from("bar"))
                                                 .build()
                                         )

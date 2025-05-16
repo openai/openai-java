@@ -9,7 +9,6 @@ import com.openai.models.beta.assistants.AssistantTool
 import com.openai.models.beta.assistants.CodeInterpreterTool
 import com.openai.models.beta.threads.AssistantResponseFormatOption
 import com.openai.models.beta.threads.AssistantToolChoiceOption
-import com.openai.models.beta.threads.TruncationObject
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
@@ -73,8 +72,8 @@ internal class RunTest {
                 .toolChoice(AssistantToolChoiceOption.Auto.NONE)
                 .addTool(CodeInterpreterTool.builder().build())
                 .truncationStrategy(
-                    TruncationObject.builder()
-                        .type(TruncationObject.Type.AUTO)
+                    Run.TruncationStrategy.builder()
+                        .type(Run.TruncationStrategy.Type.AUTO)
                         .lastMessages(1L)
                         .build()
                 )
@@ -150,7 +149,10 @@ internal class RunTest {
             .containsExactly(AssistantTool.ofCodeInterpreter(CodeInterpreterTool.builder().build()))
         assertThat(run.truncationStrategy())
             .contains(
-                TruncationObject.builder().type(TruncationObject.Type.AUTO).lastMessages(1L).build()
+                Run.TruncationStrategy.builder()
+                    .type(Run.TruncationStrategy.Type.AUTO)
+                    .lastMessages(1L)
+                    .build()
             )
         assertThat(run.usage())
             .contains(
@@ -219,8 +221,8 @@ internal class RunTest {
                 .toolChoice(AssistantToolChoiceOption.Auto.NONE)
                 .addTool(CodeInterpreterTool.builder().build())
                 .truncationStrategy(
-                    TruncationObject.builder()
-                        .type(TruncationObject.Type.AUTO)
+                    Run.TruncationStrategy.builder()
+                        .type(Run.TruncationStrategy.Type.AUTO)
                         .lastMessages(1L)
                         .build()
                 )

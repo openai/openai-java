@@ -7,7 +7,6 @@ import com.openai.client.okhttp.OpenAIOkHttpClientAsync
 import com.openai.core.JsonValue
 import com.openai.models.vectorstores.AutoFileChunkingStrategyParam
 import com.openai.models.vectorstores.VectorStoreCreateParams
-import com.openai.models.vectorstores.VectorStoreExpirationAfter
 import com.openai.models.vectorstores.VectorStoreSearchParams
 import com.openai.models.vectorstores.VectorStoreUpdateParams
 import org.junit.jupiter.api.Test
@@ -29,7 +28,7 @@ internal class VectorStoreServiceAsyncTest {
             vectorStoreServiceAsync.create(
                 VectorStoreCreateParams.builder()
                     .chunkingStrategy(AutoFileChunkingStrategyParam.builder().build())
-                    .expiresAfter(VectorStoreExpirationAfter.builder().days(1L).build())
+                    .expiresAfter(VectorStoreCreateParams.ExpiresAfter.builder().days(1L).build())
                     .addFileId("string")
                     .metadata(
                         VectorStoreCreateParams.Metadata.builder()
@@ -72,7 +71,7 @@ internal class VectorStoreServiceAsyncTest {
             vectorStoreServiceAsync.update(
                 VectorStoreUpdateParams.builder()
                     .vectorStoreId("vector_store_id")
-                    .expiresAfter(VectorStoreExpirationAfter.builder().days(1L).build())
+                    .expiresAfter(VectorStoreUpdateParams.ExpiresAfter.builder().days(1L).build())
                     .metadata(
                         VectorStoreUpdateParams.Metadata.builder()
                             .putAdditionalProperty("foo", JsonValue.from("string"))
