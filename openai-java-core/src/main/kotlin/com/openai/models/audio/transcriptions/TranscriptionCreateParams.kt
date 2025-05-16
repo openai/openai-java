@@ -1221,7 +1221,7 @@ private constructor(
                     override fun visitAuto(auto: JsonValue) =
                         auto.let { if (it == JsonValue.from("auto")) 1 else 0 }
 
-                    override fun visitVadConfig(vadConfig: VadConfig) = vadConfig.validity()
+                    override fun visitVadConfig(vadConfig: VadConfig) = 1
 
                     override fun unknown(json: JsonValue?) = 0
                 }
