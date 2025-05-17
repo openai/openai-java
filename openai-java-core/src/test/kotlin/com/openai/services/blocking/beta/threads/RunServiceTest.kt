@@ -11,7 +11,6 @@ import com.openai.models.beta.assistants.CodeInterpreterTool
 import com.openai.models.beta.threads.AssistantToolChoiceOption
 import com.openai.models.beta.threads.runs.RunCancelParams
 import com.openai.models.beta.threads.runs.RunCreateParams
-import com.openai.models.beta.threads.runs.RunListParams
 import com.openai.models.beta.threads.runs.RunRetrieveParams
 import com.openai.models.beta.threads.runs.RunSubmitToolOutputsParams
 import com.openai.models.beta.threads.runs.RunUpdateParams
@@ -195,7 +194,7 @@ internal class RunServiceTest {
                 .build()
         val runService = client.beta().threads().runs()
 
-        val page = runService.list(RunListParams.builder().threadId("thread_id").build())
+        val page = runService.list("thread_id")
 
         page.response().validate()
     }

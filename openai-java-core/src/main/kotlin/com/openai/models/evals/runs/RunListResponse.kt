@@ -484,14 +484,9 @@ private constructor(
         fun fileIdJsonlDataSource(id: String) =
             jsonlDataSource(CreateEvalJsonlRunDataSource.Source.FileId.builder().id(id).build())
 
-        /**
-         * Alias for calling [dataSource] with
-         * `DataSource.ofCreateEvalCompletionsRunDataSource(createEvalCompletionsRunDataSource)`.
-         */
-        fun dataSource(createEvalCompletionsRunDataSource: CreateEvalCompletionsRunDataSource) =
-            dataSource(
-                DataSource.ofCreateEvalCompletionsRunDataSource(createEvalCompletionsRunDataSource)
-            )
+        /** Alias for calling [dataSource] with `DataSource.ofCompletions(completions)`. */
+        fun dataSource(completions: CreateEvalCompletionsRunDataSource) =
+            dataSource(DataSource.ofCompletions(completions))
 
         /**
          * Alias for calling [dataSource] with the following:
@@ -502,9 +497,7 @@ private constructor(
          *     .build()
          * ```
          */
-        fun createEvalCompletionsRunDataSourceDataSource(
-            source: CreateEvalCompletionsRunDataSource.Source
-        ) =
+        fun completionsDataSource(source: CreateEvalCompletionsRunDataSource.Source) =
             dataSource(
                 CreateEvalCompletionsRunDataSource.builder()
                     .type(CreateEvalCompletionsRunDataSource.Type.COMPLETIONS)
@@ -513,129 +506,125 @@ private constructor(
             )
 
         /**
-         * Alias for calling [createEvalCompletionsRunDataSourceDataSource] with
+         * Alias for calling [completionsDataSource] with
          * `CreateEvalCompletionsRunDataSource.Source.ofFileContent(fileContent)`.
          */
-        fun createEvalCompletionsRunDataSourceDataSource(
+        fun completionsDataSource(
             fileContent: CreateEvalCompletionsRunDataSource.Source.FileContent
         ) =
-            createEvalCompletionsRunDataSourceDataSource(
+            completionsDataSource(
                 CreateEvalCompletionsRunDataSource.Source.ofFileContent(fileContent)
             )
 
         /**
-         * Alias for calling [createEvalCompletionsRunDataSourceDataSource] with the following:
+         * Alias for calling [completionsDataSource] with the following:
          * ```java
          * CreateEvalCompletionsRunDataSource.Source.FileContent.builder()
          *     .content(content)
          *     .build()
          * ```
          */
-        fun fileContentCreateEvalCompletionsRunDataSourceDataSource(
+        fun fileContentCompletionsDataSource(
             content: List<CreateEvalCompletionsRunDataSource.Source.FileContent.Content>
         ) =
-            createEvalCompletionsRunDataSourceDataSource(
+            completionsDataSource(
                 CreateEvalCompletionsRunDataSource.Source.FileContent.builder()
                     .content(content)
                     .build()
             )
 
         /**
-         * Alias for calling [createEvalCompletionsRunDataSourceDataSource] with
+         * Alias for calling [completionsDataSource] with
          * `CreateEvalCompletionsRunDataSource.Source.ofFileId(fileId)`.
          */
-        fun createEvalCompletionsRunDataSourceDataSource(
-            fileId: CreateEvalCompletionsRunDataSource.Source.FileId
-        ) =
-            createEvalCompletionsRunDataSourceDataSource(
-                CreateEvalCompletionsRunDataSource.Source.ofFileId(fileId)
-            )
+        fun completionsDataSource(fileId: CreateEvalCompletionsRunDataSource.Source.FileId) =
+            completionsDataSource(CreateEvalCompletionsRunDataSource.Source.ofFileId(fileId))
 
         /**
-         * Alias for calling [createEvalCompletionsRunDataSourceDataSource] with the following:
+         * Alias for calling [completionsDataSource] with the following:
          * ```java
          * CreateEvalCompletionsRunDataSource.Source.FileId.builder()
          *     .id(id)
          *     .build()
          * ```
          */
-        fun fileIdCreateEvalCompletionsRunDataSourceDataSource(id: String) =
-            createEvalCompletionsRunDataSourceDataSource(
+        fun fileIdCompletionsDataSource(id: String) =
+            completionsDataSource(
                 CreateEvalCompletionsRunDataSource.Source.FileId.builder().id(id).build()
             )
 
         /**
-         * Alias for calling [createEvalCompletionsRunDataSourceDataSource] with
+         * Alias for calling [completionsDataSource] with
          * `CreateEvalCompletionsRunDataSource.Source.ofStoredCompletions(storedCompletions)`.
          */
-        fun createEvalCompletionsRunDataSourceDataSource(
+        fun completionsDataSource(
             storedCompletions: CreateEvalCompletionsRunDataSource.Source.StoredCompletions
         ) =
-            createEvalCompletionsRunDataSourceDataSource(
+            completionsDataSource(
                 CreateEvalCompletionsRunDataSource.Source.ofStoredCompletions(storedCompletions)
             )
 
-        /** Alias for calling [dataSource] with `DataSource.ofCompletions(completions)`. */
-        fun dataSource(completions: DataSource.Completions) =
-            dataSource(DataSource.ofCompletions(completions))
+        /** Alias for calling [dataSource] with `DataSource.ofResponses(responses)`. */
+        fun dataSource(responses: DataSource.Responses) =
+            dataSource(DataSource.ofResponses(responses))
 
         /**
          * Alias for calling [dataSource] with the following:
          * ```java
-         * DataSource.Completions.builder()
+         * DataSource.Responses.builder()
          *     .source(source)
          *     .build()
          * ```
          */
-        fun completionsDataSource(source: DataSource.Completions.Source) =
-            dataSource(DataSource.Completions.builder().source(source).build())
+        fun responsesDataSource(source: DataSource.Responses.Source) =
+            dataSource(DataSource.Responses.builder().source(source).build())
 
         /**
-         * Alias for calling [completionsDataSource] with
-         * `DataSource.Completions.Source.ofFileContent(fileContent)`.
+         * Alias for calling [responsesDataSource] with
+         * `DataSource.Responses.Source.ofFileContent(fileContent)`.
          */
-        fun completionsDataSource(fileContent: DataSource.Completions.Source.FileContent) =
-            completionsDataSource(DataSource.Completions.Source.ofFileContent(fileContent))
+        fun responsesDataSource(fileContent: DataSource.Responses.Source.FileContent) =
+            responsesDataSource(DataSource.Responses.Source.ofFileContent(fileContent))
 
         /**
-         * Alias for calling [completionsDataSource] with the following:
+         * Alias for calling [responsesDataSource] with the following:
          * ```java
-         * DataSource.Completions.Source.FileContent.builder()
+         * DataSource.Responses.Source.FileContent.builder()
          *     .content(content)
          *     .build()
          * ```
          */
-        fun fileContentCompletionsDataSource(
-            content: List<DataSource.Completions.Source.FileContent.Content>
+        fun fileContentResponsesDataSource(
+            content: List<DataSource.Responses.Source.FileContent.Content>
         ) =
-            completionsDataSource(
-                DataSource.Completions.Source.FileContent.builder().content(content).build()
+            responsesDataSource(
+                DataSource.Responses.Source.FileContent.builder().content(content).build()
             )
 
         /**
-         * Alias for calling [completionsDataSource] with
-         * `DataSource.Completions.Source.ofFileId(fileId)`.
+         * Alias for calling [responsesDataSource] with
+         * `DataSource.Responses.Source.ofFileId(fileId)`.
          */
-        fun completionsDataSource(fileId: DataSource.Completions.Source.FileId) =
-            completionsDataSource(DataSource.Completions.Source.ofFileId(fileId))
+        fun responsesDataSource(fileId: DataSource.Responses.Source.FileId) =
+            responsesDataSource(DataSource.Responses.Source.ofFileId(fileId))
 
         /**
-         * Alias for calling [completionsDataSource] with the following:
+         * Alias for calling [responsesDataSource] with the following:
          * ```java
-         * DataSource.Completions.Source.FileId.builder()
+         * DataSource.Responses.Source.FileId.builder()
          *     .id(id)
          *     .build()
          * ```
          */
-        fun fileIdCompletionsDataSource(id: String) =
-            completionsDataSource(DataSource.Completions.Source.FileId.builder().id(id).build())
+        fun fileIdResponsesDataSource(id: String) =
+            responsesDataSource(DataSource.Responses.Source.FileId.builder().id(id).build())
 
         /**
-         * Alias for calling [completionsDataSource] with
-         * `DataSource.Completions.Source.ofResponses(responses)`.
+         * Alias for calling [responsesDataSource] with
+         * `DataSource.Responses.Source.ofResponses(responses)`.
          */
-        fun completionsDataSource(responses: DataSource.Completions.Source.Responses) =
-            completionsDataSource(DataSource.Completions.Source.ofResponses(responses))
+        fun responsesDataSource(responses: DataSource.Responses.Source.InnerResponses) =
+            responsesDataSource(DataSource.Responses.Source.ofResponses(responses))
 
         /** An object representing an error response from the Eval API. */
         fun error(error: EvalApiError) = error(JsonField.of(error))
@@ -942,8 +931,8 @@ private constructor(
     class DataSource
     private constructor(
         private val jsonl: CreateEvalJsonlRunDataSource? = null,
-        private val createEvalCompletionsRunDataSource: CreateEvalCompletionsRunDataSource? = null,
-        private val completions: Completions? = null,
+        private val completions: CreateEvalCompletionsRunDataSource? = null,
+        private val responses: Responses? = null,
         private val _json: JsonValue? = null,
     ) {
 
@@ -951,39 +940,35 @@ private constructor(
         fun jsonl(): Optional<CreateEvalJsonlRunDataSource> = Optional.ofNullable(jsonl)
 
         /** A CompletionsRunDataSource object describing a model sampling configuration. */
-        fun createEvalCompletionsRunDataSource(): Optional<CreateEvalCompletionsRunDataSource> =
-            Optional.ofNullable(createEvalCompletionsRunDataSource)
+        fun completions(): Optional<CreateEvalCompletionsRunDataSource> =
+            Optional.ofNullable(completions)
 
         /** A ResponsesRunDataSource object describing a model sampling configuration. */
-        fun completions(): Optional<Completions> = Optional.ofNullable(completions)
+        fun responses(): Optional<Responses> = Optional.ofNullable(responses)
 
         fun isJsonl(): Boolean = jsonl != null
 
-        fun isCreateEvalCompletionsRunDataSource(): Boolean =
-            createEvalCompletionsRunDataSource != null
-
         fun isCompletions(): Boolean = completions != null
+
+        fun isResponses(): Boolean = responses != null
 
         /** A JsonlRunDataSource object with that specifies a JSONL file that matches the eval */
         fun asJsonl(): CreateEvalJsonlRunDataSource = jsonl.getOrThrow("jsonl")
 
         /** A CompletionsRunDataSource object describing a model sampling configuration. */
-        fun asCreateEvalCompletionsRunDataSource(): CreateEvalCompletionsRunDataSource =
-            createEvalCompletionsRunDataSource.getOrThrow("createEvalCompletionsRunDataSource")
+        fun asCompletions(): CreateEvalCompletionsRunDataSource =
+            completions.getOrThrow("completions")
 
         /** A ResponsesRunDataSource object describing a model sampling configuration. */
-        fun asCompletions(): Completions = completions.getOrThrow("completions")
+        fun asResponses(): Responses = responses.getOrThrow("responses")
 
         fun _json(): Optional<JsonValue> = Optional.ofNullable(_json)
 
         fun <T> accept(visitor: Visitor<T>): T =
             when {
                 jsonl != null -> visitor.visitJsonl(jsonl)
-                createEvalCompletionsRunDataSource != null ->
-                    visitor.visitCreateEvalCompletionsRunDataSource(
-                        createEvalCompletionsRunDataSource
-                    )
                 completions != null -> visitor.visitCompletions(completions)
+                responses != null -> visitor.visitResponses(responses)
                 else -> visitor.unknown(_json)
             }
 
@@ -1000,14 +985,12 @@ private constructor(
                         jsonl.validate()
                     }
 
-                    override fun visitCreateEvalCompletionsRunDataSource(
-                        createEvalCompletionsRunDataSource: CreateEvalCompletionsRunDataSource
-                    ) {
-                        createEvalCompletionsRunDataSource.validate()
+                    override fun visitCompletions(completions: CreateEvalCompletionsRunDataSource) {
+                        completions.validate()
                     }
 
-                    override fun visitCompletions(completions: Completions) {
-                        completions.validate()
+                    override fun visitResponses(responses: Responses) {
+                        responses.validate()
                     }
                 }
             )
@@ -1034,11 +1017,10 @@ private constructor(
                 object : Visitor<Int> {
                     override fun visitJsonl(jsonl: CreateEvalJsonlRunDataSource) = jsonl.validity()
 
-                    override fun visitCreateEvalCompletionsRunDataSource(
-                        createEvalCompletionsRunDataSource: CreateEvalCompletionsRunDataSource
-                    ) = createEvalCompletionsRunDataSource.validity()
+                    override fun visitCompletions(completions: CreateEvalCompletionsRunDataSource) =
+                        completions.validity()
 
-                    override fun visitCompletions(completions: Completions) = completions.validity()
+                    override fun visitResponses(responses: Responses) = responses.validity()
 
                     override fun unknown(json: JsonValue?) = 0
                 }
@@ -1049,17 +1031,16 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is DataSource && jsonl == other.jsonl && createEvalCompletionsRunDataSource == other.createEvalCompletionsRunDataSource && completions == other.completions /* spotless:on */
+            return /* spotless:off */ other is DataSource && jsonl == other.jsonl && completions == other.completions && responses == other.responses /* spotless:on */
         }
 
-        override fun hashCode(): Int = /* spotless:off */ Objects.hash(jsonl, createEvalCompletionsRunDataSource, completions) /* spotless:on */
+        override fun hashCode(): Int = /* spotless:off */ Objects.hash(jsonl, completions, responses) /* spotless:on */
 
         override fun toString(): String =
             when {
                 jsonl != null -> "DataSource{jsonl=$jsonl}"
-                createEvalCompletionsRunDataSource != null ->
-                    "DataSource{createEvalCompletionsRunDataSource=$createEvalCompletionsRunDataSource}"
                 completions != null -> "DataSource{completions=$completions}"
+                responses != null -> "DataSource{responses=$responses}"
                 _json != null -> "DataSource{_unknown=$_json}"
                 else -> throw IllegalStateException("Invalid DataSource")
             }
@@ -1073,13 +1054,11 @@ private constructor(
 
             /** A CompletionsRunDataSource object describing a model sampling configuration. */
             @JvmStatic
-            fun ofCreateEvalCompletionsRunDataSource(
-                createEvalCompletionsRunDataSource: CreateEvalCompletionsRunDataSource
-            ) = DataSource(createEvalCompletionsRunDataSource = createEvalCompletionsRunDataSource)
+            fun ofCompletions(completions: CreateEvalCompletionsRunDataSource) =
+                DataSource(completions = completions)
 
             /** A ResponsesRunDataSource object describing a model sampling configuration. */
-            @JvmStatic
-            fun ofCompletions(completions: Completions) = DataSource(completions = completions)
+            @JvmStatic fun ofResponses(responses: Responses) = DataSource(responses = responses)
         }
 
         /**
@@ -1093,12 +1072,10 @@ private constructor(
             fun visitJsonl(jsonl: CreateEvalJsonlRunDataSource): T
 
             /** A CompletionsRunDataSource object describing a model sampling configuration. */
-            fun visitCreateEvalCompletionsRunDataSource(
-                createEvalCompletionsRunDataSource: CreateEvalCompletionsRunDataSource
-            ): T
+            fun visitCompletions(completions: CreateEvalCompletionsRunDataSource): T
 
             /** A ResponsesRunDataSource object describing a model sampling configuration. */
-            fun visitCompletions(completions: Completions): T
+            fun visitResponses(responses: Responses): T
 
             /**
              * Maps an unknown variant of [DataSource] to a value of type [T].
@@ -1128,36 +1105,17 @@ private constructor(
                             ?: DataSource(_json = json)
                     }
                     "completions" -> {
-                        val bestMatches =
-                            sequenceOf(
-                                    tryDeserialize(
-                                            node,
-                                            jacksonTypeRef<CreateEvalCompletionsRunDataSource>(),
-                                        )
-                                        ?.let {
-                                            DataSource(
-                                                createEvalCompletionsRunDataSource = it,
-                                                _json = json,
-                                            )
-                                        },
-                                    tryDeserialize(node, jacksonTypeRef<Completions>())?.let {
-                                        DataSource(completions = it, _json = json)
-                                    },
-                                )
-                                .filterNotNull()
-                                .allMaxBy { it.validity() }
-                                .toList()
-                        return when (bestMatches.size) {
-                            // This can happen if what we're deserializing is completely
-                            // incompatible with all the possible variants (e.g. deserializing from
-                            // boolean).
-                            0 -> DataSource(_json = json)
-                            1 -> bestMatches.single()
-                            // If there's more than one match with the highest validity, then use
-                            // the first completely valid match, or simply the first match if none
-                            // are completely valid.
-                            else -> bestMatches.firstOrNull { it.isValid() } ?: bestMatches.first()
-                        }
+                        return tryDeserialize(
+                                node,
+                                jacksonTypeRef<CreateEvalCompletionsRunDataSource>(),
+                            )
+                            ?.let { DataSource(completions = it, _json = json) }
+                            ?: DataSource(_json = json)
+                    }
+                    "responses" -> {
+                        return tryDeserialize(node, jacksonTypeRef<Responses>())?.let {
+                            DataSource(responses = it, _json = json)
+                        } ?: DataSource(_json = json)
                     }
                 }
 
@@ -1174,9 +1132,8 @@ private constructor(
             ) {
                 when {
                     value.jsonl != null -> generator.writeObject(value.jsonl)
-                    value.createEvalCompletionsRunDataSource != null ->
-                        generator.writeObject(value.createEvalCompletionsRunDataSource)
                     value.completions != null -> generator.writeObject(value.completions)
+                    value.responses != null -> generator.writeObject(value.responses)
                     value._json != null -> generator.writeObject(value._json)
                     else -> throw IllegalStateException("Invalid DataSource")
                 }
@@ -1184,7 +1141,7 @@ private constructor(
         }
 
         /** A ResponsesRunDataSource object describing a model sampling configuration. */
-        class Completions
+        class Responses
         private constructor(
             private val source: JsonField<Source>,
             private val type: JsonValue,
@@ -1210,7 +1167,7 @@ private constructor(
             ) : this(source, type, inputMessages, model, samplingParams, mutableMapOf())
 
             /**
-             * A EvalResponsesSource object describing a run data source configuration.
+             * Determines what populates the `item` namespace in this run's data source.
              *
              * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
              *   unexpectedly missing or null (e.g. if the server responded with an unexpected
@@ -1219,11 +1176,11 @@ private constructor(
             fun source(): Source = source.getRequired("source")
 
             /**
-             * The type of run data source. Always `completions`.
+             * The type of run data source. Always `responses`.
              *
              * Expected to always return the following:
              * ```java
-             * JsonValue.from("completions")
+             * JsonValue.from("responses")
              * ```
              *
              * However, this method can be useful for debugging and logging (e.g. if the server
@@ -1232,6 +1189,11 @@ private constructor(
             @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
 
             /**
+             * Used when sampling from a model. Dictates the structure of the messages passed into
+             * the model. Can either be a reference to a prebuilt trajectory (ie,
+             * `item.input_trajectory`), or a template with variable references to the `item`
+             * namespace.
+             *
              * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if
              *   the server responded with an unexpected value).
              */
@@ -1302,7 +1264,7 @@ private constructor(
             companion object {
 
                 /**
-                 * Returns a mutable builder for constructing an instance of [Completions].
+                 * Returns a mutable builder for constructing an instance of [Responses].
                  *
                  * The following fields are required:
                  * ```java
@@ -1312,27 +1274,27 @@ private constructor(
                 @JvmStatic fun builder() = Builder()
             }
 
-            /** A builder for [Completions]. */
+            /** A builder for [Responses]. */
             class Builder internal constructor() {
 
                 private var source: JsonField<Source>? = null
-                private var type: JsonValue = JsonValue.from("completions")
+                private var type: JsonValue = JsonValue.from("responses")
                 private var inputMessages: JsonField<InputMessages> = JsonMissing.of()
                 private var model: JsonField<String> = JsonMissing.of()
                 private var samplingParams: JsonField<SamplingParams> = JsonMissing.of()
                 private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
                 @JvmSynthetic
-                internal fun from(completions: Completions) = apply {
-                    source = completions.source
-                    type = completions.type
-                    inputMessages = completions.inputMessages
-                    model = completions.model
-                    samplingParams = completions.samplingParams
-                    additionalProperties = completions.additionalProperties.toMutableMap()
+                internal fun from(responses: Responses) = apply {
+                    source = responses.source
+                    type = responses.type
+                    inputMessages = responses.inputMessages
+                    model = responses.model
+                    samplingParams = responses.samplingParams
+                    additionalProperties = responses.additionalProperties.toMutableMap()
                 }
 
-                /** A EvalResponsesSource object describing a run data source configuration. */
+                /** Determines what populates the `item` namespace in this run's data source. */
                 fun source(source: Source) = source(JsonField.of(source))
 
                 /**
@@ -1373,7 +1335,7 @@ private constructor(
                 fun fileIdSource(id: String) = source(Source.FileId.builder().id(id).build())
 
                 /** Alias for calling [source] with `Source.ofResponses(responses)`. */
-                fun source(responses: Source.Responses) = source(Source.ofResponses(responses))
+                fun source(responses: Source.InnerResponses) = source(Source.ofResponses(responses))
 
                 /**
                  * Sets the field to an arbitrary JSON value.
@@ -1381,7 +1343,7 @@ private constructor(
                  * It is usually unnecessary to call this method because the field defaults to the
                  * following:
                  * ```java
-                 * JsonValue.from("completions")
+                 * JsonValue.from("responses")
                  * ```
                  *
                  * This method is primarily for setting the field to an undocumented or not yet
@@ -1389,6 +1351,12 @@ private constructor(
                  */
                 fun type(type: JsonValue) = apply { this.type = type }
 
+                /**
+                 * Used when sampling from a model. Dictates the structure of the messages passed
+                 * into the model. Can either be a reference to a prebuilt trajectory (ie,
+                 * `item.input_trajectory`), or a template with variable references to the `item`
+                 * namespace.
+                 */
                 fun inputMessages(inputMessages: InputMessages) =
                     inputMessages(JsonField.of(inputMessages))
 
@@ -1487,7 +1455,7 @@ private constructor(
                 }
 
                 /**
-                 * Returns an immutable instance of [Completions].
+                 * Returns an immutable instance of [Responses].
                  *
                  * Further updates to this [Builder] will not mutate the returned instance.
                  *
@@ -1498,8 +1466,8 @@ private constructor(
                  *
                  * @throws IllegalStateException if any required field is unset.
                  */
-                fun build(): Completions =
-                    Completions(
+                fun build(): Responses =
+                    Responses(
                         checkRequired("source", source),
                         type,
                         inputMessages,
@@ -1511,14 +1479,14 @@ private constructor(
 
             private var validated: Boolean = false
 
-            fun validate(): Completions = apply {
+            fun validate(): Responses = apply {
                 if (validated) {
                     return@apply
                 }
 
                 source().validate()
                 _type().let {
-                    if (it != JsonValue.from("completions")) {
+                    if (it != JsonValue.from("responses")) {
                         throw OpenAIInvalidDataException("'type' is invalid, received $it")
                     }
                 }
@@ -1545,19 +1513,19 @@ private constructor(
             @JvmSynthetic
             internal fun validity(): Int =
                 (source.asKnown().getOrNull()?.validity() ?: 0) +
-                    type.let { if (it == JsonValue.from("completions")) 1 else 0 } +
+                    type.let { if (it == JsonValue.from("responses")) 1 else 0 } +
                     (inputMessages.asKnown().getOrNull()?.validity() ?: 0) +
                     (if (model.asKnown().isPresent) 1 else 0) +
                     (samplingParams.asKnown().getOrNull()?.validity() ?: 0)
 
-            /** A EvalResponsesSource object describing a run data source configuration. */
+            /** Determines what populates the `item` namespace in this run's data source. */
             @JsonDeserialize(using = Source.Deserializer::class)
             @JsonSerialize(using = Source.Serializer::class)
             class Source
             private constructor(
                 private val fileContent: FileContent? = null,
                 private val fileId: FileId? = null,
-                private val responses: Responses? = null,
+                private val responses: InnerResponses? = null,
                 private val _json: JsonValue? = null,
             ) {
 
@@ -1566,7 +1534,7 @@ private constructor(
                 fun fileId(): Optional<FileId> = Optional.ofNullable(fileId)
 
                 /** A EvalResponsesSource object describing a run data source configuration. */
-                fun responses(): Optional<Responses> = Optional.ofNullable(responses)
+                fun responses(): Optional<InnerResponses> = Optional.ofNullable(responses)
 
                 fun isFileContent(): Boolean = fileContent != null
 
@@ -1579,7 +1547,7 @@ private constructor(
                 fun asFileId(): FileId = fileId.getOrThrow("fileId")
 
                 /** A EvalResponsesSource object describing a run data source configuration. */
-                fun asResponses(): Responses = responses.getOrThrow("responses")
+                fun asResponses(): InnerResponses = responses.getOrThrow("responses")
 
                 fun _json(): Optional<JsonValue> = Optional.ofNullable(_json)
 
@@ -1608,7 +1576,7 @@ private constructor(
                                 fileId.validate()
                             }
 
-                            override fun visitResponses(responses: Responses) {
+                            override fun visitResponses(responses: InnerResponses) {
                                 responses.validate()
                             }
                         }
@@ -1639,7 +1607,8 @@ private constructor(
 
                             override fun visitFileId(fileId: FileId) = fileId.validity()
 
-                            override fun visitResponses(responses: Responses) = responses.validity()
+                            override fun visitResponses(responses: InnerResponses) =
+                                responses.validity()
 
                             override fun unknown(json: JsonValue?) = 0
                         }
@@ -1672,7 +1641,8 @@ private constructor(
                     @JvmStatic fun ofFileId(fileId: FileId) = Source(fileId = fileId)
 
                     /** A EvalResponsesSource object describing a run data source configuration. */
-                    @JvmStatic fun ofResponses(responses: Responses) = Source(responses = responses)
+                    @JvmStatic
+                    fun ofResponses(responses: InnerResponses) = Source(responses = responses)
                 }
 
                 /**
@@ -1686,7 +1656,7 @@ private constructor(
                     fun visitFileId(fileId: FileId): T
 
                     /** A EvalResponsesSource object describing a run data source configuration. */
-                    fun visitResponses(responses: Responses): T
+                    fun visitResponses(responses: InnerResponses): T
 
                     /**
                      * Maps an unknown variant of [Source] to a value of type [T].
@@ -1721,7 +1691,7 @@ private constructor(
                                 } ?: Source(_json = json)
                             }
                             "responses" -> {
-                                return tryDeserialize(node, jacksonTypeRef<Responses>())?.let {
+                                return tryDeserialize(node, jacksonTypeRef<InnerResponses>())?.let {
                                     Source(responses = it, _json = json)
                                 } ?: Source(_json = json)
                             }
@@ -2608,18 +2578,17 @@ private constructor(
                 }
 
                 /** A EvalResponsesSource object describing a run data source configuration. */
-                class Responses
+                class InnerResponses
                 private constructor(
                     private val type: JsonValue,
-                    private val allowParallelToolCalls: JsonField<Boolean>,
                     private val createdAfter: JsonField<Long>,
                     private val createdBefore: JsonField<Long>,
-                    private val hasToolCalls: JsonField<Boolean>,
                     private val instructionsSearch: JsonField<String>,
                     private val metadata: JsonValue,
                     private val model: JsonField<String>,
                     private val reasoningEffort: JsonField<ReasoningEffort>,
                     private val temperature: JsonField<Double>,
+                    private val tools: JsonField<List<String>>,
                     private val topP: JsonField<Double>,
                     private val users: JsonField<List<String>>,
                     private val additionalProperties: MutableMap<String, JsonValue>,
@@ -2628,18 +2597,12 @@ private constructor(
                     @JsonCreator
                     private constructor(
                         @JsonProperty("type") @ExcludeMissing type: JsonValue = JsonMissing.of(),
-                        @JsonProperty("allow_parallel_tool_calls")
-                        @ExcludeMissing
-                        allowParallelToolCalls: JsonField<Boolean> = JsonMissing.of(),
                         @JsonProperty("created_after")
                         @ExcludeMissing
                         createdAfter: JsonField<Long> = JsonMissing.of(),
                         @JsonProperty("created_before")
                         @ExcludeMissing
                         createdBefore: JsonField<Long> = JsonMissing.of(),
-                        @JsonProperty("has_tool_calls")
-                        @ExcludeMissing
-                        hasToolCalls: JsonField<Boolean> = JsonMissing.of(),
                         @JsonProperty("instructions_search")
                         @ExcludeMissing
                         instructionsSearch: JsonField<String> = JsonMissing.of(),
@@ -2655,6 +2618,9 @@ private constructor(
                         @JsonProperty("temperature")
                         @ExcludeMissing
                         temperature: JsonField<Double> = JsonMissing.of(),
+                        @JsonProperty("tools")
+                        @ExcludeMissing
+                        tools: JsonField<List<String>> = JsonMissing.of(),
                         @JsonProperty("top_p")
                         @ExcludeMissing
                         topP: JsonField<Double> = JsonMissing.of(),
@@ -2663,15 +2629,14 @@ private constructor(
                         users: JsonField<List<String>> = JsonMissing.of(),
                     ) : this(
                         type,
-                        allowParallelToolCalls,
                         createdAfter,
                         createdBefore,
-                        hasToolCalls,
                         instructionsSearch,
                         metadata,
                         model,
                         reasoningEffort,
                         temperature,
+                        tools,
                         topP,
                         users,
                         mutableMapOf(),
@@ -2689,16 +2654,6 @@ private constructor(
                      * server responded with an unexpected value).
                      */
                     @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
-
-                    /**
-                     * Whether to allow parallel tool calls. This is a query parameter used to
-                     * select responses.
-                     *
-                     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type
-                     *   (e.g. if the server responded with an unexpected value).
-                     */
-                    fun allowParallelToolCalls(): Optional<Boolean> =
-                        allowParallelToolCalls.getOptional("allow_parallel_tool_calls")
 
                     /**
                      * Only include items created after this timestamp (inclusive). This is a query
@@ -2720,18 +2675,8 @@ private constructor(
                         createdBefore.getOptional("created_before")
 
                     /**
-                     * Whether the response has tool calls. This is a query parameter used to select
-                     * responses.
-                     *
-                     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type
-                     *   (e.g. if the server responded with an unexpected value).
-                     */
-                    fun hasToolCalls(): Optional<Boolean> =
-                        hasToolCalls.getOptional("has_tool_calls")
-
-                    /**
-                     * Optional search string for instructions. This is a query parameter used to
-                     * select responses.
+                     * Optional string to search the 'instructions' field. This is a query parameter
+                     * used to select responses.
                      *
                      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type
                      *   (e.g. if the server responded with an unexpected value).
@@ -2773,6 +2718,14 @@ private constructor(
                     fun temperature(): Optional<Double> = temperature.getOptional("temperature")
 
                     /**
+                     * List of tool names. This is a query parameter used to select responses.
+                     *
+                     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type
+                     *   (e.g. if the server responded with an unexpected value).
+                     */
+                    fun tools(): Optional<List<String>> = tools.getOptional("tools")
+
+                    /**
                      * Nucleus sampling parameter. This is a query parameter used to select
                      * responses.
                      *
@@ -2788,16 +2741,6 @@ private constructor(
                      *   (e.g. if the server responded with an unexpected value).
                      */
                     fun users(): Optional<List<String>> = users.getOptional("users")
-
-                    /**
-                     * Returns the raw JSON value of [allowParallelToolCalls].
-                     *
-                     * Unlike [allowParallelToolCalls], this method doesn't throw if the JSON field
-                     * has an unexpected type.
-                     */
-                    @JsonProperty("allow_parallel_tool_calls")
-                    @ExcludeMissing
-                    fun _allowParallelToolCalls(): JsonField<Boolean> = allowParallelToolCalls
 
                     /**
                      * Returns the raw JSON value of [createdAfter].
@@ -2818,16 +2761,6 @@ private constructor(
                     @JsonProperty("created_before")
                     @ExcludeMissing
                     fun _createdBefore(): JsonField<Long> = createdBefore
-
-                    /**
-                     * Returns the raw JSON value of [hasToolCalls].
-                     *
-                     * Unlike [hasToolCalls], this method doesn't throw if the JSON field has an
-                     * unexpected type.
-                     */
-                    @JsonProperty("has_tool_calls")
-                    @ExcludeMissing
-                    fun _hasToolCalls(): JsonField<Boolean> = hasToolCalls
 
                     /**
                      * Returns the raw JSON value of [instructionsSearch].
@@ -2868,6 +2801,16 @@ private constructor(
                     fun _temperature(): JsonField<Double> = temperature
 
                     /**
+                     * Returns the raw JSON value of [tools].
+                     *
+                     * Unlike [tools], this method doesn't throw if the JSON field has an unexpected
+                     * type.
+                     */
+                    @JsonProperty("tools")
+                    @ExcludeMissing
+                    fun _tools(): JsonField<List<String>> = tools
+
+                    /**
                      * Returns the raw JSON value of [topP].
                      *
                      * Unlike [topP], this method doesn't throw if the JSON field has an unexpected
@@ -2900,44 +2843,44 @@ private constructor(
                     companion object {
 
                         /**
-                         * Returns a mutable builder for constructing an instance of [Responses].
+                         * Returns a mutable builder for constructing an instance of
+                         * [InnerResponses].
                          */
                         @JvmStatic fun builder() = Builder()
                     }
 
-                    /** A builder for [Responses]. */
+                    /** A builder for [InnerResponses]. */
                     class Builder internal constructor() {
 
                         private var type: JsonValue = JsonValue.from("responses")
-                        private var allowParallelToolCalls: JsonField<Boolean> = JsonMissing.of()
                         private var createdAfter: JsonField<Long> = JsonMissing.of()
                         private var createdBefore: JsonField<Long> = JsonMissing.of()
-                        private var hasToolCalls: JsonField<Boolean> = JsonMissing.of()
                         private var instructionsSearch: JsonField<String> = JsonMissing.of()
                         private var metadata: JsonValue = JsonMissing.of()
                         private var model: JsonField<String> = JsonMissing.of()
                         private var reasoningEffort: JsonField<ReasoningEffort> = JsonMissing.of()
                         private var temperature: JsonField<Double> = JsonMissing.of()
+                        private var tools: JsonField<MutableList<String>>? = null
                         private var topP: JsonField<Double> = JsonMissing.of()
                         private var users: JsonField<MutableList<String>>? = null
                         private var additionalProperties: MutableMap<String, JsonValue> =
                             mutableMapOf()
 
                         @JvmSynthetic
-                        internal fun from(responses: Responses) = apply {
-                            type = responses.type
-                            allowParallelToolCalls = responses.allowParallelToolCalls
-                            createdAfter = responses.createdAfter
-                            createdBefore = responses.createdBefore
-                            hasToolCalls = responses.hasToolCalls
-                            instructionsSearch = responses.instructionsSearch
-                            metadata = responses.metadata
-                            model = responses.model
-                            reasoningEffort = responses.reasoningEffort
-                            temperature = responses.temperature
-                            topP = responses.topP
-                            users = responses.users.map { it.toMutableList() }
-                            additionalProperties = responses.additionalProperties.toMutableMap()
+                        internal fun from(innerResponses: InnerResponses) = apply {
+                            type = innerResponses.type
+                            createdAfter = innerResponses.createdAfter
+                            createdBefore = innerResponses.createdBefore
+                            instructionsSearch = innerResponses.instructionsSearch
+                            metadata = innerResponses.metadata
+                            model = innerResponses.model
+                            reasoningEffort = innerResponses.reasoningEffort
+                            temperature = innerResponses.temperature
+                            tools = innerResponses.tools.map { it.toMutableList() }
+                            topP = innerResponses.topP
+                            users = innerResponses.users.map { it.toMutableList() }
+                            additionalProperties =
+                                innerResponses.additionalProperties.toMutableMap()
                         }
 
                         /**
@@ -2953,40 +2896,6 @@ private constructor(
                          * yet supported value.
                          */
                         fun type(type: JsonValue) = apply { this.type = type }
-
-                        /**
-                         * Whether to allow parallel tool calls. This is a query parameter used to
-                         * select responses.
-                         */
-                        fun allowParallelToolCalls(allowParallelToolCalls: Boolean?) =
-                            allowParallelToolCalls(JsonField.ofNullable(allowParallelToolCalls))
-
-                        /**
-                         * Alias for [Builder.allowParallelToolCalls].
-                         *
-                         * This unboxed primitive overload exists for backwards compatibility.
-                         */
-                        fun allowParallelToolCalls(allowParallelToolCalls: Boolean) =
-                            allowParallelToolCalls(allowParallelToolCalls as Boolean?)
-
-                        /**
-                         * Alias for calling [Builder.allowParallelToolCalls] with
-                         * `allowParallelToolCalls.orElse(null)`.
-                         */
-                        fun allowParallelToolCalls(allowParallelToolCalls: Optional<Boolean>) =
-                            allowParallelToolCalls(allowParallelToolCalls.getOrNull())
-
-                        /**
-                         * Sets [Builder.allowParallelToolCalls] to an arbitrary JSON value.
-                         *
-                         * You should usually call [Builder.allowParallelToolCalls] with a
-                         * well-typed [Boolean] value instead. This method is primarily for setting
-                         * the field to an undocumented or not yet supported value.
-                         */
-                        fun allowParallelToolCalls(allowParallelToolCalls: JsonField<Boolean>) =
-                            apply {
-                                this.allowParallelToolCalls = allowParallelToolCalls
-                            }
 
                         /**
                          * Only include items created after this timestamp (inclusive). This is a
@@ -3054,41 +2963,8 @@ private constructor(
                         }
 
                         /**
-                         * Whether the response has tool calls. This is a query parameter used to
-                         * select responses.
-                         */
-                        fun hasToolCalls(hasToolCalls: Boolean?) =
-                            hasToolCalls(JsonField.ofNullable(hasToolCalls))
-
-                        /**
-                         * Alias for [Builder.hasToolCalls].
-                         *
-                         * This unboxed primitive overload exists for backwards compatibility.
-                         */
-                        fun hasToolCalls(hasToolCalls: Boolean) =
-                            hasToolCalls(hasToolCalls as Boolean?)
-
-                        /**
-                         * Alias for calling [Builder.hasToolCalls] with
-                         * `hasToolCalls.orElse(null)`.
-                         */
-                        fun hasToolCalls(hasToolCalls: Optional<Boolean>) =
-                            hasToolCalls(hasToolCalls.getOrNull())
-
-                        /**
-                         * Sets [Builder.hasToolCalls] to an arbitrary JSON value.
-                         *
-                         * You should usually call [Builder.hasToolCalls] with a well-typed
-                         * [Boolean] value instead. This method is primarily for setting the field
-                         * to an undocumented or not yet supported value.
-                         */
-                        fun hasToolCalls(hasToolCalls: JsonField<Boolean>) = apply {
-                            this.hasToolCalls = hasToolCalls
-                        }
-
-                        /**
-                         * Optional search string for instructions. This is a query parameter used
-                         * to select responses.
+                         * Optional string to search the 'instructions' field. This is a query
+                         * parameter used to select responses.
                          */
                         fun instructionsSearch(instructionsSearch: String?) =
                             instructionsSearch(JsonField.ofNullable(instructionsSearch))
@@ -3191,6 +3067,38 @@ private constructor(
                         }
 
                         /**
+                         * List of tool names. This is a query parameter used to select responses.
+                         */
+                        fun tools(tools: List<String>?) = tools(JsonField.ofNullable(tools))
+
+                        /** Alias for calling [Builder.tools] with `tools.orElse(null)`. */
+                        fun tools(tools: Optional<List<String>>) = tools(tools.getOrNull())
+
+                        /**
+                         * Sets [Builder.tools] to an arbitrary JSON value.
+                         *
+                         * You should usually call [Builder.tools] with a well-typed `List<String>`
+                         * value instead. This method is primarily for setting the field to an
+                         * undocumented or not yet supported value.
+                         */
+                        fun tools(tools: JsonField<List<String>>) = apply {
+                            this.tools = tools.map { it.toMutableList() }
+                        }
+
+                        /**
+                         * Adds a single [String] to [tools].
+                         *
+                         * @throws IllegalStateException if the field was previously set to a
+                         *   non-list.
+                         */
+                        fun addTool(tool: String) = apply {
+                            tools =
+                                (tools ?: JsonField.of(mutableListOf())).also {
+                                    checkKnown("tools", it).add(tool)
+                                }
+                        }
+
+                        /**
                          * Nucleus sampling parameter. This is a query parameter used to select
                          * responses.
                          */
@@ -3271,22 +3179,21 @@ private constructor(
                         }
 
                         /**
-                         * Returns an immutable instance of [Responses].
+                         * Returns an immutable instance of [InnerResponses].
                          *
                          * Further updates to this [Builder] will not mutate the returned instance.
                          */
-                        fun build(): Responses =
-                            Responses(
+                        fun build(): InnerResponses =
+                            InnerResponses(
                                 type,
-                                allowParallelToolCalls,
                                 createdAfter,
                                 createdBefore,
-                                hasToolCalls,
                                 instructionsSearch,
                                 metadata,
                                 model,
                                 reasoningEffort,
                                 temperature,
+                                (tools ?: JsonMissing.of()).map { it.toImmutable() },
                                 topP,
                                 (users ?: JsonMissing.of()).map { it.toImmutable() },
                                 additionalProperties.toMutableMap(),
@@ -3295,7 +3202,7 @@ private constructor(
 
                     private var validated: Boolean = false
 
-                    fun validate(): Responses = apply {
+                    fun validate(): InnerResponses = apply {
                         if (validated) {
                             return@apply
                         }
@@ -3305,14 +3212,13 @@ private constructor(
                                 throw OpenAIInvalidDataException("'type' is invalid, received $it")
                             }
                         }
-                        allowParallelToolCalls()
                         createdAfter()
                         createdBefore()
-                        hasToolCalls()
                         instructionsSearch()
                         model()
                         reasoningEffort().ifPresent { it.validate() }
                         temperature()
+                        tools()
                         topP()
                         users()
                         validated = true
@@ -3335,14 +3241,13 @@ private constructor(
                     @JvmSynthetic
                     internal fun validity(): Int =
                         type.let { if (it == JsonValue.from("responses")) 1 else 0 } +
-                            (if (allowParallelToolCalls.asKnown().isPresent) 1 else 0) +
                             (if (createdAfter.asKnown().isPresent) 1 else 0) +
                             (if (createdBefore.asKnown().isPresent) 1 else 0) +
-                            (if (hasToolCalls.asKnown().isPresent) 1 else 0) +
                             (if (instructionsSearch.asKnown().isPresent) 1 else 0) +
                             (if (model.asKnown().isPresent) 1 else 0) +
                             (reasoningEffort.asKnown().getOrNull()?.validity() ?: 0) +
                             (if (temperature.asKnown().isPresent) 1 else 0) +
+                            (tools.asKnown().getOrNull()?.size ?: 0) +
                             (if (topP.asKnown().isPresent) 1 else 0) +
                             (users.asKnown().getOrNull()?.size ?: 0)
 
@@ -3351,20 +3256,26 @@ private constructor(
                             return true
                         }
 
-                        return /* spotless:off */ other is Responses && type == other.type && allowParallelToolCalls == other.allowParallelToolCalls && createdAfter == other.createdAfter && createdBefore == other.createdBefore && hasToolCalls == other.hasToolCalls && instructionsSearch == other.instructionsSearch && metadata == other.metadata && model == other.model && reasoningEffort == other.reasoningEffort && temperature == other.temperature && topP == other.topP && users == other.users && additionalProperties == other.additionalProperties /* spotless:on */
+                        return /* spotless:off */ other is InnerResponses && type == other.type && createdAfter == other.createdAfter && createdBefore == other.createdBefore && instructionsSearch == other.instructionsSearch && metadata == other.metadata && model == other.model && reasoningEffort == other.reasoningEffort && temperature == other.temperature && tools == other.tools && topP == other.topP && users == other.users && additionalProperties == other.additionalProperties /* spotless:on */
                     }
 
                     /* spotless:off */
-                    private val hashCode: Int by lazy { Objects.hash(type, allowParallelToolCalls, createdAfter, createdBefore, hasToolCalls, instructionsSearch, metadata, model, reasoningEffort, temperature, topP, users, additionalProperties) }
+                    private val hashCode: Int by lazy { Objects.hash(type, createdAfter, createdBefore, instructionsSearch, metadata, model, reasoningEffort, temperature, tools, topP, users, additionalProperties) }
                     /* spotless:on */
 
                     override fun hashCode(): Int = hashCode
 
                     override fun toString() =
-                        "Responses{type=$type, allowParallelToolCalls=$allowParallelToolCalls, createdAfter=$createdAfter, createdBefore=$createdBefore, hasToolCalls=$hasToolCalls, instructionsSearch=$instructionsSearch, metadata=$metadata, model=$model, reasoningEffort=$reasoningEffort, temperature=$temperature, topP=$topP, users=$users, additionalProperties=$additionalProperties}"
+                        "InnerResponses{type=$type, createdAfter=$createdAfter, createdBefore=$createdBefore, instructionsSearch=$instructionsSearch, metadata=$metadata, model=$model, reasoningEffort=$reasoningEffort, temperature=$temperature, tools=$tools, topP=$topP, users=$users, additionalProperties=$additionalProperties}"
                 }
             }
 
+            /**
+             * Used when sampling from a model. Dictates the structure of the messages passed into
+             * the model. Can either be a reference to a prebuilt trajectory (ie,
+             * `item.input_trajectory`), or a template with variable references to the `item`
+             * namespace.
+             */
             @JsonDeserialize(using = InputMessages.Deserializer::class)
             @JsonSerialize(using = InputMessages.Serializer::class)
             class InputMessages
@@ -3554,7 +3465,7 @@ private constructor(
 
                     /**
                      * A list of chat messages forming the prompt or context. May include variable
-                     * references to the "item" namespace, ie {{item.name}}.
+                     * references to the `item` namespace, ie {{item.name}}.
                      *
                      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type
                      *   or is unexpectedly missing or null (e.g. if the server responded with an
@@ -3627,7 +3538,7 @@ private constructor(
 
                         /**
                          * A list of chat messages forming the prompt or context. May include
-                         * variable references to the "item" namespace, ie {{item.name}}.
+                         * variable references to the `item` namespace, ie {{item.name}}.
                          */
                         fun template(template: List<InnerTemplate>) =
                             template(JsonField.of(template))
@@ -5304,7 +5215,7 @@ private constructor(
                     ) : this(itemReference, type, mutableMapOf())
 
                     /**
-                     * A reference to a variable in the "item" namespace. Ie, "item.name"
+                     * A reference to a variable in the `item` namespace. Ie, "item.name"
                      *
                      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type
                      *   or is unexpectedly missing or null (e.g. if the server responded with an
@@ -5376,7 +5287,7 @@ private constructor(
                             additionalProperties = itemReference.additionalProperties.toMutableMap()
                         }
 
-                        /** A reference to a variable in the "item" namespace. Ie, "item.name" */
+                        /** A reference to a variable in the `item` namespace. Ie, "item.name" */
                         fun itemReference(itemReference: String) =
                             itemReference(JsonField.of(itemReference))
 
@@ -5781,7 +5692,7 @@ private constructor(
                     return true
                 }
 
-                return /* spotless:off */ other is Completions && source == other.source && type == other.type && inputMessages == other.inputMessages && model == other.model && samplingParams == other.samplingParams && additionalProperties == other.additionalProperties /* spotless:on */
+                return /* spotless:off */ other is Responses && source == other.source && type == other.type && inputMessages == other.inputMessages && model == other.model && samplingParams == other.samplingParams && additionalProperties == other.additionalProperties /* spotless:on */
             }
 
             /* spotless:off */
@@ -5791,7 +5702,7 @@ private constructor(
             override fun hashCode(): Int = hashCode
 
             override fun toString() =
-                "Completions{source=$source, type=$type, inputMessages=$inputMessages, model=$model, samplingParams=$samplingParams, additionalProperties=$additionalProperties}"
+                "Responses{source=$source, type=$type, inputMessages=$inputMessages, model=$model, samplingParams=$samplingParams, additionalProperties=$additionalProperties}"
         }
     }
 

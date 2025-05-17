@@ -16,6 +16,7 @@ internal class TranscriptionCreateParamsTest {
         TranscriptionCreateParams.builder()
             .file("some content".byteInputStream())
             .model(AudioModel.WHISPER_1)
+            .chunkingStrategyAuto()
             .addInclude(TranscriptionInclude.LOGPROBS)
             .language("language")
             .prompt("prompt")
@@ -31,6 +32,7 @@ internal class TranscriptionCreateParamsTest {
             TranscriptionCreateParams.builder()
                 .file("some content".byteInputStream())
                 .model(AudioModel.WHISPER_1)
+                .chunkingStrategyAuto()
                 .addInclude(TranscriptionInclude.LOGPROBS)
                 .language("language")
                 .prompt("prompt")
@@ -53,6 +55,8 @@ internal class TranscriptionCreateParamsTest {
                 mapOf(
                         "file" to MultipartField.of("some content".byteInputStream()),
                         "model" to MultipartField.of(AudioModel.WHISPER_1),
+                        "chunking_strategy" to
+                            MultipartField.of(TranscriptionCreateParams.ChunkingStrategy.ofAuto()),
                         "include" to MultipartField.of(listOf(TranscriptionInclude.LOGPROBS)),
                         "language" to MultipartField.of("language"),
                         "prompt" to MultipartField.of("prompt"),

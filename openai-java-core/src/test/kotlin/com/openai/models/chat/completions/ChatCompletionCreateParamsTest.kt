@@ -347,4 +347,36 @@ internal class ChatCompletionCreateParamsTest {
             )
         assertThat(body.model()).isEqualTo(ChatModel.GPT_4_1)
     }
+
+    @Test
+    fun structuredOutputsBuilder() {
+        class X(val s: String)
+
+        // Only interested in a few things:
+        // - Does the `Builder` type change when `responseFormat(Class<T>)` is called?
+        // - Are values already set on the "old" `Builder` preserved in the change-over?
+        // - Can new values be set on the "new" `Builder` alongside the "old" values?
+        val params =
+            ChatCompletionCreateParams.builder()
+                .addDeveloperMessage("dev message")
+                .model(ChatModel.GPT_4_1)
+                .responseFormat(X::class.java) // Creates and return a new builder.
+                .addSystemMessage("sys message")
+                .build()
+
+        val body = params.rawParams._body()
+
+        assertThat(params).isInstanceOf(StructuredChatCompletionCreateParams::class.java)
+        assertThat(params.responseType).isEqualTo(X::class.java)
+        assertThat(body.messages())
+            .containsExactly(
+                ChatCompletionMessageParam.ofDeveloper(
+                    ChatCompletionDeveloperMessageParam.builder().content("dev message").build()
+                ),
+                ChatCompletionMessageParam.ofSystem(
+                    ChatCompletionSystemMessageParam.builder().content("sys message").build()
+                ),
+            )
+        assertThat(body.model()).isEqualTo(ChatModel.GPT_4_1)
+    }
 }

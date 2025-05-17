@@ -2,23 +2,24 @@
 
 package com.openai.models.vectorstores
 
+import com.openai.core.AutoPagerAsync
 import com.openai.core.JsonValue
+import com.openai.core.PageAsync
 import com.openai.core.checkRequired
 import com.openai.services.async.VectorStoreServiceAsync
 import java.util.Objects
-import java.util.Optional
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.Executor
-import java.util.function.Predicate
 import kotlin.jvm.optionals.getOrNull
 
 /** @see [VectorStoreServiceAsync.search] */
 class VectorStoreSearchPageAsync
 private constructor(
     private val service: VectorStoreServiceAsync,
+    private val streamHandlerExecutor: Executor,
     private val params: VectorStoreSearchParams,
     private val response: VectorStoreSearchPageResponse,
-) {
+) : PageAsync<VectorStoreSearchResponse> {
 
     /**
      * Delegates to [VectorStoreSearchPageResponse], but gracefully handles missing data.
@@ -31,16 +32,18 @@ private constructor(
     /** @see [VectorStoreSearchPageResponse.object_] */
     fun object_(): JsonValue = response._object_()
 
-    fun hasNextPage(): Boolean = data().isNotEmpty()
+    override fun items(): List<VectorStoreSearchResponse> = data()
 
-    fun getNextPageParams(): Optional<VectorStoreSearchParams> = Optional.empty()
+    override fun hasNextPage(): Boolean = items().isNotEmpty()
 
-    fun getNextPage(): CompletableFuture<Optional<VectorStoreSearchPageAsync>> =
-        getNextPageParams()
-            .map { service.search(it).thenApply { Optional.of(it) } }
-            .orElseGet { CompletableFuture.completedFuture(Optional.empty()) }
+    fun nextPageParams(): VectorStoreSearchParams =
+        throw IllegalStateException("Cannot construct next page params")
 
-    fun autoPager(): AutoPager = AutoPager(this)
+    override fun nextPage(): CompletableFuture<VectorStoreSearchPageAsync> =
+        service.search(nextPageParams())
+
+    fun autoPager(): AutoPagerAsync<VectorStoreSearchResponse> =
+        AutoPagerAsync.from(this, streamHandlerExecutor)
 
     /** The parameters that were used to request this page. */
     fun params(): VectorStoreSearchParams = params
@@ -58,6 +61,7 @@ private constructor(
          * The following fields are required:
          * ```java
          * .service()
+         * .streamHandlerExecutor()
          * .params()
          * .response()
          * ```
@@ -69,17 +73,23 @@ private constructor(
     class Builder internal constructor() {
 
         private var service: VectorStoreServiceAsync? = null
+        private var streamHandlerExecutor: Executor? = null
         private var params: VectorStoreSearchParams? = null
         private var response: VectorStoreSearchPageResponse? = null
 
         @JvmSynthetic
         internal fun from(vectorStoreSearchPageAsync: VectorStoreSearchPageAsync) = apply {
             service = vectorStoreSearchPageAsync.service
+            streamHandlerExecutor = vectorStoreSearchPageAsync.streamHandlerExecutor
             params = vectorStoreSearchPageAsync.params
             response = vectorStoreSearchPageAsync.response
         }
 
         fun service(service: VectorStoreServiceAsync) = apply { this.service = service }
+
+        fun streamHandlerExecutor(streamHandlerExecutor: Executor) = apply {
+            this.streamHandlerExecutor = streamHandlerExecutor
+        }
 
         /** The parameters that were used to request this page. */
         fun params(params: VectorStoreSearchParams) = apply { this.params = params }
@@ -95,6 +105,7 @@ private constructor(
          * The following fields are required:
          * ```java
          * .service()
+         * .streamHandlerExecutor()
          * .params()
          * .response()
          * ```
@@ -104,38 +115,10 @@ private constructor(
         fun build(): VectorStoreSearchPageAsync =
             VectorStoreSearchPageAsync(
                 checkRequired("service", service),
+                checkRequired("streamHandlerExecutor", streamHandlerExecutor),
                 checkRequired("params", params),
                 checkRequired("response", response),
             )
-    }
-
-    class AutoPager(private val firstPage: VectorStoreSearchPageAsync) {
-
-        fun forEach(
-            action: Predicate<VectorStoreSearchResponse>,
-            executor: Executor,
-        ): CompletableFuture<Void> {
-            fun CompletableFuture<Optional<VectorStoreSearchPageAsync>>.forEach(
-                action: (VectorStoreSearchResponse) -> Boolean,
-                executor: Executor,
-            ): CompletableFuture<Void> =
-                thenComposeAsync(
-                    { page ->
-                        page
-                            .filter { it.data().all(action) }
-                            .map { it.getNextPage().forEach(action, executor) }
-                            .orElseGet { CompletableFuture.completedFuture(null) }
-                    },
-                    executor,
-                )
-            return CompletableFuture.completedFuture(Optional.of(firstPage))
-                .forEach(action::test, executor)
-        }
-
-        fun toList(executor: Executor): CompletableFuture<List<VectorStoreSearchResponse>> {
-            val values = mutableListOf<VectorStoreSearchResponse>()
-            return forEach(values::add, executor).thenApply { values }
-        }
     }
 
     override fun equals(other: Any?): Boolean {
@@ -143,11 +126,11 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is VectorStoreSearchPageAsync && service == other.service && params == other.params && response == other.response /* spotless:on */
+        return /* spotless:off */ other is VectorStoreSearchPageAsync && service == other.service && streamHandlerExecutor == other.streamHandlerExecutor && params == other.params && response == other.response /* spotless:on */
     }
 
-    override fun hashCode(): Int = /* spotless:off */ Objects.hash(service, params, response) /* spotless:on */
+    override fun hashCode(): Int = /* spotless:off */ Objects.hash(service, streamHandlerExecutor, params, response) /* spotless:on */
 
     override fun toString() =
-        "VectorStoreSearchPageAsync{service=$service, params=$params, response=$response}"
+        "VectorStoreSearchPageAsync{service=$service, streamHandlerExecutor=$streamHandlerExecutor, params=$params, response=$response}"
 }

@@ -51,14 +51,36 @@ interface UploadServiceAsync {
     ): CompletableFuture<Upload>
 
     /** Cancels the Upload. No Parts may be added after an Upload is cancelled. */
-    fun cancel(params: UploadCancelParams): CompletableFuture<Upload> =
-        cancel(params, RequestOptions.none())
+    fun cancel(uploadId: String): CompletableFuture<Upload> =
+        cancel(uploadId, UploadCancelParams.none())
+
+    /** @see [cancel] */
+    fun cancel(
+        uploadId: String,
+        params: UploadCancelParams = UploadCancelParams.none(),
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): CompletableFuture<Upload> =
+        cancel(params.toBuilder().uploadId(uploadId).build(), requestOptions)
+
+    /** @see [cancel] */
+    fun cancel(
+        uploadId: String,
+        params: UploadCancelParams = UploadCancelParams.none(),
+    ): CompletableFuture<Upload> = cancel(uploadId, params, RequestOptions.none())
 
     /** @see [cancel] */
     fun cancel(
         params: UploadCancelParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): CompletableFuture<Upload>
+
+    /** @see [cancel] */
+    fun cancel(params: UploadCancelParams): CompletableFuture<Upload> =
+        cancel(params, RequestOptions.none())
+
+    /** @see [cancel] */
+    fun cancel(uploadId: String, requestOptions: RequestOptions): CompletableFuture<Upload> =
+        cancel(uploadId, UploadCancelParams.none(), requestOptions)
 
     /**
      * Completes the [Upload](https://platform.openai.com/docs/api-reference/uploads/object).
@@ -73,6 +95,18 @@ interface UploadServiceAsync {
      * specified when creating the Upload object. No Parts may be added after an Upload is
      * completed.
      */
+    fun complete(uploadId: String, params: UploadCompleteParams): CompletableFuture<Upload> =
+        complete(uploadId, params, RequestOptions.none())
+
+    /** @see [complete] */
+    fun complete(
+        uploadId: String,
+        params: UploadCompleteParams,
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): CompletableFuture<Upload> =
+        complete(params.toBuilder().uploadId(uploadId).build(), requestOptions)
+
+    /** @see [complete] */
     fun complete(params: UploadCompleteParams): CompletableFuture<Upload> =
         complete(params, RequestOptions.none())
 
@@ -109,8 +143,25 @@ interface UploadServiceAsync {
          * same as [UploadServiceAsync.cancel].
          */
         @MustBeClosed
-        fun cancel(params: UploadCancelParams): CompletableFuture<HttpResponseFor<Upload>> =
-            cancel(params, RequestOptions.none())
+        fun cancel(uploadId: String): CompletableFuture<HttpResponseFor<Upload>> =
+            cancel(uploadId, UploadCancelParams.none())
+
+        /** @see [cancel] */
+        @MustBeClosed
+        fun cancel(
+            uploadId: String,
+            params: UploadCancelParams = UploadCancelParams.none(),
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): CompletableFuture<HttpResponseFor<Upload>> =
+            cancel(params.toBuilder().uploadId(uploadId).build(), requestOptions)
+
+        /** @see [cancel] */
+        @MustBeClosed
+        fun cancel(
+            uploadId: String,
+            params: UploadCancelParams = UploadCancelParams.none(),
+        ): CompletableFuture<HttpResponseFor<Upload>> =
+            cancel(uploadId, params, RequestOptions.none())
 
         /** @see [cancel] */
         @MustBeClosed
@@ -119,10 +170,40 @@ interface UploadServiceAsync {
             requestOptions: RequestOptions = RequestOptions.none(),
         ): CompletableFuture<HttpResponseFor<Upload>>
 
+        /** @see [cancel] */
+        @MustBeClosed
+        fun cancel(params: UploadCancelParams): CompletableFuture<HttpResponseFor<Upload>> =
+            cancel(params, RequestOptions.none())
+
+        /** @see [cancel] */
+        @MustBeClosed
+        fun cancel(
+            uploadId: String,
+            requestOptions: RequestOptions,
+        ): CompletableFuture<HttpResponseFor<Upload>> =
+            cancel(uploadId, UploadCancelParams.none(), requestOptions)
+
         /**
          * Returns a raw HTTP response for `post /uploads/{upload_id}/complete`, but is otherwise
          * the same as [UploadServiceAsync.complete].
          */
+        @MustBeClosed
+        fun complete(
+            uploadId: String,
+            params: UploadCompleteParams,
+        ): CompletableFuture<HttpResponseFor<Upload>> =
+            complete(uploadId, params, RequestOptions.none())
+
+        /** @see [complete] */
+        @MustBeClosed
+        fun complete(
+            uploadId: String,
+            params: UploadCompleteParams,
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): CompletableFuture<HttpResponseFor<Upload>> =
+            complete(params.toBuilder().uploadId(uploadId).build(), requestOptions)
+
+        /** @see [complete] */
         @MustBeClosed
         fun complete(params: UploadCompleteParams): CompletableFuture<HttpResponseFor<Upload>> =
             complete(params, RequestOptions.none())

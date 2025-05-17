@@ -29,6 +29,9 @@ import com.openai.core.http.Headers
 import com.openai.core.http.QueryParams
 import com.openai.core.toImmutable
 import com.openai.errors.OpenAIInvalidDataException
+import com.openai.models.finetuning.methods.DpoMethod
+import com.openai.models.finetuning.methods.ReinforcementMethod
+import com.openai.models.finetuning.methods.SupervisedMethod
 import java.util.Collections
 import java.util.Objects
 import java.util.Optional
@@ -2835,20 +2838,32 @@ private constructor(
     /** The method used for fine-tuning. */
     class Method
     private constructor(
-        private val dpo: JsonField<Dpo>,
-        private val supervised: JsonField<Supervised>,
         private val type: JsonField<Type>,
+        private val dpo: JsonField<DpoMethod>,
+        private val reinforcement: JsonField<ReinforcementMethod>,
+        private val supervised: JsonField<SupervisedMethod>,
         private val additionalProperties: MutableMap<String, JsonValue>,
     ) {
 
         @JsonCreator
         private constructor(
-            @JsonProperty("dpo") @ExcludeMissing dpo: JsonField<Dpo> = JsonMissing.of(),
+            @JsonProperty("type") @ExcludeMissing type: JsonField<Type> = JsonMissing.of(),
+            @JsonProperty("dpo") @ExcludeMissing dpo: JsonField<DpoMethod> = JsonMissing.of(),
+            @JsonProperty("reinforcement")
+            @ExcludeMissing
+            reinforcement: JsonField<ReinforcementMethod> = JsonMissing.of(),
             @JsonProperty("supervised")
             @ExcludeMissing
-            supervised: JsonField<Supervised> = JsonMissing.of(),
-            @JsonProperty("type") @ExcludeMissing type: JsonField<Type> = JsonMissing.of(),
-        ) : this(dpo, supervised, type, mutableMapOf())
+            supervised: JsonField<SupervisedMethod> = JsonMissing.of(),
+        ) : this(type, dpo, reinforcement, supervised, mutableMapOf())
+
+        /**
+         * The type of method. Is either `supervised`, `dpo`, or `reinforcement`.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         */
+        fun type(): Type = type.getRequired("type")
 
         /**
          * Configuration for the DPO fine-tuning method.
@@ -2856,7 +2871,16 @@ private constructor(
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
          */
-        fun dpo(): Optional<Dpo> = dpo.getOptional("dpo")
+        fun dpo(): Optional<DpoMethod> = dpo.getOptional("dpo")
+
+        /**
+         * Configuration for the reinforcement fine-tuning method.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun reinforcement(): Optional<ReinforcementMethod> =
+            reinforcement.getOptional("reinforcement")
 
         /**
          * Configuration for the supervised fine-tuning method.
@@ -2864,22 +2888,31 @@ private constructor(
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
          */
-        fun supervised(): Optional<Supervised> = supervised.getOptional("supervised")
+        fun supervised(): Optional<SupervisedMethod> = supervised.getOptional("supervised")
 
         /**
-         * The type of method. Is either `supervised` or `dpo`.
+         * Returns the raw JSON value of [type].
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * Unlike [type], this method doesn't throw if the JSON field has an unexpected type.
          */
-        fun type(): Optional<Type> = type.getOptional("type")
+        @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<Type> = type
 
         /**
          * Returns the raw JSON value of [dpo].
          *
          * Unlike [dpo], this method doesn't throw if the JSON field has an unexpected type.
          */
-        @JsonProperty("dpo") @ExcludeMissing fun _dpo(): JsonField<Dpo> = dpo
+        @JsonProperty("dpo") @ExcludeMissing fun _dpo(): JsonField<DpoMethod> = dpo
+
+        /**
+         * Returns the raw JSON value of [reinforcement].
+         *
+         * Unlike [reinforcement], this method doesn't throw if the JSON field has an unexpected
+         * type.
+         */
+        @JsonProperty("reinforcement")
+        @ExcludeMissing
+        fun _reinforcement(): JsonField<ReinforcementMethod> = reinforcement
 
         /**
          * Returns the raw JSON value of [supervised].
@@ -2888,14 +2921,7 @@ private constructor(
          */
         @JsonProperty("supervised")
         @ExcludeMissing
-        fun _supervised(): JsonField<Supervised> = supervised
-
-        /**
-         * Returns the raw JSON value of [type].
-         *
-         * Unlike [type], this method doesn't throw if the JSON field has an unexpected type.
-         */
-        @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<Type> = type
+        fun _supervised(): JsonField<SupervisedMethod> = supervised
 
         @JsonAnySetter
         private fun putAdditionalProperty(key: String, value: JsonValue) {
@@ -2911,53 +2937,36 @@ private constructor(
 
         companion object {
 
-            /** Returns a mutable builder for constructing an instance of [Method]. */
+            /**
+             * Returns a mutable builder for constructing an instance of [Method].
+             *
+             * The following fields are required:
+             * ```java
+             * .type()
+             * ```
+             */
             @JvmStatic fun builder() = Builder()
         }
 
         /** A builder for [Method]. */
         class Builder internal constructor() {
 
-            private var dpo: JsonField<Dpo> = JsonMissing.of()
-            private var supervised: JsonField<Supervised> = JsonMissing.of()
-            private var type: JsonField<Type> = JsonMissing.of()
+            private var type: JsonField<Type>? = null
+            private var dpo: JsonField<DpoMethod> = JsonMissing.of()
+            private var reinforcement: JsonField<ReinforcementMethod> = JsonMissing.of()
+            private var supervised: JsonField<SupervisedMethod> = JsonMissing.of()
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
             @JvmSynthetic
             internal fun from(method: Method) = apply {
-                dpo = method.dpo
-                supervised = method.supervised
                 type = method.type
+                dpo = method.dpo
+                reinforcement = method.reinforcement
+                supervised = method.supervised
                 additionalProperties = method.additionalProperties.toMutableMap()
             }
 
-            /** Configuration for the DPO fine-tuning method. */
-            fun dpo(dpo: Dpo) = dpo(JsonField.of(dpo))
-
-            /**
-             * Sets [Builder.dpo] to an arbitrary JSON value.
-             *
-             * You should usually call [Builder.dpo] with a well-typed [Dpo] value instead. This
-             * method is primarily for setting the field to an undocumented or not yet supported
-             * value.
-             */
-            fun dpo(dpo: JsonField<Dpo>) = apply { this.dpo = dpo }
-
-            /** Configuration for the supervised fine-tuning method. */
-            fun supervised(supervised: Supervised) = supervised(JsonField.of(supervised))
-
-            /**
-             * Sets [Builder.supervised] to an arbitrary JSON value.
-             *
-             * You should usually call [Builder.supervised] with a well-typed [Supervised] value
-             * instead. This method is primarily for setting the field to an undocumented or not yet
-             * supported value.
-             */
-            fun supervised(supervised: JsonField<Supervised>) = apply {
-                this.supervised = supervised
-            }
-
-            /** The type of method. Is either `supervised` or `dpo`. */
+            /** The type of method. Is either `supervised`, `dpo`, or `reinforcement`. */
             fun type(type: Type) = type(JsonField.of(type))
 
             /**
@@ -2968,6 +2977,47 @@ private constructor(
              * value.
              */
             fun type(type: JsonField<Type>) = apply { this.type = type }
+
+            /** Configuration for the DPO fine-tuning method. */
+            fun dpo(dpo: DpoMethod) = dpo(JsonField.of(dpo))
+
+            /**
+             * Sets [Builder.dpo] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.dpo] with a well-typed [DpoMethod] value instead.
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun dpo(dpo: JsonField<DpoMethod>) = apply { this.dpo = dpo }
+
+            /** Configuration for the reinforcement fine-tuning method. */
+            fun reinforcement(reinforcement: ReinforcementMethod) =
+                reinforcement(JsonField.of(reinforcement))
+
+            /**
+             * Sets [Builder.reinforcement] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.reinforcement] with a well-typed
+             * [ReinforcementMethod] value instead. This method is primarily for setting the field
+             * to an undocumented or not yet supported value.
+             */
+            fun reinforcement(reinforcement: JsonField<ReinforcementMethod>) = apply {
+                this.reinforcement = reinforcement
+            }
+
+            /** Configuration for the supervised fine-tuning method. */
+            fun supervised(supervised: SupervisedMethod) = supervised(JsonField.of(supervised))
+
+            /**
+             * Sets [Builder.supervised] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.supervised] with a well-typed [SupervisedMethod]
+             * value instead. This method is primarily for setting the field to an undocumented or
+             * not yet supported value.
+             */
+            fun supervised(supervised: JsonField<SupervisedMethod>) = apply {
+                this.supervised = supervised
+            }
 
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.clear()
@@ -2992,8 +3042,22 @@ private constructor(
              * Returns an immutable instance of [Method].
              *
              * Further updates to this [Builder] will not mutate the returned instance.
+             *
+             * The following fields are required:
+             * ```java
+             * .type()
+             * ```
+             *
+             * @throws IllegalStateException if any required field is unset.
              */
-            fun build(): Method = Method(dpo, supervised, type, additionalProperties.toMutableMap())
+            fun build(): Method =
+                Method(
+                    checkRequired("type", type),
+                    dpo,
+                    reinforcement,
+                    supervised,
+                    additionalProperties.toMutableMap(),
+                )
         }
 
         private var validated: Boolean = false
@@ -3003,9 +3067,10 @@ private constructor(
                 return@apply
             }
 
+            type().validate()
             dpo().ifPresent { it.validate() }
+            reinforcement().ifPresent { it.validate() }
             supervised().ifPresent { it.validate() }
-            type().ifPresent { it.validate() }
             validated = true
         }
 
@@ -3025,2246 +3090,12 @@ private constructor(
          */
         @JvmSynthetic
         internal fun validity(): Int =
-            (dpo.asKnown().getOrNull()?.validity() ?: 0) +
-                (supervised.asKnown().getOrNull()?.validity() ?: 0) +
-                (type.asKnown().getOrNull()?.validity() ?: 0)
-
-        /** Configuration for the DPO fine-tuning method. */
-        class Dpo
-        private constructor(
-            private val hyperparameters: JsonField<Hyperparameters>,
-            private val additionalProperties: MutableMap<String, JsonValue>,
-        ) {
-
-            @JsonCreator
-            private constructor(
-                @JsonProperty("hyperparameters")
-                @ExcludeMissing
-                hyperparameters: JsonField<Hyperparameters> = JsonMissing.of()
-            ) : this(hyperparameters, mutableMapOf())
-
-            /**
-             * The hyperparameters used for the fine-tuning job.
-             *
-             * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if
-             *   the server responded with an unexpected value).
-             */
-            fun hyperparameters(): Optional<Hyperparameters> =
-                hyperparameters.getOptional("hyperparameters")
-
-            /**
-             * Returns the raw JSON value of [hyperparameters].
-             *
-             * Unlike [hyperparameters], this method doesn't throw if the JSON field has an
-             * unexpected type.
-             */
-            @JsonProperty("hyperparameters")
-            @ExcludeMissing
-            fun _hyperparameters(): JsonField<Hyperparameters> = hyperparameters
-
-            @JsonAnySetter
-            private fun putAdditionalProperty(key: String, value: JsonValue) {
-                additionalProperties.put(key, value)
-            }
-
-            @JsonAnyGetter
-            @ExcludeMissing
-            fun _additionalProperties(): Map<String, JsonValue> =
-                Collections.unmodifiableMap(additionalProperties)
-
-            fun toBuilder() = Builder().from(this)
-
-            companion object {
-
-                /** Returns a mutable builder for constructing an instance of [Dpo]. */
-                @JvmStatic fun builder() = Builder()
-            }
-
-            /** A builder for [Dpo]. */
-            class Builder internal constructor() {
-
-                private var hyperparameters: JsonField<Hyperparameters> = JsonMissing.of()
-                private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
-
-                @JvmSynthetic
-                internal fun from(dpo: Dpo) = apply {
-                    hyperparameters = dpo.hyperparameters
-                    additionalProperties = dpo.additionalProperties.toMutableMap()
-                }
-
-                /** The hyperparameters used for the fine-tuning job. */
-                fun hyperparameters(hyperparameters: Hyperparameters) =
-                    hyperparameters(JsonField.of(hyperparameters))
-
-                /**
-                 * Sets [Builder.hyperparameters] to an arbitrary JSON value.
-                 *
-                 * You should usually call [Builder.hyperparameters] with a well-typed
-                 * [Hyperparameters] value instead. This method is primarily for setting the field
-                 * to an undocumented or not yet supported value.
-                 */
-                fun hyperparameters(hyperparameters: JsonField<Hyperparameters>) = apply {
-                    this.hyperparameters = hyperparameters
-                }
-
-                fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
-                    this.additionalProperties.clear()
-                    putAllAdditionalProperties(additionalProperties)
-                }
-
-                fun putAdditionalProperty(key: String, value: JsonValue) = apply {
-                    additionalProperties.put(key, value)
-                }
-
-                fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) =
-                    apply {
-                        this.additionalProperties.putAll(additionalProperties)
-                    }
-
-                fun removeAdditionalProperty(key: String) = apply {
-                    additionalProperties.remove(key)
-                }
-
-                fun removeAllAdditionalProperties(keys: Set<String>) = apply {
-                    keys.forEach(::removeAdditionalProperty)
-                }
-
-                /**
-                 * Returns an immutable instance of [Dpo].
-                 *
-                 * Further updates to this [Builder] will not mutate the returned instance.
-                 */
-                fun build(): Dpo = Dpo(hyperparameters, additionalProperties.toMutableMap())
-            }
-
-            private var validated: Boolean = false
-
-            fun validate(): Dpo = apply {
-                if (validated) {
-                    return@apply
-                }
-
-                hyperparameters().ifPresent { it.validate() }
-                validated = true
-            }
-
-            fun isValid(): Boolean =
-                try {
-                    validate()
-                    true
-                } catch (e: OpenAIInvalidDataException) {
-                    false
-                }
-
-            /**
-             * Returns a score indicating how many valid values are contained in this object
-             * recursively.
-             *
-             * Used for best match union deserialization.
-             */
-            @JvmSynthetic
-            internal fun validity(): Int = (hyperparameters.asKnown().getOrNull()?.validity() ?: 0)
-
-            /** The hyperparameters used for the fine-tuning job. */
-            class Hyperparameters
-            private constructor(
-                private val batchSize: JsonField<BatchSize>,
-                private val beta: JsonField<Beta>,
-                private val learningRateMultiplier: JsonField<LearningRateMultiplier>,
-                private val nEpochs: JsonField<NEpochs>,
-                private val additionalProperties: MutableMap<String, JsonValue>,
-            ) {
-
-                @JsonCreator
-                private constructor(
-                    @JsonProperty("batch_size")
-                    @ExcludeMissing
-                    batchSize: JsonField<BatchSize> = JsonMissing.of(),
-                    @JsonProperty("beta") @ExcludeMissing beta: JsonField<Beta> = JsonMissing.of(),
-                    @JsonProperty("learning_rate_multiplier")
-                    @ExcludeMissing
-                    learningRateMultiplier: JsonField<LearningRateMultiplier> = JsonMissing.of(),
-                    @JsonProperty("n_epochs")
-                    @ExcludeMissing
-                    nEpochs: JsonField<NEpochs> = JsonMissing.of(),
-                ) : this(batchSize, beta, learningRateMultiplier, nEpochs, mutableMapOf())
-
-                /**
-                 * Number of examples in each batch. A larger batch size means that model parameters
-                 * are updated less frequently, but with lower variance.
-                 *
-                 * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g.
-                 *   if the server responded with an unexpected value).
-                 */
-                fun batchSize(): Optional<BatchSize> = batchSize.getOptional("batch_size")
-
-                /**
-                 * The beta value for the DPO method. A higher beta value will increase the weight
-                 * of the penalty between the policy and reference model.
-                 *
-                 * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g.
-                 *   if the server responded with an unexpected value).
-                 */
-                fun beta(): Optional<Beta> = beta.getOptional("beta")
-
-                /**
-                 * Scaling factor for the learning rate. A smaller learning rate may be useful to
-                 * avoid overfitting.
-                 *
-                 * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g.
-                 *   if the server responded with an unexpected value).
-                 */
-                fun learningRateMultiplier(): Optional<LearningRateMultiplier> =
-                    learningRateMultiplier.getOptional("learning_rate_multiplier")
-
-                /**
-                 * The number of epochs to train the model for. An epoch refers to one full cycle
-                 * through the training dataset.
-                 *
-                 * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g.
-                 *   if the server responded with an unexpected value).
-                 */
-                fun nEpochs(): Optional<NEpochs> = nEpochs.getOptional("n_epochs")
-
-                /**
-                 * Returns the raw JSON value of [batchSize].
-                 *
-                 * Unlike [batchSize], this method doesn't throw if the JSON field has an unexpected
-                 * type.
-                 */
-                @JsonProperty("batch_size")
-                @ExcludeMissing
-                fun _batchSize(): JsonField<BatchSize> = batchSize
-
-                /**
-                 * Returns the raw JSON value of [beta].
-                 *
-                 * Unlike [beta], this method doesn't throw if the JSON field has an unexpected
-                 * type.
-                 */
-                @JsonProperty("beta") @ExcludeMissing fun _beta(): JsonField<Beta> = beta
-
-                /**
-                 * Returns the raw JSON value of [learningRateMultiplier].
-                 *
-                 * Unlike [learningRateMultiplier], this method doesn't throw if the JSON field has
-                 * an unexpected type.
-                 */
-                @JsonProperty("learning_rate_multiplier")
-                @ExcludeMissing
-                fun _learningRateMultiplier(): JsonField<LearningRateMultiplier> =
-                    learningRateMultiplier
-
-                /**
-                 * Returns the raw JSON value of [nEpochs].
-                 *
-                 * Unlike [nEpochs], this method doesn't throw if the JSON field has an unexpected
-                 * type.
-                 */
-                @JsonProperty("n_epochs")
-                @ExcludeMissing
-                fun _nEpochs(): JsonField<NEpochs> = nEpochs
-
-                @JsonAnySetter
-                private fun putAdditionalProperty(key: String, value: JsonValue) {
-                    additionalProperties.put(key, value)
-                }
-
-                @JsonAnyGetter
-                @ExcludeMissing
-                fun _additionalProperties(): Map<String, JsonValue> =
-                    Collections.unmodifiableMap(additionalProperties)
-
-                fun toBuilder() = Builder().from(this)
-
-                companion object {
-
-                    /**
-                     * Returns a mutable builder for constructing an instance of [Hyperparameters].
-                     */
-                    @JvmStatic fun builder() = Builder()
-                }
-
-                /** A builder for [Hyperparameters]. */
-                class Builder internal constructor() {
-
-                    private var batchSize: JsonField<BatchSize> = JsonMissing.of()
-                    private var beta: JsonField<Beta> = JsonMissing.of()
-                    private var learningRateMultiplier: JsonField<LearningRateMultiplier> =
-                        JsonMissing.of()
-                    private var nEpochs: JsonField<NEpochs> = JsonMissing.of()
-                    private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
-
-                    @JvmSynthetic
-                    internal fun from(hyperparameters: Hyperparameters) = apply {
-                        batchSize = hyperparameters.batchSize
-                        beta = hyperparameters.beta
-                        learningRateMultiplier = hyperparameters.learningRateMultiplier
-                        nEpochs = hyperparameters.nEpochs
-                        additionalProperties = hyperparameters.additionalProperties.toMutableMap()
-                    }
-
-                    /**
-                     * Number of examples in each batch. A larger batch size means that model
-                     * parameters are updated less frequently, but with lower variance.
-                     */
-                    fun batchSize(batchSize: BatchSize) = batchSize(JsonField.of(batchSize))
-
-                    /**
-                     * Sets [Builder.batchSize] to an arbitrary JSON value.
-                     *
-                     * You should usually call [Builder.batchSize] with a well-typed [BatchSize]
-                     * value instead. This method is primarily for setting the field to an
-                     * undocumented or not yet supported value.
-                     */
-                    fun batchSize(batchSize: JsonField<BatchSize>) = apply {
-                        this.batchSize = batchSize
-                    }
-
-                    /** Alias for calling [batchSize] with `BatchSize.ofAuto()`. */
-                    fun batchSizeAuto() = batchSize(BatchSize.ofAuto())
-
-                    /** Alias for calling [batchSize] with `BatchSize.ofManual(manual)`. */
-                    fun batchSize(manual: Long) = batchSize(BatchSize.ofManual(manual))
-
-                    /**
-                     * The beta value for the DPO method. A higher beta value will increase the
-                     * weight of the penalty between the policy and reference model.
-                     */
-                    fun beta(beta: Beta) = beta(JsonField.of(beta))
-
-                    /**
-                     * Sets [Builder.beta] to an arbitrary JSON value.
-                     *
-                     * You should usually call [Builder.beta] with a well-typed [Beta] value
-                     * instead. This method is primarily for setting the field to an undocumented or
-                     * not yet supported value.
-                     */
-                    fun beta(beta: JsonField<Beta>) = apply { this.beta = beta }
-
-                    /** Alias for calling [beta] with `Beta.ofAuto()`. */
-                    fun betaAuto() = beta(Beta.ofAuto())
-
-                    /** Alias for calling [beta] with `Beta.ofManual(manual)`. */
-                    fun beta(manual: Double) = beta(Beta.ofManual(manual))
-
-                    /**
-                     * Scaling factor for the learning rate. A smaller learning rate may be useful
-                     * to avoid overfitting.
-                     */
-                    fun learningRateMultiplier(learningRateMultiplier: LearningRateMultiplier) =
-                        learningRateMultiplier(JsonField.of(learningRateMultiplier))
-
-                    /**
-                     * Sets [Builder.learningRateMultiplier] to an arbitrary JSON value.
-                     *
-                     * You should usually call [Builder.learningRateMultiplier] with a well-typed
-                     * [LearningRateMultiplier] value instead. This method is primarily for setting
-                     * the field to an undocumented or not yet supported value.
-                     */
-                    fun learningRateMultiplier(
-                        learningRateMultiplier: JsonField<LearningRateMultiplier>
-                    ) = apply { this.learningRateMultiplier = learningRateMultiplier }
-
-                    /**
-                     * Alias for calling [learningRateMultiplier] with
-                     * `LearningRateMultiplier.ofAuto()`.
-                     */
-                    fun learningRateMultiplierAuto() =
-                        learningRateMultiplier(LearningRateMultiplier.ofAuto())
-
-                    /**
-                     * Alias for calling [learningRateMultiplier] with
-                     * `LearningRateMultiplier.ofManual(manual)`.
-                     */
-                    fun learningRateMultiplier(manual: Double) =
-                        learningRateMultiplier(LearningRateMultiplier.ofManual(manual))
-
-                    /**
-                     * The number of epochs to train the model for. An epoch refers to one full
-                     * cycle through the training dataset.
-                     */
-                    fun nEpochs(nEpochs: NEpochs) = nEpochs(JsonField.of(nEpochs))
-
-                    /**
-                     * Sets [Builder.nEpochs] to an arbitrary JSON value.
-                     *
-                     * You should usually call [Builder.nEpochs] with a well-typed [NEpochs] value
-                     * instead. This method is primarily for setting the field to an undocumented or
-                     * not yet supported value.
-                     */
-                    fun nEpochs(nEpochs: JsonField<NEpochs>) = apply { this.nEpochs = nEpochs }
-
-                    /** Alias for calling [nEpochs] with `NEpochs.ofAuto()`. */
-                    fun nEpochsAuto() = nEpochs(NEpochs.ofAuto())
-
-                    /** Alias for calling [nEpochs] with `NEpochs.ofManual(manual)`. */
-                    fun nEpochs(manual: Long) = nEpochs(NEpochs.ofManual(manual))
-
-                    fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
-                        this.additionalProperties.clear()
-                        putAllAdditionalProperties(additionalProperties)
-                    }
-
-                    fun putAdditionalProperty(key: String, value: JsonValue) = apply {
-                        additionalProperties.put(key, value)
-                    }
-
-                    fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) =
-                        apply {
-                            this.additionalProperties.putAll(additionalProperties)
-                        }
-
-                    fun removeAdditionalProperty(key: String) = apply {
-                        additionalProperties.remove(key)
-                    }
-
-                    fun removeAllAdditionalProperties(keys: Set<String>) = apply {
-                        keys.forEach(::removeAdditionalProperty)
-                    }
-
-                    /**
-                     * Returns an immutable instance of [Hyperparameters].
-                     *
-                     * Further updates to this [Builder] will not mutate the returned instance.
-                     */
-                    fun build(): Hyperparameters =
-                        Hyperparameters(
-                            batchSize,
-                            beta,
-                            learningRateMultiplier,
-                            nEpochs,
-                            additionalProperties.toMutableMap(),
-                        )
-                }
-
-                private var validated: Boolean = false
-
-                fun validate(): Hyperparameters = apply {
-                    if (validated) {
-                        return@apply
-                    }
-
-                    batchSize().ifPresent { it.validate() }
-                    beta().ifPresent { it.validate() }
-                    learningRateMultiplier().ifPresent { it.validate() }
-                    nEpochs().ifPresent { it.validate() }
-                    validated = true
-                }
-
-                fun isValid(): Boolean =
-                    try {
-                        validate()
-                        true
-                    } catch (e: OpenAIInvalidDataException) {
-                        false
-                    }
-
-                /**
-                 * Returns a score indicating how many valid values are contained in this object
-                 * recursively.
-                 *
-                 * Used for best match union deserialization.
-                 */
-                @JvmSynthetic
-                internal fun validity(): Int =
-                    (batchSize.asKnown().getOrNull()?.validity() ?: 0) +
-                        (beta.asKnown().getOrNull()?.validity() ?: 0) +
-                        (learningRateMultiplier.asKnown().getOrNull()?.validity() ?: 0) +
-                        (nEpochs.asKnown().getOrNull()?.validity() ?: 0)
-
-                /**
-                 * Number of examples in each batch. A larger batch size means that model parameters
-                 * are updated less frequently, but with lower variance.
-                 */
-                @JsonDeserialize(using = BatchSize.Deserializer::class)
-                @JsonSerialize(using = BatchSize.Serializer::class)
-                class BatchSize
-                private constructor(
-                    private val auto: JsonValue? = null,
-                    private val manual: Long? = null,
-                    private val _json: JsonValue? = null,
-                ) {
-
-                    fun auto(): Optional<JsonValue> = Optional.ofNullable(auto)
-
-                    fun manual(): Optional<Long> = Optional.ofNullable(manual)
-
-                    fun isAuto(): Boolean = auto != null
-
-                    fun isManual(): Boolean = manual != null
-
-                    fun asAuto(): JsonValue = auto.getOrThrow("auto")
-
-                    fun asManual(): Long = manual.getOrThrow("manual")
-
-                    fun _json(): Optional<JsonValue> = Optional.ofNullable(_json)
-
-                    fun <T> accept(visitor: Visitor<T>): T =
-                        when {
-                            auto != null -> visitor.visitAuto(auto)
-                            manual != null -> visitor.visitManual(manual)
-                            else -> visitor.unknown(_json)
-                        }
-
-                    private var validated: Boolean = false
-
-                    fun validate(): BatchSize = apply {
-                        if (validated) {
-                            return@apply
-                        }
-
-                        accept(
-                            object : Visitor<Unit> {
-                                override fun visitAuto(auto: JsonValue) {
-                                    auto.let {
-                                        if (it != JsonValue.from("auto")) {
-                                            throw OpenAIInvalidDataException(
-                                                "'auto' is invalid, received $it"
-                                            )
-                                        }
-                                    }
-                                }
-
-                                override fun visitManual(manual: Long) {}
-                            }
-                        )
-                        validated = true
-                    }
-
-                    fun isValid(): Boolean =
-                        try {
-                            validate()
-                            true
-                        } catch (e: OpenAIInvalidDataException) {
-                            false
-                        }
-
-                    /**
-                     * Returns a score indicating how many valid values are contained in this object
-                     * recursively.
-                     *
-                     * Used for best match union deserialization.
-                     */
-                    @JvmSynthetic
-                    internal fun validity(): Int =
-                        accept(
-                            object : Visitor<Int> {
-                                override fun visitAuto(auto: JsonValue) =
-                                    auto.let { if (it == JsonValue.from("auto")) 1 else 0 }
-
-                                override fun visitManual(manual: Long) = 1
-
-                                override fun unknown(json: JsonValue?) = 0
-                            }
-                        )
-
-                    override fun equals(other: Any?): Boolean {
-                        if (this === other) {
-                            return true
-                        }
-
-                        return /* spotless:off */ other is BatchSize && auto == other.auto && manual == other.manual /* spotless:on */
-                    }
-
-                    override fun hashCode(): Int = /* spotless:off */ Objects.hash(auto, manual) /* spotless:on */
-
-                    override fun toString(): String =
-                        when {
-                            auto != null -> "BatchSize{auto=$auto}"
-                            manual != null -> "BatchSize{manual=$manual}"
-                            _json != null -> "BatchSize{_unknown=$_json}"
-                            else -> throw IllegalStateException("Invalid BatchSize")
-                        }
-
-                    companion object {
-
-                        @JvmStatic fun ofAuto() = BatchSize(auto = JsonValue.from("auto"))
-
-                        @JvmStatic fun ofManual(manual: Long) = BatchSize(manual = manual)
-                    }
-
-                    /**
-                     * An interface that defines how to map each variant of [BatchSize] to a value
-                     * of type [T].
-                     */
-                    interface Visitor<out T> {
-
-                        fun visitAuto(auto: JsonValue): T
-
-                        fun visitManual(manual: Long): T
-
-                        /**
-                         * Maps an unknown variant of [BatchSize] to a value of type [T].
-                         *
-                         * An instance of [BatchSize] can contain an unknown variant if it was
-                         * deserialized from data that doesn't match any known variant. For example,
-                         * if the SDK is on an older version than the API, then the API may respond
-                         * with new variants that the SDK is unaware of.
-                         *
-                         * @throws OpenAIInvalidDataException in the default implementation.
-                         */
-                        fun unknown(json: JsonValue?): T {
-                            throw OpenAIInvalidDataException("Unknown BatchSize: $json")
-                        }
-                    }
-
-                    internal class Deserializer : BaseDeserializer<BatchSize>(BatchSize::class) {
-
-                        override fun ObjectCodec.deserialize(node: JsonNode): BatchSize {
-                            val json = JsonValue.fromJsonNode(node)
-
-                            val bestMatches =
-                                sequenceOf(
-                                        tryDeserialize(node, jacksonTypeRef<JsonValue>())
-                                            ?.let { BatchSize(auto = it, _json = json) }
-                                            ?.takeIf { it.isValid() },
-                                        tryDeserialize(node, jacksonTypeRef<Long>())?.let {
-                                            BatchSize(manual = it, _json = json)
-                                        },
-                                    )
-                                    .filterNotNull()
-                                    .allMaxBy { it.validity() }
-                                    .toList()
-                            return when (bestMatches.size) {
-                                // This can happen if what we're deserializing is completely
-                                // incompatible with all the possible variants (e.g. deserializing
-                                // from object).
-                                0 -> BatchSize(_json = json)
-                                1 -> bestMatches.single()
-                                // If there's more than one match with the highest validity, then
-                                // use the first completely valid match, or simply the first match
-                                // if none are completely valid.
-                                else ->
-                                    bestMatches.firstOrNull { it.isValid() } ?: bestMatches.first()
-                            }
-                        }
-                    }
-
-                    internal class Serializer : BaseSerializer<BatchSize>(BatchSize::class) {
-
-                        override fun serialize(
-                            value: BatchSize,
-                            generator: JsonGenerator,
-                            provider: SerializerProvider,
-                        ) {
-                            when {
-                                value.auto != null -> generator.writeObject(value.auto)
-                                value.manual != null -> generator.writeObject(value.manual)
-                                value._json != null -> generator.writeObject(value._json)
-                                else -> throw IllegalStateException("Invalid BatchSize")
-                            }
-                        }
-                    }
-                }
-
-                /**
-                 * The beta value for the DPO method. A higher beta value will increase the weight
-                 * of the penalty between the policy and reference model.
-                 */
-                @JsonDeserialize(using = Beta.Deserializer::class)
-                @JsonSerialize(using = Beta.Serializer::class)
-                class Beta
-                private constructor(
-                    private val auto: JsonValue? = null,
-                    private val manual: Double? = null,
-                    private val _json: JsonValue? = null,
-                ) {
-
-                    fun auto(): Optional<JsonValue> = Optional.ofNullable(auto)
-
-                    fun manual(): Optional<Double> = Optional.ofNullable(manual)
-
-                    fun isAuto(): Boolean = auto != null
-
-                    fun isManual(): Boolean = manual != null
-
-                    fun asAuto(): JsonValue = auto.getOrThrow("auto")
-
-                    fun asManual(): Double = manual.getOrThrow("manual")
-
-                    fun _json(): Optional<JsonValue> = Optional.ofNullable(_json)
-
-                    fun <T> accept(visitor: Visitor<T>): T =
-                        when {
-                            auto != null -> visitor.visitAuto(auto)
-                            manual != null -> visitor.visitManual(manual)
-                            else -> visitor.unknown(_json)
-                        }
-
-                    private var validated: Boolean = false
-
-                    fun validate(): Beta = apply {
-                        if (validated) {
-                            return@apply
-                        }
-
-                        accept(
-                            object : Visitor<Unit> {
-                                override fun visitAuto(auto: JsonValue) {
-                                    auto.let {
-                                        if (it != JsonValue.from("auto")) {
-                                            throw OpenAIInvalidDataException(
-                                                "'auto' is invalid, received $it"
-                                            )
-                                        }
-                                    }
-                                }
-
-                                override fun visitManual(manual: Double) {}
-                            }
-                        )
-                        validated = true
-                    }
-
-                    fun isValid(): Boolean =
-                        try {
-                            validate()
-                            true
-                        } catch (e: OpenAIInvalidDataException) {
-                            false
-                        }
-
-                    /**
-                     * Returns a score indicating how many valid values are contained in this object
-                     * recursively.
-                     *
-                     * Used for best match union deserialization.
-                     */
-                    @JvmSynthetic
-                    internal fun validity(): Int =
-                        accept(
-                            object : Visitor<Int> {
-                                override fun visitAuto(auto: JsonValue) =
-                                    auto.let { if (it == JsonValue.from("auto")) 1 else 0 }
-
-                                override fun visitManual(manual: Double) = 1
-
-                                override fun unknown(json: JsonValue?) = 0
-                            }
-                        )
-
-                    override fun equals(other: Any?): Boolean {
-                        if (this === other) {
-                            return true
-                        }
-
-                        return /* spotless:off */ other is Beta && auto == other.auto && manual == other.manual /* spotless:on */
-                    }
-
-                    override fun hashCode(): Int = /* spotless:off */ Objects.hash(auto, manual) /* spotless:on */
-
-                    override fun toString(): String =
-                        when {
-                            auto != null -> "Beta{auto=$auto}"
-                            manual != null -> "Beta{manual=$manual}"
-                            _json != null -> "Beta{_unknown=$_json}"
-                            else -> throw IllegalStateException("Invalid Beta")
-                        }
-
-                    companion object {
-
-                        @JvmStatic fun ofAuto() = Beta(auto = JsonValue.from("auto"))
-
-                        @JvmStatic fun ofManual(manual: Double) = Beta(manual = manual)
-                    }
-
-                    /**
-                     * An interface that defines how to map each variant of [Beta] to a value of
-                     * type [T].
-                     */
-                    interface Visitor<out T> {
-
-                        fun visitAuto(auto: JsonValue): T
-
-                        fun visitManual(manual: Double): T
-
-                        /**
-                         * Maps an unknown variant of [Beta] to a value of type [T].
-                         *
-                         * An instance of [Beta] can contain an unknown variant if it was
-                         * deserialized from data that doesn't match any known variant. For example,
-                         * if the SDK is on an older version than the API, then the API may respond
-                         * with new variants that the SDK is unaware of.
-                         *
-                         * @throws OpenAIInvalidDataException in the default implementation.
-                         */
-                        fun unknown(json: JsonValue?): T {
-                            throw OpenAIInvalidDataException("Unknown Beta: $json")
-                        }
-                    }
-
-                    internal class Deserializer : BaseDeserializer<Beta>(Beta::class) {
-
-                        override fun ObjectCodec.deserialize(node: JsonNode): Beta {
-                            val json = JsonValue.fromJsonNode(node)
-
-                            val bestMatches =
-                                sequenceOf(
-                                        tryDeserialize(node, jacksonTypeRef<JsonValue>())
-                                            ?.let { Beta(auto = it, _json = json) }
-                                            ?.takeIf { it.isValid() },
-                                        tryDeserialize(node, jacksonTypeRef<Double>())?.let {
-                                            Beta(manual = it, _json = json)
-                                        },
-                                    )
-                                    .filterNotNull()
-                                    .allMaxBy { it.validity() }
-                                    .toList()
-                            return when (bestMatches.size) {
-                                // This can happen if what we're deserializing is completely
-                                // incompatible with all the possible variants (e.g. deserializing
-                                // from object).
-                                0 -> Beta(_json = json)
-                                1 -> bestMatches.single()
-                                // If there's more than one match with the highest validity, then
-                                // use the first completely valid match, or simply the first match
-                                // if none are completely valid.
-                                else ->
-                                    bestMatches.firstOrNull { it.isValid() } ?: bestMatches.first()
-                            }
-                        }
-                    }
-
-                    internal class Serializer : BaseSerializer<Beta>(Beta::class) {
-
-                        override fun serialize(
-                            value: Beta,
-                            generator: JsonGenerator,
-                            provider: SerializerProvider,
-                        ) {
-                            when {
-                                value.auto != null -> generator.writeObject(value.auto)
-                                value.manual != null -> generator.writeObject(value.manual)
-                                value._json != null -> generator.writeObject(value._json)
-                                else -> throw IllegalStateException("Invalid Beta")
-                            }
-                        }
-                    }
-                }
-
-                /**
-                 * Scaling factor for the learning rate. A smaller learning rate may be useful to
-                 * avoid overfitting.
-                 */
-                @JsonDeserialize(using = LearningRateMultiplier.Deserializer::class)
-                @JsonSerialize(using = LearningRateMultiplier.Serializer::class)
-                class LearningRateMultiplier
-                private constructor(
-                    private val auto: JsonValue? = null,
-                    private val manual: Double? = null,
-                    private val _json: JsonValue? = null,
-                ) {
-
-                    fun auto(): Optional<JsonValue> = Optional.ofNullable(auto)
-
-                    fun manual(): Optional<Double> = Optional.ofNullable(manual)
-
-                    fun isAuto(): Boolean = auto != null
-
-                    fun isManual(): Boolean = manual != null
-
-                    fun asAuto(): JsonValue = auto.getOrThrow("auto")
-
-                    fun asManual(): Double = manual.getOrThrow("manual")
-
-                    fun _json(): Optional<JsonValue> = Optional.ofNullable(_json)
-
-                    fun <T> accept(visitor: Visitor<T>): T =
-                        when {
-                            auto != null -> visitor.visitAuto(auto)
-                            manual != null -> visitor.visitManual(manual)
-                            else -> visitor.unknown(_json)
-                        }
-
-                    private var validated: Boolean = false
-
-                    fun validate(): LearningRateMultiplier = apply {
-                        if (validated) {
-                            return@apply
-                        }
-
-                        accept(
-                            object : Visitor<Unit> {
-                                override fun visitAuto(auto: JsonValue) {
-                                    auto.let {
-                                        if (it != JsonValue.from("auto")) {
-                                            throw OpenAIInvalidDataException(
-                                                "'auto' is invalid, received $it"
-                                            )
-                                        }
-                                    }
-                                }
-
-                                override fun visitManual(manual: Double) {}
-                            }
-                        )
-                        validated = true
-                    }
-
-                    fun isValid(): Boolean =
-                        try {
-                            validate()
-                            true
-                        } catch (e: OpenAIInvalidDataException) {
-                            false
-                        }
-
-                    /**
-                     * Returns a score indicating how many valid values are contained in this object
-                     * recursively.
-                     *
-                     * Used for best match union deserialization.
-                     */
-                    @JvmSynthetic
-                    internal fun validity(): Int =
-                        accept(
-                            object : Visitor<Int> {
-                                override fun visitAuto(auto: JsonValue) =
-                                    auto.let { if (it == JsonValue.from("auto")) 1 else 0 }
-
-                                override fun visitManual(manual: Double) = 1
-
-                                override fun unknown(json: JsonValue?) = 0
-                            }
-                        )
-
-                    override fun equals(other: Any?): Boolean {
-                        if (this === other) {
-                            return true
-                        }
-
-                        return /* spotless:off */ other is LearningRateMultiplier && auto == other.auto && manual == other.manual /* spotless:on */
-                    }
-
-                    override fun hashCode(): Int = /* spotless:off */ Objects.hash(auto, manual) /* spotless:on */
-
-                    override fun toString(): String =
-                        when {
-                            auto != null -> "LearningRateMultiplier{auto=$auto}"
-                            manual != null -> "LearningRateMultiplier{manual=$manual}"
-                            _json != null -> "LearningRateMultiplier{_unknown=$_json}"
-                            else -> throw IllegalStateException("Invalid LearningRateMultiplier")
-                        }
-
-                    companion object {
-
-                        @JvmStatic
-                        fun ofAuto() = LearningRateMultiplier(auto = JsonValue.from("auto"))
-
-                        @JvmStatic
-                        fun ofManual(manual: Double) = LearningRateMultiplier(manual = manual)
-                    }
-
-                    /**
-                     * An interface that defines how to map each variant of [LearningRateMultiplier]
-                     * to a value of type [T].
-                     */
-                    interface Visitor<out T> {
-
-                        fun visitAuto(auto: JsonValue): T
-
-                        fun visitManual(manual: Double): T
-
-                        /**
-                         * Maps an unknown variant of [LearningRateMultiplier] to a value of type
-                         * [T].
-                         *
-                         * An instance of [LearningRateMultiplier] can contain an unknown variant if
-                         * it was deserialized from data that doesn't match any known variant. For
-                         * example, if the SDK is on an older version than the API, then the API may
-                         * respond with new variants that the SDK is unaware of.
-                         *
-                         * @throws OpenAIInvalidDataException in the default implementation.
-                         */
-                        fun unknown(json: JsonValue?): T {
-                            throw OpenAIInvalidDataException(
-                                "Unknown LearningRateMultiplier: $json"
-                            )
-                        }
-                    }
-
-                    internal class Deserializer :
-                        BaseDeserializer<LearningRateMultiplier>(LearningRateMultiplier::class) {
-
-                        override fun ObjectCodec.deserialize(
-                            node: JsonNode
-                        ): LearningRateMultiplier {
-                            val json = JsonValue.fromJsonNode(node)
-
-                            val bestMatches =
-                                sequenceOf(
-                                        tryDeserialize(node, jacksonTypeRef<JsonValue>())
-                                            ?.let {
-                                                LearningRateMultiplier(auto = it, _json = json)
-                                            }
-                                            ?.takeIf { it.isValid() },
-                                        tryDeserialize(node, jacksonTypeRef<Double>())?.let {
-                                            LearningRateMultiplier(manual = it, _json = json)
-                                        },
-                                    )
-                                    .filterNotNull()
-                                    .allMaxBy { it.validity() }
-                                    .toList()
-                            return when (bestMatches.size) {
-                                // This can happen if what we're deserializing is completely
-                                // incompatible with all the possible variants (e.g. deserializing
-                                // from object).
-                                0 -> LearningRateMultiplier(_json = json)
-                                1 -> bestMatches.single()
-                                // If there's more than one match with the highest validity, then
-                                // use the first completely valid match, or simply the first match
-                                // if none are completely valid.
-                                else ->
-                                    bestMatches.firstOrNull { it.isValid() } ?: bestMatches.first()
-                            }
-                        }
-                    }
-
-                    internal class Serializer :
-                        BaseSerializer<LearningRateMultiplier>(LearningRateMultiplier::class) {
-
-                        override fun serialize(
-                            value: LearningRateMultiplier,
-                            generator: JsonGenerator,
-                            provider: SerializerProvider,
-                        ) {
-                            when {
-                                value.auto != null -> generator.writeObject(value.auto)
-                                value.manual != null -> generator.writeObject(value.manual)
-                                value._json != null -> generator.writeObject(value._json)
-                                else ->
-                                    throw IllegalStateException("Invalid LearningRateMultiplier")
-                            }
-                        }
-                    }
-                }
-
-                /**
-                 * The number of epochs to train the model for. An epoch refers to one full cycle
-                 * through the training dataset.
-                 */
-                @JsonDeserialize(using = NEpochs.Deserializer::class)
-                @JsonSerialize(using = NEpochs.Serializer::class)
-                class NEpochs
-                private constructor(
-                    private val auto: JsonValue? = null,
-                    private val manual: Long? = null,
-                    private val _json: JsonValue? = null,
-                ) {
-
-                    fun auto(): Optional<JsonValue> = Optional.ofNullable(auto)
-
-                    fun manual(): Optional<Long> = Optional.ofNullable(manual)
-
-                    fun isAuto(): Boolean = auto != null
-
-                    fun isManual(): Boolean = manual != null
-
-                    fun asAuto(): JsonValue = auto.getOrThrow("auto")
-
-                    fun asManual(): Long = manual.getOrThrow("manual")
-
-                    fun _json(): Optional<JsonValue> = Optional.ofNullable(_json)
-
-                    fun <T> accept(visitor: Visitor<T>): T =
-                        when {
-                            auto != null -> visitor.visitAuto(auto)
-                            manual != null -> visitor.visitManual(manual)
-                            else -> visitor.unknown(_json)
-                        }
-
-                    private var validated: Boolean = false
-
-                    fun validate(): NEpochs = apply {
-                        if (validated) {
-                            return@apply
-                        }
-
-                        accept(
-                            object : Visitor<Unit> {
-                                override fun visitAuto(auto: JsonValue) {
-                                    auto.let {
-                                        if (it != JsonValue.from("auto")) {
-                                            throw OpenAIInvalidDataException(
-                                                "'auto' is invalid, received $it"
-                                            )
-                                        }
-                                    }
-                                }
-
-                                override fun visitManual(manual: Long) {}
-                            }
-                        )
-                        validated = true
-                    }
-
-                    fun isValid(): Boolean =
-                        try {
-                            validate()
-                            true
-                        } catch (e: OpenAIInvalidDataException) {
-                            false
-                        }
-
-                    /**
-                     * Returns a score indicating how many valid values are contained in this object
-                     * recursively.
-                     *
-                     * Used for best match union deserialization.
-                     */
-                    @JvmSynthetic
-                    internal fun validity(): Int =
-                        accept(
-                            object : Visitor<Int> {
-                                override fun visitAuto(auto: JsonValue) =
-                                    auto.let { if (it == JsonValue.from("auto")) 1 else 0 }
-
-                                override fun visitManual(manual: Long) = 1
-
-                                override fun unknown(json: JsonValue?) = 0
-                            }
-                        )
-
-                    override fun equals(other: Any?): Boolean {
-                        if (this === other) {
-                            return true
-                        }
-
-                        return /* spotless:off */ other is NEpochs && auto == other.auto && manual == other.manual /* spotless:on */
-                    }
-
-                    override fun hashCode(): Int = /* spotless:off */ Objects.hash(auto, manual) /* spotless:on */
-
-                    override fun toString(): String =
-                        when {
-                            auto != null -> "NEpochs{auto=$auto}"
-                            manual != null -> "NEpochs{manual=$manual}"
-                            _json != null -> "NEpochs{_unknown=$_json}"
-                            else -> throw IllegalStateException("Invalid NEpochs")
-                        }
-
-                    companion object {
-
-                        @JvmStatic fun ofAuto() = NEpochs(auto = JsonValue.from("auto"))
-
-                        @JvmStatic fun ofManual(manual: Long) = NEpochs(manual = manual)
-                    }
-
-                    /**
-                     * An interface that defines how to map each variant of [NEpochs] to a value of
-                     * type [T].
-                     */
-                    interface Visitor<out T> {
-
-                        fun visitAuto(auto: JsonValue): T
-
-                        fun visitManual(manual: Long): T
-
-                        /**
-                         * Maps an unknown variant of [NEpochs] to a value of type [T].
-                         *
-                         * An instance of [NEpochs] can contain an unknown variant if it was
-                         * deserialized from data that doesn't match any known variant. For example,
-                         * if the SDK is on an older version than the API, then the API may respond
-                         * with new variants that the SDK is unaware of.
-                         *
-                         * @throws OpenAIInvalidDataException in the default implementation.
-                         */
-                        fun unknown(json: JsonValue?): T {
-                            throw OpenAIInvalidDataException("Unknown NEpochs: $json")
-                        }
-                    }
-
-                    internal class Deserializer : BaseDeserializer<NEpochs>(NEpochs::class) {
-
-                        override fun ObjectCodec.deserialize(node: JsonNode): NEpochs {
-                            val json = JsonValue.fromJsonNode(node)
-
-                            val bestMatches =
-                                sequenceOf(
-                                        tryDeserialize(node, jacksonTypeRef<JsonValue>())
-                                            ?.let { NEpochs(auto = it, _json = json) }
-                                            ?.takeIf { it.isValid() },
-                                        tryDeserialize(node, jacksonTypeRef<Long>())?.let {
-                                            NEpochs(manual = it, _json = json)
-                                        },
-                                    )
-                                    .filterNotNull()
-                                    .allMaxBy { it.validity() }
-                                    .toList()
-                            return when (bestMatches.size) {
-                                // This can happen if what we're deserializing is completely
-                                // incompatible with all the possible variants (e.g. deserializing
-                                // from object).
-                                0 -> NEpochs(_json = json)
-                                1 -> bestMatches.single()
-                                // If there's more than one match with the highest validity, then
-                                // use the first completely valid match, or simply the first match
-                                // if none are completely valid.
-                                else ->
-                                    bestMatches.firstOrNull { it.isValid() } ?: bestMatches.first()
-                            }
-                        }
-                    }
-
-                    internal class Serializer : BaseSerializer<NEpochs>(NEpochs::class) {
-
-                        override fun serialize(
-                            value: NEpochs,
-                            generator: JsonGenerator,
-                            provider: SerializerProvider,
-                        ) {
-                            when {
-                                value.auto != null -> generator.writeObject(value.auto)
-                                value.manual != null -> generator.writeObject(value.manual)
-                                value._json != null -> generator.writeObject(value._json)
-                                else -> throw IllegalStateException("Invalid NEpochs")
-                            }
-                        }
-                    }
-                }
-
-                override fun equals(other: Any?): Boolean {
-                    if (this === other) {
-                        return true
-                    }
-
-                    return /* spotless:off */ other is Hyperparameters && batchSize == other.batchSize && beta == other.beta && learningRateMultiplier == other.learningRateMultiplier && nEpochs == other.nEpochs && additionalProperties == other.additionalProperties /* spotless:on */
-                }
-
-                /* spotless:off */
-                private val hashCode: Int by lazy { Objects.hash(batchSize, beta, learningRateMultiplier, nEpochs, additionalProperties) }
-                /* spotless:on */
-
-                override fun hashCode(): Int = hashCode
-
-                override fun toString() =
-                    "Hyperparameters{batchSize=$batchSize, beta=$beta, learningRateMultiplier=$learningRateMultiplier, nEpochs=$nEpochs, additionalProperties=$additionalProperties}"
-            }
-
-            override fun equals(other: Any?): Boolean {
-                if (this === other) {
-                    return true
-                }
-
-                return /* spotless:off */ other is Dpo && hyperparameters == other.hyperparameters && additionalProperties == other.additionalProperties /* spotless:on */
-            }
-
-            /* spotless:off */
-            private val hashCode: Int by lazy { Objects.hash(hyperparameters, additionalProperties) }
-            /* spotless:on */
-
-            override fun hashCode(): Int = hashCode
-
-            override fun toString() =
-                "Dpo{hyperparameters=$hyperparameters, additionalProperties=$additionalProperties}"
-        }
-
-        /** Configuration for the supervised fine-tuning method. */
-        class Supervised
-        private constructor(
-            private val hyperparameters: JsonField<Hyperparameters>,
-            private val additionalProperties: MutableMap<String, JsonValue>,
-        ) {
-
-            @JsonCreator
-            private constructor(
-                @JsonProperty("hyperparameters")
-                @ExcludeMissing
-                hyperparameters: JsonField<Hyperparameters> = JsonMissing.of()
-            ) : this(hyperparameters, mutableMapOf())
-
-            /**
-             * The hyperparameters used for the fine-tuning job.
-             *
-             * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if
-             *   the server responded with an unexpected value).
-             */
-            fun hyperparameters(): Optional<Hyperparameters> =
-                hyperparameters.getOptional("hyperparameters")
-
-            /**
-             * Returns the raw JSON value of [hyperparameters].
-             *
-             * Unlike [hyperparameters], this method doesn't throw if the JSON field has an
-             * unexpected type.
-             */
-            @JsonProperty("hyperparameters")
-            @ExcludeMissing
-            fun _hyperparameters(): JsonField<Hyperparameters> = hyperparameters
-
-            @JsonAnySetter
-            private fun putAdditionalProperty(key: String, value: JsonValue) {
-                additionalProperties.put(key, value)
-            }
-
-            @JsonAnyGetter
-            @ExcludeMissing
-            fun _additionalProperties(): Map<String, JsonValue> =
-                Collections.unmodifiableMap(additionalProperties)
-
-            fun toBuilder() = Builder().from(this)
-
-            companion object {
-
-                /** Returns a mutable builder for constructing an instance of [Supervised]. */
-                @JvmStatic fun builder() = Builder()
-            }
-
-            /** A builder for [Supervised]. */
-            class Builder internal constructor() {
-
-                private var hyperparameters: JsonField<Hyperparameters> = JsonMissing.of()
-                private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
-
-                @JvmSynthetic
-                internal fun from(supervised: Supervised) = apply {
-                    hyperparameters = supervised.hyperparameters
-                    additionalProperties = supervised.additionalProperties.toMutableMap()
-                }
-
-                /** The hyperparameters used for the fine-tuning job. */
-                fun hyperparameters(hyperparameters: Hyperparameters) =
-                    hyperparameters(JsonField.of(hyperparameters))
-
-                /**
-                 * Sets [Builder.hyperparameters] to an arbitrary JSON value.
-                 *
-                 * You should usually call [Builder.hyperparameters] with a well-typed
-                 * [Hyperparameters] value instead. This method is primarily for setting the field
-                 * to an undocumented or not yet supported value.
-                 */
-                fun hyperparameters(hyperparameters: JsonField<Hyperparameters>) = apply {
-                    this.hyperparameters = hyperparameters
-                }
-
-                fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
-                    this.additionalProperties.clear()
-                    putAllAdditionalProperties(additionalProperties)
-                }
-
-                fun putAdditionalProperty(key: String, value: JsonValue) = apply {
-                    additionalProperties.put(key, value)
-                }
-
-                fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) =
-                    apply {
-                        this.additionalProperties.putAll(additionalProperties)
-                    }
-
-                fun removeAdditionalProperty(key: String) = apply {
-                    additionalProperties.remove(key)
-                }
-
-                fun removeAllAdditionalProperties(keys: Set<String>) = apply {
-                    keys.forEach(::removeAdditionalProperty)
-                }
-
-                /**
-                 * Returns an immutable instance of [Supervised].
-                 *
-                 * Further updates to this [Builder] will not mutate the returned instance.
-                 */
-                fun build(): Supervised =
-                    Supervised(hyperparameters, additionalProperties.toMutableMap())
-            }
-
-            private var validated: Boolean = false
-
-            fun validate(): Supervised = apply {
-                if (validated) {
-                    return@apply
-                }
-
-                hyperparameters().ifPresent { it.validate() }
-                validated = true
-            }
-
-            fun isValid(): Boolean =
-                try {
-                    validate()
-                    true
-                } catch (e: OpenAIInvalidDataException) {
-                    false
-                }
-
-            /**
-             * Returns a score indicating how many valid values are contained in this object
-             * recursively.
-             *
-             * Used for best match union deserialization.
-             */
-            @JvmSynthetic
-            internal fun validity(): Int = (hyperparameters.asKnown().getOrNull()?.validity() ?: 0)
-
-            /** The hyperparameters used for the fine-tuning job. */
-            class Hyperparameters
-            private constructor(
-                private val batchSize: JsonField<BatchSize>,
-                private val learningRateMultiplier: JsonField<LearningRateMultiplier>,
-                private val nEpochs: JsonField<NEpochs>,
-                private val additionalProperties: MutableMap<String, JsonValue>,
-            ) {
-
-                @JsonCreator
-                private constructor(
-                    @JsonProperty("batch_size")
-                    @ExcludeMissing
-                    batchSize: JsonField<BatchSize> = JsonMissing.of(),
-                    @JsonProperty("learning_rate_multiplier")
-                    @ExcludeMissing
-                    learningRateMultiplier: JsonField<LearningRateMultiplier> = JsonMissing.of(),
-                    @JsonProperty("n_epochs")
-                    @ExcludeMissing
-                    nEpochs: JsonField<NEpochs> = JsonMissing.of(),
-                ) : this(batchSize, learningRateMultiplier, nEpochs, mutableMapOf())
-
-                /**
-                 * Number of examples in each batch. A larger batch size means that model parameters
-                 * are updated less frequently, but with lower variance.
-                 *
-                 * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g.
-                 *   if the server responded with an unexpected value).
-                 */
-                fun batchSize(): Optional<BatchSize> = batchSize.getOptional("batch_size")
-
-                /**
-                 * Scaling factor for the learning rate. A smaller learning rate may be useful to
-                 * avoid overfitting.
-                 *
-                 * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g.
-                 *   if the server responded with an unexpected value).
-                 */
-                fun learningRateMultiplier(): Optional<LearningRateMultiplier> =
-                    learningRateMultiplier.getOptional("learning_rate_multiplier")
-
-                /**
-                 * The number of epochs to train the model for. An epoch refers to one full cycle
-                 * through the training dataset.
-                 *
-                 * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g.
-                 *   if the server responded with an unexpected value).
-                 */
-                fun nEpochs(): Optional<NEpochs> = nEpochs.getOptional("n_epochs")
-
-                /**
-                 * Returns the raw JSON value of [batchSize].
-                 *
-                 * Unlike [batchSize], this method doesn't throw if the JSON field has an unexpected
-                 * type.
-                 */
-                @JsonProperty("batch_size")
-                @ExcludeMissing
-                fun _batchSize(): JsonField<BatchSize> = batchSize
-
-                /**
-                 * Returns the raw JSON value of [learningRateMultiplier].
-                 *
-                 * Unlike [learningRateMultiplier], this method doesn't throw if the JSON field has
-                 * an unexpected type.
-                 */
-                @JsonProperty("learning_rate_multiplier")
-                @ExcludeMissing
-                fun _learningRateMultiplier(): JsonField<LearningRateMultiplier> =
-                    learningRateMultiplier
-
-                /**
-                 * Returns the raw JSON value of [nEpochs].
-                 *
-                 * Unlike [nEpochs], this method doesn't throw if the JSON field has an unexpected
-                 * type.
-                 */
-                @JsonProperty("n_epochs")
-                @ExcludeMissing
-                fun _nEpochs(): JsonField<NEpochs> = nEpochs
-
-                @JsonAnySetter
-                private fun putAdditionalProperty(key: String, value: JsonValue) {
-                    additionalProperties.put(key, value)
-                }
-
-                @JsonAnyGetter
-                @ExcludeMissing
-                fun _additionalProperties(): Map<String, JsonValue> =
-                    Collections.unmodifiableMap(additionalProperties)
-
-                fun toBuilder() = Builder().from(this)
-
-                companion object {
-
-                    /**
-                     * Returns a mutable builder for constructing an instance of [Hyperparameters].
-                     */
-                    @JvmStatic fun builder() = Builder()
-                }
-
-                /** A builder for [Hyperparameters]. */
-                class Builder internal constructor() {
-
-                    private var batchSize: JsonField<BatchSize> = JsonMissing.of()
-                    private var learningRateMultiplier: JsonField<LearningRateMultiplier> =
-                        JsonMissing.of()
-                    private var nEpochs: JsonField<NEpochs> = JsonMissing.of()
-                    private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
-
-                    @JvmSynthetic
-                    internal fun from(hyperparameters: Hyperparameters) = apply {
-                        batchSize = hyperparameters.batchSize
-                        learningRateMultiplier = hyperparameters.learningRateMultiplier
-                        nEpochs = hyperparameters.nEpochs
-                        additionalProperties = hyperparameters.additionalProperties.toMutableMap()
-                    }
-
-                    /**
-                     * Number of examples in each batch. A larger batch size means that model
-                     * parameters are updated less frequently, but with lower variance.
-                     */
-                    fun batchSize(batchSize: BatchSize) = batchSize(JsonField.of(batchSize))
-
-                    /**
-                     * Sets [Builder.batchSize] to an arbitrary JSON value.
-                     *
-                     * You should usually call [Builder.batchSize] with a well-typed [BatchSize]
-                     * value instead. This method is primarily for setting the field to an
-                     * undocumented or not yet supported value.
-                     */
-                    fun batchSize(batchSize: JsonField<BatchSize>) = apply {
-                        this.batchSize = batchSize
-                    }
-
-                    /** Alias for calling [batchSize] with `BatchSize.ofAuto()`. */
-                    fun batchSizeAuto() = batchSize(BatchSize.ofAuto())
-
-                    /** Alias for calling [batchSize] with `BatchSize.ofManual(manual)`. */
-                    fun batchSize(manual: Long) = batchSize(BatchSize.ofManual(manual))
-
-                    /**
-                     * Scaling factor for the learning rate. A smaller learning rate may be useful
-                     * to avoid overfitting.
-                     */
-                    fun learningRateMultiplier(learningRateMultiplier: LearningRateMultiplier) =
-                        learningRateMultiplier(JsonField.of(learningRateMultiplier))
-
-                    /**
-                     * Sets [Builder.learningRateMultiplier] to an arbitrary JSON value.
-                     *
-                     * You should usually call [Builder.learningRateMultiplier] with a well-typed
-                     * [LearningRateMultiplier] value instead. This method is primarily for setting
-                     * the field to an undocumented or not yet supported value.
-                     */
-                    fun learningRateMultiplier(
-                        learningRateMultiplier: JsonField<LearningRateMultiplier>
-                    ) = apply { this.learningRateMultiplier = learningRateMultiplier }
-
-                    /**
-                     * Alias for calling [learningRateMultiplier] with
-                     * `LearningRateMultiplier.ofAuto()`.
-                     */
-                    fun learningRateMultiplierAuto() =
-                        learningRateMultiplier(LearningRateMultiplier.ofAuto())
-
-                    /**
-                     * Alias for calling [learningRateMultiplier] with
-                     * `LearningRateMultiplier.ofManual(manual)`.
-                     */
-                    fun learningRateMultiplier(manual: Double) =
-                        learningRateMultiplier(LearningRateMultiplier.ofManual(manual))
-
-                    /**
-                     * The number of epochs to train the model for. An epoch refers to one full
-                     * cycle through the training dataset.
-                     */
-                    fun nEpochs(nEpochs: NEpochs) = nEpochs(JsonField.of(nEpochs))
-
-                    /**
-                     * Sets [Builder.nEpochs] to an arbitrary JSON value.
-                     *
-                     * You should usually call [Builder.nEpochs] with a well-typed [NEpochs] value
-                     * instead. This method is primarily for setting the field to an undocumented or
-                     * not yet supported value.
-                     */
-                    fun nEpochs(nEpochs: JsonField<NEpochs>) = apply { this.nEpochs = nEpochs }
-
-                    /** Alias for calling [nEpochs] with `NEpochs.ofAuto()`. */
-                    fun nEpochsAuto() = nEpochs(NEpochs.ofAuto())
-
-                    /** Alias for calling [nEpochs] with `NEpochs.ofManual(manual)`. */
-                    fun nEpochs(manual: Long) = nEpochs(NEpochs.ofManual(manual))
-
-                    fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
-                        this.additionalProperties.clear()
-                        putAllAdditionalProperties(additionalProperties)
-                    }
-
-                    fun putAdditionalProperty(key: String, value: JsonValue) = apply {
-                        additionalProperties.put(key, value)
-                    }
-
-                    fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) =
-                        apply {
-                            this.additionalProperties.putAll(additionalProperties)
-                        }
-
-                    fun removeAdditionalProperty(key: String) = apply {
-                        additionalProperties.remove(key)
-                    }
-
-                    fun removeAllAdditionalProperties(keys: Set<String>) = apply {
-                        keys.forEach(::removeAdditionalProperty)
-                    }
-
-                    /**
-                     * Returns an immutable instance of [Hyperparameters].
-                     *
-                     * Further updates to this [Builder] will not mutate the returned instance.
-                     */
-                    fun build(): Hyperparameters =
-                        Hyperparameters(
-                            batchSize,
-                            learningRateMultiplier,
-                            nEpochs,
-                            additionalProperties.toMutableMap(),
-                        )
-                }
-
-                private var validated: Boolean = false
-
-                fun validate(): Hyperparameters = apply {
-                    if (validated) {
-                        return@apply
-                    }
-
-                    batchSize().ifPresent { it.validate() }
-                    learningRateMultiplier().ifPresent { it.validate() }
-                    nEpochs().ifPresent { it.validate() }
-                    validated = true
-                }
-
-                fun isValid(): Boolean =
-                    try {
-                        validate()
-                        true
-                    } catch (e: OpenAIInvalidDataException) {
-                        false
-                    }
-
-                /**
-                 * Returns a score indicating how many valid values are contained in this object
-                 * recursively.
-                 *
-                 * Used for best match union deserialization.
-                 */
-                @JvmSynthetic
-                internal fun validity(): Int =
-                    (batchSize.asKnown().getOrNull()?.validity() ?: 0) +
-                        (learningRateMultiplier.asKnown().getOrNull()?.validity() ?: 0) +
-                        (nEpochs.asKnown().getOrNull()?.validity() ?: 0)
-
-                /**
-                 * Number of examples in each batch. A larger batch size means that model parameters
-                 * are updated less frequently, but with lower variance.
-                 */
-                @JsonDeserialize(using = BatchSize.Deserializer::class)
-                @JsonSerialize(using = BatchSize.Serializer::class)
-                class BatchSize
-                private constructor(
-                    private val auto: JsonValue? = null,
-                    private val manual: Long? = null,
-                    private val _json: JsonValue? = null,
-                ) {
-
-                    fun auto(): Optional<JsonValue> = Optional.ofNullable(auto)
-
-                    fun manual(): Optional<Long> = Optional.ofNullable(manual)
-
-                    fun isAuto(): Boolean = auto != null
-
-                    fun isManual(): Boolean = manual != null
-
-                    fun asAuto(): JsonValue = auto.getOrThrow("auto")
-
-                    fun asManual(): Long = manual.getOrThrow("manual")
-
-                    fun _json(): Optional<JsonValue> = Optional.ofNullable(_json)
-
-                    fun <T> accept(visitor: Visitor<T>): T =
-                        when {
-                            auto != null -> visitor.visitAuto(auto)
-                            manual != null -> visitor.visitManual(manual)
-                            else -> visitor.unknown(_json)
-                        }
-
-                    private var validated: Boolean = false
-
-                    fun validate(): BatchSize = apply {
-                        if (validated) {
-                            return@apply
-                        }
-
-                        accept(
-                            object : Visitor<Unit> {
-                                override fun visitAuto(auto: JsonValue) {
-                                    auto.let {
-                                        if (it != JsonValue.from("auto")) {
-                                            throw OpenAIInvalidDataException(
-                                                "'auto' is invalid, received $it"
-                                            )
-                                        }
-                                    }
-                                }
-
-                                override fun visitManual(manual: Long) {}
-                            }
-                        )
-                        validated = true
-                    }
-
-                    fun isValid(): Boolean =
-                        try {
-                            validate()
-                            true
-                        } catch (e: OpenAIInvalidDataException) {
-                            false
-                        }
-
-                    /**
-                     * Returns a score indicating how many valid values are contained in this object
-                     * recursively.
-                     *
-                     * Used for best match union deserialization.
-                     */
-                    @JvmSynthetic
-                    internal fun validity(): Int =
-                        accept(
-                            object : Visitor<Int> {
-                                override fun visitAuto(auto: JsonValue) =
-                                    auto.let { if (it == JsonValue.from("auto")) 1 else 0 }
-
-                                override fun visitManual(manual: Long) = 1
-
-                                override fun unknown(json: JsonValue?) = 0
-                            }
-                        )
-
-                    override fun equals(other: Any?): Boolean {
-                        if (this === other) {
-                            return true
-                        }
-
-                        return /* spotless:off */ other is BatchSize && auto == other.auto && manual == other.manual /* spotless:on */
-                    }
-
-                    override fun hashCode(): Int = /* spotless:off */ Objects.hash(auto, manual) /* spotless:on */
-
-                    override fun toString(): String =
-                        when {
-                            auto != null -> "BatchSize{auto=$auto}"
-                            manual != null -> "BatchSize{manual=$manual}"
-                            _json != null -> "BatchSize{_unknown=$_json}"
-                            else -> throw IllegalStateException("Invalid BatchSize")
-                        }
-
-                    companion object {
-
-                        @JvmStatic fun ofAuto() = BatchSize(auto = JsonValue.from("auto"))
-
-                        @JvmStatic fun ofManual(manual: Long) = BatchSize(manual = manual)
-                    }
-
-                    /**
-                     * An interface that defines how to map each variant of [BatchSize] to a value
-                     * of type [T].
-                     */
-                    interface Visitor<out T> {
-
-                        fun visitAuto(auto: JsonValue): T
-
-                        fun visitManual(manual: Long): T
-
-                        /**
-                         * Maps an unknown variant of [BatchSize] to a value of type [T].
-                         *
-                         * An instance of [BatchSize] can contain an unknown variant if it was
-                         * deserialized from data that doesn't match any known variant. For example,
-                         * if the SDK is on an older version than the API, then the API may respond
-                         * with new variants that the SDK is unaware of.
-                         *
-                         * @throws OpenAIInvalidDataException in the default implementation.
-                         */
-                        fun unknown(json: JsonValue?): T {
-                            throw OpenAIInvalidDataException("Unknown BatchSize: $json")
-                        }
-                    }
-
-                    internal class Deserializer : BaseDeserializer<BatchSize>(BatchSize::class) {
-
-                        override fun ObjectCodec.deserialize(node: JsonNode): BatchSize {
-                            val json = JsonValue.fromJsonNode(node)
-
-                            val bestMatches =
-                                sequenceOf(
-                                        tryDeserialize(node, jacksonTypeRef<JsonValue>())
-                                            ?.let { BatchSize(auto = it, _json = json) }
-                                            ?.takeIf { it.isValid() },
-                                        tryDeserialize(node, jacksonTypeRef<Long>())?.let {
-                                            BatchSize(manual = it, _json = json)
-                                        },
-                                    )
-                                    .filterNotNull()
-                                    .allMaxBy { it.validity() }
-                                    .toList()
-                            return when (bestMatches.size) {
-                                // This can happen if what we're deserializing is completely
-                                // incompatible with all the possible variants (e.g. deserializing
-                                // from object).
-                                0 -> BatchSize(_json = json)
-                                1 -> bestMatches.single()
-                                // If there's more than one match with the highest validity, then
-                                // use the first completely valid match, or simply the first match
-                                // if none are completely valid.
-                                else ->
-                                    bestMatches.firstOrNull { it.isValid() } ?: bestMatches.first()
-                            }
-                        }
-                    }
-
-                    internal class Serializer : BaseSerializer<BatchSize>(BatchSize::class) {
-
-                        override fun serialize(
-                            value: BatchSize,
-                            generator: JsonGenerator,
-                            provider: SerializerProvider,
-                        ) {
-                            when {
-                                value.auto != null -> generator.writeObject(value.auto)
-                                value.manual != null -> generator.writeObject(value.manual)
-                                value._json != null -> generator.writeObject(value._json)
-                                else -> throw IllegalStateException("Invalid BatchSize")
-                            }
-                        }
-                    }
-                }
-
-                /**
-                 * Scaling factor for the learning rate. A smaller learning rate may be useful to
-                 * avoid overfitting.
-                 */
-                @JsonDeserialize(using = LearningRateMultiplier.Deserializer::class)
-                @JsonSerialize(using = LearningRateMultiplier.Serializer::class)
-                class LearningRateMultiplier
-                private constructor(
-                    private val auto: JsonValue? = null,
-                    private val manual: Double? = null,
-                    private val _json: JsonValue? = null,
-                ) {
-
-                    fun auto(): Optional<JsonValue> = Optional.ofNullable(auto)
-
-                    fun manual(): Optional<Double> = Optional.ofNullable(manual)
-
-                    fun isAuto(): Boolean = auto != null
-
-                    fun isManual(): Boolean = manual != null
-
-                    fun asAuto(): JsonValue = auto.getOrThrow("auto")
-
-                    fun asManual(): Double = manual.getOrThrow("manual")
-
-                    fun _json(): Optional<JsonValue> = Optional.ofNullable(_json)
-
-                    fun <T> accept(visitor: Visitor<T>): T =
-                        when {
-                            auto != null -> visitor.visitAuto(auto)
-                            manual != null -> visitor.visitManual(manual)
-                            else -> visitor.unknown(_json)
-                        }
-
-                    private var validated: Boolean = false
-
-                    fun validate(): LearningRateMultiplier = apply {
-                        if (validated) {
-                            return@apply
-                        }
-
-                        accept(
-                            object : Visitor<Unit> {
-                                override fun visitAuto(auto: JsonValue) {
-                                    auto.let {
-                                        if (it != JsonValue.from("auto")) {
-                                            throw OpenAIInvalidDataException(
-                                                "'auto' is invalid, received $it"
-                                            )
-                                        }
-                                    }
-                                }
-
-                                override fun visitManual(manual: Double) {}
-                            }
-                        )
-                        validated = true
-                    }
-
-                    fun isValid(): Boolean =
-                        try {
-                            validate()
-                            true
-                        } catch (e: OpenAIInvalidDataException) {
-                            false
-                        }
-
-                    /**
-                     * Returns a score indicating how many valid values are contained in this object
-                     * recursively.
-                     *
-                     * Used for best match union deserialization.
-                     */
-                    @JvmSynthetic
-                    internal fun validity(): Int =
-                        accept(
-                            object : Visitor<Int> {
-                                override fun visitAuto(auto: JsonValue) =
-                                    auto.let { if (it == JsonValue.from("auto")) 1 else 0 }
-
-                                override fun visitManual(manual: Double) = 1
-
-                                override fun unknown(json: JsonValue?) = 0
-                            }
-                        )
-
-                    override fun equals(other: Any?): Boolean {
-                        if (this === other) {
-                            return true
-                        }
-
-                        return /* spotless:off */ other is LearningRateMultiplier && auto == other.auto && manual == other.manual /* spotless:on */
-                    }
-
-                    override fun hashCode(): Int = /* spotless:off */ Objects.hash(auto, manual) /* spotless:on */
-
-                    override fun toString(): String =
-                        when {
-                            auto != null -> "LearningRateMultiplier{auto=$auto}"
-                            manual != null -> "LearningRateMultiplier{manual=$manual}"
-                            _json != null -> "LearningRateMultiplier{_unknown=$_json}"
-                            else -> throw IllegalStateException("Invalid LearningRateMultiplier")
-                        }
-
-                    companion object {
-
-                        @JvmStatic
-                        fun ofAuto() = LearningRateMultiplier(auto = JsonValue.from("auto"))
-
-                        @JvmStatic
-                        fun ofManual(manual: Double) = LearningRateMultiplier(manual = manual)
-                    }
-
-                    /**
-                     * An interface that defines how to map each variant of [LearningRateMultiplier]
-                     * to a value of type [T].
-                     */
-                    interface Visitor<out T> {
-
-                        fun visitAuto(auto: JsonValue): T
-
-                        fun visitManual(manual: Double): T
-
-                        /**
-                         * Maps an unknown variant of [LearningRateMultiplier] to a value of type
-                         * [T].
-                         *
-                         * An instance of [LearningRateMultiplier] can contain an unknown variant if
-                         * it was deserialized from data that doesn't match any known variant. For
-                         * example, if the SDK is on an older version than the API, then the API may
-                         * respond with new variants that the SDK is unaware of.
-                         *
-                         * @throws OpenAIInvalidDataException in the default implementation.
-                         */
-                        fun unknown(json: JsonValue?): T {
-                            throw OpenAIInvalidDataException(
-                                "Unknown LearningRateMultiplier: $json"
-                            )
-                        }
-                    }
-
-                    internal class Deserializer :
-                        BaseDeserializer<LearningRateMultiplier>(LearningRateMultiplier::class) {
-
-                        override fun ObjectCodec.deserialize(
-                            node: JsonNode
-                        ): LearningRateMultiplier {
-                            val json = JsonValue.fromJsonNode(node)
-
-                            val bestMatches =
-                                sequenceOf(
-                                        tryDeserialize(node, jacksonTypeRef<JsonValue>())
-                                            ?.let {
-                                                LearningRateMultiplier(auto = it, _json = json)
-                                            }
-                                            ?.takeIf { it.isValid() },
-                                        tryDeserialize(node, jacksonTypeRef<Double>())?.let {
-                                            LearningRateMultiplier(manual = it, _json = json)
-                                        },
-                                    )
-                                    .filterNotNull()
-                                    .allMaxBy { it.validity() }
-                                    .toList()
-                            return when (bestMatches.size) {
-                                // This can happen if what we're deserializing is completely
-                                // incompatible with all the possible variants (e.g. deserializing
-                                // from object).
-                                0 -> LearningRateMultiplier(_json = json)
-                                1 -> bestMatches.single()
-                                // If there's more than one match with the highest validity, then
-                                // use the first completely valid match, or simply the first match
-                                // if none are completely valid.
-                                else ->
-                                    bestMatches.firstOrNull { it.isValid() } ?: bestMatches.first()
-                            }
-                        }
-                    }
-
-                    internal class Serializer :
-                        BaseSerializer<LearningRateMultiplier>(LearningRateMultiplier::class) {
-
-                        override fun serialize(
-                            value: LearningRateMultiplier,
-                            generator: JsonGenerator,
-                            provider: SerializerProvider,
-                        ) {
-                            when {
-                                value.auto != null -> generator.writeObject(value.auto)
-                                value.manual != null -> generator.writeObject(value.manual)
-                                value._json != null -> generator.writeObject(value._json)
-                                else ->
-                                    throw IllegalStateException("Invalid LearningRateMultiplier")
-                            }
-                        }
-                    }
-                }
-
-                /**
-                 * The number of epochs to train the model for. An epoch refers to one full cycle
-                 * through the training dataset.
-                 */
-                @JsonDeserialize(using = NEpochs.Deserializer::class)
-                @JsonSerialize(using = NEpochs.Serializer::class)
-                class NEpochs
-                private constructor(
-                    private val auto: JsonValue? = null,
-                    private val manual: Long? = null,
-                    private val _json: JsonValue? = null,
-                ) {
-
-                    fun auto(): Optional<JsonValue> = Optional.ofNullable(auto)
-
-                    fun manual(): Optional<Long> = Optional.ofNullable(manual)
-
-                    fun isAuto(): Boolean = auto != null
-
-                    fun isManual(): Boolean = manual != null
-
-                    fun asAuto(): JsonValue = auto.getOrThrow("auto")
-
-                    fun asManual(): Long = manual.getOrThrow("manual")
-
-                    fun _json(): Optional<JsonValue> = Optional.ofNullable(_json)
-
-                    fun <T> accept(visitor: Visitor<T>): T =
-                        when {
-                            auto != null -> visitor.visitAuto(auto)
-                            manual != null -> visitor.visitManual(manual)
-                            else -> visitor.unknown(_json)
-                        }
-
-                    private var validated: Boolean = false
-
-                    fun validate(): NEpochs = apply {
-                        if (validated) {
-                            return@apply
-                        }
-
-                        accept(
-                            object : Visitor<Unit> {
-                                override fun visitAuto(auto: JsonValue) {
-                                    auto.let {
-                                        if (it != JsonValue.from("auto")) {
-                                            throw OpenAIInvalidDataException(
-                                                "'auto' is invalid, received $it"
-                                            )
-                                        }
-                                    }
-                                }
-
-                                override fun visitManual(manual: Long) {}
-                            }
-                        )
-                        validated = true
-                    }
-
-                    fun isValid(): Boolean =
-                        try {
-                            validate()
-                            true
-                        } catch (e: OpenAIInvalidDataException) {
-                            false
-                        }
-
-                    /**
-                     * Returns a score indicating how many valid values are contained in this object
-                     * recursively.
-                     *
-                     * Used for best match union deserialization.
-                     */
-                    @JvmSynthetic
-                    internal fun validity(): Int =
-                        accept(
-                            object : Visitor<Int> {
-                                override fun visitAuto(auto: JsonValue) =
-                                    auto.let { if (it == JsonValue.from("auto")) 1 else 0 }
-
-                                override fun visitManual(manual: Long) = 1
-
-                                override fun unknown(json: JsonValue?) = 0
-                            }
-                        )
-
-                    override fun equals(other: Any?): Boolean {
-                        if (this === other) {
-                            return true
-                        }
-
-                        return /* spotless:off */ other is NEpochs && auto == other.auto && manual == other.manual /* spotless:on */
-                    }
-
-                    override fun hashCode(): Int = /* spotless:off */ Objects.hash(auto, manual) /* spotless:on */
-
-                    override fun toString(): String =
-                        when {
-                            auto != null -> "NEpochs{auto=$auto}"
-                            manual != null -> "NEpochs{manual=$manual}"
-                            _json != null -> "NEpochs{_unknown=$_json}"
-                            else -> throw IllegalStateException("Invalid NEpochs")
-                        }
-
-                    companion object {
-
-                        @JvmStatic fun ofAuto() = NEpochs(auto = JsonValue.from("auto"))
-
-                        @JvmStatic fun ofManual(manual: Long) = NEpochs(manual = manual)
-                    }
-
-                    /**
-                     * An interface that defines how to map each variant of [NEpochs] to a value of
-                     * type [T].
-                     */
-                    interface Visitor<out T> {
-
-                        fun visitAuto(auto: JsonValue): T
-
-                        fun visitManual(manual: Long): T
-
-                        /**
-                         * Maps an unknown variant of [NEpochs] to a value of type [T].
-                         *
-                         * An instance of [NEpochs] can contain an unknown variant if it was
-                         * deserialized from data that doesn't match any known variant. For example,
-                         * if the SDK is on an older version than the API, then the API may respond
-                         * with new variants that the SDK is unaware of.
-                         *
-                         * @throws OpenAIInvalidDataException in the default implementation.
-                         */
-                        fun unknown(json: JsonValue?): T {
-                            throw OpenAIInvalidDataException("Unknown NEpochs: $json")
-                        }
-                    }
-
-                    internal class Deserializer : BaseDeserializer<NEpochs>(NEpochs::class) {
-
-                        override fun ObjectCodec.deserialize(node: JsonNode): NEpochs {
-                            val json = JsonValue.fromJsonNode(node)
-
-                            val bestMatches =
-                                sequenceOf(
-                                        tryDeserialize(node, jacksonTypeRef<JsonValue>())
-                                            ?.let { NEpochs(auto = it, _json = json) }
-                                            ?.takeIf { it.isValid() },
-                                        tryDeserialize(node, jacksonTypeRef<Long>())?.let {
-                                            NEpochs(manual = it, _json = json)
-                                        },
-                                    )
-                                    .filterNotNull()
-                                    .allMaxBy { it.validity() }
-                                    .toList()
-                            return when (bestMatches.size) {
-                                // This can happen if what we're deserializing is completely
-                                // incompatible with all the possible variants (e.g. deserializing
-                                // from object).
-                                0 -> NEpochs(_json = json)
-                                1 -> bestMatches.single()
-                                // If there's more than one match with the highest validity, then
-                                // use the first completely valid match, or simply the first match
-                                // if none are completely valid.
-                                else ->
-                                    bestMatches.firstOrNull { it.isValid() } ?: bestMatches.first()
-                            }
-                        }
-                    }
-
-                    internal class Serializer : BaseSerializer<NEpochs>(NEpochs::class) {
-
-                        override fun serialize(
-                            value: NEpochs,
-                            generator: JsonGenerator,
-                            provider: SerializerProvider,
-                        ) {
-                            when {
-                                value.auto != null -> generator.writeObject(value.auto)
-                                value.manual != null -> generator.writeObject(value.manual)
-                                value._json != null -> generator.writeObject(value._json)
-                                else -> throw IllegalStateException("Invalid NEpochs")
-                            }
-                        }
-                    }
-                }
-
-                override fun equals(other: Any?): Boolean {
-                    if (this === other) {
-                        return true
-                    }
-
-                    return /* spotless:off */ other is Hyperparameters && batchSize == other.batchSize && learningRateMultiplier == other.learningRateMultiplier && nEpochs == other.nEpochs && additionalProperties == other.additionalProperties /* spotless:on */
-                }
-
-                /* spotless:off */
-                private val hashCode: Int by lazy { Objects.hash(batchSize, learningRateMultiplier, nEpochs, additionalProperties) }
-                /* spotless:on */
-
-                override fun hashCode(): Int = hashCode
-
-                override fun toString() =
-                    "Hyperparameters{batchSize=$batchSize, learningRateMultiplier=$learningRateMultiplier, nEpochs=$nEpochs, additionalProperties=$additionalProperties}"
-            }
-
-            override fun equals(other: Any?): Boolean {
-                if (this === other) {
-                    return true
-                }
-
-                return /* spotless:off */ other is Supervised && hyperparameters == other.hyperparameters && additionalProperties == other.additionalProperties /* spotless:on */
-            }
-
-            /* spotless:off */
-            private val hashCode: Int by lazy { Objects.hash(hyperparameters, additionalProperties) }
-            /* spotless:on */
-
-            override fun hashCode(): Int = hashCode
-
-            override fun toString() =
-                "Supervised{hyperparameters=$hyperparameters, additionalProperties=$additionalProperties}"
-        }
-
-        /** The type of method. Is either `supervised` or `dpo`. */
+            (type.asKnown().getOrNull()?.validity() ?: 0) +
+                (dpo.asKnown().getOrNull()?.validity() ?: 0) +
+                (reinforcement.asKnown().getOrNull()?.validity() ?: 0) +
+                (supervised.asKnown().getOrNull()?.validity() ?: 0)
+
+        /** The type of method. Is either `supervised`, `dpo`, or `reinforcement`. */
         class Type @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
 
             /**
@@ -5283,6 +3114,8 @@ private constructor(
 
                 @JvmField val DPO = of("dpo")
 
+                @JvmField val REINFORCEMENT = of("reinforcement")
+
                 @JvmStatic fun of(value: String) = Type(JsonField.of(value))
             }
 
@@ -5290,6 +3123,7 @@ private constructor(
             enum class Known {
                 SUPERVISED,
                 DPO,
+                REINFORCEMENT,
             }
 
             /**
@@ -5304,6 +3138,7 @@ private constructor(
             enum class Value {
                 SUPERVISED,
                 DPO,
+                REINFORCEMENT,
                 /** An enum member indicating that [Type] was instantiated with an unknown value. */
                 _UNKNOWN,
             }
@@ -5319,6 +3154,7 @@ private constructor(
                 when (this) {
                     SUPERVISED -> Value.SUPERVISED
                     DPO -> Value.DPO
+                    REINFORCEMENT -> Value.REINFORCEMENT
                     else -> Value._UNKNOWN
                 }
 
@@ -5335,6 +3171,7 @@ private constructor(
                 when (this) {
                     SUPERVISED -> Known.SUPERVISED
                     DPO -> Known.DPO
+                    REINFORCEMENT -> Known.REINFORCEMENT
                     else -> throw OpenAIInvalidDataException("Unknown Type: $value")
                 }
 
@@ -5397,17 +3234,17 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is Method && dpo == other.dpo && supervised == other.supervised && type == other.type && additionalProperties == other.additionalProperties /* spotless:on */
+            return /* spotless:off */ other is Method && type == other.type && dpo == other.dpo && reinforcement == other.reinforcement && supervised == other.supervised && additionalProperties == other.additionalProperties /* spotless:on */
         }
 
         /* spotless:off */
-        private val hashCode: Int by lazy { Objects.hash(dpo, supervised, type, additionalProperties) }
+        private val hashCode: Int by lazy { Objects.hash(type, dpo, reinforcement, supervised, additionalProperties) }
         /* spotless:on */
 
         override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "Method{dpo=$dpo, supervised=$supervised, type=$type, additionalProperties=$additionalProperties}"
+            "Method{type=$type, dpo=$dpo, reinforcement=$reinforcement, supervised=$supervised, additionalProperties=$additionalProperties}"
     }
 
     override fun equals(other: Any?): Boolean {

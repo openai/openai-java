@@ -2,6 +2,8 @@
 
 package com.openai.models.vectorstores.filebatches
 
+import com.openai.core.AutoPagerAsync
+import com.openai.core.PageAsync
 import com.openai.core.checkRequired
 import com.openai.models.vectorstores.files.VectorStoreFile
 import com.openai.services.async.vectorstores.FileBatchServiceAsync
@@ -9,16 +11,16 @@ import java.util.Objects
 import java.util.Optional
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.Executor
-import java.util.function.Predicate
 import kotlin.jvm.optionals.getOrNull
 
 /** @see [FileBatchServiceAsync.listFiles] */
 class FileBatchListFilesPageAsync
 private constructor(
     private val service: FileBatchServiceAsync,
+    private val streamHandlerExecutor: Executor,
     private val params: FileBatchListFilesParams,
     private val response: FileBatchListFilesPageResponse,
-) {
+) : PageAsync<VectorStoreFile> {
 
     /**
      * Delegates to [FileBatchListFilesPageResponse], but gracefully handles missing data.
@@ -35,22 +37,18 @@ private constructor(
      */
     fun hasMore(): Optional<Boolean> = response._hasMore().getOptional("has_more")
 
-    fun hasNextPage(): Boolean = data().isNotEmpty()
+    override fun items(): List<VectorStoreFile> = data()
 
-    fun getNextPageParams(): Optional<FileBatchListFilesParams> {
-        if (!hasNextPage()) {
-            return Optional.empty()
-        }
+    override fun hasNextPage(): Boolean = items().isNotEmpty()
 
-        return Optional.of(params.toBuilder().after(data().last()._id().getOptional("id")).build())
-    }
+    fun nextPageParams(): FileBatchListFilesParams =
+        params.toBuilder().after(items().last()._id().getOptional("id")).build()
 
-    fun getNextPage(): CompletableFuture<Optional<FileBatchListFilesPageAsync>> =
-        getNextPageParams()
-            .map { service.listFiles(it).thenApply { Optional.of(it) } }
-            .orElseGet { CompletableFuture.completedFuture(Optional.empty()) }
+    override fun nextPage(): CompletableFuture<FileBatchListFilesPageAsync> =
+        service.listFiles(nextPageParams())
 
-    fun autoPager(): AutoPager = AutoPager(this)
+    fun autoPager(): AutoPagerAsync<VectorStoreFile> =
+        AutoPagerAsync.from(this, streamHandlerExecutor)
 
     /** The parameters that were used to request this page. */
     fun params(): FileBatchListFilesParams = params
@@ -68,6 +66,7 @@ private constructor(
          * The following fields are required:
          * ```java
          * .service()
+         * .streamHandlerExecutor()
          * .params()
          * .response()
          * ```
@@ -79,17 +78,23 @@ private constructor(
     class Builder internal constructor() {
 
         private var service: FileBatchServiceAsync? = null
+        private var streamHandlerExecutor: Executor? = null
         private var params: FileBatchListFilesParams? = null
         private var response: FileBatchListFilesPageResponse? = null
 
         @JvmSynthetic
         internal fun from(fileBatchListFilesPageAsync: FileBatchListFilesPageAsync) = apply {
             service = fileBatchListFilesPageAsync.service
+            streamHandlerExecutor = fileBatchListFilesPageAsync.streamHandlerExecutor
             params = fileBatchListFilesPageAsync.params
             response = fileBatchListFilesPageAsync.response
         }
 
         fun service(service: FileBatchServiceAsync) = apply { this.service = service }
+
+        fun streamHandlerExecutor(streamHandlerExecutor: Executor) = apply {
+            this.streamHandlerExecutor = streamHandlerExecutor
+        }
 
         /** The parameters that were used to request this page. */
         fun params(params: FileBatchListFilesParams) = apply { this.params = params }
@@ -105,6 +110,7 @@ private constructor(
          * The following fields are required:
          * ```java
          * .service()
+         * .streamHandlerExecutor()
          * .params()
          * .response()
          * ```
@@ -114,38 +120,10 @@ private constructor(
         fun build(): FileBatchListFilesPageAsync =
             FileBatchListFilesPageAsync(
                 checkRequired("service", service),
+                checkRequired("streamHandlerExecutor", streamHandlerExecutor),
                 checkRequired("params", params),
                 checkRequired("response", response),
             )
-    }
-
-    class AutoPager(private val firstPage: FileBatchListFilesPageAsync) {
-
-        fun forEach(
-            action: Predicate<VectorStoreFile>,
-            executor: Executor,
-        ): CompletableFuture<Void> {
-            fun CompletableFuture<Optional<FileBatchListFilesPageAsync>>.forEach(
-                action: (VectorStoreFile) -> Boolean,
-                executor: Executor,
-            ): CompletableFuture<Void> =
-                thenComposeAsync(
-                    { page ->
-                        page
-                            .filter { it.data().all(action) }
-                            .map { it.getNextPage().forEach(action, executor) }
-                            .orElseGet { CompletableFuture.completedFuture(null) }
-                    },
-                    executor,
-                )
-            return CompletableFuture.completedFuture(Optional.of(firstPage))
-                .forEach(action::test, executor)
-        }
-
-        fun toList(executor: Executor): CompletableFuture<List<VectorStoreFile>> {
-            val values = mutableListOf<VectorStoreFile>()
-            return forEach(values::add, executor).thenApply { values }
-        }
     }
 
     override fun equals(other: Any?): Boolean {
@@ -153,11 +131,11 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is FileBatchListFilesPageAsync && service == other.service && params == other.params && response == other.response /* spotless:on */
+        return /* spotless:off */ other is FileBatchListFilesPageAsync && service == other.service && streamHandlerExecutor == other.streamHandlerExecutor && params == other.params && response == other.response /* spotless:on */
     }
 
-    override fun hashCode(): Int = /* spotless:off */ Objects.hash(service, params, response) /* spotless:on */
+    override fun hashCode(): Int = /* spotless:off */ Objects.hash(service, streamHandlerExecutor, params, response) /* spotless:on */
 
     override fun toString() =
-        "FileBatchListFilesPageAsync{service=$service, params=$params, response=$response}"
+        "FileBatchListFilesPageAsync{service=$service, streamHandlerExecutor=$streamHandlerExecutor, params=$params, response=$response}"
 }

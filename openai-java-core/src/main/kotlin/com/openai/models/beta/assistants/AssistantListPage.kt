@@ -2,12 +2,12 @@
 
 package com.openai.models.beta.assistants
 
+import com.openai.core.AutoPager
+import com.openai.core.Page
 import com.openai.core.checkRequired
 import com.openai.services.blocking.beta.AssistantService
 import java.util.Objects
 import java.util.Optional
-import java.util.stream.Stream
-import java.util.stream.StreamSupport
 import kotlin.jvm.optionals.getOrNull
 
 /** @see [AssistantService.list] */
@@ -16,7 +16,7 @@ private constructor(
     private val service: AssistantService,
     private val params: AssistantListParams,
     private val response: AssistantListPageResponse,
-) {
+) : Page<Assistant> {
 
     /**
      * Delegates to [AssistantListPageResponse], but gracefully handles missing data.
@@ -32,19 +32,16 @@ private constructor(
      */
     fun hasMore(): Optional<Boolean> = response._hasMore().getOptional("has_more")
 
-    fun hasNextPage(): Boolean = data().isNotEmpty()
+    override fun items(): List<Assistant> = data()
 
-    fun getNextPageParams(): Optional<AssistantListParams> {
-        if (!hasNextPage()) {
-            return Optional.empty()
-        }
+    override fun hasNextPage(): Boolean = items().isNotEmpty()
 
-        return Optional.of(params.toBuilder().after(data().last()._id().getOptional("id")).build())
-    }
+    fun nextPageParams(): AssistantListParams =
+        params.toBuilder().after(items().last()._id().getOptional("id")).build()
 
-    fun getNextPage(): Optional<AssistantListPage> = getNextPageParams().map { service.list(it) }
+    override fun nextPage(): AssistantListPage = service.list(nextPageParams())
 
-    fun autoPager(): AutoPager = AutoPager(this)
+    fun autoPager(): AutoPager<Assistant> = AutoPager.from(this)
 
     /** The parameters that were used to request this page. */
     fun params(): AssistantListParams = params
@@ -111,25 +108,6 @@ private constructor(
                 checkRequired("params", params),
                 checkRequired("response", response),
             )
-    }
-
-    class AutoPager(private val firstPage: AssistantListPage) : Iterable<Assistant> {
-
-        override fun iterator(): Iterator<Assistant> = iterator {
-            var page = firstPage
-            var index = 0
-            while (true) {
-                while (index < page.data().size) {
-                    yield(page.data()[index++])
-                }
-                page = page.getNextPage().getOrNull() ?: break
-                index = 0
-            }
-        }
-
-        fun stream(): Stream<Assistant> {
-            return StreamSupport.stream(spliterator(), false)
-        }
     }
 
     override fun equals(other: Any?): Boolean {

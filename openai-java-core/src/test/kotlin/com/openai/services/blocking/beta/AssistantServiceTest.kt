@@ -8,8 +8,6 @@ import com.openai.core.JsonValue
 import com.openai.models.ChatModel
 import com.openai.models.ReasoningEffort
 import com.openai.models.beta.assistants.AssistantCreateParams
-import com.openai.models.beta.assistants.AssistantDeleteParams
-import com.openai.models.beta.assistants.AssistantRetrieveParams
 import com.openai.models.beta.assistants.AssistantUpdateParams
 import com.openai.models.beta.assistants.CodeInterpreterTool
 import org.junit.jupiter.api.Test
@@ -91,10 +89,7 @@ internal class AssistantServiceTest {
                 .build()
         val assistantService = client.beta().assistants()
 
-        val assistant =
-            assistantService.retrieve(
-                AssistantRetrieveParams.builder().assistantId("assistant_id").build()
-            )
+        val assistant = assistantService.retrieve("assistant_id")
 
         assistant.validate()
     }
@@ -169,10 +164,7 @@ internal class AssistantServiceTest {
                 .build()
         val assistantService = client.beta().assistants()
 
-        val assistantDeleted =
-            assistantService.delete(
-                AssistantDeleteParams.builder().assistantId("assistant_id").build()
-            )
+        val assistantDeleted = assistantService.delete("assistant_id")
 
         assistantDeleted.validate()
     }

@@ -13,7 +13,6 @@ import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
 import com.openai.core.Params
 import com.openai.core.checkKnown
-import com.openai.core.checkRequired
 import com.openai.core.http.Headers
 import com.openai.core.http.QueryParams
 import com.openai.core.toImmutable
@@ -32,13 +31,13 @@ import kotlin.jvm.optionals.getOrNull
 /** Modifies an assistant. */
 class AssistantUpdateParams
 private constructor(
-    private val assistantId: String,
+    private val assistantId: String?,
     private val body: Body,
     private val additionalHeaders: Headers,
     private val additionalQueryParams: QueryParams,
 ) : Params {
 
-    fun assistantId(): String = assistantId
+    fun assistantId(): Optional<String> = Optional.ofNullable(assistantId)
 
     /**
      * The description of the assistant. The maximum length is 512 characters.
@@ -253,14 +252,9 @@ private constructor(
 
     companion object {
 
-        /**
-         * Returns a mutable builder for constructing an instance of [AssistantUpdateParams].
-         *
-         * The following fields are required:
-         * ```java
-         * .assistantId()
-         * ```
-         */
+        @JvmStatic fun none(): AssistantUpdateParams = builder().build()
+
+        /** Returns a mutable builder for constructing an instance of [AssistantUpdateParams]. */
         @JvmStatic fun builder() = Builder()
     }
 
@@ -280,7 +274,10 @@ private constructor(
             additionalQueryParams = assistantUpdateParams.additionalQueryParams.toBuilder()
         }
 
-        fun assistantId(assistantId: String) = apply { this.assistantId = assistantId }
+        fun assistantId(assistantId: String?) = apply { this.assistantId = assistantId }
+
+        /** Alias for calling [Builder.assistantId] with `assistantId.orElse(null)`. */
+        fun assistantId(assistantId: Optional<String>) = assistantId(assistantId.getOrNull())
 
         /**
          * Sets the entire request body.
@@ -723,17 +720,10 @@ private constructor(
          * Returns an immutable instance of [AssistantUpdateParams].
          *
          * Further updates to this [Builder] will not mutate the returned instance.
-         *
-         * The following fields are required:
-         * ```java
-         * .assistantId()
-         * ```
-         *
-         * @throws IllegalStateException if any required field is unset.
          */
         fun build(): AssistantUpdateParams =
             AssistantUpdateParams(
-                checkRequired("assistantId", assistantId),
+                assistantId,
                 body.build(),
                 additionalHeaders.build(),
                 additionalQueryParams.build(),
@@ -744,7 +734,7 @@ private constructor(
 
     fun _pathParam(index: Int): String =
         when (index) {
-            0 -> assistantId
+            0 -> assistantId ?: ""
             else -> ""
         }
 

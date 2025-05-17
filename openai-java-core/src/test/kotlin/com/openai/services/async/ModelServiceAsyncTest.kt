@@ -4,8 +4,6 @@ package com.openai.services.async
 
 import com.openai.TestServerExtension
 import com.openai.client.okhttp.OpenAIOkHttpClientAsync
-import com.openai.models.models.ModelDeleteParams
-import com.openai.models.models.ModelRetrieveParams
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 
@@ -21,8 +19,7 @@ internal class ModelServiceAsyncTest {
                 .build()
         val modelServiceAsync = client.models()
 
-        val modelFuture =
-            modelServiceAsync.retrieve(ModelRetrieveParams.builder().model("gpt-4o-mini").build())
+        val modelFuture = modelServiceAsync.retrieve("gpt-4o-mini")
 
         val model = modelFuture.get()
         model.validate()
@@ -52,10 +49,7 @@ internal class ModelServiceAsyncTest {
                 .build()
         val modelServiceAsync = client.models()
 
-        val modelDeletedFuture =
-            modelServiceAsync.delete(
-                ModelDeleteParams.builder().model("ft:gpt-4o-mini:acemeco:suffix:abc123").build()
-            )
+        val modelDeletedFuture = modelServiceAsync.delete("ft:gpt-4o-mini:acemeco:suffix:abc123")
 
         val modelDeleted = modelDeletedFuture.get()
         modelDeleted.validate()

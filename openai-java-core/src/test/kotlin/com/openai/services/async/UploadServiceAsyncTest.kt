@@ -5,7 +5,6 @@ package com.openai.services.async
 import com.openai.TestServerExtension
 import com.openai.client.okhttp.OpenAIOkHttpClientAsync
 import com.openai.models.files.FilePurpose
-import com.openai.models.uploads.UploadCancelParams
 import com.openai.models.uploads.UploadCompleteParams
 import com.openai.models.uploads.UploadCreateParams
 import org.junit.jupiter.api.Test
@@ -46,10 +45,7 @@ internal class UploadServiceAsyncTest {
                 .build()
         val uploadServiceAsync = client.uploads()
 
-        val uploadFuture =
-            uploadServiceAsync.cancel(
-                UploadCancelParams.builder().uploadId("upload_abc123").build()
-            )
+        val uploadFuture = uploadServiceAsync.cancel("upload_abc123")
 
         val upload = uploadFuture.get()
         upload.validate()

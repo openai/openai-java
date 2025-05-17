@@ -3,10 +3,14 @@
 package com.openai.services.async
 
 import com.openai.core.ClientOptions
+import com.openai.services.async.finetuning.AlphaServiceAsync
+import com.openai.services.async.finetuning.AlphaServiceAsyncImpl
 import com.openai.services.async.finetuning.CheckpointServiceAsync
 import com.openai.services.async.finetuning.CheckpointServiceAsyncImpl
 import com.openai.services.async.finetuning.JobServiceAsync
 import com.openai.services.async.finetuning.JobServiceAsyncImpl
+import com.openai.services.async.finetuning.MethodServiceAsync
+import com.openai.services.async.finetuning.MethodServiceAsyncImpl
 
 class FineTuningServiceAsyncImpl internal constructor(private val clientOptions: ClientOptions) :
     FineTuningServiceAsync {
@@ -15,20 +19,32 @@ class FineTuningServiceAsyncImpl internal constructor(private val clientOptions:
         WithRawResponseImpl(clientOptions)
     }
 
+    private val methods: MethodServiceAsync by lazy { MethodServiceAsyncImpl(clientOptions) }
+
     private val jobs: JobServiceAsync by lazy { JobServiceAsyncImpl(clientOptions) }
 
     private val checkpoints: CheckpointServiceAsync by lazy {
         CheckpointServiceAsyncImpl(clientOptions)
     }
 
+    private val alpha: AlphaServiceAsync by lazy { AlphaServiceAsyncImpl(clientOptions) }
+
     override fun withRawResponse(): FineTuningServiceAsync.WithRawResponse = withRawResponse
+
+    override fun methods(): MethodServiceAsync = methods
 
     override fun jobs(): JobServiceAsync = jobs
 
     override fun checkpoints(): CheckpointServiceAsync = checkpoints
 
+    override fun alpha(): AlphaServiceAsync = alpha
+
     class WithRawResponseImpl internal constructor(private val clientOptions: ClientOptions) :
         FineTuningServiceAsync.WithRawResponse {
+
+        private val methods: MethodServiceAsync.WithRawResponse by lazy {
+            MethodServiceAsyncImpl.WithRawResponseImpl(clientOptions)
+        }
 
         private val jobs: JobServiceAsync.WithRawResponse by lazy {
             JobServiceAsyncImpl.WithRawResponseImpl(clientOptions)
@@ -38,8 +54,16 @@ class FineTuningServiceAsyncImpl internal constructor(private val clientOptions:
             CheckpointServiceAsyncImpl.WithRawResponseImpl(clientOptions)
         }
 
+        private val alpha: AlphaServiceAsync.WithRawResponse by lazy {
+            AlphaServiceAsyncImpl.WithRawResponseImpl(clientOptions)
+        }
+
+        override fun methods(): MethodServiceAsync.WithRawResponse = methods
+
         override fun jobs(): JobServiceAsync.WithRawResponse = jobs
 
         override fun checkpoints(): CheckpointServiceAsync.WithRawResponse = checkpoints
+
+        override fun alpha(): AlphaServiceAsync.WithRawResponse = alpha
     }
 }

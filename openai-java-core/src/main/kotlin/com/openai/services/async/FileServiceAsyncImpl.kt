@@ -4,6 +4,7 @@ package com.openai.services.async
 
 import com.openai.core.ClientOptions
 import com.openai.core.RequestOptions
+import com.openai.core.checkRequired
 import com.openai.core.handlers.errorHandler
 import com.openai.core.handlers.jsonHandler
 import com.openai.core.handlers.withErrorHandler
@@ -27,6 +28,7 @@ import com.openai.models.files.FileListParams
 import com.openai.models.files.FileObject
 import com.openai.models.files.FileRetrieveParams
 import java.util.concurrent.CompletableFuture
+import kotlin.jvm.optionals.getOrNull
 
 class FileServiceAsyncImpl internal constructor(private val clientOptions: ClientOptions) :
     FileServiceAsync {
@@ -114,6 +116,9 @@ class FileServiceAsyncImpl internal constructor(private val clientOptions: Clien
             params: FileRetrieveParams,
             requestOptions: RequestOptions,
         ): CompletableFuture<HttpResponseFor<FileObject>> {
+            // We check here instead of in the params builder because this can be specified
+            // positionally or in the params class.
+            checkRequired("fileId", params.fileId().getOrNull())
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.GET)
@@ -165,6 +170,7 @@ class FileServiceAsyncImpl internal constructor(private val clientOptions: Clien
                             .let {
                                 FileListPageAsync.builder()
                                     .service(FileServiceAsyncImpl(clientOptions))
+                                    .streamHandlerExecutor(clientOptions.streamHandlerExecutor)
                                     .params(params)
                                     .response(it)
                                     .build()
@@ -180,6 +186,9 @@ class FileServiceAsyncImpl internal constructor(private val clientOptions: Clien
             params: FileDeleteParams,
             requestOptions: RequestOptions,
         ): CompletableFuture<HttpResponseFor<FileDeleted>> {
+            // We check here instead of in the params builder because this can be specified
+            // positionally or in the params class.
+            checkRequired("fileId", params.fileId().getOrNull())
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.DELETE)
@@ -207,6 +216,9 @@ class FileServiceAsyncImpl internal constructor(private val clientOptions: Clien
             params: FileContentParams,
             requestOptions: RequestOptions,
         ): CompletableFuture<HttpResponse> {
+            // We check here instead of in the params builder because this can be specified
+            // positionally or in the params class.
+            checkRequired("fileId", params.fileId().getOrNull())
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.GET)

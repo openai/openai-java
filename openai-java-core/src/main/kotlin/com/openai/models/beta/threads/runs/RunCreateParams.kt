@@ -52,14 +52,14 @@ import kotlin.jvm.optionals.getOrNull
 /** Create a run. */
 class RunCreateParams
 private constructor(
-    private val threadId: String,
+    private val threadId: String?,
     private val include: List<RunStepInclude>?,
     private val body: Body,
     private val additionalHeaders: Headers,
     private val additionalQueryParams: QueryParams,
 ) : Params {
 
-    fun threadId(): String = threadId
+    fun threadId(): Optional<String> = Optional.ofNullable(threadId)
 
     /**
      * A list of additional fields to include in the response. Currently the only supported value is
@@ -385,7 +385,6 @@ private constructor(
          *
          * The following fields are required:
          * ```java
-         * .threadId()
          * .assistantId()
          * ```
          */
@@ -410,7 +409,10 @@ private constructor(
             additionalQueryParams = runCreateParams.additionalQueryParams.toBuilder()
         }
 
-        fun threadId(threadId: String) = apply { this.threadId = threadId }
+        fun threadId(threadId: String?) = apply { this.threadId = threadId }
+
+        /** Alias for calling [Builder.threadId] with `threadId.orElse(null)`. */
+        fun threadId(threadId: Optional<String>) = threadId(threadId.getOrNull())
 
         /**
          * A list of additional fields to include in the response. Currently the only supported
@@ -1057,7 +1059,6 @@ private constructor(
          *
          * The following fields are required:
          * ```java
-         * .threadId()
          * .assistantId()
          * ```
          *
@@ -1065,7 +1066,7 @@ private constructor(
          */
         fun build(): RunCreateParams =
             RunCreateParams(
-                checkRequired("threadId", threadId),
+                threadId,
                 include?.toImmutable(),
                 body.build(),
                 additionalHeaders.build(),
@@ -1077,7 +1078,7 @@ private constructor(
 
     fun _pathParam(index: Int): String =
         when (index) {
-            0 -> threadId
+            0 -> threadId ?: ""
             else -> ""
         }
 

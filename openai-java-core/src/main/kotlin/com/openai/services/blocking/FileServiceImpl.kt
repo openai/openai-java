@@ -4,6 +4,7 @@ package com.openai.services.blocking
 
 import com.openai.core.ClientOptions
 import com.openai.core.RequestOptions
+import com.openai.core.checkRequired
 import com.openai.core.handlers.errorHandler
 import com.openai.core.handlers.jsonHandler
 import com.openai.core.handlers.withErrorHandler
@@ -26,6 +27,7 @@ import com.openai.models.files.FileListPageResponse
 import com.openai.models.files.FileListParams
 import com.openai.models.files.FileObject
 import com.openai.models.files.FileRetrieveParams
+import kotlin.jvm.optionals.getOrNull
 
 class FileServiceImpl internal constructor(private val clientOptions: ClientOptions) : FileService {
 
@@ -94,6 +96,9 @@ class FileServiceImpl internal constructor(private val clientOptions: ClientOpti
             params: FileRetrieveParams,
             requestOptions: RequestOptions,
         ): HttpResponseFor<FileObject> {
+            // We check here instead of in the params builder because this can be specified
+            // positionally or in the params class.
+            checkRequired("fileId", params.fileId().getOrNull())
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.GET)
@@ -154,6 +159,9 @@ class FileServiceImpl internal constructor(private val clientOptions: ClientOpti
             params: FileDeleteParams,
             requestOptions: RequestOptions,
         ): HttpResponseFor<FileDeleted> {
+            // We check here instead of in the params builder because this can be specified
+            // positionally or in the params class.
+            checkRequired("fileId", params.fileId().getOrNull())
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.DELETE)
@@ -178,6 +186,9 @@ class FileServiceImpl internal constructor(private val clientOptions: ClientOpti
             params: FileContentParams,
             requestOptions: RequestOptions,
         ): HttpResponse {
+            // We check here instead of in the params builder because this can be specified
+            // positionally or in the params class.
+            checkRequired("fileId", params.fileId().getOrNull())
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.GET)

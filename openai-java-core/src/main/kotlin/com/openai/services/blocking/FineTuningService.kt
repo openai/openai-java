@@ -2,8 +2,10 @@
 
 package com.openai.services.blocking
 
+import com.openai.services.blocking.finetuning.AlphaService
 import com.openai.services.blocking.finetuning.CheckpointService
 import com.openai.services.blocking.finetuning.JobService
+import com.openai.services.blocking.finetuning.MethodService
 
 interface FineTuningService {
 
@@ -12,15 +14,23 @@ interface FineTuningService {
      */
     fun withRawResponse(): WithRawResponse
 
+    fun methods(): MethodService
+
     fun jobs(): JobService
 
     fun checkpoints(): CheckpointService
 
+    fun alpha(): AlphaService
+
     /** A view of [FineTuningService] that provides access to raw HTTP responses for each method. */
     interface WithRawResponse {
+
+        fun methods(): MethodService.WithRawResponse
 
         fun jobs(): JobService.WithRawResponse
 
         fun checkpoints(): CheckpointService.WithRawResponse
+
+        fun alpha(): AlphaService.WithRawResponse
     }
 }

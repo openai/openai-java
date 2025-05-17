@@ -4,7 +4,6 @@ package com.openai.services.async.responses
 
 import com.openai.TestServerExtension
 import com.openai.client.okhttp.OpenAIOkHttpClientAsync
-import com.openai.models.responses.inputitems.InputItemListParams
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 
@@ -20,10 +19,7 @@ internal class InputItemServiceAsyncTest {
                 .build()
         val inputItemServiceAsync = client.responses().inputItems()
 
-        val pageFuture =
-            inputItemServiceAsync.list(
-                InputItemListParams.builder().responseId("response_id").build()
-            )
+        val pageFuture = inputItemServiceAsync.list("response_id")
 
         val page = pageFuture.get()
         page.response().validate()

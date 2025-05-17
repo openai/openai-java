@@ -2,13 +2,12 @@
 
 package com.openai.models.finetuning.checkpoints.permissions
 
+import com.openai.core.AutoPager
 import com.openai.core.JsonValue
+import com.openai.core.Page
 import com.openai.core.checkRequired
 import com.openai.services.blocking.finetuning.checkpoints.PermissionService
 import java.util.Objects
-import java.util.Optional
-import java.util.stream.Stream
-import java.util.stream.StreamSupport
 import kotlin.jvm.optionals.getOrNull
 
 /** @see [PermissionService.create] */
@@ -17,7 +16,7 @@ private constructor(
     private val service: PermissionService,
     private val params: PermissionCreateParams,
     private val response: PermissionCreatePageResponse,
-) {
+) : Page<PermissionCreateResponse> {
 
     /**
      * Delegates to [PermissionCreatePageResponse], but gracefully handles missing data.
@@ -30,14 +29,16 @@ private constructor(
     /** @see [PermissionCreatePageResponse.object_] */
     fun object_(): JsonValue = response._object_()
 
-    fun hasNextPage(): Boolean = data().isNotEmpty()
+    override fun items(): List<PermissionCreateResponse> = data()
 
-    fun getNextPageParams(): Optional<PermissionCreateParams> = Optional.empty()
+    override fun hasNextPage(): Boolean = items().isNotEmpty()
 
-    fun getNextPage(): Optional<PermissionCreatePage> =
-        getNextPageParams().map { service.create(it) }
+    fun nextPageParams(): PermissionCreateParams =
+        throw IllegalStateException("Cannot construct next page params")
 
-    fun autoPager(): AutoPager = AutoPager(this)
+    override fun nextPage(): PermissionCreatePage = service.create(nextPageParams())
+
+    fun autoPager(): AutoPager<PermissionCreateResponse> = AutoPager.from(this)
 
     /** The parameters that were used to request this page. */
     fun params(): PermissionCreateParams = params
@@ -104,26 +105,6 @@ private constructor(
                 checkRequired("params", params),
                 checkRequired("response", response),
             )
-    }
-
-    class AutoPager(private val firstPage: PermissionCreatePage) :
-        Iterable<PermissionCreateResponse> {
-
-        override fun iterator(): Iterator<PermissionCreateResponse> = iterator {
-            var page = firstPage
-            var index = 0
-            while (true) {
-                while (index < page.data().size) {
-                    yield(page.data()[index++])
-                }
-                page = page.getNextPage().getOrNull() ?: break
-                index = 0
-            }
-        }
-
-        fun stream(): Stream<PermissionCreateResponse> {
-            return StreamSupport.stream(spliterator(), false)
-        }
     }
 
     override fun equals(other: Any?): Boolean {

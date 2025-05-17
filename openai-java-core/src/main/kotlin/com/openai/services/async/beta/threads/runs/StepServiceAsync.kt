@@ -19,6 +19,18 @@ interface StepServiceAsync {
     fun withRawResponse(): WithRawResponse
 
     /** Retrieves a run step. */
+    fun retrieve(stepId: String, params: StepRetrieveParams): CompletableFuture<RunStep> =
+        retrieve(stepId, params, RequestOptions.none())
+
+    /** @see [retrieve] */
+    fun retrieve(
+        stepId: String,
+        params: StepRetrieveParams,
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): CompletableFuture<RunStep> =
+        retrieve(params.toBuilder().stepId(stepId).build(), requestOptions)
+
+    /** @see [retrieve] */
     fun retrieve(params: StepRetrieveParams): CompletableFuture<RunStep> =
         retrieve(params, RequestOptions.none())
 
@@ -29,6 +41,18 @@ interface StepServiceAsync {
     ): CompletableFuture<RunStep>
 
     /** Returns a list of run steps belonging to a run. */
+    fun list(runId: String, params: StepListParams): CompletableFuture<StepListPageAsync> =
+        list(runId, params, RequestOptions.none())
+
+    /** @see [list] */
+    fun list(
+        runId: String,
+        params: StepListParams,
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): CompletableFuture<StepListPageAsync> =
+        list(params.toBuilder().runId(runId).build(), requestOptions)
+
+    /** @see [list] */
     fun list(params: StepListParams): CompletableFuture<StepListPageAsync> =
         list(params, RequestOptions.none())
 
@@ -46,6 +70,23 @@ interface StepServiceAsync {
          * but is otherwise the same as [StepServiceAsync.retrieve].
          */
         @MustBeClosed
+        fun retrieve(
+            stepId: String,
+            params: StepRetrieveParams,
+        ): CompletableFuture<HttpResponseFor<RunStep>> =
+            retrieve(stepId, params, RequestOptions.none())
+
+        /** @see [retrieve] */
+        @MustBeClosed
+        fun retrieve(
+            stepId: String,
+            params: StepRetrieveParams,
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): CompletableFuture<HttpResponseFor<RunStep>> =
+            retrieve(params.toBuilder().stepId(stepId).build(), requestOptions)
+
+        /** @see [retrieve] */
+        @MustBeClosed
         fun retrieve(params: StepRetrieveParams): CompletableFuture<HttpResponseFor<RunStep>> =
             retrieve(params, RequestOptions.none())
 
@@ -60,6 +101,23 @@ interface StepServiceAsync {
          * Returns a raw HTTP response for `get /threads/{thread_id}/runs/{run_id}/steps`, but is
          * otherwise the same as [StepServiceAsync.list].
          */
+        @MustBeClosed
+        fun list(
+            runId: String,
+            params: StepListParams,
+        ): CompletableFuture<HttpResponseFor<StepListPageAsync>> =
+            list(runId, params, RequestOptions.none())
+
+        /** @see [list] */
+        @MustBeClosed
+        fun list(
+            runId: String,
+            params: StepListParams,
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): CompletableFuture<HttpResponseFor<StepListPageAsync>> =
+            list(params.toBuilder().runId(runId).build(), requestOptions)
+
+        /** @see [list] */
         @MustBeClosed
         fun list(params: StepListParams): CompletableFuture<HttpResponseFor<StepListPageAsync>> =
             list(params, RequestOptions.none())

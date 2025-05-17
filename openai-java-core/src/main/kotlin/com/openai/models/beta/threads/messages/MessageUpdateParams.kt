@@ -25,7 +25,7 @@ import kotlin.jvm.optionals.getOrNull
 class MessageUpdateParams
 private constructor(
     private val threadId: String,
-    private val messageId: String,
+    private val messageId: String?,
     private val body: Body,
     private val additionalHeaders: Headers,
     private val additionalQueryParams: QueryParams,
@@ -33,7 +33,7 @@ private constructor(
 
     fun threadId(): String = threadId
 
-    fun messageId(): String = messageId
+    fun messageId(): Optional<String> = Optional.ofNullable(messageId)
 
     /**
      * Set of 16 key-value pairs that can be attached to an object. This can be useful for storing
@@ -71,7 +71,6 @@ private constructor(
          * The following fields are required:
          * ```java
          * .threadId()
-         * .messageId()
          * ```
          */
         @JvmStatic fun builder() = Builder()
@@ -97,7 +96,10 @@ private constructor(
 
         fun threadId(threadId: String) = apply { this.threadId = threadId }
 
-        fun messageId(messageId: String) = apply { this.messageId = messageId }
+        fun messageId(messageId: String?) = apply { this.messageId = messageId }
+
+        /** Alias for calling [Builder.messageId] with `messageId.orElse(null)`. */
+        fun messageId(messageId: Optional<String>) = messageId(messageId.getOrNull())
 
         /**
          * Sets the entire request body.
@@ -255,7 +257,6 @@ private constructor(
          * The following fields are required:
          * ```java
          * .threadId()
-         * .messageId()
          * ```
          *
          * @throws IllegalStateException if any required field is unset.
@@ -263,7 +264,7 @@ private constructor(
         fun build(): MessageUpdateParams =
             MessageUpdateParams(
                 checkRequired("threadId", threadId),
-                checkRequired("messageId", messageId),
+                messageId,
                 body.build(),
                 additionalHeaders.build(),
                 additionalQueryParams.build(),
@@ -275,7 +276,7 @@ private constructor(
     fun _pathParam(index: Int): String =
         when (index) {
             0 -> threadId
-            1 -> messageId
+            1 -> messageId ?: ""
             else -> ""
         }
 

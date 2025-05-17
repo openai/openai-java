@@ -4,25 +4,25 @@ package com.openai.models.models
 
 import com.openai.core.JsonValue
 import com.openai.core.Params
-import com.openai.core.checkRequired
 import com.openai.core.http.Headers
 import com.openai.core.http.QueryParams
 import com.openai.core.toImmutable
 import java.util.Objects
 import java.util.Optional
+import kotlin.jvm.optionals.getOrNull
 
 /**
  * Delete a fine-tuned model. You must have the Owner role in your organization to delete a model.
  */
 class ModelDeleteParams
 private constructor(
-    private val model: String,
+    private val model: String?,
     private val additionalHeaders: Headers,
     private val additionalQueryParams: QueryParams,
     private val additionalBodyProperties: Map<String, JsonValue>,
 ) : Params {
 
-    fun model(): String = model
+    fun model(): Optional<String> = Optional.ofNullable(model)
 
     fun _additionalBodyProperties(): Map<String, JsonValue> = additionalBodyProperties
 
@@ -34,14 +34,9 @@ private constructor(
 
     companion object {
 
-        /**
-         * Returns a mutable builder for constructing an instance of [ModelDeleteParams].
-         *
-         * The following fields are required:
-         * ```java
-         * .model()
-         * ```
-         */
+        @JvmStatic fun none(): ModelDeleteParams = builder().build()
+
+        /** Returns a mutable builder for constructing an instance of [ModelDeleteParams]. */
         @JvmStatic fun builder() = Builder()
     }
 
@@ -61,7 +56,10 @@ private constructor(
             additionalBodyProperties = modelDeleteParams.additionalBodyProperties.toMutableMap()
         }
 
-        fun model(model: String) = apply { this.model = model }
+        fun model(model: String?) = apply { this.model = model }
+
+        /** Alias for calling [Builder.model] with `model.orElse(null)`. */
+        fun model(model: Optional<String>) = model(model.getOrNull())
 
         fun additionalHeaders(additionalHeaders: Headers) = apply {
             this.additionalHeaders.clear()
@@ -187,17 +185,10 @@ private constructor(
          * Returns an immutable instance of [ModelDeleteParams].
          *
          * Further updates to this [Builder] will not mutate the returned instance.
-         *
-         * The following fields are required:
-         * ```java
-         * .model()
-         * ```
-         *
-         * @throws IllegalStateException if any required field is unset.
          */
         fun build(): ModelDeleteParams =
             ModelDeleteParams(
-                checkRequired("model", model),
+                model,
                 additionalHeaders.build(),
                 additionalQueryParams.build(),
                 additionalBodyProperties.toImmutable(),
@@ -209,7 +200,7 @@ private constructor(
 
     fun _pathParam(index: Int): String =
         when (index) {
-            0 -> model
+            0 -> model ?: ""
             else -> ""
         }
 

@@ -24,13 +24,13 @@ import kotlin.jvm.optionals.getOrNull
 /** Modifies a vector store. */
 class VectorStoreUpdateParams
 private constructor(
-    private val vectorStoreId: String,
+    private val vectorStoreId: String?,
     private val body: Body,
     private val additionalHeaders: Headers,
     private val additionalQueryParams: QueryParams,
 ) : Params {
 
-    fun vectorStoreId(): String = vectorStoreId
+    fun vectorStoreId(): Optional<String> = Optional.ofNullable(vectorStoreId)
 
     /**
      * The expiration policy for a vector store.
@@ -92,14 +92,9 @@ private constructor(
 
     companion object {
 
-        /**
-         * Returns a mutable builder for constructing an instance of [VectorStoreUpdateParams].
-         *
-         * The following fields are required:
-         * ```java
-         * .vectorStoreId()
-         * ```
-         */
+        @JvmStatic fun none(): VectorStoreUpdateParams = builder().build()
+
+        /** Returns a mutable builder for constructing an instance of [VectorStoreUpdateParams]. */
         @JvmStatic fun builder() = Builder()
     }
 
@@ -119,7 +114,11 @@ private constructor(
             additionalQueryParams = vectorStoreUpdateParams.additionalQueryParams.toBuilder()
         }
 
-        fun vectorStoreId(vectorStoreId: String) = apply { this.vectorStoreId = vectorStoreId }
+        fun vectorStoreId(vectorStoreId: String?) = apply { this.vectorStoreId = vectorStoreId }
+
+        /** Alias for calling [Builder.vectorStoreId] with `vectorStoreId.orElse(null)`. */
+        fun vectorStoreId(vectorStoreId: Optional<String>) =
+            vectorStoreId(vectorStoreId.getOrNull())
 
         /**
          * Sets the entire request body.
@@ -307,17 +306,10 @@ private constructor(
          * Returns an immutable instance of [VectorStoreUpdateParams].
          *
          * Further updates to this [Builder] will not mutate the returned instance.
-         *
-         * The following fields are required:
-         * ```java
-         * .vectorStoreId()
-         * ```
-         *
-         * @throws IllegalStateException if any required field is unset.
          */
         fun build(): VectorStoreUpdateParams =
             VectorStoreUpdateParams(
-                checkRequired("vectorStoreId", vectorStoreId),
+                vectorStoreId,
                 body.build(),
                 additionalHeaders.build(),
                 additionalQueryParams.build(),
@@ -328,7 +320,7 @@ private constructor(
 
     fun _pathParam(index: Int): String =
         when (index) {
-            0 -> vectorStoreId
+            0 -> vectorStoreId ?: ""
             else -> ""
         }
 

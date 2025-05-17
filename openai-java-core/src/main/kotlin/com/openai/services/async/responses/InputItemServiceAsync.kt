@@ -17,14 +17,39 @@ interface InputItemServiceAsync {
     fun withRawResponse(): WithRawResponse
 
     /** Returns a list of input items for a given response. */
-    fun list(params: InputItemListParams): CompletableFuture<InputItemListPageAsync> =
-        list(params, RequestOptions.none())
+    fun list(responseId: String): CompletableFuture<InputItemListPageAsync> =
+        list(responseId, InputItemListParams.none())
+
+    /** @see [list] */
+    fun list(
+        responseId: String,
+        params: InputItemListParams = InputItemListParams.none(),
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): CompletableFuture<InputItemListPageAsync> =
+        list(params.toBuilder().responseId(responseId).build(), requestOptions)
+
+    /** @see [list] */
+    fun list(
+        responseId: String,
+        params: InputItemListParams = InputItemListParams.none(),
+    ): CompletableFuture<InputItemListPageAsync> = list(responseId, params, RequestOptions.none())
 
     /** @see [list] */
     fun list(
         params: InputItemListParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): CompletableFuture<InputItemListPageAsync>
+
+    /** @see [list] */
+    fun list(params: InputItemListParams): CompletableFuture<InputItemListPageAsync> =
+        list(params, RequestOptions.none())
+
+    /** @see [list] */
+    fun list(
+        responseId: String,
+        requestOptions: RequestOptions,
+    ): CompletableFuture<InputItemListPageAsync> =
+        list(responseId, InputItemListParams.none(), requestOptions)
 
     /**
      * A view of [InputItemServiceAsync] that provides access to raw HTTP responses for each method.
@@ -36,6 +61,35 @@ interface InputItemServiceAsync {
          * otherwise the same as [InputItemServiceAsync.list].
          */
         @MustBeClosed
+        fun list(responseId: String): CompletableFuture<HttpResponseFor<InputItemListPageAsync>> =
+            list(responseId, InputItemListParams.none())
+
+        /** @see [list] */
+        @MustBeClosed
+        fun list(
+            responseId: String,
+            params: InputItemListParams = InputItemListParams.none(),
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): CompletableFuture<HttpResponseFor<InputItemListPageAsync>> =
+            list(params.toBuilder().responseId(responseId).build(), requestOptions)
+
+        /** @see [list] */
+        @MustBeClosed
+        fun list(
+            responseId: String,
+            params: InputItemListParams = InputItemListParams.none(),
+        ): CompletableFuture<HttpResponseFor<InputItemListPageAsync>> =
+            list(responseId, params, RequestOptions.none())
+
+        /** @see [list] */
+        @MustBeClosed
+        fun list(
+            params: InputItemListParams,
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): CompletableFuture<HttpResponseFor<InputItemListPageAsync>>
+
+        /** @see [list] */
+        @MustBeClosed
         fun list(
             params: InputItemListParams
         ): CompletableFuture<HttpResponseFor<InputItemListPageAsync>> =
@@ -44,8 +98,9 @@ interface InputItemServiceAsync {
         /** @see [list] */
         @MustBeClosed
         fun list(
-            params: InputItemListParams,
-            requestOptions: RequestOptions = RequestOptions.none(),
-        ): CompletableFuture<HttpResponseFor<InputItemListPageAsync>>
+            responseId: String,
+            requestOptions: RequestOptions,
+        ): CompletableFuture<HttpResponseFor<InputItemListPageAsync>> =
+            list(responseId, InputItemListParams.none(), requestOptions)
     }
 }

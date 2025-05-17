@@ -4,6 +4,7 @@ package com.openai.services.blocking.vectorstores
 
 import com.openai.core.ClientOptions
 import com.openai.core.RequestOptions
+import com.openai.core.checkRequired
 import com.openai.core.handlers.errorHandler
 import com.openai.core.handlers.jsonHandler
 import com.openai.core.handlers.withErrorHandler
@@ -28,6 +29,7 @@ import com.openai.models.vectorstores.files.FileRetrieveParams
 import com.openai.models.vectorstores.files.FileUpdateParams
 import com.openai.models.vectorstores.files.VectorStoreFile
 import com.openai.models.vectorstores.files.VectorStoreFileDeleted
+import kotlin.jvm.optionals.getOrNull
 
 class FileServiceImpl internal constructor(private val clientOptions: ClientOptions) : FileService {
 
@@ -87,6 +89,9 @@ class FileServiceImpl internal constructor(private val clientOptions: ClientOpti
             params: FileCreateParams,
             requestOptions: RequestOptions,
         ): HttpResponseFor<VectorStoreFile> {
+            // We check here instead of in the params builder because this can be specified
+            // positionally or in the params class.
+            checkRequired("vectorStoreId", params.vectorStoreId().getOrNull())
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.POST)
@@ -115,6 +120,9 @@ class FileServiceImpl internal constructor(private val clientOptions: ClientOpti
             params: FileRetrieveParams,
             requestOptions: RequestOptions,
         ): HttpResponseFor<VectorStoreFile> {
+            // We check here instead of in the params builder because this can be specified
+            // positionally or in the params class.
+            checkRequired("fileId", params.fileId().getOrNull())
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.GET)
@@ -147,6 +155,9 @@ class FileServiceImpl internal constructor(private val clientOptions: ClientOpti
             params: FileUpdateParams,
             requestOptions: RequestOptions,
         ): HttpResponseFor<VectorStoreFile> {
+            // We check here instead of in the params builder because this can be specified
+            // positionally or in the params class.
+            checkRequired("fileId", params.fileId().getOrNull())
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.POST)
@@ -181,6 +192,9 @@ class FileServiceImpl internal constructor(private val clientOptions: ClientOpti
             params: FileListParams,
             requestOptions: RequestOptions,
         ): HttpResponseFor<FileListPage> {
+            // We check here instead of in the params builder because this can be specified
+            // positionally or in the params class.
+            checkRequired("vectorStoreId", params.vectorStoreId().getOrNull())
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.GET)
@@ -216,6 +230,9 @@ class FileServiceImpl internal constructor(private val clientOptions: ClientOpti
             params: FileDeleteParams,
             requestOptions: RequestOptions,
         ): HttpResponseFor<VectorStoreFileDeleted> {
+            // We check here instead of in the params builder because this can be specified
+            // positionally or in the params class.
+            checkRequired("fileId", params.fileId().getOrNull())
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.DELETE)
@@ -250,6 +267,9 @@ class FileServiceImpl internal constructor(private val clientOptions: ClientOpti
             params: FileContentParams,
             requestOptions: RequestOptions,
         ): HttpResponseFor<FileContentPage> {
+            // We check here instead of in the params builder because this can be specified
+            // positionally or in the params class.
+            checkRequired("fileId", params.fileId().getOrNull())
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.GET)

@@ -4,6 +4,7 @@ package com.openai.services.blocking.finetuning.jobs
 
 import com.openai.core.ClientOptions
 import com.openai.core.RequestOptions
+import com.openai.core.checkRequired
 import com.openai.core.handlers.errorHandler
 import com.openai.core.handlers.jsonHandler
 import com.openai.core.handlers.withErrorHandler
@@ -17,6 +18,7 @@ import com.openai.models.ErrorObject
 import com.openai.models.finetuning.jobs.checkpoints.CheckpointListPage
 import com.openai.models.finetuning.jobs.checkpoints.CheckpointListPageResponse
 import com.openai.models.finetuning.jobs.checkpoints.CheckpointListParams
+import kotlin.jvm.optionals.getOrNull
 
 class CheckpointServiceImpl internal constructor(private val clientOptions: ClientOptions) :
     CheckpointService {
@@ -47,6 +49,9 @@ class CheckpointServiceImpl internal constructor(private val clientOptions: Clie
             params: CheckpointListParams,
             requestOptions: RequestOptions,
         ): HttpResponseFor<CheckpointListPage> {
+            // We check here instead of in the params builder because this can be specified
+            // positionally or in the params class.
+            checkRequired("fineTuningJobId", params.fineTuningJobId().getOrNull())
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.GET)

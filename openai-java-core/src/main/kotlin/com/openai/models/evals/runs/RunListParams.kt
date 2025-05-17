@@ -6,7 +6,6 @@ import com.fasterxml.jackson.annotation.JsonCreator
 import com.openai.core.Enum
 import com.openai.core.JsonField
 import com.openai.core.Params
-import com.openai.core.checkRequired
 import com.openai.core.http.Headers
 import com.openai.core.http.QueryParams
 import com.openai.errors.OpenAIInvalidDataException
@@ -17,7 +16,7 @@ import kotlin.jvm.optionals.getOrNull
 /** Get a list of runs for an evaluation. */
 class RunListParams
 private constructor(
-    private val evalId: String,
+    private val evalId: String?,
     private val after: String?,
     private val limit: Long?,
     private val order: Order?,
@@ -26,7 +25,7 @@ private constructor(
     private val additionalQueryParams: QueryParams,
 ) : Params {
 
-    fun evalId(): String = evalId
+    fun evalId(): Optional<String> = Optional.ofNullable(evalId)
 
     /** Identifier for the last run from the previous pagination request. */
     fun after(): Optional<String> = Optional.ofNullable(after)
@@ -53,14 +52,9 @@ private constructor(
 
     companion object {
 
-        /**
-         * Returns a mutable builder for constructing an instance of [RunListParams].
-         *
-         * The following fields are required:
-         * ```java
-         * .evalId()
-         * ```
-         */
+        @JvmStatic fun none(): RunListParams = builder().build()
+
+        /** Returns a mutable builder for constructing an instance of [RunListParams]. */
         @JvmStatic fun builder() = Builder()
     }
 
@@ -86,7 +80,10 @@ private constructor(
             additionalQueryParams = runListParams.additionalQueryParams.toBuilder()
         }
 
-        fun evalId(evalId: String) = apply { this.evalId = evalId }
+        fun evalId(evalId: String?) = apply { this.evalId = evalId }
+
+        /** Alias for calling [Builder.evalId] with `evalId.orElse(null)`. */
+        fun evalId(evalId: Optional<String>) = evalId(evalId.getOrNull())
 
         /** Identifier for the last run from the previous pagination request. */
         fun after(after: String?) = apply { this.after = after }
@@ -227,17 +224,10 @@ private constructor(
          * Returns an immutable instance of [RunListParams].
          *
          * Further updates to this [Builder] will not mutate the returned instance.
-         *
-         * The following fields are required:
-         * ```java
-         * .evalId()
-         * ```
-         *
-         * @throws IllegalStateException if any required field is unset.
          */
         fun build(): RunListParams =
             RunListParams(
-                checkRequired("evalId", evalId),
+                evalId,
                 after,
                 limit,
                 order,
@@ -249,7 +239,7 @@ private constructor(
 
     fun _pathParam(index: Int): String =
         when (index) {
-            0 -> evalId
+            0 -> evalId ?: ""
             else -> ""
         }
 

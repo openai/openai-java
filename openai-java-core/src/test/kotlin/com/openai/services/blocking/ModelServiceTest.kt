@@ -4,8 +4,6 @@ package com.openai.services.blocking
 
 import com.openai.TestServerExtension
 import com.openai.client.okhttp.OpenAIOkHttpClient
-import com.openai.models.models.ModelDeleteParams
-import com.openai.models.models.ModelRetrieveParams
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 
@@ -21,8 +19,7 @@ internal class ModelServiceTest {
                 .build()
         val modelService = client.models()
 
-        val model =
-            modelService.retrieve(ModelRetrieveParams.builder().model("gpt-4o-mini").build())
+        val model = modelService.retrieve("gpt-4o-mini")
 
         model.validate()
     }
@@ -50,10 +47,7 @@ internal class ModelServiceTest {
                 .build()
         val modelService = client.models()
 
-        val modelDeleted =
-            modelService.delete(
-                ModelDeleteParams.builder().model("ft:gpt-4o-mini:acemeco:suffix:abc123").build()
-            )
+        val modelDeleted = modelService.delete("ft:gpt-4o-mini:acemeco:suffix:abc123")
 
         modelDeleted.validate()
     }

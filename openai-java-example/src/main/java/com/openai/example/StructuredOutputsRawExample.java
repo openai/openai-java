@@ -1,7 +1,7 @@
 package com.openai.example;
 
-import com.openai.client.OpenAIClientAsync;
-import com.openai.client.okhttp.OpenAIOkHttpClientAsync;
+import com.openai.client.OpenAIClient;
+import com.openai.client.okhttp.OpenAIOkHttpClient;
 import com.openai.core.JsonValue;
 import com.openai.models.ChatModel;
 import com.openai.models.ResponseFormatJsonSchema;
@@ -9,16 +9,15 @@ import com.openai.models.ResponseFormatJsonSchema.JsonSchema;
 import com.openai.models.chat.completions.ChatCompletionCreateParams;
 import java.util.Map;
 
-public final class StructuredOutputsAsyncExample {
-    private StructuredOutputsAsyncExample() {}
+public final class StructuredOutputsRawExample {
+    private StructuredOutputsRawExample() {}
 
     public static void main(String[] args) {
         // Configures using one of:
         // - The `OPENAI_API_KEY` environment variable
         // - The `OPENAI_BASE_URL` and `AZURE_OPENAI_KEY` environment variables
-        OpenAIClientAsync client = OpenAIOkHttpClientAsync.fromEnv();
+        OpenAIClient client = OpenAIOkHttpClient.fromEnv();
 
-        // TODO: Update this once we support extracting JSON schemas from Java classes
         JsonSchema.Schema schema = JsonSchema.Schema.builder()
                 .putAdditionalProperty("type", JsonValue.from("object"))
                 .putAdditionalProperty(
@@ -36,12 +35,8 @@ public final class StructuredOutputsAsyncExample {
                 .addUserMessage("Who works at OpenAI?")
                 .build();
 
-        client.chat()
-                .completions()
-                .create(createParams)
-                .thenAccept(completion -> completion.choices().stream()
-                        .flatMap(choice -> choice.message().content().stream())
-                        .forEach(System.out::println))
-                .join();
+        client.chat().completions().create(createParams).choices().stream()
+                .flatMap(choice -> choice.message().content().stream())
+                .forEach(System.out::println);
     }
 }

@@ -4,23 +4,23 @@ package com.openai.models.files
 
 import com.openai.core.JsonValue
 import com.openai.core.Params
-import com.openai.core.checkRequired
 import com.openai.core.http.Headers
 import com.openai.core.http.QueryParams
 import com.openai.core.toImmutable
 import java.util.Objects
 import java.util.Optional
+import kotlin.jvm.optionals.getOrNull
 
 /** Delete a file. */
 class FileDeleteParams
 private constructor(
-    private val fileId: String,
+    private val fileId: String?,
     private val additionalHeaders: Headers,
     private val additionalQueryParams: QueryParams,
     private val additionalBodyProperties: Map<String, JsonValue>,
 ) : Params {
 
-    fun fileId(): String = fileId
+    fun fileId(): Optional<String> = Optional.ofNullable(fileId)
 
     fun _additionalBodyProperties(): Map<String, JsonValue> = additionalBodyProperties
 
@@ -32,14 +32,9 @@ private constructor(
 
     companion object {
 
-        /**
-         * Returns a mutable builder for constructing an instance of [FileDeleteParams].
-         *
-         * The following fields are required:
-         * ```java
-         * .fileId()
-         * ```
-         */
+        @JvmStatic fun none(): FileDeleteParams = builder().build()
+
+        /** Returns a mutable builder for constructing an instance of [FileDeleteParams]. */
         @JvmStatic fun builder() = Builder()
     }
 
@@ -59,7 +54,10 @@ private constructor(
             additionalBodyProperties = fileDeleteParams.additionalBodyProperties.toMutableMap()
         }
 
-        fun fileId(fileId: String) = apply { this.fileId = fileId }
+        fun fileId(fileId: String?) = apply { this.fileId = fileId }
+
+        /** Alias for calling [Builder.fileId] with `fileId.orElse(null)`. */
+        fun fileId(fileId: Optional<String>) = fileId(fileId.getOrNull())
 
         fun additionalHeaders(additionalHeaders: Headers) = apply {
             this.additionalHeaders.clear()
@@ -185,17 +183,10 @@ private constructor(
          * Returns an immutable instance of [FileDeleteParams].
          *
          * Further updates to this [Builder] will not mutate the returned instance.
-         *
-         * The following fields are required:
-         * ```java
-         * .fileId()
-         * ```
-         *
-         * @throws IllegalStateException if any required field is unset.
          */
         fun build(): FileDeleteParams =
             FileDeleteParams(
-                checkRequired("fileId", fileId),
+                fileId,
                 additionalHeaders.build(),
                 additionalQueryParams.build(),
                 additionalBodyProperties.toImmutable(),
@@ -207,7 +198,7 @@ private constructor(
 
     fun _pathParam(index: Int): String =
         when (index) {
-            0 -> fileId
+            0 -> fileId ?: ""
             else -> ""
         }
 

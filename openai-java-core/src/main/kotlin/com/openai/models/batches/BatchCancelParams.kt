@@ -4,12 +4,12 @@ package com.openai.models.batches
 
 import com.openai.core.JsonValue
 import com.openai.core.Params
-import com.openai.core.checkRequired
 import com.openai.core.http.Headers
 import com.openai.core.http.QueryParams
 import com.openai.core.toImmutable
 import java.util.Objects
 import java.util.Optional
+import kotlin.jvm.optionals.getOrNull
 
 /**
  * Cancels an in-progress batch. The batch will be in status `cancelling` for up to 10 minutes,
@@ -18,13 +18,13 @@ import java.util.Optional
  */
 class BatchCancelParams
 private constructor(
-    private val batchId: String,
+    private val batchId: String?,
     private val additionalHeaders: Headers,
     private val additionalQueryParams: QueryParams,
     private val additionalBodyProperties: Map<String, JsonValue>,
 ) : Params {
 
-    fun batchId(): String = batchId
+    fun batchId(): Optional<String> = Optional.ofNullable(batchId)
 
     fun _additionalBodyProperties(): Map<String, JsonValue> = additionalBodyProperties
 
@@ -36,14 +36,9 @@ private constructor(
 
     companion object {
 
-        /**
-         * Returns a mutable builder for constructing an instance of [BatchCancelParams].
-         *
-         * The following fields are required:
-         * ```java
-         * .batchId()
-         * ```
-         */
+        @JvmStatic fun none(): BatchCancelParams = builder().build()
+
+        /** Returns a mutable builder for constructing an instance of [BatchCancelParams]. */
         @JvmStatic fun builder() = Builder()
     }
 
@@ -63,7 +58,10 @@ private constructor(
             additionalBodyProperties = batchCancelParams.additionalBodyProperties.toMutableMap()
         }
 
-        fun batchId(batchId: String) = apply { this.batchId = batchId }
+        fun batchId(batchId: String?) = apply { this.batchId = batchId }
+
+        /** Alias for calling [Builder.batchId] with `batchId.orElse(null)`. */
+        fun batchId(batchId: Optional<String>) = batchId(batchId.getOrNull())
 
         fun additionalHeaders(additionalHeaders: Headers) = apply {
             this.additionalHeaders.clear()
@@ -189,17 +187,10 @@ private constructor(
          * Returns an immutable instance of [BatchCancelParams].
          *
          * Further updates to this [Builder] will not mutate the returned instance.
-         *
-         * The following fields are required:
-         * ```java
-         * .batchId()
-         * ```
-         *
-         * @throws IllegalStateException if any required field is unset.
          */
         fun build(): BatchCancelParams =
             BatchCancelParams(
-                checkRequired("batchId", batchId),
+                batchId,
                 additionalHeaders.build(),
                 additionalQueryParams.build(),
                 additionalBodyProperties.toImmutable(),
@@ -211,7 +202,7 @@ private constructor(
 
     fun _pathParam(index: Int): String =
         when (index) {
-            0 -> batchId
+            0 -> batchId ?: ""
             else -> ""
         }
 

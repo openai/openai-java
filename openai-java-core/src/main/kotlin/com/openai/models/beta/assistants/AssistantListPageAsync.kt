@@ -2,22 +2,24 @@
 
 package com.openai.models.beta.assistants
 
+import com.openai.core.AutoPagerAsync
+import com.openai.core.PageAsync
 import com.openai.core.checkRequired
 import com.openai.services.async.beta.AssistantServiceAsync
 import java.util.Objects
 import java.util.Optional
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.Executor
-import java.util.function.Predicate
 import kotlin.jvm.optionals.getOrNull
 
 /** @see [AssistantServiceAsync.list] */
 class AssistantListPageAsync
 private constructor(
     private val service: AssistantServiceAsync,
+    private val streamHandlerExecutor: Executor,
     private val params: AssistantListParams,
     private val response: AssistantListPageResponse,
-) {
+) : PageAsync<Assistant> {
 
     /**
      * Delegates to [AssistantListPageResponse], but gracefully handles missing data.
@@ -33,22 +35,17 @@ private constructor(
      */
     fun hasMore(): Optional<Boolean> = response._hasMore().getOptional("has_more")
 
-    fun hasNextPage(): Boolean = data().isNotEmpty()
+    override fun items(): List<Assistant> = data()
 
-    fun getNextPageParams(): Optional<AssistantListParams> {
-        if (!hasNextPage()) {
-            return Optional.empty()
-        }
+    override fun hasNextPage(): Boolean = items().isNotEmpty()
 
-        return Optional.of(params.toBuilder().after(data().last()._id().getOptional("id")).build())
-    }
+    fun nextPageParams(): AssistantListParams =
+        params.toBuilder().after(items().last()._id().getOptional("id")).build()
 
-    fun getNextPage(): CompletableFuture<Optional<AssistantListPageAsync>> =
-        getNextPageParams()
-            .map { service.list(it).thenApply { Optional.of(it) } }
-            .orElseGet { CompletableFuture.completedFuture(Optional.empty()) }
+    override fun nextPage(): CompletableFuture<AssistantListPageAsync> =
+        service.list(nextPageParams())
 
-    fun autoPager(): AutoPager = AutoPager(this)
+    fun autoPager(): AutoPagerAsync<Assistant> = AutoPagerAsync.from(this, streamHandlerExecutor)
 
     /** The parameters that were used to request this page. */
     fun params(): AssistantListParams = params
@@ -66,6 +63,7 @@ private constructor(
          * The following fields are required:
          * ```java
          * .service()
+         * .streamHandlerExecutor()
          * .params()
          * .response()
          * ```
@@ -77,17 +75,23 @@ private constructor(
     class Builder internal constructor() {
 
         private var service: AssistantServiceAsync? = null
+        private var streamHandlerExecutor: Executor? = null
         private var params: AssistantListParams? = null
         private var response: AssistantListPageResponse? = null
 
         @JvmSynthetic
         internal fun from(assistantListPageAsync: AssistantListPageAsync) = apply {
             service = assistantListPageAsync.service
+            streamHandlerExecutor = assistantListPageAsync.streamHandlerExecutor
             params = assistantListPageAsync.params
             response = assistantListPageAsync.response
         }
 
         fun service(service: AssistantServiceAsync) = apply { this.service = service }
+
+        fun streamHandlerExecutor(streamHandlerExecutor: Executor) = apply {
+            this.streamHandlerExecutor = streamHandlerExecutor
+        }
 
         /** The parameters that were used to request this page. */
         fun params(params: AssistantListParams) = apply { this.params = params }
@@ -103,6 +107,7 @@ private constructor(
          * The following fields are required:
          * ```java
          * .service()
+         * .streamHandlerExecutor()
          * .params()
          * .response()
          * ```
@@ -112,35 +117,10 @@ private constructor(
         fun build(): AssistantListPageAsync =
             AssistantListPageAsync(
                 checkRequired("service", service),
+                checkRequired("streamHandlerExecutor", streamHandlerExecutor),
                 checkRequired("params", params),
                 checkRequired("response", response),
             )
-    }
-
-    class AutoPager(private val firstPage: AssistantListPageAsync) {
-
-        fun forEach(action: Predicate<Assistant>, executor: Executor): CompletableFuture<Void> {
-            fun CompletableFuture<Optional<AssistantListPageAsync>>.forEach(
-                action: (Assistant) -> Boolean,
-                executor: Executor,
-            ): CompletableFuture<Void> =
-                thenComposeAsync(
-                    { page ->
-                        page
-                            .filter { it.data().all(action) }
-                            .map { it.getNextPage().forEach(action, executor) }
-                            .orElseGet { CompletableFuture.completedFuture(null) }
-                    },
-                    executor,
-                )
-            return CompletableFuture.completedFuture(Optional.of(firstPage))
-                .forEach(action::test, executor)
-        }
-
-        fun toList(executor: Executor): CompletableFuture<List<Assistant>> {
-            val values = mutableListOf<Assistant>()
-            return forEach(values::add, executor).thenApply { values }
-        }
     }
 
     override fun equals(other: Any?): Boolean {
@@ -148,11 +128,11 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is AssistantListPageAsync && service == other.service && params == other.params && response == other.response /* spotless:on */
+        return /* spotless:off */ other is AssistantListPageAsync && service == other.service && streamHandlerExecutor == other.streamHandlerExecutor && params == other.params && response == other.response /* spotless:on */
     }
 
-    override fun hashCode(): Int = /* spotless:off */ Objects.hash(service, params, response) /* spotless:on */
+    override fun hashCode(): Int = /* spotless:off */ Objects.hash(service, streamHandlerExecutor, params, response) /* spotless:on */
 
     override fun toString() =
-        "AssistantListPageAsync{service=$service, params=$params, response=$response}"
+        "AssistantListPageAsync{service=$service, streamHandlerExecutor=$streamHandlerExecutor, params=$params, response=$response}"
 }

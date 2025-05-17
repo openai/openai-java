@@ -17,13 +17,8 @@ public final class ModelListAsyncExample {
         CompletableFuture<ModelListPageAsync> pageFuture = client.models().list();
         pageFuture
                 .thenComposeAsync(page -> page.autoPager()
-                        .forEach(
-                                model -> {
-                                    System.out.println(model.id());
-                                    // Keep iterating
-                                    return true;
-                                },
-                                pageFuture.defaultExecutor()))
+                        .subscribe(model -> System.out.println(model.id()))
+                        .onCompleteFuture())
                 .join();
     }
 }

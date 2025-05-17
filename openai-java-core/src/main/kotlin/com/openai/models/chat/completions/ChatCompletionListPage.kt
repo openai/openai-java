@@ -2,12 +2,12 @@
 
 package com.openai.models.chat.completions
 
+import com.openai.core.AutoPager
+import com.openai.core.Page
 import com.openai.core.checkRequired
 import com.openai.services.blocking.chat.ChatCompletionService
 import java.util.Objects
 import java.util.Optional
-import java.util.stream.Stream
-import java.util.stream.StreamSupport
 import kotlin.jvm.optionals.getOrNull
 
 /** @see [ChatCompletionService.list] */
@@ -16,7 +16,7 @@ private constructor(
     private val service: ChatCompletionService,
     private val params: ChatCompletionListParams,
     private val response: ChatCompletionListPageResponse,
-) {
+) : Page<ChatCompletion> {
 
     /**
      * Delegates to [ChatCompletionListPageResponse], but gracefully handles missing data.
@@ -33,20 +33,16 @@ private constructor(
      */
     fun hasMore(): Optional<Boolean> = response._hasMore().getOptional("has_more")
 
-    fun hasNextPage(): Boolean = data().isNotEmpty()
+    override fun items(): List<ChatCompletion> = data()
 
-    fun getNextPageParams(): Optional<ChatCompletionListParams> {
-        if (!hasNextPage()) {
-            return Optional.empty()
-        }
+    override fun hasNextPage(): Boolean = items().isNotEmpty()
 
-        return Optional.of(params.toBuilder().after(data().last()._id().getOptional("id")).build())
-    }
+    fun nextPageParams(): ChatCompletionListParams =
+        params.toBuilder().after(items().last()._id().getOptional("id")).build()
 
-    fun getNextPage(): Optional<ChatCompletionListPage> =
-        getNextPageParams().map { service.list(it) }
+    override fun nextPage(): ChatCompletionListPage = service.list(nextPageParams())
 
-    fun autoPager(): AutoPager = AutoPager(this)
+    fun autoPager(): AutoPager<ChatCompletion> = AutoPager.from(this)
 
     /** The parameters that were used to request this page. */
     fun params(): ChatCompletionListParams = params
@@ -113,25 +109,6 @@ private constructor(
                 checkRequired("params", params),
                 checkRequired("response", response),
             )
-    }
-
-    class AutoPager(private val firstPage: ChatCompletionListPage) : Iterable<ChatCompletion> {
-
-        override fun iterator(): Iterator<ChatCompletion> = iterator {
-            var page = firstPage
-            var index = 0
-            while (true) {
-                while (index < page.data().size) {
-                    yield(page.data()[index++])
-                }
-                page = page.getNextPage().getOrNull() ?: break
-                index = 0
-            }
-        }
-
-        fun stream(): Stream<ChatCompletion> {
-            return StreamSupport.stream(spliterator(), false)
-        }
     }
 
     override fun equals(other: Any?): Boolean {

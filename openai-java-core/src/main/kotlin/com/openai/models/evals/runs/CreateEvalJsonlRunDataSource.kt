@@ -44,6 +44,8 @@ private constructor(
     ) : this(source, type, mutableMapOf())
 
     /**
+     * Determines what populates the `item` namespace in the data source.
+     *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
      *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
      */
@@ -108,6 +110,7 @@ private constructor(
             additionalProperties = createEvalJsonlRunDataSource.additionalProperties.toMutableMap()
         }
 
+        /** Determines what populates the `item` namespace in the data source. */
         fun source(source: Source) = source(JsonField.of(source))
 
         /**
@@ -232,6 +235,7 @@ private constructor(
         (source.asKnown().getOrNull()?.validity() ?: 0) +
             type.let { if (it == JsonValue.from("jsonl")) 1 else 0 }
 
+    /** Determines what populates the `item` namespace in the data source. */
     @JsonDeserialize(using = Source.Deserializer::class)
     @JsonSerialize(using = Source.Serializer::class)
     class Source

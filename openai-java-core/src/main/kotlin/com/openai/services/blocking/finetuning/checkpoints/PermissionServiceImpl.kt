@@ -4,6 +4,7 @@ package com.openai.services.blocking.finetuning.checkpoints
 
 import com.openai.core.ClientOptions
 import com.openai.core.RequestOptions
+import com.openai.core.checkRequired
 import com.openai.core.handlers.errorHandler
 import com.openai.core.handlers.jsonHandler
 import com.openai.core.handlers.withErrorHandler
@@ -22,6 +23,7 @@ import com.openai.models.finetuning.checkpoints.permissions.PermissionDeletePara
 import com.openai.models.finetuning.checkpoints.permissions.PermissionDeleteResponse
 import com.openai.models.finetuning.checkpoints.permissions.PermissionRetrieveParams
 import com.openai.models.finetuning.checkpoints.permissions.PermissionRetrieveResponse
+import kotlin.jvm.optionals.getOrNull
 
 class PermissionServiceImpl internal constructor(private val clientOptions: ClientOptions) :
     PermissionService {
@@ -66,6 +68,9 @@ class PermissionServiceImpl internal constructor(private val clientOptions: Clie
             params: PermissionCreateParams,
             requestOptions: RequestOptions,
         ): HttpResponseFor<PermissionCreatePage> {
+            // We check here instead of in the params builder because this can be specified
+            // positionally or in the params class.
+            checkRequired("fineTunedModelCheckpoint", params.fineTunedModelCheckpoint().getOrNull())
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.POST)
@@ -106,6 +111,9 @@ class PermissionServiceImpl internal constructor(private val clientOptions: Clie
             params: PermissionRetrieveParams,
             requestOptions: RequestOptions,
         ): HttpResponseFor<PermissionRetrieveResponse> {
+            // We check here instead of in the params builder because this can be specified
+            // positionally or in the params class.
+            checkRequired("fineTunedModelCheckpoint", params.fineTunedModelCheckpoint().getOrNull())
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.GET)
@@ -138,6 +146,9 @@ class PermissionServiceImpl internal constructor(private val clientOptions: Clie
             params: PermissionDeleteParams,
             requestOptions: RequestOptions,
         ): HttpResponseFor<PermissionDeleteResponse> {
+            // We check here instead of in the params builder because this can be specified
+            // positionally or in the params class.
+            checkRequired("permissionId", params.permissionId().getOrNull())
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.DELETE)

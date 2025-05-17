@@ -14,8 +14,10 @@ import com.openai.errors.OpenAIInvalidDataException
 import java.io.InputStream
 import java.nio.file.Path
 import java.util.Objects
+import java.util.Optional
 import kotlin.io.path.inputStream
 import kotlin.io.path.name
+import kotlin.jvm.optionals.getOrNull
 
 /**
  * Adds a [Part](https://platform.openai.com/docs/api-reference/uploads/part-object) to an
@@ -29,13 +31,13 @@ import kotlin.io.path.name
  */
 class PartCreateParams
 private constructor(
-    private val uploadId: String,
+    private val uploadId: String?,
     private val body: Body,
     private val additionalHeaders: Headers,
     private val additionalQueryParams: QueryParams,
 ) : Params {
 
-    fun uploadId(): String = uploadId
+    fun uploadId(): Optional<String> = Optional.ofNullable(uploadId)
 
     /**
      * The chunk of bytes for this Part.
@@ -65,7 +67,6 @@ private constructor(
          *
          * The following fields are required:
          * ```java
-         * .uploadId()
          * .data()
          * ```
          */
@@ -88,7 +89,10 @@ private constructor(
             additionalQueryParams = partCreateParams.additionalQueryParams.toBuilder()
         }
 
-        fun uploadId(uploadId: String) = apply { this.uploadId = uploadId }
+        fun uploadId(uploadId: String?) = apply { this.uploadId = uploadId }
+
+        /** Alias for calling [Builder.uploadId] with `uploadId.orElse(null)`. */
+        fun uploadId(uploadId: Optional<String>) = uploadId(uploadId.getOrNull())
 
         /**
          * Sets the entire request body.
@@ -222,7 +226,6 @@ private constructor(
          *
          * The following fields are required:
          * ```java
-         * .uploadId()
          * .data()
          * ```
          *
@@ -230,7 +233,7 @@ private constructor(
          */
         fun build(): PartCreateParams =
             PartCreateParams(
-                checkRequired("uploadId", uploadId),
+                uploadId,
                 body.build(),
                 additionalHeaders.build(),
                 additionalQueryParams.build(),
@@ -241,7 +244,7 @@ private constructor(
 
     fun _pathParam(index: Int): String =
         when (index) {
-            0 -> uploadId
+            0 -> uploadId ?: ""
             else -> ""
         }
 

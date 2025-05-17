@@ -58,7 +58,7 @@ private constructor(
     ) : this(source, type, inputMessages, model, samplingParams, mutableMapOf())
 
     /**
-     * A StoredCompletionsRunDataSource configuration describing a set of filters
+     * Determines what populates the `item` namespace in this run's data source.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
      *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
@@ -74,6 +74,10 @@ private constructor(
     fun type(): Type = type.getRequired("type")
 
     /**
+     * Used when sampling from a model. Dictates the structure of the messages passed into the
+     * model. Can either be a reference to a prebuilt trajectory (ie, `item.input_trajectory`), or a
+     * template with variable references to the `item` namespace.
+     *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
      */
@@ -181,7 +185,7 @@ private constructor(
                     createEvalCompletionsRunDataSource.additionalProperties.toMutableMap()
             }
 
-        /** A StoredCompletionsRunDataSource configuration describing a set of filters */
+        /** Determines what populates the `item` namespace in this run's data source. */
         fun source(source: Source) = source(JsonField.of(source))
 
         /**
@@ -234,6 +238,11 @@ private constructor(
          */
         fun type(type: JsonField<Type>) = apply { this.type = type }
 
+        /**
+         * Used when sampling from a model. Dictates the structure of the messages passed into the
+         * model. Can either be a reference to a prebuilt trajectory (ie, `item.input_trajectory`),
+         * or a template with variable references to the `item` namespace.
+         */
         fun inputMessages(inputMessages: InputMessages) = inputMessages(JsonField.of(inputMessages))
 
         /**
@@ -385,7 +394,7 @@ private constructor(
             (if (model.asKnown().isPresent) 1 else 0) +
             (samplingParams.asKnown().getOrNull()?.validity() ?: 0)
 
-    /** A StoredCompletionsRunDataSource configuration describing a set of filters */
+    /** Determines what populates the `item` namespace in this run's data source. */
     @JsonDeserialize(using = Source.Deserializer::class)
     @JsonSerialize(using = Source.Serializer::class)
     class Source
@@ -2045,6 +2054,11 @@ private constructor(
         override fun toString() = value.toString()
     }
 
+    /**
+     * Used when sampling from a model. Dictates the structure of the messages passed into the
+     * model. Can either be a reference to a prebuilt trajectory (ie, `item.input_trajectory`), or a
+     * template with variable references to the `item` namespace.
+     */
     @JsonDeserialize(using = InputMessages.Deserializer::class)
     @JsonSerialize(using = InputMessages.Serializer::class)
     class InputMessages
@@ -2231,7 +2245,7 @@ private constructor(
 
             /**
              * A list of chat messages forming the prompt or context. May include variable
-             * references to the "item" namespace, ie {{item.name}}.
+             * references to the `item` namespace, ie {{item.name}}.
              *
              * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
              *   unexpectedly missing or null (e.g. if the server responded with an unexpected
@@ -2303,7 +2317,7 @@ private constructor(
 
                 /**
                  * A list of chat messages forming the prompt or context. May include variable
-                 * references to the "item" namespace, ie {{item.name}}.
+                 * references to the `item` namespace, ie {{item.name}}.
                  */
                 fun template(template: List<InnerTemplate>) = template(JsonField.of(template))
 
@@ -3719,7 +3733,7 @@ private constructor(
             ) : this(itemReference, type, mutableMapOf())
 
             /**
-             * A reference to a variable in the "item" namespace. Ie, "item.name"
+             * A reference to a variable in the `item` namespace. Ie, "item.input_trajectory"
              *
              * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
              *   unexpectedly missing or null (e.g. if the server responded with an unexpected
@@ -3789,7 +3803,9 @@ private constructor(
                     additionalProperties = itemReference.additionalProperties.toMutableMap()
                 }
 
-                /** A reference to a variable in the "item" namespace. Ie, "item.name" */
+                /**
+                 * A reference to a variable in the `item` namespace. Ie, "item.input_trajectory"
+                 */
                 fun itemReference(itemReference: String) =
                     itemReference(JsonField.of(itemReference))
 

@@ -4,6 +4,7 @@ package com.openai.services.async.responses
 
 import com.openai.core.ClientOptions
 import com.openai.core.RequestOptions
+import com.openai.core.checkRequired
 import com.openai.core.handlers.errorHandler
 import com.openai.core.handlers.jsonHandler
 import com.openai.core.handlers.withErrorHandler
@@ -18,6 +19,7 @@ import com.openai.models.responses.inputitems.InputItemListPageAsync
 import com.openai.models.responses.inputitems.InputItemListParams
 import com.openai.models.responses.inputitems.ResponseItemList
 import java.util.concurrent.CompletableFuture
+import kotlin.jvm.optionals.getOrNull
 
 class InputItemServiceAsyncImpl internal constructor(private val clientOptions: ClientOptions) :
     InputItemServiceAsync {
@@ -47,6 +49,9 @@ class InputItemServiceAsyncImpl internal constructor(private val clientOptions: 
             params: InputItemListParams,
             requestOptions: RequestOptions,
         ): CompletableFuture<HttpResponseFor<InputItemListPageAsync>> {
+            // We check here instead of in the params builder because this can be specified
+            // positionally or in the params class.
+            checkRequired("responseId", params.responseId().getOrNull())
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.GET)
@@ -68,6 +73,7 @@ class InputItemServiceAsyncImpl internal constructor(private val clientOptions: 
                             .let {
                                 InputItemListPageAsync.builder()
                                     .service(InputItemServiceAsyncImpl(clientOptions))
+                                    .streamHandlerExecutor(clientOptions.streamHandlerExecutor)
                                     .params(params)
                                     .response(it)
                                     .build()

@@ -10,6 +10,7 @@ import com.openai.core.http.QueryParams
 import com.openai.core.toImmutable
 import java.util.Objects
 import java.util.Optional
+import kotlin.jvm.optionals.getOrNull
 
 /**
  * **NOTE:** This endpoint requires an [admin API key](../admin-api-keys).
@@ -20,7 +21,7 @@ import java.util.Optional
 class PermissionDeleteParams
 private constructor(
     private val fineTunedModelCheckpoint: String,
-    private val permissionId: String,
+    private val permissionId: String?,
     private val additionalHeaders: Headers,
     private val additionalQueryParams: QueryParams,
     private val additionalBodyProperties: Map<String, JsonValue>,
@@ -28,7 +29,7 @@ private constructor(
 
     fun fineTunedModelCheckpoint(): String = fineTunedModelCheckpoint
 
-    fun permissionId(): String = permissionId
+    fun permissionId(): Optional<String> = Optional.ofNullable(permissionId)
 
     fun _additionalBodyProperties(): Map<String, JsonValue> = additionalBodyProperties
 
@@ -46,7 +47,6 @@ private constructor(
          * The following fields are required:
          * ```java
          * .fineTunedModelCheckpoint()
-         * .permissionId()
          * ```
          */
         @JvmStatic fun builder() = Builder()
@@ -75,7 +75,10 @@ private constructor(
             this.fineTunedModelCheckpoint = fineTunedModelCheckpoint
         }
 
-        fun permissionId(permissionId: String) = apply { this.permissionId = permissionId }
+        fun permissionId(permissionId: String?) = apply { this.permissionId = permissionId }
+
+        /** Alias for calling [Builder.permissionId] with `permissionId.orElse(null)`. */
+        fun permissionId(permissionId: Optional<String>) = permissionId(permissionId.getOrNull())
 
         fun additionalHeaders(additionalHeaders: Headers) = apply {
             this.additionalHeaders.clear()
@@ -205,7 +208,6 @@ private constructor(
          * The following fields are required:
          * ```java
          * .fineTunedModelCheckpoint()
-         * .permissionId()
          * ```
          *
          * @throws IllegalStateException if any required field is unset.
@@ -213,7 +215,7 @@ private constructor(
         fun build(): PermissionDeleteParams =
             PermissionDeleteParams(
                 checkRequired("fineTunedModelCheckpoint", fineTunedModelCheckpoint),
-                checkRequired("permissionId", permissionId),
+                permissionId,
                 additionalHeaders.build(),
                 additionalQueryParams.build(),
                 additionalBodyProperties.toImmutable(),
@@ -226,7 +228,7 @@ private constructor(
     fun _pathParam(index: Int): String =
         when (index) {
             0 -> fineTunedModelCheckpoint
-            1 -> permissionId
+            1 -> permissionId ?: ""
             else -> ""
         }
 

@@ -31,8 +31,21 @@ interface AssistantService {
     ): Assistant
 
     /** Retrieves an assistant. */
-    fun retrieve(params: AssistantRetrieveParams): Assistant =
-        retrieve(params, RequestOptions.none())
+    fun retrieve(assistantId: String): Assistant =
+        retrieve(assistantId, AssistantRetrieveParams.none())
+
+    /** @see [retrieve] */
+    fun retrieve(
+        assistantId: String,
+        params: AssistantRetrieveParams = AssistantRetrieveParams.none(),
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): Assistant = retrieve(params.toBuilder().assistantId(assistantId).build(), requestOptions)
+
+    /** @see [retrieve] */
+    fun retrieve(
+        assistantId: String,
+        params: AssistantRetrieveParams = AssistantRetrieveParams.none(),
+    ): Assistant = retrieve(assistantId, params, RequestOptions.none())
 
     /** @see [retrieve] */
     fun retrieve(
@@ -40,14 +53,42 @@ interface AssistantService {
         requestOptions: RequestOptions = RequestOptions.none(),
     ): Assistant
 
+    /** @see [retrieve] */
+    fun retrieve(params: AssistantRetrieveParams): Assistant =
+        retrieve(params, RequestOptions.none())
+
+    /** @see [retrieve] */
+    fun retrieve(assistantId: String, requestOptions: RequestOptions): Assistant =
+        retrieve(assistantId, AssistantRetrieveParams.none(), requestOptions)
+
     /** Modifies an assistant. */
-    fun update(params: AssistantUpdateParams): Assistant = update(params, RequestOptions.none())
+    fun update(assistantId: String): Assistant = update(assistantId, AssistantUpdateParams.none())
+
+    /** @see [update] */
+    fun update(
+        assistantId: String,
+        params: AssistantUpdateParams = AssistantUpdateParams.none(),
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): Assistant = update(params.toBuilder().assistantId(assistantId).build(), requestOptions)
+
+    /** @see [update] */
+    fun update(
+        assistantId: String,
+        params: AssistantUpdateParams = AssistantUpdateParams.none(),
+    ): Assistant = update(assistantId, params, RequestOptions.none())
 
     /** @see [update] */
     fun update(
         params: AssistantUpdateParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): Assistant
+
+    /** @see [update] */
+    fun update(params: AssistantUpdateParams): Assistant = update(params, RequestOptions.none())
+
+    /** @see [update] */
+    fun update(assistantId: String, requestOptions: RequestOptions): Assistant =
+        update(assistantId, AssistantUpdateParams.none(), requestOptions)
 
     /** Returns a list of assistants. */
     fun list(): AssistantListPage = list(AssistantListParams.none())
@@ -67,14 +108,36 @@ interface AssistantService {
         list(AssistantListParams.none(), requestOptions)
 
     /** Delete an assistant. */
-    fun delete(params: AssistantDeleteParams): AssistantDeleted =
-        delete(params, RequestOptions.none())
+    fun delete(assistantId: String): AssistantDeleted =
+        delete(assistantId, AssistantDeleteParams.none())
+
+    /** @see [delete] */
+    fun delete(
+        assistantId: String,
+        params: AssistantDeleteParams = AssistantDeleteParams.none(),
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): AssistantDeleted =
+        delete(params.toBuilder().assistantId(assistantId).build(), requestOptions)
+
+    /** @see [delete] */
+    fun delete(
+        assistantId: String,
+        params: AssistantDeleteParams = AssistantDeleteParams.none(),
+    ): AssistantDeleted = delete(assistantId, params, RequestOptions.none())
 
     /** @see [delete] */
     fun delete(
         params: AssistantDeleteParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): AssistantDeleted
+
+    /** @see [delete] */
+    fun delete(params: AssistantDeleteParams): AssistantDeleted =
+        delete(params, RequestOptions.none())
+
+    /** @see [delete] */
+    fun delete(assistantId: String, requestOptions: RequestOptions): AssistantDeleted =
+        delete(assistantId, AssistantDeleteParams.none(), requestOptions)
 
     /** A view of [AssistantService] that provides access to raw HTTP responses for each method. */
     interface WithRawResponse {
@@ -99,8 +162,24 @@ interface AssistantService {
          * same as [AssistantService.retrieve].
          */
         @MustBeClosed
-        fun retrieve(params: AssistantRetrieveParams): HttpResponseFor<Assistant> =
-            retrieve(params, RequestOptions.none())
+        fun retrieve(assistantId: String): HttpResponseFor<Assistant> =
+            retrieve(assistantId, AssistantRetrieveParams.none())
+
+        /** @see [retrieve] */
+        @MustBeClosed
+        fun retrieve(
+            assistantId: String,
+            params: AssistantRetrieveParams = AssistantRetrieveParams.none(),
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): HttpResponseFor<Assistant> =
+            retrieve(params.toBuilder().assistantId(assistantId).build(), requestOptions)
+
+        /** @see [retrieve] */
+        @MustBeClosed
+        fun retrieve(
+            assistantId: String,
+            params: AssistantRetrieveParams = AssistantRetrieveParams.none(),
+        ): HttpResponseFor<Assistant> = retrieve(assistantId, params, RequestOptions.none())
 
         /** @see [retrieve] */
         @MustBeClosed
@@ -109,13 +188,42 @@ interface AssistantService {
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<Assistant>
 
+        /** @see [retrieve] */
+        @MustBeClosed
+        fun retrieve(params: AssistantRetrieveParams): HttpResponseFor<Assistant> =
+            retrieve(params, RequestOptions.none())
+
+        /** @see [retrieve] */
+        @MustBeClosed
+        fun retrieve(
+            assistantId: String,
+            requestOptions: RequestOptions,
+        ): HttpResponseFor<Assistant> =
+            retrieve(assistantId, AssistantRetrieveParams.none(), requestOptions)
+
         /**
          * Returns a raw HTTP response for `post /assistants/{assistant_id}`, but is otherwise the
          * same as [AssistantService.update].
          */
         @MustBeClosed
-        fun update(params: AssistantUpdateParams): HttpResponseFor<Assistant> =
-            update(params, RequestOptions.none())
+        fun update(assistantId: String): HttpResponseFor<Assistant> =
+            update(assistantId, AssistantUpdateParams.none())
+
+        /** @see [update] */
+        @MustBeClosed
+        fun update(
+            assistantId: String,
+            params: AssistantUpdateParams = AssistantUpdateParams.none(),
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): HttpResponseFor<Assistant> =
+            update(params.toBuilder().assistantId(assistantId).build(), requestOptions)
+
+        /** @see [update] */
+        @MustBeClosed
+        fun update(
+            assistantId: String,
+            params: AssistantUpdateParams = AssistantUpdateParams.none(),
+        ): HttpResponseFor<Assistant> = update(assistantId, params, RequestOptions.none())
 
         /** @see [update] */
         @MustBeClosed
@@ -123,6 +231,19 @@ interface AssistantService {
             params: AssistantUpdateParams,
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<Assistant>
+
+        /** @see [update] */
+        @MustBeClosed
+        fun update(params: AssistantUpdateParams): HttpResponseFor<Assistant> =
+            update(params, RequestOptions.none())
+
+        /** @see [update] */
+        @MustBeClosed
+        fun update(
+            assistantId: String,
+            requestOptions: RequestOptions,
+        ): HttpResponseFor<Assistant> =
+            update(assistantId, AssistantUpdateParams.none(), requestOptions)
 
         /**
          * Returns a raw HTTP response for `get /assistants`, but is otherwise the same as
@@ -154,8 +275,24 @@ interface AssistantService {
          * same as [AssistantService.delete].
          */
         @MustBeClosed
-        fun delete(params: AssistantDeleteParams): HttpResponseFor<AssistantDeleted> =
-            delete(params, RequestOptions.none())
+        fun delete(assistantId: String): HttpResponseFor<AssistantDeleted> =
+            delete(assistantId, AssistantDeleteParams.none())
+
+        /** @see [delete] */
+        @MustBeClosed
+        fun delete(
+            assistantId: String,
+            params: AssistantDeleteParams = AssistantDeleteParams.none(),
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): HttpResponseFor<AssistantDeleted> =
+            delete(params.toBuilder().assistantId(assistantId).build(), requestOptions)
+
+        /** @see [delete] */
+        @MustBeClosed
+        fun delete(
+            assistantId: String,
+            params: AssistantDeleteParams = AssistantDeleteParams.none(),
+        ): HttpResponseFor<AssistantDeleted> = delete(assistantId, params, RequestOptions.none())
 
         /** @see [delete] */
         @MustBeClosed
@@ -163,5 +300,18 @@ interface AssistantService {
             params: AssistantDeleteParams,
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<AssistantDeleted>
+
+        /** @see [delete] */
+        @MustBeClosed
+        fun delete(params: AssistantDeleteParams): HttpResponseFor<AssistantDeleted> =
+            delete(params, RequestOptions.none())
+
+        /** @see [delete] */
+        @MustBeClosed
+        fun delete(
+            assistantId: String,
+            requestOptions: RequestOptions,
+        ): HttpResponseFor<AssistantDeleted> =
+            delete(assistantId, AssistantDeleteParams.none(), requestOptions)
     }
 }

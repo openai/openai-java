@@ -2,12 +2,12 @@
 
 package com.openai.models.evals.runs
 
+import com.openai.core.AutoPager
+import com.openai.core.Page
 import com.openai.core.checkRequired
 import com.openai.services.blocking.evals.RunService
 import java.util.Objects
 import java.util.Optional
-import java.util.stream.Stream
-import java.util.stream.StreamSupport
 import kotlin.jvm.optionals.getOrNull
 
 /** @see [RunService.list] */
@@ -16,7 +16,7 @@ private constructor(
     private val service: RunService,
     private val params: RunListParams,
     private val response: RunListPageResponse,
-) {
+) : Page<RunListResponse> {
 
     /**
      * Delegates to [RunListPageResponse], but gracefully handles missing data.
@@ -33,19 +33,16 @@ private constructor(
      */
     fun hasMore(): Optional<Boolean> = response._hasMore().getOptional("has_more")
 
-    fun hasNextPage(): Boolean = data().isNotEmpty()
+    override fun items(): List<RunListResponse> = data()
 
-    fun getNextPageParams(): Optional<RunListParams> {
-        if (!hasNextPage()) {
-            return Optional.empty()
-        }
+    override fun hasNextPage(): Boolean = items().isNotEmpty()
 
-        return Optional.of(params.toBuilder().after(data().last()._id().getOptional("id")).build())
-    }
+    fun nextPageParams(): RunListParams =
+        params.toBuilder().after(items().last()._id().getOptional("id")).build()
 
-    fun getNextPage(): Optional<RunListPage> = getNextPageParams().map { service.list(it) }
+    override fun nextPage(): RunListPage = service.list(nextPageParams())
 
-    fun autoPager(): AutoPager = AutoPager(this)
+    fun autoPager(): AutoPager<RunListResponse> = AutoPager.from(this)
 
     /** The parameters that were used to request this page. */
     fun params(): RunListParams = params
@@ -112,25 +109,6 @@ private constructor(
                 checkRequired("params", params),
                 checkRequired("response", response),
             )
-    }
-
-    class AutoPager(private val firstPage: RunListPage) : Iterable<RunListResponse> {
-
-        override fun iterator(): Iterator<RunListResponse> = iterator {
-            var page = firstPage
-            var index = 0
-            while (true) {
-                while (index < page.data().size) {
-                    yield(page.data()[index++])
-                }
-                page = page.getNextPage().getOrNull() ?: break
-                index = 0
-            }
-        }
-
-        fun stream(): Stream<RunListResponse> {
-            return StreamSupport.stream(spliterator(), false)
-        }
     }
 
     override fun equals(other: Any?): Boolean {

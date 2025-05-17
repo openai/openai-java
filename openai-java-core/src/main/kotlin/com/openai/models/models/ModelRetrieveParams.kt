@@ -3,10 +3,11 @@
 package com.openai.models.models
 
 import com.openai.core.Params
-import com.openai.core.checkRequired
 import com.openai.core.http.Headers
 import com.openai.core.http.QueryParams
 import java.util.Objects
+import java.util.Optional
+import kotlin.jvm.optionals.getOrNull
 
 /**
  * Retrieves a model instance, providing basic information about the model such as the owner and
@@ -14,12 +15,12 @@ import java.util.Objects
  */
 class ModelRetrieveParams
 private constructor(
-    private val model: String,
+    private val model: String?,
     private val additionalHeaders: Headers,
     private val additionalQueryParams: QueryParams,
 ) : Params {
 
-    fun model(): String = model
+    fun model(): Optional<String> = Optional.ofNullable(model)
 
     fun _additionalHeaders(): Headers = additionalHeaders
 
@@ -29,14 +30,9 @@ private constructor(
 
     companion object {
 
-        /**
-         * Returns a mutable builder for constructing an instance of [ModelRetrieveParams].
-         *
-         * The following fields are required:
-         * ```java
-         * .model()
-         * ```
-         */
+        @JvmStatic fun none(): ModelRetrieveParams = builder().build()
+
+        /** Returns a mutable builder for constructing an instance of [ModelRetrieveParams]. */
         @JvmStatic fun builder() = Builder()
     }
 
@@ -54,7 +50,10 @@ private constructor(
             additionalQueryParams = modelRetrieveParams.additionalQueryParams.toBuilder()
         }
 
-        fun model(model: String) = apply { this.model = model }
+        fun model(model: String?) = apply { this.model = model }
+
+        /** Alias for calling [Builder.model] with `model.orElse(null)`. */
+        fun model(model: Optional<String>) = model(model.getOrNull())
 
         fun additionalHeaders(additionalHeaders: Headers) = apply {
             this.additionalHeaders.clear()
@@ -158,25 +157,14 @@ private constructor(
          * Returns an immutable instance of [ModelRetrieveParams].
          *
          * Further updates to this [Builder] will not mutate the returned instance.
-         *
-         * The following fields are required:
-         * ```java
-         * .model()
-         * ```
-         *
-         * @throws IllegalStateException if any required field is unset.
          */
         fun build(): ModelRetrieveParams =
-            ModelRetrieveParams(
-                checkRequired("model", model),
-                additionalHeaders.build(),
-                additionalQueryParams.build(),
-            )
+            ModelRetrieveParams(model, additionalHeaders.build(), additionalQueryParams.build())
     }
 
     fun _pathParam(index: Int): String =
         when (index) {
-            0 -> model
+            0 -> model ?: ""
             else -> ""
         }
 

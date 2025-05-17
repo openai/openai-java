@@ -4,6 +4,7 @@ package com.openai.services.blocking.uploads
 
 import com.openai.core.ClientOptions
 import com.openai.core.RequestOptions
+import com.openai.core.checkRequired
 import com.openai.core.handlers.errorHandler
 import com.openai.core.handlers.jsonHandler
 import com.openai.core.handlers.withErrorHandler
@@ -17,6 +18,7 @@ import com.openai.core.prepare
 import com.openai.models.ErrorObject
 import com.openai.models.uploads.parts.PartCreateParams
 import com.openai.models.uploads.parts.UploadPart
+import kotlin.jvm.optionals.getOrNull
 
 class PartServiceImpl internal constructor(private val clientOptions: ClientOptions) : PartService {
 
@@ -42,6 +44,9 @@ class PartServiceImpl internal constructor(private val clientOptions: ClientOpti
             params: PartCreateParams,
             requestOptions: RequestOptions,
         ): HttpResponseFor<UploadPart> {
+            // We check here instead of in the params builder because this can be specified
+            // positionally or in the params class.
+            checkRequired("uploadId", params.uploadId().getOrNull())
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.POST)

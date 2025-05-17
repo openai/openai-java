@@ -7,8 +7,6 @@ import com.openai.client.okhttp.OpenAIOkHttpClientAsync
 import com.openai.core.JsonValue
 import com.openai.models.vectorstores.AutoFileChunkingStrategyParam
 import com.openai.models.vectorstores.VectorStoreCreateParams
-import com.openai.models.vectorstores.VectorStoreDeleteParams
-import com.openai.models.vectorstores.VectorStoreRetrieveParams
 import com.openai.models.vectorstores.VectorStoreSearchParams
 import com.openai.models.vectorstores.VectorStoreUpdateParams
 import org.junit.jupiter.api.Test
@@ -54,10 +52,7 @@ internal class VectorStoreServiceAsyncTest {
                 .build()
         val vectorStoreServiceAsync = client.vectorStores()
 
-        val vectorStoreFuture =
-            vectorStoreServiceAsync.retrieve(
-                VectorStoreRetrieveParams.builder().vectorStoreId("vector_store_id").build()
-            )
+        val vectorStoreFuture = vectorStoreServiceAsync.retrieve("vector_store_id")
 
         val vectorStore = vectorStoreFuture.get()
         vectorStore.validate()
@@ -114,10 +109,7 @@ internal class VectorStoreServiceAsyncTest {
                 .build()
         val vectorStoreServiceAsync = client.vectorStores()
 
-        val vectorStoreDeletedFuture =
-            vectorStoreServiceAsync.delete(
-                VectorStoreDeleteParams.builder().vectorStoreId("vector_store_id").build()
-            )
+        val vectorStoreDeletedFuture = vectorStoreServiceAsync.delete("vector_store_id")
 
         val vectorStoreDeleted = vectorStoreDeletedFuture.get()
         vectorStoreDeleted.validate()

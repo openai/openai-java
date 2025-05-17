@@ -4,6 +4,7 @@ package com.openai.services.async
 
 import com.openai.core.ClientOptions
 import com.openai.core.RequestOptions
+import com.openai.core.checkRequired
 import com.openai.core.handlers.errorHandler
 import com.openai.core.handlers.jsonHandler
 import com.openai.core.handlers.withErrorHandler
@@ -22,6 +23,7 @@ import com.openai.models.uploads.UploadCreateParams
 import com.openai.services.async.uploads.PartServiceAsync
 import com.openai.services.async.uploads.PartServiceAsyncImpl
 import java.util.concurrent.CompletableFuture
+import kotlin.jvm.optionals.getOrNull
 
 class UploadServiceAsyncImpl internal constructor(private val clientOptions: ClientOptions) :
     UploadServiceAsync {
@@ -105,6 +107,9 @@ class UploadServiceAsyncImpl internal constructor(private val clientOptions: Cli
             params: UploadCancelParams,
             requestOptions: RequestOptions,
         ): CompletableFuture<HttpResponseFor<Upload>> {
+            // We check here instead of in the params builder because this can be specified
+            // positionally or in the params class.
+            checkRequired("uploadId", params.uploadId().getOrNull())
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.POST)
@@ -135,6 +140,9 @@ class UploadServiceAsyncImpl internal constructor(private val clientOptions: Cli
             params: UploadCompleteParams,
             requestOptions: RequestOptions,
         ): CompletableFuture<HttpResponseFor<Upload>> {
+            // We check here instead of in the params builder because this can be specified
+            // positionally or in the params class.
+            checkRequired("uploadId", params.uploadId().getOrNull())
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.POST)

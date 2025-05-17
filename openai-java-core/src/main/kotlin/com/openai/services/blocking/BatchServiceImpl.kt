@@ -4,6 +4,7 @@ package com.openai.services.blocking
 
 import com.openai.core.ClientOptions
 import com.openai.core.RequestOptions
+import com.openai.core.checkRequired
 import com.openai.core.handlers.errorHandler
 import com.openai.core.handlers.jsonHandler
 import com.openai.core.handlers.withErrorHandler
@@ -22,6 +23,7 @@ import com.openai.models.batches.BatchListPage
 import com.openai.models.batches.BatchListPageResponse
 import com.openai.models.batches.BatchListParams
 import com.openai.models.batches.BatchRetrieveParams
+import kotlin.jvm.optionals.getOrNull
 
 class BatchServiceImpl internal constructor(private val clientOptions: ClientOptions) :
     BatchService {
@@ -87,6 +89,9 @@ class BatchServiceImpl internal constructor(private val clientOptions: ClientOpt
             params: BatchRetrieveParams,
             requestOptions: RequestOptions,
         ): HttpResponseFor<Batch> {
+            // We check here instead of in the params builder because this can be specified
+            // positionally or in the params class.
+            checkRequired("batchId", params.batchId().getOrNull())
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.GET)
@@ -147,6 +152,9 @@ class BatchServiceImpl internal constructor(private val clientOptions: ClientOpt
             params: BatchCancelParams,
             requestOptions: RequestOptions,
         ): HttpResponseFor<Batch> {
+            // We check here instead of in the params builder because this can be specified
+            // positionally or in the params class.
+            checkRequired("batchId", params.batchId().getOrNull())
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.POST)

@@ -4,6 +4,7 @@ package com.openai.services.blocking
 
 import com.openai.core.ClientOptions
 import com.openai.core.RequestOptions
+import com.openai.core.checkRequired
 import com.openai.core.handlers.errorHandler
 import com.openai.core.handlers.jsonHandler
 import com.openai.core.handlers.withErrorHandler
@@ -28,6 +29,7 @@ import com.openai.models.evals.EvalUpdateParams
 import com.openai.models.evals.EvalUpdateResponse
 import com.openai.services.blocking.evals.RunService
 import com.openai.services.blocking.evals.RunServiceImpl
+import kotlin.jvm.optionals.getOrNull
 
 class EvalServiceImpl internal constructor(private val clientOptions: ClientOptions) : EvalService {
 
@@ -119,6 +121,9 @@ class EvalServiceImpl internal constructor(private val clientOptions: ClientOpti
             params: EvalRetrieveParams,
             requestOptions: RequestOptions,
         ): HttpResponseFor<EvalRetrieveResponse> {
+            // We check here instead of in the params builder because this can be specified
+            // positionally or in the params class.
+            checkRequired("evalId", params.evalId().getOrNull())
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.GET)
@@ -145,6 +150,9 @@ class EvalServiceImpl internal constructor(private val clientOptions: ClientOpti
             params: EvalUpdateParams,
             requestOptions: RequestOptions,
         ): HttpResponseFor<EvalUpdateResponse> {
+            // We check here instead of in the params builder because this can be specified
+            // positionally or in the params class.
+            checkRequired("evalId", params.evalId().getOrNull())
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.POST)
@@ -206,6 +214,9 @@ class EvalServiceImpl internal constructor(private val clientOptions: ClientOpti
             params: EvalDeleteParams,
             requestOptions: RequestOptions,
         ): HttpResponseFor<EvalDeleteResponse> {
+            // We check here instead of in the params builder because this can be specified
+            // positionally or in the params class.
+            checkRequired("evalId", params.evalId().getOrNull())
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.DELETE)

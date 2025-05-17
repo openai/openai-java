@@ -4,6 +4,7 @@ package com.openai.services.async.chat.completions
 
 import com.openai.core.ClientOptions
 import com.openai.core.RequestOptions
+import com.openai.core.checkRequired
 import com.openai.core.handlers.errorHandler
 import com.openai.core.handlers.jsonHandler
 import com.openai.core.handlers.withErrorHandler
@@ -18,6 +19,7 @@ import com.openai.models.chat.completions.messages.MessageListPageAsync
 import com.openai.models.chat.completions.messages.MessageListPageResponse
 import com.openai.models.chat.completions.messages.MessageListParams
 import java.util.concurrent.CompletableFuture
+import kotlin.jvm.optionals.getOrNull
 
 class MessageServiceAsyncImpl internal constructor(private val clientOptions: ClientOptions) :
     MessageServiceAsync {
@@ -48,6 +50,9 @@ class MessageServiceAsyncImpl internal constructor(private val clientOptions: Cl
             params: MessageListParams,
             requestOptions: RequestOptions,
         ): CompletableFuture<HttpResponseFor<MessageListPageAsync>> {
+            // We check here instead of in the params builder because this can be specified
+            // positionally or in the params class.
+            checkRequired("completionId", params.completionId().getOrNull())
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.GET)
@@ -69,6 +74,7 @@ class MessageServiceAsyncImpl internal constructor(private val clientOptions: Cl
                             .let {
                                 MessageListPageAsync.builder()
                                     .service(MessageServiceAsyncImpl(clientOptions))
+                                    .streamHandlerExecutor(clientOptions.streamHandlerExecutor)
                                     .params(params)
                                     .response(it)
                                     .build()

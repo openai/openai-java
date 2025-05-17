@@ -49,8 +49,22 @@ interface ThreadServiceAsync {
         create(ThreadCreateParams.none(), requestOptions)
 
     /** Retrieves a thread. */
-    fun retrieve(params: ThreadRetrieveParams): CompletableFuture<Thread> =
-        retrieve(params, RequestOptions.none())
+    fun retrieve(threadId: String): CompletableFuture<Thread> =
+        retrieve(threadId, ThreadRetrieveParams.none())
+
+    /** @see [retrieve] */
+    fun retrieve(
+        threadId: String,
+        params: ThreadRetrieveParams = ThreadRetrieveParams.none(),
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): CompletableFuture<Thread> =
+        retrieve(params.toBuilder().threadId(threadId).build(), requestOptions)
+
+    /** @see [retrieve] */
+    fun retrieve(
+        threadId: String,
+        params: ThreadRetrieveParams = ThreadRetrieveParams.none(),
+    ): CompletableFuture<Thread> = retrieve(threadId, params, RequestOptions.none())
 
     /** @see [retrieve] */
     fun retrieve(
@@ -58,9 +72,31 @@ interface ThreadServiceAsync {
         requestOptions: RequestOptions = RequestOptions.none(),
     ): CompletableFuture<Thread>
 
+    /** @see [retrieve] */
+    fun retrieve(params: ThreadRetrieveParams): CompletableFuture<Thread> =
+        retrieve(params, RequestOptions.none())
+
+    /** @see [retrieve] */
+    fun retrieve(threadId: String, requestOptions: RequestOptions): CompletableFuture<Thread> =
+        retrieve(threadId, ThreadRetrieveParams.none(), requestOptions)
+
     /** Modifies a thread. */
-    fun update(params: ThreadUpdateParams): CompletableFuture<Thread> =
-        update(params, RequestOptions.none())
+    fun update(threadId: String): CompletableFuture<Thread> =
+        update(threadId, ThreadUpdateParams.none())
+
+    /** @see [update] */
+    fun update(
+        threadId: String,
+        params: ThreadUpdateParams = ThreadUpdateParams.none(),
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): CompletableFuture<Thread> =
+        update(params.toBuilder().threadId(threadId).build(), requestOptions)
+
+    /** @see [update] */
+    fun update(
+        threadId: String,
+        params: ThreadUpdateParams = ThreadUpdateParams.none(),
+    ): CompletableFuture<Thread> = update(threadId, params, RequestOptions.none())
 
     /** @see [update] */
     fun update(
@@ -68,15 +104,45 @@ interface ThreadServiceAsync {
         requestOptions: RequestOptions = RequestOptions.none(),
     ): CompletableFuture<Thread>
 
+    /** @see [update] */
+    fun update(params: ThreadUpdateParams): CompletableFuture<Thread> =
+        update(params, RequestOptions.none())
+
+    /** @see [update] */
+    fun update(threadId: String, requestOptions: RequestOptions): CompletableFuture<Thread> =
+        update(threadId, ThreadUpdateParams.none(), requestOptions)
+
     /** Delete a thread. */
-    fun delete(params: ThreadDeleteParams): CompletableFuture<ThreadDeleted> =
-        delete(params, RequestOptions.none())
+    fun delete(threadId: String): CompletableFuture<ThreadDeleted> =
+        delete(threadId, ThreadDeleteParams.none())
+
+    /** @see [delete] */
+    fun delete(
+        threadId: String,
+        params: ThreadDeleteParams = ThreadDeleteParams.none(),
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): CompletableFuture<ThreadDeleted> =
+        delete(params.toBuilder().threadId(threadId).build(), requestOptions)
+
+    /** @see [delete] */
+    fun delete(
+        threadId: String,
+        params: ThreadDeleteParams = ThreadDeleteParams.none(),
+    ): CompletableFuture<ThreadDeleted> = delete(threadId, params, RequestOptions.none())
 
     /** @see [delete] */
     fun delete(
         params: ThreadDeleteParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): CompletableFuture<ThreadDeleted>
+
+    /** @see [delete] */
+    fun delete(params: ThreadDeleteParams): CompletableFuture<ThreadDeleted> =
+        delete(params, RequestOptions.none())
+
+    /** @see [delete] */
+    fun delete(threadId: String, requestOptions: RequestOptions): CompletableFuture<ThreadDeleted> =
+        delete(threadId, ThreadDeleteParams.none(), requestOptions)
 
     /** Create a thread and run it in one request. */
     fun createAndRun(params: ThreadCreateAndRunParams): CompletableFuture<Run> =
@@ -139,8 +205,25 @@ interface ThreadServiceAsync {
          * [ThreadServiceAsync.retrieve].
          */
         @MustBeClosed
-        fun retrieve(params: ThreadRetrieveParams): CompletableFuture<HttpResponseFor<Thread>> =
-            retrieve(params, RequestOptions.none())
+        fun retrieve(threadId: String): CompletableFuture<HttpResponseFor<Thread>> =
+            retrieve(threadId, ThreadRetrieveParams.none())
+
+        /** @see [retrieve] */
+        @MustBeClosed
+        fun retrieve(
+            threadId: String,
+            params: ThreadRetrieveParams = ThreadRetrieveParams.none(),
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): CompletableFuture<HttpResponseFor<Thread>> =
+            retrieve(params.toBuilder().threadId(threadId).build(), requestOptions)
+
+        /** @see [retrieve] */
+        @MustBeClosed
+        fun retrieve(
+            threadId: String,
+            params: ThreadRetrieveParams = ThreadRetrieveParams.none(),
+        ): CompletableFuture<HttpResponseFor<Thread>> =
+            retrieve(threadId, params, RequestOptions.none())
 
         /** @see [retrieve] */
         @MustBeClosed
@@ -149,13 +232,43 @@ interface ThreadServiceAsync {
             requestOptions: RequestOptions = RequestOptions.none(),
         ): CompletableFuture<HttpResponseFor<Thread>>
 
+        /** @see [retrieve] */
+        @MustBeClosed
+        fun retrieve(params: ThreadRetrieveParams): CompletableFuture<HttpResponseFor<Thread>> =
+            retrieve(params, RequestOptions.none())
+
+        /** @see [retrieve] */
+        @MustBeClosed
+        fun retrieve(
+            threadId: String,
+            requestOptions: RequestOptions,
+        ): CompletableFuture<HttpResponseFor<Thread>> =
+            retrieve(threadId, ThreadRetrieveParams.none(), requestOptions)
+
         /**
          * Returns a raw HTTP response for `post /threads/{thread_id}`, but is otherwise the same as
          * [ThreadServiceAsync.update].
          */
         @MustBeClosed
-        fun update(params: ThreadUpdateParams): CompletableFuture<HttpResponseFor<Thread>> =
-            update(params, RequestOptions.none())
+        fun update(threadId: String): CompletableFuture<HttpResponseFor<Thread>> =
+            update(threadId, ThreadUpdateParams.none())
+
+        /** @see [update] */
+        @MustBeClosed
+        fun update(
+            threadId: String,
+            params: ThreadUpdateParams = ThreadUpdateParams.none(),
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): CompletableFuture<HttpResponseFor<Thread>> =
+            update(params.toBuilder().threadId(threadId).build(), requestOptions)
+
+        /** @see [update] */
+        @MustBeClosed
+        fun update(
+            threadId: String,
+            params: ThreadUpdateParams = ThreadUpdateParams.none(),
+        ): CompletableFuture<HttpResponseFor<Thread>> =
+            update(threadId, params, RequestOptions.none())
 
         /** @see [update] */
         @MustBeClosed
@@ -164,13 +277,43 @@ interface ThreadServiceAsync {
             requestOptions: RequestOptions = RequestOptions.none(),
         ): CompletableFuture<HttpResponseFor<Thread>>
 
+        /** @see [update] */
+        @MustBeClosed
+        fun update(params: ThreadUpdateParams): CompletableFuture<HttpResponseFor<Thread>> =
+            update(params, RequestOptions.none())
+
+        /** @see [update] */
+        @MustBeClosed
+        fun update(
+            threadId: String,
+            requestOptions: RequestOptions,
+        ): CompletableFuture<HttpResponseFor<Thread>> =
+            update(threadId, ThreadUpdateParams.none(), requestOptions)
+
         /**
          * Returns a raw HTTP response for `delete /threads/{thread_id}`, but is otherwise the same
          * as [ThreadServiceAsync.delete].
          */
         @MustBeClosed
-        fun delete(params: ThreadDeleteParams): CompletableFuture<HttpResponseFor<ThreadDeleted>> =
-            delete(params, RequestOptions.none())
+        fun delete(threadId: String): CompletableFuture<HttpResponseFor<ThreadDeleted>> =
+            delete(threadId, ThreadDeleteParams.none())
+
+        /** @see [delete] */
+        @MustBeClosed
+        fun delete(
+            threadId: String,
+            params: ThreadDeleteParams = ThreadDeleteParams.none(),
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): CompletableFuture<HttpResponseFor<ThreadDeleted>> =
+            delete(params.toBuilder().threadId(threadId).build(), requestOptions)
+
+        /** @see [delete] */
+        @MustBeClosed
+        fun delete(
+            threadId: String,
+            params: ThreadDeleteParams = ThreadDeleteParams.none(),
+        ): CompletableFuture<HttpResponseFor<ThreadDeleted>> =
+            delete(threadId, params, RequestOptions.none())
 
         /** @see [delete] */
         @MustBeClosed
@@ -178,6 +321,19 @@ interface ThreadServiceAsync {
             params: ThreadDeleteParams,
             requestOptions: RequestOptions = RequestOptions.none(),
         ): CompletableFuture<HttpResponseFor<ThreadDeleted>>
+
+        /** @see [delete] */
+        @MustBeClosed
+        fun delete(params: ThreadDeleteParams): CompletableFuture<HttpResponseFor<ThreadDeleted>> =
+            delete(params, RequestOptions.none())
+
+        /** @see [delete] */
+        @MustBeClosed
+        fun delete(
+            threadId: String,
+            requestOptions: RequestOptions,
+        ): CompletableFuture<HttpResponseFor<ThreadDeleted>> =
+            delete(threadId, ThreadDeleteParams.none(), requestOptions)
 
         /**
          * Returns a raw HTTP response for `post /threads/runs`, but is otherwise the same as

@@ -3,10 +3,11 @@
 package com.openai.models.chat.completions
 
 import com.openai.core.Params
-import com.openai.core.checkRequired
 import com.openai.core.http.Headers
 import com.openai.core.http.QueryParams
 import java.util.Objects
+import java.util.Optional
+import kotlin.jvm.optionals.getOrNull
 
 /**
  * Get a stored chat completion. Only Chat Completions that have been created with the `store`
@@ -14,12 +15,12 @@ import java.util.Objects
  */
 class ChatCompletionRetrieveParams
 private constructor(
-    private val completionId: String,
+    private val completionId: String?,
     private val additionalHeaders: Headers,
     private val additionalQueryParams: QueryParams,
 ) : Params {
 
-    fun completionId(): String = completionId
+    fun completionId(): Optional<String> = Optional.ofNullable(completionId)
 
     fun _additionalHeaders(): Headers = additionalHeaders
 
@@ -29,13 +30,10 @@ private constructor(
 
     companion object {
 
+        @JvmStatic fun none(): ChatCompletionRetrieveParams = builder().build()
+
         /**
          * Returns a mutable builder for constructing an instance of [ChatCompletionRetrieveParams].
-         *
-         * The following fields are required:
-         * ```java
-         * .completionId()
-         * ```
          */
         @JvmStatic fun builder() = Builder()
     }
@@ -54,7 +52,10 @@ private constructor(
             additionalQueryParams = chatCompletionRetrieveParams.additionalQueryParams.toBuilder()
         }
 
-        fun completionId(completionId: String) = apply { this.completionId = completionId }
+        fun completionId(completionId: String?) = apply { this.completionId = completionId }
+
+        /** Alias for calling [Builder.completionId] with `completionId.orElse(null)`. */
+        fun completionId(completionId: Optional<String>) = completionId(completionId.getOrNull())
 
         fun additionalHeaders(additionalHeaders: Headers) = apply {
             this.additionalHeaders.clear()
@@ -158,17 +159,10 @@ private constructor(
          * Returns an immutable instance of [ChatCompletionRetrieveParams].
          *
          * Further updates to this [Builder] will not mutate the returned instance.
-         *
-         * The following fields are required:
-         * ```java
-         * .completionId()
-         * ```
-         *
-         * @throws IllegalStateException if any required field is unset.
          */
         fun build(): ChatCompletionRetrieveParams =
             ChatCompletionRetrieveParams(
-                checkRequired("completionId", completionId),
+                completionId,
                 additionalHeaders.build(),
                 additionalQueryParams.build(),
             )
@@ -176,7 +170,7 @@ private constructor(
 
     fun _pathParam(index: Int): String =
         when (index) {
-            0 -> completionId
+            0 -> completionId ?: ""
             else -> ""
         }
 

@@ -4,23 +4,23 @@ package com.openai.models.beta.assistants
 
 import com.openai.core.JsonValue
 import com.openai.core.Params
-import com.openai.core.checkRequired
 import com.openai.core.http.Headers
 import com.openai.core.http.QueryParams
 import com.openai.core.toImmutable
 import java.util.Objects
 import java.util.Optional
+import kotlin.jvm.optionals.getOrNull
 
 /** Delete an assistant. */
 class AssistantDeleteParams
 private constructor(
-    private val assistantId: String,
+    private val assistantId: String?,
     private val additionalHeaders: Headers,
     private val additionalQueryParams: QueryParams,
     private val additionalBodyProperties: Map<String, JsonValue>,
 ) : Params {
 
-    fun assistantId(): String = assistantId
+    fun assistantId(): Optional<String> = Optional.ofNullable(assistantId)
 
     fun _additionalBodyProperties(): Map<String, JsonValue> = additionalBodyProperties
 
@@ -32,14 +32,9 @@ private constructor(
 
     companion object {
 
-        /**
-         * Returns a mutable builder for constructing an instance of [AssistantDeleteParams].
-         *
-         * The following fields are required:
-         * ```java
-         * .assistantId()
-         * ```
-         */
+        @JvmStatic fun none(): AssistantDeleteParams = builder().build()
+
+        /** Returns a mutable builder for constructing an instance of [AssistantDeleteParams]. */
         @JvmStatic fun builder() = Builder()
     }
 
@@ -59,7 +54,10 @@ private constructor(
             additionalBodyProperties = assistantDeleteParams.additionalBodyProperties.toMutableMap()
         }
 
-        fun assistantId(assistantId: String) = apply { this.assistantId = assistantId }
+        fun assistantId(assistantId: String?) = apply { this.assistantId = assistantId }
+
+        /** Alias for calling [Builder.assistantId] with `assistantId.orElse(null)`. */
+        fun assistantId(assistantId: Optional<String>) = assistantId(assistantId.getOrNull())
 
         fun additionalHeaders(additionalHeaders: Headers) = apply {
             this.additionalHeaders.clear()
@@ -185,17 +183,10 @@ private constructor(
          * Returns an immutable instance of [AssistantDeleteParams].
          *
          * Further updates to this [Builder] will not mutate the returned instance.
-         *
-         * The following fields are required:
-         * ```java
-         * .assistantId()
-         * ```
-         *
-         * @throws IllegalStateException if any required field is unset.
          */
         fun build(): AssistantDeleteParams =
             AssistantDeleteParams(
-                checkRequired("assistantId", assistantId),
+                assistantId,
                 additionalHeaders.build(),
                 additionalQueryParams.build(),
                 additionalBodyProperties.toImmutable(),
@@ -207,7 +198,7 @@ private constructor(
 
     fun _pathParam(index: Int): String =
         when (index) {
-            0 -> assistantId
+            0 -> assistantId ?: ""
             else -> ""
         }
 

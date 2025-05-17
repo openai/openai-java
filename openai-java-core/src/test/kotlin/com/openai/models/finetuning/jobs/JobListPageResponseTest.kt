@@ -5,6 +5,13 @@ package com.openai.models.finetuning.jobs
 import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
 import com.openai.core.JsonValue
 import com.openai.core.jsonMapper
+import com.openai.models.finetuning.methods.DpoHyperparameters
+import com.openai.models.finetuning.methods.DpoMethod
+import com.openai.models.finetuning.methods.ReinforcementHyperparameters
+import com.openai.models.finetuning.methods.ReinforcementMethod
+import com.openai.models.finetuning.methods.SupervisedHyperparameters
+import com.openai.models.finetuning.methods.SupervisedMethod
+import com.openai.models.graders.gradermodels.StringCheckGrader
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
@@ -29,7 +36,7 @@ internal class JobListPageResponseTest {
                         .finishedAt(0L)
                         .hyperparameters(
                             FineTuningJob.Hyperparameters.builder()
-                                .batchSizeAuto()
+                                .batchSize(JsonValue.from(mapOf<String, Any>()))
                                 .learningRateMultiplierAuto()
                                 .nEpochsAuto()
                                 .build()
@@ -62,10 +69,11 @@ internal class JobListPageResponseTest {
                         )
                         .method(
                             FineTuningJob.Method.builder()
+                                .type(FineTuningJob.Method.Type.SUPERVISED)
                                 .dpo(
-                                    FineTuningJob.Method.Dpo.builder()
+                                    DpoMethod.builder()
                                         .hyperparameters(
-                                            FineTuningJob.Method.Dpo.Hyperparameters.builder()
+                                            DpoHyperparameters.builder()
                                                 .batchSizeAuto()
                                                 .betaAuto()
                                                 .learningRateMultiplierAuto()
@@ -74,11 +82,36 @@ internal class JobListPageResponseTest {
                                         )
                                         .build()
                                 )
-                                .supervised(
-                                    FineTuningJob.Method.Supervised.builder()
+                                .reinforcement(
+                                    ReinforcementMethod.builder()
+                                        .grader(
+                                            StringCheckGrader.builder()
+                                                .input("input")
+                                                .name("name")
+                                                .operation(StringCheckGrader.Operation.EQ)
+                                                .reference("reference")
+                                                .build()
+                                        )
                                         .hyperparameters(
-                                            FineTuningJob.Method.Supervised.Hyperparameters
-                                                .builder()
+                                            ReinforcementHyperparameters.builder()
+                                                .batchSizeAuto()
+                                                .computeMultiplierAuto()
+                                                .evalIntervalAuto()
+                                                .evalSamplesAuto()
+                                                .learningRateMultiplierAuto()
+                                                .nEpochsAuto()
+                                                .reasoningEffort(
+                                                    ReinforcementHyperparameters.ReasoningEffort
+                                                        .DEFAULT
+                                                )
+                                                .build()
+                                        )
+                                        .build()
+                                )
+                                .supervised(
+                                    SupervisedMethod.builder()
+                                        .hyperparameters(
+                                            SupervisedHyperparameters.builder()
                                                 .batchSizeAuto()
                                                 .learningRateMultiplierAuto()
                                                 .nEpochsAuto()
@@ -86,7 +119,6 @@ internal class JobListPageResponseTest {
                                         )
                                         .build()
                                 )
-                                .type(FineTuningJob.Method.Type.SUPERVISED)
                                 .build()
                         )
                         .build()
@@ -110,7 +142,7 @@ internal class JobListPageResponseTest {
                     .finishedAt(0L)
                     .hyperparameters(
                         FineTuningJob.Hyperparameters.builder()
-                            .batchSizeAuto()
+                            .batchSize(JsonValue.from(mapOf<String, Any>()))
                             .learningRateMultiplierAuto()
                             .nEpochsAuto()
                             .build()
@@ -143,10 +175,11 @@ internal class JobListPageResponseTest {
                     )
                     .method(
                         FineTuningJob.Method.builder()
+                            .type(FineTuningJob.Method.Type.SUPERVISED)
                             .dpo(
-                                FineTuningJob.Method.Dpo.builder()
+                                DpoMethod.builder()
                                     .hyperparameters(
-                                        FineTuningJob.Method.Dpo.Hyperparameters.builder()
+                                        DpoHyperparameters.builder()
                                             .batchSizeAuto()
                                             .betaAuto()
                                             .learningRateMultiplierAuto()
@@ -155,10 +188,35 @@ internal class JobListPageResponseTest {
                                     )
                                     .build()
                             )
-                            .supervised(
-                                FineTuningJob.Method.Supervised.builder()
+                            .reinforcement(
+                                ReinforcementMethod.builder()
+                                    .grader(
+                                        StringCheckGrader.builder()
+                                            .input("input")
+                                            .name("name")
+                                            .operation(StringCheckGrader.Operation.EQ)
+                                            .reference("reference")
+                                            .build()
+                                    )
                                     .hyperparameters(
-                                        FineTuningJob.Method.Supervised.Hyperparameters.builder()
+                                        ReinforcementHyperparameters.builder()
+                                            .batchSizeAuto()
+                                            .computeMultiplierAuto()
+                                            .evalIntervalAuto()
+                                            .evalSamplesAuto()
+                                            .learningRateMultiplierAuto()
+                                            .nEpochsAuto()
+                                            .reasoningEffort(
+                                                ReinforcementHyperparameters.ReasoningEffort.DEFAULT
+                                            )
+                                            .build()
+                                    )
+                                    .build()
+                            )
+                            .supervised(
+                                SupervisedMethod.builder()
+                                    .hyperparameters(
+                                        SupervisedHyperparameters.builder()
                                             .batchSizeAuto()
                                             .learningRateMultiplierAuto()
                                             .nEpochsAuto()
@@ -166,7 +224,6 @@ internal class JobListPageResponseTest {
                                     )
                                     .build()
                             )
-                            .type(FineTuningJob.Method.Type.SUPERVISED)
                             .build()
                     )
                     .build()
@@ -194,7 +251,7 @@ internal class JobListPageResponseTest {
                         .finishedAt(0L)
                         .hyperparameters(
                             FineTuningJob.Hyperparameters.builder()
-                                .batchSizeAuto()
+                                .batchSize(JsonValue.from(mapOf<String, Any>()))
                                 .learningRateMultiplierAuto()
                                 .nEpochsAuto()
                                 .build()
@@ -227,10 +284,11 @@ internal class JobListPageResponseTest {
                         )
                         .method(
                             FineTuningJob.Method.builder()
+                                .type(FineTuningJob.Method.Type.SUPERVISED)
                                 .dpo(
-                                    FineTuningJob.Method.Dpo.builder()
+                                    DpoMethod.builder()
                                         .hyperparameters(
-                                            FineTuningJob.Method.Dpo.Hyperparameters.builder()
+                                            DpoHyperparameters.builder()
                                                 .batchSizeAuto()
                                                 .betaAuto()
                                                 .learningRateMultiplierAuto()
@@ -239,11 +297,36 @@ internal class JobListPageResponseTest {
                                         )
                                         .build()
                                 )
-                                .supervised(
-                                    FineTuningJob.Method.Supervised.builder()
+                                .reinforcement(
+                                    ReinforcementMethod.builder()
+                                        .grader(
+                                            StringCheckGrader.builder()
+                                                .input("input")
+                                                .name("name")
+                                                .operation(StringCheckGrader.Operation.EQ)
+                                                .reference("reference")
+                                                .build()
+                                        )
                                         .hyperparameters(
-                                            FineTuningJob.Method.Supervised.Hyperparameters
-                                                .builder()
+                                            ReinforcementHyperparameters.builder()
+                                                .batchSizeAuto()
+                                                .computeMultiplierAuto()
+                                                .evalIntervalAuto()
+                                                .evalSamplesAuto()
+                                                .learningRateMultiplierAuto()
+                                                .nEpochsAuto()
+                                                .reasoningEffort(
+                                                    ReinforcementHyperparameters.ReasoningEffort
+                                                        .DEFAULT
+                                                )
+                                                .build()
+                                        )
+                                        .build()
+                                )
+                                .supervised(
+                                    SupervisedMethod.builder()
+                                        .hyperparameters(
+                                            SupervisedHyperparameters.builder()
                                                 .batchSizeAuto()
                                                 .learningRateMultiplierAuto()
                                                 .nEpochsAuto()
@@ -251,7 +334,6 @@ internal class JobListPageResponseTest {
                                         )
                                         .build()
                                 )
-                                .type(FineTuningJob.Method.Type.SUPERVISED)
                                 .build()
                         )
                         .build()

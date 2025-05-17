@@ -4,6 +4,7 @@ package com.openai.services.blocking
 
 import com.openai.core.ClientOptions
 import com.openai.core.RequestOptions
+import com.openai.core.checkRequired
 import com.openai.core.handlers.errorHandler
 import com.openai.core.handlers.jsonHandler
 import com.openai.core.handlers.withErrorHandler
@@ -32,6 +33,7 @@ import com.openai.services.blocking.vectorstores.FileBatchService
 import com.openai.services.blocking.vectorstores.FileBatchServiceImpl
 import com.openai.services.blocking.vectorstores.FileService
 import com.openai.services.blocking.vectorstores.FileServiceImpl
+import kotlin.jvm.optionals.getOrNull
 
 class VectorStoreServiceImpl internal constructor(private val clientOptions: ClientOptions) :
     VectorStoreService {
@@ -149,6 +151,9 @@ class VectorStoreServiceImpl internal constructor(private val clientOptions: Cli
             params: VectorStoreRetrieveParams,
             requestOptions: RequestOptions,
         ): HttpResponseFor<VectorStore> {
+            // We check here instead of in the params builder because this can be specified
+            // positionally or in the params class.
+            checkRequired("vectorStoreId", params.vectorStoreId().getOrNull())
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.GET)
@@ -176,6 +181,9 @@ class VectorStoreServiceImpl internal constructor(private val clientOptions: Cli
             params: VectorStoreUpdateParams,
             requestOptions: RequestOptions,
         ): HttpResponseFor<VectorStore> {
+            // We check here instead of in the params builder because this can be specified
+            // positionally or in the params class.
+            checkRequired("vectorStoreId", params.vectorStoreId().getOrNull())
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.POST)
@@ -239,6 +247,9 @@ class VectorStoreServiceImpl internal constructor(private val clientOptions: Cli
             params: VectorStoreDeleteParams,
             requestOptions: RequestOptions,
         ): HttpResponseFor<VectorStoreDeleted> {
+            // We check here instead of in the params builder because this can be specified
+            // positionally or in the params class.
+            checkRequired("vectorStoreId", params.vectorStoreId().getOrNull())
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.DELETE)
@@ -268,6 +279,9 @@ class VectorStoreServiceImpl internal constructor(private val clientOptions: Cli
             params: VectorStoreSearchParams,
             requestOptions: RequestOptions,
         ): HttpResponseFor<VectorStoreSearchPage> {
+            // We check here instead of in the params builder because this can be specified
+            // positionally or in the params class.
+            checkRequired("vectorStoreId", params.vectorStoreId().getOrNull())
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.POST)

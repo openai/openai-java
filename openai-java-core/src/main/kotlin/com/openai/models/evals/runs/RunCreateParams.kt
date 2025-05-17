@@ -36,16 +36,20 @@ import java.util.Objects
 import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
-/** Create a new evaluation run. This is the endpoint that will kick off grading. */
+/**
+ * Kicks off a new run for a given evaluation, specifying the data source, and what model
+ * configuration to use to test. The datasource will be validated against the schema specified in
+ * the config of the evaluation.
+ */
 class RunCreateParams
 private constructor(
-    private val evalId: String,
+    private val evalId: String?,
     private val body: Body,
     private val additionalHeaders: Headers,
     private val additionalQueryParams: QueryParams,
 ) : Params {
 
-    fun evalId(): String = evalId
+    fun evalId(): Optional<String> = Optional.ofNullable(evalId)
 
     /**
      * Details about the run's data source.
@@ -112,7 +116,6 @@ private constructor(
          *
          * The following fields are required:
          * ```java
-         * .evalId()
          * .dataSource()
          * ```
          */
@@ -135,7 +138,10 @@ private constructor(
             additionalQueryParams = runCreateParams.additionalQueryParams.toBuilder()
         }
 
-        fun evalId(evalId: String) = apply { this.evalId = evalId }
+        fun evalId(evalId: String?) = apply { this.evalId = evalId }
+
+        /** Alias for calling [Builder.evalId] with `evalId.orElse(null)`. */
+        fun evalId(evalId: Optional<String>) = evalId(evalId.getOrNull())
 
         /**
          * Sets the entire request body.
@@ -342,7 +348,6 @@ private constructor(
          *
          * The following fields are required:
          * ```java
-         * .evalId()
          * .dataSource()
          * ```
          *
@@ -350,7 +355,7 @@ private constructor(
          */
         fun build(): RunCreateParams =
             RunCreateParams(
-                checkRequired("evalId", evalId),
+                evalId,
                 body.build(),
                 additionalHeaders.build(),
                 additionalQueryParams.build(),
@@ -361,7 +366,7 @@ private constructor(
 
     fun _pathParam(index: Int): String =
         when (index) {
-            0 -> evalId
+            0 -> evalId ?: ""
             else -> ""
         }
 
@@ -916,7 +921,7 @@ private constructor(
             ) : this(source, type, inputMessages, model, samplingParams, mutableMapOf())
 
             /**
-             * A EvalResponsesSource object describing a run data source configuration.
+             * Determines what populates the `item` namespace in this run's data source.
              *
              * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
              *   unexpectedly missing or null (e.g. if the server responded with an unexpected
@@ -925,7 +930,7 @@ private constructor(
             fun source(): Source = source.getRequired("source")
 
             /**
-             * The type of run data source. Always `completions`.
+             * The type of run data source. Always `responses`.
              *
              * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
              *   unexpectedly missing or null (e.g. if the server responded with an unexpected
@@ -934,6 +939,11 @@ private constructor(
             fun type(): Type = type.getRequired("type")
 
             /**
+             * Used when sampling from a model. Dictates the structure of the messages passed into
+             * the model. Can either be a reference to a prebuilt trajectory (ie,
+             * `item.input_trajectory`), or a template with variable references to the `item`
+             * namespace.
+             *
              * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if
              *   the server responded with an unexpected value).
              */
@@ -1046,7 +1056,7 @@ private constructor(
                         createEvalResponsesRunDataSource.additionalProperties.toMutableMap()
                 }
 
-                /** A EvalResponsesSource object describing a run data source configuration. */
+                /** Determines what populates the `item` namespace in this run's data source. */
                 fun source(source: Source) = source(JsonField.of(source))
 
                 /**
@@ -1089,7 +1099,7 @@ private constructor(
                 /** Alias for calling [source] with `Source.ofResponses(responses)`. */
                 fun source(responses: Source.Responses) = source(Source.ofResponses(responses))
 
-                /** The type of run data source. Always `completions`. */
+                /** The type of run data source. Always `responses`. */
                 fun type(type: Type) = type(JsonField.of(type))
 
                 /**
@@ -1101,6 +1111,12 @@ private constructor(
                  */
                 fun type(type: JsonField<Type>) = apply { this.type = type }
 
+                /**
+                 * Used when sampling from a model. Dictates the structure of the messages passed
+                 * into the model. Can either be a reference to a prebuilt trajectory (ie,
+                 * `item.input_trajectory`), or a template with variable references to the `item`
+                 * namespace.
+                 */
                 fun inputMessages(inputMessages: InputMessages) =
                     inputMessages(JsonField.of(inputMessages))
 
@@ -1259,7 +1275,7 @@ private constructor(
                     (if (model.asKnown().isPresent) 1 else 0) +
                     (samplingParams.asKnown().getOrNull()?.validity() ?: 0)
 
-            /** A EvalResponsesSource object describing a run data source configuration. */
+            /** Determines what populates the `item` namespace in this run's data source. */
             @JsonDeserialize(using = Source.Deserializer::class)
             @JsonSerialize(using = Source.Serializer::class)
             class Source
@@ -2320,15 +2336,14 @@ private constructor(
                 class Responses
                 private constructor(
                     private val type: JsonValue,
-                    private val allowParallelToolCalls: JsonField<Boolean>,
                     private val createdAfter: JsonField<Long>,
                     private val createdBefore: JsonField<Long>,
-                    private val hasToolCalls: JsonField<Boolean>,
                     private val instructionsSearch: JsonField<String>,
                     private val metadata: JsonValue,
                     private val model: JsonField<String>,
                     private val reasoningEffort: JsonField<ReasoningEffort>,
                     private val temperature: JsonField<Double>,
+                    private val tools: JsonField<List<String>>,
                     private val topP: JsonField<Double>,
                     private val users: JsonField<List<String>>,
                     private val additionalProperties: MutableMap<String, JsonValue>,
@@ -2337,18 +2352,12 @@ private constructor(
                     @JsonCreator
                     private constructor(
                         @JsonProperty("type") @ExcludeMissing type: JsonValue = JsonMissing.of(),
-                        @JsonProperty("allow_parallel_tool_calls")
-                        @ExcludeMissing
-                        allowParallelToolCalls: JsonField<Boolean> = JsonMissing.of(),
                         @JsonProperty("created_after")
                         @ExcludeMissing
                         createdAfter: JsonField<Long> = JsonMissing.of(),
                         @JsonProperty("created_before")
                         @ExcludeMissing
                         createdBefore: JsonField<Long> = JsonMissing.of(),
-                        @JsonProperty("has_tool_calls")
-                        @ExcludeMissing
-                        hasToolCalls: JsonField<Boolean> = JsonMissing.of(),
                         @JsonProperty("instructions_search")
                         @ExcludeMissing
                         instructionsSearch: JsonField<String> = JsonMissing.of(),
@@ -2364,6 +2373,9 @@ private constructor(
                         @JsonProperty("temperature")
                         @ExcludeMissing
                         temperature: JsonField<Double> = JsonMissing.of(),
+                        @JsonProperty("tools")
+                        @ExcludeMissing
+                        tools: JsonField<List<String>> = JsonMissing.of(),
                         @JsonProperty("top_p")
                         @ExcludeMissing
                         topP: JsonField<Double> = JsonMissing.of(),
@@ -2372,15 +2384,14 @@ private constructor(
                         users: JsonField<List<String>> = JsonMissing.of(),
                     ) : this(
                         type,
-                        allowParallelToolCalls,
                         createdAfter,
                         createdBefore,
-                        hasToolCalls,
                         instructionsSearch,
                         metadata,
                         model,
                         reasoningEffort,
                         temperature,
+                        tools,
                         topP,
                         users,
                         mutableMapOf(),
@@ -2398,16 +2409,6 @@ private constructor(
                      * server responded with an unexpected value).
                      */
                     @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
-
-                    /**
-                     * Whether to allow parallel tool calls. This is a query parameter used to
-                     * select responses.
-                     *
-                     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type
-                     *   (e.g. if the server responded with an unexpected value).
-                     */
-                    fun allowParallelToolCalls(): Optional<Boolean> =
-                        allowParallelToolCalls.getOptional("allow_parallel_tool_calls")
 
                     /**
                      * Only include items created after this timestamp (inclusive). This is a query
@@ -2429,18 +2430,8 @@ private constructor(
                         createdBefore.getOptional("created_before")
 
                     /**
-                     * Whether the response has tool calls. This is a query parameter used to select
-                     * responses.
-                     *
-                     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type
-                     *   (e.g. if the server responded with an unexpected value).
-                     */
-                    fun hasToolCalls(): Optional<Boolean> =
-                        hasToolCalls.getOptional("has_tool_calls")
-
-                    /**
-                     * Optional search string for instructions. This is a query parameter used to
-                     * select responses.
+                     * Optional string to search the 'instructions' field. This is a query parameter
+                     * used to select responses.
                      *
                      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type
                      *   (e.g. if the server responded with an unexpected value).
@@ -2482,6 +2473,14 @@ private constructor(
                     fun temperature(): Optional<Double> = temperature.getOptional("temperature")
 
                     /**
+                     * List of tool names. This is a query parameter used to select responses.
+                     *
+                     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type
+                     *   (e.g. if the server responded with an unexpected value).
+                     */
+                    fun tools(): Optional<List<String>> = tools.getOptional("tools")
+
+                    /**
                      * Nucleus sampling parameter. This is a query parameter used to select
                      * responses.
                      *
@@ -2497,16 +2496,6 @@ private constructor(
                      *   (e.g. if the server responded with an unexpected value).
                      */
                     fun users(): Optional<List<String>> = users.getOptional("users")
-
-                    /**
-                     * Returns the raw JSON value of [allowParallelToolCalls].
-                     *
-                     * Unlike [allowParallelToolCalls], this method doesn't throw if the JSON field
-                     * has an unexpected type.
-                     */
-                    @JsonProperty("allow_parallel_tool_calls")
-                    @ExcludeMissing
-                    fun _allowParallelToolCalls(): JsonField<Boolean> = allowParallelToolCalls
 
                     /**
                      * Returns the raw JSON value of [createdAfter].
@@ -2527,16 +2516,6 @@ private constructor(
                     @JsonProperty("created_before")
                     @ExcludeMissing
                     fun _createdBefore(): JsonField<Long> = createdBefore
-
-                    /**
-                     * Returns the raw JSON value of [hasToolCalls].
-                     *
-                     * Unlike [hasToolCalls], this method doesn't throw if the JSON field has an
-                     * unexpected type.
-                     */
-                    @JsonProperty("has_tool_calls")
-                    @ExcludeMissing
-                    fun _hasToolCalls(): JsonField<Boolean> = hasToolCalls
 
                     /**
                      * Returns the raw JSON value of [instructionsSearch].
@@ -2575,6 +2554,16 @@ private constructor(
                     @JsonProperty("temperature")
                     @ExcludeMissing
                     fun _temperature(): JsonField<Double> = temperature
+
+                    /**
+                     * Returns the raw JSON value of [tools].
+                     *
+                     * Unlike [tools], this method doesn't throw if the JSON field has an unexpected
+                     * type.
+                     */
+                    @JsonProperty("tools")
+                    @ExcludeMissing
+                    fun _tools(): JsonField<List<String>> = tools
 
                     /**
                      * Returns the raw JSON value of [topP].
@@ -2618,15 +2607,14 @@ private constructor(
                     class Builder internal constructor() {
 
                         private var type: JsonValue = JsonValue.from("responses")
-                        private var allowParallelToolCalls: JsonField<Boolean> = JsonMissing.of()
                         private var createdAfter: JsonField<Long> = JsonMissing.of()
                         private var createdBefore: JsonField<Long> = JsonMissing.of()
-                        private var hasToolCalls: JsonField<Boolean> = JsonMissing.of()
                         private var instructionsSearch: JsonField<String> = JsonMissing.of()
                         private var metadata: JsonValue = JsonMissing.of()
                         private var model: JsonField<String> = JsonMissing.of()
                         private var reasoningEffort: JsonField<ReasoningEffort> = JsonMissing.of()
                         private var temperature: JsonField<Double> = JsonMissing.of()
+                        private var tools: JsonField<MutableList<String>>? = null
                         private var topP: JsonField<Double> = JsonMissing.of()
                         private var users: JsonField<MutableList<String>>? = null
                         private var additionalProperties: MutableMap<String, JsonValue> =
@@ -2635,15 +2623,14 @@ private constructor(
                         @JvmSynthetic
                         internal fun from(responses: Responses) = apply {
                             type = responses.type
-                            allowParallelToolCalls = responses.allowParallelToolCalls
                             createdAfter = responses.createdAfter
                             createdBefore = responses.createdBefore
-                            hasToolCalls = responses.hasToolCalls
                             instructionsSearch = responses.instructionsSearch
                             metadata = responses.metadata
                             model = responses.model
                             reasoningEffort = responses.reasoningEffort
                             temperature = responses.temperature
+                            tools = responses.tools.map { it.toMutableList() }
                             topP = responses.topP
                             users = responses.users.map { it.toMutableList() }
                             additionalProperties = responses.additionalProperties.toMutableMap()
@@ -2662,40 +2649,6 @@ private constructor(
                          * yet supported value.
                          */
                         fun type(type: JsonValue) = apply { this.type = type }
-
-                        /**
-                         * Whether to allow parallel tool calls. This is a query parameter used to
-                         * select responses.
-                         */
-                        fun allowParallelToolCalls(allowParallelToolCalls: Boolean?) =
-                            allowParallelToolCalls(JsonField.ofNullable(allowParallelToolCalls))
-
-                        /**
-                         * Alias for [Builder.allowParallelToolCalls].
-                         *
-                         * This unboxed primitive overload exists for backwards compatibility.
-                         */
-                        fun allowParallelToolCalls(allowParallelToolCalls: Boolean) =
-                            allowParallelToolCalls(allowParallelToolCalls as Boolean?)
-
-                        /**
-                         * Alias for calling [Builder.allowParallelToolCalls] with
-                         * `allowParallelToolCalls.orElse(null)`.
-                         */
-                        fun allowParallelToolCalls(allowParallelToolCalls: Optional<Boolean>) =
-                            allowParallelToolCalls(allowParallelToolCalls.getOrNull())
-
-                        /**
-                         * Sets [Builder.allowParallelToolCalls] to an arbitrary JSON value.
-                         *
-                         * You should usually call [Builder.allowParallelToolCalls] with a
-                         * well-typed [Boolean] value instead. This method is primarily for setting
-                         * the field to an undocumented or not yet supported value.
-                         */
-                        fun allowParallelToolCalls(allowParallelToolCalls: JsonField<Boolean>) =
-                            apply {
-                                this.allowParallelToolCalls = allowParallelToolCalls
-                            }
 
                         /**
                          * Only include items created after this timestamp (inclusive). This is a
@@ -2763,41 +2716,8 @@ private constructor(
                         }
 
                         /**
-                         * Whether the response has tool calls. This is a query parameter used to
-                         * select responses.
-                         */
-                        fun hasToolCalls(hasToolCalls: Boolean?) =
-                            hasToolCalls(JsonField.ofNullable(hasToolCalls))
-
-                        /**
-                         * Alias for [Builder.hasToolCalls].
-                         *
-                         * This unboxed primitive overload exists for backwards compatibility.
-                         */
-                        fun hasToolCalls(hasToolCalls: Boolean) =
-                            hasToolCalls(hasToolCalls as Boolean?)
-
-                        /**
-                         * Alias for calling [Builder.hasToolCalls] with
-                         * `hasToolCalls.orElse(null)`.
-                         */
-                        fun hasToolCalls(hasToolCalls: Optional<Boolean>) =
-                            hasToolCalls(hasToolCalls.getOrNull())
-
-                        /**
-                         * Sets [Builder.hasToolCalls] to an arbitrary JSON value.
-                         *
-                         * You should usually call [Builder.hasToolCalls] with a well-typed
-                         * [Boolean] value instead. This method is primarily for setting the field
-                         * to an undocumented or not yet supported value.
-                         */
-                        fun hasToolCalls(hasToolCalls: JsonField<Boolean>) = apply {
-                            this.hasToolCalls = hasToolCalls
-                        }
-
-                        /**
-                         * Optional search string for instructions. This is a query parameter used
-                         * to select responses.
+                         * Optional string to search the 'instructions' field. This is a query
+                         * parameter used to select responses.
                          */
                         fun instructionsSearch(instructionsSearch: String?) =
                             instructionsSearch(JsonField.ofNullable(instructionsSearch))
@@ -2900,6 +2820,38 @@ private constructor(
                         }
 
                         /**
+                         * List of tool names. This is a query parameter used to select responses.
+                         */
+                        fun tools(tools: List<String>?) = tools(JsonField.ofNullable(tools))
+
+                        /** Alias for calling [Builder.tools] with `tools.orElse(null)`. */
+                        fun tools(tools: Optional<List<String>>) = tools(tools.getOrNull())
+
+                        /**
+                         * Sets [Builder.tools] to an arbitrary JSON value.
+                         *
+                         * You should usually call [Builder.tools] with a well-typed `List<String>`
+                         * value instead. This method is primarily for setting the field to an
+                         * undocumented or not yet supported value.
+                         */
+                        fun tools(tools: JsonField<List<String>>) = apply {
+                            this.tools = tools.map { it.toMutableList() }
+                        }
+
+                        /**
+                         * Adds a single [String] to [tools].
+                         *
+                         * @throws IllegalStateException if the field was previously set to a
+                         *   non-list.
+                         */
+                        fun addTool(tool: String) = apply {
+                            tools =
+                                (tools ?: JsonField.of(mutableListOf())).also {
+                                    checkKnown("tools", it).add(tool)
+                                }
+                        }
+
+                        /**
                          * Nucleus sampling parameter. This is a query parameter used to select
                          * responses.
                          */
@@ -2987,15 +2939,14 @@ private constructor(
                         fun build(): Responses =
                             Responses(
                                 type,
-                                allowParallelToolCalls,
                                 createdAfter,
                                 createdBefore,
-                                hasToolCalls,
                                 instructionsSearch,
                                 metadata,
                                 model,
                                 reasoningEffort,
                                 temperature,
+                                (tools ?: JsonMissing.of()).map { it.toImmutable() },
                                 topP,
                                 (users ?: JsonMissing.of()).map { it.toImmutable() },
                                 additionalProperties.toMutableMap(),
@@ -3014,14 +2965,13 @@ private constructor(
                                 throw OpenAIInvalidDataException("'type' is invalid, received $it")
                             }
                         }
-                        allowParallelToolCalls()
                         createdAfter()
                         createdBefore()
-                        hasToolCalls()
                         instructionsSearch()
                         model()
                         reasoningEffort().ifPresent { it.validate() }
                         temperature()
+                        tools()
                         topP()
                         users()
                         validated = true
@@ -3044,14 +2994,13 @@ private constructor(
                     @JvmSynthetic
                     internal fun validity(): Int =
                         type.let { if (it == JsonValue.from("responses")) 1 else 0 } +
-                            (if (allowParallelToolCalls.asKnown().isPresent) 1 else 0) +
                             (if (createdAfter.asKnown().isPresent) 1 else 0) +
                             (if (createdBefore.asKnown().isPresent) 1 else 0) +
-                            (if (hasToolCalls.asKnown().isPresent) 1 else 0) +
                             (if (instructionsSearch.asKnown().isPresent) 1 else 0) +
                             (if (model.asKnown().isPresent) 1 else 0) +
                             (reasoningEffort.asKnown().getOrNull()?.validity() ?: 0) +
                             (if (temperature.asKnown().isPresent) 1 else 0) +
+                            (tools.asKnown().getOrNull()?.size ?: 0) +
                             (if (topP.asKnown().isPresent) 1 else 0) +
                             (users.asKnown().getOrNull()?.size ?: 0)
 
@@ -3060,21 +3009,21 @@ private constructor(
                             return true
                         }
 
-                        return /* spotless:off */ other is Responses && type == other.type && allowParallelToolCalls == other.allowParallelToolCalls && createdAfter == other.createdAfter && createdBefore == other.createdBefore && hasToolCalls == other.hasToolCalls && instructionsSearch == other.instructionsSearch && metadata == other.metadata && model == other.model && reasoningEffort == other.reasoningEffort && temperature == other.temperature && topP == other.topP && users == other.users && additionalProperties == other.additionalProperties /* spotless:on */
+                        return /* spotless:off */ other is Responses && type == other.type && createdAfter == other.createdAfter && createdBefore == other.createdBefore && instructionsSearch == other.instructionsSearch && metadata == other.metadata && model == other.model && reasoningEffort == other.reasoningEffort && temperature == other.temperature && tools == other.tools && topP == other.topP && users == other.users && additionalProperties == other.additionalProperties /* spotless:on */
                     }
 
                     /* spotless:off */
-                    private val hashCode: Int by lazy { Objects.hash(type, allowParallelToolCalls, createdAfter, createdBefore, hasToolCalls, instructionsSearch, metadata, model, reasoningEffort, temperature, topP, users, additionalProperties) }
+                    private val hashCode: Int by lazy { Objects.hash(type, createdAfter, createdBefore, instructionsSearch, metadata, model, reasoningEffort, temperature, tools, topP, users, additionalProperties) }
                     /* spotless:on */
 
                     override fun hashCode(): Int = hashCode
 
                     override fun toString() =
-                        "Responses{type=$type, allowParallelToolCalls=$allowParallelToolCalls, createdAfter=$createdAfter, createdBefore=$createdBefore, hasToolCalls=$hasToolCalls, instructionsSearch=$instructionsSearch, metadata=$metadata, model=$model, reasoningEffort=$reasoningEffort, temperature=$temperature, topP=$topP, users=$users, additionalProperties=$additionalProperties}"
+                        "Responses{type=$type, createdAfter=$createdAfter, createdBefore=$createdBefore, instructionsSearch=$instructionsSearch, metadata=$metadata, model=$model, reasoningEffort=$reasoningEffort, temperature=$temperature, tools=$tools, topP=$topP, users=$users, additionalProperties=$additionalProperties}"
                 }
             }
 
-            /** The type of run data source. Always `completions`. */
+            /** The type of run data source. Always `responses`. */
             class Type @JsonCreator private constructor(private val value: JsonField<String>) :
                 Enum {
 
@@ -3090,14 +3039,14 @@ private constructor(
 
                 companion object {
 
-                    @JvmField val COMPLETIONS = of("completions")
+                    @JvmField val RESPONSES = of("responses")
 
                     @JvmStatic fun of(value: String) = Type(JsonField.of(value))
                 }
 
                 /** An enum containing [Type]'s known values. */
                 enum class Known {
-                    COMPLETIONS
+                    RESPONSES
                 }
 
                 /**
@@ -3110,7 +3059,7 @@ private constructor(
                  * - It was constructed with an arbitrary value using the [of] method.
                  */
                 enum class Value {
-                    COMPLETIONS,
+                    RESPONSES,
                     /**
                      * An enum member indicating that [Type] was instantiated with an unknown value.
                      */
@@ -3126,7 +3075,7 @@ private constructor(
                  */
                 fun value(): Value =
                     when (this) {
-                        COMPLETIONS -> Value.COMPLETIONS
+                        RESPONSES -> Value.RESPONSES
                         else -> Value._UNKNOWN
                     }
 
@@ -3141,7 +3090,7 @@ private constructor(
                  */
                 fun known(): Known =
                     when (this) {
-                        COMPLETIONS -> Known.COMPLETIONS
+                        RESPONSES -> Known.RESPONSES
                         else -> throw OpenAIInvalidDataException("Unknown Type: $value")
                     }
 
@@ -3199,6 +3148,12 @@ private constructor(
                 override fun toString() = value.toString()
             }
 
+            /**
+             * Used when sampling from a model. Dictates the structure of the messages passed into
+             * the model. Can either be a reference to a prebuilt trajectory (ie,
+             * `item.input_trajectory`), or a template with variable references to the `item`
+             * namespace.
+             */
             @JsonDeserialize(using = InputMessages.Deserializer::class)
             @JsonSerialize(using = InputMessages.Serializer::class)
             class InputMessages
@@ -3388,7 +3343,7 @@ private constructor(
 
                     /**
                      * A list of chat messages forming the prompt or context. May include variable
-                     * references to the "item" namespace, ie {{item.name}}.
+                     * references to the `item` namespace, ie {{item.name}}.
                      *
                      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type
                      *   or is unexpectedly missing or null (e.g. if the server responded with an
@@ -3461,7 +3416,7 @@ private constructor(
 
                         /**
                          * A list of chat messages forming the prompt or context. May include
-                         * variable references to the "item" namespace, ie {{item.name}}.
+                         * variable references to the `item` namespace, ie {{item.name}}.
                          */
                         fun template(template: List<InnerTemplate>) =
                             template(JsonField.of(template))
@@ -5138,7 +5093,7 @@ private constructor(
                     ) : this(itemReference, type, mutableMapOf())
 
                     /**
-                     * A reference to a variable in the "item" namespace. Ie, "item.name"
+                     * A reference to a variable in the `item` namespace. Ie, "item.name"
                      *
                      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type
                      *   or is unexpectedly missing or null (e.g. if the server responded with an
@@ -5210,7 +5165,7 @@ private constructor(
                             additionalProperties = itemReference.additionalProperties.toMutableMap()
                         }
 
-                        /** A reference to a variable in the "item" namespace. Ie, "item.name" */
+                        /** A reference to a variable in the `item` namespace. Ie, "item.name" */
                         fun itemReference(itemReference: String) =
                             itemReference(JsonField.of(itemReference))
 
