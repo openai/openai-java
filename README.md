@@ -334,6 +334,81 @@ client.chat()
 ChatCompletion chatCompletion = chatCompletionAccumulator.chatCompletion();
 ```
 
+## Batch Processing
+
+The SDK supports batch processing of multiple requests through the Batch API. This is useful when you need to process a large number of requests efficiently. Here's how to use it:
+
+```java
+import com.openai.client.OpenAIClient;
+import com.openai.client.okhttp.OpenAIOkHttpClient;
+import com.openai.models.batches.Batch;
+import com.openai.models.batches.BatchCreateParams;
+import com.openai.models.batches.Endpoint;
+import com.openai.models.files.FileCreateParams;
+import com.openai.models.files.FileObject;
+import com.openai.models.files.FilePurpose;
+import java.nio.file.Paths;
+
+// First, create a JSONL file containing your requests
+// Example content of requests.jsonl:
+// {"model": "gpt-4", "messages": [{"role": "user", "content": "Hello"}]}
+// {"model": "gpt-4", "messages": [{"role": "user", "content": "World"}]}
+
+// Upload the JSONL file
+FileCreateParams fileParams = FileCreateParams.builder()
+    .purpose(FilePurpose.BATCH)
+    .file(Paths.get("requests.jsonl"))
+    .build();
+FileObject file = client.files().create(fileParams);
+
+// Create and execute the batch
+BatchCreateParams batchParams = BatchCreateParams.builder()
+    .inputFileId(file.id())
+    .endpoint(Endpoint.CHAT_COMPLETIONS)
+    .build();
+Batch batch = client.batches().create(batchParams);
+
+// Check batch status
+Batch retrievedBatch = client.batches().retrieve(
+    BatchRetrieveParams.builder()
+        .batchId(batch.id())
+        .build()
+);
+
+// Get batch results
+if (retrievedBatch.status().equals("completed")) {
+    // Download and process the output file
+    String outputFileId = retrievedBatch.outputFileId().get();
+    
+    // Download the output file
+    try (HttpResponse response = client.files().content(
+        FileContentParams.builder()
+            .fileId(outputFileId)
+            .build()
+    )) {
+        // Process the output file line by line
+        try (BufferedReader reader = new BufferedReader(
+            new InputStreamReader(response.body())
+        )) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                // Each line is a JSON object containing the response
+                // Process each response as needed
+                System.out.println("Response: " + line);
+            }
+        }
+    }
+}
+```
+
+The batch API supports several endpoints:
+- `/v1/responses`
+- `/v1/chat/completions`
+- `/v1/embeddings`
+- `/v1/completions`
+
+Each batch can contain up to 50,000 requests, and the input file can be up to 200 MB in size. The batch will be processed within a 24-hour window.
+
 ## File uploads
 
 The SDK defines methods that accept files.
