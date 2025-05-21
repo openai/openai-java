@@ -22,6 +22,8 @@ import com.openai.services.async.FileServiceAsync
 import com.openai.services.async.FileServiceAsyncImpl
 import com.openai.services.async.FineTuningServiceAsync
 import com.openai.services.async.FineTuningServiceAsyncImpl
+import com.openai.services.async.GraderServiceAsync
+import com.openai.services.async.GraderServiceAsyncImpl
 import com.openai.services.async.ImageServiceAsync
 import com.openai.services.async.ImageServiceAsyncImpl
 import com.openai.services.async.ModelServiceAsync
@@ -84,6 +86,10 @@ class OpenAIClientAsyncImpl(private val clientOptions: ClientOptions) : OpenAICl
         FineTuningServiceAsyncImpl(clientOptionsWithUserAgent)
     }
 
+    private val graders: GraderServiceAsync by lazy {
+        GraderServiceAsyncImpl(clientOptionsWithUserAgent)
+    }
+
     private val vectorStores: VectorStoreServiceAsync by lazy {
         VectorStoreServiceAsyncImpl(clientOptionsWithUserAgent)
     }
@@ -125,6 +131,8 @@ class OpenAIClientAsyncImpl(private val clientOptions: ClientOptions) : OpenAICl
     override fun models(): ModelServiceAsync = models
 
     override fun fineTuning(): FineTuningServiceAsync = fineTuning
+
+    override fun graders(): GraderServiceAsync = graders
 
     override fun vectorStores(): VectorStoreServiceAsync = vectorStores
 
@@ -179,6 +187,10 @@ class OpenAIClientAsyncImpl(private val clientOptions: ClientOptions) : OpenAICl
             FineTuningServiceAsyncImpl.WithRawResponseImpl(clientOptions)
         }
 
+        private val graders: GraderServiceAsync.WithRawResponse by lazy {
+            GraderServiceAsyncImpl.WithRawResponseImpl(clientOptions)
+        }
+
         private val vectorStores: VectorStoreServiceAsync.WithRawResponse by lazy {
             VectorStoreServiceAsyncImpl.WithRawResponseImpl(clientOptions)
         }
@@ -220,6 +232,8 @@ class OpenAIClientAsyncImpl(private val clientOptions: ClientOptions) : OpenAICl
         override fun models(): ModelServiceAsync.WithRawResponse = models
 
         override fun fineTuning(): FineTuningServiceAsync.WithRawResponse = fineTuning
+
+        override fun graders(): GraderServiceAsync.WithRawResponse = graders
 
         override fun vectorStores(): VectorStoreServiceAsync.WithRawResponse = vectorStores
 

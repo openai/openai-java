@@ -12,7 +12,6 @@ import com.openai.models.ReasoningEffort
 import com.openai.models.ResponseFormatText
 import com.openai.models.responses.FileSearchTool
 import com.openai.models.responses.ResponseCreateParams
-import com.openai.models.responses.ResponseDeleteParams
 import com.openai.models.responses.ResponseIncludable
 import com.openai.models.responses.ResponseRetrieveParams
 import com.openai.models.responses.ResponseTextConfig
@@ -190,10 +189,6 @@ internal class ResponseServiceTest {
                 .build()
         val responseService = client.responses()
 
-        responseService.delete(
-            ResponseDeleteParams.builder()
-                .responseId("resp_677efb5139a88190b512bc3fef8e535d")
-                .build()
-        )
+        responseService.delete("resp_677efb5139a88190b512bc3fef8e535d")
     }
 }

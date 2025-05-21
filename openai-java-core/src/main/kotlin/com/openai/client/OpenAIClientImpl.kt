@@ -22,6 +22,8 @@ import com.openai.services.blocking.FileService
 import com.openai.services.blocking.FileServiceImpl
 import com.openai.services.blocking.FineTuningService
 import com.openai.services.blocking.FineTuningServiceImpl
+import com.openai.services.blocking.GraderService
+import com.openai.services.blocking.GraderServiceImpl
 import com.openai.services.blocking.ImageService
 import com.openai.services.blocking.ImageServiceImpl
 import com.openai.services.blocking.ModelService
@@ -78,6 +80,8 @@ class OpenAIClientImpl(private val clientOptions: ClientOptions) : OpenAIClient 
         FineTuningServiceImpl(clientOptionsWithUserAgent)
     }
 
+    private val graders: GraderService by lazy { GraderServiceImpl(clientOptionsWithUserAgent) }
+
     private val vectorStores: VectorStoreService by lazy {
         VectorStoreServiceImpl(clientOptionsWithUserAgent)
     }
@@ -115,6 +119,8 @@ class OpenAIClientImpl(private val clientOptions: ClientOptions) : OpenAIClient 
     override fun models(): ModelService = models
 
     override fun fineTuning(): FineTuningService = fineTuning
+
+    override fun graders(): GraderService = graders
 
     override fun vectorStores(): VectorStoreService = vectorStores
 
@@ -169,6 +175,10 @@ class OpenAIClientImpl(private val clientOptions: ClientOptions) : OpenAIClient 
             FineTuningServiceImpl.WithRawResponseImpl(clientOptions)
         }
 
+        private val graders: GraderService.WithRawResponse by lazy {
+            GraderServiceImpl.WithRawResponseImpl(clientOptions)
+        }
+
         private val vectorStores: VectorStoreService.WithRawResponse by lazy {
             VectorStoreServiceImpl.WithRawResponseImpl(clientOptions)
         }
@@ -210,6 +220,8 @@ class OpenAIClientImpl(private val clientOptions: ClientOptions) : OpenAIClient 
         override fun models(): ModelService.WithRawResponse = models
 
         override fun fineTuning(): FineTuningService.WithRawResponse = fineTuning
+
+        override fun graders(): GraderService.WithRawResponse = graders
 
         override fun vectorStores(): VectorStoreService.WithRawResponse = vectorStores
 

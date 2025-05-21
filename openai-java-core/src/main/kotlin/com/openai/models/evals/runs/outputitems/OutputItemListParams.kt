@@ -18,7 +18,7 @@ import kotlin.jvm.optionals.getOrNull
 class OutputItemListParams
 private constructor(
     private val evalId: String,
-    private val runId: String,
+    private val runId: String?,
     private val after: String?,
     private val limit: Long?,
     private val order: Order?,
@@ -29,7 +29,7 @@ private constructor(
 
     fun evalId(): String = evalId
 
-    fun runId(): String = runId
+    fun runId(): Optional<String> = Optional.ofNullable(runId)
 
     /** Identifier for the last output item from the previous pagination request. */
     fun after(): Optional<String> = Optional.ofNullable(after)
@@ -63,7 +63,6 @@ private constructor(
          * The following fields are required:
          * ```java
          * .evalId()
-         * .runId()
          * ```
          */
         @JvmStatic fun builder() = Builder()
@@ -95,7 +94,10 @@ private constructor(
 
         fun evalId(evalId: String) = apply { this.evalId = evalId }
 
-        fun runId(runId: String) = apply { this.runId = runId }
+        fun runId(runId: String?) = apply { this.runId = runId }
+
+        /** Alias for calling [Builder.runId] with `runId.orElse(null)`. */
+        fun runId(runId: Optional<String>) = runId(runId.getOrNull())
 
         /** Identifier for the last output item from the previous pagination request. */
         fun after(after: String?) = apply { this.after = after }
@@ -240,7 +242,6 @@ private constructor(
          * The following fields are required:
          * ```java
          * .evalId()
-         * .runId()
          * ```
          *
          * @throws IllegalStateException if any required field is unset.
@@ -248,7 +249,7 @@ private constructor(
         fun build(): OutputItemListParams =
             OutputItemListParams(
                 checkRequired("evalId", evalId),
-                checkRequired("runId", runId),
+                runId,
                 after,
                 limit,
                 order,
@@ -261,7 +262,7 @@ private constructor(
     fun _pathParam(index: Int): String =
         when (index) {
             0 -> evalId
-            1 -> runId
+            1 -> runId ?: ""
             else -> ""
         }
 

@@ -2,22 +2,24 @@
 
 package com.openai.models.beta.threads.runs
 
+import com.openai.core.AutoPagerAsync
+import com.openai.core.PageAsync
 import com.openai.core.checkRequired
 import com.openai.services.async.beta.threads.RunServiceAsync
 import java.util.Objects
 import java.util.Optional
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.Executor
-import java.util.function.Predicate
 import kotlin.jvm.optionals.getOrNull
 
 /** @see [RunServiceAsync.list] */
 class RunListPageAsync
 private constructor(
     private val service: RunServiceAsync,
+    private val streamHandlerExecutor: Executor,
     private val params: RunListParams,
     private val response: RunListPageResponse,
-) {
+) : PageAsync<Run> {
 
     /**
      * Delegates to [RunListPageResponse], but gracefully handles missing data.
@@ -33,22 +35,16 @@ private constructor(
      */
     fun hasMore(): Optional<Boolean> = response._hasMore().getOptional("has_more")
 
-    fun hasNextPage(): Boolean = data().isNotEmpty()
+    override fun items(): List<Run> = data()
 
-    fun getNextPageParams(): Optional<RunListParams> {
-        if (!hasNextPage()) {
-            return Optional.empty()
-        }
+    override fun hasNextPage(): Boolean = items().isNotEmpty()
 
-        return Optional.of(params.toBuilder().after(data().last()._id().getOptional("id")).build())
-    }
+    fun nextPageParams(): RunListParams =
+        params.toBuilder().after(items().last()._id().getOptional("id")).build()
 
-    fun getNextPage(): CompletableFuture<Optional<RunListPageAsync>> =
-        getNextPageParams()
-            .map { service.list(it).thenApply { Optional.of(it) } }
-            .orElseGet { CompletableFuture.completedFuture(Optional.empty()) }
+    override fun nextPage(): CompletableFuture<RunListPageAsync> = service.list(nextPageParams())
 
-    fun autoPager(): AutoPager = AutoPager(this)
+    fun autoPager(): AutoPagerAsync<Run> = AutoPagerAsync.from(this, streamHandlerExecutor)
 
     /** The parameters that were used to request this page. */
     fun params(): RunListParams = params
@@ -66,6 +62,7 @@ private constructor(
          * The following fields are required:
          * ```java
          * .service()
+         * .streamHandlerExecutor()
          * .params()
          * .response()
          * ```
@@ -77,17 +74,23 @@ private constructor(
     class Builder internal constructor() {
 
         private var service: RunServiceAsync? = null
+        private var streamHandlerExecutor: Executor? = null
         private var params: RunListParams? = null
         private var response: RunListPageResponse? = null
 
         @JvmSynthetic
         internal fun from(runListPageAsync: RunListPageAsync) = apply {
             service = runListPageAsync.service
+            streamHandlerExecutor = runListPageAsync.streamHandlerExecutor
             params = runListPageAsync.params
             response = runListPageAsync.response
         }
 
         fun service(service: RunServiceAsync) = apply { this.service = service }
+
+        fun streamHandlerExecutor(streamHandlerExecutor: Executor) = apply {
+            this.streamHandlerExecutor = streamHandlerExecutor
+        }
 
         /** The parameters that were used to request this page. */
         fun params(params: RunListParams) = apply { this.params = params }
@@ -103,6 +106,7 @@ private constructor(
          * The following fields are required:
          * ```java
          * .service()
+         * .streamHandlerExecutor()
          * .params()
          * .response()
          * ```
@@ -112,35 +116,10 @@ private constructor(
         fun build(): RunListPageAsync =
             RunListPageAsync(
                 checkRequired("service", service),
+                checkRequired("streamHandlerExecutor", streamHandlerExecutor),
                 checkRequired("params", params),
                 checkRequired("response", response),
             )
-    }
-
-    class AutoPager(private val firstPage: RunListPageAsync) {
-
-        fun forEach(action: Predicate<Run>, executor: Executor): CompletableFuture<Void> {
-            fun CompletableFuture<Optional<RunListPageAsync>>.forEach(
-                action: (Run) -> Boolean,
-                executor: Executor,
-            ): CompletableFuture<Void> =
-                thenComposeAsync(
-                    { page ->
-                        page
-                            .filter { it.data().all(action) }
-                            .map { it.getNextPage().forEach(action, executor) }
-                            .orElseGet { CompletableFuture.completedFuture(null) }
-                    },
-                    executor,
-                )
-            return CompletableFuture.completedFuture(Optional.of(firstPage))
-                .forEach(action::test, executor)
-        }
-
-        fun toList(executor: Executor): CompletableFuture<List<Run>> {
-            val values = mutableListOf<Run>()
-            return forEach(values::add, executor).thenApply { values }
-        }
     }
 
     override fun equals(other: Any?): Boolean {
@@ -148,11 +127,11 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is RunListPageAsync && service == other.service && params == other.params && response == other.response /* spotless:on */
+        return /* spotless:off */ other is RunListPageAsync && service == other.service && streamHandlerExecutor == other.streamHandlerExecutor && params == other.params && response == other.response /* spotless:on */
     }
 
-    override fun hashCode(): Int = /* spotless:off */ Objects.hash(service, params, response) /* spotless:on */
+    override fun hashCode(): Int = /* spotless:off */ Objects.hash(service, streamHandlerExecutor, params, response) /* spotless:on */
 
     override fun toString() =
-        "RunListPageAsync{service=$service, params=$params, response=$response}"
+        "RunListPageAsync{service=$service, streamHandlerExecutor=$streamHandlerExecutor, params=$params, response=$response}"
 }

@@ -16,13 +16,35 @@ interface CheckpointService {
     fun withRawResponse(): WithRawResponse
 
     /** List checkpoints for a fine-tuning job. */
-    fun list(params: CheckpointListParams): CheckpointListPage = list(params, RequestOptions.none())
+    fun list(fineTuningJobId: String): CheckpointListPage =
+        list(fineTuningJobId, CheckpointListParams.none())
+
+    /** @see [list] */
+    fun list(
+        fineTuningJobId: String,
+        params: CheckpointListParams = CheckpointListParams.none(),
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): CheckpointListPage =
+        list(params.toBuilder().fineTuningJobId(fineTuningJobId).build(), requestOptions)
+
+    /** @see [list] */
+    fun list(
+        fineTuningJobId: String,
+        params: CheckpointListParams = CheckpointListParams.none(),
+    ): CheckpointListPage = list(fineTuningJobId, params, RequestOptions.none())
 
     /** @see [list] */
     fun list(
         params: CheckpointListParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): CheckpointListPage
+
+    /** @see [list] */
+    fun list(params: CheckpointListParams): CheckpointListPage = list(params, RequestOptions.none())
+
+    /** @see [list] */
+    fun list(fineTuningJobId: String, requestOptions: RequestOptions): CheckpointListPage =
+        list(fineTuningJobId, CheckpointListParams.none(), requestOptions)
 
     /** A view of [CheckpointService] that provides access to raw HTTP responses for each method. */
     interface WithRawResponse {
@@ -32,8 +54,25 @@ interface CheckpointService {
          * but is otherwise the same as [CheckpointService.list].
          */
         @MustBeClosed
-        fun list(params: CheckpointListParams): HttpResponseFor<CheckpointListPage> =
-            list(params, RequestOptions.none())
+        fun list(fineTuningJobId: String): HttpResponseFor<CheckpointListPage> =
+            list(fineTuningJobId, CheckpointListParams.none())
+
+        /** @see [list] */
+        @MustBeClosed
+        fun list(
+            fineTuningJobId: String,
+            params: CheckpointListParams = CheckpointListParams.none(),
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): HttpResponseFor<CheckpointListPage> =
+            list(params.toBuilder().fineTuningJobId(fineTuningJobId).build(), requestOptions)
+
+        /** @see [list] */
+        @MustBeClosed
+        fun list(
+            fineTuningJobId: String,
+            params: CheckpointListParams = CheckpointListParams.none(),
+        ): HttpResponseFor<CheckpointListPage> =
+            list(fineTuningJobId, params, RequestOptions.none())
 
         /** @see [list] */
         @MustBeClosed
@@ -41,5 +80,18 @@ interface CheckpointService {
             params: CheckpointListParams,
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<CheckpointListPage>
+
+        /** @see [list] */
+        @MustBeClosed
+        fun list(params: CheckpointListParams): HttpResponseFor<CheckpointListPage> =
+            list(params, RequestOptions.none())
+
+        /** @see [list] */
+        @MustBeClosed
+        fun list(
+            fineTuningJobId: String,
+            requestOptions: RequestOptions,
+        ): HttpResponseFor<CheckpointListPage> =
+            list(fineTuningJobId, CheckpointListParams.none(), requestOptions)
     }
 }

@@ -4,6 +4,7 @@ package com.openai.services.blocking.finetuning
 
 import com.openai.core.ClientOptions
 import com.openai.core.RequestOptions
+import com.openai.core.checkRequired
 import com.openai.core.handlers.errorHandler
 import com.openai.core.handlers.jsonHandler
 import com.openai.core.handlers.withErrorHandler
@@ -24,9 +25,12 @@ import com.openai.models.finetuning.jobs.JobListEventsParams
 import com.openai.models.finetuning.jobs.JobListPage
 import com.openai.models.finetuning.jobs.JobListPageResponse
 import com.openai.models.finetuning.jobs.JobListParams
+import com.openai.models.finetuning.jobs.JobPauseParams
+import com.openai.models.finetuning.jobs.JobResumeParams
 import com.openai.models.finetuning.jobs.JobRetrieveParams
 import com.openai.services.blocking.finetuning.jobs.CheckpointService
 import com.openai.services.blocking.finetuning.jobs.CheckpointServiceImpl
+import kotlin.jvm.optionals.getOrNull
 
 class JobServiceImpl internal constructor(private val clientOptions: ClientOptions) : JobService {
 
@@ -65,6 +69,14 @@ class JobServiceImpl internal constructor(private val clientOptions: ClientOptio
     ): JobListEventsPage =
         // get /fine_tuning/jobs/{fine_tuning_job_id}/events
         withRawResponse().listEvents(params, requestOptions).parse()
+
+    override fun pause(params: JobPauseParams, requestOptions: RequestOptions): FineTuningJob =
+        // post /fine_tuning/jobs/{fine_tuning_job_id}/pause
+        withRawResponse().pause(params, requestOptions).parse()
+
+    override fun resume(params: JobResumeParams, requestOptions: RequestOptions): FineTuningJob =
+        // post /fine_tuning/jobs/{fine_tuning_job_id}/resume
+        withRawResponse().resume(params, requestOptions).parse()
 
     class WithRawResponseImpl internal constructor(private val clientOptions: ClientOptions) :
         JobService.WithRawResponse {
@@ -111,6 +123,9 @@ class JobServiceImpl internal constructor(private val clientOptions: ClientOptio
             params: JobRetrieveParams,
             requestOptions: RequestOptions,
         ): HttpResponseFor<FineTuningJob> {
+            // We check here instead of in the params builder because this can be specified
+            // positionally or in the params class.
+            checkRequired("fineTuningJobId", params.fineTuningJobId().getOrNull())
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.GET)
@@ -171,6 +186,9 @@ class JobServiceImpl internal constructor(private val clientOptions: ClientOptio
             params: JobCancelParams,
             requestOptions: RequestOptions,
         ): HttpResponseFor<FineTuningJob> {
+            // We check here instead of in the params builder because this can be specified
+            // positionally or in the params class.
+            checkRequired("fineTuningJobId", params.fineTuningJobId().getOrNull())
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.POST)
@@ -199,6 +217,9 @@ class JobServiceImpl internal constructor(private val clientOptions: ClientOptio
             params: JobListEventsParams,
             requestOptions: RequestOptions,
         ): HttpResponseFor<JobListEventsPage> {
+            // We check here instead of in the params builder because this can be specified
+            // positionally or in the params class.
+            checkRequired("fineTuningJobId", params.fineTuningJobId().getOrNull())
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.GET)
@@ -221,6 +242,66 @@ class JobServiceImpl internal constructor(private val clientOptions: ClientOptio
                             .params(params)
                             .response(it)
                             .build()
+                    }
+            }
+        }
+
+        private val pauseHandler: Handler<FineTuningJob> =
+            jsonHandler<FineTuningJob>(clientOptions.jsonMapper).withErrorHandler(errorHandler)
+
+        override fun pause(
+            params: JobPauseParams,
+            requestOptions: RequestOptions,
+        ): HttpResponseFor<FineTuningJob> {
+            // We check here instead of in the params builder because this can be specified
+            // positionally or in the params class.
+            checkRequired("fineTuningJobId", params.fineTuningJobId().getOrNull())
+            val request =
+                HttpRequest.builder()
+                    .method(HttpMethod.POST)
+                    .addPathSegments("fine_tuning", "jobs", params._pathParam(0), "pause")
+                    .apply { params._body().ifPresent { body(json(clientOptions.jsonMapper, it)) } }
+                    .build()
+                    .prepare(clientOptions, params, deploymentModel = null)
+            val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
+            val response = clientOptions.httpClient.execute(request, requestOptions)
+            return response.parseable {
+                response
+                    .use { pauseHandler.handle(it) }
+                    .also {
+                        if (requestOptions.responseValidation!!) {
+                            it.validate()
+                        }
+                    }
+            }
+        }
+
+        private val resumeHandler: Handler<FineTuningJob> =
+            jsonHandler<FineTuningJob>(clientOptions.jsonMapper).withErrorHandler(errorHandler)
+
+        override fun resume(
+            params: JobResumeParams,
+            requestOptions: RequestOptions,
+        ): HttpResponseFor<FineTuningJob> {
+            // We check here instead of in the params builder because this can be specified
+            // positionally or in the params class.
+            checkRequired("fineTuningJobId", params.fineTuningJobId().getOrNull())
+            val request =
+                HttpRequest.builder()
+                    .method(HttpMethod.POST)
+                    .addPathSegments("fine_tuning", "jobs", params._pathParam(0), "resume")
+                    .apply { params._body().ifPresent { body(json(clientOptions.jsonMapper, it)) } }
+                    .build()
+                    .prepare(clientOptions, params, deploymentModel = null)
+            val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
+            val response = clientOptions.httpClient.execute(request, requestOptions)
+            return response.parseable {
+                response
+                    .use { resumeHandler.handle(it) }
+                    .also {
+                        if (requestOptions.responseValidation!!) {
+                            it.validate()
+                        }
                     }
             }
         }

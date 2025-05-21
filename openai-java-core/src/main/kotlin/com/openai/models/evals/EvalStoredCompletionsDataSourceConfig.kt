@@ -18,12 +18,8 @@ import java.util.Objects
 import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
-/**
- * A StoredCompletionsDataSourceConfig which specifies the metadata property of your stored
- * completions query. This is usually metadata like `usecase=chatbot` or `prompt-version=v2`, etc.
- * The schema returned by this data source config is used to defined what variables are available in
- * your evals. `item` and `sample` are both defined when using this data source config.
- */
+/** Deprecated in favor of LogsDataSourceConfig. */
+@Deprecated("deprecated")
 class EvalStoredCompletionsDataSourceConfig
 private constructor(
     private val schema: JsonField<Schema>,

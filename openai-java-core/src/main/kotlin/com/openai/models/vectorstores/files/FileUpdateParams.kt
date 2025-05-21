@@ -25,7 +25,7 @@ import kotlin.jvm.optionals.getOrNull
 class FileUpdateParams
 private constructor(
     private val vectorStoreId: String,
-    private val fileId: String,
+    private val fileId: String?,
     private val body: Body,
     private val additionalHeaders: Headers,
     private val additionalQueryParams: QueryParams,
@@ -33,7 +33,7 @@ private constructor(
 
     fun vectorStoreId(): String = vectorStoreId
 
-    fun fileId(): String = fileId
+    fun fileId(): Optional<String> = Optional.ofNullable(fileId)
 
     /**
      * Set of 16 key-value pairs that can be attached to an object. This can be useful for storing
@@ -69,7 +69,6 @@ private constructor(
          * The following fields are required:
          * ```java
          * .vectorStoreId()
-         * .fileId()
          * .attributes()
          * ```
          */
@@ -96,7 +95,10 @@ private constructor(
 
         fun vectorStoreId(vectorStoreId: String) = apply { this.vectorStoreId = vectorStoreId }
 
-        fun fileId(fileId: String) = apply { this.fileId = fileId }
+        fun fileId(fileId: String?) = apply { this.fileId = fileId }
+
+        /** Alias for calling [Builder.fileId] with `fileId.orElse(null)`. */
+        fun fileId(fileId: Optional<String>) = fileId(fileId.getOrNull())
 
         /**
          * Sets the entire request body.
@@ -253,7 +255,6 @@ private constructor(
          * The following fields are required:
          * ```java
          * .vectorStoreId()
-         * .fileId()
          * .attributes()
          * ```
          *
@@ -262,7 +263,7 @@ private constructor(
         fun build(): FileUpdateParams =
             FileUpdateParams(
                 checkRequired("vectorStoreId", vectorStoreId),
-                checkRequired("fileId", fileId),
+                fileId,
                 body.build(),
                 additionalHeaders.build(),
                 additionalQueryParams.build(),
@@ -274,7 +275,7 @@ private constructor(
     fun _pathParam(index: Int): String =
         when (index) {
             0 -> vectorStoreId
-            1 -> fileId
+            1 -> fileId ?: ""
             else -> ""
         }
 

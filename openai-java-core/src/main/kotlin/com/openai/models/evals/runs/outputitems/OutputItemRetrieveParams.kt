@@ -7,13 +7,15 @@ import com.openai.core.checkRequired
 import com.openai.core.http.Headers
 import com.openai.core.http.QueryParams
 import java.util.Objects
+import java.util.Optional
+import kotlin.jvm.optionals.getOrNull
 
 /** Get an evaluation run output item by ID. */
 class OutputItemRetrieveParams
 private constructor(
     private val evalId: String,
     private val runId: String,
-    private val outputItemId: String,
+    private val outputItemId: String?,
     private val additionalHeaders: Headers,
     private val additionalQueryParams: QueryParams,
 ) : Params {
@@ -22,7 +24,7 @@ private constructor(
 
     fun runId(): String = runId
 
-    fun outputItemId(): String = outputItemId
+    fun outputItemId(): Optional<String> = Optional.ofNullable(outputItemId)
 
     fun _additionalHeaders(): Headers = additionalHeaders
 
@@ -39,7 +41,6 @@ private constructor(
          * ```java
          * .evalId()
          * .runId()
-         * .outputItemId()
          * ```
          */
         @JvmStatic fun builder() = Builder()
@@ -67,7 +68,10 @@ private constructor(
 
         fun runId(runId: String) = apply { this.runId = runId }
 
-        fun outputItemId(outputItemId: String) = apply { this.outputItemId = outputItemId }
+        fun outputItemId(outputItemId: String?) = apply { this.outputItemId = outputItemId }
+
+        /** Alias for calling [Builder.outputItemId] with `outputItemId.orElse(null)`. */
+        fun outputItemId(outputItemId: Optional<String>) = outputItemId(outputItemId.getOrNull())
 
         fun additionalHeaders(additionalHeaders: Headers) = apply {
             this.additionalHeaders.clear()
@@ -176,7 +180,6 @@ private constructor(
          * ```java
          * .evalId()
          * .runId()
-         * .outputItemId()
          * ```
          *
          * @throws IllegalStateException if any required field is unset.
@@ -185,7 +188,7 @@ private constructor(
             OutputItemRetrieveParams(
                 checkRequired("evalId", evalId),
                 checkRequired("runId", runId),
-                checkRequired("outputItemId", outputItemId),
+                outputItemId,
                 additionalHeaders.build(),
                 additionalQueryParams.build(),
             )
@@ -195,7 +198,7 @@ private constructor(
         when (index) {
             0 -> evalId
             1 -> runId
-            2 -> outputItemId
+            2 -> outputItemId ?: ""
             else -> ""
         }
 

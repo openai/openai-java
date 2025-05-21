@@ -6,7 +6,6 @@ import com.fasterxml.jackson.annotation.JsonCreator
 import com.openai.core.Enum
 import com.openai.core.JsonField
 import com.openai.core.Params
-import com.openai.core.checkRequired
 import com.openai.core.http.Headers
 import com.openai.core.http.QueryParams
 import com.openai.errors.OpenAIInvalidDataException
@@ -17,7 +16,7 @@ import kotlin.jvm.optionals.getOrNull
 /** Returns a list of runs belonging to a thread. */
 class RunListParams
 private constructor(
-    private val threadId: String,
+    private val threadId: String?,
     private val after: String?,
     private val before: String?,
     private val limit: Long?,
@@ -26,7 +25,7 @@ private constructor(
     private val additionalQueryParams: QueryParams,
 ) : Params {
 
-    fun threadId(): String = threadId
+    fun threadId(): Optional<String> = Optional.ofNullable(threadId)
 
     /**
      * A cursor for use in pagination. `after` is an object ID that defines your place in the list.
@@ -62,14 +61,9 @@ private constructor(
 
     companion object {
 
-        /**
-         * Returns a mutable builder for constructing an instance of [RunListParams].
-         *
-         * The following fields are required:
-         * ```java
-         * .threadId()
-         * ```
-         */
+        @JvmStatic fun none(): RunListParams = builder().build()
+
+        /** Returns a mutable builder for constructing an instance of [RunListParams]. */
         @JvmStatic fun builder() = Builder()
     }
 
@@ -95,7 +89,10 @@ private constructor(
             additionalQueryParams = runListParams.additionalQueryParams.toBuilder()
         }
 
-        fun threadId(threadId: String) = apply { this.threadId = threadId }
+        fun threadId(threadId: String?) = apply { this.threadId = threadId }
+
+        /** Alias for calling [Builder.threadId] with `threadId.orElse(null)`. */
+        fun threadId(threadId: Optional<String>) = threadId(threadId.getOrNull())
 
         /**
          * A cursor for use in pagination. `after` is an object ID that defines your place in the
@@ -246,17 +243,10 @@ private constructor(
          * Returns an immutable instance of [RunListParams].
          *
          * Further updates to this [Builder] will not mutate the returned instance.
-         *
-         * The following fields are required:
-         * ```java
-         * .threadId()
-         * ```
-         *
-         * @throws IllegalStateException if any required field is unset.
          */
         fun build(): RunListParams =
             RunListParams(
-                checkRequired("threadId", threadId),
+                threadId,
                 after,
                 before,
                 limit,
@@ -268,7 +258,7 @@ private constructor(
 
     fun _pathParam(index: Int): String =
         when (index) {
-            0 -> threadId
+            0 -> threadId ?: ""
             else -> ""
         }
 

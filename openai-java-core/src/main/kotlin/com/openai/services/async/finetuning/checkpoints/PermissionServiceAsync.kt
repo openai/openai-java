@@ -26,6 +26,24 @@ interface PermissionServiceAsync {
      * This enables organization owners to share fine-tuned models with other projects in their
      * organization.
      */
+    fun create(
+        fineTunedModelCheckpoint: String,
+        params: PermissionCreateParams,
+    ): CompletableFuture<PermissionCreatePageAsync> =
+        create(fineTunedModelCheckpoint, params, RequestOptions.none())
+
+    /** @see [create] */
+    fun create(
+        fineTunedModelCheckpoint: String,
+        params: PermissionCreateParams,
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): CompletableFuture<PermissionCreatePageAsync> =
+        create(
+            params.toBuilder().fineTunedModelCheckpoint(fineTunedModelCheckpoint).build(),
+            requestOptions,
+        )
+
+    /** @see [create] */
     fun create(params: PermissionCreateParams): CompletableFuture<PermissionCreatePageAsync> =
         create(params, RequestOptions.none())
 
@@ -41,8 +59,26 @@ interface PermissionServiceAsync {
      * Organization owners can use this endpoint to view all permissions for a fine-tuned model
      * checkpoint.
      */
-    fun retrieve(params: PermissionRetrieveParams): CompletableFuture<PermissionRetrieveResponse> =
-        retrieve(params, RequestOptions.none())
+    fun retrieve(fineTunedModelCheckpoint: String): CompletableFuture<PermissionRetrieveResponse> =
+        retrieve(fineTunedModelCheckpoint, PermissionRetrieveParams.none())
+
+    /** @see [retrieve] */
+    fun retrieve(
+        fineTunedModelCheckpoint: String,
+        params: PermissionRetrieveParams = PermissionRetrieveParams.none(),
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): CompletableFuture<PermissionRetrieveResponse> =
+        retrieve(
+            params.toBuilder().fineTunedModelCheckpoint(fineTunedModelCheckpoint).build(),
+            requestOptions,
+        )
+
+    /** @see [retrieve] */
+    fun retrieve(
+        fineTunedModelCheckpoint: String,
+        params: PermissionRetrieveParams = PermissionRetrieveParams.none(),
+    ): CompletableFuture<PermissionRetrieveResponse> =
+        retrieve(fineTunedModelCheckpoint, params, RequestOptions.none())
 
     /** @see [retrieve] */
     fun retrieve(
@@ -50,12 +86,38 @@ interface PermissionServiceAsync {
         requestOptions: RequestOptions = RequestOptions.none(),
     ): CompletableFuture<PermissionRetrieveResponse>
 
+    /** @see [retrieve] */
+    fun retrieve(params: PermissionRetrieveParams): CompletableFuture<PermissionRetrieveResponse> =
+        retrieve(params, RequestOptions.none())
+
+    /** @see [retrieve] */
+    fun retrieve(
+        fineTunedModelCheckpoint: String,
+        requestOptions: RequestOptions,
+    ): CompletableFuture<PermissionRetrieveResponse> =
+        retrieve(fineTunedModelCheckpoint, PermissionRetrieveParams.none(), requestOptions)
+
     /**
      * **NOTE:** This endpoint requires an [admin API key](../admin-api-keys).
      *
      * Organization owners can use this endpoint to delete a permission for a fine-tuned model
      * checkpoint.
      */
+    fun delete(
+        permissionId: String,
+        params: PermissionDeleteParams,
+    ): CompletableFuture<PermissionDeleteResponse> =
+        delete(permissionId, params, RequestOptions.none())
+
+    /** @see [delete] */
+    fun delete(
+        permissionId: String,
+        params: PermissionDeleteParams,
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): CompletableFuture<PermissionDeleteResponse> =
+        delete(params.toBuilder().permissionId(permissionId).build(), requestOptions)
+
+    /** @see [delete] */
     fun delete(params: PermissionDeleteParams): CompletableFuture<PermissionDeleteResponse> =
         delete(params, RequestOptions.none())
 
@@ -78,6 +140,26 @@ interface PermissionServiceAsync {
          */
         @MustBeClosed
         fun create(
+            fineTunedModelCheckpoint: String,
+            params: PermissionCreateParams,
+        ): CompletableFuture<HttpResponseFor<PermissionCreatePageAsync>> =
+            create(fineTunedModelCheckpoint, params, RequestOptions.none())
+
+        /** @see [create] */
+        @MustBeClosed
+        fun create(
+            fineTunedModelCheckpoint: String,
+            params: PermissionCreateParams,
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): CompletableFuture<HttpResponseFor<PermissionCreatePageAsync>> =
+            create(
+                params.toBuilder().fineTunedModelCheckpoint(fineTunedModelCheckpoint).build(),
+                requestOptions,
+            )
+
+        /** @see [create] */
+        @MustBeClosed
+        fun create(
             params: PermissionCreateParams
         ): CompletableFuture<HttpResponseFor<PermissionCreatePageAsync>> =
             create(params, RequestOptions.none())
@@ -96,9 +178,29 @@ interface PermissionServiceAsync {
          */
         @MustBeClosed
         fun retrieve(
-            params: PermissionRetrieveParams
+            fineTunedModelCheckpoint: String
         ): CompletableFuture<HttpResponseFor<PermissionRetrieveResponse>> =
-            retrieve(params, RequestOptions.none())
+            retrieve(fineTunedModelCheckpoint, PermissionRetrieveParams.none())
+
+        /** @see [retrieve] */
+        @MustBeClosed
+        fun retrieve(
+            fineTunedModelCheckpoint: String,
+            params: PermissionRetrieveParams = PermissionRetrieveParams.none(),
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): CompletableFuture<HttpResponseFor<PermissionRetrieveResponse>> =
+            retrieve(
+                params.toBuilder().fineTunedModelCheckpoint(fineTunedModelCheckpoint).build(),
+                requestOptions,
+            )
+
+        /** @see [retrieve] */
+        @MustBeClosed
+        fun retrieve(
+            fineTunedModelCheckpoint: String,
+            params: PermissionRetrieveParams = PermissionRetrieveParams.none(),
+        ): CompletableFuture<HttpResponseFor<PermissionRetrieveResponse>> =
+            retrieve(fineTunedModelCheckpoint, params, RequestOptions.none())
 
         /** @see [retrieve] */
         @MustBeClosed
@@ -107,11 +209,43 @@ interface PermissionServiceAsync {
             requestOptions: RequestOptions = RequestOptions.none(),
         ): CompletableFuture<HttpResponseFor<PermissionRetrieveResponse>>
 
+        /** @see [retrieve] */
+        @MustBeClosed
+        fun retrieve(
+            params: PermissionRetrieveParams
+        ): CompletableFuture<HttpResponseFor<PermissionRetrieveResponse>> =
+            retrieve(params, RequestOptions.none())
+
+        /** @see [retrieve] */
+        @MustBeClosed
+        fun retrieve(
+            fineTunedModelCheckpoint: String,
+            requestOptions: RequestOptions,
+        ): CompletableFuture<HttpResponseFor<PermissionRetrieveResponse>> =
+            retrieve(fineTunedModelCheckpoint, PermissionRetrieveParams.none(), requestOptions)
+
         /**
          * Returns a raw HTTP response for `delete
          * /fine_tuning/checkpoints/{fine_tuned_model_checkpoint}/permissions/{permission_id}`, but
          * is otherwise the same as [PermissionServiceAsync.delete].
          */
+        @MustBeClosed
+        fun delete(
+            permissionId: String,
+            params: PermissionDeleteParams,
+        ): CompletableFuture<HttpResponseFor<PermissionDeleteResponse>> =
+            delete(permissionId, params, RequestOptions.none())
+
+        /** @see [delete] */
+        @MustBeClosed
+        fun delete(
+            permissionId: String,
+            params: PermissionDeleteParams,
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): CompletableFuture<HttpResponseFor<PermissionDeleteResponse>> =
+            delete(params.toBuilder().permissionId(permissionId).build(), requestOptions)
+
+        /** @see [delete] */
         @MustBeClosed
         fun delete(
             params: PermissionDeleteParams

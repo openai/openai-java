@@ -2,22 +2,24 @@
 
 package com.openai.models.beta.threads.messages
 
+import com.openai.core.AutoPagerAsync
+import com.openai.core.PageAsync
 import com.openai.core.checkRequired
 import com.openai.services.async.beta.threads.MessageServiceAsync
 import java.util.Objects
 import java.util.Optional
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.Executor
-import java.util.function.Predicate
 import kotlin.jvm.optionals.getOrNull
 
 /** @see [MessageServiceAsync.list] */
 class MessageListPageAsync
 private constructor(
     private val service: MessageServiceAsync,
+    private val streamHandlerExecutor: Executor,
     private val params: MessageListParams,
     private val response: MessageListPageResponse,
-) {
+) : PageAsync<Message> {
 
     /**
      * Delegates to [MessageListPageResponse], but gracefully handles missing data.
@@ -33,22 +35,17 @@ private constructor(
      */
     fun hasMore(): Optional<Boolean> = response._hasMore().getOptional("has_more")
 
-    fun hasNextPage(): Boolean = data().isNotEmpty()
+    override fun items(): List<Message> = data()
 
-    fun getNextPageParams(): Optional<MessageListParams> {
-        if (!hasNextPage()) {
-            return Optional.empty()
-        }
+    override fun hasNextPage(): Boolean = items().isNotEmpty()
 
-        return Optional.of(params.toBuilder().after(data().last()._id().getOptional("id")).build())
-    }
+    fun nextPageParams(): MessageListParams =
+        params.toBuilder().after(items().last()._id().getOptional("id")).build()
 
-    fun getNextPage(): CompletableFuture<Optional<MessageListPageAsync>> =
-        getNextPageParams()
-            .map { service.list(it).thenApply { Optional.of(it) } }
-            .orElseGet { CompletableFuture.completedFuture(Optional.empty()) }
+    override fun nextPage(): CompletableFuture<MessageListPageAsync> =
+        service.list(nextPageParams())
 
-    fun autoPager(): AutoPager = AutoPager(this)
+    fun autoPager(): AutoPagerAsync<Message> = AutoPagerAsync.from(this, streamHandlerExecutor)
 
     /** The parameters that were used to request this page. */
     fun params(): MessageListParams = params
@@ -66,6 +63,7 @@ private constructor(
          * The following fields are required:
          * ```java
          * .service()
+         * .streamHandlerExecutor()
          * .params()
          * .response()
          * ```
@@ -77,17 +75,23 @@ private constructor(
     class Builder internal constructor() {
 
         private var service: MessageServiceAsync? = null
+        private var streamHandlerExecutor: Executor? = null
         private var params: MessageListParams? = null
         private var response: MessageListPageResponse? = null
 
         @JvmSynthetic
         internal fun from(messageListPageAsync: MessageListPageAsync) = apply {
             service = messageListPageAsync.service
+            streamHandlerExecutor = messageListPageAsync.streamHandlerExecutor
             params = messageListPageAsync.params
             response = messageListPageAsync.response
         }
 
         fun service(service: MessageServiceAsync) = apply { this.service = service }
+
+        fun streamHandlerExecutor(streamHandlerExecutor: Executor) = apply {
+            this.streamHandlerExecutor = streamHandlerExecutor
+        }
 
         /** The parameters that were used to request this page. */
         fun params(params: MessageListParams) = apply { this.params = params }
@@ -103,6 +107,7 @@ private constructor(
          * The following fields are required:
          * ```java
          * .service()
+         * .streamHandlerExecutor()
          * .params()
          * .response()
          * ```
@@ -112,35 +117,10 @@ private constructor(
         fun build(): MessageListPageAsync =
             MessageListPageAsync(
                 checkRequired("service", service),
+                checkRequired("streamHandlerExecutor", streamHandlerExecutor),
                 checkRequired("params", params),
                 checkRequired("response", response),
             )
-    }
-
-    class AutoPager(private val firstPage: MessageListPageAsync) {
-
-        fun forEach(action: Predicate<Message>, executor: Executor): CompletableFuture<Void> {
-            fun CompletableFuture<Optional<MessageListPageAsync>>.forEach(
-                action: (Message) -> Boolean,
-                executor: Executor,
-            ): CompletableFuture<Void> =
-                thenComposeAsync(
-                    { page ->
-                        page
-                            .filter { it.data().all(action) }
-                            .map { it.getNextPage().forEach(action, executor) }
-                            .orElseGet { CompletableFuture.completedFuture(null) }
-                    },
-                    executor,
-                )
-            return CompletableFuture.completedFuture(Optional.of(firstPage))
-                .forEach(action::test, executor)
-        }
-
-        fun toList(executor: Executor): CompletableFuture<List<Message>> {
-            val values = mutableListOf<Message>()
-            return forEach(values::add, executor).thenApply { values }
-        }
     }
 
     override fun equals(other: Any?): Boolean {
@@ -148,11 +128,11 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is MessageListPageAsync && service == other.service && params == other.params && response == other.response /* spotless:on */
+        return /* spotless:off */ other is MessageListPageAsync && service == other.service && streamHandlerExecutor == other.streamHandlerExecutor && params == other.params && response == other.response /* spotless:on */
     }
 
-    override fun hashCode(): Int = /* spotless:off */ Objects.hash(service, params, response) /* spotless:on */
+    override fun hashCode(): Int = /* spotless:off */ Objects.hash(service, streamHandlerExecutor, params, response) /* spotless:on */
 
     override fun toString() =
-        "MessageListPageAsync{service=$service, params=$params, response=$response}"
+        "MessageListPageAsync{service=$service, streamHandlerExecutor=$streamHandlerExecutor, params=$params, response=$response}"
 }

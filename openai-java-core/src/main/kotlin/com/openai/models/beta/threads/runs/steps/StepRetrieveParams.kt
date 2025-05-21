@@ -16,7 +16,7 @@ class StepRetrieveParams
 private constructor(
     private val threadId: String,
     private val runId: String,
-    private val stepId: String,
+    private val stepId: String?,
     private val include: List<RunStepInclude>?,
     private val additionalHeaders: Headers,
     private val additionalQueryParams: QueryParams,
@@ -26,7 +26,7 @@ private constructor(
 
     fun runId(): String = runId
 
-    fun stepId(): String = stepId
+    fun stepId(): Optional<String> = Optional.ofNullable(stepId)
 
     /**
      * A list of additional fields to include in the response. Currently the only supported value is
@@ -54,7 +54,6 @@ private constructor(
          * ```java
          * .threadId()
          * .runId()
-         * .stepId()
          * ```
          */
         @JvmStatic fun builder() = Builder()
@@ -84,7 +83,10 @@ private constructor(
 
         fun runId(runId: String) = apply { this.runId = runId }
 
-        fun stepId(stepId: String) = apply { this.stepId = stepId }
+        fun stepId(stepId: String?) = apply { this.stepId = stepId }
+
+        /** Alias for calling [Builder.stepId] with `stepId.orElse(null)`. */
+        fun stepId(stepId: Optional<String>) = stepId(stepId.getOrNull())
 
         /**
          * A list of additional fields to include in the response. Currently the only supported
@@ -218,7 +220,6 @@ private constructor(
          * ```java
          * .threadId()
          * .runId()
-         * .stepId()
          * ```
          *
          * @throws IllegalStateException if any required field is unset.
@@ -227,7 +228,7 @@ private constructor(
             StepRetrieveParams(
                 checkRequired("threadId", threadId),
                 checkRequired("runId", runId),
-                checkRequired("stepId", stepId),
+                stepId,
                 include?.toImmutable(),
                 additionalHeaders.build(),
                 additionalQueryParams.build(),
@@ -238,7 +239,7 @@ private constructor(
         when (index) {
             0 -> threadId
             1 -> runId
-            2 -> stepId
+            2 -> stepId ?: ""
             else -> ""
         }
 

@@ -5,6 +5,7 @@ package com.openai.services.async.chat
 import com.openai.core.ClientOptions
 import com.openai.core.JsonValue
 import com.openai.core.RequestOptions
+import com.openai.core.checkRequired
 import com.openai.core.handlers.errorHandler
 import com.openai.core.handlers.jsonHandler
 import com.openai.core.handlers.mapJson
@@ -186,6 +187,9 @@ internal constructor(private val clientOptions: ClientOptions) : ChatCompletionS
             params: ChatCompletionRetrieveParams,
             requestOptions: RequestOptions,
         ): CompletableFuture<HttpResponseFor<ChatCompletion>> {
+            // We check here instead of in the params builder because this can be specified
+            // positionally or in the params class.
+            checkRequired("completionId", params.completionId().getOrNull())
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.GET)
@@ -215,6 +219,9 @@ internal constructor(private val clientOptions: ClientOptions) : ChatCompletionS
             params: ChatCompletionUpdateParams,
             requestOptions: RequestOptions,
         ): CompletableFuture<HttpResponseFor<ChatCompletion>> {
+            // We check here instead of in the params builder because this can be specified
+            // positionally or in the params class.
+            checkRequired("completionId", params.completionId().getOrNull())
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.POST)
@@ -271,6 +278,7 @@ internal constructor(private val clientOptions: ClientOptions) : ChatCompletionS
                             .let {
                                 ChatCompletionListPageAsync.builder()
                                     .service(ChatCompletionServiceAsyncImpl(clientOptions))
+                                    .streamHandlerExecutor(clientOptions.streamHandlerExecutor)
                                     .params(params)
                                     .response(it)
                                     .build()
@@ -287,6 +295,9 @@ internal constructor(private val clientOptions: ClientOptions) : ChatCompletionS
             params: ChatCompletionDeleteParams,
             requestOptions: RequestOptions,
         ): CompletableFuture<HttpResponseFor<ChatCompletionDeleted>> {
+            // We check here instead of in the params builder because this can be specified
+            // positionally or in the params class.
+            checkRequired("completionId", params.completionId().getOrNull())
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.DELETE)

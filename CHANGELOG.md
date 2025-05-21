@@ -1,5 +1,54 @@
 # Changelog
 
+## 2.0.0 (2025-05-21)
+
+Full Changelog: [v1.6.1...v2.0.0](https://github.com/openai/openai-java/compare/v1.6.1...v2.0.0)
+
+### ⚠ BREAKING CHANGES
+
+* **client:** change precision of some numeric types
+* **client:** extract auto pagination to shared classes
+* **client:** **Migration:** - If you were referencing the `AutoPager` class on a specific `*Page` or `*PageAsync` type, then you should instead reference the shared `AutoPager` and `AutoPagerAsync` types, under the `core` package
+    - `AutoPagerAsync` now has different usage. You can call `.subscribe(...)` on the returned object instead to get called back each page item. You can also call `onCompleteFuture()` to get a future that completes when all items have been processed. Finally, you can call `.close()` on the returned object to stop auto-paginating early
+    - If you were referencing `getNextPage` or `getNextPageParams`:
+       - Swap to `nextPage()` and `nextPageParams()`
+       - Note that these both now return non-optional types (use `hasNextPage()` before calling these, since they will throw if it's impossible to get another page)
+
+### Features
+
+* **api:** Add reinforcement fine-tuning api support ([3a9fcbb](https://github.com/openai/openai-java/commit/3a9fcbb2d47a6b106d963a4243c255d55123ff9c))
+* **api:** further updates for evals API ([2b9d5bc](https://github.com/openai/openai-java/commit/2b9d5bc92d4e67cfc5b48343bd999ccbe87ca2e7))
+* **api:** manual updates ([005a643](https://github.com/openai/openai-java/commit/005a6439977311990dca20e75783657e90aa3898))
+* **api:** responses x eval api ([66327c5](https://github.com/openai/openai-java/commit/66327c540652f63147158fc9ae8ffdd5e75cbca4))
+* **api:** Updating Assistants and Evals API schemas ([02c6df6](https://github.com/openai/openai-java/commit/02c6df6457c3e03a8ae87d8b895a4838809947f3))
+* **client:** allow providing some params positionally ([1c6e875](https://github.com/openai/openai-java/commit/1c6e8759bf7e6b8a7e3b245c5a2365edf2388fca))
+* **client:** extract auto pagination to shared classes ([855d571](https://github.com/openai/openai-java/commit/855d571da1cc772b31493f6a36032934772c3757))
+* **client:** type safe structured outputs ([#463](https://github.com/openai/openai-java/issues/463)) ([e123fdd](https://github.com/openai/openai-java/commit/e123fdd3f75980b7edea84eaf6f6c101cb9a2ea2))
+
+
+### Bug Fixes
+
+* add missing `deploymentModel` params ([d9af1fb](https://github.com/openai/openai-java/commit/d9af1fbe5309ae7da0522895596573fc36162387))
+* **client:** properly support srt and vtt in audio transcriptions. ([#472](https://github.com/openai/openai-java/issues/472)) ([1e5bf3d](https://github.com/openai/openai-java/commit/1e5bf3d36cb100d1b1ad8ac328b99cc50d16e4da))
+* merge conflict ([bf7e961](https://github.com/openai/openai-java/commit/bf7e961819911f28f5ad0aaa03cda05ccfa5dbed))
+* missing validity ([301a38a](https://github.com/openai/openai-java/commit/301a38adfa5782238e407f9ea22dd9635baa4e4b))
+
+
+### Chores
+
+* **docs:** grammar improvements ([13b0fbc](https://github.com/openai/openai-java/commit/13b0fbc79ec365433ac33ccd7c5fef3e9b858fae))
+* **internal:** fix custom code ([567c86e](https://github.com/openai/openai-java/commit/567c86e958acf5898ee0be7547cfa0da34f07eb2))
+
+
+### Documentation
+
+* remove or fix invalid readme examples ([fa9f7fc](https://github.com/openai/openai-java/commit/fa9f7fc1e68b8754a50373c455cad45f59b9bda3))
+
+
+### Refactors
+
+* **client:** change precision of some numeric types ([291b0f4](https://github.com/openai/openai-java/commit/291b0f4ac12f61f31c40a80a46db2cffc9012a9a))
+
 ## 1.6.1 (2025-05-08)
 
 Full Changelog: [v1.6.0...v1.6.1](https://github.com/openai/openai-java/compare/v1.6.0...v1.6.1)

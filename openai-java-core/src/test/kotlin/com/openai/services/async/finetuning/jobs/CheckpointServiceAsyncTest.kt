@@ -4,7 +4,6 @@ package com.openai.services.async.finetuning.jobs
 
 import com.openai.TestServerExtension
 import com.openai.client.okhttp.OpenAIOkHttpClientAsync
-import com.openai.models.finetuning.jobs.checkpoints.CheckpointListParams
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 
@@ -20,12 +19,7 @@ internal class CheckpointServiceAsyncTest {
                 .build()
         val checkpointServiceAsync = client.fineTuning().jobs().checkpoints()
 
-        val pageFuture =
-            checkpointServiceAsync.list(
-                CheckpointListParams.builder()
-                    .fineTuningJobId("ft-AF1WoRqd3aJAHsqc9NY7iL8F")
-                    .build()
-            )
+        val pageFuture = checkpointServiceAsync.list("ft-AF1WoRqd3aJAHsqc9NY7iL8F")
 
         val page = pageFuture.get()
         page.response().validate()

@@ -1,6 +1,6 @@
 // File generated from our OpenAPI spec by Stainless.
 
-package com.openai.models.evals
+package com.openai.models.graders.gradermodels
 
 import com.fasterxml.jackson.annotation.JsonAnyGetter
 import com.fasterxml.jackson.annotation.JsonAnySetter
@@ -15,46 +15,35 @@ import com.openai.core.checkRequired
 import com.openai.errors.OpenAIInvalidDataException
 import java.util.Collections
 import java.util.Objects
-import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
-/** A TextSimilarityGrader object which grades text based on similarity metrics. */
-class EvalTextSimilarityGrader
+/**
+ * A StringCheckGrader object that performs a string comparison between input and reference using a
+ * specified operation.
+ */
+class StringCheckGrader
 private constructor(
-    private val evaluationMetric: JsonField<EvaluationMetric>,
     private val input: JsonField<String>,
-    private val passThreshold: JsonField<Double>,
+    private val name: JsonField<String>,
+    private val operation: JsonField<Operation>,
     private val reference: JsonField<String>,
     private val type: JsonValue,
-    private val name: JsonField<String>,
     private val additionalProperties: MutableMap<String, JsonValue>,
 ) {
 
     @JsonCreator
     private constructor(
-        @JsonProperty("evaluation_metric")
-        @ExcludeMissing
-        evaluationMetric: JsonField<EvaluationMetric> = JsonMissing.of(),
         @JsonProperty("input") @ExcludeMissing input: JsonField<String> = JsonMissing.of(),
-        @JsonProperty("pass_threshold")
+        @JsonProperty("name") @ExcludeMissing name: JsonField<String> = JsonMissing.of(),
+        @JsonProperty("operation")
         @ExcludeMissing
-        passThreshold: JsonField<Double> = JsonMissing.of(),
+        operation: JsonField<Operation> = JsonMissing.of(),
         @JsonProperty("reference") @ExcludeMissing reference: JsonField<String> = JsonMissing.of(),
         @JsonProperty("type") @ExcludeMissing type: JsonValue = JsonMissing.of(),
-        @JsonProperty("name") @ExcludeMissing name: JsonField<String> = JsonMissing.of(),
-    ) : this(evaluationMetric, input, passThreshold, reference, type, name, mutableMapOf())
+    ) : this(input, name, operation, reference, type, mutableMapOf())
 
     /**
-     * The evaluation metric to use. One of `fuzzy_match`, `bleu`, `gleu`, `meteor`, `rouge_1`,
-     * `rouge_2`, `rouge_3`, `rouge_4`, `rouge_5`, or `rouge_l`.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
-     */
-    fun evaluationMetric(): EvaluationMetric = evaluationMetric.getRequired("evaluation_metric")
-
-    /**
-     * The text being graded.
+     * The input text. This may include template strings.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
      *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
@@ -62,15 +51,23 @@ private constructor(
     fun input(): String = input.getRequired("input")
 
     /**
-     * A float score where a value greater than or equal indicates a passing grade.
+     * The name of the grader.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
      *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
      */
-    fun passThreshold(): Double = passThreshold.getRequired("pass_threshold")
+    fun name(): String = name.getRequired("name")
 
     /**
-     * The text being graded against.
+     * The string check operation to perform. One of `eq`, `ne`, `like`, or `ilike`.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     */
+    fun operation(): Operation = operation.getRequired("operation")
+
+    /**
+     * The reference text. This may include template strings.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
      *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
@@ -78,35 +75,17 @@ private constructor(
     fun reference(): String = reference.getRequired("reference")
 
     /**
-     * The type of grader.
+     * The object type, which is always `string_check`.
      *
      * Expected to always return the following:
      * ```java
-     * JsonValue.from("text_similarity")
+     * JsonValue.from("string_check")
      * ```
      *
      * However, this method can be useful for debugging and logging (e.g. if the server responded
      * with an unexpected value).
      */
     @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
-
-    /**
-     * The name of the grader.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
-     */
-    fun name(): Optional<String> = name.getOptional("name")
-
-    /**
-     * Returns the raw JSON value of [evaluationMetric].
-     *
-     * Unlike [evaluationMetric], this method doesn't throw if the JSON field has an unexpected
-     * type.
-     */
-    @JsonProperty("evaluation_metric")
-    @ExcludeMissing
-    fun _evaluationMetric(): JsonField<EvaluationMetric> = evaluationMetric
 
     /**
      * Returns the raw JSON value of [input].
@@ -116,13 +95,18 @@ private constructor(
     @JsonProperty("input") @ExcludeMissing fun _input(): JsonField<String> = input
 
     /**
-     * Returns the raw JSON value of [passThreshold].
+     * Returns the raw JSON value of [name].
      *
-     * Unlike [passThreshold], this method doesn't throw if the JSON field has an unexpected type.
+     * Unlike [name], this method doesn't throw if the JSON field has an unexpected type.
      */
-    @JsonProperty("pass_threshold")
-    @ExcludeMissing
-    fun _passThreshold(): JsonField<Double> = passThreshold
+    @JsonProperty("name") @ExcludeMissing fun _name(): JsonField<String> = name
+
+    /**
+     * Returns the raw JSON value of [operation].
+     *
+     * Unlike [operation], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    @JsonProperty("operation") @ExcludeMissing fun _operation(): JsonField<Operation> = operation
 
     /**
      * Returns the raw JSON value of [reference].
@@ -130,13 +114,6 @@ private constructor(
      * Unlike [reference], this method doesn't throw if the JSON field has an unexpected type.
      */
     @JsonProperty("reference") @ExcludeMissing fun _reference(): JsonField<String> = reference
-
-    /**
-     * Returns the raw JSON value of [name].
-     *
-     * Unlike [name], this method doesn't throw if the JSON field has an unexpected type.
-     */
-    @JsonProperty("name") @ExcludeMissing fun _name(): JsonField<String> = name
 
     @JsonAnySetter
     private fun putAdditionalProperty(key: String, value: JsonValue) {
@@ -153,60 +130,40 @@ private constructor(
     companion object {
 
         /**
-         * Returns a mutable builder for constructing an instance of [EvalTextSimilarityGrader].
+         * Returns a mutable builder for constructing an instance of [StringCheckGrader].
          *
          * The following fields are required:
          * ```java
-         * .evaluationMetric()
          * .input()
-         * .passThreshold()
+         * .name()
+         * .operation()
          * .reference()
          * ```
          */
         @JvmStatic fun builder() = Builder()
     }
 
-    /** A builder for [EvalTextSimilarityGrader]. */
+    /** A builder for [StringCheckGrader]. */
     class Builder internal constructor() {
 
-        private var evaluationMetric: JsonField<EvaluationMetric>? = null
         private var input: JsonField<String>? = null
-        private var passThreshold: JsonField<Double>? = null
+        private var name: JsonField<String>? = null
+        private var operation: JsonField<Operation>? = null
         private var reference: JsonField<String>? = null
-        private var type: JsonValue = JsonValue.from("text_similarity")
-        private var name: JsonField<String> = JsonMissing.of()
+        private var type: JsonValue = JsonValue.from("string_check")
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
         @JvmSynthetic
-        internal fun from(evalTextSimilarityGrader: EvalTextSimilarityGrader) = apply {
-            evaluationMetric = evalTextSimilarityGrader.evaluationMetric
-            input = evalTextSimilarityGrader.input
-            passThreshold = evalTextSimilarityGrader.passThreshold
-            reference = evalTextSimilarityGrader.reference
-            type = evalTextSimilarityGrader.type
-            name = evalTextSimilarityGrader.name
-            additionalProperties = evalTextSimilarityGrader.additionalProperties.toMutableMap()
+        internal fun from(stringCheckGrader: StringCheckGrader) = apply {
+            input = stringCheckGrader.input
+            name = stringCheckGrader.name
+            operation = stringCheckGrader.operation
+            reference = stringCheckGrader.reference
+            type = stringCheckGrader.type
+            additionalProperties = stringCheckGrader.additionalProperties.toMutableMap()
         }
 
-        /**
-         * The evaluation metric to use. One of `fuzzy_match`, `bleu`, `gleu`, `meteor`, `rouge_1`,
-         * `rouge_2`, `rouge_3`, `rouge_4`, `rouge_5`, or `rouge_l`.
-         */
-        fun evaluationMetric(evaluationMetric: EvaluationMetric) =
-            evaluationMetric(JsonField.of(evaluationMetric))
-
-        /**
-         * Sets [Builder.evaluationMetric] to an arbitrary JSON value.
-         *
-         * You should usually call [Builder.evaluationMetric] with a well-typed [EvaluationMetric]
-         * value instead. This method is primarily for setting the field to an undocumented or not
-         * yet supported value.
-         */
-        fun evaluationMetric(evaluationMetric: JsonField<EvaluationMetric>) = apply {
-            this.evaluationMetric = evaluationMetric
-        }
-
-        /** The text being graded. */
+        /** The input text. This may include template strings. */
         fun input(input: String) = input(JsonField.of(input))
 
         /**
@@ -217,21 +174,30 @@ private constructor(
          */
         fun input(input: JsonField<String>) = apply { this.input = input }
 
-        /** A float score where a value greater than or equal indicates a passing grade. */
-        fun passThreshold(passThreshold: Double) = passThreshold(JsonField.of(passThreshold))
+        /** The name of the grader. */
+        fun name(name: String) = name(JsonField.of(name))
 
         /**
-         * Sets [Builder.passThreshold] to an arbitrary JSON value.
+         * Sets [Builder.name] to an arbitrary JSON value.
          *
-         * You should usually call [Builder.passThreshold] with a well-typed [Double] value instead.
+         * You should usually call [Builder.name] with a well-typed [String] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
+        fun name(name: JsonField<String>) = apply { this.name = name }
+
+        /** The string check operation to perform. One of `eq`, `ne`, `like`, or `ilike`. */
+        fun operation(operation: Operation) = operation(JsonField.of(operation))
+
+        /**
+         * Sets [Builder.operation] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.operation] with a well-typed [Operation] value instead.
          * This method is primarily for setting the field to an undocumented or not yet supported
          * value.
          */
-        fun passThreshold(passThreshold: JsonField<Double>) = apply {
-            this.passThreshold = passThreshold
-        }
+        fun operation(operation: JsonField<Operation>) = apply { this.operation = operation }
 
-        /** The text being graded against. */
+        /** The reference text. This may include template strings. */
         fun reference(reference: String) = reference(JsonField.of(reference))
 
         /**
@@ -249,24 +215,13 @@ private constructor(
          * It is usually unnecessary to call this method because the field defaults to the
          * following:
          * ```java
-         * JsonValue.from("text_similarity")
+         * JsonValue.from("string_check")
          * ```
          *
          * This method is primarily for setting the field to an undocumented or not yet supported
          * value.
          */
         fun type(type: JsonValue) = apply { this.type = type }
-
-        /** The name of the grader. */
-        fun name(name: String) = name(JsonField.of(name))
-
-        /**
-         * Sets [Builder.name] to an arbitrary JSON value.
-         *
-         * You should usually call [Builder.name] with a well-typed [String] value instead. This
-         * method is primarily for setting the field to an undocumented or not yet supported value.
-         */
-        fun name(name: JsonField<String>) = apply { this.name = name }
 
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
             this.additionalProperties.clear()
@@ -288,49 +243,47 @@ private constructor(
         }
 
         /**
-         * Returns an immutable instance of [EvalTextSimilarityGrader].
+         * Returns an immutable instance of [StringCheckGrader].
          *
          * Further updates to this [Builder] will not mutate the returned instance.
          *
          * The following fields are required:
          * ```java
-         * .evaluationMetric()
          * .input()
-         * .passThreshold()
+         * .name()
+         * .operation()
          * .reference()
          * ```
          *
          * @throws IllegalStateException if any required field is unset.
          */
-        fun build(): EvalTextSimilarityGrader =
-            EvalTextSimilarityGrader(
-                checkRequired("evaluationMetric", evaluationMetric),
+        fun build(): StringCheckGrader =
+            StringCheckGrader(
                 checkRequired("input", input),
-                checkRequired("passThreshold", passThreshold),
+                checkRequired("name", name),
+                checkRequired("operation", operation),
                 checkRequired("reference", reference),
                 type,
-                name,
                 additionalProperties.toMutableMap(),
             )
     }
 
     private var validated: Boolean = false
 
-    fun validate(): EvalTextSimilarityGrader = apply {
+    fun validate(): StringCheckGrader = apply {
         if (validated) {
             return@apply
         }
 
-        evaluationMetric().validate()
         input()
-        passThreshold()
+        name()
+        operation().validate()
         reference()
         _type().let {
-            if (it != JsonValue.from("text_similarity")) {
+            if (it != JsonValue.from("string_check")) {
                 throw OpenAIInvalidDataException("'type' is invalid, received $it")
             }
         }
-        name()
         validated = true
     }
 
@@ -349,19 +302,14 @@ private constructor(
      */
     @JvmSynthetic
     internal fun validity(): Int =
-        (evaluationMetric.asKnown().getOrNull()?.validity() ?: 0) +
-            (if (input.asKnown().isPresent) 1 else 0) +
-            (if (passThreshold.asKnown().isPresent) 1 else 0) +
+        (if (input.asKnown().isPresent) 1 else 0) +
+            (if (name.asKnown().isPresent) 1 else 0) +
+            (operation.asKnown().getOrNull()?.validity() ?: 0) +
             (if (reference.asKnown().isPresent) 1 else 0) +
-            type.let { if (it == JsonValue.from("text_similarity")) 1 else 0 } +
-            (if (name.asKnown().isPresent) 1 else 0)
+            type.let { if (it == JsonValue.from("string_check")) 1 else 0 }
 
-    /**
-     * The evaluation metric to use. One of `fuzzy_match`, `bleu`, `gleu`, `meteor`, `rouge_1`,
-     * `rouge_2`, `rouge_3`, `rouge_4`, `rouge_5`, or `rouge_l`.
-     */
-    class EvaluationMetric @JsonCreator private constructor(private val value: JsonField<String>) :
-        Enum {
+    /** The string check operation to perform. One of `eq`, `ne`, `like`, or `ilike`. */
+    class Operation @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
 
         /**
          * Returns this class instance's raw value.
@@ -375,66 +323,41 @@ private constructor(
 
         companion object {
 
-            @JvmField val FUZZY_MATCH = of("fuzzy_match")
+            @JvmField val EQ = of("eq")
 
-            @JvmField val BLEU = of("bleu")
+            @JvmField val NE = of("ne")
 
-            @JvmField val GLEU = of("gleu")
+            @JvmField val LIKE = of("like")
 
-            @JvmField val METEOR = of("meteor")
+            @JvmField val ILIKE = of("ilike")
 
-            @JvmField val ROUGE_1 = of("rouge_1")
-
-            @JvmField val ROUGE_2 = of("rouge_2")
-
-            @JvmField val ROUGE_3 = of("rouge_3")
-
-            @JvmField val ROUGE_4 = of("rouge_4")
-
-            @JvmField val ROUGE_5 = of("rouge_5")
-
-            @JvmField val ROUGE_L = of("rouge_l")
-
-            @JvmStatic fun of(value: String) = EvaluationMetric(JsonField.of(value))
+            @JvmStatic fun of(value: String) = Operation(JsonField.of(value))
         }
 
-        /** An enum containing [EvaluationMetric]'s known values. */
+        /** An enum containing [Operation]'s known values. */
         enum class Known {
-            FUZZY_MATCH,
-            BLEU,
-            GLEU,
-            METEOR,
-            ROUGE_1,
-            ROUGE_2,
-            ROUGE_3,
-            ROUGE_4,
-            ROUGE_5,
-            ROUGE_L,
+            EQ,
+            NE,
+            LIKE,
+            ILIKE,
         }
 
         /**
-         * An enum containing [EvaluationMetric]'s known values, as well as an [_UNKNOWN] member.
+         * An enum containing [Operation]'s known values, as well as an [_UNKNOWN] member.
          *
-         * An instance of [EvaluationMetric] can contain an unknown value in a couple of cases:
+         * An instance of [Operation] can contain an unknown value in a couple of cases:
          * - It was deserialized from data that doesn't match any known member. For example, if the
          *   SDK is on an older version than the API, then the API may respond with new members that
          *   the SDK is unaware of.
          * - It was constructed with an arbitrary value using the [of] method.
          */
         enum class Value {
-            FUZZY_MATCH,
-            BLEU,
-            GLEU,
-            METEOR,
-            ROUGE_1,
-            ROUGE_2,
-            ROUGE_3,
-            ROUGE_4,
-            ROUGE_5,
-            ROUGE_L,
+            EQ,
+            NE,
+            LIKE,
+            ILIKE,
             /**
-             * An enum member indicating that [EvaluationMetric] was instantiated with an unknown
-             * value.
+             * An enum member indicating that [Operation] was instantiated with an unknown value.
              */
             _UNKNOWN,
         }
@@ -448,16 +371,10 @@ private constructor(
          */
         fun value(): Value =
             when (this) {
-                FUZZY_MATCH -> Value.FUZZY_MATCH
-                BLEU -> Value.BLEU
-                GLEU -> Value.GLEU
-                METEOR -> Value.METEOR
-                ROUGE_1 -> Value.ROUGE_1
-                ROUGE_2 -> Value.ROUGE_2
-                ROUGE_3 -> Value.ROUGE_3
-                ROUGE_4 -> Value.ROUGE_4
-                ROUGE_5 -> Value.ROUGE_5
-                ROUGE_L -> Value.ROUGE_L
+                EQ -> Value.EQ
+                NE -> Value.NE
+                LIKE -> Value.LIKE
+                ILIKE -> Value.ILIKE
                 else -> Value._UNKNOWN
             }
 
@@ -472,17 +389,11 @@ private constructor(
          */
         fun known(): Known =
             when (this) {
-                FUZZY_MATCH -> Known.FUZZY_MATCH
-                BLEU -> Known.BLEU
-                GLEU -> Known.GLEU
-                METEOR -> Known.METEOR
-                ROUGE_1 -> Known.ROUGE_1
-                ROUGE_2 -> Known.ROUGE_2
-                ROUGE_3 -> Known.ROUGE_3
-                ROUGE_4 -> Known.ROUGE_4
-                ROUGE_5 -> Known.ROUGE_5
-                ROUGE_L -> Known.ROUGE_L
-                else -> throw OpenAIInvalidDataException("Unknown EvaluationMetric: $value")
+                EQ -> Known.EQ
+                NE -> Known.NE
+                LIKE -> Known.LIKE
+                ILIKE -> Known.ILIKE
+                else -> throw OpenAIInvalidDataException("Unknown Operation: $value")
             }
 
         /**
@@ -499,7 +410,7 @@ private constructor(
 
         private var validated: Boolean = false
 
-        fun validate(): EvaluationMetric = apply {
+        fun validate(): Operation = apply {
             if (validated) {
                 return@apply
             }
@@ -529,7 +440,7 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is EvaluationMetric && value == other.value /* spotless:on */
+            return /* spotless:off */ other is Operation && value == other.value /* spotless:on */
         }
 
         override fun hashCode() = value.hashCode()
@@ -542,15 +453,15 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is EvalTextSimilarityGrader && evaluationMetric == other.evaluationMetric && input == other.input && passThreshold == other.passThreshold && reference == other.reference && type == other.type && name == other.name && additionalProperties == other.additionalProperties /* spotless:on */
+        return /* spotless:off */ other is StringCheckGrader && input == other.input && name == other.name && operation == other.operation && reference == other.reference && type == other.type && additionalProperties == other.additionalProperties /* spotless:on */
     }
 
     /* spotless:off */
-    private val hashCode: Int by lazy { Objects.hash(evaluationMetric, input, passThreshold, reference, type, name, additionalProperties) }
+    private val hashCode: Int by lazy { Objects.hash(input, name, operation, reference, type, additionalProperties) }
     /* spotless:on */
 
     override fun hashCode(): Int = hashCode
 
     override fun toString() =
-        "EvalTextSimilarityGrader{evaluationMetric=$evaluationMetric, input=$input, passThreshold=$passThreshold, reference=$reference, type=$type, name=$name, additionalProperties=$additionalProperties}"
+        "StringCheckGrader{input=$input, name=$name, operation=$operation, reference=$reference, type=$type, additionalProperties=$additionalProperties}"
 }

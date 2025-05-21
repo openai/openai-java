@@ -12,7 +12,6 @@ import com.openai.models.ReasoningEffort
 import com.openai.models.ResponseFormatText
 import com.openai.models.responses.FileSearchTool
 import com.openai.models.responses.ResponseCreateParams
-import com.openai.models.responses.ResponseDeleteParams
 import com.openai.models.responses.ResponseIncludable
 import com.openai.models.responses.ResponseRetrieveParams
 import com.openai.models.responses.ResponseTextConfig
@@ -192,12 +191,7 @@ internal class ResponseServiceAsyncTest {
                 .build()
         val responseServiceAsync = client.responses()
 
-        val future =
-            responseServiceAsync.delete(
-                ResponseDeleteParams.builder()
-                    .responseId("resp_677efb5139a88190b512bc3fef8e535d")
-                    .build()
-            )
+        val future = responseServiceAsync.delete("resp_677efb5139a88190b512bc3fef8e535d")
 
         val response = future.get()
     }
