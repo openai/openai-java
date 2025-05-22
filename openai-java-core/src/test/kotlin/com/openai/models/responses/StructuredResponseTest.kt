@@ -100,6 +100,8 @@ internal class StructuredResponseTest {
                 DelegationReadTestCase("_truncation", JSON_FIELD),
                 DelegationReadTestCase("_usage", JSON_FIELD),
                 DelegationReadTestCase("_user", JSON_FIELD),
+                DelegationReadTestCase("background", OPTIONAL),
+                DelegationReadTestCase("_background", JSON_FIELD),
                 DelegationReadTestCase("_additionalProperties", MAP),
                 // `validate()` and `isValid()` (which calls `validate()`) are tested separately,
                 // as they require special handling.

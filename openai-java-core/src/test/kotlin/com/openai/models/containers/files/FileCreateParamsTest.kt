@@ -71,8 +71,6 @@ internal class FileCreateParamsTest {
                 { a, b -> a.readBytes() contentEquals b.readBytes() },
                 InputStream::class.java,
             )
-            .isEqualTo(
-                mapOf<String, MultipartField<*>>()
-            )
+            .isEqualTo(mapOf<String, MultipartField<*>>())
     }
 }

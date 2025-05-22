@@ -56,6 +56,52 @@ internal class StructuredResponseOutputItemTest {
                 .build()
         private val REASONING_ITEM =
             ResponseReasoningItem.builder().id(STRING).summary(listOf()).build()
+        private val CODE_INTERPRETER_CALL =
+            ResponseCodeInterpreterToolCall.builder()
+                .id(STRING)
+                .code(STRING)
+                .addLogsResult(STRING)
+                .status(ResponseCodeInterpreterToolCall.Status.COMPLETED)
+                .build()
+        private val IMAGE_GENERATION_CALL =
+            ResponseOutputItem.ImageGenerationCall.builder()
+                .id(STRING)
+                .result(STRING)
+                .status(ResponseOutputItem.ImageGenerationCall.Status.COMPLETED)
+                .build()
+        private val LOCAL_SHELL_CALL =
+            ResponseOutputItem.LocalShellCall.builder()
+                .id(STRING)
+                .callId(STRING)
+                .action(
+                    ResponseOutputItem.LocalShellCall.Action.builder()
+                        .command(listOf("echo", "hello"))
+                        .env(ResponseOutputItem.LocalShellCall.Action.Env.builder().build())
+                        .build()
+                )
+                .status(ResponseOutputItem.LocalShellCall.Status.COMPLETED)
+                .build()
+        private val MCP_APPROVAL_REQUEST =
+            ResponseOutputItem.McpApprovalRequest.builder()
+                .id(STRING)
+                .arguments(STRING)
+                .name(STRING)
+                .serverLabel(STRING)
+                .build()
+        private val MCP_CALL =
+            ResponseOutputItem.McpCall.builder()
+                .id(STRING)
+                .arguments(STRING)
+                .name(STRING)
+                .serverLabel(STRING)
+                .output(STRING)
+                .build()
+        private val MCP_LIST_TOOLS =
+            ResponseOutputItem.McpListTools.builder()
+                .id(STRING)
+                .serverLabel(STRING)
+                .tools(listOf())
+                .build()
         private val MESSAGE =
             ResponseOutputMessage.builder()
                 .id(STRING)
@@ -93,6 +139,12 @@ internal class StructuredResponseOutputItemTest {
                 DelegationReadTestCase("asWebSearchCall", FUNCTION_WEB_SEARCH),
                 DelegationReadTestCase("asComputerCall", COMPUTER_TOOL_CALL),
                 DelegationReadTestCase("asReasoning", REASONING_ITEM),
+                DelegationReadTestCase("asCodeInterpreterCall", CODE_INTERPRETER_CALL),
+                DelegationReadTestCase("asImageGenerationCall", IMAGE_GENERATION_CALL),
+                DelegationReadTestCase("asLocalShellCall", LOCAL_SHELL_CALL),
+                DelegationReadTestCase("asMcpApprovalRequest", MCP_APPROVAL_REQUEST),
+                DelegationReadTestCase("asMcpCall", MCP_CALL),
+                DelegationReadTestCase("asMcpListTools", MCP_LIST_TOOLS),
                 DelegationReadTestCase("_json", OPTIONAL),
             )
     }
@@ -105,7 +157,32 @@ internal class StructuredResponseOutputItemTest {
     @Test
     fun allDelegateFunctionsExistInDelegator() {
         // `toBuilder()` is deliberately not implemented. `accept()` has a different signature.
-        checkAllDelegation(mockDelegate::class, delegator::class, "toBuilder", "accept")
+        // We're also skipping all the newly added tool methods related to Code Interpreter, Image
+        // Generation, etc.
+        checkAllDelegation(
+            mockDelegate::class,
+            delegator::class,
+            "toBuilder",
+            "accept",
+            "asCodeInterpreterCall",
+            "asImageGenerationCall",
+            "asLocalShellCall",
+            "asMcpApprovalRequest",
+            "asMcpCall",
+            "asMcpListTools",
+            "codeInterpreterCall",
+            "imageGenerationCall",
+            "localShellCall",
+            "mcpApprovalRequest",
+            "mcpCall",
+            "mcpListTools",
+            "isCodeInterpreterCall",
+            "isImageGenerationCall",
+            "isLocalShellCall",
+            "isMcpApprovalRequest",
+            "isMcpCall",
+            "isMcpListTools",
+        )
     }
 
     @Test
@@ -123,7 +200,39 @@ internal class StructuredResponseOutputItemTest {
             delegator::class,
             delegationTestCases(),
             exceptionalTestedFns =
-                setOf("message", "asMessage", "isMessage", "validate", "isValid", "accept"),
+                setOf(
+                    "message",
+                    "asMessage",
+                    "isMessage",
+                    "validate",
+                    "isValid",
+                    "accept",
+                    "visitCodeInterpreterCall",
+                    "visitImageGenerationCall",
+                    "visitLocalShellCall",
+                    "visitMcpApprovalRequest",
+                    "visitMcpCall",
+                    "visitMcpListTools",
+                    // All the functions added for new tools:
+                    "asCodeInterpreterCall",
+                    "asImageGenerationCall",
+                    "asLocalShellCall",
+                    "asMcpApprovalRequest",
+                    "asMcpCall",
+                    "asMcpListTools",
+                    "codeInterpreterCall",
+                    "imageGenerationCall",
+                    "localShellCall",
+                    "mcpApprovalRequest",
+                    "mcpCall",
+                    "mcpListTools",
+                    "isCodeInterpreterCall",
+                    "isImageGenerationCall",
+                    "isLocalShellCall",
+                    "isMcpApprovalRequest",
+                    "isMcpCall",
+                    "isMcpListTools",
+                ),
             nonDelegatingFns = setOf("equals", "hashCode", "toString"),
         )
     }

@@ -94,6 +94,9 @@ class StructuredResponse<T : Any>(
     /** @see Response.user */
     fun user(): Optional<String> = rawResponse.user()
 
+    /** @see Response.background */
+    fun background(): Optional<Boolean> = rawResponse.background()
+
     /** @see Response._id */
     fun _id(): JsonField<String> = rawResponse._id()
 
@@ -160,6 +163,9 @@ class StructuredResponse<T : Any>(
 
     /** @see Response._user */
     fun _user(): JsonField<String> = rawResponse._user()
+
+    /** @see Response._background */
+    fun _background(): JsonField<Boolean> = rawResponse._background()
 
     /** @see Response._additionalProperties */
     fun _additionalProperties(): Map<String, JsonValue> = rawResponse._additionalProperties()
