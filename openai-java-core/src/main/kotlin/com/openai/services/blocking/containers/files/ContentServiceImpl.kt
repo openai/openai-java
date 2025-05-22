@@ -57,7 +57,7 @@ class ContentServiceImpl internal constructor(private val clientOptions: ClientO
                         "content",
                     )
                     .build()
-                    .prepare(clientOptions, params)
+                    .prepare(clientOptions, params, deploymentModel = null)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             val response = clientOptions.httpClient.execute(request, requestOptions)
             return response.parseable { response.use { retrieveHandler.handle(it) } }
