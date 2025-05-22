@@ -12,17 +12,26 @@ internal class ResponseWebSearchCallCompletedEventTest {
     @Test
     fun create() {
         val responseWebSearchCallCompletedEvent =
-            ResponseWebSearchCallCompletedEvent.builder().itemId("item_id").outputIndex(0L).build()
+            ResponseWebSearchCallCompletedEvent.builder()
+                .itemId("item_id")
+                .outputIndex(0L)
+                .sequenceNumber(0L)
+                .build()
 
         assertThat(responseWebSearchCallCompletedEvent.itemId()).isEqualTo("item_id")
         assertThat(responseWebSearchCallCompletedEvent.outputIndex()).isEqualTo(0L)
+        assertThat(responseWebSearchCallCompletedEvent.sequenceNumber()).isEqualTo(0L)
     }
 
     @Test
     fun roundtrip() {
         val jsonMapper = jsonMapper()
         val responseWebSearchCallCompletedEvent =
-            ResponseWebSearchCallCompletedEvent.builder().itemId("item_id").outputIndex(0L).build()
+            ResponseWebSearchCallCompletedEvent.builder()
+                .itemId("item_id")
+                .outputIndex(0L)
+                .sequenceNumber(0L)
+                .build()
 
         val roundtrippedResponseWebSearchCallCompletedEvent =
             jsonMapper.readValue(

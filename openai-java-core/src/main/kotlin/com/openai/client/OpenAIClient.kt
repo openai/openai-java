@@ -7,6 +7,7 @@ import com.openai.services.blocking.BatchService
 import com.openai.services.blocking.BetaService
 import com.openai.services.blocking.ChatService
 import com.openai.services.blocking.CompletionService
+import com.openai.services.blocking.ContainerService
 import com.openai.services.blocking.EmbeddingService
 import com.openai.services.blocking.EvalService
 import com.openai.services.blocking.FileService
@@ -80,6 +81,8 @@ interface OpenAIClient {
 
     fun evals(): EvalService
 
+    fun containers(): ContainerService
+
     /**
      * Closes this client, relinquishing any underlying resources.
      *
@@ -127,5 +130,7 @@ interface OpenAIClient {
         fun responses(): ResponseService.WithRawResponse
 
         fun evals(): EvalService.WithRawResponse
+
+        fun containers(): ContainerService.WithRawResponse
     }
 }

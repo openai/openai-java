@@ -399,8 +399,8 @@ private constructor(
     fun topP(): Optional<Double> = body.topP()
 
     /**
-     * A unique identifier representing your end-user, which can help OpenAI to monitor and detect
-     * abuse.
+     * A stable identifier for your end-users. Used to boost cache hit rates by better bucketing
+     * similar requests and to help OpenAI detect and prevent abuse.
      * [Learn more](https://platform.openai.com/docs/guides/safety-best-practices#end-user-ids).
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
@@ -1590,8 +1590,8 @@ private constructor(
         fun topP(topP: JsonField<Double>) = apply { body.topP(topP) }
 
         /**
-         * A unique identifier representing your end-user, which can help OpenAI to monitor and
-         * detect abuse.
+         * A stable identifier for your end-users. Used to boost cache hit rates by better bucketing
+         * similar requests and to help OpenAI detect and prevent abuse.
          * [Learn more](https://platform.openai.com/docs/guides/safety-best-practices#end-user-ids).
          */
         fun user(user: String) = apply { body.user(user) }
@@ -2260,8 +2260,8 @@ private constructor(
         fun topP(): Optional<Double> = topP.getOptional("top_p")
 
         /**
-         * A unique identifier representing your end-user, which can help OpenAI to monitor and
-         * detect abuse.
+         * A stable identifier for your end-users. Used to boost cache hit rates by better bucketing
+         * similar requests and to help OpenAI detect and prevent abuse.
          * [Learn more](https://platform.openai.com/docs/guides/safety-best-practices#end-user-ids).
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
@@ -3587,8 +3587,8 @@ private constructor(
             fun topP(topP: JsonField<Double>) = apply { this.topP = topP }
 
             /**
-             * A unique identifier representing your end-user, which can help OpenAI to monitor and
-             * detect abuse.
+             * A stable identifier for your end-users. Used to boost cache hit rates by better
+             * bucketing similar requests and to help OpenAI detect and prevent abuse.
              * [Learn more](https://platform.openai.com/docs/guides/safety-best-practices#end-user-ids).
              */
             fun user(user: String) = user(JsonField.of(user))

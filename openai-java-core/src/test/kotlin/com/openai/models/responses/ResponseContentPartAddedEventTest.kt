@@ -27,6 +27,7 @@ internal class ResponseContentPartAddedEventTest {
                         .text("text")
                         .build()
                 )
+                .sequenceNumber(0L)
                 .build()
 
         assertThat(responseContentPartAddedEvent.contentIndex()).isEqualTo(0L)
@@ -46,6 +47,7 @@ internal class ResponseContentPartAddedEventTest {
                         .build()
                 )
             )
+        assertThat(responseContentPartAddedEvent.sequenceNumber()).isEqualTo(0L)
     }
 
     @Test
@@ -67,6 +69,7 @@ internal class ResponseContentPartAddedEventTest {
                         .text("text")
                         .build()
                 )
+                .sequenceNumber(0L)
                 .build()
 
         val roundtrippedResponseContentPartAddedEvent =

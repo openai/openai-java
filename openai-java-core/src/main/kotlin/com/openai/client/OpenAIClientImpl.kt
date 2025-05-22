@@ -14,6 +14,8 @@ import com.openai.services.blocking.ChatService
 import com.openai.services.blocking.ChatServiceImpl
 import com.openai.services.blocking.CompletionService
 import com.openai.services.blocking.CompletionServiceImpl
+import com.openai.services.blocking.ContainerService
+import com.openai.services.blocking.ContainerServiceImpl
 import com.openai.services.blocking.EmbeddingService
 import com.openai.services.blocking.EmbeddingServiceImpl
 import com.openai.services.blocking.EvalService
@@ -98,6 +100,10 @@ class OpenAIClientImpl(private val clientOptions: ClientOptions) : OpenAIClient 
 
     private val evals: EvalService by lazy { EvalServiceImpl(clientOptionsWithUserAgent) }
 
+    private val containers: ContainerService by lazy {
+        ContainerServiceImpl(clientOptionsWithUserAgent)
+    }
+
     override fun async(): OpenAIClientAsync = async
 
     override fun withRawResponse(): OpenAIClient.WithRawResponse = withRawResponse
@@ -133,6 +139,8 @@ class OpenAIClientImpl(private val clientOptions: ClientOptions) : OpenAIClient 
     override fun responses(): ResponseService = responses
 
     override fun evals(): EvalService = evals
+
+    override fun containers(): ContainerService = containers
 
     override fun close() = clientOptions.httpClient.close()
 
@@ -203,6 +211,10 @@ class OpenAIClientImpl(private val clientOptions: ClientOptions) : OpenAIClient 
             EvalServiceImpl.WithRawResponseImpl(clientOptions)
         }
 
+        private val containers: ContainerService.WithRawResponse by lazy {
+            ContainerServiceImpl.WithRawResponseImpl(clientOptions)
+        }
+
         override fun completions(): CompletionService.WithRawResponse = completions
 
         override fun chat(): ChatService.WithRawResponse = chat
@@ -234,5 +246,7 @@ class OpenAIClientImpl(private val clientOptions: ClientOptions) : OpenAIClient 
         override fun responses(): ResponseService.WithRawResponse = responses
 
         override fun evals(): EvalService.WithRawResponse = evals
+
+        override fun containers(): ContainerService.WithRawResponse = containers
     }
 }

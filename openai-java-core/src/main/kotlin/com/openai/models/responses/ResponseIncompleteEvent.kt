@@ -20,6 +20,7 @@ import kotlin.jvm.optionals.getOrNull
 class ResponseIncompleteEvent
 private constructor(
     private val response: JsonField<Response>,
+    private val sequenceNumber: JsonField<Long>,
     private val type: JsonValue,
     private val additionalProperties: MutableMap<String, JsonValue>,
 ) {
@@ -27,8 +28,11 @@ private constructor(
     @JsonCreator
     private constructor(
         @JsonProperty("response") @ExcludeMissing response: JsonField<Response> = JsonMissing.of(),
+        @JsonProperty("sequence_number")
+        @ExcludeMissing
+        sequenceNumber: JsonField<Long> = JsonMissing.of(),
         @JsonProperty("type") @ExcludeMissing type: JsonValue = JsonMissing.of(),
-    ) : this(response, type, mutableMapOf())
+    ) : this(response, sequenceNumber, type, mutableMapOf())
 
     /**
      * The response that was incomplete.
@@ -37,6 +41,14 @@ private constructor(
      *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
      */
     fun response(): Response = response.getRequired("response")
+
+    /**
+     * The sequence number of this event.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     */
+    fun sequenceNumber(): Long = sequenceNumber.getRequired("sequence_number")
 
     /**
      * The type of the event. Always `response.incomplete`.
@@ -58,6 +70,15 @@ private constructor(
      */
     @JsonProperty("response") @ExcludeMissing fun _response(): JsonField<Response> = response
 
+    /**
+     * Returns the raw JSON value of [sequenceNumber].
+     *
+     * Unlike [sequenceNumber], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    @JsonProperty("sequence_number")
+    @ExcludeMissing
+    fun _sequenceNumber(): JsonField<Long> = sequenceNumber
+
     @JsonAnySetter
     private fun putAdditionalProperty(key: String, value: JsonValue) {
         additionalProperties.put(key, value)
@@ -78,6 +99,7 @@ private constructor(
          * The following fields are required:
          * ```java
          * .response()
+         * .sequenceNumber()
          * ```
          */
         @JvmStatic fun builder() = Builder()
@@ -87,12 +109,14 @@ private constructor(
     class Builder internal constructor() {
 
         private var response: JsonField<Response>? = null
+        private var sequenceNumber: JsonField<Long>? = null
         private var type: JsonValue = JsonValue.from("response.incomplete")
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
         @JvmSynthetic
         internal fun from(responseIncompleteEvent: ResponseIncompleteEvent) = apply {
             response = responseIncompleteEvent.response
+            sequenceNumber = responseIncompleteEvent.sequenceNumber
             type = responseIncompleteEvent.type
             additionalProperties = responseIncompleteEvent.additionalProperties.toMutableMap()
         }
@@ -108,6 +132,20 @@ private constructor(
          * value.
          */
         fun response(response: JsonField<Response>) = apply { this.response = response }
+
+        /** The sequence number of this event. */
+        fun sequenceNumber(sequenceNumber: Long) = sequenceNumber(JsonField.of(sequenceNumber))
+
+        /**
+         * Sets [Builder.sequenceNumber] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.sequenceNumber] with a well-typed [Long] value instead.
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
+         */
+        fun sequenceNumber(sequenceNumber: JsonField<Long>) = apply {
+            this.sequenceNumber = sequenceNumber
+        }
 
         /**
          * Sets the field to an arbitrary JSON value.
@@ -150,6 +188,7 @@ private constructor(
          * The following fields are required:
          * ```java
          * .response()
+         * .sequenceNumber()
          * ```
          *
          * @throws IllegalStateException if any required field is unset.
@@ -157,6 +196,7 @@ private constructor(
         fun build(): ResponseIncompleteEvent =
             ResponseIncompleteEvent(
                 checkRequired("response", response),
+                checkRequired("sequenceNumber", sequenceNumber),
                 type,
                 additionalProperties.toMutableMap(),
             )
@@ -170,6 +210,7 @@ private constructor(
         }
 
         response().validate()
+        sequenceNumber()
         _type().let {
             if (it != JsonValue.from("response.incomplete")) {
                 throw OpenAIInvalidDataException("'type' is invalid, received $it")
@@ -194,6 +235,7 @@ private constructor(
     @JvmSynthetic
     internal fun validity(): Int =
         (response.asKnown().getOrNull()?.validity() ?: 0) +
+            (if (sequenceNumber.asKnown().isPresent) 1 else 0) +
             type.let { if (it == JsonValue.from("response.incomplete")) 1 else 0 }
 
     override fun equals(other: Any?): Boolean {
@@ -201,15 +243,15 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is ResponseIncompleteEvent && response == other.response && type == other.type && additionalProperties == other.additionalProperties /* spotless:on */
+        return /* spotless:off */ other is ResponseIncompleteEvent && response == other.response && sequenceNumber == other.sequenceNumber && type == other.type && additionalProperties == other.additionalProperties /* spotless:on */
     }
 
     /* spotless:off */
-    private val hashCode: Int by lazy { Objects.hash(response, type, additionalProperties) }
+    private val hashCode: Int by lazy { Objects.hash(response, sequenceNumber, type, additionalProperties) }
     /* spotless:on */
 
     override fun hashCode(): Int = hashCode
 
     override fun toString() =
-        "ResponseIncompleteEvent{response=$response, type=$type, additionalProperties=$additionalProperties}"
+        "ResponseIncompleteEvent{response=$response, sequenceNumber=$sequenceNumber, type=$type, additionalProperties=$additionalProperties}"
 }

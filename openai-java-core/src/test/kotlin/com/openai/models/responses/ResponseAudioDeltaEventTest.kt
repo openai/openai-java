@@ -11,15 +11,18 @@ internal class ResponseAudioDeltaEventTest {
 
     @Test
     fun create() {
-        val responseAudioDeltaEvent = ResponseAudioDeltaEvent.builder().delta("delta").build()
+        val responseAudioDeltaEvent =
+            ResponseAudioDeltaEvent.builder().delta("delta").sequenceNumber(0L).build()
 
         assertThat(responseAudioDeltaEvent.delta()).isEqualTo("delta")
+        assertThat(responseAudioDeltaEvent.sequenceNumber()).isEqualTo(0L)
     }
 
     @Test
     fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val responseAudioDeltaEvent = ResponseAudioDeltaEvent.builder().delta("delta").build()
+        val responseAudioDeltaEvent =
+            ResponseAudioDeltaEvent.builder().delta("delta").sequenceNumber(0L).build()
 
         val roundtrippedResponseAudioDeltaEvent =
             jsonMapper.readValue(

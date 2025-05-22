@@ -24,6 +24,7 @@ import com.openai.core.http.parseable
 import com.openai.core.prepare
 import com.openai.models.ErrorObject
 import com.openai.models.responses.Response
+import com.openai.models.responses.ResponseCancelParams
 import com.openai.models.responses.ResponseCreateParams
 import com.openai.models.responses.ResponseDeleteParams
 import com.openai.models.responses.ResponseRetrieveParams
@@ -66,6 +67,11 @@ class ResponseServiceImpl internal constructor(private val clientOptions: Client
     override fun delete(params: ResponseDeleteParams, requestOptions: RequestOptions) {
         // delete /responses/{response_id}
         withRawResponse().delete(params, requestOptions)
+    }
+
+    override fun cancel(params: ResponseCancelParams, requestOptions: RequestOptions) {
+        // post /responses/{response_id}/cancel
+        withRawResponse().cancel(params, requestOptions)
     }
 
     class WithRawResponseImpl internal constructor(private val clientOptions: ClientOptions) :
@@ -194,6 +200,27 @@ class ResponseServiceImpl internal constructor(private val clientOptions: Client
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             val response = clientOptions.httpClient.execute(request, requestOptions)
             return response.parseable { response.use { deleteHandler.handle(it) } }
+        }
+
+        private val cancelHandler: Handler<Void?> = emptyHandler().withErrorHandler(errorHandler)
+
+        override fun cancel(
+            params: ResponseCancelParams,
+            requestOptions: RequestOptions,
+        ): HttpResponse {
+            // We check here instead of in the params builder because this can be specified
+            // positionally or in the params class.
+            checkRequired("responseId", params.responseId().getOrNull())
+            val request =
+                HttpRequest.builder()
+                    .method(HttpMethod.POST)
+                    .addPathSegments("responses", params._pathParam(0), "cancel")
+                    .apply { params._body().ifPresent { body(json(clientOptions.jsonMapper, it)) } }
+                    .build()
+                    .prepare(clientOptions, params)
+            val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
+            val response = clientOptions.httpClient.execute(request, requestOptions)
+            return response.parseable { response.use { cancelHandler.handle(it) } }
         }
     }
 }

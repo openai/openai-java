@@ -5,6 +5,7 @@ package com.openai.models.responses.inputitems
 import com.openai.core.AutoPager
 import com.openai.core.Page
 import com.openai.core.checkRequired
+import com.openai.models.responses.ResponseCodeInterpreterToolCall
 import com.openai.models.responses.ResponseComputerToolCall
 import com.openai.models.responses.ResponseComputerToolCallOutputItem
 import com.openai.models.responses.ResponseFileSearchToolCall
@@ -84,6 +85,38 @@ private constructor(
                             override fun visitFunctionCallOutput(
                                 functionCallOutput: ResponseFunctionToolCallOutputItem
                             ): Optional<String> = functionCallOutput._id().getOptional("id")
+
+                            override fun visitImageGenerationCall(
+                                imageGenerationCall: ResponseItem.ImageGenerationCall
+                            ): Optional<String> = imageGenerationCall._id().getOptional("id")
+
+                            override fun visitCodeInterpreterCall(
+                                codeInterpreterCall: ResponseCodeInterpreterToolCall
+                            ): Optional<String> = codeInterpreterCall._id().getOptional("id")
+
+                            override fun visitLocalShellCall(
+                                localShellCall: ResponseItem.LocalShellCall
+                            ): Optional<String> = localShellCall._id().getOptional("id")
+
+                            override fun visitLocalShellCallOutput(
+                                localShellCallOutput: ResponseItem.LocalShellCallOutput
+                            ): Optional<String> = localShellCallOutput._id().getOptional("id")
+
+                            override fun visitMcpListTools(
+                                mcpListTools: ResponseItem.McpListTools
+                            ): Optional<String> = mcpListTools._id().getOptional("id")
+
+                            override fun visitMcpApprovalRequest(
+                                mcpApprovalRequest: ResponseItem.McpApprovalRequest
+                            ): Optional<String> = mcpApprovalRequest._id().getOptional("id")
+
+                            override fun visitMcpApprovalResponse(
+                                mcpApprovalResponse: ResponseItem.McpApprovalResponse
+                            ): Optional<String> = mcpApprovalResponse._id().getOptional("id")
+
+                            override fun visitMcpCall(
+                                mcpCall: ResponseItem.McpCall
+                            ): Optional<String> = mcpCall._id().getOptional("id")
                         }
                     )
             )

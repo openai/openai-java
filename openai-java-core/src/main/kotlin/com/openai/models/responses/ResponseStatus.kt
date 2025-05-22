@@ -8,8 +8,8 @@ import com.openai.core.JsonField
 import com.openai.errors.OpenAIInvalidDataException
 
 /**
- * The status of the response generation. One of `completed`, `failed`, `in_progress`, or
- * `incomplete`.
+ * The status of the response generation. One of `completed`, `failed`, `in_progress`, `cancelled`,
+ * `queued`, or `incomplete`.
  */
 class ResponseStatus @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
 
@@ -30,6 +30,10 @@ class ResponseStatus @JsonCreator private constructor(private val value: JsonFie
 
         @JvmField val IN_PROGRESS = of("in_progress")
 
+        @JvmField val CANCELLED = of("cancelled")
+
+        @JvmField val QUEUED = of("queued")
+
         @JvmField val INCOMPLETE = of("incomplete")
 
         @JvmStatic fun of(value: String) = ResponseStatus(JsonField.of(value))
@@ -40,6 +44,8 @@ class ResponseStatus @JsonCreator private constructor(private val value: JsonFie
         COMPLETED,
         FAILED,
         IN_PROGRESS,
+        CANCELLED,
+        QUEUED,
         INCOMPLETE,
     }
 
@@ -56,6 +62,8 @@ class ResponseStatus @JsonCreator private constructor(private val value: JsonFie
         COMPLETED,
         FAILED,
         IN_PROGRESS,
+        CANCELLED,
+        QUEUED,
         INCOMPLETE,
         /**
          * An enum member indicating that [ResponseStatus] was instantiated with an unknown value.
@@ -75,6 +83,8 @@ class ResponseStatus @JsonCreator private constructor(private val value: JsonFie
             COMPLETED -> Value.COMPLETED
             FAILED -> Value.FAILED
             IN_PROGRESS -> Value.IN_PROGRESS
+            CANCELLED -> Value.CANCELLED
+            QUEUED -> Value.QUEUED
             INCOMPLETE -> Value.INCOMPLETE
             else -> Value._UNKNOWN
         }
@@ -92,6 +102,8 @@ class ResponseStatus @JsonCreator private constructor(private val value: JsonFie
             COMPLETED -> Known.COMPLETED
             FAILED -> Known.FAILED
             IN_PROGRESS -> Known.IN_PROGRESS
+            CANCELLED -> Known.CANCELLED
+            QUEUED -> Known.QUEUED
             INCOMPLETE -> Known.INCOMPLETE
             else -> throw OpenAIInvalidDataException("Unknown ResponseStatus: $value")
         }

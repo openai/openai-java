@@ -1,0 +1,72 @@
+// File generated from our OpenAPI spec by Stainless.
+
+package com.openai.services.async.containers.files
+
+import com.openai.core.ClientOptions
+import com.openai.core.RequestOptions
+import com.openai.core.checkRequired
+import com.openai.core.handlers.emptyHandler
+import com.openai.core.handlers.errorHandler
+import com.openai.core.handlers.withErrorHandler
+import com.openai.core.http.HttpMethod
+import com.openai.core.http.HttpRequest
+import com.openai.core.http.HttpResponse
+import com.openai.core.http.HttpResponse.Handler
+import com.openai.core.http.parseable
+import com.openai.core.prepareAsync
+import com.openai.models.ErrorObject
+import com.openai.models.containers.files.content.ContentRetrieveParams
+import java.util.concurrent.CompletableFuture
+import kotlin.jvm.optionals.getOrNull
+
+class ContentServiceAsyncImpl internal constructor(private val clientOptions: ClientOptions) :
+    ContentServiceAsync {
+
+    private val withRawResponse: ContentServiceAsync.WithRawResponse by lazy {
+        WithRawResponseImpl(clientOptions)
+    }
+
+    override fun withRawResponse(): ContentServiceAsync.WithRawResponse = withRawResponse
+
+    override fun retrieve(
+        params: ContentRetrieveParams,
+        requestOptions: RequestOptions,
+    ): CompletableFuture<Void?> =
+        // get /containers/{container_id}/files/{file_id}/content
+        withRawResponse().retrieve(params, requestOptions).thenAccept {}
+
+    class WithRawResponseImpl internal constructor(private val clientOptions: ClientOptions) :
+        ContentServiceAsync.WithRawResponse {
+
+        private val errorHandler: Handler<ErrorObject?> = errorHandler(clientOptions.jsonMapper)
+
+        private val retrieveHandler: Handler<Void?> = emptyHandler().withErrorHandler(errorHandler)
+
+        override fun retrieve(
+            params: ContentRetrieveParams,
+            requestOptions: RequestOptions,
+        ): CompletableFuture<HttpResponse> {
+            // We check here instead of in the params builder because this can be specified
+            // positionally or in the params class.
+            checkRequired("fileId", params.fileId().getOrNull())
+            val request =
+                HttpRequest.builder()
+                    .method(HttpMethod.GET)
+                    .addPathSegments(
+                        "containers",
+                        params._pathParam(0),
+                        "files",
+                        params._pathParam(1),
+                        "content",
+                    )
+                    .build()
+                    .prepareAsync(clientOptions, params)
+            val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
+            return request
+                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
+                .thenApply { response ->
+                    response.parseable { response.use { retrieveHandler.handle(it) } }
+                }
+        }
+    }
+}

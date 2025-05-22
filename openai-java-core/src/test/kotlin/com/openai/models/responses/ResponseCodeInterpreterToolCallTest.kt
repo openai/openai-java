@@ -17,6 +17,7 @@ internal class ResponseCodeInterpreterToolCallTest {
                 .code("code")
                 .addLogsResult("logs")
                 .status(ResponseCodeInterpreterToolCall.Status.IN_PROGRESS)
+                .containerId("container_id")
                 .build()
 
         assertThat(responseCodeInterpreterToolCall.id()).isEqualTo("id")
@@ -29,6 +30,7 @@ internal class ResponseCodeInterpreterToolCallTest {
             )
         assertThat(responseCodeInterpreterToolCall.status())
             .isEqualTo(ResponseCodeInterpreterToolCall.Status.IN_PROGRESS)
+        assertThat(responseCodeInterpreterToolCall.containerId()).contains("container_id")
     }
 
     @Test
@@ -40,6 +42,7 @@ internal class ResponseCodeInterpreterToolCallTest {
                 .code("code")
                 .addLogsResult("logs")
                 .status(ResponseCodeInterpreterToolCall.Status.IN_PROGRESS)
+                .containerId("container_id")
                 .build()
 
         val roundtrippedResponseCodeInterpreterToolCall =
