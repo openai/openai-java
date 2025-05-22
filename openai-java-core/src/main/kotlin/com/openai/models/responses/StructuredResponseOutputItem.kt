@@ -41,6 +41,28 @@ class StructuredResponseOutputItem<T : Any>(
     /** @see ResponseOutputItem.reasoning */
     fun reasoning(): Optional<ResponseReasoningItem> = rawOutputItem.reasoning()
 
+    /** @see ResponseOutputItem.codeInterpreterCall */
+    fun codeInterpreterCall(): Optional<ResponseCodeInterpreterToolCall> =
+        rawOutputItem.codeInterpreterCall()
+
+    /** @see ResponseOutputItem.imageGenerationCall */
+    fun imageGenerationCall(): Optional<ResponseOutputItem.ImageGenerationCall> =
+        rawOutputItem.imageGenerationCall()
+
+    /** @see ResponseOutputItem.localShellCall */
+    fun localShellCall(): Optional<ResponseOutputItem.LocalShellCall> =
+        rawOutputItem.localShellCall()
+
+    /** @see ResponseOutputItem.mcpApprovalRequest */
+    fun mcpApprovalRequest(): Optional<ResponseOutputItem.McpApprovalRequest> =
+        rawOutputItem.mcpApprovalRequest()
+
+    /** @see ResponseOutputItem.mcpCall */
+    fun mcpCall(): Optional<ResponseOutputItem.McpCall> = rawOutputItem.mcpCall()
+
+    /** @see ResponseOutputItem.mcpListTools */
+    fun mcpListTools(): Optional<ResponseOutputItem.McpListTools> = rawOutputItem.mcpListTools()
+
     /** @see ResponseOutputItem.isMessage */
     fun isMessage(): Boolean = message().isPresent
 
@@ -58,6 +80,24 @@ class StructuredResponseOutputItem<T : Any>(
 
     /** @see ResponseOutputItem.isReasoning */
     fun isReasoning(): Boolean = rawOutputItem.isReasoning()
+
+    /** @see ResponseOutputItem.isCodeInterpreterCall */
+    fun isCodeInterpreterCall(): Boolean = rawOutputItem.isCodeInterpreterCall()
+
+    /** @see ResponseOutputItem.isImageGenerationCall */
+    fun isImageGenerationCall(): Boolean = rawOutputItem.isImageGenerationCall()
+
+    /** @see ResponseOutputItem.isLocalShellCall */
+    fun isLocalShellCall(): Boolean = rawOutputItem.isLocalShellCall()
+
+    /** @see ResponseOutputItem.isMcpApprovalRequest */
+    fun isMcpApprovalRequest(): Boolean = rawOutputItem.isMcpApprovalRequest()
+
+    /** @see ResponseOutputItem.isMcpCall */
+    fun isMcpCall(): Boolean = rawOutputItem.isMcpCall()
+
+    /** @see ResponseOutputItem.isMcpListTools */
+    fun isMcpListTools(): Boolean = rawOutputItem.isMcpListTools()
 
     /** @see ResponseOutputItem.asMessage */
     fun asMessage(): StructuredResponseOutputMessage<T> =
@@ -81,6 +121,27 @@ class StructuredResponseOutputItem<T : Any>(
     /** @see ResponseOutputItem.asReasoning */
     fun asReasoning(): ResponseReasoningItem = rawOutputItem.asReasoning()
 
+    /** @see ResponseOutputItem.asCodeInterpreterCall */
+    fun asCodeInterpreterCall(): ResponseCodeInterpreterToolCall =
+        rawOutputItem.asCodeInterpreterCall()
+
+    /** @see ResponseOutputItem.asImageGenerationCall */
+    fun asImageGenerationCall(): ResponseOutputItem.ImageGenerationCall =
+        rawOutputItem.asImageGenerationCall()
+
+    /** @see ResponseOutputItem.asLocalShellCall */
+    fun asLocalShellCall(): ResponseOutputItem.LocalShellCall = rawOutputItem.asLocalShellCall()
+
+    /** @see ResponseOutputItem.asMcpApprovalRequest */
+    fun asMcpApprovalRequest(): ResponseOutputItem.McpApprovalRequest =
+        rawOutputItem.asMcpApprovalRequest()
+
+    /** @see ResponseOutputItem.asMcpCall */
+    fun asMcpCall(): ResponseOutputItem.McpCall = rawOutputItem.asMcpCall()
+
+    /** @see ResponseOutputItem.asMcpListTools */
+    fun asMcpListTools(): ResponseOutputItem.McpListTools = rawOutputItem.asMcpListTools()
+
     /** @see ResponseOutputItem._json */
     fun _json(): Optional<JsonValue> = rawOutputItem._json()
 
@@ -93,6 +154,12 @@ class StructuredResponseOutputItem<T : Any>(
             isWebSearchCall() -> visitor.visitWebSearchCall(asWebSearchCall())
             isComputerCall() -> visitor.visitComputerCall(asComputerCall())
             isReasoning() -> visitor.visitReasoning(asReasoning())
+            isCodeInterpreterCall() -> visitor.visitCodeInterpreterCall(asCodeInterpreterCall())
+            isImageGenerationCall() -> visitor.visitImageGenerationCall(asImageGenerationCall())
+            isLocalShellCall() -> visitor.visitLocalShellCall(asLocalShellCall())
+            isMcpApprovalRequest() -> visitor.visitMcpApprovalRequest(asMcpApprovalRequest())
+            isMcpCall() -> visitor.visitMcpCall(asMcpCall())
+            isMcpListTools() -> visitor.visitMcpListTools(asMcpListTools())
             else -> visitor.unknown(_json().getOrNull())
         }
 
@@ -128,6 +195,38 @@ class StructuredResponseOutputItem<T : Any>(
 
                 override fun visitReasoning(reasoning: ResponseReasoningItem) {
                     reasoning.validate()
+                }
+
+                override fun visitCodeInterpreterCall(
+                    codeInterpreterCall: ResponseCodeInterpreterToolCall
+                ) {
+                    codeInterpreterCall.validate()
+                }
+
+                override fun visitImageGenerationCall(
+                    imageGenerationCall: ResponseOutputItem.ImageGenerationCall
+                ) {
+                    imageGenerationCall.validate()
+                }
+
+                override fun visitLocalShellCall(
+                    localShellCall: ResponseOutputItem.LocalShellCall
+                ) {
+                    localShellCall.validate()
+                }
+
+                override fun visitMcpApprovalRequest(
+                    mcpApprovalRequest: ResponseOutputItem.McpApprovalRequest
+                ) {
+                    mcpApprovalRequest.validate()
+                }
+
+                override fun visitMcpCall(mcpCall: ResponseOutputItem.McpCall) {
+                    mcpCall.validate()
+                }
+
+                override fun visitMcpListTools(mcpListTools: ResponseOutputItem.McpListTools) {
+                    mcpListTools.validate()
                 }
             }
         )
@@ -180,6 +279,24 @@ class StructuredResponseOutputItem<T : Any>(
 
         /** @see ResponseOutputItem.Visitor.visitReasoning */
         fun visitReasoning(reasoning: ResponseReasoningItem): T
+
+        /** @see ResponseOutputItem.Visitor.visitCodeInterpreterCall */
+        fun visitCodeInterpreterCall(codeInterpreterCall: ResponseCodeInterpreterToolCall): T
+
+        /** @see ResponseOutputItem.Visitor.visitImageGenerationCall */
+        fun visitImageGenerationCall(imageGenerationCall: ResponseOutputItem.ImageGenerationCall): T
+
+        /** @see ResponseOutputItem.Visitor.visitLocalShellCall */
+        fun visitLocalShellCall(localShellCall: ResponseOutputItem.LocalShellCall): T
+
+        /** @see ResponseOutputItem.Visitor.visitMcpApprovalRequest */
+        fun visitMcpApprovalRequest(mcpApprovalRequest: ResponseOutputItem.McpApprovalRequest): T
+
+        /** @see ResponseOutputItem.Visitor.visitMcpCall */
+        fun visitMcpCall(mcpCall: ResponseOutputItem.McpCall): T
+
+        /** @see ResponseOutputItem.Visitor.visitMcpListTools */
+        fun visitMcpListTools(mcpListTools: ResponseOutputItem.McpListTools): T
 
         /** @see ResponseOutputItem.Visitor.unknown */
         fun unknown(json: JsonValue?): T {

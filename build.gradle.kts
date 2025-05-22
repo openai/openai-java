@@ -8,7 +8,7 @@ repositories {
 
 allprojects {
     group = "com.openai"
-    version = "2.0.0" // x-release-please-version
+    version = "2.1.0" // x-release-please-version
 }
 
 subprojects {

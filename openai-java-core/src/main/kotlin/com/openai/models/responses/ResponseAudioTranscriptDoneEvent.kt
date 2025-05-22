@@ -7,8 +7,10 @@ import com.fasterxml.jackson.annotation.JsonAnySetter
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.openai.core.ExcludeMissing
+import com.openai.core.JsonField
 import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
+import com.openai.core.checkRequired
 import com.openai.errors.OpenAIInvalidDataException
 import java.util.Collections
 import java.util.Objects
@@ -16,14 +18,26 @@ import java.util.Objects
 /** Emitted when the full audio transcript is completed. */
 class ResponseAudioTranscriptDoneEvent
 private constructor(
+    private val sequenceNumber: JsonField<Long>,
     private val type: JsonValue,
     private val additionalProperties: MutableMap<String, JsonValue>,
 ) {
 
     @JsonCreator
     private constructor(
-        @JsonProperty("type") @ExcludeMissing type: JsonValue = JsonMissing.of()
-    ) : this(type, mutableMapOf())
+        @JsonProperty("sequence_number")
+        @ExcludeMissing
+        sequenceNumber: JsonField<Long> = JsonMissing.of(),
+        @JsonProperty("type") @ExcludeMissing type: JsonValue = JsonMissing.of(),
+    ) : this(sequenceNumber, type, mutableMapOf())
+
+    /**
+     * The sequence number of this event.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     */
+    fun sequenceNumber(): Long = sequenceNumber.getRequired("sequence_number")
 
     /**
      * The type of the event. Always `response.audio.transcript.done`.
@@ -37,6 +51,15 @@ private constructor(
      * with an unexpected value).
      */
     @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
+
+    /**
+     * Returns the raw JSON value of [sequenceNumber].
+     *
+     * Unlike [sequenceNumber], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    @JsonProperty("sequence_number")
+    @ExcludeMissing
+    fun _sequenceNumber(): JsonField<Long> = sequenceNumber
 
     @JsonAnySetter
     private fun putAdditionalProperty(key: String, value: JsonValue) {
@@ -55,6 +78,11 @@ private constructor(
         /**
          * Returns a mutable builder for constructing an instance of
          * [ResponseAudioTranscriptDoneEvent].
+         *
+         * The following fields are required:
+         * ```java
+         * .sequenceNumber()
+         * ```
          */
         @JvmStatic fun builder() = Builder()
     }
@@ -62,16 +90,32 @@ private constructor(
     /** A builder for [ResponseAudioTranscriptDoneEvent]. */
     class Builder internal constructor() {
 
+        private var sequenceNumber: JsonField<Long>? = null
         private var type: JsonValue = JsonValue.from("response.audio.transcript.done")
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
         @JvmSynthetic
         internal fun from(responseAudioTranscriptDoneEvent: ResponseAudioTranscriptDoneEvent) =
             apply {
+                sequenceNumber = responseAudioTranscriptDoneEvent.sequenceNumber
                 type = responseAudioTranscriptDoneEvent.type
                 additionalProperties =
                     responseAudioTranscriptDoneEvent.additionalProperties.toMutableMap()
             }
+
+        /** The sequence number of this event. */
+        fun sequenceNumber(sequenceNumber: Long) = sequenceNumber(JsonField.of(sequenceNumber))
+
+        /**
+         * Sets [Builder.sequenceNumber] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.sequenceNumber] with a well-typed [Long] value instead.
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
+         */
+        fun sequenceNumber(sequenceNumber: JsonField<Long>) = apply {
+            this.sequenceNumber = sequenceNumber
+        }
 
         /**
          * Sets the field to an arbitrary JSON value.
@@ -110,9 +154,20 @@ private constructor(
          * Returns an immutable instance of [ResponseAudioTranscriptDoneEvent].
          *
          * Further updates to this [Builder] will not mutate the returned instance.
+         *
+         * The following fields are required:
+         * ```java
+         * .sequenceNumber()
+         * ```
+         *
+         * @throws IllegalStateException if any required field is unset.
          */
         fun build(): ResponseAudioTranscriptDoneEvent =
-            ResponseAudioTranscriptDoneEvent(type, additionalProperties.toMutableMap())
+            ResponseAudioTranscriptDoneEvent(
+                checkRequired("sequenceNumber", sequenceNumber),
+                type,
+                additionalProperties.toMutableMap(),
+            )
     }
 
     private var validated: Boolean = false
@@ -122,6 +177,7 @@ private constructor(
             return@apply
         }
 
+        sequenceNumber()
         _type().let {
             if (it != JsonValue.from("response.audio.transcript.done")) {
                 throw OpenAIInvalidDataException("'type' is invalid, received $it")
@@ -145,22 +201,23 @@ private constructor(
      */
     @JvmSynthetic
     internal fun validity(): Int =
-        type.let { if (it == JsonValue.from("response.audio.transcript.done")) 1 else 0 }
+        (if (sequenceNumber.asKnown().isPresent) 1 else 0) +
+            type.let { if (it == JsonValue.from("response.audio.transcript.done")) 1 else 0 }
 
     override fun equals(other: Any?): Boolean {
         if (this === other) {
             return true
         }
 
-        return /* spotless:off */ other is ResponseAudioTranscriptDoneEvent && type == other.type && additionalProperties == other.additionalProperties /* spotless:on */
+        return /* spotless:off */ other is ResponseAudioTranscriptDoneEvent && sequenceNumber == other.sequenceNumber && type == other.type && additionalProperties == other.additionalProperties /* spotless:on */
     }
 
     /* spotless:off */
-    private val hashCode: Int by lazy { Objects.hash(type, additionalProperties) }
+    private val hashCode: Int by lazy { Objects.hash(sequenceNumber, type, additionalProperties) }
     /* spotless:on */
 
     override fun hashCode(): Int = hashCode
 
     override fun toString() =
-        "ResponseAudioTranscriptDoneEvent{type=$type, additionalProperties=$additionalProperties}"
+        "ResponseAudioTranscriptDoneEvent{sequenceNumber=$sequenceNumber, type=$type, additionalProperties=$additionalProperties}"
 }

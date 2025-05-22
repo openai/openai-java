@@ -19,6 +19,7 @@ import java.util.Objects
 class ResponseAudioDeltaEvent
 private constructor(
     private val delta: JsonField<String>,
+    private val sequenceNumber: JsonField<Long>,
     private val type: JsonValue,
     private val additionalProperties: MutableMap<String, JsonValue>,
 ) {
@@ -26,8 +27,11 @@ private constructor(
     @JsonCreator
     private constructor(
         @JsonProperty("delta") @ExcludeMissing delta: JsonField<String> = JsonMissing.of(),
+        @JsonProperty("sequence_number")
+        @ExcludeMissing
+        sequenceNumber: JsonField<Long> = JsonMissing.of(),
         @JsonProperty("type") @ExcludeMissing type: JsonValue = JsonMissing.of(),
-    ) : this(delta, type, mutableMapOf())
+    ) : this(delta, sequenceNumber, type, mutableMapOf())
 
     /**
      * A chunk of Base64 encoded response audio bytes.
@@ -36,6 +40,14 @@ private constructor(
      *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
      */
     fun delta(): String = delta.getRequired("delta")
+
+    /**
+     * A sequence number for this chunk of the stream response.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     */
+    fun sequenceNumber(): Long = sequenceNumber.getRequired("sequence_number")
 
     /**
      * The type of the event. Always `response.audio.delta`.
@@ -57,6 +69,15 @@ private constructor(
      */
     @JsonProperty("delta") @ExcludeMissing fun _delta(): JsonField<String> = delta
 
+    /**
+     * Returns the raw JSON value of [sequenceNumber].
+     *
+     * Unlike [sequenceNumber], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    @JsonProperty("sequence_number")
+    @ExcludeMissing
+    fun _sequenceNumber(): JsonField<Long> = sequenceNumber
+
     @JsonAnySetter
     private fun putAdditionalProperty(key: String, value: JsonValue) {
         additionalProperties.put(key, value)
@@ -77,6 +98,7 @@ private constructor(
          * The following fields are required:
          * ```java
          * .delta()
+         * .sequenceNumber()
          * ```
          */
         @JvmStatic fun builder() = Builder()
@@ -86,12 +108,14 @@ private constructor(
     class Builder internal constructor() {
 
         private var delta: JsonField<String>? = null
+        private var sequenceNumber: JsonField<Long>? = null
         private var type: JsonValue = JsonValue.from("response.audio.delta")
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
         @JvmSynthetic
         internal fun from(responseAudioDeltaEvent: ResponseAudioDeltaEvent) = apply {
             delta = responseAudioDeltaEvent.delta
+            sequenceNumber = responseAudioDeltaEvent.sequenceNumber
             type = responseAudioDeltaEvent.type
             additionalProperties = responseAudioDeltaEvent.additionalProperties.toMutableMap()
         }
@@ -106,6 +130,20 @@ private constructor(
          * method is primarily for setting the field to an undocumented or not yet supported value.
          */
         fun delta(delta: JsonField<String>) = apply { this.delta = delta }
+
+        /** A sequence number for this chunk of the stream response. */
+        fun sequenceNumber(sequenceNumber: Long) = sequenceNumber(JsonField.of(sequenceNumber))
+
+        /**
+         * Sets [Builder.sequenceNumber] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.sequenceNumber] with a well-typed [Long] value instead.
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
+         */
+        fun sequenceNumber(sequenceNumber: JsonField<Long>) = apply {
+            this.sequenceNumber = sequenceNumber
+        }
 
         /**
          * Sets the field to an arbitrary JSON value.
@@ -148,6 +186,7 @@ private constructor(
          * The following fields are required:
          * ```java
          * .delta()
+         * .sequenceNumber()
          * ```
          *
          * @throws IllegalStateException if any required field is unset.
@@ -155,6 +194,7 @@ private constructor(
         fun build(): ResponseAudioDeltaEvent =
             ResponseAudioDeltaEvent(
                 checkRequired("delta", delta),
+                checkRequired("sequenceNumber", sequenceNumber),
                 type,
                 additionalProperties.toMutableMap(),
             )
@@ -168,6 +208,7 @@ private constructor(
         }
 
         delta()
+        sequenceNumber()
         _type().let {
             if (it != JsonValue.from("response.audio.delta")) {
                 throw OpenAIInvalidDataException("'type' is invalid, received $it")
@@ -192,6 +233,7 @@ private constructor(
     @JvmSynthetic
     internal fun validity(): Int =
         (if (delta.asKnown().isPresent) 1 else 0) +
+            (if (sequenceNumber.asKnown().isPresent) 1 else 0) +
             type.let { if (it == JsonValue.from("response.audio.delta")) 1 else 0 }
 
     override fun equals(other: Any?): Boolean {
@@ -199,15 +241,15 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is ResponseAudioDeltaEvent && delta == other.delta && type == other.type && additionalProperties == other.additionalProperties /* spotless:on */
+        return /* spotless:off */ other is ResponseAudioDeltaEvent && delta == other.delta && sequenceNumber == other.sequenceNumber && type == other.type && additionalProperties == other.additionalProperties /* spotless:on */
     }
 
     /* spotless:off */
-    private val hashCode: Int by lazy { Objects.hash(delta, type, additionalProperties) }
+    private val hashCode: Int by lazy { Objects.hash(delta, sequenceNumber, type, additionalProperties) }
     /* spotless:on */
 
     override fun hashCode(): Int = hashCode
 
     override fun toString() =
-        "ResponseAudioDeltaEvent{delta=$delta, type=$type, additionalProperties=$additionalProperties}"
+        "ResponseAudioDeltaEvent{delta=$delta, sequenceNumber=$sequenceNumber, type=$type, additionalProperties=$additionalProperties}"
 }

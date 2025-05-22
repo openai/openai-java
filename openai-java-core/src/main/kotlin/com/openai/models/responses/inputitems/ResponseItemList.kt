@@ -14,6 +14,7 @@ import com.openai.core.checkKnown
 import com.openai.core.checkRequired
 import com.openai.core.toImmutable
 import com.openai.errors.OpenAIInvalidDataException
+import com.openai.models.responses.ResponseCodeInterpreterToolCall
 import com.openai.models.responses.ResponseComputerToolCall
 import com.openai.models.responses.ResponseComputerToolCallOutputItem
 import com.openai.models.responses.ResponseFileSearchToolCall
@@ -237,6 +238,51 @@ private constructor(
          */
         fun addData(functionCallOutput: ResponseFunctionToolCallOutputItem) =
             addData(ResponseItem.ofFunctionCallOutput(functionCallOutput))
+
+        /**
+         * Alias for calling [addData] with
+         * `ResponseItem.ofImageGenerationCall(imageGenerationCall)`.
+         */
+        fun addData(imageGenerationCall: ResponseItem.ImageGenerationCall) =
+            addData(ResponseItem.ofImageGenerationCall(imageGenerationCall))
+
+        /**
+         * Alias for calling [addData] with
+         * `ResponseItem.ofCodeInterpreterCall(codeInterpreterCall)`.
+         */
+        fun addData(codeInterpreterCall: ResponseCodeInterpreterToolCall) =
+            addData(ResponseItem.ofCodeInterpreterCall(codeInterpreterCall))
+
+        /** Alias for calling [addData] with `ResponseItem.ofLocalShellCall(localShellCall)`. */
+        fun addData(localShellCall: ResponseItem.LocalShellCall) =
+            addData(ResponseItem.ofLocalShellCall(localShellCall))
+
+        /**
+         * Alias for calling [addData] with
+         * `ResponseItem.ofLocalShellCallOutput(localShellCallOutput)`.
+         */
+        fun addData(localShellCallOutput: ResponseItem.LocalShellCallOutput) =
+            addData(ResponseItem.ofLocalShellCallOutput(localShellCallOutput))
+
+        /** Alias for calling [addData] with `ResponseItem.ofMcpListTools(mcpListTools)`. */
+        fun addData(mcpListTools: ResponseItem.McpListTools) =
+            addData(ResponseItem.ofMcpListTools(mcpListTools))
+
+        /**
+         * Alias for calling [addData] with `ResponseItem.ofMcpApprovalRequest(mcpApprovalRequest)`.
+         */
+        fun addData(mcpApprovalRequest: ResponseItem.McpApprovalRequest) =
+            addData(ResponseItem.ofMcpApprovalRequest(mcpApprovalRequest))
+
+        /**
+         * Alias for calling [addData] with
+         * `ResponseItem.ofMcpApprovalResponse(mcpApprovalResponse)`.
+         */
+        fun addData(mcpApprovalResponse: ResponseItem.McpApprovalResponse) =
+            addData(ResponseItem.ofMcpApprovalResponse(mcpApprovalResponse))
+
+        /** Alias for calling [addData] with `ResponseItem.ofMcpCall(mcpCall)`. */
+        fun addData(mcpCall: ResponseItem.McpCall) = addData(ResponseItem.ofMcpCall(mcpCall))
 
         /** The ID of the first item in the list. */
         fun firstId(firstId: String) = firstId(JsonField.of(firstId))

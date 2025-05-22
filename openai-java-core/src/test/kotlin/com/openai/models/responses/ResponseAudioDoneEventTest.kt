@@ -11,13 +11,15 @@ internal class ResponseAudioDoneEventTest {
 
     @Test
     fun create() {
-        val responseAudioDoneEvent = ResponseAudioDoneEvent.builder().build()
+        val responseAudioDoneEvent = ResponseAudioDoneEvent.builder().sequenceNumber(0L).build()
+
+        assertThat(responseAudioDoneEvent.sequenceNumber()).isEqualTo(0L)
     }
 
     @Test
     fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val responseAudioDoneEvent = ResponseAudioDoneEvent.builder().build()
+        val responseAudioDoneEvent = ResponseAudioDoneEvent.builder().sequenceNumber(0L).build()
 
         val roundtrippedResponseAudioDoneEvent =
             jsonMapper.readValue(

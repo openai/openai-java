@@ -23,6 +23,7 @@ private constructor(
     private val code: JsonField<String>,
     private val message: JsonField<String>,
     private val param: JsonField<String>,
+    private val sequenceNumber: JsonField<Long>,
     private val type: JsonValue,
     private val additionalProperties: MutableMap<String, JsonValue>,
 ) {
@@ -32,8 +33,11 @@ private constructor(
         @JsonProperty("code") @ExcludeMissing code: JsonField<String> = JsonMissing.of(),
         @JsonProperty("message") @ExcludeMissing message: JsonField<String> = JsonMissing.of(),
         @JsonProperty("param") @ExcludeMissing param: JsonField<String> = JsonMissing.of(),
+        @JsonProperty("sequence_number")
+        @ExcludeMissing
+        sequenceNumber: JsonField<Long> = JsonMissing.of(),
         @JsonProperty("type") @ExcludeMissing type: JsonValue = JsonMissing.of(),
-    ) : this(code, message, param, type, mutableMapOf())
+    ) : this(code, message, param, sequenceNumber, type, mutableMapOf())
 
     /**
      * The error code.
@@ -58,6 +62,14 @@ private constructor(
      *   server responded with an unexpected value).
      */
     fun param(): Optional<String> = param.getOptional("param")
+
+    /**
+     * The sequence number of this event.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     */
+    fun sequenceNumber(): Long = sequenceNumber.getRequired("sequence_number")
 
     /**
      * The type of the event. Always `error`.
@@ -93,6 +105,15 @@ private constructor(
      */
     @JsonProperty("param") @ExcludeMissing fun _param(): JsonField<String> = param
 
+    /**
+     * Returns the raw JSON value of [sequenceNumber].
+     *
+     * Unlike [sequenceNumber], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    @JsonProperty("sequence_number")
+    @ExcludeMissing
+    fun _sequenceNumber(): JsonField<Long> = sequenceNumber
+
     @JsonAnySetter
     private fun putAdditionalProperty(key: String, value: JsonValue) {
         additionalProperties.put(key, value)
@@ -115,6 +136,7 @@ private constructor(
          * .code()
          * .message()
          * .param()
+         * .sequenceNumber()
          * ```
          */
         @JvmStatic fun builder() = Builder()
@@ -126,6 +148,7 @@ private constructor(
         private var code: JsonField<String>? = null
         private var message: JsonField<String>? = null
         private var param: JsonField<String>? = null
+        private var sequenceNumber: JsonField<Long>? = null
         private var type: JsonValue = JsonValue.from("error")
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
@@ -134,6 +157,7 @@ private constructor(
             code = responseErrorEvent.code
             message = responseErrorEvent.message
             param = responseErrorEvent.param
+            sequenceNumber = responseErrorEvent.sequenceNumber
             type = responseErrorEvent.type
             additionalProperties = responseErrorEvent.additionalProperties.toMutableMap()
         }
@@ -176,6 +200,20 @@ private constructor(
          * method is primarily for setting the field to an undocumented or not yet supported value.
          */
         fun param(param: JsonField<String>) = apply { this.param = param }
+
+        /** The sequence number of this event. */
+        fun sequenceNumber(sequenceNumber: Long) = sequenceNumber(JsonField.of(sequenceNumber))
+
+        /**
+         * Sets [Builder.sequenceNumber] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.sequenceNumber] with a well-typed [Long] value instead.
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
+         */
+        fun sequenceNumber(sequenceNumber: JsonField<Long>) = apply {
+            this.sequenceNumber = sequenceNumber
+        }
 
         /**
          * Sets the field to an arbitrary JSON value.
@@ -220,6 +258,7 @@ private constructor(
          * .code()
          * .message()
          * .param()
+         * .sequenceNumber()
          * ```
          *
          * @throws IllegalStateException if any required field is unset.
@@ -229,6 +268,7 @@ private constructor(
                 checkRequired("code", code),
                 checkRequired("message", message),
                 checkRequired("param", param),
+                checkRequired("sequenceNumber", sequenceNumber),
                 type,
                 additionalProperties.toMutableMap(),
             )
@@ -244,6 +284,7 @@ private constructor(
         code()
         message()
         param()
+        sequenceNumber()
         _type().let {
             if (it != JsonValue.from("error")) {
                 throw OpenAIInvalidDataException("'type' is invalid, received $it")
@@ -270,6 +311,7 @@ private constructor(
         (if (code.asKnown().isPresent) 1 else 0) +
             (if (message.asKnown().isPresent) 1 else 0) +
             (if (param.asKnown().isPresent) 1 else 0) +
+            (if (sequenceNumber.asKnown().isPresent) 1 else 0) +
             type.let { if (it == JsonValue.from("error")) 1 else 0 }
 
     override fun equals(other: Any?): Boolean {
@@ -277,15 +319,15 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is ResponseErrorEvent && code == other.code && message == other.message && param == other.param && type == other.type && additionalProperties == other.additionalProperties /* spotless:on */
+        return /* spotless:off */ other is ResponseErrorEvent && code == other.code && message == other.message && param == other.param && sequenceNumber == other.sequenceNumber && type == other.type && additionalProperties == other.additionalProperties /* spotless:on */
     }
 
     /* spotless:off */
-    private val hashCode: Int by lazy { Objects.hash(code, message, param, type, additionalProperties) }
+    private val hashCode: Int by lazy { Objects.hash(code, message, param, sequenceNumber, type, additionalProperties) }
     /* spotless:on */
 
     override fun hashCode(): Int = hashCode
 
     override fun toString() =
-        "ResponseErrorEvent{code=$code, message=$message, param=$param, type=$type, additionalProperties=$additionalProperties}"
+        "ResponseErrorEvent{code=$code, message=$message, param=$param, sequenceNumber=$sequenceNumber, type=$type, additionalProperties=$additionalProperties}"
 }

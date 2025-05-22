@@ -194,9 +194,21 @@ internal class StructuredResponseCreateParamsTest {
 
     @Test
     fun allBuilderDelegateFunctionsExistInDelegator() {
-        // The delegator class does not implement the various `text` functions or the `body`
-        // function of the delegate class.
-        checkAllDelegation(mockBuilderDelegate::class, builderDelegator::class, "body", "text")
+        // The delegator class does not implement various functions from the delegate class:
+        // - text functions and body function
+        // - addCodeInterpreterTool methods
+        // - various tool-related methods (addTool variations, addToolLocalShell)
+        // - background-related methods
+        checkAllDelegation(
+            mockBuilderDelegate::class,
+            builderDelegator::class,
+            "body",
+            "text",
+            "addCodeInterpreterTool",
+            "addTool",
+            "addToolLocalShell",
+            "background",
+        )
     }
 
     @Test

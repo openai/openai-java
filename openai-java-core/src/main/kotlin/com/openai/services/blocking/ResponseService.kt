@@ -8,6 +8,7 @@ import com.openai.core.http.HttpResponse
 import com.openai.core.http.HttpResponseFor
 import com.openai.core.http.StreamResponse
 import com.openai.models.responses.Response
+import com.openai.models.responses.ResponseCancelParams
 import com.openai.models.responses.ResponseCreateParams
 import com.openai.models.responses.ResponseDeleteParams
 import com.openai.models.responses.ResponseRetrieveParams
@@ -140,6 +141,34 @@ interface ResponseService {
     fun delete(responseId: String, requestOptions: RequestOptions) =
         delete(responseId, ResponseDeleteParams.none(), requestOptions)
 
+    /**
+     * Cancels a model response with the given ID. Only responses created with the `background`
+     * parameter set to `true` can be cancelled.
+     * [Learn more](https://platform.openai.com/docs/guides/background).
+     */
+    fun cancel(responseId: String) = cancel(responseId, ResponseCancelParams.none())
+
+    /** @see [cancel] */
+    fun cancel(
+        responseId: String,
+        params: ResponseCancelParams = ResponseCancelParams.none(),
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ) = cancel(params.toBuilder().responseId(responseId).build(), requestOptions)
+
+    /** @see [cancel] */
+    fun cancel(responseId: String, params: ResponseCancelParams = ResponseCancelParams.none()) =
+        cancel(responseId, params, RequestOptions.none())
+
+    /** @see [cancel] */
+    fun cancel(params: ResponseCancelParams, requestOptions: RequestOptions = RequestOptions.none())
+
+    /** @see [cancel] */
+    fun cancel(params: ResponseCancelParams) = cancel(params, RequestOptions.none())
+
+    /** @see [cancel] */
+    fun cancel(responseId: String, requestOptions: RequestOptions) =
+        cancel(responseId, ResponseCancelParams.none(), requestOptions)
+
     /** A view of [ResponseService] that provides access to raw HTTP responses for each method. */
     interface WithRawResponse {
 
@@ -260,5 +289,45 @@ interface ResponseService {
         @MustBeClosed
         fun delete(responseId: String, requestOptions: RequestOptions): HttpResponse =
             delete(responseId, ResponseDeleteParams.none(), requestOptions)
+
+        /**
+         * Returns a raw HTTP response for `post /responses/{response_id}/cancel`, but is otherwise
+         * the same as [ResponseService.cancel].
+         */
+        @MustBeClosed
+        fun cancel(responseId: String): HttpResponse =
+            cancel(responseId, ResponseCancelParams.none())
+
+        /** @see [cancel] */
+        @MustBeClosed
+        fun cancel(
+            responseId: String,
+            params: ResponseCancelParams = ResponseCancelParams.none(),
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): HttpResponse = cancel(params.toBuilder().responseId(responseId).build(), requestOptions)
+
+        /** @see [cancel] */
+        @MustBeClosed
+        fun cancel(
+            responseId: String,
+            params: ResponseCancelParams = ResponseCancelParams.none(),
+        ): HttpResponse = cancel(responseId, params, RequestOptions.none())
+
+        /** @see [cancel] */
+        @MustBeClosed
+        fun cancel(
+            params: ResponseCancelParams,
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): HttpResponse
+
+        /** @see [cancel] */
+        @MustBeClosed
+        fun cancel(params: ResponseCancelParams): HttpResponse =
+            cancel(params, RequestOptions.none())
+
+        /** @see [cancel] */
+        @MustBeClosed
+        fun cancel(responseId: String, requestOptions: RequestOptions): HttpResponse =
+            cancel(responseId, ResponseCancelParams.none(), requestOptions)
     }
 }

@@ -26,6 +26,7 @@ import com.openai.core.http.toAsync
 import com.openai.core.prepareAsync
 import com.openai.models.ErrorObject
 import com.openai.models.responses.Response
+import com.openai.models.responses.ResponseCancelParams
 import com.openai.models.responses.ResponseCreateParams
 import com.openai.models.responses.ResponseDeleteParams
 import com.openai.models.responses.ResponseRetrieveParams
@@ -80,6 +81,13 @@ class ResponseServiceAsyncImpl internal constructor(private val clientOptions: C
     ): CompletableFuture<Void?> =
         // delete /responses/{response_id}
         withRawResponse().delete(params, requestOptions).thenAccept {}
+
+    override fun cancel(
+        params: ResponseCancelParams,
+        requestOptions: RequestOptions,
+    ): CompletableFuture<Void?> =
+        // post /responses/{response_id}/cancel
+        withRawResponse().cancel(params, requestOptions).thenAccept {}
 
     class WithRawResponseImpl internal constructor(private val clientOptions: ClientOptions) :
         ResponseServiceAsync.WithRawResponse {
@@ -218,6 +226,30 @@ class ResponseServiceAsyncImpl internal constructor(private val clientOptions: C
                 .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
                 .thenApply { response ->
                     response.parseable { response.use { deleteHandler.handle(it) } }
+                }
+        }
+
+        private val cancelHandler: Handler<Void?> = emptyHandler().withErrorHandler(errorHandler)
+
+        override fun cancel(
+            params: ResponseCancelParams,
+            requestOptions: RequestOptions,
+        ): CompletableFuture<HttpResponse> {
+            // We check here instead of in the params builder because this can be specified
+            // positionally or in the params class.
+            checkRequired("responseId", params.responseId().getOrNull())
+            val request =
+                HttpRequest.builder()
+                    .method(HttpMethod.POST)
+                    .addPathSegments("responses", params._pathParam(0), "cancel")
+                    .apply { params._body().ifPresent { body(json(clientOptions.jsonMapper, it)) } }
+                    .build()
+                    .prepareAsync(clientOptions, params, deploymentModel = null)
+            val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
+            return request
+                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
+                .thenApply { response ->
+                    response.parseable { response.use { cancelHandler.handle(it) } }
                 }
         }
     }

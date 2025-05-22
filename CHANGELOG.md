@@ -1,5 +1,19 @@
 # Changelog
 
+## 2.1.0 (2025-05-22)
+
+Full Changelog: [v2.0.0...v2.1.0](https://github.com/openai/openai-java/compare/v2.0.0...v2.1.0)
+
+### Features
+
+* **api:** new streaming helpers for background responses ([a82279d](https://github.com/openai/openai-java/commit/a82279dfafef8a6a6276de104a5b58cffac63559))
+
+
+### Bug Fixes
+
+* **internal:** fix issues with new items in structured responses ([931f7b8](https://github.com/openai/openai-java/commit/931f7b8ce3a83dfbbbd46d34bf99a66fa7e888e3))
+* **tests:** fix file test ([a82adfd](https://github.com/openai/openai-java/commit/a82adfd42bbb06da2c3c18f12cafd6b8ee38cc85))
+
 ## 2.0.0 (2025-05-21)
 
 Full Changelog: [v1.6.1...v2.0.0](https://github.com/openai/openai-java/compare/v1.6.1...v2.0.0)

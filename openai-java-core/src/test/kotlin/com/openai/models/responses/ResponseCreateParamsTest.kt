@@ -4,7 +4,6 @@ package com.openai.models.responses
 
 import com.openai.core.JsonValue
 import com.openai.models.ChatModel
-import com.openai.models.ComparisonFilter
 import com.openai.models.Reasoning
 import com.openai.models.ReasoningEffort
 import com.openai.models.ResponseFormatText
@@ -20,6 +19,7 @@ internal class ResponseCreateParamsTest {
         ResponseCreateParams.builder()
             .input("string")
             .model(ChatModel.GPT_4O)
+            .background(true)
             .addInclude(ResponseIncludable.FILE_SEARCH_CALL_RESULTS)
             .instructions("instructions")
             .maxOutputTokens(0L)
@@ -43,22 +43,15 @@ internal class ResponseCreateParamsTest {
             .text(ResponseTextConfig.builder().format(ResponseFormatText.builder().build()).build())
             .toolChoice(ToolChoiceOptions.NONE)
             .addTool(
-                FileSearchTool.builder()
-                    .addVectorStoreId("string")
-                    .filters(
-                        ComparisonFilter.builder()
-                            .key("key")
-                            .type(ComparisonFilter.Type.EQ)
-                            .value("string")
+                FunctionTool.builder()
+                    .name("name")
+                    .parameters(
+                        FunctionTool.Parameters.builder()
+                            .putAdditionalProperty("foo", JsonValue.from("bar"))
                             .build()
                     )
-                    .maxNumResults(0L)
-                    .rankingOptions(
-                        FileSearchTool.RankingOptions.builder()
-                            .ranker(FileSearchTool.RankingOptions.Ranker.AUTO)
-                            .scoreThreshold(0.0)
-                            .build()
-                    )
+                    .strict(true)
+                    .description("description")
                     .build()
             )
             .topP(1.0)
@@ -73,6 +66,7 @@ internal class ResponseCreateParamsTest {
             ResponseCreateParams.builder()
                 .input("string")
                 .model(ChatModel.GPT_4O)
+                .background(true)
                 .addInclude(ResponseIncludable.FILE_SEARCH_CALL_RESULTS)
                 .instructions("instructions")
                 .maxOutputTokens(0L)
@@ -100,22 +94,15 @@ internal class ResponseCreateParamsTest {
                 )
                 .toolChoice(ToolChoiceOptions.NONE)
                 .addTool(
-                    FileSearchTool.builder()
-                        .addVectorStoreId("string")
-                        .filters(
-                            ComparisonFilter.builder()
-                                .key("key")
-                                .type(ComparisonFilter.Type.EQ)
-                                .value("string")
+                    FunctionTool.builder()
+                        .name("name")
+                        .parameters(
+                            FunctionTool.Parameters.builder()
+                                .putAdditionalProperty("foo", JsonValue.from("bar"))
                                 .build()
                         )
-                        .maxNumResults(0L)
-                        .rankingOptions(
-                            FileSearchTool.RankingOptions.builder()
-                                .ranker(FileSearchTool.RankingOptions.Ranker.AUTO)
-                                .scoreThreshold(0.0)
-                                .build()
-                        )
+                        .strict(true)
+                        .description("description")
                         .build()
                 )
                 .topP(1.0)
@@ -127,6 +114,7 @@ internal class ResponseCreateParamsTest {
 
         assertThat(body.input()).isEqualTo(ResponseCreateParams.Input.ofText("string"))
         assertThat(body.model()).isEqualTo(ResponsesModel.ofChat(ChatModel.GPT_4O))
+        assertThat(body.background()).contains(true)
         assertThat(body.include().getOrNull())
             .containsExactly(ResponseIncludable.FILE_SEARCH_CALL_RESULTS)
         assertThat(body.instructions()).contains("instructions")
@@ -158,23 +146,16 @@ internal class ResponseCreateParamsTest {
             .contains(ResponseCreateParams.ToolChoice.ofOptions(ToolChoiceOptions.NONE))
         assertThat(body.tools().getOrNull())
             .containsExactly(
-                Tool.ofFileSearch(
-                    FileSearchTool.builder()
-                        .addVectorStoreId("string")
-                        .filters(
-                            ComparisonFilter.builder()
-                                .key("key")
-                                .type(ComparisonFilter.Type.EQ)
-                                .value("string")
+                Tool.ofFunction(
+                    FunctionTool.builder()
+                        .name("name")
+                        .parameters(
+                            FunctionTool.Parameters.builder()
+                                .putAdditionalProperty("foo", JsonValue.from("bar"))
                                 .build()
                         )
-                        .maxNumResults(0L)
-                        .rankingOptions(
-                            FileSearchTool.RankingOptions.builder()
-                                .ranker(FileSearchTool.RankingOptions.Ranker.AUTO)
-                                .scoreThreshold(0.0)
-                                .build()
-                        )
+                        .strict(true)
+                        .description("description")
                         .build()
                 )
             )
