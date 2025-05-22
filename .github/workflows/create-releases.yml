@@ -1,18 +1,29 @@
-# workflow for re-running publishing to Sonatype in case it fails for some reason
-# you can run this workflow by navigating to https://www.github.com/openai/openai-java/actions/workflows/publish-sonatype.yml
-name: Publish Sonatype
+name: Create releases
 on:
-  workflow_dispatch:
+  schedule:
+    - cron: '0 5 * * *' # every day at 5am UTC
+  push:
+    branches:
+      - main
 
 jobs:
-  publish:
-    name: publish
+  release:
+    name: release
+    if: github.ref == 'refs/heads/main' && github.repository == 'openai/openai-java'
     runs-on: ubuntu-latest
+    environment: publish
 
     steps:
       - uses: actions/checkout@v4
 
+      - uses: stainless-api/trigger-release-please@v1
+        id: release
+        with:
+          repo: ${{ github.event.repository.full_name }}
+          stainless-api-key: ${{ secrets.STAINLESS_API_KEY }}
+
       - name: Set up Java
+        if: ${{ steps.release.outputs.releases_created }}
         uses: actions/setup-java@v3
         with:
           distribution: temurin
@@ -22,9 +33,11 @@ jobs:
           cache: gradle
 
       - name: Set up Gradle
+        if: ${{ steps.release.outputs.releases_created }}
         uses: gradle/gradle-build-action@v2
 
       - name: Publish to Sonatype
+        if: ${{ steps.release.outputs.releases_created }}
         run: |-
           export -- GPG_SIGNING_KEY_ID
           printenv -- GPG_SIGNING_KEY | gpg --batch --passphrase-fd 3 --import 3<<< "$GPG_SIGNING_PASSWORD"
