@@ -19,9 +19,11 @@ internal class ResponseCodeInterpreterCallInProgressEventTest {
                         .code("code")
                         .addLogsResult("logs")
                         .status(ResponseCodeInterpreterToolCall.Status.IN_PROGRESS)
+                        .containerId("container_id")
                         .build()
                 )
                 .outputIndex(0L)
+                .sequenceNumber(0L)
                 .build()
 
         assertThat(responseCodeInterpreterCallInProgressEvent.codeInterpreterCall())
@@ -31,9 +33,11 @@ internal class ResponseCodeInterpreterCallInProgressEventTest {
                     .code("code")
                     .addLogsResult("logs")
                     .status(ResponseCodeInterpreterToolCall.Status.IN_PROGRESS)
+                    .containerId("container_id")
                     .build()
             )
         assertThat(responseCodeInterpreterCallInProgressEvent.outputIndex()).isEqualTo(0L)
+        assertThat(responseCodeInterpreterCallInProgressEvent.sequenceNumber()).isEqualTo(0L)
     }
 
     @Test
@@ -47,9 +51,11 @@ internal class ResponseCodeInterpreterCallInProgressEventTest {
                         .code("code")
                         .addLogsResult("logs")
                         .status(ResponseCodeInterpreterToolCall.Status.IN_PROGRESS)
+                        .containerId("container_id")
                         .build()
                 )
                 .outputIndex(0L)
+                .sequenceNumber(0L)
                 .build()
 
         val roundtrippedResponseCodeInterpreterCallInProgressEvent =

@@ -17,12 +17,14 @@ internal class ResponseTextDeltaEventTest {
                 .delta("delta")
                 .itemId("item_id")
                 .outputIndex(0L)
+                .sequenceNumber(0L)
                 .build()
 
         assertThat(responseTextDeltaEvent.contentIndex()).isEqualTo(0L)
         assertThat(responseTextDeltaEvent.delta()).isEqualTo("delta")
         assertThat(responseTextDeltaEvent.itemId()).isEqualTo("item_id")
         assertThat(responseTextDeltaEvent.outputIndex()).isEqualTo(0L)
+        assertThat(responseTextDeltaEvent.sequenceNumber()).isEqualTo(0L)
     }
 
     @Test
@@ -34,6 +36,7 @@ internal class ResponseTextDeltaEventTest {
                 .delta("delta")
                 .itemId("item_id")
                 .outputIndex(0L)
+                .sequenceNumber(0L)
                 .build()
 
         val roundtrippedResponseTextDeltaEvent =

@@ -82,6 +82,15 @@ private constructor(
     fun model(): ResponsesModel = body.model()
 
     /**
+     * Whether to run the model response in the background.
+     * [Learn more](https://platform.openai.com/docs/guides/background).
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun background(): Optional<Boolean> = body.background()
+
+    /**
      * Specify additional output data to include in the model response. Currently supported values
      * are:
      * - `file_search_call.results`: Include the search results of the file search tool call.
@@ -263,8 +272,8 @@ private constructor(
     fun truncation(): Optional<Truncation> = body.truncation()
 
     /**
-     * A unique identifier representing your end-user, which can help OpenAI to monitor and detect
-     * abuse.
+     * A stable identifier for your end-users. Used to boost cache hit rates by better bucketing
+     * similar requests and to help OpenAI detect and prevent abuse.
      * [Learn more](https://platform.openai.com/docs/guides/safety-best-practices#end-user-ids).
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
@@ -285,6 +294,13 @@ private constructor(
      * Unlike [model], this method doesn't throw if the JSON field has an unexpected type.
      */
     fun _model(): JsonField<ResponsesModel> = body._model()
+
+    /**
+     * Returns the raw JSON value of [background].
+     *
+     * Unlike [background], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    fun _background(): JsonField<Boolean> = body._background()
 
     /**
      * Returns the raw JSON value of [include].
@@ -443,9 +459,9 @@ private constructor(
          * Otherwise, it's more convenient to use the top-level setters instead:
          * - [input]
          * - [model]
+         * - [background]
          * - [include]
          * - [instructions]
-         * - [maxOutputTokens]
          * - etc.
          */
         fun body(body: Body) = apply { this.body = body.toBuilder() }
@@ -503,6 +519,31 @@ private constructor(
 
         /** Alias for calling [model] with `ResponsesModel.ofOnly(only)`. */
         fun model(only: ResponsesModel.ResponsesOnlyModel) = apply { body.model(only) }
+
+        /**
+         * Whether to run the model response in the background.
+         * [Learn more](https://platform.openai.com/docs/guides/background).
+         */
+        fun background(background: Boolean?) = apply { body.background(background) }
+
+        /**
+         * Alias for [Builder.background].
+         *
+         * This unboxed primitive overload exists for backwards compatibility.
+         */
+        fun background(background: Boolean) = background(background as Boolean?)
+
+        /** Alias for calling [Builder.background] with `background.orElse(null)`. */
+        fun background(background: Optional<Boolean>) = background(background.getOrNull())
+
+        /**
+         * Sets [Builder.background] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.background] with a well-typed [Boolean] value instead.
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
+         */
+        fun background(background: JsonField<Boolean>) = apply { body.background(background) }
 
         /**
          * Specify additional output data to include in the model response. Currently supported
@@ -840,6 +881,9 @@ private constructor(
          */
         fun addTool(tool: Tool) = apply { body.addTool(tool) }
 
+        /** Alias for calling [addTool] with `Tool.ofFunction(function)`. */
+        fun addTool(function: FunctionTool) = apply { body.addTool(function) }
+
         /** Alias for calling [addTool] with `Tool.ofFileSearch(fileSearch)`. */
         fun addTool(fileSearch: FileSearchTool) = apply { body.addTool(fileSearch) }
 
@@ -855,14 +899,49 @@ private constructor(
             body.addFileSearchTool(vectorStoreIds)
         }
 
-        /** Alias for calling [addTool] with `Tool.ofFunction(function)`. */
-        fun addTool(function: FunctionTool) = apply { body.addTool(function) }
-
         /** Alias for calling [addTool] with `Tool.ofWebSearch(webSearch)`. */
         fun addTool(webSearch: WebSearchTool) = apply { body.addTool(webSearch) }
 
         /** Alias for calling [addTool] with `Tool.ofComputerUsePreview(computerUsePreview)`. */
         fun addTool(computerUsePreview: ComputerTool) = apply { body.addTool(computerUsePreview) }
+
+        /** Alias for calling [addTool] with `Tool.ofMcp(mcp)`. */
+        fun addTool(mcp: Tool.Mcp) = apply { body.addTool(mcp) }
+
+        /** Alias for calling [addTool] with `Tool.ofCodeInterpreter(codeInterpreter)`. */
+        fun addTool(codeInterpreter: Tool.CodeInterpreter) = apply { body.addTool(codeInterpreter) }
+
+        /**
+         * Alias for calling [addTool] with the following:
+         * ```java
+         * Tool.CodeInterpreter.builder()
+         *     .container(container)
+         *     .build()
+         * ```
+         */
+        fun addCodeInterpreterTool(container: Tool.CodeInterpreter.Container) = apply {
+            body.addCodeInterpreterTool(container)
+        }
+
+        /**
+         * Alias for calling [addCodeInterpreterTool] with
+         * `Tool.CodeInterpreter.Container.ofString(string)`.
+         */
+        fun addCodeInterpreterTool(string: String) = apply { body.addCodeInterpreterTool(string) }
+
+        /**
+         * Alias for calling [addCodeInterpreterTool] with
+         * `Tool.CodeInterpreter.Container.ofCodeInterpreterToolAuto(codeInterpreterToolAuto)`.
+         */
+        fun addCodeInterpreterTool(
+            codeInterpreterToolAuto: Tool.CodeInterpreter.Container.CodeInterpreterToolAuto
+        ) = apply { body.addCodeInterpreterTool(codeInterpreterToolAuto) }
+
+        /** Alias for calling [addTool] with `Tool.ofImageGeneration(imageGeneration)`. */
+        fun addTool(imageGeneration: Tool.ImageGeneration) = apply { body.addTool(imageGeneration) }
+
+        /** Alias for calling [addTool] with `Tool.ofLocalShell()`. */
+        fun addToolLocalShell() = apply { body.addToolLocalShell() }
 
         /**
          * An alternative to sampling with temperature, called nucleus sampling, where the model
@@ -914,8 +993,8 @@ private constructor(
         fun truncation(truncation: JsonField<Truncation>) = apply { body.truncation(truncation) }
 
         /**
-         * A unique identifier representing your end-user, which can help OpenAI to monitor and
-         * detect abuse.
+         * A stable identifier for your end-users. Used to boost cache hit rates by better bucketing
+         * similar requests and to help OpenAI detect and prevent abuse.
          * [Learn more](https://platform.openai.com/docs/guides/safety-best-practices#end-user-ids).
          */
         fun user(user: String) = apply { body.user(user) }
@@ -1076,6 +1155,7 @@ private constructor(
     private constructor(
         private val input: JsonField<Input>,
         private val model: JsonField<ResponsesModel>,
+        private val background: JsonField<Boolean>,
         private val include: JsonField<List<ResponseIncludable>>,
         private val instructions: JsonField<String>,
         private val maxOutputTokens: JsonField<Long>,
@@ -1101,6 +1181,9 @@ private constructor(
             @JsonProperty("model")
             @ExcludeMissing
             model: JsonField<ResponsesModel> = JsonMissing.of(),
+            @JsonProperty("background")
+            @ExcludeMissing
+            background: JsonField<Boolean> = JsonMissing.of(),
             @JsonProperty("include")
             @ExcludeMissing
             include: JsonField<List<ResponseIncludable>> = JsonMissing.of(),
@@ -1144,6 +1227,7 @@ private constructor(
         ) : this(
             input,
             model,
+            background,
             include,
             instructions,
             maxOutputTokens,
@@ -1188,6 +1272,15 @@ private constructor(
          *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
          */
         fun model(): ResponsesModel = model.getRequired("model")
+
+        /**
+         * Whether to run the model response in the background.
+         * [Learn more](https://platform.openai.com/docs/guides/background).
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun background(): Optional<Boolean> = background.getOptional("background")
 
         /**
          * Specify additional output data to include in the model response. Currently supported
@@ -1377,8 +1470,8 @@ private constructor(
         fun truncation(): Optional<Truncation> = truncation.getOptional("truncation")
 
         /**
-         * A unique identifier representing your end-user, which can help OpenAI to monitor and
-         * detect abuse.
+         * A stable identifier for your end-users. Used to boost cache hit rates by better bucketing
+         * similar requests and to help OpenAI detect and prevent abuse.
          * [Learn more](https://platform.openai.com/docs/guides/safety-best-practices#end-user-ids).
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
@@ -1399,6 +1492,15 @@ private constructor(
          * Unlike [model], this method doesn't throw if the JSON field has an unexpected type.
          */
         @JsonProperty("model") @ExcludeMissing fun _model(): JsonField<ResponsesModel> = model
+
+        /**
+         * Returns the raw JSON value of [background].
+         *
+         * Unlike [background], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("background")
+        @ExcludeMissing
+        fun _background(): JsonField<Boolean> = background
 
         /**
          * Returns the raw JSON value of [include].
@@ -1567,6 +1669,7 @@ private constructor(
 
             private var input: JsonField<Input>? = null
             private var model: JsonField<ResponsesModel>? = null
+            private var background: JsonField<Boolean> = JsonMissing.of()
             private var include: JsonField<MutableList<ResponseIncludable>>? = null
             private var instructions: JsonField<String> = JsonMissing.of()
             private var maxOutputTokens: JsonField<Long> = JsonMissing.of()
@@ -1589,6 +1692,7 @@ private constructor(
             internal fun from(body: Body) = apply {
                 input = body.input
                 model = body.model
+                background = body.background
                 include = body.include.map { it.toMutableList() }
                 instructions = body.instructions
                 maxOutputTokens = body.maxOutputTokens
@@ -1661,6 +1765,31 @@ private constructor(
 
             /** Alias for calling [model] with `ResponsesModel.ofOnly(only)`. */
             fun model(only: ResponsesModel.ResponsesOnlyModel) = model(ResponsesModel.ofOnly(only))
+
+            /**
+             * Whether to run the model response in the background.
+             * [Learn more](https://platform.openai.com/docs/guides/background).
+             */
+            fun background(background: Boolean?) = background(JsonField.ofNullable(background))
+
+            /**
+             * Alias for [Builder.background].
+             *
+             * This unboxed primitive overload exists for backwards compatibility.
+             */
+            fun background(background: Boolean) = background(background as Boolean?)
+
+            /** Alias for calling [Builder.background] with `background.orElse(null)`. */
+            fun background(background: Optional<Boolean>) = background(background.getOrNull())
+
+            /**
+             * Sets [Builder.background] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.background] with a well-typed [Boolean] value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun background(background: JsonField<Boolean>) = apply { this.background = background }
 
             /**
              * Specify additional output data to include in the model response. Currently supported
@@ -2024,6 +2153,9 @@ private constructor(
                     }
             }
 
+            /** Alias for calling [addTool] with `Tool.ofFunction(function)`. */
+            fun addTool(function: FunctionTool) = addTool(Tool.ofFunction(function))
+
             /** Alias for calling [addTool] with `Tool.ofFileSearch(fileSearch)`. */
             fun addTool(fileSearch: FileSearchTool) = addTool(Tool.ofFileSearch(fileSearch))
 
@@ -2038,15 +2170,57 @@ private constructor(
             fun addFileSearchTool(vectorStoreIds: List<String>) =
                 addTool(FileSearchTool.builder().vectorStoreIds(vectorStoreIds).build())
 
-            /** Alias for calling [addTool] with `Tool.ofFunction(function)`. */
-            fun addTool(function: FunctionTool) = addTool(Tool.ofFunction(function))
-
             /** Alias for calling [addTool] with `Tool.ofWebSearch(webSearch)`. */
             fun addTool(webSearch: WebSearchTool) = addTool(Tool.ofWebSearch(webSearch))
 
             /** Alias for calling [addTool] with `Tool.ofComputerUsePreview(computerUsePreview)`. */
             fun addTool(computerUsePreview: ComputerTool) =
                 addTool(Tool.ofComputerUsePreview(computerUsePreview))
+
+            /** Alias for calling [addTool] with `Tool.ofMcp(mcp)`. */
+            fun addTool(mcp: Tool.Mcp) = addTool(Tool.ofMcp(mcp))
+
+            /** Alias for calling [addTool] with `Tool.ofCodeInterpreter(codeInterpreter)`. */
+            fun addTool(codeInterpreter: Tool.CodeInterpreter) =
+                addTool(Tool.ofCodeInterpreter(codeInterpreter))
+
+            /**
+             * Alias for calling [addTool] with the following:
+             * ```java
+             * Tool.CodeInterpreter.builder()
+             *     .container(container)
+             *     .build()
+             * ```
+             */
+            fun addCodeInterpreterTool(container: Tool.CodeInterpreter.Container) =
+                addTool(Tool.CodeInterpreter.builder().container(container).build())
+
+            /**
+             * Alias for calling [addCodeInterpreterTool] with
+             * `Tool.CodeInterpreter.Container.ofString(string)`.
+             */
+            fun addCodeInterpreterTool(string: String) =
+                addCodeInterpreterTool(Tool.CodeInterpreter.Container.ofString(string))
+
+            /**
+             * Alias for calling [addCodeInterpreterTool] with
+             * `Tool.CodeInterpreter.Container.ofCodeInterpreterToolAuto(codeInterpreterToolAuto)`.
+             */
+            fun addCodeInterpreterTool(
+                codeInterpreterToolAuto: Tool.CodeInterpreter.Container.CodeInterpreterToolAuto
+            ) =
+                addCodeInterpreterTool(
+                    Tool.CodeInterpreter.Container.ofCodeInterpreterToolAuto(
+                        codeInterpreterToolAuto
+                    )
+                )
+
+            /** Alias for calling [addTool] with `Tool.ofImageGeneration(imageGeneration)`. */
+            fun addTool(imageGeneration: Tool.ImageGeneration) =
+                addTool(Tool.ofImageGeneration(imageGeneration))
+
+            /** Alias for calling [addTool] with `Tool.ofLocalShell()`. */
+            fun addToolLocalShell() = addTool(Tool.ofLocalShell())
 
             /**
              * An alternative to sampling with temperature, called nucleus sampling, where the model
@@ -2101,8 +2275,8 @@ private constructor(
             }
 
             /**
-             * A unique identifier representing your end-user, which can help OpenAI to monitor and
-             * detect abuse.
+             * A stable identifier for your end-users. Used to boost cache hit rates by better
+             * bucketing similar requests and to help OpenAI detect and prevent abuse.
              * [Learn more](https://platform.openai.com/docs/guides/safety-best-practices#end-user-ids).
              */
             fun user(user: String) = user(JsonField.of(user))
@@ -2152,6 +2326,7 @@ private constructor(
                 Body(
                     checkRequired("input", input),
                     checkRequired("model", model),
+                    background,
                     (include ?: JsonMissing.of()).map { it.toImmutable() },
                     instructions,
                     maxOutputTokens,
@@ -2181,6 +2356,7 @@ private constructor(
 
             input().validate()
             model().validate()
+            background()
             include().ifPresent { it.forEach { it.validate() } }
             instructions()
             maxOutputTokens()
@@ -2218,6 +2394,7 @@ private constructor(
         internal fun validity(): Int =
             (input.asKnown().getOrNull()?.validity() ?: 0) +
                 (model.asKnown().getOrNull()?.validity() ?: 0) +
+                (if (background.asKnown().isPresent) 1 else 0) +
                 (include.asKnown().getOrNull()?.sumOf { it.validity().toInt() } ?: 0) +
                 (if (instructions.asKnown().isPresent) 1 else 0) +
                 (if (maxOutputTokens.asKnown().isPresent) 1 else 0) +
@@ -2240,17 +2417,17 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is Body && input == other.input && model == other.model && include == other.include && instructions == other.instructions && maxOutputTokens == other.maxOutputTokens && metadata == other.metadata && parallelToolCalls == other.parallelToolCalls && previousResponseId == other.previousResponseId && reasoning == other.reasoning && serviceTier == other.serviceTier && store == other.store && temperature == other.temperature && text == other.text && toolChoice == other.toolChoice && tools == other.tools && topP == other.topP && truncation == other.truncation && user == other.user && additionalProperties == other.additionalProperties /* spotless:on */
+            return /* spotless:off */ other is Body && input == other.input && model == other.model && background == other.background && include == other.include && instructions == other.instructions && maxOutputTokens == other.maxOutputTokens && metadata == other.metadata && parallelToolCalls == other.parallelToolCalls && previousResponseId == other.previousResponseId && reasoning == other.reasoning && serviceTier == other.serviceTier && store == other.store && temperature == other.temperature && text == other.text && toolChoice == other.toolChoice && tools == other.tools && topP == other.topP && truncation == other.truncation && user == other.user && additionalProperties == other.additionalProperties /* spotless:on */
         }
 
         /* spotless:off */
-        private val hashCode: Int by lazy { Objects.hash(input, model, include, instructions, maxOutputTokens, metadata, parallelToolCalls, previousResponseId, reasoning, serviceTier, store, temperature, text, toolChoice, tools, topP, truncation, user, additionalProperties) }
+        private val hashCode: Int by lazy { Objects.hash(input, model, background, include, instructions, maxOutputTokens, metadata, parallelToolCalls, previousResponseId, reasoning, serviceTier, store, temperature, text, toolChoice, tools, topP, truncation, user, additionalProperties) }
         /* spotless:on */
 
         override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "Body{input=$input, model=$model, include=$include, instructions=$instructions, maxOutputTokens=$maxOutputTokens, metadata=$metadata, parallelToolCalls=$parallelToolCalls, previousResponseId=$previousResponseId, reasoning=$reasoning, serviceTier=$serviceTier, store=$store, temperature=$temperature, text=$text, toolChoice=$toolChoice, tools=$tools, topP=$topP, truncation=$truncation, user=$user, additionalProperties=$additionalProperties}"
+            "Body{input=$input, model=$model, background=$background, include=$include, instructions=$instructions, maxOutputTokens=$maxOutputTokens, metadata=$metadata, parallelToolCalls=$parallelToolCalls, previousResponseId=$previousResponseId, reasoning=$reasoning, serviceTier=$serviceTier, store=$store, temperature=$temperature, text=$text, toolChoice=$toolChoice, tools=$tools, topP=$topP, truncation=$truncation, user=$user, additionalProperties=$additionalProperties}"
     }
 
     /**

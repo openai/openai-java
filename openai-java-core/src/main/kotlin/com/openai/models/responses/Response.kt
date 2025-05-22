@@ -50,6 +50,7 @@ private constructor(
     private val toolChoice: JsonField<ToolChoice>,
     private val tools: JsonField<List<Tool>>,
     private val topP: JsonField<Double>,
+    private val background: JsonField<Boolean>,
     private val maxOutputTokens: JsonField<Long>,
     private val previousResponseId: JsonField<String>,
     private val reasoning: JsonField<Reasoning>,
@@ -90,6 +91,9 @@ private constructor(
         toolChoice: JsonField<ToolChoice> = JsonMissing.of(),
         @JsonProperty("tools") @ExcludeMissing tools: JsonField<List<Tool>> = JsonMissing.of(),
         @JsonProperty("top_p") @ExcludeMissing topP: JsonField<Double> = JsonMissing.of(),
+        @JsonProperty("background")
+        @ExcludeMissing
+        background: JsonField<Boolean> = JsonMissing.of(),
         @JsonProperty("max_output_tokens")
         @ExcludeMissing
         maxOutputTokens: JsonField<Long> = JsonMissing.of(),
@@ -128,6 +132,7 @@ private constructor(
         toolChoice,
         tools,
         topP,
+        background,
         maxOutputTokens,
         previousResponseId,
         reasoning,
@@ -292,6 +297,15 @@ private constructor(
     fun topP(): Optional<Double> = topP.getOptional("top_p")
 
     /**
+     * Whether to run the model response in the background.
+     * [Learn more](https://platform.openai.com/docs/guides/background).
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun background(): Optional<Boolean> = background.getOptional("background")
+
+    /**
      * An upper bound for the number of tokens that can be generated for a response, including
      * visible output tokens and
      * [reasoning tokens](https://platform.openai.com/docs/guides/reasoning).
@@ -344,8 +358,8 @@ private constructor(
     fun serviceTier(): Optional<ServiceTier> = serviceTier.getOptional("service_tier")
 
     /**
-     * The status of the response generation. One of `completed`, `failed`, `in_progress`, or
-     * `incomplete`.
+     * The status of the response generation. One of `completed`, `failed`, `in_progress`,
+     * `cancelled`, `queued`, or `incomplete`.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -386,8 +400,8 @@ private constructor(
     fun usage(): Optional<ResponseUsage> = usage.getOptional("usage")
 
     /**
-     * A unique identifier representing your end-user, which can help OpenAI to monitor and detect
-     * abuse.
+     * A stable identifier for your end-users. Used to boost cache hit rates by better bucketing
+     * similar requests and to help OpenAI detect and prevent abuse.
      * [Learn more](https://platform.openai.com/docs/guides/safety-best-practices#end-user-ids).
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
@@ -497,6 +511,13 @@ private constructor(
      * Unlike [topP], this method doesn't throw if the JSON field has an unexpected type.
      */
     @JsonProperty("top_p") @ExcludeMissing fun _topP(): JsonField<Double> = topP
+
+    /**
+     * Returns the raw JSON value of [background].
+     *
+     * Unlike [background], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    @JsonProperty("background") @ExcludeMissing fun _background(): JsonField<Boolean> = background
 
     /**
      * Returns the raw JSON value of [maxOutputTokens].
@@ -624,6 +645,7 @@ private constructor(
         private var toolChoice: JsonField<ToolChoice>? = null
         private var tools: JsonField<MutableList<Tool>>? = null
         private var topP: JsonField<Double>? = null
+        private var background: JsonField<Boolean> = JsonMissing.of()
         private var maxOutputTokens: JsonField<Long> = JsonMissing.of()
         private var previousResponseId: JsonField<String> = JsonMissing.of()
         private var reasoning: JsonField<Reasoning> = JsonMissing.of()
@@ -651,6 +673,7 @@ private constructor(
             toolChoice = response.toolChoice
             tools = response.tools.map { it.toMutableList() }
             topP = response.topP
+            background = response.background
             maxOutputTokens = response.maxOutputTokens
             previousResponseId = response.previousResponseId
             reasoning = response.reasoning
@@ -866,6 +889,41 @@ private constructor(
         fun addOutput(reasoning: ResponseReasoningItem) =
             addOutput(ResponseOutputItem.ofReasoning(reasoning))
 
+        /**
+         * Alias for calling [addOutput] with
+         * `ResponseOutputItem.ofImageGenerationCall(imageGenerationCall)`.
+         */
+        fun addOutput(imageGenerationCall: ResponseOutputItem.ImageGenerationCall) =
+            addOutput(ResponseOutputItem.ofImageGenerationCall(imageGenerationCall))
+
+        /**
+         * Alias for calling [addOutput] with
+         * `ResponseOutputItem.ofCodeInterpreterCall(codeInterpreterCall)`.
+         */
+        fun addOutput(codeInterpreterCall: ResponseCodeInterpreterToolCall) =
+            addOutput(ResponseOutputItem.ofCodeInterpreterCall(codeInterpreterCall))
+
+        /**
+         * Alias for calling [addOutput] with `ResponseOutputItem.ofLocalShellCall(localShellCall)`.
+         */
+        fun addOutput(localShellCall: ResponseOutputItem.LocalShellCall) =
+            addOutput(ResponseOutputItem.ofLocalShellCall(localShellCall))
+
+        /** Alias for calling [addOutput] with `ResponseOutputItem.ofMcpCall(mcpCall)`. */
+        fun addOutput(mcpCall: ResponseOutputItem.McpCall) =
+            addOutput(ResponseOutputItem.ofMcpCall(mcpCall))
+
+        /** Alias for calling [addOutput] with `ResponseOutputItem.ofMcpListTools(mcpListTools)`. */
+        fun addOutput(mcpListTools: ResponseOutputItem.McpListTools) =
+            addOutput(ResponseOutputItem.ofMcpListTools(mcpListTools))
+
+        /**
+         * Alias for calling [addOutput] with
+         * `ResponseOutputItem.ofMcpApprovalRequest(mcpApprovalRequest)`.
+         */
+        fun addOutput(mcpApprovalRequest: ResponseOutputItem.McpApprovalRequest) =
+            addOutput(ResponseOutputItem.ofMcpApprovalRequest(mcpApprovalRequest))
+
         /** Whether to allow the model to run tool calls in parallel. */
         fun parallelToolCalls(parallelToolCalls: Boolean) =
             parallelToolCalls(JsonField.of(parallelToolCalls))
@@ -968,6 +1026,9 @@ private constructor(
                 (tools ?: JsonField.of(mutableListOf())).also { checkKnown("tools", it).add(tool) }
         }
 
+        /** Alias for calling [addTool] with `Tool.ofFunction(function)`. */
+        fun addTool(function: FunctionTool) = addTool(Tool.ofFunction(function))
+
         /** Alias for calling [addTool] with `Tool.ofFileSearch(fileSearch)`. */
         fun addTool(fileSearch: FileSearchTool) = addTool(Tool.ofFileSearch(fileSearch))
 
@@ -982,15 +1043,55 @@ private constructor(
         fun addFileSearchTool(vectorStoreIds: List<String>) =
             addTool(FileSearchTool.builder().vectorStoreIds(vectorStoreIds).build())
 
-        /** Alias for calling [addTool] with `Tool.ofFunction(function)`. */
-        fun addTool(function: FunctionTool) = addTool(Tool.ofFunction(function))
-
         /** Alias for calling [addTool] with `Tool.ofWebSearch(webSearch)`. */
         fun addTool(webSearch: WebSearchTool) = addTool(Tool.ofWebSearch(webSearch))
 
         /** Alias for calling [addTool] with `Tool.ofComputerUsePreview(computerUsePreview)`. */
         fun addTool(computerUsePreview: ComputerTool) =
             addTool(Tool.ofComputerUsePreview(computerUsePreview))
+
+        /** Alias for calling [addTool] with `Tool.ofMcp(mcp)`. */
+        fun addTool(mcp: Tool.Mcp) = addTool(Tool.ofMcp(mcp))
+
+        /** Alias for calling [addTool] with `Tool.ofCodeInterpreter(codeInterpreter)`. */
+        fun addTool(codeInterpreter: Tool.CodeInterpreter) =
+            addTool(Tool.ofCodeInterpreter(codeInterpreter))
+
+        /**
+         * Alias for calling [addTool] with the following:
+         * ```java
+         * Tool.CodeInterpreter.builder()
+         *     .container(container)
+         *     .build()
+         * ```
+         */
+        fun addCodeInterpreterTool(container: Tool.CodeInterpreter.Container) =
+            addTool(Tool.CodeInterpreter.builder().container(container).build())
+
+        /**
+         * Alias for calling [addCodeInterpreterTool] with
+         * `Tool.CodeInterpreter.Container.ofString(string)`.
+         */
+        fun addCodeInterpreterTool(string: String) =
+            addCodeInterpreterTool(Tool.CodeInterpreter.Container.ofString(string))
+
+        /**
+         * Alias for calling [addCodeInterpreterTool] with
+         * `Tool.CodeInterpreter.Container.ofCodeInterpreterToolAuto(codeInterpreterToolAuto)`.
+         */
+        fun addCodeInterpreterTool(
+            codeInterpreterToolAuto: Tool.CodeInterpreter.Container.CodeInterpreterToolAuto
+        ) =
+            addCodeInterpreterTool(
+                Tool.CodeInterpreter.Container.ofCodeInterpreterToolAuto(codeInterpreterToolAuto)
+            )
+
+        /** Alias for calling [addTool] with `Tool.ofImageGeneration(imageGeneration)`. */
+        fun addTool(imageGeneration: Tool.ImageGeneration) =
+            addTool(Tool.ofImageGeneration(imageGeneration))
+
+        /** Alias for calling [addTool] with `Tool.ofLocalShell()`. */
+        fun addToolLocalShell() = addTool(Tool.ofLocalShell())
 
         /**
          * An alternative to sampling with temperature, called nucleus sampling, where the model
@@ -1018,6 +1119,31 @@ private constructor(
          * method is primarily for setting the field to an undocumented or not yet supported value.
          */
         fun topP(topP: JsonField<Double>) = apply { this.topP = topP }
+
+        /**
+         * Whether to run the model response in the background.
+         * [Learn more](https://platform.openai.com/docs/guides/background).
+         */
+        fun background(background: Boolean?) = background(JsonField.ofNullable(background))
+
+        /**
+         * Alias for [Builder.background].
+         *
+         * This unboxed primitive overload exists for backwards compatibility.
+         */
+        fun background(background: Boolean) = background(background as Boolean?)
+
+        /** Alias for calling [Builder.background] with `background.orElse(null)`. */
+        fun background(background: Optional<Boolean>) = background(background.getOrNull())
+
+        /**
+         * Sets [Builder.background] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.background] with a well-typed [Boolean] value instead.
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
+         */
+        fun background(background: JsonField<Boolean>) = apply { this.background = background }
 
         /**
          * An upper bound for the number of tokens that can be generated for a response, including
@@ -1127,8 +1253,8 @@ private constructor(
         }
 
         /**
-         * The status of the response generation. One of `completed`, `failed`, `in_progress`, or
-         * `incomplete`.
+         * The status of the response generation. One of `completed`, `failed`, `in_progress`,
+         * `cancelled`, `queued`, or `incomplete`.
          */
         fun status(status: ResponseStatus) = status(JsonField.of(status))
 
@@ -1196,8 +1322,8 @@ private constructor(
         fun usage(usage: JsonField<ResponseUsage>) = apply { this.usage = usage }
 
         /**
-         * A unique identifier representing your end-user, which can help OpenAI to monitor and
-         * detect abuse.
+         * A stable identifier for your end-users. Used to boost cache hit rates by better bucketing
+         * similar requests and to help OpenAI detect and prevent abuse.
          * [Learn more](https://platform.openai.com/docs/guides/safety-best-practices#end-user-ids).
          */
         fun user(user: String) = user(JsonField.of(user))
@@ -1269,6 +1395,7 @@ private constructor(
                 checkRequired("toolChoice", toolChoice),
                 checkRequired("tools", tools).map { it.toImmutable() },
                 checkRequired("topP", topP),
+                background,
                 maxOutputTokens,
                 previousResponseId,
                 reasoning,
@@ -1307,6 +1434,7 @@ private constructor(
         toolChoice().validate()
         tools().forEach { it.validate() }
         topP()
+        background()
         maxOutputTokens()
         previousResponseId()
         reasoning().ifPresent { it.validate() }
@@ -1348,6 +1476,7 @@ private constructor(
             (toolChoice.asKnown().getOrNull()?.validity() ?: 0) +
             (tools.asKnown().getOrNull()?.sumOf { it.validity().toInt() } ?: 0) +
             (if (topP.asKnown().isPresent) 1 else 0) +
+            (if (background.asKnown().isPresent) 1 else 0) +
             (if (maxOutputTokens.asKnown().isPresent) 1 else 0) +
             (if (previousResponseId.asKnown().isPresent) 1 else 0) +
             (reasoning.asKnown().getOrNull()?.validity() ?: 0) +
@@ -2289,15 +2418,15 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is Response && id == other.id && createdAt == other.createdAt && error == other.error && incompleteDetails == other.incompleteDetails && instructions == other.instructions && metadata == other.metadata && model == other.model && object_ == other.object_ && output == other.output && parallelToolCalls == other.parallelToolCalls && temperature == other.temperature && toolChoice == other.toolChoice && tools == other.tools && topP == other.topP && maxOutputTokens == other.maxOutputTokens && previousResponseId == other.previousResponseId && reasoning == other.reasoning && serviceTier == other.serviceTier && status == other.status && text == other.text && truncation == other.truncation && usage == other.usage && user == other.user && additionalProperties == other.additionalProperties /* spotless:on */
+        return /* spotless:off */ other is Response && id == other.id && createdAt == other.createdAt && error == other.error && incompleteDetails == other.incompleteDetails && instructions == other.instructions && metadata == other.metadata && model == other.model && object_ == other.object_ && output == other.output && parallelToolCalls == other.parallelToolCalls && temperature == other.temperature && toolChoice == other.toolChoice && tools == other.tools && topP == other.topP && background == other.background && maxOutputTokens == other.maxOutputTokens && previousResponseId == other.previousResponseId && reasoning == other.reasoning && serviceTier == other.serviceTier && status == other.status && text == other.text && truncation == other.truncation && usage == other.usage && user == other.user && additionalProperties == other.additionalProperties /* spotless:on */
     }
 
     /* spotless:off */
-    private val hashCode: Int by lazy { Objects.hash(id, createdAt, error, incompleteDetails, instructions, metadata, model, object_, output, parallelToolCalls, temperature, toolChoice, tools, topP, maxOutputTokens, previousResponseId, reasoning, serviceTier, status, text, truncation, usage, user, additionalProperties) }
+    private val hashCode: Int by lazy { Objects.hash(id, createdAt, error, incompleteDetails, instructions, metadata, model, object_, output, parallelToolCalls, temperature, toolChoice, tools, topP, background, maxOutputTokens, previousResponseId, reasoning, serviceTier, status, text, truncation, usage, user, additionalProperties) }
     /* spotless:on */
 
     override fun hashCode(): Int = hashCode
 
     override fun toString() =
-        "Response{id=$id, createdAt=$createdAt, error=$error, incompleteDetails=$incompleteDetails, instructions=$instructions, metadata=$metadata, model=$model, object_=$object_, output=$output, parallelToolCalls=$parallelToolCalls, temperature=$temperature, toolChoice=$toolChoice, tools=$tools, topP=$topP, maxOutputTokens=$maxOutputTokens, previousResponseId=$previousResponseId, reasoning=$reasoning, serviceTier=$serviceTier, status=$status, text=$text, truncation=$truncation, usage=$usage, user=$user, additionalProperties=$additionalProperties}"
+        "Response{id=$id, createdAt=$createdAt, error=$error, incompleteDetails=$incompleteDetails, instructions=$instructions, metadata=$metadata, model=$model, object_=$object_, output=$output, parallelToolCalls=$parallelToolCalls, temperature=$temperature, toolChoice=$toolChoice, tools=$tools, topP=$topP, background=$background, maxOutputTokens=$maxOutputTokens, previousResponseId=$previousResponseId, reasoning=$reasoning, serviceTier=$serviceTier, status=$status, text=$text, truncation=$truncation, usage=$usage, user=$user, additionalProperties=$additionalProperties}"
 }

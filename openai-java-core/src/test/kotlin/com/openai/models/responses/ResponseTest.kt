@@ -6,7 +6,6 @@ import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
 import com.openai.core.JsonValue
 import com.openai.core.jsonMapper
 import com.openai.models.ChatModel
-import com.openai.models.ComparisonFilter
 import com.openai.models.Reasoning
 import com.openai.models.ReasoningEffort
 import com.openai.models.ResponseFormatText
@@ -61,25 +60,19 @@ internal class ResponseTest {
                 .temperature(1.0)
                 .toolChoice(ToolChoiceOptions.NONE)
                 .addTool(
-                    FileSearchTool.builder()
-                        .addVectorStoreId("string")
-                        .filters(
-                            ComparisonFilter.builder()
-                                .key("key")
-                                .type(ComparisonFilter.Type.EQ)
-                                .value("string")
+                    FunctionTool.builder()
+                        .name("name")
+                        .parameters(
+                            FunctionTool.Parameters.builder()
+                                .putAdditionalProperty("foo", JsonValue.from("bar"))
                                 .build()
                         )
-                        .maxNumResults(0L)
-                        .rankingOptions(
-                            FileSearchTool.RankingOptions.builder()
-                                .ranker(FileSearchTool.RankingOptions.Ranker.AUTO)
-                                .scoreThreshold(0.0)
-                                .build()
-                        )
+                        .strict(true)
+                        .description("description")
                         .build()
                 )
                 .topP(1.0)
+                .background(true)
                 .maxOutputTokens(0L)
                 .previousResponseId("previous_response_id")
                 .reasoning(
@@ -162,27 +155,21 @@ internal class ResponseTest {
             .isEqualTo(Response.ToolChoice.ofOptions(ToolChoiceOptions.NONE))
         assertThat(response.tools())
             .containsExactly(
-                Tool.ofFileSearch(
-                    FileSearchTool.builder()
-                        .addVectorStoreId("string")
-                        .filters(
-                            ComparisonFilter.builder()
-                                .key("key")
-                                .type(ComparisonFilter.Type.EQ)
-                                .value("string")
+                Tool.ofFunction(
+                    FunctionTool.builder()
+                        .name("name")
+                        .parameters(
+                            FunctionTool.Parameters.builder()
+                                .putAdditionalProperty("foo", JsonValue.from("bar"))
                                 .build()
                         )
-                        .maxNumResults(0L)
-                        .rankingOptions(
-                            FileSearchTool.RankingOptions.builder()
-                                .ranker(FileSearchTool.RankingOptions.Ranker.AUTO)
-                                .scoreThreshold(0.0)
-                                .build()
-                        )
+                        .strict(true)
+                        .description("description")
                         .build()
                 )
             )
         assertThat(response.topP()).contains(1.0)
+        assertThat(response.background()).contains(true)
         assertThat(response.maxOutputTokens()).contains(0L)
         assertThat(response.previousResponseId()).contains("previous_response_id")
         assertThat(response.reasoning())
@@ -263,25 +250,19 @@ internal class ResponseTest {
                 .temperature(1.0)
                 .toolChoice(ToolChoiceOptions.NONE)
                 .addTool(
-                    FileSearchTool.builder()
-                        .addVectorStoreId("string")
-                        .filters(
-                            ComparisonFilter.builder()
-                                .key("key")
-                                .type(ComparisonFilter.Type.EQ)
-                                .value("string")
+                    FunctionTool.builder()
+                        .name("name")
+                        .parameters(
+                            FunctionTool.Parameters.builder()
+                                .putAdditionalProperty("foo", JsonValue.from("bar"))
                                 .build()
                         )
-                        .maxNumResults(0L)
-                        .rankingOptions(
-                            FileSearchTool.RankingOptions.builder()
-                                .ranker(FileSearchTool.RankingOptions.Ranker.AUTO)
-                                .scoreThreshold(0.0)
-                                .build()
-                        )
+                        .strict(true)
+                        .description("description")
                         .build()
                 )
                 .topP(1.0)
+                .background(true)
                 .maxOutputTokens(0L)
                 .previousResponseId("previous_response_id")
                 .reasoning(

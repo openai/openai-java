@@ -34,6 +34,7 @@ private constructor(
     private val itemId: JsonField<String>,
     private val outputIndex: JsonField<Long>,
     private val part: JsonField<Part>,
+    private val sequenceNumber: JsonField<Long>,
     private val type: JsonValue,
     private val additionalProperties: MutableMap<String, JsonValue>,
 ) {
@@ -48,8 +49,11 @@ private constructor(
         @ExcludeMissing
         outputIndex: JsonField<Long> = JsonMissing.of(),
         @JsonProperty("part") @ExcludeMissing part: JsonField<Part> = JsonMissing.of(),
+        @JsonProperty("sequence_number")
+        @ExcludeMissing
+        sequenceNumber: JsonField<Long> = JsonMissing.of(),
         @JsonProperty("type") @ExcludeMissing type: JsonValue = JsonMissing.of(),
-    ) : this(contentIndex, itemId, outputIndex, part, type, mutableMapOf())
+    ) : this(contentIndex, itemId, outputIndex, part, sequenceNumber, type, mutableMapOf())
 
     /**
      * The index of the content part that was added.
@@ -82,6 +86,14 @@ private constructor(
      *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
      */
     fun part(): Part = part.getRequired("part")
+
+    /**
+     * The sequence number of this event.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     */
+    fun sequenceNumber(): Long = sequenceNumber.getRequired("sequence_number")
 
     /**
      * The type of the event. Always `response.content_part.added`.
@@ -126,6 +138,15 @@ private constructor(
      */
     @JsonProperty("part") @ExcludeMissing fun _part(): JsonField<Part> = part
 
+    /**
+     * Returns the raw JSON value of [sequenceNumber].
+     *
+     * Unlike [sequenceNumber], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    @JsonProperty("sequence_number")
+    @ExcludeMissing
+    fun _sequenceNumber(): JsonField<Long> = sequenceNumber
+
     @JsonAnySetter
     private fun putAdditionalProperty(key: String, value: JsonValue) {
         additionalProperties.put(key, value)
@@ -150,6 +171,7 @@ private constructor(
          * .itemId()
          * .outputIndex()
          * .part()
+         * .sequenceNumber()
          * ```
          */
         @JvmStatic fun builder() = Builder()
@@ -162,6 +184,7 @@ private constructor(
         private var itemId: JsonField<String>? = null
         private var outputIndex: JsonField<Long>? = null
         private var part: JsonField<Part>? = null
+        private var sequenceNumber: JsonField<Long>? = null
         private var type: JsonValue = JsonValue.from("response.content_part.added")
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
@@ -171,6 +194,7 @@ private constructor(
             itemId = responseContentPartAddedEvent.itemId
             outputIndex = responseContentPartAddedEvent.outputIndex
             part = responseContentPartAddedEvent.part
+            sequenceNumber = responseContentPartAddedEvent.sequenceNumber
             type = responseContentPartAddedEvent.type
             additionalProperties = responseContentPartAddedEvent.additionalProperties.toMutableMap()
         }
@@ -238,6 +262,20 @@ private constructor(
         fun refusalPart(refusal: String) =
             part(ResponseOutputRefusal.builder().refusal(refusal).build())
 
+        /** The sequence number of this event. */
+        fun sequenceNumber(sequenceNumber: Long) = sequenceNumber(JsonField.of(sequenceNumber))
+
+        /**
+         * Sets [Builder.sequenceNumber] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.sequenceNumber] with a well-typed [Long] value instead.
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
+         */
+        fun sequenceNumber(sequenceNumber: JsonField<Long>) = apply {
+            this.sequenceNumber = sequenceNumber
+        }
+
         /**
          * Sets the field to an arbitrary JSON value.
          *
@@ -282,6 +320,7 @@ private constructor(
          * .itemId()
          * .outputIndex()
          * .part()
+         * .sequenceNumber()
          * ```
          *
          * @throws IllegalStateException if any required field is unset.
@@ -292,6 +331,7 @@ private constructor(
                 checkRequired("itemId", itemId),
                 checkRequired("outputIndex", outputIndex),
                 checkRequired("part", part),
+                checkRequired("sequenceNumber", sequenceNumber),
                 type,
                 additionalProperties.toMutableMap(),
             )
@@ -308,6 +348,7 @@ private constructor(
         itemId()
         outputIndex()
         part().validate()
+        sequenceNumber()
         _type().let {
             if (it != JsonValue.from("response.content_part.added")) {
                 throw OpenAIInvalidDataException("'type' is invalid, received $it")
@@ -335,6 +376,7 @@ private constructor(
             (if (itemId.asKnown().isPresent) 1 else 0) +
             (if (outputIndex.asKnown().isPresent) 1 else 0) +
             (part.asKnown().getOrNull()?.validity() ?: 0) +
+            (if (sequenceNumber.asKnown().isPresent) 1 else 0) +
             type.let { if (it == JsonValue.from("response.content_part.added")) 1 else 0 }
 
     /** The content part that was added. */
@@ -516,15 +558,15 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is ResponseContentPartAddedEvent && contentIndex == other.contentIndex && itemId == other.itemId && outputIndex == other.outputIndex && part == other.part && type == other.type && additionalProperties == other.additionalProperties /* spotless:on */
+        return /* spotless:off */ other is ResponseContentPartAddedEvent && contentIndex == other.contentIndex && itemId == other.itemId && outputIndex == other.outputIndex && part == other.part && sequenceNumber == other.sequenceNumber && type == other.type && additionalProperties == other.additionalProperties /* spotless:on */
     }
 
     /* spotless:off */
-    private val hashCode: Int by lazy { Objects.hash(contentIndex, itemId, outputIndex, part, type, additionalProperties) }
+    private val hashCode: Int by lazy { Objects.hash(contentIndex, itemId, outputIndex, part, sequenceNumber, type, additionalProperties) }
     /* spotless:on */
 
     override fun hashCode(): Int = hashCode
 
     override fun toString() =
-        "ResponseContentPartAddedEvent{contentIndex=$contentIndex, itemId=$itemId, outputIndex=$outputIndex, part=$part, type=$type, additionalProperties=$additionalProperties}"
+        "ResponseContentPartAddedEvent{contentIndex=$contentIndex, itemId=$itemId, outputIndex=$outputIndex, part=$part, sequenceNumber=$sequenceNumber, type=$type, additionalProperties=$additionalProperties}"
 }

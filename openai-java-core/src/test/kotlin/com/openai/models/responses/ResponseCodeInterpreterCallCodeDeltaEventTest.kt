@@ -15,10 +15,12 @@ internal class ResponseCodeInterpreterCallCodeDeltaEventTest {
             ResponseCodeInterpreterCallCodeDeltaEvent.builder()
                 .delta("delta")
                 .outputIndex(0L)
+                .sequenceNumber(0L)
                 .build()
 
         assertThat(responseCodeInterpreterCallCodeDeltaEvent.delta()).isEqualTo("delta")
         assertThat(responseCodeInterpreterCallCodeDeltaEvent.outputIndex()).isEqualTo(0L)
+        assertThat(responseCodeInterpreterCallCodeDeltaEvent.sequenceNumber()).isEqualTo(0L)
     }
 
     @Test
@@ -28,6 +30,7 @@ internal class ResponseCodeInterpreterCallCodeDeltaEventTest {
             ResponseCodeInterpreterCallCodeDeltaEvent.builder()
                 .delta("delta")
                 .outputIndex(0L)
+                .sequenceNumber(0L)
                 .build()
 
         val roundtrippedResponseCodeInterpreterCallCodeDeltaEvent =

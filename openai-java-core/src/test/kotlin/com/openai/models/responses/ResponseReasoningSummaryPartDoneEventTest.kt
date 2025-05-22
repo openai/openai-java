@@ -16,6 +16,7 @@ internal class ResponseReasoningSummaryPartDoneEventTest {
                 .itemId("item_id")
                 .outputIndex(0L)
                 .part(ResponseReasoningSummaryPartDoneEvent.Part.builder().text("text").build())
+                .sequenceNumber(0L)
                 .summaryIndex(0L)
                 .build()
 
@@ -23,6 +24,7 @@ internal class ResponseReasoningSummaryPartDoneEventTest {
         assertThat(responseReasoningSummaryPartDoneEvent.outputIndex()).isEqualTo(0L)
         assertThat(responseReasoningSummaryPartDoneEvent.part())
             .isEqualTo(ResponseReasoningSummaryPartDoneEvent.Part.builder().text("text").build())
+        assertThat(responseReasoningSummaryPartDoneEvent.sequenceNumber()).isEqualTo(0L)
         assertThat(responseReasoningSummaryPartDoneEvent.summaryIndex()).isEqualTo(0L)
     }
 
@@ -34,6 +36,7 @@ internal class ResponseReasoningSummaryPartDoneEventTest {
                 .itemId("item_id")
                 .outputIndex(0L)
                 .part(ResponseReasoningSummaryPartDoneEvent.Part.builder().text("text").build())
+                .sequenceNumber(0L)
                 .summaryIndex(0L)
                 .build()
 

@@ -15,12 +15,14 @@ internal class ResponseReasoningSummaryTextDoneEventTest {
             ResponseReasoningSummaryTextDoneEvent.builder()
                 .itemId("item_id")
                 .outputIndex(0L)
+                .sequenceNumber(0L)
                 .summaryIndex(0L)
                 .text("text")
                 .build()
 
         assertThat(responseReasoningSummaryTextDoneEvent.itemId()).isEqualTo("item_id")
         assertThat(responseReasoningSummaryTextDoneEvent.outputIndex()).isEqualTo(0L)
+        assertThat(responseReasoningSummaryTextDoneEvent.sequenceNumber()).isEqualTo(0L)
         assertThat(responseReasoningSummaryTextDoneEvent.summaryIndex()).isEqualTo(0L)
         assertThat(responseReasoningSummaryTextDoneEvent.text()).isEqualTo("text")
     }
@@ -32,6 +34,7 @@ internal class ResponseReasoningSummaryTextDoneEventTest {
             ResponseReasoningSummaryTextDoneEvent.builder()
                 .itemId("item_id")
                 .outputIndex(0L)
+                .sequenceNumber(0L)
                 .summaryIndex(0L)
                 .text("text")
                 .build()

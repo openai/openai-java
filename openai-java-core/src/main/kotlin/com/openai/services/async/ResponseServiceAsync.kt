@@ -9,6 +9,7 @@ import com.openai.core.http.HttpResponse
 import com.openai.core.http.HttpResponseFor
 import com.openai.core.http.StreamResponse
 import com.openai.models.responses.Response
+import com.openai.models.responses.ResponseCancelParams
 import com.openai.models.responses.ResponseCreateParams
 import com.openai.models.responses.ResponseDeleteParams
 import com.openai.models.responses.ResponseRetrieveParams
@@ -128,6 +129,42 @@ interface ResponseServiceAsync {
     /** @see [delete] */
     fun delete(responseId: String, requestOptions: RequestOptions): CompletableFuture<Void?> =
         delete(responseId, ResponseDeleteParams.none(), requestOptions)
+
+    /**
+     * Cancels a model response with the given ID. Only responses created with the `background`
+     * parameter set to `true` can be cancelled.
+     * [Learn more](https://platform.openai.com/docs/guides/background).
+     */
+    fun cancel(responseId: String): CompletableFuture<Void?> =
+        cancel(responseId, ResponseCancelParams.none())
+
+    /** @see [cancel] */
+    fun cancel(
+        responseId: String,
+        params: ResponseCancelParams = ResponseCancelParams.none(),
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): CompletableFuture<Void?> =
+        cancel(params.toBuilder().responseId(responseId).build(), requestOptions)
+
+    /** @see [cancel] */
+    fun cancel(
+        responseId: String,
+        params: ResponseCancelParams = ResponseCancelParams.none(),
+    ): CompletableFuture<Void?> = cancel(responseId, params, RequestOptions.none())
+
+    /** @see [cancel] */
+    fun cancel(
+        params: ResponseCancelParams,
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): CompletableFuture<Void?>
+
+    /** @see [cancel] */
+    fun cancel(params: ResponseCancelParams): CompletableFuture<Void?> =
+        cancel(params, RequestOptions.none())
+
+    /** @see [cancel] */
+    fun cancel(responseId: String, requestOptions: RequestOptions): CompletableFuture<Void?> =
+        cancel(responseId, ResponseCancelParams.none(), requestOptions)
 
     /**
      * A view of [ResponseServiceAsync] that provides access to raw HTTP responses for each method.
@@ -256,5 +293,49 @@ interface ResponseServiceAsync {
             requestOptions: RequestOptions,
         ): CompletableFuture<HttpResponse> =
             delete(responseId, ResponseDeleteParams.none(), requestOptions)
+
+        /**
+         * Returns a raw HTTP response for `post /responses/{response_id}/cancel`, but is otherwise
+         * the same as [ResponseServiceAsync.cancel].
+         */
+        @MustBeClosed
+        fun cancel(responseId: String): CompletableFuture<HttpResponse> =
+            cancel(responseId, ResponseCancelParams.none())
+
+        /** @see [cancel] */
+        @MustBeClosed
+        fun cancel(
+            responseId: String,
+            params: ResponseCancelParams = ResponseCancelParams.none(),
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): CompletableFuture<HttpResponse> =
+            cancel(params.toBuilder().responseId(responseId).build(), requestOptions)
+
+        /** @see [cancel] */
+        @MustBeClosed
+        fun cancel(
+            responseId: String,
+            params: ResponseCancelParams = ResponseCancelParams.none(),
+        ): CompletableFuture<HttpResponse> = cancel(responseId, params, RequestOptions.none())
+
+        /** @see [cancel] */
+        @MustBeClosed
+        fun cancel(
+            params: ResponseCancelParams,
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): CompletableFuture<HttpResponse>
+
+        /** @see [cancel] */
+        @MustBeClosed
+        fun cancel(params: ResponseCancelParams): CompletableFuture<HttpResponse> =
+            cancel(params, RequestOptions.none())
+
+        /** @see [cancel] */
+        @MustBeClosed
+        fun cancel(
+            responseId: String,
+            requestOptions: RequestOptions,
+        ): CompletableFuture<HttpResponse> =
+            cancel(responseId, ResponseCancelParams.none(), requestOptions)
     }
 }
