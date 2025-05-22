@@ -72,9 +72,7 @@ internal class FileCreateParamsTest {
                 InputStream::class.java,
             )
             .isEqualTo(
-                mapOf().mapValues { (_, field) ->
-                    field.map { (it as? ByteArray)?.inputStream() ?: it }
-                }
+                mapOf<String, MultipartField<*>>()
             )
     }
 }
