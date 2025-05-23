@@ -1,5 +1,23 @@
 # Changelog
 
+## 2.2.0 (2025-05-23)
+
+Full Changelog: [v2.1.0...v2.2.0](https://github.com/openai/openai-java/compare/v2.1.0...v2.2.0)
+
+### Features
+
+* **api:** remove deprecated endpoints from Java client ([7b5acb5](https://github.com/openai/openai-java/commit/7b5acb54d52352521e86e7e0f6f878ca67a7b53e))
+
+
+### Bug Fixes
+
+* **examples:** remove old examples ([8fe838c](https://github.com/openai/openai-java/commit/8fe838cdade6fb04aba70ae82bab0e81d061ca43))
+
+
+### Chores
+
+* **internal:** fix release workflows ([c66f725](https://github.com/openai/openai-java/commit/c66f7258d8df4000b1013aa35140bef50de852fe))
+
 ## 2.1.0 (2025-05-22)
 
 Full Changelog: [v2.0.0...v2.1.0](https://github.com/openai/openai-java/compare/v2.0.0...v2.1.0)
