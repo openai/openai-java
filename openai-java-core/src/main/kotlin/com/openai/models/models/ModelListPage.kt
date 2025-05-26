@@ -2,13 +2,12 @@
 
 package com.openai.models.models
 
+import com.openai.core.AutoPager
 import com.openai.core.JsonValue
+import com.openai.core.Page
 import com.openai.core.checkRequired
 import com.openai.services.blocking.ModelService
 import java.util.Objects
-import java.util.Optional
-import java.util.stream.Stream
-import java.util.stream.StreamSupport
 import kotlin.jvm.optionals.getOrNull
 
 /** @see [ModelService.list] */
@@ -17,7 +16,7 @@ private constructor(
     private val service: ModelService,
     private val params: ModelListParams,
     private val response: ModelListPageResponse,
-) {
+) : Page<Model> {
 
     /**
      * Delegates to [ModelListPageResponse], but gracefully handles missing data.
@@ -29,13 +28,16 @@ private constructor(
     /** @see [ModelListPageResponse.object_] */
     fun object_(): JsonValue = response._object_()
 
-    fun hasNextPage(): Boolean = data().isNotEmpty()
+    override fun items(): List<Model> = data()
 
-    fun getNextPageParams(): Optional<ModelListParams> = Optional.empty()
+    override fun hasNextPage(): Boolean = items().isNotEmpty()
 
-    fun getNextPage(): Optional<ModelListPage> = getNextPageParams().map { service.list(it) }
+    fun nextPageParams(): ModelListParams =
+        throw IllegalStateException("Cannot construct next page params")
 
-    fun autoPager(): AutoPager = AutoPager(this)
+    override fun nextPage(): ModelListPage = service.list(nextPageParams())
+
+    fun autoPager(): AutoPager<Model> = AutoPager.from(this)
 
     /** The parameters that were used to request this page. */
     fun params(): ModelListParams = params
@@ -102,25 +104,6 @@ private constructor(
                 checkRequired("params", params),
                 checkRequired("response", response),
             )
-    }
-
-    class AutoPager(private val firstPage: ModelListPage) : Iterable<Model> {
-
-        override fun iterator(): Iterator<Model> = iterator {
-            var page = firstPage
-            var index = 0
-            while (true) {
-                while (index < page.data().size) {
-                    yield(page.data()[index++])
-                }
-                page = page.getNextPage().getOrNull() ?: break
-                index = 0
-            }
-        }
-
-        fun stream(): Stream<Model> {
-            return StreamSupport.stream(spliterator(), false)
-        }
     }
 
     override fun equals(other: Any?): Boolean {

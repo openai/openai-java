@@ -3,7 +3,6 @@
 package com.openai.models.finetuning.jobs
 
 import com.openai.core.Params
-import com.openai.core.checkRequired
 import com.openai.core.http.Headers
 import com.openai.core.http.QueryParams
 import java.util.Objects
@@ -13,14 +12,14 @@ import kotlin.jvm.optionals.getOrNull
 /** Get status updates for a fine-tuning job. */
 class JobListEventsParams
 private constructor(
-    private val fineTuningJobId: String,
+    private val fineTuningJobId: String?,
     private val after: String?,
     private val limit: Long?,
     private val additionalHeaders: Headers,
     private val additionalQueryParams: QueryParams,
 ) : Params {
 
-    fun fineTuningJobId(): String = fineTuningJobId
+    fun fineTuningJobId(): Optional<String> = Optional.ofNullable(fineTuningJobId)
 
     /** Identifier for the last event from the previous pagination request. */
     fun after(): Optional<String> = Optional.ofNullable(after)
@@ -36,14 +35,9 @@ private constructor(
 
     companion object {
 
-        /**
-         * Returns a mutable builder for constructing an instance of [JobListEventsParams].
-         *
-         * The following fields are required:
-         * ```java
-         * .fineTuningJobId()
-         * ```
-         */
+        @JvmStatic fun none(): JobListEventsParams = builder().build()
+
+        /** Returns a mutable builder for constructing an instance of [JobListEventsParams]. */
         @JvmStatic fun builder() = Builder()
     }
 
@@ -65,9 +59,13 @@ private constructor(
             additionalQueryParams = jobListEventsParams.additionalQueryParams.toBuilder()
         }
 
-        fun fineTuningJobId(fineTuningJobId: String) = apply {
+        fun fineTuningJobId(fineTuningJobId: String?) = apply {
             this.fineTuningJobId = fineTuningJobId
         }
+
+        /** Alias for calling [Builder.fineTuningJobId] with `fineTuningJobId.orElse(null)`. */
+        fun fineTuningJobId(fineTuningJobId: Optional<String>) =
+            fineTuningJobId(fineTuningJobId.getOrNull())
 
         /** Identifier for the last event from the previous pagination request. */
         fun after(after: String?) = apply { this.after = after }
@@ -190,17 +188,10 @@ private constructor(
          * Returns an immutable instance of [JobListEventsParams].
          *
          * Further updates to this [Builder] will not mutate the returned instance.
-         *
-         * The following fields are required:
-         * ```java
-         * .fineTuningJobId()
-         * ```
-         *
-         * @throws IllegalStateException if any required field is unset.
          */
         fun build(): JobListEventsParams =
             JobListEventsParams(
-                checkRequired("fineTuningJobId", fineTuningJobId),
+                fineTuningJobId,
                 after,
                 limit,
                 additionalHeaders.build(),
@@ -210,7 +201,7 @@ private constructor(
 
     fun _pathParam(index: Int): String =
         when (index) {
-            0 -> fineTuningJobId
+            0 -> fineTuningJobId ?: ""
             else -> ""
         }
 

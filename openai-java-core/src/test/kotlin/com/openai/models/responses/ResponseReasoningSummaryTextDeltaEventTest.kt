@@ -16,12 +16,14 @@ internal class ResponseReasoningSummaryTextDeltaEventTest {
                 .delta("delta")
                 .itemId("item_id")
                 .outputIndex(0L)
+                .sequenceNumber(0L)
                 .summaryIndex(0L)
                 .build()
 
         assertThat(responseReasoningSummaryTextDeltaEvent.delta()).isEqualTo("delta")
         assertThat(responseReasoningSummaryTextDeltaEvent.itemId()).isEqualTo("item_id")
         assertThat(responseReasoningSummaryTextDeltaEvent.outputIndex()).isEqualTo(0L)
+        assertThat(responseReasoningSummaryTextDeltaEvent.sequenceNumber()).isEqualTo(0L)
         assertThat(responseReasoningSummaryTextDeltaEvent.summaryIndex()).isEqualTo(0L)
     }
 
@@ -33,6 +35,7 @@ internal class ResponseReasoningSummaryTextDeltaEventTest {
                 .delta("delta")
                 .itemId("item_id")
                 .outputIndex(0L)
+                .sequenceNumber(0L)
                 .summaryIndex(0L)
                 .build()
 

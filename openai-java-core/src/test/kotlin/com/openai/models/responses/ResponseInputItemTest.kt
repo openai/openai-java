@@ -35,6 +35,14 @@ internal class ResponseInputItemTest {
         assertThat(responseInputItem.functionCall()).isEmpty
         assertThat(responseInputItem.functionCallOutput()).isEmpty
         assertThat(responseInputItem.reasoning()).isEmpty
+        assertThat(responseInputItem.imageGenerationCall()).isEmpty
+        assertThat(responseInputItem.codeInterpreterCall()).isEmpty
+        assertThat(responseInputItem.localShellCall()).isEmpty
+        assertThat(responseInputItem.localShellCallOutput()).isEmpty
+        assertThat(responseInputItem.mcpListTools()).isEmpty
+        assertThat(responseInputItem.mcpApprovalRequest()).isEmpty
+        assertThat(responseInputItem.mcpApprovalResponse()).isEmpty
+        assertThat(responseInputItem.mcpCall()).isEmpty
         assertThat(responseInputItem.itemReference()).isEmpty
     }
 
@@ -81,6 +89,14 @@ internal class ResponseInputItemTest {
         assertThat(responseInputItem.functionCall()).isEmpty
         assertThat(responseInputItem.functionCallOutput()).isEmpty
         assertThat(responseInputItem.reasoning()).isEmpty
+        assertThat(responseInputItem.imageGenerationCall()).isEmpty
+        assertThat(responseInputItem.codeInterpreterCall()).isEmpty
+        assertThat(responseInputItem.localShellCall()).isEmpty
+        assertThat(responseInputItem.localShellCallOutput()).isEmpty
+        assertThat(responseInputItem.mcpListTools()).isEmpty
+        assertThat(responseInputItem.mcpApprovalRequest()).isEmpty
+        assertThat(responseInputItem.mcpApprovalResponse()).isEmpty
+        assertThat(responseInputItem.mcpCall()).isEmpty
         assertThat(responseInputItem.itemReference()).isEmpty
     }
 
@@ -137,6 +153,14 @@ internal class ResponseInputItemTest {
         assertThat(responseInputItem.functionCall()).isEmpty
         assertThat(responseInputItem.functionCallOutput()).isEmpty
         assertThat(responseInputItem.reasoning()).isEmpty
+        assertThat(responseInputItem.imageGenerationCall()).isEmpty
+        assertThat(responseInputItem.codeInterpreterCall()).isEmpty
+        assertThat(responseInputItem.localShellCall()).isEmpty
+        assertThat(responseInputItem.localShellCallOutput()).isEmpty
+        assertThat(responseInputItem.mcpListTools()).isEmpty
+        assertThat(responseInputItem.mcpApprovalRequest()).isEmpty
+        assertThat(responseInputItem.mcpApprovalResponse()).isEmpty
+        assertThat(responseInputItem.mcpCall()).isEmpty
         assertThat(responseInputItem.itemReference()).isEmpty
     }
 
@@ -187,7 +211,7 @@ internal class ResponseInputItemTest {
                         )
                         .fileId("file_id")
                         .filename("filename")
-                        .score(0.0)
+                        .score(0.0f)
                         .text("text")
                         .build()
                 )
@@ -205,6 +229,14 @@ internal class ResponseInputItemTest {
         assertThat(responseInputItem.functionCall()).isEmpty
         assertThat(responseInputItem.functionCallOutput()).isEmpty
         assertThat(responseInputItem.reasoning()).isEmpty
+        assertThat(responseInputItem.imageGenerationCall()).isEmpty
+        assertThat(responseInputItem.codeInterpreterCall()).isEmpty
+        assertThat(responseInputItem.localShellCall()).isEmpty
+        assertThat(responseInputItem.localShellCallOutput()).isEmpty
+        assertThat(responseInputItem.mcpListTools()).isEmpty
+        assertThat(responseInputItem.mcpApprovalRequest()).isEmpty
+        assertThat(responseInputItem.mcpApprovalResponse()).isEmpty
+        assertThat(responseInputItem.mcpCall()).isEmpty
         assertThat(responseInputItem.itemReference()).isEmpty
     }
 
@@ -226,7 +258,7 @@ internal class ResponseInputItemTest {
                             )
                             .fileId("file_id")
                             .filename("filename")
-                            .score(0.0)
+                            .score(0.0f)
                             .text("text")
                             .build()
                     )
@@ -278,6 +310,14 @@ internal class ResponseInputItemTest {
         assertThat(responseInputItem.functionCall()).isEmpty
         assertThat(responseInputItem.functionCallOutput()).isEmpty
         assertThat(responseInputItem.reasoning()).isEmpty
+        assertThat(responseInputItem.imageGenerationCall()).isEmpty
+        assertThat(responseInputItem.codeInterpreterCall()).isEmpty
+        assertThat(responseInputItem.localShellCall()).isEmpty
+        assertThat(responseInputItem.localShellCallOutput()).isEmpty
+        assertThat(responseInputItem.mcpListTools()).isEmpty
+        assertThat(responseInputItem.mcpApprovalRequest()).isEmpty
+        assertThat(responseInputItem.mcpApprovalResponse()).isEmpty
+        assertThat(responseInputItem.mcpCall()).isEmpty
         assertThat(responseInputItem.itemReference()).isEmpty
     }
 
@@ -351,6 +391,14 @@ internal class ResponseInputItemTest {
         assertThat(responseInputItem.functionCall()).isEmpty
         assertThat(responseInputItem.functionCallOutput()).isEmpty
         assertThat(responseInputItem.reasoning()).isEmpty
+        assertThat(responseInputItem.imageGenerationCall()).isEmpty
+        assertThat(responseInputItem.codeInterpreterCall()).isEmpty
+        assertThat(responseInputItem.localShellCall()).isEmpty
+        assertThat(responseInputItem.localShellCallOutput()).isEmpty
+        assertThat(responseInputItem.mcpListTools()).isEmpty
+        assertThat(responseInputItem.mcpApprovalRequest()).isEmpty
+        assertThat(responseInputItem.mcpApprovalResponse()).isEmpty
+        assertThat(responseInputItem.mcpCall()).isEmpty
         assertThat(responseInputItem.itemReference()).isEmpty
     }
 
@@ -408,6 +456,14 @@ internal class ResponseInputItemTest {
         assertThat(responseInputItem.functionCall()).isEmpty
         assertThat(responseInputItem.functionCallOutput()).isEmpty
         assertThat(responseInputItem.reasoning()).isEmpty
+        assertThat(responseInputItem.imageGenerationCall()).isEmpty
+        assertThat(responseInputItem.codeInterpreterCall()).isEmpty
+        assertThat(responseInputItem.localShellCall()).isEmpty
+        assertThat(responseInputItem.localShellCallOutput()).isEmpty
+        assertThat(responseInputItem.mcpListTools()).isEmpty
+        assertThat(responseInputItem.mcpApprovalRequest()).isEmpty
+        assertThat(responseInputItem.mcpApprovalResponse()).isEmpty
+        assertThat(responseInputItem.mcpCall()).isEmpty
         assertThat(responseInputItem.itemReference()).isEmpty
     }
 
@@ -454,6 +510,14 @@ internal class ResponseInputItemTest {
         assertThat(responseInputItem.functionCall()).contains(functionCall)
         assertThat(responseInputItem.functionCallOutput()).isEmpty
         assertThat(responseInputItem.reasoning()).isEmpty
+        assertThat(responseInputItem.imageGenerationCall()).isEmpty
+        assertThat(responseInputItem.codeInterpreterCall()).isEmpty
+        assertThat(responseInputItem.localShellCall()).isEmpty
+        assertThat(responseInputItem.localShellCallOutput()).isEmpty
+        assertThat(responseInputItem.mcpListTools()).isEmpty
+        assertThat(responseInputItem.mcpApprovalRequest()).isEmpty
+        assertThat(responseInputItem.mcpApprovalResponse()).isEmpty
+        assertThat(responseInputItem.mcpCall()).isEmpty
         assertThat(responseInputItem.itemReference()).isEmpty
     }
 
@@ -502,6 +566,14 @@ internal class ResponseInputItemTest {
         assertThat(responseInputItem.functionCall()).isEmpty
         assertThat(responseInputItem.functionCallOutput()).contains(functionCallOutput)
         assertThat(responseInputItem.reasoning()).isEmpty
+        assertThat(responseInputItem.imageGenerationCall()).isEmpty
+        assertThat(responseInputItem.codeInterpreterCall()).isEmpty
+        assertThat(responseInputItem.localShellCall()).isEmpty
+        assertThat(responseInputItem.localShellCallOutput()).isEmpty
+        assertThat(responseInputItem.mcpListTools()).isEmpty
+        assertThat(responseInputItem.mcpApprovalRequest()).isEmpty
+        assertThat(responseInputItem.mcpApprovalResponse()).isEmpty
+        assertThat(responseInputItem.mcpCall()).isEmpty
         assertThat(responseInputItem.itemReference()).isEmpty
     }
 
@@ -549,6 +621,14 @@ internal class ResponseInputItemTest {
         assertThat(responseInputItem.functionCall()).isEmpty
         assertThat(responseInputItem.functionCallOutput()).isEmpty
         assertThat(responseInputItem.reasoning()).contains(reasoning)
+        assertThat(responseInputItem.imageGenerationCall()).isEmpty
+        assertThat(responseInputItem.codeInterpreterCall()).isEmpty
+        assertThat(responseInputItem.localShellCall()).isEmpty
+        assertThat(responseInputItem.localShellCallOutput()).isEmpty
+        assertThat(responseInputItem.mcpListTools()).isEmpty
+        assertThat(responseInputItem.mcpApprovalRequest()).isEmpty
+        assertThat(responseInputItem.mcpApprovalResponse()).isEmpty
+        assertThat(responseInputItem.mcpCall()).isEmpty
         assertThat(responseInputItem.itemReference()).isEmpty
     }
 
@@ -562,6 +642,486 @@ internal class ResponseInputItemTest {
                     .addSummary(ResponseReasoningItem.Summary.builder().text("text").build())
                     .encryptedContent("encrypted_content")
                     .status(ResponseReasoningItem.Status.IN_PROGRESS)
+                    .build()
+            )
+
+        val roundtrippedResponseInputItem =
+            jsonMapper.readValue(
+                jsonMapper.writeValueAsString(responseInputItem),
+                jacksonTypeRef<ResponseInputItem>(),
+            )
+
+        assertThat(roundtrippedResponseInputItem).isEqualTo(responseInputItem)
+    }
+
+    @Test
+    fun ofImageGenerationCall() {
+        val imageGenerationCall =
+            ResponseInputItem.ImageGenerationCall.builder()
+                .id("id")
+                .result("result")
+                .status(ResponseInputItem.ImageGenerationCall.Status.IN_PROGRESS)
+                .build()
+
+        val responseInputItem = ResponseInputItem.ofImageGenerationCall(imageGenerationCall)
+
+        assertThat(responseInputItem.easyInputMessage()).isEmpty
+        assertThat(responseInputItem.message()).isEmpty
+        assertThat(responseInputItem.responseOutputMessage()).isEmpty
+        assertThat(responseInputItem.fileSearchCall()).isEmpty
+        assertThat(responseInputItem.computerCall()).isEmpty
+        assertThat(responseInputItem.computerCallOutput()).isEmpty
+        assertThat(responseInputItem.webSearchCall()).isEmpty
+        assertThat(responseInputItem.functionCall()).isEmpty
+        assertThat(responseInputItem.functionCallOutput()).isEmpty
+        assertThat(responseInputItem.reasoning()).isEmpty
+        assertThat(responseInputItem.imageGenerationCall()).contains(imageGenerationCall)
+        assertThat(responseInputItem.codeInterpreterCall()).isEmpty
+        assertThat(responseInputItem.localShellCall()).isEmpty
+        assertThat(responseInputItem.localShellCallOutput()).isEmpty
+        assertThat(responseInputItem.mcpListTools()).isEmpty
+        assertThat(responseInputItem.mcpApprovalRequest()).isEmpty
+        assertThat(responseInputItem.mcpApprovalResponse()).isEmpty
+        assertThat(responseInputItem.mcpCall()).isEmpty
+        assertThat(responseInputItem.itemReference()).isEmpty
+    }
+
+    @Test
+    fun ofImageGenerationCallRoundtrip() {
+        val jsonMapper = jsonMapper()
+        val responseInputItem =
+            ResponseInputItem.ofImageGenerationCall(
+                ResponseInputItem.ImageGenerationCall.builder()
+                    .id("id")
+                    .result("result")
+                    .status(ResponseInputItem.ImageGenerationCall.Status.IN_PROGRESS)
+                    .build()
+            )
+
+        val roundtrippedResponseInputItem =
+            jsonMapper.readValue(
+                jsonMapper.writeValueAsString(responseInputItem),
+                jacksonTypeRef<ResponseInputItem>(),
+            )
+
+        assertThat(roundtrippedResponseInputItem).isEqualTo(responseInputItem)
+    }
+
+    @Test
+    fun ofCodeInterpreterCall() {
+        val codeInterpreterCall =
+            ResponseCodeInterpreterToolCall.builder()
+                .id("id")
+                .code("code")
+                .addLogsResult("logs")
+                .status(ResponseCodeInterpreterToolCall.Status.IN_PROGRESS)
+                .containerId("container_id")
+                .build()
+
+        val responseInputItem = ResponseInputItem.ofCodeInterpreterCall(codeInterpreterCall)
+
+        assertThat(responseInputItem.easyInputMessage()).isEmpty
+        assertThat(responseInputItem.message()).isEmpty
+        assertThat(responseInputItem.responseOutputMessage()).isEmpty
+        assertThat(responseInputItem.fileSearchCall()).isEmpty
+        assertThat(responseInputItem.computerCall()).isEmpty
+        assertThat(responseInputItem.computerCallOutput()).isEmpty
+        assertThat(responseInputItem.webSearchCall()).isEmpty
+        assertThat(responseInputItem.functionCall()).isEmpty
+        assertThat(responseInputItem.functionCallOutput()).isEmpty
+        assertThat(responseInputItem.reasoning()).isEmpty
+        assertThat(responseInputItem.imageGenerationCall()).isEmpty
+        assertThat(responseInputItem.codeInterpreterCall()).contains(codeInterpreterCall)
+        assertThat(responseInputItem.localShellCall()).isEmpty
+        assertThat(responseInputItem.localShellCallOutput()).isEmpty
+        assertThat(responseInputItem.mcpListTools()).isEmpty
+        assertThat(responseInputItem.mcpApprovalRequest()).isEmpty
+        assertThat(responseInputItem.mcpApprovalResponse()).isEmpty
+        assertThat(responseInputItem.mcpCall()).isEmpty
+        assertThat(responseInputItem.itemReference()).isEmpty
+    }
+
+    @Test
+    fun ofCodeInterpreterCallRoundtrip() {
+        val jsonMapper = jsonMapper()
+        val responseInputItem =
+            ResponseInputItem.ofCodeInterpreterCall(
+                ResponseCodeInterpreterToolCall.builder()
+                    .id("id")
+                    .code("code")
+                    .addLogsResult("logs")
+                    .status(ResponseCodeInterpreterToolCall.Status.IN_PROGRESS)
+                    .containerId("container_id")
+                    .build()
+            )
+
+        val roundtrippedResponseInputItem =
+            jsonMapper.readValue(
+                jsonMapper.writeValueAsString(responseInputItem),
+                jacksonTypeRef<ResponseInputItem>(),
+            )
+
+        assertThat(roundtrippedResponseInputItem).isEqualTo(responseInputItem)
+    }
+
+    @Test
+    fun ofLocalShellCall() {
+        val localShellCall =
+            ResponseInputItem.LocalShellCall.builder()
+                .id("id")
+                .action(
+                    ResponseInputItem.LocalShellCall.Action.builder()
+                        .addCommand("string")
+                        .env(
+                            ResponseInputItem.LocalShellCall.Action.Env.builder()
+                                .putAdditionalProperty("foo", JsonValue.from("string"))
+                                .build()
+                        )
+                        .timeoutMs(0L)
+                        .user("user")
+                        .workingDirectory("working_directory")
+                        .build()
+                )
+                .callId("call_id")
+                .status(ResponseInputItem.LocalShellCall.Status.IN_PROGRESS)
+                .build()
+
+        val responseInputItem = ResponseInputItem.ofLocalShellCall(localShellCall)
+
+        assertThat(responseInputItem.easyInputMessage()).isEmpty
+        assertThat(responseInputItem.message()).isEmpty
+        assertThat(responseInputItem.responseOutputMessage()).isEmpty
+        assertThat(responseInputItem.fileSearchCall()).isEmpty
+        assertThat(responseInputItem.computerCall()).isEmpty
+        assertThat(responseInputItem.computerCallOutput()).isEmpty
+        assertThat(responseInputItem.webSearchCall()).isEmpty
+        assertThat(responseInputItem.functionCall()).isEmpty
+        assertThat(responseInputItem.functionCallOutput()).isEmpty
+        assertThat(responseInputItem.reasoning()).isEmpty
+        assertThat(responseInputItem.imageGenerationCall()).isEmpty
+        assertThat(responseInputItem.codeInterpreterCall()).isEmpty
+        assertThat(responseInputItem.localShellCall()).contains(localShellCall)
+        assertThat(responseInputItem.localShellCallOutput()).isEmpty
+        assertThat(responseInputItem.mcpListTools()).isEmpty
+        assertThat(responseInputItem.mcpApprovalRequest()).isEmpty
+        assertThat(responseInputItem.mcpApprovalResponse()).isEmpty
+        assertThat(responseInputItem.mcpCall()).isEmpty
+        assertThat(responseInputItem.itemReference()).isEmpty
+    }
+
+    @Test
+    fun ofLocalShellCallRoundtrip() {
+        val jsonMapper = jsonMapper()
+        val responseInputItem =
+            ResponseInputItem.ofLocalShellCall(
+                ResponseInputItem.LocalShellCall.builder()
+                    .id("id")
+                    .action(
+                        ResponseInputItem.LocalShellCall.Action.builder()
+                            .addCommand("string")
+                            .env(
+                                ResponseInputItem.LocalShellCall.Action.Env.builder()
+                                    .putAdditionalProperty("foo", JsonValue.from("string"))
+                                    .build()
+                            )
+                            .timeoutMs(0L)
+                            .user("user")
+                            .workingDirectory("working_directory")
+                            .build()
+                    )
+                    .callId("call_id")
+                    .status(ResponseInputItem.LocalShellCall.Status.IN_PROGRESS)
+                    .build()
+            )
+
+        val roundtrippedResponseInputItem =
+            jsonMapper.readValue(
+                jsonMapper.writeValueAsString(responseInputItem),
+                jacksonTypeRef<ResponseInputItem>(),
+            )
+
+        assertThat(roundtrippedResponseInputItem).isEqualTo(responseInputItem)
+    }
+
+    @Test
+    fun ofLocalShellCallOutput() {
+        val localShellCallOutput =
+            ResponseInputItem.LocalShellCallOutput.builder()
+                .id("id")
+                .output("output")
+                .status(ResponseInputItem.LocalShellCallOutput.Status.IN_PROGRESS)
+                .build()
+
+        val responseInputItem = ResponseInputItem.ofLocalShellCallOutput(localShellCallOutput)
+
+        assertThat(responseInputItem.easyInputMessage()).isEmpty
+        assertThat(responseInputItem.message()).isEmpty
+        assertThat(responseInputItem.responseOutputMessage()).isEmpty
+        assertThat(responseInputItem.fileSearchCall()).isEmpty
+        assertThat(responseInputItem.computerCall()).isEmpty
+        assertThat(responseInputItem.computerCallOutput()).isEmpty
+        assertThat(responseInputItem.webSearchCall()).isEmpty
+        assertThat(responseInputItem.functionCall()).isEmpty
+        assertThat(responseInputItem.functionCallOutput()).isEmpty
+        assertThat(responseInputItem.reasoning()).isEmpty
+        assertThat(responseInputItem.imageGenerationCall()).isEmpty
+        assertThat(responseInputItem.codeInterpreterCall()).isEmpty
+        assertThat(responseInputItem.localShellCall()).isEmpty
+        assertThat(responseInputItem.localShellCallOutput()).contains(localShellCallOutput)
+        assertThat(responseInputItem.mcpListTools()).isEmpty
+        assertThat(responseInputItem.mcpApprovalRequest()).isEmpty
+        assertThat(responseInputItem.mcpApprovalResponse()).isEmpty
+        assertThat(responseInputItem.mcpCall()).isEmpty
+        assertThat(responseInputItem.itemReference()).isEmpty
+    }
+
+    @Test
+    fun ofLocalShellCallOutputRoundtrip() {
+        val jsonMapper = jsonMapper()
+        val responseInputItem =
+            ResponseInputItem.ofLocalShellCallOutput(
+                ResponseInputItem.LocalShellCallOutput.builder()
+                    .id("id")
+                    .output("output")
+                    .status(ResponseInputItem.LocalShellCallOutput.Status.IN_PROGRESS)
+                    .build()
+            )
+
+        val roundtrippedResponseInputItem =
+            jsonMapper.readValue(
+                jsonMapper.writeValueAsString(responseInputItem),
+                jacksonTypeRef<ResponseInputItem>(),
+            )
+
+        assertThat(roundtrippedResponseInputItem).isEqualTo(responseInputItem)
+    }
+
+    @Test
+    fun ofMcpListTools() {
+        val mcpListTools =
+            ResponseInputItem.McpListTools.builder()
+                .id("id")
+                .serverLabel("server_label")
+                .addTool(
+                    ResponseInputItem.McpListTools.Tool.builder()
+                        .inputSchema(JsonValue.from(mapOf<String, Any>()))
+                        .name("name")
+                        .annotations(JsonValue.from(mapOf<String, Any>()))
+                        .description("description")
+                        .build()
+                )
+                .error("error")
+                .build()
+
+        val responseInputItem = ResponseInputItem.ofMcpListTools(mcpListTools)
+
+        assertThat(responseInputItem.easyInputMessage()).isEmpty
+        assertThat(responseInputItem.message()).isEmpty
+        assertThat(responseInputItem.responseOutputMessage()).isEmpty
+        assertThat(responseInputItem.fileSearchCall()).isEmpty
+        assertThat(responseInputItem.computerCall()).isEmpty
+        assertThat(responseInputItem.computerCallOutput()).isEmpty
+        assertThat(responseInputItem.webSearchCall()).isEmpty
+        assertThat(responseInputItem.functionCall()).isEmpty
+        assertThat(responseInputItem.functionCallOutput()).isEmpty
+        assertThat(responseInputItem.reasoning()).isEmpty
+        assertThat(responseInputItem.imageGenerationCall()).isEmpty
+        assertThat(responseInputItem.codeInterpreterCall()).isEmpty
+        assertThat(responseInputItem.localShellCall()).isEmpty
+        assertThat(responseInputItem.localShellCallOutput()).isEmpty
+        assertThat(responseInputItem.mcpListTools()).contains(mcpListTools)
+        assertThat(responseInputItem.mcpApprovalRequest()).isEmpty
+        assertThat(responseInputItem.mcpApprovalResponse()).isEmpty
+        assertThat(responseInputItem.mcpCall()).isEmpty
+        assertThat(responseInputItem.itemReference()).isEmpty
+    }
+
+    @Test
+    fun ofMcpListToolsRoundtrip() {
+        val jsonMapper = jsonMapper()
+        val responseInputItem =
+            ResponseInputItem.ofMcpListTools(
+                ResponseInputItem.McpListTools.builder()
+                    .id("id")
+                    .serverLabel("server_label")
+                    .addTool(
+                        ResponseInputItem.McpListTools.Tool.builder()
+                            .inputSchema(JsonValue.from(mapOf<String, Any>()))
+                            .name("name")
+                            .annotations(JsonValue.from(mapOf<String, Any>()))
+                            .description("description")
+                            .build()
+                    )
+                    .error("error")
+                    .build()
+            )
+
+        val roundtrippedResponseInputItem =
+            jsonMapper.readValue(
+                jsonMapper.writeValueAsString(responseInputItem),
+                jacksonTypeRef<ResponseInputItem>(),
+            )
+
+        assertThat(roundtrippedResponseInputItem).isEqualTo(responseInputItem)
+    }
+
+    @Test
+    fun ofMcpApprovalRequest() {
+        val mcpApprovalRequest =
+            ResponseInputItem.McpApprovalRequest.builder()
+                .id("id")
+                .arguments("arguments")
+                .name("name")
+                .serverLabel("server_label")
+                .build()
+
+        val responseInputItem = ResponseInputItem.ofMcpApprovalRequest(mcpApprovalRequest)
+
+        assertThat(responseInputItem.easyInputMessage()).isEmpty
+        assertThat(responseInputItem.message()).isEmpty
+        assertThat(responseInputItem.responseOutputMessage()).isEmpty
+        assertThat(responseInputItem.fileSearchCall()).isEmpty
+        assertThat(responseInputItem.computerCall()).isEmpty
+        assertThat(responseInputItem.computerCallOutput()).isEmpty
+        assertThat(responseInputItem.webSearchCall()).isEmpty
+        assertThat(responseInputItem.functionCall()).isEmpty
+        assertThat(responseInputItem.functionCallOutput()).isEmpty
+        assertThat(responseInputItem.reasoning()).isEmpty
+        assertThat(responseInputItem.imageGenerationCall()).isEmpty
+        assertThat(responseInputItem.codeInterpreterCall()).isEmpty
+        assertThat(responseInputItem.localShellCall()).isEmpty
+        assertThat(responseInputItem.localShellCallOutput()).isEmpty
+        assertThat(responseInputItem.mcpListTools()).isEmpty
+        assertThat(responseInputItem.mcpApprovalRequest()).contains(mcpApprovalRequest)
+        assertThat(responseInputItem.mcpApprovalResponse()).isEmpty
+        assertThat(responseInputItem.mcpCall()).isEmpty
+        assertThat(responseInputItem.itemReference()).isEmpty
+    }
+
+    @Test
+    fun ofMcpApprovalRequestRoundtrip() {
+        val jsonMapper = jsonMapper()
+        val responseInputItem =
+            ResponseInputItem.ofMcpApprovalRequest(
+                ResponseInputItem.McpApprovalRequest.builder()
+                    .id("id")
+                    .arguments("arguments")
+                    .name("name")
+                    .serverLabel("server_label")
+                    .build()
+            )
+
+        val roundtrippedResponseInputItem =
+            jsonMapper.readValue(
+                jsonMapper.writeValueAsString(responseInputItem),
+                jacksonTypeRef<ResponseInputItem>(),
+            )
+
+        assertThat(roundtrippedResponseInputItem).isEqualTo(responseInputItem)
+    }
+
+    @Test
+    fun ofMcpApprovalResponse() {
+        val mcpApprovalResponse =
+            ResponseInputItem.McpApprovalResponse.builder()
+                .approvalRequestId("approval_request_id")
+                .approve(true)
+                .id("id")
+                .reason("reason")
+                .build()
+
+        val responseInputItem = ResponseInputItem.ofMcpApprovalResponse(mcpApprovalResponse)
+
+        assertThat(responseInputItem.easyInputMessage()).isEmpty
+        assertThat(responseInputItem.message()).isEmpty
+        assertThat(responseInputItem.responseOutputMessage()).isEmpty
+        assertThat(responseInputItem.fileSearchCall()).isEmpty
+        assertThat(responseInputItem.computerCall()).isEmpty
+        assertThat(responseInputItem.computerCallOutput()).isEmpty
+        assertThat(responseInputItem.webSearchCall()).isEmpty
+        assertThat(responseInputItem.functionCall()).isEmpty
+        assertThat(responseInputItem.functionCallOutput()).isEmpty
+        assertThat(responseInputItem.reasoning()).isEmpty
+        assertThat(responseInputItem.imageGenerationCall()).isEmpty
+        assertThat(responseInputItem.codeInterpreterCall()).isEmpty
+        assertThat(responseInputItem.localShellCall()).isEmpty
+        assertThat(responseInputItem.localShellCallOutput()).isEmpty
+        assertThat(responseInputItem.mcpListTools()).isEmpty
+        assertThat(responseInputItem.mcpApprovalRequest()).isEmpty
+        assertThat(responseInputItem.mcpApprovalResponse()).contains(mcpApprovalResponse)
+        assertThat(responseInputItem.mcpCall()).isEmpty
+        assertThat(responseInputItem.itemReference()).isEmpty
+    }
+
+    @Test
+    fun ofMcpApprovalResponseRoundtrip() {
+        val jsonMapper = jsonMapper()
+        val responseInputItem =
+            ResponseInputItem.ofMcpApprovalResponse(
+                ResponseInputItem.McpApprovalResponse.builder()
+                    .approvalRequestId("approval_request_id")
+                    .approve(true)
+                    .id("id")
+                    .reason("reason")
+                    .build()
+            )
+
+        val roundtrippedResponseInputItem =
+            jsonMapper.readValue(
+                jsonMapper.writeValueAsString(responseInputItem),
+                jacksonTypeRef<ResponseInputItem>(),
+            )
+
+        assertThat(roundtrippedResponseInputItem).isEqualTo(responseInputItem)
+    }
+
+    @Test
+    fun ofMcpCall() {
+        val mcpCall =
+            ResponseInputItem.McpCall.builder()
+                .id("id")
+                .arguments("arguments")
+                .name("name")
+                .serverLabel("server_label")
+                .error("error")
+                .output("output")
+                .build()
+
+        val responseInputItem = ResponseInputItem.ofMcpCall(mcpCall)
+
+        assertThat(responseInputItem.easyInputMessage()).isEmpty
+        assertThat(responseInputItem.message()).isEmpty
+        assertThat(responseInputItem.responseOutputMessage()).isEmpty
+        assertThat(responseInputItem.fileSearchCall()).isEmpty
+        assertThat(responseInputItem.computerCall()).isEmpty
+        assertThat(responseInputItem.computerCallOutput()).isEmpty
+        assertThat(responseInputItem.webSearchCall()).isEmpty
+        assertThat(responseInputItem.functionCall()).isEmpty
+        assertThat(responseInputItem.functionCallOutput()).isEmpty
+        assertThat(responseInputItem.reasoning()).isEmpty
+        assertThat(responseInputItem.imageGenerationCall()).isEmpty
+        assertThat(responseInputItem.codeInterpreterCall()).isEmpty
+        assertThat(responseInputItem.localShellCall()).isEmpty
+        assertThat(responseInputItem.localShellCallOutput()).isEmpty
+        assertThat(responseInputItem.mcpListTools()).isEmpty
+        assertThat(responseInputItem.mcpApprovalRequest()).isEmpty
+        assertThat(responseInputItem.mcpApprovalResponse()).isEmpty
+        assertThat(responseInputItem.mcpCall()).contains(mcpCall)
+        assertThat(responseInputItem.itemReference()).isEmpty
+    }
+
+    @Test
+    fun ofMcpCallRoundtrip() {
+        val jsonMapper = jsonMapper()
+        val responseInputItem =
+            ResponseInputItem.ofMcpCall(
+                ResponseInputItem.McpCall.builder()
+                    .id("id")
+                    .arguments("arguments")
+                    .name("name")
+                    .serverLabel("server_label")
+                    .error("error")
+                    .output("output")
                     .build()
             )
 
@@ -594,6 +1154,14 @@ internal class ResponseInputItemTest {
         assertThat(responseInputItem.functionCall()).isEmpty
         assertThat(responseInputItem.functionCallOutput()).isEmpty
         assertThat(responseInputItem.reasoning()).isEmpty
+        assertThat(responseInputItem.imageGenerationCall()).isEmpty
+        assertThat(responseInputItem.codeInterpreterCall()).isEmpty
+        assertThat(responseInputItem.localShellCall()).isEmpty
+        assertThat(responseInputItem.localShellCallOutput()).isEmpty
+        assertThat(responseInputItem.mcpListTools()).isEmpty
+        assertThat(responseInputItem.mcpApprovalRequest()).isEmpty
+        assertThat(responseInputItem.mcpApprovalResponse()).isEmpty
+        assertThat(responseInputItem.mcpCall()).isEmpty
         assertThat(responseInputItem.itemReference()).contains(itemReference)
     }
 

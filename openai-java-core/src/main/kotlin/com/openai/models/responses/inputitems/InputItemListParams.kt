@@ -6,7 +6,6 @@ import com.fasterxml.jackson.annotation.JsonCreator
 import com.openai.core.Enum
 import com.openai.core.JsonField
 import com.openai.core.Params
-import com.openai.core.checkRequired
 import com.openai.core.http.Headers
 import com.openai.core.http.QueryParams
 import com.openai.core.toImmutable
@@ -19,7 +18,7 @@ import kotlin.jvm.optionals.getOrNull
 /** Returns a list of input items for a given response. */
 class InputItemListParams
 private constructor(
-    private val responseId: String,
+    private val responseId: String?,
     private val after: String?,
     private val before: String?,
     private val include: List<ResponseIncludable>?,
@@ -29,7 +28,7 @@ private constructor(
     private val additionalQueryParams: QueryParams,
 ) : Params {
 
-    fun responseId(): String = responseId
+    fun responseId(): Optional<String> = Optional.ofNullable(responseId)
 
     /** An item ID to list items after, used in pagination. */
     fun after(): Optional<String> = Optional.ofNullable(after)
@@ -50,7 +49,7 @@ private constructor(
     fun limit(): Optional<Long> = Optional.ofNullable(limit)
 
     /**
-     * The order to return the input items in. Default is `asc`.
+     * The order to return the input items in. Default is `desc`.
      * - `asc`: Return the input items in ascending order.
      * - `desc`: Return the input items in descending order.
      */
@@ -64,14 +63,9 @@ private constructor(
 
     companion object {
 
-        /**
-         * Returns a mutable builder for constructing an instance of [InputItemListParams].
-         *
-         * The following fields are required:
-         * ```java
-         * .responseId()
-         * ```
-         */
+        @JvmStatic fun none(): InputItemListParams = builder().build()
+
+        /** Returns a mutable builder for constructing an instance of [InputItemListParams]. */
         @JvmStatic fun builder() = Builder()
     }
 
@@ -99,7 +93,10 @@ private constructor(
             additionalQueryParams = inputItemListParams.additionalQueryParams.toBuilder()
         }
 
-        fun responseId(responseId: String) = apply { this.responseId = responseId }
+        fun responseId(responseId: String?) = apply { this.responseId = responseId }
+
+        /** Alias for calling [Builder.responseId] with `responseId.orElse(null)`. */
+        fun responseId(responseId: Optional<String>) = responseId(responseId.getOrNull())
 
         /** An item ID to list items after, used in pagination. */
         fun after(after: String?) = apply { this.after = after }
@@ -150,7 +147,7 @@ private constructor(
         fun limit(limit: Optional<Long>) = limit(limit.getOrNull())
 
         /**
-         * The order to return the input items in. Default is `asc`.
+         * The order to return the input items in. Default is `desc`.
          * - `asc`: Return the input items in ascending order.
          * - `desc`: Return the input items in descending order.
          */
@@ -261,17 +258,10 @@ private constructor(
          * Returns an immutable instance of [InputItemListParams].
          *
          * Further updates to this [Builder] will not mutate the returned instance.
-         *
-         * The following fields are required:
-         * ```java
-         * .responseId()
-         * ```
-         *
-         * @throws IllegalStateException if any required field is unset.
          */
         fun build(): InputItemListParams =
             InputItemListParams(
-                checkRequired("responseId", responseId),
+                responseId,
                 after,
                 before,
                 include?.toImmutable(),
@@ -284,7 +274,7 @@ private constructor(
 
     fun _pathParam(index: Int): String =
         when (index) {
-            0 -> responseId
+            0 -> responseId ?: ""
             else -> ""
         }
 
@@ -303,7 +293,7 @@ private constructor(
             .build()
 
     /**
-     * The order to return the input items in. Default is `asc`.
+     * The order to return the input items in. Default is `desc`.
      * - `asc`: Return the input items in ascending order.
      * - `desc`: Return the input items in descending order.
      */

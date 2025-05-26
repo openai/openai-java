@@ -14,6 +14,8 @@ import com.openai.services.blocking.ChatService
 import com.openai.services.blocking.ChatServiceImpl
 import com.openai.services.blocking.CompletionService
 import com.openai.services.blocking.CompletionServiceImpl
+import com.openai.services.blocking.ContainerService
+import com.openai.services.blocking.ContainerServiceImpl
 import com.openai.services.blocking.EmbeddingService
 import com.openai.services.blocking.EmbeddingServiceImpl
 import com.openai.services.blocking.EvalService
@@ -22,6 +24,8 @@ import com.openai.services.blocking.FileService
 import com.openai.services.blocking.FileServiceImpl
 import com.openai.services.blocking.FineTuningService
 import com.openai.services.blocking.FineTuningServiceImpl
+import com.openai.services.blocking.GraderService
+import com.openai.services.blocking.GraderServiceImpl
 import com.openai.services.blocking.ImageService
 import com.openai.services.blocking.ImageServiceImpl
 import com.openai.services.blocking.ModelService
@@ -78,6 +82,8 @@ class OpenAIClientImpl(private val clientOptions: ClientOptions) : OpenAIClient 
         FineTuningServiceImpl(clientOptionsWithUserAgent)
     }
 
+    private val graders: GraderService by lazy { GraderServiceImpl(clientOptionsWithUserAgent) }
+
     private val vectorStores: VectorStoreService by lazy {
         VectorStoreServiceImpl(clientOptionsWithUserAgent)
     }
@@ -93,6 +99,10 @@ class OpenAIClientImpl(private val clientOptions: ClientOptions) : OpenAIClient 
     }
 
     private val evals: EvalService by lazy { EvalServiceImpl(clientOptionsWithUserAgent) }
+
+    private val containers: ContainerService by lazy {
+        ContainerServiceImpl(clientOptionsWithUserAgent)
+    }
 
     override fun async(): OpenAIClientAsync = async
 
@@ -116,6 +126,8 @@ class OpenAIClientImpl(private val clientOptions: ClientOptions) : OpenAIClient 
 
     override fun fineTuning(): FineTuningService = fineTuning
 
+    override fun graders(): GraderService = graders
+
     override fun vectorStores(): VectorStoreService = vectorStores
 
     override fun beta(): BetaService = beta
@@ -127,6 +139,8 @@ class OpenAIClientImpl(private val clientOptions: ClientOptions) : OpenAIClient 
     override fun responses(): ResponseService = responses
 
     override fun evals(): EvalService = evals
+
+    override fun containers(): ContainerService = containers
 
     override fun close() = clientOptions.httpClient.close()
 
@@ -169,6 +183,10 @@ class OpenAIClientImpl(private val clientOptions: ClientOptions) : OpenAIClient 
             FineTuningServiceImpl.WithRawResponseImpl(clientOptions)
         }
 
+        private val graders: GraderService.WithRawResponse by lazy {
+            GraderServiceImpl.WithRawResponseImpl(clientOptions)
+        }
+
         private val vectorStores: VectorStoreService.WithRawResponse by lazy {
             VectorStoreServiceImpl.WithRawResponseImpl(clientOptions)
         }
@@ -193,6 +211,10 @@ class OpenAIClientImpl(private val clientOptions: ClientOptions) : OpenAIClient 
             EvalServiceImpl.WithRawResponseImpl(clientOptions)
         }
 
+        private val containers: ContainerService.WithRawResponse by lazy {
+            ContainerServiceImpl.WithRawResponseImpl(clientOptions)
+        }
+
         override fun completions(): CompletionService.WithRawResponse = completions
 
         override fun chat(): ChatService.WithRawResponse = chat
@@ -211,6 +233,8 @@ class OpenAIClientImpl(private val clientOptions: ClientOptions) : OpenAIClient 
 
         override fun fineTuning(): FineTuningService.WithRawResponse = fineTuning
 
+        override fun graders(): GraderService.WithRawResponse = graders
+
         override fun vectorStores(): VectorStoreService.WithRawResponse = vectorStores
 
         override fun beta(): BetaService.WithRawResponse = beta
@@ -222,5 +246,7 @@ class OpenAIClientImpl(private val clientOptions: ClientOptions) : OpenAIClient 
         override fun responses(): ResponseService.WithRawResponse = responses
 
         override fun evals(): EvalService.WithRawResponse = evals
+
+        override fun containers(): ContainerService.WithRawResponse = containers
     }
 }

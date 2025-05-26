@@ -6,7 +6,6 @@ import com.fasterxml.jackson.annotation.JsonCreator
 import com.openai.core.Enum
 import com.openai.core.JsonField
 import com.openai.core.Params
-import com.openai.core.checkRequired
 import com.openai.core.http.Headers
 import com.openai.core.http.QueryParams
 import com.openai.errors.OpenAIInvalidDataException
@@ -22,7 +21,7 @@ import kotlin.jvm.optionals.getOrNull
  */
 class PermissionRetrieveParams
 private constructor(
-    private val fineTunedModelCheckpoint: String,
+    private val fineTunedModelCheckpoint: String?,
     private val after: String?,
     private val limit: Long?,
     private val order: Order?,
@@ -31,7 +30,7 @@ private constructor(
     private val additionalQueryParams: QueryParams,
 ) : Params {
 
-    fun fineTunedModelCheckpoint(): String = fineTunedModelCheckpoint
+    fun fineTunedModelCheckpoint(): Optional<String> = Optional.ofNullable(fineTunedModelCheckpoint)
 
     /** Identifier for the last permission ID from the previous pagination request. */
     fun after(): Optional<String> = Optional.ofNullable(after)
@@ -53,14 +52,9 @@ private constructor(
 
     companion object {
 
-        /**
-         * Returns a mutable builder for constructing an instance of [PermissionRetrieveParams].
-         *
-         * The following fields are required:
-         * ```java
-         * .fineTunedModelCheckpoint()
-         * ```
-         */
+        @JvmStatic fun none(): PermissionRetrieveParams = builder().build()
+
+        /** Returns a mutable builder for constructing an instance of [PermissionRetrieveParams]. */
         @JvmStatic fun builder() = Builder()
     }
 
@@ -86,9 +80,16 @@ private constructor(
             additionalQueryParams = permissionRetrieveParams.additionalQueryParams.toBuilder()
         }
 
-        fun fineTunedModelCheckpoint(fineTunedModelCheckpoint: String) = apply {
+        fun fineTunedModelCheckpoint(fineTunedModelCheckpoint: String?) = apply {
             this.fineTunedModelCheckpoint = fineTunedModelCheckpoint
         }
+
+        /**
+         * Alias for calling [Builder.fineTunedModelCheckpoint] with
+         * `fineTunedModelCheckpoint.orElse(null)`.
+         */
+        fun fineTunedModelCheckpoint(fineTunedModelCheckpoint: Optional<String>) =
+            fineTunedModelCheckpoint(fineTunedModelCheckpoint.getOrNull())
 
         /** Identifier for the last permission ID from the previous pagination request. */
         fun after(after: String?) = apply { this.after = after }
@@ -223,17 +224,10 @@ private constructor(
          * Returns an immutable instance of [PermissionRetrieveParams].
          *
          * Further updates to this [Builder] will not mutate the returned instance.
-         *
-         * The following fields are required:
-         * ```java
-         * .fineTunedModelCheckpoint()
-         * ```
-         *
-         * @throws IllegalStateException if any required field is unset.
          */
         fun build(): PermissionRetrieveParams =
             PermissionRetrieveParams(
-                checkRequired("fineTunedModelCheckpoint", fineTunedModelCheckpoint),
+                fineTunedModelCheckpoint,
                 after,
                 limit,
                 order,
@@ -245,7 +239,7 @@ private constructor(
 
     fun _pathParam(index: Int): String =
         when (index) {
-            0 -> fineTunedModelCheckpoint
+            0 -> fineTunedModelCheckpoint ?: ""
             else -> ""
         }
 

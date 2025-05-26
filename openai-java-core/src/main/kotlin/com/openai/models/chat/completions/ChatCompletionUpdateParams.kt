@@ -28,13 +28,13 @@ import kotlin.jvm.optionals.getOrNull
  */
 class ChatCompletionUpdateParams
 private constructor(
-    private val completionId: String,
+    private val completionId: String?,
     private val body: Body,
     private val additionalHeaders: Headers,
     private val additionalQueryParams: QueryParams,
 ) : Params {
 
-    fun completionId(): String = completionId
+    fun completionId(): Optional<String> = Optional.ofNullable(completionId)
 
     /**
      * Set of 16 key-value pairs that can be attached to an object. This can be useful for storing
@@ -71,7 +71,6 @@ private constructor(
          *
          * The following fields are required:
          * ```java
-         * .completionId()
          * .metadata()
          * ```
          */
@@ -94,7 +93,10 @@ private constructor(
             additionalQueryParams = chatCompletionUpdateParams.additionalQueryParams.toBuilder()
         }
 
-        fun completionId(completionId: String) = apply { this.completionId = completionId }
+        fun completionId(completionId: String?) = apply { this.completionId = completionId }
+
+        /** Alias for calling [Builder.completionId] with `completionId.orElse(null)`. */
+        fun completionId(completionId: Optional<String>) = completionId(completionId.getOrNull())
 
         /**
          * Sets the entire request body.
@@ -251,7 +253,6 @@ private constructor(
          *
          * The following fields are required:
          * ```java
-         * .completionId()
          * .metadata()
          * ```
          *
@@ -259,7 +260,7 @@ private constructor(
          */
         fun build(): ChatCompletionUpdateParams =
             ChatCompletionUpdateParams(
-                checkRequired("completionId", completionId),
+                completionId,
                 body.build(),
                 additionalHeaders.build(),
                 additionalQueryParams.build(),
@@ -270,7 +271,7 @@ private constructor(
 
     fun _pathParam(index: Int): String =
         when (index) {
-            0 -> completionId
+            0 -> completionId ?: ""
             else -> ""
         }
 

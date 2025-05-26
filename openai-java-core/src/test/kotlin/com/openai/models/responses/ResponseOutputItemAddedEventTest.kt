@@ -31,6 +31,7 @@ internal class ResponseOutputItemAddedEventTest {
                         .build()
                 )
                 .outputIndex(0L)
+                .sequenceNumber(0L)
                 .build()
 
         assertThat(responseOutputItemAddedEvent.item())
@@ -54,6 +55,7 @@ internal class ResponseOutputItemAddedEventTest {
                 )
             )
         assertThat(responseOutputItemAddedEvent.outputIndex()).isEqualTo(0L)
+        assertThat(responseOutputItemAddedEvent.sequenceNumber()).isEqualTo(0L)
     }
 
     @Test
@@ -79,6 +81,7 @@ internal class ResponseOutputItemAddedEventTest {
                         .build()
                 )
                 .outputIndex(0L)
+                .sequenceNumber(0L)
                 .build()
 
         val roundtrippedResponseOutputItemAddedEvent =

@@ -10,12 +10,13 @@ import com.openai.core.http.QueryParams
 import com.openai.core.toImmutable
 import java.util.Objects
 import java.util.Optional
+import kotlin.jvm.optionals.getOrNull
 
 /** Cancel an ongoing evaluation run. */
 class RunCancelParams
 private constructor(
     private val evalId: String,
-    private val runId: String,
+    private val runId: String?,
     private val additionalHeaders: Headers,
     private val additionalQueryParams: QueryParams,
     private val additionalBodyProperties: Map<String, JsonValue>,
@@ -23,7 +24,7 @@ private constructor(
 
     fun evalId(): String = evalId
 
-    fun runId(): String = runId
+    fun runId(): Optional<String> = Optional.ofNullable(runId)
 
     fun _additionalBodyProperties(): Map<String, JsonValue> = additionalBodyProperties
 
@@ -41,7 +42,6 @@ private constructor(
          * The following fields are required:
          * ```java
          * .evalId()
-         * .runId()
          * ```
          */
         @JvmStatic fun builder() = Builder()
@@ -67,7 +67,10 @@ private constructor(
 
         fun evalId(evalId: String) = apply { this.evalId = evalId }
 
-        fun runId(runId: String) = apply { this.runId = runId }
+        fun runId(runId: String?) = apply { this.runId = runId }
+
+        /** Alias for calling [Builder.runId] with `runId.orElse(null)`. */
+        fun runId(runId: Optional<String>) = runId(runId.getOrNull())
 
         fun additionalHeaders(additionalHeaders: Headers) = apply {
             this.additionalHeaders.clear()
@@ -197,7 +200,6 @@ private constructor(
          * The following fields are required:
          * ```java
          * .evalId()
-         * .runId()
          * ```
          *
          * @throws IllegalStateException if any required field is unset.
@@ -205,7 +207,7 @@ private constructor(
         fun build(): RunCancelParams =
             RunCancelParams(
                 checkRequired("evalId", evalId),
-                checkRequired("runId", runId),
+                runId,
                 additionalHeaders.build(),
                 additionalQueryParams.build(),
                 additionalBodyProperties.toImmutable(),
@@ -218,7 +220,7 @@ private constructor(
     fun _pathParam(index: Int): String =
         when (index) {
             0 -> evalId
-            1 -> runId
+            1 -> runId ?: ""
             else -> ""
         }
 

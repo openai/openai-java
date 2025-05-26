@@ -11,7 +11,6 @@ import com.openai.core.JsonField
 import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
 import com.openai.core.Params
-import com.openai.core.checkRequired
 import com.openai.core.http.Headers
 import com.openai.core.http.QueryParams
 import com.openai.core.toImmutable
@@ -24,13 +23,13 @@ import kotlin.jvm.optionals.getOrNull
 /** Update certain properties of an evaluation. */
 class EvalUpdateParams
 private constructor(
-    private val evalId: String,
+    private val evalId: String?,
     private val body: Body,
     private val additionalHeaders: Headers,
     private val additionalQueryParams: QueryParams,
 ) : Params {
 
-    fun evalId(): String = evalId
+    fun evalId(): Optional<String> = Optional.ofNullable(evalId)
 
     /**
      * Set of 16 key-value pairs that can be attached to an object. This can be useful for storing
@@ -77,14 +76,9 @@ private constructor(
 
     companion object {
 
-        /**
-         * Returns a mutable builder for constructing an instance of [EvalUpdateParams].
-         *
-         * The following fields are required:
-         * ```java
-         * .evalId()
-         * ```
-         */
+        @JvmStatic fun none(): EvalUpdateParams = builder().build()
+
+        /** Returns a mutable builder for constructing an instance of [EvalUpdateParams]. */
         @JvmStatic fun builder() = Builder()
     }
 
@@ -104,7 +98,10 @@ private constructor(
             additionalQueryParams = evalUpdateParams.additionalQueryParams.toBuilder()
         }
 
-        fun evalId(evalId: String) = apply { this.evalId = evalId }
+        fun evalId(evalId: String?) = apply { this.evalId = evalId }
+
+        /** Alias for calling [Builder.evalId] with `evalId.orElse(null)`. */
+        fun evalId(evalId: Optional<String>) = evalId(evalId.getOrNull())
 
         /**
          * Sets the entire request body.
@@ -270,17 +267,10 @@ private constructor(
          * Returns an immutable instance of [EvalUpdateParams].
          *
          * Further updates to this [Builder] will not mutate the returned instance.
-         *
-         * The following fields are required:
-         * ```java
-         * .evalId()
-         * ```
-         *
-         * @throws IllegalStateException if any required field is unset.
          */
         fun build(): EvalUpdateParams =
             EvalUpdateParams(
-                checkRequired("evalId", evalId),
+                evalId,
                 body.build(),
                 additionalHeaders.build(),
                 additionalQueryParams.build(),
@@ -291,7 +281,7 @@ private constructor(
 
     fun _pathParam(index: Int): String =
         when (index) {
-            0 -> evalId
+            0 -> evalId ?: ""
             else -> ""
         }
 

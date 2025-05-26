@@ -2,22 +2,24 @@
 
 package com.openai.models.files
 
+import com.openai.core.AutoPagerAsync
+import com.openai.core.PageAsync
 import com.openai.core.checkRequired
 import com.openai.services.async.FileServiceAsync
 import java.util.Objects
 import java.util.Optional
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.Executor
-import java.util.function.Predicate
 import kotlin.jvm.optionals.getOrNull
 
 /** @see [FileServiceAsync.list] */
 class FileListPageAsync
 private constructor(
     private val service: FileServiceAsync,
+    private val streamHandlerExecutor: Executor,
     private val params: FileListParams,
     private val response: FileListPageResponse,
-) {
+) : PageAsync<FileObject> {
 
     /**
      * Delegates to [FileListPageResponse], but gracefully handles missing data.
@@ -33,22 +35,16 @@ private constructor(
      */
     fun hasMore(): Optional<Boolean> = response._hasMore().getOptional("has_more")
 
-    fun hasNextPage(): Boolean = data().isNotEmpty()
+    override fun items(): List<FileObject> = data()
 
-    fun getNextPageParams(): Optional<FileListParams> {
-        if (!hasNextPage()) {
-            return Optional.empty()
-        }
+    override fun hasNextPage(): Boolean = items().isNotEmpty()
 
-        return Optional.of(params.toBuilder().after(data().last()._id().getOptional("id")).build())
-    }
+    fun nextPageParams(): FileListParams =
+        params.toBuilder().after(items().last()._id().getOptional("id")).build()
 
-    fun getNextPage(): CompletableFuture<Optional<FileListPageAsync>> =
-        getNextPageParams()
-            .map { service.list(it).thenApply { Optional.of(it) } }
-            .orElseGet { CompletableFuture.completedFuture(Optional.empty()) }
+    override fun nextPage(): CompletableFuture<FileListPageAsync> = service.list(nextPageParams())
 
-    fun autoPager(): AutoPager = AutoPager(this)
+    fun autoPager(): AutoPagerAsync<FileObject> = AutoPagerAsync.from(this, streamHandlerExecutor)
 
     /** The parameters that were used to request this page. */
     fun params(): FileListParams = params
@@ -66,6 +62,7 @@ private constructor(
          * The following fields are required:
          * ```java
          * .service()
+         * .streamHandlerExecutor()
          * .params()
          * .response()
          * ```
@@ -77,17 +74,23 @@ private constructor(
     class Builder internal constructor() {
 
         private var service: FileServiceAsync? = null
+        private var streamHandlerExecutor: Executor? = null
         private var params: FileListParams? = null
         private var response: FileListPageResponse? = null
 
         @JvmSynthetic
         internal fun from(fileListPageAsync: FileListPageAsync) = apply {
             service = fileListPageAsync.service
+            streamHandlerExecutor = fileListPageAsync.streamHandlerExecutor
             params = fileListPageAsync.params
             response = fileListPageAsync.response
         }
 
         fun service(service: FileServiceAsync) = apply { this.service = service }
+
+        fun streamHandlerExecutor(streamHandlerExecutor: Executor) = apply {
+            this.streamHandlerExecutor = streamHandlerExecutor
+        }
 
         /** The parameters that were used to request this page. */
         fun params(params: FileListParams) = apply { this.params = params }
@@ -103,6 +106,7 @@ private constructor(
          * The following fields are required:
          * ```java
          * .service()
+         * .streamHandlerExecutor()
          * .params()
          * .response()
          * ```
@@ -112,35 +116,10 @@ private constructor(
         fun build(): FileListPageAsync =
             FileListPageAsync(
                 checkRequired("service", service),
+                checkRequired("streamHandlerExecutor", streamHandlerExecutor),
                 checkRequired("params", params),
                 checkRequired("response", response),
             )
-    }
-
-    class AutoPager(private val firstPage: FileListPageAsync) {
-
-        fun forEach(action: Predicate<FileObject>, executor: Executor): CompletableFuture<Void> {
-            fun CompletableFuture<Optional<FileListPageAsync>>.forEach(
-                action: (FileObject) -> Boolean,
-                executor: Executor,
-            ): CompletableFuture<Void> =
-                thenComposeAsync(
-                    { page ->
-                        page
-                            .filter { it.data().all(action) }
-                            .map { it.getNextPage().forEach(action, executor) }
-                            .orElseGet { CompletableFuture.completedFuture(null) }
-                    },
-                    executor,
-                )
-            return CompletableFuture.completedFuture(Optional.of(firstPage))
-                .forEach(action::test, executor)
-        }
-
-        fun toList(executor: Executor): CompletableFuture<List<FileObject>> {
-            val values = mutableListOf<FileObject>()
-            return forEach(values::add, executor).thenApply { values }
-        }
     }
 
     override fun equals(other: Any?): Boolean {
@@ -148,11 +127,11 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is FileListPageAsync && service == other.service && params == other.params && response == other.response /* spotless:on */
+        return /* spotless:off */ other is FileListPageAsync && service == other.service && streamHandlerExecutor == other.streamHandlerExecutor && params == other.params && response == other.response /* spotless:on */
     }
 
-    override fun hashCode(): Int = /* spotless:off */ Objects.hash(service, params, response) /* spotless:on */
+    override fun hashCode(): Int = /* spotless:off */ Objects.hash(service, streamHandlerExecutor, params, response) /* spotless:on */
 
     override fun toString() =
-        "FileListPageAsync{service=$service, params=$params, response=$response}"
+        "FileListPageAsync{service=$service, streamHandlerExecutor=$streamHandlerExecutor, params=$params, response=$response}"
 }

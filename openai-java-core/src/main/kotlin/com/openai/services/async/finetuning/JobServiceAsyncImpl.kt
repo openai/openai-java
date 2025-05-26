@@ -4,6 +4,7 @@ package com.openai.services.async.finetuning
 
 import com.openai.core.ClientOptions
 import com.openai.core.RequestOptions
+import com.openai.core.checkRequired
 import com.openai.core.handlers.errorHandler
 import com.openai.core.handlers.jsonHandler
 import com.openai.core.handlers.withErrorHandler
@@ -24,10 +25,13 @@ import com.openai.models.finetuning.jobs.JobListEventsParams
 import com.openai.models.finetuning.jobs.JobListPageAsync
 import com.openai.models.finetuning.jobs.JobListPageResponse
 import com.openai.models.finetuning.jobs.JobListParams
+import com.openai.models.finetuning.jobs.JobPauseParams
+import com.openai.models.finetuning.jobs.JobResumeParams
 import com.openai.models.finetuning.jobs.JobRetrieveParams
 import com.openai.services.async.finetuning.jobs.CheckpointServiceAsync
 import com.openai.services.async.finetuning.jobs.CheckpointServiceAsyncImpl
 import java.util.concurrent.CompletableFuture
+import kotlin.jvm.optionals.getOrNull
 
 class JobServiceAsyncImpl internal constructor(private val clientOptions: ClientOptions) :
     JobServiceAsync {
@@ -79,6 +83,20 @@ class JobServiceAsyncImpl internal constructor(private val clientOptions: Client
         // get /fine_tuning/jobs/{fine_tuning_job_id}/events
         withRawResponse().listEvents(params, requestOptions).thenApply { it.parse() }
 
+    override fun pause(
+        params: JobPauseParams,
+        requestOptions: RequestOptions,
+    ): CompletableFuture<FineTuningJob> =
+        // post /fine_tuning/jobs/{fine_tuning_job_id}/pause
+        withRawResponse().pause(params, requestOptions).thenApply { it.parse() }
+
+    override fun resume(
+        params: JobResumeParams,
+        requestOptions: RequestOptions,
+    ): CompletableFuture<FineTuningJob> =
+        // post /fine_tuning/jobs/{fine_tuning_job_id}/resume
+        withRawResponse().resume(params, requestOptions).thenApply { it.parse() }
+
     class WithRawResponseImpl internal constructor(private val clientOptions: ClientOptions) :
         JobServiceAsync.WithRawResponse {
 
@@ -127,6 +145,9 @@ class JobServiceAsyncImpl internal constructor(private val clientOptions: Client
             params: JobRetrieveParams,
             requestOptions: RequestOptions,
         ): CompletableFuture<HttpResponseFor<FineTuningJob>> {
+            // We check here instead of in the params builder because this can be specified
+            // positionally or in the params class.
+            checkRequired("fineTuningJobId", params.fineTuningJobId().getOrNull())
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.GET)
@@ -178,6 +199,7 @@ class JobServiceAsyncImpl internal constructor(private val clientOptions: Client
                             .let {
                                 JobListPageAsync.builder()
                                     .service(JobServiceAsyncImpl(clientOptions))
+                                    .streamHandlerExecutor(clientOptions.streamHandlerExecutor)
                                     .params(params)
                                     .response(it)
                                     .build()
@@ -193,6 +215,9 @@ class JobServiceAsyncImpl internal constructor(private val clientOptions: Client
             params: JobCancelParams,
             requestOptions: RequestOptions,
         ): CompletableFuture<HttpResponseFor<FineTuningJob>> {
+            // We check here instead of in the params builder because this can be specified
+            // positionally or in the params class.
+            checkRequired("fineTuningJobId", params.fineTuningJobId().getOrNull())
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.POST)
@@ -224,6 +249,9 @@ class JobServiceAsyncImpl internal constructor(private val clientOptions: Client
             params: JobListEventsParams,
             requestOptions: RequestOptions,
         ): CompletableFuture<HttpResponseFor<JobListEventsPageAsync>> {
+            // We check here instead of in the params builder because this can be specified
+            // positionally or in the params class.
+            checkRequired("fineTuningJobId", params.fineTuningJobId().getOrNull())
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.GET)
@@ -245,9 +273,76 @@ class JobServiceAsyncImpl internal constructor(private val clientOptions: Client
                             .let {
                                 JobListEventsPageAsync.builder()
                                     .service(JobServiceAsyncImpl(clientOptions))
+                                    .streamHandlerExecutor(clientOptions.streamHandlerExecutor)
                                     .params(params)
                                     .response(it)
                                     .build()
+                            }
+                    }
+                }
+        }
+
+        private val pauseHandler: Handler<FineTuningJob> =
+            jsonHandler<FineTuningJob>(clientOptions.jsonMapper).withErrorHandler(errorHandler)
+
+        override fun pause(
+            params: JobPauseParams,
+            requestOptions: RequestOptions,
+        ): CompletableFuture<HttpResponseFor<FineTuningJob>> {
+            // We check here instead of in the params builder because this can be specified
+            // positionally or in the params class.
+            checkRequired("fineTuningJobId", params.fineTuningJobId().getOrNull())
+            val request =
+                HttpRequest.builder()
+                    .method(HttpMethod.POST)
+                    .addPathSegments("fine_tuning", "jobs", params._pathParam(0), "pause")
+                    .apply { params._body().ifPresent { body(json(clientOptions.jsonMapper, it)) } }
+                    .build()
+                    .prepareAsync(clientOptions, params, deploymentModel = null)
+            val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
+            return request
+                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
+                .thenApply { response ->
+                    response.parseable {
+                        response
+                            .use { pauseHandler.handle(it) }
+                            .also {
+                                if (requestOptions.responseValidation!!) {
+                                    it.validate()
+                                }
+                            }
+                    }
+                }
+        }
+
+        private val resumeHandler: Handler<FineTuningJob> =
+            jsonHandler<FineTuningJob>(clientOptions.jsonMapper).withErrorHandler(errorHandler)
+
+        override fun resume(
+            params: JobResumeParams,
+            requestOptions: RequestOptions,
+        ): CompletableFuture<HttpResponseFor<FineTuningJob>> {
+            // We check here instead of in the params builder because this can be specified
+            // positionally or in the params class.
+            checkRequired("fineTuningJobId", params.fineTuningJobId().getOrNull())
+            val request =
+                HttpRequest.builder()
+                    .method(HttpMethod.POST)
+                    .addPathSegments("fine_tuning", "jobs", params._pathParam(0), "resume")
+                    .apply { params._body().ifPresent { body(json(clientOptions.jsonMapper, it)) } }
+                    .build()
+                    .prepareAsync(clientOptions, params, deploymentModel = null)
+            val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
+            return request
+                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
+                .thenApply { response ->
+                    response.parseable {
+                        response
+                            .use { resumeHandler.handle(it) }
+                            .also {
+                                if (requestOptions.responseValidation!!) {
+                                    it.validate()
+                                }
                             }
                     }
                 }

@@ -12,17 +12,26 @@ internal class ResponseCodeInterpreterCallCodeDoneEventTest {
     @Test
     fun create() {
         val responseCodeInterpreterCallCodeDoneEvent =
-            ResponseCodeInterpreterCallCodeDoneEvent.builder().code("code").outputIndex(0L).build()
+            ResponseCodeInterpreterCallCodeDoneEvent.builder()
+                .code("code")
+                .outputIndex(0L)
+                .sequenceNumber(0L)
+                .build()
 
         assertThat(responseCodeInterpreterCallCodeDoneEvent.code()).isEqualTo("code")
         assertThat(responseCodeInterpreterCallCodeDoneEvent.outputIndex()).isEqualTo(0L)
+        assertThat(responseCodeInterpreterCallCodeDoneEvent.sequenceNumber()).isEqualTo(0L)
     }
 
     @Test
     fun roundtrip() {
         val jsonMapper = jsonMapper()
         val responseCodeInterpreterCallCodeDoneEvent =
-            ResponseCodeInterpreterCallCodeDoneEvent.builder().code("code").outputIndex(0L).build()
+            ResponseCodeInterpreterCallCodeDoneEvent.builder()
+                .code("code")
+                .outputIndex(0L)
+                .sequenceNumber(0L)
+                .build()
 
         val roundtrippedResponseCodeInterpreterCallCodeDoneEvent =
             jsonMapper.readValue(

@@ -12,18 +12,29 @@ internal class ResponseErrorEventTest {
     @Test
     fun create() {
         val responseErrorEvent =
-            ResponseErrorEvent.builder().code("code").message("message").param("param").build()
+            ResponseErrorEvent.builder()
+                .code("code")
+                .message("message")
+                .param("param")
+                .sequenceNumber(0L)
+                .build()
 
         assertThat(responseErrorEvent.code()).contains("code")
         assertThat(responseErrorEvent.message()).isEqualTo("message")
         assertThat(responseErrorEvent.param()).contains("param")
+        assertThat(responseErrorEvent.sequenceNumber()).isEqualTo(0L)
     }
 
     @Test
     fun roundtrip() {
         val jsonMapper = jsonMapper()
         val responseErrorEvent =
-            ResponseErrorEvent.builder().code("code").message("message").param("param").build()
+            ResponseErrorEvent.builder()
+                .code("code")
+                .message("message")
+                .param("param")
+                .sequenceNumber(0L)
+                .build()
 
         val roundtrippedResponseErrorEvent =
             jsonMapper.readValue(

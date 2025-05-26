@@ -18,7 +18,7 @@ import kotlin.jvm.optionals.getOrNull
 class FileBatchListFilesParams
 private constructor(
     private val vectorStoreId: String,
-    private val batchId: String,
+    private val batchId: String?,
     private val after: String?,
     private val before: String?,
     private val filter: Filter?,
@@ -30,7 +30,7 @@ private constructor(
 
     fun vectorStoreId(): String = vectorStoreId
 
-    fun batchId(): String = batchId
+    fun batchId(): Optional<String> = Optional.ofNullable(batchId)
 
     /**
      * A cursor for use in pagination. `after` is an object ID that defines your place in the list.
@@ -75,7 +75,6 @@ private constructor(
          * The following fields are required:
          * ```java
          * .vectorStoreId()
-         * .batchId()
          * ```
          */
         @JvmStatic fun builder() = Builder()
@@ -109,7 +108,10 @@ private constructor(
 
         fun vectorStoreId(vectorStoreId: String) = apply { this.vectorStoreId = vectorStoreId }
 
-        fun batchId(batchId: String) = apply { this.batchId = batchId }
+        fun batchId(batchId: String?) = apply { this.batchId = batchId }
+
+        /** Alias for calling [Builder.batchId] with `batchId.orElse(null)`. */
+        fun batchId(batchId: Optional<String>) = batchId(batchId.getOrNull())
 
         /**
          * A cursor for use in pagination. `after` is an object ID that defines your place in the
@@ -270,7 +272,6 @@ private constructor(
          * The following fields are required:
          * ```java
          * .vectorStoreId()
-         * .batchId()
          * ```
          *
          * @throws IllegalStateException if any required field is unset.
@@ -278,7 +279,7 @@ private constructor(
         fun build(): FileBatchListFilesParams =
             FileBatchListFilesParams(
                 checkRequired("vectorStoreId", vectorStoreId),
-                checkRequired("batchId", batchId),
+                batchId,
                 after,
                 before,
                 filter,
@@ -292,7 +293,7 @@ private constructor(
     fun _pathParam(index: Int): String =
         when (index) {
             0 -> vectorStoreId
-            1 -> batchId
+            1 -> batchId ?: ""
             else -> ""
         }
 

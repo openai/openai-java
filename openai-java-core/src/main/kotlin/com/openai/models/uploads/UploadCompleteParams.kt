@@ -36,13 +36,13 @@ import kotlin.jvm.optionals.getOrNull
  */
 class UploadCompleteParams
 private constructor(
-    private val uploadId: String,
+    private val uploadId: String?,
     private val body: Body,
     private val additionalHeaders: Headers,
     private val additionalQueryParams: QueryParams,
 ) : Params {
 
-    fun uploadId(): String = uploadId
+    fun uploadId(): Optional<String> = Optional.ofNullable(uploadId)
 
     /**
      * The ordered list of Part IDs.
@@ -90,7 +90,6 @@ private constructor(
          *
          * The following fields are required:
          * ```java
-         * .uploadId()
          * .partIds()
          * ```
          */
@@ -113,7 +112,10 @@ private constructor(
             additionalQueryParams = uploadCompleteParams.additionalQueryParams.toBuilder()
         }
 
-        fun uploadId(uploadId: String) = apply { this.uploadId = uploadId }
+        fun uploadId(uploadId: String?) = apply { this.uploadId = uploadId }
+
+        /** Alias for calling [Builder.uploadId] with `uploadId.orElse(null)`. */
+        fun uploadId(uploadId: Optional<String>) = uploadId(uploadId.getOrNull())
 
         /**
          * Sets the entire request body.
@@ -282,7 +284,6 @@ private constructor(
          *
          * The following fields are required:
          * ```java
-         * .uploadId()
          * .partIds()
          * ```
          *
@@ -290,7 +291,7 @@ private constructor(
          */
         fun build(): UploadCompleteParams =
             UploadCompleteParams(
-                checkRequired("uploadId", uploadId),
+                uploadId,
                 body.build(),
                 additionalHeaders.build(),
                 additionalQueryParams.build(),
@@ -301,7 +302,7 @@ private constructor(
 
     fun _pathParam(index: Int): String =
         when (index) {
-            0 -> uploadId
+            0 -> uploadId ?: ""
             else -> ""
         }
 

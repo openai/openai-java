@@ -86,6 +86,8 @@ class ChatModel @JsonCreator private constructor(private val value: JsonField<St
 
         @JvmField val CHATGPT_4O_LATEST = of("chatgpt-4o-latest")
 
+        @JvmField val CODEX_MINI_LATEST = of("codex-mini-latest")
+
         @JvmField val GPT_4O_MINI = of("gpt-4o-mini")
 
         @JvmField val GPT_4O_MINI_2024_07_18 = of("gpt-4o-mini-2024-07-18")
@@ -165,6 +167,7 @@ class ChatModel @JsonCreator private constructor(private val value: JsonField<St
         GPT_4O_SEARCH_PREVIEW_2025_03_11,
         GPT_4O_MINI_SEARCH_PREVIEW_2025_03_11,
         CHATGPT_4O_LATEST,
+        CODEX_MINI_LATEST,
         GPT_4O_MINI,
         GPT_4O_MINI_2024_07_18,
         GPT_4_TURBO,
@@ -230,6 +233,7 @@ class ChatModel @JsonCreator private constructor(private val value: JsonField<St
         GPT_4O_SEARCH_PREVIEW_2025_03_11,
         GPT_4O_MINI_SEARCH_PREVIEW_2025_03_11,
         CHATGPT_4O_LATEST,
+        CODEX_MINI_LATEST,
         GPT_4O_MINI,
         GPT_4O_MINI_2024_07_18,
         GPT_4_TURBO,
@@ -296,6 +300,7 @@ class ChatModel @JsonCreator private constructor(private val value: JsonField<St
             GPT_4O_SEARCH_PREVIEW_2025_03_11 -> Value.GPT_4O_SEARCH_PREVIEW_2025_03_11
             GPT_4O_MINI_SEARCH_PREVIEW_2025_03_11 -> Value.GPT_4O_MINI_SEARCH_PREVIEW_2025_03_11
             CHATGPT_4O_LATEST -> Value.CHATGPT_4O_LATEST
+            CODEX_MINI_LATEST -> Value.CODEX_MINI_LATEST
             GPT_4O_MINI -> Value.GPT_4O_MINI
             GPT_4O_MINI_2024_07_18 -> Value.GPT_4O_MINI_2024_07_18
             GPT_4_TURBO -> Value.GPT_4_TURBO
@@ -362,6 +367,7 @@ class ChatModel @JsonCreator private constructor(private val value: JsonField<St
             GPT_4O_SEARCH_PREVIEW_2025_03_11 -> Known.GPT_4O_SEARCH_PREVIEW_2025_03_11
             GPT_4O_MINI_SEARCH_PREVIEW_2025_03_11 -> Known.GPT_4O_MINI_SEARCH_PREVIEW_2025_03_11
             CHATGPT_4O_LATEST -> Known.CHATGPT_4O_LATEST
+            CODEX_MINI_LATEST -> Known.CODEX_MINI_LATEST
             GPT_4O_MINI -> Known.GPT_4O_MINI
             GPT_4O_MINI_2024_07_18 -> Known.GPT_4O_MINI_2024_07_18
             GPT_4_TURBO -> Known.GPT_4_TURBO

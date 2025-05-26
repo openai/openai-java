@@ -43,11 +43,11 @@ private constructor(
     /**
      * Input text to embed, encoded as a string or array of tokens. To embed multiple inputs in a
      * single request, pass an array of strings or array of token arrays. The input must not exceed
-     * the max input tokens for the model (8192 tokens for `text-embedding-ada-002`), cannot be an
-     * empty string, and any array must be 2048 dimensions or less.
+     * the max input tokens for the model (8192 tokens for all embedding models), cannot be an empty
+     * string, and any array must be 2048 dimensions or less.
      * [Example Python code](https://cookbook.openai.com/examples/how_to_count_tokens_with_tiktoken)
-     * for counting tokens. Some models may also impose a limit on total number of tokens summed
-     * across inputs.
+     * for counting tokens. In addition to the per-input token limit, all embedding models enforce a
+     * maximum of 300,000 tokens summed across all inputs in a single request.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
      *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
@@ -181,11 +181,11 @@ private constructor(
         /**
          * Input text to embed, encoded as a string or array of tokens. To embed multiple inputs in
          * a single request, pass an array of strings or array of token arrays. The input must not
-         * exceed the max input tokens for the model (8192 tokens for `text-embedding-ada-002`),
-         * cannot be an empty string, and any array must be 2048 dimensions or less.
+         * exceed the max input tokens for the model (8192 tokens for all embedding models), cannot
+         * be an empty string, and any array must be 2048 dimensions or less.
          * [Example Python code](https://cookbook.openai.com/examples/how_to_count_tokens_with_tiktoken)
-         * for counting tokens. Some models may also impose a limit on total number of tokens summed
-         * across inputs.
+         * for counting tokens. In addition to the per-input token limit, all embedding models
+         * enforce a maximum of 300,000 tokens summed across all inputs in a single request.
          */
         fun input(input: Input) = apply { body.input(input) }
 
@@ -460,11 +460,11 @@ private constructor(
         /**
          * Input text to embed, encoded as a string or array of tokens. To embed multiple inputs in
          * a single request, pass an array of strings or array of token arrays. The input must not
-         * exceed the max input tokens for the model (8192 tokens for `text-embedding-ada-002`),
-         * cannot be an empty string, and any array must be 2048 dimensions or less.
+         * exceed the max input tokens for the model (8192 tokens for all embedding models), cannot
+         * be an empty string, and any array must be 2048 dimensions or less.
          * [Example Python code](https://cookbook.openai.com/examples/how_to_count_tokens_with_tiktoken)
-         * for counting tokens. Some models may also impose a limit on total number of tokens summed
-         * across inputs.
+         * for counting tokens. In addition to the per-input token limit, all embedding models
+         * enforce a maximum of 300,000 tokens summed across all inputs in a single request.
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
          *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
@@ -598,12 +598,11 @@ private constructor(
             /**
              * Input text to embed, encoded as a string or array of tokens. To embed multiple inputs
              * in a single request, pass an array of strings or array of token arrays. The input
-             * must not exceed the max input tokens for the model (8192 tokens for
-             * `text-embedding-ada-002`), cannot be an empty string, and any array must be 2048
-             * dimensions or less.
+             * must not exceed the max input tokens for the model (8192 tokens for all embedding
+             * models), cannot be an empty string, and any array must be 2048 dimensions or less.
              * [Example Python code](https://cookbook.openai.com/examples/how_to_count_tokens_with_tiktoken)
-             * for counting tokens. Some models may also impose a limit on total number of tokens
-             * summed across inputs.
+             * for counting tokens. In addition to the per-input token limit, all embedding models
+             * enforce a maximum of 300,000 tokens summed across all inputs in a single request.
              */
             fun input(input: Input) = input(JsonField.of(input))
 
@@ -807,11 +806,11 @@ private constructor(
     /**
      * Input text to embed, encoded as a string or array of tokens. To embed multiple inputs in a
      * single request, pass an array of strings or array of token arrays. The input must not exceed
-     * the max input tokens for the model (8192 tokens for `text-embedding-ada-002`), cannot be an
-     * empty string, and any array must be 2048 dimensions or less.
+     * the max input tokens for the model (8192 tokens for all embedding models), cannot be an empty
+     * string, and any array must be 2048 dimensions or less.
      * [Example Python code](https://cookbook.openai.com/examples/how_to_count_tokens_with_tiktoken)
-     * for counting tokens. Some models may also impose a limit on total number of tokens summed
-     * across inputs.
+     * for counting tokens. In addition to the per-input token limit, all embedding models enforce a
+     * maximum of 300,000 tokens summed across all inputs in a single request.
      */
     @JsonDeserialize(using = Input.Deserializer::class)
     @JsonSerialize(using = Input.Serializer::class)

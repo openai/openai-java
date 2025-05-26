@@ -9,7 +9,6 @@ import com.openai.models.vectorstores.AutoFileChunkingStrategyParam
 import com.openai.models.vectorstores.files.FileContentParams
 import com.openai.models.vectorstores.files.FileCreateParams
 import com.openai.models.vectorstores.files.FileDeleteParams
-import com.openai.models.vectorstores.files.FileListParams
 import com.openai.models.vectorstores.files.FileRetrieveParams
 import com.openai.models.vectorstores.files.FileUpdateParams
 import org.junit.jupiter.api.Test
@@ -101,8 +100,7 @@ internal class FileServiceAsyncTest {
                 .build()
         val fileServiceAsync = client.vectorStores().files()
 
-        val pageFuture =
-            fileServiceAsync.list(FileListParams.builder().vectorStoreId("vector_store_id").build())
+        val pageFuture = fileServiceAsync.list("vector_store_id")
 
         val page = pageFuture.get()
         page.response().validate()

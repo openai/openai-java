@@ -16,6 +16,55 @@ import org.junit.jupiter.params.provider.EnumSource
 internal class ToolTest {
 
     @Test
+    fun ofFunction() {
+        val function =
+            FunctionTool.builder()
+                .name("name")
+                .parameters(
+                    FunctionTool.Parameters.builder()
+                        .putAdditionalProperty("foo", JsonValue.from("bar"))
+                        .build()
+                )
+                .strict(true)
+                .description("description")
+                .build()
+
+        val tool = Tool.ofFunction(function)
+
+        assertThat(tool.function()).contains(function)
+        assertThat(tool.fileSearch()).isEmpty
+        assertThat(tool.webSearch()).isEmpty
+        assertThat(tool.computerUsePreview()).isEmpty
+        assertThat(tool.mcp()).isEmpty
+        assertThat(tool.codeInterpreter()).isEmpty
+        assertThat(tool.imageGeneration()).isEmpty
+        assertThat(tool.localShell()).isEmpty
+    }
+
+    @Test
+    fun ofFunctionRoundtrip() {
+        val jsonMapper = jsonMapper()
+        val tool =
+            Tool.ofFunction(
+                FunctionTool.builder()
+                    .name("name")
+                    .parameters(
+                        FunctionTool.Parameters.builder()
+                            .putAdditionalProperty("foo", JsonValue.from("bar"))
+                            .build()
+                    )
+                    .strict(true)
+                    .description("description")
+                    .build()
+            )
+
+        val roundtrippedTool =
+            jsonMapper.readValue(jsonMapper.writeValueAsString(tool), jacksonTypeRef<Tool>())
+
+        assertThat(roundtrippedTool).isEqualTo(tool)
+    }
+
+    @Test
     fun ofFileSearch() {
         val fileSearch =
             FileSearchTool.builder()
@@ -38,10 +87,14 @@ internal class ToolTest {
 
         val tool = Tool.ofFileSearch(fileSearch)
 
-        assertThat(tool.fileSearch()).contains(fileSearch)
         assertThat(tool.function()).isEmpty
+        assertThat(tool.fileSearch()).contains(fileSearch)
         assertThat(tool.webSearch()).isEmpty
         assertThat(tool.computerUsePreview()).isEmpty
+        assertThat(tool.mcp()).isEmpty
+        assertThat(tool.codeInterpreter()).isEmpty
+        assertThat(tool.imageGeneration()).isEmpty
+        assertThat(tool.localShell()).isEmpty
     }
 
     @Test
@@ -75,51 +128,6 @@ internal class ToolTest {
     }
 
     @Test
-    fun ofFunction() {
-        val function =
-            FunctionTool.builder()
-                .name("name")
-                .parameters(
-                    FunctionTool.Parameters.builder()
-                        .putAdditionalProperty("foo", JsonValue.from("bar"))
-                        .build()
-                )
-                .strict(true)
-                .description("description")
-                .build()
-
-        val tool = Tool.ofFunction(function)
-
-        assertThat(tool.fileSearch()).isEmpty
-        assertThat(tool.function()).contains(function)
-        assertThat(tool.webSearch()).isEmpty
-        assertThat(tool.computerUsePreview()).isEmpty
-    }
-
-    @Test
-    fun ofFunctionRoundtrip() {
-        val jsonMapper = jsonMapper()
-        val tool =
-            Tool.ofFunction(
-                FunctionTool.builder()
-                    .name("name")
-                    .parameters(
-                        FunctionTool.Parameters.builder()
-                            .putAdditionalProperty("foo", JsonValue.from("bar"))
-                            .build()
-                    )
-                    .strict(true)
-                    .description("description")
-                    .build()
-            )
-
-        val roundtrippedTool =
-            jsonMapper.readValue(jsonMapper.writeValueAsString(tool), jacksonTypeRef<Tool>())
-
-        assertThat(roundtrippedTool).isEqualTo(tool)
-    }
-
-    @Test
     fun ofWebSearch() {
         val webSearch =
             WebSearchTool.builder()
@@ -137,10 +145,14 @@ internal class ToolTest {
 
         val tool = Tool.ofWebSearch(webSearch)
 
-        assertThat(tool.fileSearch()).isEmpty
         assertThat(tool.function()).isEmpty
+        assertThat(tool.fileSearch()).isEmpty
         assertThat(tool.webSearch()).contains(webSearch)
         assertThat(tool.computerUsePreview()).isEmpty
+        assertThat(tool.mcp()).isEmpty
+        assertThat(tool.codeInterpreter()).isEmpty
+        assertThat(tool.imageGeneration()).isEmpty
+        assertThat(tool.localShell()).isEmpty
     }
 
     @Test
@@ -179,10 +191,14 @@ internal class ToolTest {
 
         val tool = Tool.ofComputerUsePreview(computerUsePreview)
 
-        assertThat(tool.fileSearch()).isEmpty
         assertThat(tool.function()).isEmpty
+        assertThat(tool.fileSearch()).isEmpty
         assertThat(tool.webSearch()).isEmpty
         assertThat(tool.computerUsePreview()).contains(computerUsePreview)
+        assertThat(tool.mcp()).isEmpty
+        assertThat(tool.codeInterpreter()).isEmpty
+        assertThat(tool.imageGeneration()).isEmpty
+        assertThat(tool.localShell()).isEmpty
     }
 
     @Test
@@ -196,6 +212,197 @@ internal class ToolTest {
                     .environment(ComputerTool.Environment.WINDOWS)
                     .build()
             )
+
+        val roundtrippedTool =
+            jsonMapper.readValue(jsonMapper.writeValueAsString(tool), jacksonTypeRef<Tool>())
+
+        assertThat(roundtrippedTool).isEqualTo(tool)
+    }
+
+    @Test
+    fun ofMcp() {
+        val mcp =
+            Tool.Mcp.builder()
+                .serverLabel("server_label")
+                .serverUrl("server_url")
+                .allowedToolsOfMcp(listOf("string"))
+                .headers(
+                    Tool.Mcp.Headers.builder()
+                        .putAdditionalProperty("foo", JsonValue.from("string"))
+                        .build()
+                )
+                .requireApproval(
+                    Tool.Mcp.RequireApproval.McpToolApprovalFilter.builder()
+                        .always(
+                            Tool.Mcp.RequireApproval.McpToolApprovalFilter.Always.builder()
+                                .addToolName("string")
+                                .build()
+                        )
+                        .never(
+                            Tool.Mcp.RequireApproval.McpToolApprovalFilter.Never.builder()
+                                .addToolName("string")
+                                .build()
+                        )
+                        .build()
+                )
+                .build()
+
+        val tool = Tool.ofMcp(mcp)
+
+        assertThat(tool.function()).isEmpty
+        assertThat(tool.fileSearch()).isEmpty
+        assertThat(tool.webSearch()).isEmpty
+        assertThat(tool.computerUsePreview()).isEmpty
+        assertThat(tool.mcp()).contains(mcp)
+        assertThat(tool.codeInterpreter()).isEmpty
+        assertThat(tool.imageGeneration()).isEmpty
+        assertThat(tool.localShell()).isEmpty
+    }
+
+    @Test
+    fun ofMcpRoundtrip() {
+        val jsonMapper = jsonMapper()
+        val tool =
+            Tool.ofMcp(
+                Tool.Mcp.builder()
+                    .serverLabel("server_label")
+                    .serverUrl("server_url")
+                    .allowedToolsOfMcp(listOf("string"))
+                    .headers(
+                        Tool.Mcp.Headers.builder()
+                            .putAdditionalProperty("foo", JsonValue.from("string"))
+                            .build()
+                    )
+                    .requireApproval(
+                        Tool.Mcp.RequireApproval.McpToolApprovalFilter.builder()
+                            .always(
+                                Tool.Mcp.RequireApproval.McpToolApprovalFilter.Always.builder()
+                                    .addToolName("string")
+                                    .build()
+                            )
+                            .never(
+                                Tool.Mcp.RequireApproval.McpToolApprovalFilter.Never.builder()
+                                    .addToolName("string")
+                                    .build()
+                            )
+                            .build()
+                    )
+                    .build()
+            )
+
+        val roundtrippedTool =
+            jsonMapper.readValue(jsonMapper.writeValueAsString(tool), jacksonTypeRef<Tool>())
+
+        assertThat(roundtrippedTool).isEqualTo(tool)
+    }
+
+    @Test
+    fun ofCodeInterpreter() {
+        val codeInterpreter = Tool.CodeInterpreter.builder().container("string").build()
+
+        val tool = Tool.ofCodeInterpreter(codeInterpreter)
+
+        assertThat(tool.function()).isEmpty
+        assertThat(tool.fileSearch()).isEmpty
+        assertThat(tool.webSearch()).isEmpty
+        assertThat(tool.computerUsePreview()).isEmpty
+        assertThat(tool.mcp()).isEmpty
+        assertThat(tool.codeInterpreter()).contains(codeInterpreter)
+        assertThat(tool.imageGeneration()).isEmpty
+        assertThat(tool.localShell()).isEmpty
+    }
+
+    @Test
+    fun ofCodeInterpreterRoundtrip() {
+        val jsonMapper = jsonMapper()
+        val tool =
+            Tool.ofCodeInterpreter(Tool.CodeInterpreter.builder().container("string").build())
+
+        val roundtrippedTool =
+            jsonMapper.readValue(jsonMapper.writeValueAsString(tool), jacksonTypeRef<Tool>())
+
+        assertThat(roundtrippedTool).isEqualTo(tool)
+    }
+
+    @Test
+    fun ofImageGeneration() {
+        val imageGeneration =
+            Tool.ImageGeneration.builder()
+                .background(Tool.ImageGeneration.Background.TRANSPARENT)
+                .inputImageMask(
+                    Tool.ImageGeneration.InputImageMask.builder()
+                        .fileId("file_id")
+                        .imageUrl("image_url")
+                        .build()
+                )
+                .model(Tool.ImageGeneration.Model.GPT_IMAGE_1)
+                .moderation(Tool.ImageGeneration.Moderation.AUTO)
+                .outputCompression(0L)
+                .outputFormat(Tool.ImageGeneration.OutputFormat.PNG)
+                .partialImages(0L)
+                .quality(Tool.ImageGeneration.Quality.LOW)
+                .size(Tool.ImageGeneration.Size._1024X1024)
+                .build()
+
+        val tool = Tool.ofImageGeneration(imageGeneration)
+
+        assertThat(tool.function()).isEmpty
+        assertThat(tool.fileSearch()).isEmpty
+        assertThat(tool.webSearch()).isEmpty
+        assertThat(tool.computerUsePreview()).isEmpty
+        assertThat(tool.mcp()).isEmpty
+        assertThat(tool.codeInterpreter()).isEmpty
+        assertThat(tool.imageGeneration()).contains(imageGeneration)
+        assertThat(tool.localShell()).isEmpty
+    }
+
+    @Test
+    fun ofImageGenerationRoundtrip() {
+        val jsonMapper = jsonMapper()
+        val tool =
+            Tool.ofImageGeneration(
+                Tool.ImageGeneration.builder()
+                    .background(Tool.ImageGeneration.Background.TRANSPARENT)
+                    .inputImageMask(
+                        Tool.ImageGeneration.InputImageMask.builder()
+                            .fileId("file_id")
+                            .imageUrl("image_url")
+                            .build()
+                    )
+                    .model(Tool.ImageGeneration.Model.GPT_IMAGE_1)
+                    .moderation(Tool.ImageGeneration.Moderation.AUTO)
+                    .outputCompression(0L)
+                    .outputFormat(Tool.ImageGeneration.OutputFormat.PNG)
+                    .partialImages(0L)
+                    .quality(Tool.ImageGeneration.Quality.LOW)
+                    .size(Tool.ImageGeneration.Size._1024X1024)
+                    .build()
+            )
+
+        val roundtrippedTool =
+            jsonMapper.readValue(jsonMapper.writeValueAsString(tool), jacksonTypeRef<Tool>())
+
+        assertThat(roundtrippedTool).isEqualTo(tool)
+    }
+
+    @Test
+    fun ofLocalShell() {
+        val tool = Tool.ofLocalShell()
+
+        assertThat(tool.function()).isEmpty
+        assertThat(tool.fileSearch()).isEmpty
+        assertThat(tool.webSearch()).isEmpty
+        assertThat(tool.computerUsePreview()).isEmpty
+        assertThat(tool.mcp()).isEmpty
+        assertThat(tool.codeInterpreter()).isEmpty
+        assertThat(tool.imageGeneration()).isEmpty
+        assertThat(tool.localShell()).contains(JsonValue.from(mapOf("type" to "local_shell")))
+    }
+
+    @Test
+    fun ofLocalShellRoundtrip() {
+        val jsonMapper = jsonMapper()
+        val tool = Tool.ofLocalShell()
 
         val roundtrippedTool =
             jsonMapper.readValue(jsonMapper.writeValueAsString(tool), jacksonTypeRef<Tool>())
