@@ -1,5 +1,13 @@
 # Changelog
 
+## 2.2.1 (2025-05-27)
+
+Full Changelog: [v2.2.0...v2.2.1](https://github.com/openai/openai-java/compare/v2.2.0...v2.2.1)
+
+### Bug Fixes
+
+* **client:** don't throw on absent error message ([0d1e325](https://github.com/openai/openai-java/commit/0d1e325ee02af89f713db9cc7fb360676d942d6d))
+
 ## 2.2.0 (2025-05-23)
 
 Full Changelog: [v2.1.0...v2.2.0](https://github.com/openai/openai-java/compare/v2.1.0...v2.2.0)
