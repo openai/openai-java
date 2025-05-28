@@ -10,6 +10,7 @@ import com.openai.core.http.QueryParams
 import com.openai.core.toImmutable
 import java.util.Objects
 import java.util.Optional
+import kotlin.jvm.optionals.getOrNull
 
 /**
  * Delete a vector store file. This will remove the file from the vector store but the file itself
@@ -19,7 +20,7 @@ import java.util.Optional
 class FileDeleteParams
 private constructor(
     private val vectorStoreId: String,
-    private val fileId: String,
+    private val fileId: String?,
     private val additionalHeaders: Headers,
     private val additionalQueryParams: QueryParams,
     private val additionalBodyProperties: Map<String, JsonValue>,
@@ -27,7 +28,7 @@ private constructor(
 
     fun vectorStoreId(): String = vectorStoreId
 
-    fun fileId(): String = fileId
+    fun fileId(): Optional<String> = Optional.ofNullable(fileId)
 
     fun _additionalBodyProperties(): Map<String, JsonValue> = additionalBodyProperties
 
@@ -45,7 +46,6 @@ private constructor(
          * The following fields are required:
          * ```java
          * .vectorStoreId()
-         * .fileId()
          * ```
          */
         @JvmStatic fun builder() = Builder()
@@ -71,7 +71,10 @@ private constructor(
 
         fun vectorStoreId(vectorStoreId: String) = apply { this.vectorStoreId = vectorStoreId }
 
-        fun fileId(fileId: String) = apply { this.fileId = fileId }
+        fun fileId(fileId: String?) = apply { this.fileId = fileId }
+
+        /** Alias for calling [Builder.fileId] with `fileId.orElse(null)`. */
+        fun fileId(fileId: Optional<String>) = fileId(fileId.getOrNull())
 
         fun additionalHeaders(additionalHeaders: Headers) = apply {
             this.additionalHeaders.clear()
@@ -201,7 +204,6 @@ private constructor(
          * The following fields are required:
          * ```java
          * .vectorStoreId()
-         * .fileId()
          * ```
          *
          * @throws IllegalStateException if any required field is unset.
@@ -209,7 +211,7 @@ private constructor(
         fun build(): FileDeleteParams =
             FileDeleteParams(
                 checkRequired("vectorStoreId", vectorStoreId),
-                checkRequired("fileId", fileId),
+                fileId,
                 additionalHeaders.build(),
                 additionalQueryParams.build(),
                 additionalBodyProperties.toImmutable(),
@@ -222,7 +224,7 @@ private constructor(
     fun _pathParam(index: Int): String =
         when (index) {
             0 -> vectorStoreId
-            1 -> fileId
+            1 -> fileId ?: ""
             else -> ""
         }
 

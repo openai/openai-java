@@ -28,6 +28,18 @@ interface PartServiceAsync {
      * Parts when you
      * [complete the Upload](https://platform.openai.com/docs/api-reference/uploads/complete).
      */
+    fun create(uploadId: String, params: PartCreateParams): CompletableFuture<UploadPart> =
+        create(uploadId, params, RequestOptions.none())
+
+    /** @see [create] */
+    fun create(
+        uploadId: String,
+        params: PartCreateParams,
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): CompletableFuture<UploadPart> =
+        create(params.toBuilder().uploadId(uploadId).build(), requestOptions)
+
+    /** @see [create] */
     fun create(params: PartCreateParams): CompletableFuture<UploadPart> =
         create(params, RequestOptions.none())
 
@@ -44,6 +56,23 @@ interface PartServiceAsync {
          * Returns a raw HTTP response for `post /uploads/{upload_id}/parts`, but is otherwise the
          * same as [PartServiceAsync.create].
          */
+        @MustBeClosed
+        fun create(
+            uploadId: String,
+            params: PartCreateParams,
+        ): CompletableFuture<HttpResponseFor<UploadPart>> =
+            create(uploadId, params, RequestOptions.none())
+
+        /** @see [create] */
+        @MustBeClosed
+        fun create(
+            uploadId: String,
+            params: PartCreateParams,
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): CompletableFuture<HttpResponseFor<UploadPart>> =
+            create(params.toBuilder().uploadId(uploadId).build(), requestOptions)
+
+        /** @see [create] */
         @MustBeClosed
         fun create(params: PartCreateParams): CompletableFuture<HttpResponseFor<UploadPart>> =
             create(params, RequestOptions.none())

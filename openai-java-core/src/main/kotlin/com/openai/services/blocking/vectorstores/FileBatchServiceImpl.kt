@@ -4,6 +4,7 @@ package com.openai.services.blocking.vectorstores
 
 import com.openai.core.ClientOptions
 import com.openai.core.RequestOptions
+import com.openai.core.checkRequired
 import com.openai.core.handlers.errorHandler
 import com.openai.core.handlers.jsonHandler
 import com.openai.core.handlers.withErrorHandler
@@ -23,6 +24,7 @@ import com.openai.models.vectorstores.filebatches.FileBatchListFilesPageResponse
 import com.openai.models.vectorstores.filebatches.FileBatchListFilesParams
 import com.openai.models.vectorstores.filebatches.FileBatchRetrieveParams
 import com.openai.models.vectorstores.filebatches.VectorStoreFileBatch
+import kotlin.jvm.optionals.getOrNull
 
 class FileBatchServiceImpl internal constructor(private val clientOptions: ClientOptions) :
     FileBatchService {
@@ -79,6 +81,9 @@ class FileBatchServiceImpl internal constructor(private val clientOptions: Clien
             params: FileBatchCreateParams,
             requestOptions: RequestOptions,
         ): HttpResponseFor<VectorStoreFileBatch> {
+            // We check here instead of in the params builder because this can be specified
+            // positionally or in the params class.
+            checkRequired("vectorStoreId", params.vectorStoreId().getOrNull())
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.POST)
@@ -108,6 +113,9 @@ class FileBatchServiceImpl internal constructor(private val clientOptions: Clien
             params: FileBatchRetrieveParams,
             requestOptions: RequestOptions,
         ): HttpResponseFor<VectorStoreFileBatch> {
+            // We check here instead of in the params builder because this can be specified
+            // positionally or in the params class.
+            checkRequired("batchId", params.batchId().getOrNull())
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.GET)
@@ -141,6 +149,9 @@ class FileBatchServiceImpl internal constructor(private val clientOptions: Clien
             params: FileBatchCancelParams,
             requestOptions: RequestOptions,
         ): HttpResponseFor<VectorStoreFileBatch> {
+            // We check here instead of in the params builder because this can be specified
+            // positionally or in the params class.
+            checkRequired("batchId", params.batchId().getOrNull())
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.POST)
@@ -176,6 +187,9 @@ class FileBatchServiceImpl internal constructor(private val clientOptions: Clien
             params: FileBatchListFilesParams,
             requestOptions: RequestOptions,
         ): HttpResponseFor<FileBatchListFilesPage> {
+            // We check here instead of in the params builder because this can be specified
+            // positionally or in the params class.
+            checkRequired("batchId", params.batchId().getOrNull())
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.GET)

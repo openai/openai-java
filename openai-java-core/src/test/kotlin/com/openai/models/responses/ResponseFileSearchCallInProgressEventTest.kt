@@ -15,10 +15,12 @@ internal class ResponseFileSearchCallInProgressEventTest {
             ResponseFileSearchCallInProgressEvent.builder()
                 .itemId("item_id")
                 .outputIndex(0L)
+                .sequenceNumber(0L)
                 .build()
 
         assertThat(responseFileSearchCallInProgressEvent.itemId()).isEqualTo("item_id")
         assertThat(responseFileSearchCallInProgressEvent.outputIndex()).isEqualTo(0L)
+        assertThat(responseFileSearchCallInProgressEvent.sequenceNumber()).isEqualTo(0L)
     }
 
     @Test
@@ -28,6 +30,7 @@ internal class ResponseFileSearchCallInProgressEventTest {
             ResponseFileSearchCallInProgressEvent.builder()
                 .itemId("item_id")
                 .outputIndex(0L)
+                .sequenceNumber(0L)
                 .build()
 
         val roundtrippedResponseFileSearchCallInProgressEvent =

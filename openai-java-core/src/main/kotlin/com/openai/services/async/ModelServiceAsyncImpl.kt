@@ -4,6 +4,7 @@ package com.openai.services.async
 
 import com.openai.core.ClientOptions
 import com.openai.core.RequestOptions
+import com.openai.core.checkRequired
 import com.openai.core.handlers.errorHandler
 import com.openai.core.handlers.jsonHandler
 import com.openai.core.handlers.withErrorHandler
@@ -23,6 +24,7 @@ import com.openai.models.models.ModelListPageResponse
 import com.openai.models.models.ModelListParams
 import com.openai.models.models.ModelRetrieveParams
 import java.util.concurrent.CompletableFuture
+import kotlin.jvm.optionals.getOrNull
 
 class ModelServiceAsyncImpl internal constructor(private val clientOptions: ClientOptions) :
     ModelServiceAsync {
@@ -66,12 +68,15 @@ class ModelServiceAsyncImpl internal constructor(private val clientOptions: Clie
             params: ModelRetrieveParams,
             requestOptions: RequestOptions,
         ): CompletableFuture<HttpResponseFor<Model>> {
+            // We check here instead of in the params builder because this can be specified
+            // positionally or in the params class.
+            checkRequired("model", params.model().getOrNull())
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.GET)
                     .addPathSegments("models", params._pathParam(0))
                     .build()
-                    .prepareAsync(clientOptions, params, params.model())
+                    .prepareAsync(clientOptions, params, params.model().get())
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             return request
                 .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
@@ -117,6 +122,7 @@ class ModelServiceAsyncImpl internal constructor(private val clientOptions: Clie
                             .let {
                                 ModelListPageAsync.builder()
                                     .service(ModelServiceAsyncImpl(clientOptions))
+                                    .streamHandlerExecutor(clientOptions.streamHandlerExecutor)
                                     .params(params)
                                     .response(it)
                                     .build()
@@ -132,13 +138,16 @@ class ModelServiceAsyncImpl internal constructor(private val clientOptions: Clie
             params: ModelDeleteParams,
             requestOptions: RequestOptions,
         ): CompletableFuture<HttpResponseFor<ModelDeleted>> {
+            // We check here instead of in the params builder because this can be specified
+            // positionally or in the params class.
+            checkRequired("model", params.model().getOrNull())
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.DELETE)
                     .addPathSegments("models", params._pathParam(0))
                     .apply { params._body().ifPresent { body(json(clientOptions.jsonMapper, it)) } }
                     .build()
-                    .prepareAsync(clientOptions, params, params.model())
+                    .prepareAsync(clientOptions, params, params.model().get())
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             return request
                 .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }

@@ -16,11 +16,13 @@ internal class ResponseFunctionCallArgumentsDeltaEventTest {
                 .delta("delta")
                 .itemId("item_id")
                 .outputIndex(0L)
+                .sequenceNumber(0L)
                 .build()
 
         assertThat(responseFunctionCallArgumentsDeltaEvent.delta()).isEqualTo("delta")
         assertThat(responseFunctionCallArgumentsDeltaEvent.itemId()).isEqualTo("item_id")
         assertThat(responseFunctionCallArgumentsDeltaEvent.outputIndex()).isEqualTo(0L)
+        assertThat(responseFunctionCallArgumentsDeltaEvent.sequenceNumber()).isEqualTo(0L)
     }
 
     @Test
@@ -31,6 +33,7 @@ internal class ResponseFunctionCallArgumentsDeltaEventTest {
                 .delta("delta")
                 .itemId("item_id")
                 .outputIndex(0L)
+                .sequenceNumber(0L)
                 .build()
 
         val roundtrippedResponseFunctionCallArgumentsDeltaEvent =

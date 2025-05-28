@@ -27,6 +27,17 @@ interface PartService {
      * Parts when you
      * [complete the Upload](https://platform.openai.com/docs/api-reference/uploads/complete).
      */
+    fun create(uploadId: String, params: PartCreateParams): UploadPart =
+        create(uploadId, params, RequestOptions.none())
+
+    /** @see [create] */
+    fun create(
+        uploadId: String,
+        params: PartCreateParams,
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): UploadPart = create(params.toBuilder().uploadId(uploadId).build(), requestOptions)
+
+    /** @see [create] */
     fun create(params: PartCreateParams): UploadPart = create(params, RequestOptions.none())
 
     /** @see [create] */
@@ -42,6 +53,20 @@ interface PartService {
          * Returns a raw HTTP response for `post /uploads/{upload_id}/parts`, but is otherwise the
          * same as [PartService.create].
          */
+        @MustBeClosed
+        fun create(uploadId: String, params: PartCreateParams): HttpResponseFor<UploadPart> =
+            create(uploadId, params, RequestOptions.none())
+
+        /** @see [create] */
+        @MustBeClosed
+        fun create(
+            uploadId: String,
+            params: PartCreateParams,
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): HttpResponseFor<UploadPart> =
+            create(params.toBuilder().uploadId(uploadId).build(), requestOptions)
+
+        /** @see [create] */
         @MustBeClosed
         fun create(params: PartCreateParams): HttpResponseFor<UploadPart> =
             create(params, RequestOptions.none())

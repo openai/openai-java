@@ -7,10 +7,12 @@ import com.openai.services.blocking.BatchService
 import com.openai.services.blocking.BetaService
 import com.openai.services.blocking.ChatService
 import com.openai.services.blocking.CompletionService
+import com.openai.services.blocking.ContainerService
 import com.openai.services.blocking.EmbeddingService
 import com.openai.services.blocking.EvalService
 import com.openai.services.blocking.FileService
 import com.openai.services.blocking.FineTuningService
+import com.openai.services.blocking.GraderService
 import com.openai.services.blocking.ImageService
 import com.openai.services.blocking.ModelService
 import com.openai.services.blocking.ModerationService
@@ -65,6 +67,8 @@ interface OpenAIClient {
 
     fun fineTuning(): FineTuningService
 
+    fun graders(): GraderService
+
     fun vectorStores(): VectorStoreService
 
     fun beta(): BetaService
@@ -76,6 +80,8 @@ interface OpenAIClient {
     fun responses(): ResponseService
 
     fun evals(): EvalService
+
+    fun containers(): ContainerService
 
     /**
      * Closes this client, relinquishing any underlying resources.
@@ -111,6 +117,8 @@ interface OpenAIClient {
 
         fun fineTuning(): FineTuningService.WithRawResponse
 
+        fun graders(): GraderService.WithRawResponse
+
         fun vectorStores(): VectorStoreService.WithRawResponse
 
         fun beta(): BetaService.WithRawResponse
@@ -122,5 +130,7 @@ interface OpenAIClient {
         fun responses(): ResponseService.WithRawResponse
 
         fun evals(): EvalService.WithRawResponse
+
+        fun containers(): ContainerService.WithRawResponse
     }
 }

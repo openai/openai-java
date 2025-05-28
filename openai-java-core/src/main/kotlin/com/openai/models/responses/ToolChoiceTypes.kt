@@ -40,6 +40,9 @@ private constructor(
      * - `file_search`
      * - `web_search_preview`
      * - `computer_use_preview`
+     * - `code_interpreter`
+     * - `mcp`
+     * - `image_generation`
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
      *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
@@ -98,6 +101,9 @@ private constructor(
          * - `file_search`
          * - `web_search_preview`
          * - `computer_use_preview`
+         * - `code_interpreter`
+         * - `mcp`
+         * - `image_generation`
          */
         fun type(type: Type) = type(JsonField.of(type))
 
@@ -178,6 +184,9 @@ private constructor(
      * - `file_search`
      * - `web_search_preview`
      * - `computer_use_preview`
+     * - `code_interpreter`
+     * - `mcp`
+     * - `image_generation`
      */
     class Type @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
 
@@ -201,6 +210,12 @@ private constructor(
 
             @JvmField val WEB_SEARCH_PREVIEW_2025_03_11 = of("web_search_preview_2025_03_11")
 
+            @JvmField val IMAGE_GENERATION = of("image_generation")
+
+            @JvmField val CODE_INTERPRETER = of("code_interpreter")
+
+            @JvmField val MCP = of("mcp")
+
             @JvmStatic fun of(value: String) = Type(JsonField.of(value))
         }
 
@@ -210,6 +225,9 @@ private constructor(
             WEB_SEARCH_PREVIEW,
             COMPUTER_USE_PREVIEW,
             WEB_SEARCH_PREVIEW_2025_03_11,
+            IMAGE_GENERATION,
+            CODE_INTERPRETER,
+            MCP,
         }
 
         /**
@@ -226,6 +244,9 @@ private constructor(
             WEB_SEARCH_PREVIEW,
             COMPUTER_USE_PREVIEW,
             WEB_SEARCH_PREVIEW_2025_03_11,
+            IMAGE_GENERATION,
+            CODE_INTERPRETER,
+            MCP,
             /** An enum member indicating that [Type] was instantiated with an unknown value. */
             _UNKNOWN,
         }
@@ -243,6 +264,9 @@ private constructor(
                 WEB_SEARCH_PREVIEW -> Value.WEB_SEARCH_PREVIEW
                 COMPUTER_USE_PREVIEW -> Value.COMPUTER_USE_PREVIEW
                 WEB_SEARCH_PREVIEW_2025_03_11 -> Value.WEB_SEARCH_PREVIEW_2025_03_11
+                IMAGE_GENERATION -> Value.IMAGE_GENERATION
+                CODE_INTERPRETER -> Value.CODE_INTERPRETER
+                MCP -> Value.MCP
                 else -> Value._UNKNOWN
             }
 
@@ -261,6 +285,9 @@ private constructor(
                 WEB_SEARCH_PREVIEW -> Known.WEB_SEARCH_PREVIEW
                 COMPUTER_USE_PREVIEW -> Known.COMPUTER_USE_PREVIEW
                 WEB_SEARCH_PREVIEW_2025_03_11 -> Known.WEB_SEARCH_PREVIEW_2025_03_11
+                IMAGE_GENERATION -> Known.IMAGE_GENERATION
+                CODE_INTERPRETER -> Known.CODE_INTERPRETER
+                MCP -> Known.MCP
                 else -> throw OpenAIInvalidDataException("Unknown Type: $value")
             }
 

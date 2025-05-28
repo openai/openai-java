@@ -10,11 +10,8 @@ import com.github.tomakehurst.wiremock.junit5.WireMockRuntimeInfo
 import com.github.tomakehurst.wiremock.junit5.WireMockTest
 import com.openai.TestServerExtension
 import com.openai.client.okhttp.OpenAIOkHttpClient
-import com.openai.models.files.FileContentParams
 import com.openai.models.files.FileCreateParams
-import com.openai.models.files.FileDeleteParams
 import com.openai.models.files.FilePurpose
-import com.openai.models.files.FileRetrieveParams
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
@@ -54,8 +51,7 @@ internal class FileServiceTest {
                 .build()
         val fileService = client.files()
 
-        val fileObject =
-            fileService.retrieve(FileRetrieveParams.builder().fileId("file_id").build())
+        val fileObject = fileService.retrieve("file_id")
 
         fileObject.validate()
     }
@@ -83,7 +79,7 @@ internal class FileServiceTest {
                 .build()
         val fileService = client.files()
 
-        val fileDeleted = fileService.delete(FileDeleteParams.builder().fileId("file_id").build())
+        val fileDeleted = fileService.delete("file_id")
 
         fileDeleted.validate()
     }
@@ -98,7 +94,7 @@ internal class FileServiceTest {
         val fileService = client.files()
         stubFor(get(anyUrl()).willReturn(ok().withBody("abc")))
 
-        val response = fileService.content(FileContentParams.builder().fileId("file_id").build())
+        val response = fileService.content("file_id")
 
         assertThat(response.body()).hasContent("abc")
     }

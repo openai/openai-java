@@ -2,23 +2,24 @@
 
 package com.openai.models.finetuning.checkpoints.permissions
 
+import com.openai.core.AutoPagerAsync
 import com.openai.core.JsonValue
+import com.openai.core.PageAsync
 import com.openai.core.checkRequired
 import com.openai.services.async.finetuning.checkpoints.PermissionServiceAsync
 import java.util.Objects
-import java.util.Optional
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.Executor
-import java.util.function.Predicate
 import kotlin.jvm.optionals.getOrNull
 
 /** @see [PermissionServiceAsync.create] */
 class PermissionCreatePageAsync
 private constructor(
     private val service: PermissionServiceAsync,
+    private val streamHandlerExecutor: Executor,
     private val params: PermissionCreateParams,
     private val response: PermissionCreatePageResponse,
-) {
+) : PageAsync<PermissionCreateResponse> {
 
     /**
      * Delegates to [PermissionCreatePageResponse], but gracefully handles missing data.
@@ -31,16 +32,18 @@ private constructor(
     /** @see [PermissionCreatePageResponse.object_] */
     fun object_(): JsonValue = response._object_()
 
-    fun hasNextPage(): Boolean = data().isNotEmpty()
+    override fun items(): List<PermissionCreateResponse> = data()
 
-    fun getNextPageParams(): Optional<PermissionCreateParams> = Optional.empty()
+    override fun hasNextPage(): Boolean = items().isNotEmpty()
 
-    fun getNextPage(): CompletableFuture<Optional<PermissionCreatePageAsync>> =
-        getNextPageParams()
-            .map { service.create(it).thenApply { Optional.of(it) } }
-            .orElseGet { CompletableFuture.completedFuture(Optional.empty()) }
+    fun nextPageParams(): PermissionCreateParams =
+        throw IllegalStateException("Cannot construct next page params")
 
-    fun autoPager(): AutoPager = AutoPager(this)
+    override fun nextPage(): CompletableFuture<PermissionCreatePageAsync> =
+        service.create(nextPageParams())
+
+    fun autoPager(): AutoPagerAsync<PermissionCreateResponse> =
+        AutoPagerAsync.from(this, streamHandlerExecutor)
 
     /** The parameters that were used to request this page. */
     fun params(): PermissionCreateParams = params
@@ -58,6 +61,7 @@ private constructor(
          * The following fields are required:
          * ```java
          * .service()
+         * .streamHandlerExecutor()
          * .params()
          * .response()
          * ```
@@ -69,17 +73,23 @@ private constructor(
     class Builder internal constructor() {
 
         private var service: PermissionServiceAsync? = null
+        private var streamHandlerExecutor: Executor? = null
         private var params: PermissionCreateParams? = null
         private var response: PermissionCreatePageResponse? = null
 
         @JvmSynthetic
         internal fun from(permissionCreatePageAsync: PermissionCreatePageAsync) = apply {
             service = permissionCreatePageAsync.service
+            streamHandlerExecutor = permissionCreatePageAsync.streamHandlerExecutor
             params = permissionCreatePageAsync.params
             response = permissionCreatePageAsync.response
         }
 
         fun service(service: PermissionServiceAsync) = apply { this.service = service }
+
+        fun streamHandlerExecutor(streamHandlerExecutor: Executor) = apply {
+            this.streamHandlerExecutor = streamHandlerExecutor
+        }
 
         /** The parameters that were used to request this page. */
         fun params(params: PermissionCreateParams) = apply { this.params = params }
@@ -95,6 +105,7 @@ private constructor(
          * The following fields are required:
          * ```java
          * .service()
+         * .streamHandlerExecutor()
          * .params()
          * .response()
          * ```
@@ -104,38 +115,10 @@ private constructor(
         fun build(): PermissionCreatePageAsync =
             PermissionCreatePageAsync(
                 checkRequired("service", service),
+                checkRequired("streamHandlerExecutor", streamHandlerExecutor),
                 checkRequired("params", params),
                 checkRequired("response", response),
             )
-    }
-
-    class AutoPager(private val firstPage: PermissionCreatePageAsync) {
-
-        fun forEach(
-            action: Predicate<PermissionCreateResponse>,
-            executor: Executor,
-        ): CompletableFuture<Void> {
-            fun CompletableFuture<Optional<PermissionCreatePageAsync>>.forEach(
-                action: (PermissionCreateResponse) -> Boolean,
-                executor: Executor,
-            ): CompletableFuture<Void> =
-                thenComposeAsync(
-                    { page ->
-                        page
-                            .filter { it.data().all(action) }
-                            .map { it.getNextPage().forEach(action, executor) }
-                            .orElseGet { CompletableFuture.completedFuture(null) }
-                    },
-                    executor,
-                )
-            return CompletableFuture.completedFuture(Optional.of(firstPage))
-                .forEach(action::test, executor)
-        }
-
-        fun toList(executor: Executor): CompletableFuture<List<PermissionCreateResponse>> {
-            val values = mutableListOf<PermissionCreateResponse>()
-            return forEach(values::add, executor).thenApply { values }
-        }
     }
 
     override fun equals(other: Any?): Boolean {
@@ -143,11 +126,11 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is PermissionCreatePageAsync && service == other.service && params == other.params && response == other.response /* spotless:on */
+        return /* spotless:off */ other is PermissionCreatePageAsync && service == other.service && streamHandlerExecutor == other.streamHandlerExecutor && params == other.params && response == other.response /* spotless:on */
     }
 
-    override fun hashCode(): Int = /* spotless:off */ Objects.hash(service, params, response) /* spotless:on */
+    override fun hashCode(): Int = /* spotless:off */ Objects.hash(service, streamHandlerExecutor, params, response) /* spotless:on */
 
     override fun toString() =
-        "PermissionCreatePageAsync{service=$service, params=$params, response=$response}"
+        "PermissionCreatePageAsync{service=$service, streamHandlerExecutor=$streamHandlerExecutor, params=$params, response=$response}"
 }

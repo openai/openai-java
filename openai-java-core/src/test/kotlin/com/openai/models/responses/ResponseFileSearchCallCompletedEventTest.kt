@@ -12,17 +12,26 @@ internal class ResponseFileSearchCallCompletedEventTest {
     @Test
     fun create() {
         val responseFileSearchCallCompletedEvent =
-            ResponseFileSearchCallCompletedEvent.builder().itemId("item_id").outputIndex(0L).build()
+            ResponseFileSearchCallCompletedEvent.builder()
+                .itemId("item_id")
+                .outputIndex(0L)
+                .sequenceNumber(0L)
+                .build()
 
         assertThat(responseFileSearchCallCompletedEvent.itemId()).isEqualTo("item_id")
         assertThat(responseFileSearchCallCompletedEvent.outputIndex()).isEqualTo(0L)
+        assertThat(responseFileSearchCallCompletedEvent.sequenceNumber()).isEqualTo(0L)
     }
 
     @Test
     fun roundtrip() {
         val jsonMapper = jsonMapper()
         val responseFileSearchCallCompletedEvent =
-            ResponseFileSearchCallCompletedEvent.builder().itemId("item_id").outputIndex(0L).build()
+            ResponseFileSearchCallCompletedEvent.builder()
+                .itemId("item_id")
+                .outputIndex(0L)
+                .sequenceNumber(0L)
+                .build()
 
         val roundtrippedResponseFileSearchCallCompletedEvent =
             jsonMapper.readValue(

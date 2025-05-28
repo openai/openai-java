@@ -21,13 +21,13 @@ import kotlin.jvm.optionals.getOrNull
 class TranscriptionSegment
 private constructor(
     private val id: JsonField<Long>,
-    private val avgLogprob: JsonField<Double>,
-    private val compressionRatio: JsonField<Double>,
-    private val end: JsonField<Double>,
-    private val noSpeechProb: JsonField<Double>,
+    private val avgLogprob: JsonField<Float>,
+    private val compressionRatio: JsonField<Float>,
+    private val end: JsonField<Float>,
+    private val noSpeechProb: JsonField<Float>,
     private val seek: JsonField<Long>,
-    private val start: JsonField<Double>,
-    private val temperature: JsonField<Double>,
+    private val start: JsonField<Float>,
+    private val temperature: JsonField<Float>,
     private val text: JsonField<String>,
     private val tokens: JsonField<List<Long>>,
     private val additionalProperties: MutableMap<String, JsonValue>,
@@ -38,19 +38,19 @@ private constructor(
         @JsonProperty("id") @ExcludeMissing id: JsonField<Long> = JsonMissing.of(),
         @JsonProperty("avg_logprob")
         @ExcludeMissing
-        avgLogprob: JsonField<Double> = JsonMissing.of(),
+        avgLogprob: JsonField<Float> = JsonMissing.of(),
         @JsonProperty("compression_ratio")
         @ExcludeMissing
-        compressionRatio: JsonField<Double> = JsonMissing.of(),
-        @JsonProperty("end") @ExcludeMissing end: JsonField<Double> = JsonMissing.of(),
+        compressionRatio: JsonField<Float> = JsonMissing.of(),
+        @JsonProperty("end") @ExcludeMissing end: JsonField<Float> = JsonMissing.of(),
         @JsonProperty("no_speech_prob")
         @ExcludeMissing
-        noSpeechProb: JsonField<Double> = JsonMissing.of(),
+        noSpeechProb: JsonField<Float> = JsonMissing.of(),
         @JsonProperty("seek") @ExcludeMissing seek: JsonField<Long> = JsonMissing.of(),
-        @JsonProperty("start") @ExcludeMissing start: JsonField<Double> = JsonMissing.of(),
+        @JsonProperty("start") @ExcludeMissing start: JsonField<Float> = JsonMissing.of(),
         @JsonProperty("temperature")
         @ExcludeMissing
-        temperature: JsonField<Double> = JsonMissing.of(),
+        temperature: JsonField<Float> = JsonMissing.of(),
         @JsonProperty("text") @ExcludeMissing text: JsonField<String> = JsonMissing.of(),
         @JsonProperty("tokens") @ExcludeMissing tokens: JsonField<List<Long>> = JsonMissing.of(),
     ) : this(
@@ -81,7 +81,7 @@ private constructor(
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
      *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
      */
-    fun avgLogprob(): Double = avgLogprob.getRequired("avg_logprob")
+    fun avgLogprob(): Float = avgLogprob.getRequired("avg_logprob")
 
     /**
      * Compression ratio of the segment. If the value is greater than 2.4, consider the compression
@@ -90,7 +90,7 @@ private constructor(
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
      *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
      */
-    fun compressionRatio(): Double = compressionRatio.getRequired("compression_ratio")
+    fun compressionRatio(): Float = compressionRatio.getRequired("compression_ratio")
 
     /**
      * End time of the segment in seconds.
@@ -98,7 +98,7 @@ private constructor(
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
      *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
      */
-    fun end(): Double = end.getRequired("end")
+    fun end(): Float = end.getRequired("end")
 
     /**
      * Probability of no speech in the segment. If the value is higher than 1.0 and the
@@ -107,7 +107,7 @@ private constructor(
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
      *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
      */
-    fun noSpeechProb(): Double = noSpeechProb.getRequired("no_speech_prob")
+    fun noSpeechProb(): Float = noSpeechProb.getRequired("no_speech_prob")
 
     /**
      * Seek offset of the segment.
@@ -123,7 +123,7 @@ private constructor(
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
      *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
      */
-    fun start(): Double = start.getRequired("start")
+    fun start(): Float = start.getRequired("start")
 
     /**
      * Temperature parameter used for generating the segment.
@@ -131,7 +131,7 @@ private constructor(
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
      *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
      */
-    fun temperature(): Double = temperature.getRequired("temperature")
+    fun temperature(): Float = temperature.getRequired("temperature")
 
     /**
      * Text content of the segment.
@@ -161,7 +161,7 @@ private constructor(
      *
      * Unlike [avgLogprob], this method doesn't throw if the JSON field has an unexpected type.
      */
-    @JsonProperty("avg_logprob") @ExcludeMissing fun _avgLogprob(): JsonField<Double> = avgLogprob
+    @JsonProperty("avg_logprob") @ExcludeMissing fun _avgLogprob(): JsonField<Float> = avgLogprob
 
     /**
      * Returns the raw JSON value of [compressionRatio].
@@ -171,14 +171,14 @@ private constructor(
      */
     @JsonProperty("compression_ratio")
     @ExcludeMissing
-    fun _compressionRatio(): JsonField<Double> = compressionRatio
+    fun _compressionRatio(): JsonField<Float> = compressionRatio
 
     /**
      * Returns the raw JSON value of [end].
      *
      * Unlike [end], this method doesn't throw if the JSON field has an unexpected type.
      */
-    @JsonProperty("end") @ExcludeMissing fun _end(): JsonField<Double> = end
+    @JsonProperty("end") @ExcludeMissing fun _end(): JsonField<Float> = end
 
     /**
      * Returns the raw JSON value of [noSpeechProb].
@@ -187,7 +187,7 @@ private constructor(
      */
     @JsonProperty("no_speech_prob")
     @ExcludeMissing
-    fun _noSpeechProb(): JsonField<Double> = noSpeechProb
+    fun _noSpeechProb(): JsonField<Float> = noSpeechProb
 
     /**
      * Returns the raw JSON value of [seek].
@@ -201,14 +201,14 @@ private constructor(
      *
      * Unlike [start], this method doesn't throw if the JSON field has an unexpected type.
      */
-    @JsonProperty("start") @ExcludeMissing fun _start(): JsonField<Double> = start
+    @JsonProperty("start") @ExcludeMissing fun _start(): JsonField<Float> = start
 
     /**
      * Returns the raw JSON value of [temperature].
      *
      * Unlike [temperature], this method doesn't throw if the JSON field has an unexpected type.
      */
-    @JsonProperty("temperature") @ExcludeMissing fun _temperature(): JsonField<Double> = temperature
+    @JsonProperty("temperature") @ExcludeMissing fun _temperature(): JsonField<Float> = temperature
 
     /**
      * Returns the raw JSON value of [text].
@@ -262,13 +262,13 @@ private constructor(
     class Builder internal constructor() {
 
         private var id: JsonField<Long>? = null
-        private var avgLogprob: JsonField<Double>? = null
-        private var compressionRatio: JsonField<Double>? = null
-        private var end: JsonField<Double>? = null
-        private var noSpeechProb: JsonField<Double>? = null
+        private var avgLogprob: JsonField<Float>? = null
+        private var compressionRatio: JsonField<Float>? = null
+        private var end: JsonField<Float>? = null
+        private var noSpeechProb: JsonField<Float>? = null
         private var seek: JsonField<Long>? = null
-        private var start: JsonField<Double>? = null
-        private var temperature: JsonField<Double>? = null
+        private var start: JsonField<Float>? = null
+        private var temperature: JsonField<Float>? = null
         private var text: JsonField<String>? = null
         private var tokens: JsonField<MutableList<Long>>? = null
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
@@ -303,60 +303,60 @@ private constructor(
          * Average logprob of the segment. If the value is lower than -1, consider the logprobs
          * failed.
          */
-        fun avgLogprob(avgLogprob: Double) = avgLogprob(JsonField.of(avgLogprob))
+        fun avgLogprob(avgLogprob: Float) = avgLogprob(JsonField.of(avgLogprob))
 
         /**
          * Sets [Builder.avgLogprob] to an arbitrary JSON value.
          *
-         * You should usually call [Builder.avgLogprob] with a well-typed [Double] value instead.
+         * You should usually call [Builder.avgLogprob] with a well-typed [Float] value instead.
          * This method is primarily for setting the field to an undocumented or not yet supported
          * value.
          */
-        fun avgLogprob(avgLogprob: JsonField<Double>) = apply { this.avgLogprob = avgLogprob }
+        fun avgLogprob(avgLogprob: JsonField<Float>) = apply { this.avgLogprob = avgLogprob }
 
         /**
          * Compression ratio of the segment. If the value is greater than 2.4, consider the
          * compression failed.
          */
-        fun compressionRatio(compressionRatio: Double) =
+        fun compressionRatio(compressionRatio: Float) =
             compressionRatio(JsonField.of(compressionRatio))
 
         /**
          * Sets [Builder.compressionRatio] to an arbitrary JSON value.
          *
-         * You should usually call [Builder.compressionRatio] with a well-typed [Double] value
+         * You should usually call [Builder.compressionRatio] with a well-typed [Float] value
          * instead. This method is primarily for setting the field to an undocumented or not yet
          * supported value.
          */
-        fun compressionRatio(compressionRatio: JsonField<Double>) = apply {
+        fun compressionRatio(compressionRatio: JsonField<Float>) = apply {
             this.compressionRatio = compressionRatio
         }
 
         /** End time of the segment in seconds. */
-        fun end(end: Double) = end(JsonField.of(end))
+        fun end(end: Float) = end(JsonField.of(end))
 
         /**
          * Sets [Builder.end] to an arbitrary JSON value.
          *
-         * You should usually call [Builder.end] with a well-typed [Double] value instead. This
+         * You should usually call [Builder.end] with a well-typed [Float] value instead. This
          * method is primarily for setting the field to an undocumented or not yet supported value.
          */
-        fun end(end: JsonField<Double>) = apply { this.end = end }
+        fun end(end: JsonField<Float>) = apply { this.end = end }
 
         /**
          * Probability of no speech in the segment. If the value is higher than 1.0 and the
          * `avg_logprob` is below -1, consider this segment silent.
          */
-        fun noSpeechProb(noSpeechProb: Double) = noSpeechProb(JsonField.of(noSpeechProb))
+        fun noSpeechProb(noSpeechProb: Float) = noSpeechProb(JsonField.of(noSpeechProb))
 
         /**
          * Sets [Builder.noSpeechProb] to an arbitrary JSON value.
          *
-         * You should usually call [Builder.noSpeechProb] with a well-typed [Double] value instead.
+         * You should usually call [Builder.noSpeechProb] with a well-typed [Float] value instead.
          * This method is primarily for setting the field to an undocumented or not yet supported
          * value.
          */
-        fun noSpeechProb(noSpeechProb: JsonField<Double>) = apply {
+        fun noSpeechProb(noSpeechProb: JsonField<Float>) = apply {
             this.noSpeechProb = noSpeechProb
         }
 
@@ -372,27 +372,27 @@ private constructor(
         fun seek(seek: JsonField<Long>) = apply { this.seek = seek }
 
         /** Start time of the segment in seconds. */
-        fun start(start: Double) = start(JsonField.of(start))
+        fun start(start: Float) = start(JsonField.of(start))
 
         /**
          * Sets [Builder.start] to an arbitrary JSON value.
          *
-         * You should usually call [Builder.start] with a well-typed [Double] value instead. This
+         * You should usually call [Builder.start] with a well-typed [Float] value instead. This
          * method is primarily for setting the field to an undocumented or not yet supported value.
          */
-        fun start(start: JsonField<Double>) = apply { this.start = start }
+        fun start(start: JsonField<Float>) = apply { this.start = start }
 
         /** Temperature parameter used for generating the segment. */
-        fun temperature(temperature: Double) = temperature(JsonField.of(temperature))
+        fun temperature(temperature: Float) = temperature(JsonField.of(temperature))
 
         /**
          * Sets [Builder.temperature] to an arbitrary JSON value.
          *
-         * You should usually call [Builder.temperature] with a well-typed [Double] value instead.
+         * You should usually call [Builder.temperature] with a well-typed [Float] value instead.
          * This method is primarily for setting the field to an undocumented or not yet supported
          * value.
          */
-        fun temperature(temperature: JsonField<Double>) = apply { this.temperature = temperature }
+        fun temperature(temperature: JsonField<Float>) = apply { this.temperature = temperature }
 
         /** Text content of the segment. */
         fun text(text: String) = text(JsonField.of(text))

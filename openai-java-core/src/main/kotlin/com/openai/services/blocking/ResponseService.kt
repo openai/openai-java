@@ -8,10 +8,13 @@ import com.openai.core.http.HttpResponse
 import com.openai.core.http.HttpResponseFor
 import com.openai.core.http.StreamResponse
 import com.openai.models.responses.Response
+import com.openai.models.responses.ResponseCancelParams
 import com.openai.models.responses.ResponseCreateParams
 import com.openai.models.responses.ResponseDeleteParams
 import com.openai.models.responses.ResponseRetrieveParams
 import com.openai.models.responses.ResponseStreamEvent
+import com.openai.models.responses.StructuredResponse
+import com.openai.models.responses.StructuredResponseCreateParams
 import com.openai.services.blocking.responses.InputItemService
 
 interface ResponseService {
@@ -43,6 +46,27 @@ interface ResponseService {
     ): Response
 
     /**
+     * Creates a model response. The model's structured output in JSON form will be deserialized
+     * automatically into an instance of the class `T`. See the SDK documentation for more details.
+     *
+     * @see create
+     */
+    fun <T : Any> create(params: StructuredResponseCreateParams<T>): StructuredResponse<T> =
+        create(params, RequestOptions.none())
+
+    /**
+     * Creates a model response. The model's structured output in JSON form will be deserialized
+     * automatically into an instance of the class `T`. See the SDK documentation for more details.
+     *
+     * @see create
+     */
+    fun <T : Any> create(
+        params: StructuredResponseCreateParams<T>,
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): StructuredResponse<T> =
+        StructuredResponse<T>(params.responseType, create(params.rawParams, requestOptions))
+
+    /**
      * Creates a model response. Provide [text](https://platform.openai.com/docs/guides/text) or
      * [image](https://platform.openai.com/docs/guides/images) inputs to generate
      * [text](https://platform.openai.com/docs/guides/text) or
@@ -65,7 +89,20 @@ interface ResponseService {
     ): StreamResponse<ResponseStreamEvent>
 
     /** Retrieves a model response with the given ID. */
-    fun retrieve(params: ResponseRetrieveParams): Response = retrieve(params, RequestOptions.none())
+    fun retrieve(responseId: String): Response = retrieve(responseId, ResponseRetrieveParams.none())
+
+    /** @see [retrieve] */
+    fun retrieve(
+        responseId: String,
+        params: ResponseRetrieveParams = ResponseRetrieveParams.none(),
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): Response = retrieve(params.toBuilder().responseId(responseId).build(), requestOptions)
+
+    /** @see [retrieve] */
+    fun retrieve(
+        responseId: String,
+        params: ResponseRetrieveParams = ResponseRetrieveParams.none(),
+    ): Response = retrieve(responseId, params, RequestOptions.none())
 
     /** @see [retrieve] */
     fun retrieve(
@@ -73,11 +110,64 @@ interface ResponseService {
         requestOptions: RequestOptions = RequestOptions.none(),
     ): Response
 
+    /** @see [retrieve] */
+    fun retrieve(params: ResponseRetrieveParams): Response = retrieve(params, RequestOptions.none())
+
+    /** @see [retrieve] */
+    fun retrieve(responseId: String, requestOptions: RequestOptions): Response =
+        retrieve(responseId, ResponseRetrieveParams.none(), requestOptions)
+
     /** Deletes a model response with the given ID. */
-    fun delete(params: ResponseDeleteParams) = delete(params, RequestOptions.none())
+    fun delete(responseId: String) = delete(responseId, ResponseDeleteParams.none())
+
+    /** @see [delete] */
+    fun delete(
+        responseId: String,
+        params: ResponseDeleteParams = ResponseDeleteParams.none(),
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ) = delete(params.toBuilder().responseId(responseId).build(), requestOptions)
+
+    /** @see [delete] */
+    fun delete(responseId: String, params: ResponseDeleteParams = ResponseDeleteParams.none()) =
+        delete(responseId, params, RequestOptions.none())
 
     /** @see [delete] */
     fun delete(params: ResponseDeleteParams, requestOptions: RequestOptions = RequestOptions.none())
+
+    /** @see [delete] */
+    fun delete(params: ResponseDeleteParams) = delete(params, RequestOptions.none())
+
+    /** @see [delete] */
+    fun delete(responseId: String, requestOptions: RequestOptions) =
+        delete(responseId, ResponseDeleteParams.none(), requestOptions)
+
+    /**
+     * Cancels a model response with the given ID. Only responses created with the `background`
+     * parameter set to `true` can be cancelled.
+     * [Learn more](https://platform.openai.com/docs/guides/background).
+     */
+    fun cancel(responseId: String) = cancel(responseId, ResponseCancelParams.none())
+
+    /** @see [cancel] */
+    fun cancel(
+        responseId: String,
+        params: ResponseCancelParams = ResponseCancelParams.none(),
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ) = cancel(params.toBuilder().responseId(responseId).build(), requestOptions)
+
+    /** @see [cancel] */
+    fun cancel(responseId: String, params: ResponseCancelParams = ResponseCancelParams.none()) =
+        cancel(responseId, params, RequestOptions.none())
+
+    /** @see [cancel] */
+    fun cancel(params: ResponseCancelParams, requestOptions: RequestOptions = RequestOptions.none())
+
+    /** @see [cancel] */
+    fun cancel(params: ResponseCancelParams) = cancel(params, RequestOptions.none())
+
+    /** @see [cancel] */
+    fun cancel(responseId: String, requestOptions: RequestOptions) =
+        cancel(responseId, ResponseCancelParams.none(), requestOptions)
 
     /** A view of [ResponseService] that provides access to raw HTTP responses for each method. */
     interface WithRawResponse {
@@ -121,8 +211,24 @@ interface ResponseService {
          * as [ResponseService.retrieve].
          */
         @MustBeClosed
-        fun retrieve(params: ResponseRetrieveParams): HttpResponseFor<Response> =
-            retrieve(params, RequestOptions.none())
+        fun retrieve(responseId: String): HttpResponseFor<Response> =
+            retrieve(responseId, ResponseRetrieveParams.none())
+
+        /** @see [retrieve] */
+        @MustBeClosed
+        fun retrieve(
+            responseId: String,
+            params: ResponseRetrieveParams = ResponseRetrieveParams.none(),
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): HttpResponseFor<Response> =
+            retrieve(params.toBuilder().responseId(responseId).build(), requestOptions)
+
+        /** @see [retrieve] */
+        @MustBeClosed
+        fun retrieve(
+            responseId: String,
+            params: ResponseRetrieveParams = ResponseRetrieveParams.none(),
+        ): HttpResponseFor<Response> = retrieve(responseId, params, RequestOptions.none())
 
         /** @see [retrieve] */
         @MustBeClosed
@@ -131,13 +237,41 @@ interface ResponseService {
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<Response>
 
+        /** @see [retrieve] */
+        @MustBeClosed
+        fun retrieve(params: ResponseRetrieveParams): HttpResponseFor<Response> =
+            retrieve(params, RequestOptions.none())
+
+        /** @see [retrieve] */
+        @MustBeClosed
+        fun retrieve(
+            responseId: String,
+            requestOptions: RequestOptions,
+        ): HttpResponseFor<Response> =
+            retrieve(responseId, ResponseRetrieveParams.none(), requestOptions)
+
         /**
          * Returns a raw HTTP response for `delete /responses/{response_id}`, but is otherwise the
          * same as [ResponseService.delete].
          */
         @MustBeClosed
-        fun delete(params: ResponseDeleteParams): HttpResponse =
-            delete(params, RequestOptions.none())
+        fun delete(responseId: String): HttpResponse =
+            delete(responseId, ResponseDeleteParams.none())
+
+        /** @see [delete] */
+        @MustBeClosed
+        fun delete(
+            responseId: String,
+            params: ResponseDeleteParams = ResponseDeleteParams.none(),
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): HttpResponse = delete(params.toBuilder().responseId(responseId).build(), requestOptions)
+
+        /** @see [delete] */
+        @MustBeClosed
+        fun delete(
+            responseId: String,
+            params: ResponseDeleteParams = ResponseDeleteParams.none(),
+        ): HttpResponse = delete(responseId, params, RequestOptions.none())
 
         /** @see [delete] */
         @MustBeClosed
@@ -145,5 +279,55 @@ interface ResponseService {
             params: ResponseDeleteParams,
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponse
+
+        /** @see [delete] */
+        @MustBeClosed
+        fun delete(params: ResponseDeleteParams): HttpResponse =
+            delete(params, RequestOptions.none())
+
+        /** @see [delete] */
+        @MustBeClosed
+        fun delete(responseId: String, requestOptions: RequestOptions): HttpResponse =
+            delete(responseId, ResponseDeleteParams.none(), requestOptions)
+
+        /**
+         * Returns a raw HTTP response for `post /responses/{response_id}/cancel`, but is otherwise
+         * the same as [ResponseService.cancel].
+         */
+        @MustBeClosed
+        fun cancel(responseId: String): HttpResponse =
+            cancel(responseId, ResponseCancelParams.none())
+
+        /** @see [cancel] */
+        @MustBeClosed
+        fun cancel(
+            responseId: String,
+            params: ResponseCancelParams = ResponseCancelParams.none(),
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): HttpResponse = cancel(params.toBuilder().responseId(responseId).build(), requestOptions)
+
+        /** @see [cancel] */
+        @MustBeClosed
+        fun cancel(
+            responseId: String,
+            params: ResponseCancelParams = ResponseCancelParams.none(),
+        ): HttpResponse = cancel(responseId, params, RequestOptions.none())
+
+        /** @see [cancel] */
+        @MustBeClosed
+        fun cancel(
+            params: ResponseCancelParams,
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): HttpResponse
+
+        /** @see [cancel] */
+        @MustBeClosed
+        fun cancel(params: ResponseCancelParams): HttpResponse =
+            cancel(params, RequestOptions.none())
+
+        /** @see [cancel] */
+        @MustBeClosed
+        fun cancel(responseId: String, requestOptions: RequestOptions): HttpResponse =
+            cancel(responseId, ResponseCancelParams.none(), requestOptions)
     }
 }

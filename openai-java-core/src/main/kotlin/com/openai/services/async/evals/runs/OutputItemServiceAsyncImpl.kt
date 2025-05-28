@@ -4,6 +4,7 @@ package com.openai.services.async.evals.runs
 
 import com.openai.core.ClientOptions
 import com.openai.core.RequestOptions
+import com.openai.core.checkRequired
 import com.openai.core.handlers.errorHandler
 import com.openai.core.handlers.jsonHandler
 import com.openai.core.handlers.withErrorHandler
@@ -20,6 +21,7 @@ import com.openai.models.evals.runs.outputitems.OutputItemListParams
 import com.openai.models.evals.runs.outputitems.OutputItemRetrieveParams
 import com.openai.models.evals.runs.outputitems.OutputItemRetrieveResponse
 import java.util.concurrent.CompletableFuture
+import kotlin.jvm.optionals.getOrNull
 
 class OutputItemServiceAsyncImpl internal constructor(private val clientOptions: ClientOptions) :
     OutputItemServiceAsync {
@@ -57,6 +59,9 @@ class OutputItemServiceAsyncImpl internal constructor(private val clientOptions:
             params: OutputItemRetrieveParams,
             requestOptions: RequestOptions,
         ): CompletableFuture<HttpResponseFor<OutputItemRetrieveResponse>> {
+            // We check here instead of in the params builder because this can be specified
+            // positionally or in the params class.
+            checkRequired("outputItemId", params.outputItemId().getOrNull())
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.GET)
@@ -94,6 +99,9 @@ class OutputItemServiceAsyncImpl internal constructor(private val clientOptions:
             params: OutputItemListParams,
             requestOptions: RequestOptions,
         ): CompletableFuture<HttpResponseFor<OutputItemListPageAsync>> {
+            // We check here instead of in the params builder because this can be specified
+            // positionally or in the params class.
+            checkRequired("runId", params.runId().getOrNull())
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.GET)
@@ -121,6 +129,7 @@ class OutputItemServiceAsyncImpl internal constructor(private val clientOptions:
                             .let {
                                 OutputItemListPageAsync.builder()
                                     .service(OutputItemServiceAsyncImpl(clientOptions))
+                                    .streamHandlerExecutor(clientOptions.streamHandlerExecutor)
                                     .params(params)
                                     .response(it)
                                     .build()

@@ -20,6 +20,7 @@ class ResponseReasoningSummaryTextDoneEvent
 private constructor(
     private val itemId: JsonField<String>,
     private val outputIndex: JsonField<Long>,
+    private val sequenceNumber: JsonField<Long>,
     private val summaryIndex: JsonField<Long>,
     private val text: JsonField<String>,
     private val type: JsonValue,
@@ -32,12 +33,15 @@ private constructor(
         @JsonProperty("output_index")
         @ExcludeMissing
         outputIndex: JsonField<Long> = JsonMissing.of(),
+        @JsonProperty("sequence_number")
+        @ExcludeMissing
+        sequenceNumber: JsonField<Long> = JsonMissing.of(),
         @JsonProperty("summary_index")
         @ExcludeMissing
         summaryIndex: JsonField<Long> = JsonMissing.of(),
         @JsonProperty("text") @ExcludeMissing text: JsonField<String> = JsonMissing.of(),
         @JsonProperty("type") @ExcludeMissing type: JsonValue = JsonMissing.of(),
-    ) : this(itemId, outputIndex, summaryIndex, text, type, mutableMapOf())
+    ) : this(itemId, outputIndex, sequenceNumber, summaryIndex, text, type, mutableMapOf())
 
     /**
      * The ID of the item this summary text is associated with.
@@ -54,6 +58,14 @@ private constructor(
      *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
      */
     fun outputIndex(): Long = outputIndex.getRequired("output_index")
+
+    /**
+     * The sequence number of this event.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     */
+    fun sequenceNumber(): Long = sequenceNumber.getRequired("sequence_number")
 
     /**
      * The index of the summary part within the reasoning summary.
@@ -99,6 +111,15 @@ private constructor(
     @JsonProperty("output_index") @ExcludeMissing fun _outputIndex(): JsonField<Long> = outputIndex
 
     /**
+     * Returns the raw JSON value of [sequenceNumber].
+     *
+     * Unlike [sequenceNumber], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    @JsonProperty("sequence_number")
+    @ExcludeMissing
+    fun _sequenceNumber(): JsonField<Long> = sequenceNumber
+
+    /**
      * Returns the raw JSON value of [summaryIndex].
      *
      * Unlike [summaryIndex], this method doesn't throw if the JSON field has an unexpected type.
@@ -136,6 +157,7 @@ private constructor(
          * ```java
          * .itemId()
          * .outputIndex()
+         * .sequenceNumber()
          * .summaryIndex()
          * .text()
          * ```
@@ -148,6 +170,7 @@ private constructor(
 
         private var itemId: JsonField<String>? = null
         private var outputIndex: JsonField<Long>? = null
+        private var sequenceNumber: JsonField<Long>? = null
         private var summaryIndex: JsonField<Long>? = null
         private var text: JsonField<String>? = null
         private var type: JsonValue = JsonValue.from("response.reasoning_summary_text.done")
@@ -159,6 +182,7 @@ private constructor(
         ) = apply {
             itemId = responseReasoningSummaryTextDoneEvent.itemId
             outputIndex = responseReasoningSummaryTextDoneEvent.outputIndex
+            sequenceNumber = responseReasoningSummaryTextDoneEvent.sequenceNumber
             summaryIndex = responseReasoningSummaryTextDoneEvent.summaryIndex
             text = responseReasoningSummaryTextDoneEvent.text
             type = responseReasoningSummaryTextDoneEvent.type
@@ -188,6 +212,20 @@ private constructor(
          * value.
          */
         fun outputIndex(outputIndex: JsonField<Long>) = apply { this.outputIndex = outputIndex }
+
+        /** The sequence number of this event. */
+        fun sequenceNumber(sequenceNumber: Long) = sequenceNumber(JsonField.of(sequenceNumber))
+
+        /**
+         * Sets [Builder.sequenceNumber] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.sequenceNumber] with a well-typed [Long] value instead.
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
+         */
+        fun sequenceNumber(sequenceNumber: JsonField<Long>) = apply {
+            this.sequenceNumber = sequenceNumber
+        }
 
         /** The index of the summary part within the reasoning summary. */
         fun summaryIndex(summaryIndex: Long) = summaryIndex(JsonField.of(summaryIndex))
@@ -254,6 +292,7 @@ private constructor(
          * ```java
          * .itemId()
          * .outputIndex()
+         * .sequenceNumber()
          * .summaryIndex()
          * .text()
          * ```
@@ -264,6 +303,7 @@ private constructor(
             ResponseReasoningSummaryTextDoneEvent(
                 checkRequired("itemId", itemId),
                 checkRequired("outputIndex", outputIndex),
+                checkRequired("sequenceNumber", sequenceNumber),
                 checkRequired("summaryIndex", summaryIndex),
                 checkRequired("text", text),
                 type,
@@ -280,6 +320,7 @@ private constructor(
 
         itemId()
         outputIndex()
+        sequenceNumber()
         summaryIndex()
         text()
         _type().let {
@@ -307,6 +348,7 @@ private constructor(
     internal fun validity(): Int =
         (if (itemId.asKnown().isPresent) 1 else 0) +
             (if (outputIndex.asKnown().isPresent) 1 else 0) +
+            (if (sequenceNumber.asKnown().isPresent) 1 else 0) +
             (if (summaryIndex.asKnown().isPresent) 1 else 0) +
             (if (text.asKnown().isPresent) 1 else 0) +
             type.let { if (it == JsonValue.from("response.reasoning_summary_text.done")) 1 else 0 }
@@ -316,15 +358,15 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is ResponseReasoningSummaryTextDoneEvent && itemId == other.itemId && outputIndex == other.outputIndex && summaryIndex == other.summaryIndex && text == other.text && type == other.type && additionalProperties == other.additionalProperties /* spotless:on */
+        return /* spotless:off */ other is ResponseReasoningSummaryTextDoneEvent && itemId == other.itemId && outputIndex == other.outputIndex && sequenceNumber == other.sequenceNumber && summaryIndex == other.summaryIndex && text == other.text && type == other.type && additionalProperties == other.additionalProperties /* spotless:on */
     }
 
     /* spotless:off */
-    private val hashCode: Int by lazy { Objects.hash(itemId, outputIndex, summaryIndex, text, type, additionalProperties) }
+    private val hashCode: Int by lazy { Objects.hash(itemId, outputIndex, sequenceNumber, summaryIndex, text, type, additionalProperties) }
     /* spotless:on */
 
     override fun hashCode(): Int = hashCode
 
     override fun toString() =
-        "ResponseReasoningSummaryTextDoneEvent{itemId=$itemId, outputIndex=$outputIndex, summaryIndex=$summaryIndex, text=$text, type=$type, additionalProperties=$additionalProperties}"
+        "ResponseReasoningSummaryTextDoneEvent{itemId=$itemId, outputIndex=$outputIndex, sequenceNumber=$sequenceNumber, summaryIndex=$summaryIndex, text=$text, type=$type, additionalProperties=$additionalProperties}"
 }

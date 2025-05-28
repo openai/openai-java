@@ -38,6 +38,7 @@ private constructor(
     private val results: JsonField<List<Result>>,
     private val status: JsonField<Status>,
     private val type: JsonValue,
+    private val containerId: JsonField<String>,
     private val additionalProperties: MutableMap<String, JsonValue>,
 ) {
 
@@ -50,7 +51,10 @@ private constructor(
         results: JsonField<List<Result>> = JsonMissing.of(),
         @JsonProperty("status") @ExcludeMissing status: JsonField<Status> = JsonMissing.of(),
         @JsonProperty("type") @ExcludeMissing type: JsonValue = JsonMissing.of(),
-    ) : this(id, code, results, status, type, mutableMapOf())
+        @JsonProperty("container_id")
+        @ExcludeMissing
+        containerId: JsonField<String> = JsonMissing.of(),
+    ) : this(id, code, results, status, type, containerId, mutableMapOf())
 
     /**
      * The unique ID of the code interpreter tool call.
@@ -98,6 +102,14 @@ private constructor(
     @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
 
     /**
+     * The ID of the container used to run the code.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun containerId(): Optional<String> = containerId.getOptional("container_id")
+
+    /**
      * Returns the raw JSON value of [id].
      *
      * Unlike [id], this method doesn't throw if the JSON field has an unexpected type.
@@ -124,6 +136,15 @@ private constructor(
      * Unlike [status], this method doesn't throw if the JSON field has an unexpected type.
      */
     @JsonProperty("status") @ExcludeMissing fun _status(): JsonField<Status> = status
+
+    /**
+     * Returns the raw JSON value of [containerId].
+     *
+     * Unlike [containerId], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    @JsonProperty("container_id")
+    @ExcludeMissing
+    fun _containerId(): JsonField<String> = containerId
 
     @JsonAnySetter
     private fun putAdditionalProperty(key: String, value: JsonValue) {
@@ -162,6 +183,7 @@ private constructor(
         private var results: JsonField<MutableList<Result>>? = null
         private var status: JsonField<Status>? = null
         private var type: JsonValue = JsonValue.from("code_interpreter_call")
+        private var containerId: JsonField<String> = JsonMissing.of()
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
         @JvmSynthetic
@@ -172,6 +194,7 @@ private constructor(
                 results = responseCodeInterpreterToolCall.results.map { it.toMutableList() }
                 status = responseCodeInterpreterToolCall.status
                 type = responseCodeInterpreterToolCall.type
+                containerId = responseCodeInterpreterToolCall.containerId
                 additionalProperties =
                     responseCodeInterpreterToolCall.additionalProperties.toMutableMap()
             }
@@ -276,6 +299,18 @@ private constructor(
          */
         fun type(type: JsonValue) = apply { this.type = type }
 
+        /** The ID of the container used to run the code. */
+        fun containerId(containerId: String) = containerId(JsonField.of(containerId))
+
+        /**
+         * Sets [Builder.containerId] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.containerId] with a well-typed [String] value instead.
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
+         */
+        fun containerId(containerId: JsonField<String>) = apply { this.containerId = containerId }
+
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
             this.additionalProperties.clear()
             putAllAdditionalProperties(additionalProperties)
@@ -317,6 +352,7 @@ private constructor(
                 checkRequired("results", results).map { it.toImmutable() },
                 checkRequired("status", status),
                 type,
+                containerId,
                 additionalProperties.toMutableMap(),
             )
     }
@@ -337,6 +373,7 @@ private constructor(
                 throw OpenAIInvalidDataException("'type' is invalid, received $it")
             }
         }
+        containerId()
         validated = true
     }
 
@@ -359,9 +396,10 @@ private constructor(
             (if (code.asKnown().isPresent) 1 else 0) +
             (results.asKnown().getOrNull()?.sumOf { it.validity().toInt() } ?: 0) +
             (status.asKnown().getOrNull()?.validity() ?: 0) +
-            type.let { if (it == JsonValue.from("code_interpreter_call")) 1 else 0 }
+            type.let { if (it == JsonValue.from("code_interpreter_call")) 1 else 0 } +
+            (if (containerId.asKnown().isPresent) 1 else 0)
 
-    /** The output of a code interpreter tool call that is text. */
+    /** The output of a code interpreter tool. */
     @JsonDeserialize(using = Result.Deserializer::class)
     @JsonSerialize(using = Result.Serializer::class)
     class Result
@@ -1295,15 +1333,15 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is ResponseCodeInterpreterToolCall && id == other.id && code == other.code && results == other.results && status == other.status && type == other.type && additionalProperties == other.additionalProperties /* spotless:on */
+        return /* spotless:off */ other is ResponseCodeInterpreterToolCall && id == other.id && code == other.code && results == other.results && status == other.status && type == other.type && containerId == other.containerId && additionalProperties == other.additionalProperties /* spotless:on */
     }
 
     /* spotless:off */
-    private val hashCode: Int by lazy { Objects.hash(id, code, results, status, type, additionalProperties) }
+    private val hashCode: Int by lazy { Objects.hash(id, code, results, status, type, containerId, additionalProperties) }
     /* spotless:on */
 
     override fun hashCode(): Int = hashCode
 
     override fun toString() =
-        "ResponseCodeInterpreterToolCall{id=$id, code=$code, results=$results, status=$status, type=$type, additionalProperties=$additionalProperties}"
+        "ResponseCodeInterpreterToolCall{id=$id, code=$code, results=$results, status=$status, type=$type, containerId=$containerId, additionalProperties=$additionalProperties}"
 }

@@ -10,6 +10,7 @@ import com.openai.core.http.QueryParams
 import com.openai.core.toImmutable
 import java.util.Objects
 import java.util.Optional
+import kotlin.jvm.optionals.getOrNull
 
 /**
  * Cancel a vector store file batch. This attempts to cancel the processing of files in this batch
@@ -18,7 +19,7 @@ import java.util.Optional
 class FileBatchCancelParams
 private constructor(
     private val vectorStoreId: String,
-    private val batchId: String,
+    private val batchId: String?,
     private val additionalHeaders: Headers,
     private val additionalQueryParams: QueryParams,
     private val additionalBodyProperties: Map<String, JsonValue>,
@@ -26,7 +27,7 @@ private constructor(
 
     fun vectorStoreId(): String = vectorStoreId
 
-    fun batchId(): String = batchId
+    fun batchId(): Optional<String> = Optional.ofNullable(batchId)
 
     fun _additionalBodyProperties(): Map<String, JsonValue> = additionalBodyProperties
 
@@ -44,7 +45,6 @@ private constructor(
          * The following fields are required:
          * ```java
          * .vectorStoreId()
-         * .batchId()
          * ```
          */
         @JvmStatic fun builder() = Builder()
@@ -70,7 +70,10 @@ private constructor(
 
         fun vectorStoreId(vectorStoreId: String) = apply { this.vectorStoreId = vectorStoreId }
 
-        fun batchId(batchId: String) = apply { this.batchId = batchId }
+        fun batchId(batchId: String?) = apply { this.batchId = batchId }
+
+        /** Alias for calling [Builder.batchId] with `batchId.orElse(null)`. */
+        fun batchId(batchId: Optional<String>) = batchId(batchId.getOrNull())
 
         fun additionalHeaders(additionalHeaders: Headers) = apply {
             this.additionalHeaders.clear()
@@ -200,7 +203,6 @@ private constructor(
          * The following fields are required:
          * ```java
          * .vectorStoreId()
-         * .batchId()
          * ```
          *
          * @throws IllegalStateException if any required field is unset.
@@ -208,7 +210,7 @@ private constructor(
         fun build(): FileBatchCancelParams =
             FileBatchCancelParams(
                 checkRequired("vectorStoreId", vectorStoreId),
-                checkRequired("batchId", batchId),
+                batchId,
                 additionalHeaders.build(),
                 additionalQueryParams.build(),
                 additionalBodyProperties.toImmutable(),
@@ -221,7 +223,7 @@ private constructor(
     fun _pathParam(index: Int): String =
         when (index) {
             0 -> vectorStoreId
-            1 -> batchId
+            1 -> batchId ?: ""
             else -> ""
         }
 

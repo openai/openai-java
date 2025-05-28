@@ -17,12 +17,14 @@ internal class ResponseRefusalDoneEventTest {
                 .itemId("item_id")
                 .outputIndex(0L)
                 .refusal("refusal")
+                .sequenceNumber(0L)
                 .build()
 
         assertThat(responseRefusalDoneEvent.contentIndex()).isEqualTo(0L)
         assertThat(responseRefusalDoneEvent.itemId()).isEqualTo("item_id")
         assertThat(responseRefusalDoneEvent.outputIndex()).isEqualTo(0L)
         assertThat(responseRefusalDoneEvent.refusal()).isEqualTo("refusal")
+        assertThat(responseRefusalDoneEvent.sequenceNumber()).isEqualTo(0L)
     }
 
     @Test
@@ -34,6 +36,7 @@ internal class ResponseRefusalDoneEventTest {
                 .itemId("item_id")
                 .outputIndex(0L)
                 .refusal("refusal")
+                .sequenceNumber(0L)
                 .build()
 
         val roundtrippedResponseRefusalDoneEvent =

@@ -5,6 +5,9 @@ package com.openai.core
 import com.fasterxml.jackson.core.Version
 import com.fasterxml.jackson.core.util.VersionUtil
 
+fun checkRequired(name: String, condition: Boolean) =
+    check(condition) { "`$name` is required, but was not set" }
+
 fun <T : Any> checkRequired(name: String, value: T?): T =
     checkNotNull(value) { "`$name` is required, but was not set" }
 

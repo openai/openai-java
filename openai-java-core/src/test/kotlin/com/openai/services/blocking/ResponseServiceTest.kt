@@ -6,13 +6,11 @@ import com.openai.TestServerExtension
 import com.openai.client.okhttp.OpenAIOkHttpClient
 import com.openai.core.JsonValue
 import com.openai.models.ChatModel
-import com.openai.models.ComparisonFilter
 import com.openai.models.Reasoning
 import com.openai.models.ReasoningEffort
 import com.openai.models.ResponseFormatText
-import com.openai.models.responses.FileSearchTool
+import com.openai.models.responses.FunctionTool
 import com.openai.models.responses.ResponseCreateParams
-import com.openai.models.responses.ResponseDeleteParams
 import com.openai.models.responses.ResponseIncludable
 import com.openai.models.responses.ResponseRetrieveParams
 import com.openai.models.responses.ResponseTextConfig
@@ -37,6 +35,7 @@ internal class ResponseServiceTest {
                 ResponseCreateParams.builder()
                     .input("string")
                     .model(ChatModel.GPT_4O)
+                    .background(true)
                     .addInclude(ResponseIncludable.FILE_SEARCH_CALL_RESULTS)
                     .instructions("instructions")
                     .maxOutputTokens(0L)
@@ -64,22 +63,15 @@ internal class ResponseServiceTest {
                     )
                     .toolChoice(ToolChoiceOptions.NONE)
                     .addTool(
-                        FileSearchTool.builder()
-                            .addVectorStoreId("string")
-                            .filters(
-                                ComparisonFilter.builder()
-                                    .key("key")
-                                    .type(ComparisonFilter.Type.EQ)
-                                    .value("string")
+                        FunctionTool.builder()
+                            .name("name")
+                            .parameters(
+                                FunctionTool.Parameters.builder()
+                                    .putAdditionalProperty("foo", JsonValue.from("bar"))
                                     .build()
                             )
-                            .maxNumResults(0L)
-                            .rankingOptions(
-                                FileSearchTool.RankingOptions.builder()
-                                    .ranker(FileSearchTool.RankingOptions.Ranker.AUTO)
-                                    .scoreThreshold(0.0)
-                                    .build()
-                            )
+                            .strict(true)
+                            .description("description")
                             .build()
                     )
                     .topP(1.0)
@@ -105,6 +97,7 @@ internal class ResponseServiceTest {
                 ResponseCreateParams.builder()
                     .input("string")
                     .model(ChatModel.GPT_4O)
+                    .background(true)
                     .addInclude(ResponseIncludable.FILE_SEARCH_CALL_RESULTS)
                     .instructions("instructions")
                     .maxOutputTokens(0L)
@@ -132,22 +125,15 @@ internal class ResponseServiceTest {
                     )
                     .toolChoice(ToolChoiceOptions.NONE)
                     .addTool(
-                        FileSearchTool.builder()
-                            .addVectorStoreId("string")
-                            .filters(
-                                ComparisonFilter.builder()
-                                    .key("key")
-                                    .type(ComparisonFilter.Type.EQ)
-                                    .value("string")
+                        FunctionTool.builder()
+                            .name("name")
+                            .parameters(
+                                FunctionTool.Parameters.builder()
+                                    .putAdditionalProperty("foo", JsonValue.from("bar"))
                                     .build()
                             )
-                            .maxNumResults(0L)
-                            .rankingOptions(
-                                FileSearchTool.RankingOptions.builder()
-                                    .ranker(FileSearchTool.RankingOptions.Ranker.AUTO)
-                                    .scoreThreshold(0.0)
-                                    .build()
-                            )
+                            .strict(true)
+                            .description("description")
                             .build()
                     )
                     .topP(1.0)
@@ -190,10 +176,18 @@ internal class ResponseServiceTest {
                 .build()
         val responseService = client.responses()
 
-        responseService.delete(
-            ResponseDeleteParams.builder()
-                .responseId("resp_677efb5139a88190b512bc3fef8e535d")
+        responseService.delete("resp_677efb5139a88190b512bc3fef8e535d")
+    }
+
+    @Test
+    fun cancel() {
+        val client =
+            OpenAIOkHttpClient.builder()
+                .baseUrl(TestServerExtension.BASE_URL)
+                .apiKey("My API Key")
                 .build()
-        )
+        val responseService = client.responses()
+
+        responseService.cancel("resp_677efb5139a88190b512bc3fef8e535d")
     }
 }

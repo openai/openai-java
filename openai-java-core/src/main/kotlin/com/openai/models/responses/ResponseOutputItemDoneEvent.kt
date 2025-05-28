@@ -21,6 +21,7 @@ class ResponseOutputItemDoneEvent
 private constructor(
     private val item: JsonField<ResponseOutputItem>,
     private val outputIndex: JsonField<Long>,
+    private val sequenceNumber: JsonField<Long>,
     private val type: JsonValue,
     private val additionalProperties: MutableMap<String, JsonValue>,
 ) {
@@ -33,8 +34,11 @@ private constructor(
         @JsonProperty("output_index")
         @ExcludeMissing
         outputIndex: JsonField<Long> = JsonMissing.of(),
+        @JsonProperty("sequence_number")
+        @ExcludeMissing
+        sequenceNumber: JsonField<Long> = JsonMissing.of(),
         @JsonProperty("type") @ExcludeMissing type: JsonValue = JsonMissing.of(),
-    ) : this(item, outputIndex, type, mutableMapOf())
+    ) : this(item, outputIndex, sequenceNumber, type, mutableMapOf())
 
     /**
      * The output item that was marked done.
@@ -51,6 +55,14 @@ private constructor(
      *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
      */
     fun outputIndex(): Long = outputIndex.getRequired("output_index")
+
+    /**
+     * The sequence number of this event.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     */
+    fun sequenceNumber(): Long = sequenceNumber.getRequired("sequence_number")
 
     /**
      * The type of the event. Always `response.output_item.done`.
@@ -79,6 +91,15 @@ private constructor(
      */
     @JsonProperty("output_index") @ExcludeMissing fun _outputIndex(): JsonField<Long> = outputIndex
 
+    /**
+     * Returns the raw JSON value of [sequenceNumber].
+     *
+     * Unlike [sequenceNumber], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    @JsonProperty("sequence_number")
+    @ExcludeMissing
+    fun _sequenceNumber(): JsonField<Long> = sequenceNumber
+
     @JsonAnySetter
     private fun putAdditionalProperty(key: String, value: JsonValue) {
         additionalProperties.put(key, value)
@@ -100,6 +121,7 @@ private constructor(
          * ```java
          * .item()
          * .outputIndex()
+         * .sequenceNumber()
          * ```
          */
         @JvmStatic fun builder() = Builder()
@@ -110,6 +132,7 @@ private constructor(
 
         private var item: JsonField<ResponseOutputItem>? = null
         private var outputIndex: JsonField<Long>? = null
+        private var sequenceNumber: JsonField<Long>? = null
         private var type: JsonValue = JsonValue.from("response.output_item.done")
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
@@ -117,6 +140,7 @@ private constructor(
         internal fun from(responseOutputItemDoneEvent: ResponseOutputItemDoneEvent) = apply {
             item = responseOutputItemDoneEvent.item
             outputIndex = responseOutputItemDoneEvent.outputIndex
+            sequenceNumber = responseOutputItemDoneEvent.sequenceNumber
             type = responseOutputItemDoneEvent.type
             additionalProperties = responseOutputItemDoneEvent.additionalProperties.toMutableMap()
         }
@@ -155,6 +179,38 @@ private constructor(
         /** Alias for calling [item] with `ResponseOutputItem.ofReasoning(reasoning)`. */
         fun item(reasoning: ResponseReasoningItem) = item(ResponseOutputItem.ofReasoning(reasoning))
 
+        /**
+         * Alias for calling [item] with
+         * `ResponseOutputItem.ofImageGenerationCall(imageGenerationCall)`.
+         */
+        fun item(imageGenerationCall: ResponseOutputItem.ImageGenerationCall) =
+            item(ResponseOutputItem.ofImageGenerationCall(imageGenerationCall))
+
+        /**
+         * Alias for calling [item] with
+         * `ResponseOutputItem.ofCodeInterpreterCall(codeInterpreterCall)`.
+         */
+        fun item(codeInterpreterCall: ResponseCodeInterpreterToolCall) =
+            item(ResponseOutputItem.ofCodeInterpreterCall(codeInterpreterCall))
+
+        /** Alias for calling [item] with `ResponseOutputItem.ofLocalShellCall(localShellCall)`. */
+        fun item(localShellCall: ResponseOutputItem.LocalShellCall) =
+            item(ResponseOutputItem.ofLocalShellCall(localShellCall))
+
+        /** Alias for calling [item] with `ResponseOutputItem.ofMcpCall(mcpCall)`. */
+        fun item(mcpCall: ResponseOutputItem.McpCall) = item(ResponseOutputItem.ofMcpCall(mcpCall))
+
+        /** Alias for calling [item] with `ResponseOutputItem.ofMcpListTools(mcpListTools)`. */
+        fun item(mcpListTools: ResponseOutputItem.McpListTools) =
+            item(ResponseOutputItem.ofMcpListTools(mcpListTools))
+
+        /**
+         * Alias for calling [item] with
+         * `ResponseOutputItem.ofMcpApprovalRequest(mcpApprovalRequest)`.
+         */
+        fun item(mcpApprovalRequest: ResponseOutputItem.McpApprovalRequest) =
+            item(ResponseOutputItem.ofMcpApprovalRequest(mcpApprovalRequest))
+
         /** The index of the output item that was marked done. */
         fun outputIndex(outputIndex: Long) = outputIndex(JsonField.of(outputIndex))
 
@@ -166,6 +222,20 @@ private constructor(
          * value.
          */
         fun outputIndex(outputIndex: JsonField<Long>) = apply { this.outputIndex = outputIndex }
+
+        /** The sequence number of this event. */
+        fun sequenceNumber(sequenceNumber: Long) = sequenceNumber(JsonField.of(sequenceNumber))
+
+        /**
+         * Sets [Builder.sequenceNumber] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.sequenceNumber] with a well-typed [Long] value instead.
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
+         */
+        fun sequenceNumber(sequenceNumber: JsonField<Long>) = apply {
+            this.sequenceNumber = sequenceNumber
+        }
 
         /**
          * Sets the field to an arbitrary JSON value.
@@ -209,6 +279,7 @@ private constructor(
          * ```java
          * .item()
          * .outputIndex()
+         * .sequenceNumber()
          * ```
          *
          * @throws IllegalStateException if any required field is unset.
@@ -217,6 +288,7 @@ private constructor(
             ResponseOutputItemDoneEvent(
                 checkRequired("item", item),
                 checkRequired("outputIndex", outputIndex),
+                checkRequired("sequenceNumber", sequenceNumber),
                 type,
                 additionalProperties.toMutableMap(),
             )
@@ -231,6 +303,7 @@ private constructor(
 
         item().validate()
         outputIndex()
+        sequenceNumber()
         _type().let {
             if (it != JsonValue.from("response.output_item.done")) {
                 throw OpenAIInvalidDataException("'type' is invalid, received $it")
@@ -256,6 +329,7 @@ private constructor(
     internal fun validity(): Int =
         (item.asKnown().getOrNull()?.validity() ?: 0) +
             (if (outputIndex.asKnown().isPresent) 1 else 0) +
+            (if (sequenceNumber.asKnown().isPresent) 1 else 0) +
             type.let { if (it == JsonValue.from("response.output_item.done")) 1 else 0 }
 
     override fun equals(other: Any?): Boolean {
@@ -263,15 +337,15 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is ResponseOutputItemDoneEvent && item == other.item && outputIndex == other.outputIndex && type == other.type && additionalProperties == other.additionalProperties /* spotless:on */
+        return /* spotless:off */ other is ResponseOutputItemDoneEvent && item == other.item && outputIndex == other.outputIndex && sequenceNumber == other.sequenceNumber && type == other.type && additionalProperties == other.additionalProperties /* spotless:on */
     }
 
     /* spotless:off */
-    private val hashCode: Int by lazy { Objects.hash(item, outputIndex, type, additionalProperties) }
+    private val hashCode: Int by lazy { Objects.hash(item, outputIndex, sequenceNumber, type, additionalProperties) }
     /* spotless:on */
 
     override fun hashCode(): Int = hashCode
 
     override fun toString() =
-        "ResponseOutputItemDoneEvent{item=$item, outputIndex=$outputIndex, type=$type, additionalProperties=$additionalProperties}"
+        "ResponseOutputItemDoneEvent{item=$item, outputIndex=$outputIndex, sequenceNumber=$sequenceNumber, type=$type, additionalProperties=$additionalProperties}"
 }

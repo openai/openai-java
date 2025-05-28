@@ -54,12 +54,29 @@ private constructor(
     private val reasoningSummaryTextDone: ResponseReasoningSummaryTextDoneEvent? = null,
     private val refusalDelta: ResponseRefusalDeltaEvent? = null,
     private val refusalDone: ResponseRefusalDoneEvent? = null,
-    private val outputTextAnnotationAdded: ResponseTextAnnotationDeltaEvent? = null,
     private val outputTextDelta: ResponseTextDeltaEvent? = null,
     private val outputTextDone: ResponseTextDoneEvent? = null,
     private val webSearchCallCompleted: ResponseWebSearchCallCompletedEvent? = null,
     private val webSearchCallInProgress: ResponseWebSearchCallInProgressEvent? = null,
     private val webSearchCallSearching: ResponseWebSearchCallSearchingEvent? = null,
+    private val imageGenerationCallCompleted: ResponseImageGenCallCompletedEvent? = null,
+    private val imageGenerationCallGenerating: ResponseImageGenCallGeneratingEvent? = null,
+    private val imageGenerationCallInProgress: ResponseImageGenCallInProgressEvent? = null,
+    private val imageGenerationCallPartialImage: ResponseImageGenCallPartialImageEvent? = null,
+    private val mcpCallArgumentsDelta: ResponseMcpCallArgumentsDeltaEvent? = null,
+    private val mcpCallArgumentsDone: ResponseMcpCallArgumentsDoneEvent? = null,
+    private val mcpCallCompleted: ResponseMcpCallCompletedEvent? = null,
+    private val mcpCallFailed: ResponseMcpCallFailedEvent? = null,
+    private val mcpCallInProgress: ResponseMcpCallInProgressEvent? = null,
+    private val mcpListToolsCompleted: ResponseMcpListToolsCompletedEvent? = null,
+    private val mcpListToolsFailed: ResponseMcpListToolsFailedEvent? = null,
+    private val mcpListToolsInProgress: ResponseMcpListToolsInProgressEvent? = null,
+    private val outputTextAnnotationAdded: ResponseOutputTextAnnotationAddedEvent? = null,
+    private val queued: ResponseQueuedEvent? = null,
+    private val reasoningDelta: ResponseReasoningDeltaEvent? = null,
+    private val reasoningDone: ResponseReasoningDoneEvent? = null,
+    private val reasoningSummaryDelta: ResponseReasoningSummaryDeltaEvent? = null,
+    private val reasoningSummaryDone: ResponseReasoningSummaryDoneEvent? = null,
     private val _json: JsonValue? = null,
 ) {
 
@@ -173,10 +190,6 @@ private constructor(
     /** Emitted when refusal text is finalized. */
     fun refusalDone(): Optional<ResponseRefusalDoneEvent> = Optional.ofNullable(refusalDone)
 
-    /** Emitted when a text annotation is added. */
-    fun outputTextAnnotationAdded(): Optional<ResponseTextAnnotationDeltaEvent> =
-        Optional.ofNullable(outputTextAnnotationAdded)
-
     /** Emitted when there is an additional text delta. */
     fun outputTextDelta(): Optional<ResponseTextDeltaEvent> = Optional.ofNullable(outputTextDelta)
 
@@ -194,6 +207,80 @@ private constructor(
     /** Emitted when a web search call is executing. */
     fun webSearchCallSearching(): Optional<ResponseWebSearchCallSearchingEvent> =
         Optional.ofNullable(webSearchCallSearching)
+
+    /**
+     * Emitted when an image generation tool call has completed and the final image is available.
+     */
+    fun imageGenerationCallCompleted(): Optional<ResponseImageGenCallCompletedEvent> =
+        Optional.ofNullable(imageGenerationCallCompleted)
+
+    /**
+     * Emitted when an image generation tool call is actively generating an image (intermediate
+     * state).
+     */
+    fun imageGenerationCallGenerating(): Optional<ResponseImageGenCallGeneratingEvent> =
+        Optional.ofNullable(imageGenerationCallGenerating)
+
+    /** Emitted when an image generation tool call is in progress. */
+    fun imageGenerationCallInProgress(): Optional<ResponseImageGenCallInProgressEvent> =
+        Optional.ofNullable(imageGenerationCallInProgress)
+
+    /** Emitted when a partial image is available during image generation streaming. */
+    fun imageGenerationCallPartialImage(): Optional<ResponseImageGenCallPartialImageEvent> =
+        Optional.ofNullable(imageGenerationCallPartialImage)
+
+    /** Emitted when there is a delta (partial update) to the arguments of an MCP tool call. */
+    fun mcpCallArgumentsDelta(): Optional<ResponseMcpCallArgumentsDeltaEvent> =
+        Optional.ofNullable(mcpCallArgumentsDelta)
+
+    /** Emitted when the arguments for an MCP tool call are finalized. */
+    fun mcpCallArgumentsDone(): Optional<ResponseMcpCallArgumentsDoneEvent> =
+        Optional.ofNullable(mcpCallArgumentsDone)
+
+    /** Emitted when an MCP tool call has completed successfully. */
+    fun mcpCallCompleted(): Optional<ResponseMcpCallCompletedEvent> =
+        Optional.ofNullable(mcpCallCompleted)
+
+    /** Emitted when an MCP tool call has failed. */
+    fun mcpCallFailed(): Optional<ResponseMcpCallFailedEvent> = Optional.ofNullable(mcpCallFailed)
+
+    /** Emitted when an MCP tool call is in progress. */
+    fun mcpCallInProgress(): Optional<ResponseMcpCallInProgressEvent> =
+        Optional.ofNullable(mcpCallInProgress)
+
+    /** Emitted when the list of available MCP tools has been successfully retrieved. */
+    fun mcpListToolsCompleted(): Optional<ResponseMcpListToolsCompletedEvent> =
+        Optional.ofNullable(mcpListToolsCompleted)
+
+    /** Emitted when the attempt to list available MCP tools has failed. */
+    fun mcpListToolsFailed(): Optional<ResponseMcpListToolsFailedEvent> =
+        Optional.ofNullable(mcpListToolsFailed)
+
+    /** Emitted when the system is in the process of retrieving the list of available MCP tools. */
+    fun mcpListToolsInProgress(): Optional<ResponseMcpListToolsInProgressEvent> =
+        Optional.ofNullable(mcpListToolsInProgress)
+
+    /** Emitted when an annotation is added to output text content. */
+    fun outputTextAnnotationAdded(): Optional<ResponseOutputTextAnnotationAddedEvent> =
+        Optional.ofNullable(outputTextAnnotationAdded)
+
+    /** Emitted when a response is queued and waiting to be processed. */
+    fun queued(): Optional<ResponseQueuedEvent> = Optional.ofNullable(queued)
+
+    /** Emitted when there is a delta (partial update) to the reasoning content. */
+    fun reasoningDelta(): Optional<ResponseReasoningDeltaEvent> =
+        Optional.ofNullable(reasoningDelta)
+
+    /** Emitted when the reasoning content is finalized for an item. */
+    fun reasoningDone(): Optional<ResponseReasoningDoneEvent> = Optional.ofNullable(reasoningDone)
+
+    /** Emitted when there is a delta (partial update) to the reasoning summary content. */
+    fun reasoningSummaryDelta(): Optional<ResponseReasoningSummaryDeltaEvent> =
+        Optional.ofNullable(reasoningSummaryDelta)
+
+    /** Emitted when the reasoning summary content is finalized for an item. */
+    fun reasoningSummaryDone(): Optional<ResponseReasoningSummaryDoneEvent> =
+        Optional.ofNullable(reasoningSummaryDone)
 
     fun isAudioDelta(): Boolean = audioDelta != null
 
@@ -255,8 +342,6 @@ private constructor(
 
     fun isRefusalDone(): Boolean = refusalDone != null
 
-    fun isOutputTextAnnotationAdded(): Boolean = outputTextAnnotationAdded != null
-
     fun isOutputTextDelta(): Boolean = outputTextDelta != null
 
     fun isOutputTextDone(): Boolean = outputTextDone != null
@@ -266,6 +351,42 @@ private constructor(
     fun isWebSearchCallInProgress(): Boolean = webSearchCallInProgress != null
 
     fun isWebSearchCallSearching(): Boolean = webSearchCallSearching != null
+
+    fun isImageGenerationCallCompleted(): Boolean = imageGenerationCallCompleted != null
+
+    fun isImageGenerationCallGenerating(): Boolean = imageGenerationCallGenerating != null
+
+    fun isImageGenerationCallInProgress(): Boolean = imageGenerationCallInProgress != null
+
+    fun isImageGenerationCallPartialImage(): Boolean = imageGenerationCallPartialImage != null
+
+    fun isMcpCallArgumentsDelta(): Boolean = mcpCallArgumentsDelta != null
+
+    fun isMcpCallArgumentsDone(): Boolean = mcpCallArgumentsDone != null
+
+    fun isMcpCallCompleted(): Boolean = mcpCallCompleted != null
+
+    fun isMcpCallFailed(): Boolean = mcpCallFailed != null
+
+    fun isMcpCallInProgress(): Boolean = mcpCallInProgress != null
+
+    fun isMcpListToolsCompleted(): Boolean = mcpListToolsCompleted != null
+
+    fun isMcpListToolsFailed(): Boolean = mcpListToolsFailed != null
+
+    fun isMcpListToolsInProgress(): Boolean = mcpListToolsInProgress != null
+
+    fun isOutputTextAnnotationAdded(): Boolean = outputTextAnnotationAdded != null
+
+    fun isQueued(): Boolean = queued != null
+
+    fun isReasoningDelta(): Boolean = reasoningDelta != null
+
+    fun isReasoningDone(): Boolean = reasoningDone != null
+
+    fun isReasoningSummaryDelta(): Boolean = reasoningSummaryDelta != null
+
+    fun isReasoningSummaryDone(): Boolean = reasoningSummaryDone != null
 
     /** Emitted when there is a partial audio response. */
     fun asAudioDelta(): ResponseAudioDeltaEvent = audioDelta.getOrThrow("audioDelta")
@@ -377,10 +498,6 @@ private constructor(
     /** Emitted when refusal text is finalized. */
     fun asRefusalDone(): ResponseRefusalDoneEvent = refusalDone.getOrThrow("refusalDone")
 
-    /** Emitted when a text annotation is added. */
-    fun asOutputTextAnnotationAdded(): ResponseTextAnnotationDeltaEvent =
-        outputTextAnnotationAdded.getOrThrow("outputTextAnnotationAdded")
-
     /** Emitted when there is an additional text delta. */
     fun asOutputTextDelta(): ResponseTextDeltaEvent = outputTextDelta.getOrThrow("outputTextDelta")
 
@@ -398,6 +515,80 @@ private constructor(
     /** Emitted when a web search call is executing. */
     fun asWebSearchCallSearching(): ResponseWebSearchCallSearchingEvent =
         webSearchCallSearching.getOrThrow("webSearchCallSearching")
+
+    /**
+     * Emitted when an image generation tool call has completed and the final image is available.
+     */
+    fun asImageGenerationCallCompleted(): ResponseImageGenCallCompletedEvent =
+        imageGenerationCallCompleted.getOrThrow("imageGenerationCallCompleted")
+
+    /**
+     * Emitted when an image generation tool call is actively generating an image (intermediate
+     * state).
+     */
+    fun asImageGenerationCallGenerating(): ResponseImageGenCallGeneratingEvent =
+        imageGenerationCallGenerating.getOrThrow("imageGenerationCallGenerating")
+
+    /** Emitted when an image generation tool call is in progress. */
+    fun asImageGenerationCallInProgress(): ResponseImageGenCallInProgressEvent =
+        imageGenerationCallInProgress.getOrThrow("imageGenerationCallInProgress")
+
+    /** Emitted when a partial image is available during image generation streaming. */
+    fun asImageGenerationCallPartialImage(): ResponseImageGenCallPartialImageEvent =
+        imageGenerationCallPartialImage.getOrThrow("imageGenerationCallPartialImage")
+
+    /** Emitted when there is a delta (partial update) to the arguments of an MCP tool call. */
+    fun asMcpCallArgumentsDelta(): ResponseMcpCallArgumentsDeltaEvent =
+        mcpCallArgumentsDelta.getOrThrow("mcpCallArgumentsDelta")
+
+    /** Emitted when the arguments for an MCP tool call are finalized. */
+    fun asMcpCallArgumentsDone(): ResponseMcpCallArgumentsDoneEvent =
+        mcpCallArgumentsDone.getOrThrow("mcpCallArgumentsDone")
+
+    /** Emitted when an MCP tool call has completed successfully. */
+    fun asMcpCallCompleted(): ResponseMcpCallCompletedEvent =
+        mcpCallCompleted.getOrThrow("mcpCallCompleted")
+
+    /** Emitted when an MCP tool call has failed. */
+    fun asMcpCallFailed(): ResponseMcpCallFailedEvent = mcpCallFailed.getOrThrow("mcpCallFailed")
+
+    /** Emitted when an MCP tool call is in progress. */
+    fun asMcpCallInProgress(): ResponseMcpCallInProgressEvent =
+        mcpCallInProgress.getOrThrow("mcpCallInProgress")
+
+    /** Emitted when the list of available MCP tools has been successfully retrieved. */
+    fun asMcpListToolsCompleted(): ResponseMcpListToolsCompletedEvent =
+        mcpListToolsCompleted.getOrThrow("mcpListToolsCompleted")
+
+    /** Emitted when the attempt to list available MCP tools has failed. */
+    fun asMcpListToolsFailed(): ResponseMcpListToolsFailedEvent =
+        mcpListToolsFailed.getOrThrow("mcpListToolsFailed")
+
+    /** Emitted when the system is in the process of retrieving the list of available MCP tools. */
+    fun asMcpListToolsInProgress(): ResponseMcpListToolsInProgressEvent =
+        mcpListToolsInProgress.getOrThrow("mcpListToolsInProgress")
+
+    /** Emitted when an annotation is added to output text content. */
+    fun asOutputTextAnnotationAdded(): ResponseOutputTextAnnotationAddedEvent =
+        outputTextAnnotationAdded.getOrThrow("outputTextAnnotationAdded")
+
+    /** Emitted when a response is queued and waiting to be processed. */
+    fun asQueued(): ResponseQueuedEvent = queued.getOrThrow("queued")
+
+    /** Emitted when there is a delta (partial update) to the reasoning content. */
+    fun asReasoningDelta(): ResponseReasoningDeltaEvent =
+        reasoningDelta.getOrThrow("reasoningDelta")
+
+    /** Emitted when the reasoning content is finalized for an item. */
+    fun asReasoningDone(): ResponseReasoningDoneEvent = reasoningDone.getOrThrow("reasoningDone")
+
+    /** Emitted when there is a delta (partial update) to the reasoning summary content. */
+    fun asReasoningSummaryDelta(): ResponseReasoningSummaryDeltaEvent =
+        reasoningSummaryDelta.getOrThrow("reasoningSummaryDelta")
+
+    /** Emitted when the reasoning summary content is finalized for an item. */
+    fun asReasoningSummaryDone(): ResponseReasoningSummaryDoneEvent =
+        reasoningSummaryDone.getOrThrow("reasoningSummaryDone")
 
     fun _json(): Optional<JsonValue> = Optional.ofNullable(_json)
 
@@ -447,8 +638,6 @@ private constructor(
                 visitor.visitReasoningSummaryTextDone(reasoningSummaryTextDone)
             refusalDelta != null -> visitor.visitRefusalDelta(refusalDelta)
             refusalDone != null -> visitor.visitRefusalDone(refusalDone)
-            outputTextAnnotationAdded != null ->
-                visitor.visitOutputTextAnnotationAdded(outputTextAnnotationAdded)
             outputTextDelta != null -> visitor.visitOutputTextDelta(outputTextDelta)
             outputTextDone != null -> visitor.visitOutputTextDone(outputTextDone)
             webSearchCallCompleted != null ->
@@ -457,6 +646,33 @@ private constructor(
                 visitor.visitWebSearchCallInProgress(webSearchCallInProgress)
             webSearchCallSearching != null ->
                 visitor.visitWebSearchCallSearching(webSearchCallSearching)
+            imageGenerationCallCompleted != null ->
+                visitor.visitImageGenerationCallCompleted(imageGenerationCallCompleted)
+            imageGenerationCallGenerating != null ->
+                visitor.visitImageGenerationCallGenerating(imageGenerationCallGenerating)
+            imageGenerationCallInProgress != null ->
+                visitor.visitImageGenerationCallInProgress(imageGenerationCallInProgress)
+            imageGenerationCallPartialImage != null ->
+                visitor.visitImageGenerationCallPartialImage(imageGenerationCallPartialImage)
+            mcpCallArgumentsDelta != null ->
+                visitor.visitMcpCallArgumentsDelta(mcpCallArgumentsDelta)
+            mcpCallArgumentsDone != null -> visitor.visitMcpCallArgumentsDone(mcpCallArgumentsDone)
+            mcpCallCompleted != null -> visitor.visitMcpCallCompleted(mcpCallCompleted)
+            mcpCallFailed != null -> visitor.visitMcpCallFailed(mcpCallFailed)
+            mcpCallInProgress != null -> visitor.visitMcpCallInProgress(mcpCallInProgress)
+            mcpListToolsCompleted != null ->
+                visitor.visitMcpListToolsCompleted(mcpListToolsCompleted)
+            mcpListToolsFailed != null -> visitor.visitMcpListToolsFailed(mcpListToolsFailed)
+            mcpListToolsInProgress != null ->
+                visitor.visitMcpListToolsInProgress(mcpListToolsInProgress)
+            outputTextAnnotationAdded != null ->
+                visitor.visitOutputTextAnnotationAdded(outputTextAnnotationAdded)
+            queued != null -> visitor.visitQueued(queued)
+            reasoningDelta != null -> visitor.visitReasoningDelta(reasoningDelta)
+            reasoningDone != null -> visitor.visitReasoningDone(reasoningDone)
+            reasoningSummaryDelta != null ->
+                visitor.visitReasoningSummaryDelta(reasoningSummaryDelta)
+            reasoningSummaryDone != null -> visitor.visitReasoningSummaryDone(reasoningSummaryDone)
             else -> visitor.unknown(_json)
         }
 
@@ -623,12 +839,6 @@ private constructor(
                     refusalDone.validate()
                 }
 
-                override fun visitOutputTextAnnotationAdded(
-                    outputTextAnnotationAdded: ResponseTextAnnotationDeltaEvent
-                ) {
-                    outputTextAnnotationAdded.validate()
-                }
-
                 override fun visitOutputTextDelta(outputTextDelta: ResponseTextDeltaEvent) {
                     outputTextDelta.validate()
                 }
@@ -653,6 +863,106 @@ private constructor(
                     webSearchCallSearching: ResponseWebSearchCallSearchingEvent
                 ) {
                     webSearchCallSearching.validate()
+                }
+
+                override fun visitImageGenerationCallCompleted(
+                    imageGenerationCallCompleted: ResponseImageGenCallCompletedEvent
+                ) {
+                    imageGenerationCallCompleted.validate()
+                }
+
+                override fun visitImageGenerationCallGenerating(
+                    imageGenerationCallGenerating: ResponseImageGenCallGeneratingEvent
+                ) {
+                    imageGenerationCallGenerating.validate()
+                }
+
+                override fun visitImageGenerationCallInProgress(
+                    imageGenerationCallInProgress: ResponseImageGenCallInProgressEvent
+                ) {
+                    imageGenerationCallInProgress.validate()
+                }
+
+                override fun visitImageGenerationCallPartialImage(
+                    imageGenerationCallPartialImage: ResponseImageGenCallPartialImageEvent
+                ) {
+                    imageGenerationCallPartialImage.validate()
+                }
+
+                override fun visitMcpCallArgumentsDelta(
+                    mcpCallArgumentsDelta: ResponseMcpCallArgumentsDeltaEvent
+                ) {
+                    mcpCallArgumentsDelta.validate()
+                }
+
+                override fun visitMcpCallArgumentsDone(
+                    mcpCallArgumentsDone: ResponseMcpCallArgumentsDoneEvent
+                ) {
+                    mcpCallArgumentsDone.validate()
+                }
+
+                override fun visitMcpCallCompleted(
+                    mcpCallCompleted: ResponseMcpCallCompletedEvent
+                ) {
+                    mcpCallCompleted.validate()
+                }
+
+                override fun visitMcpCallFailed(mcpCallFailed: ResponseMcpCallFailedEvent) {
+                    mcpCallFailed.validate()
+                }
+
+                override fun visitMcpCallInProgress(
+                    mcpCallInProgress: ResponseMcpCallInProgressEvent
+                ) {
+                    mcpCallInProgress.validate()
+                }
+
+                override fun visitMcpListToolsCompleted(
+                    mcpListToolsCompleted: ResponseMcpListToolsCompletedEvent
+                ) {
+                    mcpListToolsCompleted.validate()
+                }
+
+                override fun visitMcpListToolsFailed(
+                    mcpListToolsFailed: ResponseMcpListToolsFailedEvent
+                ) {
+                    mcpListToolsFailed.validate()
+                }
+
+                override fun visitMcpListToolsInProgress(
+                    mcpListToolsInProgress: ResponseMcpListToolsInProgressEvent
+                ) {
+                    mcpListToolsInProgress.validate()
+                }
+
+                override fun visitOutputTextAnnotationAdded(
+                    outputTextAnnotationAdded: ResponseOutputTextAnnotationAddedEvent
+                ) {
+                    outputTextAnnotationAdded.validate()
+                }
+
+                override fun visitQueued(queued: ResponseQueuedEvent) {
+                    queued.validate()
+                }
+
+                override fun visitReasoningDelta(reasoningDelta: ResponseReasoningDeltaEvent) {
+                    reasoningDelta.validate()
+                }
+
+                override fun visitReasoningDone(reasoningDone: ResponseReasoningDoneEvent) {
+                    reasoningDone.validate()
+                }
+
+                override fun visitReasoningSummaryDelta(
+                    reasoningSummaryDelta: ResponseReasoningSummaryDeltaEvent
+                ) {
+                    reasoningSummaryDelta.validate()
+                }
+
+                override fun visitReasoningSummaryDone(
+                    reasoningSummaryDone: ResponseReasoningSummaryDoneEvent
+                ) {
+                    reasoningSummaryDone.validate()
                 }
             }
         )
@@ -780,10 +1090,6 @@ private constructor(
                 override fun visitRefusalDone(refusalDone: ResponseRefusalDoneEvent) =
                     refusalDone.validity()
 
-                override fun visitOutputTextAnnotationAdded(
-                    outputTextAnnotationAdded: ResponseTextAnnotationDeltaEvent
-                ) = outputTextAnnotationAdded.validity()
-
                 override fun visitOutputTextDelta(outputTextDelta: ResponseTextDeltaEvent) =
                     outputTextDelta.validity()
 
@@ -802,6 +1108,73 @@ private constructor(
                     webSearchCallSearching: ResponseWebSearchCallSearchingEvent
                 ) = webSearchCallSearching.validity()
 
+                override fun visitImageGenerationCallCompleted(
+                    imageGenerationCallCompleted: ResponseImageGenCallCompletedEvent
+                ) = imageGenerationCallCompleted.validity()
+
+                override fun visitImageGenerationCallGenerating(
+                    imageGenerationCallGenerating: ResponseImageGenCallGeneratingEvent
+                ) = imageGenerationCallGenerating.validity()
+
+                override fun visitImageGenerationCallInProgress(
+                    imageGenerationCallInProgress: ResponseImageGenCallInProgressEvent
+                ) = imageGenerationCallInProgress.validity()
+
+                override fun visitImageGenerationCallPartialImage(
+                    imageGenerationCallPartialImage: ResponseImageGenCallPartialImageEvent
+                ) = imageGenerationCallPartialImage.validity()
+
+                override fun visitMcpCallArgumentsDelta(
+                    mcpCallArgumentsDelta: ResponseMcpCallArgumentsDeltaEvent
+                ) = mcpCallArgumentsDelta.validity()
+
+                override fun visitMcpCallArgumentsDone(
+                    mcpCallArgumentsDone: ResponseMcpCallArgumentsDoneEvent
+                ) = mcpCallArgumentsDone.validity()
+
+                override fun visitMcpCallCompleted(
+                    mcpCallCompleted: ResponseMcpCallCompletedEvent
+                ) = mcpCallCompleted.validity()
+
+                override fun visitMcpCallFailed(mcpCallFailed: ResponseMcpCallFailedEvent) =
+                    mcpCallFailed.validity()
+
+                override fun visitMcpCallInProgress(
+                    mcpCallInProgress: ResponseMcpCallInProgressEvent
+                ) = mcpCallInProgress.validity()
+
+                override fun visitMcpListToolsCompleted(
+                    mcpListToolsCompleted: ResponseMcpListToolsCompletedEvent
+                ) = mcpListToolsCompleted.validity()
+
+                override fun visitMcpListToolsFailed(
+                    mcpListToolsFailed: ResponseMcpListToolsFailedEvent
+                ) = mcpListToolsFailed.validity()
+
+                override fun visitMcpListToolsInProgress(
+                    mcpListToolsInProgress: ResponseMcpListToolsInProgressEvent
+                ) = mcpListToolsInProgress.validity()
+
+                override fun visitOutputTextAnnotationAdded(
+                    outputTextAnnotationAdded: ResponseOutputTextAnnotationAddedEvent
+                ) = outputTextAnnotationAdded.validity()
+
+                override fun visitQueued(queued: ResponseQueuedEvent) = queued.validity()
+
+                override fun visitReasoningDelta(reasoningDelta: ResponseReasoningDeltaEvent) =
+                    reasoningDelta.validity()
+
+                override fun visitReasoningDone(reasoningDone: ResponseReasoningDoneEvent) =
+                    reasoningDone.validity()
+
+                override fun visitReasoningSummaryDelta(
+                    reasoningSummaryDelta: ResponseReasoningSummaryDeltaEvent
+                ) = reasoningSummaryDelta.validity()
+
+                override fun visitReasoningSummaryDone(
+                    reasoningSummaryDone: ResponseReasoningSummaryDoneEvent
+                ) = reasoningSummaryDone.validity()
+
                 override fun unknown(json: JsonValue?) = 0
             }
         )
@@ -811,10 +1184,10 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is ResponseStreamEvent && audioDelta == other.audioDelta && audioDone == other.audioDone && audioTranscriptDelta == other.audioTranscriptDelta && audioTranscriptDone == other.audioTranscriptDone && codeInterpreterCallCodeDelta == other.codeInterpreterCallCodeDelta && codeInterpreterCallCodeDone == other.codeInterpreterCallCodeDone && codeInterpreterCallCompleted == other.codeInterpreterCallCompleted && codeInterpreterCallInProgress == other.codeInterpreterCallInProgress && codeInterpreterCallInterpreting == other.codeInterpreterCallInterpreting && completed == other.completed && contentPartAdded == other.contentPartAdded && contentPartDone == other.contentPartDone && created == other.created && error == other.error && fileSearchCallCompleted == other.fileSearchCallCompleted && fileSearchCallInProgress == other.fileSearchCallInProgress && fileSearchCallSearching == other.fileSearchCallSearching && functionCallArgumentsDelta == other.functionCallArgumentsDelta && functionCallArgumentsDone == other.functionCallArgumentsDone && inProgress == other.inProgress && failed == other.failed && incomplete == other.incomplete && outputItemAdded == other.outputItemAdded && outputItemDone == other.outputItemDone && reasoningSummaryPartAdded == other.reasoningSummaryPartAdded && reasoningSummaryPartDone == other.reasoningSummaryPartDone && reasoningSummaryTextDelta == other.reasoningSummaryTextDelta && reasoningSummaryTextDone == other.reasoningSummaryTextDone && refusalDelta == other.refusalDelta && refusalDone == other.refusalDone && outputTextAnnotationAdded == other.outputTextAnnotationAdded && outputTextDelta == other.outputTextDelta && outputTextDone == other.outputTextDone && webSearchCallCompleted == other.webSearchCallCompleted && webSearchCallInProgress == other.webSearchCallInProgress && webSearchCallSearching == other.webSearchCallSearching /* spotless:on */
+        return /* spotless:off */ other is ResponseStreamEvent && audioDelta == other.audioDelta && audioDone == other.audioDone && audioTranscriptDelta == other.audioTranscriptDelta && audioTranscriptDone == other.audioTranscriptDone && codeInterpreterCallCodeDelta == other.codeInterpreterCallCodeDelta && codeInterpreterCallCodeDone == other.codeInterpreterCallCodeDone && codeInterpreterCallCompleted == other.codeInterpreterCallCompleted && codeInterpreterCallInProgress == other.codeInterpreterCallInProgress && codeInterpreterCallInterpreting == other.codeInterpreterCallInterpreting && completed == other.completed && contentPartAdded == other.contentPartAdded && contentPartDone == other.contentPartDone && created == other.created && error == other.error && fileSearchCallCompleted == other.fileSearchCallCompleted && fileSearchCallInProgress == other.fileSearchCallInProgress && fileSearchCallSearching == other.fileSearchCallSearching && functionCallArgumentsDelta == other.functionCallArgumentsDelta && functionCallArgumentsDone == other.functionCallArgumentsDone && inProgress == other.inProgress && failed == other.failed && incomplete == other.incomplete && outputItemAdded == other.outputItemAdded && outputItemDone == other.outputItemDone && reasoningSummaryPartAdded == other.reasoningSummaryPartAdded && reasoningSummaryPartDone == other.reasoningSummaryPartDone && reasoningSummaryTextDelta == other.reasoningSummaryTextDelta && reasoningSummaryTextDone == other.reasoningSummaryTextDone && refusalDelta == other.refusalDelta && refusalDone == other.refusalDone && outputTextDelta == other.outputTextDelta && outputTextDone == other.outputTextDone && webSearchCallCompleted == other.webSearchCallCompleted && webSearchCallInProgress == other.webSearchCallInProgress && webSearchCallSearching == other.webSearchCallSearching && imageGenerationCallCompleted == other.imageGenerationCallCompleted && imageGenerationCallGenerating == other.imageGenerationCallGenerating && imageGenerationCallInProgress == other.imageGenerationCallInProgress && imageGenerationCallPartialImage == other.imageGenerationCallPartialImage && mcpCallArgumentsDelta == other.mcpCallArgumentsDelta && mcpCallArgumentsDone == other.mcpCallArgumentsDone && mcpCallCompleted == other.mcpCallCompleted && mcpCallFailed == other.mcpCallFailed && mcpCallInProgress == other.mcpCallInProgress && mcpListToolsCompleted == other.mcpListToolsCompleted && mcpListToolsFailed == other.mcpListToolsFailed && mcpListToolsInProgress == other.mcpListToolsInProgress && outputTextAnnotationAdded == other.outputTextAnnotationAdded && queued == other.queued && reasoningDelta == other.reasoningDelta && reasoningDone == other.reasoningDone && reasoningSummaryDelta == other.reasoningSummaryDelta && reasoningSummaryDone == other.reasoningSummaryDone /* spotless:on */
     }
 
-    override fun hashCode(): Int = /* spotless:off */ Objects.hash(audioDelta, audioDone, audioTranscriptDelta, audioTranscriptDone, codeInterpreterCallCodeDelta, codeInterpreterCallCodeDone, codeInterpreterCallCompleted, codeInterpreterCallInProgress, codeInterpreterCallInterpreting, completed, contentPartAdded, contentPartDone, created, error, fileSearchCallCompleted, fileSearchCallInProgress, fileSearchCallSearching, functionCallArgumentsDelta, functionCallArgumentsDone, inProgress, failed, incomplete, outputItemAdded, outputItemDone, reasoningSummaryPartAdded, reasoningSummaryPartDone, reasoningSummaryTextDelta, reasoningSummaryTextDone, refusalDelta, refusalDone, outputTextAnnotationAdded, outputTextDelta, outputTextDone, webSearchCallCompleted, webSearchCallInProgress, webSearchCallSearching) /* spotless:on */
+    override fun hashCode(): Int = /* spotless:off */ Objects.hash(audioDelta, audioDone, audioTranscriptDelta, audioTranscriptDone, codeInterpreterCallCodeDelta, codeInterpreterCallCodeDone, codeInterpreterCallCompleted, codeInterpreterCallInProgress, codeInterpreterCallInterpreting, completed, contentPartAdded, contentPartDone, created, error, fileSearchCallCompleted, fileSearchCallInProgress, fileSearchCallSearching, functionCallArgumentsDelta, functionCallArgumentsDone, inProgress, failed, incomplete, outputItemAdded, outputItemDone, reasoningSummaryPartAdded, reasoningSummaryPartDone, reasoningSummaryTextDelta, reasoningSummaryTextDone, refusalDelta, refusalDone, outputTextDelta, outputTextDone, webSearchCallCompleted, webSearchCallInProgress, webSearchCallSearching, imageGenerationCallCompleted, imageGenerationCallGenerating, imageGenerationCallInProgress, imageGenerationCallPartialImage, mcpCallArgumentsDelta, mcpCallArgumentsDone, mcpCallCompleted, mcpCallFailed, mcpCallInProgress, mcpListToolsCompleted, mcpListToolsFailed, mcpListToolsInProgress, outputTextAnnotationAdded, queued, reasoningDelta, reasoningDone, reasoningSummaryDelta, reasoningSummaryDone) /* spotless:on */
 
     override fun toString(): String =
         when {
@@ -864,8 +1237,6 @@ private constructor(
                 "ResponseStreamEvent{reasoningSummaryTextDone=$reasoningSummaryTextDone}"
             refusalDelta != null -> "ResponseStreamEvent{refusalDelta=$refusalDelta}"
             refusalDone != null -> "ResponseStreamEvent{refusalDone=$refusalDone}"
-            outputTextAnnotationAdded != null ->
-                "ResponseStreamEvent{outputTextAnnotationAdded=$outputTextAnnotationAdded}"
             outputTextDelta != null -> "ResponseStreamEvent{outputTextDelta=$outputTextDelta}"
             outputTextDone != null -> "ResponseStreamEvent{outputTextDone=$outputTextDone}"
             webSearchCallCompleted != null ->
@@ -874,6 +1245,36 @@ private constructor(
                 "ResponseStreamEvent{webSearchCallInProgress=$webSearchCallInProgress}"
             webSearchCallSearching != null ->
                 "ResponseStreamEvent{webSearchCallSearching=$webSearchCallSearching}"
+            imageGenerationCallCompleted != null ->
+                "ResponseStreamEvent{imageGenerationCallCompleted=$imageGenerationCallCompleted}"
+            imageGenerationCallGenerating != null ->
+                "ResponseStreamEvent{imageGenerationCallGenerating=$imageGenerationCallGenerating}"
+            imageGenerationCallInProgress != null ->
+                "ResponseStreamEvent{imageGenerationCallInProgress=$imageGenerationCallInProgress}"
+            imageGenerationCallPartialImage != null ->
+                "ResponseStreamEvent{imageGenerationCallPartialImage=$imageGenerationCallPartialImage}"
+            mcpCallArgumentsDelta != null ->
+                "ResponseStreamEvent{mcpCallArgumentsDelta=$mcpCallArgumentsDelta}"
+            mcpCallArgumentsDone != null ->
+                "ResponseStreamEvent{mcpCallArgumentsDone=$mcpCallArgumentsDone}"
+            mcpCallCompleted != null -> "ResponseStreamEvent{mcpCallCompleted=$mcpCallCompleted}"
+            mcpCallFailed != null -> "ResponseStreamEvent{mcpCallFailed=$mcpCallFailed}"
+            mcpCallInProgress != null -> "ResponseStreamEvent{mcpCallInProgress=$mcpCallInProgress}"
+            mcpListToolsCompleted != null ->
+                "ResponseStreamEvent{mcpListToolsCompleted=$mcpListToolsCompleted}"
+            mcpListToolsFailed != null ->
+                "ResponseStreamEvent{mcpListToolsFailed=$mcpListToolsFailed}"
+            mcpListToolsInProgress != null ->
+                "ResponseStreamEvent{mcpListToolsInProgress=$mcpListToolsInProgress}"
+            outputTextAnnotationAdded != null ->
+                "ResponseStreamEvent{outputTextAnnotationAdded=$outputTextAnnotationAdded}"
+            queued != null -> "ResponseStreamEvent{queued=$queued}"
+            reasoningDelta != null -> "ResponseStreamEvent{reasoningDelta=$reasoningDelta}"
+            reasoningDone != null -> "ResponseStreamEvent{reasoningDone=$reasoningDone}"
+            reasoningSummaryDelta != null ->
+                "ResponseStreamEvent{reasoningSummaryDelta=$reasoningSummaryDelta}"
+            reasoningSummaryDone != null ->
+                "ResponseStreamEvent{reasoningSummaryDone=$reasoningSummaryDone}"
             _json != null -> "ResponseStreamEvent{_unknown=$_json}"
             else -> throw IllegalStateException("Invalid ResponseStreamEvent")
         }
@@ -1039,12 +1440,6 @@ private constructor(
         fun ofRefusalDone(refusalDone: ResponseRefusalDoneEvent) =
             ResponseStreamEvent(refusalDone = refusalDone)
 
-        /** Emitted when a text annotation is added. */
-        @JvmStatic
-        fun ofOutputTextAnnotationAdded(
-            outputTextAnnotationAdded: ResponseTextAnnotationDeltaEvent
-        ) = ResponseStreamEvent(outputTextAnnotationAdded = outputTextAnnotationAdded)
-
         /** Emitted when there is an additional text delta. */
         @JvmStatic
         fun ofOutputTextDelta(outputTextDelta: ResponseTextDeltaEvent) =
@@ -1070,6 +1465,107 @@ private constructor(
         @JvmStatic
         fun ofWebSearchCallSearching(webSearchCallSearching: ResponseWebSearchCallSearchingEvent) =
             ResponseStreamEvent(webSearchCallSearching = webSearchCallSearching)
+
+        /**
+         * Emitted when an image generation tool call has completed and the final image is
+         * available.
+         */
+        @JvmStatic
+        fun ofImageGenerationCallCompleted(
+            imageGenerationCallCompleted: ResponseImageGenCallCompletedEvent
+        ) = ResponseStreamEvent(imageGenerationCallCompleted = imageGenerationCallCompleted)
+
+        /**
+         * Emitted when an image generation tool call is actively generating an image (intermediate
+         * state).
+         */
+        @JvmStatic
+        fun ofImageGenerationCallGenerating(
+            imageGenerationCallGenerating: ResponseImageGenCallGeneratingEvent
+        ) = ResponseStreamEvent(imageGenerationCallGenerating = imageGenerationCallGenerating)
+
+        /** Emitted when an image generation tool call is in progress. */
+        @JvmStatic
+        fun ofImageGenerationCallInProgress(
+            imageGenerationCallInProgress: ResponseImageGenCallInProgressEvent
+        ) = ResponseStreamEvent(imageGenerationCallInProgress = imageGenerationCallInProgress)
+
+        /** Emitted when a partial image is available during image generation streaming. */
+        @JvmStatic
+        fun ofImageGenerationCallPartialImage(
+            imageGenerationCallPartialImage: ResponseImageGenCallPartialImageEvent
+        ) = ResponseStreamEvent(imageGenerationCallPartialImage = imageGenerationCallPartialImage)
+
+        /** Emitted when there is a delta (partial update) to the arguments of an MCP tool call. */
+        @JvmStatic
+        fun ofMcpCallArgumentsDelta(mcpCallArgumentsDelta: ResponseMcpCallArgumentsDeltaEvent) =
+            ResponseStreamEvent(mcpCallArgumentsDelta = mcpCallArgumentsDelta)
+
+        /** Emitted when the arguments for an MCP tool call are finalized. */
+        @JvmStatic
+        fun ofMcpCallArgumentsDone(mcpCallArgumentsDone: ResponseMcpCallArgumentsDoneEvent) =
+            ResponseStreamEvent(mcpCallArgumentsDone = mcpCallArgumentsDone)
+
+        /** Emitted when an MCP tool call has completed successfully. */
+        @JvmStatic
+        fun ofMcpCallCompleted(mcpCallCompleted: ResponseMcpCallCompletedEvent) =
+            ResponseStreamEvent(mcpCallCompleted = mcpCallCompleted)
+
+        /** Emitted when an MCP tool call has failed. */
+        @JvmStatic
+        fun ofMcpCallFailed(mcpCallFailed: ResponseMcpCallFailedEvent) =
+            ResponseStreamEvent(mcpCallFailed = mcpCallFailed)
+
+        /** Emitted when an MCP tool call is in progress. */
+        @JvmStatic
+        fun ofMcpCallInProgress(mcpCallInProgress: ResponseMcpCallInProgressEvent) =
+            ResponseStreamEvent(mcpCallInProgress = mcpCallInProgress)
+
+        /** Emitted when the list of available MCP tools has been successfully retrieved. */
+        @JvmStatic
+        fun ofMcpListToolsCompleted(mcpListToolsCompleted: ResponseMcpListToolsCompletedEvent) =
+            ResponseStreamEvent(mcpListToolsCompleted = mcpListToolsCompleted)
+
+        /** Emitted when the attempt to list available MCP tools has failed. */
+        @JvmStatic
+        fun ofMcpListToolsFailed(mcpListToolsFailed: ResponseMcpListToolsFailedEvent) =
+            ResponseStreamEvent(mcpListToolsFailed = mcpListToolsFailed)
+
+        /**
+         * Emitted when the system is in the process of retrieving the list of available MCP tools.
+         */
+        @JvmStatic
+        fun ofMcpListToolsInProgress(mcpListToolsInProgress: ResponseMcpListToolsInProgressEvent) =
+            ResponseStreamEvent(mcpListToolsInProgress = mcpListToolsInProgress)
+
+        /** Emitted when an annotation is added to output text content. */
+        @JvmStatic
+        fun ofOutputTextAnnotationAdded(
+            outputTextAnnotationAdded: ResponseOutputTextAnnotationAddedEvent
+        ) = ResponseStreamEvent(outputTextAnnotationAdded = outputTextAnnotationAdded)
+
+        /** Emitted when a response is queued and waiting to be processed. */
+        @JvmStatic fun ofQueued(queued: ResponseQueuedEvent) = ResponseStreamEvent(queued = queued)
+
+        /** Emitted when there is a delta (partial update) to the reasoning content. */
+        @JvmStatic
+        fun ofReasoningDelta(reasoningDelta: ResponseReasoningDeltaEvent) =
+            ResponseStreamEvent(reasoningDelta = reasoningDelta)
+
+        /** Emitted when the reasoning content is finalized for an item. */
+        @JvmStatic
+        fun ofReasoningDone(reasoningDone: ResponseReasoningDoneEvent) =
+            ResponseStreamEvent(reasoningDone = reasoningDone)
+
+        /** Emitted when there is a delta (partial update) to the reasoning summary content. */
+        @JvmStatic
+        fun ofReasoningSummaryDelta(reasoningSummaryDelta: ResponseReasoningSummaryDeltaEvent) =
+            ResponseStreamEvent(reasoningSummaryDelta = reasoningSummaryDelta)
+
+        /** Emitted when the reasoning summary content is finalized for an item. */
+        @JvmStatic
+        fun ofReasoningSummaryDone(reasoningSummaryDone: ResponseReasoningSummaryDoneEvent) =
+            ResponseStreamEvent(reasoningSummaryDone = reasoningSummaryDone)
     }
 
     /**
@@ -1196,11 +1692,6 @@ private constructor(
         /** Emitted when refusal text is finalized. */
         fun visitRefusalDone(refusalDone: ResponseRefusalDoneEvent): T
 
-        /** Emitted when a text annotation is added. */
-        fun visitOutputTextAnnotationAdded(
-            outputTextAnnotationAdded: ResponseTextAnnotationDeltaEvent
-        ): T
-
         /** Emitted when there is an additional text delta. */
         fun visitOutputTextDelta(outputTextDelta: ResponseTextDeltaEvent): T
 
@@ -1221,6 +1712,80 @@ private constructor(
         fun visitWebSearchCallSearching(
             webSearchCallSearching: ResponseWebSearchCallSearchingEvent
         ): T
+
+        /**
+         * Emitted when an image generation tool call has completed and the final image is
+         * available.
+         */
+        fun visitImageGenerationCallCompleted(
+            imageGenerationCallCompleted: ResponseImageGenCallCompletedEvent
+        ): T
+
+        /**
+         * Emitted when an image generation tool call is actively generating an image (intermediate
+         * state).
+         */
+        fun visitImageGenerationCallGenerating(
+            imageGenerationCallGenerating: ResponseImageGenCallGeneratingEvent
+        ): T
+
+        /** Emitted when an image generation tool call is in progress. */
+        fun visitImageGenerationCallInProgress(
+            imageGenerationCallInProgress: ResponseImageGenCallInProgressEvent
+        ): T
+
+        /** Emitted when a partial image is available during image generation streaming. */
+        fun visitImageGenerationCallPartialImage(
+            imageGenerationCallPartialImage: ResponseImageGenCallPartialImageEvent
+        ): T
+
+        /** Emitted when there is a delta (partial update) to the arguments of an MCP tool call. */
+        fun visitMcpCallArgumentsDelta(mcpCallArgumentsDelta: ResponseMcpCallArgumentsDeltaEvent): T
+
+        /** Emitted when the arguments for an MCP tool call are finalized. */
+        fun visitMcpCallArgumentsDone(mcpCallArgumentsDone: ResponseMcpCallArgumentsDoneEvent): T
+
+        /** Emitted when an MCP tool call has completed successfully. */
+        fun visitMcpCallCompleted(mcpCallCompleted: ResponseMcpCallCompletedEvent): T
+
+        /** Emitted when an MCP tool call has failed. */
+        fun visitMcpCallFailed(mcpCallFailed: ResponseMcpCallFailedEvent): T
+
+        /** Emitted when an MCP tool call is in progress. */
+        fun visitMcpCallInProgress(mcpCallInProgress: ResponseMcpCallInProgressEvent): T
+
+        /** Emitted when the list of available MCP tools has been successfully retrieved. */
+        fun visitMcpListToolsCompleted(mcpListToolsCompleted: ResponseMcpListToolsCompletedEvent): T
+
+        /** Emitted when the attempt to list available MCP tools has failed. */
+        fun visitMcpListToolsFailed(mcpListToolsFailed: ResponseMcpListToolsFailedEvent): T
+
+        /**
+         * Emitted when the system is in the process of retrieving the list of available MCP tools.
+         */
+        fun visitMcpListToolsInProgress(
+            mcpListToolsInProgress: ResponseMcpListToolsInProgressEvent
+        ): T
+
+        /** Emitted when an annotation is added to output text content. */
+        fun visitOutputTextAnnotationAdded(
+            outputTextAnnotationAdded: ResponseOutputTextAnnotationAddedEvent
+        ): T
+
+        /** Emitted when a response is queued and waiting to be processed. */
+        fun visitQueued(queued: ResponseQueuedEvent): T
+
+        /** Emitted when there is a delta (partial update) to the reasoning content. */
+        fun visitReasoningDelta(reasoningDelta: ResponseReasoningDeltaEvent): T
+
+        /** Emitted when the reasoning content is finalized for an item. */
+        fun visitReasoningDone(reasoningDone: ResponseReasoningDoneEvent): T
+
+        /** Emitted when there is a delta (partial update) to the reasoning summary content. */
+        fun visitReasoningSummaryDelta(reasoningSummaryDelta: ResponseReasoningSummaryDeltaEvent): T
+
+        /** Emitted when the reasoning summary content is finalized for an item. */
+        fun visitReasoningSummaryDone(reasoningSummaryDone: ResponseReasoningSummaryDoneEvent): T
 
         /**
          * Maps an unknown variant of [ResponseStreamEvent] to a value of type [T].
@@ -1442,11 +2007,6 @@ private constructor(
                         ResponseStreamEvent(refusalDone = it, _json = json)
                     } ?: ResponseStreamEvent(_json = json)
                 }
-                "response.output_text.annotation.added" -> {
-                    return tryDeserialize(node, jacksonTypeRef<ResponseTextAnnotationDeltaEvent>())
-                        ?.let { ResponseStreamEvent(outputTextAnnotationAdded = it, _json = json) }
-                        ?: ResponseStreamEvent(_json = json)
-                }
                 "response.output_text.delta" -> {
                     return tryDeserialize(node, jacksonTypeRef<ResponseTextDeltaEvent>())?.let {
                         ResponseStreamEvent(outputTextDelta = it, _json = json)
@@ -1479,6 +2039,127 @@ private constructor(
                             jacksonTypeRef<ResponseWebSearchCallSearchingEvent>(),
                         )
                         ?.let { ResponseStreamEvent(webSearchCallSearching = it, _json = json) }
+                        ?: ResponseStreamEvent(_json = json)
+                }
+                "response.image_generation_call.completed" -> {
+                    return tryDeserialize(
+                            node,
+                            jacksonTypeRef<ResponseImageGenCallCompletedEvent>(),
+                        )
+                        ?.let {
+                            ResponseStreamEvent(imageGenerationCallCompleted = it, _json = json)
+                        } ?: ResponseStreamEvent(_json = json)
+                }
+                "response.image_generation_call.generating" -> {
+                    return tryDeserialize(
+                            node,
+                            jacksonTypeRef<ResponseImageGenCallGeneratingEvent>(),
+                        )
+                        ?.let {
+                            ResponseStreamEvent(imageGenerationCallGenerating = it, _json = json)
+                        } ?: ResponseStreamEvent(_json = json)
+                }
+                "response.image_generation_call.in_progress" -> {
+                    return tryDeserialize(
+                            node,
+                            jacksonTypeRef<ResponseImageGenCallInProgressEvent>(),
+                        )
+                        ?.let {
+                            ResponseStreamEvent(imageGenerationCallInProgress = it, _json = json)
+                        } ?: ResponseStreamEvent(_json = json)
+                }
+                "response.image_generation_call.partial_image" -> {
+                    return tryDeserialize(
+                            node,
+                            jacksonTypeRef<ResponseImageGenCallPartialImageEvent>(),
+                        )
+                        ?.let {
+                            ResponseStreamEvent(imageGenerationCallPartialImage = it, _json = json)
+                        } ?: ResponseStreamEvent(_json = json)
+                }
+                "response.mcp_call.arguments_delta" -> {
+                    return tryDeserialize(
+                            node,
+                            jacksonTypeRef<ResponseMcpCallArgumentsDeltaEvent>(),
+                        )
+                        ?.let { ResponseStreamEvent(mcpCallArgumentsDelta = it, _json = json) }
+                        ?: ResponseStreamEvent(_json = json)
+                }
+                "response.mcp_call.arguments_done" -> {
+                    return tryDeserialize(node, jacksonTypeRef<ResponseMcpCallArgumentsDoneEvent>())
+                        ?.let { ResponseStreamEvent(mcpCallArgumentsDone = it, _json = json) }
+                        ?: ResponseStreamEvent(_json = json)
+                }
+                "response.mcp_call.completed" -> {
+                    return tryDeserialize(node, jacksonTypeRef<ResponseMcpCallCompletedEvent>())
+                        ?.let { ResponseStreamEvent(mcpCallCompleted = it, _json = json) }
+                        ?: ResponseStreamEvent(_json = json)
+                }
+                "response.mcp_call.failed" -> {
+                    return tryDeserialize(node, jacksonTypeRef<ResponseMcpCallFailedEvent>())?.let {
+                        ResponseStreamEvent(mcpCallFailed = it, _json = json)
+                    } ?: ResponseStreamEvent(_json = json)
+                }
+                "response.mcp_call.in_progress" -> {
+                    return tryDeserialize(node, jacksonTypeRef<ResponseMcpCallInProgressEvent>())
+                        ?.let { ResponseStreamEvent(mcpCallInProgress = it, _json = json) }
+                        ?: ResponseStreamEvent(_json = json)
+                }
+                "response.mcp_list_tools.completed" -> {
+                    return tryDeserialize(
+                            node,
+                            jacksonTypeRef<ResponseMcpListToolsCompletedEvent>(),
+                        )
+                        ?.let { ResponseStreamEvent(mcpListToolsCompleted = it, _json = json) }
+                        ?: ResponseStreamEvent(_json = json)
+                }
+                "response.mcp_list_tools.failed" -> {
+                    return tryDeserialize(node, jacksonTypeRef<ResponseMcpListToolsFailedEvent>())
+                        ?.let { ResponseStreamEvent(mcpListToolsFailed = it, _json = json) }
+                        ?: ResponseStreamEvent(_json = json)
+                }
+                "response.mcp_list_tools.in_progress" -> {
+                    return tryDeserialize(
+                            node,
+                            jacksonTypeRef<ResponseMcpListToolsInProgressEvent>(),
+                        )
+                        ?.let { ResponseStreamEvent(mcpListToolsInProgress = it, _json = json) }
+                        ?: ResponseStreamEvent(_json = json)
+                }
+                "response.output_text_annotation.added" -> {
+                    return tryDeserialize(
+                            node,
+                            jacksonTypeRef<ResponseOutputTextAnnotationAddedEvent>(),
+                        )
+                        ?.let { ResponseStreamEvent(outputTextAnnotationAdded = it, _json = json) }
+                        ?: ResponseStreamEvent(_json = json)
+                }
+                "response.queued" -> {
+                    return tryDeserialize(node, jacksonTypeRef<ResponseQueuedEvent>())?.let {
+                        ResponseStreamEvent(queued = it, _json = json)
+                    } ?: ResponseStreamEvent(_json = json)
+                }
+                "response.reasoning.delta" -> {
+                    return tryDeserialize(node, jacksonTypeRef<ResponseReasoningDeltaEvent>())
+                        ?.let { ResponseStreamEvent(reasoningDelta = it, _json = json) }
+                        ?: ResponseStreamEvent(_json = json)
+                }
+                "response.reasoning.done" -> {
+                    return tryDeserialize(node, jacksonTypeRef<ResponseReasoningDoneEvent>())?.let {
+                        ResponseStreamEvent(reasoningDone = it, _json = json)
+                    } ?: ResponseStreamEvent(_json = json)
+                }
+                "response.reasoning_summary.delta" -> {
+                    return tryDeserialize(
+                            node,
+                            jacksonTypeRef<ResponseReasoningSummaryDeltaEvent>(),
+                        )
+                        ?.let { ResponseStreamEvent(reasoningSummaryDelta = it, _json = json) }
+                        ?: ResponseStreamEvent(_json = json)
+                }
+                "response.reasoning_summary.done" -> {
+                    return tryDeserialize(node, jacksonTypeRef<ResponseReasoningSummaryDoneEvent>())
+                        ?.let { ResponseStreamEvent(reasoningSummaryDone = it, _json = json) }
                         ?: ResponseStreamEvent(_json = json)
                 }
             }
@@ -1541,8 +2222,6 @@ private constructor(
                     generator.writeObject(value.reasoningSummaryTextDone)
                 value.refusalDelta != null -> generator.writeObject(value.refusalDelta)
                 value.refusalDone != null -> generator.writeObject(value.refusalDone)
-                value.outputTextAnnotationAdded != null ->
-                    generator.writeObject(value.outputTextAnnotationAdded)
                 value.outputTextDelta != null -> generator.writeObject(value.outputTextDelta)
                 value.outputTextDone != null -> generator.writeObject(value.outputTextDone)
                 value.webSearchCallCompleted != null ->
@@ -1551,6 +2230,35 @@ private constructor(
                     generator.writeObject(value.webSearchCallInProgress)
                 value.webSearchCallSearching != null ->
                     generator.writeObject(value.webSearchCallSearching)
+                value.imageGenerationCallCompleted != null ->
+                    generator.writeObject(value.imageGenerationCallCompleted)
+                value.imageGenerationCallGenerating != null ->
+                    generator.writeObject(value.imageGenerationCallGenerating)
+                value.imageGenerationCallInProgress != null ->
+                    generator.writeObject(value.imageGenerationCallInProgress)
+                value.imageGenerationCallPartialImage != null ->
+                    generator.writeObject(value.imageGenerationCallPartialImage)
+                value.mcpCallArgumentsDelta != null ->
+                    generator.writeObject(value.mcpCallArgumentsDelta)
+                value.mcpCallArgumentsDone != null ->
+                    generator.writeObject(value.mcpCallArgumentsDone)
+                value.mcpCallCompleted != null -> generator.writeObject(value.mcpCallCompleted)
+                value.mcpCallFailed != null -> generator.writeObject(value.mcpCallFailed)
+                value.mcpCallInProgress != null -> generator.writeObject(value.mcpCallInProgress)
+                value.mcpListToolsCompleted != null ->
+                    generator.writeObject(value.mcpListToolsCompleted)
+                value.mcpListToolsFailed != null -> generator.writeObject(value.mcpListToolsFailed)
+                value.mcpListToolsInProgress != null ->
+                    generator.writeObject(value.mcpListToolsInProgress)
+                value.outputTextAnnotationAdded != null ->
+                    generator.writeObject(value.outputTextAnnotationAdded)
+                value.queued != null -> generator.writeObject(value.queued)
+                value.reasoningDelta != null -> generator.writeObject(value.reasoningDelta)
+                value.reasoningDone != null -> generator.writeObject(value.reasoningDone)
+                value.reasoningSummaryDelta != null ->
+                    generator.writeObject(value.reasoningSummaryDelta)
+                value.reasoningSummaryDone != null ->
+                    generator.writeObject(value.reasoningSummaryDone)
                 value._json != null -> generator.writeObject(value._json)
                 else -> throw IllegalStateException("Invalid ResponseStreamEvent")
             }

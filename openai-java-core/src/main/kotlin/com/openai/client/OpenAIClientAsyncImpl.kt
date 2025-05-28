@@ -14,6 +14,8 @@ import com.openai.services.async.ChatServiceAsync
 import com.openai.services.async.ChatServiceAsyncImpl
 import com.openai.services.async.CompletionServiceAsync
 import com.openai.services.async.CompletionServiceAsyncImpl
+import com.openai.services.async.ContainerServiceAsync
+import com.openai.services.async.ContainerServiceAsyncImpl
 import com.openai.services.async.EmbeddingServiceAsync
 import com.openai.services.async.EmbeddingServiceAsyncImpl
 import com.openai.services.async.EvalServiceAsync
@@ -22,6 +24,8 @@ import com.openai.services.async.FileServiceAsync
 import com.openai.services.async.FileServiceAsyncImpl
 import com.openai.services.async.FineTuningServiceAsync
 import com.openai.services.async.FineTuningServiceAsyncImpl
+import com.openai.services.async.GraderServiceAsync
+import com.openai.services.async.GraderServiceAsyncImpl
 import com.openai.services.async.ImageServiceAsync
 import com.openai.services.async.ImageServiceAsyncImpl
 import com.openai.services.async.ModelServiceAsync
@@ -84,6 +88,10 @@ class OpenAIClientAsyncImpl(private val clientOptions: ClientOptions) : OpenAICl
         FineTuningServiceAsyncImpl(clientOptionsWithUserAgent)
     }
 
+    private val graders: GraderServiceAsync by lazy {
+        GraderServiceAsyncImpl(clientOptionsWithUserAgent)
+    }
+
     private val vectorStores: VectorStoreServiceAsync by lazy {
         VectorStoreServiceAsyncImpl(clientOptionsWithUserAgent)
     }
@@ -103,6 +111,10 @@ class OpenAIClientAsyncImpl(private val clientOptions: ClientOptions) : OpenAICl
     }
 
     private val evals: EvalServiceAsync by lazy { EvalServiceAsyncImpl(clientOptionsWithUserAgent) }
+
+    private val containers: ContainerServiceAsync by lazy {
+        ContainerServiceAsyncImpl(clientOptionsWithUserAgent)
+    }
 
     override fun sync(): OpenAIClient = sync
 
@@ -126,6 +138,8 @@ class OpenAIClientAsyncImpl(private val clientOptions: ClientOptions) : OpenAICl
 
     override fun fineTuning(): FineTuningServiceAsync = fineTuning
 
+    override fun graders(): GraderServiceAsync = graders
+
     override fun vectorStores(): VectorStoreServiceAsync = vectorStores
 
     override fun beta(): BetaServiceAsync = beta
@@ -137,6 +151,8 @@ class OpenAIClientAsyncImpl(private val clientOptions: ClientOptions) : OpenAICl
     override fun responses(): ResponseServiceAsync = responses
 
     override fun evals(): EvalServiceAsync = evals
+
+    override fun containers(): ContainerServiceAsync = containers
 
     override fun close() = clientOptions.httpClient.close()
 
@@ -179,6 +195,10 @@ class OpenAIClientAsyncImpl(private val clientOptions: ClientOptions) : OpenAICl
             FineTuningServiceAsyncImpl.WithRawResponseImpl(clientOptions)
         }
 
+        private val graders: GraderServiceAsync.WithRawResponse by lazy {
+            GraderServiceAsyncImpl.WithRawResponseImpl(clientOptions)
+        }
+
         private val vectorStores: VectorStoreServiceAsync.WithRawResponse by lazy {
             VectorStoreServiceAsyncImpl.WithRawResponseImpl(clientOptions)
         }
@@ -203,6 +223,10 @@ class OpenAIClientAsyncImpl(private val clientOptions: ClientOptions) : OpenAICl
             EvalServiceAsyncImpl.WithRawResponseImpl(clientOptions)
         }
 
+        private val containers: ContainerServiceAsync.WithRawResponse by lazy {
+            ContainerServiceAsyncImpl.WithRawResponseImpl(clientOptions)
+        }
+
         override fun completions(): CompletionServiceAsync.WithRawResponse = completions
 
         override fun chat(): ChatServiceAsync.WithRawResponse = chat
@@ -221,6 +245,8 @@ class OpenAIClientAsyncImpl(private val clientOptions: ClientOptions) : OpenAICl
 
         override fun fineTuning(): FineTuningServiceAsync.WithRawResponse = fineTuning
 
+        override fun graders(): GraderServiceAsync.WithRawResponse = graders
+
         override fun vectorStores(): VectorStoreServiceAsync.WithRawResponse = vectorStores
 
         override fun beta(): BetaServiceAsync.WithRawResponse = beta
@@ -232,5 +258,7 @@ class OpenAIClientAsyncImpl(private val clientOptions: ClientOptions) : OpenAICl
         override fun responses(): ResponseServiceAsync.WithRawResponse = responses
 
         override fun evals(): EvalServiceAsync.WithRawResponse = evals
+
+        override fun containers(): ContainerServiceAsync.WithRawResponse = containers
     }
 }

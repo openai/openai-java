@@ -6,7 +6,6 @@ import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
 import com.openai.core.JsonValue
 import com.openai.core.jsonMapper
 import com.openai.models.ChatModel
-import com.openai.models.ComparisonFilter
 import com.openai.models.Reasoning
 import com.openai.models.ReasoningEffort
 import com.openai.models.ResponseFormatText
@@ -62,25 +61,19 @@ internal class ResponseCompletedEventTest {
                         .temperature(1.0)
                         .toolChoice(ToolChoiceOptions.NONE)
                         .addTool(
-                            FileSearchTool.builder()
-                                .addVectorStoreId("string")
-                                .filters(
-                                    ComparisonFilter.builder()
-                                        .key("key")
-                                        .type(ComparisonFilter.Type.EQ)
-                                        .value("string")
+                            FunctionTool.builder()
+                                .name("name")
+                                .parameters(
+                                    FunctionTool.Parameters.builder()
+                                        .putAdditionalProperty("foo", JsonValue.from("bar"))
                                         .build()
                                 )
-                                .maxNumResults(0L)
-                                .rankingOptions(
-                                    FileSearchTool.RankingOptions.builder()
-                                        .ranker(FileSearchTool.RankingOptions.Ranker.AUTO)
-                                        .scoreThreshold(0.0)
-                                        .build()
-                                )
+                                .strict(true)
+                                .description("description")
                                 .build()
                         )
                         .topP(1.0)
+                        .background(true)
                         .maxOutputTokens(0L)
                         .previousResponseId("previous_response_id")
                         .reasoning(
@@ -118,6 +111,7 @@ internal class ResponseCompletedEventTest {
                         .user("user-1234")
                         .build()
                 )
+                .sequenceNumber(0L)
                 .build()
 
         assertThat(responseCompletedEvent.response())
@@ -164,25 +158,19 @@ internal class ResponseCompletedEventTest {
                     .temperature(1.0)
                     .toolChoice(ToolChoiceOptions.NONE)
                     .addTool(
-                        FileSearchTool.builder()
-                            .addVectorStoreId("string")
-                            .filters(
-                                ComparisonFilter.builder()
-                                    .key("key")
-                                    .type(ComparisonFilter.Type.EQ)
-                                    .value("string")
+                        FunctionTool.builder()
+                            .name("name")
+                            .parameters(
+                                FunctionTool.Parameters.builder()
+                                    .putAdditionalProperty("foo", JsonValue.from("bar"))
                                     .build()
                             )
-                            .maxNumResults(0L)
-                            .rankingOptions(
-                                FileSearchTool.RankingOptions.builder()
-                                    .ranker(FileSearchTool.RankingOptions.Ranker.AUTO)
-                                    .scoreThreshold(0.0)
-                                    .build()
-                            )
+                            .strict(true)
+                            .description("description")
                             .build()
                     )
                     .topP(1.0)
+                    .background(true)
                     .maxOutputTokens(0L)
                     .previousResponseId("previous_response_id")
                     .reasoning(
@@ -218,6 +206,7 @@ internal class ResponseCompletedEventTest {
                     .user("user-1234")
                     .build()
             )
+        assertThat(responseCompletedEvent.sequenceNumber()).isEqualTo(0L)
     }
 
     @Test
@@ -268,25 +257,19 @@ internal class ResponseCompletedEventTest {
                         .temperature(1.0)
                         .toolChoice(ToolChoiceOptions.NONE)
                         .addTool(
-                            FileSearchTool.builder()
-                                .addVectorStoreId("string")
-                                .filters(
-                                    ComparisonFilter.builder()
-                                        .key("key")
-                                        .type(ComparisonFilter.Type.EQ)
-                                        .value("string")
+                            FunctionTool.builder()
+                                .name("name")
+                                .parameters(
+                                    FunctionTool.Parameters.builder()
+                                        .putAdditionalProperty("foo", JsonValue.from("bar"))
                                         .build()
                                 )
-                                .maxNumResults(0L)
-                                .rankingOptions(
-                                    FileSearchTool.RankingOptions.builder()
-                                        .ranker(FileSearchTool.RankingOptions.Ranker.AUTO)
-                                        .scoreThreshold(0.0)
-                                        .build()
-                                )
+                                .strict(true)
+                                .description("description")
                                 .build()
                         )
                         .topP(1.0)
+                        .background(true)
                         .maxOutputTokens(0L)
                         .previousResponseId("previous_response_id")
                         .reasoning(
@@ -324,6 +307,7 @@ internal class ResponseCompletedEventTest {
                         .user("user-1234")
                         .build()
                 )
+                .sequenceNumber(0L)
                 .build()
 
         val roundtrippedResponseCompletedEvent =
