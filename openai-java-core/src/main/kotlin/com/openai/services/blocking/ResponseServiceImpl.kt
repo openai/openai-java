@@ -64,6 +64,13 @@ class ResponseServiceImpl internal constructor(private val clientOptions: Client
         // get /responses/{response_id}
         withRawResponse().retrieve(params, requestOptions).parse()
 
+    override fun retrieveStreaming(
+        params: ResponseRetrieveParams,
+        requestOptions: RequestOptions,
+    ): StreamResponse<ResponseStreamEvent> =
+        // get /responses/{response_id}
+        withRawResponse().retrieveStreaming(params, requestOptions).parse()
+
     override fun delete(params: ResponseDeleteParams, requestOptions: RequestOptions) {
         // delete /responses/{response_id}
         withRawResponse().delete(params, requestOptions)
@@ -176,6 +183,39 @@ class ResponseServiceImpl internal constructor(private val clientOptions: Client
                     .also {
                         if (requestOptions.responseValidation!!) {
                             it.validate()
+                        }
+                    }
+            }
+        }
+
+        private val retrieveStreamingHandler: Handler<StreamResponse<ResponseStreamEvent>> =
+            sseHandler(clientOptions.jsonMapper)
+                .mapJson<ResponseStreamEvent>()
+                .withErrorHandler(errorHandler)
+
+        override fun retrieveStreaming(
+            params: ResponseRetrieveParams,
+            requestOptions: RequestOptions,
+        ): HttpResponseFor<StreamResponse<ResponseStreamEvent>> {
+            // We check here instead of in the params builder because this can be specified
+            // positionally or in the params class.
+            checkRequired("responseId", params.responseId().getOrNull())
+            val request =
+                HttpRequest.builder()
+                    .method(HttpMethod.GET)
+                    .addPathSegments("responses", params._pathParam(0))
+                    .build()
+                    .prepare(clientOptions, params)
+            val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
+            val response = clientOptions.httpClient.execute(request, requestOptions)
+            return response.parseable {
+                response
+                    .let { retrieveStreamingHandler.handle(it) }
+                    .let { streamResponse ->
+                        if (requestOptions.responseValidation!!) {
+                            streamResponse.map { it.validate() }
+                        } else {
+                            streamResponse
                         }
                     }
             }

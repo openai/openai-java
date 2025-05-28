@@ -13,6 +13,7 @@ internal class ResponseRetrieveParamsTest {
         ResponseRetrieveParams.builder()
             .responseId("resp_677efb5139a88190b512bc3fef8e535d")
             .addInclude(ResponseIncludable.FILE_SEARCH_CALL_RESULTS)
+            .startingAfter(0L)
             .build()
     }
 
@@ -34,12 +35,18 @@ internal class ResponseRetrieveParamsTest {
             ResponseRetrieveParams.builder()
                 .responseId("resp_677efb5139a88190b512bc3fef8e535d")
                 .addInclude(ResponseIncludable.FILE_SEARCH_CALL_RESULTS)
+                .startingAfter(0L)
                 .build()
 
         val queryParams = params._queryParams()
 
         assertThat(queryParams)
-            .isEqualTo(QueryParams.builder().put("include[]", "file_search_call.results").build())
+            .isEqualTo(
+                QueryParams.builder()
+                    .put("include[]", "file_search_call.results")
+                    .put("starting_after", "0")
+                    .build()
+            )
     }
 
     @Test

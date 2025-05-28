@@ -161,10 +161,34 @@ internal class ResponseServiceTest {
                 ResponseRetrieveParams.builder()
                     .responseId("resp_677efb5139a88190b512bc3fef8e535d")
                     .addInclude(ResponseIncludable.FILE_SEARCH_CALL_RESULTS)
+                    .startingAfter(0L)
                     .build()
             )
 
         response.validate()
+    }
+
+    @Test
+    fun retrieveStreaming() {
+        val client =
+            OpenAIOkHttpClient.builder()
+                .baseUrl(TestServerExtension.BASE_URL)
+                .apiKey("My API Key")
+                .build()
+        val responseService = client.responses()
+
+        val responseStreamResponse =
+            responseService.retrieveStreaming(
+                ResponseRetrieveParams.builder()
+                    .responseId("resp_677efb5139a88190b512bc3fef8e535d")
+                    .addInclude(ResponseIncludable.FILE_SEARCH_CALL_RESULTS)
+                    .startingAfter(0L)
+                    .build()
+            )
+
+        responseStreamResponse.use {
+            responseStreamResponse.stream().forEach { response -> response.validate() }
+        }
     }
 
     @Test

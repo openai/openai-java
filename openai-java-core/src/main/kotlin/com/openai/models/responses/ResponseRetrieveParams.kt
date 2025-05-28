@@ -15,6 +15,7 @@ class ResponseRetrieveParams
 private constructor(
     private val responseId: String?,
     private val include: List<ResponseIncludable>?,
+    private val startingAfter: Long?,
     private val additionalHeaders: Headers,
     private val additionalQueryParams: QueryParams,
 ) : Params {
@@ -26,6 +27,9 @@ private constructor(
      * creation above for more information.
      */
     fun include(): Optional<List<ResponseIncludable>> = Optional.ofNullable(include)
+
+    /** The sequence number of the event after which to start streaming. */
+    fun startingAfter(): Optional<Long> = Optional.ofNullable(startingAfter)
 
     fun _additionalHeaders(): Headers = additionalHeaders
 
@@ -46,6 +50,7 @@ private constructor(
 
         private var responseId: String? = null
         private var include: MutableList<ResponseIncludable>? = null
+        private var startingAfter: Long? = null
         private var additionalHeaders: Headers.Builder = Headers.builder()
         private var additionalQueryParams: QueryParams.Builder = QueryParams.builder()
 
@@ -53,6 +58,7 @@ private constructor(
         internal fun from(responseRetrieveParams: ResponseRetrieveParams) = apply {
             responseId = responseRetrieveParams.responseId
             include = responseRetrieveParams.include?.toMutableList()
+            startingAfter = responseRetrieveParams.startingAfter
             additionalHeaders = responseRetrieveParams.additionalHeaders.toBuilder()
             additionalQueryParams = responseRetrieveParams.additionalQueryParams.toBuilder()
         }
@@ -81,6 +87,19 @@ private constructor(
         fun addInclude(include: ResponseIncludable) = apply {
             this.include = (this.include ?: mutableListOf()).apply { add(include) }
         }
+
+        /** The sequence number of the event after which to start streaming. */
+        fun startingAfter(startingAfter: Long?) = apply { this.startingAfter = startingAfter }
+
+        /**
+         * Alias for [Builder.startingAfter].
+         *
+         * This unboxed primitive overload exists for backwards compatibility.
+         */
+        fun startingAfter(startingAfter: Long) = startingAfter(startingAfter as Long?)
+
+        /** Alias for calling [Builder.startingAfter] with `startingAfter.orElse(null)`. */
+        fun startingAfter(startingAfter: Optional<Long>) = startingAfter(startingAfter.getOrNull())
 
         fun additionalHeaders(additionalHeaders: Headers) = apply {
             this.additionalHeaders.clear()
@@ -189,6 +208,7 @@ private constructor(
             ResponseRetrieveParams(
                 responseId,
                 include?.toImmutable(),
+                startingAfter,
                 additionalHeaders.build(),
                 additionalQueryParams.build(),
             )
@@ -206,6 +226,8 @@ private constructor(
         QueryParams.builder()
             .apply {
                 include?.forEach { put("include[]", it.toString()) }
+                startingAfter?.let { put("starting_after", it.toString()) }
+                stream?.let { put("stream", it.toString()) }
                 putAll(additionalQueryParams)
             }
             .build()
@@ -215,11 +237,11 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is ResponseRetrieveParams && responseId == other.responseId && include == other.include && additionalHeaders == other.additionalHeaders && additionalQueryParams == other.additionalQueryParams /* spotless:on */
+        return /* spotless:off */ other is ResponseRetrieveParams && responseId == other.responseId && include == other.include && startingAfter == other.startingAfter && additionalHeaders == other.additionalHeaders && additionalQueryParams == other.additionalQueryParams /* spotless:on */
     }
 
-    override fun hashCode(): Int = /* spotless:off */ Objects.hash(responseId, include, additionalHeaders, additionalQueryParams) /* spotless:on */
+    override fun hashCode(): Int = /* spotless:off */ Objects.hash(responseId, include, startingAfter, additionalHeaders, additionalQueryParams) /* spotless:on */
 
     override fun toString() =
-        "ResponseRetrieveParams{responseId=$responseId, include=$include, additionalHeaders=$additionalHeaders, additionalQueryParams=$additionalQueryParams}"
+        "ResponseRetrieveParams{responseId=$responseId, include=$include, startingAfter=$startingAfter, additionalHeaders=$additionalHeaders, additionalQueryParams=$additionalQueryParams}"
 }

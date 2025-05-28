@@ -35,6 +35,7 @@ private constructor(
     private val annotations: JsonField<List<Annotation>>,
     private val text: JsonField<String>,
     private val type: JsonValue,
+    private val logprobs: JsonField<List<Logprob>>,
     private val additionalProperties: MutableMap<String, JsonValue>,
 ) {
 
@@ -45,7 +46,10 @@ private constructor(
         annotations: JsonField<List<Annotation>> = JsonMissing.of(),
         @JsonProperty("text") @ExcludeMissing text: JsonField<String> = JsonMissing.of(),
         @JsonProperty("type") @ExcludeMissing type: JsonValue = JsonMissing.of(),
-    ) : this(annotations, text, type, mutableMapOf())
+        @JsonProperty("logprobs")
+        @ExcludeMissing
+        logprobs: JsonField<List<Logprob>> = JsonMissing.of(),
+    ) : this(annotations, text, type, logprobs, mutableMapOf())
 
     /**
      * The annotations of the text output.
@@ -77,6 +81,12 @@ private constructor(
     @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
 
     /**
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun logprobs(): Optional<List<Logprob>> = logprobs.getOptional("logprobs")
+
+    /**
      * Returns the raw JSON value of [annotations].
      *
      * Unlike [annotations], this method doesn't throw if the JSON field has an unexpected type.
@@ -91,6 +101,13 @@ private constructor(
      * Unlike [text], this method doesn't throw if the JSON field has an unexpected type.
      */
     @JsonProperty("text") @ExcludeMissing fun _text(): JsonField<String> = text
+
+    /**
+     * Returns the raw JSON value of [logprobs].
+     *
+     * Unlike [logprobs], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    @JsonProperty("logprobs") @ExcludeMissing fun _logprobs(): JsonField<List<Logprob>> = logprobs
 
     @JsonAnySetter
     private fun putAdditionalProperty(key: String, value: JsonValue) {
@@ -124,6 +141,7 @@ private constructor(
         private var annotations: JsonField<MutableList<Annotation>>? = null
         private var text: JsonField<String>? = null
         private var type: JsonValue = JsonValue.from("output_text")
+        private var logprobs: JsonField<MutableList<Logprob>>? = null
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
         @JvmSynthetic
@@ -131,6 +149,7 @@ private constructor(
             annotations = responseOutputText.annotations.map { it.toMutableList() }
             text = responseOutputText.text
             type = responseOutputText.type
+            logprobs = responseOutputText.logprobs.map { it.toMutableList() }
             additionalProperties = responseOutputText.additionalProperties.toMutableMap()
         }
 
@@ -197,6 +216,31 @@ private constructor(
          */
         fun type(type: JsonValue) = apply { this.type = type }
 
+        fun logprobs(logprobs: List<Logprob>) = logprobs(JsonField.of(logprobs))
+
+        /**
+         * Sets [Builder.logprobs] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.logprobs] with a well-typed `List<Logprob>` value
+         * instead. This method is primarily for setting the field to an undocumented or not yet
+         * supported value.
+         */
+        fun logprobs(logprobs: JsonField<List<Logprob>>) = apply {
+            this.logprobs = logprobs.map { it.toMutableList() }
+        }
+
+        /**
+         * Adds a single [Logprob] to [logprobs].
+         *
+         * @throws IllegalStateException if the field was previously set to a non-list.
+         */
+        fun addLogprob(logprob: Logprob) = apply {
+            logprobs =
+                (logprobs ?: JsonField.of(mutableListOf())).also {
+                    checkKnown("logprobs", it).add(logprob)
+                }
+        }
+
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
             this.additionalProperties.clear()
             putAllAdditionalProperties(additionalProperties)
@@ -234,6 +278,7 @@ private constructor(
                 checkRequired("annotations", annotations).map { it.toImmutable() },
                 checkRequired("text", text),
                 type,
+                (logprobs ?: JsonMissing.of()).map { it.toImmutable() },
                 additionalProperties.toMutableMap(),
             )
     }
@@ -252,6 +297,7 @@ private constructor(
                 throw OpenAIInvalidDataException("'type' is invalid, received $it")
             }
         }
+        logprobs().ifPresent { it.forEach { it.validate() } }
         validated = true
     }
 
@@ -272,7 +318,8 @@ private constructor(
     internal fun validity(): Int =
         (annotations.asKnown().getOrNull()?.sumOf { it.validity().toInt() } ?: 0) +
             (if (text.asKnown().isPresent) 1 else 0) +
-            type.let { if (it == JsonValue.from("output_text")) 1 else 0 }
+            type.let { if (it == JsonValue.from("output_text")) 1 else 0 } +
+            (logprobs.asKnown().getOrNull()?.sumOf { it.validity().toInt() } ?: 0)
 
     /** A citation to a file. */
     @JsonDeserialize(using = Annotation.Deserializer::class)
@@ -1287,20 +1334,557 @@ private constructor(
         }
     }
 
+    /** The log probability of a token. */
+    class Logprob
+    private constructor(
+        private val token: JsonField<String>,
+        private val bytes: JsonField<List<Long>>,
+        private val logprob: JsonField<Double>,
+        private val topLogprobs: JsonField<List<TopLogprob>>,
+        private val additionalProperties: MutableMap<String, JsonValue>,
+    ) {
+
+        @JsonCreator
+        private constructor(
+            @JsonProperty("token") @ExcludeMissing token: JsonField<String> = JsonMissing.of(),
+            @JsonProperty("bytes") @ExcludeMissing bytes: JsonField<List<Long>> = JsonMissing.of(),
+            @JsonProperty("logprob") @ExcludeMissing logprob: JsonField<Double> = JsonMissing.of(),
+            @JsonProperty("top_logprobs")
+            @ExcludeMissing
+            topLogprobs: JsonField<List<TopLogprob>> = JsonMissing.of(),
+        ) : this(token, bytes, logprob, topLogprobs, mutableMapOf())
+
+        /**
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         */
+        fun token(): String = token.getRequired("token")
+
+        /**
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         */
+        fun bytes(): List<Long> = bytes.getRequired("bytes")
+
+        /**
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         */
+        fun logprob(): Double = logprob.getRequired("logprob")
+
+        /**
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         */
+        fun topLogprobs(): List<TopLogprob> = topLogprobs.getRequired("top_logprobs")
+
+        /**
+         * Returns the raw JSON value of [token].
+         *
+         * Unlike [token], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("token") @ExcludeMissing fun _token(): JsonField<String> = token
+
+        /**
+         * Returns the raw JSON value of [bytes].
+         *
+         * Unlike [bytes], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("bytes") @ExcludeMissing fun _bytes(): JsonField<List<Long>> = bytes
+
+        /**
+         * Returns the raw JSON value of [logprob].
+         *
+         * Unlike [logprob], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("logprob") @ExcludeMissing fun _logprob(): JsonField<Double> = logprob
+
+        /**
+         * Returns the raw JSON value of [topLogprobs].
+         *
+         * Unlike [topLogprobs], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("top_logprobs")
+        @ExcludeMissing
+        fun _topLogprobs(): JsonField<List<TopLogprob>> = topLogprobs
+
+        @JsonAnySetter
+        private fun putAdditionalProperty(key: String, value: JsonValue) {
+            additionalProperties.put(key, value)
+        }
+
+        @JsonAnyGetter
+        @ExcludeMissing
+        fun _additionalProperties(): Map<String, JsonValue> =
+            Collections.unmodifiableMap(additionalProperties)
+
+        fun toBuilder() = Builder().from(this)
+
+        companion object {
+
+            /**
+             * Returns a mutable builder for constructing an instance of [Logprob].
+             *
+             * The following fields are required:
+             * ```java
+             * .token()
+             * .bytes()
+             * .logprob()
+             * .topLogprobs()
+             * ```
+             */
+            @JvmStatic fun builder() = Builder()
+        }
+
+        /** A builder for [Logprob]. */
+        class Builder internal constructor() {
+
+            private var token: JsonField<String>? = null
+            private var bytes: JsonField<MutableList<Long>>? = null
+            private var logprob: JsonField<Double>? = null
+            private var topLogprobs: JsonField<MutableList<TopLogprob>>? = null
+            private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
+
+            @JvmSynthetic
+            internal fun from(logprob: Logprob) = apply {
+                token = logprob.token
+                bytes = logprob.bytes.map { it.toMutableList() }
+                this.logprob = logprob.logprob
+                topLogprobs = logprob.topLogprobs.map { it.toMutableList() }
+                additionalProperties = logprob.additionalProperties.toMutableMap()
+            }
+
+            fun token(token: String) = token(JsonField.of(token))
+
+            /**
+             * Sets [Builder.token] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.token] with a well-typed [String] value instead.
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun token(token: JsonField<String>) = apply { this.token = token }
+
+            fun bytes(bytes: List<Long>) = bytes(JsonField.of(bytes))
+
+            /**
+             * Sets [Builder.bytes] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.bytes] with a well-typed `List<Long>` value instead.
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun bytes(bytes: JsonField<List<Long>>) = apply {
+                this.bytes = bytes.map { it.toMutableList() }
+            }
+
+            /**
+             * Adds a single [Long] to [bytes].
+             *
+             * @throws IllegalStateException if the field was previously set to a non-list.
+             */
+            fun addByte(byte_: Long) = apply {
+                bytes =
+                    (bytes ?: JsonField.of(mutableListOf())).also {
+                        checkKnown("bytes", it).add(byte_)
+                    }
+            }
+
+            fun logprob(logprob: Double) = logprob(JsonField.of(logprob))
+
+            /**
+             * Sets [Builder.logprob] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.logprob] with a well-typed [Double] value instead.
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun logprob(logprob: JsonField<Double>) = apply { this.logprob = logprob }
+
+            fun topLogprobs(topLogprobs: List<TopLogprob>) = topLogprobs(JsonField.of(topLogprobs))
+
+            /**
+             * Sets [Builder.topLogprobs] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.topLogprobs] with a well-typed `List<TopLogprob>`
+             * value instead. This method is primarily for setting the field to an undocumented or
+             * not yet supported value.
+             */
+            fun topLogprobs(topLogprobs: JsonField<List<TopLogprob>>) = apply {
+                this.topLogprobs = topLogprobs.map { it.toMutableList() }
+            }
+
+            /**
+             * Adds a single [TopLogprob] to [topLogprobs].
+             *
+             * @throws IllegalStateException if the field was previously set to a non-list.
+             */
+            fun addTopLogprob(topLogprob: TopLogprob) = apply {
+                topLogprobs =
+                    (topLogprobs ?: JsonField.of(mutableListOf())).also {
+                        checkKnown("topLogprobs", it).add(topLogprob)
+                    }
+            }
+
+            fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                this.additionalProperties.clear()
+                putAllAdditionalProperties(additionalProperties)
+            }
+
+            fun putAdditionalProperty(key: String, value: JsonValue) = apply {
+                additionalProperties.put(key, value)
+            }
+
+            fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                this.additionalProperties.putAll(additionalProperties)
+            }
+
+            fun removeAdditionalProperty(key: String) = apply { additionalProperties.remove(key) }
+
+            fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                keys.forEach(::removeAdditionalProperty)
+            }
+
+            /**
+             * Returns an immutable instance of [Logprob].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             *
+             * The following fields are required:
+             * ```java
+             * .token()
+             * .bytes()
+             * .logprob()
+             * .topLogprobs()
+             * ```
+             *
+             * @throws IllegalStateException if any required field is unset.
+             */
+            fun build(): Logprob =
+                Logprob(
+                    checkRequired("token", token),
+                    checkRequired("bytes", bytes).map { it.toImmutable() },
+                    checkRequired("logprob", logprob),
+                    checkRequired("topLogprobs", topLogprobs).map { it.toImmutable() },
+                    additionalProperties.toMutableMap(),
+                )
+        }
+
+        private var validated: Boolean = false
+
+        fun validate(): Logprob = apply {
+            if (validated) {
+                return@apply
+            }
+
+            token()
+            bytes()
+            logprob()
+            topLogprobs().forEach { it.validate() }
+            validated = true
+        }
+
+        fun isValid(): Boolean =
+            try {
+                validate()
+                true
+            } catch (e: OpenAIInvalidDataException) {
+                false
+            }
+
+        /**
+         * Returns a score indicating how many valid values are contained in this object
+         * recursively.
+         *
+         * Used for best match union deserialization.
+         */
+        @JvmSynthetic
+        internal fun validity(): Int =
+            (if (token.asKnown().isPresent) 1 else 0) +
+                (bytes.asKnown().getOrNull()?.size ?: 0) +
+                (if (logprob.asKnown().isPresent) 1 else 0) +
+                (topLogprobs.asKnown().getOrNull()?.sumOf { it.validity().toInt() } ?: 0)
+
+        /** The top log probability of a token. */
+        class TopLogprob
+        private constructor(
+            private val token: JsonField<String>,
+            private val bytes: JsonField<List<Long>>,
+            private val logprob: JsonField<Double>,
+            private val additionalProperties: MutableMap<String, JsonValue>,
+        ) {
+
+            @JsonCreator
+            private constructor(
+                @JsonProperty("token") @ExcludeMissing token: JsonField<String> = JsonMissing.of(),
+                @JsonProperty("bytes")
+                @ExcludeMissing
+                bytes: JsonField<List<Long>> = JsonMissing.of(),
+                @JsonProperty("logprob")
+                @ExcludeMissing
+                logprob: JsonField<Double> = JsonMissing.of(),
+            ) : this(token, bytes, logprob, mutableMapOf())
+
+            /**
+             * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+             *   unexpectedly missing or null (e.g. if the server responded with an unexpected
+             *   value).
+             */
+            fun token(): String = token.getRequired("token")
+
+            /**
+             * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+             *   unexpectedly missing or null (e.g. if the server responded with an unexpected
+             *   value).
+             */
+            fun bytes(): List<Long> = bytes.getRequired("bytes")
+
+            /**
+             * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+             *   unexpectedly missing or null (e.g. if the server responded with an unexpected
+             *   value).
+             */
+            fun logprob(): Double = logprob.getRequired("logprob")
+
+            /**
+             * Returns the raw JSON value of [token].
+             *
+             * Unlike [token], this method doesn't throw if the JSON field has an unexpected type.
+             */
+            @JsonProperty("token") @ExcludeMissing fun _token(): JsonField<String> = token
+
+            /**
+             * Returns the raw JSON value of [bytes].
+             *
+             * Unlike [bytes], this method doesn't throw if the JSON field has an unexpected type.
+             */
+            @JsonProperty("bytes") @ExcludeMissing fun _bytes(): JsonField<List<Long>> = bytes
+
+            /**
+             * Returns the raw JSON value of [logprob].
+             *
+             * Unlike [logprob], this method doesn't throw if the JSON field has an unexpected type.
+             */
+            @JsonProperty("logprob") @ExcludeMissing fun _logprob(): JsonField<Double> = logprob
+
+            @JsonAnySetter
+            private fun putAdditionalProperty(key: String, value: JsonValue) {
+                additionalProperties.put(key, value)
+            }
+
+            @JsonAnyGetter
+            @ExcludeMissing
+            fun _additionalProperties(): Map<String, JsonValue> =
+                Collections.unmodifiableMap(additionalProperties)
+
+            fun toBuilder() = Builder().from(this)
+
+            companion object {
+
+                /**
+                 * Returns a mutable builder for constructing an instance of [TopLogprob].
+                 *
+                 * The following fields are required:
+                 * ```java
+                 * .token()
+                 * .bytes()
+                 * .logprob()
+                 * ```
+                 */
+                @JvmStatic fun builder() = Builder()
+            }
+
+            /** A builder for [TopLogprob]. */
+            class Builder internal constructor() {
+
+                private var token: JsonField<String>? = null
+                private var bytes: JsonField<MutableList<Long>>? = null
+                private var logprob: JsonField<Double>? = null
+                private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
+
+                @JvmSynthetic
+                internal fun from(topLogprob: TopLogprob) = apply {
+                    token = topLogprob.token
+                    bytes = topLogprob.bytes.map { it.toMutableList() }
+                    logprob = topLogprob.logprob
+                    additionalProperties = topLogprob.additionalProperties.toMutableMap()
+                }
+
+                fun token(token: String) = token(JsonField.of(token))
+
+                /**
+                 * Sets [Builder.token] to an arbitrary JSON value.
+                 *
+                 * You should usually call [Builder.token] with a well-typed [String] value instead.
+                 * This method is primarily for setting the field to an undocumented or not yet
+                 * supported value.
+                 */
+                fun token(token: JsonField<String>) = apply { this.token = token }
+
+                fun bytes(bytes: List<Long>) = bytes(JsonField.of(bytes))
+
+                /**
+                 * Sets [Builder.bytes] to an arbitrary JSON value.
+                 *
+                 * You should usually call [Builder.bytes] with a well-typed `List<Long>` value
+                 * instead. This method is primarily for setting the field to an undocumented or not
+                 * yet supported value.
+                 */
+                fun bytes(bytes: JsonField<List<Long>>) = apply {
+                    this.bytes = bytes.map { it.toMutableList() }
+                }
+
+                /**
+                 * Adds a single [Long] to [bytes].
+                 *
+                 * @throws IllegalStateException if the field was previously set to a non-list.
+                 */
+                fun addByte(byte_: Long) = apply {
+                    bytes =
+                        (bytes ?: JsonField.of(mutableListOf())).also {
+                            checkKnown("bytes", it).add(byte_)
+                        }
+                }
+
+                fun logprob(logprob: Double) = logprob(JsonField.of(logprob))
+
+                /**
+                 * Sets [Builder.logprob] to an arbitrary JSON value.
+                 *
+                 * You should usually call [Builder.logprob] with a well-typed [Double] value
+                 * instead. This method is primarily for setting the field to an undocumented or not
+                 * yet supported value.
+                 */
+                fun logprob(logprob: JsonField<Double>) = apply { this.logprob = logprob }
+
+                fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                    this.additionalProperties.clear()
+                    putAllAdditionalProperties(additionalProperties)
+                }
+
+                fun putAdditionalProperty(key: String, value: JsonValue) = apply {
+                    additionalProperties.put(key, value)
+                }
+
+                fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) =
+                    apply {
+                        this.additionalProperties.putAll(additionalProperties)
+                    }
+
+                fun removeAdditionalProperty(key: String) = apply {
+                    additionalProperties.remove(key)
+                }
+
+                fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                    keys.forEach(::removeAdditionalProperty)
+                }
+
+                /**
+                 * Returns an immutable instance of [TopLogprob].
+                 *
+                 * Further updates to this [Builder] will not mutate the returned instance.
+                 *
+                 * The following fields are required:
+                 * ```java
+                 * .token()
+                 * .bytes()
+                 * .logprob()
+                 * ```
+                 *
+                 * @throws IllegalStateException if any required field is unset.
+                 */
+                fun build(): TopLogprob =
+                    TopLogprob(
+                        checkRequired("token", token),
+                        checkRequired("bytes", bytes).map { it.toImmutable() },
+                        checkRequired("logprob", logprob),
+                        additionalProperties.toMutableMap(),
+                    )
+            }
+
+            private var validated: Boolean = false
+
+            fun validate(): TopLogprob = apply {
+                if (validated) {
+                    return@apply
+                }
+
+                token()
+                bytes()
+                logprob()
+                validated = true
+            }
+
+            fun isValid(): Boolean =
+                try {
+                    validate()
+                    true
+                } catch (e: OpenAIInvalidDataException) {
+                    false
+                }
+
+            /**
+             * Returns a score indicating how many valid values are contained in this object
+             * recursively.
+             *
+             * Used for best match union deserialization.
+             */
+            @JvmSynthetic
+            internal fun validity(): Int =
+                (if (token.asKnown().isPresent) 1 else 0) +
+                    (bytes.asKnown().getOrNull()?.size ?: 0) +
+                    (if (logprob.asKnown().isPresent) 1 else 0)
+
+            override fun equals(other: Any?): Boolean {
+                if (this === other) {
+                    return true
+                }
+
+                return /* spotless:off */ other is TopLogprob && token == other.token && bytes == other.bytes && logprob == other.logprob && additionalProperties == other.additionalProperties /* spotless:on */
+            }
+
+            /* spotless:off */
+            private val hashCode: Int by lazy { Objects.hash(token, bytes, logprob, additionalProperties) }
+            /* spotless:on */
+
+            override fun hashCode(): Int = hashCode
+
+            override fun toString() =
+                "TopLogprob{token=$token, bytes=$bytes, logprob=$logprob, additionalProperties=$additionalProperties}"
+        }
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) {
+                return true
+            }
+
+            return /* spotless:off */ other is Logprob && token == other.token && bytes == other.bytes && logprob == other.logprob && topLogprobs == other.topLogprobs && additionalProperties == other.additionalProperties /* spotless:on */
+        }
+
+        /* spotless:off */
+        private val hashCode: Int by lazy { Objects.hash(token, bytes, logprob, topLogprobs, additionalProperties) }
+        /* spotless:on */
+
+        override fun hashCode(): Int = hashCode
+
+        override fun toString() =
+            "Logprob{token=$token, bytes=$bytes, logprob=$logprob, topLogprobs=$topLogprobs, additionalProperties=$additionalProperties}"
+    }
+
     override fun equals(other: Any?): Boolean {
         if (this === other) {
             return true
         }
 
-        return /* spotless:off */ other is ResponseOutputText && annotations == other.annotations && text == other.text && type == other.type && additionalProperties == other.additionalProperties /* spotless:on */
+        return /* spotless:off */ other is ResponseOutputText && annotations == other.annotations && text == other.text && type == other.type && logprobs == other.logprobs && additionalProperties == other.additionalProperties /* spotless:on */
     }
 
     /* spotless:off */
-    private val hashCode: Int by lazy { Objects.hash(annotations, text, type, additionalProperties) }
+    private val hashCode: Int by lazy { Objects.hash(annotations, text, type, logprobs, additionalProperties) }
     /* spotless:on */
 
     override fun hashCode(): Int = hashCode
 
     override fun toString() =
-        "ResponseOutputText{annotations=$annotations, text=$text, type=$type, additionalProperties=$additionalProperties}"
+        "ResponseOutputText{annotations=$annotations, text=$text, type=$type, logprobs=$logprobs, additionalProperties=$additionalProperties}"
 }

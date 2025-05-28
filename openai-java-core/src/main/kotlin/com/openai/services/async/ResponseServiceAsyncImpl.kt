@@ -75,6 +75,16 @@ class ResponseServiceAsyncImpl internal constructor(private val clientOptions: C
         // get /responses/{response_id}
         withRawResponse().retrieve(params, requestOptions).thenApply { it.parse() }
 
+    override fun retrieveStreaming(
+        params: ResponseRetrieveParams,
+        requestOptions: RequestOptions,
+    ): AsyncStreamResponse<ResponseStreamEvent> =
+        // get /responses/{response_id}
+        withRawResponse()
+            .retrieveStreaming(params, requestOptions)
+            .thenApply { it.parse() }
+            .toAsync(clientOptions.streamHandlerExecutor)
+
     override fun delete(
         params: ResponseDeleteParams,
         requestOptions: RequestOptions,
@@ -199,6 +209,42 @@ class ResponseServiceAsyncImpl internal constructor(private val clientOptions: C
                             .also {
                                 if (requestOptions.responseValidation!!) {
                                     it.validate()
+                                }
+                            }
+                    }
+                }
+        }
+
+        private val retrieveStreamingHandler: Handler<StreamResponse<ResponseStreamEvent>> =
+            sseHandler(clientOptions.jsonMapper)
+                .mapJson<ResponseStreamEvent>()
+                .withErrorHandler(errorHandler)
+
+        override fun retrieveStreaming(
+            params: ResponseRetrieveParams,
+            requestOptions: RequestOptions,
+        ): CompletableFuture<HttpResponseFor<StreamResponse<ResponseStreamEvent>>> {
+            // We check here instead of in the params builder because this can be specified
+            // positionally or in the params class.
+            checkRequired("responseId", params.responseId().getOrNull())
+            val request =
+                HttpRequest.builder()
+                    .method(HttpMethod.GET)
+                    .addPathSegments("responses", params._pathParam(0))
+                    .build()
+                    .prepareAsync(clientOptions, params)
+            val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
+            return request
+                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
+                .thenApply { response ->
+                    response.parseable {
+                        response
+                            .let { retrieveStreamingHandler.handle(it) }
+                            .let { streamResponse ->
+                                if (requestOptions.responseValidation!!) {
+                                    streamResponse.map { it.validate() }
+                                } else {
+                                    streamResponse
                                 }
                             }
                     }

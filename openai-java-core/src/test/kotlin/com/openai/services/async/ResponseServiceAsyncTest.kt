@@ -162,11 +162,35 @@ internal class ResponseServiceAsyncTest {
                 ResponseRetrieveParams.builder()
                     .responseId("resp_677efb5139a88190b512bc3fef8e535d")
                     .addInclude(ResponseIncludable.FILE_SEARCH_CALL_RESULTS)
+                    .startingAfter(0L)
                     .build()
             )
 
         val response = responseFuture.get()
         response.validate()
+    }
+
+    @Test
+    fun retrieveStreaming() {
+        val client =
+            OpenAIOkHttpClientAsync.builder()
+                .baseUrl(TestServerExtension.BASE_URL)
+                .apiKey("My API Key")
+                .build()
+        val responseServiceAsync = client.responses()
+
+        val responseStreamResponse =
+            responseServiceAsync.retrieveStreaming(
+                ResponseRetrieveParams.builder()
+                    .responseId("resp_677efb5139a88190b512bc3fef8e535d")
+                    .addInclude(ResponseIncludable.FILE_SEARCH_CALL_RESULTS)
+                    .startingAfter(0L)
+                    .build()
+            )
+
+        val onCompleteFuture =
+            responseStreamResponse.subscribe { response -> response.validate() }.onCompleteFuture()
+        onCompleteFuture.get()
     }
 
     @Test
