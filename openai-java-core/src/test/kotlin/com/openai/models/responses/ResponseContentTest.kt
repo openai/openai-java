@@ -131,6 +131,20 @@ internal class ResponseContentTest {
                         .build()
                 )
                 .text("text")
+                .addLogprob(
+                    ResponseOutputText.Logprob.builder()
+                        .token("token")
+                        .addByte(0L)
+                        .logprob(0.0)
+                        .addTopLogprob(
+                            ResponseOutputText.Logprob.TopLogprob.builder()
+                                .token("token")
+                                .addByte(0L)
+                                .logprob(0.0)
+                                .build()
+                        )
+                        .build()
+                )
                 .build()
 
         val responseContent = ResponseContent.ofOutputText(outputText)
@@ -155,6 +169,20 @@ internal class ResponseContentTest {
                             .build()
                     )
                     .text("text")
+                    .addLogprob(
+                        ResponseOutputText.Logprob.builder()
+                            .token("token")
+                            .addByte(0L)
+                            .logprob(0.0)
+                            .addTopLogprob(
+                                ResponseOutputText.Logprob.TopLogprob.builder()
+                                    .token("token")
+                                    .addByte(0L)
+                                    .logprob(0.0)
+                                    .build()
+                            )
+                            .build()
+                    )
                     .build()
             )
 
