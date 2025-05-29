@@ -1,5 +1,22 @@
 # Changelog
 
+## 2.3.0 (2025-05-29)
+
+Full Changelog: [v2.2.1...v2.3.0](https://github.com/openai/openai-java/compare/v2.2.1...v2.3.0)
+
+### Features
+
+* **api:** Config update for pakrym-stream-param ([55ae767](https://github.com/openai/openai-java/commit/55ae767021a1d03a2c8bc4184163acd56ee64d41))
+
+
+### Bug Fixes
+
+* **client:** add missing deployment model param ([#704](https://github.com/openai/openai-java/issues/704)) ([37aa563](https://github.com/openai/openai-java/commit/37aa563789f34de917758519d859f17d9c1a98fc))
+* **client:** correctly send streaming discriminator param ([b27559f](https://github.com/openai/openai-java/commit/b27559fa7d1c097ada40da12e55d1def372f5dce))
+* **client:** optional image deployment model param ([a507f84](https://github.com/openai/openai-java/commit/a507f8446a2270ee3e9c5e5295a9a57b59c633eb))
+* **client:** remove `@MustBeClosed` for future returning methods ([2988157](https://github.com/openai/openai-java/commit/2988157933dfe2ec7f9f2b626d0fa9eb184db27d))
+* **client:** return binary content from `get /containers/{container_id}/files/{file_id}/content` ([787e12b](https://github.com/openai/openai-java/commit/787e12b4ac3d33f46aa31c165241c26f927e92dc))
+
 ## 2.2.1 (2025-05-27)
 
 Full Changelog: [v2.2.0...v2.2.1](https://github.com/openai/openai-java/compare/v2.2.0...v2.2.1)
