@@ -15,24 +15,29 @@ interface ContentService {
     fun withRawResponse(): WithRawResponse
 
     /** Retrieve Container File Content */
-    fun retrieve(fileId: String, params: ContentRetrieveParams) =
+    @MustBeClosed
+    fun retrieve(fileId: String, params: ContentRetrieveParams): HttpResponse =
         retrieve(fileId, params, RequestOptions.none())
 
     /** @see [retrieve] */
+    @MustBeClosed
     fun retrieve(
         fileId: String,
         params: ContentRetrieveParams,
         requestOptions: RequestOptions = RequestOptions.none(),
-    ) = retrieve(params.toBuilder().fileId(fileId).build(), requestOptions)
+    ): HttpResponse = retrieve(params.toBuilder().fileId(fileId).build(), requestOptions)
 
     /** @see [retrieve] */
-    fun retrieve(params: ContentRetrieveParams) = retrieve(params, RequestOptions.none())
+    @MustBeClosed
+    fun retrieve(params: ContentRetrieveParams): HttpResponse =
+        retrieve(params, RequestOptions.none())
 
     /** @see [retrieve] */
+    @MustBeClosed
     fun retrieve(
         params: ContentRetrieveParams,
         requestOptions: RequestOptions = RequestOptions.none(),
-    )
+    ): HttpResponse
 
     /** A view of [ContentService] that provides access to raw HTTP responses for each method. */
     interface WithRawResponse {
