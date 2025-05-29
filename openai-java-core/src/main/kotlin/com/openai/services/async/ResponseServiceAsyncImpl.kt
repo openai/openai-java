@@ -231,6 +231,7 @@ class ResponseServiceAsyncImpl internal constructor(private val clientOptions: C
                 HttpRequest.builder()
                     .method(HttpMethod.GET)
                     .addPathSegments("responses", params._pathParam(0))
+                    .putQueryParam("stream", "true")
                     .build()
                     .prepareAsync(clientOptions, params, deploymentModel = null)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))

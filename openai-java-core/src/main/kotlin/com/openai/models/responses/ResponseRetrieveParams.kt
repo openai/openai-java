@@ -227,7 +227,6 @@ private constructor(
             .apply {
                 include?.forEach { put("include[]", it.toString()) }
                 startingAfter?.let { put("starting_after", it.toString()) }
-                stream?.let { put("stream", it.toString()) }
                 putAll(additionalQueryParams)
             }
             .build()
