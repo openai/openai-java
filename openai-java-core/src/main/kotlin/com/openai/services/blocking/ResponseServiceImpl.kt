@@ -204,6 +204,7 @@ class ResponseServiceImpl internal constructor(private val clientOptions: Client
                 HttpRequest.builder()
                     .method(HttpMethod.GET)
                     .addPathSegments("responses", params._pathParam(0))
+                    .putQueryParam("stream", "true")
                     .build()
                     .prepare(clientOptions, params)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
