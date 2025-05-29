@@ -5,14 +5,11 @@ package com.openai.services.async.containers.files
 import com.openai.core.ClientOptions
 import com.openai.core.RequestOptions
 import com.openai.core.checkRequired
-import com.openai.core.handlers.emptyHandler
 import com.openai.core.handlers.errorHandler
-import com.openai.core.handlers.withErrorHandler
 import com.openai.core.http.HttpMethod
 import com.openai.core.http.HttpRequest
 import com.openai.core.http.HttpResponse
 import com.openai.core.http.HttpResponse.Handler
-import com.openai.core.http.parseable
 import com.openai.core.prepareAsync
 import com.openai.models.ErrorObject
 import com.openai.models.containers.files.content.ContentRetrieveParams
@@ -31,16 +28,14 @@ class ContentServiceAsyncImpl internal constructor(private val clientOptions: Cl
     override fun retrieve(
         params: ContentRetrieveParams,
         requestOptions: RequestOptions,
-    ): CompletableFuture<Void?> =
+    ): CompletableFuture<HttpResponse> =
         // get /containers/{container_id}/files/{file_id}/content
-        withRawResponse().retrieve(params, requestOptions).thenAccept {}
+        withRawResponse().retrieve(params, requestOptions)
 
     class WithRawResponseImpl internal constructor(private val clientOptions: ClientOptions) :
         ContentServiceAsync.WithRawResponse {
 
         private val errorHandler: Handler<ErrorObject?> = errorHandler(clientOptions.jsonMapper)
-
-        private val retrieveHandler: Handler<Void?> = emptyHandler().withErrorHandler(errorHandler)
 
         override fun retrieve(
             params: ContentRetrieveParams,
@@ -62,11 +57,9 @@ class ContentServiceAsyncImpl internal constructor(private val clientOptions: Cl
                     .build()
                     .prepareAsync(clientOptions, params)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
-            return request
-                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
-                .thenApply { response ->
-                    response.parseable { response.use { retrieveHandler.handle(it) } }
-                }
+            return request.thenComposeAsync {
+                clientOptions.httpClient.executeAsync(it, requestOptions)
+            }
         }
     }
 }
