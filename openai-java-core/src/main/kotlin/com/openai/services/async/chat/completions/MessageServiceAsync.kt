@@ -2,7 +2,6 @@
 
 package com.openai.services.async.chat.completions
 
-import com.google.errorprone.annotations.MustBeClosed
 import com.openai.core.RequestOptions
 import com.openai.core.http.HttpResponseFor
 import com.openai.models.chat.completions.messages.MessageListPageAsync
@@ -63,12 +62,10 @@ interface MessageServiceAsync {
          * Returns a raw HTTP response for `get /chat/completions/{completion_id}/messages`, but is
          * otherwise the same as [MessageServiceAsync.list].
          */
-        @MustBeClosed
         fun list(completionId: String): CompletableFuture<HttpResponseFor<MessageListPageAsync>> =
             list(completionId, MessageListParams.none())
 
         /** @see [list] */
-        @MustBeClosed
         fun list(
             completionId: String,
             params: MessageListParams = MessageListParams.none(),
@@ -77,7 +74,6 @@ interface MessageServiceAsync {
             list(params.toBuilder().completionId(completionId).build(), requestOptions)
 
         /** @see [list] */
-        @MustBeClosed
         fun list(
             completionId: String,
             params: MessageListParams = MessageListParams.none(),
@@ -85,21 +81,18 @@ interface MessageServiceAsync {
             list(completionId, params, RequestOptions.none())
 
         /** @see [list] */
-        @MustBeClosed
         fun list(
             params: MessageListParams,
             requestOptions: RequestOptions = RequestOptions.none(),
         ): CompletableFuture<HttpResponseFor<MessageListPageAsync>>
 
         /** @see [list] */
-        @MustBeClosed
         fun list(
             params: MessageListParams
         ): CompletableFuture<HttpResponseFor<MessageListPageAsync>> =
             list(params, RequestOptions.none())
 
         /** @see [list] */
-        @MustBeClosed
         fun list(
             completionId: String,
             requestOptions: RequestOptions,

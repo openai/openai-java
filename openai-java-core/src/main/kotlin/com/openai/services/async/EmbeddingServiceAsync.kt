@@ -2,7 +2,6 @@
 
 package com.openai.services.async
 
-import com.google.errorprone.annotations.MustBeClosed
 import com.openai.core.RequestOptions
 import com.openai.core.http.HttpResponseFor
 import com.openai.models.embeddings.CreateEmbeddingResponse
@@ -35,14 +34,12 @@ interface EmbeddingServiceAsync {
          * Returns a raw HTTP response for `post /embeddings`, but is otherwise the same as
          * [EmbeddingServiceAsync.create].
          */
-        @MustBeClosed
         fun create(
             params: EmbeddingCreateParams
         ): CompletableFuture<HttpResponseFor<CreateEmbeddingResponse>> =
             create(params, RequestOptions.none())
 
         /** @see [create] */
-        @MustBeClosed
         fun create(
             params: EmbeddingCreateParams,
             requestOptions: RequestOptions = RequestOptions.none(),

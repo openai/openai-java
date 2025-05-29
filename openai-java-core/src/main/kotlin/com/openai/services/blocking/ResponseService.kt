@@ -117,6 +117,48 @@ interface ResponseService {
     fun retrieve(responseId: String, requestOptions: RequestOptions): Response =
         retrieve(responseId, ResponseRetrieveParams.none(), requestOptions)
 
+    /** Retrieves a model response with the given ID. */
+    @MustBeClosed
+    fun retrieveStreaming(responseId: String): StreamResponse<ResponseStreamEvent> =
+        retrieveStreaming(responseId, ResponseRetrieveParams.none())
+
+    /** @see [retrieveStreaming] */
+    @MustBeClosed
+    fun retrieveStreaming(
+        responseId: String,
+        params: ResponseRetrieveParams = ResponseRetrieveParams.none(),
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): StreamResponse<ResponseStreamEvent> =
+        retrieveStreaming(params.toBuilder().responseId(responseId).build(), requestOptions)
+
+    /** @see [retrieveStreaming] */
+    @MustBeClosed
+    fun retrieveStreaming(
+        responseId: String,
+        params: ResponseRetrieveParams = ResponseRetrieveParams.none(),
+    ): StreamResponse<ResponseStreamEvent> =
+        retrieveStreaming(responseId, params, RequestOptions.none())
+
+    /** @see [retrieveStreaming] */
+    @MustBeClosed
+    fun retrieveStreaming(
+        params: ResponseRetrieveParams,
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): StreamResponse<ResponseStreamEvent>
+
+    /** @see [retrieveStreaming] */
+    @MustBeClosed
+    fun retrieveStreaming(params: ResponseRetrieveParams): StreamResponse<ResponseStreamEvent> =
+        retrieveStreaming(params, RequestOptions.none())
+
+    /** @see [retrieveStreaming] */
+    @MustBeClosed
+    fun retrieveStreaming(
+        responseId: String,
+        requestOptions: RequestOptions,
+    ): StreamResponse<ResponseStreamEvent> =
+        retrieveStreaming(responseId, ResponseRetrieveParams.none(), requestOptions)
+
     /** Deletes a model response with the given ID. */
     fun delete(responseId: String) = delete(responseId, ResponseDeleteParams.none())
 
@@ -249,6 +291,55 @@ interface ResponseService {
             requestOptions: RequestOptions,
         ): HttpResponseFor<Response> =
             retrieve(responseId, ResponseRetrieveParams.none(), requestOptions)
+
+        /**
+         * Returns a raw HTTP response for `get /responses/{response_id}`, but is otherwise the same
+         * as [ResponseService.retrieveStreaming].
+         */
+        @MustBeClosed
+        fun retrieveStreaming(
+            responseId: String
+        ): HttpResponseFor<StreamResponse<ResponseStreamEvent>> =
+            retrieveStreaming(responseId, ResponseRetrieveParams.none())
+
+        /** @see [retrieveStreaming] */
+        @MustBeClosed
+        fun retrieveStreaming(
+            responseId: String,
+            params: ResponseRetrieveParams = ResponseRetrieveParams.none(),
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): HttpResponseFor<StreamResponse<ResponseStreamEvent>> =
+            retrieveStreaming(params.toBuilder().responseId(responseId).build(), requestOptions)
+
+        /** @see [retrieveStreaming] */
+        @MustBeClosed
+        fun retrieveStreaming(
+            responseId: String,
+            params: ResponseRetrieveParams = ResponseRetrieveParams.none(),
+        ): HttpResponseFor<StreamResponse<ResponseStreamEvent>> =
+            retrieveStreaming(responseId, params, RequestOptions.none())
+
+        /** @see [retrieveStreaming] */
+        @MustBeClosed
+        fun retrieveStreaming(
+            params: ResponseRetrieveParams,
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): HttpResponseFor<StreamResponse<ResponseStreamEvent>>
+
+        /** @see [retrieveStreaming] */
+        @MustBeClosed
+        fun retrieveStreaming(
+            params: ResponseRetrieveParams
+        ): HttpResponseFor<StreamResponse<ResponseStreamEvent>> =
+            retrieveStreaming(params, RequestOptions.none())
+
+        /** @see [retrieveStreaming] */
+        @MustBeClosed
+        fun retrieveStreaming(
+            responseId: String,
+            requestOptions: RequestOptions,
+        ): HttpResponseFor<StreamResponse<ResponseStreamEvent>> =
+            retrieveStreaming(responseId, ResponseRetrieveParams.none(), requestOptions)
 
         /**
          * Returns a raw HTTP response for `delete /responses/{response_id}`, but is otherwise the

@@ -2,7 +2,6 @@
 
 package com.openai.services.async.audio
 
-import com.google.errorprone.annotations.MustBeClosed
 import com.openai.core.RequestOptions
 import com.openai.core.http.HttpResponseFor
 import com.openai.models.audio.translations.TranslationCreateParams
@@ -36,14 +35,12 @@ interface TranslationServiceAsync {
          * Returns a raw HTTP response for `post /audio/translations`, but is otherwise the same as
          * [TranslationServiceAsync.create].
          */
-        @MustBeClosed
         fun create(
             params: TranslationCreateParams
         ): CompletableFuture<HttpResponseFor<TranslationCreateResponse>> =
             create(params, RequestOptions.none())
 
         /** @see [create] */
-        @MustBeClosed
         fun create(
             params: TranslationCreateParams,
             requestOptions: RequestOptions = RequestOptions.none(),

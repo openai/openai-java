@@ -98,6 +98,43 @@ interface ResponseServiceAsync {
     fun retrieve(responseId: String, requestOptions: RequestOptions): CompletableFuture<Response> =
         retrieve(responseId, ResponseRetrieveParams.none(), requestOptions)
 
+    /** Retrieves a model response with the given ID. */
+    fun retrieveStreaming(responseId: String): AsyncStreamResponse<ResponseStreamEvent> =
+        retrieveStreaming(responseId, ResponseRetrieveParams.none())
+
+    /** @see [retrieveStreaming] */
+    fun retrieveStreaming(
+        responseId: String,
+        params: ResponseRetrieveParams = ResponseRetrieveParams.none(),
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): AsyncStreamResponse<ResponseStreamEvent> =
+        retrieveStreaming(params.toBuilder().responseId(responseId).build(), requestOptions)
+
+    /** @see [retrieveStreaming] */
+    fun retrieveStreaming(
+        responseId: String,
+        params: ResponseRetrieveParams = ResponseRetrieveParams.none(),
+    ): AsyncStreamResponse<ResponseStreamEvent> =
+        retrieveStreaming(responseId, params, RequestOptions.none())
+
+    /** @see [retrieveStreaming] */
+    fun retrieveStreaming(
+        params: ResponseRetrieveParams,
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): AsyncStreamResponse<ResponseStreamEvent>
+
+    /** @see [retrieveStreaming] */
+    fun retrieveStreaming(
+        params: ResponseRetrieveParams
+    ): AsyncStreamResponse<ResponseStreamEvent> = retrieveStreaming(params, RequestOptions.none())
+
+    /** @see [retrieveStreaming] */
+    fun retrieveStreaming(
+        responseId: String,
+        requestOptions: RequestOptions,
+    ): AsyncStreamResponse<ResponseStreamEvent> =
+        retrieveStreaming(responseId, ResponseRetrieveParams.none(), requestOptions)
+
     /** Deletes a model response with the given ID. */
     fun delete(responseId: String): CompletableFuture<Void?> =
         delete(responseId, ResponseDeleteParams.none())
@@ -177,12 +214,10 @@ interface ResponseServiceAsync {
          * Returns a raw HTTP response for `post /responses`, but is otherwise the same as
          * [ResponseServiceAsync.create].
          */
-        @MustBeClosed
         fun create(params: ResponseCreateParams): CompletableFuture<HttpResponseFor<Response>> =
             create(params, RequestOptions.none())
 
         /** @see [create] */
-        @MustBeClosed
         fun create(
             params: ResponseCreateParams,
             requestOptions: RequestOptions = RequestOptions.none(),
@@ -209,12 +244,10 @@ interface ResponseServiceAsync {
          * Returns a raw HTTP response for `get /responses/{response_id}`, but is otherwise the same
          * as [ResponseServiceAsync.retrieve].
          */
-        @MustBeClosed
         fun retrieve(responseId: String): CompletableFuture<HttpResponseFor<Response>> =
             retrieve(responseId, ResponseRetrieveParams.none())
 
         /** @see [retrieve] */
-        @MustBeClosed
         fun retrieve(
             responseId: String,
             params: ResponseRetrieveParams = ResponseRetrieveParams.none(),
@@ -223,7 +256,6 @@ interface ResponseServiceAsync {
             retrieve(params.toBuilder().responseId(responseId).build(), requestOptions)
 
         /** @see [retrieve] */
-        @MustBeClosed
         fun retrieve(
             responseId: String,
             params: ResponseRetrieveParams = ResponseRetrieveParams.none(),
@@ -231,19 +263,16 @@ interface ResponseServiceAsync {
             retrieve(responseId, params, RequestOptions.none())
 
         /** @see [retrieve] */
-        @MustBeClosed
         fun retrieve(
             params: ResponseRetrieveParams,
             requestOptions: RequestOptions = RequestOptions.none(),
         ): CompletableFuture<HttpResponseFor<Response>>
 
         /** @see [retrieve] */
-        @MustBeClosed
         fun retrieve(params: ResponseRetrieveParams): CompletableFuture<HttpResponseFor<Response>> =
             retrieve(params, RequestOptions.none())
 
         /** @see [retrieve] */
-        @MustBeClosed
         fun retrieve(
             responseId: String,
             requestOptions: RequestOptions,
@@ -251,15 +280,62 @@ interface ResponseServiceAsync {
             retrieve(responseId, ResponseRetrieveParams.none(), requestOptions)
 
         /**
+         * Returns a raw HTTP response for `get /responses/{response_id}`, but is otherwise the same
+         * as [ResponseServiceAsync.retrieveStreaming].
+         */
+        @MustBeClosed
+        fun retrieveStreaming(
+            responseId: String
+        ): CompletableFuture<HttpResponseFor<StreamResponse<ResponseStreamEvent>>> =
+            retrieveStreaming(responseId, ResponseRetrieveParams.none())
+
+        /** @see [retrieveStreaming] */
+        @MustBeClosed
+        fun retrieveStreaming(
+            responseId: String,
+            params: ResponseRetrieveParams = ResponseRetrieveParams.none(),
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): CompletableFuture<HttpResponseFor<StreamResponse<ResponseStreamEvent>>> =
+            retrieveStreaming(params.toBuilder().responseId(responseId).build(), requestOptions)
+
+        /** @see [retrieveStreaming] */
+        @MustBeClosed
+        fun retrieveStreaming(
+            responseId: String,
+            params: ResponseRetrieveParams = ResponseRetrieveParams.none(),
+        ): CompletableFuture<HttpResponseFor<StreamResponse<ResponseStreamEvent>>> =
+            retrieveStreaming(responseId, params, RequestOptions.none())
+
+        /** @see [retrieveStreaming] */
+        @MustBeClosed
+        fun retrieveStreaming(
+            params: ResponseRetrieveParams,
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): CompletableFuture<HttpResponseFor<StreamResponse<ResponseStreamEvent>>>
+
+        /** @see [retrieveStreaming] */
+        @MustBeClosed
+        fun retrieveStreaming(
+            params: ResponseRetrieveParams
+        ): CompletableFuture<HttpResponseFor<StreamResponse<ResponseStreamEvent>>> =
+            retrieveStreaming(params, RequestOptions.none())
+
+        /** @see [retrieveStreaming] */
+        @MustBeClosed
+        fun retrieveStreaming(
+            responseId: String,
+            requestOptions: RequestOptions,
+        ): CompletableFuture<HttpResponseFor<StreamResponse<ResponseStreamEvent>>> =
+            retrieveStreaming(responseId, ResponseRetrieveParams.none(), requestOptions)
+
+        /**
          * Returns a raw HTTP response for `delete /responses/{response_id}`, but is otherwise the
          * same as [ResponseServiceAsync.delete].
          */
-        @MustBeClosed
         fun delete(responseId: String): CompletableFuture<HttpResponse> =
             delete(responseId, ResponseDeleteParams.none())
 
         /** @see [delete] */
-        @MustBeClosed
         fun delete(
             responseId: String,
             params: ResponseDeleteParams = ResponseDeleteParams.none(),
@@ -268,26 +344,22 @@ interface ResponseServiceAsync {
             delete(params.toBuilder().responseId(responseId).build(), requestOptions)
 
         /** @see [delete] */
-        @MustBeClosed
         fun delete(
             responseId: String,
             params: ResponseDeleteParams = ResponseDeleteParams.none(),
         ): CompletableFuture<HttpResponse> = delete(responseId, params, RequestOptions.none())
 
         /** @see [delete] */
-        @MustBeClosed
         fun delete(
             params: ResponseDeleteParams,
             requestOptions: RequestOptions = RequestOptions.none(),
         ): CompletableFuture<HttpResponse>
 
         /** @see [delete] */
-        @MustBeClosed
         fun delete(params: ResponseDeleteParams): CompletableFuture<HttpResponse> =
             delete(params, RequestOptions.none())
 
         /** @see [delete] */
-        @MustBeClosed
         fun delete(
             responseId: String,
             requestOptions: RequestOptions,
@@ -298,12 +370,10 @@ interface ResponseServiceAsync {
          * Returns a raw HTTP response for `post /responses/{response_id}/cancel`, but is otherwise
          * the same as [ResponseServiceAsync.cancel].
          */
-        @MustBeClosed
         fun cancel(responseId: String): CompletableFuture<HttpResponse> =
             cancel(responseId, ResponseCancelParams.none())
 
         /** @see [cancel] */
-        @MustBeClosed
         fun cancel(
             responseId: String,
             params: ResponseCancelParams = ResponseCancelParams.none(),
@@ -312,26 +382,22 @@ interface ResponseServiceAsync {
             cancel(params.toBuilder().responseId(responseId).build(), requestOptions)
 
         /** @see [cancel] */
-        @MustBeClosed
         fun cancel(
             responseId: String,
             params: ResponseCancelParams = ResponseCancelParams.none(),
         ): CompletableFuture<HttpResponse> = cancel(responseId, params, RequestOptions.none())
 
         /** @see [cancel] */
-        @MustBeClosed
         fun cancel(
             params: ResponseCancelParams,
             requestOptions: RequestOptions = RequestOptions.none(),
         ): CompletableFuture<HttpResponse>
 
         /** @see [cancel] */
-        @MustBeClosed
         fun cancel(params: ResponseCancelParams): CompletableFuture<HttpResponse> =
             cancel(params, RequestOptions.none())
 
         /** @see [cancel] */
-        @MustBeClosed
         fun cancel(
             responseId: String,
             requestOptions: RequestOptions,

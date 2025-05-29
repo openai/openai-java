@@ -128,7 +128,11 @@ class ImageServiceImpl internal constructor(private val clientOptions: ClientOpt
                     .addPathSegments("images", "generations")
                     .body(json(clientOptions.jsonMapper, params._body()))
                     .build()
-                    .prepare(clientOptions, params, params.model().toString())
+                    .prepare(
+                        clientOptions,
+                        params,
+                        params.model().map { it.toString() }.orElse(null),
+                    )
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             val response = clientOptions.httpClient.execute(request, requestOptions)
             return response.parseable {

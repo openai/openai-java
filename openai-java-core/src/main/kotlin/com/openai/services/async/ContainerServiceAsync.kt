@@ -2,7 +2,6 @@
 
 package com.openai.services.async
 
-import com.google.errorprone.annotations.MustBeClosed
 import com.openai.core.RequestOptions
 import com.openai.core.http.HttpResponse
 import com.openai.core.http.HttpResponseFor
@@ -132,14 +131,12 @@ interface ContainerServiceAsync {
          * Returns a raw HTTP response for `post /containers`, but is otherwise the same as
          * [ContainerServiceAsync.create].
          */
-        @MustBeClosed
         fun create(
             params: ContainerCreateParams
         ): CompletableFuture<HttpResponseFor<ContainerCreateResponse>> =
             create(params, RequestOptions.none())
 
         /** @see [create] */
-        @MustBeClosed
         fun create(
             params: ContainerCreateParams,
             requestOptions: RequestOptions = RequestOptions.none(),
@@ -149,14 +146,12 @@ interface ContainerServiceAsync {
          * Returns a raw HTTP response for `get /containers/{container_id}`, but is otherwise the
          * same as [ContainerServiceAsync.retrieve].
          */
-        @MustBeClosed
         fun retrieve(
             containerId: String
         ): CompletableFuture<HttpResponseFor<ContainerRetrieveResponse>> =
             retrieve(containerId, ContainerRetrieveParams.none())
 
         /** @see [retrieve] */
-        @MustBeClosed
         fun retrieve(
             containerId: String,
             params: ContainerRetrieveParams = ContainerRetrieveParams.none(),
@@ -165,7 +160,6 @@ interface ContainerServiceAsync {
             retrieve(params.toBuilder().containerId(containerId).build(), requestOptions)
 
         /** @see [retrieve] */
-        @MustBeClosed
         fun retrieve(
             containerId: String,
             params: ContainerRetrieveParams = ContainerRetrieveParams.none(),
@@ -173,21 +167,18 @@ interface ContainerServiceAsync {
             retrieve(containerId, params, RequestOptions.none())
 
         /** @see [retrieve] */
-        @MustBeClosed
         fun retrieve(
             params: ContainerRetrieveParams,
             requestOptions: RequestOptions = RequestOptions.none(),
         ): CompletableFuture<HttpResponseFor<ContainerRetrieveResponse>>
 
         /** @see [retrieve] */
-        @MustBeClosed
         fun retrieve(
             params: ContainerRetrieveParams
         ): CompletableFuture<HttpResponseFor<ContainerRetrieveResponse>> =
             retrieve(params, RequestOptions.none())
 
         /** @see [retrieve] */
-        @MustBeClosed
         fun retrieve(
             containerId: String,
             requestOptions: RequestOptions,
@@ -198,26 +189,22 @@ interface ContainerServiceAsync {
          * Returns a raw HTTP response for `get /containers`, but is otherwise the same as
          * [ContainerServiceAsync.list].
          */
-        @MustBeClosed
         fun list(): CompletableFuture<HttpResponseFor<ContainerListPageAsync>> =
             list(ContainerListParams.none())
 
         /** @see [list] */
-        @MustBeClosed
         fun list(
             params: ContainerListParams = ContainerListParams.none(),
             requestOptions: RequestOptions = RequestOptions.none(),
         ): CompletableFuture<HttpResponseFor<ContainerListPageAsync>>
 
         /** @see [list] */
-        @MustBeClosed
         fun list(
             params: ContainerListParams = ContainerListParams.none()
         ): CompletableFuture<HttpResponseFor<ContainerListPageAsync>> =
             list(params, RequestOptions.none())
 
         /** @see [list] */
-        @MustBeClosed
         fun list(
             requestOptions: RequestOptions
         ): CompletableFuture<HttpResponseFor<ContainerListPageAsync>> =
@@ -227,12 +214,10 @@ interface ContainerServiceAsync {
          * Returns a raw HTTP response for `delete /containers/{container_id}`, but is otherwise the
          * same as [ContainerServiceAsync.delete].
          */
-        @MustBeClosed
         fun delete(containerId: String): CompletableFuture<HttpResponse> =
             delete(containerId, ContainerDeleteParams.none())
 
         /** @see [delete] */
-        @MustBeClosed
         fun delete(
             containerId: String,
             params: ContainerDeleteParams = ContainerDeleteParams.none(),
@@ -241,26 +226,22 @@ interface ContainerServiceAsync {
             delete(params.toBuilder().containerId(containerId).build(), requestOptions)
 
         /** @see [delete] */
-        @MustBeClosed
         fun delete(
             containerId: String,
             params: ContainerDeleteParams = ContainerDeleteParams.none(),
         ): CompletableFuture<HttpResponse> = delete(containerId, params, RequestOptions.none())
 
         /** @see [delete] */
-        @MustBeClosed
         fun delete(
             params: ContainerDeleteParams,
             requestOptions: RequestOptions = RequestOptions.none(),
         ): CompletableFuture<HttpResponse>
 
         /** @see [delete] */
-        @MustBeClosed
         fun delete(params: ContainerDeleteParams): CompletableFuture<HttpResponse> =
             delete(params, RequestOptions.none())
 
         /** @see [delete] */
-        @MustBeClosed
         fun delete(
             containerId: String,
             requestOptions: RequestOptions,

@@ -2,7 +2,6 @@
 
 package com.openai.services.async.finetuning.alpha
 
-import com.google.errorprone.annotations.MustBeClosed
 import com.openai.core.RequestOptions
 import com.openai.core.http.HttpResponseFor
 import com.openai.models.finetuning.alpha.graders.GraderRunParams
@@ -47,12 +46,10 @@ interface GraderServiceAsync {
          * Returns a raw HTTP response for `post /fine_tuning/alpha/graders/run`, but is otherwise
          * the same as [GraderServiceAsync.run].
          */
-        @MustBeClosed
         fun run(params: GraderRunParams): CompletableFuture<HttpResponseFor<GraderRunResponse>> =
             run(params, RequestOptions.none())
 
         /** @see [run] */
-        @MustBeClosed
         fun run(
             params: GraderRunParams,
             requestOptions: RequestOptions = RequestOptions.none(),
@@ -62,14 +59,12 @@ interface GraderServiceAsync {
          * Returns a raw HTTP response for `post /fine_tuning/alpha/graders/validate`, but is
          * otherwise the same as [GraderServiceAsync.validate].
          */
-        @MustBeClosed
         fun validate(
             params: GraderValidateParams
         ): CompletableFuture<HttpResponseFor<GraderValidateResponse>> =
             validate(params, RequestOptions.none())
 
         /** @see [validate] */
-        @MustBeClosed
         fun validate(
             params: GraderValidateParams,
             requestOptions: RequestOptions = RequestOptions.none(),

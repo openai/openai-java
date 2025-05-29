@@ -2,7 +2,6 @@
 
 package com.openai.services.async.finetuning.jobs
 
-import com.google.errorprone.annotations.MustBeClosed
 import com.openai.core.RequestOptions
 import com.openai.core.http.HttpResponseFor
 import com.openai.models.finetuning.jobs.checkpoints.CheckpointListPageAsync
@@ -62,14 +61,12 @@ interface CheckpointServiceAsync {
          * Returns a raw HTTP response for `get /fine_tuning/jobs/{fine_tuning_job_id}/checkpoints`,
          * but is otherwise the same as [CheckpointServiceAsync.list].
          */
-        @MustBeClosed
         fun list(
             fineTuningJobId: String
         ): CompletableFuture<HttpResponseFor<CheckpointListPageAsync>> =
             list(fineTuningJobId, CheckpointListParams.none())
 
         /** @see [list] */
-        @MustBeClosed
         fun list(
             fineTuningJobId: String,
             params: CheckpointListParams = CheckpointListParams.none(),
@@ -78,7 +75,6 @@ interface CheckpointServiceAsync {
             list(params.toBuilder().fineTuningJobId(fineTuningJobId).build(), requestOptions)
 
         /** @see [list] */
-        @MustBeClosed
         fun list(
             fineTuningJobId: String,
             params: CheckpointListParams = CheckpointListParams.none(),
@@ -86,21 +82,18 @@ interface CheckpointServiceAsync {
             list(fineTuningJobId, params, RequestOptions.none())
 
         /** @see [list] */
-        @MustBeClosed
         fun list(
             params: CheckpointListParams,
             requestOptions: RequestOptions = RequestOptions.none(),
         ): CompletableFuture<HttpResponseFor<CheckpointListPageAsync>>
 
         /** @see [list] */
-        @MustBeClosed
         fun list(
             params: CheckpointListParams
         ): CompletableFuture<HttpResponseFor<CheckpointListPageAsync>> =
             list(params, RequestOptions.none())
 
         /** @see [list] */
-        @MustBeClosed
         fun list(
             fineTuningJobId: String,
             requestOptions: RequestOptions,
