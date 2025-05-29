@@ -205,7 +205,7 @@ class ResponseServiceImpl internal constructor(private val clientOptions: Client
                     .method(HttpMethod.GET)
                     .addPathSegments("responses", params._pathParam(0))
                     .build()
-                    .prepare(clientOptions, params)
+                    .prepare(clientOptions, params, deploymentModel = null)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             val response = clientOptions.httpClient.execute(request, requestOptions)
             return response.parseable {
