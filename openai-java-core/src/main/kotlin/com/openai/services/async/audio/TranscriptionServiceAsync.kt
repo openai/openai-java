@@ -51,14 +51,12 @@ interface TranscriptionServiceAsync {
          * Returns a raw HTTP response for `post /audio/transcriptions`, but is otherwise the same
          * as [TranscriptionServiceAsync.create].
          */
-        @MustBeClosed
         fun create(
             params: TranscriptionCreateParams
         ): CompletableFuture<HttpResponseFor<TranscriptionCreateResponse>> =
             create(params, RequestOptions.none())
 
         /** @see [create] */
-        @MustBeClosed
         fun create(
             params: TranscriptionCreateParams,
             requestOptions: RequestOptions = RequestOptions.none(),

@@ -2,7 +2,6 @@
 
 package com.openai.services.async.responses
 
-import com.google.errorprone.annotations.MustBeClosed
 import com.openai.core.RequestOptions
 import com.openai.core.http.HttpResponseFor
 import com.openai.models.responses.inputitems.InputItemListPageAsync
@@ -60,12 +59,10 @@ interface InputItemServiceAsync {
          * Returns a raw HTTP response for `get /responses/{response_id}/input_items`, but is
          * otherwise the same as [InputItemServiceAsync.list].
          */
-        @MustBeClosed
         fun list(responseId: String): CompletableFuture<HttpResponseFor<InputItemListPageAsync>> =
             list(responseId, InputItemListParams.none())
 
         /** @see [list] */
-        @MustBeClosed
         fun list(
             responseId: String,
             params: InputItemListParams = InputItemListParams.none(),
@@ -74,7 +71,6 @@ interface InputItemServiceAsync {
             list(params.toBuilder().responseId(responseId).build(), requestOptions)
 
         /** @see [list] */
-        @MustBeClosed
         fun list(
             responseId: String,
             params: InputItemListParams = InputItemListParams.none(),
@@ -82,21 +78,18 @@ interface InputItemServiceAsync {
             list(responseId, params, RequestOptions.none())
 
         /** @see [list] */
-        @MustBeClosed
         fun list(
             params: InputItemListParams,
             requestOptions: RequestOptions = RequestOptions.none(),
         ): CompletableFuture<HttpResponseFor<InputItemListPageAsync>>
 
         /** @see [list] */
-        @MustBeClosed
         fun list(
             params: InputItemListParams
         ): CompletableFuture<HttpResponseFor<InputItemListPageAsync>> =
             list(params, RequestOptions.none())
 
         /** @see [list] */
-        @MustBeClosed
         fun list(
             responseId: String,
             requestOptions: RequestOptions,

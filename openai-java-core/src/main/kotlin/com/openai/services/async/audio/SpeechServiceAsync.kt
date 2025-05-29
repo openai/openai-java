@@ -2,7 +2,6 @@
 
 package com.openai.services.async.audio
 
-import com.google.errorprone.annotations.MustBeClosed
 import com.openai.core.RequestOptions
 import com.openai.core.http.HttpResponse
 import com.openai.models.audio.speech.SpeechCreateParams
@@ -16,12 +15,10 @@ interface SpeechServiceAsync {
     fun withRawResponse(): WithRawResponse
 
     /** Generates audio from the input text. */
-    @MustBeClosed
     fun create(params: SpeechCreateParams): CompletableFuture<HttpResponse> =
         create(params, RequestOptions.none())
 
     /** @see [create] */
-    @MustBeClosed
     fun create(
         params: SpeechCreateParams,
         requestOptions: RequestOptions = RequestOptions.none(),
@@ -36,12 +33,10 @@ interface SpeechServiceAsync {
          * Returns a raw HTTP response for `post /audio/speech`, but is otherwise the same as
          * [SpeechServiceAsync.create].
          */
-        @MustBeClosed
         fun create(params: SpeechCreateParams): CompletableFuture<HttpResponse> =
             create(params, RequestOptions.none())
 
         /** @see [create] */
-        @MustBeClosed
         fun create(
             params: SpeechCreateParams,
             requestOptions: RequestOptions = RequestOptions.none(),

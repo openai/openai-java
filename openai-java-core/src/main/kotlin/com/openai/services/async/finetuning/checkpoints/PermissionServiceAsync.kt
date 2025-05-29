@@ -2,7 +2,6 @@
 
 package com.openai.services.async.finetuning.checkpoints
 
-import com.google.errorprone.annotations.MustBeClosed
 import com.openai.core.RequestOptions
 import com.openai.core.http.HttpResponseFor
 import com.openai.models.finetuning.checkpoints.permissions.PermissionCreatePageAsync
@@ -138,7 +137,6 @@ interface PermissionServiceAsync {
          * /fine_tuning/checkpoints/{fine_tuned_model_checkpoint}/permissions`, but is otherwise the
          * same as [PermissionServiceAsync.create].
          */
-        @MustBeClosed
         fun create(
             fineTunedModelCheckpoint: String,
             params: PermissionCreateParams,
@@ -146,7 +144,6 @@ interface PermissionServiceAsync {
             create(fineTunedModelCheckpoint, params, RequestOptions.none())
 
         /** @see [create] */
-        @MustBeClosed
         fun create(
             fineTunedModelCheckpoint: String,
             params: PermissionCreateParams,
@@ -158,14 +155,12 @@ interface PermissionServiceAsync {
             )
 
         /** @see [create] */
-        @MustBeClosed
         fun create(
             params: PermissionCreateParams
         ): CompletableFuture<HttpResponseFor<PermissionCreatePageAsync>> =
             create(params, RequestOptions.none())
 
         /** @see [create] */
-        @MustBeClosed
         fun create(
             params: PermissionCreateParams,
             requestOptions: RequestOptions = RequestOptions.none(),
@@ -176,14 +171,12 @@ interface PermissionServiceAsync {
          * /fine_tuning/checkpoints/{fine_tuned_model_checkpoint}/permissions`, but is otherwise the
          * same as [PermissionServiceAsync.retrieve].
          */
-        @MustBeClosed
         fun retrieve(
             fineTunedModelCheckpoint: String
         ): CompletableFuture<HttpResponseFor<PermissionRetrieveResponse>> =
             retrieve(fineTunedModelCheckpoint, PermissionRetrieveParams.none())
 
         /** @see [retrieve] */
-        @MustBeClosed
         fun retrieve(
             fineTunedModelCheckpoint: String,
             params: PermissionRetrieveParams = PermissionRetrieveParams.none(),
@@ -195,7 +188,6 @@ interface PermissionServiceAsync {
             )
 
         /** @see [retrieve] */
-        @MustBeClosed
         fun retrieve(
             fineTunedModelCheckpoint: String,
             params: PermissionRetrieveParams = PermissionRetrieveParams.none(),
@@ -203,21 +195,18 @@ interface PermissionServiceAsync {
             retrieve(fineTunedModelCheckpoint, params, RequestOptions.none())
 
         /** @see [retrieve] */
-        @MustBeClosed
         fun retrieve(
             params: PermissionRetrieveParams,
             requestOptions: RequestOptions = RequestOptions.none(),
         ): CompletableFuture<HttpResponseFor<PermissionRetrieveResponse>>
 
         /** @see [retrieve] */
-        @MustBeClosed
         fun retrieve(
             params: PermissionRetrieveParams
         ): CompletableFuture<HttpResponseFor<PermissionRetrieveResponse>> =
             retrieve(params, RequestOptions.none())
 
         /** @see [retrieve] */
-        @MustBeClosed
         fun retrieve(
             fineTunedModelCheckpoint: String,
             requestOptions: RequestOptions,
@@ -229,7 +218,6 @@ interface PermissionServiceAsync {
          * /fine_tuning/checkpoints/{fine_tuned_model_checkpoint}/permissions/{permission_id}`, but
          * is otherwise the same as [PermissionServiceAsync.delete].
          */
-        @MustBeClosed
         fun delete(
             permissionId: String,
             params: PermissionDeleteParams,
@@ -237,7 +225,6 @@ interface PermissionServiceAsync {
             delete(permissionId, params, RequestOptions.none())
 
         /** @see [delete] */
-        @MustBeClosed
         fun delete(
             permissionId: String,
             params: PermissionDeleteParams,
@@ -246,14 +233,12 @@ interface PermissionServiceAsync {
             delete(params.toBuilder().permissionId(permissionId).build(), requestOptions)
 
         /** @see [delete] */
-        @MustBeClosed
         fun delete(
             params: PermissionDeleteParams
         ): CompletableFuture<HttpResponseFor<PermissionDeleteResponse>> =
             delete(params, RequestOptions.none())
 
         /** @see [delete] */
-        @MustBeClosed
         fun delete(
             params: PermissionDeleteParams,
             requestOptions: RequestOptions = RequestOptions.none(),

@@ -2,7 +2,6 @@
 
 package com.openai.services.async.uploads
 
-import com.google.errorprone.annotations.MustBeClosed
 import com.openai.core.RequestOptions
 import com.openai.core.http.HttpResponseFor
 import com.openai.models.uploads.parts.PartCreateParams
@@ -56,7 +55,6 @@ interface PartServiceAsync {
          * Returns a raw HTTP response for `post /uploads/{upload_id}/parts`, but is otherwise the
          * same as [PartServiceAsync.create].
          */
-        @MustBeClosed
         fun create(
             uploadId: String,
             params: PartCreateParams,
@@ -64,7 +62,6 @@ interface PartServiceAsync {
             create(uploadId, params, RequestOptions.none())
 
         /** @see [create] */
-        @MustBeClosed
         fun create(
             uploadId: String,
             params: PartCreateParams,
@@ -73,12 +70,10 @@ interface PartServiceAsync {
             create(params.toBuilder().uploadId(uploadId).build(), requestOptions)
 
         /** @see [create] */
-        @MustBeClosed
         fun create(params: PartCreateParams): CompletableFuture<HttpResponseFor<UploadPart>> =
             create(params, RequestOptions.none())
 
         /** @see [create] */
-        @MustBeClosed
         fun create(
             params: PartCreateParams,
             requestOptions: RequestOptions = RequestOptions.none(),

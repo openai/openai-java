@@ -48,12 +48,10 @@ interface CompletionServiceAsync {
          * Returns a raw HTTP response for `post /completions`, but is otherwise the same as
          * [CompletionServiceAsync.create].
          */
-        @MustBeClosed
         fun create(params: CompletionCreateParams): CompletableFuture<HttpResponseFor<Completion>> =
             create(params, RequestOptions.none())
 
         /** @see [create] */
-        @MustBeClosed
         fun create(
             params: CompletionCreateParams,
             requestOptions: RequestOptions = RequestOptions.none(),

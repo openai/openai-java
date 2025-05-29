@@ -2,7 +2,6 @@
 
 package com.openai.services.async.finetuning
 
-import com.google.errorprone.annotations.MustBeClosed
 import com.openai.core.RequestOptions
 import com.openai.core.http.HttpResponseFor
 import com.openai.models.finetuning.jobs.FineTuningJob
@@ -251,12 +250,10 @@ interface JobServiceAsync {
          * Returns a raw HTTP response for `post /fine_tuning/jobs`, but is otherwise the same as
          * [JobServiceAsync.create].
          */
-        @MustBeClosed
         fun create(params: JobCreateParams): CompletableFuture<HttpResponseFor<FineTuningJob>> =
             create(params, RequestOptions.none())
 
         /** @see [create] */
-        @MustBeClosed
         fun create(
             params: JobCreateParams,
             requestOptions: RequestOptions = RequestOptions.none(),
@@ -266,12 +263,10 @@ interface JobServiceAsync {
          * Returns a raw HTTP response for `get /fine_tuning/jobs/{fine_tuning_job_id}`, but is
          * otherwise the same as [JobServiceAsync.retrieve].
          */
-        @MustBeClosed
         fun retrieve(fineTuningJobId: String): CompletableFuture<HttpResponseFor<FineTuningJob>> =
             retrieve(fineTuningJobId, JobRetrieveParams.none())
 
         /** @see [retrieve] */
-        @MustBeClosed
         fun retrieve(
             fineTuningJobId: String,
             params: JobRetrieveParams = JobRetrieveParams.none(),
@@ -280,7 +275,6 @@ interface JobServiceAsync {
             retrieve(params.toBuilder().fineTuningJobId(fineTuningJobId).build(), requestOptions)
 
         /** @see [retrieve] */
-        @MustBeClosed
         fun retrieve(
             fineTuningJobId: String,
             params: JobRetrieveParams = JobRetrieveParams.none(),
@@ -288,19 +282,16 @@ interface JobServiceAsync {
             retrieve(fineTuningJobId, params, RequestOptions.none())
 
         /** @see [retrieve] */
-        @MustBeClosed
         fun retrieve(
             params: JobRetrieveParams,
             requestOptions: RequestOptions = RequestOptions.none(),
         ): CompletableFuture<HttpResponseFor<FineTuningJob>>
 
         /** @see [retrieve] */
-        @MustBeClosed
         fun retrieve(params: JobRetrieveParams): CompletableFuture<HttpResponseFor<FineTuningJob>> =
             retrieve(params, RequestOptions.none())
 
         /** @see [retrieve] */
-        @MustBeClosed
         fun retrieve(
             fineTuningJobId: String,
             requestOptions: RequestOptions,
@@ -311,26 +302,22 @@ interface JobServiceAsync {
          * Returns a raw HTTP response for `get /fine_tuning/jobs`, but is otherwise the same as
          * [JobServiceAsync.list].
          */
-        @MustBeClosed
         fun list(): CompletableFuture<HttpResponseFor<JobListPageAsync>> =
             list(JobListParams.none())
 
         /** @see [list] */
-        @MustBeClosed
         fun list(
             params: JobListParams = JobListParams.none(),
             requestOptions: RequestOptions = RequestOptions.none(),
         ): CompletableFuture<HttpResponseFor<JobListPageAsync>>
 
         /** @see [list] */
-        @MustBeClosed
         fun list(
             params: JobListParams = JobListParams.none()
         ): CompletableFuture<HttpResponseFor<JobListPageAsync>> =
             list(params, RequestOptions.none())
 
         /** @see [list] */
-        @MustBeClosed
         fun list(
             requestOptions: RequestOptions
         ): CompletableFuture<HttpResponseFor<JobListPageAsync>> =
@@ -340,12 +327,10 @@ interface JobServiceAsync {
          * Returns a raw HTTP response for `post /fine_tuning/jobs/{fine_tuning_job_id}/cancel`, but
          * is otherwise the same as [JobServiceAsync.cancel].
          */
-        @MustBeClosed
         fun cancel(fineTuningJobId: String): CompletableFuture<HttpResponseFor<FineTuningJob>> =
             cancel(fineTuningJobId, JobCancelParams.none())
 
         /** @see [cancel] */
-        @MustBeClosed
         fun cancel(
             fineTuningJobId: String,
             params: JobCancelParams = JobCancelParams.none(),
@@ -354,7 +339,6 @@ interface JobServiceAsync {
             cancel(params.toBuilder().fineTuningJobId(fineTuningJobId).build(), requestOptions)
 
         /** @see [cancel] */
-        @MustBeClosed
         fun cancel(
             fineTuningJobId: String,
             params: JobCancelParams = JobCancelParams.none(),
@@ -362,19 +346,16 @@ interface JobServiceAsync {
             cancel(fineTuningJobId, params, RequestOptions.none())
 
         /** @see [cancel] */
-        @MustBeClosed
         fun cancel(
             params: JobCancelParams,
             requestOptions: RequestOptions = RequestOptions.none(),
         ): CompletableFuture<HttpResponseFor<FineTuningJob>>
 
         /** @see [cancel] */
-        @MustBeClosed
         fun cancel(params: JobCancelParams): CompletableFuture<HttpResponseFor<FineTuningJob>> =
             cancel(params, RequestOptions.none())
 
         /** @see [cancel] */
-        @MustBeClosed
         fun cancel(
             fineTuningJobId: String,
             requestOptions: RequestOptions,
@@ -385,14 +366,12 @@ interface JobServiceAsync {
          * Returns a raw HTTP response for `get /fine_tuning/jobs/{fine_tuning_job_id}/events`, but
          * is otherwise the same as [JobServiceAsync.listEvents].
          */
-        @MustBeClosed
         fun listEvents(
             fineTuningJobId: String
         ): CompletableFuture<HttpResponseFor<JobListEventsPageAsync>> =
             listEvents(fineTuningJobId, JobListEventsParams.none())
 
         /** @see [listEvents] */
-        @MustBeClosed
         fun listEvents(
             fineTuningJobId: String,
             params: JobListEventsParams = JobListEventsParams.none(),
@@ -401,7 +380,6 @@ interface JobServiceAsync {
             listEvents(params.toBuilder().fineTuningJobId(fineTuningJobId).build(), requestOptions)
 
         /** @see [listEvents] */
-        @MustBeClosed
         fun listEvents(
             fineTuningJobId: String,
             params: JobListEventsParams = JobListEventsParams.none(),
@@ -409,21 +387,18 @@ interface JobServiceAsync {
             listEvents(fineTuningJobId, params, RequestOptions.none())
 
         /** @see [listEvents] */
-        @MustBeClosed
         fun listEvents(
             params: JobListEventsParams,
             requestOptions: RequestOptions = RequestOptions.none(),
         ): CompletableFuture<HttpResponseFor<JobListEventsPageAsync>>
 
         /** @see [listEvents] */
-        @MustBeClosed
         fun listEvents(
             params: JobListEventsParams
         ): CompletableFuture<HttpResponseFor<JobListEventsPageAsync>> =
             listEvents(params, RequestOptions.none())
 
         /** @see [listEvents] */
-        @MustBeClosed
         fun listEvents(
             fineTuningJobId: String,
             requestOptions: RequestOptions,
@@ -434,12 +409,10 @@ interface JobServiceAsync {
          * Returns a raw HTTP response for `post /fine_tuning/jobs/{fine_tuning_job_id}/pause`, but
          * is otherwise the same as [JobServiceAsync.pause].
          */
-        @MustBeClosed
         fun pause(fineTuningJobId: String): CompletableFuture<HttpResponseFor<FineTuningJob>> =
             pause(fineTuningJobId, JobPauseParams.none())
 
         /** @see [pause] */
-        @MustBeClosed
         fun pause(
             fineTuningJobId: String,
             params: JobPauseParams = JobPauseParams.none(),
@@ -448,7 +421,6 @@ interface JobServiceAsync {
             pause(params.toBuilder().fineTuningJobId(fineTuningJobId).build(), requestOptions)
 
         /** @see [pause] */
-        @MustBeClosed
         fun pause(
             fineTuningJobId: String,
             params: JobPauseParams = JobPauseParams.none(),
@@ -456,19 +428,16 @@ interface JobServiceAsync {
             pause(fineTuningJobId, params, RequestOptions.none())
 
         /** @see [pause] */
-        @MustBeClosed
         fun pause(
             params: JobPauseParams,
             requestOptions: RequestOptions = RequestOptions.none(),
         ): CompletableFuture<HttpResponseFor<FineTuningJob>>
 
         /** @see [pause] */
-        @MustBeClosed
         fun pause(params: JobPauseParams): CompletableFuture<HttpResponseFor<FineTuningJob>> =
             pause(params, RequestOptions.none())
 
         /** @see [pause] */
-        @MustBeClosed
         fun pause(
             fineTuningJobId: String,
             requestOptions: RequestOptions,
@@ -479,12 +448,10 @@ interface JobServiceAsync {
          * Returns a raw HTTP response for `post /fine_tuning/jobs/{fine_tuning_job_id}/resume`, but
          * is otherwise the same as [JobServiceAsync.resume].
          */
-        @MustBeClosed
         fun resume(fineTuningJobId: String): CompletableFuture<HttpResponseFor<FineTuningJob>> =
             resume(fineTuningJobId, JobResumeParams.none())
 
         /** @see [resume] */
-        @MustBeClosed
         fun resume(
             fineTuningJobId: String,
             params: JobResumeParams = JobResumeParams.none(),
@@ -493,7 +460,6 @@ interface JobServiceAsync {
             resume(params.toBuilder().fineTuningJobId(fineTuningJobId).build(), requestOptions)
 
         /** @see [resume] */
-        @MustBeClosed
         fun resume(
             fineTuningJobId: String,
             params: JobResumeParams = JobResumeParams.none(),
@@ -501,19 +467,16 @@ interface JobServiceAsync {
             resume(fineTuningJobId, params, RequestOptions.none())
 
         /** @see [resume] */
-        @MustBeClosed
         fun resume(
             params: JobResumeParams,
             requestOptions: RequestOptions = RequestOptions.none(),
         ): CompletableFuture<HttpResponseFor<FineTuningJob>>
 
         /** @see [resume] */
-        @MustBeClosed
         fun resume(params: JobResumeParams): CompletableFuture<HttpResponseFor<FineTuningJob>> =
             resume(params, RequestOptions.none())
 
         /** @see [resume] */
-        @MustBeClosed
         fun resume(
             fineTuningJobId: String,
             requestOptions: RequestOptions,
