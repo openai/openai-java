@@ -22,6 +22,7 @@ import com.openai.core.JsonValue
 import com.openai.core.allMaxBy
 import com.openai.core.checkRequired
 import com.openai.core.getOrThrow
+import com.openai.core.toJsonString
 import com.openai.errors.OpenAIInvalidDataException
 import java.util.Collections
 import java.util.Objects
@@ -145,6 +146,14 @@ private constructor(
 
         /** Alias for calling [content] with `Content.ofText(text)`. */
         fun content(text: String) = content(Content.ofText(text))
+
+        /**
+         * Sets the content to text representing the JSON serialized form of a given object. This is
+         * useful when passing data that is the result of a function call.
+         *
+         * @see content
+         */
+        fun contentAsJson(functionResult: Any) = content(toJsonString(functionResult))
 
         /**
          * Alias for calling [content] with `Content.ofArrayOfContentParts(arrayOfContentParts)`.

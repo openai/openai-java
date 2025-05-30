@@ -298,6 +298,13 @@ class StructuredResponseCreateParams<T : Any>(
         fun addTool(function: FunctionTool) = apply { paramsBuilder.addTool(function) }
 
         /** @see ResponseCreateParams.Builder.addTool */
+        @JvmOverloads
+        fun <T> addTool(
+            functionParametersType: Class<T>,
+            localValidation: JsonSchemaLocalValidation = JsonSchemaLocalValidation.YES,
+        ) = apply { paramsBuilder.addTool(functionParametersType, localValidation) }
+
+        /** @see ResponseCreateParams.Builder.addTool */
         fun addTool(webSearch: WebSearchTool) = apply { paramsBuilder.addTool(webSearch) }
 
         /** @see ResponseCreateParams.Builder.addTool */

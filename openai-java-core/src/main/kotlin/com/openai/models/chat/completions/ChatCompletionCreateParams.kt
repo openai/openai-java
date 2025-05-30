@@ -25,6 +25,7 @@ import com.openai.core.Params
 import com.openai.core.allMaxBy
 import com.openai.core.checkKnown
 import com.openai.core.checkRequired
+import com.openai.core.functionToolFromClass
 import com.openai.core.getOrThrow
 import com.openai.core.http.Headers
 import com.openai.core.http.QueryParams
@@ -1535,6 +1536,21 @@ private constructor(
          * @throws IllegalStateException if the field was previously set to a non-list.
          */
         fun addTool(tool: ChatCompletionTool) = apply { body.addTool(tool) }
+
+        /**
+         * Adds a single [ChatCompletionTool] to [tools] where the JSON schema describing the
+         * function parameters is derived from the fields of a given class. Local validation of that
+         * JSON schema can be performed to check if the schema is likely to pass remote validation
+         * by the AI model. By default, local validation is enabled; disable it by setting
+         * [localValidation] to [JsonSchemaLocalValidation.NO].
+         *
+         * @see addTool
+         */
+        @JvmOverloads
+        fun <T : Any> addTool(
+            functionParametersType: Class<T>,
+            localValidation: JsonSchemaLocalValidation = JsonSchemaLocalValidation.YES,
+        ) = apply { addTool(functionToolFromClass(functionParametersType, localValidation)) }
 
         /**
          * An integer between 0 and 20 specifying the number of most likely tokens to return at each

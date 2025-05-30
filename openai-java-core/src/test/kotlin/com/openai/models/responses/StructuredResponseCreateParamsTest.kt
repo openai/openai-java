@@ -1,10 +1,12 @@
 package com.openai.models.responses
 
 import com.openai.core.BOOLEAN
+import com.openai.core.CLASS
 import com.openai.core.DOUBLE
 import com.openai.core.DelegationWriteTestCase
 import com.openai.core.JSON_FIELD
 import com.openai.core.JSON_VALUE
+import com.openai.core.JsonSchemaLocalValidation
 import com.openai.core.LIST
 import com.openai.core.LONG
 import com.openai.core.MAP
@@ -80,6 +82,8 @@ internal class StructuredResponseCreateParamsTest {
         private val HEADERS = Headers.builder().build()
         private val QUERY_PARAMS = QueryParams.builder().build()
 
+        private val VALIDATION = JsonSchemaLocalValidation.NO
+
         // The list order follows the declaration order in `ResponseCreateParams.Builder` for
         // easier maintenance.
         @JvmStatic
@@ -144,6 +148,7 @@ internal class StructuredResponseCreateParamsTest {
                 DelegationWriteTestCase("addTool", FUNCTION_TOOL),
                 DelegationWriteTestCase("addTool", WEB_SEARCH_TOOL),
                 DelegationWriteTestCase("addTool", COMPUTER_TOOL),
+                DelegationWriteTestCase("addTool", CLASS, VALIDATION),
                 DelegationWriteTestCase("topP", NULLABLE_DOUBLE),
                 DelegationWriteTestCase("topP", DOUBLE),
                 DelegationWriteTestCase("topP", OPTIONAL),

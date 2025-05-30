@@ -28,6 +28,7 @@ import com.openai.core.checkRequired
 import com.openai.core.getOrThrow
 import com.openai.core.http.Headers
 import com.openai.core.http.QueryParams
+import com.openai.core.responseFunctionToolFromClass
 import com.openai.core.toImmutable
 import com.openai.errors.OpenAIInvalidDataException
 import com.openai.models.ChatModel
@@ -924,6 +925,23 @@ private constructor(
          */
         fun addFileSearchTool(vectorStoreIds: List<String>) = apply {
             body.addFileSearchTool(vectorStoreIds)
+        }
+
+        /**
+         * Adds a single [FunctionTool] where the JSON schema describing the function parameters is
+         * derived from the fields of a given class. Local validation of that JSON schema can be
+         * performed to check if the schema is likely to pass remote validation by the AI model. By
+         * default, local validation is enabled; disable it by setting [localValidation] to
+         * [JsonSchemaLocalValidation.NO].
+         *
+         * @see addTool
+         */
+        @JvmOverloads
+        fun <T> addTool(
+            functionParametersType: Class<T>,
+            localValidation: JsonSchemaLocalValidation = JsonSchemaLocalValidation.YES,
+        ) = apply {
+            body.addTool(responseFunctionToolFromClass(functionParametersType, localValidation))
         }
 
         /** Alias for calling [addTool] with `Tool.ofWebSearch(webSearch)`. */

@@ -33,6 +33,7 @@ internal val NULLABLE_DOUBLE: Double? = null
 internal val LIST = listOf(STRING)
 internal val SET = setOf(STRING)
 internal val MAP = mapOf(STRING to STRING)
+internal val CLASS = X::class.java
 
 /**
  * Defines a test case where a function in a delegator returns a value from a corresponding function
@@ -104,12 +105,15 @@ internal fun checkAllDelegation(
         }
 
         // Drop the first parameter from each function, as it is the implicit "this" object and has
-        // the type of the class declaring the function, which will never match.
+        // the type of the class declaring the function, which will never match. Compare only the
+        // "classifiers" of the types, so that generic type parameters are ignored. For example,
+        // one `java.lang.Class<T>` is then considered equal to another `java.lang.Class<T>`. For
+        // the data set being processed, this simplification does not cause any problems.
         val supersetFunction =
             supersetClass.declaredFunctions.find {
                 it.name == subsetFunction.name &&
-                    it.parameters.drop(1).map { it.type } ==
-                        subsetFunction.parameters.drop(1).map { it.type }
+                    it.parameters.drop(1).map { it.type.classifier } ==
+                        subsetFunction.parameters.drop(1).map { it.type.classifier }
             }
 
         if (supersetFunction == null) {
