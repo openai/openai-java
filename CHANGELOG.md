@@ -1,5 +1,13 @@
 # Changelog
 
+## 2.3.2 (2025-06-02)
+
+Full Changelog: [v2.3.1...v2.3.2](https://github.com/openai/openai-java/compare/v2.3.1...v2.3.2)
+
+### Bug Fixes
+
+* **api:** Fix evals and code interpreter interfaces ([d7e2747](https://github.com/openai/openai-java/commit/d7e27475e917613beda0022725a1d9551ed2a278))
+
 ## 2.3.1 (2025-06-02)
 
 Full Changelog: [v2.3.0...v2.3.1](https://github.com/openai/openai-java/compare/v2.3.0...v2.3.1)

@@ -13,7 +13,7 @@ internal class CreateEmbeddingResponseTest {
     fun create() {
         val createEmbeddingResponse =
             CreateEmbeddingResponse.builder()
-                .addData(Embedding.builder().addEmbedding(0.0).index(0L).build())
+                .addData(Embedding.builder().addEmbedding(0.0f).index(0L).build())
                 .model("model")
                 .usage(
                     CreateEmbeddingResponse.Usage.builder().promptTokens(0L).totalTokens(0L).build()
@@ -21,7 +21,7 @@ internal class CreateEmbeddingResponseTest {
                 .build()
 
         assertThat(createEmbeddingResponse.data())
-            .containsExactly(Embedding.builder().addEmbedding(0.0).index(0L).build())
+            .containsExactly(Embedding.builder().addEmbedding(0.0f).index(0L).build())
         assertThat(createEmbeddingResponse.model()).isEqualTo("model")
         assertThat(createEmbeddingResponse.usage())
             .isEqualTo(
@@ -34,7 +34,7 @@ internal class CreateEmbeddingResponseTest {
         val jsonMapper = jsonMapper()
         val createEmbeddingResponse =
             CreateEmbeddingResponse.builder()
-                .addData(Embedding.builder().addEmbedding(0.0).index(0L).build())
+                .addData(Embedding.builder().addEmbedding(0.0f).index(0L).build())
                 .model("model")
                 .usage(
                     CreateEmbeddingResponse.Usage.builder().promptTokens(0L).totalTokens(0L).build()

@@ -22,7 +22,7 @@ internal class TranscriptionStreamEventTest {
                 .addLogprob(
                     TranscriptionTextDeltaEvent.Logprob.builder()
                         .token("token")
-                        .addByte(JsonValue.from(mapOf<String, Any>()))
+                        .addByte(0L)
                         .logprob(0.0)
                         .build()
                 )
@@ -45,7 +45,7 @@ internal class TranscriptionStreamEventTest {
                     .addLogprob(
                         TranscriptionTextDeltaEvent.Logprob.builder()
                             .token("token")
-                            .addByte(JsonValue.from(mapOf<String, Any>()))
+                            .addByte(0L)
                             .logprob(0.0)
                             .build()
                     )
@@ -69,7 +69,7 @@ internal class TranscriptionStreamEventTest {
                 .addLogprob(
                     TranscriptionTextDoneEvent.Logprob.builder()
                         .token("token")
-                        .addByte(JsonValue.from(mapOf<String, Any>()))
+                        .addByte(0L)
                         .logprob(0.0)
                         .build()
                 )
@@ -92,7 +92,7 @@ internal class TranscriptionStreamEventTest {
                     .addLogprob(
                         TranscriptionTextDoneEvent.Logprob.builder()
                             .token("token")
-                            .addByte(JsonValue.from(mapOf<String, Any>()))
+                            .addByte(0L)
                             .logprob(0.0)
                             .build()
                     )

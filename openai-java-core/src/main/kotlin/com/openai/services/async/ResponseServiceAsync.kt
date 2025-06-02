@@ -172,7 +172,7 @@ interface ResponseServiceAsync {
      * parameter set to `true` can be cancelled.
      * [Learn more](https://platform.openai.com/docs/guides/background).
      */
-    fun cancel(responseId: String): CompletableFuture<Void?> =
+    fun cancel(responseId: String): CompletableFuture<Response> =
         cancel(responseId, ResponseCancelParams.none())
 
     /** @see [cancel] */
@@ -180,27 +180,27 @@ interface ResponseServiceAsync {
         responseId: String,
         params: ResponseCancelParams = ResponseCancelParams.none(),
         requestOptions: RequestOptions = RequestOptions.none(),
-    ): CompletableFuture<Void?> =
+    ): CompletableFuture<Response> =
         cancel(params.toBuilder().responseId(responseId).build(), requestOptions)
 
     /** @see [cancel] */
     fun cancel(
         responseId: String,
         params: ResponseCancelParams = ResponseCancelParams.none(),
-    ): CompletableFuture<Void?> = cancel(responseId, params, RequestOptions.none())
+    ): CompletableFuture<Response> = cancel(responseId, params, RequestOptions.none())
 
     /** @see [cancel] */
     fun cancel(
         params: ResponseCancelParams,
         requestOptions: RequestOptions = RequestOptions.none(),
-    ): CompletableFuture<Void?>
+    ): CompletableFuture<Response>
 
     /** @see [cancel] */
-    fun cancel(params: ResponseCancelParams): CompletableFuture<Void?> =
+    fun cancel(params: ResponseCancelParams): CompletableFuture<Response> =
         cancel(params, RequestOptions.none())
 
     /** @see [cancel] */
-    fun cancel(responseId: String, requestOptions: RequestOptions): CompletableFuture<Void?> =
+    fun cancel(responseId: String, requestOptions: RequestOptions): CompletableFuture<Response> =
         cancel(responseId, ResponseCancelParams.none(), requestOptions)
 
     /**
@@ -370,7 +370,7 @@ interface ResponseServiceAsync {
          * Returns a raw HTTP response for `post /responses/{response_id}/cancel`, but is otherwise
          * the same as [ResponseServiceAsync.cancel].
          */
-        fun cancel(responseId: String): CompletableFuture<HttpResponse> =
+        fun cancel(responseId: String): CompletableFuture<HttpResponseFor<Response>> =
             cancel(responseId, ResponseCancelParams.none())
 
         /** @see [cancel] */
@@ -378,30 +378,31 @@ interface ResponseServiceAsync {
             responseId: String,
             params: ResponseCancelParams = ResponseCancelParams.none(),
             requestOptions: RequestOptions = RequestOptions.none(),
-        ): CompletableFuture<HttpResponse> =
+        ): CompletableFuture<HttpResponseFor<Response>> =
             cancel(params.toBuilder().responseId(responseId).build(), requestOptions)
 
         /** @see [cancel] */
         fun cancel(
             responseId: String,
             params: ResponseCancelParams = ResponseCancelParams.none(),
-        ): CompletableFuture<HttpResponse> = cancel(responseId, params, RequestOptions.none())
+        ): CompletableFuture<HttpResponseFor<Response>> =
+            cancel(responseId, params, RequestOptions.none())
 
         /** @see [cancel] */
         fun cancel(
             params: ResponseCancelParams,
             requestOptions: RequestOptions = RequestOptions.none(),
-        ): CompletableFuture<HttpResponse>
+        ): CompletableFuture<HttpResponseFor<Response>>
 
         /** @see [cancel] */
-        fun cancel(params: ResponseCancelParams): CompletableFuture<HttpResponse> =
+        fun cancel(params: ResponseCancelParams): CompletableFuture<HttpResponseFor<Response>> =
             cancel(params, RequestOptions.none())
 
         /** @see [cancel] */
         fun cancel(
             responseId: String,
             requestOptions: RequestOptions,
-        ): CompletableFuture<HttpResponse> =
+        ): CompletableFuture<HttpResponseFor<Response>> =
             cancel(responseId, ResponseCancelParams.none(), requestOptions)
     }
 }

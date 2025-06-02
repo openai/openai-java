@@ -187,6 +187,13 @@ private constructor(
         fun addAnnotation(urlCitation: Annotation.UrlCitation) =
             addAnnotation(Annotation.ofUrlCitation(urlCitation))
 
+        /**
+         * Alias for calling [addAnnotation] with
+         * `Annotation.ofContainerFileCitation(containerFileCitation)`.
+         */
+        fun addAnnotation(containerFileCitation: Annotation.ContainerFileCitation) =
+            addAnnotation(Annotation.ofContainerFileCitation(containerFileCitation))
+
         /** Alias for calling [addAnnotation] with `Annotation.ofFilePath(filePath)`. */
         fun addAnnotation(filePath: Annotation.FilePath) =
             addAnnotation(Annotation.ofFilePath(filePath))
@@ -328,6 +335,7 @@ private constructor(
     private constructor(
         private val fileCitation: FileCitation? = null,
         private val urlCitation: UrlCitation? = null,
+        private val containerFileCitation: ContainerFileCitation? = null,
         private val filePath: FilePath? = null,
         private val _json: JsonValue? = null,
     ) {
@@ -338,12 +346,18 @@ private constructor(
         /** A citation for a web resource used to generate a model response. */
         fun urlCitation(): Optional<UrlCitation> = Optional.ofNullable(urlCitation)
 
+        /** A citation for a container file used to generate a model response. */
+        fun containerFileCitation(): Optional<ContainerFileCitation> =
+            Optional.ofNullable(containerFileCitation)
+
         /** A path to a file. */
         fun filePath(): Optional<FilePath> = Optional.ofNullable(filePath)
 
         fun isFileCitation(): Boolean = fileCitation != null
 
         fun isUrlCitation(): Boolean = urlCitation != null
+
+        fun isContainerFileCitation(): Boolean = containerFileCitation != null
 
         fun isFilePath(): Boolean = filePath != null
 
@@ -352,6 +366,10 @@ private constructor(
 
         /** A citation for a web resource used to generate a model response. */
         fun asUrlCitation(): UrlCitation = urlCitation.getOrThrow("urlCitation")
+
+        /** A citation for a container file used to generate a model response. */
+        fun asContainerFileCitation(): ContainerFileCitation =
+            containerFileCitation.getOrThrow("containerFileCitation")
 
         /** A path to a file. */
         fun asFilePath(): FilePath = filePath.getOrThrow("filePath")
@@ -362,6 +380,8 @@ private constructor(
             when {
                 fileCitation != null -> visitor.visitFileCitation(fileCitation)
                 urlCitation != null -> visitor.visitUrlCitation(urlCitation)
+                containerFileCitation != null ->
+                    visitor.visitContainerFileCitation(containerFileCitation)
                 filePath != null -> visitor.visitFilePath(filePath)
                 else -> visitor.unknown(_json)
             }
@@ -381,6 +401,12 @@ private constructor(
 
                     override fun visitUrlCitation(urlCitation: UrlCitation) {
                         urlCitation.validate()
+                    }
+
+                    override fun visitContainerFileCitation(
+                        containerFileCitation: ContainerFileCitation
+                    ) {
+                        containerFileCitation.validate()
                     }
 
                     override fun visitFilePath(filePath: FilePath) {
@@ -414,6 +440,10 @@ private constructor(
 
                     override fun visitUrlCitation(urlCitation: UrlCitation) = urlCitation.validity()
 
+                    override fun visitContainerFileCitation(
+                        containerFileCitation: ContainerFileCitation
+                    ) = containerFileCitation.validity()
+
                     override fun visitFilePath(filePath: FilePath) = filePath.validity()
 
                     override fun unknown(json: JsonValue?) = 0
@@ -425,15 +455,17 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is Annotation && fileCitation == other.fileCitation && urlCitation == other.urlCitation && filePath == other.filePath /* spotless:on */
+            return /* spotless:off */ other is Annotation && fileCitation == other.fileCitation && urlCitation == other.urlCitation && containerFileCitation == other.containerFileCitation && filePath == other.filePath /* spotless:on */
         }
 
-        override fun hashCode(): Int = /* spotless:off */ Objects.hash(fileCitation, urlCitation, filePath) /* spotless:on */
+        override fun hashCode(): Int = /* spotless:off */ Objects.hash(fileCitation, urlCitation, containerFileCitation, filePath) /* spotless:on */
 
         override fun toString(): String =
             when {
                 fileCitation != null -> "Annotation{fileCitation=$fileCitation}"
                 urlCitation != null -> "Annotation{urlCitation=$urlCitation}"
+                containerFileCitation != null ->
+                    "Annotation{containerFileCitation=$containerFileCitation}"
                 filePath != null -> "Annotation{filePath=$filePath}"
                 _json != null -> "Annotation{_unknown=$_json}"
                 else -> throw IllegalStateException("Invalid Annotation")
@@ -449,6 +481,11 @@ private constructor(
             @JvmStatic
             fun ofUrlCitation(urlCitation: UrlCitation) = Annotation(urlCitation = urlCitation)
 
+            /** A citation for a container file used to generate a model response. */
+            @JvmStatic
+            fun ofContainerFileCitation(containerFileCitation: ContainerFileCitation) =
+                Annotation(containerFileCitation = containerFileCitation)
+
             /** A path to a file. */
             @JvmStatic fun ofFilePath(filePath: FilePath) = Annotation(filePath = filePath)
         }
@@ -463,6 +500,9 @@ private constructor(
 
             /** A citation for a web resource used to generate a model response. */
             fun visitUrlCitation(urlCitation: UrlCitation): T
+
+            /** A citation for a container file used to generate a model response. */
+            fun visitContainerFileCitation(containerFileCitation: ContainerFileCitation): T
 
             /** A path to a file. */
             fun visitFilePath(filePath: FilePath): T
@@ -499,6 +539,11 @@ private constructor(
                             Annotation(urlCitation = it, _json = json)
                         } ?: Annotation(_json = json)
                     }
+                    "container_file_citation" -> {
+                        return tryDeserialize(node, jacksonTypeRef<ContainerFileCitation>())?.let {
+                            Annotation(containerFileCitation = it, _json = json)
+                        } ?: Annotation(_json = json)
+                    }
                     "file_path" -> {
                         return tryDeserialize(node, jacksonTypeRef<FilePath>())?.let {
                             Annotation(filePath = it, _json = json)
@@ -520,6 +565,8 @@ private constructor(
                 when {
                     value.fileCitation != null -> generator.writeObject(value.fileCitation)
                     value.urlCitation != null -> generator.writeObject(value.urlCitation)
+                    value.containerFileCitation != null ->
+                        generator.writeObject(value.containerFileCitation)
                     value.filePath != null -> generator.writeObject(value.filePath)
                     value._json != null -> generator.writeObject(value._json)
                     else -> throw IllegalStateException("Invalid Annotation")
@@ -1089,6 +1136,342 @@ private constructor(
 
             override fun toString() =
                 "UrlCitation{endIndex=$endIndex, startIndex=$startIndex, title=$title, type=$type, url=$url, additionalProperties=$additionalProperties}"
+        }
+
+        /** A citation for a container file used to generate a model response. */
+        class ContainerFileCitation
+        private constructor(
+            private val containerId: JsonField<String>,
+            private val endIndex: JsonField<Long>,
+            private val fileId: JsonField<String>,
+            private val startIndex: JsonField<Long>,
+            private val type: JsonValue,
+            private val additionalProperties: MutableMap<String, JsonValue>,
+        ) {
+
+            @JsonCreator
+            private constructor(
+                @JsonProperty("container_id")
+                @ExcludeMissing
+                containerId: JsonField<String> = JsonMissing.of(),
+                @JsonProperty("end_index")
+                @ExcludeMissing
+                endIndex: JsonField<Long> = JsonMissing.of(),
+                @JsonProperty("file_id")
+                @ExcludeMissing
+                fileId: JsonField<String> = JsonMissing.of(),
+                @JsonProperty("start_index")
+                @ExcludeMissing
+                startIndex: JsonField<Long> = JsonMissing.of(),
+                @JsonProperty("type") @ExcludeMissing type: JsonValue = JsonMissing.of(),
+            ) : this(containerId, endIndex, fileId, startIndex, type, mutableMapOf())
+
+            /**
+             * The ID of the container file.
+             *
+             * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+             *   unexpectedly missing or null (e.g. if the server responded with an unexpected
+             *   value).
+             */
+            fun containerId(): String = containerId.getRequired("container_id")
+
+            /**
+             * The index of the last character of the container file citation in the message.
+             *
+             * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+             *   unexpectedly missing or null (e.g. if the server responded with an unexpected
+             *   value).
+             */
+            fun endIndex(): Long = endIndex.getRequired("end_index")
+
+            /**
+             * The ID of the file.
+             *
+             * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+             *   unexpectedly missing or null (e.g. if the server responded with an unexpected
+             *   value).
+             */
+            fun fileId(): String = fileId.getRequired("file_id")
+
+            /**
+             * The index of the first character of the container file citation in the message.
+             *
+             * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+             *   unexpectedly missing or null (e.g. if the server responded with an unexpected
+             *   value).
+             */
+            fun startIndex(): Long = startIndex.getRequired("start_index")
+
+            /**
+             * The type of the container file citation. Always `container_file_citation`.
+             *
+             * Expected to always return the following:
+             * ```java
+             * JsonValue.from("container_file_citation")
+             * ```
+             *
+             * However, this method can be useful for debugging and logging (e.g. if the server
+             * responded with an unexpected value).
+             */
+            @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
+
+            /**
+             * Returns the raw JSON value of [containerId].
+             *
+             * Unlike [containerId], this method doesn't throw if the JSON field has an unexpected
+             * type.
+             */
+            @JsonProperty("container_id")
+            @ExcludeMissing
+            fun _containerId(): JsonField<String> = containerId
+
+            /**
+             * Returns the raw JSON value of [endIndex].
+             *
+             * Unlike [endIndex], this method doesn't throw if the JSON field has an unexpected
+             * type.
+             */
+            @JsonProperty("end_index") @ExcludeMissing fun _endIndex(): JsonField<Long> = endIndex
+
+            /**
+             * Returns the raw JSON value of [fileId].
+             *
+             * Unlike [fileId], this method doesn't throw if the JSON field has an unexpected type.
+             */
+            @JsonProperty("file_id") @ExcludeMissing fun _fileId(): JsonField<String> = fileId
+
+            /**
+             * Returns the raw JSON value of [startIndex].
+             *
+             * Unlike [startIndex], this method doesn't throw if the JSON field has an unexpected
+             * type.
+             */
+            @JsonProperty("start_index")
+            @ExcludeMissing
+            fun _startIndex(): JsonField<Long> = startIndex
+
+            @JsonAnySetter
+            private fun putAdditionalProperty(key: String, value: JsonValue) {
+                additionalProperties.put(key, value)
+            }
+
+            @JsonAnyGetter
+            @ExcludeMissing
+            fun _additionalProperties(): Map<String, JsonValue> =
+                Collections.unmodifiableMap(additionalProperties)
+
+            fun toBuilder() = Builder().from(this)
+
+            companion object {
+
+                /**
+                 * Returns a mutable builder for constructing an instance of
+                 * [ContainerFileCitation].
+                 *
+                 * The following fields are required:
+                 * ```java
+                 * .containerId()
+                 * .endIndex()
+                 * .fileId()
+                 * .startIndex()
+                 * ```
+                 */
+                @JvmStatic fun builder() = Builder()
+            }
+
+            /** A builder for [ContainerFileCitation]. */
+            class Builder internal constructor() {
+
+                private var containerId: JsonField<String>? = null
+                private var endIndex: JsonField<Long>? = null
+                private var fileId: JsonField<String>? = null
+                private var startIndex: JsonField<Long>? = null
+                private var type: JsonValue = JsonValue.from("container_file_citation")
+                private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
+
+                @JvmSynthetic
+                internal fun from(containerFileCitation: ContainerFileCitation) = apply {
+                    containerId = containerFileCitation.containerId
+                    endIndex = containerFileCitation.endIndex
+                    fileId = containerFileCitation.fileId
+                    startIndex = containerFileCitation.startIndex
+                    type = containerFileCitation.type
+                    additionalProperties = containerFileCitation.additionalProperties.toMutableMap()
+                }
+
+                /** The ID of the container file. */
+                fun containerId(containerId: String) = containerId(JsonField.of(containerId))
+
+                /**
+                 * Sets [Builder.containerId] to an arbitrary JSON value.
+                 *
+                 * You should usually call [Builder.containerId] with a well-typed [String] value
+                 * instead. This method is primarily for setting the field to an undocumented or not
+                 * yet supported value.
+                 */
+                fun containerId(containerId: JsonField<String>) = apply {
+                    this.containerId = containerId
+                }
+
+                /**
+                 * The index of the last character of the container file citation in the message.
+                 */
+                fun endIndex(endIndex: Long) = endIndex(JsonField.of(endIndex))
+
+                /**
+                 * Sets [Builder.endIndex] to an arbitrary JSON value.
+                 *
+                 * You should usually call [Builder.endIndex] with a well-typed [Long] value
+                 * instead. This method is primarily for setting the field to an undocumented or not
+                 * yet supported value.
+                 */
+                fun endIndex(endIndex: JsonField<Long>) = apply { this.endIndex = endIndex }
+
+                /** The ID of the file. */
+                fun fileId(fileId: String) = fileId(JsonField.of(fileId))
+
+                /**
+                 * Sets [Builder.fileId] to an arbitrary JSON value.
+                 *
+                 * You should usually call [Builder.fileId] with a well-typed [String] value
+                 * instead. This method is primarily for setting the field to an undocumented or not
+                 * yet supported value.
+                 */
+                fun fileId(fileId: JsonField<String>) = apply { this.fileId = fileId }
+
+                /**
+                 * The index of the first character of the container file citation in the message.
+                 */
+                fun startIndex(startIndex: Long) = startIndex(JsonField.of(startIndex))
+
+                /**
+                 * Sets [Builder.startIndex] to an arbitrary JSON value.
+                 *
+                 * You should usually call [Builder.startIndex] with a well-typed [Long] value
+                 * instead. This method is primarily for setting the field to an undocumented or not
+                 * yet supported value.
+                 */
+                fun startIndex(startIndex: JsonField<Long>) = apply { this.startIndex = startIndex }
+
+                /**
+                 * Sets the field to an arbitrary JSON value.
+                 *
+                 * It is usually unnecessary to call this method because the field defaults to the
+                 * following:
+                 * ```java
+                 * JsonValue.from("container_file_citation")
+                 * ```
+                 *
+                 * This method is primarily for setting the field to an undocumented or not yet
+                 * supported value.
+                 */
+                fun type(type: JsonValue) = apply { this.type = type }
+
+                fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                    this.additionalProperties.clear()
+                    putAllAdditionalProperties(additionalProperties)
+                }
+
+                fun putAdditionalProperty(key: String, value: JsonValue) = apply {
+                    additionalProperties.put(key, value)
+                }
+
+                fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) =
+                    apply {
+                        this.additionalProperties.putAll(additionalProperties)
+                    }
+
+                fun removeAdditionalProperty(key: String) = apply {
+                    additionalProperties.remove(key)
+                }
+
+                fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                    keys.forEach(::removeAdditionalProperty)
+                }
+
+                /**
+                 * Returns an immutable instance of [ContainerFileCitation].
+                 *
+                 * Further updates to this [Builder] will not mutate the returned instance.
+                 *
+                 * The following fields are required:
+                 * ```java
+                 * .containerId()
+                 * .endIndex()
+                 * .fileId()
+                 * .startIndex()
+                 * ```
+                 *
+                 * @throws IllegalStateException if any required field is unset.
+                 */
+                fun build(): ContainerFileCitation =
+                    ContainerFileCitation(
+                        checkRequired("containerId", containerId),
+                        checkRequired("endIndex", endIndex),
+                        checkRequired("fileId", fileId),
+                        checkRequired("startIndex", startIndex),
+                        type,
+                        additionalProperties.toMutableMap(),
+                    )
+            }
+
+            private var validated: Boolean = false
+
+            fun validate(): ContainerFileCitation = apply {
+                if (validated) {
+                    return@apply
+                }
+
+                containerId()
+                endIndex()
+                fileId()
+                startIndex()
+                _type().let {
+                    if (it != JsonValue.from("container_file_citation")) {
+                        throw OpenAIInvalidDataException("'type' is invalid, received $it")
+                    }
+                }
+                validated = true
+            }
+
+            fun isValid(): Boolean =
+                try {
+                    validate()
+                    true
+                } catch (e: OpenAIInvalidDataException) {
+                    false
+                }
+
+            /**
+             * Returns a score indicating how many valid values are contained in this object
+             * recursively.
+             *
+             * Used for best match union deserialization.
+             */
+            @JvmSynthetic
+            internal fun validity(): Int =
+                (if (containerId.asKnown().isPresent) 1 else 0) +
+                    (if (endIndex.asKnown().isPresent) 1 else 0) +
+                    (if (fileId.asKnown().isPresent) 1 else 0) +
+                    (if (startIndex.asKnown().isPresent) 1 else 0) +
+                    type.let { if (it == JsonValue.from("container_file_citation")) 1 else 0 }
+
+            override fun equals(other: Any?): Boolean {
+                if (this === other) {
+                    return true
+                }
+
+                return /* spotless:off */ other is ContainerFileCitation && containerId == other.containerId && endIndex == other.endIndex && fileId == other.fileId && startIndex == other.startIndex && type == other.type && additionalProperties == other.additionalProperties /* spotless:on */
+            }
+
+            /* spotless:off */
+            private val hashCode: Int by lazy { Objects.hash(containerId, endIndex, fileId, startIndex, type, additionalProperties) }
+            /* spotless:on */
+
+            override fun hashCode(): Int = hashCode
+
+            override fun toString() =
+                "ContainerFileCitation{containerId=$containerId, endIndex=$endIndex, fileId=$fileId, startIndex=$startIndex, type=$type, additionalProperties=$additionalProperties}"
         }
 
         /** A path to a file. */

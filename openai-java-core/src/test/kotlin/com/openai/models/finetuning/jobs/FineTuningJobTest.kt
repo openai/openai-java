@@ -35,7 +35,7 @@ internal class FineTuningJobTest {
                 .finishedAt(0L)
                 .hyperparameters(
                     FineTuningJob.Hyperparameters.builder()
-                        .batchSize(JsonValue.from(mapOf<String, Any>()))
+                        .batchSizeAuto()
                         .learningRateMultiplierAuto()
                         .nEpochsAuto()
                         .build()
@@ -132,7 +132,7 @@ internal class FineTuningJobTest {
         assertThat(fineTuningJob.hyperparameters())
             .isEqualTo(
                 FineTuningJob.Hyperparameters.builder()
-                    .batchSize(JsonValue.from(mapOf<String, Any>()))
+                    .batchSizeAuto()
                     .learningRateMultiplierAuto()
                     .nEpochsAuto()
                     .build()
@@ -239,7 +239,7 @@ internal class FineTuningJobTest {
                 .finishedAt(0L)
                 .hyperparameters(
                     FineTuningJob.Hyperparameters.builder()
-                        .batchSize(JsonValue.from(mapOf<String, Any>()))
+                        .batchSizeAuto()
                         .learningRateMultiplierAuto()
                         .nEpochsAuto()
                         .build()
