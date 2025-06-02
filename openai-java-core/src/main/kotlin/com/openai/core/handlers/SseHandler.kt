@@ -25,6 +25,7 @@ internal fun sseHandler(jsonMapper: JsonMapper): Handler<StreamResponse<SseMessa
             if (done) {
                 continue
             }
+
             val message = state.decode(line) ?: continue
 
             if (message.data.startsWith("[DONE]")) {
