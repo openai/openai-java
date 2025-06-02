@@ -95,9 +95,9 @@ class ResponseServiceAsyncImpl internal constructor(private val clientOptions: C
     override fun cancel(
         params: ResponseCancelParams,
         requestOptions: RequestOptions,
-    ): CompletableFuture<Void?> =
+    ): CompletableFuture<Response> =
         // post /responses/{response_id}/cancel
-        withRawResponse().cancel(params, requestOptions).thenAccept {}
+        withRawResponse().cancel(params, requestOptions).thenApply { it.parse() }
 
     class WithRawResponseImpl internal constructor(private val clientOptions: ClientOptions) :
         ResponseServiceAsync.WithRawResponse {
@@ -276,12 +276,13 @@ class ResponseServiceAsyncImpl internal constructor(private val clientOptions: C
                 }
         }
 
-        private val cancelHandler: Handler<Void?> = emptyHandler().withErrorHandler(errorHandler)
+        private val cancelHandler: Handler<Response> =
+            jsonHandler<Response>(clientOptions.jsonMapper).withErrorHandler(errorHandler)
 
         override fun cancel(
             params: ResponseCancelParams,
             requestOptions: RequestOptions,
-        ): CompletableFuture<HttpResponse> {
+        ): CompletableFuture<HttpResponseFor<Response>> {
             // We check here instead of in the params builder because this can be specified
             // positionally or in the params class.
             checkRequired("responseId", params.responseId().getOrNull())
@@ -296,7 +297,15 @@ class ResponseServiceAsyncImpl internal constructor(private val clientOptions: C
             return request
                 .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
                 .thenApply { response ->
-                    response.parseable { response.use { cancelHandler.handle(it) } }
+                    response.parseable {
+                        response
+                            .use { cancelHandler.handle(it) }
+                            .also {
+                                if (requestOptions.responseValidation!!) {
+                                    it.validate()
+                                }
+                            }
+                    }
                 }
         }
     }

@@ -21,7 +21,7 @@ import kotlin.jvm.optionals.getOrNull
 /** Represents an embedding vector returned by embedding endpoint. */
 class Embedding
 private constructor(
-    private val embedding: JsonField<List<Double>>,
+    private val embedding: JsonField<List<Float>>,
     private val index: JsonField<Long>,
     private val object_: JsonValue,
     private val additionalProperties: MutableMap<String, JsonValue>,
@@ -31,7 +31,7 @@ private constructor(
     private constructor(
         @JsonProperty("embedding")
         @ExcludeMissing
-        embedding: JsonField<List<Double>> = JsonMissing.of(),
+        embedding: JsonField<List<Float>> = JsonMissing.of(),
         @JsonProperty("index") @ExcludeMissing index: JsonField<Long> = JsonMissing.of(),
         @JsonProperty("object") @ExcludeMissing object_: JsonValue = JsonMissing.of(),
     ) : this(embedding, index, object_, mutableMapOf())
@@ -43,7 +43,7 @@ private constructor(
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
      *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
      */
-    fun embedding(): List<Double> = embedding.getRequired("embedding")
+    fun embedding(): List<Float> = embedding.getRequired("embedding")
 
     /**
      * The index of the embedding in the list of embeddings.
@@ -71,7 +71,7 @@ private constructor(
      *
      * Unlike [embedding], this method doesn't throw if the JSON field has an unexpected type.
      */
-    @JsonProperty("embedding") @ExcludeMissing fun _embedding(): JsonField<List<Double>> = embedding
+    @JsonProperty("embedding") @ExcludeMissing fun _embedding(): JsonField<List<Float>> = embedding
 
     /**
      * Returns the raw JSON value of [index].
@@ -109,7 +109,7 @@ private constructor(
     /** A builder for [Embedding]. */
     class Builder internal constructor() {
 
-        private var embedding: JsonField<MutableList<Double>>? = null
+        private var embedding: JsonField<MutableList<Float>>? = null
         private var index: JsonField<Long>? = null
         private var object_: JsonValue = JsonValue.from("embedding")
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
@@ -127,25 +127,25 @@ private constructor(
          * model as listed in the
          * [embedding guide](https://platform.openai.com/docs/guides/embeddings).
          */
-        fun embedding(embedding: List<Double>) = embedding(JsonField.of(embedding))
+        fun embedding(embedding: List<Float>) = embedding(JsonField.of(embedding))
 
         /**
          * Sets [Builder.embedding] to an arbitrary JSON value.
          *
-         * You should usually call [Builder.embedding] with a well-typed `List<Double>` value
+         * You should usually call [Builder.embedding] with a well-typed `List<Float>` value
          * instead. This method is primarily for setting the field to an undocumented or not yet
          * supported value.
          */
-        fun embedding(embedding: JsonField<List<Double>>) = apply {
+        fun embedding(embedding: JsonField<List<Float>>) = apply {
             this.embedding = embedding.map { it.toMutableList() }
         }
 
         /**
-         * Adds a single [Double] to [Builder.embedding].
+         * Adds a single [Float] to [Builder.embedding].
          *
          * @throws IllegalStateException if the field was previously set to a non-list.
          */
-        fun addEmbedding(embedding: Double) = apply {
+        fun addEmbedding(embedding: Float) = apply {
             this.embedding =
                 (this.embedding ?: JsonField.of(mutableListOf())).also {
                     checkKnown("embedding", it).add(embedding)

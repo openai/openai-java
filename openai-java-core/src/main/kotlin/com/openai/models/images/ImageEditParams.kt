@@ -48,7 +48,7 @@ private constructor(
     /**
      * The image(s) to edit. Must be a supported image file or an array of images.
      *
-     * For `gpt-image-1`, each image should be a `png`, `webp`, or `jpg` file less than 25MB. You
+     * For `gpt-image-1`, each image should be a `png`, `webp`, or `jpg` file less than 50MB. You
      * can provide up to 16 images.
      *
      * For `dall-e-2`, you can only provide one image, and it should be a square `png` file less
@@ -271,7 +271,7 @@ private constructor(
         /**
          * The image(s) to edit. Must be a supported image file or an array of images.
          *
-         * For `gpt-image-1`, each image should be a `png`, `webp`, or `jpg` file less than 25MB.
+         * For `gpt-image-1`, each image should be a `png`, `webp`, or `jpg` file less than 50MB.
          * You can provide up to 16 images.
          *
          * For `dall-e-2`, you can only provide one image, and it should be a square `png` file less
@@ -293,7 +293,7 @@ private constructor(
         /**
          * The image(s) to edit. Must be a supported image file or an array of images.
          *
-         * For `gpt-image-1`, each image should be a `png`, `webp`, or `jpg` file less than 25MB.
+         * For `gpt-image-1`, each image should be a `png`, `webp`, or `jpg` file less than 50MB.
          * You can provide up to 16 images.
          *
          * For `dall-e-2`, you can only provide one image, and it should be a square `png` file less
@@ -304,7 +304,7 @@ private constructor(
         /**
          * The image(s) to edit. Must be a supported image file or an array of images.
          *
-         * For `gpt-image-1`, each image should be a `png`, `webp`, or `jpg` file less than 25MB.
+         * For `gpt-image-1`, each image should be a `png`, `webp`, or `jpg` file less than 50MB.
          * You can provide up to 16 images.
          *
          * For `dall-e-2`, you can only provide one image, and it should be a square `png` file less
@@ -663,7 +663,7 @@ private constructor(
         /**
          * The image(s) to edit. Must be a supported image file or an array of images.
          *
-         * For `gpt-image-1`, each image should be a `png`, `webp`, or `jpg` file less than 25MB.
+         * For `gpt-image-1`, each image should be a `png`, `webp`, or `jpg` file less than 50MB.
          * You can provide up to 16 images.
          *
          * For `dall-e-2`, you can only provide one image, and it should be a square `png` file less
@@ -892,7 +892,7 @@ private constructor(
              * The image(s) to edit. Must be a supported image file or an array of images.
              *
              * For `gpt-image-1`, each image should be a `png`, `webp`, or `jpg` file less than
-             * 25MB. You can provide up to 16 images.
+             * 50MB. You can provide up to 16 images.
              *
              * For `dall-e-2`, you can only provide one image, and it should be a square `png` file
              * less than 4MB.
@@ -915,7 +915,7 @@ private constructor(
              * The image(s) to edit. Must be a supported image file or an array of images.
              *
              * For `gpt-image-1`, each image should be a `png`, `webp`, or `jpg` file less than
-             * 25MB. You can provide up to 16 images.
+             * 50MB. You can provide up to 16 images.
              *
              * For `dall-e-2`, you can only provide one image, and it should be a square `png` file
              * less than 4MB.
@@ -926,7 +926,7 @@ private constructor(
              * The image(s) to edit. Must be a supported image file or an array of images.
              *
              * For `gpt-image-1`, each image should be a `png`, `webp`, or `jpg` file less than
-             * 25MB. You can provide up to 16 images.
+             * 50MB. You can provide up to 16 images.
              *
              * For `dall-e-2`, you can only provide one image, and it should be a square `png` file
              * less than 4MB.
@@ -1227,7 +1227,7 @@ private constructor(
     /**
      * The image(s) to edit. Must be a supported image file or an array of images.
      *
-     * For `gpt-image-1`, each image should be a `png`, `webp`, or `jpg` file less than 25MB. You
+     * For `gpt-image-1`, each image should be a `png`, `webp`, or `jpg` file less than 50MB. You
      * can provide up to 16 images.
      *
      * For `dall-e-2`, you can only provide one image, and it should be a square `png` file less

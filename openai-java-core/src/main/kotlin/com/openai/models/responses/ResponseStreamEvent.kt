@@ -1830,7 +1830,7 @@ private constructor(
                         ?.let { ResponseStreamEvent(audioTranscriptDone = it, _json = json) }
                         ?: ResponseStreamEvent(_json = json)
                 }
-                "response.code_interpreter_call.code.delta" -> {
+                "response.code_interpreter_call_code.delta" -> {
                     return tryDeserialize(
                             node,
                             jacksonTypeRef<ResponseCodeInterpreterCallCodeDeltaEvent>(),
@@ -1839,7 +1839,7 @@ private constructor(
                             ResponseStreamEvent(codeInterpreterCallCodeDelta = it, _json = json)
                         } ?: ResponseStreamEvent(_json = json)
                 }
-                "response.code_interpreter_call.code.done" -> {
+                "response.code_interpreter_call_code.done" -> {
                     return tryDeserialize(
                             node,
                             jacksonTypeRef<ResponseCodeInterpreterCallCodeDoneEvent>(),

@@ -165,27 +165,32 @@ interface ResponseService {
      * parameter set to `true` can be cancelled.
      * [Learn more](https://platform.openai.com/docs/guides/background).
      */
-    fun cancel(responseId: String) = cancel(responseId, ResponseCancelParams.none())
+    fun cancel(responseId: String): Response = cancel(responseId, ResponseCancelParams.none())
 
     /** @see [cancel] */
     fun cancel(
         responseId: String,
         params: ResponseCancelParams = ResponseCancelParams.none(),
         requestOptions: RequestOptions = RequestOptions.none(),
-    ) = cancel(params.toBuilder().responseId(responseId).build(), requestOptions)
+    ): Response = cancel(params.toBuilder().responseId(responseId).build(), requestOptions)
 
     /** @see [cancel] */
-    fun cancel(responseId: String, params: ResponseCancelParams = ResponseCancelParams.none()) =
-        cancel(responseId, params, RequestOptions.none())
+    fun cancel(
+        responseId: String,
+        params: ResponseCancelParams = ResponseCancelParams.none(),
+    ): Response = cancel(responseId, params, RequestOptions.none())
 
     /** @see [cancel] */
-    fun cancel(params: ResponseCancelParams, requestOptions: RequestOptions = RequestOptions.none())
+    fun cancel(
+        params: ResponseCancelParams,
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): Response
 
     /** @see [cancel] */
-    fun cancel(params: ResponseCancelParams) = cancel(params, RequestOptions.none())
+    fun cancel(params: ResponseCancelParams): Response = cancel(params, RequestOptions.none())
 
     /** @see [cancel] */
-    fun cancel(responseId: String, requestOptions: RequestOptions) =
+    fun cancel(responseId: String, requestOptions: RequestOptions): Response =
         cancel(responseId, ResponseCancelParams.none(), requestOptions)
 
     /** A view of [ResponseService] that provides access to raw HTTP responses for each method. */
@@ -363,7 +368,7 @@ interface ResponseService {
          * the same as [ResponseService.cancel].
          */
         @MustBeClosed
-        fun cancel(responseId: String): HttpResponse =
+        fun cancel(responseId: String): HttpResponseFor<Response> =
             cancel(responseId, ResponseCancelParams.none())
 
         /** @see [cancel] */
@@ -372,30 +377,31 @@ interface ResponseService {
             responseId: String,
             params: ResponseCancelParams = ResponseCancelParams.none(),
             requestOptions: RequestOptions = RequestOptions.none(),
-        ): HttpResponse = cancel(params.toBuilder().responseId(responseId).build(), requestOptions)
+        ): HttpResponseFor<Response> =
+            cancel(params.toBuilder().responseId(responseId).build(), requestOptions)
 
         /** @see [cancel] */
         @MustBeClosed
         fun cancel(
             responseId: String,
             params: ResponseCancelParams = ResponseCancelParams.none(),
-        ): HttpResponse = cancel(responseId, params, RequestOptions.none())
+        ): HttpResponseFor<Response> = cancel(responseId, params, RequestOptions.none())
 
         /** @see [cancel] */
         @MustBeClosed
         fun cancel(
             params: ResponseCancelParams,
             requestOptions: RequestOptions = RequestOptions.none(),
-        ): HttpResponse
+        ): HttpResponseFor<Response>
 
         /** @see [cancel] */
         @MustBeClosed
-        fun cancel(params: ResponseCancelParams): HttpResponse =
+        fun cancel(params: ResponseCancelParams): HttpResponseFor<Response> =
             cancel(params, RequestOptions.none())
 
         /** @see [cancel] */
         @MustBeClosed
-        fun cancel(responseId: String, requestOptions: RequestOptions): HttpResponse =
+        fun cancel(responseId: String, requestOptions: RequestOptions): HttpResponseFor<Response> =
             cancel(responseId, ResponseCancelParams.none(), requestOptions)
     }
 }

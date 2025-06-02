@@ -16,6 +16,8 @@ import com.openai.errors.OpenAIInvalidDataException
  *   item outputs. This enables reasoning items to be used in multi-turn conversations when using
  *   the Responses API statelessly (like when the `store` parameter is set to `false`, or when an
  *   organization is enrolled in the zero data retention program).
+ * - `code_interpreter_call.outputs`: Includes the outputs of python code execution in code
+ *   interpreter tool call items.
  */
 class ResponseIncludable @JsonCreator private constructor(private val value: JsonField<String>) :
     Enum {
@@ -40,6 +42,8 @@ class ResponseIncludable @JsonCreator private constructor(private val value: Jso
 
         @JvmField val REASONING_ENCRYPTED_CONTENT = of("reasoning.encrypted_content")
 
+        @JvmField val CODE_INTERPRETER_CALL_OUTPUTS = of("code_interpreter_call.outputs")
+
         @JvmStatic fun of(value: String) = ResponseIncludable(JsonField.of(value))
     }
 
@@ -49,6 +53,7 @@ class ResponseIncludable @JsonCreator private constructor(private val value: Jso
         MESSAGE_INPUT_IMAGE_IMAGE_URL,
         COMPUTER_CALL_OUTPUT_OUTPUT_IMAGE_URL,
         REASONING_ENCRYPTED_CONTENT,
+        CODE_INTERPRETER_CALL_OUTPUTS,
     }
 
     /**
@@ -65,6 +70,7 @@ class ResponseIncludable @JsonCreator private constructor(private val value: Jso
         MESSAGE_INPUT_IMAGE_IMAGE_URL,
         COMPUTER_CALL_OUTPUT_OUTPUT_IMAGE_URL,
         REASONING_ENCRYPTED_CONTENT,
+        CODE_INTERPRETER_CALL_OUTPUTS,
         /**
          * An enum member indicating that [ResponseIncludable] was instantiated with an unknown
          * value.
@@ -85,6 +91,7 @@ class ResponseIncludable @JsonCreator private constructor(private val value: Jso
             MESSAGE_INPUT_IMAGE_IMAGE_URL -> Value.MESSAGE_INPUT_IMAGE_IMAGE_URL
             COMPUTER_CALL_OUTPUT_OUTPUT_IMAGE_URL -> Value.COMPUTER_CALL_OUTPUT_OUTPUT_IMAGE_URL
             REASONING_ENCRYPTED_CONTENT -> Value.REASONING_ENCRYPTED_CONTENT
+            CODE_INTERPRETER_CALL_OUTPUTS -> Value.CODE_INTERPRETER_CALL_OUTPUTS
             else -> Value._UNKNOWN
         }
 
@@ -102,6 +109,7 @@ class ResponseIncludable @JsonCreator private constructor(private val value: Jso
             MESSAGE_INPUT_IMAGE_IMAGE_URL -> Known.MESSAGE_INPUT_IMAGE_IMAGE_URL
             COMPUTER_CALL_OUTPUT_OUTPUT_IMAGE_URL -> Known.COMPUTER_CALL_OUTPUT_OUTPUT_IMAGE_URL
             REASONING_ENCRYPTED_CONTENT -> Known.REASONING_ENCRYPTED_CONTENT
+            CODE_INTERPRETER_CALL_OUTPUTS -> Known.CODE_INTERPRETER_CALL_OUTPUTS
             else -> throw OpenAIInvalidDataException("Unknown ResponseIncludable: $value")
         }
 

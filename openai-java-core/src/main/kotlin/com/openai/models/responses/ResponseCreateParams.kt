@@ -100,6 +100,8 @@ private constructor(
      *   reasoning item outputs. This enables reasoning items to be used in multi-turn conversations
      *   when using the Responses API statelessly (like when the `store` parameter is set to
      *   `false`, or when an organization is enrolled in the zero data retention program).
+     * - `code_interpreter_call.outputs`: Includes the outputs of python code execution in code
+     *   interpreter tool call items.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -176,9 +178,9 @@ private constructor(
      * - If set to 'auto', and the Project is Scale tier enabled, the system will utilize scale tier
      *   credits until they are exhausted.
      * - If set to 'auto', and the Project is not Scale tier enabled, the request will be processed
-     *   using the default service tier with a lower uptime SLA and no latency guarentee.
+     *   using the default service tier with a lower uptime SLA and no latency guarantee.
      * - If set to 'default', the request will be processed using the default service tier with a
-     *   lower uptime SLA and no latency guarentee.
+     *   lower uptime SLA and no latency guarantee.
      * - If set to 'flex', the request will be processed with the Flex Processing service tier.
      *   [Learn more](https://platform.openai.com/docs/guides/flex-processing).
      * - When not set, the default behavior is 'auto'.
@@ -557,6 +559,8 @@ private constructor(
          *   conversations when using the Responses API statelessly (like when the `store` parameter
          *   is set to `false`, or when an organization is enrolled in the zero data retention
          *   program).
+         * - `code_interpreter_call.outputs`: Includes the outputs of python code execution in code
+         *   interpreter tool call items.
          */
         fun include(include: List<ResponseIncludable>?) = apply { body.include(include) }
 
@@ -736,9 +740,9 @@ private constructor(
          *   tier credits until they are exhausted.
          * - If set to 'auto', and the Project is not Scale tier enabled, the request will be
          *   processed using the default service tier with a lower uptime SLA and no latency
-         *   guarentee.
+         *   guarantee.
          * - If set to 'default', the request will be processed using the default service tier with
-         *   a lower uptime SLA and no latency guarentee.
+         *   a lower uptime SLA and no latency guarantee.
          * - If set to 'flex', the request will be processed with the Flex Processing service tier.
          *   [Learn more](https://platform.openai.com/docs/guides/flex-processing).
          * - When not set, the default behavior is 'auto'.
@@ -1294,6 +1298,8 @@ private constructor(
          *   conversations when using the Responses API statelessly (like when the `store` parameter
          *   is set to `false`, or when an organization is enrolled in the zero data retention
          *   program).
+         * - `code_interpreter_call.outputs`: Includes the outputs of python code execution in code
+         *   interpreter tool call items.
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
@@ -1373,9 +1379,9 @@ private constructor(
          *   tier credits until they are exhausted.
          * - If set to 'auto', and the Project is not Scale tier enabled, the request will be
          *   processed using the default service tier with a lower uptime SLA and no latency
-         *   guarentee.
+         *   guarantee.
          * - If set to 'default', the request will be processed using the default service tier with
-         *   a lower uptime SLA and no latency guarentee.
+         *   a lower uptime SLA and no latency guarantee.
          * - If set to 'flex', the request will be processed with the Flex Processing service tier.
          *   [Learn more](https://platform.openai.com/docs/guides/flex-processing).
          * - When not set, the default behavior is 'auto'.
@@ -1804,6 +1810,8 @@ private constructor(
              *   conversations when using the Responses API statelessly (like when the `store`
              *   parameter is set to `false`, or when an organization is enrolled in the zero data
              *   retention program).
+             * - `code_interpreter_call.outputs`: Includes the outputs of python code execution in
+             *   code interpreter tool call items.
              */
             fun include(include: List<ResponseIncludable>?) = include(JsonField.ofNullable(include))
 
@@ -1992,9 +2000,9 @@ private constructor(
              *   scale tier credits until they are exhausted.
              * - If set to 'auto', and the Project is not Scale tier enabled, the request will be
              *   processed using the default service tier with a lower uptime SLA and no latency
-             *   guarentee.
+             *   guarantee.
              * - If set to 'default', the request will be processed using the default service tier
-             *   with a lower uptime SLA and no latency guarentee.
+             *   with a lower uptime SLA and no latency guarantee.
              * - If set to 'flex', the request will be processed with the Flex Processing service
              *   tier. [Learn more](https://platform.openai.com/docs/guides/flex-processing).
              * - When not set, the default behavior is 'auto'.
@@ -2738,9 +2746,9 @@ private constructor(
      * - If set to 'auto', and the Project is Scale tier enabled, the system will utilize scale tier
      *   credits until they are exhausted.
      * - If set to 'auto', and the Project is not Scale tier enabled, the request will be processed
-     *   using the default service tier with a lower uptime SLA and no latency guarentee.
+     *   using the default service tier with a lower uptime SLA and no latency guarantee.
      * - If set to 'default', the request will be processed using the default service tier with a
-     *   lower uptime SLA and no latency guarentee.
+     *   lower uptime SLA and no latency guarantee.
      * - If set to 'flex', the request will be processed with the Flex Processing service tier.
      *   [Learn more](https://platform.openai.com/docs/guides/flex-processing).
      * - When not set, the default behavior is 'auto'.

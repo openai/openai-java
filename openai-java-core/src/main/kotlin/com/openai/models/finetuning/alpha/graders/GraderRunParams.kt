@@ -20,7 +20,6 @@ import com.openai.core.JsonField
 import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
 import com.openai.core.Params
-import com.openai.core.allMaxBy
 import com.openai.core.checkRequired
 import com.openai.core.getOrThrow
 import com.openai.core.http.Headers
@@ -53,7 +52,9 @@ private constructor(
     fun grader(): Grader = body.grader()
 
     /**
-     * The model sample to be evaluated.
+     * The model sample to be evaluated. This value will be used to populate the `sample` namespace.
+     * See [the guide](https://platform.openai.com/docs/guides/graders) for more details. The
+     * `output_json` variable will be populated if the model sample is a valid JSON string.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
      *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
@@ -61,12 +62,10 @@ private constructor(
     fun modelSample(): String = body.modelSample()
 
     /**
-     * The reference answer for the evaluation.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * The dataset item provided to the grader. This will be used to populate the `item` namespace.
+     * See [the guide](https://platform.openai.com/docs/guides/graders) for more details.
      */
-    fun referenceAnswer(): ReferenceAnswer = body.referenceAnswer()
+    fun _item(): JsonValue = body._item()
 
     /**
      * Returns the raw JSON value of [grader].
@@ -81,13 +80,6 @@ private constructor(
      * Unlike [modelSample], this method doesn't throw if the JSON field has an unexpected type.
      */
     fun _modelSample(): JsonField<String> = body._modelSample()
-
-    /**
-     * Returns the raw JSON value of [referenceAnswer].
-     *
-     * Unlike [referenceAnswer], this method doesn't throw if the JSON field has an unexpected type.
-     */
-    fun _referenceAnswer(): JsonField<ReferenceAnswer> = body._referenceAnswer()
 
     fun _additionalBodyProperties(): Map<String, JsonValue> = body._additionalProperties()
 
@@ -106,7 +98,6 @@ private constructor(
          * ```java
          * .grader()
          * .modelSample()
-         * .referenceAnswer()
          * ```
          */
         @JvmStatic fun builder() = Builder()
@@ -133,7 +124,7 @@ private constructor(
          * Otherwise, it's more convenient to use the top-level setters instead:
          * - [grader]
          * - [modelSample]
-         * - [referenceAnswer]
+         * - [item]
          */
         fun body(body: Body) = apply { this.body = body.toBuilder() }
 
@@ -163,7 +154,12 @@ private constructor(
         /** Alias for calling [grader] with `Grader.ofMulti(multi)`. */
         fun grader(multi: MultiGrader) = apply { body.grader(multi) }
 
-        /** The model sample to be evaluated. */
+        /**
+         * The model sample to be evaluated. This value will be used to populate the `sample`
+         * namespace. See [the guide](https://platform.openai.com/docs/guides/graders) for more
+         * details. The `output_json` variable will be populated if the model sample is a valid JSON
+         * string.
+         */
         fun modelSample(modelSample: String) = apply { body.modelSample(modelSample) }
 
         /**
@@ -175,35 +171,12 @@ private constructor(
          */
         fun modelSample(modelSample: JsonField<String>) = apply { body.modelSample(modelSample) }
 
-        /** The reference answer for the evaluation. */
-        fun referenceAnswer(referenceAnswer: ReferenceAnswer) = apply {
-            body.referenceAnswer(referenceAnswer)
-        }
-
         /**
-         * Sets [Builder.referenceAnswer] to an arbitrary JSON value.
-         *
-         * You should usually call [Builder.referenceAnswer] with a well-typed [ReferenceAnswer]
-         * value instead. This method is primarily for setting the field to an undocumented or not
-         * yet supported value.
+         * The dataset item provided to the grader. This will be used to populate the `item`
+         * namespace. See [the guide](https://platform.openai.com/docs/guides/graders) for more
+         * details.
          */
-        fun referenceAnswer(referenceAnswer: JsonField<ReferenceAnswer>) = apply {
-            body.referenceAnswer(referenceAnswer)
-        }
-
-        /** Alias for calling [referenceAnswer] with `ReferenceAnswer.ofString(string)`. */
-        fun referenceAnswer(string: String) = apply { body.referenceAnswer(string) }
-
-        /** Alias for calling [referenceAnswer] with `ReferenceAnswer.ofJsonValue(jsonValue)`. */
-        fun referenceAnswer(jsonValue: JsonValue) = apply { body.referenceAnswer(jsonValue) }
-
-        /** Alias for calling [referenceAnswer] with `ReferenceAnswer.ofJsonValues(jsonValues)`. */
-        fun referenceAnswerOfJsonValues(jsonValues: List<JsonValue>) = apply {
-            body.referenceAnswerOfJsonValues(jsonValues)
-        }
-
-        /** Alias for calling [referenceAnswer] with `ReferenceAnswer.ofNumber(number)`. */
-        fun referenceAnswer(number: Double) = apply { body.referenceAnswer(number) }
+        fun item(item: JsonValue) = apply { body.item(item) }
 
         fun additionalBodyProperties(additionalBodyProperties: Map<String, JsonValue>) = apply {
             body.additionalProperties(additionalBodyProperties)
@@ -331,7 +304,6 @@ private constructor(
          * ```java
          * .grader()
          * .modelSample()
-         * .referenceAnswer()
          * ```
          *
          * @throws IllegalStateException if any required field is unset.
@@ -350,7 +322,7 @@ private constructor(
     private constructor(
         private val grader: JsonField<Grader>,
         private val modelSample: JsonField<String>,
-        private val referenceAnswer: JsonField<ReferenceAnswer>,
+        private val item: JsonValue,
         private val additionalProperties: MutableMap<String, JsonValue>,
     ) {
 
@@ -360,10 +332,8 @@ private constructor(
             @JsonProperty("model_sample")
             @ExcludeMissing
             modelSample: JsonField<String> = JsonMissing.of(),
-            @JsonProperty("reference_answer")
-            @ExcludeMissing
-            referenceAnswer: JsonField<ReferenceAnswer> = JsonMissing.of(),
-        ) : this(grader, modelSample, referenceAnswer, mutableMapOf())
+            @JsonProperty("item") @ExcludeMissing item: JsonValue = JsonMissing.of(),
+        ) : this(grader, modelSample, item, mutableMapOf())
 
         /**
          * The grader used for the fine-tuning job.
@@ -374,7 +344,10 @@ private constructor(
         fun grader(): Grader = grader.getRequired("grader")
 
         /**
-         * The model sample to be evaluated.
+         * The model sample to be evaluated. This value will be used to populate the `sample`
+         * namespace. See [the guide](https://platform.openai.com/docs/guides/graders) for more
+         * details. The `output_json` variable will be populated if the model sample is a valid JSON
+         * string.
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
          *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
@@ -382,12 +355,11 @@ private constructor(
         fun modelSample(): String = modelSample.getRequired("model_sample")
 
         /**
-         * The reference answer for the evaluation.
-         *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         * The dataset item provided to the grader. This will be used to populate the `item`
+         * namespace. See [the guide](https://platform.openai.com/docs/guides/graders) for more
+         * details.
          */
-        fun referenceAnswer(): ReferenceAnswer = referenceAnswer.getRequired("reference_answer")
+        @JsonProperty("item") @ExcludeMissing fun _item(): JsonValue = item
 
         /**
          * Returns the raw JSON value of [grader].
@@ -404,16 +376,6 @@ private constructor(
         @JsonProperty("model_sample")
         @ExcludeMissing
         fun _modelSample(): JsonField<String> = modelSample
-
-        /**
-         * Returns the raw JSON value of [referenceAnswer].
-         *
-         * Unlike [referenceAnswer], this method doesn't throw if the JSON field has an unexpected
-         * type.
-         */
-        @JsonProperty("reference_answer")
-        @ExcludeMissing
-        fun _referenceAnswer(): JsonField<ReferenceAnswer> = referenceAnswer
 
         @JsonAnySetter
         private fun putAdditionalProperty(key: String, value: JsonValue) {
@@ -436,7 +398,6 @@ private constructor(
              * ```java
              * .grader()
              * .modelSample()
-             * .referenceAnswer()
              * ```
              */
             @JvmStatic fun builder() = Builder()
@@ -447,14 +408,14 @@ private constructor(
 
             private var grader: JsonField<Grader>? = null
             private var modelSample: JsonField<String>? = null
-            private var referenceAnswer: JsonField<ReferenceAnswer>? = null
+            private var item: JsonValue = JsonMissing.of()
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
             @JvmSynthetic
             internal fun from(body: Body) = apply {
                 grader = body.grader
                 modelSample = body.modelSample
-                referenceAnswer = body.referenceAnswer
+                item = body.item
                 additionalProperties = body.additionalProperties.toMutableMap()
             }
 
@@ -486,7 +447,12 @@ private constructor(
             /** Alias for calling [grader] with `Grader.ofMulti(multi)`. */
             fun grader(multi: MultiGrader) = grader(Grader.ofMulti(multi))
 
-            /** The model sample to be evaluated. */
+            /**
+             * The model sample to be evaluated. This value will be used to populate the `sample`
+             * namespace. See [the guide](https://platform.openai.com/docs/guides/graders) for more
+             * details. The `output_json` variable will be populated if the model sample is a valid
+             * JSON string.
+             */
             fun modelSample(modelSample: String) = modelSample(JsonField.of(modelSample))
 
             /**
@@ -500,38 +466,12 @@ private constructor(
                 this.modelSample = modelSample
             }
 
-            /** The reference answer for the evaluation. */
-            fun referenceAnswer(referenceAnswer: ReferenceAnswer) =
-                referenceAnswer(JsonField.of(referenceAnswer))
-
             /**
-             * Sets [Builder.referenceAnswer] to an arbitrary JSON value.
-             *
-             * You should usually call [Builder.referenceAnswer] with a well-typed [ReferenceAnswer]
-             * value instead. This method is primarily for setting the field to an undocumented or
-             * not yet supported value.
+             * The dataset item provided to the grader. This will be used to populate the `item`
+             * namespace. See [the guide](https://platform.openai.com/docs/guides/graders) for more
+             * details.
              */
-            fun referenceAnswer(referenceAnswer: JsonField<ReferenceAnswer>) = apply {
-                this.referenceAnswer = referenceAnswer
-            }
-
-            /** Alias for calling [referenceAnswer] with `ReferenceAnswer.ofString(string)`. */
-            fun referenceAnswer(string: String) = referenceAnswer(ReferenceAnswer.ofString(string))
-
-            /**
-             * Alias for calling [referenceAnswer] with `ReferenceAnswer.ofJsonValue(jsonValue)`.
-             */
-            fun referenceAnswer(jsonValue: JsonValue) =
-                referenceAnswer(ReferenceAnswer.ofJsonValue(jsonValue))
-
-            /**
-             * Alias for calling [referenceAnswer] with `ReferenceAnswer.ofJsonValues(jsonValues)`.
-             */
-            fun referenceAnswerOfJsonValues(jsonValues: List<JsonValue>) =
-                referenceAnswer(ReferenceAnswer.ofJsonValues(jsonValues))
-
-            /** Alias for calling [referenceAnswer] with `ReferenceAnswer.ofNumber(number)`. */
-            fun referenceAnswer(number: Double) = referenceAnswer(ReferenceAnswer.ofNumber(number))
+            fun item(item: JsonValue) = apply { this.item = item }
 
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.clear()
@@ -561,7 +501,6 @@ private constructor(
              * ```java
              * .grader()
              * .modelSample()
-             * .referenceAnswer()
              * ```
              *
              * @throws IllegalStateException if any required field is unset.
@@ -570,7 +509,7 @@ private constructor(
                 Body(
                     checkRequired("grader", grader),
                     checkRequired("modelSample", modelSample),
-                    checkRequired("referenceAnswer", referenceAnswer),
+                    item,
                     additionalProperties.toMutableMap(),
                 )
         }
@@ -584,7 +523,6 @@ private constructor(
 
             grader().validate()
             modelSample()
-            referenceAnswer().validate()
             validated = true
         }
 
@@ -605,25 +543,24 @@ private constructor(
         @JvmSynthetic
         internal fun validity(): Int =
             (grader.asKnown().getOrNull()?.validity() ?: 0) +
-                (if (modelSample.asKnown().isPresent) 1 else 0) +
-                (referenceAnswer.asKnown().getOrNull()?.validity() ?: 0)
+                (if (modelSample.asKnown().isPresent) 1 else 0)
 
         override fun equals(other: Any?): Boolean {
             if (this === other) {
                 return true
             }
 
-            return /* spotless:off */ other is Body && grader == other.grader && modelSample == other.modelSample && referenceAnswer == other.referenceAnswer && additionalProperties == other.additionalProperties /* spotless:on */
+            return /* spotless:off */ other is Body && grader == other.grader && modelSample == other.modelSample && item == other.item && additionalProperties == other.additionalProperties /* spotless:on */
         }
 
         /* spotless:off */
-        private val hashCode: Int by lazy { Objects.hash(grader, modelSample, referenceAnswer, additionalProperties) }
+        private val hashCode: Int by lazy { Objects.hash(grader, modelSample, item, additionalProperties) }
         /* spotless:on */
 
         override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "Body{grader=$grader, modelSample=$modelSample, referenceAnswer=$referenceAnswer, additionalProperties=$additionalProperties}"
+            "Body{grader=$grader, modelSample=$modelSample, item=$item, additionalProperties=$additionalProperties}"
     }
 
     /** The grader used for the fine-tuning job. */
@@ -910,221 +847,6 @@ private constructor(
                     value.multi != null -> generator.writeObject(value.multi)
                     value._json != null -> generator.writeObject(value._json)
                     else -> throw IllegalStateException("Invalid Grader")
-                }
-            }
-        }
-    }
-
-    /** The reference answer for the evaluation. */
-    @JsonDeserialize(using = ReferenceAnswer.Deserializer::class)
-    @JsonSerialize(using = ReferenceAnswer.Serializer::class)
-    class ReferenceAnswer
-    private constructor(
-        private val string: String? = null,
-        private val jsonValue: JsonValue? = null,
-        private val jsonValues: List<JsonValue>? = null,
-        private val number: Double? = null,
-        private val _json: JsonValue? = null,
-    ) {
-
-        fun string(): Optional<String> = Optional.ofNullable(string)
-
-        fun jsonValue(): Optional<JsonValue> = Optional.ofNullable(jsonValue)
-
-        fun jsonValues(): Optional<List<JsonValue>> = Optional.ofNullable(jsonValues)
-
-        fun number(): Optional<Double> = Optional.ofNullable(number)
-
-        fun isString(): Boolean = string != null
-
-        fun isJsonValue(): Boolean = jsonValue != null
-
-        fun isJsonValues(): Boolean = jsonValues != null
-
-        fun isNumber(): Boolean = number != null
-
-        fun asString(): String = string.getOrThrow("string")
-
-        fun asJsonValue(): JsonValue = jsonValue.getOrThrow("jsonValue")
-
-        fun asJsonValues(): List<JsonValue> = jsonValues.getOrThrow("jsonValues")
-
-        fun asNumber(): Double = number.getOrThrow("number")
-
-        fun _json(): Optional<JsonValue> = Optional.ofNullable(_json)
-
-        fun <T> accept(visitor: Visitor<T>): T =
-            when {
-                string != null -> visitor.visitString(string)
-                jsonValue != null -> visitor.visitJsonValue(jsonValue)
-                jsonValues != null -> visitor.visitJsonValues(jsonValues)
-                number != null -> visitor.visitNumber(number)
-                else -> visitor.unknown(_json)
-            }
-
-        private var validated: Boolean = false
-
-        fun validate(): ReferenceAnswer = apply {
-            if (validated) {
-                return@apply
-            }
-
-            accept(
-                object : Visitor<Unit> {
-                    override fun visitString(string: String) {}
-
-                    override fun visitJsonValue(jsonValue: JsonValue) {}
-
-                    override fun visitJsonValues(jsonValues: List<JsonValue>) {}
-
-                    override fun visitNumber(number: Double) {}
-                }
-            )
-            validated = true
-        }
-
-        fun isValid(): Boolean =
-            try {
-                validate()
-                true
-            } catch (e: OpenAIInvalidDataException) {
-                false
-            }
-
-        /**
-         * Returns a score indicating how many valid values are contained in this object
-         * recursively.
-         *
-         * Used for best match union deserialization.
-         */
-        @JvmSynthetic
-        internal fun validity(): Int =
-            accept(
-                object : Visitor<Int> {
-                    override fun visitString(string: String) = 1
-
-                    override fun visitJsonValue(jsonValue: JsonValue) = 1
-
-                    override fun visitJsonValues(jsonValues: List<JsonValue>) = jsonValues.size
-
-                    override fun visitNumber(number: Double) = 1
-
-                    override fun unknown(json: JsonValue?) = 0
-                }
-            )
-
-        override fun equals(other: Any?): Boolean {
-            if (this === other) {
-                return true
-            }
-
-            return /* spotless:off */ other is ReferenceAnswer && string == other.string && jsonValue == other.jsonValue && jsonValues == other.jsonValues && number == other.number /* spotless:on */
-        }
-
-        override fun hashCode(): Int = /* spotless:off */ Objects.hash(string, jsonValue, jsonValues, number) /* spotless:on */
-
-        override fun toString(): String =
-            when {
-                string != null -> "ReferenceAnswer{string=$string}"
-                jsonValue != null -> "ReferenceAnswer{jsonValue=$jsonValue}"
-                jsonValues != null -> "ReferenceAnswer{jsonValues=$jsonValues}"
-                number != null -> "ReferenceAnswer{number=$number}"
-                _json != null -> "ReferenceAnswer{_unknown=$_json}"
-                else -> throw IllegalStateException("Invalid ReferenceAnswer")
-            }
-
-        companion object {
-
-            @JvmStatic fun ofString(string: String) = ReferenceAnswer(string = string)
-
-            @JvmStatic
-            fun ofJsonValue(jsonValue: JsonValue) = ReferenceAnswer(jsonValue = jsonValue)
-
-            @JvmStatic
-            fun ofJsonValues(jsonValues: List<JsonValue>) = ReferenceAnswer(jsonValues = jsonValues)
-
-            @JvmStatic fun ofNumber(number: Double) = ReferenceAnswer(number = number)
-        }
-
-        /**
-         * An interface that defines how to map each variant of [ReferenceAnswer] to a value of type
-         * [T].
-         */
-        interface Visitor<out T> {
-
-            fun visitString(string: String): T
-
-            fun visitJsonValue(jsonValue: JsonValue): T
-
-            fun visitJsonValues(jsonValues: List<JsonValue>): T
-
-            fun visitNumber(number: Double): T
-
-            /**
-             * Maps an unknown variant of [ReferenceAnswer] to a value of type [T].
-             *
-             * An instance of [ReferenceAnswer] can contain an unknown variant if it was
-             * deserialized from data that doesn't match any known variant. For example, if the SDK
-             * is on an older version than the API, then the API may respond with new variants that
-             * the SDK is unaware of.
-             *
-             * @throws OpenAIInvalidDataException in the default implementation.
-             */
-            fun unknown(json: JsonValue?): T {
-                throw OpenAIInvalidDataException("Unknown ReferenceAnswer: $json")
-            }
-        }
-
-        internal class Deserializer : BaseDeserializer<ReferenceAnswer>(ReferenceAnswer::class) {
-
-            override fun ObjectCodec.deserialize(node: JsonNode): ReferenceAnswer {
-                val json = JsonValue.fromJsonNode(node)
-
-                val bestMatches =
-                    sequenceOf(
-                            tryDeserialize(node, jacksonTypeRef<String>())?.let {
-                                ReferenceAnswer(string = it, _json = json)
-                            },
-                            tryDeserialize(node, jacksonTypeRef<List<JsonValue>>())?.let {
-                                ReferenceAnswer(jsonValues = it, _json = json)
-                            },
-                            tryDeserialize(node, jacksonTypeRef<Double>())?.let {
-                                ReferenceAnswer(number = it, _json = json)
-                            },
-                            tryDeserialize(node, jacksonTypeRef<JsonValue>())?.let {
-                                ReferenceAnswer(jsonValue = it, _json = json)
-                            },
-                        )
-                        .filterNotNull()
-                        .allMaxBy { it.validity() }
-                        .toList()
-                return when (bestMatches.size) {
-                    // This can happen if what we're deserializing is completely incompatible with
-                    // all the possible variants.
-                    0 -> ReferenceAnswer(_json = json)
-                    1 -> bestMatches.single()
-                    // If there's more than one match with the highest validity, then use the first
-                    // completely valid match, or simply the first match if none are completely
-                    // valid.
-                    else -> bestMatches.firstOrNull { it.isValid() } ?: bestMatches.first()
-                }
-            }
-        }
-
-        internal class Serializer : BaseSerializer<ReferenceAnswer>(ReferenceAnswer::class) {
-
-            override fun serialize(
-                value: ReferenceAnswer,
-                generator: JsonGenerator,
-                provider: SerializerProvider,
-            ) {
-                when {
-                    value.string != null -> generator.writeObject(value.string)
-                    value.jsonValue != null -> generator.writeObject(value.jsonValue)
-                    value.jsonValues != null -> generator.writeObject(value.jsonValues)
-                    value.number != null -> generator.writeObject(value.number)
-                    value._json != null -> generator.writeObject(value._json)
-                    else -> throw IllegalStateException("Invalid ReferenceAnswer")
                 }
             }
         }
