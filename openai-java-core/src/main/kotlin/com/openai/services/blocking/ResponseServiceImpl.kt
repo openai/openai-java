@@ -76,10 +76,9 @@ class ResponseServiceImpl internal constructor(private val clientOptions: Client
         withRawResponse().delete(params, requestOptions)
     }
 
-    override fun cancel(params: ResponseCancelParams, requestOptions: RequestOptions) {
+    override fun cancel(params: ResponseCancelParams, requestOptions: RequestOptions): Response =
         // post /responses/{response_id}/cancel
-        withRawResponse().cancel(params, requestOptions)
-    }
+        withRawResponse().cancel(params, requestOptions).parse()
 
     class WithRawResponseImpl internal constructor(private val clientOptions: ClientOptions) :
         ResponseService.WithRawResponse {
@@ -243,12 +242,13 @@ class ResponseServiceImpl internal constructor(private val clientOptions: Client
             return response.parseable { response.use { deleteHandler.handle(it) } }
         }
 
-        private val cancelHandler: Handler<Void?> = emptyHandler().withErrorHandler(errorHandler)
+        private val cancelHandler: Handler<Response> =
+            jsonHandler<Response>(clientOptions.jsonMapper).withErrorHandler(errorHandler)
 
         override fun cancel(
             params: ResponseCancelParams,
             requestOptions: RequestOptions,
-        ): HttpResponse {
+        ): HttpResponseFor<Response> {
             // We check here instead of in the params builder because this can be specified
             // positionally or in the params class.
             checkRequired("responseId", params.responseId().getOrNull())
@@ -261,7 +261,15 @@ class ResponseServiceImpl internal constructor(private val clientOptions: Client
                     .prepare(clientOptions, params, deploymentModel = null)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             val response = clientOptions.httpClient.execute(request, requestOptions)
-            return response.parseable { response.use { cancelHandler.handle(it) } }
+            return response.parseable {
+                response
+                    .use { cancelHandler.handle(it) }
+                    .also {
+                        if (requestOptions.responseValidation!!) {
+                            it.validate()
+                        }
+                    }
+            }
         }
     }
 }

@@ -62,11 +62,11 @@ private constructor(
     fun sequenceNumber(): Long = sequenceNumber.getRequired("sequence_number")
 
     /**
-     * The type of the event. Always `response.code_interpreter_call.code.delta`.
+     * The type of the event. Always `response.code_interpreter_call_code.delta`.
      *
      * Expected to always return the following:
      * ```java
-     * JsonValue.from("response.code_interpreter_call.code.delta")
+     * JsonValue.from("response.code_interpreter_call_code.delta")
      * ```
      *
      * However, this method can be useful for debugging and logging (e.g. if the server responded
@@ -131,7 +131,7 @@ private constructor(
         private var delta: JsonField<String>? = null
         private var outputIndex: JsonField<Long>? = null
         private var sequenceNumber: JsonField<Long>? = null
-        private var type: JsonValue = JsonValue.from("response.code_interpreter_call.code.delta")
+        private var type: JsonValue = JsonValue.from("response.code_interpreter_call_code.delta")
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
         @JvmSynthetic
@@ -189,7 +189,7 @@ private constructor(
          * It is usually unnecessary to call this method because the field defaults to the
          * following:
          * ```java
-         * JsonValue.from("response.code_interpreter_call.code.delta")
+         * JsonValue.from("response.code_interpreter_call_code.delta")
          * ```
          *
          * This method is primarily for setting the field to an undocumented or not yet supported
@@ -251,7 +251,7 @@ private constructor(
         outputIndex()
         sequenceNumber()
         _type().let {
-            if (it != JsonValue.from("response.code_interpreter_call.code.delta")) {
+            if (it != JsonValue.from("response.code_interpreter_call_code.delta")) {
                 throw OpenAIInvalidDataException("'type' is invalid, received $it")
             }
         }
@@ -277,7 +277,7 @@ private constructor(
             (if (outputIndex.asKnown().isPresent) 1 else 0) +
             (if (sequenceNumber.asKnown().isPresent) 1 else 0) +
             type.let {
-                if (it == JsonValue.from("response.code_interpreter_call.code.delta")) 1 else 0
+                if (it == JsonValue.from("response.code_interpreter_call_code.delta")) 1 else 0
             }
 
     override fun equals(other: Any?): Boolean {

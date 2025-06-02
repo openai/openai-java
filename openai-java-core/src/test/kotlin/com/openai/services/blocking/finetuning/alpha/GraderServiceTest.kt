@@ -4,6 +4,7 @@ package com.openai.services.blocking.finetuning.alpha
 
 import com.openai.TestServerExtension
 import com.openai.client.okhttp.OpenAIOkHttpClient
+import com.openai.core.JsonValue
 import com.openai.models.finetuning.alpha.graders.GraderRunParams
 import com.openai.models.finetuning.alpha.graders.GraderValidateParams
 import com.openai.models.graders.gradermodels.StringCheckGrader
@@ -34,7 +35,7 @@ internal class GraderServiceTest {
                             .build()
                     )
                     .modelSample("model_sample")
-                    .referenceAnswer("string")
+                    .item(JsonValue.from(mapOf<String, Any>()))
                     .build()
             )
 
