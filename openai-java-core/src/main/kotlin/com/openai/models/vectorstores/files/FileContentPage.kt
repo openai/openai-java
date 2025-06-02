@@ -31,7 +31,7 @@ private constructor(
 
     override fun items(): List<FileContentResponse> = data()
 
-    override fun hasNextPage(): Boolean = items().isNotEmpty()
+    override fun hasNextPage(): Boolean = false
 
     fun nextPageParams(): FileContentParams =
         throw IllegalStateException("Cannot construct next page params")

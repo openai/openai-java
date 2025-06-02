@@ -34,7 +34,7 @@ private constructor(
 
     override fun items(): List<PermissionCreateResponse> = data()
 
-    override fun hasNextPage(): Boolean = items().isNotEmpty()
+    override fun hasNextPage(): Boolean = false
 
     fun nextPageParams(): PermissionCreateParams =
         throw IllegalStateException("Cannot construct next page params")
