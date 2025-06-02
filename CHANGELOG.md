@@ -1,5 +1,13 @@
 # Changelog
 
+## 2.3.1 (2025-06-02)
+
+Full Changelog: [v2.3.0...v2.3.1](https://github.com/openai/openai-java/compare/v2.3.0...v2.3.1)
+
+### Bug Fixes
+
+* **client:** `hasNextPage` impl for some classes ([32e968f](https://github.com/openai/openai-java/commit/32e968f096ec8d16ef98f8152b729a5d82daea34))
+
 ## 2.3.0 (2025-05-29)
 
 Full Changelog: [v2.2.1...v2.3.0](https://github.com/openai/openai-java/compare/v2.2.1...v2.3.0)
