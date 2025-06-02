@@ -90,6 +90,22 @@ class StructuredResponseCreateParams<T : Any>(
         /** @see ResponseCreateParams.Builder.model */
         fun model(only: ResponsesModel.ResponsesOnlyModel) = apply { paramsBuilder.model(only) }
 
+        /** @see ResponseCreateParams.Builder.background */
+        fun background(background: Boolean?) = apply { paramsBuilder.background(background) }
+
+        /** @see ResponseCreateParams.Builder.background */
+        fun background(background: Boolean) = apply { paramsBuilder.background(background) }
+
+        /** @see ResponseCreateParams.Builder.background */
+        fun background(background: Optional<Boolean>) = apply {
+            paramsBuilder.background(background)
+        }
+
+        /** @see ResponseCreateParams.Builder.background */
+        fun background(background: JsonField<Boolean>) = apply {
+            paramsBuilder.background(background)
+        }
+
         /** @see ResponseCreateParams.Builder.include */
         fun include(include: List<ResponseIncludable>?) = apply { paramsBuilder.include(include) }
 
@@ -287,14 +303,6 @@ class StructuredResponseCreateParams<T : Any>(
         fun addTool(tool: Tool) = apply { paramsBuilder.addTool(tool) }
 
         /** @see ResponseCreateParams.Builder.addTool */
-        fun addTool(fileSearch: FileSearchTool) = apply { paramsBuilder.addTool(fileSearch) }
-
-        /** @see ResponseCreateParams.Builder.addFileSearchTool */
-        fun addFileSearchTool(vectorStoreIds: List<String>) = apply {
-            paramsBuilder.addFileSearchTool(vectorStoreIds)
-        }
-
-        /** @see ResponseCreateParams.Builder.addTool */
         fun addTool(function: FunctionTool) = apply { paramsBuilder.addTool(function) }
 
         /** @see ResponseCreateParams.Builder.addTool */
@@ -305,12 +313,51 @@ class StructuredResponseCreateParams<T : Any>(
         ) = apply { paramsBuilder.addTool(functionParametersType, localValidation) }
 
         /** @see ResponseCreateParams.Builder.addTool */
+        fun addTool(fileSearch: FileSearchTool) = apply { paramsBuilder.addTool(fileSearch) }
+
+        /** @see ResponseCreateParams.Builder.addFileSearchTool */
+        fun addFileSearchTool(vectorStoreIds: List<String>) = apply {
+            paramsBuilder.addFileSearchTool(vectorStoreIds)
+        }
+
+        /** @see ResponseCreateParams.Builder.addTool */
         fun addTool(webSearch: WebSearchTool) = apply { paramsBuilder.addTool(webSearch) }
 
         /** @see ResponseCreateParams.Builder.addTool */
         fun addTool(computerUsePreview: ComputerTool) = apply {
             paramsBuilder.addTool(computerUsePreview)
         }
+
+        /** @see ResponseCreateParams.Builder.addTool */
+        fun addTool(mcp: Tool.Mcp) = apply { paramsBuilder.addTool(mcp) }
+
+        /** @see ResponseCreateParams.Builder.addTool */
+        fun addTool(codeInterpreter: Tool.CodeInterpreter) = apply {
+            paramsBuilder.addTool(codeInterpreter)
+        }
+
+        /** @see ResponseCreateParams.Builder.addCodeInterpreterTool */
+        fun addCodeInterpreterTool(container: Tool.CodeInterpreter.Container) = apply {
+            paramsBuilder.addCodeInterpreterTool(container)
+        }
+
+        /** @see ResponseCreateParams.Builder.addCodeInterpreterTool */
+        fun addCodeInterpreterTool(string: String) = apply {
+            paramsBuilder.addCodeInterpreterTool(string)
+        }
+
+        /** @see ResponseCreateParams.Builder.addCodeInterpreterTool */
+        fun addCodeInterpreterTool(
+            codeInterpreterToolAuto: Tool.CodeInterpreter.Container.CodeInterpreterToolAuto
+        ) = apply { paramsBuilder.addCodeInterpreterTool(codeInterpreterToolAuto) }
+
+        /** @see ResponseCreateParams.Builder.addTool */
+        fun addTool(imageGeneration: Tool.ImageGeneration) = apply {
+            paramsBuilder.addTool(imageGeneration)
+        }
+
+        /** @see ResponseCreateParams.Builder.addToolLocalShell */
+        fun addToolLocalShell() = apply { paramsBuilder.addToolLocalShell() }
 
         /** @see ResponseCreateParams.Builder.topP */
         fun topP(topP: Double?) = apply { paramsBuilder.topP(topP) }

@@ -912,21 +912,6 @@ private constructor(
         /** Alias for calling [addTool] with `Tool.ofFunction(function)`. */
         fun addTool(function: FunctionTool) = apply { body.addTool(function) }
 
-        /** Alias for calling [addTool] with `Tool.ofFileSearch(fileSearch)`. */
-        fun addTool(fileSearch: FileSearchTool) = apply { body.addTool(fileSearch) }
-
-        /**
-         * Alias for calling [addTool] with the following:
-         * ```java
-         * FileSearchTool.builder()
-         *     .vectorStoreIds(vectorStoreIds)
-         *     .build()
-         * ```
-         */
-        fun addFileSearchTool(vectorStoreIds: List<String>) = apply {
-            body.addFileSearchTool(vectorStoreIds)
-        }
-
         /**
          * Adds a single [FunctionTool] where the JSON schema describing the function parameters is
          * derived from the fields of a given class. Local validation of that JSON schema can be
@@ -942,6 +927,21 @@ private constructor(
             localValidation: JsonSchemaLocalValidation = JsonSchemaLocalValidation.YES,
         ) = apply {
             body.addTool(responseFunctionToolFromClass(functionParametersType, localValidation))
+        }
+
+        /** Alias for calling [addTool] with `Tool.ofFileSearch(fileSearch)`. */
+        fun addTool(fileSearch: FileSearchTool) = apply { body.addTool(fileSearch) }
+
+        /**
+         * Alias for calling [addTool] with the following:
+         * ```java
+         * FileSearchTool.builder()
+         *     .vectorStoreIds(vectorStoreIds)
+         *     .build()
+         * ```
+         */
+        fun addFileSearchTool(vectorStoreIds: List<String>) = apply {
+            body.addFileSearchTool(vectorStoreIds)
         }
 
         /** Alias for calling [addTool] with `Tool.ofWebSearch(webSearch)`. */

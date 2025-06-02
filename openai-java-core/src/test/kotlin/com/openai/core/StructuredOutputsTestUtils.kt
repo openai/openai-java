@@ -175,12 +175,11 @@ internal fun checkOneDelegationWrite(
 
 private fun invokeMethod(method: Method, target: Any, testCase: DelegationWriteTestCase) {
     val numParams = testCase.inputValues.size
-    val inputValue1 = testCase.inputValues[0]
-    val inputValue2 = testCase.inputValues.getOrNull(1)
 
     when (numParams) {
-        1 -> method.invoke(target, inputValue1)
-        2 -> method.invoke(target, inputValue1, inputValue2)
+        0 -> method.invoke(target)
+        1 -> method.invoke(target, testCase.inputValues[0])
+        2 -> method.invoke(target, testCase.inputValues[0], testCase.inputValues.getOrNull(1))
         else -> fail { "Unexpected number of function parameters ($numParams)." }
     }
 }
@@ -191,11 +190,12 @@ private fun invokeMethod(method: Method, target: Any, testCase: DelegationWriteT
  */
 internal fun findDelegationMethod(target: Any, testCase: DelegationWriteTestCase): Method {
     val numParams = testCase.inputValues.size
-    val inputValue1: Any? = testCase.inputValues[0]
+    val inputValue1: Any? = if (numParams > 0) testCase.inputValues[0] else null
     val inputValue2 = if (numParams > 1) testCase.inputValues[1] else null
 
     val method =
         when (numParams) {
+            0 -> findJavaMethod(target.javaClass, testCase.functionName)
             1 ->
                 if (inputValue1 != null) {
                     findJavaMethod(
