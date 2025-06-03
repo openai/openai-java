@@ -1,5 +1,18 @@
 # Changelog
 
+## 2.4.0 (2025-06-03)
+
+Full Changelog: [v2.3.2...v2.4.0](https://github.com/openai/openai-java/compare/v2.3.2...v2.4.0)
+
+### Features
+
+* **api:** add new realtime and audio models, realtime session options ([898d2ad](https://github.com/openai/openai-java/commit/898d2ad33f780e060dff902b755f3456ae0c12ed))
+
+
+### Chores
+
+* **internal:** minor formatting change ([f68c491](https://github.com/openai/openai-java/commit/f68c491cb41e22a25d498b18919e8e7a657d753a))
+
 ## 2.3.2 (2025-06-02)
 
 Full Changelog: [v2.3.1...v2.3.2](https://github.com/openai/openai-java/compare/v2.3.1...v2.3.2)
