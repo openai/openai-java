@@ -14,7 +14,6 @@ import java.util.List;
 public final class ResponsesFunctionCallingExample {
     private ResponsesFunctionCallingExample() {}
 
-    //    @JsonTypeName("get-sdk-quality")
     @JsonClassDescription("Gets the quality of the given SDK.")
     static class GetSdkQuality {
         @JsonPropertyDescription("The name of the SDK.")

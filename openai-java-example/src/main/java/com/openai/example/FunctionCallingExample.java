@@ -11,7 +11,6 @@ import java.util.Collection;
 public final class FunctionCallingExample {
     private FunctionCallingExample() {}
 
-    //    @JsonTypeName("get-sdk-quality")
     @JsonClassDescription("Gets the quality of the given SDK.")
     static class GetSdkQuality {
         @JsonPropertyDescription("The name of the SDK.")
@@ -30,7 +29,7 @@ public final class FunctionCallingExample {
         }
     }
 
-    @JsonClassDescription("Gets the review score (out of 10) for the given SDK.")
+    @JsonClassDescription("Gets the review score (out of 10) for the named SDK.")
     static class GetSdkScore {
         public String name;
 
@@ -65,11 +64,11 @@ public final class FunctionCallingExample {
                     return message.toolCalls().stream().flatMap(Collection::stream);
                 })
                 .forEach(toolCall -> {
-                    Object content = callFunction2(toolCall.function());
+                    Object result = callFunction(toolCall.function());
                     // Add the tool call result to the conversation.
                     createParamsBuilder.addMessage(ChatCompletionToolMessageParam.builder()
                             .toolCallId(toolCall.id())
-                            .contentAsJson(content)
+                            .contentAsJson(result)
                             .build());
                 });
 
@@ -80,7 +79,7 @@ public final class FunctionCallingExample {
                 .forEach(System.out::println);
     }
 
-    private static Object callFunction2(ChatCompletionMessageToolCall.Function function) {
+    private static Object callFunction(ChatCompletionMessageToolCall.Function function) {
         switch (function.name()) {
             case "GetSdkQuality":
                 return function.arguments(GetSdkQuality.class).execute();

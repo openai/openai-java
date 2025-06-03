@@ -265,6 +265,10 @@ private constructor(
          * been used to define the JSON schema for the function definition's parameters, so that the
          * JSON corresponds to structure of the given class.
          *
+         * @throws OpenAIInvalidDataException If the JSON data is missing, `null`, or cannot be
+         *   parsed to an instance of the [functionParametersType] class. This might occur if the
+         *   class is not the same as the class that was originally used to define the arguments, or
+         *   if the data from the AI model is invalid or incomplete (e.g., truncated).
          * @see ChatCompletionCreateParams.Builder.addTool
          * @see arguments
          */

@@ -58,6 +58,10 @@ private constructor(
      * class. The class must be the same as the class that was used to define the function's
      * parameters when the function was defined.
      *
+     * @throws OpenAIInvalidDataException If the JSON data is missing, `null`, or cannot be parsed
+     *   to an instance of the [functionParametersType] class. This might occur if the class is not
+     *   the same as the class that was originally used to define the arguments, or if the data from
+     *   the AI model is invalid or incomplete (e.g., truncated).
      * @see ResponseCreateParams.Builder.addTool
      * @see arguments
      */

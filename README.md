@@ -533,6 +533,195 @@ If you use `@JsonProperty(required = false)`, the `false` value will be ignored.
 must mark all properties as _required_, so the schema generated from your Java classes will respect
 that restriction and ignore any annotation that would violate it.
 
+## Function calling
+
+OpenAI [Function Calling](https://platform.openai.com/docs/guides/function-calling?api-mode=chat)
+lets you integrate external functions directly into the language model's responses. Instead of
+producing plain text, the model can output instructions (with parameters) for calling a function
+when appropriate. You define a [JSON schema](https://json-schema.org/overview/what-is-jsonschema)
+for functions, and the model uses it to decide when and how to trigger these calls, enabling more
+interactive, data-driven applications.
+
+A JSON schema describing a function's parameters can be defined via the API by building a
+[`ChatCompletionTool`](openai-java-core/src/main/kotlin/com/openai/models/chat/completions/ChatCompletionTool.kt)
+containing a
+[`FunctionDefinition`](openai-java-core/src/main/kotlin/com/openai/models/FunctionDefinition.kt)
+and then using `addTool` to set it on the input parameters. The response from the AI model may then
+contain requests to call your functions, detailing the functions' names and their parameter values
+as JSON data that conforms to the JSON schema from the function definition. You can then parse the
+parameter values from this JSON, invoke your functions, and pass your functions' results back to the
+AI model. A full, working example of _Function Calling_ using the low-level API can be seen in
+[`FunctionCallingRawExample`](openai-java-example/src/main/java/com/openai/example/FunctionCallingRawExample.java).
+
+However, for greater convenience, the SDK can derive a function and its parameters automatically
+from the structure of an arbitrary Java class: the class's name provides the function name, and the
+class's fields define the function's parameters. When the AI model responds with the parameter
+values in JSON form, you can then easily convert that JSON to an instance of your Java class and
+use the parameter values to invoke your custom function. A full, working example of the use of
+_Function Calling_ with Java classes to define function parameters can be seen in
+[`FunctionCallingExample`](openai-java-example/src/main/java/com/openai/example/FunctionCallingExample.java).
+
+Like for _Structured Outputs_, Java classes can contain fields declared to be instances of other
+classes and can use collections. Optionally, annotations can be used to set the descriptions of the
+function (class) and its parameters (fields) to assist the AI model in understanding the purpose of
+the function and the possible values of its parameters.
+
+```java
+import com.fasterxml.jackson.annotation.JsonClassDescription;
+import com.fasterxml.jackson.annotation.JsonPropertyDescription;
+
+@JsonClassDescription("Gets the quality of the given SDK.")
+static class GetSdkQuality {
+    @JsonPropertyDescription("The name of the SDK.")
+    public String name;
+
+    public SdkQuality execute() {
+        return new SdkQuality(
+                name, name.contains("OpenAI") ? "It's robust and polished!" : "*shrug*");
+    }
+}
+
+static class SdkQuality {
+    public String quality;
+
+    public SdkQuality(String name, String evaluation) {
+        quality = name + ": " + evaluation;
+    }
+}
+
+@JsonClassDescription("Gets the review score (out of 10) for the named SDK.")
+static class GetSdkScore {
+  public String name;
+
+  public int execute() {
+    return name.contains("OpenAI") ? 10 : 3;
+  }
+}
+```
+
+When your functions are defined, add them to the input parameters using `addTool(Class<T>)` and then
+call them if requested to do so in the AI model's response. `Function.argments(Class<T>)` can be
+used to parse a function's parameters in JSON form to an instance of your function-defining class.
+The fields of that instance will be set to the values of the parameters to the function call.
+
+After calling the function, use `ChatCompletionToolMessageParam.Builder.contentAsJson(Object)` to
+pass the function's result back to the AI model. The method will convert the result to JSON form
+for consumption by the model. The `Object` can be any object, including simple `String` instances
+and boxed primitive types.
+
+```java
+import com.openai.client.OpenAIClient;
+import com.openai.client.okhttp.OpenAIOkHttpClient;
+import com.openai.models.ChatModel;
+import com.openai.models.chat.completions.*;
+import java.util.Collection;
+        
+OpenAIClient client = OpenAIOkHttpClient.fromEnv();
+
+ChatCompletionCreateParams.Builder createParamsBuilder = ChatCompletionCreateParams.builder()
+        .model(ChatModel.GPT_3_5_TURBO)
+        .maxCompletionTokens(2048)
+        .addTool(GetSdkQuality.class)
+        .addTool(GetSdkScore.class)
+        .addUserMessage("How good are the following SDKs and what do reviewers say: "
+                + "OpenAI Java SDK, Unknown Company SDK.");
+
+client.chat().completions().create(createParamsBuilder.build()).choices().stream()
+        .map(ChatCompletion.Choice::message)
+        // Add each assistant message onto the builder so that we keep track of the
+        // conversation for asking a follow-up question later.
+        .peek(createParamsBuilder::addMessage)
+        .flatMap(message -> {
+            message.content().ifPresent(System.out::println);
+            return message.toolCalls().stream().flatMap(Collection::stream);
+        })
+        .forEach(toolCall -> {
+            Object result = callFunction(toolCall.function());
+            // Add the tool call result to the conversation.
+            createParamsBuilder.addMessage(ChatCompletionToolMessageParam.builder()
+                    .toolCallId(toolCall.id())
+                    .contentAsJson(result)
+                    .build());
+        });
+
+// Ask a follow-up question about the function call result.
+createParamsBuilder.addUserMessage("Why do you say that?");
+client.chat().completions().create(createParamsBuilder.build()).choices().stream()
+        .flatMap(choice -> choice.message().content().stream())
+        .forEach(System.out::println);
+
+static Object callFunction(ChatCompletionMessageToolCall.Function function) {
+  switch (function.name()) {
+    case "GetSdkQuality":
+      return function.arguments(GetSdkQuality.class).execute();
+    case "GetSdkScore":
+      return function.arguments(GetSdkScore.class).execute();
+    default:
+      throw new IllegalArgumentException("Unknown function: " + function.name());
+  }
+}
+```
+
+In the code above, an `execute()` method encapsulates each function's logic. However, there is no
+requirement to follow that pattern. You are free to implement your function's logic in any way that
+best suits your use case. The pattern above is only intended to _suggest_ that a suitable pattern
+may make the process of function calling simpler to understand and implement.
+
+### Usage with the Responses API
+
+_Function Calling_ is also supported for the Responses API. The usage is the same as described
+except where the Responses API differs slightly from the Chat Completions API. Pass the top-level
+class to `addTool(Class<T>)` when building the parameters. In the response, look for
+[`RepoonseOutputItem`](openai-java-core/src/main/kotlin/com/openai/models/responses/ResponseOutputItem.kt)
+instances that are function calls. Parse the parameters to each function call to an instance of the
+class using
+[`ResponseFunctionToolCall.arguments(Class<T>)`](openai-java-core/src/main/kotlin/com/openai/models/responses/ResponseFunctionToolCall.kt).
+Finally, pass the result of each call back to the model.
+
+For a full example of the usage of _Function Calling_ with the Responses API, see
+[`ResponsesFunctionCallingExample`](openai-java-example/src/main/java/com/openai/example/ResponsesFunctionCallingExample.java).
+
+### Local function JSON schema validation
+
+Like for _Structured Outputs_, you can perform local validation to check that the JSON schema
+derived from your function class respects the restrictions imposed by OpenAI on such schemas. Local
+validation is enabled by default, but it can be disabled by adding `JsonSchemaLocalValidation.NO` to
+the call to `addTool`.
+
+```java
+ChatCompletionCreateParams.Builder createParamsBuilder = ChatCompletionCreateParams.builder()
+        .model(ChatModel.GPT_3_5_TURBO)
+        .maxCompletionTokens(2048)
+        .addTool(GetSdkQuality.class, JsonSchemaLocalValidation.NO)
+        .addTool(GetSdkScore.class, JsonSchemaLocalValidation.NO)
+        .addUserMessage("How good are the following SDKs and what do reviewers say: "
+                + "OpenAI Java SDK, Unknown Company SDK.");
+```
+
+See [Local JSON schema validation](#local-json-schema-validation) for more details on local schema
+validation and under what circumstances you might want to disable it.
+
+### Annotating function classes
+
+You can use annotations to add further information about functions to the JSON schemas that are
+derived from your function classes, or to exclude individual fields from the parameters to the
+function. Details from annotations captured in the JSON schema may be used by the AI model to
+improve its response. The SDK supports the use of
+[Jackson Databind](https://github.com/FasterXML/jackson-databind) annotations.
+
+- Use `@JsonClassDescription` to add a description to a function class detailing when and how to use
+  that function.
+- Use `@JsonTypeName` to set the function name to something other than the simple name of the class,
+  which is used by default.
+- Use `@JsonPropertyDescription` to add a detailed description to function parameter (a field of
+  a function class).
+- Use `@JsonIgnore` to omit a field of a class from the generated JSON schema for a function's
+  parameters.
+
+OpenAI provides some
+[Best practices for defining functions](https://platform.openai.com/docs/guides/function-calling#best-practices-for-defining-functions)
+that may help you to understand how to use the above annotations effectively for your functions.
+
 ## File uploads
 
 The SDK defines methods that accept files.
