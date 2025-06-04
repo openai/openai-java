@@ -615,7 +615,7 @@ import com.openai.client.okhttp.OpenAIOkHttpClient;
 import com.openai.models.ChatModel;
 import com.openai.models.chat.completions.*;
 import java.util.Collection;
-        
+
 OpenAIClient client = OpenAIOkHttpClient.fromEnv();
 
 ChatCompletionCreateParams.Builder createParamsBuilder = ChatCompletionCreateParams.builder()
@@ -678,7 +678,12 @@ class using
 [`ResponseFunctionToolCall.arguments(Class<T>)`](openai-java-core/src/main/kotlin/com/openai/models/responses/ResponseFunctionToolCall.kt).
 Finally, pass the result of each call back to the model.
 
-For a full example of the usage of _Function Calling_ with the Responses API, see
+For a full example of the usage of _Function Calling_ with the Responses API using the low-level
+API to define and parse function parameters, see
+[`ResponsesFunctionCallingRawExample`](openai-java-example/src/main/java/com/openai/example/ResponsesFunctionCallingRawExample.java).
+
+For a full example of the usage of _Function Calling_ with the Responses API using Java classes to
+define and parse function parameters, see
 [`ResponsesFunctionCallingExample`](openai-java-example/src/main/java/com/openai/example/ResponsesFunctionCallingExample.java).
 
 ### Local function JSON schema validation
