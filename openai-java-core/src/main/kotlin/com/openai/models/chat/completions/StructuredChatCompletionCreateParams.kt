@@ -534,8 +534,8 @@ internal constructor(
 
         /** @see ChatCompletionCreateParams.Builder.addTool */
         @JvmOverloads
-        fun <T : Any> addTool(
-            functionParametersType: Class<T>,
+        fun addTool(
+            functionParametersType: Class<*>,
             localValidation: JsonSchemaLocalValidation = JsonSchemaLocalValidation.YES,
         ) = apply { paramsBuilder.addTool(functionParametersType, localValidation) }
 

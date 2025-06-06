@@ -922,8 +922,8 @@ private constructor(
          * @see addTool
          */
         @JvmOverloads
-        fun <T> addTool(
-            functionParametersType: Class<T>,
+        fun addTool(
+            functionParametersType: Class<*>,
             localValidation: JsonSchemaLocalValidation = JsonSchemaLocalValidation.YES,
         ) = apply {
             body.addTool(responseFunctionToolFromClass(functionParametersType, localValidation))

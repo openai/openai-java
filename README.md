@@ -533,7 +533,7 @@ If you use `@JsonProperty(required = false)`, the `false` value will be ignored.
 must mark all properties as _required_, so the schema generated from your Java classes will respect
 that restriction and ignore any annotation that would violate it.
 
-## Function calling
+## Function calling with JSON schemas
 
 OpenAI [Function Calling](https://platform.openai.com/docs/guides/function-calling?api-mode=chat)
 lets you integrate external functions directly into the language model's responses. Instead of
@@ -561,10 +561,10 @@ use the parameter values to invoke your custom function. A full, working example
 _Function Calling_ with Java classes to define function parameters can be seen in
 [`FunctionCallingExample`](openai-java-example/src/main/java/com/openai/example/FunctionCallingExample.java).
 
-Like for _Structured Outputs_, Java classes can contain fields declared to be instances of other
-classes and can use collections. Optionally, annotations can be used to set the descriptions of the
-function (class) and its parameters (fields) to assist the AI model in understanding the purpose of
-the function and the possible values of its parameters.
+Like for [Structured Outputs](#structured-outputs-with-json-schemas), Java classes can contain
+fields declared to be instances of other classes and can use collections. Optionally, annotations
+can be used to set the descriptions of the function (class) and its parameters (fields) to assist
+the AI model in understanding the purpose of the function and the possible values of its parameters.
 
 ```java
 import com.fasterxml.jackson.annotation.JsonClassDescription;

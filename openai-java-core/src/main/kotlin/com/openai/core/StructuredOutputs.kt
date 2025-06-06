@@ -35,8 +35,8 @@ private val MAPPER =
  * class.
  */
 @JvmSynthetic
-internal fun <T> responseFormatFromClass(
-    type: Class<T>,
+internal fun responseFormatFromClass(
+    type: Class<*>,
     localValidation: JsonSchemaLocalValidation = JsonSchemaLocalValidation.YES,
 ): ResponseFormatJsonSchema =
     ResponseFormatJsonSchema.builder()
@@ -65,9 +65,9 @@ internal fun <T> responseFormatFromClass(
  *   values will cause validation to be skipped.
  */
 @JvmSynthetic
-internal fun <T> validateSchema(
+internal fun validateSchema(
     schema: ObjectNode,
-    sourceType: Class<T>,
+    sourceType: Class<*>,
     localValidation: JsonSchemaLocalValidation,
 ): ObjectNode {
     if (localValidation == JsonSchemaLocalValidation.YES) {
@@ -86,8 +86,8 @@ internal fun <T> validateSchema(
  * arbitrary Java class.
  */
 @JvmSynthetic
-internal fun <T> textConfigFromClass(
-    type: Class<T>,
+internal fun textConfigFromClass(
+    type: Class<*>,
     localValidation: JsonSchemaLocalValidation = JsonSchemaLocalValidation.YES,
 ): ResponseTextConfig =
     ResponseTextConfig.builder()
@@ -115,8 +115,8 @@ internal data class FunctionInfo(
 
 @JvmSynthetic
 // "internal" instead of "private" for testing purposes.
-internal fun <T> extractFunctionInfo(
-    parametersType: Class<T>,
+internal fun extractFunctionInfo(
+    parametersType: Class<*>,
     localValidation: JsonSchemaLocalValidation,
 ): FunctionInfo {
     val schema = extractSchema(parametersType)
@@ -142,8 +142,8 @@ internal fun <T> extractFunctionInfo(
  * the fields of a class.
  */
 @JvmSynthetic
-internal fun <T> functionToolFromClass(
-    parametersType: Class<T>,
+internal fun functionToolFromClass(
+    parametersType: Class<*>,
     localValidation: JsonSchemaLocalValidation = JsonSchemaLocalValidation.YES,
 ): ChatCompletionTool {
     val functionInfo = extractFunctionInfo(parametersType, localValidation)
@@ -168,8 +168,8 @@ internal fun <T> functionToolFromClass(
  * the fields of a class.
  */
 @JvmSynthetic
-internal fun <T> responseFunctionToolFromClass(
-    parametersType: Class<T>,
+internal fun responseFunctionToolFromClass(
+    parametersType: Class<*>,
     localValidation: JsonSchemaLocalValidation = JsonSchemaLocalValidation.YES,
 ): FunctionTool {
     val functionInfo = extractFunctionInfo(parametersType, localValidation)
@@ -190,7 +190,7 @@ internal fun <T> responseFunctionToolFromClass(
  * thrown and any recorded validation errors can be inspected at leisure by the tests.
  */
 @JvmSynthetic
-internal fun <T> extractSchema(type: Class<T>): ObjectNode {
+internal fun extractSchema(type: Class<*>): ObjectNode {
     val configBuilder =
         SchemaGeneratorConfigBuilder(
                 com.github.victools.jsonschema.generator.SchemaVersion.DRAFT_2020_12,

@@ -307,8 +307,8 @@ class StructuredResponseCreateParams<T : Any>(
 
         /** @see ResponseCreateParams.Builder.addTool */
         @JvmOverloads
-        fun <T> addTool(
-            functionParametersType: Class<T>,
+        fun addTool(
+            functionParametersType: Class<*>,
             localValidation: JsonSchemaLocalValidation = JsonSchemaLocalValidation.YES,
         ) = apply { paramsBuilder.addTool(functionParametersType, localValidation) }
 
