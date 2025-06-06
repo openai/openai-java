@@ -532,6 +532,13 @@ internal constructor(
         /** @see ChatCompletionCreateParams.Builder.addTool */
         fun addTool(tool: ChatCompletionTool) = apply { paramsBuilder.addTool(tool) }
 
+        /** @see ChatCompletionCreateParams.Builder.addTool */
+        @JvmOverloads
+        fun addTool(
+            functionParametersType: Class<*>,
+            localValidation: JsonSchemaLocalValidation = JsonSchemaLocalValidation.YES,
+        ) = apply { paramsBuilder.addTool(functionParametersType, localValidation) }
+
         /** @see ChatCompletionCreateParams.Builder.topLogprobs */
         fun topLogprobs(topLogprobs: Long?) = apply { paramsBuilder.topLogprobs(topLogprobs) }
 

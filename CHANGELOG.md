@@ -1,5 +1,13 @@
 # Changelog
 
+## 2.5.0 (2025-06-06)
+
+Full Changelog: [v2.4.0...v2.5.0](https://github.com/openai/openai-java/compare/v2.4.0...v2.5.0)
+
+### Features
+
+* **client:** automatic schema generation and arg parsing for function calling ([#497](https://github.com/openai/openai-java/issues/497)) ([800dc8f](https://github.com/openai/openai-java/commit/800dc8fcf1e7109c419fb6125f6ad2822b6d6748))
+
 ## 2.4.0 (2025-06-03)
 
 Full Changelog: [v2.3.2...v2.4.0](https://github.com/openai/openai-java/compare/v2.3.2...v2.4.0)

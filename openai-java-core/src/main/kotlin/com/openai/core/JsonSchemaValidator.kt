@@ -392,8 +392,7 @@ internal class JsonSchemaValidator private constructor() {
         // The schema must declare that additional properties are not allowed. For this check, it
         // does not matter if there are no "properties" in the schema.
         verify(
-            schema.get(ADDITIONAL_PROPS) != null &&
-                schema.get(ADDITIONAL_PROPS).asBoolean() == false,
+            schema.get(ADDITIONAL_PROPS) != null && !schema.get(ADDITIONAL_PROPS).asBoolean(),
             path,
         ) {
             "'$ADDITIONAL_PROPS' field is missing or is not set to 'false'."
@@ -401,27 +400,37 @@ internal class JsonSchemaValidator private constructor() {
 
         val properties = schema.get(PROPS)
 
-        // The "properties" field may be missing (there may be no properties to declare), but if it
-        // is present, it must be a non-empty object, or validation cannot continue.
-        // TODO: Decide if a missing or empty "properties" field is OK or not.
+        // An object schema _must_ have a `"properties"` field, and it must contain at least one
+        // property. The AI model will report an error relating to a missing or empty `"required"`
+        // array if the "properties" field is missing or empty (and therefore the `"required"` array
+        // will also be missing or empty). This condition can arise if a `Map` is used as the field
+        // type: it will cause the generation of an object schema with no defined properties. If not
+        // present or empty, validation cannot continue.
         verify(
-            properties == null || (properties.isObject && !properties.isEmpty),
+            properties != null && properties.isObject && !properties.isEmpty,
             path,
-            { "'$PROPS' field is not a non-empty object." },
+            { "'$PROPS' field is missing, empty or not an object." },
         ) {
             return
         }
 
-        if (properties != null) { // Must be an object.
-            // If a "properties" field is present, there must also be a "required" field. All
-            // properties must be named in the list of required properties.
-            validatePropertiesRequired(
-                properties.fieldNames().asSequence().toSet(),
-                schema.get(REQUIRED),
-                "$path/$REQUIRED",
-            )
-            validateProperties(properties, "$path/$PROPS", depth)
+        // Similarly, insist that the `"required"` array is present or stop validation.
+        val required = schema.get(REQUIRED)
+
+        verify(
+            required != null && required.isArray && !required.isEmpty,
+            path,
+            { "'$REQUIRED' field is missing, empty or not an array." },
+        ) {
+            return
         }
+
+        validatePropertiesRequired(
+            properties.fieldNames().asSequence().toSet(),
+            required,
+            "$path/$REQUIRED",
+        )
+        validateProperties(properties, "$path/$PROPS", depth)
     }
 
     /**
@@ -554,10 +563,10 @@ internal class JsonSchemaValidator private constructor() {
      */
     private fun validatePropertiesRequired(
         propertyNames: Collection<String>,
-        required: JsonNode?,
+        required: JsonNode,
         path: String,
     ) {
-        val requiredNames = required?.map { it.asText() }?.toSet() ?: emptySet()
+        val requiredNames = required.map { it.asText() }.toSet()
 
         propertyNames.forEach { propertyName ->
             verify(propertyName in requiredNames, path) {

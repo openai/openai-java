@@ -33,6 +33,7 @@ internal val NULLABLE_DOUBLE: Double? = null
 internal val LIST = listOf(STRING)
 internal val SET = setOf(STRING)
 internal val MAP = mapOf(STRING to STRING)
+internal val CLASS = X::class.java
 
 /**
  * Defines a test case where a function in a delegator returns a value from a corresponding function
@@ -104,12 +105,15 @@ internal fun checkAllDelegation(
         }
 
         // Drop the first parameter from each function, as it is the implicit "this" object and has
-        // the type of the class declaring the function, which will never match.
+        // the type of the class declaring the function, which will never match. Compare only the
+        // "classifiers" of the types, so that generic type parameters are ignored. For example,
+        // one `java.lang.Class<T>` is then considered equal to another `java.lang.Class<T>`. For
+        // the data set being processed, this simplification does not cause any problems.
         val supersetFunction =
             supersetClass.declaredFunctions.find {
                 it.name == subsetFunction.name &&
-                    it.parameters.drop(1).map { it.type } ==
-                        subsetFunction.parameters.drop(1).map { it.type }
+                    it.parameters.drop(1).map { it.type.classifier } ==
+                        subsetFunction.parameters.drop(1).map { it.type.classifier }
             }
 
         if (supersetFunction == null) {
@@ -171,12 +175,11 @@ internal fun checkOneDelegationWrite(
 
 private fun invokeMethod(method: Method, target: Any, testCase: DelegationWriteTestCase) {
     val numParams = testCase.inputValues.size
-    val inputValue1 = testCase.inputValues[0]
-    val inputValue2 = testCase.inputValues.getOrNull(1)
 
     when (numParams) {
-        1 -> method.invoke(target, inputValue1)
-        2 -> method.invoke(target, inputValue1, inputValue2)
+        0 -> method.invoke(target)
+        1 -> method.invoke(target, testCase.inputValues[0])
+        2 -> method.invoke(target, testCase.inputValues[0], testCase.inputValues.getOrNull(1))
         else -> fail { "Unexpected number of function parameters ($numParams)." }
     }
 }
@@ -187,11 +190,12 @@ private fun invokeMethod(method: Method, target: Any, testCase: DelegationWriteT
  */
 internal fun findDelegationMethod(target: Any, testCase: DelegationWriteTestCase): Method {
     val numParams = testCase.inputValues.size
-    val inputValue1: Any? = testCase.inputValues[0]
+    val inputValue1: Any? = if (numParams > 0) testCase.inputValues[0] else null
     val inputValue2 = if (numParams > 1) testCase.inputValues[1] else null
 
     val method =
         when (numParams) {
+            0 -> findJavaMethod(target.javaClass, testCase.functionName)
             1 ->
                 if (inputValue1 != null) {
                     findJavaMethod(
