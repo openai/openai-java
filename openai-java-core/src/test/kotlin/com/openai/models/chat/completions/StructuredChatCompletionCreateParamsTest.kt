@@ -1,10 +1,12 @@
 package com.openai.models.chat.completions
 
 import com.openai.core.BOOLEAN
+import com.openai.core.CLASS
 import com.openai.core.DOUBLE
 import com.openai.core.DelegationWriteTestCase
 import com.openai.core.JSON_FIELD
 import com.openai.core.JSON_VALUE
+import com.openai.core.JsonSchemaLocalValidation
 import com.openai.core.LIST
 import com.openai.core.LONG
 import com.openai.core.MAP
@@ -104,6 +106,8 @@ internal class StructuredChatCompletionCreateParamsTest {
 
         private val HEADERS = Headers.builder().build()
         private val QUERY_PARAMS = QueryParams.builder().build()
+
+        private val VALIDATION = JsonSchemaLocalValidation.NO
 
         // The list order follows the declaration order in `ChatCompletionCreateParams.Builder` for
         // easier maintenance.
@@ -216,6 +220,7 @@ internal class StructuredChatCompletionCreateParamsTest {
                 DelegationWriteTestCase("tools", LIST),
                 DelegationWriteTestCase("tools", JSON_FIELD),
                 DelegationWriteTestCase("addTool", TOOL),
+                DelegationWriteTestCase("addTool", CLASS, VALIDATION),
                 DelegationWriteTestCase("topLogprobs", NULLABLE_LONG),
                 DelegationWriteTestCase("topLogprobs", LONG),
                 DelegationWriteTestCase("topLogprobs", OPTIONAL),
