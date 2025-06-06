@@ -36,6 +36,7 @@ private constructor(
     @get:JvmName("maxRetries") val maxRetries: Int,
     @get:JvmName("credential") val credential: Credential,
     @get:JvmName("azureServiceVersion") val azureServiceVersion: AzureOpenAIServiceVersion?,
+    @get:JvmName("modelInPath") val modelInPath: Boolean = false,
     private val organization: String?,
     private val project: String?,
     private val webhookSecret: String?,
@@ -93,6 +94,7 @@ private constructor(
         private var azureServiceVersion: AzureOpenAIServiceVersion? = null
         private var organization: String? = null
         private var project: String? = null
+        private var modelInPath: Boolean = false
         private var webhookSecret: String? = null
 
         @JvmSynthetic
@@ -113,6 +115,7 @@ private constructor(
             organization = clientOptions.organization
             project = clientOptions.project
             webhookSecret = clientOptions.webhookSecret
+            modelInPath = clientOptions.modelInPath
         }
 
         fun httpClient(httpClient: HttpClient) = apply {
@@ -279,6 +282,8 @@ private constructor(
             }
         }
 
+        fun modelInPath(modelInPath: Boolean) = apply { this.modelInPath = modelInPath }
+
         /**
          * Returns an immutable instance of [ClientOptions].
          *
@@ -368,6 +373,7 @@ private constructor(
                 maxRetries,
                 credential,
                 azureServiceVersion,
+                modelInPath,
                 organization,
                 project,
                 webhookSecret,

@@ -65,4 +65,27 @@ internal class ClientOptionsTest {
             .isInstanceOf(IllegalArgumentException::class.java)
             .hasMessage("Azure API key cannot be empty.")
     }
+
+    @Test
+    fun modelInPathTestSet() {
+        val clientOptions =
+            ClientOptions.builder()
+                .httpClient(createOkHttpClient("https://api.openai.com/v1"))
+                .credential(BearerTokenCredential.create(FAKE_API_KEY))
+                .modelInPath(true)
+                .build()
+
+        assertThat(clientOptions.modelInPath).isTrue()
+    }
+
+    @Test
+    fun modelInPathTestDefaultFalse() {
+        val clientOptions =
+            ClientOptions.builder()
+                .httpClient(createOkHttpClient("https://api.openai.com/v1"))
+                .credential(BearerTokenCredential.create(FAKE_API_KEY))
+                .build()
+
+        assertThat(clientOptions.modelInPath).isFalse()
+    }
 }
