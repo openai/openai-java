@@ -26,6 +26,10 @@ import com.openai.core.checkRequired
 import com.openai.core.getOrThrow
 import com.openai.core.toImmutable
 import com.openai.errors.OpenAIInvalidDataException
+import com.openai.models.ResponseFormatJsonObject
+import com.openai.models.ResponseFormatJsonSchema
+import com.openai.models.ResponseFormatText
+import com.openai.models.chat.completions.ChatCompletionTool
 import com.openai.models.responses.EasyInputMessage
 import com.openai.models.responses.ResponseInputText
 import java.util.Collections
@@ -3933,8 +3937,10 @@ private constructor(
     class SamplingParams
     private constructor(
         private val maxCompletionTokens: JsonField<Long>,
+        private val responseFormat: JsonField<ResponseFormat>,
         private val seed: JsonField<Long>,
         private val temperature: JsonField<Double>,
+        private val tools: JsonField<List<ChatCompletionTool>>,
         private val topP: JsonField<Double>,
         private val additionalProperties: MutableMap<String, JsonValue>,
     ) {
@@ -3944,12 +3950,26 @@ private constructor(
             @JsonProperty("max_completion_tokens")
             @ExcludeMissing
             maxCompletionTokens: JsonField<Long> = JsonMissing.of(),
+            @JsonProperty("response_format")
+            @ExcludeMissing
+            responseFormat: JsonField<ResponseFormat> = JsonMissing.of(),
             @JsonProperty("seed") @ExcludeMissing seed: JsonField<Long> = JsonMissing.of(),
             @JsonProperty("temperature")
             @ExcludeMissing
             temperature: JsonField<Double> = JsonMissing.of(),
+            @JsonProperty("tools")
+            @ExcludeMissing
+            tools: JsonField<List<ChatCompletionTool>> = JsonMissing.of(),
             @JsonProperty("top_p") @ExcludeMissing topP: JsonField<Double> = JsonMissing.of(),
-        ) : this(maxCompletionTokens, seed, temperature, topP, mutableMapOf())
+        ) : this(
+            maxCompletionTokens,
+            responseFormat,
+            seed,
+            temperature,
+            tools,
+            topP,
+            mutableMapOf(),
+        )
 
         /**
          * The maximum number of tokens in the generated output.
@@ -3959,6 +3979,23 @@ private constructor(
          */
         fun maxCompletionTokens(): Optional<Long> =
             maxCompletionTokens.getOptional("max_completion_tokens")
+
+        /**
+         * An object specifying the format that the model must output.
+         *
+         * Setting to `{ "type": "json_schema", "json_schema": {...} }` enables Structured Outputs
+         * which ensures the model will match your supplied JSON schema. Learn more in the
+         * [Structured Outputs guide](https://platform.openai.com/docs/guides/structured-outputs).
+         *
+         * Setting to `{ "type": "json_object" }` enables the older JSON mode, which ensures the
+         * message the model generates is valid JSON. Using `json_schema` is preferred for models
+         * that support it.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun responseFormat(): Optional<ResponseFormat> =
+            responseFormat.getOptional("response_format")
 
         /**
          * A seed value to initialize the randomness, during sampling.
@@ -3975,6 +4012,16 @@ private constructor(
          *   server responded with an unexpected value).
          */
         fun temperature(): Optional<Double> = temperature.getOptional("temperature")
+
+        /**
+         * A list of tools the model may call. Currently, only functions are supported as a tool.
+         * Use this to provide a list of functions the model may generate JSON inputs for. A max of
+         * 128 functions are supported.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun tools(): Optional<List<ChatCompletionTool>> = tools.getOptional("tools")
 
         /**
          * An alternative to temperature for nucleus sampling; 1.0 includes all tokens.
@@ -3995,6 +4042,16 @@ private constructor(
         fun _maxCompletionTokens(): JsonField<Long> = maxCompletionTokens
 
         /**
+         * Returns the raw JSON value of [responseFormat].
+         *
+         * Unlike [responseFormat], this method doesn't throw if the JSON field has an unexpected
+         * type.
+         */
+        @JsonProperty("response_format")
+        @ExcludeMissing
+        fun _responseFormat(): JsonField<ResponseFormat> = responseFormat
+
+        /**
          * Returns the raw JSON value of [seed].
          *
          * Unlike [seed], this method doesn't throw if the JSON field has an unexpected type.
@@ -4009,6 +4066,15 @@ private constructor(
         @JsonProperty("temperature")
         @ExcludeMissing
         fun _temperature(): JsonField<Double> = temperature
+
+        /**
+         * Returns the raw JSON value of [tools].
+         *
+         * Unlike [tools], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("tools")
+        @ExcludeMissing
+        fun _tools(): JsonField<List<ChatCompletionTool>> = tools
 
         /**
          * Returns the raw JSON value of [topP].
@@ -4039,16 +4105,20 @@ private constructor(
         class Builder internal constructor() {
 
             private var maxCompletionTokens: JsonField<Long> = JsonMissing.of()
+            private var responseFormat: JsonField<ResponseFormat> = JsonMissing.of()
             private var seed: JsonField<Long> = JsonMissing.of()
             private var temperature: JsonField<Double> = JsonMissing.of()
+            private var tools: JsonField<MutableList<ChatCompletionTool>>? = null
             private var topP: JsonField<Double> = JsonMissing.of()
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
             @JvmSynthetic
             internal fun from(samplingParams: SamplingParams) = apply {
                 maxCompletionTokens = samplingParams.maxCompletionTokens
+                responseFormat = samplingParams.responseFormat
                 seed = samplingParams.seed
                 temperature = samplingParams.temperature
+                tools = samplingParams.tools.map { it.toMutableList() }
                 topP = samplingParams.topP
                 additionalProperties = samplingParams.additionalProperties.toMutableMap()
             }
@@ -4067,6 +4137,48 @@ private constructor(
             fun maxCompletionTokens(maxCompletionTokens: JsonField<Long>) = apply {
                 this.maxCompletionTokens = maxCompletionTokens
             }
+
+            /**
+             * An object specifying the format that the model must output.
+             *
+             * Setting to `{ "type": "json_schema", "json_schema": {...} }` enables Structured
+             * Outputs which ensures the model will match your supplied JSON schema. Learn more in
+             * the
+             * [Structured Outputs guide](https://platform.openai.com/docs/guides/structured-outputs).
+             *
+             * Setting to `{ "type": "json_object" }` enables the older JSON mode, which ensures the
+             * message the model generates is valid JSON. Using `json_schema` is preferred for
+             * models that support it.
+             */
+            fun responseFormat(responseFormat: ResponseFormat) =
+                responseFormat(JsonField.of(responseFormat))
+
+            /**
+             * Sets [Builder.responseFormat] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.responseFormat] with a well-typed [ResponseFormat]
+             * value instead. This method is primarily for setting the field to an undocumented or
+             * not yet supported value.
+             */
+            fun responseFormat(responseFormat: JsonField<ResponseFormat>) = apply {
+                this.responseFormat = responseFormat
+            }
+
+            /** Alias for calling [responseFormat] with `ResponseFormat.ofText(text)`. */
+            fun responseFormat(text: ResponseFormatText) =
+                responseFormat(ResponseFormat.ofText(text))
+
+            /**
+             * Alias for calling [responseFormat] with `ResponseFormat.ofJsonSchema(jsonSchema)`.
+             */
+            fun responseFormat(jsonSchema: ResponseFormatJsonSchema) =
+                responseFormat(ResponseFormat.ofJsonSchema(jsonSchema))
+
+            /**
+             * Alias for calling [responseFormat] with `ResponseFormat.ofJsonObject(jsonObject)`.
+             */
+            fun responseFormat(jsonObject: ResponseFormatJsonObject) =
+                responseFormat(ResponseFormat.ofJsonObject(jsonObject))
 
             /** A seed value to initialize the randomness, during sampling. */
             fun seed(seed: Long) = seed(JsonField.of(seed))
@@ -4092,6 +4204,36 @@ private constructor(
              */
             fun temperature(temperature: JsonField<Double>) = apply {
                 this.temperature = temperature
+            }
+
+            /**
+             * A list of tools the model may call. Currently, only functions are supported as a
+             * tool. Use this to provide a list of functions the model may generate JSON inputs for.
+             * A max of 128 functions are supported.
+             */
+            fun tools(tools: List<ChatCompletionTool>) = tools(JsonField.of(tools))
+
+            /**
+             * Sets [Builder.tools] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.tools] with a well-typed `List<ChatCompletionTool>`
+             * value instead. This method is primarily for setting the field to an undocumented or
+             * not yet supported value.
+             */
+            fun tools(tools: JsonField<List<ChatCompletionTool>>) = apply {
+                this.tools = tools.map { it.toMutableList() }
+            }
+
+            /**
+             * Adds a single [ChatCompletionTool] to [tools].
+             *
+             * @throws IllegalStateException if the field was previously set to a non-list.
+             */
+            fun addTool(tool: ChatCompletionTool) = apply {
+                tools =
+                    (tools ?: JsonField.of(mutableListOf())).also {
+                        checkKnown("tools", it).add(tool)
+                    }
             }
 
             /** An alternative to temperature for nucleus sampling; 1.0 includes all tokens. */
@@ -4133,8 +4275,10 @@ private constructor(
             fun build(): SamplingParams =
                 SamplingParams(
                     maxCompletionTokens,
+                    responseFormat,
                     seed,
                     temperature,
+                    (tools ?: JsonMissing.of()).map { it.toImmutable() },
                     topP,
                     additionalProperties.toMutableMap(),
                 )
@@ -4148,8 +4292,10 @@ private constructor(
             }
 
             maxCompletionTokens()
+            responseFormat().ifPresent { it.validate() }
             seed()
             temperature()
+            tools().ifPresent { it.forEach { it.validate() } }
             topP()
             validated = true
         }
@@ -4171,26 +4317,284 @@ private constructor(
         @JvmSynthetic
         internal fun validity(): Int =
             (if (maxCompletionTokens.asKnown().isPresent) 1 else 0) +
+                (responseFormat.asKnown().getOrNull()?.validity() ?: 0) +
                 (if (seed.asKnown().isPresent) 1 else 0) +
                 (if (temperature.asKnown().isPresent) 1 else 0) +
+                (tools.asKnown().getOrNull()?.sumOf { it.validity().toInt() } ?: 0) +
                 (if (topP.asKnown().isPresent) 1 else 0)
+
+        /**
+         * An object specifying the format that the model must output.
+         *
+         * Setting to `{ "type": "json_schema", "json_schema": {...} }` enables Structured Outputs
+         * which ensures the model will match your supplied JSON schema. Learn more in the
+         * [Structured Outputs guide](https://platform.openai.com/docs/guides/structured-outputs).
+         *
+         * Setting to `{ "type": "json_object" }` enables the older JSON mode, which ensures the
+         * message the model generates is valid JSON. Using `json_schema` is preferred for models
+         * that support it.
+         */
+        @JsonDeserialize(using = ResponseFormat.Deserializer::class)
+        @JsonSerialize(using = ResponseFormat.Serializer::class)
+        class ResponseFormat
+        private constructor(
+            private val text: ResponseFormatText? = null,
+            private val jsonSchema: ResponseFormatJsonSchema? = null,
+            private val jsonObject: ResponseFormatJsonObject? = null,
+            private val _json: JsonValue? = null,
+        ) {
+
+            /** Default response format. Used to generate text responses. */
+            fun text(): Optional<ResponseFormatText> = Optional.ofNullable(text)
+
+            /**
+             * JSON Schema response format. Used to generate structured JSON responses. Learn more
+             * about
+             * [Structured Outputs](https://platform.openai.com/docs/guides/structured-outputs).
+             */
+            fun jsonSchema(): Optional<ResponseFormatJsonSchema> = Optional.ofNullable(jsonSchema)
+
+            /**
+             * JSON object response format. An older method of generating JSON responses. Using
+             * `json_schema` is recommended for models that support it. Note that the model will not
+             * generate JSON without a system or user message instructing it to do so.
+             */
+            fun jsonObject(): Optional<ResponseFormatJsonObject> = Optional.ofNullable(jsonObject)
+
+            fun isText(): Boolean = text != null
+
+            fun isJsonSchema(): Boolean = jsonSchema != null
+
+            fun isJsonObject(): Boolean = jsonObject != null
+
+            /** Default response format. Used to generate text responses. */
+            fun asText(): ResponseFormatText = text.getOrThrow("text")
+
+            /**
+             * JSON Schema response format. Used to generate structured JSON responses. Learn more
+             * about
+             * [Structured Outputs](https://platform.openai.com/docs/guides/structured-outputs).
+             */
+            fun asJsonSchema(): ResponseFormatJsonSchema = jsonSchema.getOrThrow("jsonSchema")
+
+            /**
+             * JSON object response format. An older method of generating JSON responses. Using
+             * `json_schema` is recommended for models that support it. Note that the model will not
+             * generate JSON without a system or user message instructing it to do so.
+             */
+            fun asJsonObject(): ResponseFormatJsonObject = jsonObject.getOrThrow("jsonObject")
+
+            fun _json(): Optional<JsonValue> = Optional.ofNullable(_json)
+
+            fun <T> accept(visitor: Visitor<T>): T =
+                when {
+                    text != null -> visitor.visitText(text)
+                    jsonSchema != null -> visitor.visitJsonSchema(jsonSchema)
+                    jsonObject != null -> visitor.visitJsonObject(jsonObject)
+                    else -> visitor.unknown(_json)
+                }
+
+            private var validated: Boolean = false
+
+            fun validate(): ResponseFormat = apply {
+                if (validated) {
+                    return@apply
+                }
+
+                accept(
+                    object : Visitor<Unit> {
+                        override fun visitText(text: ResponseFormatText) {
+                            text.validate()
+                        }
+
+                        override fun visitJsonSchema(jsonSchema: ResponseFormatJsonSchema) {
+                            jsonSchema.validate()
+                        }
+
+                        override fun visitJsonObject(jsonObject: ResponseFormatJsonObject) {
+                            jsonObject.validate()
+                        }
+                    }
+                )
+                validated = true
+            }
+
+            fun isValid(): Boolean =
+                try {
+                    validate()
+                    true
+                } catch (e: OpenAIInvalidDataException) {
+                    false
+                }
+
+            /**
+             * Returns a score indicating how many valid values are contained in this object
+             * recursively.
+             *
+             * Used for best match union deserialization.
+             */
+            @JvmSynthetic
+            internal fun validity(): Int =
+                accept(
+                    object : Visitor<Int> {
+                        override fun visitText(text: ResponseFormatText) = text.validity()
+
+                        override fun visitJsonSchema(jsonSchema: ResponseFormatJsonSchema) =
+                            jsonSchema.validity()
+
+                        override fun visitJsonObject(jsonObject: ResponseFormatJsonObject) =
+                            jsonObject.validity()
+
+                        override fun unknown(json: JsonValue?) = 0
+                    }
+                )
+
+            override fun equals(other: Any?): Boolean {
+                if (this === other) {
+                    return true
+                }
+
+                return /* spotless:off */ other is ResponseFormat && text == other.text && jsonSchema == other.jsonSchema && jsonObject == other.jsonObject /* spotless:on */
+            }
+
+            override fun hashCode(): Int = /* spotless:off */ Objects.hash(text, jsonSchema, jsonObject) /* spotless:on */
+
+            override fun toString(): String =
+                when {
+                    text != null -> "ResponseFormat{text=$text}"
+                    jsonSchema != null -> "ResponseFormat{jsonSchema=$jsonSchema}"
+                    jsonObject != null -> "ResponseFormat{jsonObject=$jsonObject}"
+                    _json != null -> "ResponseFormat{_unknown=$_json}"
+                    else -> throw IllegalStateException("Invalid ResponseFormat")
+                }
+
+            companion object {
+
+                /** Default response format. Used to generate text responses. */
+                @JvmStatic fun ofText(text: ResponseFormatText) = ResponseFormat(text = text)
+
+                /**
+                 * JSON Schema response format. Used to generate structured JSON responses. Learn
+                 * more about
+                 * [Structured Outputs](https://platform.openai.com/docs/guides/structured-outputs).
+                 */
+                @JvmStatic
+                fun ofJsonSchema(jsonSchema: ResponseFormatJsonSchema) =
+                    ResponseFormat(jsonSchema = jsonSchema)
+
+                /**
+                 * JSON object response format. An older method of generating JSON responses. Using
+                 * `json_schema` is recommended for models that support it. Note that the model will
+                 * not generate JSON without a system or user message instructing it to do so.
+                 */
+                @JvmStatic
+                fun ofJsonObject(jsonObject: ResponseFormatJsonObject) =
+                    ResponseFormat(jsonObject = jsonObject)
+            }
+
+            /**
+             * An interface that defines how to map each variant of [ResponseFormat] to a value of
+             * type [T].
+             */
+            interface Visitor<out T> {
+
+                /** Default response format. Used to generate text responses. */
+                fun visitText(text: ResponseFormatText): T
+
+                /**
+                 * JSON Schema response format. Used to generate structured JSON responses. Learn
+                 * more about
+                 * [Structured Outputs](https://platform.openai.com/docs/guides/structured-outputs).
+                 */
+                fun visitJsonSchema(jsonSchema: ResponseFormatJsonSchema): T
+
+                /**
+                 * JSON object response format. An older method of generating JSON responses. Using
+                 * `json_schema` is recommended for models that support it. Note that the model will
+                 * not generate JSON without a system or user message instructing it to do so.
+                 */
+                fun visitJsonObject(jsonObject: ResponseFormatJsonObject): T
+
+                /**
+                 * Maps an unknown variant of [ResponseFormat] to a value of type [T].
+                 *
+                 * An instance of [ResponseFormat] can contain an unknown variant if it was
+                 * deserialized from data that doesn't match any known variant. For example, if the
+                 * SDK is on an older version than the API, then the API may respond with new
+                 * variants that the SDK is unaware of.
+                 *
+                 * @throws OpenAIInvalidDataException in the default implementation.
+                 */
+                fun unknown(json: JsonValue?): T {
+                    throw OpenAIInvalidDataException("Unknown ResponseFormat: $json")
+                }
+            }
+
+            internal class Deserializer : BaseDeserializer<ResponseFormat>(ResponseFormat::class) {
+
+                override fun ObjectCodec.deserialize(node: JsonNode): ResponseFormat {
+                    val json = JsonValue.fromJsonNode(node)
+
+                    val bestMatches =
+                        sequenceOf(
+                                tryDeserialize(node, jacksonTypeRef<ResponseFormatText>())?.let {
+                                    ResponseFormat(text = it, _json = json)
+                                },
+                                tryDeserialize(node, jacksonTypeRef<ResponseFormatJsonSchema>())
+                                    ?.let { ResponseFormat(jsonSchema = it, _json = json) },
+                                tryDeserialize(node, jacksonTypeRef<ResponseFormatJsonObject>())
+                                    ?.let { ResponseFormat(jsonObject = it, _json = json) },
+                            )
+                            .filterNotNull()
+                            .allMaxBy { it.validity() }
+                            .toList()
+                    return when (bestMatches.size) {
+                        // This can happen if what we're deserializing is completely incompatible
+                        // with all the possible variants (e.g. deserializing from boolean).
+                        0 -> ResponseFormat(_json = json)
+                        1 -> bestMatches.single()
+                        // If there's more than one match with the highest validity, then use the
+                        // first completely valid match, or simply the first match if none are
+                        // completely valid.
+                        else -> bestMatches.firstOrNull { it.isValid() } ?: bestMatches.first()
+                    }
+                }
+            }
+
+            internal class Serializer : BaseSerializer<ResponseFormat>(ResponseFormat::class) {
+
+                override fun serialize(
+                    value: ResponseFormat,
+                    generator: JsonGenerator,
+                    provider: SerializerProvider,
+                ) {
+                    when {
+                        value.text != null -> generator.writeObject(value.text)
+                        value.jsonSchema != null -> generator.writeObject(value.jsonSchema)
+                        value.jsonObject != null -> generator.writeObject(value.jsonObject)
+                        value._json != null -> generator.writeObject(value._json)
+                        else -> throw IllegalStateException("Invalid ResponseFormat")
+                    }
+                }
+            }
+        }
 
         override fun equals(other: Any?): Boolean {
             if (this === other) {
                 return true
             }
 
-            return /* spotless:off */ other is SamplingParams && maxCompletionTokens == other.maxCompletionTokens && seed == other.seed && temperature == other.temperature && topP == other.topP && additionalProperties == other.additionalProperties /* spotless:on */
+            return /* spotless:off */ other is SamplingParams && maxCompletionTokens == other.maxCompletionTokens && responseFormat == other.responseFormat && seed == other.seed && temperature == other.temperature && tools == other.tools && topP == other.topP && additionalProperties == other.additionalProperties /* spotless:on */
         }
 
         /* spotless:off */
-        private val hashCode: Int by lazy { Objects.hash(maxCompletionTokens, seed, temperature, topP, additionalProperties) }
+        private val hashCode: Int by lazy { Objects.hash(maxCompletionTokens, responseFormat, seed, temperature, tools, topP, additionalProperties) }
         /* spotless:on */
 
         override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "SamplingParams{maxCompletionTokens=$maxCompletionTokens, seed=$seed, temperature=$temperature, topP=$topP, additionalProperties=$additionalProperties}"
+            "SamplingParams{maxCompletionTokens=$maxCompletionTokens, responseFormat=$responseFormat, seed=$seed, temperature=$temperature, tools=$tools, topP=$topP, additionalProperties=$additionalProperties}"
     }
 
     override fun equals(other: Any?): Boolean {
