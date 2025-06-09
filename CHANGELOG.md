@@ -1,5 +1,13 @@
 # Changelog
 
+## 2.6.0 (2025-06-09)
+
+Full Changelog: [v2.5.0...v2.6.0](https://github.com/openai/openai-java/compare/v2.5.0...v2.6.0)
+
+### Features
+
+* **api:** Add tools and structured outputs to evals ([f9d593c](https://github.com/openai/openai-java/commit/f9d593c74e08686f28e99fe2b2cb033cc506e552))
+
 ## 2.5.0 (2025-06-06)
 
 Full Changelog: [v2.4.0...v2.5.0](https://github.com/openai/openai-java/compare/v2.4.0...v2.5.0)

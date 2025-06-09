@@ -5,6 +5,10 @@ package com.openai.models.evals.runs
 import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
 import com.openai.core.JsonValue
 import com.openai.core.jsonMapper
+import com.openai.models.FunctionDefinition
+import com.openai.models.FunctionParameters
+import com.openai.models.ResponseFormatText
+import com.openai.models.chat.completions.ChatCompletionTool
 import com.openai.models.responses.EasyInputMessage
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
@@ -50,8 +54,25 @@ internal class CreateEvalCompletionsRunDataSourceTest {
                 .samplingParams(
                     CreateEvalCompletionsRunDataSource.SamplingParams.builder()
                         .maxCompletionTokens(0L)
+                        .responseFormat(ResponseFormatText.builder().build())
                         .seed(0L)
                         .temperature(0.0)
+                        .addTool(
+                            ChatCompletionTool.builder()
+                                .function(
+                                    FunctionDefinition.builder()
+                                        .name("name")
+                                        .description("description")
+                                        .parameters(
+                                            FunctionParameters.builder()
+                                                .putAdditionalProperty("foo", JsonValue.from("bar"))
+                                                .build()
+                                        )
+                                        .strict(true)
+                                        .build()
+                                )
+                                .build()
+                        )
                         .topP(0.0)
                         .build()
                 )
@@ -103,8 +124,25 @@ internal class CreateEvalCompletionsRunDataSourceTest {
             .contains(
                 CreateEvalCompletionsRunDataSource.SamplingParams.builder()
                     .maxCompletionTokens(0L)
+                    .responseFormat(ResponseFormatText.builder().build())
                     .seed(0L)
                     .temperature(0.0)
+                    .addTool(
+                        ChatCompletionTool.builder()
+                            .function(
+                                FunctionDefinition.builder()
+                                    .name("name")
+                                    .description("description")
+                                    .parameters(
+                                        FunctionParameters.builder()
+                                            .putAdditionalProperty("foo", JsonValue.from("bar"))
+                                            .build()
+                                    )
+                                    .strict(true)
+                                    .build()
+                            )
+                            .build()
+                    )
                     .topP(0.0)
                     .build()
             )
@@ -150,8 +188,25 @@ internal class CreateEvalCompletionsRunDataSourceTest {
                 .samplingParams(
                     CreateEvalCompletionsRunDataSource.SamplingParams.builder()
                         .maxCompletionTokens(0L)
+                        .responseFormat(ResponseFormatText.builder().build())
                         .seed(0L)
                         .temperature(0.0)
+                        .addTool(
+                            ChatCompletionTool.builder()
+                                .function(
+                                    FunctionDefinition.builder()
+                                        .name("name")
+                                        .description("description")
+                                        .parameters(
+                                            FunctionParameters.builder()
+                                                .putAdditionalProperty("foo", JsonValue.from("bar"))
+                                                .build()
+                                        )
+                                        .strict(true)
+                                        .build()
+                                )
+                                .build()
+                        )
                         .topP(0.0)
                         .build()
                 )
