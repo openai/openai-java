@@ -233,6 +233,10 @@ private constructor(
 
             @JvmField val O1_PRO_2025_03_19 = of("o1-pro-2025-03-19")
 
+            @JvmField val O3_PRO = of("o3-pro")
+
+            @JvmField val O3_PRO_2025_06_10 = of("o3-pro-2025-06-10")
+
             @JvmField val COMPUTER_USE_PREVIEW = of("computer-use-preview")
 
             @JvmField val COMPUTER_USE_PREVIEW_2025_03_11 = of("computer-use-preview-2025-03-11")
@@ -244,6 +248,8 @@ private constructor(
         enum class Known {
             O1_PRO,
             O1_PRO_2025_03_19,
+            O3_PRO,
+            O3_PRO_2025_06_10,
             COMPUTER_USE_PREVIEW,
             COMPUTER_USE_PREVIEW_2025_03_11,
         }
@@ -260,6 +266,8 @@ private constructor(
         enum class Value {
             O1_PRO,
             O1_PRO_2025_03_19,
+            O3_PRO,
+            O3_PRO_2025_06_10,
             COMPUTER_USE_PREVIEW,
             COMPUTER_USE_PREVIEW_2025_03_11,
             /**
@@ -280,6 +288,8 @@ private constructor(
             when (this) {
                 O1_PRO -> Value.O1_PRO
                 O1_PRO_2025_03_19 -> Value.O1_PRO_2025_03_19
+                O3_PRO -> Value.O3_PRO
+                O3_PRO_2025_06_10 -> Value.O3_PRO_2025_06_10
                 COMPUTER_USE_PREVIEW -> Value.COMPUTER_USE_PREVIEW
                 COMPUTER_USE_PREVIEW_2025_03_11 -> Value.COMPUTER_USE_PREVIEW_2025_03_11
                 else -> Value._UNKNOWN
@@ -298,6 +308,8 @@ private constructor(
             when (this) {
                 O1_PRO -> Known.O1_PRO
                 O1_PRO_2025_03_19 -> Known.O1_PRO_2025_03_19
+                O3_PRO -> Known.O3_PRO
+                O3_PRO_2025_06_10 -> Known.O3_PRO_2025_06_10
                 COMPUTER_USE_PREVIEW -> Known.COMPUTER_USE_PREVIEW
                 COMPUTER_USE_PREVIEW_2025_03_11 -> Known.COMPUTER_USE_PREVIEW_2025_03_11
                 else -> throw OpenAIInvalidDataException("Unknown ResponsesOnlyModel: $value")
