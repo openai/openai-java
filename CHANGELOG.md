@@ -1,5 +1,13 @@
 # Changelog
 
+## 2.7.0 (2025-06-10)
+
+Full Changelog: [v2.6.0...v2.7.0](https://github.com/openai/openai-java/compare/v2.6.0...v2.7.0)
+
+### Features
+
+* **api:** Add o3-pro model IDs ([48a685f](https://github.com/openai/openai-java/commit/48a685f51f2db7499d9e47d6641b80acb14155a8))
+
 ## 2.6.0 (2025-06-09)
 
 Full Changelog: [v2.5.0...v2.6.0](https://github.com/openai/openai-java/compare/v2.5.0...v2.6.0)
