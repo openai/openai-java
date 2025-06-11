@@ -67,6 +67,7 @@ class ImageServiceAsyncImpl internal constructor(private val clientOptions: Clie
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.POST)
+                    .baseUrl(clientOptions.baseUrl())
                     .addPathSegments("images", "variations")
                     .body(multipartFormData(clientOptions.jsonMapper, params._body()))
                     .build()
@@ -97,6 +98,7 @@ class ImageServiceAsyncImpl internal constructor(private val clientOptions: Clie
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.POST)
+                    .baseUrl(clientOptions.baseUrl())
                     .addPathSegments("images", "edits")
                     .body(multipartFormData(clientOptions.jsonMapper, params._body()))
                     .build()
@@ -127,6 +129,7 @@ class ImageServiceAsyncImpl internal constructor(private val clientOptions: Clie
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.POST)
+                    .baseUrl(clientOptions.baseUrl())
                     .addPathSegments("images", "generations")
                     .body(json(clientOptions.jsonMapper, params._body()))
                     .build()

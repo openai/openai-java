@@ -54,6 +54,7 @@ class InputItemServiceImpl internal constructor(private val clientOptions: Clien
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.GET)
+                    .baseUrl(clientOptions.baseUrl())
                     .addPathSegments("responses", params._pathParam(0), "input_items")
                     .build()
                     .prepare(clientOptions, params)

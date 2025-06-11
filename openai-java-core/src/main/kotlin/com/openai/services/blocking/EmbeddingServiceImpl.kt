@@ -50,6 +50,7 @@ class EmbeddingServiceImpl internal constructor(private val clientOptions: Clien
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.POST)
+                    .baseUrl(clientOptions.baseUrl())
                     .addPathSegments("embeddings")
                     .body(json(clientOptions.jsonMapper, params._body()))
                     .build()

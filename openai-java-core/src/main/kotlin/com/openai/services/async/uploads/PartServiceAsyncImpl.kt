@@ -55,6 +55,7 @@ class PartServiceAsyncImpl internal constructor(private val clientOptions: Clien
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.POST)
+                    .baseUrl(clientOptions.baseUrl())
                     .addPathSegments("uploads", params._pathParam(0), "parts")
                     .body(multipartFormData(clientOptions.jsonMapper, params._body()))
                     .build()

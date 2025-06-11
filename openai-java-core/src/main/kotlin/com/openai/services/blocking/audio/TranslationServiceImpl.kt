@@ -50,6 +50,7 @@ class TranslationServiceImpl internal constructor(private val clientOptions: Cli
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.POST)
+                    .baseUrl(clientOptions.baseUrl())
                     .addPathSegments("audio", "translations")
                     .body(multipartFormData(clientOptions.jsonMapper, params._body()))
                     .build()
