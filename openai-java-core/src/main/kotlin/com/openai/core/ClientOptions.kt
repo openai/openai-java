@@ -28,7 +28,7 @@ private constructor(
     @get:JvmName("jsonMapper") val jsonMapper: JsonMapper,
     @get:JvmName("streamHandlerExecutor") val streamHandlerExecutor: Executor,
     @get:JvmName("clock") val clock: Clock,
-    @get:JvmName("baseUrl") val baseUrl: String,
+    private val baseUrl: String?,
     @get:JvmName("headers") val headers: Headers,
     @get:JvmName("queryParams") val queryParams: QueryParams,
     @get:JvmName("responseValidation") val responseValidation: Boolean,
@@ -45,6 +45,8 @@ private constructor(
             checkJacksonVersionCompatibility()
         }
     }
+
+    fun baseUrl(): String = baseUrl ?: PRODUCTION_URL
 
     fun organization(): Optional<String> = Optional.ofNullable(organization)
 
@@ -78,7 +80,7 @@ private constructor(
         private var jsonMapper: JsonMapper = jsonMapper()
         private var streamHandlerExecutor: Executor? = null
         private var clock: Clock = Clock.systemUTC()
-        private var baseUrl: String = PRODUCTION_URL
+        private var baseUrl: String? = null
         private var headers: Headers.Builder = Headers.builder()
         private var queryParams: QueryParams.Builder = QueryParams.builder()
         private var responseValidation: Boolean = false
@@ -122,7 +124,10 @@ private constructor(
 
         fun clock(clock: Clock) = apply { this.clock = clock }
 
-        fun baseUrl(baseUrl: String) = apply { this.baseUrl = baseUrl }
+        fun baseUrl(baseUrl: String?) = apply { this.baseUrl = baseUrl }
+
+        /** Alias for calling [Builder.baseUrl] with `baseUrl.orElse(null)`. */
+        fun baseUrl(baseUrl: Optional<String>) = baseUrl(baseUrl.getOrNull())
 
         fun responseValidation(responseValidation: Boolean) = apply {
             this.responseValidation = responseValidation
@@ -232,8 +237,6 @@ private constructor(
 
         fun removeAllQueryParams(keys: Set<String>) = apply { queryParams.removeAll(keys) }
 
-        fun baseUrl(): String = baseUrl
-
         fun fromEnv() = apply {
             System.getenv("OPENAI_BASE_URL")?.let { baseUrl(it) }
             val openAIKey = System.getenv("OPENAI_API_KEY")
@@ -299,13 +302,16 @@ private constructor(
                 }
             }
 
-            if (isAzureEndpoint(baseUrl)) {
-                // Default Azure OpenAI version is used if Azure user doesn't
-                // specific a service API version in 'queryParams'.
-                replaceQueryParams(
-                    "api-version",
-                    (azureServiceVersion ?: AzureOpenAIServiceVersion.latestStableVersion()).value,
-                )
+            baseUrl?.let {
+                if (isAzureEndpoint(it)) {
+                    // Default Azure OpenAI version is used if Azure user doesn't
+                    // specific a service API version in 'queryParams'.
+                    replaceQueryParams(
+                        "api-version",
+                        (azureServiceVersion ?: AzureOpenAIServiceVersion.latestStableVersion())
+                            .value,
+                    )
+                }
             }
 
             headers.replaceAll(this.headers.build())

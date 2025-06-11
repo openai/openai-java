@@ -39,6 +39,7 @@ class SpeechServiceImpl internal constructor(private val clientOptions: ClientOp
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.POST)
+                    .baseUrl(clientOptions.baseUrl())
                     .addPathSegments("audio", "speech")
                     .body(json(clientOptions.jsonMapper, params._body()))
                     .build()

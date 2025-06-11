@@ -6,7 +6,7 @@ import com.openai.core.toImmutable
 class HttpRequest
 private constructor(
     @get:JvmName("method") val method: HttpMethod,
-    @get:JvmName("url") val url: String?,
+    @get:JvmName("baseUrl") val baseUrl: String,
     @get:JvmName("pathSegments") val pathSegments: List<String>,
     @get:JvmName("headers") val headers: Headers,
     @get:JvmName("queryParams") val queryParams: QueryParams,
@@ -16,7 +16,7 @@ private constructor(
     fun toBuilder(): Builder = Builder().from(this)
 
     override fun toString(): String =
-        "HttpRequest{method=$method, url=$url, pathSegments=$pathSegments, headers=$headers, queryParams=$queryParams, body=$body}"
+        "HttpRequest{method=$method, baseUrl=$baseUrl, pathSegments=$pathSegments, headers=$headers, queryParams=$queryParams, body=$body}"
 
     companion object {
         @JvmStatic fun builder() = Builder()
@@ -25,7 +25,7 @@ private constructor(
     class Builder internal constructor() {
 
         private var method: HttpMethod? = null
-        private var url: String? = null
+        private var baseUrl: String? = null
         private var pathSegments: MutableList<String> = mutableListOf()
         private var headers: Headers.Builder = Headers.builder()
         private var queryParams: QueryParams.Builder = QueryParams.builder()
@@ -34,7 +34,7 @@ private constructor(
         @JvmSynthetic
         internal fun from(request: HttpRequest) = apply {
             method = request.method
-            url = request.url
+            baseUrl = request.baseUrl
             pathSegments = request.pathSegments.toMutableList()
             headers = request.headers.toBuilder()
             queryParams = request.queryParams.toBuilder()
@@ -43,7 +43,7 @@ private constructor(
 
         fun method(method: HttpMethod) = apply { this.method = method }
 
-        fun url(url: String) = apply { this.url = url }
+        fun baseUrl(baseUrl: String) = apply { this.baseUrl = baseUrl }
 
         fun pathSegments(pathSegments: List<String>) = apply {
             this.pathSegments = pathSegments.toMutableList()
@@ -140,7 +140,7 @@ private constructor(
         fun build(): HttpRequest =
             HttpRequest(
                 checkRequired("method", method),
-                url,
+                checkRequired("baseUrl", baseUrl),
                 pathSegments.toImmutable(),
                 headers.build(),
                 queryParams.build(),

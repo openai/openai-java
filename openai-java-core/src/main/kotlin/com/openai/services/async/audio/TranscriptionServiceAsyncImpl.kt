@@ -83,6 +83,7 @@ class TranscriptionServiceAsyncImpl internal constructor(private val clientOptio
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.POST)
+                    .baseUrl(clientOptions.baseUrl())
                     .addPathSegments("audio", "transcriptions")
                     .body(multipartFormData(clientOptions.jsonMapper, params._body()))
                     .build()
@@ -123,6 +124,7 @@ class TranscriptionServiceAsyncImpl internal constructor(private val clientOptio
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.POST)
+                    .baseUrl(clientOptions.baseUrl())
                     .addPathSegments("audio", "transcriptions")
                     .body(
                         multipartFormData(

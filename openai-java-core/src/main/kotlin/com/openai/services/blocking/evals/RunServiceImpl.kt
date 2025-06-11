@@ -99,6 +99,7 @@ class RunServiceImpl internal constructor(private val clientOptions: ClientOptio
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.POST)
+                    .baseUrl(clientOptions.baseUrl())
                     .addPathSegments("evals", params._pathParam(0), "runs")
                     .body(json(clientOptions.jsonMapper, params._body()))
                     .build()
@@ -130,6 +131,7 @@ class RunServiceImpl internal constructor(private val clientOptions: ClientOptio
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.GET)
+                    .baseUrl(clientOptions.baseUrl())
                     .addPathSegments("evals", params._pathParam(0), "runs", params._pathParam(1))
                     .build()
                     .prepare(clientOptions, params, deploymentModel = null)
@@ -160,6 +162,7 @@ class RunServiceImpl internal constructor(private val clientOptions: ClientOptio
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.GET)
+                    .baseUrl(clientOptions.baseUrl())
                     .addPathSegments("evals", params._pathParam(0), "runs")
                     .build()
                     .prepare(clientOptions, params, deploymentModel = null)
@@ -196,6 +199,7 @@ class RunServiceImpl internal constructor(private val clientOptions: ClientOptio
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.DELETE)
+                    .baseUrl(clientOptions.baseUrl())
                     .addPathSegments("evals", params._pathParam(0), "runs", params._pathParam(1))
                     .apply { params._body().ifPresent { body(json(clientOptions.jsonMapper, it)) } }
                     .build()
@@ -226,6 +230,7 @@ class RunServiceImpl internal constructor(private val clientOptions: ClientOptio
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.POST)
+                    .baseUrl(clientOptions.baseUrl())
                     .addPathSegments("evals", params._pathParam(0), "runs", params._pathParam(1))
                     .apply { params._body().ifPresent { body(json(clientOptions.jsonMapper, it)) } }
                     .build()

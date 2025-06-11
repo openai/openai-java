@@ -59,6 +59,7 @@ class GraderServiceAsyncImpl internal constructor(private val clientOptions: Cli
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.POST)
+                    .baseUrl(clientOptions.baseUrl())
                     .addPathSegments("fine_tuning", "alpha", "graders", "run")
                     .body(json(clientOptions.jsonMapper, params._body()))
                     .build()
@@ -90,6 +91,7 @@ class GraderServiceAsyncImpl internal constructor(private val clientOptions: Cli
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.POST)
+                    .baseUrl(clientOptions.baseUrl())
                     .addPathSegments("fine_tuning", "alpha", "graders", "validate")
                     .body(json(clientOptions.jsonMapper, params._body()))
                     .build()

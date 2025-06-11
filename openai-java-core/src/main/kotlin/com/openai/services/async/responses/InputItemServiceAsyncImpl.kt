@@ -55,6 +55,7 @@ class InputItemServiceAsyncImpl internal constructor(private val clientOptions: 
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.GET)
+                    .baseUrl(clientOptions.baseUrl())
                     .addPathSegments("responses", params._pathParam(0), "input_items")
                     .build()
                     .prepareAsync(clientOptions, params, deploymentModel = null)
