@@ -3,6 +3,7 @@
 package com.openai.services.blocking
 
 import com.google.errorprone.annotations.MustBeClosed
+import com.openai.core.ClientOptions
 import com.openai.core.RequestOptions
 import com.openai.core.http.HttpResponseFor
 import com.openai.models.evals.EvalCreateParams
@@ -16,6 +17,7 @@ import com.openai.models.evals.EvalRetrieveResponse
 import com.openai.models.evals.EvalUpdateParams
 import com.openai.models.evals.EvalUpdateResponse
 import com.openai.services.blocking.evals.RunService
+import java.util.function.Consumer
 
 interface EvalService {
 
@@ -23,6 +25,13 @@ interface EvalService {
      * Returns a view of this service that provides access to raw HTTP responses for each method.
      */
     fun withRawResponse(): WithRawResponse
+
+    /**
+     * Returns a view of this service with the given option modifications applied.
+     *
+     * The original service is not modified.
+     */
+    fun withOptions(modifier: Consumer<ClientOptions.Builder>): EvalService
 
     fun runs(): RunService
 
@@ -148,6 +157,13 @@ interface EvalService {
 
     /** A view of [EvalService] that provides access to raw HTTP responses for each method. */
     interface WithRawResponse {
+
+        /**
+         * Returns a view of this service with the given option modifications applied.
+         *
+         * The original service is not modified.
+         */
+        fun withOptions(modifier: Consumer<ClientOptions.Builder>): EvalService.WithRawResponse
 
         fun runs(): RunService.WithRawResponse
 

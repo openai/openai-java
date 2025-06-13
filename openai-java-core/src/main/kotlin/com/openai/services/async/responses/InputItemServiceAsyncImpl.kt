@@ -19,6 +19,7 @@ import com.openai.models.responses.inputitems.InputItemListPageAsync
 import com.openai.models.responses.inputitems.InputItemListParams
 import com.openai.models.responses.inputitems.ResponseItemList
 import java.util.concurrent.CompletableFuture
+import java.util.function.Consumer
 import kotlin.jvm.optionals.getOrNull
 
 class InputItemServiceAsyncImpl internal constructor(private val clientOptions: ClientOptions) :
@@ -29,6 +30,9 @@ class InputItemServiceAsyncImpl internal constructor(private val clientOptions: 
     }
 
     override fun withRawResponse(): InputItemServiceAsync.WithRawResponse = withRawResponse
+
+    override fun withOptions(modifier: Consumer<ClientOptions.Builder>): InputItemServiceAsync =
+        InputItemServiceAsyncImpl(clientOptions.toBuilder().apply(modifier::accept).build())
 
     override fun list(
         params: InputItemListParams,
@@ -41,6 +45,13 @@ class InputItemServiceAsyncImpl internal constructor(private val clientOptions: 
         InputItemServiceAsync.WithRawResponse {
 
         private val errorHandler: Handler<ErrorObject?> = errorHandler(clientOptions.jsonMapper)
+
+        override fun withOptions(
+            modifier: Consumer<ClientOptions.Builder>
+        ): InputItemServiceAsync.WithRawResponse =
+            InputItemServiceAsyncImpl.WithRawResponseImpl(
+                clientOptions.toBuilder().apply(modifier::accept).build()
+            )
 
         private val listHandler: Handler<ResponseItemList> =
             jsonHandler<ResponseItemList>(clientOptions.jsonMapper).withErrorHandler(errorHandler)

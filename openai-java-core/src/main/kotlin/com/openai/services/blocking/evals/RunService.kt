@@ -3,6 +3,7 @@
 package com.openai.services.blocking.evals
 
 import com.google.errorprone.annotations.MustBeClosed
+import com.openai.core.ClientOptions
 import com.openai.core.RequestOptions
 import com.openai.core.http.HttpResponseFor
 import com.openai.models.evals.runs.RunCancelParams
@@ -16,6 +17,7 @@ import com.openai.models.evals.runs.RunListParams
 import com.openai.models.evals.runs.RunRetrieveParams
 import com.openai.models.evals.runs.RunRetrieveResponse
 import com.openai.services.blocking.evals.runs.OutputItemService
+import java.util.function.Consumer
 
 interface RunService {
 
@@ -23,6 +25,13 @@ interface RunService {
      * Returns a view of this service that provides access to raw HTTP responses for each method.
      */
     fun withRawResponse(): WithRawResponse
+
+    /**
+     * Returns a view of this service with the given option modifications applied.
+     *
+     * The original service is not modified.
+     */
+    fun withOptions(modifier: Consumer<ClientOptions.Builder>): RunService
 
     fun outputItems(): OutputItemService
 
@@ -140,6 +149,13 @@ interface RunService {
 
     /** A view of [RunService] that provides access to raw HTTP responses for each method. */
     interface WithRawResponse {
+
+        /**
+         * Returns a view of this service with the given option modifications applied.
+         *
+         * The original service is not modified.
+         */
+        fun withOptions(modifier: Consumer<ClientOptions.Builder>): RunService.WithRawResponse
 
         fun outputItems(): OutputItemService.WithRawResponse
 

@@ -2,6 +2,7 @@
 
 package com.openai.services.async.finetuning.checkpoints
 
+import com.openai.core.ClientOptions
 import com.openai.core.RequestOptions
 import com.openai.core.http.HttpResponseFor
 import com.openai.models.finetuning.checkpoints.permissions.PermissionCreatePageAsync
@@ -11,6 +12,7 @@ import com.openai.models.finetuning.checkpoints.permissions.PermissionDeleteResp
 import com.openai.models.finetuning.checkpoints.permissions.PermissionRetrieveParams
 import com.openai.models.finetuning.checkpoints.permissions.PermissionRetrieveResponse
 import java.util.concurrent.CompletableFuture
+import java.util.function.Consumer
 
 interface PermissionServiceAsync {
 
@@ -18,6 +20,13 @@ interface PermissionServiceAsync {
      * Returns a view of this service that provides access to raw HTTP responses for each method.
      */
     fun withRawResponse(): WithRawResponse
+
+    /**
+     * Returns a view of this service with the given option modifications applied.
+     *
+     * The original service is not modified.
+     */
+    fun withOptions(modifier: Consumer<ClientOptions.Builder>): PermissionServiceAsync
 
     /**
      * **NOTE:** Calling this endpoint requires an [admin API key](../admin-api-keys).
@@ -131,6 +140,15 @@ interface PermissionServiceAsync {
      * method.
      */
     interface WithRawResponse {
+
+        /**
+         * Returns a view of this service with the given option modifications applied.
+         *
+         * The original service is not modified.
+         */
+        fun withOptions(
+            modifier: Consumer<ClientOptions.Builder>
+        ): PermissionServiceAsync.WithRawResponse
 
         /**
          * Returns a raw HTTP response for `post

@@ -33,6 +33,7 @@ import com.openai.services.blocking.vectorstores.FileBatchService
 import com.openai.services.blocking.vectorstores.FileBatchServiceImpl
 import com.openai.services.blocking.vectorstores.FileService
 import com.openai.services.blocking.vectorstores.FileServiceImpl
+import java.util.function.Consumer
 import kotlin.jvm.optionals.getOrNull
 
 class VectorStoreServiceImpl internal constructor(private val clientOptions: ClientOptions) :
@@ -52,6 +53,9 @@ class VectorStoreServiceImpl internal constructor(private val clientOptions: Cli
     private val fileBatches: FileBatchService by lazy { FileBatchServiceImpl(clientOptions) }
 
     override fun withRawResponse(): VectorStoreService.WithRawResponse = withRawResponse
+
+    override fun withOptions(modifier: Consumer<ClientOptions.Builder>): VectorStoreService =
+        VectorStoreServiceImpl(clientOptions.toBuilder().apply(modifier::accept).build())
 
     override fun files(): FileService = files
 
@@ -111,6 +115,13 @@ class VectorStoreServiceImpl internal constructor(private val clientOptions: Cli
         private val fileBatches: FileBatchService.WithRawResponse by lazy {
             FileBatchServiceImpl.WithRawResponseImpl(clientOptions)
         }
+
+        override fun withOptions(
+            modifier: Consumer<ClientOptions.Builder>
+        ): VectorStoreService.WithRawResponse =
+            VectorStoreServiceImpl.WithRawResponseImpl(
+                clientOptions.toBuilder().apply(modifier::accept).build()
+            )
 
         override fun files(): FileService.WithRawResponse = files
 

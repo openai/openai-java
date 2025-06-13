@@ -3,10 +3,12 @@
 package com.openai.services.blocking.chat.completions
 
 import com.google.errorprone.annotations.MustBeClosed
+import com.openai.core.ClientOptions
 import com.openai.core.RequestOptions
 import com.openai.core.http.HttpResponseFor
 import com.openai.models.chat.completions.messages.MessageListPage
 import com.openai.models.chat.completions.messages.MessageListParams
+import java.util.function.Consumer
 
 interface MessageService {
 
@@ -14,6 +16,13 @@ interface MessageService {
      * Returns a view of this service that provides access to raw HTTP responses for each method.
      */
     fun withRawResponse(): WithRawResponse
+
+    /**
+     * Returns a view of this service with the given option modifications applied.
+     *
+     * The original service is not modified.
+     */
+    fun withOptions(modifier: Consumer<ClientOptions.Builder>): MessageService
 
     /**
      * Get the messages in a stored chat completion. Only Chat Completions that have been created
@@ -49,6 +58,13 @@ interface MessageService {
 
     /** A view of [MessageService] that provides access to raw HTTP responses for each method. */
     interface WithRawResponse {
+
+        /**
+         * Returns a view of this service with the given option modifications applied.
+         *
+         * The original service is not modified.
+         */
+        fun withOptions(modifier: Consumer<ClientOptions.Builder>): MessageService.WithRawResponse
 
         /**
          * Returns a raw HTTP response for `get /chat/completions/{completion_id}/messages`, but is

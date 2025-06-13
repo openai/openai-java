@@ -29,6 +29,7 @@ import com.openai.models.evals.runs.RunRetrieveParams
 import com.openai.models.evals.runs.RunRetrieveResponse
 import com.openai.services.blocking.evals.runs.OutputItemService
 import com.openai.services.blocking.evals.runs.OutputItemServiceImpl
+import java.util.function.Consumer
 import kotlin.jvm.optionals.getOrNull
 
 class RunServiceImpl internal constructor(private val clientOptions: ClientOptions) : RunService {
@@ -40,6 +41,9 @@ class RunServiceImpl internal constructor(private val clientOptions: ClientOptio
     private val outputItems: OutputItemService by lazy { OutputItemServiceImpl(clientOptions) }
 
     override fun withRawResponse(): RunService.WithRawResponse = withRawResponse
+
+    override fun withOptions(modifier: Consumer<ClientOptions.Builder>): RunService =
+        RunServiceImpl(clientOptions.toBuilder().apply(modifier::accept).build())
 
     override fun outputItems(): OutputItemService = outputItems
 
@@ -83,6 +87,13 @@ class RunServiceImpl internal constructor(private val clientOptions: ClientOptio
         private val outputItems: OutputItemService.WithRawResponse by lazy {
             OutputItemServiceImpl.WithRawResponseImpl(clientOptions)
         }
+
+        override fun withOptions(
+            modifier: Consumer<ClientOptions.Builder>
+        ): RunService.WithRawResponse =
+            RunServiceImpl.WithRawResponseImpl(
+                clientOptions.toBuilder().apply(modifier::accept).build()
+            )
 
         override fun outputItems(): OutputItemService.WithRawResponse = outputItems
 

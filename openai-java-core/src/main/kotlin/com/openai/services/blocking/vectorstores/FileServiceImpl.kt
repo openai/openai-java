@@ -29,6 +29,7 @@ import com.openai.models.vectorstores.files.FileRetrieveParams
 import com.openai.models.vectorstores.files.FileUpdateParams
 import com.openai.models.vectorstores.files.VectorStoreFile
 import com.openai.models.vectorstores.files.VectorStoreFileDeleted
+import java.util.function.Consumer
 import kotlin.jvm.optionals.getOrNull
 
 class FileServiceImpl internal constructor(private val clientOptions: ClientOptions) : FileService {
@@ -43,6 +44,9 @@ class FileServiceImpl internal constructor(private val clientOptions: ClientOpti
     }
 
     override fun withRawResponse(): FileService.WithRawResponse = withRawResponse
+
+    override fun withOptions(modifier: Consumer<ClientOptions.Builder>): FileService =
+        FileServiceImpl(clientOptions.toBuilder().apply(modifier::accept).build())
 
     override fun create(params: FileCreateParams, requestOptions: RequestOptions): VectorStoreFile =
         // post /vector_stores/{vector_store_id}/files
@@ -81,6 +85,13 @@ class FileServiceImpl internal constructor(private val clientOptions: ClientOpti
         FileService.WithRawResponse {
 
         private val errorHandler: Handler<ErrorObject?> = errorHandler(clientOptions.jsonMapper)
+
+        override fun withOptions(
+            modifier: Consumer<ClientOptions.Builder>
+        ): FileService.WithRawResponse =
+            FileServiceImpl.WithRawResponseImpl(
+                clientOptions.toBuilder().apply(modifier::accept).build()
+            )
 
         private val createHandler: Handler<VectorStoreFile> =
             jsonHandler<VectorStoreFile>(clientOptions.jsonMapper).withErrorHandler(errorHandler)

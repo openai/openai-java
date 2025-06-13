@@ -19,6 +19,7 @@ import com.openai.models.finetuning.jobs.checkpoints.CheckpointListPageAsync
 import com.openai.models.finetuning.jobs.checkpoints.CheckpointListPageResponse
 import com.openai.models.finetuning.jobs.checkpoints.CheckpointListParams
 import java.util.concurrent.CompletableFuture
+import java.util.function.Consumer
 import kotlin.jvm.optionals.getOrNull
 
 class CheckpointServiceAsyncImpl internal constructor(private val clientOptions: ClientOptions) :
@@ -29,6 +30,9 @@ class CheckpointServiceAsyncImpl internal constructor(private val clientOptions:
     }
 
     override fun withRawResponse(): CheckpointServiceAsync.WithRawResponse = withRawResponse
+
+    override fun withOptions(modifier: Consumer<ClientOptions.Builder>): CheckpointServiceAsync =
+        CheckpointServiceAsyncImpl(clientOptions.toBuilder().apply(modifier::accept).build())
 
     override fun list(
         params: CheckpointListParams,
@@ -41,6 +45,13 @@ class CheckpointServiceAsyncImpl internal constructor(private val clientOptions:
         CheckpointServiceAsync.WithRawResponse {
 
         private val errorHandler: Handler<ErrorObject?> = errorHandler(clientOptions.jsonMapper)
+
+        override fun withOptions(
+            modifier: Consumer<ClientOptions.Builder>
+        ): CheckpointServiceAsync.WithRawResponse =
+            CheckpointServiceAsyncImpl.WithRawResponseImpl(
+                clientOptions.toBuilder().apply(modifier::accept).build()
+            )
 
         private val listHandler: Handler<CheckpointListPageResponse> =
             jsonHandler<CheckpointListPageResponse>(clientOptions.jsonMapper)

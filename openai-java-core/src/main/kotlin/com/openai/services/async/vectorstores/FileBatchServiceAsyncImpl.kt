@@ -25,6 +25,7 @@ import com.openai.models.vectorstores.filebatches.FileBatchListFilesParams
 import com.openai.models.vectorstores.filebatches.FileBatchRetrieveParams
 import com.openai.models.vectorstores.filebatches.VectorStoreFileBatch
 import java.util.concurrent.CompletableFuture
+import java.util.function.Consumer
 import kotlin.jvm.optionals.getOrNull
 
 class FileBatchServiceAsyncImpl internal constructor(private val clientOptions: ClientOptions) :
@@ -40,6 +41,9 @@ class FileBatchServiceAsyncImpl internal constructor(private val clientOptions: 
     }
 
     override fun withRawResponse(): FileBatchServiceAsync.WithRawResponse = withRawResponse
+
+    override fun withOptions(modifier: Consumer<ClientOptions.Builder>): FileBatchServiceAsync =
+        FileBatchServiceAsyncImpl(clientOptions.toBuilder().apply(modifier::accept).build())
 
     override fun create(
         params: FileBatchCreateParams,
@@ -73,6 +77,13 @@ class FileBatchServiceAsyncImpl internal constructor(private val clientOptions: 
         FileBatchServiceAsync.WithRawResponse {
 
         private val errorHandler: Handler<ErrorObject?> = errorHandler(clientOptions.jsonMapper)
+
+        override fun withOptions(
+            modifier: Consumer<ClientOptions.Builder>
+        ): FileBatchServiceAsync.WithRawResponse =
+            FileBatchServiceAsyncImpl.WithRawResponseImpl(
+                clientOptions.toBuilder().apply(modifier::accept).build()
+            )
 
         private val createHandler: Handler<VectorStoreFileBatch> =
             jsonHandler<VectorStoreFileBatch>(clientOptions.jsonMapper)

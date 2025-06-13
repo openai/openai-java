@@ -31,6 +31,7 @@ import com.openai.models.finetuning.jobs.JobRetrieveParams
 import com.openai.services.async.finetuning.jobs.CheckpointServiceAsync
 import com.openai.services.async.finetuning.jobs.CheckpointServiceAsyncImpl
 import java.util.concurrent.CompletableFuture
+import java.util.function.Consumer
 import kotlin.jvm.optionals.getOrNull
 
 class JobServiceAsyncImpl internal constructor(private val clientOptions: ClientOptions) :
@@ -45,6 +46,9 @@ class JobServiceAsyncImpl internal constructor(private val clientOptions: Client
     }
 
     override fun withRawResponse(): JobServiceAsync.WithRawResponse = withRawResponse
+
+    override fun withOptions(modifier: Consumer<ClientOptions.Builder>): JobServiceAsync =
+        JobServiceAsyncImpl(clientOptions.toBuilder().apply(modifier::accept).build())
 
     override fun checkpoints(): CheckpointServiceAsync = checkpoints
 
@@ -105,6 +109,13 @@ class JobServiceAsyncImpl internal constructor(private val clientOptions: Client
         private val checkpoints: CheckpointServiceAsync.WithRawResponse by lazy {
             CheckpointServiceAsyncImpl.WithRawResponseImpl(clientOptions)
         }
+
+        override fun withOptions(
+            modifier: Consumer<ClientOptions.Builder>
+        ): JobServiceAsync.WithRawResponse =
+            JobServiceAsyncImpl.WithRawResponseImpl(
+                clientOptions.toBuilder().apply(modifier::accept).build()
+            )
 
         override fun checkpoints(): CheckpointServiceAsync.WithRawResponse = checkpoints
 

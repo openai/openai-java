@@ -11,6 +11,7 @@ import com.openai.services.async.finetuning.JobServiceAsync
 import com.openai.services.async.finetuning.JobServiceAsyncImpl
 import com.openai.services.async.finetuning.MethodServiceAsync
 import com.openai.services.async.finetuning.MethodServiceAsyncImpl
+import java.util.function.Consumer
 
 class FineTuningServiceAsyncImpl internal constructor(private val clientOptions: ClientOptions) :
     FineTuningServiceAsync {
@@ -30,6 +31,9 @@ class FineTuningServiceAsyncImpl internal constructor(private val clientOptions:
     private val alpha: AlphaServiceAsync by lazy { AlphaServiceAsyncImpl(clientOptions) }
 
     override fun withRawResponse(): FineTuningServiceAsync.WithRawResponse = withRawResponse
+
+    override fun withOptions(modifier: Consumer<ClientOptions.Builder>): FineTuningServiceAsync =
+        FineTuningServiceAsyncImpl(clientOptions.toBuilder().apply(modifier::accept).build())
 
     override fun methods(): MethodServiceAsync = methods
 
@@ -57,6 +61,13 @@ class FineTuningServiceAsyncImpl internal constructor(private val clientOptions:
         private val alpha: AlphaServiceAsync.WithRawResponse by lazy {
             AlphaServiceAsyncImpl.WithRawResponseImpl(clientOptions)
         }
+
+        override fun withOptions(
+            modifier: Consumer<ClientOptions.Builder>
+        ): FineTuningServiceAsync.WithRawResponse =
+            FineTuningServiceAsyncImpl.WithRawResponseImpl(
+                clientOptions.toBuilder().apply(modifier::accept).build()
+            )
 
         override fun methods(): MethodServiceAsync.WithRawResponse = methods
 

@@ -23,6 +23,7 @@ import com.openai.models.models.ModelListPage
 import com.openai.models.models.ModelListPageResponse
 import com.openai.models.models.ModelListParams
 import com.openai.models.models.ModelRetrieveParams
+import java.util.function.Consumer
 import kotlin.jvm.optionals.getOrNull
 
 class ModelServiceImpl internal constructor(private val clientOptions: ClientOptions) :
@@ -33,6 +34,9 @@ class ModelServiceImpl internal constructor(private val clientOptions: ClientOpt
     }
 
     override fun withRawResponse(): ModelService.WithRawResponse = withRawResponse
+
+    override fun withOptions(modifier: Consumer<ClientOptions.Builder>): ModelService =
+        ModelServiceImpl(clientOptions.toBuilder().apply(modifier::accept).build())
 
     override fun retrieve(params: ModelRetrieveParams, requestOptions: RequestOptions): Model =
         // get /models/{model}
@@ -50,6 +54,13 @@ class ModelServiceImpl internal constructor(private val clientOptions: ClientOpt
         ModelService.WithRawResponse {
 
         private val errorHandler: Handler<ErrorObject?> = errorHandler(clientOptions.jsonMapper)
+
+        override fun withOptions(
+            modifier: Consumer<ClientOptions.Builder>
+        ): ModelService.WithRawResponse =
+            ModelServiceImpl.WithRawResponseImpl(
+                clientOptions.toBuilder().apply(modifier::accept).build()
+            )
 
         private val retrieveHandler: Handler<Model> =
             jsonHandler<Model>(clientOptions.jsonMapper).withErrorHandler(errorHandler)

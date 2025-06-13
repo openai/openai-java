@@ -31,6 +31,7 @@ import com.openai.models.responses.ResponseRetrieveParams
 import com.openai.models.responses.ResponseStreamEvent
 import com.openai.services.blocking.responses.InputItemService
 import com.openai.services.blocking.responses.InputItemServiceImpl
+import java.util.function.Consumer
 import kotlin.jvm.optionals.getOrNull
 
 class ResponseServiceImpl internal constructor(private val clientOptions: ClientOptions) :
@@ -43,6 +44,9 @@ class ResponseServiceImpl internal constructor(private val clientOptions: Client
     private val inputItems: InputItemService by lazy { InputItemServiceImpl(clientOptions) }
 
     override fun withRawResponse(): ResponseService.WithRawResponse = withRawResponse
+
+    override fun withOptions(modifier: Consumer<ClientOptions.Builder>): ResponseService =
+        ResponseServiceImpl(clientOptions.toBuilder().apply(modifier::accept).build())
 
     override fun inputItems(): InputItemService = inputItems
 
@@ -88,6 +92,13 @@ class ResponseServiceImpl internal constructor(private val clientOptions: Client
         private val inputItems: InputItemService.WithRawResponse by lazy {
             InputItemServiceImpl.WithRawResponseImpl(clientOptions)
         }
+
+        override fun withOptions(
+            modifier: Consumer<ClientOptions.Builder>
+        ): ResponseService.WithRawResponse =
+            ResponseServiceImpl.WithRawResponseImpl(
+                clientOptions.toBuilder().apply(modifier::accept).build()
+            )
 
         override fun inputItems(): InputItemService.WithRawResponse = inputItems
 

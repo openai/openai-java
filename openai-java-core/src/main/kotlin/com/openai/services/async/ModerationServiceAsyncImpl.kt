@@ -18,6 +18,7 @@ import com.openai.models.ErrorObject
 import com.openai.models.moderations.ModerationCreateParams
 import com.openai.models.moderations.ModerationCreateResponse
 import java.util.concurrent.CompletableFuture
+import java.util.function.Consumer
 
 class ModerationServiceAsyncImpl internal constructor(private val clientOptions: ClientOptions) :
     ModerationServiceAsync {
@@ -27,6 +28,9 @@ class ModerationServiceAsyncImpl internal constructor(private val clientOptions:
     }
 
     override fun withRawResponse(): ModerationServiceAsync.WithRawResponse = withRawResponse
+
+    override fun withOptions(modifier: Consumer<ClientOptions.Builder>): ModerationServiceAsync =
+        ModerationServiceAsyncImpl(clientOptions.toBuilder().apply(modifier::accept).build())
 
     override fun create(
         params: ModerationCreateParams,
@@ -39,6 +43,13 @@ class ModerationServiceAsyncImpl internal constructor(private val clientOptions:
         ModerationServiceAsync.WithRawResponse {
 
         private val errorHandler: Handler<ErrorObject?> = errorHandler(clientOptions.jsonMapper)
+
+        override fun withOptions(
+            modifier: Consumer<ClientOptions.Builder>
+        ): ModerationServiceAsync.WithRawResponse =
+            ModerationServiceAsyncImpl.WithRawResponseImpl(
+                clientOptions.toBuilder().apply(modifier::accept).build()
+            )
 
         private val createHandler: Handler<ModerationCreateResponse> =
             jsonHandler<ModerationCreateResponse>(clientOptions.jsonMapper)

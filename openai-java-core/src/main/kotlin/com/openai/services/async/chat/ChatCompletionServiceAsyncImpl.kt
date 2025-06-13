@@ -36,6 +36,7 @@ import com.openai.models.chat.completions.ChatCompletionUpdateParams
 import com.openai.services.async.chat.completions.MessageServiceAsync
 import com.openai.services.async.chat.completions.MessageServiceAsyncImpl
 import java.util.concurrent.CompletableFuture
+import java.util.function.Consumer
 import kotlin.jvm.optionals.getOrNull
 
 class ChatCompletionServiceAsyncImpl
@@ -48,6 +49,11 @@ internal constructor(private val clientOptions: ClientOptions) : ChatCompletionS
     private val messages: MessageServiceAsync by lazy { MessageServiceAsyncImpl(clientOptions) }
 
     override fun withRawResponse(): ChatCompletionServiceAsync.WithRawResponse = withRawResponse
+
+    override fun withOptions(
+        modifier: Consumer<ClientOptions.Builder>
+    ): ChatCompletionServiceAsync =
+        ChatCompletionServiceAsyncImpl(clientOptions.toBuilder().apply(modifier::accept).build())
 
     override fun messages(): MessageServiceAsync = messages
 
@@ -104,6 +110,13 @@ internal constructor(private val clientOptions: ClientOptions) : ChatCompletionS
         private val messages: MessageServiceAsync.WithRawResponse by lazy {
             MessageServiceAsyncImpl.WithRawResponseImpl(clientOptions)
         }
+
+        override fun withOptions(
+            modifier: Consumer<ClientOptions.Builder>
+        ): ChatCompletionServiceAsync.WithRawResponse =
+            ChatCompletionServiceAsyncImpl.WithRawResponseImpl(
+                clientOptions.toBuilder().apply(modifier::accept).build()
+            )
 
         override fun messages(): MessageServiceAsync.WithRawResponse = messages
 
