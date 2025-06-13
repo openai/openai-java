@@ -2,10 +2,12 @@
 
 package com.openai.services.async
 
+import com.openai.core.ClientOptions
 import com.openai.services.async.finetuning.AlphaServiceAsync
 import com.openai.services.async.finetuning.CheckpointServiceAsync
 import com.openai.services.async.finetuning.JobServiceAsync
 import com.openai.services.async.finetuning.MethodServiceAsync
+import java.util.function.Consumer
 
 interface FineTuningServiceAsync {
 
@@ -13,6 +15,13 @@ interface FineTuningServiceAsync {
      * Returns a view of this service that provides access to raw HTTP responses for each method.
      */
     fun withRawResponse(): WithRawResponse
+
+    /**
+     * Returns a view of this service with the given option modifications applied.
+     *
+     * The original service is not modified.
+     */
+    fun withOptions(modifier: Consumer<ClientOptions.Builder>): FineTuningServiceAsync
 
     fun methods(): MethodServiceAsync
 
@@ -27,6 +36,15 @@ interface FineTuningServiceAsync {
      * method.
      */
     interface WithRawResponse {
+
+        /**
+         * Returns a view of this service with the given option modifications applied.
+         *
+         * The original service is not modified.
+         */
+        fun withOptions(
+            modifier: Consumer<ClientOptions.Builder>
+        ): FineTuningServiceAsync.WithRawResponse
 
         fun methods(): MethodServiceAsync.WithRawResponse
 

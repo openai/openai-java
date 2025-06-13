@@ -30,6 +30,7 @@ import com.openai.models.finetuning.jobs.JobResumeParams
 import com.openai.models.finetuning.jobs.JobRetrieveParams
 import com.openai.services.blocking.finetuning.jobs.CheckpointService
 import com.openai.services.blocking.finetuning.jobs.CheckpointServiceImpl
+import java.util.function.Consumer
 import kotlin.jvm.optionals.getOrNull
 
 class JobServiceImpl internal constructor(private val clientOptions: ClientOptions) : JobService {
@@ -41,6 +42,9 @@ class JobServiceImpl internal constructor(private val clientOptions: ClientOptio
     private val checkpoints: CheckpointService by lazy { CheckpointServiceImpl(clientOptions) }
 
     override fun withRawResponse(): JobService.WithRawResponse = withRawResponse
+
+    override fun withOptions(modifier: Consumer<ClientOptions.Builder>): JobService =
+        JobServiceImpl(clientOptions.toBuilder().apply(modifier::accept).build())
 
     override fun checkpoints(): CheckpointService = checkpoints
 
@@ -86,6 +90,13 @@ class JobServiceImpl internal constructor(private val clientOptions: ClientOptio
         private val checkpoints: CheckpointService.WithRawResponse by lazy {
             CheckpointServiceImpl.WithRawResponseImpl(clientOptions)
         }
+
+        override fun withOptions(
+            modifier: Consumer<ClientOptions.Builder>
+        ): JobService.WithRawResponse =
+            JobServiceImpl.WithRawResponseImpl(
+                clientOptions.toBuilder().apply(modifier::accept).build()
+            )
 
         override fun checkpoints(): CheckpointService.WithRawResponse = checkpoints
 

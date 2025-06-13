@@ -29,6 +29,7 @@ import com.openai.models.containers.files.FileRetrieveParams
 import com.openai.models.containers.files.FileRetrieveResponse
 import com.openai.services.blocking.containers.files.ContentService
 import com.openai.services.blocking.containers.files.ContentServiceImpl
+import java.util.function.Consumer
 import kotlin.jvm.optionals.getOrNull
 
 class FileServiceImpl internal constructor(private val clientOptions: ClientOptions) : FileService {
@@ -40,6 +41,9 @@ class FileServiceImpl internal constructor(private val clientOptions: ClientOpti
     private val content: ContentService by lazy { ContentServiceImpl(clientOptions) }
 
     override fun withRawResponse(): FileService.WithRawResponse = withRawResponse
+
+    override fun withOptions(modifier: Consumer<ClientOptions.Builder>): FileService =
+        FileServiceImpl(clientOptions.toBuilder().apply(modifier::accept).build())
 
     override fun content(): ContentService = content
 
@@ -74,6 +78,13 @@ class FileServiceImpl internal constructor(private val clientOptions: ClientOpti
         private val content: ContentService.WithRawResponse by lazy {
             ContentServiceImpl.WithRawResponseImpl(clientOptions)
         }
+
+        override fun withOptions(
+            modifier: Consumer<ClientOptions.Builder>
+        ): FileService.WithRawResponse =
+            FileServiceImpl.WithRawResponseImpl(
+                clientOptions.toBuilder().apply(modifier::accept).build()
+            )
 
         override fun content(): ContentService.WithRawResponse = content
 

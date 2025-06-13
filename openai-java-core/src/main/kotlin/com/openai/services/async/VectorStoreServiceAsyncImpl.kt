@@ -34,6 +34,7 @@ import com.openai.services.async.vectorstores.FileBatchServiceAsyncImpl
 import com.openai.services.async.vectorstores.FileServiceAsync
 import com.openai.services.async.vectorstores.FileServiceAsyncImpl
 import java.util.concurrent.CompletableFuture
+import java.util.function.Consumer
 import kotlin.jvm.optionals.getOrNull
 
 class VectorStoreServiceAsyncImpl internal constructor(private val clientOptions: ClientOptions) :
@@ -55,6 +56,9 @@ class VectorStoreServiceAsyncImpl internal constructor(private val clientOptions
     }
 
     override fun withRawResponse(): VectorStoreServiceAsync.WithRawResponse = withRawResponse
+
+    override fun withOptions(modifier: Consumer<ClientOptions.Builder>): VectorStoreServiceAsync =
+        VectorStoreServiceAsyncImpl(clientOptions.toBuilder().apply(modifier::accept).build())
 
     override fun files(): FileServiceAsync = files
 
@@ -114,6 +118,13 @@ class VectorStoreServiceAsyncImpl internal constructor(private val clientOptions
         private val fileBatches: FileBatchServiceAsync.WithRawResponse by lazy {
             FileBatchServiceAsyncImpl.WithRawResponseImpl(clientOptions)
         }
+
+        override fun withOptions(
+            modifier: Consumer<ClientOptions.Builder>
+        ): VectorStoreServiceAsync.WithRawResponse =
+            VectorStoreServiceAsyncImpl.WithRawResponseImpl(
+                clientOptions.toBuilder().apply(modifier::accept).build()
+            )
 
         override fun files(): FileServiceAsync.WithRawResponse = files
 

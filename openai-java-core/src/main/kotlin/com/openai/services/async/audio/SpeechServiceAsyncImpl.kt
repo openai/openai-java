@@ -14,6 +14,7 @@ import com.openai.core.prepareAsync
 import com.openai.models.ErrorObject
 import com.openai.models.audio.speech.SpeechCreateParams
 import java.util.concurrent.CompletableFuture
+import java.util.function.Consumer
 
 class SpeechServiceAsyncImpl internal constructor(private val clientOptions: ClientOptions) :
     SpeechServiceAsync {
@@ -23,6 +24,9 @@ class SpeechServiceAsyncImpl internal constructor(private val clientOptions: Cli
     }
 
     override fun withRawResponse(): SpeechServiceAsync.WithRawResponse = withRawResponse
+
+    override fun withOptions(modifier: Consumer<ClientOptions.Builder>): SpeechServiceAsync =
+        SpeechServiceAsyncImpl(clientOptions.toBuilder().apply(modifier::accept).build())
 
     override fun create(
         params: SpeechCreateParams,
@@ -35,6 +39,13 @@ class SpeechServiceAsyncImpl internal constructor(private val clientOptions: Cli
         SpeechServiceAsync.WithRawResponse {
 
         private val errorHandler: Handler<ErrorObject?> = errorHandler(clientOptions.jsonMapper)
+
+        override fun withOptions(
+            modifier: Consumer<ClientOptions.Builder>
+        ): SpeechServiceAsync.WithRawResponse =
+            SpeechServiceAsyncImpl.WithRawResponseImpl(
+                clientOptions.toBuilder().apply(modifier::accept).build()
+            )
 
         override fun create(
             params: SpeechCreateParams,

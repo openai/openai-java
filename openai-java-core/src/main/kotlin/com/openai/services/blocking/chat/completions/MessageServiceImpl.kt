@@ -18,6 +18,7 @@ import com.openai.models.ErrorObject
 import com.openai.models.chat.completions.messages.MessageListPage
 import com.openai.models.chat.completions.messages.MessageListPageResponse
 import com.openai.models.chat.completions.messages.MessageListParams
+import java.util.function.Consumer
 import kotlin.jvm.optionals.getOrNull
 
 class MessageServiceImpl internal constructor(private val clientOptions: ClientOptions) :
@@ -29,6 +30,9 @@ class MessageServiceImpl internal constructor(private val clientOptions: ClientO
 
     override fun withRawResponse(): MessageService.WithRawResponse = withRawResponse
 
+    override fun withOptions(modifier: Consumer<ClientOptions.Builder>): MessageService =
+        MessageServiceImpl(clientOptions.toBuilder().apply(modifier::accept).build())
+
     override fun list(params: MessageListParams, requestOptions: RequestOptions): MessageListPage =
         // get /chat/completions/{completion_id}/messages
         withRawResponse().list(params, requestOptions).parse()
@@ -37,6 +41,13 @@ class MessageServiceImpl internal constructor(private val clientOptions: ClientO
         MessageService.WithRawResponse {
 
         private val errorHandler: Handler<ErrorObject?> = errorHandler(clientOptions.jsonMapper)
+
+        override fun withOptions(
+            modifier: Consumer<ClientOptions.Builder>
+        ): MessageService.WithRawResponse =
+            MessageServiceImpl.WithRawResponseImpl(
+                clientOptions.toBuilder().apply(modifier::accept).build()
+            )
 
         private val listHandler: Handler<MessageListPageResponse> =
             jsonHandler<MessageListPageResponse>(clientOptions.jsonMapper)

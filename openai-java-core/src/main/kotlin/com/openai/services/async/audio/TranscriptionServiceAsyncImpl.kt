@@ -31,6 +31,8 @@ import com.openai.models.audio.transcriptions.TranscriptionStreamEvent
 import java.util.concurrent.CompletableFuture
 import kotlin.jvm.optionals.getOrNull
 
+import java.util.function.Consumer
+
 class TranscriptionServiceAsyncImpl internal constructor(private val clientOptions: ClientOptions) :
     TranscriptionServiceAsync {
 
@@ -39,6 +41,9 @@ class TranscriptionServiceAsyncImpl internal constructor(private val clientOptio
     }
 
     override fun withRawResponse(): TranscriptionServiceAsync.WithRawResponse = withRawResponse
+
+    override fun withOptions(modifier: Consumer<ClientOptions.Builder>): TranscriptionServiceAsync =
+        TranscriptionServiceAsyncImpl(clientOptions.toBuilder().apply(modifier::accept).build())
 
     override fun create(
         params: TranscriptionCreateParams,
@@ -61,6 +66,13 @@ class TranscriptionServiceAsyncImpl internal constructor(private val clientOptio
         TranscriptionServiceAsync.WithRawResponse {
 
         private val errorHandler: Handler<ErrorObject?> = errorHandler(clientOptions.jsonMapper)
+
+        override fun withOptions(
+            modifier: Consumer<ClientOptions.Builder>
+        ): TranscriptionServiceAsync.WithRawResponse =
+            TranscriptionServiceAsyncImpl.WithRawResponseImpl(
+                clientOptions.toBuilder().apply(modifier::accept).build()
+            )
 
         private val createJsonHandler: Handler<TranscriptionCreateResponse> =
             jsonHandler<TranscriptionCreateResponse>(clientOptions.jsonMapper)

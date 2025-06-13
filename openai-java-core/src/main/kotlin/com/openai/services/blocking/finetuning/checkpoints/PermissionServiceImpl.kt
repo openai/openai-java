@@ -23,6 +23,7 @@ import com.openai.models.finetuning.checkpoints.permissions.PermissionDeletePara
 import com.openai.models.finetuning.checkpoints.permissions.PermissionDeleteResponse
 import com.openai.models.finetuning.checkpoints.permissions.PermissionRetrieveParams
 import com.openai.models.finetuning.checkpoints.permissions.PermissionRetrieveResponse
+import java.util.function.Consumer
 import kotlin.jvm.optionals.getOrNull
 
 class PermissionServiceImpl internal constructor(private val clientOptions: ClientOptions) :
@@ -33,6 +34,9 @@ class PermissionServiceImpl internal constructor(private val clientOptions: Clie
     }
 
     override fun withRawResponse(): PermissionService.WithRawResponse = withRawResponse
+
+    override fun withOptions(modifier: Consumer<ClientOptions.Builder>): PermissionService =
+        PermissionServiceImpl(clientOptions.toBuilder().apply(modifier::accept).build())
 
     override fun create(
         params: PermissionCreateParams,
@@ -59,6 +63,13 @@ class PermissionServiceImpl internal constructor(private val clientOptions: Clie
         PermissionService.WithRawResponse {
 
         private val errorHandler: Handler<ErrorObject?> = errorHandler(clientOptions.jsonMapper)
+
+        override fun withOptions(
+            modifier: Consumer<ClientOptions.Builder>
+        ): PermissionService.WithRawResponse =
+            PermissionServiceImpl.WithRawResponseImpl(
+                clientOptions.toBuilder().apply(modifier::accept).build()
+            )
 
         private val createHandler: Handler<PermissionCreatePageResponse> =
             jsonHandler<PermissionCreatePageResponse>(clientOptions.jsonMapper)

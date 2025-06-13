@@ -3,6 +3,7 @@
 package com.openai.services.blocking
 
 import com.google.errorprone.annotations.MustBeClosed
+import com.openai.core.ClientOptions
 import com.openai.core.RequestOptions
 import com.openai.core.http.HttpResponseFor
 import com.openai.models.vectorstores.VectorStore
@@ -17,6 +18,7 @@ import com.openai.models.vectorstores.VectorStoreSearchParams
 import com.openai.models.vectorstores.VectorStoreUpdateParams
 import com.openai.services.blocking.vectorstores.FileBatchService
 import com.openai.services.blocking.vectorstores.FileService
+import java.util.function.Consumer
 
 interface VectorStoreService {
 
@@ -24,6 +26,13 @@ interface VectorStoreService {
      * Returns a view of this service that provides access to raw HTTP responses for each method.
      */
     fun withRawResponse(): WithRawResponse
+
+    /**
+     * Returns a view of this service with the given option modifications applied.
+     *
+     * The original service is not modified.
+     */
+    fun withOptions(modifier: Consumer<ClientOptions.Builder>): VectorStoreService
 
     fun files(): FileService
 
@@ -183,6 +192,15 @@ interface VectorStoreService {
      * A view of [VectorStoreService] that provides access to raw HTTP responses for each method.
      */
     interface WithRawResponse {
+
+        /**
+         * Returns a view of this service with the given option modifications applied.
+         *
+         * The original service is not modified.
+         */
+        fun withOptions(
+            modifier: Consumer<ClientOptions.Builder>
+        ): VectorStoreService.WithRawResponse
 
         fun files(): FileService.WithRawResponse
 

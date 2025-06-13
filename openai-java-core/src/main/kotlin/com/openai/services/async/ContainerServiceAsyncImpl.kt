@@ -29,6 +29,7 @@ import com.openai.models.containers.ContainerRetrieveResponse
 import com.openai.services.async.containers.FileServiceAsync
 import com.openai.services.async.containers.FileServiceAsyncImpl
 import java.util.concurrent.CompletableFuture
+import java.util.function.Consumer
 import kotlin.jvm.optionals.getOrNull
 
 class ContainerServiceAsyncImpl internal constructor(private val clientOptions: ClientOptions) :
@@ -41,6 +42,9 @@ class ContainerServiceAsyncImpl internal constructor(private val clientOptions: 
     private val files: FileServiceAsync by lazy { FileServiceAsyncImpl(clientOptions) }
 
     override fun withRawResponse(): ContainerServiceAsync.WithRawResponse = withRawResponse
+
+    override fun withOptions(modifier: Consumer<ClientOptions.Builder>): ContainerServiceAsync =
+        ContainerServiceAsyncImpl(clientOptions.toBuilder().apply(modifier::accept).build())
 
     override fun files(): FileServiceAsync = files
 
@@ -80,6 +84,13 @@ class ContainerServiceAsyncImpl internal constructor(private val clientOptions: 
         private val files: FileServiceAsync.WithRawResponse by lazy {
             FileServiceAsyncImpl.WithRawResponseImpl(clientOptions)
         }
+
+        override fun withOptions(
+            modifier: Consumer<ClientOptions.Builder>
+        ): ContainerServiceAsync.WithRawResponse =
+            ContainerServiceAsyncImpl.WithRawResponseImpl(
+                clientOptions.toBuilder().apply(modifier::accept).build()
+            )
 
         override fun files(): FileServiceAsync.WithRawResponse = files
 

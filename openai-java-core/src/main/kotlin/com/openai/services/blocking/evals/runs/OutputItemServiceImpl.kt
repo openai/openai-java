@@ -20,6 +20,7 @@ import com.openai.models.evals.runs.outputitems.OutputItemListPageResponse
 import com.openai.models.evals.runs.outputitems.OutputItemListParams
 import com.openai.models.evals.runs.outputitems.OutputItemRetrieveParams
 import com.openai.models.evals.runs.outputitems.OutputItemRetrieveResponse
+import java.util.function.Consumer
 import kotlin.jvm.optionals.getOrNull
 
 class OutputItemServiceImpl internal constructor(private val clientOptions: ClientOptions) :
@@ -30,6 +31,9 @@ class OutputItemServiceImpl internal constructor(private val clientOptions: Clie
     }
 
     override fun withRawResponse(): OutputItemService.WithRawResponse = withRawResponse
+
+    override fun withOptions(modifier: Consumer<ClientOptions.Builder>): OutputItemService =
+        OutputItemServiceImpl(clientOptions.toBuilder().apply(modifier::accept).build())
 
     override fun retrieve(
         params: OutputItemRetrieveParams,
@@ -49,6 +53,13 @@ class OutputItemServiceImpl internal constructor(private val clientOptions: Clie
         OutputItemService.WithRawResponse {
 
         private val errorHandler: Handler<ErrorObject?> = errorHandler(clientOptions.jsonMapper)
+
+        override fun withOptions(
+            modifier: Consumer<ClientOptions.Builder>
+        ): OutputItemService.WithRawResponse =
+            OutputItemServiceImpl.WithRawResponseImpl(
+                clientOptions.toBuilder().apply(modifier::accept).build()
+            )
 
         private val retrieveHandler: Handler<OutputItemRetrieveResponse> =
             jsonHandler<OutputItemRetrieveResponse>(clientOptions.jsonMapper)

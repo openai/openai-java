@@ -30,6 +30,7 @@ import com.openai.models.evals.EvalUpdateResponse
 import com.openai.services.async.evals.RunServiceAsync
 import com.openai.services.async.evals.RunServiceAsyncImpl
 import java.util.concurrent.CompletableFuture
+import java.util.function.Consumer
 import kotlin.jvm.optionals.getOrNull
 
 class EvalServiceAsyncImpl internal constructor(private val clientOptions: ClientOptions) :
@@ -42,6 +43,9 @@ class EvalServiceAsyncImpl internal constructor(private val clientOptions: Clien
     private val runs: RunServiceAsync by lazy { RunServiceAsyncImpl(clientOptions) }
 
     override fun withRawResponse(): EvalServiceAsync.WithRawResponse = withRawResponse
+
+    override fun withOptions(modifier: Consumer<ClientOptions.Builder>): EvalServiceAsync =
+        EvalServiceAsyncImpl(clientOptions.toBuilder().apply(modifier::accept).build())
 
     override fun runs(): RunServiceAsync = runs
 
@@ -88,6 +92,13 @@ class EvalServiceAsyncImpl internal constructor(private val clientOptions: Clien
         private val runs: RunServiceAsync.WithRawResponse by lazy {
             RunServiceAsyncImpl.WithRawResponseImpl(clientOptions)
         }
+
+        override fun withOptions(
+            modifier: Consumer<ClientOptions.Builder>
+        ): EvalServiceAsync.WithRawResponse =
+            EvalServiceAsyncImpl.WithRawResponseImpl(
+                clientOptions.toBuilder().apply(modifier::accept).build()
+            )
 
         override fun runs(): RunServiceAsync.WithRawResponse = runs
 

@@ -34,6 +34,7 @@ import com.openai.models.responses.ResponseStreamEvent
 import com.openai.services.async.responses.InputItemServiceAsync
 import com.openai.services.async.responses.InputItemServiceAsyncImpl
 import java.util.concurrent.CompletableFuture
+import java.util.function.Consumer
 import kotlin.jvm.optionals.getOrNull
 
 class ResponseServiceAsyncImpl internal constructor(private val clientOptions: ClientOptions) :
@@ -48,6 +49,9 @@ class ResponseServiceAsyncImpl internal constructor(private val clientOptions: C
     }
 
     override fun withRawResponse(): ResponseServiceAsync.WithRawResponse = withRawResponse
+
+    override fun withOptions(modifier: Consumer<ClientOptions.Builder>): ResponseServiceAsync =
+        ResponseServiceAsyncImpl(clientOptions.toBuilder().apply(modifier::accept).build())
 
     override fun inputItems(): InputItemServiceAsync = inputItems
 
@@ -107,6 +111,13 @@ class ResponseServiceAsyncImpl internal constructor(private val clientOptions: C
         private val inputItems: InputItemServiceAsync.WithRawResponse by lazy {
             InputItemServiceAsyncImpl.WithRawResponseImpl(clientOptions)
         }
+
+        override fun withOptions(
+            modifier: Consumer<ClientOptions.Builder>
+        ): ResponseServiceAsync.WithRawResponse =
+            ResponseServiceAsyncImpl.WithRawResponseImpl(
+                clientOptions.toBuilder().apply(modifier::accept).build()
+            )
 
         override fun inputItems(): InputItemServiceAsync.WithRawResponse = inputItems
 

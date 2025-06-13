@@ -20,6 +20,7 @@ import com.openai.models.images.ImageCreateVariationParams
 import com.openai.models.images.ImageEditParams
 import com.openai.models.images.ImageGenerateParams
 import com.openai.models.images.ImagesResponse
+import java.util.function.Consumer
 
 class ImageServiceImpl internal constructor(private val clientOptions: ClientOptions) :
     ImageService {
@@ -29,6 +30,9 @@ class ImageServiceImpl internal constructor(private val clientOptions: ClientOpt
     }
 
     override fun withRawResponse(): ImageService.WithRawResponse = withRawResponse
+
+    override fun withOptions(modifier: Consumer<ClientOptions.Builder>): ImageService =
+        ImageServiceImpl(clientOptions.toBuilder().apply(modifier::accept).build())
 
     override fun createVariation(
         params: ImageCreateVariationParams,
@@ -52,6 +56,13 @@ class ImageServiceImpl internal constructor(private val clientOptions: ClientOpt
         ImageService.WithRawResponse {
 
         private val errorHandler: Handler<ErrorObject?> = errorHandler(clientOptions.jsonMapper)
+
+        override fun withOptions(
+            modifier: Consumer<ClientOptions.Builder>
+        ): ImageService.WithRawResponse =
+            ImageServiceImpl.WithRawResponseImpl(
+                clientOptions.toBuilder().apply(modifier::accept).build()
+            )
 
         private val createVariationHandler: Handler<ImagesResponse> =
             jsonHandler<ImagesResponse>(clientOptions.jsonMapper).withErrorHandler(errorHandler)

@@ -3,6 +3,7 @@
 package com.openai.services.blocking
 
 import com.google.errorprone.annotations.MustBeClosed
+import com.openai.core.ClientOptions
 import com.openai.core.RequestOptions
 import com.openai.core.http.HttpResponse
 import com.openai.core.http.HttpResponseFor
@@ -14,6 +15,7 @@ import com.openai.models.files.FileListPage
 import com.openai.models.files.FileListParams
 import com.openai.models.files.FileObject
 import com.openai.models.files.FileRetrieveParams
+import java.util.function.Consumer
 
 interface FileService {
 
@@ -21,6 +23,13 @@ interface FileService {
      * Returns a view of this service that provides access to raw HTTP responses for each method.
      */
     fun withRawResponse(): WithRawResponse
+
+    /**
+     * Returns a view of this service with the given option modifications applied.
+     *
+     * The original service is not modified.
+     */
+    fun withOptions(modifier: Consumer<ClientOptions.Builder>): FileService
 
     /**
      * Upload a file that can be used across various endpoints. Individual files can be up to 512
@@ -159,6 +168,13 @@ interface FileService {
 
     /** A view of [FileService] that provides access to raw HTTP responses for each method. */
     interface WithRawResponse {
+
+        /**
+         * Returns a view of this service with the given option modifications applied.
+         *
+         * The original service is not modified.
+         */
+        fun withOptions(modifier: Consumer<ClientOptions.Builder>): FileService.WithRawResponse
 
         /**
          * Returns a raw HTTP response for `post /files`, but is otherwise the same as
