@@ -33,6 +33,7 @@ import com.openai.models.chat.completions.ChatCompletionRetrieveParams
 import com.openai.models.chat.completions.ChatCompletionUpdateParams
 import com.openai.services.blocking.chat.completions.MessageService
 import com.openai.services.blocking.chat.completions.MessageServiceImpl
+import java.util.function.Consumer
 import kotlin.jvm.optionals.getOrNull
 
 class ChatCompletionServiceImpl internal constructor(private val clientOptions: ClientOptions) :
@@ -45,6 +46,9 @@ class ChatCompletionServiceImpl internal constructor(private val clientOptions: 
     private val messages: MessageService by lazy { MessageServiceImpl(clientOptions) }
 
     override fun withRawResponse(): ChatCompletionService.WithRawResponse = withRawResponse
+
+    override fun withOptions(modifier: Consumer<ClientOptions.Builder>): ChatCompletionService =
+        ChatCompletionServiceImpl(clientOptions.toBuilder().apply(modifier::accept).build())
 
     override fun messages(): MessageService = messages
 
@@ -99,6 +103,13 @@ class ChatCompletionServiceImpl internal constructor(private val clientOptions: 
             MessageServiceImpl.WithRawResponseImpl(clientOptions)
         }
 
+        override fun withOptions(
+            modifier: Consumer<ClientOptions.Builder>
+        ): ChatCompletionService.WithRawResponse =
+            ChatCompletionServiceImpl.WithRawResponseImpl(
+                clientOptions.toBuilder().apply(modifier::accept).build()
+            )
+
         override fun messages(): MessageService.WithRawResponse = messages
 
         private val createHandler: Handler<ChatCompletion> =
@@ -111,6 +122,7 @@ class ChatCompletionServiceImpl internal constructor(private val clientOptions: 
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.POST)
+                    .baseUrl(clientOptions.baseUrl())
                     .addPathSegments("chat", "completions")
                     .body(json(clientOptions.jsonMapper, params._body()))
                     .build()
@@ -140,6 +152,7 @@ class ChatCompletionServiceImpl internal constructor(private val clientOptions: 
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.POST)
+                    .baseUrl(clientOptions.baseUrl())
                     .addPathSegments("chat", "completions")
                     .body(
                         json(
@@ -181,6 +194,7 @@ class ChatCompletionServiceImpl internal constructor(private val clientOptions: 
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.GET)
+                    .baseUrl(clientOptions.baseUrl())
                     .addPathSegments("chat", "completions", params._pathParam(0))
                     .build()
                     .prepare(clientOptions, params, null)
@@ -210,6 +224,7 @@ class ChatCompletionServiceImpl internal constructor(private val clientOptions: 
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.POST)
+                    .baseUrl(clientOptions.baseUrl())
                     .addPathSegments("chat", "completions", params._pathParam(0))
                     .body(json(clientOptions.jsonMapper, params._body()))
                     .build()
@@ -238,6 +253,7 @@ class ChatCompletionServiceImpl internal constructor(private val clientOptions: 
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.GET)
+                    .baseUrl(clientOptions.baseUrl())
                     .addPathSegments("chat", "completions")
                     .build()
                     .prepare(
@@ -279,6 +295,7 @@ class ChatCompletionServiceImpl internal constructor(private val clientOptions: 
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.DELETE)
+                    .baseUrl(clientOptions.baseUrl())
                     .addPathSegments("chat", "completions", params._pathParam(0))
                     .apply { params._body().ifPresent { body(json(clientOptions.jsonMapper, it)) } }
                     .build()

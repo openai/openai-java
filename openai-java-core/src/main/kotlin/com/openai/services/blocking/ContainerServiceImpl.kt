@@ -28,6 +28,7 @@ import com.openai.models.containers.ContainerRetrieveParams
 import com.openai.models.containers.ContainerRetrieveResponse
 import com.openai.services.blocking.containers.FileService
 import com.openai.services.blocking.containers.FileServiceImpl
+import java.util.function.Consumer
 import kotlin.jvm.optionals.getOrNull
 
 class ContainerServiceImpl internal constructor(private val clientOptions: ClientOptions) :
@@ -40,6 +41,9 @@ class ContainerServiceImpl internal constructor(private val clientOptions: Clien
     private val files: FileService by lazy { FileServiceImpl(clientOptions) }
 
     override fun withRawResponse(): ContainerService.WithRawResponse = withRawResponse
+
+    override fun withOptions(modifier: Consumer<ClientOptions.Builder>): ContainerService =
+        ContainerServiceImpl(clientOptions.toBuilder().apply(modifier::accept).build())
 
     override fun files(): FileService = files
 
@@ -78,6 +82,13 @@ class ContainerServiceImpl internal constructor(private val clientOptions: Clien
             FileServiceImpl.WithRawResponseImpl(clientOptions)
         }
 
+        override fun withOptions(
+            modifier: Consumer<ClientOptions.Builder>
+        ): ContainerService.WithRawResponse =
+            ContainerServiceImpl.WithRawResponseImpl(
+                clientOptions.toBuilder().apply(modifier::accept).build()
+            )
+
         override fun files(): FileService.WithRawResponse = files
 
         private val createHandler: Handler<ContainerCreateResponse> =
@@ -91,6 +102,7 @@ class ContainerServiceImpl internal constructor(private val clientOptions: Clien
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.POST)
+                    .baseUrl(clientOptions.baseUrl())
                     .addPathSegments("containers")
                     .body(json(clientOptions.jsonMapper, params._body()))
                     .build()
@@ -122,6 +134,7 @@ class ContainerServiceImpl internal constructor(private val clientOptions: Clien
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.GET)
+                    .baseUrl(clientOptions.baseUrl())
                     .addPathSegments("containers", params._pathParam(0))
                     .build()
                     .prepare(clientOptions, params, deploymentModel = null)
@@ -149,6 +162,7 @@ class ContainerServiceImpl internal constructor(private val clientOptions: Clien
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.GET)
+                    .baseUrl(clientOptions.baseUrl())
                     .addPathSegments("containers")
                     .build()
                     .prepare(clientOptions, params, deploymentModel = null)
@@ -184,6 +198,7 @@ class ContainerServiceImpl internal constructor(private val clientOptions: Clien
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.DELETE)
+                    .baseUrl(clientOptions.baseUrl())
                     .addPathSegments("containers", params._pathParam(0))
                     .apply { params._body().ifPresent { body(json(clientOptions.jsonMapper, it)) } }
                     .build()

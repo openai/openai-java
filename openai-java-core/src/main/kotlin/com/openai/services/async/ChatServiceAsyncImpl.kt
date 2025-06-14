@@ -5,6 +5,7 @@ package com.openai.services.async
 import com.openai.core.ClientOptions
 import com.openai.services.async.chat.ChatCompletionServiceAsync
 import com.openai.services.async.chat.ChatCompletionServiceAsyncImpl
+import java.util.function.Consumer
 
 class ChatServiceAsyncImpl internal constructor(private val clientOptions: ClientOptions) :
     ChatServiceAsync {
@@ -19,6 +20,9 @@ class ChatServiceAsyncImpl internal constructor(private val clientOptions: Clien
 
     override fun withRawResponse(): ChatServiceAsync.WithRawResponse = withRawResponse
 
+    override fun withOptions(modifier: Consumer<ClientOptions.Builder>): ChatServiceAsync =
+        ChatServiceAsyncImpl(clientOptions.toBuilder().apply(modifier::accept).build())
+
     override fun completions(): ChatCompletionServiceAsync = completions
 
     class WithRawResponseImpl internal constructor(private val clientOptions: ClientOptions) :
@@ -27,6 +31,13 @@ class ChatServiceAsyncImpl internal constructor(private val clientOptions: Clien
         private val completions: ChatCompletionServiceAsync.WithRawResponse by lazy {
             ChatCompletionServiceAsyncImpl.WithRawResponseImpl(clientOptions)
         }
+
+        override fun withOptions(
+            modifier: Consumer<ClientOptions.Builder>
+        ): ChatServiceAsync.WithRawResponse =
+            ChatServiceAsyncImpl.WithRawResponseImpl(
+                clientOptions.toBuilder().apply(modifier::accept).build()
+            )
 
         override fun completions(): ChatCompletionServiceAsync.WithRawResponse = completions
     }

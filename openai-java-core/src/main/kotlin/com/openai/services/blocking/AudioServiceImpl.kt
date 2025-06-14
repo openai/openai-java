@@ -9,6 +9,7 @@ import com.openai.services.blocking.audio.TranscriptionService
 import com.openai.services.blocking.audio.TranscriptionServiceImpl
 import com.openai.services.blocking.audio.TranslationService
 import com.openai.services.blocking.audio.TranslationServiceImpl
+import java.util.function.Consumer
 
 class AudioServiceImpl internal constructor(private val clientOptions: ClientOptions) :
     AudioService {
@@ -26,6 +27,9 @@ class AudioServiceImpl internal constructor(private val clientOptions: ClientOpt
     private val speech: SpeechService by lazy { SpeechServiceImpl(clientOptions) }
 
     override fun withRawResponse(): AudioService.WithRawResponse = withRawResponse
+
+    override fun withOptions(modifier: Consumer<ClientOptions.Builder>): AudioService =
+        AudioServiceImpl(clientOptions.toBuilder().apply(modifier::accept).build())
 
     override fun transcriptions(): TranscriptionService = transcriptions
 
@@ -47,6 +51,13 @@ class AudioServiceImpl internal constructor(private val clientOptions: ClientOpt
         private val speech: SpeechService.WithRawResponse by lazy {
             SpeechServiceImpl.WithRawResponseImpl(clientOptions)
         }
+
+        override fun withOptions(
+            modifier: Consumer<ClientOptions.Builder>
+        ): AudioService.WithRawResponse =
+            AudioServiceImpl.WithRawResponseImpl(
+                clientOptions.toBuilder().apply(modifier::accept).build()
+            )
 
         override fun transcriptions(): TranscriptionService.WithRawResponse = transcriptions
 

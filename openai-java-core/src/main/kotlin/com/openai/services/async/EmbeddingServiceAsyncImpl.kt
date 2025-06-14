@@ -18,6 +18,7 @@ import com.openai.models.ErrorObject
 import com.openai.models.embeddings.CreateEmbeddingResponse
 import com.openai.models.embeddings.EmbeddingCreateParams
 import java.util.concurrent.CompletableFuture
+import java.util.function.Consumer
 
 class EmbeddingServiceAsyncImpl internal constructor(private val clientOptions: ClientOptions) :
     EmbeddingServiceAsync {
@@ -27,6 +28,9 @@ class EmbeddingServiceAsyncImpl internal constructor(private val clientOptions: 
     }
 
     override fun withRawResponse(): EmbeddingServiceAsync.WithRawResponse = withRawResponse
+
+    override fun withOptions(modifier: Consumer<ClientOptions.Builder>): EmbeddingServiceAsync =
+        EmbeddingServiceAsyncImpl(clientOptions.toBuilder().apply(modifier::accept).build())
 
     override fun create(
         params: EmbeddingCreateParams,
@@ -40,6 +44,13 @@ class EmbeddingServiceAsyncImpl internal constructor(private val clientOptions: 
 
         private val errorHandler: Handler<ErrorObject?> = errorHandler(clientOptions.jsonMapper)
 
+        override fun withOptions(
+            modifier: Consumer<ClientOptions.Builder>
+        ): EmbeddingServiceAsync.WithRawResponse =
+            EmbeddingServiceAsyncImpl.WithRawResponseImpl(
+                clientOptions.toBuilder().apply(modifier::accept).build()
+            )
+
         private val createHandler: Handler<CreateEmbeddingResponse> =
             jsonHandler<CreateEmbeddingResponse>(clientOptions.jsonMapper)
                 .withErrorHandler(errorHandler)
@@ -51,6 +62,7 @@ class EmbeddingServiceAsyncImpl internal constructor(private val clientOptions: 
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.POST)
+                    .baseUrl(clientOptions.baseUrl())
                     .addPathSegments("embeddings")
                     .body(json(clientOptions.jsonMapper, params._body()))
                     .build()

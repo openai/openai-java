@@ -2,6 +2,7 @@
 
 package com.openai.services.async
 
+import com.openai.core.ClientOptions
 import com.openai.core.RequestOptions
 import com.openai.core.http.HttpResponseFor
 import com.openai.models.models.Model
@@ -11,6 +12,7 @@ import com.openai.models.models.ModelListPageAsync
 import com.openai.models.models.ModelListParams
 import com.openai.models.models.ModelRetrieveParams
 import java.util.concurrent.CompletableFuture
+import java.util.function.Consumer
 
 interface ModelServiceAsync {
 
@@ -18,6 +20,13 @@ interface ModelServiceAsync {
      * Returns a view of this service that provides access to raw HTTP responses for each method.
      */
     fun withRawResponse(): WithRawResponse
+
+    /**
+     * Returns a view of this service with the given option modifications applied.
+     *
+     * The original service is not modified.
+     */
+    fun withOptions(modifier: Consumer<ClientOptions.Builder>): ModelServiceAsync
 
     /**
      * Retrieves a model instance, providing basic information about the model such as the owner and
@@ -111,6 +120,15 @@ interface ModelServiceAsync {
 
     /** A view of [ModelServiceAsync] that provides access to raw HTTP responses for each method. */
     interface WithRawResponse {
+
+        /**
+         * Returns a view of this service with the given option modifications applied.
+         *
+         * The original service is not modified.
+         */
+        fun withOptions(
+            modifier: Consumer<ClientOptions.Builder>
+        ): ModelServiceAsync.WithRawResponse
 
         /**
          * Returns a raw HTTP response for `get /models/{model}`, but is otherwise the same as

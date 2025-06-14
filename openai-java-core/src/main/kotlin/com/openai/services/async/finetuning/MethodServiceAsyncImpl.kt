@@ -3,6 +3,7 @@
 package com.openai.services.async.finetuning
 
 import com.openai.core.ClientOptions
+import java.util.function.Consumer
 
 class MethodServiceAsyncImpl internal constructor(private val clientOptions: ClientOptions) :
     MethodServiceAsync {
@@ -13,6 +14,17 @@ class MethodServiceAsyncImpl internal constructor(private val clientOptions: Cli
 
     override fun withRawResponse(): MethodServiceAsync.WithRawResponse = withRawResponse
 
+    override fun withOptions(modifier: Consumer<ClientOptions.Builder>): MethodServiceAsync =
+        MethodServiceAsyncImpl(clientOptions.toBuilder().apply(modifier::accept).build())
+
     class WithRawResponseImpl internal constructor(private val clientOptions: ClientOptions) :
-        MethodServiceAsync.WithRawResponse
+        MethodServiceAsync.WithRawResponse {
+
+        override fun withOptions(
+            modifier: Consumer<ClientOptions.Builder>
+        ): MethodServiceAsync.WithRawResponse =
+            MethodServiceAsyncImpl.WithRawResponseImpl(
+                clientOptions.toBuilder().apply(modifier::accept).build()
+            )
+    }
 }

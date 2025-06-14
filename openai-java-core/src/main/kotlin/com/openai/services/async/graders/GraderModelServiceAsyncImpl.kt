@@ -3,6 +3,7 @@
 package com.openai.services.async.graders
 
 import com.openai.core.ClientOptions
+import java.util.function.Consumer
 
 class GraderModelServiceAsyncImpl internal constructor(private val clientOptions: ClientOptions) :
     GraderModelServiceAsync {
@@ -13,6 +14,17 @@ class GraderModelServiceAsyncImpl internal constructor(private val clientOptions
 
     override fun withRawResponse(): GraderModelServiceAsync.WithRawResponse = withRawResponse
 
+    override fun withOptions(modifier: Consumer<ClientOptions.Builder>): GraderModelServiceAsync =
+        GraderModelServiceAsyncImpl(clientOptions.toBuilder().apply(modifier::accept).build())
+
     class WithRawResponseImpl internal constructor(private val clientOptions: ClientOptions) :
-        GraderModelServiceAsync.WithRawResponse
+        GraderModelServiceAsync.WithRawResponse {
+
+        override fun withOptions(
+            modifier: Consumer<ClientOptions.Builder>
+        ): GraderModelServiceAsync.WithRawResponse =
+            GraderModelServiceAsyncImpl.WithRawResponseImpl(
+                clientOptions.toBuilder().apply(modifier::accept).build()
+            )
+    }
 }

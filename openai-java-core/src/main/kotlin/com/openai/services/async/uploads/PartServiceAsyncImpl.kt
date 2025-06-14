@@ -19,6 +19,7 @@ import com.openai.models.ErrorObject
 import com.openai.models.uploads.parts.PartCreateParams
 import com.openai.models.uploads.parts.UploadPart
 import java.util.concurrent.CompletableFuture
+import java.util.function.Consumer
 import kotlin.jvm.optionals.getOrNull
 
 class PartServiceAsyncImpl internal constructor(private val clientOptions: ClientOptions) :
@@ -29,6 +30,9 @@ class PartServiceAsyncImpl internal constructor(private val clientOptions: Clien
     }
 
     override fun withRawResponse(): PartServiceAsync.WithRawResponse = withRawResponse
+
+    override fun withOptions(modifier: Consumer<ClientOptions.Builder>): PartServiceAsync =
+        PartServiceAsyncImpl(clientOptions.toBuilder().apply(modifier::accept).build())
 
     override fun create(
         params: PartCreateParams,
@@ -41,6 +45,13 @@ class PartServiceAsyncImpl internal constructor(private val clientOptions: Clien
         PartServiceAsync.WithRawResponse {
 
         private val errorHandler: Handler<ErrorObject?> = errorHandler(clientOptions.jsonMapper)
+
+        override fun withOptions(
+            modifier: Consumer<ClientOptions.Builder>
+        ): PartServiceAsync.WithRawResponse =
+            PartServiceAsyncImpl.WithRawResponseImpl(
+                clientOptions.toBuilder().apply(modifier::accept).build()
+            )
 
         private val createHandler: Handler<UploadPart> =
             jsonHandler<UploadPart>(clientOptions.jsonMapper).withErrorHandler(errorHandler)
@@ -55,6 +66,7 @@ class PartServiceAsyncImpl internal constructor(private val clientOptions: Clien
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.POST)
+                    .baseUrl(clientOptions.baseUrl())
                     .addPathSegments("uploads", params._pathParam(0), "parts")
                     .body(multipartFormData(clientOptions.jsonMapper, params._body()))
                     .build()

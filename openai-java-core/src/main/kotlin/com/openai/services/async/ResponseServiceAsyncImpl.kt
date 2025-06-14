@@ -34,6 +34,7 @@ import com.openai.models.responses.ResponseStreamEvent
 import com.openai.services.async.responses.InputItemServiceAsync
 import com.openai.services.async.responses.InputItemServiceAsyncImpl
 import java.util.concurrent.CompletableFuture
+import java.util.function.Consumer
 import kotlin.jvm.optionals.getOrNull
 
 class ResponseServiceAsyncImpl internal constructor(private val clientOptions: ClientOptions) :
@@ -48,6 +49,9 @@ class ResponseServiceAsyncImpl internal constructor(private val clientOptions: C
     }
 
     override fun withRawResponse(): ResponseServiceAsync.WithRawResponse = withRawResponse
+
+    override fun withOptions(modifier: Consumer<ClientOptions.Builder>): ResponseServiceAsync =
+        ResponseServiceAsyncImpl(clientOptions.toBuilder().apply(modifier::accept).build())
 
     override fun inputItems(): InputItemServiceAsync = inputItems
 
@@ -108,6 +112,13 @@ class ResponseServiceAsyncImpl internal constructor(private val clientOptions: C
             InputItemServiceAsyncImpl.WithRawResponseImpl(clientOptions)
         }
 
+        override fun withOptions(
+            modifier: Consumer<ClientOptions.Builder>
+        ): ResponseServiceAsync.WithRawResponse =
+            ResponseServiceAsyncImpl.WithRawResponseImpl(
+                clientOptions.toBuilder().apply(modifier::accept).build()
+            )
+
         override fun inputItems(): InputItemServiceAsync.WithRawResponse = inputItems
 
         private val createHandler: Handler<Response> =
@@ -120,6 +131,7 @@ class ResponseServiceAsyncImpl internal constructor(private val clientOptions: C
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.POST)
+                    .baseUrl(clientOptions.baseUrl())
                     .addPathSegments("responses")
                     .body(json(clientOptions.jsonMapper, params._body()))
                     .build()
@@ -152,6 +164,7 @@ class ResponseServiceAsyncImpl internal constructor(private val clientOptions: C
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.POST)
+                    .baseUrl(clientOptions.baseUrl())
                     .addPathSegments("responses")
                     .body(
                         json(
@@ -196,6 +209,7 @@ class ResponseServiceAsyncImpl internal constructor(private val clientOptions: C
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.GET)
+                    .baseUrl(clientOptions.baseUrl())
                     .addPathSegments("responses", params._pathParam(0))
                     .build()
                     .prepareAsync(clientOptions, params, deploymentModel = null)
@@ -230,6 +244,7 @@ class ResponseServiceAsyncImpl internal constructor(private val clientOptions: C
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.GET)
+                    .baseUrl(clientOptions.baseUrl())
                     .addPathSegments("responses", params._pathParam(0))
                     .putQueryParam("stream", "true")
                     .build()
@@ -264,6 +279,7 @@ class ResponseServiceAsyncImpl internal constructor(private val clientOptions: C
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.DELETE)
+                    .baseUrl(clientOptions.baseUrl())
                     .addPathSegments("responses", params._pathParam(0))
                     .apply { params._body().ifPresent { body(json(clientOptions.jsonMapper, it)) } }
                     .build()
@@ -289,6 +305,7 @@ class ResponseServiceAsyncImpl internal constructor(private val clientOptions: C
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.POST)
+                    .baseUrl(clientOptions.baseUrl())
                     .addPathSegments("responses", params._pathParam(0), "cancel")
                     .apply { params._body().ifPresent { body(json(clientOptions.jsonMapper, it)) } }
                     .build()

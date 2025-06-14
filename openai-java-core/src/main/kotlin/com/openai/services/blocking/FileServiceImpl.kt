@@ -27,6 +27,7 @@ import com.openai.models.files.FileListPageResponse
 import com.openai.models.files.FileListParams
 import com.openai.models.files.FileObject
 import com.openai.models.files.FileRetrieveParams
+import java.util.function.Consumer
 import kotlin.jvm.optionals.getOrNull
 
 class FileServiceImpl internal constructor(private val clientOptions: ClientOptions) : FileService {
@@ -36,6 +37,9 @@ class FileServiceImpl internal constructor(private val clientOptions: ClientOpti
     }
 
     override fun withRawResponse(): FileService.WithRawResponse = withRawResponse
+
+    override fun withOptions(modifier: Consumer<ClientOptions.Builder>): FileService =
+        FileServiceImpl(clientOptions.toBuilder().apply(modifier::accept).build())
 
     override fun create(params: FileCreateParams, requestOptions: RequestOptions): FileObject =
         // post /files
@@ -62,6 +66,13 @@ class FileServiceImpl internal constructor(private val clientOptions: ClientOpti
 
         private val errorHandler: Handler<ErrorObject?> = errorHandler(clientOptions.jsonMapper)
 
+        override fun withOptions(
+            modifier: Consumer<ClientOptions.Builder>
+        ): FileService.WithRawResponse =
+            FileServiceImpl.WithRawResponseImpl(
+                clientOptions.toBuilder().apply(modifier::accept).build()
+            )
+
         private val createHandler: Handler<FileObject> =
             jsonHandler<FileObject>(clientOptions.jsonMapper).withErrorHandler(errorHandler)
 
@@ -72,6 +83,7 @@ class FileServiceImpl internal constructor(private val clientOptions: ClientOpti
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.POST)
+                    .baseUrl(clientOptions.baseUrl())
                     .addPathSegments("files")
                     .body(multipartFormData(clientOptions.jsonMapper, params._body()))
                     .build()
@@ -102,6 +114,7 @@ class FileServiceImpl internal constructor(private val clientOptions: ClientOpti
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.GET)
+                    .baseUrl(clientOptions.baseUrl())
                     .addPathSegments("files", params._pathParam(0))
                     .build()
                     .prepare(clientOptions, params, deploymentModel = null)
@@ -129,6 +142,7 @@ class FileServiceImpl internal constructor(private val clientOptions: ClientOpti
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.GET)
+                    .baseUrl(clientOptions.baseUrl())
                     .addPathSegments("files")
                     .build()
                     .prepare(clientOptions, params, deploymentModel = null)
@@ -165,6 +179,7 @@ class FileServiceImpl internal constructor(private val clientOptions: ClientOpti
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.DELETE)
+                    .baseUrl(clientOptions.baseUrl())
                     .addPathSegments("files", params._pathParam(0))
                     .apply { params._body().ifPresent { body(json(clientOptions.jsonMapper, it)) } }
                     .build()
@@ -192,6 +207,7 @@ class FileServiceImpl internal constructor(private val clientOptions: ClientOpti
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.GET)
+                    .baseUrl(clientOptions.baseUrl())
                     .addPathSegments("files", params._pathParam(0), "content")
                     .build()
                     .prepare(clientOptions, params, deploymentModel = null)

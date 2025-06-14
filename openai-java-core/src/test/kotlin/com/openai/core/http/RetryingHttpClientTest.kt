@@ -20,11 +20,13 @@ import org.junit.jupiter.params.provider.ValueSource
 internal class RetryingHttpClientTest {
 
     private var openResponseCount = 0
+    private lateinit var baseUrl: String
     private lateinit var httpClient: HttpClient
 
     @BeforeEach
     fun beforeEach(wmRuntimeInfo: WireMockRuntimeInfo) {
-        val okHttpClient = OkHttpClient.builder().baseUrl(wmRuntimeInfo.httpBaseUrl).build()
+        baseUrl = wmRuntimeInfo.httpBaseUrl
+        val okHttpClient = OkHttpClient.builder().build()
         httpClient =
             object : HttpClient {
 
@@ -75,7 +77,11 @@ internal class RetryingHttpClientTest {
 
         val response =
             retryingClient.execute(
-                HttpRequest.builder().method(HttpMethod.POST).addPathSegment("something").build(),
+                HttpRequest.builder()
+                    .method(HttpMethod.POST)
+                    .baseUrl(baseUrl)
+                    .addPathSegment("something")
+                    .build(),
                 async,
             )
 
@@ -97,7 +103,11 @@ internal class RetryingHttpClientTest {
 
         val response =
             retryingClient.execute(
-                HttpRequest.builder().method(HttpMethod.POST).addPathSegment("something").build(),
+                HttpRequest.builder()
+                    .method(HttpMethod.POST)
+                    .baseUrl(baseUrl)
+                    .addPathSegment("something")
+                    .build(),
                 async,
             )
 
@@ -139,7 +149,11 @@ internal class RetryingHttpClientTest {
 
         val response =
             retryingClient.execute(
-                HttpRequest.builder().method(HttpMethod.POST).addPathSegment("something").build(),
+                HttpRequest.builder()
+                    .method(HttpMethod.POST)
+                    .baseUrl(baseUrl)
+                    .addPathSegment("something")
+                    .build(),
                 async,
             )
 
@@ -187,6 +201,7 @@ internal class RetryingHttpClientTest {
             retryingClient.execute(
                 HttpRequest.builder()
                     .method(HttpMethod.POST)
+                    .baseUrl(baseUrl)
                     .addPathSegment("something")
                     .putHeader("x-stainless-retry-count", "42")
                     .build(),
@@ -223,7 +238,11 @@ internal class RetryingHttpClientTest {
 
         val response =
             retryingClient.execute(
-                HttpRequest.builder().method(HttpMethod.POST).addPathSegment("something").build(),
+                HttpRequest.builder()
+                    .method(HttpMethod.POST)
+                    .baseUrl(baseUrl)
+                    .addPathSegment("something")
+                    .build(),
                 async,
             )
 

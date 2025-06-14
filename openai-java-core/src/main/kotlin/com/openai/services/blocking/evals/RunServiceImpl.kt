@@ -29,6 +29,7 @@ import com.openai.models.evals.runs.RunRetrieveParams
 import com.openai.models.evals.runs.RunRetrieveResponse
 import com.openai.services.blocking.evals.runs.OutputItemService
 import com.openai.services.blocking.evals.runs.OutputItemServiceImpl
+import java.util.function.Consumer
 import kotlin.jvm.optionals.getOrNull
 
 class RunServiceImpl internal constructor(private val clientOptions: ClientOptions) : RunService {
@@ -40,6 +41,9 @@ class RunServiceImpl internal constructor(private val clientOptions: ClientOptio
     private val outputItems: OutputItemService by lazy { OutputItemServiceImpl(clientOptions) }
 
     override fun withRawResponse(): RunService.WithRawResponse = withRawResponse
+
+    override fun withOptions(modifier: Consumer<ClientOptions.Builder>): RunService =
+        RunServiceImpl(clientOptions.toBuilder().apply(modifier::accept).build())
 
     override fun outputItems(): OutputItemService = outputItems
 
@@ -84,6 +88,13 @@ class RunServiceImpl internal constructor(private val clientOptions: ClientOptio
             OutputItemServiceImpl.WithRawResponseImpl(clientOptions)
         }
 
+        override fun withOptions(
+            modifier: Consumer<ClientOptions.Builder>
+        ): RunService.WithRawResponse =
+            RunServiceImpl.WithRawResponseImpl(
+                clientOptions.toBuilder().apply(modifier::accept).build()
+            )
+
         override fun outputItems(): OutputItemService.WithRawResponse = outputItems
 
         private val createHandler: Handler<RunCreateResponse> =
@@ -99,6 +110,7 @@ class RunServiceImpl internal constructor(private val clientOptions: ClientOptio
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.POST)
+                    .baseUrl(clientOptions.baseUrl())
                     .addPathSegments("evals", params._pathParam(0), "runs")
                     .body(json(clientOptions.jsonMapper, params._body()))
                     .build()
@@ -130,6 +142,7 @@ class RunServiceImpl internal constructor(private val clientOptions: ClientOptio
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.GET)
+                    .baseUrl(clientOptions.baseUrl())
                     .addPathSegments("evals", params._pathParam(0), "runs", params._pathParam(1))
                     .build()
                     .prepare(clientOptions, params, deploymentModel = null)
@@ -160,6 +173,7 @@ class RunServiceImpl internal constructor(private val clientOptions: ClientOptio
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.GET)
+                    .baseUrl(clientOptions.baseUrl())
                     .addPathSegments("evals", params._pathParam(0), "runs")
                     .build()
                     .prepare(clientOptions, params, deploymentModel = null)
@@ -196,6 +210,7 @@ class RunServiceImpl internal constructor(private val clientOptions: ClientOptio
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.DELETE)
+                    .baseUrl(clientOptions.baseUrl())
                     .addPathSegments("evals", params._pathParam(0), "runs", params._pathParam(1))
                     .apply { params._body().ifPresent { body(json(clientOptions.jsonMapper, it)) } }
                     .build()
@@ -226,6 +241,7 @@ class RunServiceImpl internal constructor(private val clientOptions: ClientOptio
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.POST)
+                    .baseUrl(clientOptions.baseUrl())
                     .addPathSegments("evals", params._pathParam(0), "runs", params._pathParam(1))
                     .apply { params._body().ifPresent { body(json(clientOptions.jsonMapper, it)) } }
                     .build()

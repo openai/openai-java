@@ -3,11 +3,13 @@
 package com.openai.services.blocking
 
 import com.google.errorprone.annotations.MustBeClosed
+import com.openai.core.ClientOptions
 import com.openai.core.RequestOptions
 import com.openai.core.http.HttpResponseFor
 import com.openai.core.http.StreamResponse
 import com.openai.models.completions.Completion
 import com.openai.models.completions.CompletionCreateParams
+import java.util.function.Consumer
 
 interface CompletionService {
 
@@ -15,6 +17,13 @@ interface CompletionService {
      * Returns a view of this service that provides access to raw HTTP responses for each method.
      */
     fun withRawResponse(): WithRawResponse
+
+    /**
+     * Returns a view of this service with the given option modifications applied.
+     *
+     * The original service is not modified.
+     */
+    fun withOptions(modifier: Consumer<ClientOptions.Builder>): CompletionService
 
     /** Creates a completion for the provided prompt and parameters. */
     fun create(params: CompletionCreateParams): Completion = create(params, RequestOptions.none())
@@ -39,6 +48,15 @@ interface CompletionService {
 
     /** A view of [CompletionService] that provides access to raw HTTP responses for each method. */
     interface WithRawResponse {
+
+        /**
+         * Returns a view of this service with the given option modifications applied.
+         *
+         * The original service is not modified.
+         */
+        fun withOptions(
+            modifier: Consumer<ClientOptions.Builder>
+        ): CompletionService.WithRawResponse
 
         /**
          * Returns a raw HTTP response for `post /completions`, but is otherwise the same as

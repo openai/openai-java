@@ -2,6 +2,7 @@
 
 package com.openai.client
 
+import com.openai.core.ClientOptions
 import com.openai.services.async.AudioServiceAsync
 import com.openai.services.async.BatchServiceAsync
 import com.openai.services.async.BetaServiceAsync
@@ -19,6 +20,7 @@ import com.openai.services.async.ModerationServiceAsync
 import com.openai.services.async.ResponseServiceAsync
 import com.openai.services.async.UploadServiceAsync
 import com.openai.services.async.VectorStoreServiceAsync
+import java.util.function.Consumer
 
 /**
  * A client for interacting with the OpenAI REST API asynchronously. You can also switch to
@@ -48,6 +50,13 @@ interface OpenAIClientAsync {
      * Returns a view of this service that provides access to raw HTTP responses for each method.
      */
     fun withRawResponse(): WithRawResponse
+
+    /**
+     * Returns a view of this service with the given option modifications applied.
+     *
+     * The original service is not modified.
+     */
+    fun withOptions(modifier: Consumer<ClientOptions.Builder>): OpenAIClientAsync
 
     fun completions(): CompletionServiceAsync
 
@@ -98,6 +107,15 @@ interface OpenAIClientAsync {
 
     /** A view of [OpenAIClientAsync] that provides access to raw HTTP responses for each method. */
     interface WithRawResponse {
+
+        /**
+         * Returns a view of this service with the given option modifications applied.
+         *
+         * The original service is not modified.
+         */
+        fun withOptions(
+            modifier: Consumer<ClientOptions.Builder>
+        ): OpenAIClientAsync.WithRawResponse
 
         fun completions(): CompletionServiceAsync.WithRawResponse
 

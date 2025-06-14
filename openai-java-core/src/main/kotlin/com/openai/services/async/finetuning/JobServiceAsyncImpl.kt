@@ -31,6 +31,7 @@ import com.openai.models.finetuning.jobs.JobRetrieveParams
 import com.openai.services.async.finetuning.jobs.CheckpointServiceAsync
 import com.openai.services.async.finetuning.jobs.CheckpointServiceAsyncImpl
 import java.util.concurrent.CompletableFuture
+import java.util.function.Consumer
 import kotlin.jvm.optionals.getOrNull
 
 class JobServiceAsyncImpl internal constructor(private val clientOptions: ClientOptions) :
@@ -45,6 +46,9 @@ class JobServiceAsyncImpl internal constructor(private val clientOptions: Client
     }
 
     override fun withRawResponse(): JobServiceAsync.WithRawResponse = withRawResponse
+
+    override fun withOptions(modifier: Consumer<ClientOptions.Builder>): JobServiceAsync =
+        JobServiceAsyncImpl(clientOptions.toBuilder().apply(modifier::accept).build())
 
     override fun checkpoints(): CheckpointServiceAsync = checkpoints
 
@@ -106,6 +110,13 @@ class JobServiceAsyncImpl internal constructor(private val clientOptions: Client
             CheckpointServiceAsyncImpl.WithRawResponseImpl(clientOptions)
         }
 
+        override fun withOptions(
+            modifier: Consumer<ClientOptions.Builder>
+        ): JobServiceAsync.WithRawResponse =
+            JobServiceAsyncImpl.WithRawResponseImpl(
+                clientOptions.toBuilder().apply(modifier::accept).build()
+            )
+
         override fun checkpoints(): CheckpointServiceAsync.WithRawResponse = checkpoints
 
         private val createHandler: Handler<FineTuningJob> =
@@ -118,6 +129,7 @@ class JobServiceAsyncImpl internal constructor(private val clientOptions: Client
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.POST)
+                    .baseUrl(clientOptions.baseUrl())
                     .addPathSegments("fine_tuning", "jobs")
                     .body(json(clientOptions.jsonMapper, params._body()))
                     .build()
@@ -151,6 +163,7 @@ class JobServiceAsyncImpl internal constructor(private val clientOptions: Client
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.GET)
+                    .baseUrl(clientOptions.baseUrl())
                     .addPathSegments("fine_tuning", "jobs", params._pathParam(0))
                     .build()
                     .prepareAsync(clientOptions, params, deploymentModel = null)
@@ -181,6 +194,7 @@ class JobServiceAsyncImpl internal constructor(private val clientOptions: Client
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.GET)
+                    .baseUrl(clientOptions.baseUrl())
                     .addPathSegments("fine_tuning", "jobs")
                     .build()
                     .prepareAsync(clientOptions, params, deploymentModel = null)
@@ -221,6 +235,7 @@ class JobServiceAsyncImpl internal constructor(private val clientOptions: Client
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.POST)
+                    .baseUrl(clientOptions.baseUrl())
                     .addPathSegments("fine_tuning", "jobs", params._pathParam(0), "cancel")
                     .apply { params._body().ifPresent { body(json(clientOptions.jsonMapper, it)) } }
                     .build()
@@ -255,6 +270,7 @@ class JobServiceAsyncImpl internal constructor(private val clientOptions: Client
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.GET)
+                    .baseUrl(clientOptions.baseUrl())
                     .addPathSegments("fine_tuning", "jobs", params._pathParam(0), "events")
                     .build()
                     .prepareAsync(clientOptions, params, deploymentModel = null)
@@ -295,6 +311,7 @@ class JobServiceAsyncImpl internal constructor(private val clientOptions: Client
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.POST)
+                    .baseUrl(clientOptions.baseUrl())
                     .addPathSegments("fine_tuning", "jobs", params._pathParam(0), "pause")
                     .apply { params._body().ifPresent { body(json(clientOptions.jsonMapper, it)) } }
                     .build()
@@ -328,6 +345,7 @@ class JobServiceAsyncImpl internal constructor(private val clientOptions: Client
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.POST)
+                    .baseUrl(clientOptions.baseUrl())
                     .addPathSegments("fine_tuning", "jobs", params._pathParam(0), "resume")
                     .apply { params._body().ifPresent { body(json(clientOptions.jsonMapper, it)) } }
                     .build()
