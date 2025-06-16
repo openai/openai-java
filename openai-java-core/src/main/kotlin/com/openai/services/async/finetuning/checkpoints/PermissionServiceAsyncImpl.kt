@@ -21,8 +21,9 @@ import com.openai.models.finetuning.checkpoints.permissions.PermissionCreatePage
 import com.openai.models.finetuning.checkpoints.permissions.PermissionCreateParams
 import com.openai.models.finetuning.checkpoints.permissions.PermissionDeleteParams
 import com.openai.models.finetuning.checkpoints.permissions.PermissionDeleteResponse
+import com.openai.models.finetuning.checkpoints.permissions.PermissionRetrievePageAsync
+import com.openai.models.finetuning.checkpoints.permissions.PermissionRetrievePageResponse
 import com.openai.models.finetuning.checkpoints.permissions.PermissionRetrieveParams
-import com.openai.models.finetuning.checkpoints.permissions.PermissionRetrieveResponse
 import java.util.concurrent.CompletableFuture
 import java.util.function.Consumer
 import kotlin.jvm.optionals.getOrNull
@@ -49,7 +50,7 @@ class PermissionServiceAsyncImpl internal constructor(private val clientOptions:
     override fun retrieve(
         params: PermissionRetrieveParams,
         requestOptions: RequestOptions,
-    ): CompletableFuture<PermissionRetrieveResponse> =
+    ): CompletableFuture<PermissionRetrievePageAsync> =
         // get /fine_tuning/checkpoints/{fine_tuned_model_checkpoint}/permissions
         withRawResponse().retrieve(params, requestOptions).thenApply { it.parse() }
 
@@ -120,14 +121,14 @@ class PermissionServiceAsyncImpl internal constructor(private val clientOptions:
                 }
         }
 
-        private val retrieveHandler: Handler<PermissionRetrieveResponse> =
-            jsonHandler<PermissionRetrieveResponse>(clientOptions.jsonMapper)
+        private val retrieveHandler: Handler<PermissionRetrievePageResponse> =
+            jsonHandler<PermissionRetrievePageResponse>(clientOptions.jsonMapper)
                 .withErrorHandler(errorHandler)
 
         override fun retrieve(
             params: PermissionRetrieveParams,
             requestOptions: RequestOptions,
-        ): CompletableFuture<HttpResponseFor<PermissionRetrieveResponse>> {
+        ): CompletableFuture<HttpResponseFor<PermissionRetrievePageAsync>> {
             // We check here instead of in the params builder because this can be specified
             // positionally or in the params class.
             checkRequired("fineTunedModelCheckpoint", params.fineTunedModelCheckpoint().getOrNull())
@@ -154,6 +155,14 @@ class PermissionServiceAsyncImpl internal constructor(private val clientOptions:
                                 if (requestOptions.responseValidation!!) {
                                     it.validate()
                                 }
+                            }
+                            .let {
+                                PermissionRetrievePageAsync.builder()
+                                    .service(PermissionServiceAsyncImpl(clientOptions))
+                                    .streamHandlerExecutor(clientOptions.streamHandlerExecutor)
+                                    .params(params)
+                                    .response(it)
+                                    .build()
                             }
                     }
                 }
