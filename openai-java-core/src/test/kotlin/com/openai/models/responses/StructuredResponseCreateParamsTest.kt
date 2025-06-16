@@ -29,6 +29,7 @@ import com.openai.core.textConfigFromClass
 import com.openai.models.ChatModel
 import com.openai.models.Reasoning
 import com.openai.models.ResponsesModel
+import com.openai.models.completions.CompletionCreateParams
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.MethodSource
@@ -59,6 +60,7 @@ internal class StructuredResponseCreateParamsTest {
         private val METADATA = ResponseCreateParams.Metadata.builder().build()
         private val SERVICE_TIER = ResponseCreateParams.ServiceTier.AUTO
         private val REASONING = Reasoning.builder().build()
+        private val PROMPT = ResponsePrompt.builder().build()
 
         private val TOOL_CHOICE_TYPE = ToolChoiceTypes.Type.FILE_SEARCH
         private val TOOL_CHOICE_TYPES = ToolChoiceTypes.builder().type(TOOL_CHOICE_TYPE).build()
@@ -132,6 +134,9 @@ internal class StructuredResponseCreateParamsTest {
                 DelegationWriteTestCase("previousResponseId", NULLABLE_STRING),
                 DelegationWriteTestCase("previousResponseId", OPTIONAL),
                 DelegationWriteTestCase("previousResponseId", JSON_FIELD),
+                DelegationWriteTestCase("prompt", PROMPT),
+                DelegationWriteTestCase("prompt", OPTIONAL),
+                DelegationWriteTestCase("prompt", JSON_FIELD),
                 DelegationWriteTestCase("reasoning", REASONING),
                 DelegationWriteTestCase("reasoning", OPTIONAL),
                 DelegationWriteTestCase("reasoning", JSON_FIELD),
