@@ -12,6 +12,7 @@ import com.openai.models.ResponseFormatText
 import com.openai.models.responses.FunctionTool
 import com.openai.models.responses.ResponseCreateParams
 import com.openai.models.responses.ResponseIncludable
+import com.openai.models.responses.ResponsePrompt
 import com.openai.models.responses.ResponseRetrieveParams
 import com.openai.models.responses.ResponseTextConfig
 import com.openai.models.responses.ToolChoiceOptions
@@ -46,6 +47,17 @@ internal class ResponseServiceAsyncTest {
                     )
                     .parallelToolCalls(true)
                     .previousResponseId("previous_response_id")
+                    .prompt(
+                        ResponsePrompt.builder()
+                            .id("id")
+                            .variables(
+                                ResponsePrompt.Variables.builder()
+                                    .putAdditionalProperty("foo", JsonValue.from("string"))
+                                    .build()
+                            )
+                            .version("version")
+                            .build()
+                    )
                     .reasoning(
                         Reasoning.builder()
                             .effort(ReasoningEffort.LOW)
@@ -109,6 +121,17 @@ internal class ResponseServiceAsyncTest {
                     )
                     .parallelToolCalls(true)
                     .previousResponseId("previous_response_id")
+                    .prompt(
+                        ResponsePrompt.builder()
+                            .id("id")
+                            .variables(
+                                ResponsePrompt.Variables.builder()
+                                    .putAdditionalProperty("foo", JsonValue.from("string"))
+                                    .build()
+                            )
+                            .version("version")
+                            .build()
+                    )
                     .reasoning(
                         Reasoning.builder()
                             .effort(ReasoningEffort.LOW)

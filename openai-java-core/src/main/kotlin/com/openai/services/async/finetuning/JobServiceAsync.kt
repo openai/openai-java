@@ -42,7 +42,7 @@ interface JobServiceAsync {
      * Response includes details of the enqueued job including job status and the name of the
      * fine-tuned models once complete.
      *
-     * [Learn more about fine-tuning](https://platform.openai.com/docs/guides/fine-tuning)
+     * [Learn more about fine-tuning](https://platform.openai.com/docs/guides/model-optimization)
      */
     fun create(params: JobCreateParams): CompletableFuture<FineTuningJob> =
         create(params, RequestOptions.none())
@@ -56,7 +56,7 @@ interface JobServiceAsync {
     /**
      * Get info about a fine-tuning job.
      *
-     * [Learn more about fine-tuning](https://platform.openai.com/docs/guides/fine-tuning)
+     * [Learn more about fine-tuning](https://platform.openai.com/docs/guides/model-optimization)
      */
     fun retrieve(fineTuningJobId: String): CompletableFuture<FineTuningJob> =
         retrieve(fineTuningJobId, JobRetrieveParams.none())

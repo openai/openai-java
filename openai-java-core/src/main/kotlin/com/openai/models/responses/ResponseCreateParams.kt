@@ -109,7 +109,7 @@ private constructor(
     fun include(): Optional<List<ResponseIncludable>> = body.include()
 
     /**
-     * Inserts a system (or developer) message as the first item in the model's context.
+     * A system (or developer) message inserted into the model's context.
      *
      * When using along with `previous_response_id`, the instructions from a previous response will
      * not be carried over to the next response. This makes it simple to swap out system (or
@@ -160,6 +160,15 @@ private constructor(
      *   server responded with an unexpected value).
      */
     fun previousResponseId(): Optional<String> = body.previousResponseId()
+
+    /**
+     * Reference to a prompt template and its variables.
+     * [Learn more](https://platform.openai.com/docs/guides/text?api-mode=responses#reusable-prompts).
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun prompt(): Optional<ResponsePrompt> = body.prompt()
 
     /**
      * **o-series models only**
@@ -347,6 +356,13 @@ private constructor(
      * type.
      */
     fun _previousResponseId(): JsonField<String> = body._previousResponseId()
+
+    /**
+     * Returns the raw JSON value of [prompt].
+     *
+     * Unlike [prompt], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    fun _prompt(): JsonField<ResponsePrompt> = body._prompt()
 
     /**
      * Returns the raw JSON value of [reasoning].
@@ -584,7 +600,7 @@ private constructor(
         fun addInclude(include: ResponseIncludable) = apply { body.addInclude(include) }
 
         /**
-         * Inserts a system (or developer) message as the first item in the model's context.
+         * A system (or developer) message inserted into the model's context.
          *
          * When using along with `previous_response_id`, the instructions from a previous response
          * will not be carried over to the next response. This makes it simple to swap out system
@@ -712,6 +728,24 @@ private constructor(
         fun previousResponseId(previousResponseId: JsonField<String>) = apply {
             body.previousResponseId(previousResponseId)
         }
+
+        /**
+         * Reference to a prompt template and its variables.
+         * [Learn more](https://platform.openai.com/docs/guides/text?api-mode=responses#reusable-prompts).
+         */
+        fun prompt(prompt: ResponsePrompt?) = apply { body.prompt(prompt) }
+
+        /** Alias for calling [Builder.prompt] with `prompt.orElse(null)`. */
+        fun prompt(prompt: Optional<ResponsePrompt>) = prompt(prompt.getOrNull())
+
+        /**
+         * Sets [Builder.prompt] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.prompt] with a well-typed [ResponsePrompt] value
+         * instead. This method is primarily for setting the field to an undocumented or not yet
+         * supported value.
+         */
+        fun prompt(prompt: JsonField<ResponsePrompt>) = apply { body.prompt(prompt) }
 
         /**
          * **o-series models only**
@@ -1166,6 +1200,7 @@ private constructor(
         private val metadata: JsonField<Metadata>,
         private val parallelToolCalls: JsonField<Boolean>,
         private val previousResponseId: JsonField<String>,
+        private val prompt: JsonField<ResponsePrompt>,
         private val reasoning: JsonField<Reasoning>,
         private val serviceTier: JsonField<ServiceTier>,
         private val store: JsonField<Boolean>,
@@ -1206,6 +1241,9 @@ private constructor(
             @JsonProperty("previous_response_id")
             @ExcludeMissing
             previousResponseId: JsonField<String> = JsonMissing.of(),
+            @JsonProperty("prompt")
+            @ExcludeMissing
+            prompt: JsonField<ResponsePrompt> = JsonMissing.of(),
             @JsonProperty("reasoning")
             @ExcludeMissing
             reasoning: JsonField<Reasoning> = JsonMissing.of(),
@@ -1238,6 +1276,7 @@ private constructor(
             metadata,
             parallelToolCalls,
             previousResponseId,
+            prompt,
             reasoning,
             serviceTier,
             store,
@@ -1307,7 +1346,7 @@ private constructor(
         fun include(): Optional<List<ResponseIncludable>> = include.getOptional("include")
 
         /**
-         * Inserts a system (or developer) message as the first item in the model's context.
+         * A system (or developer) message inserted into the model's context.
          *
          * When using along with `previous_response_id`, the instructions from a previous response
          * will not be carried over to the next response. This makes it simple to swap out system
@@ -1360,6 +1399,15 @@ private constructor(
          */
         fun previousResponseId(): Optional<String> =
             previousResponseId.getOptional("previous_response_id")
+
+        /**
+         * Reference to a prompt template and its variables.
+         * [Learn more](https://platform.openai.com/docs/guides/text?api-mode=responses#reusable-prompts).
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun prompt(): Optional<ResponsePrompt> = prompt.getOptional("prompt")
 
         /**
          * **o-series models only**
@@ -1565,6 +1613,13 @@ private constructor(
         fun _previousResponseId(): JsonField<String> = previousResponseId
 
         /**
+         * Returns the raw JSON value of [prompt].
+         *
+         * Unlike [prompt], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("prompt") @ExcludeMissing fun _prompt(): JsonField<ResponsePrompt> = prompt
+
+        /**
          * Returns the raw JSON value of [reasoning].
          *
          * Unlike [reasoning], this method doesn't throw if the JSON field has an unexpected type.
@@ -1682,6 +1737,7 @@ private constructor(
             private var metadata: JsonField<Metadata> = JsonMissing.of()
             private var parallelToolCalls: JsonField<Boolean> = JsonMissing.of()
             private var previousResponseId: JsonField<String> = JsonMissing.of()
+            private var prompt: JsonField<ResponsePrompt> = JsonMissing.of()
             private var reasoning: JsonField<Reasoning> = JsonMissing.of()
             private var serviceTier: JsonField<ServiceTier> = JsonMissing.of()
             private var store: JsonField<Boolean> = JsonMissing.of()
@@ -1705,6 +1761,7 @@ private constructor(
                 metadata = body.metadata
                 parallelToolCalls = body.parallelToolCalls
                 previousResponseId = body.previousResponseId
+                prompt = body.prompt
                 reasoning = body.reasoning
                 serviceTier = body.serviceTier
                 store = body.store
@@ -1842,7 +1899,7 @@ private constructor(
             }
 
             /**
-             * Inserts a system (or developer) message as the first item in the model's context.
+             * A system (or developer) message inserted into the model's context.
              *
              * When using along with `previous_response_id`, the instructions from a previous
              * response will not be carried over to the next response. This makes it simple to swap
@@ -1972,6 +2029,24 @@ private constructor(
             fun previousResponseId(previousResponseId: JsonField<String>) = apply {
                 this.previousResponseId = previousResponseId
             }
+
+            /**
+             * Reference to a prompt template and its variables.
+             * [Learn more](https://platform.openai.com/docs/guides/text?api-mode=responses#reusable-prompts).
+             */
+            fun prompt(prompt: ResponsePrompt?) = prompt(JsonField.ofNullable(prompt))
+
+            /** Alias for calling [Builder.prompt] with `prompt.orElse(null)`. */
+            fun prompt(prompt: Optional<ResponsePrompt>) = prompt(prompt.getOrNull())
+
+            /**
+             * Sets [Builder.prompt] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.prompt] with a well-typed [ResponsePrompt] value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun prompt(prompt: JsonField<ResponsePrompt>) = apply { this.prompt = prompt }
 
             /**
              * **o-series models only**
@@ -2341,6 +2416,7 @@ private constructor(
                     metadata,
                     parallelToolCalls,
                     previousResponseId,
+                    prompt,
                     reasoning,
                     serviceTier,
                     store,
@@ -2371,6 +2447,7 @@ private constructor(
             metadata().ifPresent { it.validate() }
             parallelToolCalls()
             previousResponseId()
+            prompt().ifPresent { it.validate() }
             reasoning().ifPresent { it.validate() }
             serviceTier().ifPresent { it.validate() }
             store()
@@ -2409,6 +2486,7 @@ private constructor(
                 (metadata.asKnown().getOrNull()?.validity() ?: 0) +
                 (if (parallelToolCalls.asKnown().isPresent) 1 else 0) +
                 (if (previousResponseId.asKnown().isPresent) 1 else 0) +
+                (prompt.asKnown().getOrNull()?.validity() ?: 0) +
                 (reasoning.asKnown().getOrNull()?.validity() ?: 0) +
                 (serviceTier.asKnown().getOrNull()?.validity() ?: 0) +
                 (if (store.asKnown().isPresent) 1 else 0) +
@@ -2425,17 +2503,17 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is Body && input == other.input && model == other.model && background == other.background && include == other.include && instructions == other.instructions && maxOutputTokens == other.maxOutputTokens && metadata == other.metadata && parallelToolCalls == other.parallelToolCalls && previousResponseId == other.previousResponseId && reasoning == other.reasoning && serviceTier == other.serviceTier && store == other.store && temperature == other.temperature && text == other.text && toolChoice == other.toolChoice && tools == other.tools && topP == other.topP && truncation == other.truncation && user == other.user && additionalProperties == other.additionalProperties /* spotless:on */
+            return /* spotless:off */ other is Body && input == other.input && model == other.model && background == other.background && include == other.include && instructions == other.instructions && maxOutputTokens == other.maxOutputTokens && metadata == other.metadata && parallelToolCalls == other.parallelToolCalls && previousResponseId == other.previousResponseId && prompt == other.prompt && reasoning == other.reasoning && serviceTier == other.serviceTier && store == other.store && temperature == other.temperature && text == other.text && toolChoice == other.toolChoice && tools == other.tools && topP == other.topP && truncation == other.truncation && user == other.user && additionalProperties == other.additionalProperties /* spotless:on */
         }
 
         /* spotless:off */
-        private val hashCode: Int by lazy { Objects.hash(input, model, background, include, instructions, maxOutputTokens, metadata, parallelToolCalls, previousResponseId, reasoning, serviceTier, store, temperature, text, toolChoice, tools, topP, truncation, user, additionalProperties) }
+        private val hashCode: Int by lazy { Objects.hash(input, model, background, include, instructions, maxOutputTokens, metadata, parallelToolCalls, previousResponseId, prompt, reasoning, serviceTier, store, temperature, text, toolChoice, tools, topP, truncation, user, additionalProperties) }
         /* spotless:on */
 
         override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "Body{input=$input, model=$model, background=$background, include=$include, instructions=$instructions, maxOutputTokens=$maxOutputTokens, metadata=$metadata, parallelToolCalls=$parallelToolCalls, previousResponseId=$previousResponseId, reasoning=$reasoning, serviceTier=$serviceTier, store=$store, temperature=$temperature, text=$text, toolChoice=$toolChoice, tools=$tools, topP=$topP, truncation=$truncation, user=$user, additionalProperties=$additionalProperties}"
+            "Body{input=$input, model=$model, background=$background, include=$include, instructions=$instructions, maxOutputTokens=$maxOutputTokens, metadata=$metadata, parallelToolCalls=$parallelToolCalls, previousResponseId=$previousResponseId, prompt=$prompt, reasoning=$reasoning, serviceTier=$serviceTier, store=$store, temperature=$temperature, text=$text, toolChoice=$toolChoice, tools=$tools, topP=$topP, truncation=$truncation, user=$user, additionalProperties=$additionalProperties}"
     }
 
     /**
@@ -2776,6 +2854,8 @@ private constructor(
 
             @JvmField val FLEX = of("flex")
 
+            @JvmField val SCALE = of("scale")
+
             @JvmStatic fun of(value: String) = ServiceTier(JsonField.of(value))
         }
 
@@ -2784,6 +2864,7 @@ private constructor(
             AUTO,
             DEFAULT,
             FLEX,
+            SCALE,
         }
 
         /**
@@ -2799,6 +2880,7 @@ private constructor(
             AUTO,
             DEFAULT,
             FLEX,
+            SCALE,
             /**
              * An enum member indicating that [ServiceTier] was instantiated with an unknown value.
              */
@@ -2817,6 +2899,7 @@ private constructor(
                 AUTO -> Value.AUTO
                 DEFAULT -> Value.DEFAULT
                 FLEX -> Value.FLEX
+                SCALE -> Value.SCALE
                 else -> Value._UNKNOWN
             }
 
@@ -2834,6 +2917,7 @@ private constructor(
                 AUTO -> Known.AUTO
                 DEFAULT -> Known.DEFAULT
                 FLEX -> Known.FLEX
+                SCALE -> Known.SCALE
                 else -> throw OpenAIInvalidDataException("Unknown ServiceTier: $value")
             }
 
