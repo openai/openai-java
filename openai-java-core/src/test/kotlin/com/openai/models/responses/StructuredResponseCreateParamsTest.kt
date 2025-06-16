@@ -29,7 +29,6 @@ import com.openai.core.textConfigFromClass
 import com.openai.models.ChatModel
 import com.openai.models.Reasoning
 import com.openai.models.ResponsesModel
-import com.openai.models.completions.CompletionCreateParams
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.MethodSource
