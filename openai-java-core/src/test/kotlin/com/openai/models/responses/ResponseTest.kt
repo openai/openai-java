@@ -32,7 +32,7 @@ internal class ResponseTest {
                         .reason(Response.IncompleteDetails.Reason.MAX_OUTPUT_TOKENS)
                         .build()
                 )
-                .instructions("instructions")
+                .instructions("string")
                 .metadata(
                     Response.Metadata.builder()
                         .putAdditionalProperty("foo", JsonValue.from("string"))
@@ -89,6 +89,17 @@ internal class ResponseTest {
                 .background(true)
                 .maxOutputTokens(0L)
                 .previousResponseId("previous_response_id")
+                .prompt(
+                    ResponsePrompt.builder()
+                        .id("id")
+                        .variables(
+                            ResponsePrompt.Variables.builder()
+                                .putAdditionalProperty("foo", JsonValue.from("string"))
+                                .build()
+                        )
+                        .version("version")
+                        .build()
+                )
                 .reasoning(
                     Reasoning.builder()
                         .effort(ReasoningEffort.LOW)
@@ -135,7 +146,7 @@ internal class ResponseTest {
                     .reason(Response.IncompleteDetails.Reason.MAX_OUTPUT_TOKENS)
                     .build()
             )
-        assertThat(response.instructions()).contains("instructions")
+        assertThat(response.instructions()).contains(Response.Instructions.ofString("string"))
         assertThat(response.metadata())
             .contains(
                 Response.Metadata.builder()
@@ -200,6 +211,18 @@ internal class ResponseTest {
         assertThat(response.background()).contains(true)
         assertThat(response.maxOutputTokens()).contains(0L)
         assertThat(response.previousResponseId()).contains("previous_response_id")
+        assertThat(response.prompt())
+            .contains(
+                ResponsePrompt.builder()
+                    .id("id")
+                    .variables(
+                        ResponsePrompt.Variables.builder()
+                            .putAdditionalProperty("foo", JsonValue.from("string"))
+                            .build()
+                    )
+                    .version("version")
+                    .build()
+            )
         assertThat(response.reasoning())
             .contains(
                 Reasoning.builder()
@@ -250,7 +273,7 @@ internal class ResponseTest {
                         .reason(Response.IncompleteDetails.Reason.MAX_OUTPUT_TOKENS)
                         .build()
                 )
-                .instructions("instructions")
+                .instructions("string")
                 .metadata(
                     Response.Metadata.builder()
                         .putAdditionalProperty("foo", JsonValue.from("string"))
@@ -307,6 +330,17 @@ internal class ResponseTest {
                 .background(true)
                 .maxOutputTokens(0L)
                 .previousResponseId("previous_response_id")
+                .prompt(
+                    ResponsePrompt.builder()
+                        .id("id")
+                        .variables(
+                            ResponsePrompt.Variables.builder()
+                                .putAdditionalProperty("foo", JsonValue.from("string"))
+                                .build()
+                        )
+                        .version("version")
+                        .build()
+                )
                 .reasoning(
                     Reasoning.builder()
                         .effort(ReasoningEffort.LOW)

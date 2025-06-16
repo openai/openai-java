@@ -43,7 +43,7 @@ import kotlin.jvm.optionals.getOrNull
  * Response includes details of the enqueued job including job status and the name of the fine-tuned
  * models once complete.
  *
- * [Learn more about fine-tuning](https://platform.openai.com/docs/guides/fine-tuning)
+ * [Learn more about fine-tuning](https://platform.openai.com/docs/guides/model-optimization)
  */
 class JobCreateParams
 private constructor(
@@ -77,8 +77,8 @@ private constructor(
      * [preference](https://platform.openai.com/docs/api-reference/fine-tuning/preference-input)
      * format.
      *
-     * See the [fine-tuning guide](https://platform.openai.com/docs/guides/fine-tuning) for more
-     * details.
+     * See the [fine-tuning guide](https://platform.openai.com/docs/guides/model-optimization) for
+     * more details.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
      *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
@@ -155,8 +155,8 @@ private constructor(
      * Your dataset must be formatted as a JSONL file. You must upload your file with the purpose
      * `fine-tune`.
      *
-     * See the [fine-tuning guide](https://platform.openai.com/docs/guides/fine-tuning) for more
-     * details.
+     * See the [fine-tuning guide](https://platform.openai.com/docs/guides/model-optimization) for
+     * more details.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -315,8 +315,8 @@ private constructor(
          * [preference](https://platform.openai.com/docs/api-reference/fine-tuning/preference-input)
          * format.
          *
-         * See the [fine-tuning guide](https://platform.openai.com/docs/guides/fine-tuning) for more
-         * details.
+         * See the [fine-tuning guide](https://platform.openai.com/docs/guides/model-optimization)
+         * for more details.
          */
         fun trainingFile(trainingFile: String) = apply { body.trainingFile(trainingFile) }
 
@@ -466,8 +466,8 @@ private constructor(
          * Your dataset must be formatted as a JSONL file. You must upload your file with the
          * purpose `fine-tune`.
          *
-         * See the [fine-tuning guide](https://platform.openai.com/docs/guides/fine-tuning) for more
-         * details.
+         * See the [fine-tuning guide](https://platform.openai.com/docs/guides/model-optimization)
+         * for more details.
          */
         fun validationFile(validationFile: String?) = apply { body.validationFile(validationFile) }
 
@@ -699,8 +699,8 @@ private constructor(
          * [preference](https://platform.openai.com/docs/api-reference/fine-tuning/preference-input)
          * format.
          *
-         * See the [fine-tuning guide](https://platform.openai.com/docs/guides/fine-tuning) for more
-         * details.
+         * See the [fine-tuning guide](https://platform.openai.com/docs/guides/model-optimization)
+         * for more details.
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
          *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
@@ -778,8 +778,8 @@ private constructor(
          * Your dataset must be formatted as a JSONL file. You must upload your file with the
          * purpose `fine-tune`.
          *
-         * See the [fine-tuning guide](https://platform.openai.com/docs/guides/fine-tuning) for more
-         * details.
+         * See the [fine-tuning guide](https://platform.openai.com/docs/guides/model-optimization)
+         * for more details.
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
@@ -956,7 +956,8 @@ private constructor(
              * [preference](https://platform.openai.com/docs/api-reference/fine-tuning/preference-input)
              * format.
              *
-             * See the [fine-tuning guide](https://platform.openai.com/docs/guides/fine-tuning) for
+             * See the
+             * [fine-tuning guide](https://platform.openai.com/docs/guides/model-optimization) for
              * more details.
              */
             fun trainingFile(trainingFile: String) = trainingFile(JsonField.of(trainingFile))
@@ -1113,7 +1114,8 @@ private constructor(
              * Your dataset must be formatted as a JSONL file. You must upload your file with the
              * purpose `fine-tune`.
              *
-             * See the [fine-tuning guide](https://platform.openai.com/docs/guides/fine-tuning) for
+             * See the
+             * [fine-tuning guide](https://platform.openai.com/docs/guides/model-optimization) for
              * more details.
              */
             fun validationFile(validationFile: String?) =

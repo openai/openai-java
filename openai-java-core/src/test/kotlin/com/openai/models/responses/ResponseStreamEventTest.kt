@@ -847,7 +847,7 @@ internal class ResponseStreamEventTest {
                                 .reason(Response.IncompleteDetails.Reason.MAX_OUTPUT_TOKENS)
                                 .build()
                         )
-                        .instructions("instructions")
+                        .instructions("string")
                         .metadata(
                             Response.Metadata.builder()
                                 .putAdditionalProperty("foo", JsonValue.from("string"))
@@ -904,6 +904,17 @@ internal class ResponseStreamEventTest {
                         .background(true)
                         .maxOutputTokens(0L)
                         .previousResponseId("previous_response_id")
+                        .prompt(
+                            ResponsePrompt.builder()
+                                .id("id")
+                                .variables(
+                                    ResponsePrompt.Variables.builder()
+                                        .putAdditionalProperty("foo", JsonValue.from("string"))
+                                        .build()
+                                )
+                                .version("version")
+                                .build()
+                        )
                         .reasoning(
                             Reasoning.builder()
                                 .effort(ReasoningEffort.LOW)
@@ -1020,7 +1031,7 @@ internal class ResponseStreamEventTest {
                                     .reason(Response.IncompleteDetails.Reason.MAX_OUTPUT_TOKENS)
                                     .build()
                             )
-                            .instructions("instructions")
+                            .instructions("string")
                             .metadata(
                                 Response.Metadata.builder()
                                     .putAdditionalProperty("foo", JsonValue.from("string"))
@@ -1078,6 +1089,17 @@ internal class ResponseStreamEventTest {
                             .background(true)
                             .maxOutputTokens(0L)
                             .previousResponseId("previous_response_id")
+                            .prompt(
+                                ResponsePrompt.builder()
+                                    .id("id")
+                                    .variables(
+                                        ResponsePrompt.Variables.builder()
+                                            .putAdditionalProperty("foo", JsonValue.from("string"))
+                                            .build()
+                                    )
+                                    .version("version")
+                                    .build()
+                            )
                             .reasoning(
                                 Reasoning.builder()
                                     .effort(ReasoningEffort.LOW)
@@ -1423,7 +1445,7 @@ internal class ResponseStreamEventTest {
                                 .reason(Response.IncompleteDetails.Reason.MAX_OUTPUT_TOKENS)
                                 .build()
                         )
-                        .instructions("instructions")
+                        .instructions("string")
                         .metadata(
                             Response.Metadata.builder()
                                 .putAdditionalProperty("foo", JsonValue.from("string"))
@@ -1480,6 +1502,17 @@ internal class ResponseStreamEventTest {
                         .background(true)
                         .maxOutputTokens(0L)
                         .previousResponseId("previous_response_id")
+                        .prompt(
+                            ResponsePrompt.builder()
+                                .id("id")
+                                .variables(
+                                    ResponsePrompt.Variables.builder()
+                                        .putAdditionalProperty("foo", JsonValue.from("string"))
+                                        .build()
+                                )
+                                .version("version")
+                                .build()
+                        )
                         .reasoning(
                             Reasoning.builder()
                                 .effort(ReasoningEffort.LOW)
@@ -1596,7 +1629,7 @@ internal class ResponseStreamEventTest {
                                     .reason(Response.IncompleteDetails.Reason.MAX_OUTPUT_TOKENS)
                                     .build()
                             )
-                            .instructions("instructions")
+                            .instructions("string")
                             .metadata(
                                 Response.Metadata.builder()
                                     .putAdditionalProperty("foo", JsonValue.from("string"))
@@ -1654,6 +1687,17 @@ internal class ResponseStreamEventTest {
                             .background(true)
                             .maxOutputTokens(0L)
                             .previousResponseId("previous_response_id")
+                            .prompt(
+                                ResponsePrompt.builder()
+                                    .id("id")
+                                    .variables(
+                                        ResponsePrompt.Variables.builder()
+                                            .putAdditionalProperty("foo", JsonValue.from("string"))
+                                            .build()
+                                    )
+                                    .version("version")
+                                    .build()
+                            )
                             .reasoning(
                                 Reasoning.builder()
                                     .effort(ReasoningEffort.LOW)
@@ -2257,7 +2301,7 @@ internal class ResponseStreamEventTest {
                                 .reason(Response.IncompleteDetails.Reason.MAX_OUTPUT_TOKENS)
                                 .build()
                         )
-                        .instructions("instructions")
+                        .instructions("string")
                         .metadata(
                             Response.Metadata.builder()
                                 .putAdditionalProperty("foo", JsonValue.from("string"))
@@ -2314,6 +2358,17 @@ internal class ResponseStreamEventTest {
                         .background(true)
                         .maxOutputTokens(0L)
                         .previousResponseId("previous_response_id")
+                        .prompt(
+                            ResponsePrompt.builder()
+                                .id("id")
+                                .variables(
+                                    ResponsePrompt.Variables.builder()
+                                        .putAdditionalProperty("foo", JsonValue.from("string"))
+                                        .build()
+                                )
+                                .version("version")
+                                .build()
+                        )
                         .reasoning(
                             Reasoning.builder()
                                 .effort(ReasoningEffort.LOW)
@@ -2430,7 +2485,7 @@ internal class ResponseStreamEventTest {
                                     .reason(Response.IncompleteDetails.Reason.MAX_OUTPUT_TOKENS)
                                     .build()
                             )
-                            .instructions("instructions")
+                            .instructions("string")
                             .metadata(
                                 Response.Metadata.builder()
                                     .putAdditionalProperty("foo", JsonValue.from("string"))
@@ -2488,6 +2543,17 @@ internal class ResponseStreamEventTest {
                             .background(true)
                             .maxOutputTokens(0L)
                             .previousResponseId("previous_response_id")
+                            .prompt(
+                                ResponsePrompt.builder()
+                                    .id("id")
+                                    .variables(
+                                        ResponsePrompt.Variables.builder()
+                                            .putAdditionalProperty("foo", JsonValue.from("string"))
+                                            .build()
+                                    )
+                                    .version("version")
+                                    .build()
+                            )
                             .reasoning(
                                 Reasoning.builder()
                                     .effort(ReasoningEffort.LOW)
@@ -2555,7 +2621,7 @@ internal class ResponseStreamEventTest {
                                 .reason(Response.IncompleteDetails.Reason.MAX_OUTPUT_TOKENS)
                                 .build()
                         )
-                        .instructions("instructions")
+                        .instructions("string")
                         .metadata(
                             Response.Metadata.builder()
                                 .putAdditionalProperty("foo", JsonValue.from("string"))
@@ -2612,6 +2678,17 @@ internal class ResponseStreamEventTest {
                         .background(true)
                         .maxOutputTokens(0L)
                         .previousResponseId("previous_response_id")
+                        .prompt(
+                            ResponsePrompt.builder()
+                                .id("id")
+                                .variables(
+                                    ResponsePrompt.Variables.builder()
+                                        .putAdditionalProperty("foo", JsonValue.from("string"))
+                                        .build()
+                                )
+                                .version("version")
+                                .build()
+                        )
                         .reasoning(
                             Reasoning.builder()
                                 .effort(ReasoningEffort.LOW)
@@ -2728,7 +2805,7 @@ internal class ResponseStreamEventTest {
                                     .reason(Response.IncompleteDetails.Reason.MAX_OUTPUT_TOKENS)
                                     .build()
                             )
-                            .instructions("instructions")
+                            .instructions("string")
                             .metadata(
                                 Response.Metadata.builder()
                                     .putAdditionalProperty("foo", JsonValue.from("string"))
@@ -2786,6 +2863,17 @@ internal class ResponseStreamEventTest {
                             .background(true)
                             .maxOutputTokens(0L)
                             .previousResponseId("previous_response_id")
+                            .prompt(
+                                ResponsePrompt.builder()
+                                    .id("id")
+                                    .variables(
+                                        ResponsePrompt.Variables.builder()
+                                            .putAdditionalProperty("foo", JsonValue.from("string"))
+                                            .build()
+                                    )
+                                    .version("version")
+                                    .build()
+                            )
                             .reasoning(
                                 Reasoning.builder()
                                     .effort(ReasoningEffort.LOW)
@@ -2853,7 +2941,7 @@ internal class ResponseStreamEventTest {
                                 .reason(Response.IncompleteDetails.Reason.MAX_OUTPUT_TOKENS)
                                 .build()
                         )
-                        .instructions("instructions")
+                        .instructions("string")
                         .metadata(
                             Response.Metadata.builder()
                                 .putAdditionalProperty("foo", JsonValue.from("string"))
@@ -2910,6 +2998,17 @@ internal class ResponseStreamEventTest {
                         .background(true)
                         .maxOutputTokens(0L)
                         .previousResponseId("previous_response_id")
+                        .prompt(
+                            ResponsePrompt.builder()
+                                .id("id")
+                                .variables(
+                                    ResponsePrompt.Variables.builder()
+                                        .putAdditionalProperty("foo", JsonValue.from("string"))
+                                        .build()
+                                )
+                                .version("version")
+                                .build()
+                        )
                         .reasoning(
                             Reasoning.builder()
                                 .effort(ReasoningEffort.LOW)
@@ -3026,7 +3125,7 @@ internal class ResponseStreamEventTest {
                                     .reason(Response.IncompleteDetails.Reason.MAX_OUTPUT_TOKENS)
                                     .build()
                             )
-                            .instructions("instructions")
+                            .instructions("string")
                             .metadata(
                                 Response.Metadata.builder()
                                     .putAdditionalProperty("foo", JsonValue.from("string"))
@@ -3084,6 +3183,17 @@ internal class ResponseStreamEventTest {
                             .background(true)
                             .maxOutputTokens(0L)
                             .previousResponseId("previous_response_id")
+                            .prompt(
+                                ResponsePrompt.builder()
+                                    .id("id")
+                                    .variables(
+                                        ResponsePrompt.Variables.builder()
+                                            .putAdditionalProperty("foo", JsonValue.from("string"))
+                                            .build()
+                                    )
+                                    .version("version")
+                                    .build()
+                            )
                             .reasoning(
                                 Reasoning.builder()
                                     .effort(ReasoningEffort.LOW)
@@ -5561,7 +5671,7 @@ internal class ResponseStreamEventTest {
                                 .reason(Response.IncompleteDetails.Reason.MAX_OUTPUT_TOKENS)
                                 .build()
                         )
-                        .instructions("instructions")
+                        .instructions("string")
                         .metadata(
                             Response.Metadata.builder()
                                 .putAdditionalProperty("foo", JsonValue.from("string"))
@@ -5618,6 +5728,17 @@ internal class ResponseStreamEventTest {
                         .background(true)
                         .maxOutputTokens(0L)
                         .previousResponseId("previous_response_id")
+                        .prompt(
+                            ResponsePrompt.builder()
+                                .id("id")
+                                .variables(
+                                    ResponsePrompt.Variables.builder()
+                                        .putAdditionalProperty("foo", JsonValue.from("string"))
+                                        .build()
+                                )
+                                .version("version")
+                                .build()
+                        )
                         .reasoning(
                             Reasoning.builder()
                                 .effort(ReasoningEffort.LOW)
@@ -5734,7 +5855,7 @@ internal class ResponseStreamEventTest {
                                     .reason(Response.IncompleteDetails.Reason.MAX_OUTPUT_TOKENS)
                                     .build()
                             )
-                            .instructions("instructions")
+                            .instructions("string")
                             .metadata(
                                 Response.Metadata.builder()
                                     .putAdditionalProperty("foo", JsonValue.from("string"))
@@ -5792,6 +5913,17 @@ internal class ResponseStreamEventTest {
                             .background(true)
                             .maxOutputTokens(0L)
                             .previousResponseId("previous_response_id")
+                            .prompt(
+                                ResponsePrompt.builder()
+                                    .id("id")
+                                    .variables(
+                                        ResponsePrompt.Variables.builder()
+                                            .putAdditionalProperty("foo", JsonValue.from("string"))
+                                            .build()
+                                    )
+                                    .version("version")
+                                    .build()
+                            )
                             .reasoning(
                                 Reasoning.builder()
                                     .effort(ReasoningEffort.LOW)
