@@ -13,29 +13,14 @@ internal class PermissionRetrieveResponseTest {
     fun create() {
         val permissionRetrieveResponse =
             PermissionRetrieveResponse.builder()
-                .addData(
-                    PermissionRetrieveResponse.Data.builder()
-                        .id("id")
-                        .createdAt(0L)
-                        .projectId("project_id")
-                        .build()
-                )
-                .hasMore(true)
-                .firstId("first_id")
-                .lastId("last_id")
+                .id("id")
+                .createdAt(0L)
+                .projectId("project_id")
                 .build()
 
-        assertThat(permissionRetrieveResponse.data())
-            .containsExactly(
-                PermissionRetrieveResponse.Data.builder()
-                    .id("id")
-                    .createdAt(0L)
-                    .projectId("project_id")
-                    .build()
-            )
-        assertThat(permissionRetrieveResponse.hasMore()).isEqualTo(true)
-        assertThat(permissionRetrieveResponse.firstId()).contains("first_id")
-        assertThat(permissionRetrieveResponse.lastId()).contains("last_id")
+        assertThat(permissionRetrieveResponse.id()).isEqualTo("id")
+        assertThat(permissionRetrieveResponse.createdAt()).isEqualTo(0L)
+        assertThat(permissionRetrieveResponse.projectId()).isEqualTo("project_id")
     }
 
     @Test
@@ -43,16 +28,9 @@ internal class PermissionRetrieveResponseTest {
         val jsonMapper = jsonMapper()
         val permissionRetrieveResponse =
             PermissionRetrieveResponse.builder()
-                .addData(
-                    PermissionRetrieveResponse.Data.builder()
-                        .id("id")
-                        .createdAt(0L)
-                        .projectId("project_id")
-                        .build()
-                )
-                .hasMore(true)
-                .firstId("first_id")
-                .lastId("last_id")
+                .id("id")
+                .createdAt(0L)
+                .projectId("project_id")
                 .build()
 
         val roundtrippedPermissionRetrieveResponse =
