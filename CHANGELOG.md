@@ -1,5 +1,18 @@
 # Changelog
 
+## 2.8.0 (2025-06-16)
+
+Full Changelog: [v2.7.0...v2.8.0](https://github.com/openai/openai-java/compare/v2.7.0...v2.8.0)
+
+### Features
+
+* **client:** implement per-endpoint base URL support ([c87f1af](https://github.com/openai/openai-java/commit/c87f1af80b1f3d898a5a1553be48ee87ea4e7b4f))
+
+
+### Chores
+
+* **internal:** codegen related update ([3597aee](https://github.com/openai/openai-java/commit/3597aee95ae1956afbe8bd62b5a6946dd62256b3))
+
 ## 2.7.0 (2025-06-10)
 
 Full Changelog: [v2.6.0...v2.7.0](https://github.com/openai/openai-java/compare/v2.6.0...v2.7.0)

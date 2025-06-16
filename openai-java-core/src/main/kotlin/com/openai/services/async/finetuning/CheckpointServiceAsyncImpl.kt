@@ -5,6 +5,7 @@ package com.openai.services.async.finetuning
 import com.openai.core.ClientOptions
 import com.openai.services.async.finetuning.checkpoints.PermissionServiceAsync
 import com.openai.services.async.finetuning.checkpoints.PermissionServiceAsyncImpl
+import java.util.function.Consumer
 
 class CheckpointServiceAsyncImpl internal constructor(private val clientOptions: ClientOptions) :
     CheckpointServiceAsync {
@@ -19,6 +20,9 @@ class CheckpointServiceAsyncImpl internal constructor(private val clientOptions:
 
     override fun withRawResponse(): CheckpointServiceAsync.WithRawResponse = withRawResponse
 
+    override fun withOptions(modifier: Consumer<ClientOptions.Builder>): CheckpointServiceAsync =
+        CheckpointServiceAsyncImpl(clientOptions.toBuilder().apply(modifier::accept).build())
+
     override fun permissions(): PermissionServiceAsync = permissions
 
     class WithRawResponseImpl internal constructor(private val clientOptions: ClientOptions) :
@@ -27,6 +31,13 @@ class CheckpointServiceAsyncImpl internal constructor(private val clientOptions:
         private val permissions: PermissionServiceAsync.WithRawResponse by lazy {
             PermissionServiceAsyncImpl.WithRawResponseImpl(clientOptions)
         }
+
+        override fun withOptions(
+            modifier: Consumer<ClientOptions.Builder>
+        ): CheckpointServiceAsync.WithRawResponse =
+            CheckpointServiceAsyncImpl.WithRawResponseImpl(
+                clientOptions.toBuilder().apply(modifier::accept).build()
+            )
 
         override fun permissions(): PermissionServiceAsync.WithRawResponse = permissions
     }

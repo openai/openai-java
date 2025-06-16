@@ -5,6 +5,7 @@ package com.openai.services.blocking.finetuning
 import com.openai.core.ClientOptions
 import com.openai.services.blocking.finetuning.checkpoints.PermissionService
 import com.openai.services.blocking.finetuning.checkpoints.PermissionServiceImpl
+import java.util.function.Consumer
 
 class CheckpointServiceImpl internal constructor(private val clientOptions: ClientOptions) :
     CheckpointService {
@@ -17,6 +18,9 @@ class CheckpointServiceImpl internal constructor(private val clientOptions: Clie
 
     override fun withRawResponse(): CheckpointService.WithRawResponse = withRawResponse
 
+    override fun withOptions(modifier: Consumer<ClientOptions.Builder>): CheckpointService =
+        CheckpointServiceImpl(clientOptions.toBuilder().apply(modifier::accept).build())
+
     override fun permissions(): PermissionService = permissions
 
     class WithRawResponseImpl internal constructor(private val clientOptions: ClientOptions) :
@@ -25,6 +29,13 @@ class CheckpointServiceImpl internal constructor(private val clientOptions: Clie
         private val permissions: PermissionService.WithRawResponse by lazy {
             PermissionServiceImpl.WithRawResponseImpl(clientOptions)
         }
+
+        override fun withOptions(
+            modifier: Consumer<ClientOptions.Builder>
+        ): CheckpointService.WithRawResponse =
+            CheckpointServiceImpl.WithRawResponseImpl(
+                clientOptions.toBuilder().apply(modifier::accept).build()
+            )
 
         override fun permissions(): PermissionService.WithRawResponse = permissions
     }

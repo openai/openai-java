@@ -2,6 +2,7 @@
 
 package com.openai.services.async
 
+import com.openai.core.ClientOptions
 import com.openai.core.RequestOptions
 import com.openai.core.http.HttpResponse
 import com.openai.core.http.HttpResponseFor
@@ -14,6 +15,7 @@ import com.openai.models.containers.ContainerRetrieveParams
 import com.openai.models.containers.ContainerRetrieveResponse
 import com.openai.services.async.containers.FileServiceAsync
 import java.util.concurrent.CompletableFuture
+import java.util.function.Consumer
 
 interface ContainerServiceAsync {
 
@@ -21,6 +23,13 @@ interface ContainerServiceAsync {
      * Returns a view of this service that provides access to raw HTTP responses for each method.
      */
     fun withRawResponse(): WithRawResponse
+
+    /**
+     * Returns a view of this service with the given option modifications applied.
+     *
+     * The original service is not modified.
+     */
+    fun withOptions(modifier: Consumer<ClientOptions.Builder>): ContainerServiceAsync
 
     fun files(): FileServiceAsync
 
@@ -124,6 +133,15 @@ interface ContainerServiceAsync {
      * A view of [ContainerServiceAsync] that provides access to raw HTTP responses for each method.
      */
     interface WithRawResponse {
+
+        /**
+         * Returns a view of this service with the given option modifications applied.
+         *
+         * The original service is not modified.
+         */
+        fun withOptions(
+            modifier: Consumer<ClientOptions.Builder>
+        ): ContainerServiceAsync.WithRawResponse
 
         fun files(): FileServiceAsync.WithRawResponse
 

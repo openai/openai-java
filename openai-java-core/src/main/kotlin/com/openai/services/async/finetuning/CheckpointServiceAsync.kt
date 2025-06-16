@@ -2,7 +2,9 @@
 
 package com.openai.services.async.finetuning
 
+import com.openai.core.ClientOptions
 import com.openai.services.async.finetuning.checkpoints.PermissionServiceAsync
+import java.util.function.Consumer
 
 interface CheckpointServiceAsync {
 
@@ -11,6 +13,13 @@ interface CheckpointServiceAsync {
      */
     fun withRawResponse(): WithRawResponse
 
+    /**
+     * Returns a view of this service with the given option modifications applied.
+     *
+     * The original service is not modified.
+     */
+    fun withOptions(modifier: Consumer<ClientOptions.Builder>): CheckpointServiceAsync
+
     fun permissions(): PermissionServiceAsync
 
     /**
@@ -18,6 +27,15 @@ interface CheckpointServiceAsync {
      * method.
      */
     interface WithRawResponse {
+
+        /**
+         * Returns a view of this service with the given option modifications applied.
+         *
+         * The original service is not modified.
+         */
+        fun withOptions(
+            modifier: Consumer<ClientOptions.Builder>
+        ): CheckpointServiceAsync.WithRawResponse
 
         fun permissions(): PermissionServiceAsync.WithRawResponse
     }

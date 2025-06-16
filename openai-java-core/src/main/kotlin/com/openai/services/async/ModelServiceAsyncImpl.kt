@@ -24,6 +24,7 @@ import com.openai.models.models.ModelListPageResponse
 import com.openai.models.models.ModelListParams
 import com.openai.models.models.ModelRetrieveParams
 import java.util.concurrent.CompletableFuture
+import java.util.function.Consumer
 import kotlin.jvm.optionals.getOrNull
 
 class ModelServiceAsyncImpl internal constructor(private val clientOptions: ClientOptions) :
@@ -34,6 +35,9 @@ class ModelServiceAsyncImpl internal constructor(private val clientOptions: Clie
     }
 
     override fun withRawResponse(): ModelServiceAsync.WithRawResponse = withRawResponse
+
+    override fun withOptions(modifier: Consumer<ClientOptions.Builder>): ModelServiceAsync =
+        ModelServiceAsyncImpl(clientOptions.toBuilder().apply(modifier::accept).build())
 
     override fun retrieve(
         params: ModelRetrieveParams,
@@ -61,6 +65,13 @@ class ModelServiceAsyncImpl internal constructor(private val clientOptions: Clie
 
         private val errorHandler: Handler<ErrorObject?> = errorHandler(clientOptions.jsonMapper)
 
+        override fun withOptions(
+            modifier: Consumer<ClientOptions.Builder>
+        ): ModelServiceAsync.WithRawResponse =
+            ModelServiceAsyncImpl.WithRawResponseImpl(
+                clientOptions.toBuilder().apply(modifier::accept).build()
+            )
+
         private val retrieveHandler: Handler<Model> =
             jsonHandler<Model>(clientOptions.jsonMapper).withErrorHandler(errorHandler)
 
@@ -74,6 +85,7 @@ class ModelServiceAsyncImpl internal constructor(private val clientOptions: Clie
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.GET)
+                    .baseUrl(clientOptions.baseUrl())
                     .addPathSegments("models", params._pathParam(0))
                     .build()
                     .prepareAsync(clientOptions, params, params.model().get())
@@ -104,6 +116,7 @@ class ModelServiceAsyncImpl internal constructor(private val clientOptions: Clie
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.GET)
+                    .baseUrl(clientOptions.baseUrl())
                     .addPathSegments("models")
                     .build()
                     .prepareAsync(clientOptions, params, deploymentModel = null)
@@ -144,6 +157,7 @@ class ModelServiceAsyncImpl internal constructor(private val clientOptions: Clie
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.DELETE)
+                    .baseUrl(clientOptions.baseUrl())
                     .addPathSegments("models", params._pathParam(0))
                     .apply { params._body().ifPresent { body(json(clientOptions.jsonMapper, it)) } }
                     .build()

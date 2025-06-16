@@ -34,6 +34,7 @@ import com.openai.services.async.vectorstores.FileBatchServiceAsyncImpl
 import com.openai.services.async.vectorstores.FileServiceAsync
 import com.openai.services.async.vectorstores.FileServiceAsyncImpl
 import java.util.concurrent.CompletableFuture
+import java.util.function.Consumer
 import kotlin.jvm.optionals.getOrNull
 
 class VectorStoreServiceAsyncImpl internal constructor(private val clientOptions: ClientOptions) :
@@ -55,6 +56,9 @@ class VectorStoreServiceAsyncImpl internal constructor(private val clientOptions
     }
 
     override fun withRawResponse(): VectorStoreServiceAsync.WithRawResponse = withRawResponse
+
+    override fun withOptions(modifier: Consumer<ClientOptions.Builder>): VectorStoreServiceAsync =
+        VectorStoreServiceAsyncImpl(clientOptions.toBuilder().apply(modifier::accept).build())
 
     override fun files(): FileServiceAsync = files
 
@@ -115,6 +119,13 @@ class VectorStoreServiceAsyncImpl internal constructor(private val clientOptions
             FileBatchServiceAsyncImpl.WithRawResponseImpl(clientOptions)
         }
 
+        override fun withOptions(
+            modifier: Consumer<ClientOptions.Builder>
+        ): VectorStoreServiceAsync.WithRawResponse =
+            VectorStoreServiceAsyncImpl.WithRawResponseImpl(
+                clientOptions.toBuilder().apply(modifier::accept).build()
+            )
+
         override fun files(): FileServiceAsync.WithRawResponse = files
 
         override fun fileBatches(): FileBatchServiceAsync.WithRawResponse = fileBatches
@@ -129,6 +140,7 @@ class VectorStoreServiceAsyncImpl internal constructor(private val clientOptions
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.POST)
+                    .baseUrl(clientOptions.baseUrl())
                     .addPathSegments("vector_stores")
                     .putAllHeaders(DEFAULT_HEADERS)
                     .body(json(clientOptions.jsonMapper, params._body()))
@@ -163,6 +175,7 @@ class VectorStoreServiceAsyncImpl internal constructor(private val clientOptions
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.GET)
+                    .baseUrl(clientOptions.baseUrl())
                     .addPathSegments("vector_stores", params._pathParam(0))
                     .putAllHeaders(DEFAULT_HEADERS)
                     .build()
@@ -196,6 +209,7 @@ class VectorStoreServiceAsyncImpl internal constructor(private val clientOptions
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.POST)
+                    .baseUrl(clientOptions.baseUrl())
                     .addPathSegments("vector_stores", params._pathParam(0))
                     .putAllHeaders(DEFAULT_HEADERS)
                     .body(json(clientOptions.jsonMapper, params._body()))
@@ -228,6 +242,7 @@ class VectorStoreServiceAsyncImpl internal constructor(private val clientOptions
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.GET)
+                    .baseUrl(clientOptions.baseUrl())
                     .addPathSegments("vector_stores")
                     .putAllHeaders(DEFAULT_HEADERS)
                     .build()
@@ -269,6 +284,7 @@ class VectorStoreServiceAsyncImpl internal constructor(private val clientOptions
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.DELETE)
+                    .baseUrl(clientOptions.baseUrl())
                     .addPathSegments("vector_stores", params._pathParam(0))
                     .putAllHeaders(DEFAULT_HEADERS)
                     .apply { params._body().ifPresent { body(json(clientOptions.jsonMapper, it)) } }
@@ -304,6 +320,7 @@ class VectorStoreServiceAsyncImpl internal constructor(private val clientOptions
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.POST)
+                    .baseUrl(clientOptions.baseUrl())
                     .addPathSegments("vector_stores", params._pathParam(0), "search")
                     .putAllHeaders(DEFAULT_HEADERS)
                     .body(json(clientOptions.jsonMapper, params._body()))

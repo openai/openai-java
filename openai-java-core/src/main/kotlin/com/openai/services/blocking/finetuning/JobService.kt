@@ -3,6 +3,7 @@
 package com.openai.services.blocking.finetuning
 
 import com.google.errorprone.annotations.MustBeClosed
+import com.openai.core.ClientOptions
 import com.openai.core.RequestOptions
 import com.openai.core.http.HttpResponseFor
 import com.openai.models.finetuning.jobs.FineTuningJob
@@ -16,6 +17,7 @@ import com.openai.models.finetuning.jobs.JobPauseParams
 import com.openai.models.finetuning.jobs.JobResumeParams
 import com.openai.models.finetuning.jobs.JobRetrieveParams
 import com.openai.services.blocking.finetuning.jobs.CheckpointService
+import java.util.function.Consumer
 
 interface JobService {
 
@@ -23,6 +25,13 @@ interface JobService {
      * Returns a view of this service that provides access to raw HTTP responses for each method.
      */
     fun withRawResponse(): WithRawResponse
+
+    /**
+     * Returns a view of this service with the given option modifications applied.
+     *
+     * The original service is not modified.
+     */
+    fun withOptions(modifier: Consumer<ClientOptions.Builder>): JobService
 
     fun checkpoints(): CheckpointService
 
@@ -222,6 +231,13 @@ interface JobService {
 
     /** A view of [JobService] that provides access to raw HTTP responses for each method. */
     interface WithRawResponse {
+
+        /**
+         * Returns a view of this service with the given option modifications applied.
+         *
+         * The original service is not modified.
+         */
+        fun withOptions(modifier: Consumer<ClientOptions.Builder>): JobService.WithRawResponse
 
         fun checkpoints(): CheckpointService.WithRawResponse
 

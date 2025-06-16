@@ -5,6 +5,7 @@ package com.openai.services.async.finetuning
 import com.openai.core.ClientOptions
 import com.openai.services.async.finetuning.alpha.GraderServiceAsync
 import com.openai.services.async.finetuning.alpha.GraderServiceAsyncImpl
+import java.util.function.Consumer
 
 class AlphaServiceAsyncImpl internal constructor(private val clientOptions: ClientOptions) :
     AlphaServiceAsync {
@@ -17,6 +18,9 @@ class AlphaServiceAsyncImpl internal constructor(private val clientOptions: Clie
 
     override fun withRawResponse(): AlphaServiceAsync.WithRawResponse = withRawResponse
 
+    override fun withOptions(modifier: Consumer<ClientOptions.Builder>): AlphaServiceAsync =
+        AlphaServiceAsyncImpl(clientOptions.toBuilder().apply(modifier::accept).build())
+
     override fun graders(): GraderServiceAsync = graders
 
     class WithRawResponseImpl internal constructor(private val clientOptions: ClientOptions) :
@@ -25,6 +29,13 @@ class AlphaServiceAsyncImpl internal constructor(private val clientOptions: Clie
         private val graders: GraderServiceAsync.WithRawResponse by lazy {
             GraderServiceAsyncImpl.WithRawResponseImpl(clientOptions)
         }
+
+        override fun withOptions(
+            modifier: Consumer<ClientOptions.Builder>
+        ): AlphaServiceAsync.WithRawResponse =
+            AlphaServiceAsyncImpl.WithRawResponseImpl(
+                clientOptions.toBuilder().apply(modifier::accept).build()
+            )
 
         override fun graders(): GraderServiceAsync.WithRawResponse = graders
     }

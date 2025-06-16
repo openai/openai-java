@@ -3,10 +3,12 @@
 package com.openai.services.blocking.finetuning.jobs
 
 import com.google.errorprone.annotations.MustBeClosed
+import com.openai.core.ClientOptions
 import com.openai.core.RequestOptions
 import com.openai.core.http.HttpResponseFor
 import com.openai.models.finetuning.jobs.checkpoints.CheckpointListPage
 import com.openai.models.finetuning.jobs.checkpoints.CheckpointListParams
+import java.util.function.Consumer
 
 interface CheckpointService {
 
@@ -14,6 +16,13 @@ interface CheckpointService {
      * Returns a view of this service that provides access to raw HTTP responses for each method.
      */
     fun withRawResponse(): WithRawResponse
+
+    /**
+     * Returns a view of this service with the given option modifications applied.
+     *
+     * The original service is not modified.
+     */
+    fun withOptions(modifier: Consumer<ClientOptions.Builder>): CheckpointService
 
     /** List checkpoints for a fine-tuning job. */
     fun list(fineTuningJobId: String): CheckpointListPage =
@@ -48,6 +57,15 @@ interface CheckpointService {
 
     /** A view of [CheckpointService] that provides access to raw HTTP responses for each method. */
     interface WithRawResponse {
+
+        /**
+         * Returns a view of this service with the given option modifications applied.
+         *
+         * The original service is not modified.
+         */
+        fun withOptions(
+            modifier: Consumer<ClientOptions.Builder>
+        ): CheckpointService.WithRawResponse
 
         /**
          * Returns a raw HTTP response for `get /fine_tuning/jobs/{fine_tuning_job_id}/checkpoints`,

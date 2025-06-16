@@ -21,6 +21,7 @@ import com.openai.models.evals.runs.outputitems.OutputItemListParams
 import com.openai.models.evals.runs.outputitems.OutputItemRetrieveParams
 import com.openai.models.evals.runs.outputitems.OutputItemRetrieveResponse
 import java.util.concurrent.CompletableFuture
+import java.util.function.Consumer
 import kotlin.jvm.optionals.getOrNull
 
 class OutputItemServiceAsyncImpl internal constructor(private val clientOptions: ClientOptions) :
@@ -31,6 +32,9 @@ class OutputItemServiceAsyncImpl internal constructor(private val clientOptions:
     }
 
     override fun withRawResponse(): OutputItemServiceAsync.WithRawResponse = withRawResponse
+
+    override fun withOptions(modifier: Consumer<ClientOptions.Builder>): OutputItemServiceAsync =
+        OutputItemServiceAsyncImpl(clientOptions.toBuilder().apply(modifier::accept).build())
 
     override fun retrieve(
         params: OutputItemRetrieveParams,
@@ -51,6 +55,13 @@ class OutputItemServiceAsyncImpl internal constructor(private val clientOptions:
 
         private val errorHandler: Handler<ErrorObject?> = errorHandler(clientOptions.jsonMapper)
 
+        override fun withOptions(
+            modifier: Consumer<ClientOptions.Builder>
+        ): OutputItemServiceAsync.WithRawResponse =
+            OutputItemServiceAsyncImpl.WithRawResponseImpl(
+                clientOptions.toBuilder().apply(modifier::accept).build()
+            )
+
         private val retrieveHandler: Handler<OutputItemRetrieveResponse> =
             jsonHandler<OutputItemRetrieveResponse>(clientOptions.jsonMapper)
                 .withErrorHandler(errorHandler)
@@ -65,6 +76,7 @@ class OutputItemServiceAsyncImpl internal constructor(private val clientOptions:
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.GET)
+                    .baseUrl(clientOptions.baseUrl())
                     .addPathSegments(
                         "evals",
                         params._pathParam(0),
@@ -105,6 +117,7 @@ class OutputItemServiceAsyncImpl internal constructor(private val clientOptions:
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.GET)
+                    .baseUrl(clientOptions.baseUrl())
                     .addPathSegments(
                         "evals",
                         params._pathParam(0),

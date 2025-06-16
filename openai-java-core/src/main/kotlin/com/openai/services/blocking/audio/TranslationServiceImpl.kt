@@ -17,6 +17,7 @@ import com.openai.core.prepare
 import com.openai.models.ErrorObject
 import com.openai.models.audio.translations.TranslationCreateParams
 import com.openai.models.audio.translations.TranslationCreateResponse
+import java.util.function.Consumer
 
 class TranslationServiceImpl internal constructor(private val clientOptions: ClientOptions) :
     TranslationService {
@@ -26,6 +27,9 @@ class TranslationServiceImpl internal constructor(private val clientOptions: Cli
     }
 
     override fun withRawResponse(): TranslationService.WithRawResponse = withRawResponse
+
+    override fun withOptions(modifier: Consumer<ClientOptions.Builder>): TranslationService =
+        TranslationServiceImpl(clientOptions.toBuilder().apply(modifier::accept).build())
 
     override fun create(
         params: TranslationCreateParams,
@@ -39,6 +43,13 @@ class TranslationServiceImpl internal constructor(private val clientOptions: Cli
 
         private val errorHandler: Handler<ErrorObject?> = errorHandler(clientOptions.jsonMapper)
 
+        override fun withOptions(
+            modifier: Consumer<ClientOptions.Builder>
+        ): TranslationService.WithRawResponse =
+            TranslationServiceImpl.WithRawResponseImpl(
+                clientOptions.toBuilder().apply(modifier::accept).build()
+            )
+
         private val createHandler: Handler<TranslationCreateResponse> =
             jsonHandler<TranslationCreateResponse>(clientOptions.jsonMapper)
                 .withErrorHandler(errorHandler)
@@ -50,6 +61,7 @@ class TranslationServiceImpl internal constructor(private val clientOptions: Cli
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.POST)
+                    .baseUrl(clientOptions.baseUrl())
                     .addPathSegments("audio", "translations")
                     .body(multipartFormData(clientOptions.jsonMapper, params._body()))
                     .build()

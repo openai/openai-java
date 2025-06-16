@@ -24,6 +24,7 @@ import com.openai.models.finetuning.checkpoints.permissions.PermissionDeleteResp
 import com.openai.models.finetuning.checkpoints.permissions.PermissionRetrieveParams
 import com.openai.models.finetuning.checkpoints.permissions.PermissionRetrieveResponse
 import java.util.concurrent.CompletableFuture
+import java.util.function.Consumer
 import kotlin.jvm.optionals.getOrNull
 
 class PermissionServiceAsyncImpl internal constructor(private val clientOptions: ClientOptions) :
@@ -34,6 +35,9 @@ class PermissionServiceAsyncImpl internal constructor(private val clientOptions:
     }
 
     override fun withRawResponse(): PermissionServiceAsync.WithRawResponse = withRawResponse
+
+    override fun withOptions(modifier: Consumer<ClientOptions.Builder>): PermissionServiceAsync =
+        PermissionServiceAsyncImpl(clientOptions.toBuilder().apply(modifier::accept).build())
 
     override fun create(
         params: PermissionCreateParams,
@@ -61,6 +65,13 @@ class PermissionServiceAsyncImpl internal constructor(private val clientOptions:
 
         private val errorHandler: Handler<ErrorObject?> = errorHandler(clientOptions.jsonMapper)
 
+        override fun withOptions(
+            modifier: Consumer<ClientOptions.Builder>
+        ): PermissionServiceAsync.WithRawResponse =
+            PermissionServiceAsyncImpl.WithRawResponseImpl(
+                clientOptions.toBuilder().apply(modifier::accept).build()
+            )
+
         private val createHandler: Handler<PermissionCreatePageResponse> =
             jsonHandler<PermissionCreatePageResponse>(clientOptions.jsonMapper)
                 .withErrorHandler(errorHandler)
@@ -75,6 +86,7 @@ class PermissionServiceAsyncImpl internal constructor(private val clientOptions:
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.POST)
+                    .baseUrl(clientOptions.baseUrl())
                     .addPathSegments(
                         "fine_tuning",
                         "checkpoints",
@@ -122,6 +134,7 @@ class PermissionServiceAsyncImpl internal constructor(private val clientOptions:
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.GET)
+                    .baseUrl(clientOptions.baseUrl())
                     .addPathSegments(
                         "fine_tuning",
                         "checkpoints",
@@ -160,6 +173,7 @@ class PermissionServiceAsyncImpl internal constructor(private val clientOptions:
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.DELETE)
+                    .baseUrl(clientOptions.baseUrl())
                     .addPathSegments(
                         "fine_tuning",
                         "checkpoints",

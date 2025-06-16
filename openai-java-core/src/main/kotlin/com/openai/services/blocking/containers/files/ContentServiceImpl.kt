@@ -13,6 +13,7 @@ import com.openai.core.http.HttpResponse.Handler
 import com.openai.core.prepare
 import com.openai.models.ErrorObject
 import com.openai.models.containers.files.content.ContentRetrieveParams
+import java.util.function.Consumer
 import kotlin.jvm.optionals.getOrNull
 
 class ContentServiceImpl internal constructor(private val clientOptions: ClientOptions) :
@@ -23,6 +24,9 @@ class ContentServiceImpl internal constructor(private val clientOptions: ClientO
     }
 
     override fun withRawResponse(): ContentService.WithRawResponse = withRawResponse
+
+    override fun withOptions(modifier: Consumer<ClientOptions.Builder>): ContentService =
+        ContentServiceImpl(clientOptions.toBuilder().apply(modifier::accept).build())
 
     override fun retrieve(
         params: ContentRetrieveParams,
@@ -36,6 +40,13 @@ class ContentServiceImpl internal constructor(private val clientOptions: ClientO
 
         private val errorHandler: Handler<ErrorObject?> = errorHandler(clientOptions.jsonMapper)
 
+        override fun withOptions(
+            modifier: Consumer<ClientOptions.Builder>
+        ): ContentService.WithRawResponse =
+            ContentServiceImpl.WithRawResponseImpl(
+                clientOptions.toBuilder().apply(modifier::accept).build()
+            )
+
         override fun retrieve(
             params: ContentRetrieveParams,
             requestOptions: RequestOptions,
@@ -46,6 +57,7 @@ class ContentServiceImpl internal constructor(private val clientOptions: ClientO
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.GET)
+                    .baseUrl(clientOptions.baseUrl())
                     .addPathSegments(
                         "containers",
                         params._pathParam(0),

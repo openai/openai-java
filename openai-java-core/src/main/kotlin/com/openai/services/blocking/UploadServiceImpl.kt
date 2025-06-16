@@ -22,6 +22,7 @@ import com.openai.models.uploads.UploadCompleteParams
 import com.openai.models.uploads.UploadCreateParams
 import com.openai.services.blocking.uploads.PartService
 import com.openai.services.blocking.uploads.PartServiceImpl
+import java.util.function.Consumer
 import kotlin.jvm.optionals.getOrNull
 
 class UploadServiceImpl internal constructor(private val clientOptions: ClientOptions) :
@@ -34,6 +35,9 @@ class UploadServiceImpl internal constructor(private val clientOptions: ClientOp
     private val parts: PartService by lazy { PartServiceImpl(clientOptions) }
 
     override fun withRawResponse(): UploadService.WithRawResponse = withRawResponse
+
+    override fun withOptions(modifier: Consumer<ClientOptions.Builder>): UploadService =
+        UploadServiceImpl(clientOptions.toBuilder().apply(modifier::accept).build())
 
     override fun parts(): PartService = parts
 
@@ -58,6 +62,13 @@ class UploadServiceImpl internal constructor(private val clientOptions: ClientOp
             PartServiceImpl.WithRawResponseImpl(clientOptions)
         }
 
+        override fun withOptions(
+            modifier: Consumer<ClientOptions.Builder>
+        ): UploadService.WithRawResponse =
+            UploadServiceImpl.WithRawResponseImpl(
+                clientOptions.toBuilder().apply(modifier::accept).build()
+            )
+
         override fun parts(): PartService.WithRawResponse = parts
 
         private val createHandler: Handler<Upload> =
@@ -70,6 +81,7 @@ class UploadServiceImpl internal constructor(private val clientOptions: ClientOp
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.POST)
+                    .baseUrl(clientOptions.baseUrl())
                     .addPathSegments("uploads")
                     .body(json(clientOptions.jsonMapper, params._body()))
                     .build()
@@ -100,6 +112,7 @@ class UploadServiceImpl internal constructor(private val clientOptions: ClientOp
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.POST)
+                    .baseUrl(clientOptions.baseUrl())
                     .addPathSegments("uploads", params._pathParam(0), "cancel")
                     .apply { params._body().ifPresent { body(json(clientOptions.jsonMapper, it)) } }
                     .build()
@@ -130,6 +143,7 @@ class UploadServiceImpl internal constructor(private val clientOptions: ClientOp
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.POST)
+                    .baseUrl(clientOptions.baseUrl())
                     .addPathSegments("uploads", params._pathParam(0), "complete")
                     .body(json(clientOptions.jsonMapper, params._body()))
                     .build()

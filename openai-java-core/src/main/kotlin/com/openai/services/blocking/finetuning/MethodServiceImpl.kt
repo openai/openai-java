@@ -3,6 +3,7 @@
 package com.openai.services.blocking.finetuning
 
 import com.openai.core.ClientOptions
+import java.util.function.Consumer
 
 class MethodServiceImpl internal constructor(private val clientOptions: ClientOptions) :
     MethodService {
@@ -13,6 +14,17 @@ class MethodServiceImpl internal constructor(private val clientOptions: ClientOp
 
     override fun withRawResponse(): MethodService.WithRawResponse = withRawResponse
 
+    override fun withOptions(modifier: Consumer<ClientOptions.Builder>): MethodService =
+        MethodServiceImpl(clientOptions.toBuilder().apply(modifier::accept).build())
+
     class WithRawResponseImpl internal constructor(private val clientOptions: ClientOptions) :
-        MethodService.WithRawResponse
+        MethodService.WithRawResponse {
+
+        override fun withOptions(
+            modifier: Consumer<ClientOptions.Builder>
+        ): MethodService.WithRawResponse =
+            MethodServiceImpl.WithRawResponseImpl(
+                clientOptions.toBuilder().apply(modifier::accept).build()
+            )
+    }
 }
