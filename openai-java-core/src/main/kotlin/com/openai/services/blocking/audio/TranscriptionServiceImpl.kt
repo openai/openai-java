@@ -26,9 +26,8 @@ import com.openai.models.audio.transcriptions.Transcription
 import com.openai.models.audio.transcriptions.TranscriptionCreateParams
 import com.openai.models.audio.transcriptions.TranscriptionCreateResponse
 import com.openai.models.audio.transcriptions.TranscriptionStreamEvent
-import kotlin.jvm.optionals.getOrNull
-
 import java.util.function.Consumer
+import kotlin.jvm.optionals.getOrNull
 
 class TranscriptionServiceImpl internal constructor(private val clientOptions: ClientOptions) :
     TranscriptionService {

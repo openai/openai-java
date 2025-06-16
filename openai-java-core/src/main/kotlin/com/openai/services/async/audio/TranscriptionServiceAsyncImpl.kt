@@ -29,9 +29,8 @@ import com.openai.models.audio.transcriptions.TranscriptionCreateParams
 import com.openai.models.audio.transcriptions.TranscriptionCreateResponse
 import com.openai.models.audio.transcriptions.TranscriptionStreamEvent
 import java.util.concurrent.CompletableFuture
-import kotlin.jvm.optionals.getOrNull
-
 import java.util.function.Consumer
+import kotlin.jvm.optionals.getOrNull
 
 class TranscriptionServiceAsyncImpl internal constructor(private val clientOptions: ClientOptions) :
     TranscriptionServiceAsync {
