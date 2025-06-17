@@ -21,9 +21,11 @@ import com.openai.models.finetuning.checkpoints.permissions.PermissionCreatePage
 import com.openai.models.finetuning.checkpoints.permissions.PermissionCreateParams
 import com.openai.models.finetuning.checkpoints.permissions.PermissionDeleteParams
 import com.openai.models.finetuning.checkpoints.permissions.PermissionDeleteResponse
+import com.openai.models.finetuning.checkpoints.permissions.PermissionRetrievePageAsync
+import com.openai.models.finetuning.checkpoints.permissions.PermissionRetrievePageResponse
 import com.openai.models.finetuning.checkpoints.permissions.PermissionRetrieveParams
-import com.openai.models.finetuning.checkpoints.permissions.PermissionRetrieveResponse
 import java.util.concurrent.CompletableFuture
+import java.util.function.Consumer
 import kotlin.jvm.optionals.getOrNull
 
 class PermissionServiceAsyncImpl internal constructor(private val clientOptions: ClientOptions) :
@@ -35,6 +37,9 @@ class PermissionServiceAsyncImpl internal constructor(private val clientOptions:
 
     override fun withRawResponse(): PermissionServiceAsync.WithRawResponse = withRawResponse
 
+    override fun withOptions(modifier: Consumer<ClientOptions.Builder>): PermissionServiceAsync =
+        PermissionServiceAsyncImpl(clientOptions.toBuilder().apply(modifier::accept).build())
+
     override fun create(
         params: PermissionCreateParams,
         requestOptions: RequestOptions,
@@ -45,7 +50,7 @@ class PermissionServiceAsyncImpl internal constructor(private val clientOptions:
     override fun retrieve(
         params: PermissionRetrieveParams,
         requestOptions: RequestOptions,
-    ): CompletableFuture<PermissionRetrieveResponse> =
+    ): CompletableFuture<PermissionRetrievePageAsync> =
         // get /fine_tuning/checkpoints/{fine_tuned_model_checkpoint}/permissions
         withRawResponse().retrieve(params, requestOptions).thenApply { it.parse() }
 
@@ -61,6 +66,13 @@ class PermissionServiceAsyncImpl internal constructor(private val clientOptions:
 
         private val errorHandler: Handler<ErrorObject?> = errorHandler(clientOptions.jsonMapper)
 
+        override fun withOptions(
+            modifier: Consumer<ClientOptions.Builder>
+        ): PermissionServiceAsync.WithRawResponse =
+            PermissionServiceAsyncImpl.WithRawResponseImpl(
+                clientOptions.toBuilder().apply(modifier::accept).build()
+            )
+
         private val createHandler: Handler<PermissionCreatePageResponse> =
             jsonHandler<PermissionCreatePageResponse>(clientOptions.jsonMapper)
                 .withErrorHandler(errorHandler)
@@ -75,6 +87,7 @@ class PermissionServiceAsyncImpl internal constructor(private val clientOptions:
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.POST)
+                    .baseUrl(clientOptions.baseUrl())
                     .addPathSegments(
                         "fine_tuning",
                         "checkpoints",
@@ -108,20 +121,21 @@ class PermissionServiceAsyncImpl internal constructor(private val clientOptions:
                 }
         }
 
-        private val retrieveHandler: Handler<PermissionRetrieveResponse> =
-            jsonHandler<PermissionRetrieveResponse>(clientOptions.jsonMapper)
+        private val retrieveHandler: Handler<PermissionRetrievePageResponse> =
+            jsonHandler<PermissionRetrievePageResponse>(clientOptions.jsonMapper)
                 .withErrorHandler(errorHandler)
 
         override fun retrieve(
             params: PermissionRetrieveParams,
             requestOptions: RequestOptions,
-        ): CompletableFuture<HttpResponseFor<PermissionRetrieveResponse>> {
+        ): CompletableFuture<HttpResponseFor<PermissionRetrievePageAsync>> {
             // We check here instead of in the params builder because this can be specified
             // positionally or in the params class.
             checkRequired("fineTunedModelCheckpoint", params.fineTunedModelCheckpoint().getOrNull())
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.GET)
+                    .baseUrl(clientOptions.baseUrl())
                     .addPathSegments(
                         "fine_tuning",
                         "checkpoints",
@@ -142,6 +156,14 @@ class PermissionServiceAsyncImpl internal constructor(private val clientOptions:
                                     it.validate()
                                 }
                             }
+                            .let {
+                                PermissionRetrievePageAsync.builder()
+                                    .service(PermissionServiceAsyncImpl(clientOptions))
+                                    .streamHandlerExecutor(clientOptions.streamHandlerExecutor)
+                                    .params(params)
+                                    .response(it)
+                                    .build()
+                            }
                     }
                 }
         }
@@ -160,6 +182,7 @@ class PermissionServiceAsyncImpl internal constructor(private val clientOptions:
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.DELETE)
+                    .baseUrl(clientOptions.baseUrl())
                     .addPathSegments(
                         "fine_tuning",
                         "checkpoints",

@@ -2,6 +2,7 @@
 
 package com.openai.services.async.finetuning
 
+import com.openai.core.ClientOptions
 import com.openai.core.RequestOptions
 import com.openai.core.http.HttpResponseFor
 import com.openai.models.finetuning.jobs.FineTuningJob
@@ -16,6 +17,7 @@ import com.openai.models.finetuning.jobs.JobResumeParams
 import com.openai.models.finetuning.jobs.JobRetrieveParams
 import com.openai.services.async.finetuning.jobs.CheckpointServiceAsync
 import java.util.concurrent.CompletableFuture
+import java.util.function.Consumer
 
 interface JobServiceAsync {
 
@@ -23,6 +25,13 @@ interface JobServiceAsync {
      * Returns a view of this service that provides access to raw HTTP responses for each method.
      */
     fun withRawResponse(): WithRawResponse
+
+    /**
+     * Returns a view of this service with the given option modifications applied.
+     *
+     * The original service is not modified.
+     */
+    fun withOptions(modifier: Consumer<ClientOptions.Builder>): JobServiceAsync
 
     fun checkpoints(): CheckpointServiceAsync
 
@@ -33,7 +42,7 @@ interface JobServiceAsync {
      * Response includes details of the enqueued job including job status and the name of the
      * fine-tuned models once complete.
      *
-     * [Learn more about fine-tuning](https://platform.openai.com/docs/guides/fine-tuning)
+     * [Learn more about fine-tuning](https://platform.openai.com/docs/guides/model-optimization)
      */
     fun create(params: JobCreateParams): CompletableFuture<FineTuningJob> =
         create(params, RequestOptions.none())
@@ -47,7 +56,7 @@ interface JobServiceAsync {
     /**
      * Get info about a fine-tuning job.
      *
-     * [Learn more about fine-tuning](https://platform.openai.com/docs/guides/fine-tuning)
+     * [Learn more about fine-tuning](https://platform.openai.com/docs/guides/model-optimization)
      */
     fun retrieve(fineTuningJobId: String): CompletableFuture<FineTuningJob> =
         retrieve(fineTuningJobId, JobRetrieveParams.none())
@@ -243,6 +252,13 @@ interface JobServiceAsync {
 
     /** A view of [JobServiceAsync] that provides access to raw HTTP responses for each method. */
     interface WithRawResponse {
+
+        /**
+         * Returns a view of this service with the given option modifications applied.
+         *
+         * The original service is not modified.
+         */
+        fun withOptions(modifier: Consumer<ClientOptions.Builder>): JobServiceAsync.WithRawResponse
 
         fun checkpoints(): CheckpointServiceAsync.WithRawResponse
 

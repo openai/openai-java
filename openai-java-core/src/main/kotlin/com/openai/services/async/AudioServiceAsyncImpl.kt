@@ -9,6 +9,7 @@ import com.openai.services.async.audio.TranscriptionServiceAsync
 import com.openai.services.async.audio.TranscriptionServiceAsyncImpl
 import com.openai.services.async.audio.TranslationServiceAsync
 import com.openai.services.async.audio.TranslationServiceAsyncImpl
+import java.util.function.Consumer
 
 class AudioServiceAsyncImpl internal constructor(private val clientOptions: ClientOptions) :
     AudioServiceAsync {
@@ -28,6 +29,9 @@ class AudioServiceAsyncImpl internal constructor(private val clientOptions: Clie
     private val speech: SpeechServiceAsync by lazy { SpeechServiceAsyncImpl(clientOptions) }
 
     override fun withRawResponse(): AudioServiceAsync.WithRawResponse = withRawResponse
+
+    override fun withOptions(modifier: Consumer<ClientOptions.Builder>): AudioServiceAsync =
+        AudioServiceAsyncImpl(clientOptions.toBuilder().apply(modifier::accept).build())
 
     override fun transcriptions(): TranscriptionServiceAsync = transcriptions
 
@@ -49,6 +53,13 @@ class AudioServiceAsyncImpl internal constructor(private val clientOptions: Clie
         private val speech: SpeechServiceAsync.WithRawResponse by lazy {
             SpeechServiceAsyncImpl.WithRawResponseImpl(clientOptions)
         }
+
+        override fun withOptions(
+            modifier: Consumer<ClientOptions.Builder>
+        ): AudioServiceAsync.WithRawResponse =
+            AudioServiceAsyncImpl.WithRawResponseImpl(
+                clientOptions.toBuilder().apply(modifier::accept).build()
+            )
 
         override fun transcriptions(): TranscriptionServiceAsync.WithRawResponse = transcriptions
 

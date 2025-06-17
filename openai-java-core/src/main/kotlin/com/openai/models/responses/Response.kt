@@ -40,7 +40,7 @@ private constructor(
     private val createdAt: JsonField<Double>,
     private val error: JsonField<ResponseError>,
     private val incompleteDetails: JsonField<IncompleteDetails>,
-    private val instructions: JsonField<String>,
+    private val instructions: JsonField<Instructions>,
     private val metadata: JsonField<Metadata>,
     private val model: JsonField<ResponsesModel>,
     private val object_: JsonValue,
@@ -53,6 +53,7 @@ private constructor(
     private val background: JsonField<Boolean>,
     private val maxOutputTokens: JsonField<Long>,
     private val previousResponseId: JsonField<String>,
+    private val prompt: JsonField<ResponsePrompt>,
     private val reasoning: JsonField<Reasoning>,
     private val serviceTier: JsonField<ServiceTier>,
     private val status: JsonField<ResponseStatus>,
@@ -73,7 +74,7 @@ private constructor(
         incompleteDetails: JsonField<IncompleteDetails> = JsonMissing.of(),
         @JsonProperty("instructions")
         @ExcludeMissing
-        instructions: JsonField<String> = JsonMissing.of(),
+        instructions: JsonField<Instructions> = JsonMissing.of(),
         @JsonProperty("metadata") @ExcludeMissing metadata: JsonField<Metadata> = JsonMissing.of(),
         @JsonProperty("model") @ExcludeMissing model: JsonField<ResponsesModel> = JsonMissing.of(),
         @JsonProperty("object") @ExcludeMissing object_: JsonValue = JsonMissing.of(),
@@ -100,6 +101,9 @@ private constructor(
         @JsonProperty("previous_response_id")
         @ExcludeMissing
         previousResponseId: JsonField<String> = JsonMissing.of(),
+        @JsonProperty("prompt")
+        @ExcludeMissing
+        prompt: JsonField<ResponsePrompt> = JsonMissing.of(),
         @JsonProperty("reasoning")
         @ExcludeMissing
         reasoning: JsonField<Reasoning> = JsonMissing.of(),
@@ -135,6 +139,7 @@ private constructor(
         background,
         maxOutputTokens,
         previousResponseId,
+        prompt,
         reasoning,
         serviceTier,
         status,
@@ -179,7 +184,7 @@ private constructor(
         incompleteDetails.getOptional("incomplete_details")
 
     /**
-     * Inserts a system (or developer) message as the first item in the model's context.
+     * A system (or developer) message inserted into the model's context.
      *
      * When using along with `previous_response_id`, the instructions from a previous response will
      * not be carried over to the next response. This makes it simple to swap out system (or
@@ -188,7 +193,7 @@ private constructor(
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
      */
-    fun instructions(): Optional<String> = instructions.getOptional("instructions")
+    fun instructions(): Optional<Instructions> = instructions.getOptional("instructions")
 
     /**
      * Set of 16 key-value pairs that can be attached to an object. This can be useful for storing
@@ -327,6 +332,15 @@ private constructor(
         previousResponseId.getOptional("previous_response_id")
 
     /**
+     * Reference to a prompt template and its variables.
+     * [Learn more](https://platform.openai.com/docs/guides/text?api-mode=responses#reusable-prompts).
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun prompt(): Optional<ResponsePrompt> = prompt.getOptional("prompt")
+
+    /**
      * **o-series models only**
      *
      * Configuration options for
@@ -447,7 +461,7 @@ private constructor(
      */
     @JsonProperty("instructions")
     @ExcludeMissing
-    fun _instructions(): JsonField<String> = instructions
+    fun _instructions(): JsonField<Instructions> = instructions
 
     /**
      * Returns the raw JSON value of [metadata].
@@ -537,6 +551,13 @@ private constructor(
     @JsonProperty("previous_response_id")
     @ExcludeMissing
     fun _previousResponseId(): JsonField<String> = previousResponseId
+
+    /**
+     * Returns the raw JSON value of [prompt].
+     *
+     * Unlike [prompt], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    @JsonProperty("prompt") @ExcludeMissing fun _prompt(): JsonField<ResponsePrompt> = prompt
 
     /**
      * Returns the raw JSON value of [reasoning].
@@ -635,7 +656,7 @@ private constructor(
         private var createdAt: JsonField<Double>? = null
         private var error: JsonField<ResponseError>? = null
         private var incompleteDetails: JsonField<IncompleteDetails>? = null
-        private var instructions: JsonField<String>? = null
+        private var instructions: JsonField<Instructions>? = null
         private var metadata: JsonField<Metadata>? = null
         private var model: JsonField<ResponsesModel>? = null
         private var object_: JsonValue = JsonValue.from("response")
@@ -648,6 +669,7 @@ private constructor(
         private var background: JsonField<Boolean> = JsonMissing.of()
         private var maxOutputTokens: JsonField<Long> = JsonMissing.of()
         private var previousResponseId: JsonField<String> = JsonMissing.of()
+        private var prompt: JsonField<ResponsePrompt> = JsonMissing.of()
         private var reasoning: JsonField<Reasoning> = JsonMissing.of()
         private var serviceTier: JsonField<ServiceTier> = JsonMissing.of()
         private var status: JsonField<ResponseStatus> = JsonMissing.of()
@@ -676,6 +698,7 @@ private constructor(
             background = response.background
             maxOutputTokens = response.maxOutputTokens
             previousResponseId = response.previousResponseId
+            prompt = response.prompt
             reasoning = response.reasoning
             serviceTier = response.serviceTier
             status = response.status
@@ -744,27 +767,36 @@ private constructor(
         }
 
         /**
-         * Inserts a system (or developer) message as the first item in the model's context.
+         * A system (or developer) message inserted into the model's context.
          *
          * When using along with `previous_response_id`, the instructions from a previous response
          * will not be carried over to the next response. This makes it simple to swap out system
          * (or developer) messages in new responses.
          */
-        fun instructions(instructions: String?) = instructions(JsonField.ofNullable(instructions))
+        fun instructions(instructions: Instructions?) =
+            instructions(JsonField.ofNullable(instructions))
 
         /** Alias for calling [Builder.instructions] with `instructions.orElse(null)`. */
-        fun instructions(instructions: Optional<String>) = instructions(instructions.getOrNull())
+        fun instructions(instructions: Optional<Instructions>) =
+            instructions(instructions.getOrNull())
 
         /**
          * Sets [Builder.instructions] to an arbitrary JSON value.
          *
-         * You should usually call [Builder.instructions] with a well-typed [String] value instead.
-         * This method is primarily for setting the field to an undocumented or not yet supported
-         * value.
+         * You should usually call [Builder.instructions] with a well-typed [Instructions] value
+         * instead. This method is primarily for setting the field to an undocumented or not yet
+         * supported value.
          */
-        fun instructions(instructions: JsonField<String>) = apply {
+        fun instructions(instructions: JsonField<Instructions>) = apply {
             this.instructions = instructions
         }
+
+        /** Alias for calling [instructions] with `Instructions.ofString(string)`. */
+        fun instructions(string: String) = instructions(Instructions.ofString(string))
+
+        /** Alias for calling [instructions] with `Instructions.ofInputItemList(inputItemList)`. */
+        fun instructionsOfInputItemList(inputItemList: List<ResponseInputItem>) =
+            instructions(Instructions.ofInputItemList(inputItemList))
 
         /**
          * Set of 16 key-value pairs that can be attached to an object. This can be useful for
@@ -1201,6 +1233,24 @@ private constructor(
         }
 
         /**
+         * Reference to a prompt template and its variables.
+         * [Learn more](https://platform.openai.com/docs/guides/text?api-mode=responses#reusable-prompts).
+         */
+        fun prompt(prompt: ResponsePrompt?) = prompt(JsonField.ofNullable(prompt))
+
+        /** Alias for calling [Builder.prompt] with `prompt.orElse(null)`. */
+        fun prompt(prompt: Optional<ResponsePrompt>) = prompt(prompt.getOrNull())
+
+        /**
+         * Sets [Builder.prompt] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.prompt] with a well-typed [ResponsePrompt] value
+         * instead. This method is primarily for setting the field to an undocumented or not yet
+         * supported value.
+         */
+        fun prompt(prompt: JsonField<ResponsePrompt>) = apply { this.prompt = prompt }
+
+        /**
          * **o-series models only**
          *
          * Configuration options for
@@ -1398,6 +1448,7 @@ private constructor(
                 background,
                 maxOutputTokens,
                 previousResponseId,
+                prompt,
                 reasoning,
                 serviceTier,
                 status,
@@ -1420,7 +1471,7 @@ private constructor(
         createdAt()
         error().ifPresent { it.validate() }
         incompleteDetails().ifPresent { it.validate() }
-        instructions()
+        instructions().ifPresent { it.validate() }
         metadata().ifPresent { it.validate() }
         model().validate()
         _object_().let {
@@ -1437,6 +1488,7 @@ private constructor(
         background()
         maxOutputTokens()
         previousResponseId()
+        prompt().ifPresent { it.validate() }
         reasoning().ifPresent { it.validate() }
         serviceTier().ifPresent { it.validate() }
         status().ifPresent { it.validate() }
@@ -1466,7 +1518,7 @@ private constructor(
             (if (createdAt.asKnown().isPresent) 1 else 0) +
             (error.asKnown().getOrNull()?.validity() ?: 0) +
             (incompleteDetails.asKnown().getOrNull()?.validity() ?: 0) +
-            (if (instructions.asKnown().isPresent) 1 else 0) +
+            (instructions.asKnown().getOrNull()?.validity() ?: 0) +
             (metadata.asKnown().getOrNull()?.validity() ?: 0) +
             (model.asKnown().getOrNull()?.validity() ?: 0) +
             object_.let { if (it == JsonValue.from("response")) 1 else 0 } +
@@ -1479,6 +1531,7 @@ private constructor(
             (if (background.asKnown().isPresent) 1 else 0) +
             (if (maxOutputTokens.asKnown().isPresent) 1 else 0) +
             (if (previousResponseId.asKnown().isPresent) 1 else 0) +
+            (prompt.asKnown().getOrNull()?.validity() ?: 0) +
             (reasoning.asKnown().getOrNull()?.validity() ?: 0) +
             (serviceTier.asKnown().getOrNull()?.validity() ?: 0) +
             (status.asKnown().getOrNull()?.validity() ?: 0) +
@@ -1757,6 +1810,200 @@ private constructor(
 
         override fun toString() =
             "IncompleteDetails{reason=$reason, additionalProperties=$additionalProperties}"
+    }
+
+    /**
+     * A system (or developer) message inserted into the model's context.
+     *
+     * When using along with `previous_response_id`, the instructions from a previous response will
+     * not be carried over to the next response. This makes it simple to swap out system (or
+     * developer) messages in new responses.
+     */
+    @JsonDeserialize(using = Instructions.Deserializer::class)
+    @JsonSerialize(using = Instructions.Serializer::class)
+    class Instructions
+    private constructor(
+        private val string: String? = null,
+        private val inputItemList: List<ResponseInputItem>? = null,
+        private val _json: JsonValue? = null,
+    ) {
+
+        /** A text input to the model, equivalent to a text input with the `developer` role. */
+        fun string(): Optional<String> = Optional.ofNullable(string)
+
+        /** A list of one or many input items to the model, containing different content types. */
+        fun inputItemList(): Optional<List<ResponseInputItem>> = Optional.ofNullable(inputItemList)
+
+        fun isString(): Boolean = string != null
+
+        fun isInputItemList(): Boolean = inputItemList != null
+
+        /** A text input to the model, equivalent to a text input with the `developer` role. */
+        fun asString(): String = string.getOrThrow("string")
+
+        /** A list of one or many input items to the model, containing different content types. */
+        fun asInputItemList(): List<ResponseInputItem> = inputItemList.getOrThrow("inputItemList")
+
+        fun _json(): Optional<JsonValue> = Optional.ofNullable(_json)
+
+        fun <T> accept(visitor: Visitor<T>): T =
+            when {
+                string != null -> visitor.visitString(string)
+                inputItemList != null -> visitor.visitInputItemList(inputItemList)
+                else -> visitor.unknown(_json)
+            }
+
+        private var validated: Boolean = false
+
+        fun validate(): Instructions = apply {
+            if (validated) {
+                return@apply
+            }
+
+            accept(
+                object : Visitor<Unit> {
+                    override fun visitString(string: String) {}
+
+                    override fun visitInputItemList(inputItemList: List<ResponseInputItem>) {
+                        inputItemList.forEach { it.validate() }
+                    }
+                }
+            )
+            validated = true
+        }
+
+        fun isValid(): Boolean =
+            try {
+                validate()
+                true
+            } catch (e: OpenAIInvalidDataException) {
+                false
+            }
+
+        /**
+         * Returns a score indicating how many valid values are contained in this object
+         * recursively.
+         *
+         * Used for best match union deserialization.
+         */
+        @JvmSynthetic
+        internal fun validity(): Int =
+            accept(
+                object : Visitor<Int> {
+                    override fun visitString(string: String) = 1
+
+                    override fun visitInputItemList(inputItemList: List<ResponseInputItem>) =
+                        inputItemList.sumOf { it.validity().toInt() }
+
+                    override fun unknown(json: JsonValue?) = 0
+                }
+            )
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) {
+                return true
+            }
+
+            return /* spotless:off */ other is Instructions && string == other.string && inputItemList == other.inputItemList /* spotless:on */
+        }
+
+        override fun hashCode(): Int = /* spotless:off */ Objects.hash(string, inputItemList) /* spotless:on */
+
+        override fun toString(): String =
+            when {
+                string != null -> "Instructions{string=$string}"
+                inputItemList != null -> "Instructions{inputItemList=$inputItemList}"
+                _json != null -> "Instructions{_unknown=$_json}"
+                else -> throw IllegalStateException("Invalid Instructions")
+            }
+
+        companion object {
+
+            /** A text input to the model, equivalent to a text input with the `developer` role. */
+            @JvmStatic fun ofString(string: String) = Instructions(string = string)
+
+            /**
+             * A list of one or many input items to the model, containing different content types.
+             */
+            @JvmStatic
+            fun ofInputItemList(inputItemList: List<ResponseInputItem>) =
+                Instructions(inputItemList = inputItemList)
+        }
+
+        /**
+         * An interface that defines how to map each variant of [Instructions] to a value of type
+         * [T].
+         */
+        interface Visitor<out T> {
+
+            /** A text input to the model, equivalent to a text input with the `developer` role. */
+            fun visitString(string: String): T
+
+            /**
+             * A list of one or many input items to the model, containing different content types.
+             */
+            fun visitInputItemList(inputItemList: List<ResponseInputItem>): T
+
+            /**
+             * Maps an unknown variant of [Instructions] to a value of type [T].
+             *
+             * An instance of [Instructions] can contain an unknown variant if it was deserialized
+             * from data that doesn't match any known variant. For example, if the SDK is on an
+             * older version than the API, then the API may respond with new variants that the SDK
+             * is unaware of.
+             *
+             * @throws OpenAIInvalidDataException in the default implementation.
+             */
+            fun unknown(json: JsonValue?): T {
+                throw OpenAIInvalidDataException("Unknown Instructions: $json")
+            }
+        }
+
+        internal class Deserializer : BaseDeserializer<Instructions>(Instructions::class) {
+
+            override fun ObjectCodec.deserialize(node: JsonNode): Instructions {
+                val json = JsonValue.fromJsonNode(node)
+
+                val bestMatches =
+                    sequenceOf(
+                            tryDeserialize(node, jacksonTypeRef<String>())?.let {
+                                Instructions(string = it, _json = json)
+                            },
+                            tryDeserialize(node, jacksonTypeRef<List<ResponseInputItem>>())?.let {
+                                Instructions(inputItemList = it, _json = json)
+                            },
+                        )
+                        .filterNotNull()
+                        .allMaxBy { it.validity() }
+                        .toList()
+                return when (bestMatches.size) {
+                    // This can happen if what we're deserializing is completely incompatible with
+                    // all the possible variants (e.g. deserializing from object).
+                    0 -> Instructions(_json = json)
+                    1 -> bestMatches.single()
+                    // If there's more than one match with the highest validity, then use the first
+                    // completely valid match, or simply the first match if none are completely
+                    // valid.
+                    else -> bestMatches.firstOrNull { it.isValid() } ?: bestMatches.first()
+                }
+            }
+        }
+
+        internal class Serializer : BaseSerializer<Instructions>(Instructions::class) {
+
+            override fun serialize(
+                value: Instructions,
+                generator: JsonGenerator,
+                provider: SerializerProvider,
+            ) {
+                when {
+                    value.string != null -> generator.writeObject(value.string)
+                    value.inputItemList != null -> generator.writeObject(value.inputItemList)
+                    value._json != null -> generator.writeObject(value._json)
+                    else -> throw IllegalStateException("Invalid Instructions")
+                }
+            }
+        }
     }
 
     /**
@@ -2165,6 +2412,8 @@ private constructor(
 
             @JvmField val FLEX = of("flex")
 
+            @JvmField val SCALE = of("scale")
+
             @JvmStatic fun of(value: String) = ServiceTier(JsonField.of(value))
         }
 
@@ -2173,6 +2422,7 @@ private constructor(
             AUTO,
             DEFAULT,
             FLEX,
+            SCALE,
         }
 
         /**
@@ -2188,6 +2438,7 @@ private constructor(
             AUTO,
             DEFAULT,
             FLEX,
+            SCALE,
             /**
              * An enum member indicating that [ServiceTier] was instantiated with an unknown value.
              */
@@ -2206,6 +2457,7 @@ private constructor(
                 AUTO -> Value.AUTO
                 DEFAULT -> Value.DEFAULT
                 FLEX -> Value.FLEX
+                SCALE -> Value.SCALE
                 else -> Value._UNKNOWN
             }
 
@@ -2223,6 +2475,7 @@ private constructor(
                 AUTO -> Known.AUTO
                 DEFAULT -> Known.DEFAULT
                 FLEX -> Known.FLEX
+                SCALE -> Known.SCALE
                 else -> throw OpenAIInvalidDataException("Unknown ServiceTier: $value")
             }
 
@@ -2418,15 +2671,15 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is Response && id == other.id && createdAt == other.createdAt && error == other.error && incompleteDetails == other.incompleteDetails && instructions == other.instructions && metadata == other.metadata && model == other.model && object_ == other.object_ && output == other.output && parallelToolCalls == other.parallelToolCalls && temperature == other.temperature && toolChoice == other.toolChoice && tools == other.tools && topP == other.topP && background == other.background && maxOutputTokens == other.maxOutputTokens && previousResponseId == other.previousResponseId && reasoning == other.reasoning && serviceTier == other.serviceTier && status == other.status && text == other.text && truncation == other.truncation && usage == other.usage && user == other.user && additionalProperties == other.additionalProperties /* spotless:on */
+        return /* spotless:off */ other is Response && id == other.id && createdAt == other.createdAt && error == other.error && incompleteDetails == other.incompleteDetails && instructions == other.instructions && metadata == other.metadata && model == other.model && object_ == other.object_ && output == other.output && parallelToolCalls == other.parallelToolCalls && temperature == other.temperature && toolChoice == other.toolChoice && tools == other.tools && topP == other.topP && background == other.background && maxOutputTokens == other.maxOutputTokens && previousResponseId == other.previousResponseId && prompt == other.prompt && reasoning == other.reasoning && serviceTier == other.serviceTier && status == other.status && text == other.text && truncation == other.truncation && usage == other.usage && user == other.user && additionalProperties == other.additionalProperties /* spotless:on */
     }
 
     /* spotless:off */
-    private val hashCode: Int by lazy { Objects.hash(id, createdAt, error, incompleteDetails, instructions, metadata, model, object_, output, parallelToolCalls, temperature, toolChoice, tools, topP, background, maxOutputTokens, previousResponseId, reasoning, serviceTier, status, text, truncation, usage, user, additionalProperties) }
+    private val hashCode: Int by lazy { Objects.hash(id, createdAt, error, incompleteDetails, instructions, metadata, model, object_, output, parallelToolCalls, temperature, toolChoice, tools, topP, background, maxOutputTokens, previousResponseId, prompt, reasoning, serviceTier, status, text, truncation, usage, user, additionalProperties) }
     /* spotless:on */
 
     override fun hashCode(): Int = hashCode
 
     override fun toString() =
-        "Response{id=$id, createdAt=$createdAt, error=$error, incompleteDetails=$incompleteDetails, instructions=$instructions, metadata=$metadata, model=$model, object_=$object_, output=$output, parallelToolCalls=$parallelToolCalls, temperature=$temperature, toolChoice=$toolChoice, tools=$tools, topP=$topP, background=$background, maxOutputTokens=$maxOutputTokens, previousResponseId=$previousResponseId, reasoning=$reasoning, serviceTier=$serviceTier, status=$status, text=$text, truncation=$truncation, usage=$usage, user=$user, additionalProperties=$additionalProperties}"
+        "Response{id=$id, createdAt=$createdAt, error=$error, incompleteDetails=$incompleteDetails, instructions=$instructions, metadata=$metadata, model=$model, object_=$object_, output=$output, parallelToolCalls=$parallelToolCalls, temperature=$temperature, toolChoice=$toolChoice, tools=$tools, topP=$topP, background=$background, maxOutputTokens=$maxOutputTokens, previousResponseId=$previousResponseId, prompt=$prompt, reasoning=$reasoning, serviceTier=$serviceTier, status=$status, text=$text, truncation=$truncation, usage=$usage, user=$user, additionalProperties=$additionalProperties}"
 }

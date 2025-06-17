@@ -14,6 +14,7 @@ import com.openai.core.prepareAsync
 import com.openai.models.ErrorObject
 import com.openai.models.containers.files.content.ContentRetrieveParams
 import java.util.concurrent.CompletableFuture
+import java.util.function.Consumer
 import kotlin.jvm.optionals.getOrNull
 
 class ContentServiceAsyncImpl internal constructor(private val clientOptions: ClientOptions) :
@@ -24,6 +25,9 @@ class ContentServiceAsyncImpl internal constructor(private val clientOptions: Cl
     }
 
     override fun withRawResponse(): ContentServiceAsync.WithRawResponse = withRawResponse
+
+    override fun withOptions(modifier: Consumer<ClientOptions.Builder>): ContentServiceAsync =
+        ContentServiceAsyncImpl(clientOptions.toBuilder().apply(modifier::accept).build())
 
     override fun retrieve(
         params: ContentRetrieveParams,
@@ -37,6 +41,13 @@ class ContentServiceAsyncImpl internal constructor(private val clientOptions: Cl
 
         private val errorHandler: Handler<ErrorObject?> = errorHandler(clientOptions.jsonMapper)
 
+        override fun withOptions(
+            modifier: Consumer<ClientOptions.Builder>
+        ): ContentServiceAsync.WithRawResponse =
+            ContentServiceAsyncImpl.WithRawResponseImpl(
+                clientOptions.toBuilder().apply(modifier::accept).build()
+            )
+
         override fun retrieve(
             params: ContentRetrieveParams,
             requestOptions: RequestOptions,
@@ -47,6 +58,7 @@ class ContentServiceAsyncImpl internal constructor(private val clientOptions: Cl
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.GET)
+                    .baseUrl(clientOptions.baseUrl())
                     .addPathSegments(
                         "containers",
                         params._pathParam(0),

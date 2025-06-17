@@ -3,6 +3,7 @@
 package com.openai.services.blocking
 
 import com.openai.core.ClientOptions
+import java.util.function.Consumer
 
 class BetaServiceImpl internal constructor(private val clientOptions: ClientOptions) : BetaService {
 
@@ -12,6 +13,17 @@ class BetaServiceImpl internal constructor(private val clientOptions: ClientOpti
 
     override fun withRawResponse(): BetaService.WithRawResponse = withRawResponse
 
+    override fun withOptions(modifier: Consumer<ClientOptions.Builder>): BetaService =
+        BetaServiceImpl(clientOptions.toBuilder().apply(modifier::accept).build())
+
     class WithRawResponseImpl internal constructor(private val clientOptions: ClientOptions) :
-        BetaService.WithRawResponse
+        BetaService.WithRawResponse {
+
+        override fun withOptions(
+            modifier: Consumer<ClientOptions.Builder>
+        ): BetaService.WithRawResponse =
+            BetaServiceImpl.WithRawResponseImpl(
+                clientOptions.toBuilder().apply(modifier::accept).build()
+            )
+    }
 }

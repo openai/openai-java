@@ -3,6 +3,7 @@
 package com.openai.services.blocking.containers
 
 import com.google.errorprone.annotations.MustBeClosed
+import com.openai.core.ClientOptions
 import com.openai.core.RequestOptions
 import com.openai.core.http.HttpResponse
 import com.openai.core.http.HttpResponseFor
@@ -14,6 +15,7 @@ import com.openai.models.containers.files.FileListParams
 import com.openai.models.containers.files.FileRetrieveParams
 import com.openai.models.containers.files.FileRetrieveResponse
 import com.openai.services.blocking.containers.files.ContentService
+import java.util.function.Consumer
 
 interface FileService {
 
@@ -21,6 +23,13 @@ interface FileService {
      * Returns a view of this service that provides access to raw HTTP responses for each method.
      */
     fun withRawResponse(): WithRawResponse
+
+    /**
+     * Returns a view of this service with the given option modifications applied.
+     *
+     * The original service is not modified.
+     */
+    fun withOptions(modifier: Consumer<ClientOptions.Builder>): FileService
 
     fun content(): ContentService
 
@@ -127,6 +136,13 @@ interface FileService {
 
     /** A view of [FileService] that provides access to raw HTTP responses for each method. */
     interface WithRawResponse {
+
+        /**
+         * Returns a view of this service with the given option modifications applied.
+         *
+         * The original service is not modified.
+         */
+        fun withOptions(modifier: Consumer<ClientOptions.Builder>): FileService.WithRawResponse
 
         fun content(): ContentService.WithRawResponse
 

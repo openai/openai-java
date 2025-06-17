@@ -21,6 +21,7 @@ import com.openai.models.images.ImageEditParams
 import com.openai.models.images.ImageGenerateParams
 import com.openai.models.images.ImagesResponse
 import java.util.concurrent.CompletableFuture
+import java.util.function.Consumer
 
 class ImageServiceAsyncImpl internal constructor(private val clientOptions: ClientOptions) :
     ImageServiceAsync {
@@ -30,6 +31,9 @@ class ImageServiceAsyncImpl internal constructor(private val clientOptions: Clie
     }
 
     override fun withRawResponse(): ImageServiceAsync.WithRawResponse = withRawResponse
+
+    override fun withOptions(modifier: Consumer<ClientOptions.Builder>): ImageServiceAsync =
+        ImageServiceAsyncImpl(clientOptions.toBuilder().apply(modifier::accept).build())
 
     override fun createVariation(
         params: ImageCreateVariationParams,
@@ -57,6 +61,13 @@ class ImageServiceAsyncImpl internal constructor(private val clientOptions: Clie
 
         private val errorHandler: Handler<ErrorObject?> = errorHandler(clientOptions.jsonMapper)
 
+        override fun withOptions(
+            modifier: Consumer<ClientOptions.Builder>
+        ): ImageServiceAsync.WithRawResponse =
+            ImageServiceAsyncImpl.WithRawResponseImpl(
+                clientOptions.toBuilder().apply(modifier::accept).build()
+            )
+
         private val createVariationHandler: Handler<ImagesResponse> =
             jsonHandler<ImagesResponse>(clientOptions.jsonMapper).withErrorHandler(errorHandler)
 
@@ -67,6 +78,7 @@ class ImageServiceAsyncImpl internal constructor(private val clientOptions: Clie
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.POST)
+                    .baseUrl(clientOptions.baseUrl())
                     .addPathSegments("images", "variations")
                     .body(multipartFormData(clientOptions.jsonMapper, params._body()))
                     .build()
@@ -101,6 +113,7 @@ class ImageServiceAsyncImpl internal constructor(private val clientOptions: Clie
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.POST)
+                    .baseUrl(clientOptions.baseUrl())
                     .addPathSegments("images", "edits")
                     .body(multipartFormData(clientOptions.jsonMapper, params._body()))
                     .build()
@@ -135,6 +148,7 @@ class ImageServiceAsyncImpl internal constructor(private val clientOptions: Clie
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.POST)
+                    .baseUrl(clientOptions.baseUrl())
                     .addPathSegments("images", "generations")
                     .body(json(clientOptions.jsonMapper, params._body()))
                     .build()

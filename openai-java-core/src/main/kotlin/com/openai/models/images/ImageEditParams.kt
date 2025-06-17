@@ -111,6 +111,24 @@ private constructor(
     fun n(): Optional<Long> = body.n()
 
     /**
+     * The compression level (0-100%) for the generated images. This parameter is only supported for
+     * `gpt-image-1` with the `webp` or `jpeg` output formats, and defaults to 100.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun outputCompression(): Optional<Long> = body.outputCompression()
+
+    /**
+     * The format in which the generated images are returned. This parameter is only supported for
+     * `gpt-image-1`. Must be one of `png`, `jpeg`, or `webp`. The default value is `png`.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun outputFormat(): Optional<OutputFormat> = body.outputFormat()
+
+    /**
      * The quality of the image that will be generated. `high`, `medium` and `low` are only
      * supported for `gpt-image-1`. `dall-e-2` only supports `standard` quality. Defaults to `auto`.
      *
@@ -190,6 +208,22 @@ private constructor(
      * Unlike [n], this method doesn't throw if the multipart field has an unexpected type.
      */
     fun _n(): MultipartField<Long> = body._n()
+
+    /**
+     * Returns the raw multipart value of [outputCompression].
+     *
+     * Unlike [outputCompression], this method doesn't throw if the multipart field has an
+     * unexpected type.
+     */
+    fun _outputCompression(): MultipartField<Long> = body._outputCompression()
+
+    /**
+     * Returns the raw multipart value of [outputFormat].
+     *
+     * Unlike [outputFormat], this method doesn't throw if the multipart field has an unexpected
+     * type.
+     */
+    fun _outputFormat(): MultipartField<OutputFormat> = body._outputFormat()
 
     /**
      * Returns the raw multipart value of [quality].
@@ -437,6 +471,58 @@ private constructor(
         fun n(n: MultipartField<Long>) = apply { body.n(n) }
 
         /**
+         * The compression level (0-100%) for the generated images. This parameter is only supported
+         * for `gpt-image-1` with the `webp` or `jpeg` output formats, and defaults to 100.
+         */
+        fun outputCompression(outputCompression: Long?) = apply {
+            body.outputCompression(outputCompression)
+        }
+
+        /**
+         * Alias for [Builder.outputCompression].
+         *
+         * This unboxed primitive overload exists for backwards compatibility.
+         */
+        fun outputCompression(outputCompression: Long) =
+            outputCompression(outputCompression as Long?)
+
+        /** Alias for calling [Builder.outputCompression] with `outputCompression.orElse(null)`. */
+        fun outputCompression(outputCompression: Optional<Long>) =
+            outputCompression(outputCompression.getOrNull())
+
+        /**
+         * Sets [Builder.outputCompression] to an arbitrary multipart value.
+         *
+         * You should usually call [Builder.outputCompression] with a well-typed [Long] value
+         * instead. This method is primarily for setting the field to an undocumented or not yet
+         * supported value.
+         */
+        fun outputCompression(outputCompression: MultipartField<Long>) = apply {
+            body.outputCompression(outputCompression)
+        }
+
+        /**
+         * The format in which the generated images are returned. This parameter is only supported
+         * for `gpt-image-1`. Must be one of `png`, `jpeg`, or `webp`. The default value is `png`.
+         */
+        fun outputFormat(outputFormat: OutputFormat?) = apply { body.outputFormat(outputFormat) }
+
+        /** Alias for calling [Builder.outputFormat] with `outputFormat.orElse(null)`. */
+        fun outputFormat(outputFormat: Optional<OutputFormat>) =
+            outputFormat(outputFormat.getOrNull())
+
+        /**
+         * Sets [Builder.outputFormat] to an arbitrary multipart value.
+         *
+         * You should usually call [Builder.outputFormat] with a well-typed [OutputFormat] value
+         * instead. This method is primarily for setting the field to an undocumented or not yet
+         * supported value.
+         */
+        fun outputFormat(outputFormat: MultipartField<OutputFormat>) = apply {
+            body.outputFormat(outputFormat)
+        }
+
+        /**
          * The quality of the image that will be generated. `high`, `medium` and `low` are only
          * supported for `gpt-image-1`. `dall-e-2` only supports `standard` quality. Defaults to
          * `auto`.
@@ -635,6 +721,8 @@ private constructor(
                 "mask" to _mask(),
                 "model" to _model(),
                 "n" to _n(),
+                "output_compression" to _outputCompression(),
+                "output_format" to _outputFormat(),
                 "quality" to _quality(),
                 "response_format" to _responseFormat(),
                 "size" to _size(),
@@ -654,6 +742,8 @@ private constructor(
         private val mask: MultipartField<InputStream>,
         private val model: MultipartField<ImageModel>,
         private val n: MultipartField<Long>,
+        private val outputCompression: MultipartField<Long>,
+        private val outputFormat: MultipartField<OutputFormat>,
         private val quality: MultipartField<Quality>,
         private val responseFormat: MultipartField<ResponseFormat>,
         private val size: MultipartField<Size>,
@@ -724,6 +814,25 @@ private constructor(
          *   server responded with an unexpected value).
          */
         fun n(): Optional<Long> = n.value.getOptional("n")
+
+        /**
+         * The compression level (0-100%) for the generated images. This parameter is only supported
+         * for `gpt-image-1` with the `webp` or `jpeg` output formats, and defaults to 100.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun outputCompression(): Optional<Long> =
+            outputCompression.value.getOptional("output_compression")
+
+        /**
+         * The format in which the generated images are returned. This parameter is only supported
+         * for `gpt-image-1`. Must be one of `png`, `jpeg`, or `webp`. The default value is `png`.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun outputFormat(): Optional<OutputFormat> = outputFormat.value.getOptional("output_format")
 
         /**
          * The quality of the image that will be generated. `high`, `medium` and `low` are only
@@ -813,6 +922,26 @@ private constructor(
         @JsonProperty("n") @ExcludeMissing fun _n(): MultipartField<Long> = n
 
         /**
+         * Returns the raw multipart value of [outputCompression].
+         *
+         * Unlike [outputCompression], this method doesn't throw if the multipart field has an
+         * unexpected type.
+         */
+        @JsonProperty("output_compression")
+        @ExcludeMissing
+        fun _outputCompression(): MultipartField<Long> = outputCompression
+
+        /**
+         * Returns the raw multipart value of [outputFormat].
+         *
+         * Unlike [outputFormat], this method doesn't throw if the multipart field has an unexpected
+         * type.
+         */
+        @JsonProperty("output_format")
+        @ExcludeMissing
+        fun _outputFormat(): MultipartField<OutputFormat> = outputFormat
+
+        /**
          * Returns the raw multipart value of [quality].
          *
          * Unlike [quality], this method doesn't throw if the multipart field has an unexpected
@@ -869,6 +998,8 @@ private constructor(
             private var mask: MultipartField<InputStream> = MultipartField.of(null)
             private var model: MultipartField<ImageModel> = MultipartField.of(null)
             private var n: MultipartField<Long> = MultipartField.of(null)
+            private var outputCompression: MultipartField<Long> = MultipartField.of(null)
+            private var outputFormat: MultipartField<OutputFormat> = MultipartField.of(null)
             private var quality: MultipartField<Quality> = MultipartField.of(null)
             private var responseFormat: MultipartField<ResponseFormat> = MultipartField.of(null)
             private var size: MultipartField<Size> = MultipartField.of(null)
@@ -882,6 +1013,8 @@ private constructor(
                 mask = body.mask
                 model = body.model
                 n = body.n
+                outputCompression = body.outputCompression
+                outputFormat = body.outputFormat
                 quality = body.quality
                 responseFormat = body.responseFormat
                 size = body.size
@@ -1073,6 +1206,62 @@ private constructor(
             fun n(n: MultipartField<Long>) = apply { this.n = n }
 
             /**
+             * The compression level (0-100%) for the generated images. This parameter is only
+             * supported for `gpt-image-1` with the `webp` or `jpeg` output formats, and defaults
+             * to 100.
+             */
+            fun outputCompression(outputCompression: Long?) =
+                outputCompression(MultipartField.of(outputCompression))
+
+            /**
+             * Alias for [Builder.outputCompression].
+             *
+             * This unboxed primitive overload exists for backwards compatibility.
+             */
+            fun outputCompression(outputCompression: Long) =
+                outputCompression(outputCompression as Long?)
+
+            /**
+             * Alias for calling [Builder.outputCompression] with `outputCompression.orElse(null)`.
+             */
+            fun outputCompression(outputCompression: Optional<Long>) =
+                outputCompression(outputCompression.getOrNull())
+
+            /**
+             * Sets [Builder.outputCompression] to an arbitrary multipart value.
+             *
+             * You should usually call [Builder.outputCompression] with a well-typed [Long] value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun outputCompression(outputCompression: MultipartField<Long>) = apply {
+                this.outputCompression = outputCompression
+            }
+
+            /**
+             * The format in which the generated images are returned. This parameter is only
+             * supported for `gpt-image-1`. Must be one of `png`, `jpeg`, or `webp`. The default
+             * value is `png`.
+             */
+            fun outputFormat(outputFormat: OutputFormat?) =
+                outputFormat(MultipartField.of(outputFormat))
+
+            /** Alias for calling [Builder.outputFormat] with `outputFormat.orElse(null)`. */
+            fun outputFormat(outputFormat: Optional<OutputFormat>) =
+                outputFormat(outputFormat.getOrNull())
+
+            /**
+             * Sets [Builder.outputFormat] to an arbitrary multipart value.
+             *
+             * You should usually call [Builder.outputFormat] with a well-typed [OutputFormat] value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun outputFormat(outputFormat: MultipartField<OutputFormat>) = apply {
+                this.outputFormat = outputFormat
+            }
+
+            /**
              * The quality of the image that will be generated. `high`, `medium` and `low` are only
              * supported for `gpt-image-1`. `dall-e-2` only supports `standard` quality. Defaults to
              * `auto`.
@@ -1171,6 +1360,8 @@ private constructor(
                     mask,
                     model,
                     n,
+                    outputCompression,
+                    outputFormat,
                     quality,
                     responseFormat,
                     size,
@@ -1191,6 +1382,8 @@ private constructor(
             mask()
             model().ifPresent { it.validate() }
             n()
+            outputCompression()
+            outputFormat().ifPresent { it.validate() }
             quality().ifPresent { it.validate() }
             responseFormat().ifPresent { it.validate() }
             size().ifPresent { it.validate() }
@@ -1211,17 +1404,17 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is Body && image == other.image && prompt == other.prompt && background == other.background && mask == other.mask && model == other.model && n == other.n && quality == other.quality && responseFormat == other.responseFormat && size == other.size && user == other.user /* spotless:on */
+            return /* spotless:off */ other is Body && image == other.image && prompt == other.prompt && background == other.background && mask == other.mask && model == other.model && n == other.n && outputCompression == other.outputCompression && outputFormat == other.outputFormat && quality == other.quality && responseFormat == other.responseFormat && size == other.size && user == other.user /* spotless:on */
         }
 
         /* spotless:off */
-        private val hashCode: Int by lazy { Objects.hash(image, prompt, background, mask, model, n, quality, responseFormat, size, user) }
+        private val hashCode: Int by lazy { Objects.hash(image, prompt, background, mask, model, n, outputCompression, outputFormat, quality, responseFormat, size, user) }
         /* spotless:on */
 
         override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "Body{image=$image, prompt=$prompt, background=$background, mask=$mask, model=$model, n=$n, quality=$quality, responseFormat=$responseFormat, size=$size, user=$user}"
+            "Body{image=$image, prompt=$prompt, background=$background, mask=$mask, model=$model, n=$n, outputCompression=$outputCompression, outputFormat=$outputFormat, quality=$quality, responseFormat=$responseFormat, size=$size, user=$user}"
     }
 
     /**
@@ -1538,6 +1731,144 @@ private constructor(
             }
 
             return /* spotless:off */ other is Background && value == other.value /* spotless:on */
+        }
+
+        override fun hashCode() = value.hashCode()
+
+        override fun toString() = value.toString()
+    }
+
+    /**
+     * The format in which the generated images are returned. This parameter is only supported for
+     * `gpt-image-1`. Must be one of `png`, `jpeg`, or `webp`. The default value is `png`.
+     */
+    class OutputFormat @JsonCreator private constructor(private val value: JsonField<String>) :
+        Enum {
+
+        /**
+         * Returns this class instance's raw value.
+         *
+         * This is usually only useful if this instance was deserialized from data that doesn't
+         * match any known member, and you want to know that value. For example, if the SDK is on an
+         * older version than the API, then the API may respond with new members that the SDK is
+         * unaware of.
+         */
+        @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
+
+        companion object {
+
+            @JvmField val PNG = of("png")
+
+            @JvmField val JPEG = of("jpeg")
+
+            @JvmField val WEBP = of("webp")
+
+            @JvmStatic fun of(value: String) = OutputFormat(JsonField.of(value))
+        }
+
+        /** An enum containing [OutputFormat]'s known values. */
+        enum class Known {
+            PNG,
+            JPEG,
+            WEBP,
+        }
+
+        /**
+         * An enum containing [OutputFormat]'s known values, as well as an [_UNKNOWN] member.
+         *
+         * An instance of [OutputFormat] can contain an unknown value in a couple of cases:
+         * - It was deserialized from data that doesn't match any known member. For example, if the
+         *   SDK is on an older version than the API, then the API may respond with new members that
+         *   the SDK is unaware of.
+         * - It was constructed with an arbitrary value using the [of] method.
+         */
+        enum class Value {
+            PNG,
+            JPEG,
+            WEBP,
+            /**
+             * An enum member indicating that [OutputFormat] was instantiated with an unknown value.
+             */
+            _UNKNOWN,
+        }
+
+        /**
+         * Returns an enum member corresponding to this class instance's value, or [Value._UNKNOWN]
+         * if the class was instantiated with an unknown value.
+         *
+         * Use the [known] method instead if you're certain the value is always known or if you want
+         * to throw for the unknown case.
+         */
+        fun value(): Value =
+            when (this) {
+                PNG -> Value.PNG
+                JPEG -> Value.JPEG
+                WEBP -> Value.WEBP
+                else -> Value._UNKNOWN
+            }
+
+        /**
+         * Returns an enum member corresponding to this class instance's value.
+         *
+         * Use the [value] method instead if you're uncertain the value is always known and don't
+         * want to throw for the unknown case.
+         *
+         * @throws OpenAIInvalidDataException if this class instance's value is a not a known
+         *   member.
+         */
+        fun known(): Known =
+            when (this) {
+                PNG -> Known.PNG
+                JPEG -> Known.JPEG
+                WEBP -> Known.WEBP
+                else -> throw OpenAIInvalidDataException("Unknown OutputFormat: $value")
+            }
+
+        /**
+         * Returns this class instance's primitive wire representation.
+         *
+         * This differs from the [toString] method because that method is primarily for debugging
+         * and generally doesn't throw.
+         *
+         * @throws OpenAIInvalidDataException if this class instance's value does not have the
+         *   expected primitive type.
+         */
+        fun asString(): String =
+            _value().asString().orElseThrow { OpenAIInvalidDataException("Value is not a String") }
+
+        private var validated: Boolean = false
+
+        fun validate(): OutputFormat = apply {
+            if (validated) {
+                return@apply
+            }
+
+            known()
+            validated = true
+        }
+
+        fun isValid(): Boolean =
+            try {
+                validate()
+                true
+            } catch (e: OpenAIInvalidDataException) {
+                false
+            }
+
+        /**
+         * Returns a score indicating how many valid values are contained in this object
+         * recursively.
+         *
+         * Used for best match union deserialization.
+         */
+        @JvmSynthetic internal fun validity(): Int = if (value() == Value._UNKNOWN) 0 else 1
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) {
+                return true
+            }
+
+            return /* spotless:off */ other is OutputFormat && value == other.value /* spotless:on */
         }
 
         override fun hashCode() = value.hashCode()

@@ -38,6 +38,7 @@ import com.openai.services.async.UploadServiceAsync
 import com.openai.services.async.UploadServiceAsyncImpl
 import com.openai.services.async.VectorStoreServiceAsync
 import com.openai.services.async.VectorStoreServiceAsyncImpl
+import java.util.function.Consumer
 
 class OpenAIClientAsyncImpl(private val clientOptions: ClientOptions) : OpenAIClientAsync {
 
@@ -119,6 +120,9 @@ class OpenAIClientAsyncImpl(private val clientOptions: ClientOptions) : OpenAICl
     override fun sync(): OpenAIClient = sync
 
     override fun withRawResponse(): OpenAIClientAsync.WithRawResponse = withRawResponse
+
+    override fun withOptions(modifier: Consumer<ClientOptions.Builder>): OpenAIClientAsync =
+        OpenAIClientAsyncImpl(clientOptions.toBuilder().apply(modifier::accept).build())
 
     override fun completions(): CompletionServiceAsync = completions
 
@@ -226,6 +230,13 @@ class OpenAIClientAsyncImpl(private val clientOptions: ClientOptions) : OpenAICl
         private val containers: ContainerServiceAsync.WithRawResponse by lazy {
             ContainerServiceAsyncImpl.WithRawResponseImpl(clientOptions)
         }
+
+        override fun withOptions(
+            modifier: Consumer<ClientOptions.Builder>
+        ): OpenAIClientAsync.WithRawResponse =
+            OpenAIClientAsyncImpl.WithRawResponseImpl(
+                clientOptions.toBuilder().apply(modifier::accept).build()
+            )
 
         override fun completions(): CompletionServiceAsync.WithRawResponse = completions
 

@@ -59,6 +59,7 @@ internal class StructuredResponseCreateParamsTest {
         private val METADATA = ResponseCreateParams.Metadata.builder().build()
         private val SERVICE_TIER = ResponseCreateParams.ServiceTier.AUTO
         private val REASONING = Reasoning.builder().build()
+        private val PROMPT = ResponsePrompt.builder().id("test-prompt-id").build()
 
         private val TOOL_CHOICE_TYPE = ToolChoiceTypes.Type.FILE_SEARCH
         private val TOOL_CHOICE_TYPES = ToolChoiceTypes.builder().type(TOOL_CHOICE_TYPE).build()
@@ -132,6 +133,9 @@ internal class StructuredResponseCreateParamsTest {
                 DelegationWriteTestCase("previousResponseId", NULLABLE_STRING),
                 DelegationWriteTestCase("previousResponseId", OPTIONAL),
                 DelegationWriteTestCase("previousResponseId", JSON_FIELD),
+                DelegationWriteTestCase("prompt", PROMPT),
+                DelegationWriteTestCase("prompt", OPTIONAL),
+                DelegationWriteTestCase("prompt", JSON_FIELD),
                 DelegationWriteTestCase("reasoning", REASONING),
                 DelegationWriteTestCase("reasoning", OPTIONAL),
                 DelegationWriteTestCase("reasoning", JSON_FIELD),

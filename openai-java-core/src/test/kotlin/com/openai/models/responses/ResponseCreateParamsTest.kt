@@ -30,6 +30,17 @@ internal class ResponseCreateParamsTest {
             )
             .parallelToolCalls(true)
             .previousResponseId("previous_response_id")
+            .prompt(
+                ResponsePrompt.builder()
+                    .id("id")
+                    .variables(
+                        ResponsePrompt.Variables.builder()
+                            .putAdditionalProperty("foo", JsonValue.from("string"))
+                            .build()
+                    )
+                    .version("version")
+                    .build()
+            )
             .reasoning(
                 Reasoning.builder()
                     .effort(ReasoningEffort.LOW)
@@ -77,6 +88,17 @@ internal class ResponseCreateParamsTest {
                 )
                 .parallelToolCalls(true)
                 .previousResponseId("previous_response_id")
+                .prompt(
+                    ResponsePrompt.builder()
+                        .id("id")
+                        .variables(
+                            ResponsePrompt.Variables.builder()
+                                .putAdditionalProperty("foo", JsonValue.from("string"))
+                                .build()
+                        )
+                        .version("version")
+                        .build()
+                )
                 .reasoning(
                     Reasoning.builder()
                         .effort(ReasoningEffort.LOW)
@@ -127,6 +149,18 @@ internal class ResponseCreateParamsTest {
             )
         assertThat(body.parallelToolCalls()).contains(true)
         assertThat(body.previousResponseId()).contains("previous_response_id")
+        assertThat(body.prompt())
+            .contains(
+                ResponsePrompt.builder()
+                    .id("id")
+                    .variables(
+                        ResponsePrompt.Variables.builder()
+                            .putAdditionalProperty("foo", JsonValue.from("string"))
+                            .build()
+                    )
+                    .version("version")
+                    .build()
+            )
         assertThat(body.reasoning())
             .contains(
                 Reasoning.builder()

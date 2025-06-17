@@ -3,6 +3,7 @@
 package com.openai.services.blocking
 
 import com.google.errorprone.annotations.MustBeClosed
+import com.openai.core.ClientOptions
 import com.openai.core.RequestOptions
 import com.openai.core.http.HttpResponseFor
 import com.openai.models.uploads.Upload
@@ -10,6 +11,7 @@ import com.openai.models.uploads.UploadCancelParams
 import com.openai.models.uploads.UploadCompleteParams
 import com.openai.models.uploads.UploadCreateParams
 import com.openai.services.blocking.uploads.PartService
+import java.util.function.Consumer
 
 interface UploadService {
 
@@ -17,6 +19,13 @@ interface UploadService {
      * Returns a view of this service that provides access to raw HTTP responses for each method.
      */
     fun withRawResponse(): WithRawResponse
+
+    /**
+     * Returns a view of this service with the given option modifications applied.
+     *
+     * The original service is not modified.
+     */
+    fun withOptions(modifier: Consumer<ClientOptions.Builder>): UploadService
 
     fun parts(): PartService
 
@@ -109,6 +118,13 @@ interface UploadService {
 
     /** A view of [UploadService] that provides access to raw HTTP responses for each method. */
     interface WithRawResponse {
+
+        /**
+         * Returns a view of this service with the given option modifications applied.
+         *
+         * The original service is not modified.
+         */
+        fun withOptions(modifier: Consumer<ClientOptions.Builder>): UploadService.WithRawResponse
 
         fun parts(): PartService.WithRawResponse
 

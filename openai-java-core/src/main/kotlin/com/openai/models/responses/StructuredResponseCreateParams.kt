@@ -205,6 +205,15 @@ class StructuredResponseCreateParams<T : Any>(
             paramsBuilder.previousResponseId(previousResponseId)
         }
 
+        /** @see ResponseCreateParams.Builder.prompt */
+        fun prompt(prompt: ResponsePrompt?) = apply { paramsBuilder.prompt(prompt) }
+
+        /** @see ResponseCreateParams.Builder.prompt */
+        fun prompt(prompt: Optional<ResponsePrompt>) = apply { paramsBuilder.prompt(prompt) }
+
+        /** @see ResponseCreateParams.Builder.prompt */
+        fun prompt(prompt: JsonField<ResponsePrompt>) = apply { paramsBuilder.prompt(prompt) }
+
         /** @see ResponseCreateParams.Builder.reasoning */
         fun reasoning(reasoning: Reasoning?) = apply { paramsBuilder.reasoning(reasoning) }
 

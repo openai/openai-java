@@ -57,6 +57,8 @@ internal class ImageServiceAsyncTest {
                     .mask("some content".byteInputStream())
                     .model(ImageModel.DALL_E_2)
                     .n(1L)
+                    .outputCompression(100L)
+                    .outputFormat(ImageEditParams.OutputFormat.PNG)
                     .quality(ImageEditParams.Quality.HIGH)
                     .responseFormat(ImageEditParams.ResponseFormat.URL)
                     .size(ImageEditParams.Size._1024X1024)

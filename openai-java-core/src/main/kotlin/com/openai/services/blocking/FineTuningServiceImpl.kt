@@ -11,6 +11,7 @@ import com.openai.services.blocking.finetuning.JobService
 import com.openai.services.blocking.finetuning.JobServiceImpl
 import com.openai.services.blocking.finetuning.MethodService
 import com.openai.services.blocking.finetuning.MethodServiceImpl
+import java.util.function.Consumer
 
 class FineTuningServiceImpl internal constructor(private val clientOptions: ClientOptions) :
     FineTuningService {
@@ -28,6 +29,9 @@ class FineTuningServiceImpl internal constructor(private val clientOptions: Clie
     private val alpha: AlphaService by lazy { AlphaServiceImpl(clientOptions) }
 
     override fun withRawResponse(): FineTuningService.WithRawResponse = withRawResponse
+
+    override fun withOptions(modifier: Consumer<ClientOptions.Builder>): FineTuningService =
+        FineTuningServiceImpl(clientOptions.toBuilder().apply(modifier::accept).build())
 
     override fun methods(): MethodService = methods
 
@@ -55,6 +59,13 @@ class FineTuningServiceImpl internal constructor(private val clientOptions: Clie
         private val alpha: AlphaService.WithRawResponse by lazy {
             AlphaServiceImpl.WithRawResponseImpl(clientOptions)
         }
+
+        override fun withOptions(
+            modifier: Consumer<ClientOptions.Builder>
+        ): FineTuningService.WithRawResponse =
+            FineTuningServiceImpl.WithRawResponseImpl(
+                clientOptions.toBuilder().apply(modifier::accept).build()
+            )
 
         override fun methods(): MethodService.WithRawResponse = methods
 

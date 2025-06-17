@@ -5074,6 +5074,8 @@ private constructor(
 
             @JvmField val FLEX = of("flex")
 
+            @JvmField val SCALE = of("scale")
+
             @JvmStatic fun of(value: String) = ServiceTier(JsonField.of(value))
         }
 
@@ -5082,6 +5084,7 @@ private constructor(
             AUTO,
             DEFAULT,
             FLEX,
+            SCALE,
         }
 
         /**
@@ -5097,6 +5100,7 @@ private constructor(
             AUTO,
             DEFAULT,
             FLEX,
+            SCALE,
             /**
              * An enum member indicating that [ServiceTier] was instantiated with an unknown value.
              */
@@ -5115,6 +5119,7 @@ private constructor(
                 AUTO -> Value.AUTO
                 DEFAULT -> Value.DEFAULT
                 FLEX -> Value.FLEX
+                SCALE -> Value.SCALE
                 else -> Value._UNKNOWN
             }
 
@@ -5132,6 +5137,7 @@ private constructor(
                 AUTO -> Known.AUTO
                 DEFAULT -> Known.DEFAULT
                 FLEX -> Known.FLEX
+                SCALE -> Known.SCALE
                 else -> throw OpenAIInvalidDataException("Unknown ServiceTier: $value")
             }
 

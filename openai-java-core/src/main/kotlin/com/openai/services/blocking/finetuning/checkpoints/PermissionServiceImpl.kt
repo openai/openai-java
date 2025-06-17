@@ -21,8 +21,10 @@ import com.openai.models.finetuning.checkpoints.permissions.PermissionCreatePage
 import com.openai.models.finetuning.checkpoints.permissions.PermissionCreateParams
 import com.openai.models.finetuning.checkpoints.permissions.PermissionDeleteParams
 import com.openai.models.finetuning.checkpoints.permissions.PermissionDeleteResponse
+import com.openai.models.finetuning.checkpoints.permissions.PermissionRetrievePage
+import com.openai.models.finetuning.checkpoints.permissions.PermissionRetrievePageResponse
 import com.openai.models.finetuning.checkpoints.permissions.PermissionRetrieveParams
-import com.openai.models.finetuning.checkpoints.permissions.PermissionRetrieveResponse
+import java.util.function.Consumer
 import kotlin.jvm.optionals.getOrNull
 
 class PermissionServiceImpl internal constructor(private val clientOptions: ClientOptions) :
@@ -34,6 +36,9 @@ class PermissionServiceImpl internal constructor(private val clientOptions: Clie
 
     override fun withRawResponse(): PermissionService.WithRawResponse = withRawResponse
 
+    override fun withOptions(modifier: Consumer<ClientOptions.Builder>): PermissionService =
+        PermissionServiceImpl(clientOptions.toBuilder().apply(modifier::accept).build())
+
     override fun create(
         params: PermissionCreateParams,
         requestOptions: RequestOptions,
@@ -44,7 +49,7 @@ class PermissionServiceImpl internal constructor(private val clientOptions: Clie
     override fun retrieve(
         params: PermissionRetrieveParams,
         requestOptions: RequestOptions,
-    ): PermissionRetrieveResponse =
+    ): PermissionRetrievePage =
         // get /fine_tuning/checkpoints/{fine_tuned_model_checkpoint}/permissions
         withRawResponse().retrieve(params, requestOptions).parse()
 
@@ -60,6 +65,13 @@ class PermissionServiceImpl internal constructor(private val clientOptions: Clie
 
         private val errorHandler: Handler<ErrorObject?> = errorHandler(clientOptions.jsonMapper)
 
+        override fun withOptions(
+            modifier: Consumer<ClientOptions.Builder>
+        ): PermissionService.WithRawResponse =
+            PermissionServiceImpl.WithRawResponseImpl(
+                clientOptions.toBuilder().apply(modifier::accept).build()
+            )
+
         private val createHandler: Handler<PermissionCreatePageResponse> =
             jsonHandler<PermissionCreatePageResponse>(clientOptions.jsonMapper)
                 .withErrorHandler(errorHandler)
@@ -74,6 +86,7 @@ class PermissionServiceImpl internal constructor(private val clientOptions: Clie
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.POST)
+                    .baseUrl(clientOptions.baseUrl())
                     .addPathSegments(
                         "fine_tuning",
                         "checkpoints",
@@ -103,20 +116,21 @@ class PermissionServiceImpl internal constructor(private val clientOptions: Clie
             }
         }
 
-        private val retrieveHandler: Handler<PermissionRetrieveResponse> =
-            jsonHandler<PermissionRetrieveResponse>(clientOptions.jsonMapper)
+        private val retrieveHandler: Handler<PermissionRetrievePageResponse> =
+            jsonHandler<PermissionRetrievePageResponse>(clientOptions.jsonMapper)
                 .withErrorHandler(errorHandler)
 
         override fun retrieve(
             params: PermissionRetrieveParams,
             requestOptions: RequestOptions,
-        ): HttpResponseFor<PermissionRetrieveResponse> {
+        ): HttpResponseFor<PermissionRetrievePage> {
             // We check here instead of in the params builder because this can be specified
             // positionally or in the params class.
             checkRequired("fineTunedModelCheckpoint", params.fineTunedModelCheckpoint().getOrNull())
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.GET)
+                    .baseUrl(clientOptions.baseUrl())
                     .addPathSegments(
                         "fine_tuning",
                         "checkpoints",
@@ -135,6 +149,13 @@ class PermissionServiceImpl internal constructor(private val clientOptions: Clie
                             it.validate()
                         }
                     }
+                    .let {
+                        PermissionRetrievePage.builder()
+                            .service(PermissionServiceImpl(clientOptions))
+                            .params(params)
+                            .response(it)
+                            .build()
+                    }
             }
         }
 
@@ -152,6 +173,7 @@ class PermissionServiceImpl internal constructor(private val clientOptions: Clie
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.DELETE)
+                    .baseUrl(clientOptions.baseUrl())
                     .addPathSegments(
                         "fine_tuning",
                         "checkpoints",

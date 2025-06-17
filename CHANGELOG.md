@@ -1,5 +1,31 @@
 # Changelog
 
+## 2.8.0 (2025-06-17)
+
+Full Changelog: [v2.7.0...v2.8.0](https://github.com/openai/openai-java/compare/v2.7.0...v2.8.0)
+
+### Features
+
+* **api:** add reusable prompt IDs ([0767a2b](https://github.com/openai/openai-java/commit/0767a2b50d853feff84748fed3eb6cf544bec6fb))
+* **api:** manual updates ([ec235f7](https://github.com/openai/openai-java/commit/ec235f7f311ca1866ae8a05e9a622ab588062071))
+* **client:** implement per-endpoint base URL support ([c87f1af](https://github.com/openai/openai-java/commit/c87f1af80b1f3d898a5a1553be48ee87ea4e7b4f))
+
+
+### Bug Fixes
+
+* **client:** update StructuredResponse with Prompt details ([a47219b](https://github.com/openai/openai-java/commit/a47219b0247dcb4d25b3bf0f33ba6b392c61cd38))
+* **internal:** run formatter ([5757aa6](https://github.com/openai/openai-java/commit/5757aa6af407d749a7bba6e1f0714eec850d4369))
+* **tests:** fix required prop in test ([e820c6f](https://github.com/openai/openai-java/commit/e820c6f115ff392b567abb355f11ce5acfcab537))
+
+
+### Chores
+
+* **ci:** enable for pull requests ([9c90b16](https://github.com/openai/openai-java/commit/9c90b16585ebe3ffc031e0df598a27b5b6a85bb8))
+* **internal:** codegen related update ([3597aee](https://github.com/openai/openai-java/commit/3597aee95ae1956afbe8bd62b5a6946dd62256b3))
+* run formatter ([426527b](https://github.com/openai/openai-java/commit/426527b76371e7e0a66e368b0ddbb8da806fae2b))
+* run formatter ([426527b](https://github.com/openai/openai-java/commit/426527b76371e7e0a66e368b0ddbb8da806fae2b))
+* run formatter ([899f79c](https://github.com/openai/openai-java/commit/899f79c88b9a79ada33982af0d2ee64f96445230))
+
 ## 2.7.0 (2025-06-10)
 
 Full Changelog: [v2.6.0...v2.7.0](https://github.com/openai/openai-java/compare/v2.6.0...v2.7.0)

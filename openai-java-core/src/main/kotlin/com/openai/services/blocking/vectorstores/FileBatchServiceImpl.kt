@@ -24,6 +24,7 @@ import com.openai.models.vectorstores.filebatches.FileBatchListFilesPageResponse
 import com.openai.models.vectorstores.filebatches.FileBatchListFilesParams
 import com.openai.models.vectorstores.filebatches.FileBatchRetrieveParams
 import com.openai.models.vectorstores.filebatches.VectorStoreFileBatch
+import java.util.function.Consumer
 import kotlin.jvm.optionals.getOrNull
 
 class FileBatchServiceImpl internal constructor(private val clientOptions: ClientOptions) :
@@ -39,6 +40,9 @@ class FileBatchServiceImpl internal constructor(private val clientOptions: Clien
     }
 
     override fun withRawResponse(): FileBatchService.WithRawResponse = withRawResponse
+
+    override fun withOptions(modifier: Consumer<ClientOptions.Builder>): FileBatchService =
+        FileBatchServiceImpl(clientOptions.toBuilder().apply(modifier::accept).build())
 
     override fun create(
         params: FileBatchCreateParams,
@@ -73,6 +77,13 @@ class FileBatchServiceImpl internal constructor(private val clientOptions: Clien
 
         private val errorHandler: Handler<ErrorObject?> = errorHandler(clientOptions.jsonMapper)
 
+        override fun withOptions(
+            modifier: Consumer<ClientOptions.Builder>
+        ): FileBatchService.WithRawResponse =
+            FileBatchServiceImpl.WithRawResponseImpl(
+                clientOptions.toBuilder().apply(modifier::accept).build()
+            )
+
         private val createHandler: Handler<VectorStoreFileBatch> =
             jsonHandler<VectorStoreFileBatch>(clientOptions.jsonMapper)
                 .withErrorHandler(errorHandler)
@@ -87,6 +98,7 @@ class FileBatchServiceImpl internal constructor(private val clientOptions: Clien
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.POST)
+                    .baseUrl(clientOptions.baseUrl())
                     .addPathSegments("vector_stores", params._pathParam(0), "file_batches")
                     .putAllHeaders(DEFAULT_HEADERS)
                     .body(json(clientOptions.jsonMapper, params._body()))
@@ -119,6 +131,7 @@ class FileBatchServiceImpl internal constructor(private val clientOptions: Clien
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.GET)
+                    .baseUrl(clientOptions.baseUrl())
                     .addPathSegments(
                         "vector_stores",
                         params._pathParam(0),
@@ -155,6 +168,7 @@ class FileBatchServiceImpl internal constructor(private val clientOptions: Clien
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.POST)
+                    .baseUrl(clientOptions.baseUrl())
                     .addPathSegments(
                         "vector_stores",
                         params._pathParam(0),
@@ -193,6 +207,7 @@ class FileBatchServiceImpl internal constructor(private val clientOptions: Clien
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.GET)
+                    .baseUrl(clientOptions.baseUrl())
                     .addPathSegments(
                         "vector_stores",
                         params._pathParam(0),

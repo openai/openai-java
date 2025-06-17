@@ -17,8 +17,8 @@ internal class ClientOptionsTest {
         private const val FAKE_API_KEY = "test-api-key"
 
         @JvmStatic
-        private fun createOkHttpClient(baseUrl: String): OkHttpClient {
-            return OkHttpClient.builder().baseUrl(baseUrl).build()
+        private fun createOkHttpClient(): OkHttpClient {
+            return OkHttpClient.builder().build()
         }
 
         @JvmStatic
@@ -31,21 +31,19 @@ internal class ClientOptionsTest {
         }
     }
 
-    @ParameterizedTest
-    @MethodSource("provideBaseUrls")
-    fun clientOptionsWithoutBaseUrl(baseUrl: String) {
+    fun clientOptionsWithoutBaseUrl() {
         // Arrange
         val apiKey = FAKE_API_KEY
 
         // Act
         val clientOptions =
             ClientOptions.builder()
-                .httpClient(createOkHttpClient(baseUrl))
+                .httpClient(createOkHttpClient())
                 .credential(BearerTokenCredential.create(apiKey))
                 .build()
 
         // Assert
-        assertThat(clientOptions.baseUrl).isEqualTo(ClientOptions.PRODUCTION_URL)
+        assertThat(clientOptions.baseUrl()).isEqualTo(ClientOptions.PRODUCTION_URL)
     }
 
     @ParameterizedTest
@@ -53,7 +51,7 @@ internal class ClientOptionsTest {
     fun throwExceptionWhenNullCredential(baseUrl: String) {
         // Act
         val clientOptionsBuilder =
-            ClientOptions.builder().httpClient(createOkHttpClient(baseUrl)).baseUrl(baseUrl)
+            ClientOptions.builder().httpClient(createOkHttpClient()).baseUrl(baseUrl)
 
         // Assert
         assertThatThrownBy { clientOptionsBuilder.build() }

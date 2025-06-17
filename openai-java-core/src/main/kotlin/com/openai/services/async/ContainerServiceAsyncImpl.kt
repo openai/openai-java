@@ -29,6 +29,7 @@ import com.openai.models.containers.ContainerRetrieveResponse
 import com.openai.services.async.containers.FileServiceAsync
 import com.openai.services.async.containers.FileServiceAsyncImpl
 import java.util.concurrent.CompletableFuture
+import java.util.function.Consumer
 import kotlin.jvm.optionals.getOrNull
 
 class ContainerServiceAsyncImpl internal constructor(private val clientOptions: ClientOptions) :
@@ -41,6 +42,9 @@ class ContainerServiceAsyncImpl internal constructor(private val clientOptions: 
     private val files: FileServiceAsync by lazy { FileServiceAsyncImpl(clientOptions) }
 
     override fun withRawResponse(): ContainerServiceAsync.WithRawResponse = withRawResponse
+
+    override fun withOptions(modifier: Consumer<ClientOptions.Builder>): ContainerServiceAsync =
+        ContainerServiceAsyncImpl(clientOptions.toBuilder().apply(modifier::accept).build())
 
     override fun files(): FileServiceAsync = files
 
@@ -81,6 +85,13 @@ class ContainerServiceAsyncImpl internal constructor(private val clientOptions: 
             FileServiceAsyncImpl.WithRawResponseImpl(clientOptions)
         }
 
+        override fun withOptions(
+            modifier: Consumer<ClientOptions.Builder>
+        ): ContainerServiceAsync.WithRawResponse =
+            ContainerServiceAsyncImpl.WithRawResponseImpl(
+                clientOptions.toBuilder().apply(modifier::accept).build()
+            )
+
         override fun files(): FileServiceAsync.WithRawResponse = files
 
         private val createHandler: Handler<ContainerCreateResponse> =
@@ -94,6 +105,7 @@ class ContainerServiceAsyncImpl internal constructor(private val clientOptions: 
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.POST)
+                    .baseUrl(clientOptions.baseUrl())
                     .addPathSegments("containers")
                     .body(json(clientOptions.jsonMapper, params._body()))
                     .build()
@@ -128,6 +140,7 @@ class ContainerServiceAsyncImpl internal constructor(private val clientOptions: 
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.GET)
+                    .baseUrl(clientOptions.baseUrl())
                     .addPathSegments("containers", params._pathParam(0))
                     .build()
                     .prepareAsync(clientOptions, params, deploymentModel = null)
@@ -158,6 +171,7 @@ class ContainerServiceAsyncImpl internal constructor(private val clientOptions: 
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.GET)
+                    .baseUrl(clientOptions.baseUrl())
                     .addPathSegments("containers")
                     .build()
                     .prepareAsync(clientOptions, params, deploymentModel = null)
@@ -197,6 +211,7 @@ class ContainerServiceAsyncImpl internal constructor(private val clientOptions: 
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.DELETE)
+                    .baseUrl(clientOptions.baseUrl())
                     .addPathSegments("containers", params._pathParam(0))
                     .apply { params._body().ifPresent { body(json(clientOptions.jsonMapper, it)) } }
                     .build()

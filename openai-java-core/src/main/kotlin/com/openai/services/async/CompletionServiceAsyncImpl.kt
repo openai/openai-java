@@ -25,6 +25,7 @@ import com.openai.models.ErrorObject
 import com.openai.models.completions.Completion
 import com.openai.models.completions.CompletionCreateParams
 import java.util.concurrent.CompletableFuture
+import java.util.function.Consumer
 
 class CompletionServiceAsyncImpl internal constructor(private val clientOptions: ClientOptions) :
     CompletionServiceAsync {
@@ -34,6 +35,9 @@ class CompletionServiceAsyncImpl internal constructor(private val clientOptions:
     }
 
     override fun withRawResponse(): CompletionServiceAsync.WithRawResponse = withRawResponse
+
+    override fun withOptions(modifier: Consumer<ClientOptions.Builder>): CompletionServiceAsync =
+        CompletionServiceAsyncImpl(clientOptions.toBuilder().apply(modifier::accept).build())
 
     override fun create(
         params: CompletionCreateParams,
@@ -57,6 +61,13 @@ class CompletionServiceAsyncImpl internal constructor(private val clientOptions:
 
         private val errorHandler: Handler<ErrorObject?> = errorHandler(clientOptions.jsonMapper)
 
+        override fun withOptions(
+            modifier: Consumer<ClientOptions.Builder>
+        ): CompletionServiceAsync.WithRawResponse =
+            CompletionServiceAsyncImpl.WithRawResponseImpl(
+                clientOptions.toBuilder().apply(modifier::accept).build()
+            )
+
         private val createHandler: Handler<Completion> =
             jsonHandler<Completion>(clientOptions.jsonMapper).withErrorHandler(errorHandler)
 
@@ -67,6 +78,7 @@ class CompletionServiceAsyncImpl internal constructor(private val clientOptions:
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.POST)
+                    .baseUrl(clientOptions.baseUrl())
                     .addPathSegments("completions")
                     .body(json(clientOptions.jsonMapper, params._body()))
                     .build()
@@ -99,6 +111,7 @@ class CompletionServiceAsyncImpl internal constructor(private val clientOptions:
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.POST)
+                    .baseUrl(clientOptions.baseUrl())
                     .addPathSegments("completions")
                     .body(
                         json(

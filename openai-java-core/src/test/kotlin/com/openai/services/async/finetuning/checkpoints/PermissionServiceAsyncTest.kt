@@ -6,7 +6,6 @@ import com.openai.TestServerExtension
 import com.openai.client.okhttp.OpenAIOkHttpClientAsync
 import com.openai.models.finetuning.checkpoints.permissions.PermissionCreateParams
 import com.openai.models.finetuning.checkpoints.permissions.PermissionDeleteParams
-import com.openai.models.finetuning.checkpoints.permissions.PermissionRetrieveParams
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 
@@ -43,19 +42,10 @@ internal class PermissionServiceAsyncTest {
                 .build()
         val permissionServiceAsync = client.fineTuning().checkpoints().permissions()
 
-        val permissionFuture =
-            permissionServiceAsync.retrieve(
-                PermissionRetrieveParams.builder()
-                    .fineTunedModelCheckpoint("ft-AF1WoRqd3aJAHsqc9NY7iL8F")
-                    .after("after")
-                    .limit(0L)
-                    .order(PermissionRetrieveParams.Order.ASCENDING)
-                    .projectId("project_id")
-                    .build()
-            )
+        val pageFuture = permissionServiceAsync.retrieve("ft-AF1WoRqd3aJAHsqc9NY7iL8F")
 
-        val permission = permissionFuture.get()
-        permission.validate()
+        val page = pageFuture.get()
+        page.response().validate()
     }
 
     @Test
