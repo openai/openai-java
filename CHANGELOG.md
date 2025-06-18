@@ -1,5 +1,13 @@
 # Changelog
 
+## 2.8.1 (2025-06-18)
+
+Full Changelog: [v2.8.0...v2.8.1](https://github.com/openai/openai-java/compare/v2.8.0...v2.8.1)
+
+### Bug Fixes
+
+* **client:** consider cognitiveservices.azure.com as azure ([#470](https://github.com/openai/openai-java/issues/470)) ([551bfc2](https://github.com/openai/openai-java/commit/551bfc20022d13326da79a73a4ca71fa4bfff437))
+
 ## 2.8.0 (2025-06-17)
 
 Full Changelog: [v2.7.0...v2.8.0](https://github.com/openai/openai-java/compare/v2.7.0...v2.8.0)
