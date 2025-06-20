@@ -17,10 +17,9 @@ internal class ResponseCreateParamsTest {
     @Test
     fun create() {
         ResponseCreateParams.builder()
-            .input("string")
-            .model(ChatModel.GPT_4O)
             .background(true)
             .addInclude(ResponseIncludable.FILE_SEARCH_CALL_RESULTS)
+            .input("string")
             .instructions("instructions")
             .maxOutputTokens(0L)
             .metadata(
@@ -28,6 +27,7 @@ internal class ResponseCreateParamsTest {
                     .putAdditionalProperty("foo", JsonValue.from("string"))
                     .build()
             )
+            .model(ChatModel.GPT_4O)
             .parallelToolCalls(true)
             .previousResponseId("previous_response_id")
             .prompt(
@@ -75,10 +75,9 @@ internal class ResponseCreateParamsTest {
     fun body() {
         val params =
             ResponseCreateParams.builder()
-                .input("string")
-                .model(ChatModel.GPT_4O)
                 .background(true)
                 .addInclude(ResponseIncludable.FILE_SEARCH_CALL_RESULTS)
+                .input("string")
                 .instructions("instructions")
                 .maxOutputTokens(0L)
                 .metadata(
@@ -86,6 +85,7 @@ internal class ResponseCreateParamsTest {
                         .putAdditionalProperty("foo", JsonValue.from("string"))
                         .build()
                 )
+                .model(ChatModel.GPT_4O)
                 .parallelToolCalls(true)
                 .previousResponseId("previous_response_id")
                 .prompt(
@@ -134,11 +134,10 @@ internal class ResponseCreateParamsTest {
 
         val body = params._body()
 
-        assertThat(body.input()).isEqualTo(ResponseCreateParams.Input.ofText("string"))
-        assertThat(body.model()).isEqualTo(ResponsesModel.ofChat(ChatModel.GPT_4O))
         assertThat(body.background()).contains(true)
         assertThat(body.include().getOrNull())
             .containsExactly(ResponseIncludable.FILE_SEARCH_CALL_RESULTS)
+        assertThat(body.input()).contains(ResponseCreateParams.Input.ofText("string"))
         assertThat(body.instructions()).contains("instructions")
         assertThat(body.maxOutputTokens()).contains(0L)
         assertThat(body.metadata())
@@ -147,6 +146,7 @@ internal class ResponseCreateParamsTest {
                     .putAdditionalProperty("foo", JsonValue.from("string"))
                     .build()
             )
+        assertThat(body.model()).contains(ResponsesModel.ofChat(ChatModel.GPT_4O))
         assertThat(body.parallelToolCalls()).contains(true)
         assertThat(body.previousResponseId()).contains("previous_response_id")
         assertThat(body.prompt())
@@ -200,11 +200,8 @@ internal class ResponseCreateParamsTest {
 
     @Test
     fun bodyWithoutOptionalFields() {
-        val params = ResponseCreateParams.builder().input("string").model(ChatModel.GPT_4O).build()
+        val params = ResponseCreateParams.builder().build()
 
         val body = params._body()
-
-        assertThat(body.input()).isEqualTo(ResponseCreateParams.Input.ofText("string"))
-        assertThat(body.model()).isEqualTo(ResponsesModel.ofChat(ChatModel.GPT_4O))
     }
 }

@@ -44,13 +44,21 @@ interface ResponseService {
      * [file search](https://platform.openai.com/docs/guides/tools-file-search) to use your own data
      * as input for the model's response.
      */
-    fun create(params: ResponseCreateParams): Response = create(params, RequestOptions.none())
+    fun create(): Response = create(ResponseCreateParams.none())
 
     /** @see [create] */
     fun create(
-        params: ResponseCreateParams,
+        params: ResponseCreateParams = ResponseCreateParams.none(),
         requestOptions: RequestOptions = RequestOptions.none(),
     ): Response
+
+    /** @see [create] */
+    fun create(params: ResponseCreateParams = ResponseCreateParams.none()): Response =
+        create(params, RequestOptions.none())
+
+    /** @see [create] */
+    fun create(requestOptions: RequestOptions): Response =
+        create(ResponseCreateParams.none(), requestOptions)
 
     /**
      * Creates a model response. Provide [text](https://platform.openai.com/docs/guides/text) or
@@ -64,15 +72,26 @@ interface ResponseService {
      * as input for the model's response.
      */
     @MustBeClosed
-    fun createStreaming(params: ResponseCreateParams): StreamResponse<ResponseStreamEvent> =
-        createStreaming(params, RequestOptions.none())
+    fun createStreaming(): StreamResponse<ResponseStreamEvent> =
+        createStreaming(ResponseCreateParams.none())
 
     /** @see [createStreaming] */
     @MustBeClosed
     fun createStreaming(
-        params: ResponseCreateParams,
+        params: ResponseCreateParams = ResponseCreateParams.none(),
         requestOptions: RequestOptions = RequestOptions.none(),
     ): StreamResponse<ResponseStreamEvent>
+
+    /** @see [createStreaming] */
+    @MustBeClosed
+    fun createStreaming(
+        params: ResponseCreateParams = ResponseCreateParams.none()
+    ): StreamResponse<ResponseStreamEvent> = createStreaming(params, RequestOptions.none())
+
+    /** @see [createStreaming] */
+    @MustBeClosed
+    fun createStreaming(requestOptions: RequestOptions): StreamResponse<ResponseStreamEvent> =
+        createStreaming(ResponseCreateParams.none(), requestOptions)
 
     /** Retrieves a model response with the given ID. */
     fun retrieve(responseId: String): Response = retrieve(responseId, ResponseRetrieveParams.none())
@@ -218,33 +237,54 @@ interface ResponseService {
          * Returns a raw HTTP response for `post /responses`, but is otherwise the same as
          * [ResponseService.create].
          */
-        @MustBeClosed
-        fun create(params: ResponseCreateParams): HttpResponseFor<Response> =
-            create(params, RequestOptions.none())
+        @MustBeClosed fun create(): HttpResponseFor<Response> = create(ResponseCreateParams.none())
 
         /** @see [create] */
         @MustBeClosed
         fun create(
-            params: ResponseCreateParams,
+            params: ResponseCreateParams = ResponseCreateParams.none(),
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<Response>
+
+        /** @see [create] */
+        @MustBeClosed
+        fun create(
+            params: ResponseCreateParams = ResponseCreateParams.none()
+        ): HttpResponseFor<Response> = create(params, RequestOptions.none())
+
+        /** @see [create] */
+        @MustBeClosed
+        fun create(requestOptions: RequestOptions): HttpResponseFor<Response> =
+            create(ResponseCreateParams.none(), requestOptions)
 
         /**
          * Returns a raw HTTP response for `post /responses`, but is otherwise the same as
          * [ResponseService.createStreaming].
          */
         @MustBeClosed
+        fun createStreaming(): HttpResponseFor<StreamResponse<ResponseStreamEvent>> =
+            createStreaming(ResponseCreateParams.none())
+
+        /** @see [createStreaming] */
+        @MustBeClosed
         fun createStreaming(
-            params: ResponseCreateParams
+            params: ResponseCreateParams = ResponseCreateParams.none(),
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): HttpResponseFor<StreamResponse<ResponseStreamEvent>>
+
+        /** @see [createStreaming] */
+        @MustBeClosed
+        fun createStreaming(
+            params: ResponseCreateParams = ResponseCreateParams.none()
         ): HttpResponseFor<StreamResponse<ResponseStreamEvent>> =
             createStreaming(params, RequestOptions.none())
 
         /** @see [createStreaming] */
         @MustBeClosed
         fun createStreaming(
-            params: ResponseCreateParams,
-            requestOptions: RequestOptions = RequestOptions.none(),
-        ): HttpResponseFor<StreamResponse<ResponseStreamEvent>>
+            requestOptions: RequestOptions
+        ): HttpResponseFor<StreamResponse<ResponseStreamEvent>> =
+            createStreaming(ResponseCreateParams.none(), requestOptions)
 
         /**
          * Returns a raw HTTP response for `get /responses/{response_id}`, but is otherwise the same
