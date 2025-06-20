@@ -24,7 +24,6 @@ import com.openai.core.JsonValue
 import com.openai.core.Params
 import com.openai.core.allMaxBy
 import com.openai.core.checkKnown
-import com.openai.core.checkRequired
 import com.openai.core.getOrThrow
 import com.openai.core.http.Headers
 import com.openai.core.http.QueryParams
@@ -58,32 +57,6 @@ private constructor(
 ) : Params {
 
     /**
-     * Text, image, or file inputs to the model, used to generate a response.
-     *
-     * Learn more:
-     * - [Text inputs and outputs](https://platform.openai.com/docs/guides/text)
-     * - [Image inputs](https://platform.openai.com/docs/guides/images)
-     * - [File inputs](https://platform.openai.com/docs/guides/pdf-files)
-     * - [Conversation state](https://platform.openai.com/docs/guides/conversation-state)
-     * - [Function calling](https://platform.openai.com/docs/guides/function-calling)
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
-     */
-    fun input(): Input = body.input()
-
-    /**
-     * Model ID used to generate the response, like `gpt-4o` or `o3`. OpenAI offers a wide range of
-     * models with different capabilities, performance characteristics, and price points. Refer to
-     * the [model guide](https://platform.openai.com/docs/models) to browse and compare available
-     * models.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
-     */
-    fun model(): ResponsesModel = body.model()
-
-    /**
      * Whether to run the model response in the background.
      * [Learn more](https://platform.openai.com/docs/guides/background).
      *
@@ -109,6 +82,21 @@ private constructor(
      *   server responded with an unexpected value).
      */
     fun include(): Optional<List<ResponseIncludable>> = body.include()
+
+    /**
+     * Text, image, or file inputs to the model, used to generate a response.
+     *
+     * Learn more:
+     * - [Text inputs and outputs](https://platform.openai.com/docs/guides/text)
+     * - [Image inputs](https://platform.openai.com/docs/guides/images)
+     * - [File inputs](https://platform.openai.com/docs/guides/pdf-files)
+     * - [Conversation state](https://platform.openai.com/docs/guides/conversation-state)
+     * - [Function calling](https://platform.openai.com/docs/guides/function-calling)
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun input(): Optional<Input> = body.input()
 
     /**
      * A system (or developer) message inserted into the model's context.
@@ -144,6 +132,17 @@ private constructor(
      *   server responded with an unexpected value).
      */
     fun metadata(): Optional<Metadata> = body.metadata()
+
+    /**
+     * Model ID used to generate the response, like `gpt-4o` or `o3`. OpenAI offers a wide range of
+     * models with different capabilities, performance characteristics, and price points. Refer to
+     * the [model guide](https://platform.openai.com/docs/models) to browse and compare available
+     * models.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun model(): Optional<ResponsesModel> = body.model()
 
     /**
      * Whether to allow the model to run tool calls in parallel.
@@ -295,20 +294,6 @@ private constructor(
     fun user(): Optional<String> = body.user()
 
     /**
-     * Returns the raw JSON value of [input].
-     *
-     * Unlike [input], this method doesn't throw if the JSON field has an unexpected type.
-     */
-    fun _input(): JsonField<Input> = body._input()
-
-    /**
-     * Returns the raw JSON value of [model].
-     *
-     * Unlike [model], this method doesn't throw if the JSON field has an unexpected type.
-     */
-    fun _model(): JsonField<ResponsesModel> = body._model()
-
-    /**
      * Returns the raw JSON value of [background].
      *
      * Unlike [background], this method doesn't throw if the JSON field has an unexpected type.
@@ -321,6 +306,13 @@ private constructor(
      * Unlike [include], this method doesn't throw if the JSON field has an unexpected type.
      */
     fun _include(): JsonField<List<ResponseIncludable>> = body._include()
+
+    /**
+     * Returns the raw JSON value of [input].
+     *
+     * Unlike [input], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    fun _input(): JsonField<Input> = body._input()
 
     /**
      * Returns the raw JSON value of [instructions].
@@ -342,6 +334,13 @@ private constructor(
      * Unlike [metadata], this method doesn't throw if the JSON field has an unexpected type.
      */
     fun _metadata(): JsonField<Metadata> = body._metadata()
+
+    /**
+     * Returns the raw JSON value of [model].
+     *
+     * Unlike [model], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    fun _model(): JsonField<ResponsesModel> = body._model()
 
     /**
      * Returns the raw JSON value of [parallelToolCalls].
@@ -446,15 +445,9 @@ private constructor(
 
     companion object {
 
-        /**
-         * Returns a mutable builder for constructing an instance of [ResponseCreateParams].
-         *
-         * The following fields are required:
-         * ```java
-         * .input()
-         * .model()
-         * ```
-         */
+        @JvmStatic fun none(): ResponseCreateParams = builder().build()
+
+        /** Returns a mutable builder for constructing an instance of [ResponseCreateParams]. */
         @JvmStatic fun builder() = Builder()
     }
 
@@ -477,68 +470,14 @@ private constructor(
          *
          * This is generally only useful if you are already constructing the body separately.
          * Otherwise, it's more convenient to use the top-level setters instead:
-         * - [input]
-         * - [model]
          * - [background]
          * - [include]
+         * - [input]
          * - [instructions]
+         * - [maxOutputTokens]
          * - etc.
          */
         fun body(body: Body) = apply { this.body = body.toBuilder() }
-
-        /**
-         * Text, image, or file inputs to the model, used to generate a response.
-         *
-         * Learn more:
-         * - [Text inputs and outputs](https://platform.openai.com/docs/guides/text)
-         * - [Image inputs](https://platform.openai.com/docs/guides/images)
-         * - [File inputs](https://platform.openai.com/docs/guides/pdf-files)
-         * - [Conversation state](https://platform.openai.com/docs/guides/conversation-state)
-         * - [Function calling](https://platform.openai.com/docs/guides/function-calling)
-         */
-        fun input(input: Input) = apply { body.input(input) }
-
-        /**
-         * Sets [Builder.input] to an arbitrary JSON value.
-         *
-         * You should usually call [Builder.input] with a well-typed [Input] value instead. This
-         * method is primarily for setting the field to an undocumented or not yet supported value.
-         */
-        fun input(input: JsonField<Input>) = apply { body.input(input) }
-
-        /** Alias for calling [input] with `Input.ofText(text)`. */
-        fun input(text: String) = apply { body.input(text) }
-
-        /** Alias for calling [input] with `Input.ofResponse(response)`. */
-        fun inputOfResponse(response: List<ResponseInputItem>) = apply {
-            body.inputOfResponse(response)
-        }
-
-        /**
-         * Model ID used to generate the response, like `gpt-4o` or `o3`. OpenAI offers a wide range
-         * of models with different capabilities, performance characteristics, and price points.
-         * Refer to the [model guide](https://platform.openai.com/docs/models) to browse and compare
-         * available models.
-         */
-        fun model(model: ResponsesModel) = apply { body.model(model) }
-
-        /**
-         * Sets [Builder.model] to an arbitrary JSON value.
-         *
-         * You should usually call [Builder.model] with a well-typed [ResponsesModel] value instead.
-         * This method is primarily for setting the field to an undocumented or not yet supported
-         * value.
-         */
-        fun model(model: JsonField<ResponsesModel>) = apply { body.model(model) }
-
-        /** Alias for calling [model] with `ResponsesModel.ofString(string)`. */
-        fun model(string: String) = apply { body.model(string) }
-
-        /** Alias for calling [model] with `ResponsesModel.ofChat(chat)`. */
-        fun model(chat: ChatModel) = apply { body.model(chat) }
-
-        /** Alias for calling [model] with `ResponsesModel.ofOnly(only)`. */
-        fun model(only: ResponsesModel.ResponsesOnlyModel) = apply { body.model(only) }
 
         /**
          * Whether to run the model response in the background.
@@ -600,6 +539,34 @@ private constructor(
          * @throws IllegalStateException if the field was previously set to a non-list.
          */
         fun addInclude(include: ResponseIncludable) = apply { body.addInclude(include) }
+
+        /**
+         * Text, image, or file inputs to the model, used to generate a response.
+         *
+         * Learn more:
+         * - [Text inputs and outputs](https://platform.openai.com/docs/guides/text)
+         * - [Image inputs](https://platform.openai.com/docs/guides/images)
+         * - [File inputs](https://platform.openai.com/docs/guides/pdf-files)
+         * - [Conversation state](https://platform.openai.com/docs/guides/conversation-state)
+         * - [Function calling](https://platform.openai.com/docs/guides/function-calling)
+         */
+        fun input(input: Input) = apply { body.input(input) }
+
+        /**
+         * Sets [Builder.input] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.input] with a well-typed [Input] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
+        fun input(input: JsonField<Input>) = apply { body.input(input) }
+
+        /** Alias for calling [input] with `Input.ofText(text)`. */
+        fun input(text: String) = apply { body.input(text) }
+
+        /** Alias for calling [input] with `Input.ofResponse(response)`. */
+        fun inputOfResponse(response: List<ResponseInputItem>) = apply {
+            body.inputOfResponse(response)
+        }
 
         /**
          * A system (or developer) message inserted into the model's context.
@@ -676,6 +643,32 @@ private constructor(
          * value.
          */
         fun metadata(metadata: JsonField<Metadata>) = apply { body.metadata(metadata) }
+
+        /**
+         * Model ID used to generate the response, like `gpt-4o` or `o3`. OpenAI offers a wide range
+         * of models with different capabilities, performance characteristics, and price points.
+         * Refer to the [model guide](https://platform.openai.com/docs/models) to browse and compare
+         * available models.
+         */
+        fun model(model: ResponsesModel) = apply { body.model(model) }
+
+        /**
+         * Sets [Builder.model] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.model] with a well-typed [ResponsesModel] value instead.
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
+         */
+        fun model(model: JsonField<ResponsesModel>) = apply { body.model(model) }
+
+        /** Alias for calling [model] with `ResponsesModel.ofString(string)`. */
+        fun model(string: String) = apply { body.model(string) }
+
+        /** Alias for calling [model] with `ResponsesModel.ofChat(chat)`. */
+        fun model(chat: ChatModel) = apply { body.model(chat) }
+
+        /** Alias for calling [model] with `ResponsesModel.ofOnly(only)`. */
+        fun model(only: ResponsesModel.ResponsesOnlyModel) = apply { body.model(only) }
 
         /** Whether to allow the model to run tool calls in parallel. */
         fun parallelToolCalls(parallelToolCalls: Boolean?) = apply {
@@ -1207,14 +1200,6 @@ private constructor(
          * Returns an immutable instance of [ResponseCreateParams].
          *
          * Further updates to this [Builder] will not mutate the returned instance.
-         *
-         * The following fields are required:
-         * ```java
-         * .input()
-         * .model()
-         * ```
-         *
-         * @throws IllegalStateException if any required field is unset.
          */
         fun build(): ResponseCreateParams =
             ResponseCreateParams(
@@ -1232,13 +1217,13 @@ private constructor(
 
     class Body
     private constructor(
-        private val input: JsonField<Input>,
-        private val model: JsonField<ResponsesModel>,
         private val background: JsonField<Boolean>,
         private val include: JsonField<List<ResponseIncludable>>,
+        private val input: JsonField<Input>,
         private val instructions: JsonField<String>,
         private val maxOutputTokens: JsonField<Long>,
         private val metadata: JsonField<Metadata>,
+        private val model: JsonField<ResponsesModel>,
         private val parallelToolCalls: JsonField<Boolean>,
         private val previousResponseId: JsonField<String>,
         private val prompt: JsonField<ResponsePrompt>,
@@ -1257,16 +1242,13 @@ private constructor(
 
         @JsonCreator
         private constructor(
-            @JsonProperty("input") @ExcludeMissing input: JsonField<Input> = JsonMissing.of(),
-            @JsonProperty("model")
-            @ExcludeMissing
-            model: JsonField<ResponsesModel> = JsonMissing.of(),
             @JsonProperty("background")
             @ExcludeMissing
             background: JsonField<Boolean> = JsonMissing.of(),
             @JsonProperty("include")
             @ExcludeMissing
             include: JsonField<List<ResponseIncludable>> = JsonMissing.of(),
+            @JsonProperty("input") @ExcludeMissing input: JsonField<Input> = JsonMissing.of(),
             @JsonProperty("instructions")
             @ExcludeMissing
             instructions: JsonField<String> = JsonMissing.of(),
@@ -1276,6 +1258,9 @@ private constructor(
             @JsonProperty("metadata")
             @ExcludeMissing
             metadata: JsonField<Metadata> = JsonMissing.of(),
+            @JsonProperty("model")
+            @ExcludeMissing
+            model: JsonField<ResponsesModel> = JsonMissing.of(),
             @JsonProperty("parallel_tool_calls")
             @ExcludeMissing
             parallelToolCalls: JsonField<Boolean> = JsonMissing.of(),
@@ -1308,13 +1293,13 @@ private constructor(
             truncation: JsonField<Truncation> = JsonMissing.of(),
             @JsonProperty("user") @ExcludeMissing user: JsonField<String> = JsonMissing.of(),
         ) : this(
-            input,
-            model,
             background,
             include,
+            input,
             instructions,
             maxOutputTokens,
             metadata,
+            model,
             parallelToolCalls,
             previousResponseId,
             prompt,
@@ -1330,32 +1315,6 @@ private constructor(
             user,
             mutableMapOf(),
         )
-
-        /**
-         * Text, image, or file inputs to the model, used to generate a response.
-         *
-         * Learn more:
-         * - [Text inputs and outputs](https://platform.openai.com/docs/guides/text)
-         * - [Image inputs](https://platform.openai.com/docs/guides/images)
-         * - [File inputs](https://platform.openai.com/docs/guides/pdf-files)
-         * - [Conversation state](https://platform.openai.com/docs/guides/conversation-state)
-         * - [Function calling](https://platform.openai.com/docs/guides/function-calling)
-         *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
-         */
-        fun input(): Input = input.getRequired("input")
-
-        /**
-         * Model ID used to generate the response, like `gpt-4o` or `o3`. OpenAI offers a wide range
-         * of models with different capabilities, performance characteristics, and price points.
-         * Refer to the [model guide](https://platform.openai.com/docs/models) to browse and compare
-         * available models.
-         *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
-         */
-        fun model(): ResponsesModel = model.getRequired("model")
 
         /**
          * Whether to run the model response in the background.
@@ -1385,6 +1344,21 @@ private constructor(
          *   server responded with an unexpected value).
          */
         fun include(): Optional<List<ResponseIncludable>> = include.getOptional("include")
+
+        /**
+         * Text, image, or file inputs to the model, used to generate a response.
+         *
+         * Learn more:
+         * - [Text inputs and outputs](https://platform.openai.com/docs/guides/text)
+         * - [Image inputs](https://platform.openai.com/docs/guides/images)
+         * - [File inputs](https://platform.openai.com/docs/guides/pdf-files)
+         * - [Conversation state](https://platform.openai.com/docs/guides/conversation-state)
+         * - [Function calling](https://platform.openai.com/docs/guides/function-calling)
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun input(): Optional<Input> = input.getOptional("input")
 
         /**
          * A system (or developer) message inserted into the model's context.
@@ -1420,6 +1394,17 @@ private constructor(
          *   server responded with an unexpected value).
          */
         fun metadata(): Optional<Metadata> = metadata.getOptional("metadata")
+
+        /**
+         * Model ID used to generate the response, like `gpt-4o` or `o3`. OpenAI offers a wide range
+         * of models with different capabilities, performance characteristics, and price points.
+         * Refer to the [model guide](https://platform.openai.com/docs/models) to browse and compare
+         * available models.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun model(): Optional<ResponsesModel> = model.getOptional("model")
 
         /**
          * Whether to allow the model to run tool calls in parallel.
@@ -1575,20 +1560,6 @@ private constructor(
         fun user(): Optional<String> = user.getOptional("user")
 
         /**
-         * Returns the raw JSON value of [input].
-         *
-         * Unlike [input], this method doesn't throw if the JSON field has an unexpected type.
-         */
-        @JsonProperty("input") @ExcludeMissing fun _input(): JsonField<Input> = input
-
-        /**
-         * Returns the raw JSON value of [model].
-         *
-         * Unlike [model], this method doesn't throw if the JSON field has an unexpected type.
-         */
-        @JsonProperty("model") @ExcludeMissing fun _model(): JsonField<ResponsesModel> = model
-
-        /**
          * Returns the raw JSON value of [background].
          *
          * Unlike [background], this method doesn't throw if the JSON field has an unexpected type.
@@ -1605,6 +1576,13 @@ private constructor(
         @JsonProperty("include")
         @ExcludeMissing
         fun _include(): JsonField<List<ResponseIncludable>> = include
+
+        /**
+         * Returns the raw JSON value of [input].
+         *
+         * Unlike [input], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("input") @ExcludeMissing fun _input(): JsonField<Input> = input
 
         /**
          * Returns the raw JSON value of [instructions].
@@ -1632,6 +1610,13 @@ private constructor(
          * Unlike [metadata], this method doesn't throw if the JSON field has an unexpected type.
          */
         @JsonProperty("metadata") @ExcludeMissing fun _metadata(): JsonField<Metadata> = metadata
+
+        /**
+         * Returns the raw JSON value of [model].
+         *
+         * Unlike [model], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("model") @ExcludeMissing fun _model(): JsonField<ResponsesModel> = model
 
         /**
          * Returns the raw JSON value of [parallelToolCalls].
@@ -1754,28 +1739,20 @@ private constructor(
 
         companion object {
 
-            /**
-             * Returns a mutable builder for constructing an instance of [Body].
-             *
-             * The following fields are required:
-             * ```java
-             * .input()
-             * .model()
-             * ```
-             */
+            /** Returns a mutable builder for constructing an instance of [Body]. */
             @JvmStatic fun builder() = Builder()
         }
 
         /** A builder for [Body]. */
         class Builder internal constructor() {
 
-            private var input: JsonField<Input>? = null
-            private var model: JsonField<ResponsesModel>? = null
             private var background: JsonField<Boolean> = JsonMissing.of()
             private var include: JsonField<MutableList<ResponseIncludable>>? = null
+            private var input: JsonField<Input> = JsonMissing.of()
             private var instructions: JsonField<String> = JsonMissing.of()
             private var maxOutputTokens: JsonField<Long> = JsonMissing.of()
             private var metadata: JsonField<Metadata> = JsonMissing.of()
+            private var model: JsonField<ResponsesModel> = JsonMissing.of()
             private var parallelToolCalls: JsonField<Boolean> = JsonMissing.of()
             private var previousResponseId: JsonField<String> = JsonMissing.of()
             private var prompt: JsonField<ResponsePrompt> = JsonMissing.of()
@@ -1793,13 +1770,13 @@ private constructor(
 
             @JvmSynthetic
             internal fun from(body: Body) = apply {
-                input = body.input
-                model = body.model
                 background = body.background
                 include = body.include.map { it.toMutableList() }
+                input = body.input
                 instructions = body.instructions
                 maxOutputTokens = body.maxOutputTokens
                 metadata = body.metadata
+                model = body.model
                 parallelToolCalls = body.parallelToolCalls
                 previousResponseId = body.previousResponseId
                 prompt = body.prompt
@@ -1815,60 +1792,6 @@ private constructor(
                 user = body.user
                 additionalProperties = body.additionalProperties.toMutableMap()
             }
-
-            /**
-             * Text, image, or file inputs to the model, used to generate a response.
-             *
-             * Learn more:
-             * - [Text inputs and outputs](https://platform.openai.com/docs/guides/text)
-             * - [Image inputs](https://platform.openai.com/docs/guides/images)
-             * - [File inputs](https://platform.openai.com/docs/guides/pdf-files)
-             * - [Conversation state](https://platform.openai.com/docs/guides/conversation-state)
-             * - [Function calling](https://platform.openai.com/docs/guides/function-calling)
-             */
-            fun input(input: Input) = input(JsonField.of(input))
-
-            /**
-             * Sets [Builder.input] to an arbitrary JSON value.
-             *
-             * You should usually call [Builder.input] with a well-typed [Input] value instead. This
-             * method is primarily for setting the field to an undocumented or not yet supported
-             * value.
-             */
-            fun input(input: JsonField<Input>) = apply { this.input = input }
-
-            /** Alias for calling [input] with `Input.ofText(text)`. */
-            fun input(text: String) = input(Input.ofText(text))
-
-            /** Alias for calling [input] with `Input.ofResponse(response)`. */
-            fun inputOfResponse(response: List<ResponseInputItem>) =
-                input(Input.ofResponse(response))
-
-            /**
-             * Model ID used to generate the response, like `gpt-4o` or `o3`. OpenAI offers a wide
-             * range of models with different capabilities, performance characteristics, and price
-             * points. Refer to the [model guide](https://platform.openai.com/docs/models) to browse
-             * and compare available models.
-             */
-            fun model(model: ResponsesModel) = model(JsonField.of(model))
-
-            /**
-             * Sets [Builder.model] to an arbitrary JSON value.
-             *
-             * You should usually call [Builder.model] with a well-typed [ResponsesModel] value
-             * instead. This method is primarily for setting the field to an undocumented or not yet
-             * supported value.
-             */
-            fun model(model: JsonField<ResponsesModel>) = apply { this.model = model }
-
-            /** Alias for calling [model] with `ResponsesModel.ofString(string)`. */
-            fun model(string: String) = model(ResponsesModel.ofString(string))
-
-            /** Alias for calling [model] with `ResponsesModel.ofChat(chat)`. */
-            fun model(chat: ChatModel) = model(ResponsesModel.ofChat(chat))
-
-            /** Alias for calling [model] with `ResponsesModel.ofOnly(only)`. */
-            fun model(only: ResponsesModel.ResponsesOnlyModel) = model(ResponsesModel.ofOnly(only))
 
             /**
              * Whether to run the model response in the background.
@@ -1938,6 +1861,34 @@ private constructor(
                         checkKnown("include", it).add(include)
                     }
             }
+
+            /**
+             * Text, image, or file inputs to the model, used to generate a response.
+             *
+             * Learn more:
+             * - [Text inputs and outputs](https://platform.openai.com/docs/guides/text)
+             * - [Image inputs](https://platform.openai.com/docs/guides/images)
+             * - [File inputs](https://platform.openai.com/docs/guides/pdf-files)
+             * - [Conversation state](https://platform.openai.com/docs/guides/conversation-state)
+             * - [Function calling](https://platform.openai.com/docs/guides/function-calling)
+             */
+            fun input(input: Input) = input(JsonField.of(input))
+
+            /**
+             * Sets [Builder.input] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.input] with a well-typed [Input] value instead. This
+             * method is primarily for setting the field to an undocumented or not yet supported
+             * value.
+             */
+            fun input(input: JsonField<Input>) = apply { this.input = input }
+
+            /** Alias for calling [input] with `Input.ofText(text)`. */
+            fun input(text: String) = input(Input.ofText(text))
+
+            /** Alias for calling [input] with `Input.ofResponse(response)`. */
+            fun inputOfResponse(response: List<ResponseInputItem>) =
+                input(Input.ofResponse(response))
 
             /**
              * A system (or developer) message inserted into the model's context.
@@ -2015,6 +1966,32 @@ private constructor(
              * supported value.
              */
             fun metadata(metadata: JsonField<Metadata>) = apply { this.metadata = metadata }
+
+            /**
+             * Model ID used to generate the response, like `gpt-4o` or `o3`. OpenAI offers a wide
+             * range of models with different capabilities, performance characteristics, and price
+             * points. Refer to the [model guide](https://platform.openai.com/docs/models) to browse
+             * and compare available models.
+             */
+            fun model(model: ResponsesModel) = model(JsonField.of(model))
+
+            /**
+             * Sets [Builder.model] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.model] with a well-typed [ResponsesModel] value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun model(model: JsonField<ResponsesModel>) = apply { this.model = model }
+
+            /** Alias for calling [model] with `ResponsesModel.ofString(string)`. */
+            fun model(string: String) = model(ResponsesModel.ofString(string))
+
+            /** Alias for calling [model] with `ResponsesModel.ofChat(chat)`. */
+            fun model(chat: ChatModel) = model(ResponsesModel.ofChat(chat))
+
+            /** Alias for calling [model] with `ResponsesModel.ofOnly(only)`. */
+            fun model(only: ResponsesModel.ResponsesOnlyModel) = model(ResponsesModel.ofOnly(only))
 
             /** Whether to allow the model to run tool calls in parallel. */
             fun parallelToolCalls(parallelToolCalls: Boolean?) =
@@ -2437,24 +2414,16 @@ private constructor(
              * Returns an immutable instance of [Body].
              *
              * Further updates to this [Builder] will not mutate the returned instance.
-             *
-             * The following fields are required:
-             * ```java
-             * .input()
-             * .model()
-             * ```
-             *
-             * @throws IllegalStateException if any required field is unset.
              */
             fun build(): Body =
                 Body(
-                    checkRequired("input", input),
-                    checkRequired("model", model),
                     background,
                     (include ?: JsonMissing.of()).map { it.toImmutable() },
+                    input,
                     instructions,
                     maxOutputTokens,
                     metadata,
+                    model,
                     parallelToolCalls,
                     previousResponseId,
                     prompt,
@@ -2479,13 +2448,13 @@ private constructor(
                 return@apply
             }
 
-            input().validate()
-            model().validate()
             background()
             include().ifPresent { it.forEach { it.validate() } }
+            input().ifPresent { it.validate() }
             instructions()
             maxOutputTokens()
             metadata().ifPresent { it.validate() }
+            model().ifPresent { it.validate() }
             parallelToolCalls()
             previousResponseId()
             prompt().ifPresent { it.validate() }
@@ -2518,13 +2487,13 @@ private constructor(
          */
         @JvmSynthetic
         internal fun validity(): Int =
-            (input.asKnown().getOrNull()?.validity() ?: 0) +
-                (model.asKnown().getOrNull()?.validity() ?: 0) +
-                (if (background.asKnown().isPresent) 1 else 0) +
+            (if (background.asKnown().isPresent) 1 else 0) +
                 (include.asKnown().getOrNull()?.sumOf { it.validity().toInt() } ?: 0) +
+                (input.asKnown().getOrNull()?.validity() ?: 0) +
                 (if (instructions.asKnown().isPresent) 1 else 0) +
                 (if (maxOutputTokens.asKnown().isPresent) 1 else 0) +
                 (metadata.asKnown().getOrNull()?.validity() ?: 0) +
+                (model.asKnown().getOrNull()?.validity() ?: 0) +
                 (if (parallelToolCalls.asKnown().isPresent) 1 else 0) +
                 (if (previousResponseId.asKnown().isPresent) 1 else 0) +
                 (prompt.asKnown().getOrNull()?.validity() ?: 0) +
@@ -2544,17 +2513,17 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is Body && input == other.input && model == other.model && background == other.background && include == other.include && instructions == other.instructions && maxOutputTokens == other.maxOutputTokens && metadata == other.metadata && parallelToolCalls == other.parallelToolCalls && previousResponseId == other.previousResponseId && prompt == other.prompt && reasoning == other.reasoning && serviceTier == other.serviceTier && store == other.store && temperature == other.temperature && text == other.text && toolChoice == other.toolChoice && tools == other.tools && topP == other.topP && truncation == other.truncation && user == other.user && additionalProperties == other.additionalProperties /* spotless:on */
+            return /* spotless:off */ other is Body && background == other.background && include == other.include && input == other.input && instructions == other.instructions && maxOutputTokens == other.maxOutputTokens && metadata == other.metadata && model == other.model && parallelToolCalls == other.parallelToolCalls && previousResponseId == other.previousResponseId && prompt == other.prompt && reasoning == other.reasoning && serviceTier == other.serviceTier && store == other.store && temperature == other.temperature && text == other.text && toolChoice == other.toolChoice && tools == other.tools && topP == other.topP && truncation == other.truncation && user == other.user && additionalProperties == other.additionalProperties /* spotless:on */
         }
 
         /* spotless:off */
-        private val hashCode: Int by lazy { Objects.hash(input, model, background, include, instructions, maxOutputTokens, metadata, parallelToolCalls, previousResponseId, prompt, reasoning, serviceTier, store, temperature, text, toolChoice, tools, topP, truncation, user, additionalProperties) }
+        private val hashCode: Int by lazy { Objects.hash(background, include, input, instructions, maxOutputTokens, metadata, model, parallelToolCalls, previousResponseId, prompt, reasoning, serviceTier, store, temperature, text, toolChoice, tools, topP, truncation, user, additionalProperties) }
         /* spotless:on */
 
         override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "Body{input=$input, model=$model, background=$background, include=$include, instructions=$instructions, maxOutputTokens=$maxOutputTokens, metadata=$metadata, parallelToolCalls=$parallelToolCalls, previousResponseId=$previousResponseId, prompt=$prompt, reasoning=$reasoning, serviceTier=$serviceTier, store=$store, temperature=$temperature, text=$text, toolChoice=$toolChoice, tools=$tools, topP=$topP, truncation=$truncation, user=$user, additionalProperties=$additionalProperties}"
+            "Body{background=$background, include=$include, input=$input, instructions=$instructions, maxOutputTokens=$maxOutputTokens, metadata=$metadata, model=$model, parallelToolCalls=$parallelToolCalls, previousResponseId=$previousResponseId, prompt=$prompt, reasoning=$reasoning, serviceTier=$serviceTier, store=$store, temperature=$temperature, text=$text, toolChoice=$toolChoice, tools=$tools, topP=$topP, truncation=$truncation, user=$user, additionalProperties=$additionalProperties}"
     }
 
     /**
