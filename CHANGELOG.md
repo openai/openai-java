@@ -1,5 +1,13 @@
 # Changelog
 
+## 2.9.0 (2025-06-21)
+
+Full Changelog: [v2.8.1...v2.9.0](https://github.com/openai/openai-java/compare/v2.8.1...v2.9.0)
+
+### Features
+
+* **api:** make model and inputs not required to create response ([87dd646](https://github.com/openai/openai-java/commit/87dd64658da6cec7564f3b571e15ec0e2db0660b))
+
 ## 2.8.1 (2025-06-18)
 
 Full Changelog: [v2.8.0...v2.8.1](https://github.com/openai/openai-java/compare/v2.8.0...v2.8.1)

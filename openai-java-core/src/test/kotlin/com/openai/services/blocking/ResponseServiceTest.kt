@@ -34,10 +34,9 @@ internal class ResponseServiceTest {
         val response =
             responseService.create(
                 ResponseCreateParams.builder()
-                    .input("string")
-                    .model(ChatModel.GPT_4O)
                     .background(true)
                     .addInclude(ResponseIncludable.FILE_SEARCH_CALL_RESULTS)
+                    .input("string")
                     .instructions("instructions")
                     .maxOutputTokens(0L)
                     .metadata(
@@ -45,6 +44,7 @@ internal class ResponseServiceTest {
                             .putAdditionalProperty("foo", JsonValue.from("string"))
                             .build()
                     )
+                    .model(ChatModel.GPT_4O)
                     .parallelToolCalls(true)
                     .previousResponseId("previous_response_id")
                     .prompt(
@@ -107,10 +107,9 @@ internal class ResponseServiceTest {
         val responseStreamResponse =
             responseService.createStreaming(
                 ResponseCreateParams.builder()
-                    .input("string")
-                    .model(ChatModel.GPT_4O)
                     .background(true)
                     .addInclude(ResponseIncludable.FILE_SEARCH_CALL_RESULTS)
+                    .input("string")
                     .instructions("instructions")
                     .maxOutputTokens(0L)
                     .metadata(
@@ -118,6 +117,7 @@ internal class ResponseServiceTest {
                             .putAdditionalProperty("foo", JsonValue.from("string"))
                             .build()
                     )
+                    .model(ChatModel.GPT_4O)
                     .parallelToolCalls(true)
                     .previousResponseId("previous_response_id")
                     .prompt(
