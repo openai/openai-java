@@ -28,6 +28,7 @@ private constructor(
     private val language: JsonField<String>,
     private val text: JsonField<String>,
     private val segments: JsonField<List<TranscriptionSegment>>,
+    private val usage: JsonField<Usage>,
     private val words: JsonField<List<TranscriptionWord>>,
     private val additionalProperties: MutableMap<String, JsonValue>,
 ) {
@@ -40,10 +41,11 @@ private constructor(
         @JsonProperty("segments")
         @ExcludeMissing
         segments: JsonField<List<TranscriptionSegment>> = JsonMissing.of(),
+        @JsonProperty("usage") @ExcludeMissing usage: JsonField<Usage> = JsonMissing.of(),
         @JsonProperty("words")
         @ExcludeMissing
         words: JsonField<List<TranscriptionWord>> = JsonMissing.of(),
-    ) : this(duration, language, text, segments, words, mutableMapOf())
+    ) : this(duration, language, text, segments, usage, words, mutableMapOf())
 
     /**
      * The duration of the input audio.
@@ -76,6 +78,14 @@ private constructor(
      *   server responded with an unexpected value).
      */
     fun segments(): Optional<List<TranscriptionSegment>> = segments.getOptional("segments")
+
+    /**
+     * Usage statistics for models billed by audio input duration.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun usage(): Optional<Usage> = usage.getOptional("usage")
 
     /**
      * Extracted words and their corresponding timestamps.
@@ -114,6 +124,13 @@ private constructor(
     @JsonProperty("segments")
     @ExcludeMissing
     fun _segments(): JsonField<List<TranscriptionSegment>> = segments
+
+    /**
+     * Returns the raw JSON value of [usage].
+     *
+     * Unlike [usage], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    @JsonProperty("usage") @ExcludeMissing fun _usage(): JsonField<Usage> = usage
 
     /**
      * Returns the raw JSON value of [words].
@@ -156,6 +173,7 @@ private constructor(
         private var language: JsonField<String>? = null
         private var text: JsonField<String>? = null
         private var segments: JsonField<MutableList<TranscriptionSegment>>? = null
+        private var usage: JsonField<Usage> = JsonMissing.of()
         private var words: JsonField<MutableList<TranscriptionWord>>? = null
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
@@ -165,6 +183,7 @@ private constructor(
             language = transcriptionVerbose.language
             text = transcriptionVerbose.text
             segments = transcriptionVerbose.segments.map { it.toMutableList() }
+            usage = transcriptionVerbose.usage
             words = transcriptionVerbose.words.map { it.toMutableList() }
             additionalProperties = transcriptionVerbose.additionalProperties.toMutableMap()
         }
@@ -227,6 +246,17 @@ private constructor(
                     checkKnown("segments", it).add(segment)
                 }
         }
+
+        /** Usage statistics for models billed by audio input duration. */
+        fun usage(usage: Usage) = usage(JsonField.of(usage))
+
+        /**
+         * Sets [Builder.usage] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.usage] with a well-typed [Usage] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
+        fun usage(usage: JsonField<Usage>) = apply { this.usage = usage }
 
         /** Extracted words and their corresponding timestamps. */
         fun words(words: List<TranscriptionWord>) = words(JsonField.of(words))
@@ -291,6 +321,7 @@ private constructor(
                 checkRequired("language", language),
                 checkRequired("text", text),
                 (segments ?: JsonMissing.of()).map { it.toImmutable() },
+                usage,
                 (words ?: JsonMissing.of()).map { it.toImmutable() },
                 additionalProperties.toMutableMap(),
             )
@@ -307,6 +338,7 @@ private constructor(
         language()
         text()
         segments().ifPresent { it.forEach { it.validate() } }
+        usage().ifPresent { it.validate() }
         words().ifPresent { it.forEach { it.validate() } }
         validated = true
     }
@@ -330,22 +362,224 @@ private constructor(
             (if (language.asKnown().isPresent) 1 else 0) +
             (if (text.asKnown().isPresent) 1 else 0) +
             (segments.asKnown().getOrNull()?.sumOf { it.validity().toInt() } ?: 0) +
+            (usage.asKnown().getOrNull()?.validity() ?: 0) +
             (words.asKnown().getOrNull()?.sumOf { it.validity().toInt() } ?: 0)
+
+    /** Usage statistics for models billed by audio input duration. */
+    class Usage
+    private constructor(
+        private val duration: JsonField<Double>,
+        private val type: JsonValue,
+        private val additionalProperties: MutableMap<String, JsonValue>,
+    ) {
+
+        @JsonCreator
+        private constructor(
+            @JsonProperty("duration")
+            @ExcludeMissing
+            duration: JsonField<Double> = JsonMissing.of(),
+            @JsonProperty("type") @ExcludeMissing type: JsonValue = JsonMissing.of(),
+        ) : this(duration, type, mutableMapOf())
+
+        /**
+         * Duration of the input audio in seconds.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         */
+        fun duration(): Double = duration.getRequired("duration")
+
+        /**
+         * The type of the usage object. Always `duration` for this variant.
+         *
+         * Expected to always return the following:
+         * ```java
+         * JsonValue.from("duration")
+         * ```
+         *
+         * However, this method can be useful for debugging and logging (e.g. if the server
+         * responded with an unexpected value).
+         */
+        @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
+
+        /**
+         * Returns the raw JSON value of [duration].
+         *
+         * Unlike [duration], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("duration") @ExcludeMissing fun _duration(): JsonField<Double> = duration
+
+        @JsonAnySetter
+        private fun putAdditionalProperty(key: String, value: JsonValue) {
+            additionalProperties.put(key, value)
+        }
+
+        @JsonAnyGetter
+        @ExcludeMissing
+        fun _additionalProperties(): Map<String, JsonValue> =
+            Collections.unmodifiableMap(additionalProperties)
+
+        fun toBuilder() = Builder().from(this)
+
+        companion object {
+
+            /**
+             * Returns a mutable builder for constructing an instance of [Usage].
+             *
+             * The following fields are required:
+             * ```java
+             * .duration()
+             * ```
+             */
+            @JvmStatic fun builder() = Builder()
+        }
+
+        /** A builder for [Usage]. */
+        class Builder internal constructor() {
+
+            private var duration: JsonField<Double>? = null
+            private var type: JsonValue = JsonValue.from("duration")
+            private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
+
+            @JvmSynthetic
+            internal fun from(usage: Usage) = apply {
+                duration = usage.duration
+                type = usage.type
+                additionalProperties = usage.additionalProperties.toMutableMap()
+            }
+
+            /** Duration of the input audio in seconds. */
+            fun duration(duration: Double) = duration(JsonField.of(duration))
+
+            /**
+             * Sets [Builder.duration] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.duration] with a well-typed [Double] value instead.
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun duration(duration: JsonField<Double>) = apply { this.duration = duration }
+
+            /**
+             * Sets the field to an arbitrary JSON value.
+             *
+             * It is usually unnecessary to call this method because the field defaults to the
+             * following:
+             * ```java
+             * JsonValue.from("duration")
+             * ```
+             *
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun type(type: JsonValue) = apply { this.type = type }
+
+            fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                this.additionalProperties.clear()
+                putAllAdditionalProperties(additionalProperties)
+            }
+
+            fun putAdditionalProperty(key: String, value: JsonValue) = apply {
+                additionalProperties.put(key, value)
+            }
+
+            fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                this.additionalProperties.putAll(additionalProperties)
+            }
+
+            fun removeAdditionalProperty(key: String) = apply { additionalProperties.remove(key) }
+
+            fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                keys.forEach(::removeAdditionalProperty)
+            }
+
+            /**
+             * Returns an immutable instance of [Usage].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             *
+             * The following fields are required:
+             * ```java
+             * .duration()
+             * ```
+             *
+             * @throws IllegalStateException if any required field is unset.
+             */
+            fun build(): Usage =
+                Usage(
+                    checkRequired("duration", duration),
+                    type,
+                    additionalProperties.toMutableMap(),
+                )
+        }
+
+        private var validated: Boolean = false
+
+        fun validate(): Usage = apply {
+            if (validated) {
+                return@apply
+            }
+
+            duration()
+            _type().let {
+                if (it != JsonValue.from("duration")) {
+                    throw OpenAIInvalidDataException("'type' is invalid, received $it")
+                }
+            }
+            validated = true
+        }
+
+        fun isValid(): Boolean =
+            try {
+                validate()
+                true
+            } catch (e: OpenAIInvalidDataException) {
+                false
+            }
+
+        /**
+         * Returns a score indicating how many valid values are contained in this object
+         * recursively.
+         *
+         * Used for best match union deserialization.
+         */
+        @JvmSynthetic
+        internal fun validity(): Int =
+            (if (duration.asKnown().isPresent) 1 else 0) +
+                type.let { if (it == JsonValue.from("duration")) 1 else 0 }
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) {
+                return true
+            }
+
+            return /* spotless:off */ other is Usage && duration == other.duration && type == other.type && additionalProperties == other.additionalProperties /* spotless:on */
+        }
+
+        /* spotless:off */
+        private val hashCode: Int by lazy { Objects.hash(duration, type, additionalProperties) }
+        /* spotless:on */
+
+        override fun hashCode(): Int = hashCode
+
+        override fun toString() =
+            "Usage{duration=$duration, type=$type, additionalProperties=$additionalProperties}"
+    }
 
     override fun equals(other: Any?): Boolean {
         if (this === other) {
             return true
         }
 
-        return /* spotless:off */ other is TranscriptionVerbose && duration == other.duration && language == other.language && text == other.text && segments == other.segments && words == other.words && additionalProperties == other.additionalProperties /* spotless:on */
+        return /* spotless:off */ other is TranscriptionVerbose && duration == other.duration && language == other.language && text == other.text && segments == other.segments && usage == other.usage && words == other.words && additionalProperties == other.additionalProperties /* spotless:on */
     }
 
     /* spotless:off */
-    private val hashCode: Int by lazy { Objects.hash(duration, language, text, segments, words, additionalProperties) }
+    private val hashCode: Int by lazy { Objects.hash(duration, language, text, segments, usage, words, additionalProperties) }
     /* spotless:on */
 
     override fun hashCode(): Int = hashCode
 
     override fun toString() =
-        "TranscriptionVerbose{duration=$duration, language=$language, text=$text, segments=$segments, words=$words, additionalProperties=$additionalProperties}"
+        "TranscriptionVerbose{duration=$duration, language=$language, text=$text, segments=$segments, usage=$usage, words=$words, additionalProperties=$additionalProperties}"
 }

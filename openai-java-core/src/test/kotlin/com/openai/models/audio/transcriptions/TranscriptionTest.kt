@@ -18,12 +18,41 @@ internal class TranscriptionTest {
                 .addLogprob(
                     Transcription.Logprob.builder().token("token").addByte(0.0).logprob(0.0).build()
                 )
+                .usage(
+                    Transcription.Usage.Tokens.builder()
+                        .inputTokens(0L)
+                        .outputTokens(0L)
+                        .totalTokens(0L)
+                        .inputTokenDetails(
+                            Transcription.Usage.Tokens.InputTokenDetails.builder()
+                                .audioTokens(0L)
+                                .textTokens(0L)
+                                .build()
+                        )
+                        .build()
+                )
                 .build()
 
         assertThat(transcription.text()).isEqualTo("text")
         assertThat(transcription.logprobs().getOrNull())
             .containsExactly(
                 Transcription.Logprob.builder().token("token").addByte(0.0).logprob(0.0).build()
+            )
+        assertThat(transcription.usage())
+            .contains(
+                Transcription.Usage.ofTokens(
+                    Transcription.Usage.Tokens.builder()
+                        .inputTokens(0L)
+                        .outputTokens(0L)
+                        .totalTokens(0L)
+                        .inputTokenDetails(
+                            Transcription.Usage.Tokens.InputTokenDetails.builder()
+                                .audioTokens(0L)
+                                .textTokens(0L)
+                                .build()
+                        )
+                        .build()
+                )
             )
     }
 
@@ -35,6 +64,19 @@ internal class TranscriptionTest {
                 .text("text")
                 .addLogprob(
                     Transcription.Logprob.builder().token("token").addByte(0.0).logprob(0.0).build()
+                )
+                .usage(
+                    Transcription.Usage.Tokens.builder()
+                        .inputTokens(0L)
+                        .outputTokens(0L)
+                        .totalTokens(0L)
+                        .inputTokenDetails(
+                            Transcription.Usage.Tokens.InputTokenDetails.builder()
+                                .audioTokens(0L)
+                                .textTokens(0L)
+                                .build()
+                        )
+                        .build()
                 )
                 .build()
 

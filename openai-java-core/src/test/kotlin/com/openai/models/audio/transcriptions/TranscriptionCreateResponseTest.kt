@@ -22,6 +22,19 @@ internal class TranscriptionCreateResponseTest {
                 .addLogprob(
                     Transcription.Logprob.builder().token("token").addByte(0.0).logprob(0.0).build()
                 )
+                .usage(
+                    Transcription.Usage.Tokens.builder()
+                        .inputTokens(0L)
+                        .outputTokens(0L)
+                        .totalTokens(0L)
+                        .inputTokenDetails(
+                            Transcription.Usage.Tokens.InputTokenDetails.builder()
+                                .audioTokens(0L)
+                                .textTokens(0L)
+                                .build()
+                        )
+                        .build()
+                )
                 .build()
 
         val transcriptionCreateResponse = TranscriptionCreateResponse.ofTranscription(transcription)
@@ -42,6 +55,19 @@ internal class TranscriptionCreateResponseTest {
                             .token("token")
                             .addByte(0.0)
                             .logprob(0.0)
+                            .build()
+                    )
+                    .usage(
+                        Transcription.Usage.Tokens.builder()
+                            .inputTokens(0L)
+                            .outputTokens(0L)
+                            .totalTokens(0L)
+                            .inputTokenDetails(
+                                Transcription.Usage.Tokens.InputTokenDetails.builder()
+                                    .audioTokens(0L)
+                                    .textTokens(0L)
+                                    .build()
+                            )
                             .build()
                     )
                     .build()
@@ -77,6 +103,7 @@ internal class TranscriptionCreateResponseTest {
                         .addToken(0L)
                         .build()
                 )
+                .usage(TranscriptionVerbose.Usage.builder().duration(0.0).build())
                 .addWord(TranscriptionWord.builder().end(0.0f).start(0.0f).word("word").build())
                 .build()
 
@@ -109,6 +136,7 @@ internal class TranscriptionCreateResponseTest {
                             .addToken(0L)
                             .build()
                     )
+                    .usage(TranscriptionVerbose.Usage.builder().duration(0.0).build())
                     .addWord(TranscriptionWord.builder().end(0.0f).start(0.0f).word("word").build())
                     .build()
             )

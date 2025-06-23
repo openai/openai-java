@@ -4,6 +4,7 @@ package com.openai.models.responses
 
 import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
 import com.openai.core.jsonMapper
+import kotlin.jvm.optionals.getOrNull
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
@@ -15,22 +16,22 @@ internal class ResponseCodeInterpreterToolCallTest {
             ResponseCodeInterpreterToolCall.builder()
                 .id("id")
                 .code("code")
-                .addLogsResult("logs")
-                .status(ResponseCodeInterpreterToolCall.Status.IN_PROGRESS)
                 .containerId("container_id")
+                .addLogsOutput("logs")
+                .status(ResponseCodeInterpreterToolCall.Status.IN_PROGRESS)
                 .build()
 
         assertThat(responseCodeInterpreterToolCall.id()).isEqualTo("id")
-        assertThat(responseCodeInterpreterToolCall.code()).isEqualTo("code")
-        assertThat(responseCodeInterpreterToolCall.results())
+        assertThat(responseCodeInterpreterToolCall.code()).contains("code")
+        assertThat(responseCodeInterpreterToolCall.containerId()).isEqualTo("container_id")
+        assertThat(responseCodeInterpreterToolCall.outputs().getOrNull())
             .containsExactly(
-                ResponseCodeInterpreterToolCall.Result.ofLogs(
-                    ResponseCodeInterpreterToolCall.Result.Logs.builder().logs("logs").build()
+                ResponseCodeInterpreterToolCall.Output.ofLogs(
+                    ResponseCodeInterpreterToolCall.Output.Logs.builder().logs("logs").build()
                 )
             )
         assertThat(responseCodeInterpreterToolCall.status())
             .isEqualTo(ResponseCodeInterpreterToolCall.Status.IN_PROGRESS)
-        assertThat(responseCodeInterpreterToolCall.containerId()).contains("container_id")
     }
 
     @Test
@@ -40,9 +41,9 @@ internal class ResponseCodeInterpreterToolCallTest {
             ResponseCodeInterpreterToolCall.builder()
                 .id("id")
                 .code("code")
-                .addLogsResult("logs")
-                .status(ResponseCodeInterpreterToolCall.Status.IN_PROGRESS)
                 .containerId("container_id")
+                .addLogsOutput("logs")
+                .status(ResponseCodeInterpreterToolCall.Status.IN_PROGRESS)
                 .build()
 
         val roundtrippedResponseCodeInterpreterToolCall =

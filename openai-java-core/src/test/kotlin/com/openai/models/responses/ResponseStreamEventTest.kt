@@ -340,6 +340,7 @@ internal class ResponseStreamEventTest {
         val codeInterpreterCallCodeDelta =
             ResponseCodeInterpreterCallCodeDeltaEvent.builder()
                 .delta("delta")
+                .itemId("item_id")
                 .outputIndex(0L)
                 .sequenceNumber(0L)
                 .build()
@@ -410,6 +411,7 @@ internal class ResponseStreamEventTest {
             ResponseStreamEvent.ofCodeInterpreterCallCodeDelta(
                 ResponseCodeInterpreterCallCodeDeltaEvent.builder()
                     .delta("delta")
+                    .itemId("item_id")
                     .outputIndex(0L)
                     .sequenceNumber(0L)
                     .build()
@@ -429,6 +431,7 @@ internal class ResponseStreamEventTest {
         val codeInterpreterCallCodeDone =
             ResponseCodeInterpreterCallCodeDoneEvent.builder()
                 .code("code")
+                .itemId("item_id")
                 .outputIndex(0L)
                 .sequenceNumber(0L)
                 .build()
@@ -499,6 +502,7 @@ internal class ResponseStreamEventTest {
             ResponseStreamEvent.ofCodeInterpreterCallCodeDone(
                 ResponseCodeInterpreterCallCodeDoneEvent.builder()
                     .code("code")
+                    .itemId("item_id")
                     .outputIndex(0L)
                     .sequenceNumber(0L)
                     .build()
@@ -517,15 +521,7 @@ internal class ResponseStreamEventTest {
     fun ofCodeInterpreterCallCompleted() {
         val codeInterpreterCallCompleted =
             ResponseCodeInterpreterCallCompletedEvent.builder()
-                .codeInterpreterCall(
-                    ResponseCodeInterpreterToolCall.builder()
-                        .id("id")
-                        .code("code")
-                        .addLogsResult("logs")
-                        .status(ResponseCodeInterpreterToolCall.Status.IN_PROGRESS)
-                        .containerId("container_id")
-                        .build()
-                )
+                .itemId("item_id")
                 .outputIndex(0L)
                 .sequenceNumber(0L)
                 .build()
@@ -595,15 +591,7 @@ internal class ResponseStreamEventTest {
         val responseStreamEvent =
             ResponseStreamEvent.ofCodeInterpreterCallCompleted(
                 ResponseCodeInterpreterCallCompletedEvent.builder()
-                    .codeInterpreterCall(
-                        ResponseCodeInterpreterToolCall.builder()
-                            .id("id")
-                            .code("code")
-                            .addLogsResult("logs")
-                            .status(ResponseCodeInterpreterToolCall.Status.IN_PROGRESS)
-                            .containerId("container_id")
-                            .build()
-                    )
+                    .itemId("item_id")
                     .outputIndex(0L)
                     .sequenceNumber(0L)
                     .build()
@@ -622,15 +610,7 @@ internal class ResponseStreamEventTest {
     fun ofCodeInterpreterCallInProgress() {
         val codeInterpreterCallInProgress =
             ResponseCodeInterpreterCallInProgressEvent.builder()
-                .codeInterpreterCall(
-                    ResponseCodeInterpreterToolCall.builder()
-                        .id("id")
-                        .code("code")
-                        .addLogsResult("logs")
-                        .status(ResponseCodeInterpreterToolCall.Status.IN_PROGRESS)
-                        .containerId("container_id")
-                        .build()
-                )
+                .itemId("item_id")
                 .outputIndex(0L)
                 .sequenceNumber(0L)
                 .build()
@@ -700,15 +680,7 @@ internal class ResponseStreamEventTest {
         val responseStreamEvent =
             ResponseStreamEvent.ofCodeInterpreterCallInProgress(
                 ResponseCodeInterpreterCallInProgressEvent.builder()
-                    .codeInterpreterCall(
-                        ResponseCodeInterpreterToolCall.builder()
-                            .id("id")
-                            .code("code")
-                            .addLogsResult("logs")
-                            .status(ResponseCodeInterpreterToolCall.Status.IN_PROGRESS)
-                            .containerId("container_id")
-                            .build()
-                    )
+                    .itemId("item_id")
                     .outputIndex(0L)
                     .sequenceNumber(0L)
                     .build()
@@ -727,15 +699,7 @@ internal class ResponseStreamEventTest {
     fun ofCodeInterpreterCallInterpreting() {
         val codeInterpreterCallInterpreting =
             ResponseCodeInterpreterCallInterpretingEvent.builder()
-                .codeInterpreterCall(
-                    ResponseCodeInterpreterToolCall.builder()
-                        .id("id")
-                        .code("code")
-                        .addLogsResult("logs")
-                        .status(ResponseCodeInterpreterToolCall.Status.IN_PROGRESS)
-                        .containerId("container_id")
-                        .build()
-                )
+                .itemId("item_id")
                 .outputIndex(0L)
                 .sequenceNumber(0L)
                 .build()
@@ -805,15 +769,7 @@ internal class ResponseStreamEventTest {
         val responseStreamEvent =
             ResponseStreamEvent.ofCodeInterpreterCallInterpreting(
                 ResponseCodeInterpreterCallInterpretingEvent.builder()
-                    .codeInterpreterCall(
-                        ResponseCodeInterpreterToolCall.builder()
-                            .id("id")
-                            .code("code")
-                            .addLogsResult("logs")
-                            .status(ResponseCodeInterpreterToolCall.Status.IN_PROGRESS)
-                            .containerId("container_id")
-                            .build()
-                    )
+                    .itemId("item_id")
                     .outputIndex(0L)
                     .sequenceNumber(0L)
                     .build()
@@ -862,6 +818,7 @@ internal class ResponseStreamEventTest {
                                         .addAnnotation(
                                             ResponseOutputText.Annotation.FileCitation.builder()
                                                 .fileId("file_id")
+                                                .filename("filename")
                                                 .index(0L)
                                                 .build()
                                         )
@@ -1046,6 +1003,7 @@ internal class ResponseStreamEventTest {
                                             .addAnnotation(
                                                 ResponseOutputText.Annotation.FileCitation.builder()
                                                     .fileId("file_id")
+                                                    .filename("filename")
                                                     .index(0L)
                                                     .build()
                                             )
@@ -1160,6 +1118,7 @@ internal class ResponseStreamEventTest {
                         .addAnnotation(
                             ResponseOutputText.Annotation.FileCitation.builder()
                                 .fileId("file_id")
+                                .filename("filename")
                                 .index(0L)
                                 .build()
                         )
@@ -1254,6 +1213,7 @@ internal class ResponseStreamEventTest {
                             .addAnnotation(
                                 ResponseOutputText.Annotation.FileCitation.builder()
                                     .fileId("file_id")
+                                    .filename("filename")
                                     .index(0L)
                                     .build()
                             )
@@ -1299,6 +1259,7 @@ internal class ResponseStreamEventTest {
                         .addAnnotation(
                             ResponseOutputText.Annotation.FileCitation.builder()
                                 .fileId("file_id")
+                                .filename("filename")
                                 .index(0L)
                                 .build()
                         )
@@ -1393,6 +1354,7 @@ internal class ResponseStreamEventTest {
                             .addAnnotation(
                                 ResponseOutputText.Annotation.FileCitation.builder()
                                     .fileId("file_id")
+                                    .filename("filename")
                                     .index(0L)
                                     .build()
                             )
@@ -1460,6 +1422,7 @@ internal class ResponseStreamEventTest {
                                         .addAnnotation(
                                             ResponseOutputText.Annotation.FileCitation.builder()
                                                 .fileId("file_id")
+                                                .filename("filename")
                                                 .index(0L)
                                                 .build()
                                         )
@@ -1644,6 +1607,7 @@ internal class ResponseStreamEventTest {
                                             .addAnnotation(
                                                 ResponseOutputText.Annotation.FileCitation.builder()
                                                     .fileId("file_id")
+                                                    .filename("filename")
                                                     .index(0L)
                                                     .build()
                                             )
@@ -2316,6 +2280,7 @@ internal class ResponseStreamEventTest {
                                         .addAnnotation(
                                             ResponseOutputText.Annotation.FileCitation.builder()
                                                 .fileId("file_id")
+                                                .filename("filename")
                                                 .index(0L)
                                                 .build()
                                         )
@@ -2500,6 +2465,7 @@ internal class ResponseStreamEventTest {
                                             .addAnnotation(
                                                 ResponseOutputText.Annotation.FileCitation.builder()
                                                     .fileId("file_id")
+                                                    .filename("filename")
                                                     .index(0L)
                                                     .build()
                                             )
@@ -2636,6 +2602,7 @@ internal class ResponseStreamEventTest {
                                         .addAnnotation(
                                             ResponseOutputText.Annotation.FileCitation.builder()
                                                 .fileId("file_id")
+                                                .filename("filename")
                                                 .index(0L)
                                                 .build()
                                         )
@@ -2820,6 +2787,7 @@ internal class ResponseStreamEventTest {
                                             .addAnnotation(
                                                 ResponseOutputText.Annotation.FileCitation.builder()
                                                     .fileId("file_id")
+                                                    .filename("filename")
                                                     .index(0L)
                                                     .build()
                                             )
@@ -2956,6 +2924,7 @@ internal class ResponseStreamEventTest {
                                         .addAnnotation(
                                             ResponseOutputText.Annotation.FileCitation.builder()
                                                 .fileId("file_id")
+                                                .filename("filename")
                                                 .index(0L)
                                                 .build()
                                         )
@@ -3140,6 +3109,7 @@ internal class ResponseStreamEventTest {
                                             .addAnnotation(
                                                 ResponseOutputText.Annotation.FileCitation.builder()
                                                     .fileId("file_id")
+                                                    .filename("filename")
                                                     .index(0L)
                                                     .build()
                                             )
@@ -3254,6 +3224,7 @@ internal class ResponseStreamEventTest {
                                 .addAnnotation(
                                     ResponseOutputText.Annotation.FileCitation.builder()
                                         .fileId("file_id")
+                                        .filename("filename")
                                         .index(0L)
                                         .build()
                                 )
@@ -3352,6 +3323,7 @@ internal class ResponseStreamEventTest {
                                     .addAnnotation(
                                         ResponseOutputText.Annotation.FileCitation.builder()
                                             .fileId("file_id")
+                                            .filename("filename")
                                             .index(0L)
                                             .build()
                                     )
@@ -3401,6 +3373,7 @@ internal class ResponseStreamEventTest {
                                 .addAnnotation(
                                     ResponseOutputText.Annotation.FileCitation.builder()
                                         .fileId("file_id")
+                                        .filename("filename")
                                         .index(0L)
                                         .build()
                                 )
@@ -3499,6 +3472,7 @@ internal class ResponseStreamEventTest {
                                     .addAnnotation(
                                         ResponseOutputText.Annotation.FileCitation.builder()
                                             .fileId("file_id")
+                                            .filename("filename")
                                             .index(0L)
                                             .build()
                                     )
@@ -5686,6 +5660,7 @@ internal class ResponseStreamEventTest {
                                         .addAnnotation(
                                             ResponseOutputText.Annotation.FileCitation.builder()
                                                 .fileId("file_id")
+                                                .filename("filename")
                                                 .index(0L)
                                                 .build()
                                         )
@@ -5870,6 +5845,7 @@ internal class ResponseStreamEventTest {
                                             .addAnnotation(
                                                 ResponseOutputText.Annotation.FileCitation.builder()
                                                     .fileId("file_id")
+                                                    .filename("filename")
                                                     .index(0L)
                                                     .build()
                                             )

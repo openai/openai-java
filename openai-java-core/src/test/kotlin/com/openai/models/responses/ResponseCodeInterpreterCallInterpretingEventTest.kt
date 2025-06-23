@@ -13,29 +13,12 @@ internal class ResponseCodeInterpreterCallInterpretingEventTest {
     fun create() {
         val responseCodeInterpreterCallInterpretingEvent =
             ResponseCodeInterpreterCallInterpretingEvent.builder()
-                .codeInterpreterCall(
-                    ResponseCodeInterpreterToolCall.builder()
-                        .id("id")
-                        .code("code")
-                        .addLogsResult("logs")
-                        .status(ResponseCodeInterpreterToolCall.Status.IN_PROGRESS)
-                        .containerId("container_id")
-                        .build()
-                )
+                .itemId("item_id")
                 .outputIndex(0L)
                 .sequenceNumber(0L)
                 .build()
 
-        assertThat(responseCodeInterpreterCallInterpretingEvent.codeInterpreterCall())
-            .isEqualTo(
-                ResponseCodeInterpreterToolCall.builder()
-                    .id("id")
-                    .code("code")
-                    .addLogsResult("logs")
-                    .status(ResponseCodeInterpreterToolCall.Status.IN_PROGRESS)
-                    .containerId("container_id")
-                    .build()
-            )
+        assertThat(responseCodeInterpreterCallInterpretingEvent.itemId()).isEqualTo("item_id")
         assertThat(responseCodeInterpreterCallInterpretingEvent.outputIndex()).isEqualTo(0L)
         assertThat(responseCodeInterpreterCallInterpretingEvent.sequenceNumber()).isEqualTo(0L)
     }
@@ -45,15 +28,7 @@ internal class ResponseCodeInterpreterCallInterpretingEventTest {
         val jsonMapper = jsonMapper()
         val responseCodeInterpreterCallInterpretingEvent =
             ResponseCodeInterpreterCallInterpretingEvent.builder()
-                .codeInterpreterCall(
-                    ResponseCodeInterpreterToolCall.builder()
-                        .id("id")
-                        .code("code")
-                        .addLogsResult("logs")
-                        .status(ResponseCodeInterpreterToolCall.Status.IN_PROGRESS)
-                        .containerId("container_id")
-                        .build()
-                )
+                .itemId("item_id")
                 .outputIndex(0L)
                 .sequenceNumber(0L)
                 .build()

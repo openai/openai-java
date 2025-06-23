@@ -15,10 +15,11 @@ import com.openai.errors.OpenAIInvalidDataException
 import java.util.Collections
 import java.util.Objects
 
-/** Emitted when a partial code snippet is added by the code interpreter. */
+/** Emitted when a partial code snippet is streamed by the code interpreter. */
 class ResponseCodeInterpreterCallCodeDeltaEvent
 private constructor(
     private val delta: JsonField<String>,
+    private val itemId: JsonField<String>,
     private val outputIndex: JsonField<Long>,
     private val sequenceNumber: JsonField<Long>,
     private val type: JsonValue,
@@ -28,6 +29,7 @@ private constructor(
     @JsonCreator
     private constructor(
         @JsonProperty("delta") @ExcludeMissing delta: JsonField<String> = JsonMissing.of(),
+        @JsonProperty("item_id") @ExcludeMissing itemId: JsonField<String> = JsonMissing.of(),
         @JsonProperty("output_index")
         @ExcludeMissing
         outputIndex: JsonField<Long> = JsonMissing.of(),
@@ -35,10 +37,10 @@ private constructor(
         @ExcludeMissing
         sequenceNumber: JsonField<Long> = JsonMissing.of(),
         @JsonProperty("type") @ExcludeMissing type: JsonValue = JsonMissing.of(),
-    ) : this(delta, outputIndex, sequenceNumber, type, mutableMapOf())
+    ) : this(delta, itemId, outputIndex, sequenceNumber, type, mutableMapOf())
 
     /**
-     * The partial code snippet added by the code interpreter.
+     * The partial code snippet being streamed by the code interpreter.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
      *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
@@ -46,7 +48,15 @@ private constructor(
     fun delta(): String = delta.getRequired("delta")
 
     /**
-     * The index of the output item that the code interpreter call is in progress.
+     * The unique identifier of the code interpreter tool call item.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     */
+    fun itemId(): String = itemId.getRequired("item_id")
+
+    /**
+     * The index of the output item in the response for which the code is being streamed.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
      *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
@@ -54,7 +64,7 @@ private constructor(
     fun outputIndex(): Long = outputIndex.getRequired("output_index")
 
     /**
-     * The sequence number of this event.
+     * The sequence number of this event, used to order streaming events.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
      *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
@@ -80,6 +90,13 @@ private constructor(
      * Unlike [delta], this method doesn't throw if the JSON field has an unexpected type.
      */
     @JsonProperty("delta") @ExcludeMissing fun _delta(): JsonField<String> = delta
+
+    /**
+     * Returns the raw JSON value of [itemId].
+     *
+     * Unlike [itemId], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    @JsonProperty("item_id") @ExcludeMissing fun _itemId(): JsonField<String> = itemId
 
     /**
      * Returns the raw JSON value of [outputIndex].
@@ -118,6 +135,7 @@ private constructor(
          * The following fields are required:
          * ```java
          * .delta()
+         * .itemId()
          * .outputIndex()
          * .sequenceNumber()
          * ```
@@ -129,6 +147,7 @@ private constructor(
     class Builder internal constructor() {
 
         private var delta: JsonField<String>? = null
+        private var itemId: JsonField<String>? = null
         private var outputIndex: JsonField<Long>? = null
         private var sequenceNumber: JsonField<Long>? = null
         private var type: JsonValue = JsonValue.from("response.code_interpreter_call_code.delta")
@@ -139,6 +158,7 @@ private constructor(
             responseCodeInterpreterCallCodeDeltaEvent: ResponseCodeInterpreterCallCodeDeltaEvent
         ) = apply {
             delta = responseCodeInterpreterCallCodeDeltaEvent.delta
+            itemId = responseCodeInterpreterCallCodeDeltaEvent.itemId
             outputIndex = responseCodeInterpreterCallCodeDeltaEvent.outputIndex
             sequenceNumber = responseCodeInterpreterCallCodeDeltaEvent.sequenceNumber
             type = responseCodeInterpreterCallCodeDeltaEvent.type
@@ -146,7 +166,7 @@ private constructor(
                 responseCodeInterpreterCallCodeDeltaEvent.additionalProperties.toMutableMap()
         }
 
-        /** The partial code snippet added by the code interpreter. */
+        /** The partial code snippet being streamed by the code interpreter. */
         fun delta(delta: String) = delta(JsonField.of(delta))
 
         /**
@@ -157,7 +177,18 @@ private constructor(
          */
         fun delta(delta: JsonField<String>) = apply { this.delta = delta }
 
-        /** The index of the output item that the code interpreter call is in progress. */
+        /** The unique identifier of the code interpreter tool call item. */
+        fun itemId(itemId: String) = itemId(JsonField.of(itemId))
+
+        /**
+         * Sets [Builder.itemId] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.itemId] with a well-typed [String] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
+        fun itemId(itemId: JsonField<String>) = apply { this.itemId = itemId }
+
+        /** The index of the output item in the response for which the code is being streamed. */
         fun outputIndex(outputIndex: Long) = outputIndex(JsonField.of(outputIndex))
 
         /**
@@ -169,7 +200,7 @@ private constructor(
          */
         fun outputIndex(outputIndex: JsonField<Long>) = apply { this.outputIndex = outputIndex }
 
-        /** The sequence number of this event. */
+        /** The sequence number of this event, used to order streaming events. */
         fun sequenceNumber(sequenceNumber: Long) = sequenceNumber(JsonField.of(sequenceNumber))
 
         /**
@@ -224,6 +255,7 @@ private constructor(
          * The following fields are required:
          * ```java
          * .delta()
+         * .itemId()
          * .outputIndex()
          * .sequenceNumber()
          * ```
@@ -233,6 +265,7 @@ private constructor(
         fun build(): ResponseCodeInterpreterCallCodeDeltaEvent =
             ResponseCodeInterpreterCallCodeDeltaEvent(
                 checkRequired("delta", delta),
+                checkRequired("itemId", itemId),
                 checkRequired("outputIndex", outputIndex),
                 checkRequired("sequenceNumber", sequenceNumber),
                 type,
@@ -248,6 +281,7 @@ private constructor(
         }
 
         delta()
+        itemId()
         outputIndex()
         sequenceNumber()
         _type().let {
@@ -274,6 +308,7 @@ private constructor(
     @JvmSynthetic
     internal fun validity(): Int =
         (if (delta.asKnown().isPresent) 1 else 0) +
+            (if (itemId.asKnown().isPresent) 1 else 0) +
             (if (outputIndex.asKnown().isPresent) 1 else 0) +
             (if (sequenceNumber.asKnown().isPresent) 1 else 0) +
             type.let {
@@ -285,15 +320,15 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is ResponseCodeInterpreterCallCodeDeltaEvent && delta == other.delta && outputIndex == other.outputIndex && sequenceNumber == other.sequenceNumber && type == other.type && additionalProperties == other.additionalProperties /* spotless:on */
+        return /* spotless:off */ other is ResponseCodeInterpreterCallCodeDeltaEvent && delta == other.delta && itemId == other.itemId && outputIndex == other.outputIndex && sequenceNumber == other.sequenceNumber && type == other.type && additionalProperties == other.additionalProperties /* spotless:on */
     }
 
     /* spotless:off */
-    private val hashCode: Int by lazy { Objects.hash(delta, outputIndex, sequenceNumber, type, additionalProperties) }
+    private val hashCode: Int by lazy { Objects.hash(delta, itemId, outputIndex, sequenceNumber, type, additionalProperties) }
     /* spotless:on */
 
     override fun hashCode(): Int = hashCode
 
     override fun toString() =
-        "ResponseCodeInterpreterCallCodeDeltaEvent{delta=$delta, outputIndex=$outputIndex, sequenceNumber=$sequenceNumber, type=$type, additionalProperties=$additionalProperties}"
+        "ResponseCodeInterpreterCallCodeDeltaEvent{delta=$delta, itemId=$itemId, outputIndex=$outputIndex, sequenceNumber=$sequenceNumber, type=$type, additionalProperties=$additionalProperties}"
 }

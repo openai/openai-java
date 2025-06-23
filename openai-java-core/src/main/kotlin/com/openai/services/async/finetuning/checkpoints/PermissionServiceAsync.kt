@@ -9,8 +9,8 @@ import com.openai.models.finetuning.checkpoints.permissions.PermissionCreatePage
 import com.openai.models.finetuning.checkpoints.permissions.PermissionCreateParams
 import com.openai.models.finetuning.checkpoints.permissions.PermissionDeleteParams
 import com.openai.models.finetuning.checkpoints.permissions.PermissionDeleteResponse
-import com.openai.models.finetuning.checkpoints.permissions.PermissionRetrievePageAsync
 import com.openai.models.finetuning.checkpoints.permissions.PermissionRetrieveParams
+import com.openai.models.finetuning.checkpoints.permissions.PermissionRetrieveResponse
 import java.util.concurrent.CompletableFuture
 import java.util.function.Consumer
 
@@ -67,7 +67,7 @@ interface PermissionServiceAsync {
      * Organization owners can use this endpoint to view all permissions for a fine-tuned model
      * checkpoint.
      */
-    fun retrieve(fineTunedModelCheckpoint: String): CompletableFuture<PermissionRetrievePageAsync> =
+    fun retrieve(fineTunedModelCheckpoint: String): CompletableFuture<PermissionRetrieveResponse> =
         retrieve(fineTunedModelCheckpoint, PermissionRetrieveParams.none())
 
     /** @see [retrieve] */
@@ -75,7 +75,7 @@ interface PermissionServiceAsync {
         fineTunedModelCheckpoint: String,
         params: PermissionRetrieveParams = PermissionRetrieveParams.none(),
         requestOptions: RequestOptions = RequestOptions.none(),
-    ): CompletableFuture<PermissionRetrievePageAsync> =
+    ): CompletableFuture<PermissionRetrieveResponse> =
         retrieve(
             params.toBuilder().fineTunedModelCheckpoint(fineTunedModelCheckpoint).build(),
             requestOptions,
@@ -85,24 +85,24 @@ interface PermissionServiceAsync {
     fun retrieve(
         fineTunedModelCheckpoint: String,
         params: PermissionRetrieveParams = PermissionRetrieveParams.none(),
-    ): CompletableFuture<PermissionRetrievePageAsync> =
+    ): CompletableFuture<PermissionRetrieveResponse> =
         retrieve(fineTunedModelCheckpoint, params, RequestOptions.none())
 
     /** @see [retrieve] */
     fun retrieve(
         params: PermissionRetrieveParams,
         requestOptions: RequestOptions = RequestOptions.none(),
-    ): CompletableFuture<PermissionRetrievePageAsync>
+    ): CompletableFuture<PermissionRetrieveResponse>
 
     /** @see [retrieve] */
-    fun retrieve(params: PermissionRetrieveParams): CompletableFuture<PermissionRetrievePageAsync> =
+    fun retrieve(params: PermissionRetrieveParams): CompletableFuture<PermissionRetrieveResponse> =
         retrieve(params, RequestOptions.none())
 
     /** @see [retrieve] */
     fun retrieve(
         fineTunedModelCheckpoint: String,
         requestOptions: RequestOptions,
-    ): CompletableFuture<PermissionRetrievePageAsync> =
+    ): CompletableFuture<PermissionRetrieveResponse> =
         retrieve(fineTunedModelCheckpoint, PermissionRetrieveParams.none(), requestOptions)
 
     /**
@@ -191,7 +191,7 @@ interface PermissionServiceAsync {
          */
         fun retrieve(
             fineTunedModelCheckpoint: String
-        ): CompletableFuture<HttpResponseFor<PermissionRetrievePageAsync>> =
+        ): CompletableFuture<HttpResponseFor<PermissionRetrieveResponse>> =
             retrieve(fineTunedModelCheckpoint, PermissionRetrieveParams.none())
 
         /** @see [retrieve] */
@@ -199,7 +199,7 @@ interface PermissionServiceAsync {
             fineTunedModelCheckpoint: String,
             params: PermissionRetrieveParams = PermissionRetrieveParams.none(),
             requestOptions: RequestOptions = RequestOptions.none(),
-        ): CompletableFuture<HttpResponseFor<PermissionRetrievePageAsync>> =
+        ): CompletableFuture<HttpResponseFor<PermissionRetrieveResponse>> =
             retrieve(
                 params.toBuilder().fineTunedModelCheckpoint(fineTunedModelCheckpoint).build(),
                 requestOptions,
@@ -209,26 +209,26 @@ interface PermissionServiceAsync {
         fun retrieve(
             fineTunedModelCheckpoint: String,
             params: PermissionRetrieveParams = PermissionRetrieveParams.none(),
-        ): CompletableFuture<HttpResponseFor<PermissionRetrievePageAsync>> =
+        ): CompletableFuture<HttpResponseFor<PermissionRetrieveResponse>> =
             retrieve(fineTunedModelCheckpoint, params, RequestOptions.none())
 
         /** @see [retrieve] */
         fun retrieve(
             params: PermissionRetrieveParams,
             requestOptions: RequestOptions = RequestOptions.none(),
-        ): CompletableFuture<HttpResponseFor<PermissionRetrievePageAsync>>
+        ): CompletableFuture<HttpResponseFor<PermissionRetrieveResponse>>
 
         /** @see [retrieve] */
         fun retrieve(
             params: PermissionRetrieveParams
-        ): CompletableFuture<HttpResponseFor<PermissionRetrievePageAsync>> =
+        ): CompletableFuture<HttpResponseFor<PermissionRetrieveResponse>> =
             retrieve(params, RequestOptions.none())
 
         /** @see [retrieve] */
         fun retrieve(
             fineTunedModelCheckpoint: String,
             requestOptions: RequestOptions,
-        ): CompletableFuture<HttpResponseFor<PermissionRetrievePageAsync>> =
+        ): CompletableFuture<HttpResponseFor<PermissionRetrieveResponse>> =
             retrieve(fineTunedModelCheckpoint, PermissionRetrieveParams.none(), requestOptions)
 
         /**

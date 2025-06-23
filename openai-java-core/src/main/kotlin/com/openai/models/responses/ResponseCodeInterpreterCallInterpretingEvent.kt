@@ -14,12 +14,11 @@ import com.openai.core.checkRequired
 import com.openai.errors.OpenAIInvalidDataException
 import java.util.Collections
 import java.util.Objects
-import kotlin.jvm.optionals.getOrNull
 
 /** Emitted when the code interpreter is actively interpreting the code snippet. */
 class ResponseCodeInterpreterCallInterpretingEvent
 private constructor(
-    private val codeInterpreterCall: JsonField<ResponseCodeInterpreterToolCall>,
+    private val itemId: JsonField<String>,
     private val outputIndex: JsonField<Long>,
     private val sequenceNumber: JsonField<Long>,
     private val type: JsonValue,
@@ -28,9 +27,7 @@ private constructor(
 
     @JsonCreator
     private constructor(
-        @JsonProperty("code_interpreter_call")
-        @ExcludeMissing
-        codeInterpreterCall: JsonField<ResponseCodeInterpreterToolCall> = JsonMissing.of(),
+        @JsonProperty("item_id") @ExcludeMissing itemId: JsonField<String> = JsonMissing.of(),
         @JsonProperty("output_index")
         @ExcludeMissing
         outputIndex: JsonField<Long> = JsonMissing.of(),
@@ -38,19 +35,19 @@ private constructor(
         @ExcludeMissing
         sequenceNumber: JsonField<Long> = JsonMissing.of(),
         @JsonProperty("type") @ExcludeMissing type: JsonValue = JsonMissing.of(),
-    ) : this(codeInterpreterCall, outputIndex, sequenceNumber, type, mutableMapOf())
+    ) : this(itemId, outputIndex, sequenceNumber, type, mutableMapOf())
 
     /**
-     * A tool call to run code.
+     * The unique identifier of the code interpreter tool call item.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
      *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
      */
-    fun codeInterpreterCall(): ResponseCodeInterpreterToolCall =
-        codeInterpreterCall.getRequired("code_interpreter_call")
+    fun itemId(): String = itemId.getRequired("item_id")
 
     /**
-     * The index of the output item that the code interpreter call is in progress.
+     * The index of the output item in the response for which the code interpreter is interpreting
+     * code.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
      *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
@@ -58,7 +55,7 @@ private constructor(
     fun outputIndex(): Long = outputIndex.getRequired("output_index")
 
     /**
-     * The sequence number of this event.
+     * The sequence number of this event, used to order streaming events.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
      *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
@@ -79,14 +76,11 @@ private constructor(
     @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
 
     /**
-     * Returns the raw JSON value of [codeInterpreterCall].
+     * Returns the raw JSON value of [itemId].
      *
-     * Unlike [codeInterpreterCall], this method doesn't throw if the JSON field has an unexpected
-     * type.
+     * Unlike [itemId], this method doesn't throw if the JSON field has an unexpected type.
      */
-    @JsonProperty("code_interpreter_call")
-    @ExcludeMissing
-    fun _codeInterpreterCall(): JsonField<ResponseCodeInterpreterToolCall> = codeInterpreterCall
+    @JsonProperty("item_id") @ExcludeMissing fun _itemId(): JsonField<String> = itemId
 
     /**
      * Returns the raw JSON value of [outputIndex].
@@ -124,7 +118,7 @@ private constructor(
          *
          * The following fields are required:
          * ```java
-         * .codeInterpreterCall()
+         * .itemId()
          * .outputIndex()
          * .sequenceNumber()
          * ```
@@ -135,7 +129,7 @@ private constructor(
     /** A builder for [ResponseCodeInterpreterCallInterpretingEvent]. */
     class Builder internal constructor() {
 
-        private var codeInterpreterCall: JsonField<ResponseCodeInterpreterToolCall>? = null
+        private var itemId: JsonField<String>? = null
         private var outputIndex: JsonField<Long>? = null
         private var sequenceNumber: JsonField<Long>? = null
         private var type: JsonValue = JsonValue.from("response.code_interpreter_call.interpreting")
@@ -146,7 +140,7 @@ private constructor(
             responseCodeInterpreterCallInterpretingEvent:
                 ResponseCodeInterpreterCallInterpretingEvent
         ) = apply {
-            codeInterpreterCall = responseCodeInterpreterCallInterpretingEvent.codeInterpreterCall
+            itemId = responseCodeInterpreterCallInterpretingEvent.itemId
             outputIndex = responseCodeInterpreterCallInterpretingEvent.outputIndex
             sequenceNumber = responseCodeInterpreterCallInterpretingEvent.sequenceNumber
             type = responseCodeInterpreterCallInterpretingEvent.type
@@ -154,23 +148,21 @@ private constructor(
                 responseCodeInterpreterCallInterpretingEvent.additionalProperties.toMutableMap()
         }
 
-        /** A tool call to run code. */
-        fun codeInterpreterCall(codeInterpreterCall: ResponseCodeInterpreterToolCall) =
-            codeInterpreterCall(JsonField.of(codeInterpreterCall))
+        /** The unique identifier of the code interpreter tool call item. */
+        fun itemId(itemId: String) = itemId(JsonField.of(itemId))
 
         /**
-         * Sets [Builder.codeInterpreterCall] to an arbitrary JSON value.
+         * Sets [Builder.itemId] to an arbitrary JSON value.
          *
-         * You should usually call [Builder.codeInterpreterCall] with a well-typed
-         * [ResponseCodeInterpreterToolCall] value instead. This method is primarily for setting the
-         * field to an undocumented or not yet supported value.
+         * You should usually call [Builder.itemId] with a well-typed [String] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
          */
-        fun codeInterpreterCall(codeInterpreterCall: JsonField<ResponseCodeInterpreterToolCall>) =
-            apply {
-                this.codeInterpreterCall = codeInterpreterCall
-            }
+        fun itemId(itemId: JsonField<String>) = apply { this.itemId = itemId }
 
-        /** The index of the output item that the code interpreter call is in progress. */
+        /**
+         * The index of the output item in the response for which the code interpreter is
+         * interpreting code.
+         */
         fun outputIndex(outputIndex: Long) = outputIndex(JsonField.of(outputIndex))
 
         /**
@@ -182,7 +174,7 @@ private constructor(
          */
         fun outputIndex(outputIndex: JsonField<Long>) = apply { this.outputIndex = outputIndex }
 
-        /** The sequence number of this event. */
+        /** The sequence number of this event, used to order streaming events. */
         fun sequenceNumber(sequenceNumber: Long) = sequenceNumber(JsonField.of(sequenceNumber))
 
         /**
@@ -236,7 +228,7 @@ private constructor(
          *
          * The following fields are required:
          * ```java
-         * .codeInterpreterCall()
+         * .itemId()
          * .outputIndex()
          * .sequenceNumber()
          * ```
@@ -245,7 +237,7 @@ private constructor(
          */
         fun build(): ResponseCodeInterpreterCallInterpretingEvent =
             ResponseCodeInterpreterCallInterpretingEvent(
-                checkRequired("codeInterpreterCall", codeInterpreterCall),
+                checkRequired("itemId", itemId),
                 checkRequired("outputIndex", outputIndex),
                 checkRequired("sequenceNumber", sequenceNumber),
                 type,
@@ -260,7 +252,7 @@ private constructor(
             return@apply
         }
 
-        codeInterpreterCall().validate()
+        itemId()
         outputIndex()
         sequenceNumber()
         _type().let {
@@ -286,7 +278,7 @@ private constructor(
      */
     @JvmSynthetic
     internal fun validity(): Int =
-        (codeInterpreterCall.asKnown().getOrNull()?.validity() ?: 0) +
+        (if (itemId.asKnown().isPresent) 1 else 0) +
             (if (outputIndex.asKnown().isPresent) 1 else 0) +
             (if (sequenceNumber.asKnown().isPresent) 1 else 0) +
             type.let {
@@ -298,15 +290,15 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is ResponseCodeInterpreterCallInterpretingEvent && codeInterpreterCall == other.codeInterpreterCall && outputIndex == other.outputIndex && sequenceNumber == other.sequenceNumber && type == other.type && additionalProperties == other.additionalProperties /* spotless:on */
+        return /* spotless:off */ other is ResponseCodeInterpreterCallInterpretingEvent && itemId == other.itemId && outputIndex == other.outputIndex && sequenceNumber == other.sequenceNumber && type == other.type && additionalProperties == other.additionalProperties /* spotless:on */
     }
 
     /* spotless:off */
-    private val hashCode: Int by lazy { Objects.hash(codeInterpreterCall, outputIndex, sequenceNumber, type, additionalProperties) }
+    private val hashCode: Int by lazy { Objects.hash(itemId, outputIndex, sequenceNumber, type, additionalProperties) }
     /* spotless:on */
 
     override fun hashCode(): Int = hashCode
 
     override fun toString() =
-        "ResponseCodeInterpreterCallInterpretingEvent{codeInterpreterCall=$codeInterpreterCall, outputIndex=$outputIndex, sequenceNumber=$sequenceNumber, type=$type, additionalProperties=$additionalProperties}"
+        "ResponseCodeInterpreterCallInterpretingEvent{itemId=$itemId, outputIndex=$outputIndex, sequenceNumber=$sequenceNumber, type=$type, additionalProperties=$additionalProperties}"
 }
