@@ -13,29 +13,12 @@ internal class ResponseCodeInterpreterCallCompletedEventTest {
     fun create() {
         val responseCodeInterpreterCallCompletedEvent =
             ResponseCodeInterpreterCallCompletedEvent.builder()
-                .codeInterpreterCall(
-                    ResponseCodeInterpreterToolCall.builder()
-                        .id("id")
-                        .code("code")
-                        .addLogsResult("logs")
-                        .status(ResponseCodeInterpreterToolCall.Status.IN_PROGRESS)
-                        .containerId("container_id")
-                        .build()
-                )
+                .itemId("item_id")
                 .outputIndex(0L)
                 .sequenceNumber(0L)
                 .build()
 
-        assertThat(responseCodeInterpreterCallCompletedEvent.codeInterpreterCall())
-            .isEqualTo(
-                ResponseCodeInterpreterToolCall.builder()
-                    .id("id")
-                    .code("code")
-                    .addLogsResult("logs")
-                    .status(ResponseCodeInterpreterToolCall.Status.IN_PROGRESS)
-                    .containerId("container_id")
-                    .build()
-            )
+        assertThat(responseCodeInterpreterCallCompletedEvent.itemId()).isEqualTo("item_id")
         assertThat(responseCodeInterpreterCallCompletedEvent.outputIndex()).isEqualTo(0L)
         assertThat(responseCodeInterpreterCallCompletedEvent.sequenceNumber()).isEqualTo(0L)
     }
@@ -45,15 +28,7 @@ internal class ResponseCodeInterpreterCallCompletedEventTest {
         val jsonMapper = jsonMapper()
         val responseCodeInterpreterCallCompletedEvent =
             ResponseCodeInterpreterCallCompletedEvent.builder()
-                .codeInterpreterCall(
-                    ResponseCodeInterpreterToolCall.builder()
-                        .id("id")
-                        .code("code")
-                        .addLogsResult("logs")
-                        .status(ResponseCodeInterpreterToolCall.Status.IN_PROGRESS)
-                        .containerId("container_id")
-                        .build()
-                )
+                .itemId("item_id")
                 .outputIndex(0L)
                 .sequenceNumber(0L)
                 .build()

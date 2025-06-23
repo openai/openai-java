@@ -14,11 +14,13 @@ internal class ResponseCodeInterpreterCallCodeDoneEventTest {
         val responseCodeInterpreterCallCodeDoneEvent =
             ResponseCodeInterpreterCallCodeDoneEvent.builder()
                 .code("code")
+                .itemId("item_id")
                 .outputIndex(0L)
                 .sequenceNumber(0L)
                 .build()
 
         assertThat(responseCodeInterpreterCallCodeDoneEvent.code()).isEqualTo("code")
+        assertThat(responseCodeInterpreterCallCodeDoneEvent.itemId()).isEqualTo("item_id")
         assertThat(responseCodeInterpreterCallCodeDoneEvent.outputIndex()).isEqualTo(0L)
         assertThat(responseCodeInterpreterCallCodeDoneEvent.sequenceNumber()).isEqualTo(0L)
     }
@@ -29,6 +31,7 @@ internal class ResponseCodeInterpreterCallCodeDoneEventTest {
         val responseCodeInterpreterCallCodeDoneEvent =
             ResponseCodeInterpreterCallCodeDoneEvent.builder()
                 .code("code")
+                .itemId("item_id")
                 .outputIndex(0L)
                 .sequenceNumber(0L)
                 .build()

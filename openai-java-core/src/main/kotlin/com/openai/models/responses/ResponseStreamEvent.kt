@@ -94,11 +94,11 @@ private constructor(
     fun audioTranscriptDone(): Optional<ResponseAudioTranscriptDoneEvent> =
         Optional.ofNullable(audioTranscriptDone)
 
-    /** Emitted when a partial code snippet is added by the code interpreter. */
+    /** Emitted when a partial code snippet is streamed by the code interpreter. */
     fun codeInterpreterCallCodeDelta(): Optional<ResponseCodeInterpreterCallCodeDeltaEvent> =
         Optional.ofNullable(codeInterpreterCallCodeDelta)
 
-    /** Emitted when code snippet output is finalized by the code interpreter. */
+    /** Emitted when the code snippet is finalized by the code interpreter. */
     fun codeInterpreterCallCodeDone(): Optional<ResponseCodeInterpreterCallCodeDoneEvent> =
         Optional.ofNullable(codeInterpreterCallCodeDone)
 
@@ -402,11 +402,11 @@ private constructor(
     fun asAudioTranscriptDone(): ResponseAudioTranscriptDoneEvent =
         audioTranscriptDone.getOrThrow("audioTranscriptDone")
 
-    /** Emitted when a partial code snippet is added by the code interpreter. */
+    /** Emitted when a partial code snippet is streamed by the code interpreter. */
     fun asCodeInterpreterCallCodeDelta(): ResponseCodeInterpreterCallCodeDeltaEvent =
         codeInterpreterCallCodeDelta.getOrThrow("codeInterpreterCallCodeDelta")
 
-    /** Emitted when code snippet output is finalized by the code interpreter. */
+    /** Emitted when the code snippet is finalized by the code interpreter. */
     fun asCodeInterpreterCallCodeDone(): ResponseCodeInterpreterCallCodeDoneEvent =
         codeInterpreterCallCodeDone.getOrThrow("codeInterpreterCallCodeDone")
 
@@ -1301,13 +1301,13 @@ private constructor(
         fun ofAudioTranscriptDone(audioTranscriptDone: ResponseAudioTranscriptDoneEvent) =
             ResponseStreamEvent(audioTranscriptDone = audioTranscriptDone)
 
-        /** Emitted when a partial code snippet is added by the code interpreter. */
+        /** Emitted when a partial code snippet is streamed by the code interpreter. */
         @JvmStatic
         fun ofCodeInterpreterCallCodeDelta(
             codeInterpreterCallCodeDelta: ResponseCodeInterpreterCallCodeDeltaEvent
         ) = ResponseStreamEvent(codeInterpreterCallCodeDelta = codeInterpreterCallCodeDelta)
 
-        /** Emitted when code snippet output is finalized by the code interpreter. */
+        /** Emitted when the code snippet is finalized by the code interpreter. */
         @JvmStatic
         fun ofCodeInterpreterCallCodeDone(
             codeInterpreterCallCodeDone: ResponseCodeInterpreterCallCodeDoneEvent
@@ -1586,12 +1586,12 @@ private constructor(
         /** Emitted when the full audio transcript is completed. */
         fun visitAudioTranscriptDone(audioTranscriptDone: ResponseAudioTranscriptDoneEvent): T
 
-        /** Emitted when a partial code snippet is added by the code interpreter. */
+        /** Emitted when a partial code snippet is streamed by the code interpreter. */
         fun visitCodeInterpreterCallCodeDelta(
             codeInterpreterCallCodeDelta: ResponseCodeInterpreterCallCodeDeltaEvent
         ): T
 
-        /** Emitted when code snippet output is finalized by the code interpreter. */
+        /** Emitted when the code snippet is finalized by the code interpreter. */
         fun visitCodeInterpreterCallCodeDone(
             codeInterpreterCallCodeDone: ResponseCodeInterpreterCallCodeDoneEvent
         ): T

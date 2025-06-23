@@ -16,6 +16,7 @@ internal class SpeechCreateParamsTest {
             .instructions("instructions")
             .responseFormat(SpeechCreateParams.ResponseFormat.MP3)
             .speed(0.25)
+            .streamFormat(SpeechCreateParams.StreamFormat.SSE)
             .build()
     }
 
@@ -29,6 +30,7 @@ internal class SpeechCreateParamsTest {
                 .instructions("instructions")
                 .responseFormat(SpeechCreateParams.ResponseFormat.MP3)
                 .speed(0.25)
+                .streamFormat(SpeechCreateParams.StreamFormat.SSE)
                 .build()
 
         val body = params._body()
@@ -39,6 +41,7 @@ internal class SpeechCreateParamsTest {
         assertThat(body.instructions()).contains("instructions")
         assertThat(body.responseFormat()).contains(SpeechCreateParams.ResponseFormat.MP3)
         assertThat(body.speed()).contains(0.25)
+        assertThat(body.streamFormat()).contains(SpeechCreateParams.StreamFormat.SSE)
     }
 
     @Test

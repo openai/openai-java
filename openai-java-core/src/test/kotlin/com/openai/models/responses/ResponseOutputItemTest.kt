@@ -24,6 +24,7 @@ internal class ResponseOutputItemTest {
                         .addAnnotation(
                             ResponseOutputText.Annotation.FileCitation.builder()
                                 .fileId("file_id")
+                                .filename("filename")
                                 .index(0L)
                                 .build()
                         )
@@ -75,6 +76,7 @@ internal class ResponseOutputItemTest {
                             .addAnnotation(
                                 ResponseOutputText.Annotation.FileCitation.builder()
                                     .fileId("file_id")
+                                    .filename("filename")
                                     .index(0L)
                                     .build()
                             )
@@ -450,9 +452,9 @@ internal class ResponseOutputItemTest {
             ResponseCodeInterpreterToolCall.builder()
                 .id("id")
                 .code("code")
-                .addLogsResult("logs")
-                .status(ResponseCodeInterpreterToolCall.Status.IN_PROGRESS)
                 .containerId("container_id")
+                .addLogsOutput("logs")
+                .status(ResponseCodeInterpreterToolCall.Status.IN_PROGRESS)
                 .build()
 
         val responseOutputItem = ResponseOutputItem.ofCodeInterpreterCall(codeInterpreterCall)
@@ -479,9 +481,9 @@ internal class ResponseOutputItemTest {
                 ResponseCodeInterpreterToolCall.builder()
                     .id("id")
                     .code("code")
-                    .addLogsResult("logs")
-                    .status(ResponseCodeInterpreterToolCall.Status.IN_PROGRESS)
                     .containerId("container_id")
+                    .addLogsOutput("logs")
+                    .status(ResponseCodeInterpreterToolCall.Status.IN_PROGRESS)
                     .build()
             )
 
