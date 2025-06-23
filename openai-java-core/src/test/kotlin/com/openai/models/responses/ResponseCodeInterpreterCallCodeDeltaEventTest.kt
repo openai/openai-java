@@ -14,11 +14,13 @@ internal class ResponseCodeInterpreterCallCodeDeltaEventTest {
         val responseCodeInterpreterCallCodeDeltaEvent =
             ResponseCodeInterpreterCallCodeDeltaEvent.builder()
                 .delta("delta")
+                .itemId("item_id")
                 .outputIndex(0L)
                 .sequenceNumber(0L)
                 .build()
 
         assertThat(responseCodeInterpreterCallCodeDeltaEvent.delta()).isEqualTo("delta")
+        assertThat(responseCodeInterpreterCallCodeDeltaEvent.itemId()).isEqualTo("item_id")
         assertThat(responseCodeInterpreterCallCodeDeltaEvent.outputIndex()).isEqualTo(0L)
         assertThat(responseCodeInterpreterCallCodeDeltaEvent.sequenceNumber()).isEqualTo(0L)
     }
@@ -29,6 +31,7 @@ internal class ResponseCodeInterpreterCallCodeDeltaEventTest {
         val responseCodeInterpreterCallCodeDeltaEvent =
             ResponseCodeInterpreterCallCodeDeltaEvent.builder()
                 .delta("delta")
+                .itemId("item_id")
                 .outputIndex(0L)
                 .sequenceNumber(0L)
                 .build()

@@ -46,14 +46,22 @@ interface ResponseServiceAsync {
      * [file search](https://platform.openai.com/docs/guides/tools-file-search) to use your own data
      * as input for the model's response.
      */
-    fun create(params: ResponseCreateParams): CompletableFuture<Response> =
-        create(params, RequestOptions.none())
+    fun create(): CompletableFuture<Response> = create(ResponseCreateParams.none())
 
     /** @see [create] */
     fun create(
-        params: ResponseCreateParams,
+        params: ResponseCreateParams = ResponseCreateParams.none(),
         requestOptions: RequestOptions = RequestOptions.none(),
     ): CompletableFuture<Response>
+
+    /** @see [create] */
+    fun create(
+        params: ResponseCreateParams = ResponseCreateParams.none()
+    ): CompletableFuture<Response> = create(params, RequestOptions.none())
+
+    /** @see [create] */
+    fun create(requestOptions: RequestOptions): CompletableFuture<Response> =
+        create(ResponseCreateParams.none(), requestOptions)
 
     /**
      * Creates a model response. Provide [text](https://platform.openai.com/docs/guides/text) or
@@ -66,14 +74,23 @@ interface ResponseServiceAsync {
      * [file search](https://platform.openai.com/docs/guides/tools-file-search) to use your own data
      * as input for the model's response.
      */
-    fun createStreaming(params: ResponseCreateParams): AsyncStreamResponse<ResponseStreamEvent> =
-        createStreaming(params, RequestOptions.none())
+    fun createStreaming(): AsyncStreamResponse<ResponseStreamEvent> =
+        createStreaming(ResponseCreateParams.none())
 
     /** @see [createStreaming] */
     fun createStreaming(
-        params: ResponseCreateParams,
+        params: ResponseCreateParams = ResponseCreateParams.none(),
         requestOptions: RequestOptions = RequestOptions.none(),
     ): AsyncStreamResponse<ResponseStreamEvent>
+
+    /** @see [createStreaming] */
+    fun createStreaming(
+        params: ResponseCreateParams = ResponseCreateParams.none()
+    ): AsyncStreamResponse<ResponseStreamEvent> = createStreaming(params, RequestOptions.none())
+
+    /** @see [createStreaming] */
+    fun createStreaming(requestOptions: RequestOptions): AsyncStreamResponse<ResponseStreamEvent> =
+        createStreaming(ResponseCreateParams.none(), requestOptions)
 
     /** Retrieves a model response with the given ID. */
     fun retrieve(responseId: String): CompletableFuture<Response> =
@@ -232,31 +249,53 @@ interface ResponseServiceAsync {
          * Returns a raw HTTP response for `post /responses`, but is otherwise the same as
          * [ResponseServiceAsync.create].
          */
-        fun create(params: ResponseCreateParams): CompletableFuture<HttpResponseFor<Response>> =
-            create(params, RequestOptions.none())
+        fun create(): CompletableFuture<HttpResponseFor<Response>> =
+            create(ResponseCreateParams.none())
 
         /** @see [create] */
         fun create(
-            params: ResponseCreateParams,
+            params: ResponseCreateParams = ResponseCreateParams.none(),
             requestOptions: RequestOptions = RequestOptions.none(),
         ): CompletableFuture<HttpResponseFor<Response>>
+
+        /** @see [create] */
+        fun create(
+            params: ResponseCreateParams = ResponseCreateParams.none()
+        ): CompletableFuture<HttpResponseFor<Response>> = create(params, RequestOptions.none())
+
+        /** @see [create] */
+        fun create(requestOptions: RequestOptions): CompletableFuture<HttpResponseFor<Response>> =
+            create(ResponseCreateParams.none(), requestOptions)
 
         /**
          * Returns a raw HTTP response for `post /responses`, but is otherwise the same as
          * [ResponseServiceAsync.createStreaming].
          */
         @MustBeClosed
+        fun createStreaming():
+            CompletableFuture<HttpResponseFor<StreamResponse<ResponseStreamEvent>>> =
+            createStreaming(ResponseCreateParams.none())
+
+        /** @see [createStreaming] */
+        @MustBeClosed
         fun createStreaming(
-            params: ResponseCreateParams
+            params: ResponseCreateParams = ResponseCreateParams.none(),
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): CompletableFuture<HttpResponseFor<StreamResponse<ResponseStreamEvent>>>
+
+        /** @see [createStreaming] */
+        @MustBeClosed
+        fun createStreaming(
+            params: ResponseCreateParams = ResponseCreateParams.none()
         ): CompletableFuture<HttpResponseFor<StreamResponse<ResponseStreamEvent>>> =
             createStreaming(params, RequestOptions.none())
 
         /** @see [createStreaming] */
         @MustBeClosed
         fun createStreaming(
-            params: ResponseCreateParams,
-            requestOptions: RequestOptions = RequestOptions.none(),
-        ): CompletableFuture<HttpResponseFor<StreamResponse<ResponseStreamEvent>>>
+            requestOptions: RequestOptions
+        ): CompletableFuture<HttpResponseFor<StreamResponse<ResponseStreamEvent>>> =
+            createStreaming(ResponseCreateParams.none(), requestOptions)
 
         /**
          * Returns a raw HTTP response for `get /responses/{response_id}`, but is otherwise the same

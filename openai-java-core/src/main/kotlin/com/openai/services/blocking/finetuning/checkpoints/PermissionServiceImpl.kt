@@ -21,9 +21,8 @@ import com.openai.models.finetuning.checkpoints.permissions.PermissionCreatePage
 import com.openai.models.finetuning.checkpoints.permissions.PermissionCreateParams
 import com.openai.models.finetuning.checkpoints.permissions.PermissionDeleteParams
 import com.openai.models.finetuning.checkpoints.permissions.PermissionDeleteResponse
-import com.openai.models.finetuning.checkpoints.permissions.PermissionRetrievePage
-import com.openai.models.finetuning.checkpoints.permissions.PermissionRetrievePageResponse
 import com.openai.models.finetuning.checkpoints.permissions.PermissionRetrieveParams
+import com.openai.models.finetuning.checkpoints.permissions.PermissionRetrieveResponse
 import java.util.function.Consumer
 import kotlin.jvm.optionals.getOrNull
 
@@ -49,7 +48,7 @@ class PermissionServiceImpl internal constructor(private val clientOptions: Clie
     override fun retrieve(
         params: PermissionRetrieveParams,
         requestOptions: RequestOptions,
-    ): PermissionRetrievePage =
+    ): PermissionRetrieveResponse =
         // get /fine_tuning/checkpoints/{fine_tuned_model_checkpoint}/permissions
         withRawResponse().retrieve(params, requestOptions).parse()
 
@@ -116,14 +115,14 @@ class PermissionServiceImpl internal constructor(private val clientOptions: Clie
             }
         }
 
-        private val retrieveHandler: Handler<PermissionRetrievePageResponse> =
-            jsonHandler<PermissionRetrievePageResponse>(clientOptions.jsonMapper)
+        private val retrieveHandler: Handler<PermissionRetrieveResponse> =
+            jsonHandler<PermissionRetrieveResponse>(clientOptions.jsonMapper)
                 .withErrorHandler(errorHandler)
 
         override fun retrieve(
             params: PermissionRetrieveParams,
             requestOptions: RequestOptions,
-        ): HttpResponseFor<PermissionRetrievePage> {
+        ): HttpResponseFor<PermissionRetrieveResponse> {
             // We check here instead of in the params builder because this can be specified
             // positionally or in the params class.
             checkRequired("fineTunedModelCheckpoint", params.fineTunedModelCheckpoint().getOrNull())
@@ -148,13 +147,6 @@ class PermissionServiceImpl internal constructor(private val clientOptions: Clie
                         if (requestOptions.responseValidation!!) {
                             it.validate()
                         }
-                    }
-                    .let {
-                        PermissionRetrievePage.builder()
-                            .service(PermissionServiceImpl(clientOptions))
-                            .params(params)
-                            .response(it)
-                            .build()
                     }
             }
         }

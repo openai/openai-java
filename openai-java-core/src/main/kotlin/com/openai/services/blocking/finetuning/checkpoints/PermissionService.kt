@@ -10,8 +10,8 @@ import com.openai.models.finetuning.checkpoints.permissions.PermissionCreatePage
 import com.openai.models.finetuning.checkpoints.permissions.PermissionCreateParams
 import com.openai.models.finetuning.checkpoints.permissions.PermissionDeleteParams
 import com.openai.models.finetuning.checkpoints.permissions.PermissionDeleteResponse
-import com.openai.models.finetuning.checkpoints.permissions.PermissionRetrievePage
 import com.openai.models.finetuning.checkpoints.permissions.PermissionRetrieveParams
+import com.openai.models.finetuning.checkpoints.permissions.PermissionRetrieveResponse
 import java.util.function.Consumer
 
 interface PermissionService {
@@ -66,7 +66,7 @@ interface PermissionService {
      * Organization owners can use this endpoint to view all permissions for a fine-tuned model
      * checkpoint.
      */
-    fun retrieve(fineTunedModelCheckpoint: String): PermissionRetrievePage =
+    fun retrieve(fineTunedModelCheckpoint: String): PermissionRetrieveResponse =
         retrieve(fineTunedModelCheckpoint, PermissionRetrieveParams.none())
 
     /** @see [retrieve] */
@@ -74,7 +74,7 @@ interface PermissionService {
         fineTunedModelCheckpoint: String,
         params: PermissionRetrieveParams = PermissionRetrieveParams.none(),
         requestOptions: RequestOptions = RequestOptions.none(),
-    ): PermissionRetrievePage =
+    ): PermissionRetrieveResponse =
         retrieve(
             params.toBuilder().fineTunedModelCheckpoint(fineTunedModelCheckpoint).build(),
             requestOptions,
@@ -84,23 +84,24 @@ interface PermissionService {
     fun retrieve(
         fineTunedModelCheckpoint: String,
         params: PermissionRetrieveParams = PermissionRetrieveParams.none(),
-    ): PermissionRetrievePage = retrieve(fineTunedModelCheckpoint, params, RequestOptions.none())
+    ): PermissionRetrieveResponse =
+        retrieve(fineTunedModelCheckpoint, params, RequestOptions.none())
 
     /** @see [retrieve] */
     fun retrieve(
         params: PermissionRetrieveParams,
         requestOptions: RequestOptions = RequestOptions.none(),
-    ): PermissionRetrievePage
+    ): PermissionRetrieveResponse
 
     /** @see [retrieve] */
-    fun retrieve(params: PermissionRetrieveParams): PermissionRetrievePage =
+    fun retrieve(params: PermissionRetrieveParams): PermissionRetrieveResponse =
         retrieve(params, RequestOptions.none())
 
     /** @see [retrieve] */
     fun retrieve(
         fineTunedModelCheckpoint: String,
         requestOptions: RequestOptions,
-    ): PermissionRetrievePage =
+    ): PermissionRetrieveResponse =
         retrieve(fineTunedModelCheckpoint, PermissionRetrieveParams.none(), requestOptions)
 
     /**
@@ -184,7 +185,9 @@ interface PermissionService {
          * same as [PermissionService.retrieve].
          */
         @MustBeClosed
-        fun retrieve(fineTunedModelCheckpoint: String): HttpResponseFor<PermissionRetrievePage> =
+        fun retrieve(
+            fineTunedModelCheckpoint: String
+        ): HttpResponseFor<PermissionRetrieveResponse> =
             retrieve(fineTunedModelCheckpoint, PermissionRetrieveParams.none())
 
         /** @see [retrieve] */
@@ -193,7 +196,7 @@ interface PermissionService {
             fineTunedModelCheckpoint: String,
             params: PermissionRetrieveParams = PermissionRetrieveParams.none(),
             requestOptions: RequestOptions = RequestOptions.none(),
-        ): HttpResponseFor<PermissionRetrievePage> =
+        ): HttpResponseFor<PermissionRetrieveResponse> =
             retrieve(
                 params.toBuilder().fineTunedModelCheckpoint(fineTunedModelCheckpoint).build(),
                 requestOptions,
@@ -204,7 +207,7 @@ interface PermissionService {
         fun retrieve(
             fineTunedModelCheckpoint: String,
             params: PermissionRetrieveParams = PermissionRetrieveParams.none(),
-        ): HttpResponseFor<PermissionRetrievePage> =
+        ): HttpResponseFor<PermissionRetrieveResponse> =
             retrieve(fineTunedModelCheckpoint, params, RequestOptions.none())
 
         /** @see [retrieve] */
@@ -212,19 +215,20 @@ interface PermissionService {
         fun retrieve(
             params: PermissionRetrieveParams,
             requestOptions: RequestOptions = RequestOptions.none(),
-        ): HttpResponseFor<PermissionRetrievePage>
+        ): HttpResponseFor<PermissionRetrieveResponse>
 
         /** @see [retrieve] */
         @MustBeClosed
-        fun retrieve(params: PermissionRetrieveParams): HttpResponseFor<PermissionRetrievePage> =
-            retrieve(params, RequestOptions.none())
+        fun retrieve(
+            params: PermissionRetrieveParams
+        ): HttpResponseFor<PermissionRetrieveResponse> = retrieve(params, RequestOptions.none())
 
         /** @see [retrieve] */
         @MustBeClosed
         fun retrieve(
             fineTunedModelCheckpoint: String,
             requestOptions: RequestOptions,
-        ): HttpResponseFor<PermissionRetrievePage> =
+        ): HttpResponseFor<PermissionRetrieveResponse> =
             retrieve(fineTunedModelCheckpoint, PermissionRetrieveParams.none(), requestOptions)
 
         /**

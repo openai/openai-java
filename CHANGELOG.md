@@ -1,5 +1,19 @@
 # Changelog
 
+## 2.9.0 (2025-06-23)
+
+Full Changelog: [v2.8.1...v2.9.0](https://github.com/openai/openai-java/compare/v2.8.1...v2.9.0)
+
+### Features
+
+* **api:** make model and inputs not required to create response ([87dd646](https://github.com/openai/openai-java/commit/87dd64658da6cec7564f3b571e15ec0e2db0660b))
+* **api:** update api shapes for usage and code interpreter ([c003f8d](https://github.com/openai/openai-java/commit/c003f8d34388f2a78f60dd3daae63495650c3038))
+
+
+### Bug Fixes
+
+* **client:** bump max requests per host to max requests (5 -&gt; 64) ([a36d9f6](https://github.com/openai/openai-java/commit/a36d9f647dc82f8e39591179b87a128038ce7acb))
+
 ## 2.8.1 (2025-06-18)
 
 Full Changelog: [v2.8.0...v2.8.1](https://github.com/openai/openai-java/compare/v2.8.0...v2.8.1)

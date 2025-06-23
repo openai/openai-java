@@ -205,6 +205,11 @@ class OkHttpClient private constructor(private val okHttpClient: okhttp3.OkHttpC
                     .callTimeout(timeout.request())
                     .proxy(proxy)
                     .build()
+                    .apply {
+                        // We usually make all our requests to the same host so it makes sense to
+                        // raise the per-host limit to the overall limit.
+                        dispatcher.maxRequestsPerHost = dispatcher.maxRequests
+                    }
             )
     }
 }

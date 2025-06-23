@@ -19,6 +19,7 @@ internal class ResponseOutputMessageTest {
                         .addAnnotation(
                             ResponseOutputText.Annotation.FileCitation.builder()
                                 .fileId("file_id")
+                                .filename("filename")
                                 .index(0L)
                                 .build()
                         )
@@ -50,6 +51,7 @@ internal class ResponseOutputMessageTest {
                         .addAnnotation(
                             ResponseOutputText.Annotation.FileCitation.builder()
                                 .fileId("file_id")
+                                .filename("filename")
                                 .index(0L)
                                 .build()
                         )
@@ -86,6 +88,7 @@ internal class ResponseOutputMessageTest {
                         .addAnnotation(
                             ResponseOutputText.Annotation.FileCitation.builder()
                                 .fileId("file_id")
+                                .filename("filename")
                                 .index(0L)
                                 .build()
                         )

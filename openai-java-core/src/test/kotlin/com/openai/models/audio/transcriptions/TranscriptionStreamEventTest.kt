@@ -73,6 +73,19 @@ internal class TranscriptionStreamEventTest {
                         .logprob(0.0)
                         .build()
                 )
+                .usage(
+                    TranscriptionTextDoneEvent.Usage.builder()
+                        .inputTokens(0L)
+                        .outputTokens(0L)
+                        .totalTokens(0L)
+                        .inputTokenDetails(
+                            TranscriptionTextDoneEvent.Usage.InputTokenDetails.builder()
+                                .audioTokens(0L)
+                                .textTokens(0L)
+                                .build()
+                        )
+                        .build()
+                )
                 .build()
 
         val transcriptionStreamEvent =
@@ -94,6 +107,19 @@ internal class TranscriptionStreamEventTest {
                             .token("token")
                             .addByte(0L)
                             .logprob(0.0)
+                            .build()
+                    )
+                    .usage(
+                        TranscriptionTextDoneEvent.Usage.builder()
+                            .inputTokens(0L)
+                            .outputTokens(0L)
+                            .totalTokens(0L)
+                            .inputTokenDetails(
+                                TranscriptionTextDoneEvent.Usage.InputTokenDetails.builder()
+                                    .audioTokens(0L)
+                                    .textTokens(0L)
+                                    .build()
+                            )
                             .build()
                     )
                     .build()

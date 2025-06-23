@@ -578,6 +578,7 @@ private constructor(
         class FileCitation
         private constructor(
             private val fileId: JsonField<String>,
+            private val filename: JsonField<String>,
             private val index: JsonField<Long>,
             private val type: JsonValue,
             private val additionalProperties: MutableMap<String, JsonValue>,
@@ -588,9 +589,12 @@ private constructor(
                 @JsonProperty("file_id")
                 @ExcludeMissing
                 fileId: JsonField<String> = JsonMissing.of(),
+                @JsonProperty("filename")
+                @ExcludeMissing
+                filename: JsonField<String> = JsonMissing.of(),
                 @JsonProperty("index") @ExcludeMissing index: JsonField<Long> = JsonMissing.of(),
                 @JsonProperty("type") @ExcludeMissing type: JsonValue = JsonMissing.of(),
-            ) : this(fileId, index, type, mutableMapOf())
+            ) : this(fileId, filename, index, type, mutableMapOf())
 
             /**
              * The ID of the file.
@@ -600,6 +604,15 @@ private constructor(
              *   value).
              */
             fun fileId(): String = fileId.getRequired("file_id")
+
+            /**
+             * The filename of the file cited.
+             *
+             * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+             *   unexpectedly missing or null (e.g. if the server responded with an unexpected
+             *   value).
+             */
+            fun filename(): String = filename.getRequired("filename")
 
             /**
              * The index of the file in the list of files.
@@ -631,6 +644,14 @@ private constructor(
             @JsonProperty("file_id") @ExcludeMissing fun _fileId(): JsonField<String> = fileId
 
             /**
+             * Returns the raw JSON value of [filename].
+             *
+             * Unlike [filename], this method doesn't throw if the JSON field has an unexpected
+             * type.
+             */
+            @JsonProperty("filename") @ExcludeMissing fun _filename(): JsonField<String> = filename
+
+            /**
              * Returns the raw JSON value of [index].
              *
              * Unlike [index], this method doesn't throw if the JSON field has an unexpected type.
@@ -657,6 +678,7 @@ private constructor(
                  * The following fields are required:
                  * ```java
                  * .fileId()
+                 * .filename()
                  * .index()
                  * ```
                  */
@@ -667,6 +689,7 @@ private constructor(
             class Builder internal constructor() {
 
                 private var fileId: JsonField<String>? = null
+                private var filename: JsonField<String>? = null
                 private var index: JsonField<Long>? = null
                 private var type: JsonValue = JsonValue.from("file_citation")
                 private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
@@ -674,6 +697,7 @@ private constructor(
                 @JvmSynthetic
                 internal fun from(fileCitation: FileCitation) = apply {
                     fileId = fileCitation.fileId
+                    filename = fileCitation.filename
                     index = fileCitation.index
                     type = fileCitation.type
                     additionalProperties = fileCitation.additionalProperties.toMutableMap()
@@ -690,6 +714,18 @@ private constructor(
                  * yet supported value.
                  */
                 fun fileId(fileId: JsonField<String>) = apply { this.fileId = fileId }
+
+                /** The filename of the file cited. */
+                fun filename(filename: String) = filename(JsonField.of(filename))
+
+                /**
+                 * Sets [Builder.filename] to an arbitrary JSON value.
+                 *
+                 * You should usually call [Builder.filename] with a well-typed [String] value
+                 * instead. This method is primarily for setting the field to an undocumented or not
+                 * yet supported value.
+                 */
+                fun filename(filename: JsonField<String>) = apply { this.filename = filename }
 
                 /** The index of the file in the list of files. */
                 fun index(index: Long) = index(JsonField.of(index))
@@ -747,6 +783,7 @@ private constructor(
                  * The following fields are required:
                  * ```java
                  * .fileId()
+                 * .filename()
                  * .index()
                  * ```
                  *
@@ -755,6 +792,7 @@ private constructor(
                 fun build(): FileCitation =
                     FileCitation(
                         checkRequired("fileId", fileId),
+                        checkRequired("filename", filename),
                         checkRequired("index", index),
                         type,
                         additionalProperties.toMutableMap(),
@@ -769,6 +807,7 @@ private constructor(
                 }
 
                 fileId()
+                filename()
                 index()
                 _type().let {
                     if (it != JsonValue.from("file_citation")) {
@@ -795,6 +834,7 @@ private constructor(
             @JvmSynthetic
             internal fun validity(): Int =
                 (if (fileId.asKnown().isPresent) 1 else 0) +
+                    (if (filename.asKnown().isPresent) 1 else 0) +
                     (if (index.asKnown().isPresent) 1 else 0) +
                     type.let { if (it == JsonValue.from("file_citation")) 1 else 0 }
 
@@ -803,17 +843,17 @@ private constructor(
                     return true
                 }
 
-                return /* spotless:off */ other is FileCitation && fileId == other.fileId && index == other.index && type == other.type && additionalProperties == other.additionalProperties /* spotless:on */
+                return /* spotless:off */ other is FileCitation && fileId == other.fileId && filename == other.filename && index == other.index && type == other.type && additionalProperties == other.additionalProperties /* spotless:on */
             }
 
             /* spotless:off */
-            private val hashCode: Int by lazy { Objects.hash(fileId, index, type, additionalProperties) }
+            private val hashCode: Int by lazy { Objects.hash(fileId, filename, index, type, additionalProperties) }
             /* spotless:on */
 
             override fun hashCode(): Int = hashCode
 
             override fun toString() =
-                "FileCitation{fileId=$fileId, index=$index, type=$type, additionalProperties=$additionalProperties}"
+                "FileCitation{fileId=$fileId, filename=$filename, index=$index, type=$type, additionalProperties=$additionalProperties}"
         }
 
         /** A citation for a web resource used to generate a model response. */
@@ -1144,6 +1184,7 @@ private constructor(
             private val containerId: JsonField<String>,
             private val endIndex: JsonField<Long>,
             private val fileId: JsonField<String>,
+            private val filename: JsonField<String>,
             private val startIndex: JsonField<Long>,
             private val type: JsonValue,
             private val additionalProperties: MutableMap<String, JsonValue>,
@@ -1160,11 +1201,14 @@ private constructor(
                 @JsonProperty("file_id")
                 @ExcludeMissing
                 fileId: JsonField<String> = JsonMissing.of(),
+                @JsonProperty("filename")
+                @ExcludeMissing
+                filename: JsonField<String> = JsonMissing.of(),
                 @JsonProperty("start_index")
                 @ExcludeMissing
                 startIndex: JsonField<Long> = JsonMissing.of(),
                 @JsonProperty("type") @ExcludeMissing type: JsonValue = JsonMissing.of(),
-            ) : this(containerId, endIndex, fileId, startIndex, type, mutableMapOf())
+            ) : this(containerId, endIndex, fileId, filename, startIndex, type, mutableMapOf())
 
             /**
              * The ID of the container file.
@@ -1192,6 +1236,15 @@ private constructor(
              *   value).
              */
             fun fileId(): String = fileId.getRequired("file_id")
+
+            /**
+             * The filename of the container file cited.
+             *
+             * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+             *   unexpectedly missing or null (e.g. if the server responded with an unexpected
+             *   value).
+             */
+            fun filename(): String = filename.getRequired("filename")
 
             /**
              * The index of the first character of the container file citation in the message.
@@ -1241,6 +1294,14 @@ private constructor(
             @JsonProperty("file_id") @ExcludeMissing fun _fileId(): JsonField<String> = fileId
 
             /**
+             * Returns the raw JSON value of [filename].
+             *
+             * Unlike [filename], this method doesn't throw if the JSON field has an unexpected
+             * type.
+             */
+            @JsonProperty("filename") @ExcludeMissing fun _filename(): JsonField<String> = filename
+
+            /**
              * Returns the raw JSON value of [startIndex].
              *
              * Unlike [startIndex], this method doesn't throw if the JSON field has an unexpected
@@ -1273,6 +1334,7 @@ private constructor(
                  * .containerId()
                  * .endIndex()
                  * .fileId()
+                 * .filename()
                  * .startIndex()
                  * ```
                  */
@@ -1285,6 +1347,7 @@ private constructor(
                 private var containerId: JsonField<String>? = null
                 private var endIndex: JsonField<Long>? = null
                 private var fileId: JsonField<String>? = null
+                private var filename: JsonField<String>? = null
                 private var startIndex: JsonField<Long>? = null
                 private var type: JsonValue = JsonValue.from("container_file_citation")
                 private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
@@ -1294,6 +1357,7 @@ private constructor(
                     containerId = containerFileCitation.containerId
                     endIndex = containerFileCitation.endIndex
                     fileId = containerFileCitation.fileId
+                    filename = containerFileCitation.filename
                     startIndex = containerFileCitation.startIndex
                     type = containerFileCitation.type
                     additionalProperties = containerFileCitation.additionalProperties.toMutableMap()
@@ -1338,6 +1402,18 @@ private constructor(
                  * yet supported value.
                  */
                 fun fileId(fileId: JsonField<String>) = apply { this.fileId = fileId }
+
+                /** The filename of the container file cited. */
+                fun filename(filename: String) = filename(JsonField.of(filename))
+
+                /**
+                 * Sets [Builder.filename] to an arbitrary JSON value.
+                 *
+                 * You should usually call [Builder.filename] with a well-typed [String] value
+                 * instead. This method is primarily for setting the field to an undocumented or not
+                 * yet supported value.
+                 */
+                fun filename(filename: JsonField<String>) = apply { this.filename = filename }
 
                 /**
                  * The index of the first character of the container file citation in the message.
@@ -1399,6 +1475,7 @@ private constructor(
                  * .containerId()
                  * .endIndex()
                  * .fileId()
+                 * .filename()
                  * .startIndex()
                  * ```
                  *
@@ -1409,6 +1486,7 @@ private constructor(
                         checkRequired("containerId", containerId),
                         checkRequired("endIndex", endIndex),
                         checkRequired("fileId", fileId),
+                        checkRequired("filename", filename),
                         checkRequired("startIndex", startIndex),
                         type,
                         additionalProperties.toMutableMap(),
@@ -1425,6 +1503,7 @@ private constructor(
                 containerId()
                 endIndex()
                 fileId()
+                filename()
                 startIndex()
                 _type().let {
                     if (it != JsonValue.from("container_file_citation")) {
@@ -1453,6 +1532,7 @@ private constructor(
                 (if (containerId.asKnown().isPresent) 1 else 0) +
                     (if (endIndex.asKnown().isPresent) 1 else 0) +
                     (if (fileId.asKnown().isPresent) 1 else 0) +
+                    (if (filename.asKnown().isPresent) 1 else 0) +
                     (if (startIndex.asKnown().isPresent) 1 else 0) +
                     type.let { if (it == JsonValue.from("container_file_citation")) 1 else 0 }
 
@@ -1461,17 +1541,17 @@ private constructor(
                     return true
                 }
 
-                return /* spotless:off */ other is ContainerFileCitation && containerId == other.containerId && endIndex == other.endIndex && fileId == other.fileId && startIndex == other.startIndex && type == other.type && additionalProperties == other.additionalProperties /* spotless:on */
+                return /* spotless:off */ other is ContainerFileCitation && containerId == other.containerId && endIndex == other.endIndex && fileId == other.fileId && filename == other.filename && startIndex == other.startIndex && type == other.type && additionalProperties == other.additionalProperties /* spotless:on */
             }
 
             /* spotless:off */
-            private val hashCode: Int by lazy { Objects.hash(containerId, endIndex, fileId, startIndex, type, additionalProperties) }
+            private val hashCode: Int by lazy { Objects.hash(containerId, endIndex, fileId, filename, startIndex, type, additionalProperties) }
             /* spotless:on */
 
             override fun hashCode(): Int = hashCode
 
             override fun toString() =
-                "ContainerFileCitation{containerId=$containerId, endIndex=$endIndex, fileId=$fileId, startIndex=$startIndex, type=$type, additionalProperties=$additionalProperties}"
+                "ContainerFileCitation{containerId=$containerId, endIndex=$endIndex, fileId=$fileId, filename=$filename, startIndex=$startIndex, type=$type, additionalProperties=$additionalProperties}"
         }
 
         /** A path to a file. */
