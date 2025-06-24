@@ -19,6 +19,9 @@ import com.openai.core.JsonSchemaValidator.Companion.UNRESTRICTED_ENUM_VALUES_LI
 internal class JsonSchemaValidator private constructor() {
 
     companion object {
+        private const val NO_PROPERTIES_DOC =
+            "https://github.com/openai/openai-java/blob/main/README.md#defining-json-schema-properties"
+
         // The names of the supported schema keywords. All other keywords will be rejected.
         private const val SCHEMA = "\$schema"
         private const val ID = "\$id"
@@ -409,7 +412,10 @@ internal class JsonSchemaValidator private constructor() {
         verify(
             properties != null && properties.isObject && !properties.isEmpty,
             path,
-            { "'$PROPS' field is missing, empty or not an object." },
+            {
+                "'$PROPS' field is missing, empty or not an object. " +
+                    "At least one named property must be defined. See: $NO_PROPERTIES_DOC"
+            },
         ) {
             return
         }

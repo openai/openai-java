@@ -363,7 +363,8 @@ response will then be converted automatically to an instance of that Java class.
 example of the use of Structured Outputs with arbitrary Java classes can be seen in
 [`StructuredOutputsExample`](openai-java-example/src/main/java/com/openai/example/StructuredOutputsExample.java).
 
-Java classes can contain fields declared to be instances of other classes and can use collections:
+Java classes can contain fields declared to be instances of other classes and can use collections
+(see [Defining JSON schema properties](#defining-json-schema-properties) for more details):
 
 ```java
 class Person {
@@ -506,12 +507,38 @@ the latter when `ResponseCreateParams.Builder.text(Class<T>)` is called.
 For a full example of the usage of _Structured Outputs_ with the Responses API, see
 [`ResponsesStructuredOutputsExample`](openai-java-example/src/main/java/com/openai/example/ResponsesStructuredOutputsExample.java).
 
+### Defining JSON schema properties
+
+When a JSON schema is derived from your Java classes, all properties represented by `public` fields
+or `public` getter methods are included in the schema by default. Non-`public` fields and getter
+methods are _not_ included by default. You can exclude `public`, or include non-`public` fields or
+getter methods, by using the `@JsonIgnore` or `@JsonProperty` annotations respectively (see
+[Annotating classes and JSON schemas](#annotating-classes-and-json-schemas) for details).
+
+If you do not want to define `public` fields, you can define `private` fields and corresponding
+`public` getter methods. For example, a `private` field `myValue` with a `public` getter method
+`getMyValue()` will result in a `"myValue"` property being included in the JSON schema. If you
+prefer not to use the conventional Java "get" prefix for the name of the getter method, then you
+_must_ annotate the getter method with the `@JsonProperty` annotation and the full method name will
+be used as the property name. You do not have to define any corresponding setter methods if you do
+not need them.
+
+Each of your classes _must_ define at least one property to be included in the JSON schema. A
+validation error will occur if any class contains no fields or getter methods from which schema
+properties can be derived. This may occur if, for example:
+
+- There are no fields or getter methods in the class.
+- All fields and getter methods are `public`, but all are annotated with `@JsonIgnore`.
+- All fields and getter methods are non-`public`, but none are annotated with `@JsonProperty`.
+- A field or getter method is declared with a `Map` type. A `Map` is treated like a separate class
+  with no named properties, so it will result in an empty `"properties"` field in the JSON schema.
+
 ### Annotating classes and JSON schemas
 
 You can use annotations to add further information to the JSON schema derived from your Java
-classes, or to exclude individual fields from the schema. Details from annotations captured in the
-JSON schema may be used by the AI model to improve its response. The SDK supports the use of
-[Jackson Databind](https://github.com/FasterXML/jackson-databind) annotations.
+classes, or to control which fields or getter methods will be included in the schema. Details from
+annotations captured in the JSON schema may be used by the AI model to improve its response. The SDK
+supports the use of [Jackson Databind](https://github.com/FasterXML/jackson-databind) annotations.
 
 ```java
 import com.fasterxml.jackson.annotation.JsonClassDescription;
@@ -541,8 +568,12 @@ class BookList {
 ```
 
 - Use `@JsonClassDescription` to add a detailed description to a class.
-- Use `@JsonPropertyDescription` to add a detailed description to a field of a class.
-- Use `@JsonIgnore` to omit a field of a class from the generated JSON schema.
+- Use `@JsonPropertyDescription` to add a detailed description to a field or getter method of a
+  class.
+- Use `@JsonIgnore` to exclude a `public` field or getter method of a class from the generated JSON
+  schema.
+- Use `@JsonProperty` to include a non-`public` field or getter method of a class in the generated
+  JSON schema.
 
 If you use `@JsonProperty(required = false)`, the `false` value will be ignored. OpenAI JSON schemas
 must mark all properties as _required_, so the schema generated from your Java classes will respect
@@ -577,9 +608,11 @@ _Function Calling_ with Java classes to define function parameters can be seen i
 [`FunctionCallingExample`](openai-java-example/src/main/java/com/openai/example/FunctionCallingExample.java).
 
 Like for [Structured Outputs](#structured-outputs-with-json-schemas), Java classes can contain
-fields declared to be instances of other classes and can use collections. Optionally, annotations
-can be used to set the descriptions of the function (class) and its parameters (fields) to assist
-the AI model in understanding the purpose of the function and the possible values of its parameters.
+fields declared to be instances of other classes and can use collections (see
+[Defining JSON schema properties](#defining-json-schema-properties) for more details). Optionally,
+annotations can be used to set the descriptions of the function (class) and its parameters (fields)
+to assist the AI model in understanding the purpose of the function and the possible values of its
+parameters.
 
 ```java
 import com.fasterxml.jackson.annotation.JsonClassDescription;
@@ -724,23 +757,30 @@ validation and under what circumstances you might want to disable it.
 ### Annotating function classes
 
 You can use annotations to add further information about functions to the JSON schemas that are
-derived from your function classes, or to exclude individual fields from the parameters to the
-function. Details from annotations captured in the JSON schema may be used by the AI model to
-improve its response. The SDK supports the use of
+derived from your function classes, or to control which fields or getter methods will be used as
+parameters to the function. Details from annotations captured in the JSON schema may be used by the
+AI model to improve its response. The SDK supports the use of
 [Jackson Databind](https://github.com/FasterXML/jackson-databind) annotations.
 
 - Use `@JsonClassDescription` to add a description to a function class detailing when and how to use
   that function.
 - Use `@JsonTypeName` to set the function name to something other than the simple name of the class,
   which is used by default.
-- Use `@JsonPropertyDescription` to add a detailed description to function parameter (a field of
-  a function class).
-- Use `@JsonIgnore` to omit a field of a class from the generated JSON schema for a function's
-  parameters.
+- Use `@JsonPropertyDescription` to add a detailed description to function parameter (a field or
+  getter method of a function class).
+- Use `@JsonIgnore` to exclude a `public` field or getter method of a class from the generated JSON
+  schema for a function's parameters.
+- Use `@JsonProperty` to include a non-`public` field or getter method of a class in the generated
+  JSON schema for a function's parameters.
 
 OpenAI provides some
 [Best practices for defining functions](https://platform.openai.com/docs/guides/function-calling#best-practices-for-defining-functions)
 that may help you to understand how to use the above annotations effectively for your functions.
+
+See also [Defining JSON schema properties](#defining-json-schema-properties) for more details on how
+to use fields and getter methods and combine access modifiers and annotations to define the
+parameters of your functions. The same rules apply to function classes and to the structured output
+classes described in that section.
 
 ## File uploads
 
