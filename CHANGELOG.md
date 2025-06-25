@@ -1,5 +1,14 @@
 # Changelog
 
+## 2.9.1 (2025-06-25)
+
+Full Changelog: [v2.9.0...v2.9.1](https://github.com/openai/openai-java/compare/v2.9.0...v2.9.1)
+
+### Chores
+
+* **internal:** add tests for breaking change detection ([b0a6eeb](https://github.com/openai/openai-java/commit/b0a6eebc67688d38769809efaef7ebc23f519969))
+* updated readme link ([c0992cd](https://github.com/openai/openai-java/commit/c0992cdf475ce4a7f5225d849affb1b449c37cf1))
+
 ## 2.9.0 (2025-06-23)
 
 Full Changelog: [v2.8.1...v2.9.0](https://github.com/openai/openai-java/compare/v2.8.1...v2.9.0)
