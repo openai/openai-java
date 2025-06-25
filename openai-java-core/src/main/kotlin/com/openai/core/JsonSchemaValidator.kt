@@ -20,7 +20,7 @@ internal class JsonSchemaValidator private constructor() {
 
     companion object {
         private const val NO_PROPERTIES_DOC =
-            "https://github.com/openai/openai-java/blob/main/README.md#defining-json-schema-properties"
+            "https://github.com/openai/openai-java#defining-json-schema-properties"
 
         // The names of the supported schema keywords. All other keywords will be rejected.
         private const val SCHEMA = "\$schema"
