@@ -5,6 +5,7 @@ package com.openai.services.blocking
 import com.openai.core.ClientOptions
 import com.openai.errors.OpenAIInvalidDataException
 import com.openai.models.webhooks.UnwrapWebhookEvent
+import com.openai.models.webhooks.WebhookVerificationParams
 import java.util.function.Consumer
 
 interface WebhookService {
@@ -24,9 +25,19 @@ interface WebhookService {
     /**
      * Validates that the given payload was sent by OpenAI and parses the payload.
      *
+     * @param params Verification parameters including payload, headers, secret and tolerance
      * @throws OpenAIInvalidDataException if the body could not be parsed.
      */
-    fun unwrap(body: String): UnwrapWebhookEvent
+    fun unwrap(params: WebhookVerificationParams): UnwrapWebhookEvent
+
+    /**
+     * Validates whether or not the webhook payload was sent by OpenAI.
+     *
+     * @param params Verification parameters including payload, headers, secret and tolerance
+     * @throws InvalidWebhookSignatureException if the signature is invalid or timestamp is too
+     *   old/new
+     */
+    fun verifySignature(params: WebhookVerificationParams)
 
     /** A view of [WebhookService] that provides access to raw HTTP responses for each method. */
     interface WithRawResponse {

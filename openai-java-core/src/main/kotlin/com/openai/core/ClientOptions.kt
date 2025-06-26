@@ -250,16 +250,15 @@ private constructor(
 
         fun fromEnv() = apply {
             System.getenv("OPENAI_BASE_URL")?.let { baseUrl(it) }
-<<<<<<< generated--merge-conflict
-            System.getenv("OPENAI_API_KEY")?.let { apiKey(it) }
-            System.getenv("OPENAI_ORG_ID")?.let { organization(it) }
-            System.getenv("OPENAI_PROJECT_ID")?.let { project(it) }
-            System.getenv("OPENAI_WEBHOOK_SECRET")?.let { webhookSecret(it) }
-=======
+
             val openAIKey = System.getenv("OPENAI_API_KEY")
             val openAIOrgId = System.getenv("OPENAI_ORG_ID")
             val openAIProjectId = System.getenv("OPENAI_PROJECT_ID")
             val azureOpenAIKey = System.getenv("AZURE_OPENAI_KEY")
+            val openAIWebhookSecret = System.getenv("OPENAI_WEBHOOK_SECRET")
+            if (!openAIWebhookSecret.isNullOrEmpty()) {
+                webhookSecret(openAIWebhookSecret)
+            }
 
             when {
                 !openAIKey.isNullOrEmpty() && !azureOpenAIKey.isNullOrEmpty() -> {
@@ -276,7 +275,6 @@ private constructor(
                     credential(AzureApiKeyCredential.create(azureOpenAIKey))
                 }
             }
->>>>>>> integrated--merge-conflict
         }
 
         /**
