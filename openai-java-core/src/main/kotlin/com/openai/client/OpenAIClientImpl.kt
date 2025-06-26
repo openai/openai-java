@@ -38,6 +38,8 @@ import com.openai.services.blocking.UploadService
 import com.openai.services.blocking.UploadServiceImpl
 import com.openai.services.blocking.VectorStoreService
 import com.openai.services.blocking.VectorStoreServiceImpl
+import com.openai.services.blocking.WebhookService
+import com.openai.services.blocking.WebhookServiceImpl
 import java.util.function.Consumer
 
 class OpenAIClientImpl(private val clientOptions: ClientOptions) : OpenAIClient {
@@ -89,6 +91,8 @@ class OpenAIClientImpl(private val clientOptions: ClientOptions) : OpenAIClient 
         VectorStoreServiceImpl(clientOptionsWithUserAgent)
     }
 
+    private val webhooks: WebhookService by lazy { WebhookServiceImpl(clientOptionsWithUserAgent) }
+
     private val beta: BetaService by lazy { BetaServiceImpl(clientOptionsWithUserAgent) }
 
     private val batches: BatchService by lazy { BatchServiceImpl(clientOptionsWithUserAgent) }
@@ -133,6 +137,8 @@ class OpenAIClientImpl(private val clientOptions: ClientOptions) : OpenAIClient 
     override fun graders(): GraderService = graders
 
     override fun vectorStores(): VectorStoreService = vectorStores
+
+    override fun webhooks(): WebhookService = webhooks
 
     override fun beta(): BetaService = beta
 
@@ -195,6 +201,10 @@ class OpenAIClientImpl(private val clientOptions: ClientOptions) : OpenAIClient 
             VectorStoreServiceImpl.WithRawResponseImpl(clientOptions)
         }
 
+        private val webhooks: WebhookService.WithRawResponse by lazy {
+            WebhookServiceImpl.WithRawResponseImpl(clientOptions)
+        }
+
         private val beta: BetaService.WithRawResponse by lazy {
             BetaServiceImpl.WithRawResponseImpl(clientOptions)
         }
@@ -247,6 +257,8 @@ class OpenAIClientImpl(private val clientOptions: ClientOptions) : OpenAIClient 
         override fun graders(): GraderService.WithRawResponse = graders
 
         override fun vectorStores(): VectorStoreService.WithRawResponse = vectorStores
+
+        override fun webhooks(): WebhookService.WithRawResponse = webhooks
 
         override fun beta(): BetaService.WithRawResponse = beta
 

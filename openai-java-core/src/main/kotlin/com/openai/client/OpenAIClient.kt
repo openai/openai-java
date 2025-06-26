@@ -20,6 +20,7 @@ import com.openai.services.blocking.ModerationService
 import com.openai.services.blocking.ResponseService
 import com.openai.services.blocking.UploadService
 import com.openai.services.blocking.VectorStoreService
+import com.openai.services.blocking.WebhookService
 import java.util.function.Consumer
 
 /**
@@ -80,6 +81,8 @@ interface OpenAIClient {
 
     fun vectorStores(): VectorStoreService
 
+    fun webhooks(): WebhookService
+
     fun beta(): BetaService
 
     fun batches(): BatchService
@@ -136,6 +139,8 @@ interface OpenAIClient {
         fun graders(): GraderService.WithRawResponse
 
         fun vectorStores(): VectorStoreService.WithRawResponse
+
+        fun webhooks(): WebhookService.WithRawResponse
 
         fun beta(): BetaService.WithRawResponse
 

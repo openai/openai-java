@@ -38,6 +38,7 @@ private constructor(
     @get:JvmName("azureServiceVersion") val azureServiceVersion: AzureOpenAIServiceVersion?,
     private val organization: String?,
     private val project: String?,
+    private val webhookSecret: String?,
 ) {
 
     init {
@@ -51,6 +52,8 @@ private constructor(
     fun organization(): Optional<String> = Optional.ofNullable(organization)
 
     fun project(): Optional<String> = Optional.ofNullable(project)
+
+    fun webhookSecret(): Optional<String> = Optional.ofNullable(webhookSecret)
 
     fun toBuilder() = Builder().from(this)
 
@@ -90,6 +93,7 @@ private constructor(
         private var azureServiceVersion: AzureOpenAIServiceVersion? = null
         private var organization: String? = null
         private var project: String? = null
+        private var webhookSecret: String? = null
 
         @JvmSynthetic
         internal fun from(clientOptions: ClientOptions) = apply {
@@ -108,6 +112,7 @@ private constructor(
             azureServiceVersion = clientOptions.azureServiceVersion
             organization = clientOptions.organization
             project = clientOptions.project
+            webhookSecret = clientOptions.webhookSecret
         }
 
         fun httpClient(httpClient: HttpClient) = apply { this.httpClient = httpClient }
@@ -156,6 +161,12 @@ private constructor(
 
         /** Alias for calling [Builder.project] with `project.orElse(null)`. */
         fun project(project: Optional<String>) = project(project.getOrNull())
+
+        fun webhookSecret(webhookSecret: String?) = apply { this.webhookSecret = webhookSecret }
+
+        /** Alias for calling [Builder.webhookSecret] with `webhookSecret.orElse(null)`. */
+        fun webhookSecret(webhookSecret: Optional<String>) =
+            webhookSecret(webhookSecret.getOrNull())
 
         fun headers(headers: Headers) = apply {
             this.headers.clear()
@@ -239,10 +250,15 @@ private constructor(
 
         fun fromEnv() = apply {
             System.getenv("OPENAI_BASE_URL")?.let { baseUrl(it) }
+
             val openAIKey = System.getenv("OPENAI_API_KEY")
             val openAIOrgId = System.getenv("OPENAI_ORG_ID")
             val openAIProjectId = System.getenv("OPENAI_PROJECT_ID")
             val azureOpenAIKey = System.getenv("AZURE_OPENAI_KEY")
+            val openAIWebhookSecret = System.getenv("OPENAI_WEBHOOK_SECRET")
+            if (!openAIWebhookSecret.isNullOrEmpty()) {
+                webhookSecret(openAIWebhookSecret)
+            }
 
             when {
                 !openAIKey.isNullOrEmpty() && !azureOpenAIKey.isNullOrEmpty() -> {
@@ -354,6 +370,7 @@ private constructor(
                 azureServiceVersion,
                 organization,
                 project,
+                webhookSecret,
             )
         }
     }

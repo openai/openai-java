@@ -66,6 +66,8 @@ internal class StructuredResponseCreateParamsTest {
         private val TOOL_CHOICE = ResponseCreateParams.ToolChoice.ofTypes(TOOL_CHOICE_TYPES)
         private val TOOL_CHOICE_OPTIONS = ToolChoiceOptions.AUTO
         private val TOOL_CHOICE_FUNCTION = ToolChoiceFunction.builder().name(STRING).build()
+        private val TOOL_CHOICE_MCP =
+            ToolChoiceMcp.builder().name(STRING).serverLabel(STRING).build()
 
         private val FUNCTION_TOOL =
             FunctionTool.builder().name(STRING).parameters(NULLABLE).strict(BOOLEAN).build()
@@ -123,6 +125,10 @@ internal class StructuredResponseCreateParamsTest {
                 DelegationWriteTestCase("maxOutputTokens", LONG),
                 DelegationWriteTestCase("maxOutputTokens", OPTIONAL),
                 DelegationWriteTestCase("maxOutputTokens", JSON_FIELD),
+                DelegationWriteTestCase("maxToolCalls", NULLABLE_LONG),
+                DelegationWriteTestCase("maxToolCalls", LONG),
+                DelegationWriteTestCase("maxToolCalls", OPTIONAL),
+                DelegationWriteTestCase("maxToolCalls", JSON_FIELD),
                 DelegationWriteTestCase("metadata", METADATA),
                 DelegationWriteTestCase("metadata", OPTIONAL),
                 DelegationWriteTestCase("metadata", JSON_FIELD),
@@ -156,6 +162,7 @@ internal class StructuredResponseCreateParamsTest {
                 DelegationWriteTestCase("toolChoice", TOOL_CHOICE_OPTIONS),
                 DelegationWriteTestCase("toolChoice", TOOL_CHOICE_TYPES),
                 DelegationWriteTestCase("toolChoice", TOOL_CHOICE_FUNCTION),
+                DelegationWriteTestCase("toolChoice", TOOL_CHOICE_MCP),
                 DelegationWriteTestCase("tools", LIST),
                 DelegationWriteTestCase("tools", JSON_FIELD),
                 DelegationWriteTestCase("addTool", TOOL),
@@ -176,6 +183,10 @@ internal class StructuredResponseCreateParamsTest {
                 DelegationWriteTestCase("topP", DOUBLE),
                 DelegationWriteTestCase("topP", OPTIONAL),
                 DelegationWriteTestCase("topP", JSON_FIELD),
+                DelegationWriteTestCase("topLogprobs", NULLABLE_LONG),
+                DelegationWriteTestCase("topLogprobs", LONG),
+                DelegationWriteTestCase("topLogprobs", OPTIONAL),
+                DelegationWriteTestCase("topLogprobs", JSON_FIELD),
                 DelegationWriteTestCase("truncation", NULLABLE),
                 DelegationWriteTestCase("truncation", OPTIONAL),
                 DelegationWriteTestCase("truncation", JSON_FIELD),

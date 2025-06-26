@@ -20,6 +20,7 @@ import com.openai.services.async.ModerationServiceAsync
 import com.openai.services.async.ResponseServiceAsync
 import com.openai.services.async.UploadServiceAsync
 import com.openai.services.async.VectorStoreServiceAsync
+import com.openai.services.async.WebhookServiceAsync
 import java.util.function.Consumer
 
 /**
@@ -80,6 +81,8 @@ interface OpenAIClientAsync {
 
     fun vectorStores(): VectorStoreServiceAsync
 
+    fun webhooks(): WebhookServiceAsync
+
     fun beta(): BetaServiceAsync
 
     fun batches(): BatchServiceAsync
@@ -138,6 +141,8 @@ interface OpenAIClientAsync {
         fun graders(): GraderServiceAsync.WithRawResponse
 
         fun vectorStores(): VectorStoreServiceAsync.WithRawResponse
+
+        fun webhooks(): WebhookServiceAsync.WithRawResponse
 
         fun beta(): BetaServiceAsync.WithRawResponse
 
