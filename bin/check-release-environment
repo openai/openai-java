@@ -7,19 +7,19 @@ if [ -z "${STAINLESS_API_KEY}" ]; then
 fi
 
 if [ -z "${SONATYPE_USERNAME}" ]; then
-  errors+=("The OPENAI_SONATYPE_USERNAME secret has not been set. Please set it in either this repository's secrets or your organization secrets")
+  errors+=("The SONATYPE_USERNAME secret has not been set. Please set it in either this repository's secrets or your organization secrets")
 fi
 
 if [ -z "${SONATYPE_PASSWORD}" ]; then
-  errors+=("The OPENAI_SONATYPE_PASSWORD secret has not been set. Please set it in either this repository's secrets or your organization secrets")
+  errors+=("The SONATYPE_PASSWORD secret has not been set. Please set it in either this repository's secrets or your organization secrets")
 fi
 
 if [ -z "${GPG_SIGNING_KEY}" ]; then
-  errors+=("The OPENAI_SONATYPE_GPG_SIGNING_KEY secret has not been set. Please set it in either this repository's secrets or your organization secrets")
+  errors+=("The GPG_SIGNING_KEY secret has not been set. Please set it in either this repository's secrets or your organization secrets")
 fi
 
 if [ -z "${GPG_SIGNING_PASSWORD}" ]; then
-  errors+=("The OPENAI_SONATYPE_GPG_SIGNING_PASSWORD secret has not been set. Please set it in either this repository's secrets or your organization secrets")
+  errors+=("The GPG_SIGNING_PASSWORD secret has not been set. Please set it in either this repository's secrets or your organization secrets")
 fi
 
 lenErrors=${#errors[@]}
