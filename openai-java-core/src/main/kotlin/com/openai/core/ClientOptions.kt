@@ -33,6 +33,7 @@ private constructor(
     @get:JvmName("apiKey") val apiKey: String,
     private val organization: String?,
     private val project: String?,
+    private val webhookSecret: String?,
 ) {
 
     init {
@@ -46,6 +47,8 @@ private constructor(
     fun organization(): Optional<String> = Optional.ofNullable(organization)
 
     fun project(): Optional<String> = Optional.ofNullable(project)
+
+    fun webhookSecret(): Optional<String> = Optional.ofNullable(webhookSecret)
 
     fun toBuilder() = Builder().from(this)
 
@@ -84,6 +87,7 @@ private constructor(
         private var apiKey: String? = null
         private var organization: String? = null
         private var project: String? = null
+        private var webhookSecret: String? = null
 
         @JvmSynthetic
         internal fun from(clientOptions: ClientOptions) = apply {
@@ -101,6 +105,7 @@ private constructor(
             apiKey = clientOptions.apiKey
             organization = clientOptions.organization
             project = clientOptions.project
+            webhookSecret = clientOptions.webhookSecret
         }
 
         fun httpClient(httpClient: HttpClient) = apply { this.httpClient = httpClient }
@@ -141,6 +146,12 @@ private constructor(
 
         /** Alias for calling [Builder.project] with `project.orElse(null)`. */
         fun project(project: Optional<String>) = project(project.getOrNull())
+
+        fun webhookSecret(webhookSecret: String?) = apply { this.webhookSecret = webhookSecret }
+
+        /** Alias for calling [Builder.webhookSecret] with `webhookSecret.orElse(null)`. */
+        fun webhookSecret(webhookSecret: Optional<String>) =
+            webhookSecret(webhookSecret.getOrNull())
 
         fun headers(headers: Headers) = apply {
             this.headers.clear()
@@ -227,6 +238,7 @@ private constructor(
             System.getenv("OPENAI_API_KEY")?.let { apiKey(it) }
             System.getenv("OPENAI_ORG_ID")?.let { organization(it) }
             System.getenv("OPENAI_PROJECT_ID")?.let { project(it) }
+            System.getenv("OPENAI_WEBHOOK_SECRET")?.let { webhookSecret(it) }
         }
 
         /**
@@ -301,6 +313,7 @@ private constructor(
                 apiKey,
                 organization,
                 project,
+                webhookSecret,
             )
         }
     }

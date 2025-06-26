@@ -236,6 +236,14 @@ private constructor(
 
             @JvmField val O3_PRO_2025_06_10 = of("o3-pro-2025-06-10")
 
+            @JvmField val O3_DEEP_RESEARCH = of("o3-deep-research")
+
+            @JvmField val O3_DEEP_RESEARCH_2025_06_26 = of("o3-deep-research-2025-06-26")
+
+            @JvmField val O4_MINI_DEEP_RESEARCH = of("o4-mini-deep-research")
+
+            @JvmField val O4_MINI_DEEP_RESEARCH_2025_06_26 = of("o4-mini-deep-research-2025-06-26")
+
             @JvmField val COMPUTER_USE_PREVIEW = of("computer-use-preview")
 
             @JvmField val COMPUTER_USE_PREVIEW_2025_03_11 = of("computer-use-preview-2025-03-11")
@@ -249,6 +257,10 @@ private constructor(
             O1_PRO_2025_03_19,
             O3_PRO,
             O3_PRO_2025_06_10,
+            O3_DEEP_RESEARCH,
+            O3_DEEP_RESEARCH_2025_06_26,
+            O4_MINI_DEEP_RESEARCH,
+            O4_MINI_DEEP_RESEARCH_2025_06_26,
             COMPUTER_USE_PREVIEW,
             COMPUTER_USE_PREVIEW_2025_03_11,
         }
@@ -267,6 +279,10 @@ private constructor(
             O1_PRO_2025_03_19,
             O3_PRO,
             O3_PRO_2025_06_10,
+            O3_DEEP_RESEARCH,
+            O3_DEEP_RESEARCH_2025_06_26,
+            O4_MINI_DEEP_RESEARCH,
+            O4_MINI_DEEP_RESEARCH_2025_06_26,
             COMPUTER_USE_PREVIEW,
             COMPUTER_USE_PREVIEW_2025_03_11,
             /**
@@ -289,6 +305,10 @@ private constructor(
                 O1_PRO_2025_03_19 -> Value.O1_PRO_2025_03_19
                 O3_PRO -> Value.O3_PRO
                 O3_PRO_2025_06_10 -> Value.O3_PRO_2025_06_10
+                O3_DEEP_RESEARCH -> Value.O3_DEEP_RESEARCH
+                O3_DEEP_RESEARCH_2025_06_26 -> Value.O3_DEEP_RESEARCH_2025_06_26
+                O4_MINI_DEEP_RESEARCH -> Value.O4_MINI_DEEP_RESEARCH
+                O4_MINI_DEEP_RESEARCH_2025_06_26 -> Value.O4_MINI_DEEP_RESEARCH_2025_06_26
                 COMPUTER_USE_PREVIEW -> Value.COMPUTER_USE_PREVIEW
                 COMPUTER_USE_PREVIEW_2025_03_11 -> Value.COMPUTER_USE_PREVIEW_2025_03_11
                 else -> Value._UNKNOWN
@@ -309,6 +329,10 @@ private constructor(
                 O1_PRO_2025_03_19 -> Known.O1_PRO_2025_03_19
                 O3_PRO -> Known.O3_PRO
                 O3_PRO_2025_06_10 -> Known.O3_PRO_2025_06_10
+                O3_DEEP_RESEARCH -> Known.O3_DEEP_RESEARCH
+                O3_DEEP_RESEARCH_2025_06_26 -> Known.O3_DEEP_RESEARCH_2025_06_26
+                O4_MINI_DEEP_RESEARCH -> Known.O4_MINI_DEEP_RESEARCH
+                O4_MINI_DEEP_RESEARCH_2025_06_26 -> Known.O4_MINI_DEEP_RESEARCH_2025_06_26
                 COMPUTER_USE_PREVIEW -> Known.COMPUTER_USE_PREVIEW
                 COMPUTER_USE_PREVIEW_2025_03_11 -> Known.COMPUTER_USE_PREVIEW_2025_03_11
                 else -> throw OpenAIInvalidDataException("Unknown ResponsesOnlyModel: $value")

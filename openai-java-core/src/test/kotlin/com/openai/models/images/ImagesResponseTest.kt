@@ -15,6 +15,7 @@ internal class ImagesResponseTest {
         val imagesResponse =
             ImagesResponse.builder()
                 .created(0L)
+                .background(ImagesResponse.Background.TRANSPARENT)
                 .addData(
                     Image.builder()
                         .b64Json("b64_json")
@@ -22,6 +23,9 @@ internal class ImagesResponseTest {
                         .url("url")
                         .build()
                 )
+                .outputFormat(ImagesResponse.OutputFormat.PNG)
+                .quality(ImagesResponse.Quality.LOW)
+                .size(ImagesResponse.Size._1024X1024)
                 .usage(
                     ImagesResponse.Usage.builder()
                         .inputTokens(0L)
@@ -38,6 +42,7 @@ internal class ImagesResponseTest {
                 .build()
 
         assertThat(imagesResponse.created()).isEqualTo(0L)
+        assertThat(imagesResponse.background()).contains(ImagesResponse.Background.TRANSPARENT)
         assertThat(imagesResponse.data().getOrNull())
             .containsExactly(
                 Image.builder()
@@ -46,6 +51,9 @@ internal class ImagesResponseTest {
                     .url("url")
                     .build()
             )
+        assertThat(imagesResponse.outputFormat()).contains(ImagesResponse.OutputFormat.PNG)
+        assertThat(imagesResponse.quality()).contains(ImagesResponse.Quality.LOW)
+        assertThat(imagesResponse.size()).contains(ImagesResponse.Size._1024X1024)
         assertThat(imagesResponse.usage())
             .contains(
                 ImagesResponse.Usage.builder()
@@ -68,6 +76,7 @@ internal class ImagesResponseTest {
         val imagesResponse =
             ImagesResponse.builder()
                 .created(0L)
+                .background(ImagesResponse.Background.TRANSPARENT)
                 .addData(
                     Image.builder()
                         .b64Json("b64_json")
@@ -75,6 +84,9 @@ internal class ImagesResponseTest {
                         .url("url")
                         .build()
                 )
+                .outputFormat(ImagesResponse.OutputFormat.PNG)
+                .quality(ImagesResponse.Quality.LOW)
+                .size(ImagesResponse.Size._1024X1024)
                 .usage(
                     ImagesResponse.Usage.builder()
                         .inputTokens(0L)

@@ -35,10 +35,11 @@ internal class ResponseServiceTest {
             responseService.create(
                 ResponseCreateParams.builder()
                     .background(true)
-                    .addInclude(ResponseIncludable.FILE_SEARCH_CALL_RESULTS)
+                    .addInclude(ResponseIncludable.CODE_INTERPRETER_CALL_OUTPUTS)
                     .input("string")
                     .instructions("instructions")
                     .maxOutputTokens(0L)
+                    .maxToolCalls(0L)
                     .metadata(
                         ResponseCreateParams.Metadata.builder()
                             .putAdditionalProperty("foo", JsonValue.from("string"))
@@ -86,6 +87,7 @@ internal class ResponseServiceTest {
                             .description("description")
                             .build()
                     )
+                    .topLogprobs(0L)
                     .topP(1.0)
                     .truncation(ResponseCreateParams.Truncation.AUTO)
                     .user("user-1234")
@@ -108,10 +110,11 @@ internal class ResponseServiceTest {
             responseService.createStreaming(
                 ResponseCreateParams.builder()
                     .background(true)
-                    .addInclude(ResponseIncludable.FILE_SEARCH_CALL_RESULTS)
+                    .addInclude(ResponseIncludable.CODE_INTERPRETER_CALL_OUTPUTS)
                     .input("string")
                     .instructions("instructions")
                     .maxOutputTokens(0L)
+                    .maxToolCalls(0L)
                     .metadata(
                         ResponseCreateParams.Metadata.builder()
                             .putAdditionalProperty("foo", JsonValue.from("string"))
@@ -159,6 +162,7 @@ internal class ResponseServiceTest {
                             .description("description")
                             .build()
                     )
+                    .topLogprobs(0L)
                     .topP(1.0)
                     .truncation(ResponseCreateParams.Truncation.AUTO)
                     .user("user-1234")
@@ -183,7 +187,7 @@ internal class ResponseServiceTest {
             responseService.retrieve(
                 ResponseRetrieveParams.builder()
                     .responseId("resp_677efb5139a88190b512bc3fef8e535d")
-                    .addInclude(ResponseIncludable.FILE_SEARCH_CALL_RESULTS)
+                    .addInclude(ResponseIncludable.CODE_INTERPRETER_CALL_OUTPUTS)
                     .startingAfter(0L)
                     .build()
             )
@@ -204,7 +208,7 @@ internal class ResponseServiceTest {
             responseService.retrieveStreaming(
                 ResponseRetrieveParams.builder()
                     .responseId("resp_677efb5139a88190b512bc3fef8e535d")
-                    .addInclude(ResponseIncludable.FILE_SEARCH_CALL_RESULTS)
+                    .addInclude(ResponseIncludable.CODE_INTERPRETER_CALL_OUTPUTS)
                     .startingAfter(0L)
                     .build()
             )

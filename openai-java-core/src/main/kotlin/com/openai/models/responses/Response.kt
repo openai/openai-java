@@ -52,12 +52,14 @@ private constructor(
     private val topP: JsonField<Double>,
     private val background: JsonField<Boolean>,
     private val maxOutputTokens: JsonField<Long>,
+    private val maxToolCalls: JsonField<Long>,
     private val previousResponseId: JsonField<String>,
     private val prompt: JsonField<ResponsePrompt>,
     private val reasoning: JsonField<Reasoning>,
     private val serviceTier: JsonField<ServiceTier>,
     private val status: JsonField<ResponseStatus>,
     private val text: JsonField<ResponseTextConfig>,
+    private val topLogprobs: JsonField<Long>,
     private val truncation: JsonField<Truncation>,
     private val usage: JsonField<ResponseUsage>,
     private val user: JsonField<String>,
@@ -98,6 +100,9 @@ private constructor(
         @JsonProperty("max_output_tokens")
         @ExcludeMissing
         maxOutputTokens: JsonField<Long> = JsonMissing.of(),
+        @JsonProperty("max_tool_calls")
+        @ExcludeMissing
+        maxToolCalls: JsonField<Long> = JsonMissing.of(),
         @JsonProperty("previous_response_id")
         @ExcludeMissing
         previousResponseId: JsonField<String> = JsonMissing.of(),
@@ -116,6 +121,9 @@ private constructor(
         @JsonProperty("text")
         @ExcludeMissing
         text: JsonField<ResponseTextConfig> = JsonMissing.of(),
+        @JsonProperty("top_logprobs")
+        @ExcludeMissing
+        topLogprobs: JsonField<Long> = JsonMissing.of(),
         @JsonProperty("truncation")
         @ExcludeMissing
         truncation: JsonField<Truncation> = JsonMissing.of(),
@@ -138,12 +146,14 @@ private constructor(
         topP,
         background,
         maxOutputTokens,
+        maxToolCalls,
         previousResponseId,
         prompt,
         reasoning,
         serviceTier,
         status,
         text,
+        topLogprobs,
         truncation,
         usage,
         user,
@@ -321,6 +331,16 @@ private constructor(
     fun maxOutputTokens(): Optional<Long> = maxOutputTokens.getOptional("max_output_tokens")
 
     /**
+     * The maximum number of total calls to built-in tools that can be processed in a response. This
+     * maximum number applies across all built-in tool calls, not per individual tool. Any further
+     * attempts to call a tool by the model will be ignored.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun maxToolCalls(): Optional<Long> = maxToolCalls.getOptional("max_tool_calls")
+
+    /**
      * The unique ID of the previous response to the model. Use this to create multi-turn
      * conversations. Learn more about
      * [conversation state](https://platform.openai.com/docs/guides/conversation-state).
@@ -352,19 +372,19 @@ private constructor(
     fun reasoning(): Optional<Reasoning> = reasoning.getOptional("reasoning")
 
     /**
-     * Specifies the latency tier to use for processing the request. This parameter is relevant for
-     * customers subscribed to the scale tier service:
-     * - If set to 'auto', and the Project is Scale tier enabled, the system will utilize scale tier
-     *   credits until they are exhausted.
-     * - If set to 'auto', and the Project is not Scale tier enabled, the request will be processed
-     *   using the default service tier with a lower uptime SLA and no latency guarantee.
-     * - If set to 'default', the request will be processed using the default service tier with a
-     *   lower uptime SLA and no latency guarantee.
-     * - If set to 'flex', the request will be processed with the Flex Processing service tier.
-     *   [Learn more](https://platform.openai.com/docs/guides/flex-processing).
+     * Specifies the processing type used for serving the request.
+     * - If set to 'auto', then the request will be processed with the service tier configured in
+     *   the Project settings. Unless otherwise configured, the Project will use 'default'.
+     * - If set to 'default', then the requset will be processed with the standard pricing and
+     *   performance for the selected model.
+     * - If set to '[flex](https://platform.openai.com/docs/guides/flex-processing)' or 'priority',
+     *   then the request will be processed with the corresponding service tier.
+     *   [Contact sales](https://openai.com/contact-sales) to learn more about Priority processing.
      * - When not set, the default behavior is 'auto'.
      *
-     * When this parameter is set, the response body will include the `service_tier` utilized.
+     * When the `service_tier` parameter is set, the response body will include the `service_tier`
+     * value based on the processing mode actually used to serve the request. This response value
+     * may be different from the value set in the parameter.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -390,6 +410,15 @@ private constructor(
      *   server responded with an unexpected value).
      */
     fun text(): Optional<ResponseTextConfig> = text.getOptional("text")
+
+    /**
+     * An integer between 0 and 20 specifying the number of most likely tokens to return at each
+     * token position, each with an associated log probability.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun topLogprobs(): Optional<Long> = topLogprobs.getOptional("top_logprobs")
 
     /**
      * The truncation strategy to use for the model response.
@@ -543,6 +572,15 @@ private constructor(
     fun _maxOutputTokens(): JsonField<Long> = maxOutputTokens
 
     /**
+     * Returns the raw JSON value of [maxToolCalls].
+     *
+     * Unlike [maxToolCalls], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    @JsonProperty("max_tool_calls")
+    @ExcludeMissing
+    fun _maxToolCalls(): JsonField<Long> = maxToolCalls
+
+    /**
      * Returns the raw JSON value of [previousResponseId].
      *
      * Unlike [previousResponseId], this method doesn't throw if the JSON field has an unexpected
@@ -588,6 +626,13 @@ private constructor(
      * Unlike [text], this method doesn't throw if the JSON field has an unexpected type.
      */
     @JsonProperty("text") @ExcludeMissing fun _text(): JsonField<ResponseTextConfig> = text
+
+    /**
+     * Returns the raw JSON value of [topLogprobs].
+     *
+     * Unlike [topLogprobs], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    @JsonProperty("top_logprobs") @ExcludeMissing fun _topLogprobs(): JsonField<Long> = topLogprobs
 
     /**
      * Returns the raw JSON value of [truncation].
@@ -668,12 +713,14 @@ private constructor(
         private var topP: JsonField<Double>? = null
         private var background: JsonField<Boolean> = JsonMissing.of()
         private var maxOutputTokens: JsonField<Long> = JsonMissing.of()
+        private var maxToolCalls: JsonField<Long> = JsonMissing.of()
         private var previousResponseId: JsonField<String> = JsonMissing.of()
         private var prompt: JsonField<ResponsePrompt> = JsonMissing.of()
         private var reasoning: JsonField<Reasoning> = JsonMissing.of()
         private var serviceTier: JsonField<ServiceTier> = JsonMissing.of()
         private var status: JsonField<ResponseStatus> = JsonMissing.of()
         private var text: JsonField<ResponseTextConfig> = JsonMissing.of()
+        private var topLogprobs: JsonField<Long> = JsonMissing.of()
         private var truncation: JsonField<Truncation> = JsonMissing.of()
         private var usage: JsonField<ResponseUsage> = JsonMissing.of()
         private var user: JsonField<String> = JsonMissing.of()
@@ -697,12 +744,14 @@ private constructor(
             topP = response.topP
             background = response.background
             maxOutputTokens = response.maxOutputTokens
+            maxToolCalls = response.maxToolCalls
             previousResponseId = response.previousResponseId
             prompt = response.prompt
             reasoning = response.reasoning
             serviceTier = response.serviceTier
             status = response.status
             text = response.text
+            topLogprobs = response.topLogprobs
             truncation = response.truncation
             usage = response.usage
             user = response.user
@@ -1021,6 +1070,9 @@ private constructor(
         /** Alias for calling [toolChoice] with `ToolChoice.ofFunction(function)`. */
         fun toolChoice(function: ToolChoiceFunction) = toolChoice(ToolChoice.ofFunction(function))
 
+        /** Alias for calling [toolChoice] with `ToolChoice.ofMcp(mcp)`. */
+        fun toolChoice(mcp: ToolChoiceMcp) = toolChoice(ToolChoice.ofMcp(mcp))
+
         /**
          * An array of tools the model may call while generating a response. You can specify which
          * tool to use by setting the `tool_choice` parameter.
@@ -1208,6 +1260,32 @@ private constructor(
         }
 
         /**
+         * The maximum number of total calls to built-in tools that can be processed in a response.
+         * This maximum number applies across all built-in tool calls, not per individual tool. Any
+         * further attempts to call a tool by the model will be ignored.
+         */
+        fun maxToolCalls(maxToolCalls: Long?) = maxToolCalls(JsonField.ofNullable(maxToolCalls))
+
+        /**
+         * Alias for [Builder.maxToolCalls].
+         *
+         * This unboxed primitive overload exists for backwards compatibility.
+         */
+        fun maxToolCalls(maxToolCalls: Long) = maxToolCalls(maxToolCalls as Long?)
+
+        /** Alias for calling [Builder.maxToolCalls] with `maxToolCalls.orElse(null)`. */
+        fun maxToolCalls(maxToolCalls: Optional<Long>) = maxToolCalls(maxToolCalls.getOrNull())
+
+        /**
+         * Sets [Builder.maxToolCalls] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.maxToolCalls] with a well-typed [Long] value instead.
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
+         */
+        fun maxToolCalls(maxToolCalls: JsonField<Long>) = apply { this.maxToolCalls = maxToolCalls }
+
+        /**
          * The unique ID of the previous response to the model. Use this to create multi-turn
          * conversations. Learn more about
          * [conversation state](https://platform.openai.com/docs/guides/conversation-state).
@@ -1271,20 +1349,20 @@ private constructor(
         fun reasoning(reasoning: JsonField<Reasoning>) = apply { this.reasoning = reasoning }
 
         /**
-         * Specifies the latency tier to use for processing the request. This parameter is relevant
-         * for customers subscribed to the scale tier service:
-         * - If set to 'auto', and the Project is Scale tier enabled, the system will utilize scale
-         *   tier credits until they are exhausted.
-         * - If set to 'auto', and the Project is not Scale tier enabled, the request will be
-         *   processed using the default service tier with a lower uptime SLA and no latency
-         *   guarantee.
-         * - If set to 'default', the request will be processed using the default service tier with
-         *   a lower uptime SLA and no latency guarantee.
-         * - If set to 'flex', the request will be processed with the Flex Processing service tier.
-         *   [Learn more](https://platform.openai.com/docs/guides/flex-processing).
+         * Specifies the processing type used for serving the request.
+         * - If set to 'auto', then the request will be processed with the service tier configured
+         *   in the Project settings. Unless otherwise configured, the Project will use 'default'.
+         * - If set to 'default', then the requset will be processed with the standard pricing and
+         *   performance for the selected model.
+         * - If set to '[flex](https://platform.openai.com/docs/guides/flex-processing)' or
+         *   'priority', then the request will be processed with the corresponding service tier.
+         *   [Contact sales](https://openai.com/contact-sales) to learn more about Priority
+         *   processing.
          * - When not set, the default behavior is 'auto'.
          *
-         * When this parameter is set, the response body will include the `service_tier` utilized.
+         * When the `service_tier` parameter is set, the response body will include the
+         * `service_tier` value based on the processing mode actually used to serve the request.
+         * This response value may be different from the value set in the parameter.
          */
         fun serviceTier(serviceTier: ServiceTier?) = serviceTier(JsonField.ofNullable(serviceTier))
 
@@ -1333,6 +1411,31 @@ private constructor(
          * supported value.
          */
         fun text(text: JsonField<ResponseTextConfig>) = apply { this.text = text }
+
+        /**
+         * An integer between 0 and 20 specifying the number of most likely tokens to return at each
+         * token position, each with an associated log probability.
+         */
+        fun topLogprobs(topLogprobs: Long?) = topLogprobs(JsonField.ofNullable(topLogprobs))
+
+        /**
+         * Alias for [Builder.topLogprobs].
+         *
+         * This unboxed primitive overload exists for backwards compatibility.
+         */
+        fun topLogprobs(topLogprobs: Long) = topLogprobs(topLogprobs as Long?)
+
+        /** Alias for calling [Builder.topLogprobs] with `topLogprobs.orElse(null)`. */
+        fun topLogprobs(topLogprobs: Optional<Long>) = topLogprobs(topLogprobs.getOrNull())
+
+        /**
+         * Sets [Builder.topLogprobs] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.topLogprobs] with a well-typed [Long] value instead.
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
+         */
+        fun topLogprobs(topLogprobs: JsonField<Long>) = apply { this.topLogprobs = topLogprobs }
 
         /**
          * The truncation strategy to use for the model response.
@@ -1447,12 +1550,14 @@ private constructor(
                 checkRequired("topP", topP),
                 background,
                 maxOutputTokens,
+                maxToolCalls,
                 previousResponseId,
                 prompt,
                 reasoning,
                 serviceTier,
                 status,
                 text,
+                topLogprobs,
                 truncation,
                 usage,
                 user,
@@ -1487,12 +1592,14 @@ private constructor(
         topP()
         background()
         maxOutputTokens()
+        maxToolCalls()
         previousResponseId()
         prompt().ifPresent { it.validate() }
         reasoning().ifPresent { it.validate() }
         serviceTier().ifPresent { it.validate() }
         status().ifPresent { it.validate() }
         text().ifPresent { it.validate() }
+        topLogprobs()
         truncation().ifPresent { it.validate() }
         usage().ifPresent { it.validate() }
         user()
@@ -1530,12 +1637,14 @@ private constructor(
             (if (topP.asKnown().isPresent) 1 else 0) +
             (if (background.asKnown().isPresent) 1 else 0) +
             (if (maxOutputTokens.asKnown().isPresent) 1 else 0) +
+            (if (maxToolCalls.asKnown().isPresent) 1 else 0) +
             (if (previousResponseId.asKnown().isPresent) 1 else 0) +
             (prompt.asKnown().getOrNull()?.validity() ?: 0) +
             (reasoning.asKnown().getOrNull()?.validity() ?: 0) +
             (serviceTier.asKnown().getOrNull()?.validity() ?: 0) +
             (status.asKnown().getOrNull()?.validity() ?: 0) +
             (text.asKnown().getOrNull()?.validity() ?: 0) +
+            (if (topLogprobs.asKnown().isPresent) 1 else 0) +
             (truncation.asKnown().getOrNull()?.validity() ?: 0) +
             (usage.asKnown().getOrNull()?.validity() ?: 0) +
             (if (user.asKnown().isPresent) 1 else 0)
@@ -2126,6 +2235,7 @@ private constructor(
         private val options: ToolChoiceOptions? = null,
         private val types: ToolChoiceTypes? = null,
         private val function: ToolChoiceFunction? = null,
+        private val mcp: ToolChoiceMcp? = null,
         private val _json: JsonValue? = null,
     ) {
 
@@ -2150,11 +2260,16 @@ private constructor(
         /** Use this option to force the model to call a specific function. */
         fun function(): Optional<ToolChoiceFunction> = Optional.ofNullable(function)
 
+        /** Use this option to force the model to call a specific tool on a remote MCP server. */
+        fun mcp(): Optional<ToolChoiceMcp> = Optional.ofNullable(mcp)
+
         fun isOptions(): Boolean = options != null
 
         fun isTypes(): Boolean = types != null
 
         fun isFunction(): Boolean = function != null
+
+        fun isMcp(): Boolean = mcp != null
 
         /**
          * Controls which (if any) tool is called by the model.
@@ -2177,6 +2292,9 @@ private constructor(
         /** Use this option to force the model to call a specific function. */
         fun asFunction(): ToolChoiceFunction = function.getOrThrow("function")
 
+        /** Use this option to force the model to call a specific tool on a remote MCP server. */
+        fun asMcp(): ToolChoiceMcp = mcp.getOrThrow("mcp")
+
         fun _json(): Optional<JsonValue> = Optional.ofNullable(_json)
 
         fun <T> accept(visitor: Visitor<T>): T =
@@ -2184,6 +2302,7 @@ private constructor(
                 options != null -> visitor.visitOptions(options)
                 types != null -> visitor.visitTypes(types)
                 function != null -> visitor.visitFunction(function)
+                mcp != null -> visitor.visitMcp(mcp)
                 else -> visitor.unknown(_json)
             }
 
@@ -2206,6 +2325,10 @@ private constructor(
 
                     override fun visitFunction(function: ToolChoiceFunction) {
                         function.validate()
+                    }
+
+                    override fun visitMcp(mcp: ToolChoiceMcp) {
+                        mcp.validate()
                     }
                 }
             )
@@ -2236,6 +2359,8 @@ private constructor(
 
                     override fun visitFunction(function: ToolChoiceFunction) = function.validity()
 
+                    override fun visitMcp(mcp: ToolChoiceMcp) = mcp.validity()
+
                     override fun unknown(json: JsonValue?) = 0
                 }
             )
@@ -2245,16 +2370,17 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is ToolChoice && options == other.options && types == other.types && function == other.function /* spotless:on */
+            return /* spotless:off */ other is ToolChoice && options == other.options && types == other.types && function == other.function && mcp == other.mcp /* spotless:on */
         }
 
-        override fun hashCode(): Int = /* spotless:off */ Objects.hash(options, types, function) /* spotless:on */
+        override fun hashCode(): Int = /* spotless:off */ Objects.hash(options, types, function, mcp) /* spotless:on */
 
         override fun toString(): String =
             when {
                 options != null -> "ToolChoice{options=$options}"
                 types != null -> "ToolChoice{types=$types}"
                 function != null -> "ToolChoice{function=$function}"
+                mcp != null -> "ToolChoice{mcp=$mcp}"
                 _json != null -> "ToolChoice{_unknown=$_json}"
                 else -> throw IllegalStateException("Invalid ToolChoice")
             }
@@ -2282,6 +2408,11 @@ private constructor(
             /** Use this option to force the model to call a specific function. */
             @JvmStatic
             fun ofFunction(function: ToolChoiceFunction) = ToolChoice(function = function)
+
+            /**
+             * Use this option to force the model to call a specific tool on a remote MCP server.
+             */
+            @JvmStatic fun ofMcp(mcp: ToolChoiceMcp) = ToolChoice(mcp = mcp)
         }
 
         /**
@@ -2309,6 +2440,11 @@ private constructor(
 
             /** Use this option to force the model to call a specific function. */
             fun visitFunction(function: ToolChoiceFunction): T
+
+            /**
+             * Use this option to force the model to call a specific tool on a remote MCP server.
+             */
+            fun visitMcp(mcp: ToolChoiceMcp): T
 
             /**
              * Maps an unknown variant of [ToolChoice] to a value of type [T].
@@ -2341,6 +2477,9 @@ private constructor(
                             tryDeserialize(node, jacksonTypeRef<ToolChoiceFunction>())?.let {
                                 ToolChoice(function = it, _json = json)
                             },
+                            tryDeserialize(node, jacksonTypeRef<ToolChoiceMcp>())?.let {
+                                ToolChoice(mcp = it, _json = json)
+                            },
                         )
                         .filterNotNull()
                         .allMaxBy { it.validity() }
@@ -2369,6 +2508,7 @@ private constructor(
                     value.options != null -> generator.writeObject(value.options)
                     value.types != null -> generator.writeObject(value.types)
                     value.function != null -> generator.writeObject(value.function)
+                    value.mcp != null -> generator.writeObject(value.mcp)
                     value._json != null -> generator.writeObject(value._json)
                     else -> throw IllegalStateException("Invalid ToolChoice")
                 }
@@ -2377,19 +2517,19 @@ private constructor(
     }
 
     /**
-     * Specifies the latency tier to use for processing the request. This parameter is relevant for
-     * customers subscribed to the scale tier service:
-     * - If set to 'auto', and the Project is Scale tier enabled, the system will utilize scale tier
-     *   credits until they are exhausted.
-     * - If set to 'auto', and the Project is not Scale tier enabled, the request will be processed
-     *   using the default service tier with a lower uptime SLA and no latency guarantee.
-     * - If set to 'default', the request will be processed using the default service tier with a
-     *   lower uptime SLA and no latency guarantee.
-     * - If set to 'flex', the request will be processed with the Flex Processing service tier.
-     *   [Learn more](https://platform.openai.com/docs/guides/flex-processing).
+     * Specifies the processing type used for serving the request.
+     * - If set to 'auto', then the request will be processed with the service tier configured in
+     *   the Project settings. Unless otherwise configured, the Project will use 'default'.
+     * - If set to 'default', then the requset will be processed with the standard pricing and
+     *   performance for the selected model.
+     * - If set to '[flex](https://platform.openai.com/docs/guides/flex-processing)' or 'priority',
+     *   then the request will be processed with the corresponding service tier.
+     *   [Contact sales](https://openai.com/contact-sales) to learn more about Priority processing.
      * - When not set, the default behavior is 'auto'.
      *
-     * When this parameter is set, the response body will include the `service_tier` utilized.
+     * When the `service_tier` parameter is set, the response body will include the `service_tier`
+     * value based on the processing mode actually used to serve the request. This response value
+     * may be different from the value set in the parameter.
      */
     class ServiceTier @JsonCreator private constructor(private val value: JsonField<String>) :
         Enum {
@@ -2414,6 +2554,8 @@ private constructor(
 
             @JvmField val SCALE = of("scale")
 
+            @JvmField val PRIORITY = of("priority")
+
             @JvmStatic fun of(value: String) = ServiceTier(JsonField.of(value))
         }
 
@@ -2423,6 +2565,7 @@ private constructor(
             DEFAULT,
             FLEX,
             SCALE,
+            PRIORITY,
         }
 
         /**
@@ -2439,6 +2582,7 @@ private constructor(
             DEFAULT,
             FLEX,
             SCALE,
+            PRIORITY,
             /**
              * An enum member indicating that [ServiceTier] was instantiated with an unknown value.
              */
@@ -2458,6 +2602,7 @@ private constructor(
                 DEFAULT -> Value.DEFAULT
                 FLEX -> Value.FLEX
                 SCALE -> Value.SCALE
+                PRIORITY -> Value.PRIORITY
                 else -> Value._UNKNOWN
             }
 
@@ -2476,6 +2621,7 @@ private constructor(
                 DEFAULT -> Known.DEFAULT
                 FLEX -> Known.FLEX
                 SCALE -> Known.SCALE
+                PRIORITY -> Known.PRIORITY
                 else -> throw OpenAIInvalidDataException("Unknown ServiceTier: $value")
             }
 
@@ -2671,15 +2817,15 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is Response && id == other.id && createdAt == other.createdAt && error == other.error && incompleteDetails == other.incompleteDetails && instructions == other.instructions && metadata == other.metadata && model == other.model && object_ == other.object_ && output == other.output && parallelToolCalls == other.parallelToolCalls && temperature == other.temperature && toolChoice == other.toolChoice && tools == other.tools && topP == other.topP && background == other.background && maxOutputTokens == other.maxOutputTokens && previousResponseId == other.previousResponseId && prompt == other.prompt && reasoning == other.reasoning && serviceTier == other.serviceTier && status == other.status && text == other.text && truncation == other.truncation && usage == other.usage && user == other.user && additionalProperties == other.additionalProperties /* spotless:on */
+        return /* spotless:off */ other is Response && id == other.id && createdAt == other.createdAt && error == other.error && incompleteDetails == other.incompleteDetails && instructions == other.instructions && metadata == other.metadata && model == other.model && object_ == other.object_ && output == other.output && parallelToolCalls == other.parallelToolCalls && temperature == other.temperature && toolChoice == other.toolChoice && tools == other.tools && topP == other.topP && background == other.background && maxOutputTokens == other.maxOutputTokens && maxToolCalls == other.maxToolCalls && previousResponseId == other.previousResponseId && prompt == other.prompt && reasoning == other.reasoning && serviceTier == other.serviceTier && status == other.status && text == other.text && topLogprobs == other.topLogprobs && truncation == other.truncation && usage == other.usage && user == other.user && additionalProperties == other.additionalProperties /* spotless:on */
     }
 
     /* spotless:off */
-    private val hashCode: Int by lazy { Objects.hash(id, createdAt, error, incompleteDetails, instructions, metadata, model, object_, output, parallelToolCalls, temperature, toolChoice, tools, topP, background, maxOutputTokens, previousResponseId, prompt, reasoning, serviceTier, status, text, truncation, usage, user, additionalProperties) }
+    private val hashCode: Int by lazy { Objects.hash(id, createdAt, error, incompleteDetails, instructions, metadata, model, object_, output, parallelToolCalls, temperature, toolChoice, tools, topP, background, maxOutputTokens, maxToolCalls, previousResponseId, prompt, reasoning, serviceTier, status, text, topLogprobs, truncation, usage, user, additionalProperties) }
     /* spotless:on */
 
     override fun hashCode(): Int = hashCode
 
     override fun toString() =
-        "Response{id=$id, createdAt=$createdAt, error=$error, incompleteDetails=$incompleteDetails, instructions=$instructions, metadata=$metadata, model=$model, object_=$object_, output=$output, parallelToolCalls=$parallelToolCalls, temperature=$temperature, toolChoice=$toolChoice, tools=$tools, topP=$topP, background=$background, maxOutputTokens=$maxOutputTokens, previousResponseId=$previousResponseId, prompt=$prompt, reasoning=$reasoning, serviceTier=$serviceTier, status=$status, text=$text, truncation=$truncation, usage=$usage, user=$user, additionalProperties=$additionalProperties}"
+        "Response{id=$id, createdAt=$createdAt, error=$error, incompleteDetails=$incompleteDetails, instructions=$instructions, metadata=$metadata, model=$model, object_=$object_, output=$output, parallelToolCalls=$parallelToolCalls, temperature=$temperature, toolChoice=$toolChoice, tools=$tools, topP=$topP, background=$background, maxOutputTokens=$maxOutputTokens, maxToolCalls=$maxToolCalls, previousResponseId=$previousResponseId, prompt=$prompt, reasoning=$reasoning, serviceTier=$serviceTier, status=$status, text=$text, topLogprobs=$topLogprobs, truncation=$truncation, usage=$usage, user=$user, additionalProperties=$additionalProperties}"
 }
