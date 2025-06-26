@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.JsonAnyGetter
 import com.fasterxml.jackson.annotation.JsonAnySetter
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonProperty
+import com.openai.core.Enum
 import com.openai.core.ExcludeMissing
 import com.openai.core.JsonField
 import com.openai.core.JsonMissing
@@ -23,7 +24,11 @@ import kotlin.jvm.optionals.getOrNull
 class ImagesResponse
 private constructor(
     private val created: JsonField<Long>,
+    private val background: JsonField<Background>,
     private val data: JsonField<List<Image>>,
+    private val outputFormat: JsonField<OutputFormat>,
+    private val quality: JsonField<Quality>,
+    private val size: JsonField<Size>,
     private val usage: JsonField<Usage>,
     private val additionalProperties: MutableMap<String, JsonValue>,
 ) {
@@ -31,9 +36,17 @@ private constructor(
     @JsonCreator
     private constructor(
         @JsonProperty("created") @ExcludeMissing created: JsonField<Long> = JsonMissing.of(),
+        @JsonProperty("background")
+        @ExcludeMissing
+        background: JsonField<Background> = JsonMissing.of(),
         @JsonProperty("data") @ExcludeMissing data: JsonField<List<Image>> = JsonMissing.of(),
+        @JsonProperty("output_format")
+        @ExcludeMissing
+        outputFormat: JsonField<OutputFormat> = JsonMissing.of(),
+        @JsonProperty("quality") @ExcludeMissing quality: JsonField<Quality> = JsonMissing.of(),
+        @JsonProperty("size") @ExcludeMissing size: JsonField<Size> = JsonMissing.of(),
         @JsonProperty("usage") @ExcludeMissing usage: JsonField<Usage> = JsonMissing.of(),
-    ) : this(created, data, usage, mutableMapOf())
+    ) : this(created, background, data, outputFormat, quality, size, usage, mutableMapOf())
 
     /**
      * The Unix timestamp (in seconds) of when the image was created.
@@ -44,12 +57,44 @@ private constructor(
     fun created(): Long = created.getRequired("created")
 
     /**
+     * The background parameter used for the image generation. Either `transparent` or `opaque`.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun background(): Optional<Background> = background.getOptional("background")
+
+    /**
      * The list of generated images.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
      */
     fun data(): Optional<List<Image>> = data.getOptional("data")
+
+    /**
+     * The output format of the image generation. Either `png`, `webp`, or `jpeg`.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun outputFormat(): Optional<OutputFormat> = outputFormat.getOptional("output_format")
+
+    /**
+     * The quality of the image generated. Either `low`, `medium`, or `high`.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun quality(): Optional<Quality> = quality.getOptional("quality")
+
+    /**
+     * The size of the image generated. Either `1024x1024`, `1024x1536`, or `1536x1024`.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun size(): Optional<Size> = size.getOptional("size")
 
     /**
      * For `gpt-image-1` only, the token usage information for the image generation.
@@ -67,11 +112,43 @@ private constructor(
     @JsonProperty("created") @ExcludeMissing fun _created(): JsonField<Long> = created
 
     /**
+     * Returns the raw JSON value of [background].
+     *
+     * Unlike [background], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    @JsonProperty("background")
+    @ExcludeMissing
+    fun _background(): JsonField<Background> = background
+
+    /**
      * Returns the raw JSON value of [data].
      *
      * Unlike [data], this method doesn't throw if the JSON field has an unexpected type.
      */
     @JsonProperty("data") @ExcludeMissing fun _data(): JsonField<List<Image>> = data
+
+    /**
+     * Returns the raw JSON value of [outputFormat].
+     *
+     * Unlike [outputFormat], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    @JsonProperty("output_format")
+    @ExcludeMissing
+    fun _outputFormat(): JsonField<OutputFormat> = outputFormat
+
+    /**
+     * Returns the raw JSON value of [quality].
+     *
+     * Unlike [quality], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    @JsonProperty("quality") @ExcludeMissing fun _quality(): JsonField<Quality> = quality
+
+    /**
+     * Returns the raw JSON value of [size].
+     *
+     * Unlike [size], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    @JsonProperty("size") @ExcludeMissing fun _size(): JsonField<Size> = size
 
     /**
      * Returns the raw JSON value of [usage].
@@ -109,14 +186,22 @@ private constructor(
     class Builder internal constructor() {
 
         private var created: JsonField<Long>? = null
+        private var background: JsonField<Background> = JsonMissing.of()
         private var data: JsonField<MutableList<Image>>? = null
+        private var outputFormat: JsonField<OutputFormat> = JsonMissing.of()
+        private var quality: JsonField<Quality> = JsonMissing.of()
+        private var size: JsonField<Size> = JsonMissing.of()
         private var usage: JsonField<Usage> = JsonMissing.of()
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
         @JvmSynthetic
         internal fun from(imagesResponse: ImagesResponse) = apply {
             created = imagesResponse.created
+            background = imagesResponse.background
             data = imagesResponse.data.map { it.toMutableList() }
+            outputFormat = imagesResponse.outputFormat
+            quality = imagesResponse.quality
+            size = imagesResponse.size
             usage = imagesResponse.usage
             additionalProperties = imagesResponse.additionalProperties.toMutableMap()
         }
@@ -131,6 +216,20 @@ private constructor(
          * method is primarily for setting the field to an undocumented or not yet supported value.
          */
         fun created(created: JsonField<Long>) = apply { this.created = created }
+
+        /**
+         * The background parameter used for the image generation. Either `transparent` or `opaque`.
+         */
+        fun background(background: Background) = background(JsonField.of(background))
+
+        /**
+         * Sets [Builder.background] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.background] with a well-typed [Background] value
+         * instead. This method is primarily for setting the field to an undocumented or not yet
+         * supported value.
+         */
+        fun background(background: JsonField<Background>) = apply { this.background = background }
 
         /** The list of generated images. */
         fun data(data: List<Image>) = data(JsonField.of(data))
@@ -157,6 +256,42 @@ private constructor(
                     checkKnown("data", it).add(data)
                 }
         }
+
+        /** The output format of the image generation. Either `png`, `webp`, or `jpeg`. */
+        fun outputFormat(outputFormat: OutputFormat) = outputFormat(JsonField.of(outputFormat))
+
+        /**
+         * Sets [Builder.outputFormat] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.outputFormat] with a well-typed [OutputFormat] value
+         * instead. This method is primarily for setting the field to an undocumented or not yet
+         * supported value.
+         */
+        fun outputFormat(outputFormat: JsonField<OutputFormat>) = apply {
+            this.outputFormat = outputFormat
+        }
+
+        /** The quality of the image generated. Either `low`, `medium`, or `high`. */
+        fun quality(quality: Quality) = quality(JsonField.of(quality))
+
+        /**
+         * Sets [Builder.quality] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.quality] with a well-typed [Quality] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
+        fun quality(quality: JsonField<Quality>) = apply { this.quality = quality }
+
+        /** The size of the image generated. Either `1024x1024`, `1024x1536`, or `1536x1024`. */
+        fun size(size: Size) = size(JsonField.of(size))
+
+        /**
+         * Sets [Builder.size] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.size] with a well-typed [Size] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
+        fun size(size: JsonField<Size>) = apply { this.size = size }
 
         /** For `gpt-image-1` only, the token usage information for the image generation. */
         fun usage(usage: Usage) = usage(JsonField.of(usage))
@@ -203,7 +338,11 @@ private constructor(
         fun build(): ImagesResponse =
             ImagesResponse(
                 checkRequired("created", created),
+                background,
                 (data ?: JsonMissing.of()).map { it.toImmutable() },
+                outputFormat,
+                quality,
+                size,
                 usage,
                 additionalProperties.toMutableMap(),
             )
@@ -217,7 +356,11 @@ private constructor(
         }
 
         created()
+        background().ifPresent { it.validate() }
         data().ifPresent { it.forEach { it.validate() } }
+        outputFormat().ifPresent { it.validate() }
+        quality().ifPresent { it.validate() }
+        size().ifPresent { it.validate() }
         usage().ifPresent { it.validate() }
         validated = true
     }
@@ -238,8 +381,539 @@ private constructor(
     @JvmSynthetic
     internal fun validity(): Int =
         (if (created.asKnown().isPresent) 1 else 0) +
+            (background.asKnown().getOrNull()?.validity() ?: 0) +
             (data.asKnown().getOrNull()?.sumOf { it.validity().toInt() } ?: 0) +
+            (outputFormat.asKnown().getOrNull()?.validity() ?: 0) +
+            (quality.asKnown().getOrNull()?.validity() ?: 0) +
+            (size.asKnown().getOrNull()?.validity() ?: 0) +
             (usage.asKnown().getOrNull()?.validity() ?: 0)
+
+    /** The background parameter used for the image generation. Either `transparent` or `opaque`. */
+    class Background @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
+
+        /**
+         * Returns this class instance's raw value.
+         *
+         * This is usually only useful if this instance was deserialized from data that doesn't
+         * match any known member, and you want to know that value. For example, if the SDK is on an
+         * older version than the API, then the API may respond with new members that the SDK is
+         * unaware of.
+         */
+        @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
+
+        companion object {
+
+            @JvmField val TRANSPARENT = of("transparent")
+
+            @JvmField val OPAQUE = of("opaque")
+
+            @JvmStatic fun of(value: String) = Background(JsonField.of(value))
+        }
+
+        /** An enum containing [Background]'s known values. */
+        enum class Known {
+            TRANSPARENT,
+            OPAQUE,
+        }
+
+        /**
+         * An enum containing [Background]'s known values, as well as an [_UNKNOWN] member.
+         *
+         * An instance of [Background] can contain an unknown value in a couple of cases:
+         * - It was deserialized from data that doesn't match any known member. For example, if the
+         *   SDK is on an older version than the API, then the API may respond with new members that
+         *   the SDK is unaware of.
+         * - It was constructed with an arbitrary value using the [of] method.
+         */
+        enum class Value {
+            TRANSPARENT,
+            OPAQUE,
+            /**
+             * An enum member indicating that [Background] was instantiated with an unknown value.
+             */
+            _UNKNOWN,
+        }
+
+        /**
+         * Returns an enum member corresponding to this class instance's value, or [Value._UNKNOWN]
+         * if the class was instantiated with an unknown value.
+         *
+         * Use the [known] method instead if you're certain the value is always known or if you want
+         * to throw for the unknown case.
+         */
+        fun value(): Value =
+            when (this) {
+                TRANSPARENT -> Value.TRANSPARENT
+                OPAQUE -> Value.OPAQUE
+                else -> Value._UNKNOWN
+            }
+
+        /**
+         * Returns an enum member corresponding to this class instance's value.
+         *
+         * Use the [value] method instead if you're uncertain the value is always known and don't
+         * want to throw for the unknown case.
+         *
+         * @throws OpenAIInvalidDataException if this class instance's value is a not a known
+         *   member.
+         */
+        fun known(): Known =
+            when (this) {
+                TRANSPARENT -> Known.TRANSPARENT
+                OPAQUE -> Known.OPAQUE
+                else -> throw OpenAIInvalidDataException("Unknown Background: $value")
+            }
+
+        /**
+         * Returns this class instance's primitive wire representation.
+         *
+         * This differs from the [toString] method because that method is primarily for debugging
+         * and generally doesn't throw.
+         *
+         * @throws OpenAIInvalidDataException if this class instance's value does not have the
+         *   expected primitive type.
+         */
+        fun asString(): String =
+            _value().asString().orElseThrow { OpenAIInvalidDataException("Value is not a String") }
+
+        private var validated: Boolean = false
+
+        fun validate(): Background = apply {
+            if (validated) {
+                return@apply
+            }
+
+            known()
+            validated = true
+        }
+
+        fun isValid(): Boolean =
+            try {
+                validate()
+                true
+            } catch (e: OpenAIInvalidDataException) {
+                false
+            }
+
+        /**
+         * Returns a score indicating how many valid values are contained in this object
+         * recursively.
+         *
+         * Used for best match union deserialization.
+         */
+        @JvmSynthetic internal fun validity(): Int = if (value() == Value._UNKNOWN) 0 else 1
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) {
+                return true
+            }
+
+            return /* spotless:off */ other is Background && value == other.value /* spotless:on */
+        }
+
+        override fun hashCode() = value.hashCode()
+
+        override fun toString() = value.toString()
+    }
+
+    /** The output format of the image generation. Either `png`, `webp`, or `jpeg`. */
+    class OutputFormat @JsonCreator private constructor(private val value: JsonField<String>) :
+        Enum {
+
+        /**
+         * Returns this class instance's raw value.
+         *
+         * This is usually only useful if this instance was deserialized from data that doesn't
+         * match any known member, and you want to know that value. For example, if the SDK is on an
+         * older version than the API, then the API may respond with new members that the SDK is
+         * unaware of.
+         */
+        @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
+
+        companion object {
+
+            @JvmField val PNG = of("png")
+
+            @JvmField val WEBP = of("webp")
+
+            @JvmField val JPEG = of("jpeg")
+
+            @JvmStatic fun of(value: String) = OutputFormat(JsonField.of(value))
+        }
+
+        /** An enum containing [OutputFormat]'s known values. */
+        enum class Known {
+            PNG,
+            WEBP,
+            JPEG,
+        }
+
+        /**
+         * An enum containing [OutputFormat]'s known values, as well as an [_UNKNOWN] member.
+         *
+         * An instance of [OutputFormat] can contain an unknown value in a couple of cases:
+         * - It was deserialized from data that doesn't match any known member. For example, if the
+         *   SDK is on an older version than the API, then the API may respond with new members that
+         *   the SDK is unaware of.
+         * - It was constructed with an arbitrary value using the [of] method.
+         */
+        enum class Value {
+            PNG,
+            WEBP,
+            JPEG,
+            /**
+             * An enum member indicating that [OutputFormat] was instantiated with an unknown value.
+             */
+            _UNKNOWN,
+        }
+
+        /**
+         * Returns an enum member corresponding to this class instance's value, or [Value._UNKNOWN]
+         * if the class was instantiated with an unknown value.
+         *
+         * Use the [known] method instead if you're certain the value is always known or if you want
+         * to throw for the unknown case.
+         */
+        fun value(): Value =
+            when (this) {
+                PNG -> Value.PNG
+                WEBP -> Value.WEBP
+                JPEG -> Value.JPEG
+                else -> Value._UNKNOWN
+            }
+
+        /**
+         * Returns an enum member corresponding to this class instance's value.
+         *
+         * Use the [value] method instead if you're uncertain the value is always known and don't
+         * want to throw for the unknown case.
+         *
+         * @throws OpenAIInvalidDataException if this class instance's value is a not a known
+         *   member.
+         */
+        fun known(): Known =
+            when (this) {
+                PNG -> Known.PNG
+                WEBP -> Known.WEBP
+                JPEG -> Known.JPEG
+                else -> throw OpenAIInvalidDataException("Unknown OutputFormat: $value")
+            }
+
+        /**
+         * Returns this class instance's primitive wire representation.
+         *
+         * This differs from the [toString] method because that method is primarily for debugging
+         * and generally doesn't throw.
+         *
+         * @throws OpenAIInvalidDataException if this class instance's value does not have the
+         *   expected primitive type.
+         */
+        fun asString(): String =
+            _value().asString().orElseThrow { OpenAIInvalidDataException("Value is not a String") }
+
+        private var validated: Boolean = false
+
+        fun validate(): OutputFormat = apply {
+            if (validated) {
+                return@apply
+            }
+
+            known()
+            validated = true
+        }
+
+        fun isValid(): Boolean =
+            try {
+                validate()
+                true
+            } catch (e: OpenAIInvalidDataException) {
+                false
+            }
+
+        /**
+         * Returns a score indicating how many valid values are contained in this object
+         * recursively.
+         *
+         * Used for best match union deserialization.
+         */
+        @JvmSynthetic internal fun validity(): Int = if (value() == Value._UNKNOWN) 0 else 1
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) {
+                return true
+            }
+
+            return /* spotless:off */ other is OutputFormat && value == other.value /* spotless:on */
+        }
+
+        override fun hashCode() = value.hashCode()
+
+        override fun toString() = value.toString()
+    }
+
+    /** The quality of the image generated. Either `low`, `medium`, or `high`. */
+    class Quality @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
+
+        /**
+         * Returns this class instance's raw value.
+         *
+         * This is usually only useful if this instance was deserialized from data that doesn't
+         * match any known member, and you want to know that value. For example, if the SDK is on an
+         * older version than the API, then the API may respond with new members that the SDK is
+         * unaware of.
+         */
+        @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
+
+        companion object {
+
+            @JvmField val LOW = of("low")
+
+            @JvmField val MEDIUM = of("medium")
+
+            @JvmField val HIGH = of("high")
+
+            @JvmStatic fun of(value: String) = Quality(JsonField.of(value))
+        }
+
+        /** An enum containing [Quality]'s known values. */
+        enum class Known {
+            LOW,
+            MEDIUM,
+            HIGH,
+        }
+
+        /**
+         * An enum containing [Quality]'s known values, as well as an [_UNKNOWN] member.
+         *
+         * An instance of [Quality] can contain an unknown value in a couple of cases:
+         * - It was deserialized from data that doesn't match any known member. For example, if the
+         *   SDK is on an older version than the API, then the API may respond with new members that
+         *   the SDK is unaware of.
+         * - It was constructed with an arbitrary value using the [of] method.
+         */
+        enum class Value {
+            LOW,
+            MEDIUM,
+            HIGH,
+            /** An enum member indicating that [Quality] was instantiated with an unknown value. */
+            _UNKNOWN,
+        }
+
+        /**
+         * Returns an enum member corresponding to this class instance's value, or [Value._UNKNOWN]
+         * if the class was instantiated with an unknown value.
+         *
+         * Use the [known] method instead if you're certain the value is always known or if you want
+         * to throw for the unknown case.
+         */
+        fun value(): Value =
+            when (this) {
+                LOW -> Value.LOW
+                MEDIUM -> Value.MEDIUM
+                HIGH -> Value.HIGH
+                else -> Value._UNKNOWN
+            }
+
+        /**
+         * Returns an enum member corresponding to this class instance's value.
+         *
+         * Use the [value] method instead if you're uncertain the value is always known and don't
+         * want to throw for the unknown case.
+         *
+         * @throws OpenAIInvalidDataException if this class instance's value is a not a known
+         *   member.
+         */
+        fun known(): Known =
+            when (this) {
+                LOW -> Known.LOW
+                MEDIUM -> Known.MEDIUM
+                HIGH -> Known.HIGH
+                else -> throw OpenAIInvalidDataException("Unknown Quality: $value")
+            }
+
+        /**
+         * Returns this class instance's primitive wire representation.
+         *
+         * This differs from the [toString] method because that method is primarily for debugging
+         * and generally doesn't throw.
+         *
+         * @throws OpenAIInvalidDataException if this class instance's value does not have the
+         *   expected primitive type.
+         */
+        fun asString(): String =
+            _value().asString().orElseThrow { OpenAIInvalidDataException("Value is not a String") }
+
+        private var validated: Boolean = false
+
+        fun validate(): Quality = apply {
+            if (validated) {
+                return@apply
+            }
+
+            known()
+            validated = true
+        }
+
+        fun isValid(): Boolean =
+            try {
+                validate()
+                true
+            } catch (e: OpenAIInvalidDataException) {
+                false
+            }
+
+        /**
+         * Returns a score indicating how many valid values are contained in this object
+         * recursively.
+         *
+         * Used for best match union deserialization.
+         */
+        @JvmSynthetic internal fun validity(): Int = if (value() == Value._UNKNOWN) 0 else 1
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) {
+                return true
+            }
+
+            return /* spotless:off */ other is Quality && value == other.value /* spotless:on */
+        }
+
+        override fun hashCode() = value.hashCode()
+
+        override fun toString() = value.toString()
+    }
+
+    /** The size of the image generated. Either `1024x1024`, `1024x1536`, or `1536x1024`. */
+    class Size @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
+
+        /**
+         * Returns this class instance's raw value.
+         *
+         * This is usually only useful if this instance was deserialized from data that doesn't
+         * match any known member, and you want to know that value. For example, if the SDK is on an
+         * older version than the API, then the API may respond with new members that the SDK is
+         * unaware of.
+         */
+        @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
+
+        companion object {
+
+            @JvmField val _1024X1024 = of("1024x1024")
+
+            @JvmField val _1024X1536 = of("1024x1536")
+
+            @JvmField val _1536X1024 = of("1536x1024")
+
+            @JvmStatic fun of(value: String) = Size(JsonField.of(value))
+        }
+
+        /** An enum containing [Size]'s known values. */
+        enum class Known {
+            _1024X1024,
+            _1024X1536,
+            _1536X1024,
+        }
+
+        /**
+         * An enum containing [Size]'s known values, as well as an [_UNKNOWN] member.
+         *
+         * An instance of [Size] can contain an unknown value in a couple of cases:
+         * - It was deserialized from data that doesn't match any known member. For example, if the
+         *   SDK is on an older version than the API, then the API may respond with new members that
+         *   the SDK is unaware of.
+         * - It was constructed with an arbitrary value using the [of] method.
+         */
+        enum class Value {
+            _1024X1024,
+            _1024X1536,
+            _1536X1024,
+            /** An enum member indicating that [Size] was instantiated with an unknown value. */
+            _UNKNOWN,
+        }
+
+        /**
+         * Returns an enum member corresponding to this class instance's value, or [Value._UNKNOWN]
+         * if the class was instantiated with an unknown value.
+         *
+         * Use the [known] method instead if you're certain the value is always known or if you want
+         * to throw for the unknown case.
+         */
+        fun value(): Value =
+            when (this) {
+                _1024X1024 -> Value._1024X1024
+                _1024X1536 -> Value._1024X1536
+                _1536X1024 -> Value._1536X1024
+                else -> Value._UNKNOWN
+            }
+
+        /**
+         * Returns an enum member corresponding to this class instance's value.
+         *
+         * Use the [value] method instead if you're uncertain the value is always known and don't
+         * want to throw for the unknown case.
+         *
+         * @throws OpenAIInvalidDataException if this class instance's value is a not a known
+         *   member.
+         */
+        fun known(): Known =
+            when (this) {
+                _1024X1024 -> Known._1024X1024
+                _1024X1536 -> Known._1024X1536
+                _1536X1024 -> Known._1536X1024
+                else -> throw OpenAIInvalidDataException("Unknown Size: $value")
+            }
+
+        /**
+         * Returns this class instance's primitive wire representation.
+         *
+         * This differs from the [toString] method because that method is primarily for debugging
+         * and generally doesn't throw.
+         *
+         * @throws OpenAIInvalidDataException if this class instance's value does not have the
+         *   expected primitive type.
+         */
+        fun asString(): String =
+            _value().asString().orElseThrow { OpenAIInvalidDataException("Value is not a String") }
+
+        private var validated: Boolean = false
+
+        fun validate(): Size = apply {
+            if (validated) {
+                return@apply
+            }
+
+            known()
+            validated = true
+        }
+
+        fun isValid(): Boolean =
+            try {
+                validate()
+                true
+            } catch (e: OpenAIInvalidDataException) {
+                false
+            }
+
+        /**
+         * Returns a score indicating how many valid values are contained in this object
+         * recursively.
+         *
+         * Used for best match union deserialization.
+         */
+        @JvmSynthetic internal fun validity(): Int = if (value() == Value._UNKNOWN) 0 else 1
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) {
+                return true
+            }
+
+            return /* spotless:off */ other is Size && value == other.value /* spotless:on */
+        }
+
+        override fun hashCode() = value.hashCode()
+
+        override fun toString() = value.toString()
+    }
 
     /** For `gpt-image-1` only, the token usage information for the image generation. */
     class Usage
@@ -753,15 +1427,15 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is ImagesResponse && created == other.created && data == other.data && usage == other.usage && additionalProperties == other.additionalProperties /* spotless:on */
+        return /* spotless:off */ other is ImagesResponse && created == other.created && background == other.background && data == other.data && outputFormat == other.outputFormat && quality == other.quality && size == other.size && usage == other.usage && additionalProperties == other.additionalProperties /* spotless:on */
     }
 
     /* spotless:off */
-    private val hashCode: Int by lazy { Objects.hash(created, data, usage, additionalProperties) }
+    private val hashCode: Int by lazy { Objects.hash(created, background, data, outputFormat, quality, size, usage, additionalProperties) }
     /* spotless:on */
 
     override fun hashCode(): Int = hashCode
 
     override fun toString() =
-        "ImagesResponse{created=$created, data=$data, usage=$usage, additionalProperties=$additionalProperties}"
+        "ImagesResponse{created=$created, background=$background, data=$data, outputFormat=$outputFormat, quality=$quality, size=$size, usage=$usage, additionalProperties=$additionalProperties}"
 }

@@ -90,6 +90,7 @@ internal class ResponseIncompleteEventTest {
                         .topP(1.0)
                         .background(true)
                         .maxOutputTokens(0L)
+                        .maxToolCalls(0L)
                         .previousResponseId("previous_response_id")
                         .prompt(
                             ResponsePrompt.builder()
@@ -116,6 +117,7 @@ internal class ResponseIncompleteEventTest {
                                 .format(ResponseFormatText.builder().build())
                                 .build()
                         )
+                        .topLogprobs(0L)
                         .truncation(Response.Truncation.AUTO)
                         .usage(
                             ResponseUsage.builder()
@@ -213,6 +215,7 @@ internal class ResponseIncompleteEventTest {
                     .topP(1.0)
                     .background(true)
                     .maxOutputTokens(0L)
+                    .maxToolCalls(0L)
                     .previousResponseId("previous_response_id")
                     .prompt(
                         ResponsePrompt.builder()
@@ -239,6 +242,7 @@ internal class ResponseIncompleteEventTest {
                             .format(ResponseFormatText.builder().build())
                             .build()
                     )
+                    .topLogprobs(0L)
                     .truncation(Response.Truncation.AUTO)
                     .usage(
                         ResponseUsage.builder()
@@ -338,6 +342,7 @@ internal class ResponseIncompleteEventTest {
                         .topP(1.0)
                         .background(true)
                         .maxOutputTokens(0L)
+                        .maxToolCalls(0L)
                         .previousResponseId("previous_response_id")
                         .prompt(
                             ResponsePrompt.builder()
@@ -364,6 +369,7 @@ internal class ResponseIncompleteEventTest {
                                 .format(ResponseFormatText.builder().build())
                                 .build()
                         )
+                        .topLogprobs(0L)
                         .truncation(Response.Truncation.AUTO)
                         .usage(
                             ResponseUsage.builder()

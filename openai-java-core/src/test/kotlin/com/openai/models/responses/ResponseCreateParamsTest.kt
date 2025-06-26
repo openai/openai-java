@@ -18,10 +18,11 @@ internal class ResponseCreateParamsTest {
     fun create() {
         ResponseCreateParams.builder()
             .background(true)
-            .addInclude(ResponseIncludable.FILE_SEARCH_CALL_RESULTS)
+            .addInclude(ResponseIncludable.CODE_INTERPRETER_CALL_OUTPUTS)
             .input("string")
             .instructions("instructions")
             .maxOutputTokens(0L)
+            .maxToolCalls(0L)
             .metadata(
                 ResponseCreateParams.Metadata.builder()
                     .putAdditionalProperty("foo", JsonValue.from("string"))
@@ -65,6 +66,7 @@ internal class ResponseCreateParamsTest {
                     .description("description")
                     .build()
             )
+            .topLogprobs(0L)
             .topP(1.0)
             .truncation(ResponseCreateParams.Truncation.AUTO)
             .user("user-1234")
@@ -76,10 +78,11 @@ internal class ResponseCreateParamsTest {
         val params =
             ResponseCreateParams.builder()
                 .background(true)
-                .addInclude(ResponseIncludable.FILE_SEARCH_CALL_RESULTS)
+                .addInclude(ResponseIncludable.CODE_INTERPRETER_CALL_OUTPUTS)
                 .input("string")
                 .instructions("instructions")
                 .maxOutputTokens(0L)
+                .maxToolCalls(0L)
                 .metadata(
                     ResponseCreateParams.Metadata.builder()
                         .putAdditionalProperty("foo", JsonValue.from("string"))
@@ -127,6 +130,7 @@ internal class ResponseCreateParamsTest {
                         .description("description")
                         .build()
                 )
+                .topLogprobs(0L)
                 .topP(1.0)
                 .truncation(ResponseCreateParams.Truncation.AUTO)
                 .user("user-1234")
@@ -136,10 +140,11 @@ internal class ResponseCreateParamsTest {
 
         assertThat(body.background()).contains(true)
         assertThat(body.include().getOrNull())
-            .containsExactly(ResponseIncludable.FILE_SEARCH_CALL_RESULTS)
+            .containsExactly(ResponseIncludable.CODE_INTERPRETER_CALL_OUTPUTS)
         assertThat(body.input()).contains(ResponseCreateParams.Input.ofText("string"))
         assertThat(body.instructions()).contains("instructions")
         assertThat(body.maxOutputTokens()).contains(0L)
+        assertThat(body.maxToolCalls()).contains(0L)
         assertThat(body.metadata())
             .contains(
                 ResponseCreateParams.Metadata.builder()
@@ -193,6 +198,7 @@ internal class ResponseCreateParamsTest {
                         .build()
                 )
             )
+        assertThat(body.topLogprobs()).contains(0L)
         assertThat(body.topP()).contains(1.0)
         assertThat(body.truncation()).contains(ResponseCreateParams.Truncation.AUTO)
         assertThat(body.user()).contains("user-1234")

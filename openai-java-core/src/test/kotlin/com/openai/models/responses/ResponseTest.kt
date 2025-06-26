@@ -89,6 +89,7 @@ internal class ResponseTest {
                 .topP(1.0)
                 .background(true)
                 .maxOutputTokens(0L)
+                .maxToolCalls(0L)
                 .previousResponseId("previous_response_id")
                 .prompt(
                     ResponsePrompt.builder()
@@ -115,6 +116,7 @@ internal class ResponseTest {
                         .format(ResponseFormatText.builder().build())
                         .build()
                 )
+                .topLogprobs(0L)
                 .truncation(Response.Truncation.AUTO)
                 .usage(
                     ResponseUsage.builder()
@@ -212,6 +214,7 @@ internal class ResponseTest {
         assertThat(response.topP()).contains(1.0)
         assertThat(response.background()).contains(true)
         assertThat(response.maxOutputTokens()).contains(0L)
+        assertThat(response.maxToolCalls()).contains(0L)
         assertThat(response.previousResponseId()).contains("previous_response_id")
         assertThat(response.prompt())
             .contains(
@@ -239,6 +242,7 @@ internal class ResponseTest {
             .contains(
                 ResponseTextConfig.builder().format(ResponseFormatText.builder().build()).build()
             )
+        assertThat(response.topLogprobs()).contains(0L)
         assertThat(response.truncation()).contains(Response.Truncation.AUTO)
         assertThat(response.usage())
             .contains(
@@ -332,6 +336,7 @@ internal class ResponseTest {
                 .topP(1.0)
                 .background(true)
                 .maxOutputTokens(0L)
+                .maxToolCalls(0L)
                 .previousResponseId("previous_response_id")
                 .prompt(
                     ResponsePrompt.builder()
@@ -358,6 +363,7 @@ internal class ResponseTest {
                         .format(ResponseFormatText.builder().build())
                         .build()
                 )
+                .topLogprobs(0L)
                 .truncation(Response.Truncation.AUTO)
                 .usage(
                     ResponseUsage.builder()
