@@ -48,7 +48,6 @@ internal class StructuredResponseOutputItemTest {
                     ResponseFunctionWebSearch.Action.ofSearch(
                         ResponseFunctionWebSearch.Action.Search.builder()
                             .query("query")
-                            .addDomain("string")
                             .build()
                     )
                 )
