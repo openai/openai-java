@@ -20,10 +20,8 @@ import com.openai.core.ExcludeMissing
 import com.openai.core.JsonField
 import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
-import com.openai.core.checkKnown
 import com.openai.core.checkRequired
 import com.openai.core.getOrThrow
-import com.openai.core.toImmutable
 import com.openai.errors.OpenAIInvalidDataException
 import java.util.Collections
 import java.util.Objects
@@ -525,7 +523,6 @@ private constructor(
         private constructor(
             private val query: JsonField<String>,
             private val type: JsonValue,
-            private val domains: JsonField<List<String>>,
             private val additionalProperties: MutableMap<String, JsonValue>,
         ) {
 
@@ -533,10 +530,7 @@ private constructor(
             private constructor(
                 @JsonProperty("query") @ExcludeMissing query: JsonField<String> = JsonMissing.of(),
                 @JsonProperty("type") @ExcludeMissing type: JsonValue = JsonMissing.of(),
-                @JsonProperty("domains")
-                @ExcludeMissing
-                domains: JsonField<List<String>> = JsonMissing.of(),
-            ) : this(query, type, domains, mutableMapOf())
+            ) : this(query, type, mutableMapOf())
 
             /**
              * The search query.
@@ -561,28 +555,11 @@ private constructor(
             @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
 
             /**
-             * Domains to restrict the search or domains where results were found.
-             *
-             * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if
-             *   the server responded with an unexpected value).
-             */
-            fun domains(): Optional<List<String>> = domains.getOptional("domains")
-
-            /**
              * Returns the raw JSON value of [query].
              *
              * Unlike [query], this method doesn't throw if the JSON field has an unexpected type.
              */
             @JsonProperty("query") @ExcludeMissing fun _query(): JsonField<String> = query
-
-            /**
-             * Returns the raw JSON value of [domains].
-             *
-             * Unlike [domains], this method doesn't throw if the JSON field has an unexpected type.
-             */
-            @JsonProperty("domains")
-            @ExcludeMissing
-            fun _domains(): JsonField<List<String>> = domains
 
             @JsonAnySetter
             private fun putAdditionalProperty(key: String, value: JsonValue) {
@@ -614,14 +591,12 @@ private constructor(
 
                 private var query: JsonField<String>? = null
                 private var type: JsonValue = JsonValue.from("search")
-                private var domains: JsonField<MutableList<String>>? = null
                 private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
                 @JvmSynthetic
                 internal fun from(search: Search) = apply {
                     query = search.query
                     type = search.type
-                    domains = search.domains.map { it.toMutableList() }
                     additionalProperties = search.additionalProperties.toMutableMap()
                 }
 
@@ -650,32 +625,6 @@ private constructor(
                  * supported value.
                  */
                 fun type(type: JsonValue) = apply { this.type = type }
-
-                /** Domains to restrict the search or domains where results were found. */
-                fun domains(domains: List<String>) = domains(JsonField.of(domains))
-
-                /**
-                 * Sets [Builder.domains] to an arbitrary JSON value.
-                 *
-                 * You should usually call [Builder.domains] with a well-typed `List<String>` value
-                 * instead. This method is primarily for setting the field to an undocumented or not
-                 * yet supported value.
-                 */
-                fun domains(domains: JsonField<List<String>>) = apply {
-                    this.domains = domains.map { it.toMutableList() }
-                }
-
-                /**
-                 * Adds a single [String] to [domains].
-                 *
-                 * @throws IllegalStateException if the field was previously set to a non-list.
-                 */
-                fun addDomain(domain: String) = apply {
-                    domains =
-                        (domains ?: JsonField.of(mutableListOf())).also {
-                            checkKnown("domains", it).add(domain)
-                        }
-                }
 
                 fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                     this.additionalProperties.clear()
@@ -712,12 +661,7 @@ private constructor(
                  * @throws IllegalStateException if any required field is unset.
                  */
                 fun build(): Search =
-                    Search(
-                        checkRequired("query", query),
-                        type,
-                        (domains ?: JsonMissing.of()).map { it.toImmutable() },
-                        additionalProperties.toMutableMap(),
-                    )
+                    Search(checkRequired("query", query), type, additionalProperties.toMutableMap())
             }
 
             private var validated: Boolean = false
@@ -733,7 +677,6 @@ private constructor(
                         throw OpenAIInvalidDataException("'type' is invalid, received $it")
                     }
                 }
-                domains()
                 validated = true
             }
 
@@ -754,25 +697,24 @@ private constructor(
             @JvmSynthetic
             internal fun validity(): Int =
                 (if (query.asKnown().isPresent) 1 else 0) +
-                    type.let { if (it == JsonValue.from("search")) 1 else 0 } +
-                    (domains.asKnown().getOrNull()?.size ?: 0)
+                    type.let { if (it == JsonValue.from("search")) 1 else 0 }
 
             override fun equals(other: Any?): Boolean {
                 if (this === other) {
                     return true
                 }
 
-                return /* spotless:off */ other is Search && query == other.query && type == other.type && domains == other.domains && additionalProperties == other.additionalProperties /* spotless:on */
+                return /* spotless:off */ other is Search && query == other.query && type == other.type && additionalProperties == other.additionalProperties /* spotless:on */
             }
 
             /* spotless:off */
-            private val hashCode: Int by lazy { Objects.hash(query, type, domains, additionalProperties) }
+            private val hashCode: Int by lazy { Objects.hash(query, type, additionalProperties) }
             /* spotless:on */
 
             override fun hashCode(): Int = hashCode
 
             override fun toString() =
-                "Search{query=$query, type=$type, domains=$domains, additionalProperties=$additionalProperties}"
+                "Search{query=$query, type=$type, additionalProperties=$additionalProperties}"
         }
 
         /** Action type "open_page" - Opens a specific URL from search results. */

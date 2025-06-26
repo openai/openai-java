@@ -471,12 +471,7 @@ internal class ResponseInputItemTest {
         val webSearchCall =
             ResponseFunctionWebSearch.builder()
                 .id("id")
-                .action(
-                    ResponseFunctionWebSearch.Action.Search.builder()
-                        .query("query")
-                        .addDomain("string")
-                        .build()
-                )
+                .searchAction("query")
                 .status(ResponseFunctionWebSearch.Status.IN_PROGRESS)
                 .build()
 
@@ -510,12 +505,7 @@ internal class ResponseInputItemTest {
             ResponseInputItem.ofWebSearchCall(
                 ResponseFunctionWebSearch.builder()
                     .id("id")
-                    .action(
-                        ResponseFunctionWebSearch.Action.Search.builder()
-                            .query("query")
-                            .addDomain("string")
-                            .build()
-                    )
+                    .searchAction("query")
                     .status(ResponseFunctionWebSearch.Status.IN_PROGRESS)
                     .build()
             )
