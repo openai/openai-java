@@ -462,18 +462,18 @@ to. If any issues are detected, an exception will be thrown, providing a detaile
 the reasons for the validation failure.
 
 - **Local Validation**: The validation process occurs locally, meaning no requests are sent to the
-remote AI model. If the schema passes local validation, it is likely to pass remote validation as
-well.
+  remote AI model. If the schema passes local validation, it is likely to pass remote validation as
+  well.
 - **Remote Validation**: The remote AI model will conduct its own validation upon receiving the JSON
-schema in the request.
+  schema in the request.
 - **Version Compatibility**: There may be instances where local validation fails while remote
-validation succeeds. This can occur if the SDK version is outdated compared to the restrictions
-enforced by the remote AI model.
+  validation succeeds. This can occur if the SDK version is outdated compared to the restrictions
+  enforced by the remote AI model.
 - **Disabling Local Validation**: If you encounter compatibility issues and wish to bypass local
-validation, you can disable it by passing
-[`JsonSchemaLocalValidation.NO`](openai-java-core/src/main/kotlin/com/openai/core/JsonSchemaLocalValidation.kt)
-to the `responseFormat(Class<T>, JsonSchemaLocalValidation)` method when building the parameters.
-(The default value for this parameter is `JsonSchemaLocalValidation.YES`.)
+  validation, you can disable it by passing
+  [`JsonSchemaLocalValidation.NO`](openai-java-core/src/main/kotlin/com/openai/core/JsonSchemaLocalValidation.kt)
+  to the `responseFormat(Class<T>, JsonSchemaLocalValidation)` method when building the parameters.
+  (The default value for this parameter is `JsonSchemaLocalValidation.YES`.)
 
 ```java
 import com.openai.core.JsonSchemaLocalValidation;
@@ -849,6 +849,89 @@ FileCreateParams params = FileCreateParams.builder()
         .build())
     .build();
 FileObject fileObject = client.files().create(params);
+```
+
+## Webhook Verification
+
+Verifying webhook signatures is _optional but encouraged_.
+
+For more information about webhooks, see [the API docs](https://platform.openai.com/docs/guides/webhooks).
+
+### Parsing webhook payloads
+
+For most use cases, you will likely want to verify the webhook and parse the payload at the same time. To achieve this, we provide the method `client.webhooks().unwrap()`, which parses a webhook request and verifies that it was sent by OpenAI. This method will throw an exception if the signature is invalid.
+
+Note that the `body` parameter must be the raw JSON string sent from the server (do not parse it first). The `.unwrap()` method will parse this JSON for you into an event object after verifying the webhook was sent from OpenAI.
+
+```java
+import com.openai.client.OpenAIClient;
+import com.openai.client.okhttp.OpenAIOkHttpClient;
+import com.openai.core.http.Headers;
+import com.openai.models.webhooks.UnwrapWebhookEvent;
+import java.util.Optional;
+
+OpenAIClient client = OpenAIOkHttpClient.fromEnv(); // OPENAI_WEBHOOK_SECRET env var used by default
+
+public void handleWebhook(String body, Map<String, String> headers) {
+    try {
+        Headers headersList = Headers.builder()
+                .putAll(headers)
+                .build();
+
+        UnwrapWebhookEvent event = client.webhooks().unwrap(body, headersList, Optional.empty());
+
+        if (event.isResponseCompletedWebhookEvent()) {
+            System.out.println("Response completed: " + event.asResponseCompletedWebhookEvent().data());
+        } else if (event.isResponseFailed()) {
+            System.out.println("Response failed: " + event.asResponseFailed().data());
+        } else {
+            System.out.println("Unhandled event type: " + event.getClass().getSimpleName());
+        }
+    } catch (Exception e) {
+        System.err.println("Invalid webhook signature: " + e.getMessage());
+        // Handle invalid signature
+    }
+}
+```
+
+### Verifying webhook payloads directly
+
+In some cases, you may want to verify the webhook separately from parsing the payload. If you prefer to handle these steps separately, we provide the method `client.webhooks().verifySignature()` to _only verify_ the signature of a webhook request. Like `.unwrap()`, this method will throw an exception if the signature is invalid.
+
+Note that the `body` parameter must be the raw JSON string sent from the server (do not parse it first). You will then need to parse the body after verifying the signature.
+
+```java
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.openai.client.OpenAIClient;
+import com.openai.client.okhttp.OpenAIOkHttpClient;
+import com.openai.core.http.Headers;
+import com.openai.models.webhooks.WebhookVerificationParams;
+import java.util.Optional;
+
+OpenAIClient client = OpenAIOkHttpClient.fromEnv(); // OPENAI_WEBHOOK_SECRET env var used by default
+ObjectMapper objectMapper = new ObjectMapper();
+
+public void handleWebhook(String body, Map<String, String> headers) {
+    try {
+        Headers headersList = Headers.builder()
+                .putAll(headers)
+                .build();
+
+        client.webhooks().verifySignature(
+            WebhookVerificationParams.builder()
+                .payload(body)
+                .headers(headersList)
+                .build()
+        );
+
+        // Parse the body after verification
+        Map<String, Object> event = objectMapper.readValue(body, Map.class);
+        System.out.println("Verified event: " + event);
+    } catch (Exception e) {
+        System.err.println("Invalid webhook signature: " + e.getMessage());
+        // Handle invalid signature
+    }
+}
 ```
 
 ## Binary responses
