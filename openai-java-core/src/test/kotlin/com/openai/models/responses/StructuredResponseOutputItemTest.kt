@@ -60,7 +60,8 @@ internal class StructuredResponseOutputItemTest {
             ResponseCodeInterpreterToolCall.builder()
                 .id(STRING)
                 .code(STRING)
-                .addLogsResult(STRING)
+                .containerId(STRING)
+                .outputs(listOf())
                 .status(ResponseCodeInterpreterToolCall.Status.COMPLETED)
                 .build()
         private val IMAGE_GENERATION_CALL =

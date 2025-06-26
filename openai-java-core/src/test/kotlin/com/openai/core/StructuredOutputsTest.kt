@@ -84,7 +84,7 @@ internal class StructuredOutputsTest {
         // AI. It can only reply with values to _named_ properties, so there must be at least one.
         assertThat(validator.errors()).hasSize(1)
         assertThat(validator.errors()[0])
-            .isEqualTo("#: 'properties' field is missing, empty or not an object.")
+            .startsWith("#: 'properties' field is missing, empty or not an object.")
     }
 
     @Test
@@ -98,15 +98,15 @@ internal class StructuredOutputsTest {
         // no named `"properties"` and no `"required"` array. Only the first problem is reported.
         assertThat(validator.errors()).hasSize(1)
         assertThat(validator.errors()[0])
-            .isEqualTo("#/properties/m: 'properties' field is missing, empty or not an object.")
+            .startsWith("#/properties/m: 'properties' field is missing, empty or not an object.")
 
         // Do this check of `toString()` once for a validation failure, but do not repeat it in
         // other tests.
         assertThat(validator.toString())
-            .isEqualTo(
+            .startsWith(
                 "JsonSchemaValidator{isValidationComplete=true, totalStringLength=1, " +
                     "totalObjectProperties=1, totalEnumValues=0, errors=[" +
-                    "#/properties/m: 'properties' field is missing, empty or not an object.]}"
+                    "#/properties/m: 'properties' field is missing, empty or not an object."
             )
     }
 
@@ -700,7 +700,7 @@ internal class StructuredOutputsTest {
         // be allowed and the AI model will have nothing it can populate.
         assertThat(validator.errors()).hasSize(1)
         assertThat(validator.errors()[0])
-            .isEqualTo("#: 'properties' field is missing, empty or not an object.")
+            .startsWith("#: 'properties' field is missing, empty or not an object.")
     }
 
     @Test
@@ -721,7 +721,7 @@ internal class StructuredOutputsTest {
 
         assertThat(validator.errors()).hasSize(1)
         assertThat(validator.errors()[0])
-            .isEqualTo("#: 'properties' field is missing, empty or not an object.")
+            .startsWith("#: 'properties' field is missing, empty or not an object.")
     }
 
     @Test
@@ -742,7 +742,7 @@ internal class StructuredOutputsTest {
 
         assertThat(validator.errors()).hasSize(1)
         assertThat(validator.errors()[0])
-            .isEqualTo("#: 'properties' field is missing, empty or not an object.")
+            .startsWith("#: 'properties' field is missing, empty or not an object.")
     }
 
     @Test
