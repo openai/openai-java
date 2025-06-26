@@ -44,6 +44,14 @@ internal class StructuredResponseOutputItemTest {
             ResponseFunctionWebSearch.builder()
                 .id(STRING)
                 .status(ResponseFunctionWebSearch.Status.COMPLETED)
+                .action(
+                    ResponseFunctionWebSearch.Action.ofSearch(
+                        ResponseFunctionWebSearch.Action.Search.builder()
+                            .query("query")
+                            .addDomain("string")
+                            .build()
+                    )
+                )
                 .build()
         private val COMPUTER_TOOL_CALL =
             ResponseComputerToolCall.builder()

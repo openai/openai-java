@@ -67,6 +67,12 @@ class StructuredResponse<T : Any>(
     /** @see Response.topP */
     fun topP(): Optional<Double> = rawResponse.topP()
 
+    /** @see Response.maxToolCalls */
+    fun maxToolCalls(): Optional<Long> = rawResponse.maxToolCalls()
+
+    /** @see Response.topLogprobs */
+    fun topLogprobs(): Optional<Long> = rawResponse.topLogprobs()
+
     /** @see Response.maxOutputTokens */
     fun maxOutputTokens(): Optional<Long> = rawResponse.maxOutputTokens()
 
@@ -139,6 +145,12 @@ class StructuredResponse<T : Any>(
 
     /** @see Response._topP */
     fun _topP(): JsonField<Double> = rawResponse._topP()
+
+    /** @see Response._maxToolCalls */
+    fun _maxToolCalls(): JsonField<Long> = rawResponse._maxToolCalls()
+
+    /** @see Response._topLogprobs */
+    fun _topLogprobs(): JsonField<Long> = rawResponse._topLogprobs()
 
     /** @see Response._maxOutputTokens */
     fun _maxOutputTokens(): JsonField<Long> = rawResponse._maxOutputTokens()

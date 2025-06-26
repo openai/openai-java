@@ -155,6 +155,22 @@ class StructuredResponseCreateParams<T : Any>(
             paramsBuilder.maxOutputTokens(maxOutputTokens)
         }
 
+        /** @see ResponseCreateParams.Builder.maxToolCalls */
+        fun maxToolCalls(maxToolCalls: Long?) = apply { paramsBuilder.maxToolCalls(maxToolCalls) }
+
+        /** @see ResponseCreateParams.Builder.maxToolCalls */
+        fun maxToolCalls(maxToolCalls: Long) = apply { paramsBuilder.maxToolCalls(maxToolCalls) }
+
+        /** @see ResponseCreateParams.Builder.maxToolCalls */
+        fun maxToolCalls(maxToolCalls: Optional<Long>) = apply {
+            paramsBuilder.maxToolCalls(maxToolCalls)
+        }
+
+        /** @see ResponseCreateParams.Builder.maxToolCalls */
+        fun maxToolCalls(maxToolCalls: JsonField<Long>) = apply {
+            paramsBuilder.maxToolCalls(maxToolCalls)
+        }
+
         /** @see ResponseCreateParams.Builder.metadata */
         fun metadata(metadata: ResponseCreateParams.Metadata?) = apply {
             paramsBuilder.metadata(metadata)
@@ -302,6 +318,9 @@ class StructuredResponseCreateParams<T : Any>(
         /** @see ResponseCreateParams.Builder.toolChoice */
         fun toolChoice(function: ToolChoiceFunction) = apply { paramsBuilder.toolChoice(function) }
 
+        /** @see ResponseCreateParams.Builder.toolChoice */
+        fun toolChoice(mcp: ToolChoiceMcp) = apply { paramsBuilder.toolChoice(mcp) }
+
         /** @see ResponseCreateParams.Builder.tools */
         fun tools(tools: List<Tool>) = apply { paramsBuilder.tools(tools) }
 
@@ -379,6 +398,22 @@ class StructuredResponseCreateParams<T : Any>(
 
         /** @see ResponseCreateParams.Builder.topP */
         fun topP(topP: JsonField<Double>) = apply { paramsBuilder.topP(topP) }
+
+        /** @see ResponseCreateParams.Builder.topLogprobs */
+        fun topLogprobs(topLogprobs: Long?) = apply { paramsBuilder.topLogprobs(topLogprobs) }
+
+        /** @see ResponseCreateParams.Builder.topLogprobs */
+        fun topLogprobs(topLogprobs: Long) = apply { paramsBuilder.topLogprobs(topLogprobs) }
+
+        /** @see ResponseCreateParams.Builder.topLogprobs */
+        fun topLogprobs(topLogprobs: Optional<Long>) = apply {
+            paramsBuilder.topLogprobs(topLogprobs)
+        }
+
+        /** @see ResponseCreateParams.Builder.topLogprobs */
+        fun topLogprobs(topLogprobs: JsonField<Long>) = apply {
+            paramsBuilder.topLogprobs(topLogprobs)
+        }
 
         /** @see ResponseCreateParams.Builder.truncation */
         fun truncation(truncation: ResponseCreateParams.Truncation?) = apply {
