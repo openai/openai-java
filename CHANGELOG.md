@@ -1,5 +1,18 @@
 # Changelog
 
+## 2.11.0 (2025-06-27)
+
+Full Changelog: [v2.10.0...v2.11.0](https://github.com/openai/openai-java/compare/v2.10.0...v2.11.0)
+
+### Features
+
+* **api:** add realtime data models ([38d8e89](https://github.com/openai/openai-java/commit/38d8e893a15a9d9c2619ed28ed83cf149a8203a8))
+
+
+### Chores
+
+* add deploymentModel ([60ffc59](https://github.com/openai/openai-java/commit/60ffc59870c76d72a75e16897146663c46c3d0c7))
+
 ## 2.10.0 (2025-06-26)
 
 Full Changelog: [v2.9.1...v2.10.0](https://github.com/openai/openai-java/compare/v2.9.1...v2.10.0)
