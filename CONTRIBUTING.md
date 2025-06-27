@@ -175,14 +175,6 @@ Note: for now you'll need to comment out the line for `signAllPublications()` he
 
 ## Development Tools
 
-### IDE Setup
-
-This project works well with IntelliJ IDEA and other IDEs that support Gradle and Kotlin. The repository includes:
-
-- Gradle build scripts with Kotlin DSL
-- Spotless formatting configuration
-- JUnit 5 test configuration
-
 ### Available Gradle Tasks
 
 Some useful Gradle tasks:
@@ -205,5 +197,3 @@ The project uses:
 - **AssertJ** for fluent assertions
 - **WireMock** for HTTP service mocking
 - **Custom TestServerExtension** for mock server management
-
-Tests are organized by service in the `src/test/kotlin/com/openai/services/` directory with both blocking and async variants.
