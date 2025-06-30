@@ -14,9 +14,10 @@ import org.mockito.kotlin.verify
 @ExtendWith(MockitoExtension::class)
 internal class ClientOptionsTest {
 
+    private val httpClient = mock<HttpClient>()
+
     @Test
     fun toBuilder_whenOriginalClientOptionsGarbageCollected_doesNotCloseOriginalClient() {
-        val httpClient = mock<HttpClient>()
         var clientOptions =
             ClientOptions.builder().httpClient(httpClient).apiKey("My API Key").build()
         verify(httpClient, never()).close()
