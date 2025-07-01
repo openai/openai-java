@@ -12,6 +12,7 @@ import com.github.victools.jsonschema.generator.OptionPreset
 import com.github.victools.jsonschema.generator.SchemaGenerator
 import com.github.victools.jsonschema.generator.SchemaGeneratorConfigBuilder
 import com.github.victools.jsonschema.module.jackson.JacksonModule
+import com.github.victools.jsonschema.module.swagger2.Swagger2Module
 import com.openai.errors.OpenAIInvalidDataException
 import com.openai.models.FunctionDefinition
 import com.openai.models.ResponseFormatJsonSchema
@@ -201,6 +202,9 @@ internal fun extractSchema(type: Class<*>): ObjectNode {
             // Use `JacksonModule` to support the use of Jackson annotations to set property and
             // class names and descriptions and to mark fields with `@JsonIgnore`.
             .with(JacksonModule())
+            // Use `Swagger2Module` to support OpenAPI Swagger 2 `@Schema` annotations to set
+            // property constraints (e.g., a `"pattern"` constraint for a string property).
+            .with(Swagger2Module())
 
     configBuilder
         .forFields()

@@ -38,6 +38,16 @@ internal class JsonSchemaValidator private constructor() {
         private const val ENUM = "enum"
         private const val ADDITIONAL_PROPS = "additionalProperties"
 
+        private const val PATTERN = "pattern"
+        private const val FORMAT = "format"
+        private const val MULTIPLE_OF = "multipleOf"
+        private const val MINIMUM = "minimum"
+        private const val EXCLUSIVE_MINIMUM = "exclusiveMinimum"
+        private const val MAXIMUM = "maximum"
+        private const val EXCLUSIVE_MAXIMUM = "exclusiveMaximum"
+        private const val MIN_ITEMS = "minItems"
+        private const val MAX_ITEMS = "maxItems"
+
         // The names of the supported schema data types.
         //
         // JSON Schema does not define an "integer" type, only a "number" type, but it allows any
@@ -50,21 +60,8 @@ internal class JsonSchemaValidator private constructor() {
         private const val TYPE_INTEGER = "integer"
         private const val TYPE_NULL = "null"
 
-        // The validator checks that unsupported type-specific keywords are not present in a
-        // property node. The OpenAI API specification states:
-        //
-        // "Notable keywords not supported include:
-        //
-        // - For strings: `minLength`, `maxLength`, `pattern`, `format`
-        // - For numbers: `minimum`, `maximum`, `multipleOf`
-        // - For objects: `patternProperties`, `unevaluatedProperties`, `propertyNames`,
-        //   `minProperties`, `maxProperties`
-        // - For arrays: `unevaluatedItems`, `contains`, `minContains`, `maxContains`, `minItems`,
-        //   `maxItems`, `uniqueItems`"
-        //
-        // As that list is not exhaustive, and no keywords are explicitly named as supported, this
-        // validation allows _no_ type-specific keywords. The following sets define the allowed
-        // keywords in different contexts and all others are rejected.
+        // The following sets define the allowed keywords in different contexts and all others are
+        // rejected.
 
         /**
          * The set of allowed keywords in the root schema only, not including the keywords that are
@@ -94,13 +91,39 @@ internal class JsonSchemaValidator private constructor() {
          * The set of allowed keywords when defining sub-schemas when the `"type"` field is set to
          * `"array"`.
          */
-        private val ALLOWED_KEYWORDS_ARRAY_SUB_SCHEMA = setOf(TYPE, TITLE, DESC, ITEMS)
+        private val ALLOWED_KEYWORDS_ARRAY_SUB_SCHEMA =
+            setOf(TYPE, TITLE, DESC, ITEMS, MIN_ITEMS, MAX_ITEMS)
 
         /**
          * The set of allowed keywords when defining sub-schemas when the `"type"` field is set to
-         * `"boolean"`, `"integer"`, `"number"`, or `"string"`.
+         * `"boolean"`, or any other simple type not handled separately.
          */
         private val ALLOWED_KEYWORDS_SIMPLE_SUB_SCHEMA = setOf(TYPE, TITLE, DESC, ENUM, CONST)
+
+        /**
+         * The set of allowed keywords when defining sub-schemas when the `"type"` field is set to
+         * `"string"`.
+         */
+        private val ALLOWED_KEYWORDS_STRING_SUB_SCHEMA =
+            setOf(TYPE, TITLE, DESC, ENUM, CONST, PATTERN, FORMAT)
+
+        /**
+         * The set of allowed keywords when defining sub-schemas when the `"type"` field is set to
+         * `"integer"` or `"number"`.
+         */
+        private val ALLOWED_KEYWORDS_NUMBER_SUB_SCHEMA =
+            setOf(
+                TYPE,
+                TITLE,
+                DESC,
+                ENUM,
+                CONST,
+                MINIMUM,
+                EXCLUSIVE_MINIMUM,
+                MAXIMUM,
+                EXCLUSIVE_MAXIMUM,
+                MULTIPLE_OF,
+            )
 
         /**
          * The maximum total length of all strings used in the schema for property names, definition
@@ -474,7 +497,15 @@ internal class JsonSchemaValidator private constructor() {
      *   value of the non-`"null"` type name. For example `"string"`, or `"number"`.
      */
     private fun validateSimpleSchema(schema: JsonNode, typeName: String, path: String, depth: Int) {
-        validateKeywords(schema, ALLOWED_KEYWORDS_SIMPLE_SUB_SCHEMA, path, depth)
+        val allowedKeywords =
+            when (typeName) {
+                TYPE_NUMBER,
+                TYPE_INTEGER -> ALLOWED_KEYWORDS_NUMBER_SUB_SCHEMA
+                TYPE_STRING -> ALLOWED_KEYWORDS_STRING_SUB_SCHEMA
+                else -> ALLOWED_KEYWORDS_SIMPLE_SUB_SCHEMA
+            }
+
+        validateKeywords(schema, allowedKeywords, path, depth)
 
         val enumField = schema.get(ENUM)
 
@@ -600,7 +631,7 @@ internal class JsonSchemaValidator private constructor() {
 
     /**
      * Validates that the names of all fields in the given schema node are present in a collection
-     * of allowed keywords.
+     * of allowed keywords. The values associated with the keywords are _not_ validated.
      *
      * @param depth The nesting depth of the [schema] node. If this depth is zero, an additional set
      *   of allowed keywords will be included automatically for keywords that are allowed to appear
