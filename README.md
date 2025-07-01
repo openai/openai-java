@@ -607,8 +607,8 @@ class Article {
 ```
 
 Local validation will check that you have not used any unsupported constraint keywords. However, the
-values of the are _not_ validated locally. For example, if you use a value for the `"format"`
-constraint of a string property that is not in the list of
+values of the constraints are _not_ validated locally. For example, if you use a value for the
+`"format"` constraint of a string property that is not in the list of
 [supported format names](https://platform.openai.com/docs/guides/structured-outputs#supported-properties),
 then local validation will pass, but the AI model may report an error.
 
