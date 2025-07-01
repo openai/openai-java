@@ -580,6 +580,53 @@ If you use `@JsonProperty(required = false)`, the `false` value will be ignored.
 must mark all properties as _required_, so the schema generated from your Java classes will respect
 that restriction and ignore any annotation that would violate it.
 
+You can also use [OpenAPI Swagger 2](https://swagger.io/specification/v2/)
+[`@Schema`](https://github.com/swagger-api/swagger-core/wiki/Swagger-2.X---Annotations#schema) and
+[`@ArraySchema`](https://github.com/swagger-api/swagger-core/wiki/Swagger-2.X---Annotations#arrayschema)
+annotations. These allow type-specific constraints to be added to your schema properties. You can
+learn more about the supported constraints in the OpenAI documentation on
+[Supported properties](https://platform.openai.com/docs/guides/structured-outputs#supported-properties).
+
+```java
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
+
+class Article {
+    @ArraySchema(minItems = 1, maxItems = 10)
+    public List<String> authors;
+ 
+    @Schema(pattern = "^[A-Za-z ]+$")
+    public String title;
+    
+    @Schema(format = "date")
+    public String publicationDate;
+    
+    @Schema(minimum = "1")
+    public int pageCount;
+}
+```
+
+Local validation will check that you have not used any unsupported constraint keywords. However, the
+values of those constraints are _not_ validated locally. For example, if you use a value for the
+`"format"` constraint of a string property that is not in the list of supported format names (see
+the link to the OpenAI documentation above), then local validation will pass, but the AI model may
+report an error.
+
+If you use both Jackson and Swagger annotations to set the same schema field, the Jackson annotation
+will take precedence. In the following example, the description of `myProperty` will be set to
+"Jackson description"; "Swagger description" will be ignored:
+
+```java
+import com.fasterxml.jackson.annotation.JsonPropertyDescription;
+import io.swagger.v3.oas.annotations.media.Schema;
+
+class MyObject {
+    @Schema(description = "Swagger description")
+    @JsonPropertyDescription("Jackson description")
+    public String myProperty;
+}
+```
+
 ## Function calling with JSON schemas
 
 OpenAI [Function Calling](https://platform.openai.com/docs/guides/function-calling?api-mode=chat)
