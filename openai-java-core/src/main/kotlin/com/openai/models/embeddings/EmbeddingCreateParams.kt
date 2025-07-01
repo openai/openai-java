@@ -78,6 +78,9 @@ private constructor(
      * The format to return the embeddings in. Can be either `float` or
      * [`base64`](https://pypi.org/project/pybase64/).
      *
+     * Returns the encoding format that was set (either explicitly or via default) when this
+     * EmbeddingCreateParams instance was built.
+     *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
      */
@@ -418,12 +421,18 @@ private constructor(
          *
          * @throws IllegalStateException if any required field is unset.
          */
-        fun build(): EmbeddingCreateParams =
-            EmbeddingCreateParams(
+        fun build(): EmbeddingCreateParams {
+            // Apply default encoding format if not explicitly set
+            if (body._encodingFormat().isMissing()) {
+                body.encodingFormat(EmbeddingDefaults.defaultEncodingFormat)
+            }
+
+            return EmbeddingCreateParams(
                 body.build(),
                 additionalHeaders.build(),
                 additionalQueryParams.build(),
             )
+        }
     }
 
     fun _body(): Body = body
@@ -723,6 +732,12 @@ private constructor(
             fun removeAllAdditionalProperties(keys: Set<String>) = apply {
                 keys.forEach(::removeAdditionalProperty)
             }
+
+            /**
+             * Internal method to check if encodingFormat has been set. Used by the main Builder to
+             * determine if default should be applied.
+             */
+            internal fun _encodingFormat(): JsonField<EncodingFormat> = encodingFormat
 
             /**
              * Returns an immutable instance of [Body].
