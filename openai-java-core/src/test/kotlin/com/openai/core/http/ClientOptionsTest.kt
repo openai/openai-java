@@ -67,7 +67,7 @@ internal class ClientOptionsTest {
     }
 
     @Test
-    fun modelInPathTestSetFalse() {
+    fun unifiedAzureRoutesTestSetFalse() {
         val clientOptions =
             ClientOptions.builder()
                 .httpClient(createOkHttpClient())
@@ -79,7 +79,7 @@ internal class ClientOptionsTest {
     }
 
     @Test
-    fun modelInPathTestDefaultTrue() {
+    fun unifiedAzureRoutesTestDefaultTrue() {
         val clientOptions =
             ClientOptions.builder()
                 .httpClient(createOkHttpClient())
