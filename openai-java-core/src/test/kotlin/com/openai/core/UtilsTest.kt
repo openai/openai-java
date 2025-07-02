@@ -46,4 +46,35 @@ internal class UtilsTest {
         assertThat(isAzureEndpoint("")).isFalse()
         assertThat(isAzureEndpoint("   ")).isFalse()
     }
+
+    @Test
+    fun isAzureLegacyEndpoint() {
+        // Valid Azure legacy endpoints
+        assertThat(isAzureLegacyEndpoint("https://region.openai.azure.com")).isTrue()
+        assertThat(isAzureLegacyEndpoint("https://region.openai.azure.com/")).isTrue()
+
+        // Invalid Azure legacy endpoints
+        assertThat(isAzureLegacyEndpoint("https://region.azure-api.net")).isFalse()
+        assertThat(isAzureLegacyEndpoint("https://region.services.ai.azure.com")).isFalse()
+        assertThat(isAzureLegacyEndpoint("https://example.com")).isFalse()
+        assertThat(isAzureLegacyEndpoint("https://region.openai.com")).isFalse()
+        assertThat(isAzureLegacyEndpoint("https://region.azure.com")).isFalse()
+        assertThat(isAzureLegacyEndpoint("")).isFalse()
+        assertThat(isAzureLegacyEndpoint("   ")).isFalse()
+    }
+
+    @Test
+    fun isAzureUnifiedEndpoint() {
+        // Valid Azure unified endpoints
+        assertThat(isAzureUnifiedEndpoint("https://region.services.ai.azure.com")).isTrue()
+        assertThat(isAzureUnifiedEndpoint("https://region.services.ai.azure.com/")).isTrue()
+
+        // Invalid Azure unified endpoints
+        assertThat(isAzureUnifiedEndpoint("https://region.openai.azure.com")).isFalse()
+        assertThat(isAzureUnifiedEndpoint("https://example.com")).isFalse()
+        assertThat(isAzureUnifiedEndpoint("https://region.openai.com")).isFalse()
+        assertThat(isAzureUnifiedEndpoint("https://region.azure.com")).isFalse()
+        assertThat(isAzureUnifiedEndpoint("")).isFalse()
+        assertThat(isAzureUnifiedEndpoint("   ")).isFalse()
+    }
 }

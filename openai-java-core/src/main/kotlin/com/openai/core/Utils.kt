@@ -91,13 +91,27 @@ internal fun Any?.contentToString(): String {
 
 @JvmSynthetic
 internal fun isAzureEndpoint(baseUrl: String): Boolean {
-    // Azure Endpoint should be in the format of `https://<region>.openai.azure.com`.
+    // Azure legacy endpoint should be in the format of `https://<region>.openai.azure.com`.
+    // Or Azure unified endpoint should be in the format of `https://<region>.services.ai.azure.com`.
     // Or `https://<region>.azure-api.net` for Azure OpenAI Management URL.
     // Or `<user>-random-<region>.cognitiveservices.azure.com`.
     val trimmedBaseUrl = baseUrl.trim().trimEnd('/')
-    return trimmedBaseUrl.endsWith(".openai.azure.com", true) ||
+    return isAzureLegacyEndpoint(trimmedBaseUrl) || isAzureUnifiedEndpoint(baseUrl) ||
+        // exceptions:
         trimmedBaseUrl.endsWith(".azure-api.net", true) ||
         trimmedBaseUrl.endsWith(".cognitiveservices.azure.com", true)
+}
+
+@JvmSynthetic
+internal fun isAzureLegacyEndpoint(baseUrl: String): Boolean {
+    val trimmedBaseUrl = baseUrl.trim().trimEnd('/')
+    return trimmedBaseUrl.endsWith(".openai.azure.com", true)
+}
+
+@JvmSynthetic
+internal fun isAzureUnifiedEndpoint(baseUrl: String): Boolean {
+    val trimmedBaseUrl = baseUrl.trim().trimEnd('/')
+    return trimmedBaseUrl.endsWith(".services.ai.azure.com", true)
 }
 
 internal interface Enum

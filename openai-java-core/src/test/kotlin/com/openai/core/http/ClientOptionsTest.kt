@@ -67,25 +67,25 @@ internal class ClientOptionsTest {
     }
 
     @Test
-    fun modelInPathTestSet() {
+    fun modelInPathTestSetFalse() {
         val clientOptions =
             ClientOptions.builder()
-                .httpClient(createOkHttpClient("https://api.openai.com/v1"))
+                .httpClient(createOkHttpClient())
                 .credential(BearerTokenCredential.create(FAKE_API_KEY))
-                .modelInPath(true)
+                .unifiedAzureRoutes(false)
                 .build()
 
-        assertThat(clientOptions.modelInPath).isTrue()
+        assertThat(clientOptions.unifiedAzureRoutes).isFalse()
     }
 
     @Test
-    fun modelInPathTestDefaultFalse() {
+    fun modelInPathTestDefaultTrue() {
         val clientOptions =
             ClientOptions.builder()
-                .httpClient(createOkHttpClient("https://api.openai.com/v1"))
+                .httpClient(createOkHttpClient())
                 .credential(BearerTokenCredential.create(FAKE_API_KEY))
                 .build()
 
-        assertThat(clientOptions.modelInPath).isFalse()
+        assertThat(clientOptions.unifiedAzureRoutes).isTrue()
     }
 }
