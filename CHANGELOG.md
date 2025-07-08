@@ -1,5 +1,13 @@
 # Changelog
 
+## 2.12.1 (2025-07-08)
+
+Full Changelog: [v2.12.0...v2.12.1](https://github.com/openai/openai-java/compare/v2.12.0...v2.12.1)
+
+### Chores
+
+* **ci:** ensure docs generation always succeeds ([54de202](https://github.com/openai/openai-java/commit/54de202443c8dd3c112bc0521a29649f87acb7c9))
+
 ## 2.12.0 (2025-07-01)
 
 Full Changelog: [v2.11.0...v2.12.0](https://github.com/openai/openai-java/compare/v2.11.0...v2.12.0)
