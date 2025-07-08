@@ -53,3 +53,7 @@ configure<MavenPublishBaseExtension> {
         }
     }
 }
+
+tasks.withType<Zip>().configureEach {
+    isZip64 = true
+}
