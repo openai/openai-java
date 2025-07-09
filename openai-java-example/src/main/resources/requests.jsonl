@@ -1,0 +1,2 @@
+{"model": "gpt-4", "messages": [{"role": "user", "content": "Hello"}]}
+{"model": "gpt-4", "messages": [{"role": "user", "content": "World"}]}
