@@ -40,7 +40,7 @@ private constructor(
     private val createdAt: JsonField<Double>,
     private val error: JsonField<ResponseError>,
     private val incompleteDetails: JsonField<IncompleteDetails>,
-    private val instructions: JsonField<String>,
+    private val instructions: JsonField<Instructions>,
     private val metadata: JsonField<Metadata>,
     private val model: JsonField<ResponsesModel>,
     private val object_: JsonValue,
@@ -52,11 +52,14 @@ private constructor(
     private val topP: JsonField<Double>,
     private val background: JsonField<Boolean>,
     private val maxOutputTokens: JsonField<Long>,
+    private val maxToolCalls: JsonField<Long>,
     private val previousResponseId: JsonField<String>,
+    private val prompt: JsonField<ResponsePrompt>,
     private val reasoning: JsonField<Reasoning>,
     private val serviceTier: JsonField<ServiceTier>,
     private val status: JsonField<ResponseStatus>,
     private val text: JsonField<ResponseTextConfig>,
+    private val topLogprobs: JsonField<Long>,
     private val truncation: JsonField<Truncation>,
     private val usage: JsonField<ResponseUsage>,
     private val user: JsonField<String>,
@@ -73,7 +76,7 @@ private constructor(
         incompleteDetails: JsonField<IncompleteDetails> = JsonMissing.of(),
         @JsonProperty("instructions")
         @ExcludeMissing
-        instructions: JsonField<String> = JsonMissing.of(),
+        instructions: JsonField<Instructions> = JsonMissing.of(),
         @JsonProperty("metadata") @ExcludeMissing metadata: JsonField<Metadata> = JsonMissing.of(),
         @JsonProperty("model") @ExcludeMissing model: JsonField<ResponsesModel> = JsonMissing.of(),
         @JsonProperty("object") @ExcludeMissing object_: JsonValue = JsonMissing.of(),
@@ -97,9 +100,15 @@ private constructor(
         @JsonProperty("max_output_tokens")
         @ExcludeMissing
         maxOutputTokens: JsonField<Long> = JsonMissing.of(),
+        @JsonProperty("max_tool_calls")
+        @ExcludeMissing
+        maxToolCalls: JsonField<Long> = JsonMissing.of(),
         @JsonProperty("previous_response_id")
         @ExcludeMissing
         previousResponseId: JsonField<String> = JsonMissing.of(),
+        @JsonProperty("prompt")
+        @ExcludeMissing
+        prompt: JsonField<ResponsePrompt> = JsonMissing.of(),
         @JsonProperty("reasoning")
         @ExcludeMissing
         reasoning: JsonField<Reasoning> = JsonMissing.of(),
@@ -112,6 +121,9 @@ private constructor(
         @JsonProperty("text")
         @ExcludeMissing
         text: JsonField<ResponseTextConfig> = JsonMissing.of(),
+        @JsonProperty("top_logprobs")
+        @ExcludeMissing
+        topLogprobs: JsonField<Long> = JsonMissing.of(),
         @JsonProperty("truncation")
         @ExcludeMissing
         truncation: JsonField<Truncation> = JsonMissing.of(),
@@ -134,11 +146,14 @@ private constructor(
         topP,
         background,
         maxOutputTokens,
+        maxToolCalls,
         previousResponseId,
+        prompt,
         reasoning,
         serviceTier,
         status,
         text,
+        topLogprobs,
         truncation,
         usage,
         user,
@@ -179,7 +194,7 @@ private constructor(
         incompleteDetails.getOptional("incomplete_details")
 
     /**
-     * Inserts a system (or developer) message as the first item in the model's context.
+     * A system (or developer) message inserted into the model's context.
      *
      * When using along with `previous_response_id`, the instructions from a previous response will
      * not be carried over to the next response. This makes it simple to swap out system (or
@@ -188,7 +203,7 @@ private constructor(
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
      */
-    fun instructions(): Optional<String> = instructions.getOptional("instructions")
+    fun instructions(): Optional<Instructions> = instructions.getOptional("instructions")
 
     /**
      * Set of 16 key-value pairs that can be attached to an object. This can be useful for storing
@@ -316,6 +331,16 @@ private constructor(
     fun maxOutputTokens(): Optional<Long> = maxOutputTokens.getOptional("max_output_tokens")
 
     /**
+     * The maximum number of total calls to built-in tools that can be processed in a response. This
+     * maximum number applies across all built-in tool calls, not per individual tool. Any further
+     * attempts to call a tool by the model will be ignored.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun maxToolCalls(): Optional<Long> = maxToolCalls.getOptional("max_tool_calls")
+
+    /**
      * The unique ID of the previous response to the model. Use this to create multi-turn
      * conversations. Learn more about
      * [conversation state](https://platform.openai.com/docs/guides/conversation-state).
@@ -325,6 +350,15 @@ private constructor(
      */
     fun previousResponseId(): Optional<String> =
         previousResponseId.getOptional("previous_response_id")
+
+    /**
+     * Reference to a prompt template and its variables.
+     * [Learn more](https://platform.openai.com/docs/guides/text?api-mode=responses#reusable-prompts).
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun prompt(): Optional<ResponsePrompt> = prompt.getOptional("prompt")
 
     /**
      * **o-series models only**
@@ -338,19 +372,19 @@ private constructor(
     fun reasoning(): Optional<Reasoning> = reasoning.getOptional("reasoning")
 
     /**
-     * Specifies the latency tier to use for processing the request. This parameter is relevant for
-     * customers subscribed to the scale tier service:
-     * - If set to 'auto', and the Project is Scale tier enabled, the system will utilize scale tier
-     *   credits until they are exhausted.
-     * - If set to 'auto', and the Project is not Scale tier enabled, the request will be processed
-     *   using the default service tier with a lower uptime SLA and no latency guarentee.
-     * - If set to 'default', the request will be processed using the default service tier with a
-     *   lower uptime SLA and no latency guarentee.
-     * - If set to 'flex', the request will be processed with the Flex Processing service tier.
-     *   [Learn more](https://platform.openai.com/docs/guides/flex-processing).
+     * Specifies the processing type used for serving the request.
+     * - If set to 'auto', then the request will be processed with the service tier configured in
+     *   the Project settings. Unless otherwise configured, the Project will use 'default'.
+     * - If set to 'default', then the requset will be processed with the standard pricing and
+     *   performance for the selected model.
+     * - If set to '[flex](https://platform.openai.com/docs/guides/flex-processing)' or 'priority',
+     *   then the request will be processed with the corresponding service tier.
+     *   [Contact sales](https://openai.com/contact-sales) to learn more about Priority processing.
      * - When not set, the default behavior is 'auto'.
      *
-     * When this parameter is set, the response body will include the `service_tier` utilized.
+     * When the `service_tier` parameter is set, the response body will include the `service_tier`
+     * value based on the processing mode actually used to serve the request. This response value
+     * may be different from the value set in the parameter.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -376,6 +410,15 @@ private constructor(
      *   server responded with an unexpected value).
      */
     fun text(): Optional<ResponseTextConfig> = text.getOptional("text")
+
+    /**
+     * An integer between 0 and 20 specifying the number of most likely tokens to return at each
+     * token position, each with an associated log probability.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun topLogprobs(): Optional<Long> = topLogprobs.getOptional("top_logprobs")
 
     /**
      * The truncation strategy to use for the model response.
@@ -447,7 +490,7 @@ private constructor(
      */
     @JsonProperty("instructions")
     @ExcludeMissing
-    fun _instructions(): JsonField<String> = instructions
+    fun _instructions(): JsonField<Instructions> = instructions
 
     /**
      * Returns the raw JSON value of [metadata].
@@ -529,6 +572,15 @@ private constructor(
     fun _maxOutputTokens(): JsonField<Long> = maxOutputTokens
 
     /**
+     * Returns the raw JSON value of [maxToolCalls].
+     *
+     * Unlike [maxToolCalls], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    @JsonProperty("max_tool_calls")
+    @ExcludeMissing
+    fun _maxToolCalls(): JsonField<Long> = maxToolCalls
+
+    /**
      * Returns the raw JSON value of [previousResponseId].
      *
      * Unlike [previousResponseId], this method doesn't throw if the JSON field has an unexpected
@@ -537,6 +589,13 @@ private constructor(
     @JsonProperty("previous_response_id")
     @ExcludeMissing
     fun _previousResponseId(): JsonField<String> = previousResponseId
+
+    /**
+     * Returns the raw JSON value of [prompt].
+     *
+     * Unlike [prompt], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    @JsonProperty("prompt") @ExcludeMissing fun _prompt(): JsonField<ResponsePrompt> = prompt
 
     /**
      * Returns the raw JSON value of [reasoning].
@@ -567,6 +626,13 @@ private constructor(
      * Unlike [text], this method doesn't throw if the JSON field has an unexpected type.
      */
     @JsonProperty("text") @ExcludeMissing fun _text(): JsonField<ResponseTextConfig> = text
+
+    /**
+     * Returns the raw JSON value of [topLogprobs].
+     *
+     * Unlike [topLogprobs], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    @JsonProperty("top_logprobs") @ExcludeMissing fun _topLogprobs(): JsonField<Long> = topLogprobs
 
     /**
      * Returns the raw JSON value of [truncation].
@@ -635,7 +701,7 @@ private constructor(
         private var createdAt: JsonField<Double>? = null
         private var error: JsonField<ResponseError>? = null
         private var incompleteDetails: JsonField<IncompleteDetails>? = null
-        private var instructions: JsonField<String>? = null
+        private var instructions: JsonField<Instructions>? = null
         private var metadata: JsonField<Metadata>? = null
         private var model: JsonField<ResponsesModel>? = null
         private var object_: JsonValue = JsonValue.from("response")
@@ -647,11 +713,14 @@ private constructor(
         private var topP: JsonField<Double>? = null
         private var background: JsonField<Boolean> = JsonMissing.of()
         private var maxOutputTokens: JsonField<Long> = JsonMissing.of()
+        private var maxToolCalls: JsonField<Long> = JsonMissing.of()
         private var previousResponseId: JsonField<String> = JsonMissing.of()
+        private var prompt: JsonField<ResponsePrompt> = JsonMissing.of()
         private var reasoning: JsonField<Reasoning> = JsonMissing.of()
         private var serviceTier: JsonField<ServiceTier> = JsonMissing.of()
         private var status: JsonField<ResponseStatus> = JsonMissing.of()
         private var text: JsonField<ResponseTextConfig> = JsonMissing.of()
+        private var topLogprobs: JsonField<Long> = JsonMissing.of()
         private var truncation: JsonField<Truncation> = JsonMissing.of()
         private var usage: JsonField<ResponseUsage> = JsonMissing.of()
         private var user: JsonField<String> = JsonMissing.of()
@@ -675,11 +744,14 @@ private constructor(
             topP = response.topP
             background = response.background
             maxOutputTokens = response.maxOutputTokens
+            maxToolCalls = response.maxToolCalls
             previousResponseId = response.previousResponseId
+            prompt = response.prompt
             reasoning = response.reasoning
             serviceTier = response.serviceTier
             status = response.status
             text = response.text
+            topLogprobs = response.topLogprobs
             truncation = response.truncation
             usage = response.usage
             user = response.user
@@ -744,27 +816,36 @@ private constructor(
         }
 
         /**
-         * Inserts a system (or developer) message as the first item in the model's context.
+         * A system (or developer) message inserted into the model's context.
          *
          * When using along with `previous_response_id`, the instructions from a previous response
          * will not be carried over to the next response. This makes it simple to swap out system
          * (or developer) messages in new responses.
          */
-        fun instructions(instructions: String?) = instructions(JsonField.ofNullable(instructions))
+        fun instructions(instructions: Instructions?) =
+            instructions(JsonField.ofNullable(instructions))
 
         /** Alias for calling [Builder.instructions] with `instructions.orElse(null)`. */
-        fun instructions(instructions: Optional<String>) = instructions(instructions.getOrNull())
+        fun instructions(instructions: Optional<Instructions>) =
+            instructions(instructions.getOrNull())
 
         /**
          * Sets [Builder.instructions] to an arbitrary JSON value.
          *
-         * You should usually call [Builder.instructions] with a well-typed [String] value instead.
-         * This method is primarily for setting the field to an undocumented or not yet supported
-         * value.
+         * You should usually call [Builder.instructions] with a well-typed [Instructions] value
+         * instead. This method is primarily for setting the field to an undocumented or not yet
+         * supported value.
          */
-        fun instructions(instructions: JsonField<String>) = apply {
+        fun instructions(instructions: JsonField<Instructions>) = apply {
             this.instructions = instructions
         }
+
+        /** Alias for calling [instructions] with `Instructions.ofString(string)`. */
+        fun instructions(string: String) = instructions(Instructions.ofString(string))
+
+        /** Alias for calling [instructions] with `Instructions.ofInputItemList(inputItemList)`. */
+        fun instructionsOfInputItemList(inputItemList: List<ResponseInputItem>) =
+            instructions(Instructions.ofInputItemList(inputItemList))
 
         /**
          * Set of 16 key-value pairs that can be attached to an object. This can be useful for
@@ -989,6 +1070,9 @@ private constructor(
         /** Alias for calling [toolChoice] with `ToolChoice.ofFunction(function)`. */
         fun toolChoice(function: ToolChoiceFunction) = toolChoice(ToolChoice.ofFunction(function))
 
+        /** Alias for calling [toolChoice] with `ToolChoice.ofMcp(mcp)`. */
+        fun toolChoice(mcp: ToolChoiceMcp) = toolChoice(ToolChoice.ofMcp(mcp))
+
         /**
          * An array of tools the model may call while generating a response. You can specify which
          * tool to use by setting the `tool_choice` parameter.
@@ -1176,6 +1260,32 @@ private constructor(
         }
 
         /**
+         * The maximum number of total calls to built-in tools that can be processed in a response.
+         * This maximum number applies across all built-in tool calls, not per individual tool. Any
+         * further attempts to call a tool by the model will be ignored.
+         */
+        fun maxToolCalls(maxToolCalls: Long?) = maxToolCalls(JsonField.ofNullable(maxToolCalls))
+
+        /**
+         * Alias for [Builder.maxToolCalls].
+         *
+         * This unboxed primitive overload exists for backwards compatibility.
+         */
+        fun maxToolCalls(maxToolCalls: Long) = maxToolCalls(maxToolCalls as Long?)
+
+        /** Alias for calling [Builder.maxToolCalls] with `maxToolCalls.orElse(null)`. */
+        fun maxToolCalls(maxToolCalls: Optional<Long>) = maxToolCalls(maxToolCalls.getOrNull())
+
+        /**
+         * Sets [Builder.maxToolCalls] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.maxToolCalls] with a well-typed [Long] value instead.
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
+         */
+        fun maxToolCalls(maxToolCalls: JsonField<Long>) = apply { this.maxToolCalls = maxToolCalls }
+
+        /**
          * The unique ID of the previous response to the model. Use this to create multi-turn
          * conversations. Learn more about
          * [conversation state](https://platform.openai.com/docs/guides/conversation-state).
@@ -1201,6 +1311,24 @@ private constructor(
         }
 
         /**
+         * Reference to a prompt template and its variables.
+         * [Learn more](https://platform.openai.com/docs/guides/text?api-mode=responses#reusable-prompts).
+         */
+        fun prompt(prompt: ResponsePrompt?) = prompt(JsonField.ofNullable(prompt))
+
+        /** Alias for calling [Builder.prompt] with `prompt.orElse(null)`. */
+        fun prompt(prompt: Optional<ResponsePrompt>) = prompt(prompt.getOrNull())
+
+        /**
+         * Sets [Builder.prompt] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.prompt] with a well-typed [ResponsePrompt] value
+         * instead. This method is primarily for setting the field to an undocumented or not yet
+         * supported value.
+         */
+        fun prompt(prompt: JsonField<ResponsePrompt>) = apply { this.prompt = prompt }
+
+        /**
          * **o-series models only**
          *
          * Configuration options for
@@ -1221,20 +1349,20 @@ private constructor(
         fun reasoning(reasoning: JsonField<Reasoning>) = apply { this.reasoning = reasoning }
 
         /**
-         * Specifies the latency tier to use for processing the request. This parameter is relevant
-         * for customers subscribed to the scale tier service:
-         * - If set to 'auto', and the Project is Scale tier enabled, the system will utilize scale
-         *   tier credits until they are exhausted.
-         * - If set to 'auto', and the Project is not Scale tier enabled, the request will be
-         *   processed using the default service tier with a lower uptime SLA and no latency
-         *   guarentee.
-         * - If set to 'default', the request will be processed using the default service tier with
-         *   a lower uptime SLA and no latency guarentee.
-         * - If set to 'flex', the request will be processed with the Flex Processing service tier.
-         *   [Learn more](https://platform.openai.com/docs/guides/flex-processing).
+         * Specifies the processing type used for serving the request.
+         * - If set to 'auto', then the request will be processed with the service tier configured
+         *   in the Project settings. Unless otherwise configured, the Project will use 'default'.
+         * - If set to 'default', then the requset will be processed with the standard pricing and
+         *   performance for the selected model.
+         * - If set to '[flex](https://platform.openai.com/docs/guides/flex-processing)' or
+         *   'priority', then the request will be processed with the corresponding service tier.
+         *   [Contact sales](https://openai.com/contact-sales) to learn more about Priority
+         *   processing.
          * - When not set, the default behavior is 'auto'.
          *
-         * When this parameter is set, the response body will include the `service_tier` utilized.
+         * When the `service_tier` parameter is set, the response body will include the
+         * `service_tier` value based on the processing mode actually used to serve the request.
+         * This response value may be different from the value set in the parameter.
          */
         fun serviceTier(serviceTier: ServiceTier?) = serviceTier(JsonField.ofNullable(serviceTier))
 
@@ -1283,6 +1411,31 @@ private constructor(
          * supported value.
          */
         fun text(text: JsonField<ResponseTextConfig>) = apply { this.text = text }
+
+        /**
+         * An integer between 0 and 20 specifying the number of most likely tokens to return at each
+         * token position, each with an associated log probability.
+         */
+        fun topLogprobs(topLogprobs: Long?) = topLogprobs(JsonField.ofNullable(topLogprobs))
+
+        /**
+         * Alias for [Builder.topLogprobs].
+         *
+         * This unboxed primitive overload exists for backwards compatibility.
+         */
+        fun topLogprobs(topLogprobs: Long) = topLogprobs(topLogprobs as Long?)
+
+        /** Alias for calling [Builder.topLogprobs] with `topLogprobs.orElse(null)`. */
+        fun topLogprobs(topLogprobs: Optional<Long>) = topLogprobs(topLogprobs.getOrNull())
+
+        /**
+         * Sets [Builder.topLogprobs] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.topLogprobs] with a well-typed [Long] value instead.
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
+         */
+        fun topLogprobs(topLogprobs: JsonField<Long>) = apply { this.topLogprobs = topLogprobs }
 
         /**
          * The truncation strategy to use for the model response.
@@ -1397,11 +1550,14 @@ private constructor(
                 checkRequired("topP", topP),
                 background,
                 maxOutputTokens,
+                maxToolCalls,
                 previousResponseId,
+                prompt,
                 reasoning,
                 serviceTier,
                 status,
                 text,
+                topLogprobs,
                 truncation,
                 usage,
                 user,
@@ -1420,7 +1576,7 @@ private constructor(
         createdAt()
         error().ifPresent { it.validate() }
         incompleteDetails().ifPresent { it.validate() }
-        instructions()
+        instructions().ifPresent { it.validate() }
         metadata().ifPresent { it.validate() }
         model().validate()
         _object_().let {
@@ -1436,11 +1592,14 @@ private constructor(
         topP()
         background()
         maxOutputTokens()
+        maxToolCalls()
         previousResponseId()
+        prompt().ifPresent { it.validate() }
         reasoning().ifPresent { it.validate() }
         serviceTier().ifPresent { it.validate() }
         status().ifPresent { it.validate() }
         text().ifPresent { it.validate() }
+        topLogprobs()
         truncation().ifPresent { it.validate() }
         usage().ifPresent { it.validate() }
         user()
@@ -1466,7 +1625,7 @@ private constructor(
             (if (createdAt.asKnown().isPresent) 1 else 0) +
             (error.asKnown().getOrNull()?.validity() ?: 0) +
             (incompleteDetails.asKnown().getOrNull()?.validity() ?: 0) +
-            (if (instructions.asKnown().isPresent) 1 else 0) +
+            (instructions.asKnown().getOrNull()?.validity() ?: 0) +
             (metadata.asKnown().getOrNull()?.validity() ?: 0) +
             (model.asKnown().getOrNull()?.validity() ?: 0) +
             object_.let { if (it == JsonValue.from("response")) 1 else 0 } +
@@ -1478,11 +1637,14 @@ private constructor(
             (if (topP.asKnown().isPresent) 1 else 0) +
             (if (background.asKnown().isPresent) 1 else 0) +
             (if (maxOutputTokens.asKnown().isPresent) 1 else 0) +
+            (if (maxToolCalls.asKnown().isPresent) 1 else 0) +
             (if (previousResponseId.asKnown().isPresent) 1 else 0) +
+            (prompt.asKnown().getOrNull()?.validity() ?: 0) +
             (reasoning.asKnown().getOrNull()?.validity() ?: 0) +
             (serviceTier.asKnown().getOrNull()?.validity() ?: 0) +
             (status.asKnown().getOrNull()?.validity() ?: 0) +
             (text.asKnown().getOrNull()?.validity() ?: 0) +
+            (if (topLogprobs.asKnown().isPresent) 1 else 0) +
             (truncation.asKnown().getOrNull()?.validity() ?: 0) +
             (usage.asKnown().getOrNull()?.validity() ?: 0) +
             (if (user.asKnown().isPresent) 1 else 0)
@@ -1760,6 +1922,200 @@ private constructor(
     }
 
     /**
+     * A system (or developer) message inserted into the model's context.
+     *
+     * When using along with `previous_response_id`, the instructions from a previous response will
+     * not be carried over to the next response. This makes it simple to swap out system (or
+     * developer) messages in new responses.
+     */
+    @JsonDeserialize(using = Instructions.Deserializer::class)
+    @JsonSerialize(using = Instructions.Serializer::class)
+    class Instructions
+    private constructor(
+        private val string: String? = null,
+        private val inputItemList: List<ResponseInputItem>? = null,
+        private val _json: JsonValue? = null,
+    ) {
+
+        /** A text input to the model, equivalent to a text input with the `developer` role. */
+        fun string(): Optional<String> = Optional.ofNullable(string)
+
+        /** A list of one or many input items to the model, containing different content types. */
+        fun inputItemList(): Optional<List<ResponseInputItem>> = Optional.ofNullable(inputItemList)
+
+        fun isString(): Boolean = string != null
+
+        fun isInputItemList(): Boolean = inputItemList != null
+
+        /** A text input to the model, equivalent to a text input with the `developer` role. */
+        fun asString(): String = string.getOrThrow("string")
+
+        /** A list of one or many input items to the model, containing different content types. */
+        fun asInputItemList(): List<ResponseInputItem> = inputItemList.getOrThrow("inputItemList")
+
+        fun _json(): Optional<JsonValue> = Optional.ofNullable(_json)
+
+        fun <T> accept(visitor: Visitor<T>): T =
+            when {
+                string != null -> visitor.visitString(string)
+                inputItemList != null -> visitor.visitInputItemList(inputItemList)
+                else -> visitor.unknown(_json)
+            }
+
+        private var validated: Boolean = false
+
+        fun validate(): Instructions = apply {
+            if (validated) {
+                return@apply
+            }
+
+            accept(
+                object : Visitor<Unit> {
+                    override fun visitString(string: String) {}
+
+                    override fun visitInputItemList(inputItemList: List<ResponseInputItem>) {
+                        inputItemList.forEach { it.validate() }
+                    }
+                }
+            )
+            validated = true
+        }
+
+        fun isValid(): Boolean =
+            try {
+                validate()
+                true
+            } catch (e: OpenAIInvalidDataException) {
+                false
+            }
+
+        /**
+         * Returns a score indicating how many valid values are contained in this object
+         * recursively.
+         *
+         * Used for best match union deserialization.
+         */
+        @JvmSynthetic
+        internal fun validity(): Int =
+            accept(
+                object : Visitor<Int> {
+                    override fun visitString(string: String) = 1
+
+                    override fun visitInputItemList(inputItemList: List<ResponseInputItem>) =
+                        inputItemList.sumOf { it.validity().toInt() }
+
+                    override fun unknown(json: JsonValue?) = 0
+                }
+            )
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) {
+                return true
+            }
+
+            return /* spotless:off */ other is Instructions && string == other.string && inputItemList == other.inputItemList /* spotless:on */
+        }
+
+        override fun hashCode(): Int = /* spotless:off */ Objects.hash(string, inputItemList) /* spotless:on */
+
+        override fun toString(): String =
+            when {
+                string != null -> "Instructions{string=$string}"
+                inputItemList != null -> "Instructions{inputItemList=$inputItemList}"
+                _json != null -> "Instructions{_unknown=$_json}"
+                else -> throw IllegalStateException("Invalid Instructions")
+            }
+
+        companion object {
+
+            /** A text input to the model, equivalent to a text input with the `developer` role. */
+            @JvmStatic fun ofString(string: String) = Instructions(string = string)
+
+            /**
+             * A list of one or many input items to the model, containing different content types.
+             */
+            @JvmStatic
+            fun ofInputItemList(inputItemList: List<ResponseInputItem>) =
+                Instructions(inputItemList = inputItemList)
+        }
+
+        /**
+         * An interface that defines how to map each variant of [Instructions] to a value of type
+         * [T].
+         */
+        interface Visitor<out T> {
+
+            /** A text input to the model, equivalent to a text input with the `developer` role. */
+            fun visitString(string: String): T
+
+            /**
+             * A list of one or many input items to the model, containing different content types.
+             */
+            fun visitInputItemList(inputItemList: List<ResponseInputItem>): T
+
+            /**
+             * Maps an unknown variant of [Instructions] to a value of type [T].
+             *
+             * An instance of [Instructions] can contain an unknown variant if it was deserialized
+             * from data that doesn't match any known variant. For example, if the SDK is on an
+             * older version than the API, then the API may respond with new variants that the SDK
+             * is unaware of.
+             *
+             * @throws OpenAIInvalidDataException in the default implementation.
+             */
+            fun unknown(json: JsonValue?): T {
+                throw OpenAIInvalidDataException("Unknown Instructions: $json")
+            }
+        }
+
+        internal class Deserializer : BaseDeserializer<Instructions>(Instructions::class) {
+
+            override fun ObjectCodec.deserialize(node: JsonNode): Instructions {
+                val json = JsonValue.fromJsonNode(node)
+
+                val bestMatches =
+                    sequenceOf(
+                            tryDeserialize(node, jacksonTypeRef<String>())?.let {
+                                Instructions(string = it, _json = json)
+                            },
+                            tryDeserialize(node, jacksonTypeRef<List<ResponseInputItem>>())?.let {
+                                Instructions(inputItemList = it, _json = json)
+                            },
+                        )
+                        .filterNotNull()
+                        .allMaxBy { it.validity() }
+                        .toList()
+                return when (bestMatches.size) {
+                    // This can happen if what we're deserializing is completely incompatible with
+                    // all the possible variants (e.g. deserializing from object).
+                    0 -> Instructions(_json = json)
+                    1 -> bestMatches.single()
+                    // If there's more than one match with the highest validity, then use the first
+                    // completely valid match, or simply the first match if none are completely
+                    // valid.
+                    else -> bestMatches.firstOrNull { it.isValid() } ?: bestMatches.first()
+                }
+            }
+        }
+
+        internal class Serializer : BaseSerializer<Instructions>(Instructions::class) {
+
+            override fun serialize(
+                value: Instructions,
+                generator: JsonGenerator,
+                provider: SerializerProvider,
+            ) {
+                when {
+                    value.string != null -> generator.writeObject(value.string)
+                    value.inputItemList != null -> generator.writeObject(value.inputItemList)
+                    value._json != null -> generator.writeObject(value._json)
+                    else -> throw IllegalStateException("Invalid Instructions")
+                }
+            }
+        }
+    }
+
+    /**
      * Set of 16 key-value pairs that can be attached to an object. This can be useful for storing
      * additional information about the object in a structured format, and querying for objects via
      * API or the dashboard.
@@ -1879,6 +2235,7 @@ private constructor(
         private val options: ToolChoiceOptions? = null,
         private val types: ToolChoiceTypes? = null,
         private val function: ToolChoiceFunction? = null,
+        private val mcp: ToolChoiceMcp? = null,
         private val _json: JsonValue? = null,
     ) {
 
@@ -1903,11 +2260,16 @@ private constructor(
         /** Use this option to force the model to call a specific function. */
         fun function(): Optional<ToolChoiceFunction> = Optional.ofNullable(function)
 
+        /** Use this option to force the model to call a specific tool on a remote MCP server. */
+        fun mcp(): Optional<ToolChoiceMcp> = Optional.ofNullable(mcp)
+
         fun isOptions(): Boolean = options != null
 
         fun isTypes(): Boolean = types != null
 
         fun isFunction(): Boolean = function != null
+
+        fun isMcp(): Boolean = mcp != null
 
         /**
          * Controls which (if any) tool is called by the model.
@@ -1930,6 +2292,9 @@ private constructor(
         /** Use this option to force the model to call a specific function. */
         fun asFunction(): ToolChoiceFunction = function.getOrThrow("function")
 
+        /** Use this option to force the model to call a specific tool on a remote MCP server. */
+        fun asMcp(): ToolChoiceMcp = mcp.getOrThrow("mcp")
+
         fun _json(): Optional<JsonValue> = Optional.ofNullable(_json)
 
         fun <T> accept(visitor: Visitor<T>): T =
@@ -1937,6 +2302,7 @@ private constructor(
                 options != null -> visitor.visitOptions(options)
                 types != null -> visitor.visitTypes(types)
                 function != null -> visitor.visitFunction(function)
+                mcp != null -> visitor.visitMcp(mcp)
                 else -> visitor.unknown(_json)
             }
 
@@ -1959,6 +2325,10 @@ private constructor(
 
                     override fun visitFunction(function: ToolChoiceFunction) {
                         function.validate()
+                    }
+
+                    override fun visitMcp(mcp: ToolChoiceMcp) {
+                        mcp.validate()
                     }
                 }
             )
@@ -1989,6 +2359,8 @@ private constructor(
 
                     override fun visitFunction(function: ToolChoiceFunction) = function.validity()
 
+                    override fun visitMcp(mcp: ToolChoiceMcp) = mcp.validity()
+
                     override fun unknown(json: JsonValue?) = 0
                 }
             )
@@ -1998,16 +2370,17 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is ToolChoice && options == other.options && types == other.types && function == other.function /* spotless:on */
+            return /* spotless:off */ other is ToolChoice && options == other.options && types == other.types && function == other.function && mcp == other.mcp /* spotless:on */
         }
 
-        override fun hashCode(): Int = /* spotless:off */ Objects.hash(options, types, function) /* spotless:on */
+        override fun hashCode(): Int = /* spotless:off */ Objects.hash(options, types, function, mcp) /* spotless:on */
 
         override fun toString(): String =
             when {
                 options != null -> "ToolChoice{options=$options}"
                 types != null -> "ToolChoice{types=$types}"
                 function != null -> "ToolChoice{function=$function}"
+                mcp != null -> "ToolChoice{mcp=$mcp}"
                 _json != null -> "ToolChoice{_unknown=$_json}"
                 else -> throw IllegalStateException("Invalid ToolChoice")
             }
@@ -2035,6 +2408,11 @@ private constructor(
             /** Use this option to force the model to call a specific function. */
             @JvmStatic
             fun ofFunction(function: ToolChoiceFunction) = ToolChoice(function = function)
+
+            /**
+             * Use this option to force the model to call a specific tool on a remote MCP server.
+             */
+            @JvmStatic fun ofMcp(mcp: ToolChoiceMcp) = ToolChoice(mcp = mcp)
         }
 
         /**
@@ -2062,6 +2440,11 @@ private constructor(
 
             /** Use this option to force the model to call a specific function. */
             fun visitFunction(function: ToolChoiceFunction): T
+
+            /**
+             * Use this option to force the model to call a specific tool on a remote MCP server.
+             */
+            fun visitMcp(mcp: ToolChoiceMcp): T
 
             /**
              * Maps an unknown variant of [ToolChoice] to a value of type [T].
@@ -2094,6 +2477,9 @@ private constructor(
                             tryDeserialize(node, jacksonTypeRef<ToolChoiceFunction>())?.let {
                                 ToolChoice(function = it, _json = json)
                             },
+                            tryDeserialize(node, jacksonTypeRef<ToolChoiceMcp>())?.let {
+                                ToolChoice(mcp = it, _json = json)
+                            },
                         )
                         .filterNotNull()
                         .allMaxBy { it.validity() }
@@ -2122,6 +2508,7 @@ private constructor(
                     value.options != null -> generator.writeObject(value.options)
                     value.types != null -> generator.writeObject(value.types)
                     value.function != null -> generator.writeObject(value.function)
+                    value.mcp != null -> generator.writeObject(value.mcp)
                     value._json != null -> generator.writeObject(value._json)
                     else -> throw IllegalStateException("Invalid ToolChoice")
                 }
@@ -2130,19 +2517,19 @@ private constructor(
     }
 
     /**
-     * Specifies the latency tier to use for processing the request. This parameter is relevant for
-     * customers subscribed to the scale tier service:
-     * - If set to 'auto', and the Project is Scale tier enabled, the system will utilize scale tier
-     *   credits until they are exhausted.
-     * - If set to 'auto', and the Project is not Scale tier enabled, the request will be processed
-     *   using the default service tier with a lower uptime SLA and no latency guarentee.
-     * - If set to 'default', the request will be processed using the default service tier with a
-     *   lower uptime SLA and no latency guarentee.
-     * - If set to 'flex', the request will be processed with the Flex Processing service tier.
-     *   [Learn more](https://platform.openai.com/docs/guides/flex-processing).
+     * Specifies the processing type used for serving the request.
+     * - If set to 'auto', then the request will be processed with the service tier configured in
+     *   the Project settings. Unless otherwise configured, the Project will use 'default'.
+     * - If set to 'default', then the requset will be processed with the standard pricing and
+     *   performance for the selected model.
+     * - If set to '[flex](https://platform.openai.com/docs/guides/flex-processing)' or 'priority',
+     *   then the request will be processed with the corresponding service tier.
+     *   [Contact sales](https://openai.com/contact-sales) to learn more about Priority processing.
      * - When not set, the default behavior is 'auto'.
      *
-     * When this parameter is set, the response body will include the `service_tier` utilized.
+     * When the `service_tier` parameter is set, the response body will include the `service_tier`
+     * value based on the processing mode actually used to serve the request. This response value
+     * may be different from the value set in the parameter.
      */
     class ServiceTier @JsonCreator private constructor(private val value: JsonField<String>) :
         Enum {
@@ -2165,6 +2552,10 @@ private constructor(
 
             @JvmField val FLEX = of("flex")
 
+            @JvmField val SCALE = of("scale")
+
+            @JvmField val PRIORITY = of("priority")
+
             @JvmStatic fun of(value: String) = ServiceTier(JsonField.of(value))
         }
 
@@ -2173,6 +2564,8 @@ private constructor(
             AUTO,
             DEFAULT,
             FLEX,
+            SCALE,
+            PRIORITY,
         }
 
         /**
@@ -2188,6 +2581,8 @@ private constructor(
             AUTO,
             DEFAULT,
             FLEX,
+            SCALE,
+            PRIORITY,
             /**
              * An enum member indicating that [ServiceTier] was instantiated with an unknown value.
              */
@@ -2206,6 +2601,8 @@ private constructor(
                 AUTO -> Value.AUTO
                 DEFAULT -> Value.DEFAULT
                 FLEX -> Value.FLEX
+                SCALE -> Value.SCALE
+                PRIORITY -> Value.PRIORITY
                 else -> Value._UNKNOWN
             }
 
@@ -2223,6 +2620,8 @@ private constructor(
                 AUTO -> Known.AUTO
                 DEFAULT -> Known.DEFAULT
                 FLEX -> Known.FLEX
+                SCALE -> Known.SCALE
+                PRIORITY -> Known.PRIORITY
                 else -> throw OpenAIInvalidDataException("Unknown ServiceTier: $value")
             }
 
@@ -2418,15 +2817,15 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is Response && id == other.id && createdAt == other.createdAt && error == other.error && incompleteDetails == other.incompleteDetails && instructions == other.instructions && metadata == other.metadata && model == other.model && object_ == other.object_ && output == other.output && parallelToolCalls == other.parallelToolCalls && temperature == other.temperature && toolChoice == other.toolChoice && tools == other.tools && topP == other.topP && background == other.background && maxOutputTokens == other.maxOutputTokens && previousResponseId == other.previousResponseId && reasoning == other.reasoning && serviceTier == other.serviceTier && status == other.status && text == other.text && truncation == other.truncation && usage == other.usage && user == other.user && additionalProperties == other.additionalProperties /* spotless:on */
+        return /* spotless:off */ other is Response && id == other.id && createdAt == other.createdAt && error == other.error && incompleteDetails == other.incompleteDetails && instructions == other.instructions && metadata == other.metadata && model == other.model && object_ == other.object_ && output == other.output && parallelToolCalls == other.parallelToolCalls && temperature == other.temperature && toolChoice == other.toolChoice && tools == other.tools && topP == other.topP && background == other.background && maxOutputTokens == other.maxOutputTokens && maxToolCalls == other.maxToolCalls && previousResponseId == other.previousResponseId && prompt == other.prompt && reasoning == other.reasoning && serviceTier == other.serviceTier && status == other.status && text == other.text && topLogprobs == other.topLogprobs && truncation == other.truncation && usage == other.usage && user == other.user && additionalProperties == other.additionalProperties /* spotless:on */
     }
 
     /* spotless:off */
-    private val hashCode: Int by lazy { Objects.hash(id, createdAt, error, incompleteDetails, instructions, metadata, model, object_, output, parallelToolCalls, temperature, toolChoice, tools, topP, background, maxOutputTokens, previousResponseId, reasoning, serviceTier, status, text, truncation, usage, user, additionalProperties) }
+    private val hashCode: Int by lazy { Objects.hash(id, createdAt, error, incompleteDetails, instructions, metadata, model, object_, output, parallelToolCalls, temperature, toolChoice, tools, topP, background, maxOutputTokens, maxToolCalls, previousResponseId, prompt, reasoning, serviceTier, status, text, topLogprobs, truncation, usage, user, additionalProperties) }
     /* spotless:on */
 
     override fun hashCode(): Int = hashCode
 
     override fun toString() =
-        "Response{id=$id, createdAt=$createdAt, error=$error, incompleteDetails=$incompleteDetails, instructions=$instructions, metadata=$metadata, model=$model, object_=$object_, output=$output, parallelToolCalls=$parallelToolCalls, temperature=$temperature, toolChoice=$toolChoice, tools=$tools, topP=$topP, background=$background, maxOutputTokens=$maxOutputTokens, previousResponseId=$previousResponseId, reasoning=$reasoning, serviceTier=$serviceTier, status=$status, text=$text, truncation=$truncation, usage=$usage, user=$user, additionalProperties=$additionalProperties}"
+        "Response{id=$id, createdAt=$createdAt, error=$error, incompleteDetails=$incompleteDetails, instructions=$instructions, metadata=$metadata, model=$model, object_=$object_, output=$output, parallelToolCalls=$parallelToolCalls, temperature=$temperature, toolChoice=$toolChoice, tools=$tools, topP=$topP, background=$background, maxOutputTokens=$maxOutputTokens, maxToolCalls=$maxToolCalls, previousResponseId=$previousResponseId, prompt=$prompt, reasoning=$reasoning, serviceTier=$serviceTier, status=$status, text=$text, topLogprobs=$topLogprobs, truncation=$truncation, usage=$usage, user=$user, additionalProperties=$additionalProperties}"
 }

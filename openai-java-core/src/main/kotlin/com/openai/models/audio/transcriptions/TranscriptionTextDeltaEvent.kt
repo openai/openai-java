@@ -262,7 +262,7 @@ private constructor(
     class Logprob
     private constructor(
         private val token: JsonField<String>,
-        private val bytes: JsonField<List<JsonValue>>,
+        private val bytes: JsonField<List<Long>>,
         private val logprob: JsonField<Double>,
         private val additionalProperties: MutableMap<String, JsonValue>,
     ) {
@@ -270,9 +270,7 @@ private constructor(
         @JsonCreator
         private constructor(
             @JsonProperty("token") @ExcludeMissing token: JsonField<String> = JsonMissing.of(),
-            @JsonProperty("bytes")
-            @ExcludeMissing
-            bytes: JsonField<List<JsonValue>> = JsonMissing.of(),
+            @JsonProperty("bytes") @ExcludeMissing bytes: JsonField<List<Long>> = JsonMissing.of(),
             @JsonProperty("logprob") @ExcludeMissing logprob: JsonField<Double> = JsonMissing.of(),
         ) : this(token, bytes, logprob, mutableMapOf())
 
@@ -290,7 +288,7 @@ private constructor(
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
          */
-        fun bytes(): Optional<List<JsonValue>> = bytes.getOptional("bytes")
+        fun bytes(): Optional<List<Long>> = bytes.getOptional("bytes")
 
         /**
          * The log probability of the token.
@@ -312,7 +310,7 @@ private constructor(
          *
          * Unlike [bytes], this method doesn't throw if the JSON field has an unexpected type.
          */
-        @JsonProperty("bytes") @ExcludeMissing fun _bytes(): JsonField<List<JsonValue>> = bytes
+        @JsonProperty("bytes") @ExcludeMissing fun _bytes(): JsonField<List<Long>> = bytes
 
         /**
          * Returns the raw JSON value of [logprob].
@@ -343,7 +341,7 @@ private constructor(
         class Builder internal constructor() {
 
             private var token: JsonField<String> = JsonMissing.of()
-            private var bytes: JsonField<MutableList<JsonValue>>? = null
+            private var bytes: JsonField<MutableList<Long>>? = null
             private var logprob: JsonField<Double> = JsonMissing.of()
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
@@ -368,25 +366,25 @@ private constructor(
             fun token(token: JsonField<String>) = apply { this.token = token }
 
             /** The bytes that were used to generate the log probability. */
-            fun bytes(bytes: List<JsonValue>) = bytes(JsonField.of(bytes))
+            fun bytes(bytes: List<Long>) = bytes(JsonField.of(bytes))
 
             /**
              * Sets [Builder.bytes] to an arbitrary JSON value.
              *
-             * You should usually call [Builder.bytes] with a well-typed `List<JsonValue>` value
-             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * You should usually call [Builder.bytes] with a well-typed `List<Long>` value instead.
+             * This method is primarily for setting the field to an undocumented or not yet
              * supported value.
              */
-            fun bytes(bytes: JsonField<List<JsonValue>>) = apply {
+            fun bytes(bytes: JsonField<List<Long>>) = apply {
                 this.bytes = bytes.map { it.toMutableList() }
             }
 
             /**
-             * Adds a single [JsonValue] to [bytes].
+             * Adds a single [Long] to [bytes].
              *
              * @throws IllegalStateException if the field was previously set to a non-list.
              */
-            fun addByte(byte_: JsonValue) = apply {
+            fun addByte(byte_: Long) = apply {
                 bytes =
                     (bytes ?: JsonField.of(mutableListOf())).also {
                         checkKnown("bytes", it).add(byte_)

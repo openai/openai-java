@@ -1,22 +1,42 @@
 package com.openai.example;
 
-import static com.openai.core.ObjectMappers.jsonMapper;
-
-import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.annotation.JsonClassDescription;
+import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 import com.openai.client.OpenAIClient;
 import com.openai.client.okhttp.OpenAIOkHttpClient;
-import com.openai.core.JsonObject;
-import com.openai.core.JsonValue;
 import com.openai.models.ChatModel;
-import com.openai.models.FunctionDefinition;
-import com.openai.models.FunctionParameters;
 import com.openai.models.chat.completions.*;
 import java.util.Collection;
-import java.util.List;
-import java.util.Map;
 
 public final class FunctionCallingExample {
     private FunctionCallingExample() {}
+
+    @JsonClassDescription("Gets the quality of the given SDK.")
+    static class GetSdkQuality {
+        @JsonPropertyDescription("The name of the SDK.")
+        public String name;
+
+        public SdkQuality execute() {
+            return new SdkQuality(name, name.contains("OpenAI") ? "It's robust and polished!" : "*shrug*");
+        }
+    }
+
+    static class SdkQuality {
+        public String quality;
+
+        public SdkQuality(String name, String evaluation) {
+            quality = name + ": " + evaluation;
+        }
+    }
+
+    @JsonClassDescription("Gets the review score (out of 10) for the named SDK.")
+    static class GetSdkScore {
+        public String name;
+
+        public int execute() {
+            return name.contains("OpenAI") ? 10 : 3;
+        }
+    }
 
     public static void main(String[] args) {
         // Configures using one of:
@@ -24,45 +44,33 @@ public final class FunctionCallingExample {
         // - The `OPENAI_BASE_URL` and `AZURE_OPENAI_KEY` environment variables
         OpenAIClient client = OpenAIOkHttpClient.fromEnv();
 
-        // Use a builder so that we can append more messages to it below.
-        // Each time we call .build()` we get an immutable object that's unaffected by future mutations of the builder.
+        // Use a `Builder` so that more messages can be appended below. When `build()` is called, it
+        // creates an immutable object that is unaffected by future mutations of the builder.
         ChatCompletionCreateParams.Builder createParamsBuilder = ChatCompletionCreateParams.builder()
                 .model(ChatModel.GPT_3_5_TURBO)
                 .maxCompletionTokens(2048)
-                .addTool(ChatCompletionTool.builder()
-                        .function(FunctionDefinition.builder()
-                                .name("get-sdk-quality")
-                                .description("Gets the quality of the given SDK.")
-                                .parameters(FunctionParameters.builder()
-                                        .putAdditionalProperty("type", JsonValue.from("object"))
-                                        .putAdditionalProperty(
-                                                "properties", JsonValue.from(Map.of("name", Map.of("type", "string"))))
-                                        .putAdditionalProperty("required", JsonValue.from(List.of("name")))
-                                        .putAdditionalProperty("additionalProperties", JsonValue.from(false))
-                                        .build())
-                                .build())
-                        .build())
-                .addUserMessage("How good are the following SDKs: OpenAI Java SDK, Unknown Company SDK");
+                .addTool(GetSdkQuality.class)
+                .addTool(GetSdkScore.class)
+                .addUserMessage("How good are the following SDKs and what do reviewers say: "
+                        + "OpenAI Java SDK, Unknown Company SDK.");
 
         client.chat().completions().create(createParamsBuilder.build()).choices().stream()
                 .map(ChatCompletion.Choice::message)
-                // Add each assistant message onto the builder so that we keep track of the conversation for asking a
-                // follow-up question later.
+                // Add each assistant message onto the builder so that we keep track of the
+                // conversation for asking a follow-up question later.
                 .peek(createParamsBuilder::addMessage)
                 .flatMap(message -> {
                     message.content().ifPresent(System.out::println);
                     return message.toolCalls().stream().flatMap(Collection::stream);
                 })
                 .forEach(toolCall -> {
-                    String content = callFunction(toolCall.function());
+                    Object result = callFunction(toolCall.function());
                     // Add the tool call result to the conversation.
                     createParamsBuilder.addMessage(ChatCompletionToolMessageParam.builder()
                             .toolCallId(toolCall.id())
-                            .content(content)
+                            .contentAsJson(result)
                             .build());
-                    System.out.println(content);
                 });
-        System.out.println();
 
         // Ask a follow-up question about the function call result.
         createParamsBuilder.addUserMessage("Why do you say that?");
@@ -71,23 +79,14 @@ public final class FunctionCallingExample {
                 .forEach(System.out::println);
     }
 
-    private static String callFunction(ChatCompletionMessageToolCall.Function function) {
-        if (!function.name().equals("get-sdk-quality")) {
-            throw new IllegalArgumentException("Unknown function: " + function.name());
+    private static Object callFunction(ChatCompletionMessageToolCall.Function function) {
+        switch (function.name()) {
+            case "GetSdkQuality":
+                return function.arguments(GetSdkQuality.class).execute();
+            case "GetSdkScore":
+                return function.arguments(GetSdkScore.class).execute();
+            default:
+                throw new IllegalArgumentException("Unknown function: " + function.name());
         }
-
-        JsonValue arguments;
-        try {
-            arguments = JsonValue.from(jsonMapper().readTree(function.arguments()));
-        } catch (JsonProcessingException e) {
-            throw new IllegalArgumentException("Bad function arguments", e);
-        }
-
-        String sdkName = ((JsonObject) arguments).values().get("name").asStringOrThrow();
-        if (sdkName.contains("OpenAI")) {
-            return sdkName + ": It's robust and polished!";
-        }
-
-        return sdkName + ": *shrug*";
     }
 }

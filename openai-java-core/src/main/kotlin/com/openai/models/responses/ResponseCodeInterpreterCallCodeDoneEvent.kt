@@ -15,10 +15,11 @@ import com.openai.errors.OpenAIInvalidDataException
 import java.util.Collections
 import java.util.Objects
 
-/** Emitted when code snippet output is finalized by the code interpreter. */
+/** Emitted when the code snippet is finalized by the code interpreter. */
 class ResponseCodeInterpreterCallCodeDoneEvent
 private constructor(
     private val code: JsonField<String>,
+    private val itemId: JsonField<String>,
     private val outputIndex: JsonField<Long>,
     private val sequenceNumber: JsonField<Long>,
     private val type: JsonValue,
@@ -28,6 +29,7 @@ private constructor(
     @JsonCreator
     private constructor(
         @JsonProperty("code") @ExcludeMissing code: JsonField<String> = JsonMissing.of(),
+        @JsonProperty("item_id") @ExcludeMissing itemId: JsonField<String> = JsonMissing.of(),
         @JsonProperty("output_index")
         @ExcludeMissing
         outputIndex: JsonField<Long> = JsonMissing.of(),
@@ -35,7 +37,7 @@ private constructor(
         @ExcludeMissing
         sequenceNumber: JsonField<Long> = JsonMissing.of(),
         @JsonProperty("type") @ExcludeMissing type: JsonValue = JsonMissing.of(),
-    ) : this(code, outputIndex, sequenceNumber, type, mutableMapOf())
+    ) : this(code, itemId, outputIndex, sequenceNumber, type, mutableMapOf())
 
     /**
      * The final code snippet output by the code interpreter.
@@ -46,7 +48,15 @@ private constructor(
     fun code(): String = code.getRequired("code")
 
     /**
-     * The index of the output item that the code interpreter call is in progress.
+     * The unique identifier of the code interpreter tool call item.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     */
+    fun itemId(): String = itemId.getRequired("item_id")
+
+    /**
+     * The index of the output item in the response for which the code is finalized.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
      *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
@@ -54,7 +64,7 @@ private constructor(
     fun outputIndex(): Long = outputIndex.getRequired("output_index")
 
     /**
-     * The sequence number of this event.
+     * The sequence number of this event, used to order streaming events.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
      *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
@@ -62,11 +72,11 @@ private constructor(
     fun sequenceNumber(): Long = sequenceNumber.getRequired("sequence_number")
 
     /**
-     * The type of the event. Always `response.code_interpreter_call.code.done`.
+     * The type of the event. Always `response.code_interpreter_call_code.done`.
      *
      * Expected to always return the following:
      * ```java
-     * JsonValue.from("response.code_interpreter_call.code.done")
+     * JsonValue.from("response.code_interpreter_call_code.done")
      * ```
      *
      * However, this method can be useful for debugging and logging (e.g. if the server responded
@@ -80,6 +90,13 @@ private constructor(
      * Unlike [code], this method doesn't throw if the JSON field has an unexpected type.
      */
     @JsonProperty("code") @ExcludeMissing fun _code(): JsonField<String> = code
+
+    /**
+     * Returns the raw JSON value of [itemId].
+     *
+     * Unlike [itemId], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    @JsonProperty("item_id") @ExcludeMissing fun _itemId(): JsonField<String> = itemId
 
     /**
      * Returns the raw JSON value of [outputIndex].
@@ -118,6 +135,7 @@ private constructor(
          * The following fields are required:
          * ```java
          * .code()
+         * .itemId()
          * .outputIndex()
          * .sequenceNumber()
          * ```
@@ -129,9 +147,10 @@ private constructor(
     class Builder internal constructor() {
 
         private var code: JsonField<String>? = null
+        private var itemId: JsonField<String>? = null
         private var outputIndex: JsonField<Long>? = null
         private var sequenceNumber: JsonField<Long>? = null
-        private var type: JsonValue = JsonValue.from("response.code_interpreter_call.code.done")
+        private var type: JsonValue = JsonValue.from("response.code_interpreter_call_code.done")
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
         @JvmSynthetic
@@ -139,6 +158,7 @@ private constructor(
             responseCodeInterpreterCallCodeDoneEvent: ResponseCodeInterpreterCallCodeDoneEvent
         ) = apply {
             code = responseCodeInterpreterCallCodeDoneEvent.code
+            itemId = responseCodeInterpreterCallCodeDoneEvent.itemId
             outputIndex = responseCodeInterpreterCallCodeDoneEvent.outputIndex
             sequenceNumber = responseCodeInterpreterCallCodeDoneEvent.sequenceNumber
             type = responseCodeInterpreterCallCodeDoneEvent.type
@@ -157,7 +177,18 @@ private constructor(
          */
         fun code(code: JsonField<String>) = apply { this.code = code }
 
-        /** The index of the output item that the code interpreter call is in progress. */
+        /** The unique identifier of the code interpreter tool call item. */
+        fun itemId(itemId: String) = itemId(JsonField.of(itemId))
+
+        /**
+         * Sets [Builder.itemId] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.itemId] with a well-typed [String] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
+        fun itemId(itemId: JsonField<String>) = apply { this.itemId = itemId }
+
+        /** The index of the output item in the response for which the code is finalized. */
         fun outputIndex(outputIndex: Long) = outputIndex(JsonField.of(outputIndex))
 
         /**
@@ -169,7 +200,7 @@ private constructor(
          */
         fun outputIndex(outputIndex: JsonField<Long>) = apply { this.outputIndex = outputIndex }
 
-        /** The sequence number of this event. */
+        /** The sequence number of this event, used to order streaming events. */
         fun sequenceNumber(sequenceNumber: Long) = sequenceNumber(JsonField.of(sequenceNumber))
 
         /**
@@ -189,7 +220,7 @@ private constructor(
          * It is usually unnecessary to call this method because the field defaults to the
          * following:
          * ```java
-         * JsonValue.from("response.code_interpreter_call.code.done")
+         * JsonValue.from("response.code_interpreter_call_code.done")
          * ```
          *
          * This method is primarily for setting the field to an undocumented or not yet supported
@@ -224,6 +255,7 @@ private constructor(
          * The following fields are required:
          * ```java
          * .code()
+         * .itemId()
          * .outputIndex()
          * .sequenceNumber()
          * ```
@@ -233,6 +265,7 @@ private constructor(
         fun build(): ResponseCodeInterpreterCallCodeDoneEvent =
             ResponseCodeInterpreterCallCodeDoneEvent(
                 checkRequired("code", code),
+                checkRequired("itemId", itemId),
                 checkRequired("outputIndex", outputIndex),
                 checkRequired("sequenceNumber", sequenceNumber),
                 type,
@@ -248,10 +281,11 @@ private constructor(
         }
 
         code()
+        itemId()
         outputIndex()
         sequenceNumber()
         _type().let {
-            if (it != JsonValue.from("response.code_interpreter_call.code.done")) {
+            if (it != JsonValue.from("response.code_interpreter_call_code.done")) {
                 throw OpenAIInvalidDataException("'type' is invalid, received $it")
             }
         }
@@ -274,10 +308,11 @@ private constructor(
     @JvmSynthetic
     internal fun validity(): Int =
         (if (code.asKnown().isPresent) 1 else 0) +
+            (if (itemId.asKnown().isPresent) 1 else 0) +
             (if (outputIndex.asKnown().isPresent) 1 else 0) +
             (if (sequenceNumber.asKnown().isPresent) 1 else 0) +
             type.let {
-                if (it == JsonValue.from("response.code_interpreter_call.code.done")) 1 else 0
+                if (it == JsonValue.from("response.code_interpreter_call_code.done")) 1 else 0
             }
 
     override fun equals(other: Any?): Boolean {
@@ -285,15 +320,15 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is ResponseCodeInterpreterCallCodeDoneEvent && code == other.code && outputIndex == other.outputIndex && sequenceNumber == other.sequenceNumber && type == other.type && additionalProperties == other.additionalProperties /* spotless:on */
+        return /* spotless:off */ other is ResponseCodeInterpreterCallCodeDoneEvent && code == other.code && itemId == other.itemId && outputIndex == other.outputIndex && sequenceNumber == other.sequenceNumber && type == other.type && additionalProperties == other.additionalProperties /* spotless:on */
     }
 
     /* spotless:off */
-    private val hashCode: Int by lazy { Objects.hash(code, outputIndex, sequenceNumber, type, additionalProperties) }
+    private val hashCode: Int by lazy { Objects.hash(code, itemId, outputIndex, sequenceNumber, type, additionalProperties) }
     /* spotless:on */
 
     override fun hashCode(): Int = hashCode
 
     override fun toString() =
-        "ResponseCodeInterpreterCallCodeDoneEvent{code=$code, outputIndex=$outputIndex, sequenceNumber=$sequenceNumber, type=$type, additionalProperties=$additionalProperties}"
+        "ResponseCodeInterpreterCallCodeDoneEvent{code=$code, itemId=$itemId, outputIndex=$outputIndex, sequenceNumber=$sequenceNumber, type=$type, additionalProperties=$additionalProperties}"
 }

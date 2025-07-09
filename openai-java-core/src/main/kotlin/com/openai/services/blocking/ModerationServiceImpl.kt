@@ -17,6 +17,7 @@ import com.openai.core.prepare
 import com.openai.models.ErrorObject
 import com.openai.models.moderations.ModerationCreateParams
 import com.openai.models.moderations.ModerationCreateResponse
+import java.util.function.Consumer
 
 class ModerationServiceImpl internal constructor(private val clientOptions: ClientOptions) :
     ModerationService {
@@ -26,6 +27,9 @@ class ModerationServiceImpl internal constructor(private val clientOptions: Clie
     }
 
     override fun withRawResponse(): ModerationService.WithRawResponse = withRawResponse
+
+    override fun withOptions(modifier: Consumer<ClientOptions.Builder>): ModerationService =
+        ModerationServiceImpl(clientOptions.toBuilder().apply(modifier::accept).build())
 
     override fun create(
         params: ModerationCreateParams,
@@ -39,6 +43,13 @@ class ModerationServiceImpl internal constructor(private val clientOptions: Clie
 
         private val errorHandler: Handler<ErrorObject?> = errorHandler(clientOptions.jsonMapper)
 
+        override fun withOptions(
+            modifier: Consumer<ClientOptions.Builder>
+        ): ModerationService.WithRawResponse =
+            ModerationServiceImpl.WithRawResponseImpl(
+                clientOptions.toBuilder().apply(modifier::accept).build()
+            )
+
         private val createHandler: Handler<ModerationCreateResponse> =
             jsonHandler<ModerationCreateResponse>(clientOptions.jsonMapper)
                 .withErrorHandler(errorHandler)
@@ -50,6 +61,7 @@ class ModerationServiceImpl internal constructor(private val clientOptions: Clie
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.POST)
+                    .baseUrl(clientOptions.baseUrl())
                     .addPathSegments("moderations")
                     .body(json(clientOptions.jsonMapper, params._body()))
                     .build()

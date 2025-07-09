@@ -2,7 +2,7 @@
 
 package com.openai.services.async
 
-import com.google.errorprone.annotations.MustBeClosed
+import com.openai.core.ClientOptions
 import com.openai.core.RequestOptions
 import com.openai.core.http.HttpResponseFor
 import com.openai.models.images.ImageCreateVariationParams
@@ -10,6 +10,7 @@ import com.openai.models.images.ImageEditParams
 import com.openai.models.images.ImageGenerateParams
 import com.openai.models.images.ImagesResponse
 import java.util.concurrent.CompletableFuture
+import java.util.function.Consumer
 
 interface ImageServiceAsync {
 
@@ -17,6 +18,13 @@ interface ImageServiceAsync {
      * Returns a view of this service that provides access to raw HTTP responses for each method.
      */
     fun withRawResponse(): WithRawResponse
+
+    /**
+     * Returns a view of this service with the given option modifications applied.
+     *
+     * The original service is not modified.
+     */
+    fun withOptions(modifier: Consumer<ClientOptions.Builder>): ImageServiceAsync
 
     /** Creates a variation of a given image. This endpoint only supports `dall-e-2`. */
     fun createVariation(params: ImageCreateVariationParams): CompletableFuture<ImagesResponse> =
@@ -58,17 +66,24 @@ interface ImageServiceAsync {
     interface WithRawResponse {
 
         /**
+         * Returns a view of this service with the given option modifications applied.
+         *
+         * The original service is not modified.
+         */
+        fun withOptions(
+            modifier: Consumer<ClientOptions.Builder>
+        ): ImageServiceAsync.WithRawResponse
+
+        /**
          * Returns a raw HTTP response for `post /images/variations`, but is otherwise the same as
          * [ImageServiceAsync.createVariation].
          */
-        @MustBeClosed
         fun createVariation(
             params: ImageCreateVariationParams
         ): CompletableFuture<HttpResponseFor<ImagesResponse>> =
             createVariation(params, RequestOptions.none())
 
         /** @see [createVariation] */
-        @MustBeClosed
         fun createVariation(
             params: ImageCreateVariationParams,
             requestOptions: RequestOptions = RequestOptions.none(),
@@ -78,12 +93,10 @@ interface ImageServiceAsync {
          * Returns a raw HTTP response for `post /images/edits`, but is otherwise the same as
          * [ImageServiceAsync.edit].
          */
-        @MustBeClosed
         fun edit(params: ImageEditParams): CompletableFuture<HttpResponseFor<ImagesResponse>> =
             edit(params, RequestOptions.none())
 
         /** @see [edit] */
-        @MustBeClosed
         fun edit(
             params: ImageEditParams,
             requestOptions: RequestOptions = RequestOptions.none(),
@@ -93,14 +106,12 @@ interface ImageServiceAsync {
          * Returns a raw HTTP response for `post /images/generations`, but is otherwise the same as
          * [ImageServiceAsync.generate].
          */
-        @MustBeClosed
         fun generate(
             params: ImageGenerateParams
         ): CompletableFuture<HttpResponseFor<ImagesResponse>> =
             generate(params, RequestOptions.none())
 
         /** @see [generate] */
-        @MustBeClosed
         fun generate(
             params: ImageGenerateParams,
             requestOptions: RequestOptions = RequestOptions.none(),

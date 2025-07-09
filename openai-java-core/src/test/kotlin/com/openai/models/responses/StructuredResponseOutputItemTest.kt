@@ -44,6 +44,11 @@ internal class StructuredResponseOutputItemTest {
             ResponseFunctionWebSearch.builder()
                 .id(STRING)
                 .status(ResponseFunctionWebSearch.Status.COMPLETED)
+                .action(
+                    ResponseFunctionWebSearch.Action.ofSearch(
+                        ResponseFunctionWebSearch.Action.Search.builder().query("query").build()
+                    )
+                )
                 .build()
         private val COMPUTER_TOOL_CALL =
             ResponseComputerToolCall.builder()
@@ -60,7 +65,8 @@ internal class StructuredResponseOutputItemTest {
             ResponseCodeInterpreterToolCall.builder()
                 .id(STRING)
                 .code(STRING)
-                .addLogsResult(STRING)
+                .containerId(STRING)
+                .outputs(listOf())
                 .status(ResponseCodeInterpreterToolCall.Status.COMPLETED)
                 .build()
         private val IMAGE_GENERATION_CALL =

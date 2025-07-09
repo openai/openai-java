@@ -9,9 +9,12 @@ import com.openai.errors.OpenAIInvalidDataException
 
 /**
  * Specify additional output data to include in the model response. Currently supported values are:
+ * - `code_interpreter_call.outputs`: Includes the outputs of python code execution in code
+ *   interpreter tool call items.
+ * - `computer_call_output.output.image_url`: Include image urls from the computer call output.
  * - `file_search_call.results`: Include the search results of the file search tool call.
  * - `message.input_image.image_url`: Include image urls from the input message.
- * - `computer_call_output.output.image_url`: Include image urls from the computer call output.
+ * - `message.output_text.logprobs`: Include logprobs with assistant messages.
  * - `reasoning.encrypted_content`: Includes an encrypted version of reasoning tokens in reasoning
  *   item outputs. This enables reasoning items to be used in multi-turn conversations when using
  *   the Responses API statelessly (like when the `store` parameter is set to `false`, or when an
@@ -31,12 +34,16 @@ class ResponseIncludable @JsonCreator private constructor(private val value: Jso
 
     companion object {
 
+        @JvmField val CODE_INTERPRETER_CALL_OUTPUTS = of("code_interpreter_call.outputs")
+
+        @JvmField
+        val COMPUTER_CALL_OUTPUT_OUTPUT_IMAGE_URL = of("computer_call_output.output.image_url")
+
         @JvmField val FILE_SEARCH_CALL_RESULTS = of("file_search_call.results")
 
         @JvmField val MESSAGE_INPUT_IMAGE_IMAGE_URL = of("message.input_image.image_url")
 
-        @JvmField
-        val COMPUTER_CALL_OUTPUT_OUTPUT_IMAGE_URL = of("computer_call_output.output.image_url")
+        @JvmField val MESSAGE_OUTPUT_TEXT_LOGPROBS = of("message.output_text.logprobs")
 
         @JvmField val REASONING_ENCRYPTED_CONTENT = of("reasoning.encrypted_content")
 
@@ -45,9 +52,11 @@ class ResponseIncludable @JsonCreator private constructor(private val value: Jso
 
     /** An enum containing [ResponseIncludable]'s known values. */
     enum class Known {
+        CODE_INTERPRETER_CALL_OUTPUTS,
+        COMPUTER_CALL_OUTPUT_OUTPUT_IMAGE_URL,
         FILE_SEARCH_CALL_RESULTS,
         MESSAGE_INPUT_IMAGE_IMAGE_URL,
-        COMPUTER_CALL_OUTPUT_OUTPUT_IMAGE_URL,
+        MESSAGE_OUTPUT_TEXT_LOGPROBS,
         REASONING_ENCRYPTED_CONTENT,
     }
 
@@ -61,9 +70,11 @@ class ResponseIncludable @JsonCreator private constructor(private val value: Jso
      * - It was constructed with an arbitrary value using the [of] method.
      */
     enum class Value {
+        CODE_INTERPRETER_CALL_OUTPUTS,
+        COMPUTER_CALL_OUTPUT_OUTPUT_IMAGE_URL,
         FILE_SEARCH_CALL_RESULTS,
         MESSAGE_INPUT_IMAGE_IMAGE_URL,
-        COMPUTER_CALL_OUTPUT_OUTPUT_IMAGE_URL,
+        MESSAGE_OUTPUT_TEXT_LOGPROBS,
         REASONING_ENCRYPTED_CONTENT,
         /**
          * An enum member indicating that [ResponseIncludable] was instantiated with an unknown
@@ -81,9 +92,11 @@ class ResponseIncludable @JsonCreator private constructor(private val value: Jso
      */
     fun value(): Value =
         when (this) {
+            CODE_INTERPRETER_CALL_OUTPUTS -> Value.CODE_INTERPRETER_CALL_OUTPUTS
+            COMPUTER_CALL_OUTPUT_OUTPUT_IMAGE_URL -> Value.COMPUTER_CALL_OUTPUT_OUTPUT_IMAGE_URL
             FILE_SEARCH_CALL_RESULTS -> Value.FILE_SEARCH_CALL_RESULTS
             MESSAGE_INPUT_IMAGE_IMAGE_URL -> Value.MESSAGE_INPUT_IMAGE_IMAGE_URL
-            COMPUTER_CALL_OUTPUT_OUTPUT_IMAGE_URL -> Value.COMPUTER_CALL_OUTPUT_OUTPUT_IMAGE_URL
+            MESSAGE_OUTPUT_TEXT_LOGPROBS -> Value.MESSAGE_OUTPUT_TEXT_LOGPROBS
             REASONING_ENCRYPTED_CONTENT -> Value.REASONING_ENCRYPTED_CONTENT
             else -> Value._UNKNOWN
         }
@@ -98,9 +111,11 @@ class ResponseIncludable @JsonCreator private constructor(private val value: Jso
      */
     fun known(): Known =
         when (this) {
+            CODE_INTERPRETER_CALL_OUTPUTS -> Known.CODE_INTERPRETER_CALL_OUTPUTS
+            COMPUTER_CALL_OUTPUT_OUTPUT_IMAGE_URL -> Known.COMPUTER_CALL_OUTPUT_OUTPUT_IMAGE_URL
             FILE_SEARCH_CALL_RESULTS -> Known.FILE_SEARCH_CALL_RESULTS
             MESSAGE_INPUT_IMAGE_IMAGE_URL -> Known.MESSAGE_INPUT_IMAGE_IMAGE_URL
-            COMPUTER_CALL_OUTPUT_OUTPUT_IMAGE_URL -> Known.COMPUTER_CALL_OUTPUT_OUTPUT_IMAGE_URL
+            MESSAGE_OUTPUT_TEXT_LOGPROBS -> Known.MESSAGE_OUTPUT_TEXT_LOGPROBS
             REASONING_ENCRYPTED_CONTENT -> Known.REASONING_ENCRYPTED_CONTENT
             else -> throw OpenAIInvalidDataException("Unknown ResponseIncludable: $value")
         }

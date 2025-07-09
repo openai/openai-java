@@ -24,6 +24,7 @@ import com.openai.models.batches.BatchListPageResponse
 import com.openai.models.batches.BatchListParams
 import com.openai.models.batches.BatchRetrieveParams
 import java.util.concurrent.CompletableFuture
+import java.util.function.Consumer
 import kotlin.jvm.optionals.getOrNull
 
 class BatchServiceAsyncImpl internal constructor(private val clientOptions: ClientOptions) :
@@ -34,6 +35,9 @@ class BatchServiceAsyncImpl internal constructor(private val clientOptions: Clie
     }
 
     override fun withRawResponse(): BatchServiceAsync.WithRawResponse = withRawResponse
+
+    override fun withOptions(modifier: Consumer<ClientOptions.Builder>): BatchServiceAsync =
+        BatchServiceAsyncImpl(clientOptions.toBuilder().apply(modifier::accept).build())
 
     override fun create(
         params: BatchCreateParams,
@@ -68,6 +72,13 @@ class BatchServiceAsyncImpl internal constructor(private val clientOptions: Clie
 
         private val errorHandler: Handler<ErrorObject?> = errorHandler(clientOptions.jsonMapper)
 
+        override fun withOptions(
+            modifier: Consumer<ClientOptions.Builder>
+        ): BatchServiceAsync.WithRawResponse =
+            BatchServiceAsyncImpl.WithRawResponseImpl(
+                clientOptions.toBuilder().apply(modifier::accept).build()
+            )
+
         private val createHandler: Handler<Batch> =
             jsonHandler<Batch>(clientOptions.jsonMapper).withErrorHandler(errorHandler)
 
@@ -78,6 +89,7 @@ class BatchServiceAsyncImpl internal constructor(private val clientOptions: Clie
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.POST)
+                    .baseUrl(clientOptions.baseUrl())
                     .addPathSegments("batches")
                     .body(json(clientOptions.jsonMapper, params._body()))
                     .build()
@@ -111,6 +123,7 @@ class BatchServiceAsyncImpl internal constructor(private val clientOptions: Clie
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.GET)
+                    .baseUrl(clientOptions.baseUrl())
                     .addPathSegments("batches", params._pathParam(0))
                     .build()
                     .prepareAsync(clientOptions, params, deploymentModel = null)
@@ -141,6 +154,7 @@ class BatchServiceAsyncImpl internal constructor(private val clientOptions: Clie
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.GET)
+                    .baseUrl(clientOptions.baseUrl())
                     .addPathSegments("batches")
                     .build()
                     .prepareAsync(clientOptions, params, deploymentModel = null)
@@ -181,6 +195,7 @@ class BatchServiceAsyncImpl internal constructor(private val clientOptions: Clie
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.POST)
+                    .baseUrl(clientOptions.baseUrl())
                     .addPathSegments("batches", params._pathParam(0), "cancel")
                     .apply { params._body().ifPresent { body(json(clientOptions.jsonMapper, it)) } }
                     .build()

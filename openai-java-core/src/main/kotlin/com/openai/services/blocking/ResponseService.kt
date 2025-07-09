@@ -3,6 +3,7 @@
 package com.openai.services.blocking
 
 import com.google.errorprone.annotations.MustBeClosed
+import com.openai.core.ClientOptions
 import com.openai.core.RequestOptions
 import com.openai.core.http.HttpResponse
 import com.openai.core.http.HttpResponseFor
@@ -16,6 +17,7 @@ import com.openai.models.responses.ResponseStreamEvent
 import com.openai.models.responses.StructuredResponse
 import com.openai.models.responses.StructuredResponseCreateParams
 import com.openai.services.blocking.responses.InputItemService
+import java.util.function.Consumer
 
 interface ResponseService {
 
@@ -23,6 +25,13 @@ interface ResponseService {
      * Returns a view of this service that provides access to raw HTTP responses for each method.
      */
     fun withRawResponse(): WithRawResponse
+
+    /**
+     * Returns a view of this service with the given option modifications applied.
+     *
+     * The original service is not modified.
+     */
+    fun withOptions(modifier: Consumer<ClientOptions.Builder>): ResponseService
 
     fun inputItems(): InputItemService
 
@@ -37,13 +46,21 @@ interface ResponseService {
      * [file search](https://platform.openai.com/docs/guides/tools-file-search) to use your own data
      * as input for the model's response.
      */
-    fun create(params: ResponseCreateParams): Response = create(params, RequestOptions.none())
+    fun create(): Response = create(ResponseCreateParams.none())
 
     /** @see [create] */
     fun create(
-        params: ResponseCreateParams,
+        params: ResponseCreateParams = ResponseCreateParams.none(),
         requestOptions: RequestOptions = RequestOptions.none(),
     ): Response
+
+    /** @see [create] */
+    fun create(params: ResponseCreateParams = ResponseCreateParams.none()): Response =
+        create(params, RequestOptions.none())
+
+    /** @see [create] */
+    fun create(requestOptions: RequestOptions): Response =
+        create(ResponseCreateParams.none(), requestOptions)
 
     /**
      * Creates a model response. The model's structured output in JSON form will be deserialized
@@ -78,15 +95,26 @@ interface ResponseService {
      * as input for the model's response.
      */
     @MustBeClosed
-    fun createStreaming(params: ResponseCreateParams): StreamResponse<ResponseStreamEvent> =
-        createStreaming(params, RequestOptions.none())
+    fun createStreaming(): StreamResponse<ResponseStreamEvent> =
+        createStreaming(ResponseCreateParams.none())
 
     /** @see [createStreaming] */
     @MustBeClosed
     fun createStreaming(
-        params: ResponseCreateParams,
+        params: ResponseCreateParams = ResponseCreateParams.none(),
         requestOptions: RequestOptions = RequestOptions.none(),
     ): StreamResponse<ResponseStreamEvent>
+
+    /** @see [createStreaming] */
+    @MustBeClosed
+    fun createStreaming(
+        params: ResponseCreateParams = ResponseCreateParams.none()
+    ): StreamResponse<ResponseStreamEvent> = createStreaming(params, RequestOptions.none())
+
+    /** @see [createStreaming] */
+    @MustBeClosed
+    fun createStreaming(requestOptions: RequestOptions): StreamResponse<ResponseStreamEvent> =
+        createStreaming(ResponseCreateParams.none(), requestOptions)
 
     /** Retrieves a model response with the given ID. */
     fun retrieve(responseId: String): Response = retrieve(responseId, ResponseRetrieveParams.none())
@@ -117,6 +145,48 @@ interface ResponseService {
     fun retrieve(responseId: String, requestOptions: RequestOptions): Response =
         retrieve(responseId, ResponseRetrieveParams.none(), requestOptions)
 
+    /** Retrieves a model response with the given ID. */
+    @MustBeClosed
+    fun retrieveStreaming(responseId: String): StreamResponse<ResponseStreamEvent> =
+        retrieveStreaming(responseId, ResponseRetrieveParams.none())
+
+    /** @see [retrieveStreaming] */
+    @MustBeClosed
+    fun retrieveStreaming(
+        responseId: String,
+        params: ResponseRetrieveParams = ResponseRetrieveParams.none(),
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): StreamResponse<ResponseStreamEvent> =
+        retrieveStreaming(params.toBuilder().responseId(responseId).build(), requestOptions)
+
+    /** @see [retrieveStreaming] */
+    @MustBeClosed
+    fun retrieveStreaming(
+        responseId: String,
+        params: ResponseRetrieveParams = ResponseRetrieveParams.none(),
+    ): StreamResponse<ResponseStreamEvent> =
+        retrieveStreaming(responseId, params, RequestOptions.none())
+
+    /** @see [retrieveStreaming] */
+    @MustBeClosed
+    fun retrieveStreaming(
+        params: ResponseRetrieveParams,
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): StreamResponse<ResponseStreamEvent>
+
+    /** @see [retrieveStreaming] */
+    @MustBeClosed
+    fun retrieveStreaming(params: ResponseRetrieveParams): StreamResponse<ResponseStreamEvent> =
+        retrieveStreaming(params, RequestOptions.none())
+
+    /** @see [retrieveStreaming] */
+    @MustBeClosed
+    fun retrieveStreaming(
+        responseId: String,
+        requestOptions: RequestOptions,
+    ): StreamResponse<ResponseStreamEvent> =
+        retrieveStreaming(responseId, ResponseRetrieveParams.none(), requestOptions)
+
     /** Deletes a model response with the given ID. */
     fun delete(responseId: String) = delete(responseId, ResponseDeleteParams.none())
 
@@ -146,31 +216,43 @@ interface ResponseService {
      * parameter set to `true` can be cancelled.
      * [Learn more](https://platform.openai.com/docs/guides/background).
      */
-    fun cancel(responseId: String) = cancel(responseId, ResponseCancelParams.none())
+    fun cancel(responseId: String): Response = cancel(responseId, ResponseCancelParams.none())
 
     /** @see [cancel] */
     fun cancel(
         responseId: String,
         params: ResponseCancelParams = ResponseCancelParams.none(),
         requestOptions: RequestOptions = RequestOptions.none(),
-    ) = cancel(params.toBuilder().responseId(responseId).build(), requestOptions)
+    ): Response = cancel(params.toBuilder().responseId(responseId).build(), requestOptions)
 
     /** @see [cancel] */
-    fun cancel(responseId: String, params: ResponseCancelParams = ResponseCancelParams.none()) =
-        cancel(responseId, params, RequestOptions.none())
+    fun cancel(
+        responseId: String,
+        params: ResponseCancelParams = ResponseCancelParams.none(),
+    ): Response = cancel(responseId, params, RequestOptions.none())
 
     /** @see [cancel] */
-    fun cancel(params: ResponseCancelParams, requestOptions: RequestOptions = RequestOptions.none())
+    fun cancel(
+        params: ResponseCancelParams,
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): Response
 
     /** @see [cancel] */
-    fun cancel(params: ResponseCancelParams) = cancel(params, RequestOptions.none())
+    fun cancel(params: ResponseCancelParams): Response = cancel(params, RequestOptions.none())
 
     /** @see [cancel] */
-    fun cancel(responseId: String, requestOptions: RequestOptions) =
+    fun cancel(responseId: String, requestOptions: RequestOptions): Response =
         cancel(responseId, ResponseCancelParams.none(), requestOptions)
 
     /** A view of [ResponseService] that provides access to raw HTTP responses for each method. */
     interface WithRawResponse {
+
+        /**
+         * Returns a view of this service with the given option modifications applied.
+         *
+         * The original service is not modified.
+         */
+        fun withOptions(modifier: Consumer<ClientOptions.Builder>): ResponseService.WithRawResponse
 
         fun inputItems(): InputItemService.WithRawResponse
 
@@ -178,33 +260,54 @@ interface ResponseService {
          * Returns a raw HTTP response for `post /responses`, but is otherwise the same as
          * [ResponseService.create].
          */
-        @MustBeClosed
-        fun create(params: ResponseCreateParams): HttpResponseFor<Response> =
-            create(params, RequestOptions.none())
+        @MustBeClosed fun create(): HttpResponseFor<Response> = create(ResponseCreateParams.none())
 
         /** @see [create] */
         @MustBeClosed
         fun create(
-            params: ResponseCreateParams,
+            params: ResponseCreateParams = ResponseCreateParams.none(),
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<Response>
+
+        /** @see [create] */
+        @MustBeClosed
+        fun create(
+            params: ResponseCreateParams = ResponseCreateParams.none()
+        ): HttpResponseFor<Response> = create(params, RequestOptions.none())
+
+        /** @see [create] */
+        @MustBeClosed
+        fun create(requestOptions: RequestOptions): HttpResponseFor<Response> =
+            create(ResponseCreateParams.none(), requestOptions)
 
         /**
          * Returns a raw HTTP response for `post /responses`, but is otherwise the same as
          * [ResponseService.createStreaming].
          */
         @MustBeClosed
+        fun createStreaming(): HttpResponseFor<StreamResponse<ResponseStreamEvent>> =
+            createStreaming(ResponseCreateParams.none())
+
+        /** @see [createStreaming] */
+        @MustBeClosed
         fun createStreaming(
-            params: ResponseCreateParams
+            params: ResponseCreateParams = ResponseCreateParams.none(),
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): HttpResponseFor<StreamResponse<ResponseStreamEvent>>
+
+        /** @see [createStreaming] */
+        @MustBeClosed
+        fun createStreaming(
+            params: ResponseCreateParams = ResponseCreateParams.none()
         ): HttpResponseFor<StreamResponse<ResponseStreamEvent>> =
             createStreaming(params, RequestOptions.none())
 
         /** @see [createStreaming] */
         @MustBeClosed
         fun createStreaming(
-            params: ResponseCreateParams,
-            requestOptions: RequestOptions = RequestOptions.none(),
-        ): HttpResponseFor<StreamResponse<ResponseStreamEvent>>
+            requestOptions: RequestOptions
+        ): HttpResponseFor<StreamResponse<ResponseStreamEvent>> =
+            createStreaming(ResponseCreateParams.none(), requestOptions)
 
         /**
          * Returns a raw HTTP response for `get /responses/{response_id}`, but is otherwise the same
@@ -251,6 +354,55 @@ interface ResponseService {
             retrieve(responseId, ResponseRetrieveParams.none(), requestOptions)
 
         /**
+         * Returns a raw HTTP response for `get /responses/{response_id}`, but is otherwise the same
+         * as [ResponseService.retrieveStreaming].
+         */
+        @MustBeClosed
+        fun retrieveStreaming(
+            responseId: String
+        ): HttpResponseFor<StreamResponse<ResponseStreamEvent>> =
+            retrieveStreaming(responseId, ResponseRetrieveParams.none())
+
+        /** @see [retrieveStreaming] */
+        @MustBeClosed
+        fun retrieveStreaming(
+            responseId: String,
+            params: ResponseRetrieveParams = ResponseRetrieveParams.none(),
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): HttpResponseFor<StreamResponse<ResponseStreamEvent>> =
+            retrieveStreaming(params.toBuilder().responseId(responseId).build(), requestOptions)
+
+        /** @see [retrieveStreaming] */
+        @MustBeClosed
+        fun retrieveStreaming(
+            responseId: String,
+            params: ResponseRetrieveParams = ResponseRetrieveParams.none(),
+        ): HttpResponseFor<StreamResponse<ResponseStreamEvent>> =
+            retrieveStreaming(responseId, params, RequestOptions.none())
+
+        /** @see [retrieveStreaming] */
+        @MustBeClosed
+        fun retrieveStreaming(
+            params: ResponseRetrieveParams,
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): HttpResponseFor<StreamResponse<ResponseStreamEvent>>
+
+        /** @see [retrieveStreaming] */
+        @MustBeClosed
+        fun retrieveStreaming(
+            params: ResponseRetrieveParams
+        ): HttpResponseFor<StreamResponse<ResponseStreamEvent>> =
+            retrieveStreaming(params, RequestOptions.none())
+
+        /** @see [retrieveStreaming] */
+        @MustBeClosed
+        fun retrieveStreaming(
+            responseId: String,
+            requestOptions: RequestOptions,
+        ): HttpResponseFor<StreamResponse<ResponseStreamEvent>> =
+            retrieveStreaming(responseId, ResponseRetrieveParams.none(), requestOptions)
+
+        /**
          * Returns a raw HTTP response for `delete /responses/{response_id}`, but is otherwise the
          * same as [ResponseService.delete].
          */
@@ -295,7 +447,7 @@ interface ResponseService {
          * the same as [ResponseService.cancel].
          */
         @MustBeClosed
-        fun cancel(responseId: String): HttpResponse =
+        fun cancel(responseId: String): HttpResponseFor<Response> =
             cancel(responseId, ResponseCancelParams.none())
 
         /** @see [cancel] */
@@ -304,30 +456,31 @@ interface ResponseService {
             responseId: String,
             params: ResponseCancelParams = ResponseCancelParams.none(),
             requestOptions: RequestOptions = RequestOptions.none(),
-        ): HttpResponse = cancel(params.toBuilder().responseId(responseId).build(), requestOptions)
+        ): HttpResponseFor<Response> =
+            cancel(params.toBuilder().responseId(responseId).build(), requestOptions)
 
         /** @see [cancel] */
         @MustBeClosed
         fun cancel(
             responseId: String,
             params: ResponseCancelParams = ResponseCancelParams.none(),
-        ): HttpResponse = cancel(responseId, params, RequestOptions.none())
+        ): HttpResponseFor<Response> = cancel(responseId, params, RequestOptions.none())
 
         /** @see [cancel] */
         @MustBeClosed
         fun cancel(
             params: ResponseCancelParams,
             requestOptions: RequestOptions = RequestOptions.none(),
-        ): HttpResponse
+        ): HttpResponseFor<Response>
 
         /** @see [cancel] */
         @MustBeClosed
-        fun cancel(params: ResponseCancelParams): HttpResponse =
+        fun cancel(params: ResponseCancelParams): HttpResponseFor<Response> =
             cancel(params, RequestOptions.none())
 
         /** @see [cancel] */
         @MustBeClosed
-        fun cancel(responseId: String, requestOptions: RequestOptions): HttpResponse =
+        fun cancel(responseId: String, requestOptions: RequestOptions): HttpResponseFor<Response> =
             cancel(responseId, ResponseCancelParams.none(), requestOptions)
     }
 }

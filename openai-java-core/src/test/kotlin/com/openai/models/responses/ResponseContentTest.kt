@@ -127,10 +127,25 @@ internal class ResponseContentTest {
                 .addAnnotation(
                     ResponseOutputText.Annotation.FileCitation.builder()
                         .fileId("file_id")
+                        .filename("filename")
                         .index(0L)
                         .build()
                 )
                 .text("text")
+                .addLogprob(
+                    ResponseOutputText.Logprob.builder()
+                        .token("token")
+                        .addByte(0L)
+                        .logprob(0.0)
+                        .addTopLogprob(
+                            ResponseOutputText.Logprob.TopLogprob.builder()
+                                .token("token")
+                                .addByte(0L)
+                                .logprob(0.0)
+                                .build()
+                        )
+                        .build()
+                )
                 .build()
 
         val responseContent = ResponseContent.ofOutputText(outputText)
@@ -151,10 +166,25 @@ internal class ResponseContentTest {
                     .addAnnotation(
                         ResponseOutputText.Annotation.FileCitation.builder()
                             .fileId("file_id")
+                            .filename("filename")
                             .index(0L)
                             .build()
                     )
                     .text("text")
+                    .addLogprob(
+                        ResponseOutputText.Logprob.builder()
+                            .token("token")
+                            .addByte(0L)
+                            .logprob(0.0)
+                            .addTopLogprob(
+                                ResponseOutputText.Logprob.TopLogprob.builder()
+                                    .token("token")
+                                    .addByte(0L)
+                                    .logprob(0.0)
+                                    .build()
+                            )
+                            .build()
+                    )
                     .build()
             )
 

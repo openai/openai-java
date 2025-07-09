@@ -3,6 +3,7 @@
 package com.openai.services.async.chat
 
 import com.google.errorprone.annotations.MustBeClosed
+import com.openai.core.ClientOptions
 import com.openai.core.RequestOptions
 import com.openai.core.http.AsyncStreamResponse
 import com.openai.core.http.HttpResponseFor
@@ -18,6 +19,7 @@ import com.openai.models.chat.completions.ChatCompletionRetrieveParams
 import com.openai.models.chat.completions.ChatCompletionUpdateParams
 import com.openai.services.async.chat.completions.MessageServiceAsync
 import java.util.concurrent.CompletableFuture
+import java.util.function.Consumer
 
 interface ChatCompletionServiceAsync {
 
@@ -25,6 +27,13 @@ interface ChatCompletionServiceAsync {
      * Returns a view of this service that provides access to raw HTTP responses for each method.
      */
     fun withRawResponse(): WithRawResponse
+
+    /**
+     * Returns a view of this service with the given option modifications applied.
+     *
+     * The original service is not modified.
+     */
+    fun withOptions(modifier: Consumer<ClientOptions.Builder>): ChatCompletionServiceAsync
 
     fun messages(): MessageServiceAsync
 
@@ -216,20 +225,27 @@ interface ChatCompletionServiceAsync {
      */
     interface WithRawResponse {
 
+        /**
+         * Returns a view of this service with the given option modifications applied.
+         *
+         * The original service is not modified.
+         */
+        fun withOptions(
+            modifier: Consumer<ClientOptions.Builder>
+        ): ChatCompletionServiceAsync.WithRawResponse
+
         fun messages(): MessageServiceAsync.WithRawResponse
 
         /**
          * Returns a raw HTTP response for `post /chat/completions`, but is otherwise the same as
          * [ChatCompletionServiceAsync.create].
          */
-        @MustBeClosed
         fun create(
             params: ChatCompletionCreateParams
         ): CompletableFuture<HttpResponseFor<ChatCompletion>> =
             create(params, RequestOptions.none())
 
         /** @see [create] */
-        @MustBeClosed
         fun create(
             params: ChatCompletionCreateParams,
             requestOptions: RequestOptions = RequestOptions.none(),
@@ -256,12 +272,10 @@ interface ChatCompletionServiceAsync {
          * Returns a raw HTTP response for `get /chat/completions/{completion_id}`, but is otherwise
          * the same as [ChatCompletionServiceAsync.retrieve].
          */
-        @MustBeClosed
         fun retrieve(completionId: String): CompletableFuture<HttpResponseFor<ChatCompletion>> =
             retrieve(completionId, ChatCompletionRetrieveParams.none())
 
         /** @see [retrieve] */
-        @MustBeClosed
         fun retrieve(
             completionId: String,
             params: ChatCompletionRetrieveParams = ChatCompletionRetrieveParams.none(),
@@ -270,7 +284,6 @@ interface ChatCompletionServiceAsync {
             retrieve(params.toBuilder().completionId(completionId).build(), requestOptions)
 
         /** @see [retrieve] */
-        @MustBeClosed
         fun retrieve(
             completionId: String,
             params: ChatCompletionRetrieveParams = ChatCompletionRetrieveParams.none(),
@@ -278,21 +291,18 @@ interface ChatCompletionServiceAsync {
             retrieve(completionId, params, RequestOptions.none())
 
         /** @see [retrieve] */
-        @MustBeClosed
         fun retrieve(
             params: ChatCompletionRetrieveParams,
             requestOptions: RequestOptions = RequestOptions.none(),
         ): CompletableFuture<HttpResponseFor<ChatCompletion>>
 
         /** @see [retrieve] */
-        @MustBeClosed
         fun retrieve(
             params: ChatCompletionRetrieveParams
         ): CompletableFuture<HttpResponseFor<ChatCompletion>> =
             retrieve(params, RequestOptions.none())
 
         /** @see [retrieve] */
-        @MustBeClosed
         fun retrieve(
             completionId: String,
             requestOptions: RequestOptions,
@@ -303,7 +313,6 @@ interface ChatCompletionServiceAsync {
          * Returns a raw HTTP response for `post /chat/completions/{completion_id}`, but is
          * otherwise the same as [ChatCompletionServiceAsync.update].
          */
-        @MustBeClosed
         fun update(
             completionId: String,
             params: ChatCompletionUpdateParams,
@@ -311,7 +320,6 @@ interface ChatCompletionServiceAsync {
             update(completionId, params, RequestOptions.none())
 
         /** @see [update] */
-        @MustBeClosed
         fun update(
             completionId: String,
             params: ChatCompletionUpdateParams,
@@ -320,14 +328,12 @@ interface ChatCompletionServiceAsync {
             update(params.toBuilder().completionId(completionId).build(), requestOptions)
 
         /** @see [update] */
-        @MustBeClosed
         fun update(
             params: ChatCompletionUpdateParams
         ): CompletableFuture<HttpResponseFor<ChatCompletion>> =
             update(params, RequestOptions.none())
 
         /** @see [update] */
-        @MustBeClosed
         fun update(
             params: ChatCompletionUpdateParams,
             requestOptions: RequestOptions = RequestOptions.none(),
@@ -337,26 +343,22 @@ interface ChatCompletionServiceAsync {
          * Returns a raw HTTP response for `get /chat/completions`, but is otherwise the same as
          * [ChatCompletionServiceAsync.list].
          */
-        @MustBeClosed
         fun list(): CompletableFuture<HttpResponseFor<ChatCompletionListPageAsync>> =
             list(ChatCompletionListParams.none())
 
         /** @see [list] */
-        @MustBeClosed
         fun list(
             params: ChatCompletionListParams = ChatCompletionListParams.none(),
             requestOptions: RequestOptions = RequestOptions.none(),
         ): CompletableFuture<HttpResponseFor<ChatCompletionListPageAsync>>
 
         /** @see [list] */
-        @MustBeClosed
         fun list(
             params: ChatCompletionListParams = ChatCompletionListParams.none()
         ): CompletableFuture<HttpResponseFor<ChatCompletionListPageAsync>> =
             list(params, RequestOptions.none())
 
         /** @see [list] */
-        @MustBeClosed
         fun list(
             requestOptions: RequestOptions
         ): CompletableFuture<HttpResponseFor<ChatCompletionListPageAsync>> =
@@ -366,14 +368,12 @@ interface ChatCompletionServiceAsync {
          * Returns a raw HTTP response for `delete /chat/completions/{completion_id}`, but is
          * otherwise the same as [ChatCompletionServiceAsync.delete].
          */
-        @MustBeClosed
         fun delete(
             completionId: String
         ): CompletableFuture<HttpResponseFor<ChatCompletionDeleted>> =
             delete(completionId, ChatCompletionDeleteParams.none())
 
         /** @see [delete] */
-        @MustBeClosed
         fun delete(
             completionId: String,
             params: ChatCompletionDeleteParams = ChatCompletionDeleteParams.none(),
@@ -382,7 +382,6 @@ interface ChatCompletionServiceAsync {
             delete(params.toBuilder().completionId(completionId).build(), requestOptions)
 
         /** @see [delete] */
-        @MustBeClosed
         fun delete(
             completionId: String,
             params: ChatCompletionDeleteParams = ChatCompletionDeleteParams.none(),
@@ -390,21 +389,18 @@ interface ChatCompletionServiceAsync {
             delete(completionId, params, RequestOptions.none())
 
         /** @see [delete] */
-        @MustBeClosed
         fun delete(
             params: ChatCompletionDeleteParams,
             requestOptions: RequestOptions = RequestOptions.none(),
         ): CompletableFuture<HttpResponseFor<ChatCompletionDeleted>>
 
         /** @see [delete] */
-        @MustBeClosed
         fun delete(
             params: ChatCompletionDeleteParams
         ): CompletableFuture<HttpResponseFor<ChatCompletionDeleted>> =
             delete(params, RequestOptions.none())
 
         /** @see [delete] */
-        @MustBeClosed
         fun delete(
             completionId: String,
             requestOptions: RequestOptions,

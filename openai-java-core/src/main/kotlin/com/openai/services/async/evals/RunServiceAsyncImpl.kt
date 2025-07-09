@@ -30,6 +30,7 @@ import com.openai.models.evals.runs.RunRetrieveResponse
 import com.openai.services.async.evals.runs.OutputItemServiceAsync
 import com.openai.services.async.evals.runs.OutputItemServiceAsyncImpl
 import java.util.concurrent.CompletableFuture
+import java.util.function.Consumer
 import kotlin.jvm.optionals.getOrNull
 
 class RunServiceAsyncImpl internal constructor(private val clientOptions: ClientOptions) :
@@ -44,6 +45,9 @@ class RunServiceAsyncImpl internal constructor(private val clientOptions: Client
     }
 
     override fun withRawResponse(): RunServiceAsync.WithRawResponse = withRawResponse
+
+    override fun withOptions(modifier: Consumer<ClientOptions.Builder>): RunServiceAsync =
+        RunServiceAsyncImpl(clientOptions.toBuilder().apply(modifier::accept).build())
 
     override fun outputItems(): OutputItemServiceAsync = outputItems
 
@@ -91,6 +95,13 @@ class RunServiceAsyncImpl internal constructor(private val clientOptions: Client
             OutputItemServiceAsyncImpl.WithRawResponseImpl(clientOptions)
         }
 
+        override fun withOptions(
+            modifier: Consumer<ClientOptions.Builder>
+        ): RunServiceAsync.WithRawResponse =
+            RunServiceAsyncImpl.WithRawResponseImpl(
+                clientOptions.toBuilder().apply(modifier::accept).build()
+            )
+
         override fun outputItems(): OutputItemServiceAsync.WithRawResponse = outputItems
 
         private val createHandler: Handler<RunCreateResponse> =
@@ -106,6 +117,7 @@ class RunServiceAsyncImpl internal constructor(private val clientOptions: Client
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.POST)
+                    .baseUrl(clientOptions.baseUrl())
                     .addPathSegments("evals", params._pathParam(0), "runs")
                     .body(json(clientOptions.jsonMapper, params._body()))
                     .build()
@@ -140,6 +152,7 @@ class RunServiceAsyncImpl internal constructor(private val clientOptions: Client
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.GET)
+                    .baseUrl(clientOptions.baseUrl())
                     .addPathSegments("evals", params._pathParam(0), "runs", params._pathParam(1))
                     .build()
                     .prepareAsync(clientOptions, params, deploymentModel = null)
@@ -173,6 +186,7 @@ class RunServiceAsyncImpl internal constructor(private val clientOptions: Client
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.GET)
+                    .baseUrl(clientOptions.baseUrl())
                     .addPathSegments("evals", params._pathParam(0), "runs")
                     .build()
                     .prepareAsync(clientOptions, params, deploymentModel = null)
@@ -213,6 +227,7 @@ class RunServiceAsyncImpl internal constructor(private val clientOptions: Client
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.DELETE)
+                    .baseUrl(clientOptions.baseUrl())
                     .addPathSegments("evals", params._pathParam(0), "runs", params._pathParam(1))
                     .apply { params._body().ifPresent { body(json(clientOptions.jsonMapper, it)) } }
                     .build()
@@ -246,6 +261,7 @@ class RunServiceAsyncImpl internal constructor(private val clientOptions: Client
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.POST)
+                    .baseUrl(clientOptions.baseUrl())
                     .addPathSegments("evals", params._pathParam(0), "runs", params._pathParam(1))
                     .apply { params._body().ifPresent { body(json(clientOptions.jsonMapper, it)) } }
                     .build()

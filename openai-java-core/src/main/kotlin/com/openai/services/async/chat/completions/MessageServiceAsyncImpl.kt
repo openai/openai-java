@@ -19,6 +19,7 @@ import com.openai.models.chat.completions.messages.MessageListPageAsync
 import com.openai.models.chat.completions.messages.MessageListPageResponse
 import com.openai.models.chat.completions.messages.MessageListParams
 import java.util.concurrent.CompletableFuture
+import java.util.function.Consumer
 import kotlin.jvm.optionals.getOrNull
 
 class MessageServiceAsyncImpl internal constructor(private val clientOptions: ClientOptions) :
@@ -29,6 +30,9 @@ class MessageServiceAsyncImpl internal constructor(private val clientOptions: Cl
     }
 
     override fun withRawResponse(): MessageServiceAsync.WithRawResponse = withRawResponse
+
+    override fun withOptions(modifier: Consumer<ClientOptions.Builder>): MessageServiceAsync =
+        MessageServiceAsyncImpl(clientOptions.toBuilder().apply(modifier::accept).build())
 
     override fun list(
         params: MessageListParams,
@@ -41,6 +45,13 @@ class MessageServiceAsyncImpl internal constructor(private val clientOptions: Cl
         MessageServiceAsync.WithRawResponse {
 
         private val errorHandler: Handler<ErrorObject?> = errorHandler(clientOptions.jsonMapper)
+
+        override fun withOptions(
+            modifier: Consumer<ClientOptions.Builder>
+        ): MessageServiceAsync.WithRawResponse =
+            MessageServiceAsyncImpl.WithRawResponseImpl(
+                clientOptions.toBuilder().apply(modifier::accept).build()
+            )
 
         private val listHandler: Handler<MessageListPageResponse> =
             jsonHandler<MessageListPageResponse>(clientOptions.jsonMapper)
@@ -56,6 +67,7 @@ class MessageServiceAsyncImpl internal constructor(private val clientOptions: Cl
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.GET)
+                    .baseUrl(clientOptions.baseUrl())
                     .addPathSegments("chat", "completions", params._pathParam(0), "messages")
                     .build()
                     .prepareAsync(clientOptions, params, null)

@@ -17,19 +17,31 @@ internal class ResponseCreateParamsTest {
     @Test
     fun create() {
         ResponseCreateParams.builder()
-            .input("string")
-            .model(ChatModel.GPT_4O)
             .background(true)
-            .addInclude(ResponseIncludable.FILE_SEARCH_CALL_RESULTS)
+            .addInclude(ResponseIncludable.CODE_INTERPRETER_CALL_OUTPUTS)
+            .input("string")
             .instructions("instructions")
             .maxOutputTokens(0L)
+            .maxToolCalls(0L)
             .metadata(
                 ResponseCreateParams.Metadata.builder()
                     .putAdditionalProperty("foo", JsonValue.from("string"))
                     .build()
             )
+            .model(ChatModel.GPT_4O)
             .parallelToolCalls(true)
             .previousResponseId("previous_response_id")
+            .prompt(
+                ResponsePrompt.builder()
+                    .id("id")
+                    .variables(
+                        ResponsePrompt.Variables.builder()
+                            .putAdditionalProperty("foo", JsonValue.from("string"))
+                            .build()
+                    )
+                    .version("version")
+                    .build()
+            )
             .reasoning(
                 Reasoning.builder()
                     .effort(ReasoningEffort.LOW)
@@ -54,6 +66,7 @@ internal class ResponseCreateParamsTest {
                     .description("description")
                     .build()
             )
+            .topLogprobs(0L)
             .topP(1.0)
             .truncation(ResponseCreateParams.Truncation.AUTO)
             .user("user-1234")
@@ -64,19 +77,31 @@ internal class ResponseCreateParamsTest {
     fun body() {
         val params =
             ResponseCreateParams.builder()
-                .input("string")
-                .model(ChatModel.GPT_4O)
                 .background(true)
-                .addInclude(ResponseIncludable.FILE_SEARCH_CALL_RESULTS)
+                .addInclude(ResponseIncludable.CODE_INTERPRETER_CALL_OUTPUTS)
+                .input("string")
                 .instructions("instructions")
                 .maxOutputTokens(0L)
+                .maxToolCalls(0L)
                 .metadata(
                     ResponseCreateParams.Metadata.builder()
                         .putAdditionalProperty("foo", JsonValue.from("string"))
                         .build()
                 )
+                .model(ChatModel.GPT_4O)
                 .parallelToolCalls(true)
                 .previousResponseId("previous_response_id")
+                .prompt(
+                    ResponsePrompt.builder()
+                        .id("id")
+                        .variables(
+                            ResponsePrompt.Variables.builder()
+                                .putAdditionalProperty("foo", JsonValue.from("string"))
+                                .build()
+                        )
+                        .version("version")
+                        .build()
+                )
                 .reasoning(
                     Reasoning.builder()
                         .effort(ReasoningEffort.LOW)
@@ -105,6 +130,7 @@ internal class ResponseCreateParamsTest {
                         .description("description")
                         .build()
                 )
+                .topLogprobs(0L)
                 .topP(1.0)
                 .truncation(ResponseCreateParams.Truncation.AUTO)
                 .user("user-1234")
@@ -112,21 +138,34 @@ internal class ResponseCreateParamsTest {
 
         val body = params._body()
 
-        assertThat(body.input()).isEqualTo(ResponseCreateParams.Input.ofText("string"))
-        assertThat(body.model()).isEqualTo(ResponsesModel.ofChat(ChatModel.GPT_4O))
         assertThat(body.background()).contains(true)
         assertThat(body.include().getOrNull())
-            .containsExactly(ResponseIncludable.FILE_SEARCH_CALL_RESULTS)
+            .containsExactly(ResponseIncludable.CODE_INTERPRETER_CALL_OUTPUTS)
+        assertThat(body.input()).contains(ResponseCreateParams.Input.ofText("string"))
         assertThat(body.instructions()).contains("instructions")
         assertThat(body.maxOutputTokens()).contains(0L)
+        assertThat(body.maxToolCalls()).contains(0L)
         assertThat(body.metadata())
             .contains(
                 ResponseCreateParams.Metadata.builder()
                     .putAdditionalProperty("foo", JsonValue.from("string"))
                     .build()
             )
+        assertThat(body.model()).contains(ResponsesModel.ofChat(ChatModel.GPT_4O))
         assertThat(body.parallelToolCalls()).contains(true)
         assertThat(body.previousResponseId()).contains("previous_response_id")
+        assertThat(body.prompt())
+            .contains(
+                ResponsePrompt.builder()
+                    .id("id")
+                    .variables(
+                        ResponsePrompt.Variables.builder()
+                            .putAdditionalProperty("foo", JsonValue.from("string"))
+                            .build()
+                    )
+                    .version("version")
+                    .build()
+            )
         assertThat(body.reasoning())
             .contains(
                 Reasoning.builder()
@@ -159,6 +198,7 @@ internal class ResponseCreateParamsTest {
                         .build()
                 )
             )
+        assertThat(body.topLogprobs()).contains(0L)
         assertThat(body.topP()).contains(1.0)
         assertThat(body.truncation()).contains(ResponseCreateParams.Truncation.AUTO)
         assertThat(body.user()).contains("user-1234")
@@ -166,11 +206,8 @@ internal class ResponseCreateParamsTest {
 
     @Test
     fun bodyWithoutOptionalFields() {
-        val params = ResponseCreateParams.builder().input("string").model(ChatModel.GPT_4O).build()
+        val params = ResponseCreateParams.builder().build()
 
         val body = params._body()
-
-        assertThat(body.input()).isEqualTo(ResponseCreateParams.Input.ofText("string"))
-        assertThat(body.model()).isEqualTo(ResponsesModel.ofChat(ChatModel.GPT_4O))
     }
 }

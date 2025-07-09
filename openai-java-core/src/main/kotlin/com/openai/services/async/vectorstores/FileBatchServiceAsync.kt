@@ -2,7 +2,7 @@
 
 package com.openai.services.async.vectorstores
 
-import com.google.errorprone.annotations.MustBeClosed
+import com.openai.core.ClientOptions
 import com.openai.core.RequestOptions
 import com.openai.core.http.HttpResponseFor
 import com.openai.models.vectorstores.filebatches.FileBatchCancelParams
@@ -12,6 +12,7 @@ import com.openai.models.vectorstores.filebatches.FileBatchListFilesParams
 import com.openai.models.vectorstores.filebatches.FileBatchRetrieveParams
 import com.openai.models.vectorstores.filebatches.VectorStoreFileBatch
 import java.util.concurrent.CompletableFuture
+import java.util.function.Consumer
 
 interface FileBatchServiceAsync {
 
@@ -19,6 +20,13 @@ interface FileBatchServiceAsync {
      * Returns a view of this service that provides access to raw HTTP responses for each method.
      */
     fun withRawResponse(): WithRawResponse
+
+    /**
+     * Returns a view of this service with the given option modifications applied.
+     *
+     * The original service is not modified.
+     */
+    fun withOptions(modifier: Consumer<ClientOptions.Builder>): FileBatchServiceAsync
 
     /** Create a vector store file batch. */
     fun create(
@@ -128,10 +136,18 @@ interface FileBatchServiceAsync {
     interface WithRawResponse {
 
         /**
+         * Returns a view of this service with the given option modifications applied.
+         *
+         * The original service is not modified.
+         */
+        fun withOptions(
+            modifier: Consumer<ClientOptions.Builder>
+        ): FileBatchServiceAsync.WithRawResponse
+
+        /**
          * Returns a raw HTTP response for `post /vector_stores/{vector_store_id}/file_batches`, but
          * is otherwise the same as [FileBatchServiceAsync.create].
          */
-        @MustBeClosed
         fun create(
             vectorStoreId: String,
             params: FileBatchCreateParams,
@@ -139,7 +155,6 @@ interface FileBatchServiceAsync {
             create(vectorStoreId, params, RequestOptions.none())
 
         /** @see [create] */
-        @MustBeClosed
         fun create(
             vectorStoreId: String,
             params: FileBatchCreateParams,
@@ -148,14 +163,12 @@ interface FileBatchServiceAsync {
             create(params.toBuilder().vectorStoreId(vectorStoreId).build(), requestOptions)
 
         /** @see [create] */
-        @MustBeClosed
         fun create(
             params: FileBatchCreateParams
         ): CompletableFuture<HttpResponseFor<VectorStoreFileBatch>> =
             create(params, RequestOptions.none())
 
         /** @see [create] */
-        @MustBeClosed
         fun create(
             params: FileBatchCreateParams,
             requestOptions: RequestOptions = RequestOptions.none(),
@@ -166,7 +179,6 @@ interface FileBatchServiceAsync {
          * /vector_stores/{vector_store_id}/file_batches/{batch_id}`, but is otherwise the same as
          * [FileBatchServiceAsync.retrieve].
          */
-        @MustBeClosed
         fun retrieve(
             batchId: String,
             params: FileBatchRetrieveParams,
@@ -174,7 +186,6 @@ interface FileBatchServiceAsync {
             retrieve(batchId, params, RequestOptions.none())
 
         /** @see [retrieve] */
-        @MustBeClosed
         fun retrieve(
             batchId: String,
             params: FileBatchRetrieveParams,
@@ -183,14 +194,12 @@ interface FileBatchServiceAsync {
             retrieve(params.toBuilder().batchId(batchId).build(), requestOptions)
 
         /** @see [retrieve] */
-        @MustBeClosed
         fun retrieve(
             params: FileBatchRetrieveParams
         ): CompletableFuture<HttpResponseFor<VectorStoreFileBatch>> =
             retrieve(params, RequestOptions.none())
 
         /** @see [retrieve] */
-        @MustBeClosed
         fun retrieve(
             params: FileBatchRetrieveParams,
             requestOptions: RequestOptions = RequestOptions.none(),
@@ -201,7 +210,6 @@ interface FileBatchServiceAsync {
          * /vector_stores/{vector_store_id}/file_batches/{batch_id}/cancel`, but is otherwise the
          * same as [FileBatchServiceAsync.cancel].
          */
-        @MustBeClosed
         fun cancel(
             batchId: String,
             params: FileBatchCancelParams,
@@ -209,7 +217,6 @@ interface FileBatchServiceAsync {
             cancel(batchId, params, RequestOptions.none())
 
         /** @see [cancel] */
-        @MustBeClosed
         fun cancel(
             batchId: String,
             params: FileBatchCancelParams,
@@ -218,14 +225,12 @@ interface FileBatchServiceAsync {
             cancel(params.toBuilder().batchId(batchId).build(), requestOptions)
 
         /** @see [cancel] */
-        @MustBeClosed
         fun cancel(
             params: FileBatchCancelParams
         ): CompletableFuture<HttpResponseFor<VectorStoreFileBatch>> =
             cancel(params, RequestOptions.none())
 
         /** @see [cancel] */
-        @MustBeClosed
         fun cancel(
             params: FileBatchCancelParams,
             requestOptions: RequestOptions = RequestOptions.none(),
@@ -236,7 +241,6 @@ interface FileBatchServiceAsync {
          * /vector_stores/{vector_store_id}/file_batches/{batch_id}/files`, but is otherwise the
          * same as [FileBatchServiceAsync.listFiles].
          */
-        @MustBeClosed
         fun listFiles(
             batchId: String,
             params: FileBatchListFilesParams,
@@ -244,7 +248,6 @@ interface FileBatchServiceAsync {
             listFiles(batchId, params, RequestOptions.none())
 
         /** @see [listFiles] */
-        @MustBeClosed
         fun listFiles(
             batchId: String,
             params: FileBatchListFilesParams,
@@ -253,14 +256,12 @@ interface FileBatchServiceAsync {
             listFiles(params.toBuilder().batchId(batchId).build(), requestOptions)
 
         /** @see [listFiles] */
-        @MustBeClosed
         fun listFiles(
             params: FileBatchListFilesParams
         ): CompletableFuture<HttpResponseFor<FileBatchListFilesPageAsync>> =
             listFiles(params, RequestOptions.none())
 
         /** @see [listFiles] */
-        @MustBeClosed
         fun listFiles(
             params: FileBatchListFilesParams,
             requestOptions: RequestOptions = RequestOptions.none(),

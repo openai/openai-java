@@ -7,6 +7,8 @@ import com.openai.client.okhttp.OpenAIOkHttpClient;
 import com.openai.models.ChatModel;
 import com.openai.models.chat.completions.ChatCompletionCreateParams;
 import com.openai.models.chat.completions.StructuredChatCompletionCreateParams;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.List;
 
 public final class StructuredOutputsExample {
@@ -32,6 +34,7 @@ public final class StructuredOutputsExample {
         public Person author;
 
         @JsonPropertyDescription("The year in which the book was first published.")
+        @Schema(minimum = "1500")
         public int publicationYear;
 
         public String genre;
@@ -46,6 +49,7 @@ public final class StructuredOutputsExample {
     }
 
     public static class BookList {
+        @ArraySchema(maxItems = 100)
         public List<Book> books;
     }
 

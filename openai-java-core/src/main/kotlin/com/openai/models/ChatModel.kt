@@ -70,6 +70,8 @@ class ChatModel @JsonCreator private constructor(private val value: JsonField<St
 
         @JvmField val GPT_4O_AUDIO_PREVIEW_2024_12_17 = of("gpt-4o-audio-preview-2024-12-17")
 
+        @JvmField val GPT_4O_AUDIO_PREVIEW_2025_06_03 = of("gpt-4o-audio-preview-2025-06-03")
+
         @JvmField val GPT_4O_MINI_AUDIO_PREVIEW = of("gpt-4o-mini-audio-preview")
 
         @JvmField
@@ -160,6 +162,7 @@ class ChatModel @JsonCreator private constructor(private val value: JsonField<St
         GPT_4O_AUDIO_PREVIEW,
         GPT_4O_AUDIO_PREVIEW_2024_10_01,
         GPT_4O_AUDIO_PREVIEW_2024_12_17,
+        GPT_4O_AUDIO_PREVIEW_2025_06_03,
         GPT_4O_MINI_AUDIO_PREVIEW,
         GPT_4O_MINI_AUDIO_PREVIEW_2024_12_17,
         GPT_4O_SEARCH_PREVIEW,
@@ -226,6 +229,7 @@ class ChatModel @JsonCreator private constructor(private val value: JsonField<St
         GPT_4O_AUDIO_PREVIEW,
         GPT_4O_AUDIO_PREVIEW_2024_10_01,
         GPT_4O_AUDIO_PREVIEW_2024_12_17,
+        GPT_4O_AUDIO_PREVIEW_2025_06_03,
         GPT_4O_MINI_AUDIO_PREVIEW,
         GPT_4O_MINI_AUDIO_PREVIEW_2024_12_17,
         GPT_4O_SEARCH_PREVIEW,
@@ -293,6 +297,7 @@ class ChatModel @JsonCreator private constructor(private val value: JsonField<St
             GPT_4O_AUDIO_PREVIEW -> Value.GPT_4O_AUDIO_PREVIEW
             GPT_4O_AUDIO_PREVIEW_2024_10_01 -> Value.GPT_4O_AUDIO_PREVIEW_2024_10_01
             GPT_4O_AUDIO_PREVIEW_2024_12_17 -> Value.GPT_4O_AUDIO_PREVIEW_2024_12_17
+            GPT_4O_AUDIO_PREVIEW_2025_06_03 -> Value.GPT_4O_AUDIO_PREVIEW_2025_06_03
             GPT_4O_MINI_AUDIO_PREVIEW -> Value.GPT_4O_MINI_AUDIO_PREVIEW
             GPT_4O_MINI_AUDIO_PREVIEW_2024_12_17 -> Value.GPT_4O_MINI_AUDIO_PREVIEW_2024_12_17
             GPT_4O_SEARCH_PREVIEW -> Value.GPT_4O_SEARCH_PREVIEW
@@ -360,6 +365,7 @@ class ChatModel @JsonCreator private constructor(private val value: JsonField<St
             GPT_4O_AUDIO_PREVIEW -> Known.GPT_4O_AUDIO_PREVIEW
             GPT_4O_AUDIO_PREVIEW_2024_10_01 -> Known.GPT_4O_AUDIO_PREVIEW_2024_10_01
             GPT_4O_AUDIO_PREVIEW_2024_12_17 -> Known.GPT_4O_AUDIO_PREVIEW_2024_12_17
+            GPT_4O_AUDIO_PREVIEW_2025_06_03 -> Known.GPT_4O_AUDIO_PREVIEW_2025_06_03
             GPT_4O_MINI_AUDIO_PREVIEW -> Known.GPT_4O_MINI_AUDIO_PREVIEW
             GPT_4O_MINI_AUDIO_PREVIEW_2024_12_17 -> Known.GPT_4O_MINI_AUDIO_PREVIEW_2024_12_17
             GPT_4O_SEARCH_PREVIEW -> Known.GPT_4O_SEARCH_PREVIEW

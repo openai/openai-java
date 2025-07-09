@@ -18,6 +18,7 @@ import com.openai.models.ErrorObject
 import com.openai.models.finetuning.jobs.checkpoints.CheckpointListPage
 import com.openai.models.finetuning.jobs.checkpoints.CheckpointListPageResponse
 import com.openai.models.finetuning.jobs.checkpoints.CheckpointListParams
+import java.util.function.Consumer
 import kotlin.jvm.optionals.getOrNull
 
 class CheckpointServiceImpl internal constructor(private val clientOptions: ClientOptions) :
@@ -28,6 +29,9 @@ class CheckpointServiceImpl internal constructor(private val clientOptions: Clie
     }
 
     override fun withRawResponse(): CheckpointService.WithRawResponse = withRawResponse
+
+    override fun withOptions(modifier: Consumer<ClientOptions.Builder>): CheckpointService =
+        CheckpointServiceImpl(clientOptions.toBuilder().apply(modifier::accept).build())
 
     override fun list(
         params: CheckpointListParams,
@@ -40,6 +44,13 @@ class CheckpointServiceImpl internal constructor(private val clientOptions: Clie
         CheckpointService.WithRawResponse {
 
         private val errorHandler: Handler<ErrorObject?> = errorHandler(clientOptions.jsonMapper)
+
+        override fun withOptions(
+            modifier: Consumer<ClientOptions.Builder>
+        ): CheckpointService.WithRawResponse =
+            CheckpointServiceImpl.WithRawResponseImpl(
+                clientOptions.toBuilder().apply(modifier::accept).build()
+            )
 
         private val listHandler: Handler<CheckpointListPageResponse> =
             jsonHandler<CheckpointListPageResponse>(clientOptions.jsonMapper)
@@ -55,6 +66,7 @@ class CheckpointServiceImpl internal constructor(private val clientOptions: Clie
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.GET)
+                    .baseUrl(clientOptions.baseUrl())
                     .addPathSegments("fine_tuning", "jobs", params._pathParam(0), "checkpoints")
                     .build()
                     .prepare(clientOptions, params, deploymentModel = null)

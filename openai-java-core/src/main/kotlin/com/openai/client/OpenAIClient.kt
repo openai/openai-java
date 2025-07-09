@@ -2,6 +2,7 @@
 
 package com.openai.client
 
+import com.openai.core.ClientOptions
 import com.openai.services.blocking.AudioService
 import com.openai.services.blocking.BatchService
 import com.openai.services.blocking.BetaService
@@ -19,6 +20,8 @@ import com.openai.services.blocking.ModerationService
 import com.openai.services.blocking.ResponseService
 import com.openai.services.blocking.UploadService
 import com.openai.services.blocking.VectorStoreService
+import com.openai.services.blocking.WebhookService
+import java.util.function.Consumer
 
 /**
  * A client for interacting with the OpenAI REST API synchronously. You can also switch to
@@ -49,6 +52,13 @@ interface OpenAIClient {
      */
     fun withRawResponse(): WithRawResponse
 
+    /**
+     * Returns a view of this service with the given option modifications applied.
+     *
+     * The original service is not modified.
+     */
+    fun withOptions(modifier: Consumer<ClientOptions.Builder>): OpenAIClient
+
     fun completions(): CompletionService
 
     fun chat(): ChatService
@@ -70,6 +80,8 @@ interface OpenAIClient {
     fun graders(): GraderService
 
     fun vectorStores(): VectorStoreService
+
+    fun webhooks(): WebhookService
 
     fun beta(): BetaService
 
@@ -99,6 +111,13 @@ interface OpenAIClient {
     /** A view of [OpenAIClient] that provides access to raw HTTP responses for each method. */
     interface WithRawResponse {
 
+        /**
+         * Returns a view of this service with the given option modifications applied.
+         *
+         * The original service is not modified.
+         */
+        fun withOptions(modifier: Consumer<ClientOptions.Builder>): OpenAIClient.WithRawResponse
+
         fun completions(): CompletionService.WithRawResponse
 
         fun chat(): ChatService.WithRawResponse
@@ -120,6 +139,8 @@ interface OpenAIClient {
         fun graders(): GraderService.WithRawResponse
 
         fun vectorStores(): VectorStoreService.WithRawResponse
+
+        fun webhooks(): WebhookService.WithRawResponse
 
         fun beta(): BetaService.WithRawResponse
 

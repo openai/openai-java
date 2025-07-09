@@ -30,7 +30,16 @@ import com.openai.core.http.QueryParams
 import com.openai.core.toImmutable
 import com.openai.errors.OpenAIInvalidDataException
 import com.openai.models.ReasoningEffort
+import com.openai.models.ResponseFormatJsonObject
+import com.openai.models.ResponseFormatText
+import com.openai.models.responses.ComputerTool
+import com.openai.models.responses.FileSearchTool
+import com.openai.models.responses.FunctionTool
+import com.openai.models.responses.ResponseFormatTextConfig
+import com.openai.models.responses.ResponseFormatTextJsonSchemaConfig
 import com.openai.models.responses.ResponseInputText
+import com.openai.models.responses.Tool
+import com.openai.models.responses.WebSearchTool
 import java.util.Collections
 import java.util.Objects
 import java.util.Optional
@@ -5295,6 +5304,8 @@ private constructor(
                 private val maxCompletionTokens: JsonField<Long>,
                 private val seed: JsonField<Long>,
                 private val temperature: JsonField<Double>,
+                private val text: JsonField<Text>,
+                private val tools: JsonField<List<Tool>>,
                 private val topP: JsonField<Double>,
                 private val additionalProperties: MutableMap<String, JsonValue>,
             ) {
@@ -5308,10 +5319,14 @@ private constructor(
                     @JsonProperty("temperature")
                     @ExcludeMissing
                     temperature: JsonField<Double> = JsonMissing.of(),
+                    @JsonProperty("text") @ExcludeMissing text: JsonField<Text> = JsonMissing.of(),
+                    @JsonProperty("tools")
+                    @ExcludeMissing
+                    tools: JsonField<List<Tool>> = JsonMissing.of(),
                     @JsonProperty("top_p")
                     @ExcludeMissing
                     topP: JsonField<Double> = JsonMissing.of(),
-                ) : this(maxCompletionTokens, seed, temperature, topP, mutableMapOf())
+                ) : this(maxCompletionTokens, seed, temperature, text, tools, topP, mutableMapOf())
 
                 /**
                  * The maximum number of tokens in the generated output.
@@ -5337,6 +5352,37 @@ private constructor(
                  *   if the server responded with an unexpected value).
                  */
                 fun temperature(): Optional<Double> = temperature.getOptional("temperature")
+
+                /**
+                 * Configuration options for a text response from the model. Can be plain text or
+                 * structured JSON data. Learn more:
+                 * - [Text inputs and outputs](https://platform.openai.com/docs/guides/text)
+                 * - [Structured
+                 *   Outputs](https://platform.openai.com/docs/guides/structured-outputs)
+                 *
+                 * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g.
+                 *   if the server responded with an unexpected value).
+                 */
+                fun text(): Optional<Text> = text.getOptional("text")
+
+                /**
+                 * An array of tools the model may call while generating a response. You can specify
+                 * which tool to use by setting the `tool_choice` parameter.
+                 *
+                 * The two categories of tools you can provide the model are:
+                 * - **Built-in tools**: Tools that are provided by OpenAI that extend the model's
+                 *   capabilities, like
+                 *   [web search](https://platform.openai.com/docs/guides/tools-web-search) or
+                 *   [file search](https://platform.openai.com/docs/guides/tools-file-search). Learn
+                 *   more about [built-in tools](https://platform.openai.com/docs/guides/tools).
+                 * - **Function calls (custom tools)**: Functions that are defined by you, enabling
+                 *   the model to call your own code. Learn more about
+                 *   [function calling](https://platform.openai.com/docs/guides/function-calling).
+                 *
+                 * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g.
+                 *   if the server responded with an unexpected value).
+                 */
+                fun tools(): Optional<List<Tool>> = tools.getOptional("tools")
 
                 /**
                  * An alternative to temperature for nucleus sampling; 1.0 includes all tokens.
@@ -5375,6 +5421,22 @@ private constructor(
                 fun _temperature(): JsonField<Double> = temperature
 
                 /**
+                 * Returns the raw JSON value of [text].
+                 *
+                 * Unlike [text], this method doesn't throw if the JSON field has an unexpected
+                 * type.
+                 */
+                @JsonProperty("text") @ExcludeMissing fun _text(): JsonField<Text> = text
+
+                /**
+                 * Returns the raw JSON value of [tools].
+                 *
+                 * Unlike [tools], this method doesn't throw if the JSON field has an unexpected
+                 * type.
+                 */
+                @JsonProperty("tools") @ExcludeMissing fun _tools(): JsonField<List<Tool>> = tools
+
+                /**
                  * Returns the raw JSON value of [topP].
                  *
                  * Unlike [topP], this method doesn't throw if the JSON field has an unexpected
@@ -5408,6 +5470,8 @@ private constructor(
                     private var maxCompletionTokens: JsonField<Long> = JsonMissing.of()
                     private var seed: JsonField<Long> = JsonMissing.of()
                     private var temperature: JsonField<Double> = JsonMissing.of()
+                    private var text: JsonField<Text> = JsonMissing.of()
+                    private var tools: JsonField<MutableList<Tool>>? = null
                     private var topP: JsonField<Double> = JsonMissing.of()
                     private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
@@ -5416,6 +5480,8 @@ private constructor(
                         maxCompletionTokens = samplingParams.maxCompletionTokens
                         seed = samplingParams.seed
                         temperature = samplingParams.temperature
+                        text = samplingParams.text
+                        tools = samplingParams.tools.map { it.toMutableList() }
                         topP = samplingParams.topP
                         additionalProperties = samplingParams.additionalProperties.toMutableMap()
                     }
@@ -5460,6 +5526,141 @@ private constructor(
                     fun temperature(temperature: JsonField<Double>) = apply {
                         this.temperature = temperature
                     }
+
+                    /**
+                     * Configuration options for a text response from the model. Can be plain text
+                     * or structured JSON data. Learn more:
+                     * - [Text inputs and outputs](https://platform.openai.com/docs/guides/text)
+                     * - [Structured
+                     *   Outputs](https://platform.openai.com/docs/guides/structured-outputs)
+                     */
+                    fun text(text: Text) = text(JsonField.of(text))
+
+                    /**
+                     * Sets [Builder.text] to an arbitrary JSON value.
+                     *
+                     * You should usually call [Builder.text] with a well-typed [Text] value
+                     * instead. This method is primarily for setting the field to an undocumented or
+                     * not yet supported value.
+                     */
+                    fun text(text: JsonField<Text>) = apply { this.text = text }
+
+                    /**
+                     * An array of tools the model may call while generating a response. You can
+                     * specify which tool to use by setting the `tool_choice` parameter.
+                     *
+                     * The two categories of tools you can provide the model are:
+                     * - **Built-in tools**: Tools that are provided by OpenAI that extend the
+                     *   model's capabilities, like
+                     *   [web search](https://platform.openai.com/docs/guides/tools-web-search) or
+                     *   [file search](https://platform.openai.com/docs/guides/tools-file-search).
+                     *   Learn more about
+                     *   [built-in tools](https://platform.openai.com/docs/guides/tools).
+                     * - **Function calls (custom tools)**: Functions that are defined by you,
+                     *   enabling the model to call your own code. Learn more about
+                     *   [function calling](https://platform.openai.com/docs/guides/function-calling).
+                     */
+                    fun tools(tools: List<Tool>) = tools(JsonField.of(tools))
+
+                    /**
+                     * Sets [Builder.tools] to an arbitrary JSON value.
+                     *
+                     * You should usually call [Builder.tools] with a well-typed `List<Tool>` value
+                     * instead. This method is primarily for setting the field to an undocumented or
+                     * not yet supported value.
+                     */
+                    fun tools(tools: JsonField<List<Tool>>) = apply {
+                        this.tools = tools.map { it.toMutableList() }
+                    }
+
+                    /**
+                     * Adds a single [Tool] to [tools].
+                     *
+                     * @throws IllegalStateException if the field was previously set to a non-list.
+                     */
+                    fun addTool(tool: Tool) = apply {
+                        tools =
+                            (tools ?: JsonField.of(mutableListOf())).also {
+                                checkKnown("tools", it).add(tool)
+                            }
+                    }
+
+                    /** Alias for calling [addTool] with `Tool.ofFunction(function)`. */
+                    fun addTool(function: FunctionTool) = addTool(Tool.ofFunction(function))
+
+                    /** Alias for calling [addTool] with `Tool.ofFileSearch(fileSearch)`. */
+                    fun addTool(fileSearch: FileSearchTool) = addTool(Tool.ofFileSearch(fileSearch))
+
+                    /**
+                     * Alias for calling [addTool] with the following:
+                     * ```java
+                     * FileSearchTool.builder()
+                     *     .vectorStoreIds(vectorStoreIds)
+                     *     .build()
+                     * ```
+                     */
+                    fun addFileSearchTool(vectorStoreIds: List<String>) =
+                        addTool(FileSearchTool.builder().vectorStoreIds(vectorStoreIds).build())
+
+                    /** Alias for calling [addTool] with `Tool.ofWebSearch(webSearch)`. */
+                    fun addTool(webSearch: WebSearchTool) = addTool(Tool.ofWebSearch(webSearch))
+
+                    /**
+                     * Alias for calling [addTool] with
+                     * `Tool.ofComputerUsePreview(computerUsePreview)`.
+                     */
+                    fun addTool(computerUsePreview: ComputerTool) =
+                        addTool(Tool.ofComputerUsePreview(computerUsePreview))
+
+                    /** Alias for calling [addTool] with `Tool.ofMcp(mcp)`. */
+                    fun addTool(mcp: Tool.Mcp) = addTool(Tool.ofMcp(mcp))
+
+                    /**
+                     * Alias for calling [addTool] with `Tool.ofCodeInterpreter(codeInterpreter)`.
+                     */
+                    fun addTool(codeInterpreter: Tool.CodeInterpreter) =
+                        addTool(Tool.ofCodeInterpreter(codeInterpreter))
+
+                    /**
+                     * Alias for calling [addTool] with the following:
+                     * ```java
+                     * Tool.CodeInterpreter.builder()
+                     *     .container(container)
+                     *     .build()
+                     * ```
+                     */
+                    fun addCodeInterpreterTool(container: Tool.CodeInterpreter.Container) =
+                        addTool(Tool.CodeInterpreter.builder().container(container).build())
+
+                    /**
+                     * Alias for calling [addCodeInterpreterTool] with
+                     * `Tool.CodeInterpreter.Container.ofString(string)`.
+                     */
+                    fun addCodeInterpreterTool(string: String) =
+                        addCodeInterpreterTool(Tool.CodeInterpreter.Container.ofString(string))
+
+                    /**
+                     * Alias for calling [addCodeInterpreterTool] with
+                     * `Tool.CodeInterpreter.Container.ofCodeInterpreterToolAuto(codeInterpreterToolAuto)`.
+                     */
+                    fun addCodeInterpreterTool(
+                        codeInterpreterToolAuto:
+                            Tool.CodeInterpreter.Container.CodeInterpreterToolAuto
+                    ) =
+                        addCodeInterpreterTool(
+                            Tool.CodeInterpreter.Container.ofCodeInterpreterToolAuto(
+                                codeInterpreterToolAuto
+                            )
+                        )
+
+                    /**
+                     * Alias for calling [addTool] with `Tool.ofImageGeneration(imageGeneration)`.
+                     */
+                    fun addTool(imageGeneration: Tool.ImageGeneration) =
+                        addTool(Tool.ofImageGeneration(imageGeneration))
+
+                    /** Alias for calling [addTool] with `Tool.ofLocalShell()`. */
+                    fun addToolLocalShell() = addTool(Tool.ofLocalShell())
 
                     /**
                      * An alternative to temperature for nucleus sampling; 1.0 includes all tokens.
@@ -5507,6 +5708,8 @@ private constructor(
                             maxCompletionTokens,
                             seed,
                             temperature,
+                            text,
+                            (tools ?: JsonMissing.of()).map { it.toImmutable() },
                             topP,
                             additionalProperties.toMutableMap(),
                         )
@@ -5522,6 +5725,8 @@ private constructor(
                     maxCompletionTokens()
                     seed()
                     temperature()
+                    text().ifPresent { it.validate() }
+                    tools().ifPresent { it.forEach { it.validate() } }
                     topP()
                     validated = true
                 }
@@ -5545,24 +5750,231 @@ private constructor(
                     (if (maxCompletionTokens.asKnown().isPresent) 1 else 0) +
                         (if (seed.asKnown().isPresent) 1 else 0) +
                         (if (temperature.asKnown().isPresent) 1 else 0) +
+                        (text.asKnown().getOrNull()?.validity() ?: 0) +
+                        (tools.asKnown().getOrNull()?.sumOf { it.validity().toInt() } ?: 0) +
                         (if (topP.asKnown().isPresent) 1 else 0)
+
+                /**
+                 * Configuration options for a text response from the model. Can be plain text or
+                 * structured JSON data. Learn more:
+                 * - [Text inputs and outputs](https://platform.openai.com/docs/guides/text)
+                 * - [Structured
+                 *   Outputs](https://platform.openai.com/docs/guides/structured-outputs)
+                 */
+                class Text
+                private constructor(
+                    private val format: JsonField<ResponseFormatTextConfig>,
+                    private val additionalProperties: MutableMap<String, JsonValue>,
+                ) {
+
+                    @JsonCreator
+                    private constructor(
+                        @JsonProperty("format")
+                        @ExcludeMissing
+                        format: JsonField<ResponseFormatTextConfig> = JsonMissing.of()
+                    ) : this(format, mutableMapOf())
+
+                    /**
+                     * An object specifying the format that the model must output.
+                     *
+                     * Configuring `{ "type": "json_schema" }` enables Structured Outputs, which
+                     * ensures the model will match your supplied JSON schema. Learn more in the
+                     * [Structured Outputs guide](https://platform.openai.com/docs/guides/structured-outputs).
+                     *
+                     * The default format is `{ "type": "text" }` with no additional options.
+                     *
+                     * **Not recommended for gpt-4o and newer models:**
+                     *
+                     * Setting to `{ "type": "json_object" }` enables the older JSON mode, which
+                     * ensures the message the model generates is valid JSON. Using `json_schema` is
+                     * preferred for models that support it.
+                     *
+                     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type
+                     *   (e.g. if the server responded with an unexpected value).
+                     */
+                    fun format(): Optional<ResponseFormatTextConfig> = format.getOptional("format")
+
+                    /**
+                     * Returns the raw JSON value of [format].
+                     *
+                     * Unlike [format], this method doesn't throw if the JSON field has an
+                     * unexpected type.
+                     */
+                    @JsonProperty("format")
+                    @ExcludeMissing
+                    fun _format(): JsonField<ResponseFormatTextConfig> = format
+
+                    @JsonAnySetter
+                    private fun putAdditionalProperty(key: String, value: JsonValue) {
+                        additionalProperties.put(key, value)
+                    }
+
+                    @JsonAnyGetter
+                    @ExcludeMissing
+                    fun _additionalProperties(): Map<String, JsonValue> =
+                        Collections.unmodifiableMap(additionalProperties)
+
+                    fun toBuilder() = Builder().from(this)
+
+                    companion object {
+
+                        /** Returns a mutable builder for constructing an instance of [Text]. */
+                        @JvmStatic fun builder() = Builder()
+                    }
+
+                    /** A builder for [Text]. */
+                    class Builder internal constructor() {
+
+                        private var format: JsonField<ResponseFormatTextConfig> = JsonMissing.of()
+                        private var additionalProperties: MutableMap<String, JsonValue> =
+                            mutableMapOf()
+
+                        @JvmSynthetic
+                        internal fun from(text: Text) = apply {
+                            format = text.format
+                            additionalProperties = text.additionalProperties.toMutableMap()
+                        }
+
+                        /**
+                         * An object specifying the format that the model must output.
+                         *
+                         * Configuring `{ "type": "json_schema" }` enables Structured Outputs, which
+                         * ensures the model will match your supplied JSON schema. Learn more in the
+                         * [Structured Outputs guide](https://platform.openai.com/docs/guides/structured-outputs).
+                         *
+                         * The default format is `{ "type": "text" }` with no additional options.
+                         *
+                         * **Not recommended for gpt-4o and newer models:**
+                         *
+                         * Setting to `{ "type": "json_object" }` enables the older JSON mode, which
+                         * ensures the message the model generates is valid JSON. Using
+                         * `json_schema` is preferred for models that support it.
+                         */
+                        fun format(format: ResponseFormatTextConfig) = format(JsonField.of(format))
+
+                        /**
+                         * Sets [Builder.format] to an arbitrary JSON value.
+                         *
+                         * You should usually call [Builder.format] with a well-typed
+                         * [ResponseFormatTextConfig] value instead. This method is primarily for
+                         * setting the field to an undocumented or not yet supported value.
+                         */
+                        fun format(format: JsonField<ResponseFormatTextConfig>) = apply {
+                            this.format = format
+                        }
+
+                        /**
+                         * Alias for calling [format] with `ResponseFormatTextConfig.ofText(text)`.
+                         */
+                        fun format(text: ResponseFormatText) =
+                            format(ResponseFormatTextConfig.ofText(text))
+
+                        /**
+                         * Alias for calling [format] with
+                         * `ResponseFormatTextConfig.ofJsonSchema(jsonSchema)`.
+                         */
+                        fun format(jsonSchema: ResponseFormatTextJsonSchemaConfig) =
+                            format(ResponseFormatTextConfig.ofJsonSchema(jsonSchema))
+
+                        /**
+                         * Alias for calling [format] with
+                         * `ResponseFormatTextConfig.ofJsonObject(jsonObject)`.
+                         */
+                        fun format(jsonObject: ResponseFormatJsonObject) =
+                            format(ResponseFormatTextConfig.ofJsonObject(jsonObject))
+
+                        fun additionalProperties(additionalProperties: Map<String, JsonValue>) =
+                            apply {
+                                this.additionalProperties.clear()
+                                putAllAdditionalProperties(additionalProperties)
+                            }
+
+                        fun putAdditionalProperty(key: String, value: JsonValue) = apply {
+                            additionalProperties.put(key, value)
+                        }
+
+                        fun putAllAdditionalProperties(
+                            additionalProperties: Map<String, JsonValue>
+                        ) = apply { this.additionalProperties.putAll(additionalProperties) }
+
+                        fun removeAdditionalProperty(key: String) = apply {
+                            additionalProperties.remove(key)
+                        }
+
+                        fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                            keys.forEach(::removeAdditionalProperty)
+                        }
+
+                        /**
+                         * Returns an immutable instance of [Text].
+                         *
+                         * Further updates to this [Builder] will not mutate the returned instance.
+                         */
+                        fun build(): Text = Text(format, additionalProperties.toMutableMap())
+                    }
+
+                    private var validated: Boolean = false
+
+                    fun validate(): Text = apply {
+                        if (validated) {
+                            return@apply
+                        }
+
+                        format().ifPresent { it.validate() }
+                        validated = true
+                    }
+
+                    fun isValid(): Boolean =
+                        try {
+                            validate()
+                            true
+                        } catch (e: OpenAIInvalidDataException) {
+                            false
+                        }
+
+                    /**
+                     * Returns a score indicating how many valid values are contained in this object
+                     * recursively.
+                     *
+                     * Used for best match union deserialization.
+                     */
+                    @JvmSynthetic
+                    internal fun validity(): Int = (format.asKnown().getOrNull()?.validity() ?: 0)
+
+                    override fun equals(other: Any?): Boolean {
+                        if (this === other) {
+                            return true
+                        }
+
+                        return /* spotless:off */ other is Text && format == other.format && additionalProperties == other.additionalProperties /* spotless:on */
+                    }
+
+                    /* spotless:off */
+                    private val hashCode: Int by lazy { Objects.hash(format, additionalProperties) }
+                    /* spotless:on */
+
+                    override fun hashCode(): Int = hashCode
+
+                    override fun toString() =
+                        "Text{format=$format, additionalProperties=$additionalProperties}"
+                }
 
                 override fun equals(other: Any?): Boolean {
                     if (this === other) {
                         return true
                     }
 
-                    return /* spotless:off */ other is SamplingParams && maxCompletionTokens == other.maxCompletionTokens && seed == other.seed && temperature == other.temperature && topP == other.topP && additionalProperties == other.additionalProperties /* spotless:on */
+                    return /* spotless:off */ other is SamplingParams && maxCompletionTokens == other.maxCompletionTokens && seed == other.seed && temperature == other.temperature && text == other.text && tools == other.tools && topP == other.topP && additionalProperties == other.additionalProperties /* spotless:on */
                 }
 
                 /* spotless:off */
-                private val hashCode: Int by lazy { Objects.hash(maxCompletionTokens, seed, temperature, topP, additionalProperties) }
+                private val hashCode: Int by lazy { Objects.hash(maxCompletionTokens, seed, temperature, text, tools, topP, additionalProperties) }
                 /* spotless:on */
 
                 override fun hashCode(): Int = hashCode
 
                 override fun toString() =
-                    "SamplingParams{maxCompletionTokens=$maxCompletionTokens, seed=$seed, temperature=$temperature, topP=$topP, additionalProperties=$additionalProperties}"
+                    "SamplingParams{maxCompletionTokens=$maxCompletionTokens, seed=$seed, temperature=$temperature, text=$text, tools=$tools, topP=$topP, additionalProperties=$additionalProperties}"
             }
 
             override fun equals(other: Any?): Boolean {

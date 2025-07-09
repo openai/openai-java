@@ -32,7 +32,7 @@ class StructuredResponse<T : Any>(
     fun incompleteDetails(): Optional<Response.IncompleteDetails> = rawResponse.incompleteDetails()
 
     /** @see Response.instructions */
-    fun instructions(): Optional<String> = rawResponse.instructions()
+    fun instructions(): Optional<Response.Instructions> = rawResponse.instructions()
 
     /** @see Response.metadata */
     fun metadata(): Optional<Response.Metadata> = rawResponse.metadata()
@@ -67,11 +67,20 @@ class StructuredResponse<T : Any>(
     /** @see Response.topP */
     fun topP(): Optional<Double> = rawResponse.topP()
 
+    /** @see Response.maxToolCalls */
+    fun maxToolCalls(): Optional<Long> = rawResponse.maxToolCalls()
+
+    /** @see Response.topLogprobs */
+    fun topLogprobs(): Optional<Long> = rawResponse.topLogprobs()
+
     /** @see Response.maxOutputTokens */
     fun maxOutputTokens(): Optional<Long> = rawResponse.maxOutputTokens()
 
     /** @see Response.previousResponseId */
     fun previousResponseId(): Optional<String> = rawResponse.previousResponseId()
+
+    /** @see Response.prompt */
+    fun prompt(): Optional<ResponsePrompt> = rawResponse.prompt()
 
     /** @see Response.reasoning */
     fun reasoning(): Optional<Reasoning> = rawResponse.reasoning()
@@ -111,7 +120,7 @@ class StructuredResponse<T : Any>(
         rawResponse._incompleteDetails()
 
     /** @see Response._instructions */
-    fun _instructions(): JsonField<String> = rawResponse._instructions()
+    fun _instructions(): JsonField<Response.Instructions> = rawResponse._instructions()
 
     /** @see Response._metadata */
     fun _metadata(): JsonField<Response.Metadata> = rawResponse._metadata()
@@ -137,11 +146,20 @@ class StructuredResponse<T : Any>(
     /** @see Response._topP */
     fun _topP(): JsonField<Double> = rawResponse._topP()
 
+    /** @see Response._maxToolCalls */
+    fun _maxToolCalls(): JsonField<Long> = rawResponse._maxToolCalls()
+
+    /** @see Response._topLogprobs */
+    fun _topLogprobs(): JsonField<Long> = rawResponse._topLogprobs()
+
     /** @see Response._maxOutputTokens */
     fun _maxOutputTokens(): JsonField<Long> = rawResponse._maxOutputTokens()
 
     /** @see Response._previousResponseId */
     fun _previousResponseId(): JsonField<String> = rawResponse._previousResponseId()
+
+    /** @see Response._prompt */
+    fun _prompt(): JsonField<ResponsePrompt> = rawResponse._prompt()
 
     /** @see Response._reasoning */
     fun _reasoning(): JsonField<Reasoning> = rawResponse._reasoning()

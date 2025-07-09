@@ -18,6 +18,7 @@ import com.openai.core.prepare
 import com.openai.models.ErrorObject
 import com.openai.models.uploads.parts.PartCreateParams
 import com.openai.models.uploads.parts.UploadPart
+import java.util.function.Consumer
 import kotlin.jvm.optionals.getOrNull
 
 class PartServiceImpl internal constructor(private val clientOptions: ClientOptions) : PartService {
@@ -28,6 +29,9 @@ class PartServiceImpl internal constructor(private val clientOptions: ClientOpti
 
     override fun withRawResponse(): PartService.WithRawResponse = withRawResponse
 
+    override fun withOptions(modifier: Consumer<ClientOptions.Builder>): PartService =
+        PartServiceImpl(clientOptions.toBuilder().apply(modifier::accept).build())
+
     override fun create(params: PartCreateParams, requestOptions: RequestOptions): UploadPart =
         // post /uploads/{upload_id}/parts
         withRawResponse().create(params, requestOptions).parse()
@@ -36,6 +40,13 @@ class PartServiceImpl internal constructor(private val clientOptions: ClientOpti
         PartService.WithRawResponse {
 
         private val errorHandler: Handler<ErrorObject?> = errorHandler(clientOptions.jsonMapper)
+
+        override fun withOptions(
+            modifier: Consumer<ClientOptions.Builder>
+        ): PartService.WithRawResponse =
+            PartServiceImpl.WithRawResponseImpl(
+                clientOptions.toBuilder().apply(modifier::accept).build()
+            )
 
         private val createHandler: Handler<UploadPart> =
             jsonHandler<UploadPart>(clientOptions.jsonMapper).withErrorHandler(errorHandler)
@@ -50,6 +61,7 @@ class PartServiceImpl internal constructor(private val clientOptions: ClientOpti
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.POST)
+                    .baseUrl(clientOptions.baseUrl())
                     .addPathSegments("uploads", params._pathParam(0), "parts")
                     .body(multipartFormData(clientOptions.jsonMapper, params._body()))
                     .build()

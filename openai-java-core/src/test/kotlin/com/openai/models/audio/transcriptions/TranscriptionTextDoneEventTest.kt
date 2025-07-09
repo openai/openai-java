@@ -3,7 +3,6 @@
 package com.openai.models.audio.transcriptions
 
 import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
-import com.openai.core.JsonValue
 import com.openai.core.jsonMapper
 import kotlin.jvm.optionals.getOrNull
 import org.assertj.core.api.Assertions.assertThat
@@ -19,8 +18,21 @@ internal class TranscriptionTextDoneEventTest {
                 .addLogprob(
                     TranscriptionTextDoneEvent.Logprob.builder()
                         .token("token")
-                        .addByte(JsonValue.from(mapOf<String, Any>()))
+                        .addByte(0L)
                         .logprob(0.0)
+                        .build()
+                )
+                .usage(
+                    TranscriptionTextDoneEvent.Usage.builder()
+                        .inputTokens(0L)
+                        .outputTokens(0L)
+                        .totalTokens(0L)
+                        .inputTokenDetails(
+                            TranscriptionTextDoneEvent.Usage.InputTokenDetails.builder()
+                                .audioTokens(0L)
+                                .textTokens(0L)
+                                .build()
+                        )
                         .build()
                 )
                 .build()
@@ -30,8 +42,22 @@ internal class TranscriptionTextDoneEventTest {
             .containsExactly(
                 TranscriptionTextDoneEvent.Logprob.builder()
                     .token("token")
-                    .addByte(JsonValue.from(mapOf<String, Any>()))
+                    .addByte(0L)
                     .logprob(0.0)
+                    .build()
+            )
+        assertThat(transcriptionTextDoneEvent.usage())
+            .contains(
+                TranscriptionTextDoneEvent.Usage.builder()
+                    .inputTokens(0L)
+                    .outputTokens(0L)
+                    .totalTokens(0L)
+                    .inputTokenDetails(
+                        TranscriptionTextDoneEvent.Usage.InputTokenDetails.builder()
+                            .audioTokens(0L)
+                            .textTokens(0L)
+                            .build()
+                    )
                     .build()
             )
     }
@@ -45,8 +71,21 @@ internal class TranscriptionTextDoneEventTest {
                 .addLogprob(
                     TranscriptionTextDoneEvent.Logprob.builder()
                         .token("token")
-                        .addByte(JsonValue.from(mapOf<String, Any>()))
+                        .addByte(0L)
                         .logprob(0.0)
+                        .build()
+                )
+                .usage(
+                    TranscriptionTextDoneEvent.Usage.builder()
+                        .inputTokens(0L)
+                        .outputTokens(0L)
+                        .totalTokens(0L)
+                        .inputTokenDetails(
+                            TranscriptionTextDoneEvent.Usage.InputTokenDetails.builder()
+                                .audioTokens(0L)
+                                .textTokens(0L)
+                                .build()
+                        )
                         .build()
                 )
                 .build()

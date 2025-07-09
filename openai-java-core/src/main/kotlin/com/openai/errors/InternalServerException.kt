@@ -17,7 +17,7 @@ private constructor(
     private val headers: Headers,
     private val error: ErrorObject?,
     cause: Throwable?,
-) : OpenAIServiceException("$statusCode: ${error?.message()}", cause) {
+) : OpenAIServiceException("$statusCode: ${error?._message()}", cause) {
 
     override fun body(): JsonValue =
         error?.let { JsonValue.fromJsonNode(jsonMapper().valueToTree(it)) } ?: JsonMissing.of()

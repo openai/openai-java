@@ -2,7 +2,7 @@
 
 package com.openai.services.async
 
-import com.google.errorprone.annotations.MustBeClosed
+import com.openai.core.ClientOptions
 import com.openai.core.RequestOptions
 import com.openai.core.http.HttpResponseFor
 import com.openai.models.uploads.Upload
@@ -11,6 +11,7 @@ import com.openai.models.uploads.UploadCompleteParams
 import com.openai.models.uploads.UploadCreateParams
 import com.openai.services.async.uploads.PartServiceAsync
 import java.util.concurrent.CompletableFuture
+import java.util.function.Consumer
 
 interface UploadServiceAsync {
 
@@ -18,6 +19,13 @@ interface UploadServiceAsync {
      * Returns a view of this service that provides access to raw HTTP responses for each method.
      */
     fun withRawResponse(): WithRawResponse
+
+    /**
+     * Returns a view of this service with the given option modifications applied.
+     *
+     * The original service is not modified.
+     */
+    fun withOptions(modifier: Consumer<ClientOptions.Builder>): UploadServiceAsync
 
     fun parts(): PartServiceAsync
 
@@ -121,18 +129,25 @@ interface UploadServiceAsync {
      */
     interface WithRawResponse {
 
+        /**
+         * Returns a view of this service with the given option modifications applied.
+         *
+         * The original service is not modified.
+         */
+        fun withOptions(
+            modifier: Consumer<ClientOptions.Builder>
+        ): UploadServiceAsync.WithRawResponse
+
         fun parts(): PartServiceAsync.WithRawResponse
 
         /**
          * Returns a raw HTTP response for `post /uploads`, but is otherwise the same as
          * [UploadServiceAsync.create].
          */
-        @MustBeClosed
         fun create(params: UploadCreateParams): CompletableFuture<HttpResponseFor<Upload>> =
             create(params, RequestOptions.none())
 
         /** @see [create] */
-        @MustBeClosed
         fun create(
             params: UploadCreateParams,
             requestOptions: RequestOptions = RequestOptions.none(),
@@ -142,12 +157,10 @@ interface UploadServiceAsync {
          * Returns a raw HTTP response for `post /uploads/{upload_id}/cancel`, but is otherwise the
          * same as [UploadServiceAsync.cancel].
          */
-        @MustBeClosed
         fun cancel(uploadId: String): CompletableFuture<HttpResponseFor<Upload>> =
             cancel(uploadId, UploadCancelParams.none())
 
         /** @see [cancel] */
-        @MustBeClosed
         fun cancel(
             uploadId: String,
             params: UploadCancelParams = UploadCancelParams.none(),
@@ -156,7 +169,6 @@ interface UploadServiceAsync {
             cancel(params.toBuilder().uploadId(uploadId).build(), requestOptions)
 
         /** @see [cancel] */
-        @MustBeClosed
         fun cancel(
             uploadId: String,
             params: UploadCancelParams = UploadCancelParams.none(),
@@ -164,19 +176,16 @@ interface UploadServiceAsync {
             cancel(uploadId, params, RequestOptions.none())
 
         /** @see [cancel] */
-        @MustBeClosed
         fun cancel(
             params: UploadCancelParams,
             requestOptions: RequestOptions = RequestOptions.none(),
         ): CompletableFuture<HttpResponseFor<Upload>>
 
         /** @see [cancel] */
-        @MustBeClosed
         fun cancel(params: UploadCancelParams): CompletableFuture<HttpResponseFor<Upload>> =
             cancel(params, RequestOptions.none())
 
         /** @see [cancel] */
-        @MustBeClosed
         fun cancel(
             uploadId: String,
             requestOptions: RequestOptions,
@@ -187,7 +196,6 @@ interface UploadServiceAsync {
          * Returns a raw HTTP response for `post /uploads/{upload_id}/complete`, but is otherwise
          * the same as [UploadServiceAsync.complete].
          */
-        @MustBeClosed
         fun complete(
             uploadId: String,
             params: UploadCompleteParams,
@@ -195,7 +203,6 @@ interface UploadServiceAsync {
             complete(uploadId, params, RequestOptions.none())
 
         /** @see [complete] */
-        @MustBeClosed
         fun complete(
             uploadId: String,
             params: UploadCompleteParams,
@@ -204,12 +211,10 @@ interface UploadServiceAsync {
             complete(params.toBuilder().uploadId(uploadId).build(), requestOptions)
 
         /** @see [complete] */
-        @MustBeClosed
         fun complete(params: UploadCompleteParams): CompletableFuture<HttpResponseFor<Upload>> =
             complete(params, RequestOptions.none())
 
         /** @see [complete] */
-        @MustBeClosed
         fun complete(
             params: UploadCompleteParams,
             requestOptions: RequestOptions = RequestOptions.none(),

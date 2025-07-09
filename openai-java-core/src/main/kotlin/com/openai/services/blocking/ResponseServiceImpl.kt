@@ -31,6 +31,7 @@ import com.openai.models.responses.ResponseRetrieveParams
 import com.openai.models.responses.ResponseStreamEvent
 import com.openai.services.blocking.responses.InputItemService
 import com.openai.services.blocking.responses.InputItemServiceImpl
+import java.util.function.Consumer
 import kotlin.jvm.optionals.getOrNull
 
 class ResponseServiceImpl internal constructor(private val clientOptions: ClientOptions) :
@@ -43,6 +44,9 @@ class ResponseServiceImpl internal constructor(private val clientOptions: Client
     private val inputItems: InputItemService by lazy { InputItemServiceImpl(clientOptions) }
 
     override fun withRawResponse(): ResponseService.WithRawResponse = withRawResponse
+
+    override fun withOptions(modifier: Consumer<ClientOptions.Builder>): ResponseService =
+        ResponseServiceImpl(clientOptions.toBuilder().apply(modifier::accept).build())
 
     override fun inputItems(): InputItemService = inputItems
 
@@ -64,15 +68,21 @@ class ResponseServiceImpl internal constructor(private val clientOptions: Client
         // get /responses/{response_id}
         withRawResponse().retrieve(params, requestOptions).parse()
 
+    override fun retrieveStreaming(
+        params: ResponseRetrieveParams,
+        requestOptions: RequestOptions,
+    ): StreamResponse<ResponseStreamEvent> =
+        // get /responses/{response_id}
+        withRawResponse().retrieveStreaming(params, requestOptions).parse()
+
     override fun delete(params: ResponseDeleteParams, requestOptions: RequestOptions) {
         // delete /responses/{response_id}
         withRawResponse().delete(params, requestOptions)
     }
 
-    override fun cancel(params: ResponseCancelParams, requestOptions: RequestOptions) {
+    override fun cancel(params: ResponseCancelParams, requestOptions: RequestOptions): Response =
         // post /responses/{response_id}/cancel
-        withRawResponse().cancel(params, requestOptions)
-    }
+        withRawResponse().cancel(params, requestOptions).parse()
 
     class WithRawResponseImpl internal constructor(private val clientOptions: ClientOptions) :
         ResponseService.WithRawResponse {
@@ -82,6 +92,13 @@ class ResponseServiceImpl internal constructor(private val clientOptions: Client
         private val inputItems: InputItemService.WithRawResponse by lazy {
             InputItemServiceImpl.WithRawResponseImpl(clientOptions)
         }
+
+        override fun withOptions(
+            modifier: Consumer<ClientOptions.Builder>
+        ): ResponseService.WithRawResponse =
+            ResponseServiceImpl.WithRawResponseImpl(
+                clientOptions.toBuilder().apply(modifier::accept).build()
+            )
 
         override fun inputItems(): InputItemService.WithRawResponse = inputItems
 
@@ -95,6 +112,7 @@ class ResponseServiceImpl internal constructor(private val clientOptions: Client
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.POST)
+                    .baseUrl(clientOptions.baseUrl())
                     .addPathSegments("responses")
                     .body(json(clientOptions.jsonMapper, params._body()))
                     .build()
@@ -124,6 +142,7 @@ class ResponseServiceImpl internal constructor(private val clientOptions: Client
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.POST)
+                    .baseUrl(clientOptions.baseUrl())
                     .addPathSegments("responses")
                     .body(
                         json(
@@ -165,6 +184,7 @@ class ResponseServiceImpl internal constructor(private val clientOptions: Client
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.GET)
+                    .baseUrl(clientOptions.baseUrl())
                     .addPathSegments("responses", params._pathParam(0))
                     .build()
                     .prepare(clientOptions, params, deploymentModel = null)
@@ -176,6 +196,41 @@ class ResponseServiceImpl internal constructor(private val clientOptions: Client
                     .also {
                         if (requestOptions.responseValidation!!) {
                             it.validate()
+                        }
+                    }
+            }
+        }
+
+        private val retrieveStreamingHandler: Handler<StreamResponse<ResponseStreamEvent>> =
+            sseHandler(clientOptions.jsonMapper)
+                .mapJson<ResponseStreamEvent>()
+                .withErrorHandler(errorHandler)
+
+        override fun retrieveStreaming(
+            params: ResponseRetrieveParams,
+            requestOptions: RequestOptions,
+        ): HttpResponseFor<StreamResponse<ResponseStreamEvent>> {
+            // We check here instead of in the params builder because this can be specified
+            // positionally or in the params class.
+            checkRequired("responseId", params.responseId().getOrNull())
+            val request =
+                HttpRequest.builder()
+                    .method(HttpMethod.GET)
+                    .baseUrl(clientOptions.baseUrl())
+                    .addPathSegments("responses", params._pathParam(0))
+                    .putQueryParam("stream", "true")
+                    .build()
+                    .prepare(clientOptions, params, deploymentModel = null)
+            val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
+            val response = clientOptions.httpClient.execute(request, requestOptions)
+            return response.parseable {
+                response
+                    .let { retrieveStreamingHandler.handle(it) }
+                    .let { streamResponse ->
+                        if (requestOptions.responseValidation!!) {
+                            streamResponse.map { it.validate() }
+                        } else {
+                            streamResponse
                         }
                     }
             }
@@ -193,6 +248,7 @@ class ResponseServiceImpl internal constructor(private val clientOptions: Client
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.DELETE)
+                    .baseUrl(clientOptions.baseUrl())
                     .addPathSegments("responses", params._pathParam(0))
                     .apply { params._body().ifPresent { body(json(clientOptions.jsonMapper, it)) } }
                     .build()
@@ -202,25 +258,35 @@ class ResponseServiceImpl internal constructor(private val clientOptions: Client
             return response.parseable { response.use { deleteHandler.handle(it) } }
         }
 
-        private val cancelHandler: Handler<Void?> = emptyHandler().withErrorHandler(errorHandler)
+        private val cancelHandler: Handler<Response> =
+            jsonHandler<Response>(clientOptions.jsonMapper).withErrorHandler(errorHandler)
 
         override fun cancel(
             params: ResponseCancelParams,
             requestOptions: RequestOptions,
-        ): HttpResponse {
+        ): HttpResponseFor<Response> {
             // We check here instead of in the params builder because this can be specified
             // positionally or in the params class.
             checkRequired("responseId", params.responseId().getOrNull())
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.POST)
+                    .baseUrl(clientOptions.baseUrl())
                     .addPathSegments("responses", params._pathParam(0), "cancel")
                     .apply { params._body().ifPresent { body(json(clientOptions.jsonMapper, it)) } }
                     .build()
                     .prepare(clientOptions, params, deploymentModel = null)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             val response = clientOptions.httpClient.execute(request, requestOptions)
-            return response.parseable { response.use { cancelHandler.handle(it) } }
+            return response.parseable {
+                response
+                    .use { cancelHandler.handle(it) }
+                    .also {
+                        if (requestOptions.responseValidation!!) {
+                            it.validate()
+                        }
+                    }
+            }
         }
     }
 }

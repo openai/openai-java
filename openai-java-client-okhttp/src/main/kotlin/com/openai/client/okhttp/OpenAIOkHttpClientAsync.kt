@@ -176,6 +176,14 @@ class OpenAIOkHttpClientAsync private constructor() {
         /** Alias for calling [Builder.project] with `project.orElse(null)`. */
         fun project(project: Optional<String>) = project(project.getOrNull())
 
+        fun webhookSecret(webhookSecret: String?) = apply {
+            clientOptions.webhookSecret(webhookSecret)
+        }
+
+        /** Alias for calling [Builder.webhookSecret] with `webhookSecret.orElse(null)`. */
+        fun webhookSecret(webhookSecret: Optional<String>) =
+            webhookSecret(webhookSecret.getOrNull())
+
         fun fromEnv() = apply { clientOptions.fromEnv() }
 
         /**
@@ -186,13 +194,7 @@ class OpenAIOkHttpClientAsync private constructor() {
         fun build(): OpenAIClientAsync =
             OpenAIClientAsyncImpl(
                 clientOptions
-                    .httpClient(
-                        OkHttpClient.builder()
-                            .baseUrl(clientOptions.baseUrl())
-                            .timeout(timeout)
-                            .proxy(proxy)
-                            .build()
-                    )
+                    .httpClient(OkHttpClient.builder().timeout(timeout).proxy(proxy).build())
                     .build()
             )
     }

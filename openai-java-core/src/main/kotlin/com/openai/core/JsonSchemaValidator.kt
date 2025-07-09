@@ -19,6 +19,9 @@ import com.openai.core.JsonSchemaValidator.Companion.UNRESTRICTED_ENUM_VALUES_LI
 internal class JsonSchemaValidator private constructor() {
 
     companion object {
+        private const val NO_PROPERTIES_DOC =
+            "https://github.com/openai/openai-java#defining-json-schema-properties"
+
         // The names of the supported schema keywords. All other keywords will be rejected.
         private const val SCHEMA = "\$schema"
         private const val ID = "\$id"
@@ -35,6 +38,16 @@ internal class JsonSchemaValidator private constructor() {
         private const val ENUM = "enum"
         private const val ADDITIONAL_PROPS = "additionalProperties"
 
+        private const val PATTERN = "pattern"
+        private const val FORMAT = "format"
+        private const val MULTIPLE_OF = "multipleOf"
+        private const val MINIMUM = "minimum"
+        private const val EXCLUSIVE_MINIMUM = "exclusiveMinimum"
+        private const val MAXIMUM = "maximum"
+        private const val EXCLUSIVE_MAXIMUM = "exclusiveMaximum"
+        private const val MIN_ITEMS = "minItems"
+        private const val MAX_ITEMS = "maxItems"
+
         // The names of the supported schema data types.
         //
         // JSON Schema does not define an "integer" type, only a "number" type, but it allows any
@@ -47,21 +60,8 @@ internal class JsonSchemaValidator private constructor() {
         private const val TYPE_INTEGER = "integer"
         private const val TYPE_NULL = "null"
 
-        // The validator checks that unsupported type-specific keywords are not present in a
-        // property node. The OpenAI API specification states:
-        //
-        // "Notable keywords not supported include:
-        //
-        // - For strings: `minLength`, `maxLength`, `pattern`, `format`
-        // - For numbers: `minimum`, `maximum`, `multipleOf`
-        // - For objects: `patternProperties`, `unevaluatedProperties`, `propertyNames`,
-        //   `minProperties`, `maxProperties`
-        // - For arrays: `unevaluatedItems`, `contains`, `minContains`, `maxContains`, `minItems`,
-        //   `maxItems`, `uniqueItems`"
-        //
-        // As that list is not exhaustive, and no keywords are explicitly named as supported, this
-        // validation allows _no_ type-specific keywords. The following sets define the allowed
-        // keywords in different contexts and all others are rejected.
+        // The following sets define the allowed keywords in different contexts and all others are
+        // rejected.
 
         /**
          * The set of allowed keywords in the root schema only, not including the keywords that are
@@ -91,13 +91,39 @@ internal class JsonSchemaValidator private constructor() {
          * The set of allowed keywords when defining sub-schemas when the `"type"` field is set to
          * `"array"`.
          */
-        private val ALLOWED_KEYWORDS_ARRAY_SUB_SCHEMA = setOf(TYPE, TITLE, DESC, ITEMS)
+        private val ALLOWED_KEYWORDS_ARRAY_SUB_SCHEMA =
+            setOf(TYPE, TITLE, DESC, ITEMS, MIN_ITEMS, MAX_ITEMS)
 
         /**
          * The set of allowed keywords when defining sub-schemas when the `"type"` field is set to
-         * `"boolean"`, `"integer"`, `"number"`, or `"string"`.
+         * `"boolean"`, or any other simple type not handled separately.
          */
         private val ALLOWED_KEYWORDS_SIMPLE_SUB_SCHEMA = setOf(TYPE, TITLE, DESC, ENUM, CONST)
+
+        /**
+         * The set of allowed keywords when defining sub-schemas when the `"type"` field is set to
+         * `"string"`.
+         */
+        private val ALLOWED_KEYWORDS_STRING_SUB_SCHEMA =
+            setOf(TYPE, TITLE, DESC, ENUM, CONST, PATTERN, FORMAT)
+
+        /**
+         * The set of allowed keywords when defining sub-schemas when the `"type"` field is set to
+         * `"integer"` or `"number"`.
+         */
+        private val ALLOWED_KEYWORDS_NUMBER_SUB_SCHEMA =
+            setOf(
+                TYPE,
+                TITLE,
+                DESC,
+                ENUM,
+                CONST,
+                MINIMUM,
+                EXCLUSIVE_MINIMUM,
+                MAXIMUM,
+                EXCLUSIVE_MAXIMUM,
+                MULTIPLE_OF,
+            )
 
         /**
          * The maximum total length of all strings used in the schema for property names, definition
@@ -392,8 +418,7 @@ internal class JsonSchemaValidator private constructor() {
         // The schema must declare that additional properties are not allowed. For this check, it
         // does not matter if there are no "properties" in the schema.
         verify(
-            schema.get(ADDITIONAL_PROPS) != null &&
-                schema.get(ADDITIONAL_PROPS).asBoolean() == false,
+            schema.get(ADDITIONAL_PROPS) != null && !schema.get(ADDITIONAL_PROPS).asBoolean(),
             path,
         ) {
             "'$ADDITIONAL_PROPS' field is missing or is not set to 'false'."
@@ -401,27 +426,40 @@ internal class JsonSchemaValidator private constructor() {
 
         val properties = schema.get(PROPS)
 
-        // The "properties" field may be missing (there may be no properties to declare), but if it
-        // is present, it must be a non-empty object, or validation cannot continue.
-        // TODO: Decide if a missing or empty "properties" field is OK or not.
+        // An object schema _must_ have a `"properties"` field, and it must contain at least one
+        // property. The AI model will report an error relating to a missing or empty `"required"`
+        // array if the "properties" field is missing or empty (and therefore the `"required"` array
+        // will also be missing or empty). This condition can arise if a `Map` is used as the field
+        // type: it will cause the generation of an object schema with no defined properties. If not
+        // present or empty, validation cannot continue.
         verify(
-            properties == null || (properties.isObject && !properties.isEmpty),
+            properties != null && properties.isObject && !properties.isEmpty,
             path,
-            { "'$PROPS' field is not a non-empty object." },
+            {
+                "'$PROPS' field is missing, empty or not an object. " +
+                    "At least one named property must be defined. See: $NO_PROPERTIES_DOC"
+            },
         ) {
             return
         }
 
-        if (properties != null) { // Must be an object.
-            // If a "properties" field is present, there must also be a "required" field. All
-            // properties must be named in the list of required properties.
-            validatePropertiesRequired(
-                properties.fieldNames().asSequence().toSet(),
-                schema.get(REQUIRED),
-                "$path/$REQUIRED",
-            )
-            validateProperties(properties, "$path/$PROPS", depth)
+        // Similarly, insist that the `"required"` array is present or stop validation.
+        val required = schema.get(REQUIRED)
+
+        verify(
+            required != null && required.isArray && !required.isEmpty,
+            path,
+            { "'$REQUIRED' field is missing, empty or not an array." },
+        ) {
+            return
         }
+
+        validatePropertiesRequired(
+            properties.fieldNames().asSequence().toSet(),
+            required,
+            "$path/$REQUIRED",
+        )
+        validateProperties(properties, "$path/$PROPS", depth)
     }
 
     /**
@@ -459,7 +497,15 @@ internal class JsonSchemaValidator private constructor() {
      *   value of the non-`"null"` type name. For example `"string"`, or `"number"`.
      */
     private fun validateSimpleSchema(schema: JsonNode, typeName: String, path: String, depth: Int) {
-        validateKeywords(schema, ALLOWED_KEYWORDS_SIMPLE_SUB_SCHEMA, path, depth)
+        val allowedKeywords =
+            when (typeName) {
+                TYPE_NUMBER,
+                TYPE_INTEGER -> ALLOWED_KEYWORDS_NUMBER_SUB_SCHEMA
+                TYPE_STRING -> ALLOWED_KEYWORDS_STRING_SUB_SCHEMA
+                else -> ALLOWED_KEYWORDS_SIMPLE_SUB_SCHEMA
+            }
+
+        validateKeywords(schema, allowedKeywords, path, depth)
 
         val enumField = schema.get(ENUM)
 
@@ -554,10 +600,10 @@ internal class JsonSchemaValidator private constructor() {
      */
     private fun validatePropertiesRequired(
         propertyNames: Collection<String>,
-        required: JsonNode?,
+        required: JsonNode,
         path: String,
     ) {
-        val requiredNames = required?.map { it.asText() }?.toSet() ?: emptySet()
+        val requiredNames = required.map { it.asText() }.toSet()
 
         propertyNames.forEach { propertyName ->
             verify(propertyName in requiredNames, path) {
@@ -585,7 +631,7 @@ internal class JsonSchemaValidator private constructor() {
 
     /**
      * Validates that the names of all fields in the given schema node are present in a collection
-     * of allowed keywords.
+     * of allowed keywords. The values associated with the keywords are _not_ validated.
      *
      * @param depth The nesting depth of the [schema] node. If this depth is zero, an additional set
      *   of allowed keywords will be included automatically for keywords that are allowed to appear

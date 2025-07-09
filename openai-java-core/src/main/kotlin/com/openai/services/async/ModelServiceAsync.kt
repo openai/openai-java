@@ -2,7 +2,7 @@
 
 package com.openai.services.async
 
-import com.google.errorprone.annotations.MustBeClosed
+import com.openai.core.ClientOptions
 import com.openai.core.RequestOptions
 import com.openai.core.http.HttpResponseFor
 import com.openai.models.models.Model
@@ -12,6 +12,7 @@ import com.openai.models.models.ModelListPageAsync
 import com.openai.models.models.ModelListParams
 import com.openai.models.models.ModelRetrieveParams
 import java.util.concurrent.CompletableFuture
+import java.util.function.Consumer
 
 interface ModelServiceAsync {
 
@@ -19,6 +20,13 @@ interface ModelServiceAsync {
      * Returns a view of this service that provides access to raw HTTP responses for each method.
      */
     fun withRawResponse(): WithRawResponse
+
+    /**
+     * Returns a view of this service with the given option modifications applied.
+     *
+     * The original service is not modified.
+     */
+    fun withOptions(modifier: Consumer<ClientOptions.Builder>): ModelServiceAsync
 
     /**
      * Retrieves a model instance, providing basic information about the model such as the owner and
@@ -114,15 +122,22 @@ interface ModelServiceAsync {
     interface WithRawResponse {
 
         /**
+         * Returns a view of this service with the given option modifications applied.
+         *
+         * The original service is not modified.
+         */
+        fun withOptions(
+            modifier: Consumer<ClientOptions.Builder>
+        ): ModelServiceAsync.WithRawResponse
+
+        /**
          * Returns a raw HTTP response for `get /models/{model}`, but is otherwise the same as
          * [ModelServiceAsync.retrieve].
          */
-        @MustBeClosed
         fun retrieve(model: String): CompletableFuture<HttpResponseFor<Model>> =
             retrieve(model, ModelRetrieveParams.none())
 
         /** @see [retrieve] */
-        @MustBeClosed
         fun retrieve(
             model: String,
             params: ModelRetrieveParams = ModelRetrieveParams.none(),
@@ -131,7 +146,6 @@ interface ModelServiceAsync {
             retrieve(params.toBuilder().model(model).build(), requestOptions)
 
         /** @see [retrieve] */
-        @MustBeClosed
         fun retrieve(
             model: String,
             params: ModelRetrieveParams = ModelRetrieveParams.none(),
@@ -139,19 +153,16 @@ interface ModelServiceAsync {
             retrieve(model, params, RequestOptions.none())
 
         /** @see [retrieve] */
-        @MustBeClosed
         fun retrieve(
             params: ModelRetrieveParams,
             requestOptions: RequestOptions = RequestOptions.none(),
         ): CompletableFuture<HttpResponseFor<Model>>
 
         /** @see [retrieve] */
-        @MustBeClosed
         fun retrieve(params: ModelRetrieveParams): CompletableFuture<HttpResponseFor<Model>> =
             retrieve(params, RequestOptions.none())
 
         /** @see [retrieve] */
-        @MustBeClosed
         fun retrieve(
             model: String,
             requestOptions: RequestOptions,
@@ -162,26 +173,22 @@ interface ModelServiceAsync {
          * Returns a raw HTTP response for `get /models`, but is otherwise the same as
          * [ModelServiceAsync.list].
          */
-        @MustBeClosed
         fun list(): CompletableFuture<HttpResponseFor<ModelListPageAsync>> =
             list(ModelListParams.none())
 
         /** @see [list] */
-        @MustBeClosed
         fun list(
             params: ModelListParams = ModelListParams.none(),
             requestOptions: RequestOptions = RequestOptions.none(),
         ): CompletableFuture<HttpResponseFor<ModelListPageAsync>>
 
         /** @see [list] */
-        @MustBeClosed
         fun list(
             params: ModelListParams = ModelListParams.none()
         ): CompletableFuture<HttpResponseFor<ModelListPageAsync>> =
             list(params, RequestOptions.none())
 
         /** @see [list] */
-        @MustBeClosed
         fun list(
             requestOptions: RequestOptions
         ): CompletableFuture<HttpResponseFor<ModelListPageAsync>> =
@@ -191,12 +198,10 @@ interface ModelServiceAsync {
          * Returns a raw HTTP response for `delete /models/{model}`, but is otherwise the same as
          * [ModelServiceAsync.delete].
          */
-        @MustBeClosed
         fun delete(model: String): CompletableFuture<HttpResponseFor<ModelDeleted>> =
             delete(model, ModelDeleteParams.none())
 
         /** @see [delete] */
-        @MustBeClosed
         fun delete(
             model: String,
             params: ModelDeleteParams = ModelDeleteParams.none(),
@@ -205,7 +210,6 @@ interface ModelServiceAsync {
             delete(params.toBuilder().model(model).build(), requestOptions)
 
         /** @see [delete] */
-        @MustBeClosed
         fun delete(
             model: String,
             params: ModelDeleteParams = ModelDeleteParams.none(),
@@ -213,19 +217,16 @@ interface ModelServiceAsync {
             delete(model, params, RequestOptions.none())
 
         /** @see [delete] */
-        @MustBeClosed
         fun delete(
             params: ModelDeleteParams,
             requestOptions: RequestOptions = RequestOptions.none(),
         ): CompletableFuture<HttpResponseFor<ModelDeleted>>
 
         /** @see [delete] */
-        @MustBeClosed
         fun delete(params: ModelDeleteParams): CompletableFuture<HttpResponseFor<ModelDeleted>> =
             delete(params, RequestOptions.none())
 
         /** @see [delete] */
-        @MustBeClosed
         fun delete(
             model: String,
             requestOptions: RequestOptions,

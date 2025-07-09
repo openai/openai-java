@@ -19,6 +19,7 @@ import com.openai.models.finetuning.alpha.graders.GraderRunParams
 import com.openai.models.finetuning.alpha.graders.GraderRunResponse
 import com.openai.models.finetuning.alpha.graders.GraderValidateParams
 import com.openai.models.finetuning.alpha.graders.GraderValidateResponse
+import java.util.function.Consumer
 
 class GraderServiceImpl internal constructor(private val clientOptions: ClientOptions) :
     GraderService {
@@ -28,6 +29,9 @@ class GraderServiceImpl internal constructor(private val clientOptions: ClientOp
     }
 
     override fun withRawResponse(): GraderService.WithRawResponse = withRawResponse
+
+    override fun withOptions(modifier: Consumer<ClientOptions.Builder>): GraderService =
+        GraderServiceImpl(clientOptions.toBuilder().apply(modifier::accept).build())
 
     override fun run(params: GraderRunParams, requestOptions: RequestOptions): GraderRunResponse =
         // post /fine_tuning/alpha/graders/run
@@ -45,6 +49,13 @@ class GraderServiceImpl internal constructor(private val clientOptions: ClientOp
 
         private val errorHandler: Handler<ErrorObject?> = errorHandler(clientOptions.jsonMapper)
 
+        override fun withOptions(
+            modifier: Consumer<ClientOptions.Builder>
+        ): GraderService.WithRawResponse =
+            GraderServiceImpl.WithRawResponseImpl(
+                clientOptions.toBuilder().apply(modifier::accept).build()
+            )
+
         private val runHandler: Handler<GraderRunResponse> =
             jsonHandler<GraderRunResponse>(clientOptions.jsonMapper).withErrorHandler(errorHandler)
 
@@ -55,6 +66,7 @@ class GraderServiceImpl internal constructor(private val clientOptions: ClientOp
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.POST)
+                    .baseUrl(clientOptions.baseUrl())
                     .addPathSegments("fine_tuning", "alpha", "graders", "run")
                     .body(json(clientOptions.jsonMapper, params._body()))
                     .build()
@@ -83,6 +95,7 @@ class GraderServiceImpl internal constructor(private val clientOptions: ClientOp
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.POST)
+                    .baseUrl(clientOptions.baseUrl())
                     .addPathSegments("fine_tuning", "alpha", "graders", "validate")
                     .body(json(clientOptions.jsonMapper, params._body()))
                     .build()

@@ -2,7 +2,7 @@
 
 package com.openai.services.async.evals
 
-import com.google.errorprone.annotations.MustBeClosed
+import com.openai.core.ClientOptions
 import com.openai.core.RequestOptions
 import com.openai.core.http.HttpResponseFor
 import com.openai.models.evals.runs.RunCancelParams
@@ -17,6 +17,7 @@ import com.openai.models.evals.runs.RunRetrieveParams
 import com.openai.models.evals.runs.RunRetrieveResponse
 import com.openai.services.async.evals.runs.OutputItemServiceAsync
 import java.util.concurrent.CompletableFuture
+import java.util.function.Consumer
 
 interface RunServiceAsync {
 
@@ -24,6 +25,13 @@ interface RunServiceAsync {
      * Returns a view of this service that provides access to raw HTTP responses for each method.
      */
     fun withRawResponse(): WithRawResponse
+
+    /**
+     * Returns a view of this service with the given option modifications applied.
+     *
+     * The original service is not modified.
+     */
+    fun withOptions(modifier: Consumer<ClientOptions.Builder>): RunServiceAsync
 
     fun outputItems(): OutputItemServiceAsync
 
@@ -154,13 +162,19 @@ interface RunServiceAsync {
     /** A view of [RunServiceAsync] that provides access to raw HTTP responses for each method. */
     interface WithRawResponse {
 
+        /**
+         * Returns a view of this service with the given option modifications applied.
+         *
+         * The original service is not modified.
+         */
+        fun withOptions(modifier: Consumer<ClientOptions.Builder>): RunServiceAsync.WithRawResponse
+
         fun outputItems(): OutputItemServiceAsync.WithRawResponse
 
         /**
          * Returns a raw HTTP response for `post /evals/{eval_id}/runs`, but is otherwise the same
          * as [RunServiceAsync.create].
          */
-        @MustBeClosed
         fun create(
             evalId: String,
             params: RunCreateParams,
@@ -168,7 +182,6 @@ interface RunServiceAsync {
             create(evalId, params, RequestOptions.none())
 
         /** @see [create] */
-        @MustBeClosed
         fun create(
             evalId: String,
             params: RunCreateParams,
@@ -177,12 +190,10 @@ interface RunServiceAsync {
             create(params.toBuilder().evalId(evalId).build(), requestOptions)
 
         /** @see [create] */
-        @MustBeClosed
         fun create(params: RunCreateParams): CompletableFuture<HttpResponseFor<RunCreateResponse>> =
             create(params, RequestOptions.none())
 
         /** @see [create] */
-        @MustBeClosed
         fun create(
             params: RunCreateParams,
             requestOptions: RequestOptions = RequestOptions.none(),
@@ -192,7 +203,6 @@ interface RunServiceAsync {
          * Returns a raw HTTP response for `get /evals/{eval_id}/runs/{run_id}`, but is otherwise
          * the same as [RunServiceAsync.retrieve].
          */
-        @MustBeClosed
         fun retrieve(
             runId: String,
             params: RunRetrieveParams,
@@ -200,7 +210,6 @@ interface RunServiceAsync {
             retrieve(runId, params, RequestOptions.none())
 
         /** @see [retrieve] */
-        @MustBeClosed
         fun retrieve(
             runId: String,
             params: RunRetrieveParams,
@@ -209,14 +218,12 @@ interface RunServiceAsync {
             retrieve(params.toBuilder().runId(runId).build(), requestOptions)
 
         /** @see [retrieve] */
-        @MustBeClosed
         fun retrieve(
             params: RunRetrieveParams
         ): CompletableFuture<HttpResponseFor<RunRetrieveResponse>> =
             retrieve(params, RequestOptions.none())
 
         /** @see [retrieve] */
-        @MustBeClosed
         fun retrieve(
             params: RunRetrieveParams,
             requestOptions: RequestOptions = RequestOptions.none(),
@@ -226,12 +233,10 @@ interface RunServiceAsync {
          * Returns a raw HTTP response for `get /evals/{eval_id}/runs`, but is otherwise the same as
          * [RunServiceAsync.list].
          */
-        @MustBeClosed
         fun list(evalId: String): CompletableFuture<HttpResponseFor<RunListPageAsync>> =
             list(evalId, RunListParams.none())
 
         /** @see [list] */
-        @MustBeClosed
         fun list(
             evalId: String,
             params: RunListParams = RunListParams.none(),
@@ -240,7 +245,6 @@ interface RunServiceAsync {
             list(params.toBuilder().evalId(evalId).build(), requestOptions)
 
         /** @see [list] */
-        @MustBeClosed
         fun list(
             evalId: String,
             params: RunListParams = RunListParams.none(),
@@ -248,19 +252,16 @@ interface RunServiceAsync {
             list(evalId, params, RequestOptions.none())
 
         /** @see [list] */
-        @MustBeClosed
         fun list(
             params: RunListParams,
             requestOptions: RequestOptions = RequestOptions.none(),
         ): CompletableFuture<HttpResponseFor<RunListPageAsync>>
 
         /** @see [list] */
-        @MustBeClosed
         fun list(params: RunListParams): CompletableFuture<HttpResponseFor<RunListPageAsync>> =
             list(params, RequestOptions.none())
 
         /** @see [list] */
-        @MustBeClosed
         fun list(
             evalId: String,
             requestOptions: RequestOptions,
@@ -271,7 +272,6 @@ interface RunServiceAsync {
          * Returns a raw HTTP response for `delete /evals/{eval_id}/runs/{run_id}`, but is otherwise
          * the same as [RunServiceAsync.delete].
          */
-        @MustBeClosed
         fun delete(
             runId: String,
             params: RunDeleteParams,
@@ -279,7 +279,6 @@ interface RunServiceAsync {
             delete(runId, params, RequestOptions.none())
 
         /** @see [delete] */
-        @MustBeClosed
         fun delete(
             runId: String,
             params: RunDeleteParams,
@@ -288,12 +287,10 @@ interface RunServiceAsync {
             delete(params.toBuilder().runId(runId).build(), requestOptions)
 
         /** @see [delete] */
-        @MustBeClosed
         fun delete(params: RunDeleteParams): CompletableFuture<HttpResponseFor<RunDeleteResponse>> =
             delete(params, RequestOptions.none())
 
         /** @see [delete] */
-        @MustBeClosed
         fun delete(
             params: RunDeleteParams,
             requestOptions: RequestOptions = RequestOptions.none(),
@@ -303,7 +300,6 @@ interface RunServiceAsync {
          * Returns a raw HTTP response for `post /evals/{eval_id}/runs/{run_id}`, but is otherwise
          * the same as [RunServiceAsync.cancel].
          */
-        @MustBeClosed
         fun cancel(
             runId: String,
             params: RunCancelParams,
@@ -311,7 +307,6 @@ interface RunServiceAsync {
             cancel(runId, params, RequestOptions.none())
 
         /** @see [cancel] */
-        @MustBeClosed
         fun cancel(
             runId: String,
             params: RunCancelParams,
@@ -320,12 +315,10 @@ interface RunServiceAsync {
             cancel(params.toBuilder().runId(runId).build(), requestOptions)
 
         /** @see [cancel] */
-        @MustBeClosed
         fun cancel(params: RunCancelParams): CompletableFuture<HttpResponseFor<RunCancelResponse>> =
             cancel(params, RequestOptions.none())
 
         /** @see [cancel] */
-        @MustBeClosed
         fun cancel(
             params: RunCancelParams,
             requestOptions: RequestOptions = RequestOptions.none(),

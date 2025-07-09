@@ -29,6 +29,7 @@ import com.openai.models.audio.transcriptions.TranscriptionCreateParams
 import com.openai.models.audio.transcriptions.TranscriptionCreateResponse
 import com.openai.models.audio.transcriptions.TranscriptionStreamEvent
 import java.util.concurrent.CompletableFuture
+import java.util.function.Consumer
 import kotlin.jvm.optionals.getOrNull
 
 class TranscriptionServiceAsyncImpl internal constructor(private val clientOptions: ClientOptions) :
@@ -39,6 +40,9 @@ class TranscriptionServiceAsyncImpl internal constructor(private val clientOptio
     }
 
     override fun withRawResponse(): TranscriptionServiceAsync.WithRawResponse = withRawResponse
+
+    override fun withOptions(modifier: Consumer<ClientOptions.Builder>): TranscriptionServiceAsync =
+        TranscriptionServiceAsyncImpl(clientOptions.toBuilder().apply(modifier::accept).build())
 
     override fun create(
         params: TranscriptionCreateParams,
@@ -62,6 +66,13 @@ class TranscriptionServiceAsyncImpl internal constructor(private val clientOptio
 
         private val errorHandler: Handler<ErrorObject?> = errorHandler(clientOptions.jsonMapper)
 
+        override fun withOptions(
+            modifier: Consumer<ClientOptions.Builder>
+        ): TranscriptionServiceAsync.WithRawResponse =
+            TranscriptionServiceAsyncImpl.WithRawResponseImpl(
+                clientOptions.toBuilder().apply(modifier::accept).build()
+            )
+
         private val createJsonHandler: Handler<TranscriptionCreateResponse> =
             jsonHandler<TranscriptionCreateResponse>(clientOptions.jsonMapper)
                 .withErrorHandler(errorHandler)
@@ -83,6 +94,7 @@ class TranscriptionServiceAsyncImpl internal constructor(private val clientOptio
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.POST)
+                    .baseUrl(clientOptions.baseUrl())
                     .addPathSegments("audio", "transcriptions")
                     .body(multipartFormData(clientOptions.jsonMapper, params._body()))
                     .build()
@@ -123,6 +135,7 @@ class TranscriptionServiceAsyncImpl internal constructor(private val clientOptio
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.POST)
+                    .baseUrl(clientOptions.baseUrl())
                     .addPathSegments("audio", "transcriptions")
                     .body(
                         multipartFormData(

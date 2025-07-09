@@ -14,10 +14,17 @@ internal class ResponseFunctionWebSearchTest {
         val responseFunctionWebSearch =
             ResponseFunctionWebSearch.builder()
                 .id("id")
+                .searchAction("query")
                 .status(ResponseFunctionWebSearch.Status.IN_PROGRESS)
                 .build()
 
         assertThat(responseFunctionWebSearch.id()).isEqualTo("id")
+        assertThat(responseFunctionWebSearch.action())
+            .isEqualTo(
+                ResponseFunctionWebSearch.Action.ofSearch(
+                    ResponseFunctionWebSearch.Action.Search.builder().query("query").build()
+                )
+            )
         assertThat(responseFunctionWebSearch.status())
             .isEqualTo(ResponseFunctionWebSearch.Status.IN_PROGRESS)
     }
@@ -28,6 +35,7 @@ internal class ResponseFunctionWebSearchTest {
         val responseFunctionWebSearch =
             ResponseFunctionWebSearch.builder()
                 .id("id")
+                .searchAction("query")
                 .status(ResponseFunctionWebSearch.Status.IN_PROGRESS)
                 .build()
 

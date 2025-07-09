@@ -12,6 +12,7 @@ import com.openai.models.ResponseFormatText
 import com.openai.models.responses.FunctionTool
 import com.openai.models.responses.ResponseCreateParams
 import com.openai.models.responses.ResponseIncludable
+import com.openai.models.responses.ResponsePrompt
 import com.openai.models.responses.ResponseRetrieveParams
 import com.openai.models.responses.ResponseTextConfig
 import com.openai.models.responses.ToolChoiceOptions
@@ -33,19 +34,31 @@ internal class ResponseServiceAsyncTest {
         val responseFuture =
             responseServiceAsync.create(
                 ResponseCreateParams.builder()
-                    .input("string")
-                    .model(ChatModel.GPT_4O)
                     .background(true)
-                    .addInclude(ResponseIncludable.FILE_SEARCH_CALL_RESULTS)
+                    .addInclude(ResponseIncludable.CODE_INTERPRETER_CALL_OUTPUTS)
+                    .input("string")
                     .instructions("instructions")
                     .maxOutputTokens(0L)
+                    .maxToolCalls(0L)
                     .metadata(
                         ResponseCreateParams.Metadata.builder()
                             .putAdditionalProperty("foo", JsonValue.from("string"))
                             .build()
                     )
+                    .model(ChatModel.GPT_4O)
                     .parallelToolCalls(true)
                     .previousResponseId("previous_response_id")
+                    .prompt(
+                        ResponsePrompt.builder()
+                            .id("id")
+                            .variables(
+                                ResponsePrompt.Variables.builder()
+                                    .putAdditionalProperty("foo", JsonValue.from("string"))
+                                    .build()
+                            )
+                            .version("version")
+                            .build()
+                    )
                     .reasoning(
                         Reasoning.builder()
                             .effort(ReasoningEffort.LOW)
@@ -74,6 +87,7 @@ internal class ResponseServiceAsyncTest {
                             .description("description")
                             .build()
                     )
+                    .topLogprobs(0L)
                     .topP(1.0)
                     .truncation(ResponseCreateParams.Truncation.AUTO)
                     .user("user-1234")
@@ -96,19 +110,31 @@ internal class ResponseServiceAsyncTest {
         val responseStreamResponse =
             responseServiceAsync.createStreaming(
                 ResponseCreateParams.builder()
-                    .input("string")
-                    .model(ChatModel.GPT_4O)
                     .background(true)
-                    .addInclude(ResponseIncludable.FILE_SEARCH_CALL_RESULTS)
+                    .addInclude(ResponseIncludable.CODE_INTERPRETER_CALL_OUTPUTS)
+                    .input("string")
                     .instructions("instructions")
                     .maxOutputTokens(0L)
+                    .maxToolCalls(0L)
                     .metadata(
                         ResponseCreateParams.Metadata.builder()
                             .putAdditionalProperty("foo", JsonValue.from("string"))
                             .build()
                     )
+                    .model(ChatModel.GPT_4O)
                     .parallelToolCalls(true)
                     .previousResponseId("previous_response_id")
+                    .prompt(
+                        ResponsePrompt.builder()
+                            .id("id")
+                            .variables(
+                                ResponsePrompt.Variables.builder()
+                                    .putAdditionalProperty("foo", JsonValue.from("string"))
+                                    .build()
+                            )
+                            .version("version")
+                            .build()
+                    )
                     .reasoning(
                         Reasoning.builder()
                             .effort(ReasoningEffort.LOW)
@@ -137,6 +163,7 @@ internal class ResponseServiceAsyncTest {
                             .description("description")
                             .build()
                     )
+                    .topLogprobs(0L)
                     .topP(1.0)
                     .truncation(ResponseCreateParams.Truncation.AUTO)
                     .user("user-1234")
@@ -161,12 +188,36 @@ internal class ResponseServiceAsyncTest {
             responseServiceAsync.retrieve(
                 ResponseRetrieveParams.builder()
                     .responseId("resp_677efb5139a88190b512bc3fef8e535d")
-                    .addInclude(ResponseIncludable.FILE_SEARCH_CALL_RESULTS)
+                    .addInclude(ResponseIncludable.CODE_INTERPRETER_CALL_OUTPUTS)
+                    .startingAfter(0L)
                     .build()
             )
 
         val response = responseFuture.get()
         response.validate()
+    }
+
+    @Test
+    fun retrieveStreaming() {
+        val client =
+            OpenAIOkHttpClientAsync.builder()
+                .baseUrl(TestServerExtension.BASE_URL)
+                .apiKey("My API Key")
+                .build()
+        val responseServiceAsync = client.responses()
+
+        val responseStreamResponse =
+            responseServiceAsync.retrieveStreaming(
+                ResponseRetrieveParams.builder()
+                    .responseId("resp_677efb5139a88190b512bc3fef8e535d")
+                    .addInclude(ResponseIncludable.CODE_INTERPRETER_CALL_OUTPUTS)
+                    .startingAfter(0L)
+                    .build()
+            )
+
+        val onCompleteFuture =
+            responseStreamResponse.subscribe { response -> response.validate() }.onCompleteFuture()
+        onCompleteFuture.get()
     }
 
     @Test
@@ -192,8 +243,9 @@ internal class ResponseServiceAsyncTest {
                 .build()
         val responseServiceAsync = client.responses()
 
-        val future = responseServiceAsync.cancel("resp_677efb5139a88190b512bc3fef8e535d")
+        val responseFuture = responseServiceAsync.cancel("resp_677efb5139a88190b512bc3fef8e535d")
 
-        val response = future.get()
+        val response = responseFuture.get()
+        response.validate()
     }
 }

@@ -41,6 +41,7 @@ internal class SpeechServiceTest {
                     .instructions("instructions")
                     .responseFormat(SpeechCreateParams.ResponseFormat.MP3)
                     .speed(0.25)
+                    .streamFormat(SpeechCreateParams.StreamFormat.SSE)
                     .build()
             )
 

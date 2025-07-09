@@ -3,7 +3,6 @@
 package com.openai.models.graders.gradermodels
 
 import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
-import com.openai.core.JsonValue
 import com.openai.core.jsonMapper
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
@@ -16,19 +15,11 @@ internal class MultiGraderTest {
             MultiGrader.builder()
                 .calculateOutput("calculate_output")
                 .graders(
-                    MultiGrader.Graders.builder()
-                        .putAdditionalProperty(
-                            "foo",
-                            JsonValue.from(
-                                mapOf(
-                                    "input" to "input",
-                                    "name" to "name",
-                                    "operation" to "eq",
-                                    "reference" to "reference",
-                                    "type" to "string_check",
-                                )
-                            ),
-                        )
+                    StringCheckGrader.builder()
+                        .input("input")
+                        .name("name")
+                        .operation(StringCheckGrader.Operation.EQ)
+                        .reference("reference")
                         .build()
                 )
                 .name("name")
@@ -37,20 +28,14 @@ internal class MultiGraderTest {
         assertThat(multiGrader.calculateOutput()).isEqualTo("calculate_output")
         assertThat(multiGrader.graders())
             .isEqualTo(
-                MultiGrader.Graders.builder()
-                    .putAdditionalProperty(
-                        "foo",
-                        JsonValue.from(
-                            mapOf(
-                                "input" to "input",
-                                "name" to "name",
-                                "operation" to "eq",
-                                "reference" to "reference",
-                                "type" to "string_check",
-                            )
-                        ),
-                    )
-                    .build()
+                MultiGrader.Graders.ofStringCheckGrader(
+                    StringCheckGrader.builder()
+                        .input("input")
+                        .name("name")
+                        .operation(StringCheckGrader.Operation.EQ)
+                        .reference("reference")
+                        .build()
+                )
             )
         assertThat(multiGrader.name()).isEqualTo("name")
     }
@@ -62,19 +47,11 @@ internal class MultiGraderTest {
             MultiGrader.builder()
                 .calculateOutput("calculate_output")
                 .graders(
-                    MultiGrader.Graders.builder()
-                        .putAdditionalProperty(
-                            "foo",
-                            JsonValue.from(
-                                mapOf(
-                                    "input" to "input",
-                                    "name" to "name",
-                                    "operation" to "eq",
-                                    "reference" to "reference",
-                                    "type" to "string_check",
-                                )
-                            ),
-                        )
+                    StringCheckGrader.builder()
+                        .input("input")
+                        .name("name")
+                        .operation(StringCheckGrader.Operation.EQ)
+                        .reference("reference")
                         .build()
                 )
                 .name("name")

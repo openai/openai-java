@@ -1,10 +1,12 @@
 package com.openai.models.responses
 
 import com.openai.core.BOOLEAN
+import com.openai.core.CLASS
 import com.openai.core.DOUBLE
 import com.openai.core.DelegationWriteTestCase
 import com.openai.core.JSON_FIELD
 import com.openai.core.JSON_VALUE
+import com.openai.core.JsonSchemaLocalValidation
 import com.openai.core.LIST
 import com.openai.core.LONG
 import com.openai.core.MAP
@@ -57,12 +59,15 @@ internal class StructuredResponseCreateParamsTest {
         private val METADATA = ResponseCreateParams.Metadata.builder().build()
         private val SERVICE_TIER = ResponseCreateParams.ServiceTier.AUTO
         private val REASONING = Reasoning.builder().build()
+        private val PROMPT = ResponsePrompt.builder().id("test-prompt-id").build()
 
         private val TOOL_CHOICE_TYPE = ToolChoiceTypes.Type.FILE_SEARCH
         private val TOOL_CHOICE_TYPES = ToolChoiceTypes.builder().type(TOOL_CHOICE_TYPE).build()
         private val TOOL_CHOICE = ResponseCreateParams.ToolChoice.ofTypes(TOOL_CHOICE_TYPES)
         private val TOOL_CHOICE_OPTIONS = ToolChoiceOptions.AUTO
         private val TOOL_CHOICE_FUNCTION = ToolChoiceFunction.builder().name(STRING).build()
+        private val TOOL_CHOICE_MCP =
+            ToolChoiceMcp.builder().name(STRING).serverLabel(STRING).build()
 
         private val FUNCTION_TOOL =
             FunctionTool.builder().name(STRING).parameters(NULLABLE).strict(BOOLEAN).build()
@@ -76,9 +81,19 @@ internal class StructuredResponseCreateParamsTest {
                 .environment(ComputerTool.Environment.LINUX)
                 .build()
         private val TOOL = Tool.ofFunction(FUNCTION_TOOL)
+        private val MCP_TOOL = Tool.Mcp.builder().serverLabel(STRING).serverUrl(STRING).build()
+        private val CODE_INTERPRETER_TOOL_AUTO =
+            Tool.CodeInterpreter.Container.CodeInterpreterToolAuto.builder().build()
+        private val CODE_INTERPRETER_CONTAINER =
+            Tool.CodeInterpreter.Container.ofCodeInterpreterToolAuto(CODE_INTERPRETER_TOOL_AUTO)
+        private val CODE_INTERPRETER_TOOL =
+            Tool.CodeInterpreter.builder().container(CODE_INTERPRETER_CONTAINER).build()
+        private val IMAGE_GENERATION_TOOL = Tool.ImageGeneration.builder().build()
 
         private val HEADERS = Headers.builder().build()
         private val QUERY_PARAMS = QueryParams.builder().build()
+
+        private val VALIDATION = JsonSchemaLocalValidation.NO
 
         // The list order follows the declaration order in `ResponseCreateParams.Builder` for
         // easier maintenance.
@@ -95,6 +110,10 @@ internal class StructuredResponseCreateParamsTest {
                 DelegationWriteTestCase("model", STRING),
                 DelegationWriteTestCase("model", CHAT_MODEL),
                 DelegationWriteTestCase("model", RESPONSES_ONLY_MODEL),
+                DelegationWriteTestCase("background", NULLABLE_BOOLEAN),
+                DelegationWriteTestCase("background", BOOLEAN),
+                DelegationWriteTestCase("background", OPTIONAL),
+                DelegationWriteTestCase("background", JSON_FIELD),
                 DelegationWriteTestCase("include", LIST),
                 DelegationWriteTestCase("include", OPTIONAL),
                 DelegationWriteTestCase("include", JSON_FIELD),
@@ -106,6 +125,10 @@ internal class StructuredResponseCreateParamsTest {
                 DelegationWriteTestCase("maxOutputTokens", LONG),
                 DelegationWriteTestCase("maxOutputTokens", OPTIONAL),
                 DelegationWriteTestCase("maxOutputTokens", JSON_FIELD),
+                DelegationWriteTestCase("maxToolCalls", NULLABLE_LONG),
+                DelegationWriteTestCase("maxToolCalls", LONG),
+                DelegationWriteTestCase("maxToolCalls", OPTIONAL),
+                DelegationWriteTestCase("maxToolCalls", JSON_FIELD),
                 DelegationWriteTestCase("metadata", METADATA),
                 DelegationWriteTestCase("metadata", OPTIONAL),
                 DelegationWriteTestCase("metadata", JSON_FIELD),
@@ -116,6 +139,9 @@ internal class StructuredResponseCreateParamsTest {
                 DelegationWriteTestCase("previousResponseId", NULLABLE_STRING),
                 DelegationWriteTestCase("previousResponseId", OPTIONAL),
                 DelegationWriteTestCase("previousResponseId", JSON_FIELD),
+                DelegationWriteTestCase("prompt", PROMPT),
+                DelegationWriteTestCase("prompt", OPTIONAL),
+                DelegationWriteTestCase("prompt", JSON_FIELD),
                 DelegationWriteTestCase("reasoning", REASONING),
                 DelegationWriteTestCase("reasoning", OPTIONAL),
                 DelegationWriteTestCase("reasoning", JSON_FIELD),
@@ -136,18 +162,31 @@ internal class StructuredResponseCreateParamsTest {
                 DelegationWriteTestCase("toolChoice", TOOL_CHOICE_OPTIONS),
                 DelegationWriteTestCase("toolChoice", TOOL_CHOICE_TYPES),
                 DelegationWriteTestCase("toolChoice", TOOL_CHOICE_FUNCTION),
+                DelegationWriteTestCase("toolChoice", TOOL_CHOICE_MCP),
                 DelegationWriteTestCase("tools", LIST),
                 DelegationWriteTestCase("tools", JSON_FIELD),
                 DelegationWriteTestCase("addTool", TOOL),
+                DelegationWriteTestCase("addTool", FUNCTION_TOOL),
+                DelegationWriteTestCase("addTool", CLASS, VALIDATION),
                 DelegationWriteTestCase("addTool", FILE_SEARCH_TOOL),
                 DelegationWriteTestCase("addFileSearchTool", LIST),
-                DelegationWriteTestCase("addTool", FUNCTION_TOOL),
                 DelegationWriteTestCase("addTool", WEB_SEARCH_TOOL),
                 DelegationWriteTestCase("addTool", COMPUTER_TOOL),
+                DelegationWriteTestCase("addTool", MCP_TOOL),
+                DelegationWriteTestCase("addTool", CODE_INTERPRETER_TOOL),
+                DelegationWriteTestCase("addCodeInterpreterTool", CODE_INTERPRETER_CONTAINER),
+                DelegationWriteTestCase("addCodeInterpreterTool", STRING),
+                DelegationWriteTestCase("addCodeInterpreterTool", CODE_INTERPRETER_TOOL_AUTO),
+                DelegationWriteTestCase("addTool", IMAGE_GENERATION_TOOL),
+                DelegationWriteTestCase("addToolLocalShell"),
                 DelegationWriteTestCase("topP", NULLABLE_DOUBLE),
                 DelegationWriteTestCase("topP", DOUBLE),
                 DelegationWriteTestCase("topP", OPTIONAL),
                 DelegationWriteTestCase("topP", JSON_FIELD),
+                DelegationWriteTestCase("topLogprobs", NULLABLE_LONG),
+                DelegationWriteTestCase("topLogprobs", LONG),
+                DelegationWriteTestCase("topLogprobs", OPTIONAL),
+                DelegationWriteTestCase("topLogprobs", JSON_FIELD),
                 DelegationWriteTestCase("truncation", NULLABLE),
                 DelegationWriteTestCase("truncation", OPTIONAL),
                 DelegationWriteTestCase("truncation", JSON_FIELD),
@@ -194,20 +233,30 @@ internal class StructuredResponseCreateParamsTest {
 
     @Test
     fun allBuilderDelegateFunctionsExistInDelegator() {
-        // The delegator class does not implement various functions from the delegate class:
-        // - text functions and body function
-        // - addCodeInterpreterTool methods
-        // - various tool-related methods (addTool variations, addToolLocalShell)
-        // - background-related methods
         checkAllDelegation(
             mockBuilderDelegate::class,
             builderDelegator::class,
+            // ************************************************************************************
+            // NOTE: THIS TEST EXISTS TO ENSURE THAT WHEN NEW FUNCTIONS ARE ADDED MANUALLY OR VIA
+            // CODE GEN TO `ResponseCreateParams.Builder`, THAT THOSE FUNCTIONS ARE _ALSO_ ADDED
+            // _MANUALLY_ TO `StructuredResponseCreateParams.Builder`. FAILURE TO ADD THOSE
+            // FUNCTIONS RESULTS IN _MISSING_ FUNCTIONALITY WHEN USING STRUCTURED OUTPUTS.
+            // EXCEPTIONS ADDED TO THIS LIST ARE PRESENT BY DESIGN, NOT BECAUSE THE FUNCTIONS ARE
+            // SIMPLY NOT YET IMPLEMENTED IN THE DELEGATOR CLASS.
+            //
+            // DO NOT ADD EXCEPTIONS TO THIS LIST SIMPLY BECAUSE TESTS ARE FAILING. THE TESTS ARE
+            // SUPPOSED TO FAIL. ADD THE NEW FUNCTIONS TO `StructuredResponseCreateParams.Builder`
+            // AND ADD A PARAMETERIZED TEST TO `builderDelegationTestCases` (above) TO ENSURE
+            // CORRECT DELEGATION BEHAVIOR.
+            // ************************************************************************************
+
+            // For Structured Outputs, setting `body` would overwrite the previously set `text`
+            // property, which would break the Structured Outputs behavior.
             "body",
+            // For Structured Outputs, a new type-safe generic`text` function replaces all existing
+            // text functions, as they are mutually incompatible. This function has its own
+            // dedicated unit tests.
             "text",
-            "addCodeInterpreterTool",
-            "addTool",
-            "addToolLocalShell",
-            "background",
         )
     }
 

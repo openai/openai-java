@@ -38,6 +38,9 @@ import com.openai.services.async.UploadServiceAsync
 import com.openai.services.async.UploadServiceAsyncImpl
 import com.openai.services.async.VectorStoreServiceAsync
 import com.openai.services.async.VectorStoreServiceAsyncImpl
+import com.openai.services.async.WebhookServiceAsync
+import com.openai.services.async.WebhookServiceAsyncImpl
+import java.util.function.Consumer
 
 class OpenAIClientAsyncImpl(private val clientOptions: ClientOptions) : OpenAIClientAsync {
 
@@ -96,6 +99,10 @@ class OpenAIClientAsyncImpl(private val clientOptions: ClientOptions) : OpenAICl
         VectorStoreServiceAsyncImpl(clientOptionsWithUserAgent)
     }
 
+    private val webhooks: WebhookServiceAsync by lazy {
+        WebhookServiceAsyncImpl(clientOptionsWithUserAgent)
+    }
+
     private val beta: BetaServiceAsync by lazy { BetaServiceAsyncImpl(clientOptionsWithUserAgent) }
 
     private val batches: BatchServiceAsync by lazy {
@@ -120,6 +127,9 @@ class OpenAIClientAsyncImpl(private val clientOptions: ClientOptions) : OpenAICl
 
     override fun withRawResponse(): OpenAIClientAsync.WithRawResponse = withRawResponse
 
+    override fun withOptions(modifier: Consumer<ClientOptions.Builder>): OpenAIClientAsync =
+        OpenAIClientAsyncImpl(clientOptions.toBuilder().apply(modifier::accept).build())
+
     override fun completions(): CompletionServiceAsync = completions
 
     override fun chat(): ChatServiceAsync = chat
@@ -141,6 +151,8 @@ class OpenAIClientAsyncImpl(private val clientOptions: ClientOptions) : OpenAICl
     override fun graders(): GraderServiceAsync = graders
 
     override fun vectorStores(): VectorStoreServiceAsync = vectorStores
+
+    override fun webhooks(): WebhookServiceAsync = webhooks
 
     override fun beta(): BetaServiceAsync = beta
 
@@ -203,6 +215,10 @@ class OpenAIClientAsyncImpl(private val clientOptions: ClientOptions) : OpenAICl
             VectorStoreServiceAsyncImpl.WithRawResponseImpl(clientOptions)
         }
 
+        private val webhooks: WebhookServiceAsync.WithRawResponse by lazy {
+            WebhookServiceAsyncImpl.WithRawResponseImpl(clientOptions)
+        }
+
         private val beta: BetaServiceAsync.WithRawResponse by lazy {
             BetaServiceAsyncImpl.WithRawResponseImpl(clientOptions)
         }
@@ -227,6 +243,13 @@ class OpenAIClientAsyncImpl(private val clientOptions: ClientOptions) : OpenAICl
             ContainerServiceAsyncImpl.WithRawResponseImpl(clientOptions)
         }
 
+        override fun withOptions(
+            modifier: Consumer<ClientOptions.Builder>
+        ): OpenAIClientAsync.WithRawResponse =
+            OpenAIClientAsyncImpl.WithRawResponseImpl(
+                clientOptions.toBuilder().apply(modifier::accept).build()
+            )
+
         override fun completions(): CompletionServiceAsync.WithRawResponse = completions
 
         override fun chat(): ChatServiceAsync.WithRawResponse = chat
@@ -248,6 +271,8 @@ class OpenAIClientAsyncImpl(private val clientOptions: ClientOptions) : OpenAICl
         override fun graders(): GraderServiceAsync.WithRawResponse = graders
 
         override fun vectorStores(): VectorStoreServiceAsync.WithRawResponse = vectorStores
+
+        override fun webhooks(): WebhookServiceAsync.WithRawResponse = webhooks
 
         override fun beta(): BetaServiceAsync.WithRawResponse = beta
 

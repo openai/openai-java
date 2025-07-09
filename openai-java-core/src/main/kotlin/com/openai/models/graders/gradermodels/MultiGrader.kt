@@ -6,15 +6,26 @@ import com.fasterxml.jackson.annotation.JsonAnyGetter
 import com.fasterxml.jackson.annotation.JsonAnySetter
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonProperty
+import com.fasterxml.jackson.core.JsonGenerator
+import com.fasterxml.jackson.core.ObjectCodec
+import com.fasterxml.jackson.databind.JsonNode
+import com.fasterxml.jackson.databind.SerializerProvider
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize
+import com.fasterxml.jackson.databind.annotation.JsonSerialize
+import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
+import com.openai.core.BaseDeserializer
+import com.openai.core.BaseSerializer
 import com.openai.core.ExcludeMissing
 import com.openai.core.JsonField
 import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
+import com.openai.core.allMaxBy
 import com.openai.core.checkRequired
-import com.openai.core.toImmutable
+import com.openai.core.getOrThrow
 import com.openai.errors.OpenAIInvalidDataException
 import java.util.Collections
 import java.util.Objects
+import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
 /** A MultiGrader object combines the output of multiple graders to produce a single score. */
@@ -46,6 +57,9 @@ private constructor(
     fun calculateOutput(): String = calculateOutput.getRequired("calculate_output")
 
     /**
+     * A StringCheckGrader object that performs a string comparison between input and reference
+     * using a specified operation.
+     *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
      *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
      */
@@ -155,6 +169,10 @@ private constructor(
             this.calculateOutput = calculateOutput
         }
 
+        /**
+         * A StringCheckGrader object that performs a string comparison between input and reference
+         * using a specified operation.
+         */
         fun graders(graders: Graders) = graders(JsonField.of(graders))
 
         /**
@@ -164,6 +182,27 @@ private constructor(
          * method is primarily for setting the field to an undocumented or not yet supported value.
          */
         fun graders(graders: JsonField<Graders>) = apply { this.graders = graders }
+
+        /** Alias for calling [graders] with `Graders.ofStringCheckGrader(stringCheckGrader)`. */
+        fun graders(stringCheckGrader: StringCheckGrader) =
+            graders(Graders.ofStringCheckGrader(stringCheckGrader))
+
+        /**
+         * Alias for calling [graders] with `Graders.ofTextSimilarityGrader(textSimilarityGrader)`.
+         */
+        fun graders(textSimilarityGrader: TextSimilarityGrader) =
+            graders(Graders.ofTextSimilarityGrader(textSimilarityGrader))
+
+        /** Alias for calling [graders] with `Graders.ofPythonGrader(pythonGrader)`. */
+        fun graders(pythonGrader: PythonGrader) = graders(Graders.ofPythonGrader(pythonGrader))
+
+        /** Alias for calling [graders] with `Graders.ofScoreModelGrader(scoreModelGrader)`. */
+        fun graders(scoreModelGrader: ScoreModelGrader) =
+            graders(Graders.ofScoreModelGrader(scoreModelGrader))
+
+        /** Alias for calling [graders] with `Graders.ofLabelModelGrader(labelModelGrader)`. */
+        fun graders(labelModelGrader: LabelModelGrader) =
+            graders(Graders.ofLabelModelGrader(labelModelGrader))
 
         /** The name of the grader. */
         fun name(name: String) = name(JsonField.of(name))
@@ -271,61 +310,90 @@ private constructor(
             (if (name.asKnown().isPresent) 1 else 0) +
             type.let { if (it == JsonValue.from("multi")) 1 else 0 }
 
+    /**
+     * A StringCheckGrader object that performs a string comparison between input and reference
+     * using a specified operation.
+     */
+    @JsonDeserialize(using = Graders.Deserializer::class)
+    @JsonSerialize(using = Graders.Serializer::class)
     class Graders
-    @JsonCreator
     private constructor(
-        @com.fasterxml.jackson.annotation.JsonValue
-        private val additionalProperties: Map<String, JsonValue>
+        private val stringCheckGrader: StringCheckGrader? = null,
+        private val textSimilarityGrader: TextSimilarityGrader? = null,
+        private val pythonGrader: PythonGrader? = null,
+        private val scoreModelGrader: ScoreModelGrader? = null,
+        private val labelModelGrader: LabelModelGrader? = null,
+        private val _json: JsonValue? = null,
     ) {
 
-        @JsonAnyGetter
-        @ExcludeMissing
-        fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
+        /**
+         * A StringCheckGrader object that performs a string comparison between input and reference
+         * using a specified operation.
+         */
+        fun stringCheckGrader(): Optional<StringCheckGrader> =
+            Optional.ofNullable(stringCheckGrader)
 
-        fun toBuilder() = Builder().from(this)
+        /** A TextSimilarityGrader object which grades text based on similarity metrics. */
+        fun textSimilarityGrader(): Optional<TextSimilarityGrader> =
+            Optional.ofNullable(textSimilarityGrader)
 
-        companion object {
+        /** A PythonGrader object that runs a python script on the input. */
+        fun pythonGrader(): Optional<PythonGrader> = Optional.ofNullable(pythonGrader)
 
-            /** Returns a mutable builder for constructing an instance of [Graders]. */
-            @JvmStatic fun builder() = Builder()
-        }
+        /** A ScoreModelGrader object that uses a model to assign a score to the input. */
+        fun scoreModelGrader(): Optional<ScoreModelGrader> = Optional.ofNullable(scoreModelGrader)
 
-        /** A builder for [Graders]. */
-        class Builder internal constructor() {
+        /**
+         * A LabelModelGrader object which uses a model to assign labels to each item in the
+         * evaluation.
+         */
+        fun labelModelGrader(): Optional<LabelModelGrader> = Optional.ofNullable(labelModelGrader)
 
-            private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
+        fun isStringCheckGrader(): Boolean = stringCheckGrader != null
 
-            @JvmSynthetic
-            internal fun from(graders: Graders) = apply {
-                additionalProperties = graders.additionalProperties.toMutableMap()
+        fun isTextSimilarityGrader(): Boolean = textSimilarityGrader != null
+
+        fun isPythonGrader(): Boolean = pythonGrader != null
+
+        fun isScoreModelGrader(): Boolean = scoreModelGrader != null
+
+        fun isLabelModelGrader(): Boolean = labelModelGrader != null
+
+        /**
+         * A StringCheckGrader object that performs a string comparison between input and reference
+         * using a specified operation.
+         */
+        fun asStringCheckGrader(): StringCheckGrader =
+            stringCheckGrader.getOrThrow("stringCheckGrader")
+
+        /** A TextSimilarityGrader object which grades text based on similarity metrics. */
+        fun asTextSimilarityGrader(): TextSimilarityGrader =
+            textSimilarityGrader.getOrThrow("textSimilarityGrader")
+
+        /** A PythonGrader object that runs a python script on the input. */
+        fun asPythonGrader(): PythonGrader = pythonGrader.getOrThrow("pythonGrader")
+
+        /** A ScoreModelGrader object that uses a model to assign a score to the input. */
+        fun asScoreModelGrader(): ScoreModelGrader = scoreModelGrader.getOrThrow("scoreModelGrader")
+
+        /**
+         * A LabelModelGrader object which uses a model to assign labels to each item in the
+         * evaluation.
+         */
+        fun asLabelModelGrader(): LabelModelGrader = labelModelGrader.getOrThrow("labelModelGrader")
+
+        fun _json(): Optional<JsonValue> = Optional.ofNullable(_json)
+
+        fun <T> accept(visitor: Visitor<T>): T =
+            when {
+                stringCheckGrader != null -> visitor.visitStringCheckGrader(stringCheckGrader)
+                textSimilarityGrader != null ->
+                    visitor.visitTextSimilarityGrader(textSimilarityGrader)
+                pythonGrader != null -> visitor.visitPythonGrader(pythonGrader)
+                scoreModelGrader != null -> visitor.visitScoreModelGrader(scoreModelGrader)
+                labelModelGrader != null -> visitor.visitLabelModelGrader(labelModelGrader)
+                else -> visitor.unknown(_json)
             }
-
-            fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
-                this.additionalProperties.clear()
-                putAllAdditionalProperties(additionalProperties)
-            }
-
-            fun putAdditionalProperty(key: String, value: JsonValue) = apply {
-                additionalProperties.put(key, value)
-            }
-
-            fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
-                this.additionalProperties.putAll(additionalProperties)
-            }
-
-            fun removeAdditionalProperty(key: String) = apply { additionalProperties.remove(key) }
-
-            fun removeAllAdditionalProperties(keys: Set<String>) = apply {
-                keys.forEach(::removeAdditionalProperty)
-            }
-
-            /**
-             * Returns an immutable instance of [Graders].
-             *
-             * Further updates to this [Builder] will not mutate the returned instance.
-             */
-            fun build(): Graders = Graders(additionalProperties.toImmutable())
-        }
 
         private var validated: Boolean = false
 
@@ -334,6 +402,31 @@ private constructor(
                 return@apply
             }
 
+            accept(
+                object : Visitor<Unit> {
+                    override fun visitStringCheckGrader(stringCheckGrader: StringCheckGrader) {
+                        stringCheckGrader.validate()
+                    }
+
+                    override fun visitTextSimilarityGrader(
+                        textSimilarityGrader: TextSimilarityGrader
+                    ) {
+                        textSimilarityGrader.validate()
+                    }
+
+                    override fun visitPythonGrader(pythonGrader: PythonGrader) {
+                        pythonGrader.validate()
+                    }
+
+                    override fun visitScoreModelGrader(scoreModelGrader: ScoreModelGrader) {
+                        scoreModelGrader.validate()
+                    }
+
+                    override fun visitLabelModelGrader(labelModelGrader: LabelModelGrader) {
+                        labelModelGrader.validate()
+                    }
+                }
+            )
             validated = true
         }
 
@@ -353,23 +446,183 @@ private constructor(
          */
         @JvmSynthetic
         internal fun validity(): Int =
-            additionalProperties.count { (_, value) -> !value.isNull() && !value.isMissing() }
+            accept(
+                object : Visitor<Int> {
+                    override fun visitStringCheckGrader(stringCheckGrader: StringCheckGrader) =
+                        stringCheckGrader.validity()
+
+                    override fun visitTextSimilarityGrader(
+                        textSimilarityGrader: TextSimilarityGrader
+                    ) = textSimilarityGrader.validity()
+
+                    override fun visitPythonGrader(pythonGrader: PythonGrader) =
+                        pythonGrader.validity()
+
+                    override fun visitScoreModelGrader(scoreModelGrader: ScoreModelGrader) =
+                        scoreModelGrader.validity()
+
+                    override fun visitLabelModelGrader(labelModelGrader: LabelModelGrader) =
+                        labelModelGrader.validity()
+
+                    override fun unknown(json: JsonValue?) = 0
+                }
+            )
 
         override fun equals(other: Any?): Boolean {
             if (this === other) {
                 return true
             }
 
-            return /* spotless:off */ other is Graders && additionalProperties == other.additionalProperties /* spotless:on */
+            return /* spotless:off */ other is Graders && stringCheckGrader == other.stringCheckGrader && textSimilarityGrader == other.textSimilarityGrader && pythonGrader == other.pythonGrader && scoreModelGrader == other.scoreModelGrader && labelModelGrader == other.labelModelGrader /* spotless:on */
         }
 
-        /* spotless:off */
-        private val hashCode: Int by lazy { Objects.hash(additionalProperties) }
-        /* spotless:on */
+        override fun hashCode(): Int = /* spotless:off */ Objects.hash(stringCheckGrader, textSimilarityGrader, pythonGrader, scoreModelGrader, labelModelGrader) /* spotless:on */
 
-        override fun hashCode(): Int = hashCode
+        override fun toString(): String =
+            when {
+                stringCheckGrader != null -> "Graders{stringCheckGrader=$stringCheckGrader}"
+                textSimilarityGrader != null ->
+                    "Graders{textSimilarityGrader=$textSimilarityGrader}"
+                pythonGrader != null -> "Graders{pythonGrader=$pythonGrader}"
+                scoreModelGrader != null -> "Graders{scoreModelGrader=$scoreModelGrader}"
+                labelModelGrader != null -> "Graders{labelModelGrader=$labelModelGrader}"
+                _json != null -> "Graders{_unknown=$_json}"
+                else -> throw IllegalStateException("Invalid Graders")
+            }
 
-        override fun toString() = "Graders{additionalProperties=$additionalProperties}"
+        companion object {
+
+            /**
+             * A StringCheckGrader object that performs a string comparison between input and
+             * reference using a specified operation.
+             */
+            @JvmStatic
+            fun ofStringCheckGrader(stringCheckGrader: StringCheckGrader) =
+                Graders(stringCheckGrader = stringCheckGrader)
+
+            /** A TextSimilarityGrader object which grades text based on similarity metrics. */
+            @JvmStatic
+            fun ofTextSimilarityGrader(textSimilarityGrader: TextSimilarityGrader) =
+                Graders(textSimilarityGrader = textSimilarityGrader)
+
+            /** A PythonGrader object that runs a python script on the input. */
+            @JvmStatic
+            fun ofPythonGrader(pythonGrader: PythonGrader) = Graders(pythonGrader = pythonGrader)
+
+            /** A ScoreModelGrader object that uses a model to assign a score to the input. */
+            @JvmStatic
+            fun ofScoreModelGrader(scoreModelGrader: ScoreModelGrader) =
+                Graders(scoreModelGrader = scoreModelGrader)
+
+            /**
+             * A LabelModelGrader object which uses a model to assign labels to each item in the
+             * evaluation.
+             */
+            @JvmStatic
+            fun ofLabelModelGrader(labelModelGrader: LabelModelGrader) =
+                Graders(labelModelGrader = labelModelGrader)
+        }
+
+        /**
+         * An interface that defines how to map each variant of [Graders] to a value of type [T].
+         */
+        interface Visitor<out T> {
+
+            /**
+             * A StringCheckGrader object that performs a string comparison between input and
+             * reference using a specified operation.
+             */
+            fun visitStringCheckGrader(stringCheckGrader: StringCheckGrader): T
+
+            /** A TextSimilarityGrader object which grades text based on similarity metrics. */
+            fun visitTextSimilarityGrader(textSimilarityGrader: TextSimilarityGrader): T
+
+            /** A PythonGrader object that runs a python script on the input. */
+            fun visitPythonGrader(pythonGrader: PythonGrader): T
+
+            /** A ScoreModelGrader object that uses a model to assign a score to the input. */
+            fun visitScoreModelGrader(scoreModelGrader: ScoreModelGrader): T
+
+            /**
+             * A LabelModelGrader object which uses a model to assign labels to each item in the
+             * evaluation.
+             */
+            fun visitLabelModelGrader(labelModelGrader: LabelModelGrader): T
+
+            /**
+             * Maps an unknown variant of [Graders] to a value of type [T].
+             *
+             * An instance of [Graders] can contain an unknown variant if it was deserialized from
+             * data that doesn't match any known variant. For example, if the SDK is on an older
+             * version than the API, then the API may respond with new variants that the SDK is
+             * unaware of.
+             *
+             * @throws OpenAIInvalidDataException in the default implementation.
+             */
+            fun unknown(json: JsonValue?): T {
+                throw OpenAIInvalidDataException("Unknown Graders: $json")
+            }
+        }
+
+        internal class Deserializer : BaseDeserializer<Graders>(Graders::class) {
+
+            override fun ObjectCodec.deserialize(node: JsonNode): Graders {
+                val json = JsonValue.fromJsonNode(node)
+
+                val bestMatches =
+                    sequenceOf(
+                            tryDeserialize(node, jacksonTypeRef<StringCheckGrader>())?.let {
+                                Graders(stringCheckGrader = it, _json = json)
+                            },
+                            tryDeserialize(node, jacksonTypeRef<TextSimilarityGrader>())?.let {
+                                Graders(textSimilarityGrader = it, _json = json)
+                            },
+                            tryDeserialize(node, jacksonTypeRef<PythonGrader>())?.let {
+                                Graders(pythonGrader = it, _json = json)
+                            },
+                            tryDeserialize(node, jacksonTypeRef<ScoreModelGrader>())?.let {
+                                Graders(scoreModelGrader = it, _json = json)
+                            },
+                            tryDeserialize(node, jacksonTypeRef<LabelModelGrader>())?.let {
+                                Graders(labelModelGrader = it, _json = json)
+                            },
+                        )
+                        .filterNotNull()
+                        .allMaxBy { it.validity() }
+                        .toList()
+                return when (bestMatches.size) {
+                    // This can happen if what we're deserializing is completely incompatible with
+                    // all the possible variants (e.g. deserializing from boolean).
+                    0 -> Graders(_json = json)
+                    1 -> bestMatches.single()
+                    // If there's more than one match with the highest validity, then use the first
+                    // completely valid match, or simply the first match if none are completely
+                    // valid.
+                    else -> bestMatches.firstOrNull { it.isValid() } ?: bestMatches.first()
+                }
+            }
+        }
+
+        internal class Serializer : BaseSerializer<Graders>(Graders::class) {
+
+            override fun serialize(
+                value: Graders,
+                generator: JsonGenerator,
+                provider: SerializerProvider,
+            ) {
+                when {
+                    value.stringCheckGrader != null ->
+                        generator.writeObject(value.stringCheckGrader)
+                    value.textSimilarityGrader != null ->
+                        generator.writeObject(value.textSimilarityGrader)
+                    value.pythonGrader != null -> generator.writeObject(value.pythonGrader)
+                    value.scoreModelGrader != null -> generator.writeObject(value.scoreModelGrader)
+                    value.labelModelGrader != null -> generator.writeObject(value.labelModelGrader)
+                    value._json != null -> generator.writeObject(value._json)
+                    else -> throw IllegalStateException("Invalid Graders")
+                }
+            }
+        }
     }
 
     override fun equals(other: Any?): Boolean {

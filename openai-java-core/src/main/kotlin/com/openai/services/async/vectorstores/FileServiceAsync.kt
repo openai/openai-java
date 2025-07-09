@@ -2,7 +2,7 @@
 
 package com.openai.services.async.vectorstores
 
-import com.google.errorprone.annotations.MustBeClosed
+import com.openai.core.ClientOptions
 import com.openai.core.RequestOptions
 import com.openai.core.http.HttpResponseFor
 import com.openai.models.vectorstores.files.FileContentPageAsync
@@ -16,6 +16,7 @@ import com.openai.models.vectorstores.files.FileUpdateParams
 import com.openai.models.vectorstores.files.VectorStoreFile
 import com.openai.models.vectorstores.files.VectorStoreFileDeleted
 import java.util.concurrent.CompletableFuture
+import java.util.function.Consumer
 
 interface FileServiceAsync {
 
@@ -23,6 +24,13 @@ interface FileServiceAsync {
      * Returns a view of this service that provides access to raw HTTP responses for each method.
      */
     fun withRawResponse(): WithRawResponse
+
+    /**
+     * Returns a view of this service with the given option modifications applied.
+     *
+     * The original service is not modified.
+     */
+    fun withOptions(modifier: Consumer<ClientOptions.Builder>): FileServiceAsync
 
     /**
      * Create a vector store file by attaching a
@@ -187,10 +195,16 @@ interface FileServiceAsync {
     interface WithRawResponse {
 
         /**
+         * Returns a view of this service with the given option modifications applied.
+         *
+         * The original service is not modified.
+         */
+        fun withOptions(modifier: Consumer<ClientOptions.Builder>): FileServiceAsync.WithRawResponse
+
+        /**
          * Returns a raw HTTP response for `post /vector_stores/{vector_store_id}/files`, but is
          * otherwise the same as [FileServiceAsync.create].
          */
-        @MustBeClosed
         fun create(
             vectorStoreId: String,
             params: FileCreateParams,
@@ -198,7 +212,6 @@ interface FileServiceAsync {
             create(vectorStoreId, params, RequestOptions.none())
 
         /** @see [create] */
-        @MustBeClosed
         fun create(
             vectorStoreId: String,
             params: FileCreateParams,
@@ -207,12 +220,10 @@ interface FileServiceAsync {
             create(params.toBuilder().vectorStoreId(vectorStoreId).build(), requestOptions)
 
         /** @see [create] */
-        @MustBeClosed
         fun create(params: FileCreateParams): CompletableFuture<HttpResponseFor<VectorStoreFile>> =
             create(params, RequestOptions.none())
 
         /** @see [create] */
-        @MustBeClosed
         fun create(
             params: FileCreateParams,
             requestOptions: RequestOptions = RequestOptions.none(),
@@ -222,7 +233,6 @@ interface FileServiceAsync {
          * Returns a raw HTTP response for `get /vector_stores/{vector_store_id}/files/{file_id}`,
          * but is otherwise the same as [FileServiceAsync.retrieve].
          */
-        @MustBeClosed
         fun retrieve(
             fileId: String,
             params: FileRetrieveParams,
@@ -230,7 +240,6 @@ interface FileServiceAsync {
             retrieve(fileId, params, RequestOptions.none())
 
         /** @see [retrieve] */
-        @MustBeClosed
         fun retrieve(
             fileId: String,
             params: FileRetrieveParams,
@@ -239,14 +248,12 @@ interface FileServiceAsync {
             retrieve(params.toBuilder().fileId(fileId).build(), requestOptions)
 
         /** @see [retrieve] */
-        @MustBeClosed
         fun retrieve(
             params: FileRetrieveParams
         ): CompletableFuture<HttpResponseFor<VectorStoreFile>> =
             retrieve(params, RequestOptions.none())
 
         /** @see [retrieve] */
-        @MustBeClosed
         fun retrieve(
             params: FileRetrieveParams,
             requestOptions: RequestOptions = RequestOptions.none(),
@@ -256,7 +263,6 @@ interface FileServiceAsync {
          * Returns a raw HTTP response for `post /vector_stores/{vector_store_id}/files/{file_id}`,
          * but is otherwise the same as [FileServiceAsync.update].
          */
-        @MustBeClosed
         fun update(
             fileId: String,
             params: FileUpdateParams,
@@ -264,7 +270,6 @@ interface FileServiceAsync {
             update(fileId, params, RequestOptions.none())
 
         /** @see [update] */
-        @MustBeClosed
         fun update(
             fileId: String,
             params: FileUpdateParams,
@@ -273,12 +278,10 @@ interface FileServiceAsync {
             update(params.toBuilder().fileId(fileId).build(), requestOptions)
 
         /** @see [update] */
-        @MustBeClosed
         fun update(params: FileUpdateParams): CompletableFuture<HttpResponseFor<VectorStoreFile>> =
             update(params, RequestOptions.none())
 
         /** @see [update] */
-        @MustBeClosed
         fun update(
             params: FileUpdateParams,
             requestOptions: RequestOptions = RequestOptions.none(),
@@ -288,12 +291,10 @@ interface FileServiceAsync {
          * Returns a raw HTTP response for `get /vector_stores/{vector_store_id}/files`, but is
          * otherwise the same as [FileServiceAsync.list].
          */
-        @MustBeClosed
         fun list(vectorStoreId: String): CompletableFuture<HttpResponseFor<FileListPageAsync>> =
             list(vectorStoreId, FileListParams.none())
 
         /** @see [list] */
-        @MustBeClosed
         fun list(
             vectorStoreId: String,
             params: FileListParams = FileListParams.none(),
@@ -302,7 +303,6 @@ interface FileServiceAsync {
             list(params.toBuilder().vectorStoreId(vectorStoreId).build(), requestOptions)
 
         /** @see [list] */
-        @MustBeClosed
         fun list(
             vectorStoreId: String,
             params: FileListParams = FileListParams.none(),
@@ -310,19 +310,16 @@ interface FileServiceAsync {
             list(vectorStoreId, params, RequestOptions.none())
 
         /** @see [list] */
-        @MustBeClosed
         fun list(
             params: FileListParams,
             requestOptions: RequestOptions = RequestOptions.none(),
         ): CompletableFuture<HttpResponseFor<FileListPageAsync>>
 
         /** @see [list] */
-        @MustBeClosed
         fun list(params: FileListParams): CompletableFuture<HttpResponseFor<FileListPageAsync>> =
             list(params, RequestOptions.none())
 
         /** @see [list] */
-        @MustBeClosed
         fun list(
             vectorStoreId: String,
             requestOptions: RequestOptions,
@@ -334,7 +331,6 @@ interface FileServiceAsync {
          * /vector_stores/{vector_store_id}/files/{file_id}`, but is otherwise the same as
          * [FileServiceAsync.delete].
          */
-        @MustBeClosed
         fun delete(
             fileId: String,
             params: FileDeleteParams,
@@ -342,7 +338,6 @@ interface FileServiceAsync {
             delete(fileId, params, RequestOptions.none())
 
         /** @see [delete] */
-        @MustBeClosed
         fun delete(
             fileId: String,
             params: FileDeleteParams,
@@ -351,14 +346,12 @@ interface FileServiceAsync {
             delete(params.toBuilder().fileId(fileId).build(), requestOptions)
 
         /** @see [delete] */
-        @MustBeClosed
         fun delete(
             params: FileDeleteParams
         ): CompletableFuture<HttpResponseFor<VectorStoreFileDeleted>> =
             delete(params, RequestOptions.none())
 
         /** @see [delete] */
-        @MustBeClosed
         fun delete(
             params: FileDeleteParams,
             requestOptions: RequestOptions = RequestOptions.none(),
@@ -369,7 +362,6 @@ interface FileServiceAsync {
          * /vector_stores/{vector_store_id}/files/{file_id}/content`, but is otherwise the same as
          * [FileServiceAsync.content].
          */
-        @MustBeClosed
         fun content(
             fileId: String,
             params: FileContentParams,
@@ -377,7 +369,6 @@ interface FileServiceAsync {
             content(fileId, params, RequestOptions.none())
 
         /** @see [content] */
-        @MustBeClosed
         fun content(
             fileId: String,
             params: FileContentParams,
@@ -386,14 +377,12 @@ interface FileServiceAsync {
             content(params.toBuilder().fileId(fileId).build(), requestOptions)
 
         /** @see [content] */
-        @MustBeClosed
         fun content(
             params: FileContentParams
         ): CompletableFuture<HttpResponseFor<FileContentPageAsync>> =
             content(params, RequestOptions.none())
 
         /** @see [content] */
-        @MustBeClosed
         fun content(
             params: FileContentParams,
             requestOptions: RequestOptions = RequestOptions.none(),

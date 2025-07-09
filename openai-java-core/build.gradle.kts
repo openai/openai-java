@@ -20,6 +20,7 @@ dependencies {
     api("com.fasterxml.jackson.core:jackson-core:2.18.2")
     api("com.fasterxml.jackson.core:jackson-databind:2.18.2")
     api("com.google.errorprone:error_prone_annotations:2.33.0")
+    api("io.swagger.core.v3:swagger-annotations:2.2.31")
 
     implementation("com.fasterxml.jackson.core:jackson-annotations:2.18.2")
     implementation("com.fasterxml.jackson.datatype:jackson-datatype-jdk8:2.18.2")
@@ -29,6 +30,7 @@ dependencies {
     implementation("org.apache.httpcomponents.client5:httpclient5:5.3.1")
     implementation("com.github.victools:jsonschema-generator:4.38.0")
     implementation("com.github.victools:jsonschema-module-jackson:4.38.0")
+    implementation("com.github.victools:jsonschema-module-swagger-2:4.38.0")
 
     testImplementation(kotlin("test"))
     testImplementation(project(":openai-java-client-okhttp"))

@@ -115,19 +115,19 @@ private constructor(
     @JsonProperty("object") @ExcludeMissing fun _object_(): JsonValue = object_
 
     /**
-     * Specifies the latency tier to use for processing the request. This parameter is relevant for
-     * customers subscribed to the scale tier service:
-     * - If set to 'auto', and the Project is Scale tier enabled, the system will utilize scale tier
-     *   credits until they are exhausted.
-     * - If set to 'auto', and the Project is not Scale tier enabled, the request will be processed
-     *   using the default service tier with a lower uptime SLA and no latency guarentee.
-     * - If set to 'default', the request will be processed using the default service tier with a
-     *   lower uptime SLA and no latency guarentee.
-     * - If set to 'flex', the request will be processed with the Flex Processing service tier.
-     *   [Learn more](https://platform.openai.com/docs/guides/flex-processing).
+     * Specifies the processing type used for serving the request.
+     * - If set to 'auto', then the request will be processed with the service tier configured in
+     *   the Project settings. Unless otherwise configured, the Project will use 'default'.
+     * - If set to 'default', then the requset will be processed with the standard pricing and
+     *   performance for the selected model.
+     * - If set to '[flex](https://platform.openai.com/docs/guides/flex-processing)' or 'priority',
+     *   then the request will be processed with the corresponding service tier.
+     *   [Contact sales](https://openai.com/contact-sales) to learn more about Priority processing.
      * - When not set, the default behavior is 'auto'.
      *
-     * When this parameter is set, the response body will include the `service_tier` utilized.
+     * When the `service_tier` parameter is set, the response body will include the `service_tier`
+     * value based on the processing mode actually used to serve the request. This response value
+     * may be different from the value set in the parameter.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -346,20 +346,20 @@ private constructor(
         fun object_(object_: JsonValue) = apply { this.object_ = object_ }
 
         /**
-         * Specifies the latency tier to use for processing the request. This parameter is relevant
-         * for customers subscribed to the scale tier service:
-         * - If set to 'auto', and the Project is Scale tier enabled, the system will utilize scale
-         *   tier credits until they are exhausted.
-         * - If set to 'auto', and the Project is not Scale tier enabled, the request will be
-         *   processed using the default service tier with a lower uptime SLA and no latency
-         *   guarentee.
-         * - If set to 'default', the request will be processed using the default service tier with
-         *   a lower uptime SLA and no latency guarentee.
-         * - If set to 'flex', the request will be processed with the Flex Processing service tier.
-         *   [Learn more](https://platform.openai.com/docs/guides/flex-processing).
+         * Specifies the processing type used for serving the request.
+         * - If set to 'auto', then the request will be processed with the service tier configured
+         *   in the Project settings. Unless otherwise configured, the Project will use 'default'.
+         * - If set to 'default', then the requset will be processed with the standard pricing and
+         *   performance for the selected model.
+         * - If set to '[flex](https://platform.openai.com/docs/guides/flex-processing)' or
+         *   'priority', then the request will be processed with the corresponding service tier.
+         *   [Contact sales](https://openai.com/contact-sales) to learn more about Priority
+         *   processing.
          * - When not set, the default behavior is 'auto'.
          *
-         * When this parameter is set, the response body will include the `service_tier` utilized.
+         * When the `service_tier` parameter is set, the response body will include the
+         * `service_tier` value based on the processing mode actually used to serve the request.
+         * This response value may be different from the value set in the parameter.
          */
         fun serviceTier(serviceTier: ServiceTier?) = serviceTier(JsonField.ofNullable(serviceTier))
 
@@ -2482,19 +2482,19 @@ private constructor(
     }
 
     /**
-     * Specifies the latency tier to use for processing the request. This parameter is relevant for
-     * customers subscribed to the scale tier service:
-     * - If set to 'auto', and the Project is Scale tier enabled, the system will utilize scale tier
-     *   credits until they are exhausted.
-     * - If set to 'auto', and the Project is not Scale tier enabled, the request will be processed
-     *   using the default service tier with a lower uptime SLA and no latency guarentee.
-     * - If set to 'default', the request will be processed using the default service tier with a
-     *   lower uptime SLA and no latency guarentee.
-     * - If set to 'flex', the request will be processed with the Flex Processing service tier.
-     *   [Learn more](https://platform.openai.com/docs/guides/flex-processing).
+     * Specifies the processing type used for serving the request.
+     * - If set to 'auto', then the request will be processed with the service tier configured in
+     *   the Project settings. Unless otherwise configured, the Project will use 'default'.
+     * - If set to 'default', then the requset will be processed with the standard pricing and
+     *   performance for the selected model.
+     * - If set to '[flex](https://platform.openai.com/docs/guides/flex-processing)' or 'priority',
+     *   then the request will be processed with the corresponding service tier.
+     *   [Contact sales](https://openai.com/contact-sales) to learn more about Priority processing.
      * - When not set, the default behavior is 'auto'.
      *
-     * When this parameter is set, the response body will include the `service_tier` utilized.
+     * When the `service_tier` parameter is set, the response body will include the `service_tier`
+     * value based on the processing mode actually used to serve the request. This response value
+     * may be different from the value set in the parameter.
      */
     class ServiceTier @JsonCreator private constructor(private val value: JsonField<String>) :
         Enum {
@@ -2517,6 +2517,10 @@ private constructor(
 
             @JvmField val FLEX = of("flex")
 
+            @JvmField val SCALE = of("scale")
+
+            @JvmField val PRIORITY = of("priority")
+
             @JvmStatic fun of(value: String) = ServiceTier(JsonField.of(value))
         }
 
@@ -2525,6 +2529,8 @@ private constructor(
             AUTO,
             DEFAULT,
             FLEX,
+            SCALE,
+            PRIORITY,
         }
 
         /**
@@ -2540,6 +2546,8 @@ private constructor(
             AUTO,
             DEFAULT,
             FLEX,
+            SCALE,
+            PRIORITY,
             /**
              * An enum member indicating that [ServiceTier] was instantiated with an unknown value.
              */
@@ -2558,6 +2566,8 @@ private constructor(
                 AUTO -> Value.AUTO
                 DEFAULT -> Value.DEFAULT
                 FLEX -> Value.FLEX
+                SCALE -> Value.SCALE
+                PRIORITY -> Value.PRIORITY
                 else -> Value._UNKNOWN
             }
 
@@ -2575,6 +2585,8 @@ private constructor(
                 AUTO -> Known.AUTO
                 DEFAULT -> Known.DEFAULT
                 FLEX -> Known.FLEX
+                SCALE -> Known.SCALE
+                PRIORITY -> Known.PRIORITY
                 else -> throw OpenAIInvalidDataException("Unknown ServiceTier: $value")
             }
 

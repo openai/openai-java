@@ -2,7 +2,7 @@
 
 package com.openai.services.async
 
-import com.google.errorprone.annotations.MustBeClosed
+import com.openai.core.ClientOptions
 import com.openai.core.RequestOptions
 import com.openai.core.http.HttpResponseFor
 import com.openai.models.batches.Batch
@@ -12,6 +12,7 @@ import com.openai.models.batches.BatchListPageAsync
 import com.openai.models.batches.BatchListParams
 import com.openai.models.batches.BatchRetrieveParams
 import java.util.concurrent.CompletableFuture
+import java.util.function.Consumer
 
 interface BatchServiceAsync {
 
@@ -19,6 +20,13 @@ interface BatchServiceAsync {
      * Returns a view of this service that provides access to raw HTTP responses for each method.
      */
     fun withRawResponse(): WithRawResponse
+
+    /**
+     * Returns a view of this service with the given option modifications applied.
+     *
+     * The original service is not modified.
+     */
+    fun withOptions(modifier: Consumer<ClientOptions.Builder>): BatchServiceAsync
 
     /** Creates and executes a batch from an uploaded file of requests */
     fun create(params: BatchCreateParams): CompletableFuture<Batch> =
@@ -120,15 +128,22 @@ interface BatchServiceAsync {
     interface WithRawResponse {
 
         /**
+         * Returns a view of this service with the given option modifications applied.
+         *
+         * The original service is not modified.
+         */
+        fun withOptions(
+            modifier: Consumer<ClientOptions.Builder>
+        ): BatchServiceAsync.WithRawResponse
+
+        /**
          * Returns a raw HTTP response for `post /batches`, but is otherwise the same as
          * [BatchServiceAsync.create].
          */
-        @MustBeClosed
         fun create(params: BatchCreateParams): CompletableFuture<HttpResponseFor<Batch>> =
             create(params, RequestOptions.none())
 
         /** @see [create] */
-        @MustBeClosed
         fun create(
             params: BatchCreateParams,
             requestOptions: RequestOptions = RequestOptions.none(),
@@ -138,12 +153,10 @@ interface BatchServiceAsync {
          * Returns a raw HTTP response for `get /batches/{batch_id}`, but is otherwise the same as
          * [BatchServiceAsync.retrieve].
          */
-        @MustBeClosed
         fun retrieve(batchId: String): CompletableFuture<HttpResponseFor<Batch>> =
             retrieve(batchId, BatchRetrieveParams.none())
 
         /** @see [retrieve] */
-        @MustBeClosed
         fun retrieve(
             batchId: String,
             params: BatchRetrieveParams = BatchRetrieveParams.none(),
@@ -152,7 +165,6 @@ interface BatchServiceAsync {
             retrieve(params.toBuilder().batchId(batchId).build(), requestOptions)
 
         /** @see [retrieve] */
-        @MustBeClosed
         fun retrieve(
             batchId: String,
             params: BatchRetrieveParams = BatchRetrieveParams.none(),
@@ -160,19 +172,16 @@ interface BatchServiceAsync {
             retrieve(batchId, params, RequestOptions.none())
 
         /** @see [retrieve] */
-        @MustBeClosed
         fun retrieve(
             params: BatchRetrieveParams,
             requestOptions: RequestOptions = RequestOptions.none(),
         ): CompletableFuture<HttpResponseFor<Batch>>
 
         /** @see [retrieve] */
-        @MustBeClosed
         fun retrieve(params: BatchRetrieveParams): CompletableFuture<HttpResponseFor<Batch>> =
             retrieve(params, RequestOptions.none())
 
         /** @see [retrieve] */
-        @MustBeClosed
         fun retrieve(
             batchId: String,
             requestOptions: RequestOptions,
@@ -183,26 +192,22 @@ interface BatchServiceAsync {
          * Returns a raw HTTP response for `get /batches`, but is otherwise the same as
          * [BatchServiceAsync.list].
          */
-        @MustBeClosed
         fun list(): CompletableFuture<HttpResponseFor<BatchListPageAsync>> =
             list(BatchListParams.none())
 
         /** @see [list] */
-        @MustBeClosed
         fun list(
             params: BatchListParams = BatchListParams.none(),
             requestOptions: RequestOptions = RequestOptions.none(),
         ): CompletableFuture<HttpResponseFor<BatchListPageAsync>>
 
         /** @see [list] */
-        @MustBeClosed
         fun list(
             params: BatchListParams = BatchListParams.none()
         ): CompletableFuture<HttpResponseFor<BatchListPageAsync>> =
             list(params, RequestOptions.none())
 
         /** @see [list] */
-        @MustBeClosed
         fun list(
             requestOptions: RequestOptions
         ): CompletableFuture<HttpResponseFor<BatchListPageAsync>> =
@@ -212,12 +217,10 @@ interface BatchServiceAsync {
          * Returns a raw HTTP response for `post /batches/{batch_id}/cancel`, but is otherwise the
          * same as [BatchServiceAsync.cancel].
          */
-        @MustBeClosed
         fun cancel(batchId: String): CompletableFuture<HttpResponseFor<Batch>> =
             cancel(batchId, BatchCancelParams.none())
 
         /** @see [cancel] */
-        @MustBeClosed
         fun cancel(
             batchId: String,
             params: BatchCancelParams = BatchCancelParams.none(),
@@ -226,7 +229,6 @@ interface BatchServiceAsync {
             cancel(params.toBuilder().batchId(batchId).build(), requestOptions)
 
         /** @see [cancel] */
-        @MustBeClosed
         fun cancel(
             batchId: String,
             params: BatchCancelParams = BatchCancelParams.none(),
@@ -234,19 +236,16 @@ interface BatchServiceAsync {
             cancel(batchId, params, RequestOptions.none())
 
         /** @see [cancel] */
-        @MustBeClosed
         fun cancel(
             params: BatchCancelParams,
             requestOptions: RequestOptions = RequestOptions.none(),
         ): CompletableFuture<HttpResponseFor<Batch>>
 
         /** @see [cancel] */
-        @MustBeClosed
         fun cancel(params: BatchCancelParams): CompletableFuture<HttpResponseFor<Batch>> =
             cancel(params, RequestOptions.none())
 
         /** @see [cancel] */
-        @MustBeClosed
         fun cancel(
             batchId: String,
             requestOptions: RequestOptions,

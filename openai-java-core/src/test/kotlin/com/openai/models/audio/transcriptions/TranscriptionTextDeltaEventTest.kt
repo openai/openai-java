@@ -3,7 +3,6 @@
 package com.openai.models.audio.transcriptions
 
 import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
-import com.openai.core.JsonValue
 import com.openai.core.jsonMapper
 import kotlin.jvm.optionals.getOrNull
 import org.assertj.core.api.Assertions.assertThat
@@ -19,7 +18,7 @@ internal class TranscriptionTextDeltaEventTest {
                 .addLogprob(
                     TranscriptionTextDeltaEvent.Logprob.builder()
                         .token("token")
-                        .addByte(JsonValue.from(mapOf<String, Any>()))
+                        .addByte(0L)
                         .logprob(0.0)
                         .build()
                 )
@@ -30,7 +29,7 @@ internal class TranscriptionTextDeltaEventTest {
             .containsExactly(
                 TranscriptionTextDeltaEvent.Logprob.builder()
                     .token("token")
-                    .addByte(JsonValue.from(mapOf<String, Any>()))
+                    .addByte(0L)
                     .logprob(0.0)
                     .build()
             )
@@ -45,7 +44,7 @@ internal class TranscriptionTextDeltaEventTest {
                 .addLogprob(
                     TranscriptionTextDeltaEvent.Logprob.builder()
                         .token("token")
-                        .addByte(JsonValue.from(mapOf<String, Any>()))
+                        .addByte(0L)
                         .logprob(0.0)
                         .build()
                 )

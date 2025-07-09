@@ -20,6 +20,7 @@ import com.openai.models.images.ImageCreateVariationParams
 import com.openai.models.images.ImageEditParams
 import com.openai.models.images.ImageGenerateParams
 import com.openai.models.images.ImagesResponse
+import java.util.function.Consumer
 
 class ImageServiceImpl internal constructor(private val clientOptions: ClientOptions) :
     ImageService {
@@ -29,6 +30,9 @@ class ImageServiceImpl internal constructor(private val clientOptions: ClientOpt
     }
 
     override fun withRawResponse(): ImageService.WithRawResponse = withRawResponse
+
+    override fun withOptions(modifier: Consumer<ClientOptions.Builder>): ImageService =
+        ImageServiceImpl(clientOptions.toBuilder().apply(modifier::accept).build())
 
     override fun createVariation(
         params: ImageCreateVariationParams,
@@ -53,6 +57,13 @@ class ImageServiceImpl internal constructor(private val clientOptions: ClientOpt
 
         private val errorHandler: Handler<ErrorObject?> = errorHandler(clientOptions.jsonMapper)
 
+        override fun withOptions(
+            modifier: Consumer<ClientOptions.Builder>
+        ): ImageService.WithRawResponse =
+            ImageServiceImpl.WithRawResponseImpl(
+                clientOptions.toBuilder().apply(modifier::accept).build()
+            )
+
         private val createVariationHandler: Handler<ImagesResponse> =
             jsonHandler<ImagesResponse>(clientOptions.jsonMapper).withErrorHandler(errorHandler)
 
@@ -63,6 +74,7 @@ class ImageServiceImpl internal constructor(private val clientOptions: ClientOpt
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.POST)
+                    .baseUrl(clientOptions.baseUrl())
                     .addPathSegments("images", "variations")
                     .body(multipartFormData(clientOptions.jsonMapper, params._body()))
                     .build()
@@ -94,6 +106,7 @@ class ImageServiceImpl internal constructor(private val clientOptions: ClientOpt
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.POST)
+                    .baseUrl(clientOptions.baseUrl())
                     .addPathSegments("images", "edits")
                     .body(multipartFormData(clientOptions.jsonMapper, params._body()))
                     .build()
@@ -125,10 +138,15 @@ class ImageServiceImpl internal constructor(private val clientOptions: ClientOpt
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.POST)
+                    .baseUrl(clientOptions.baseUrl())
                     .addPathSegments("images", "generations")
                     .body(json(clientOptions.jsonMapper, params._body()))
                     .build()
-                    .prepare(clientOptions, params, params.model().toString())
+                    .prepare(
+                        clientOptions,
+                        params,
+                        params.model().map { it.toString() }.orElse(null),
+                    )
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             val response = clientOptions.httpClient.execute(request, requestOptions)
             return response.parseable {

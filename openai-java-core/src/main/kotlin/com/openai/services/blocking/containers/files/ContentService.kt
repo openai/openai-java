@@ -3,9 +3,11 @@
 package com.openai.services.blocking.containers.files
 
 import com.google.errorprone.annotations.MustBeClosed
+import com.openai.core.ClientOptions
 import com.openai.core.RequestOptions
 import com.openai.core.http.HttpResponse
 import com.openai.models.containers.files.content.ContentRetrieveParams
+import java.util.function.Consumer
 
 interface ContentService {
 
@@ -14,28 +16,47 @@ interface ContentService {
      */
     fun withRawResponse(): WithRawResponse
 
+    /**
+     * Returns a view of this service with the given option modifications applied.
+     *
+     * The original service is not modified.
+     */
+    fun withOptions(modifier: Consumer<ClientOptions.Builder>): ContentService
+
     /** Retrieve Container File Content */
-    fun retrieve(fileId: String, params: ContentRetrieveParams) =
+    @MustBeClosed
+    fun retrieve(fileId: String, params: ContentRetrieveParams): HttpResponse =
         retrieve(fileId, params, RequestOptions.none())
 
     /** @see [retrieve] */
+    @MustBeClosed
     fun retrieve(
         fileId: String,
         params: ContentRetrieveParams,
         requestOptions: RequestOptions = RequestOptions.none(),
-    ) = retrieve(params.toBuilder().fileId(fileId).build(), requestOptions)
+    ): HttpResponse = retrieve(params.toBuilder().fileId(fileId).build(), requestOptions)
 
     /** @see [retrieve] */
-    fun retrieve(params: ContentRetrieveParams) = retrieve(params, RequestOptions.none())
+    @MustBeClosed
+    fun retrieve(params: ContentRetrieveParams): HttpResponse =
+        retrieve(params, RequestOptions.none())
 
     /** @see [retrieve] */
+    @MustBeClosed
     fun retrieve(
         params: ContentRetrieveParams,
         requestOptions: RequestOptions = RequestOptions.none(),
-    )
+    ): HttpResponse
 
     /** A view of [ContentService] that provides access to raw HTTP responses for each method. */
     interface WithRawResponse {
+
+        /**
+         * Returns a view of this service with the given option modifications applied.
+         *
+         * The original service is not modified.
+         */
+        fun withOptions(modifier: Consumer<ClientOptions.Builder>): ContentService.WithRawResponse
 
         /**
          * Returns a raw HTTP response for `get /containers/{container_id}/files/{file_id}/content`,

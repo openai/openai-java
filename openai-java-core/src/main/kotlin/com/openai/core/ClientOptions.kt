@@ -28,7 +28,7 @@ private constructor(
     @get:JvmName("jsonMapper") val jsonMapper: JsonMapper,
     @get:JvmName("streamHandlerExecutor") val streamHandlerExecutor: Executor,
     @get:JvmName("clock") val clock: Clock,
-    @get:JvmName("baseUrl") val baseUrl: String,
+    private val baseUrl: String?,
     @get:JvmName("headers") val headers: Headers,
     @get:JvmName("queryParams") val queryParams: QueryParams,
     @get:JvmName("responseValidation") val responseValidation: Boolean,
@@ -38,6 +38,7 @@ private constructor(
     @get:JvmName("azureServiceVersion") val azureServiceVersion: AzureOpenAIServiceVersion?,
     private val organization: String?,
     private val project: String?,
+    private val webhookSecret: String?,
 ) {
 
     init {
@@ -46,9 +47,13 @@ private constructor(
         }
     }
 
+    fun baseUrl(): String = baseUrl ?: PRODUCTION_URL
+
     fun organization(): Optional<String> = Optional.ofNullable(organization)
 
     fun project(): Optional<String> = Optional.ofNullable(project)
+
+    fun webhookSecret(): Optional<String> = Optional.ofNullable(webhookSecret)
 
     fun toBuilder() = Builder().from(this)
 
@@ -78,7 +83,7 @@ private constructor(
         private var jsonMapper: JsonMapper = jsonMapper()
         private var streamHandlerExecutor: Executor? = null
         private var clock: Clock = Clock.systemUTC()
-        private var baseUrl: String = PRODUCTION_URL
+        private var baseUrl: String? = null
         private var headers: Headers.Builder = Headers.builder()
         private var queryParams: QueryParams.Builder = QueryParams.builder()
         private var responseValidation: Boolean = false
@@ -88,6 +93,7 @@ private constructor(
         private var azureServiceVersion: AzureOpenAIServiceVersion? = null
         private var organization: String? = null
         private var project: String? = null
+        private var webhookSecret: String? = null
 
         @JvmSynthetic
         internal fun from(clientOptions: ClientOptions) = apply {
@@ -106,9 +112,12 @@ private constructor(
             azureServiceVersion = clientOptions.azureServiceVersion
             organization = clientOptions.organization
             project = clientOptions.project
+            webhookSecret = clientOptions.webhookSecret
         }
 
-        fun httpClient(httpClient: HttpClient) = apply { this.httpClient = httpClient }
+        fun httpClient(httpClient: HttpClient) = apply {
+            this.httpClient = PhantomReachableClosingHttpClient(httpClient)
+        }
 
         fun checkJacksonVersionCompatibility(checkJacksonVersionCompatibility: Boolean) = apply {
             this.checkJacksonVersionCompatibility = checkJacksonVersionCompatibility
@@ -122,7 +131,10 @@ private constructor(
 
         fun clock(clock: Clock) = apply { this.clock = clock }
 
-        fun baseUrl(baseUrl: String) = apply { this.baseUrl = baseUrl }
+        fun baseUrl(baseUrl: String?) = apply { this.baseUrl = baseUrl }
+
+        /** Alias for calling [Builder.baseUrl] with `baseUrl.orElse(null)`. */
+        fun baseUrl(baseUrl: Optional<String>) = baseUrl(baseUrl.getOrNull())
 
         fun responseValidation(responseValidation: Boolean) = apply {
             this.responseValidation = responseValidation
@@ -151,6 +163,12 @@ private constructor(
 
         /** Alias for calling [Builder.project] with `project.orElse(null)`. */
         fun project(project: Optional<String>) = project(project.getOrNull())
+
+        fun webhookSecret(webhookSecret: String?) = apply { this.webhookSecret = webhookSecret }
+
+        /** Alias for calling [Builder.webhookSecret] with `webhookSecret.orElse(null)`. */
+        fun webhookSecret(webhookSecret: Optional<String>) =
+            webhookSecret(webhookSecret.getOrNull())
 
         fun headers(headers: Headers) = apply {
             this.headers.clear()
@@ -232,14 +250,17 @@ private constructor(
 
         fun removeAllQueryParams(keys: Set<String>) = apply { queryParams.removeAll(keys) }
 
-        fun baseUrl(): String = baseUrl
-
         fun fromEnv() = apply {
             System.getenv("OPENAI_BASE_URL")?.let { baseUrl(it) }
+
             val openAIKey = System.getenv("OPENAI_API_KEY")
             val openAIOrgId = System.getenv("OPENAI_ORG_ID")
             val openAIProjectId = System.getenv("OPENAI_PROJECT_ID")
             val azureOpenAIKey = System.getenv("AZURE_OPENAI_KEY")
+            val openAIWebhookSecret = System.getenv("OPENAI_WEBHOOK_SECRET")
+            if (!openAIWebhookSecret.isNullOrEmpty()) {
+                webhookSecret(openAIWebhookSecret)
+            }
 
             when {
                 !openAIKey.isNullOrEmpty() && !azureOpenAIKey.isNullOrEmpty() -> {
@@ -299,13 +320,16 @@ private constructor(
                 }
             }
 
-            if (isAzureEndpoint(baseUrl)) {
-                // Default Azure OpenAI version is used if Azure user doesn't
-                // specific a service API version in 'queryParams'.
-                replaceQueryParams(
-                    "api-version",
-                    (azureServiceVersion ?: AzureOpenAIServiceVersion.latestStableVersion()).value,
-                )
+            baseUrl?.let {
+                if (isAzureEndpoint(it)) {
+                    // Default Azure OpenAI version is used if Azure user doesn't
+                    // specific a service API version in 'queryParams'.
+                    replaceQueryParams(
+                        "api-version",
+                        (azureServiceVersion ?: AzureOpenAIServiceVersion.latestStableVersion())
+                            .value,
+                    )
+                }
             }
 
             headers.replaceAll(this.headers.build())
@@ -313,13 +337,11 @@ private constructor(
 
             return ClientOptions(
                 httpClient,
-                PhantomReachableClosingHttpClient(
-                    RetryingHttpClient.builder()
-                        .httpClient(httpClient)
-                        .clock(clock)
-                        .maxRetries(maxRetries)
-                        .build()
-                ),
+                RetryingHttpClient.builder()
+                    .httpClient(httpClient)
+                    .clock(clock)
+                    .maxRetries(maxRetries)
+                    .build(),
                 checkJacksonVersionCompatibility,
                 jsonMapper,
                 streamHandlerExecutor
@@ -348,6 +370,7 @@ private constructor(
                 azureServiceVersion,
                 organization,
                 project,
+                webhookSecret,
             )
         }
     }

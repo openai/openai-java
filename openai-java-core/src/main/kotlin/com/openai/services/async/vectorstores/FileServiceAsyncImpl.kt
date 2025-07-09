@@ -30,6 +30,7 @@ import com.openai.models.vectorstores.files.FileUpdateParams
 import com.openai.models.vectorstores.files.VectorStoreFile
 import com.openai.models.vectorstores.files.VectorStoreFileDeleted
 import java.util.concurrent.CompletableFuture
+import java.util.function.Consumer
 import kotlin.jvm.optionals.getOrNull
 
 class FileServiceAsyncImpl internal constructor(private val clientOptions: ClientOptions) :
@@ -45,6 +46,9 @@ class FileServiceAsyncImpl internal constructor(private val clientOptions: Clien
     }
 
     override fun withRawResponse(): FileServiceAsync.WithRawResponse = withRawResponse
+
+    override fun withOptions(modifier: Consumer<ClientOptions.Builder>): FileServiceAsync =
+        FileServiceAsyncImpl(clientOptions.toBuilder().apply(modifier::accept).build())
 
     override fun create(
         params: FileCreateParams,
@@ -93,6 +97,13 @@ class FileServiceAsyncImpl internal constructor(private val clientOptions: Clien
 
         private val errorHandler: Handler<ErrorObject?> = errorHandler(clientOptions.jsonMapper)
 
+        override fun withOptions(
+            modifier: Consumer<ClientOptions.Builder>
+        ): FileServiceAsync.WithRawResponse =
+            FileServiceAsyncImpl.WithRawResponseImpl(
+                clientOptions.toBuilder().apply(modifier::accept).build()
+            )
+
         private val createHandler: Handler<VectorStoreFile> =
             jsonHandler<VectorStoreFile>(clientOptions.jsonMapper).withErrorHandler(errorHandler)
 
@@ -106,6 +117,7 @@ class FileServiceAsyncImpl internal constructor(private val clientOptions: Clien
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.POST)
+                    .baseUrl(clientOptions.baseUrl())
                     .addPathSegments("vector_stores", params._pathParam(0), "files")
                     .putAllHeaders(DEFAULT_HEADERS)
                     .body(json(clientOptions.jsonMapper, params._body()))
@@ -140,6 +152,7 @@ class FileServiceAsyncImpl internal constructor(private val clientOptions: Clien
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.GET)
+                    .baseUrl(clientOptions.baseUrl())
                     .addPathSegments(
                         "vector_stores",
                         params._pathParam(0),
@@ -178,6 +191,7 @@ class FileServiceAsyncImpl internal constructor(private val clientOptions: Clien
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.POST)
+                    .baseUrl(clientOptions.baseUrl())
                     .addPathSegments(
                         "vector_stores",
                         params._pathParam(0),
@@ -218,6 +232,7 @@ class FileServiceAsyncImpl internal constructor(private val clientOptions: Clien
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.GET)
+                    .baseUrl(clientOptions.baseUrl())
                     .addPathSegments("vector_stores", params._pathParam(0), "files")
                     .putAllHeaders(DEFAULT_HEADERS)
                     .build()
@@ -260,6 +275,7 @@ class FileServiceAsyncImpl internal constructor(private val clientOptions: Clien
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.DELETE)
+                    .baseUrl(clientOptions.baseUrl())
                     .addPathSegments(
                         "vector_stores",
                         params._pathParam(0),
@@ -300,6 +316,7 @@ class FileServiceAsyncImpl internal constructor(private val clientOptions: Clien
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.GET)
+                    .baseUrl(clientOptions.baseUrl())
                     .addPathSegments(
                         "vector_stores",
                         params._pathParam(0),

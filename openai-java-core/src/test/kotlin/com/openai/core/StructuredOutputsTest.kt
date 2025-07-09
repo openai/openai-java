@@ -4,17 +4,19 @@ import com.fasterxml.jackson.annotation.JsonClassDescription
 import com.fasterxml.jackson.annotation.JsonIgnore
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.annotation.JsonPropertyDescription
+import com.fasterxml.jackson.annotation.JsonTypeName
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.node.ObjectNode
 import com.openai.errors.OpenAIInvalidDataException
+import io.swagger.v3.oas.annotations.media.ArraySchema
+import io.swagger.v3.oas.annotations.media.Schema
 import java.util.Optional
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatNoException
 import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.AfterTestExecutionCallback
-import org.junit.jupiter.api.extension.ExtensionContext
 import org.junit.jupiter.api.extension.RegisterExtension
 
 /** Tests for the `StructuredOutputs` functions and the [JsonSchemaValidator]. */
@@ -59,17 +61,14 @@ internal class StructuredOutputsTest {
     @Suppress("unused")
     @RegisterExtension
     val printValidationErrorsOnFailure: AfterTestExecutionCallback =
-        object : AfterTestExecutionCallback {
-            @Throws(Exception::class)
-            override fun afterTestExecution(context: ExtensionContext) {
-                if (
-                    context.displayName.startsWith("schemaTest_") &&
-                        (VERBOSE_MODE || context.executionException.isPresent)
-                ) {
-                    // Test failed.
-                    println("Schema: ${schema.toPrettyString()}\n")
-                    println("$validator\n")
-                }
+        AfterTestExecutionCallback { context ->
+            if (
+                context.displayName.startsWith("schemaTest_") &&
+                    (VERBOSE_MODE || context.executionException.isPresent)
+            ) {
+                // Test failed.
+                println("Schema: ${schema.toPrettyString()}\n")
+                println("$validator\n")
             }
         }
 
@@ -83,7 +82,34 @@ internal class StructuredOutputsTest {
         schema = extractSchema(X::class.java)
         validator.validate(schema)
 
-        assertThat(validator.isValid()).isTrue
+        // Expect a failure. If a class has no properties, then the schema is meaningless to the
+        // AI. It can only reply with values to _named_ properties, so there must be at least one.
+        assertThat(validator.errors()).hasSize(1)
+        assertThat(validator.errors()[0])
+            .startsWith("#: 'properties' field is missing, empty or not an object.")
+    }
+
+    @Test
+    fun schemaTest_mapHasNoNamedProperties() {
+        @Suppress("unused") class X(val m: Map<String, Integer>)
+
+        schema = extractSchema(X::class.java)
+        validator.validate(schema)
+
+        // A map results in a schema that declares an "object" sub-schema, but that sub-schema has
+        // no named `"properties"` and no `"required"` array. Only the first problem is reported.
+        assertThat(validator.errors()).hasSize(1)
+        assertThat(validator.errors()[0])
+            .startsWith("#/properties/m: 'properties' field is missing, empty or not an object.")
+
+        // Do this check of `toString()` once for a validation failure, but do not repeat it in
+        // other tests.
+        assertThat(validator.toString())
+            .startsWith(
+                "JsonSchemaValidator{isValidationComplete=true, totalStringLength=1, " +
+                    "totalObjectProperties=1, totalEnumValues=0, errors=[" +
+                    "#/properties/m: 'properties' field is missing, empty or not an object."
+            )
     }
 
     @Test
@@ -115,6 +141,11 @@ internal class StructuredOutputsTest {
         // The reason for the failure is that generic type information is erased for scopes like
         // local variables, but generic type information for fields is retained as part of the class
         // metadata. This is the expected behavior in Java, so this test expects an invalid schema.
+        //
+        // The `extractSchema` function could be defined to accept type parameters and these could
+        // be passed to the schema generator (which accepts them) and the above would work. However,
+        // there would be no simple way to deserialize the JSON response back to a parameterized
+        // type like `List<String>` without again providing the type parameters.
         assertThat(validator.isValid()).isFalse
         assertThat(validator.errors()).hasSize(2)
         assertThat(validator.errors()[0]).isEqualTo("#/items: Schema or sub-schema is empty.")
@@ -161,6 +192,14 @@ internal class StructuredOutputsTest {
         validator.validate(schema)
 
         assertThat(validator.isValid()).isTrue
+
+        // Do this check of `toString()` once for a validation success, but do not repeat it in
+        // other tests.
+        assertThat(validator.toString())
+            .isEqualTo(
+                "JsonSchemaValidator{isValidationComplete=true, totalStringLength=10, " +
+                    "totalObjectProperties=0, totalEnumValues=2, errors=[]}"
+            )
     }
 
     @Test
@@ -457,20 +496,16 @@ internal class StructuredOutputsTest {
 
     @Test
     fun schemaTest_unsupportedKeywords() {
-        // OpenAI lists a set of keywords that are not allowed, but the set is not exhaustive. Check
-        // that everything named in that set is identified as not allowed, as that is the minimum
-        // level of validation expected. Check at the root schema and a sub-schema. There is no need
-        // to match the keywords to their expected schema types or be concerned about the values of
-        // the keyword fields, which makes testing easier.
+        // OpenAI lists a set of keywords that are allowed (for non "fine-tuned" models). Check that
+        // a selection of keywords that are not listed as supported are identified as not allowed.
+        // Check at the root schema and a sub-schema. There is no need to match the keywords to
+        // their expected schema types or be concerned about the values of the keyword fields, which
+        // makes testing easier. Supported keywords are tested elsewhere (mostly when applied via
+        // annotations).
         val keywordsNotAllowed =
             listOf(
                 "minLength",
                 "maxLength",
-                "pattern",
-                "format",
-                "minimum",
-                "maximum",
-                "multipleOf",
                 "patternProperties",
                 "unevaluatedProperties",
                 "propertyNames",
@@ -480,8 +515,6 @@ internal class StructuredOutputsTest {
                 "contains",
                 "minContains",
                 "maxContains",
-                "minItems",
-                "maxItems",
                 "uniqueItems",
             )
         val notAllowedUses = keywordsNotAllowed.joinToString(", ") { "\"$it\" : \"\"" }
@@ -517,6 +550,32 @@ internal class StructuredOutputsTest {
 
     @Test
     fun schemaTest_propertyNotMarkedRequired() {
+        // Use two properties, so the `"required"` array is not empty, but is still not listing
+        // _all_ of the properties.
+        schema =
+            parseJson(
+                """
+                {
+                    "$SCHEMA" : "$SCHEMA_VER",
+                    "type" : "object",
+                    "properties" : {
+                        "name" : { "type" : "string" }, 
+                        "address" : { "type" : "string" } 
+                    },
+                    "additionalProperties" : false,
+                    "required" : [ "name" ]
+                }
+                """
+            )
+        validator.validate(schema)
+
+        assertThat(validator.errors()).hasSize(1)
+        assertThat(validator.errors()[0])
+            .isEqualTo("#/required: 'properties' field 'address' is not listed as 'required'.")
+    }
+
+    @Test
+    fun schemaTest_requiredArrayEmpty() {
         schema =
             parseJson(
                 """
@@ -533,7 +592,7 @@ internal class StructuredOutputsTest {
 
         assertThat(validator.errors()).hasSize(1)
         assertThat(validator.errors()[0])
-            .isEqualTo("#/required: 'properties' field 'name' is not listed as 'required'.")
+            .isEqualTo("#: 'required' field is missing, empty or not an array.")
     }
 
     @Test
@@ -554,7 +613,7 @@ internal class StructuredOutputsTest {
 
         assertThat(validator.errors()).hasSize(1)
         assertThat(validator.errors()[0])
-            .isEqualTo("#/required: 'properties' field 'name' is not listed as 'required'.")
+            .isEqualTo("#: 'required' field is missing, empty or not an array.")
     }
 
     @Test
@@ -574,7 +633,7 @@ internal class StructuredOutputsTest {
 
         assertThat(validator.errors()).hasSize(1)
         assertThat(validator.errors()[0])
-            .isEqualTo("#/required: 'properties' field 'name' is not listed as 'required'.")
+            .isEqualTo("#: 'required' field is missing, empty or not an array.")
     }
 
     @Test
@@ -633,8 +692,11 @@ internal class StructuredOutputsTest {
             )
         validator.validate(schema)
 
-        // For now, allow that an object may have no properties. Update this if that is revised.
-        assertThat(validator.isValid()).isTrue()
+        // An object must explicitly declare some properties, as no `"additionalProperties"` will
+        // be allowed and the AI model will have nothing it can populate.
+        assertThat(validator.errors()).hasSize(1)
+        assertThat(validator.errors()[0])
+            .startsWith("#: 'properties' field is missing, empty or not an object.")
     }
 
     @Test
@@ -655,7 +717,7 @@ internal class StructuredOutputsTest {
 
         assertThat(validator.errors()).hasSize(1)
         assertThat(validator.errors()[0])
-            .isEqualTo("#: 'properties' field is not a non-empty object.")
+            .startsWith("#: 'properties' field is missing, empty or not an object.")
     }
 
     @Test
@@ -676,7 +738,7 @@ internal class StructuredOutputsTest {
 
         assertThat(validator.errors()).hasSize(1)
         assertThat(validator.errors()[0])
-            .isEqualTo("#: 'properties' field is not a non-empty object.")
+            .startsWith("#: 'properties' field is missing, empty or not an object.")
     }
 
     @Test
@@ -1200,7 +1262,7 @@ internal class StructuredOutputsTest {
     @Test
     fun schemaTest_annotatedWithJsonClassDescription() {
         // Add a "description" to the root schema using an annotation.
-        @JsonClassDescription("A simple schema.") class X()
+        @Suppress("unused") @JsonClassDescription("A simple schema.") class X(val s: String)
 
         schema = extractSchema(X::class.java)
         validator.validate(schema)
@@ -1294,6 +1356,182 @@ internal class StructuredOutputsTest {
     }
 
     @Test
+    fun schemaTest_annotatedWithSchemaStringConstraints() {
+        @Suppress("unused")
+        class X(@get:Schema(pattern = "^[a-z]+$", format = "email") val s: String)
+
+        schema = extractSchema(X::class.java)
+        validator.validate(schema)
+
+        val properties = schema.get("properties")
+        val stringProperty = properties.get("s")
+
+        assertThat(validator.isValid()).isTrue
+        assertThat(stringProperty).isNotNull
+
+        assertThat(stringProperty.get("pattern")).isNotNull
+        assertThat(stringProperty.get("pattern").isTextual).isTrue
+        assertThat(stringProperty.get("pattern").asText()).isEqualTo("^[a-z]+$")
+
+        assertThat(stringProperty.get("format")).isNotNull
+        assertThat(stringProperty.get("format").isTextual).isTrue
+        assertThat(stringProperty.get("format").asText()).isEqualTo("email")
+    }
+
+    @Test
+    fun schemaTest_annotatedWithSchemaNumberConstraints() {
+        @Suppress("unused")
+        class X(@get:Schema(multipleOf = 5.0, minimum = "10.0", maximum = "55.0") val d: Double)
+
+        schema = extractSchema(X::class.java)
+        validator.validate(schema)
+
+        val properties = schema.get("properties")
+        val numberProperty = properties.get("d")
+
+        assertThat(validator.isValid()).isTrue
+        assertThat(numberProperty).isNotNull
+
+        assertThat(numberProperty.get("multipleOf")).isNotNull
+        assertThat(numberProperty.get("multipleOf").isNumber).isTrue
+        assertThat(numberProperty.get("multipleOf").asDouble()).isEqualTo(5.0)
+
+        assertThat(numberProperty.get("minimum")).isNotNull
+        assertThat(numberProperty.get("minimum").isNumber).isTrue
+        assertThat(numberProperty.get("minimum").asDouble()).isEqualTo(10.0)
+
+        assertThat(numberProperty.get("maximum")).isNotNull
+        assertThat(numberProperty.get("maximum").isNumber).isTrue
+        assertThat(numberProperty.get("maximum").asDouble()).isEqualTo(55.0)
+    }
+
+    @Test
+    fun schemaTest_annotatedWithSchemaNumberConstraintsExclusive() {
+        @Suppress("unused")
+        class X(
+            @get:Schema(
+                multipleOf = 5.0,
+                minimum = "10.0",
+                exclusiveMinimum = true,
+                maximum = "55.0",
+                exclusiveMaximum = true,
+            )
+            val d: Double
+        )
+
+        schema = extractSchema(X::class.java)
+        validator.validate(schema)
+
+        val properties = schema.get("properties")
+        val numberProperty = properties.get("d")
+
+        assertThat(validator.isValid()).isTrue
+        assertThat(numberProperty).isNotNull
+
+        assertThat(numberProperty.get("multipleOf")).isNotNull
+        assertThat(numberProperty.get("multipleOf").isNumber).isTrue
+        assertThat(numberProperty.get("multipleOf").asDouble()).isEqualTo(5.0)
+
+        // The pairing of `minimum` and `exclusiveMinimum` in the annotation is reduced to a single
+        // `"exclusiveMinimum"` field in the schema with a numeric value. Same for the maximum.
+        assertThat(numberProperty.get("exclusiveMinimum")).isNotNull
+        assertThat(numberProperty.get("exclusiveMinimum").isNumber).isTrue
+        assertThat(numberProperty.get("exclusiveMinimum").asDouble()).isEqualTo(10.0)
+
+        assertThat(numberProperty.get("exclusiveMaximum")).isNotNull
+        assertThat(numberProperty.get("exclusiveMaximum").isNumber).isTrue
+        assertThat(numberProperty.get("exclusiveMaximum").asDouble()).isEqualTo(55.0)
+    }
+
+    @Test
+    fun schemaTest_annotatedWithSchemaIntegerConstraints() {
+        @Suppress("unused")
+        class X(@get:Schema(multipleOf = 5.0, minimum = "10", maximum = "55") val i: Int)
+
+        schema = extractSchema(X::class.java)
+        validator.validate(schema)
+
+        val properties = schema.get("properties")
+        val integerProperty = properties.get("i")
+
+        assertThat(validator.isValid()).isTrue
+        assertThat(integerProperty).isNotNull
+
+        assertThat(integerProperty.get("multipleOf")).isNotNull
+        assertThat(integerProperty.get("multipleOf").isNumber).isTrue
+        assertThat(integerProperty.get("multipleOf").asDouble()).isEqualTo(5.0)
+
+        assertThat(integerProperty.get("minimum")).isNotNull
+        assertThat(integerProperty.get("minimum").isNumber).isTrue
+        assertThat(integerProperty.get("minimum").asInt()).isEqualTo(10)
+
+        assertThat(integerProperty.get("maximum")).isNotNull
+        assertThat(integerProperty.get("maximum").isNumber).isTrue
+        assertThat(integerProperty.get("maximum").asInt()).isEqualTo(55)
+    }
+
+    @Test
+    fun schemaTest_annotatedWithSchemaIntegerConstraintsExclusive() {
+        @Suppress("unused")
+        class X(
+            @get:Schema(
+                multipleOf = 5.0,
+                minimum = "10",
+                exclusiveMinimum = true,
+                maximum = "55",
+                exclusiveMaximum = true,
+            )
+            val i: Int
+        )
+
+        schema = extractSchema(X::class.java)
+        validator.validate(schema)
+
+        val properties = schema.get("properties")
+        val integerProperty = properties.get("i")
+
+        assertThat(validator.isValid()).isTrue
+        assertThat(integerProperty).isNotNull
+
+        assertThat(integerProperty.get("multipleOf")).isNotNull
+        assertThat(integerProperty.get("multipleOf").isNumber).isTrue
+        assertThat(integerProperty.get("multipleOf").asDouble()).isEqualTo(5.0)
+
+        // The pairing of `minimum` and `exclusiveMinimum` in the annotation is reduced to a single
+        // `"exclusiveMinimum"` field in the schema with a numeric value. Same for the maximum.
+        assertThat(integerProperty.get("exclusiveMinimum")).isNotNull
+        assertThat(integerProperty.get("exclusiveMinimum").isNumber).isTrue
+        assertThat(integerProperty.get("exclusiveMinimum").asInt()).isEqualTo(10)
+
+        assertThat(integerProperty.get("exclusiveMaximum")).isNotNull
+        assertThat(integerProperty.get("exclusiveMaximum").isNumber).isTrue
+        assertThat(integerProperty.get("exclusiveMaximum").asInt()).isEqualTo(55)
+    }
+
+    @Test
+    fun schemaTest_annotatedWithArraySchemaArrayConstraints() {
+        @Suppress("unused")
+        class X(@get:ArraySchema(minItems = 11, maxItems = 42) val a: List<String>)
+
+        schema = extractSchema(X::class.java)
+        validator.validate(schema)
+
+        val properties = schema.get("properties")
+        val arrayProperty = properties.get("a")
+
+        assertThat(validator.isValid()).isTrue
+        assertThat(arrayProperty).isNotNull
+
+        assertThat(arrayProperty.get("minItems")).isNotNull
+        assertThat(arrayProperty.get("minItems").isInt).isTrue
+        assertThat(arrayProperty.get("minItems").asInt()).isEqualTo(11)
+
+        assertThat(arrayProperty.get("maxItems")).isNotNull
+        assertThat(arrayProperty.get("maxItems").isInt).isTrue
+        assertThat(arrayProperty.get("maxItems").asInt()).isEqualTo(42)
+    }
+
+    @Test
     fun schemaTest_emptyDefinitions() {
         // Be lenient about empty definitions.
         schema =
@@ -1352,6 +1590,14 @@ internal class StructuredOutputsTest {
     fun validatorBeforeValidation() {
         assertThat(validator.errors()).isEmpty()
         assertThat(validator.isValid()).isFalse
+
+        // Do this check of `toString()` once for an unused validator, but do not repeat it in other
+        // tests.
+        assertThat(validator.toString())
+            .isEqualTo(
+                "JsonSchemaValidator{isValidationComplete=false, totalStringLength=0, " +
+                    "totalObjectProperties=0, totalEnumValues=0, errors=[]}"
+            )
     }
 
     @Test
@@ -1440,7 +1686,7 @@ internal class StructuredOutputsTest {
     }
 
     @Test
-    fun fromClassEnablesStrictAdherenceToSchema() {
+    fun responseFormatFromClassEnablesStrictAdherenceToSchema() {
         @Suppress("unused") class X(val s: String)
 
         val jsonSchema = responseFormatFromClass(X::class.java)
@@ -1449,11 +1695,21 @@ internal class StructuredOutputsTest {
         // to the JSON schema.
         assertThat(jsonSchema.jsonSchema().strict()).isPresent
         assertThat(jsonSchema.jsonSchema().strict().get()).isTrue
+
+        // The `schema()` accessor cannot be called successfully because of the way the field was
+        // set to a schema. This is OK, as the serialization will still work. Just confirm the
+        // expected failure, so if the conditions change, they will be noticed.
+        assertThatThrownBy { jsonSchema.jsonSchema().schema() }
+            .isExactlyInstanceOf(OpenAIInvalidDataException::class.java)
+
+        // Use the `_schema()` accessor instead and check that the value is not null or missing.
+        assertThat(jsonSchema.jsonSchema()._schema())
+            .isNotInstanceOfAny(JsonMissing::class.java, JsonNull::class.java)
     }
 
     @Test
     @Suppress("unused")
-    fun fromClassSuccessWithoutValidation() {
+    fun responseFormatFromClassSuccessWithoutValidation() {
         // Exceed the maximum nesting depth, but do not enable validation.
         class U(val s: String)
         class V(val u: U)
@@ -1468,7 +1724,7 @@ internal class StructuredOutputsTest {
     }
 
     @Test
-    fun fromClassSuccessWithValidation() {
+    fun responseFormatFromClassSuccessWithValidation() {
         @Suppress("unused") class X(val s: String)
 
         assertThatNoException().isThrownBy {
@@ -1478,7 +1734,7 @@ internal class StructuredOutputsTest {
 
     @Test
     @Suppress("unused")
-    fun fromClassFailureWithValidation() {
+    fun responseFormatFromClassFailureWithValidation() {
         // Exceed the maximum nesting depth and enable validation.
         class U(val s: String)
         class V(val u: U)
@@ -1498,8 +1754,8 @@ internal class StructuredOutputsTest {
 
     @Test
     @Suppress("unused")
-    fun fromClassFailureWithValidationDefault() {
-        // Confirm that the default value of the `localValidation` argument is `true` by expecting
+    fun responseFormatFromClassFailureWithValidationDefault() {
+        // Confirm that the default value of the `localValidation` argument is `YES` by expecting
         // a validation error when that argument is not given an explicit value.
         class U(val s: String)
         class V(val u: U)
@@ -1516,5 +1772,339 @@ internal class StructuredOutputsTest {
                     " - #/properties/y/properties/x/properties/w/properties/v/properties/u" +
                     "/properties/s: Current nesting depth is 6, but maximum is 5."
             )
+    }
+
+    @Test
+    fun textConfigFromClassEnablesStrictAdherenceToSchema() {
+        @Suppress("unused") class X(val s: String)
+
+        val textConfig = textConfigFromClass(X::class.java)
+        val jsonSchema = textConfig.format().get().jsonSchema().get()
+
+        // The "strict" flag _must_ be set to ensure that the model's output will _always_ conform
+        // to the JSON schema.
+        assertThat(jsonSchema.strict()).isPresent
+        assertThat(jsonSchema.strict().get()).isTrue
+
+        // The `schema()` accessor cannot be called successfully because of the way the field was
+        // set to a schema. This is OK, as the serialization will still work. Just confirm the
+        // expected failure, so if the conditions change, they will be noticed.
+        assertThatThrownBy { jsonSchema.schema() }
+            .isExactlyInstanceOf(OpenAIInvalidDataException::class.java)
+
+        // Use the `_schema()` accessor instead and check that the value is not null or missing.
+        assertThat(jsonSchema._schema())
+            .isNotInstanceOfAny(JsonMissing::class.java, JsonNull::class.java)
+    }
+
+    @Test
+    @Suppress("unused")
+    fun textConfigFromClassSuccessWithoutValidation() {
+        // Exceed the maximum nesting depth, but do not enable validation.
+        class U(val s: String)
+        class V(val u: U)
+        class W(val v: V)
+        class X(val w: W)
+        class Y(val x: X)
+        class Z(val y: Y)
+
+        assertThatNoException().isThrownBy {
+            textConfigFromClass(Z::class.java, JsonSchemaLocalValidation.NO)
+        }
+    }
+
+    @Test
+    fun textConfigFromClassSuccessWithValidation() {
+        @Suppress("unused") class X(val s: String)
+
+        assertThatNoException().isThrownBy {
+            textConfigFromClass(X::class.java, JsonSchemaLocalValidation.YES)
+        }
+    }
+
+    @Test
+    @Suppress("unused")
+    fun textConfigFromClassFailureWithValidation() {
+        // Exceed the maximum nesting depth and enable validation.
+        class U(val s: String)
+        class V(val u: U)
+        class W(val v: V)
+        class X(val w: W)
+        class Y(val x: X)
+        class Z(val y: Y)
+
+        assertThatThrownBy { textConfigFromClass(Z::class.java, JsonSchemaLocalValidation.YES) }
+            .isExactlyInstanceOf(IllegalArgumentException::class.java)
+            .hasMessage(
+                "Local validation failed for JSON schema derived from ${Z::class.java}:\n" +
+                    " - #/properties/y/properties/x/properties/w/properties/v/properties/u" +
+                    "/properties/s: Current nesting depth is 6, but maximum is 5."
+            )
+    }
+
+    @Test
+    @Suppress("unused")
+    fun textConfigFromClassFailureWithValidationDefault() {
+        // Confirm that the default value of the `localValidation` argument is `YES` by expecting
+        // a validation error when that argument is not given an explicit value.
+        class U(val s: String)
+        class V(val u: U)
+        class W(val v: V)
+        class X(val w: W)
+        class Y(val x: X)
+        class Z(val y: Y)
+
+        // Use default for `localValidation` flag.
+        assertThatThrownBy { textConfigFromClass(Z::class.java) }
+            .isExactlyInstanceOf(IllegalArgumentException::class.java)
+            .hasMessage(
+                "Local validation failed for JSON schema derived from ${Z::class.java}:\n" +
+                    " - #/properties/y/properties/x/properties/w/properties/v/properties/u" +
+                    "/properties/s: Current nesting depth is 6, but maximum is 5."
+            )
+    }
+
+    @Test
+    fun extractFunctionInfoUsingClassNameAndNoDescription() {
+        @Suppress("unused") class X(val s: String)
+
+        val info = extractFunctionInfo(X::class.java, JsonSchemaLocalValidation.NO)
+
+        assertThat(info.name).isEqualTo("X")
+        assertThat(info.description).isNull()
+    }
+
+    @Test
+    fun extractFunctionInfoUsingAnnotationNameAndNoDescription() {
+        @Suppress("unused") @JsonTypeName("fnX") class X(val s: String)
+
+        val info = extractFunctionInfo(X::class.java, JsonSchemaLocalValidation.NO)
+
+        assertThat(info.name).isEqualTo("fnX")
+        assertThat(info.description).isNull()
+    }
+
+    @Test
+    fun extractFunctionInfoUsingClassNameAndAnnotationDescription() {
+        @Suppress("unused") @JsonClassDescription("Something about X") class X(val s: String)
+
+        val info = extractFunctionInfo(X::class.java, JsonSchemaLocalValidation.NO)
+
+        assertThat(info.name).isEqualTo("X")
+        assertThat(info.description).isEqualTo("Something about X")
+        // If the description annotation is set, it will be added to the schema by the generator,
+        // but should them be moved out by `extractFunctionInfo` into the function info.
+        assertThat(info.schema.get("description")).isNull()
+    }
+
+    @Test
+    fun functionToolFromClassEnablesStrictAdherenceToSchema() {
+        @Suppress("unused") @JsonClassDescription("Something about X") class X(val s: String)
+
+        val functionTool = functionToolFromClass(X::class.java)
+        val fnDef = functionTool.function()
+
+        // The "strict" flag _must_ be set to ensure that the model's output will _always_ conform
+        // to the JSON schema.
+        assertThat(fnDef.strict()).isPresent
+        assertThat(fnDef.strict().get()).isTrue
+        // Test here that the name, description and parameters (schema) are applied. There is no
+        // need to test these again for the other cases.
+        assertThat(fnDef.name()).isEqualTo("X")
+        assertThat(fnDef.description()).isPresent
+        assertThat(fnDef.description().get()).isEqualTo("Something about X")
+
+        // The `parameters()` accessor cannot be called successfully because of the way the field
+        // was set to a schema. This is OK, as the serialization will still work. Just confirm the
+        // expected failure, so if the conditions change, they will be noticed.
+        assertThatThrownBy { fnDef.parameters() }
+            .isExactlyInstanceOf(OpenAIInvalidDataException::class.java)
+
+        // Use the `_parameters()` accessor instead and check that the value is not null or missing.
+        assertThat(fnDef._parameters())
+            .isNotInstanceOfAny(JsonMissing::class.java, JsonNull::class.java)
+    }
+
+    @Test
+    @Suppress("unused")
+    fun functionToolFromClassSuccessWithoutValidation() {
+        // Exceed the maximum nesting depth, but do not enable validation.
+        class U(val s: String)
+        class V(val u: U)
+        class W(val v: V)
+        class X(val w: W)
+        class Y(val x: X)
+        class Z(val y: Y)
+
+        assertThatNoException().isThrownBy {
+            functionToolFromClass(Z::class.java, JsonSchemaLocalValidation.NO)
+        }
+    }
+
+    @Test
+    fun functionToolFromClassSuccessWithValidation() {
+        @Suppress("unused") class X(val s: String)
+
+        assertThatNoException().isThrownBy {
+            functionToolFromClass(X::class.java, JsonSchemaLocalValidation.YES)
+        }
+    }
+
+    @Test
+    @Suppress("unused")
+    fun functionToolFromClassFailureWithValidation() {
+        // Exceed the maximum nesting depth and enable validation.
+        class U(val s: String)
+        class V(val u: U)
+        class W(val v: V)
+        class X(val w: W)
+        class Y(val x: X)
+        class Z(val y: Y)
+
+        assertThatThrownBy { functionToolFromClass(Z::class.java, JsonSchemaLocalValidation.YES) }
+            .isExactlyInstanceOf(IllegalArgumentException::class.java)
+            .hasMessage(
+                "Local validation failed for JSON schema derived from ${Z::class.java}:\n" +
+                    " - #/properties/y/properties/x/properties/w/properties/v/properties/u" +
+                    "/properties/s: Current nesting depth is 6, but maximum is 5."
+            )
+    }
+
+    @Test
+    @Suppress("unused")
+    fun functionToolFromClassFailureWithValidationDefault() {
+        // Confirm that the default value of the `localValidation` argument is `YES` by expecting a
+        // validation error when that argument is not given an explicit value.
+        class U(val s: String)
+        class V(val u: U)
+        class W(val v: V)
+        class X(val w: W)
+        class Y(val x: X)
+        class Z(val y: Y)
+
+        // Use default for `localValidation` flag.
+        assertThatThrownBy { functionToolFromClass(Z::class.java) }
+            .isExactlyInstanceOf(IllegalArgumentException::class.java)
+            .hasMessage(
+                "Local validation failed for JSON schema derived from ${Z::class.java}:\n" +
+                    " - #/properties/y/properties/x/properties/w/properties/v/properties/u" +
+                    "/properties/s: Current nesting depth is 6, but maximum is 5."
+            )
+    }
+
+    @Test
+    fun responseFunctionToolFromClassEnablesStrictAdherenceToSchema() {
+        @Suppress("unused") @JsonClassDescription("Something about X") class X(val s: String)
+
+        val fnTool = responseFunctionToolFromClass(X::class.java)
+
+        // The "strict" flag _must_ be set to ensure that the model's output will _always_ conform
+        // to the JSON schema.
+        assertThat(fnTool.strict()).isPresent
+        assertThat(fnTool.strict().get()).isTrue
+        // Test here that the name, description and parameters (schema) are applied. There is no
+        // need to test these again for the other cases.
+        assertThat(fnTool.name()).isEqualTo("X")
+        assertThat(fnTool.description()).isPresent
+        assertThat(fnTool.description().get()).isEqualTo("Something about X")
+
+        // The `parameters()` accessor cannot be called successfully because of the way the field
+        // was set to a schema. This is OK, as the serialization will still work. Just confirm the
+        // expected failure, so if the conditions change, they will be noticed.
+        assertThatThrownBy { fnTool.parameters() }
+            .isExactlyInstanceOf(OpenAIInvalidDataException::class.java)
+
+        // Use the `_parameters()` accessor instead and check that the value is not null or missing.
+        assertThat(fnTool._parameters())
+            .isNotInstanceOfAny(JsonMissing::class.java, JsonNull::class.java)
+    }
+
+    @Test
+    @Suppress("unused")
+    fun responseFunctionToolFromClassSuccessWithoutValidation() {
+        // Exceed the maximum nesting depth, but do not enable validation.
+        class U(val s: String)
+        class V(val u: U)
+        class W(val v: V)
+        class X(val w: W)
+        class Y(val x: X)
+        class Z(val y: Y)
+
+        assertThatNoException().isThrownBy {
+            responseFunctionToolFromClass(Z::class.java, JsonSchemaLocalValidation.NO)
+        }
+    }
+
+    @Test
+    fun responseFunctionToolFromClassSuccessWithValidation() {
+        @Suppress("unused") class X(val s: String)
+
+        assertThatNoException().isThrownBy {
+            responseFunctionToolFromClass(X::class.java, JsonSchemaLocalValidation.YES)
+        }
+    }
+
+    @Test
+    @Suppress("unused")
+    fun responseFunctionToolFromClassFailureWithValidation() {
+        // Exceed the maximum nesting depth and enable validation.
+        class U(val s: String)
+        class V(val u: U)
+        class W(val v: V)
+        class X(val w: W)
+        class Y(val x: X)
+        class Z(val y: Y)
+
+        assertThatThrownBy {
+                responseFunctionToolFromClass(Z::class.java, JsonSchemaLocalValidation.YES)
+            }
+            .isExactlyInstanceOf(IllegalArgumentException::class.java)
+            .hasMessage(
+                "Local validation failed for JSON schema derived from ${Z::class.java}:\n" +
+                    " - #/properties/y/properties/x/properties/w/properties/v/properties/u" +
+                    "/properties/s: Current nesting depth is 6, but maximum is 5."
+            )
+    }
+
+    @Test
+    @Suppress("unused")
+    fun responseFunctionToolFromClassFailureWithValidationDefault() {
+        // Confirm that the default value of the `localValidation` argument is `YES` by expecting
+        // a validation error when that argument is not given an explicit value.
+        class U(val s: String)
+        class V(val u: U)
+        class W(val v: V)
+        class X(val w: W)
+        class Y(val x: X)
+        class Z(val y: Y)
+
+        // Use default for `localValidation` flag.
+        assertThatThrownBy { responseFunctionToolFromClass(Z::class.java) }
+            .isExactlyInstanceOf(IllegalArgumentException::class.java)
+            .hasMessage(
+                "Local validation failed for JSON schema derived from ${Z::class.java}:\n" +
+                    " - #/properties/y/properties/x/properties/w/properties/v/properties/u" +
+                    "/properties/s: Current nesting depth is 6, but maximum is 5."
+            )
+    }
+
+    @Test
+    fun toJsonString() {
+        val boolPrimitive = toJsonString(true)
+        val boolObject = toJsonString(java.lang.Boolean.TRUE)
+        val numberPrimitive = toJsonString(42)
+        val numberObject = toJsonString(Integer.valueOf(42))
+        val stringObject = toJsonString("Hello, World!")
+        val optional = toJsonString(Optional.of("optional"))
+        val optionalNullable = toJsonString(Optional.ofNullable(null))
+
+        assertThat(boolPrimitive).isEqualTo("true")
+        assertThat(boolObject).isEqualTo("true")
+        assertThat(numberPrimitive).isEqualTo("42")
+        assertThat(numberObject).isEqualTo("42")
+        // String values should be in quotes.
+        assertThat(stringObject).isEqualTo("\"Hello, World!\"")
+        assertThat(optional).isEqualTo("\"optional\"")
+        assertThat(optionalNullable).isEqualTo("null")
     }
 }

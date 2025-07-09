@@ -2,7 +2,7 @@
 
 package com.openai.services.async.containers
 
-import com.google.errorprone.annotations.MustBeClosed
+import com.openai.core.ClientOptions
 import com.openai.core.RequestOptions
 import com.openai.core.http.HttpResponse
 import com.openai.core.http.HttpResponseFor
@@ -15,6 +15,7 @@ import com.openai.models.containers.files.FileRetrieveParams
 import com.openai.models.containers.files.FileRetrieveResponse
 import com.openai.services.async.containers.files.ContentServiceAsync
 import java.util.concurrent.CompletableFuture
+import java.util.function.Consumer
 
 interface FileServiceAsync {
 
@@ -22,6 +23,13 @@ interface FileServiceAsync {
      * Returns a view of this service that provides access to raw HTTP responses for each method.
      */
     fun withRawResponse(): WithRawResponse
+
+    /**
+     * Returns a view of this service with the given option modifications applied.
+     *
+     * The original service is not modified.
+     */
+    fun withOptions(modifier: Consumer<ClientOptions.Builder>): FileServiceAsync
 
     fun content(): ContentServiceAsync
 
@@ -148,18 +156,23 @@ interface FileServiceAsync {
     /** A view of [FileServiceAsync] that provides access to raw HTTP responses for each method. */
     interface WithRawResponse {
 
+        /**
+         * Returns a view of this service with the given option modifications applied.
+         *
+         * The original service is not modified.
+         */
+        fun withOptions(modifier: Consumer<ClientOptions.Builder>): FileServiceAsync.WithRawResponse
+
         fun content(): ContentServiceAsync.WithRawResponse
 
         /**
          * Returns a raw HTTP response for `post /containers/{container_id}/files`, but is otherwise
          * the same as [FileServiceAsync.create].
          */
-        @MustBeClosed
         fun create(containerId: String): CompletableFuture<HttpResponseFor<FileCreateResponse>> =
             create(containerId, FileCreateParams.none())
 
         /** @see [create] */
-        @MustBeClosed
         fun create(
             containerId: String,
             params: FileCreateParams = FileCreateParams.none(),
@@ -168,7 +181,6 @@ interface FileServiceAsync {
             create(params.toBuilder().containerId(containerId).build(), requestOptions)
 
         /** @see [create] */
-        @MustBeClosed
         fun create(
             containerId: String,
             params: FileCreateParams = FileCreateParams.none(),
@@ -176,21 +188,18 @@ interface FileServiceAsync {
             create(containerId, params, RequestOptions.none())
 
         /** @see [create] */
-        @MustBeClosed
         fun create(
             params: FileCreateParams,
             requestOptions: RequestOptions = RequestOptions.none(),
         ): CompletableFuture<HttpResponseFor<FileCreateResponse>>
 
         /** @see [create] */
-        @MustBeClosed
         fun create(
             params: FileCreateParams
         ): CompletableFuture<HttpResponseFor<FileCreateResponse>> =
             create(params, RequestOptions.none())
 
         /** @see [create] */
-        @MustBeClosed
         fun create(
             containerId: String,
             requestOptions: RequestOptions,
@@ -201,7 +210,6 @@ interface FileServiceAsync {
          * Returns a raw HTTP response for `get /containers/{container_id}/files/{file_id}`, but is
          * otherwise the same as [FileServiceAsync.retrieve].
          */
-        @MustBeClosed
         fun retrieve(
             fileId: String,
             params: FileRetrieveParams,
@@ -209,7 +217,6 @@ interface FileServiceAsync {
             retrieve(fileId, params, RequestOptions.none())
 
         /** @see [retrieve] */
-        @MustBeClosed
         fun retrieve(
             fileId: String,
             params: FileRetrieveParams,
@@ -218,14 +225,12 @@ interface FileServiceAsync {
             retrieve(params.toBuilder().fileId(fileId).build(), requestOptions)
 
         /** @see [retrieve] */
-        @MustBeClosed
         fun retrieve(
             params: FileRetrieveParams
         ): CompletableFuture<HttpResponseFor<FileRetrieveResponse>> =
             retrieve(params, RequestOptions.none())
 
         /** @see [retrieve] */
-        @MustBeClosed
         fun retrieve(
             params: FileRetrieveParams,
             requestOptions: RequestOptions = RequestOptions.none(),
@@ -235,12 +240,10 @@ interface FileServiceAsync {
          * Returns a raw HTTP response for `get /containers/{container_id}/files`, but is otherwise
          * the same as [FileServiceAsync.list].
          */
-        @MustBeClosed
         fun list(containerId: String): CompletableFuture<HttpResponseFor<FileListPageAsync>> =
             list(containerId, FileListParams.none())
 
         /** @see [list] */
-        @MustBeClosed
         fun list(
             containerId: String,
             params: FileListParams = FileListParams.none(),
@@ -249,7 +252,6 @@ interface FileServiceAsync {
             list(params.toBuilder().containerId(containerId).build(), requestOptions)
 
         /** @see [list] */
-        @MustBeClosed
         fun list(
             containerId: String,
             params: FileListParams = FileListParams.none(),
@@ -257,19 +259,16 @@ interface FileServiceAsync {
             list(containerId, params, RequestOptions.none())
 
         /** @see [list] */
-        @MustBeClosed
         fun list(
             params: FileListParams,
             requestOptions: RequestOptions = RequestOptions.none(),
         ): CompletableFuture<HttpResponseFor<FileListPageAsync>>
 
         /** @see [list] */
-        @MustBeClosed
         fun list(params: FileListParams): CompletableFuture<HttpResponseFor<FileListPageAsync>> =
             list(params, RequestOptions.none())
 
         /** @see [list] */
-        @MustBeClosed
         fun list(
             containerId: String,
             requestOptions: RequestOptions,
@@ -280,12 +279,10 @@ interface FileServiceAsync {
          * Returns a raw HTTP response for `delete /containers/{container_id}/files/{file_id}`, but
          * is otherwise the same as [FileServiceAsync.delete].
          */
-        @MustBeClosed
         fun delete(fileId: String, params: FileDeleteParams): CompletableFuture<HttpResponse> =
             delete(fileId, params, RequestOptions.none())
 
         /** @see [delete] */
-        @MustBeClosed
         fun delete(
             fileId: String,
             params: FileDeleteParams,
@@ -294,12 +291,10 @@ interface FileServiceAsync {
             delete(params.toBuilder().fileId(fileId).build(), requestOptions)
 
         /** @see [delete] */
-        @MustBeClosed
         fun delete(params: FileDeleteParams): CompletableFuture<HttpResponse> =
             delete(params, RequestOptions.none())
 
         /** @see [delete] */
-        @MustBeClosed
         fun delete(
             params: FileDeleteParams,
             requestOptions: RequestOptions = RequestOptions.none(),

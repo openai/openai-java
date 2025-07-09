@@ -90,6 +90,22 @@ class StructuredResponseCreateParams<T : Any>(
         /** @see ResponseCreateParams.Builder.model */
         fun model(only: ResponsesModel.ResponsesOnlyModel) = apply { paramsBuilder.model(only) }
 
+        /** @see ResponseCreateParams.Builder.background */
+        fun background(background: Boolean?) = apply { paramsBuilder.background(background) }
+
+        /** @see ResponseCreateParams.Builder.background */
+        fun background(background: Boolean) = apply { paramsBuilder.background(background) }
+
+        /** @see ResponseCreateParams.Builder.background */
+        fun background(background: Optional<Boolean>) = apply {
+            paramsBuilder.background(background)
+        }
+
+        /** @see ResponseCreateParams.Builder.background */
+        fun background(background: JsonField<Boolean>) = apply {
+            paramsBuilder.background(background)
+        }
+
         /** @see ResponseCreateParams.Builder.include */
         fun include(include: List<ResponseIncludable>?) = apply { paramsBuilder.include(include) }
 
@@ -137,6 +153,22 @@ class StructuredResponseCreateParams<T : Any>(
         /** @see ResponseCreateParams.Builder.maxOutputTokens */
         fun maxOutputTokens(maxOutputTokens: JsonField<Long>) = apply {
             paramsBuilder.maxOutputTokens(maxOutputTokens)
+        }
+
+        /** @see ResponseCreateParams.Builder.maxToolCalls */
+        fun maxToolCalls(maxToolCalls: Long?) = apply { paramsBuilder.maxToolCalls(maxToolCalls) }
+
+        /** @see ResponseCreateParams.Builder.maxToolCalls */
+        fun maxToolCalls(maxToolCalls: Long) = apply { paramsBuilder.maxToolCalls(maxToolCalls) }
+
+        /** @see ResponseCreateParams.Builder.maxToolCalls */
+        fun maxToolCalls(maxToolCalls: Optional<Long>) = apply {
+            paramsBuilder.maxToolCalls(maxToolCalls)
+        }
+
+        /** @see ResponseCreateParams.Builder.maxToolCalls */
+        fun maxToolCalls(maxToolCalls: JsonField<Long>) = apply {
+            paramsBuilder.maxToolCalls(maxToolCalls)
         }
 
         /** @see ResponseCreateParams.Builder.metadata */
@@ -188,6 +220,15 @@ class StructuredResponseCreateParams<T : Any>(
         fun previousResponseId(previousResponseId: JsonField<String>) = apply {
             paramsBuilder.previousResponseId(previousResponseId)
         }
+
+        /** @see ResponseCreateParams.Builder.prompt */
+        fun prompt(prompt: ResponsePrompt?) = apply { paramsBuilder.prompt(prompt) }
+
+        /** @see ResponseCreateParams.Builder.prompt */
+        fun prompt(prompt: Optional<ResponsePrompt>) = apply { paramsBuilder.prompt(prompt) }
+
+        /** @see ResponseCreateParams.Builder.prompt */
+        fun prompt(prompt: JsonField<ResponsePrompt>) = apply { paramsBuilder.prompt(prompt) }
 
         /** @see ResponseCreateParams.Builder.reasoning */
         fun reasoning(reasoning: Reasoning?) = apply { paramsBuilder.reasoning(reasoning) }
@@ -277,6 +318,9 @@ class StructuredResponseCreateParams<T : Any>(
         /** @see ResponseCreateParams.Builder.toolChoice */
         fun toolChoice(function: ToolChoiceFunction) = apply { paramsBuilder.toolChoice(function) }
 
+        /** @see ResponseCreateParams.Builder.toolChoice */
+        fun toolChoice(mcp: ToolChoiceMcp) = apply { paramsBuilder.toolChoice(mcp) }
+
         /** @see ResponseCreateParams.Builder.tools */
         fun tools(tools: List<Tool>) = apply { paramsBuilder.tools(tools) }
 
@@ -287,6 +331,16 @@ class StructuredResponseCreateParams<T : Any>(
         fun addTool(tool: Tool) = apply { paramsBuilder.addTool(tool) }
 
         /** @see ResponseCreateParams.Builder.addTool */
+        fun addTool(function: FunctionTool) = apply { paramsBuilder.addTool(function) }
+
+        /** @see ResponseCreateParams.Builder.addTool */
+        @JvmOverloads
+        fun addTool(
+            functionParametersType: Class<*>,
+            localValidation: JsonSchemaLocalValidation = JsonSchemaLocalValidation.YES,
+        ) = apply { paramsBuilder.addTool(functionParametersType, localValidation) }
+
+        /** @see ResponseCreateParams.Builder.addTool */
         fun addTool(fileSearch: FileSearchTool) = apply { paramsBuilder.addTool(fileSearch) }
 
         /** @see ResponseCreateParams.Builder.addFileSearchTool */
@@ -295,15 +349,43 @@ class StructuredResponseCreateParams<T : Any>(
         }
 
         /** @see ResponseCreateParams.Builder.addTool */
-        fun addTool(function: FunctionTool) = apply { paramsBuilder.addTool(function) }
-
-        /** @see ResponseCreateParams.Builder.addTool */
         fun addTool(webSearch: WebSearchTool) = apply { paramsBuilder.addTool(webSearch) }
 
         /** @see ResponseCreateParams.Builder.addTool */
         fun addTool(computerUsePreview: ComputerTool) = apply {
             paramsBuilder.addTool(computerUsePreview)
         }
+
+        /** @see ResponseCreateParams.Builder.addTool */
+        fun addTool(mcp: Tool.Mcp) = apply { paramsBuilder.addTool(mcp) }
+
+        /** @see ResponseCreateParams.Builder.addTool */
+        fun addTool(codeInterpreter: Tool.CodeInterpreter) = apply {
+            paramsBuilder.addTool(codeInterpreter)
+        }
+
+        /** @see ResponseCreateParams.Builder.addCodeInterpreterTool */
+        fun addCodeInterpreterTool(container: Tool.CodeInterpreter.Container) = apply {
+            paramsBuilder.addCodeInterpreterTool(container)
+        }
+
+        /** @see ResponseCreateParams.Builder.addCodeInterpreterTool */
+        fun addCodeInterpreterTool(string: String) = apply {
+            paramsBuilder.addCodeInterpreterTool(string)
+        }
+
+        /** @see ResponseCreateParams.Builder.addCodeInterpreterTool */
+        fun addCodeInterpreterTool(
+            codeInterpreterToolAuto: Tool.CodeInterpreter.Container.CodeInterpreterToolAuto
+        ) = apply { paramsBuilder.addCodeInterpreterTool(codeInterpreterToolAuto) }
+
+        /** @see ResponseCreateParams.Builder.addTool */
+        fun addTool(imageGeneration: Tool.ImageGeneration) = apply {
+            paramsBuilder.addTool(imageGeneration)
+        }
+
+        /** @see ResponseCreateParams.Builder.addToolLocalShell */
+        fun addToolLocalShell() = apply { paramsBuilder.addToolLocalShell() }
 
         /** @see ResponseCreateParams.Builder.topP */
         fun topP(topP: Double?) = apply { paramsBuilder.topP(topP) }
@@ -316,6 +398,22 @@ class StructuredResponseCreateParams<T : Any>(
 
         /** @see ResponseCreateParams.Builder.topP */
         fun topP(topP: JsonField<Double>) = apply { paramsBuilder.topP(topP) }
+
+        /** @see ResponseCreateParams.Builder.topLogprobs */
+        fun topLogprobs(topLogprobs: Long?) = apply { paramsBuilder.topLogprobs(topLogprobs) }
+
+        /** @see ResponseCreateParams.Builder.topLogprobs */
+        fun topLogprobs(topLogprobs: Long) = apply { paramsBuilder.topLogprobs(topLogprobs) }
+
+        /** @see ResponseCreateParams.Builder.topLogprobs */
+        fun topLogprobs(topLogprobs: Optional<Long>) = apply {
+            paramsBuilder.topLogprobs(topLogprobs)
+        }
+
+        /** @see ResponseCreateParams.Builder.topLogprobs */
+        fun topLogprobs(topLogprobs: JsonField<Long>) = apply {
+            paramsBuilder.topLogprobs(topLogprobs)
+        }
 
         /** @see ResponseCreateParams.Builder.truncation */
         fun truncation(truncation: ResponseCreateParams.Truncation?) = apply {

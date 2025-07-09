@@ -22,7 +22,7 @@ internal class TranscriptionStreamEventTest {
                 .addLogprob(
                     TranscriptionTextDeltaEvent.Logprob.builder()
                         .token("token")
-                        .addByte(JsonValue.from(mapOf<String, Any>()))
+                        .addByte(0L)
                         .logprob(0.0)
                         .build()
                 )
@@ -45,7 +45,7 @@ internal class TranscriptionStreamEventTest {
                     .addLogprob(
                         TranscriptionTextDeltaEvent.Logprob.builder()
                             .token("token")
-                            .addByte(JsonValue.from(mapOf<String, Any>()))
+                            .addByte(0L)
                             .logprob(0.0)
                             .build()
                     )
@@ -69,8 +69,21 @@ internal class TranscriptionStreamEventTest {
                 .addLogprob(
                     TranscriptionTextDoneEvent.Logprob.builder()
                         .token("token")
-                        .addByte(JsonValue.from(mapOf<String, Any>()))
+                        .addByte(0L)
                         .logprob(0.0)
+                        .build()
+                )
+                .usage(
+                    TranscriptionTextDoneEvent.Usage.builder()
+                        .inputTokens(0L)
+                        .outputTokens(0L)
+                        .totalTokens(0L)
+                        .inputTokenDetails(
+                            TranscriptionTextDoneEvent.Usage.InputTokenDetails.builder()
+                                .audioTokens(0L)
+                                .textTokens(0L)
+                                .build()
+                        )
                         .build()
                 )
                 .build()
@@ -92,8 +105,21 @@ internal class TranscriptionStreamEventTest {
                     .addLogprob(
                         TranscriptionTextDoneEvent.Logprob.builder()
                             .token("token")
-                            .addByte(JsonValue.from(mapOf<String, Any>()))
+                            .addByte(0L)
                             .logprob(0.0)
+                            .build()
+                    )
+                    .usage(
+                        TranscriptionTextDoneEvent.Usage.builder()
+                            .inputTokens(0L)
+                            .outputTokens(0L)
+                            .totalTokens(0L)
+                            .inputTokenDetails(
+                                TranscriptionTextDoneEvent.Usage.InputTokenDetails.builder()
+                                    .audioTokens(0L)
+                                    .textTokens(0L)
+                                    .build()
+                            )
                             .build()
                     )
                     .build()
