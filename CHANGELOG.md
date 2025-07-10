@@ -1,5 +1,13 @@
 # Changelog
 
+## 2.12.2 (2025-07-10)
+
+Full Changelog: [v2.12.1...v2.12.2](https://github.com/openai/openai-java/compare/v2.12.1...v2.12.2)
+
+### Documentation
+
+* add batch processing examples ([#462](https://github.com/openai/openai-java/issues/462)) ([#476](https://github.com/openai/openai-java/issues/476)) ([d910267](https://github.com/openai/openai-java/commit/d910267a97748ce1a193712da03011a65e21277c))
+
 ## 2.12.1 (2025-07-08)
 
 Full Changelog: [v2.12.0...v2.12.1](https://github.com/openai/openai-java/compare/v2.12.0...v2.12.1)
