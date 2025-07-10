@@ -100,6 +100,17 @@ class ChatCompletionAccumulator private constructor() {
     companion object {
         @JvmStatic fun create() = ChatCompletionAccumulator()
 
+        /**
+         * Creates an instance of a Java class using data from a JSON string. The JSON data should
+         * conform to the JSON schema previously extracted from the Java class.
+         *
+         * @throws OpenAIInvalidDataException If the JSON data cannot be parsed to an instance of
+         *   the [responseType] class.
+         */
+        @JvmStatic
+        fun <T> responseTypeFromJson(json: String, responseType: Class<T>): T =
+            com.openai.core.responseTypeFromJson(json, responseType)
+
         @JvmSynthetic
         internal fun convertFunctionCall(
             chunkFunctionCall: ChatCompletionChunk.Choice.Delta.FunctionCall

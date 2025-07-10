@@ -218,8 +218,8 @@ internal fun extractSchema(type: Class<*>): ObjectNode {
 }
 
 /**
- * Creates an instance of a Java class using data from a JSON. The JSON data should conform to the
- * JSON schema previously extracted from the Java class.
+ * Creates an instance of a Java class using data from a JSON string. The JSON data should conform
+ * to the JSON schema previously extracted from the Java class.
  *
  * @throws OpenAIInvalidDataException If the JSON data cannot be parsed to an instance of the
  *   [responseType] class.
