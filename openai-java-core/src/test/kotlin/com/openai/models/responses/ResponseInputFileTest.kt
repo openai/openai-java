@@ -15,11 +15,13 @@ internal class ResponseInputFileTest {
             ResponseInputFile.builder()
                 .fileData("file_data")
                 .fileId("file_id")
+                .fileUrl("file_url")
                 .filename("filename")
                 .build()
 
         assertThat(responseInputFile.fileData()).contains("file_data")
         assertThat(responseInputFile.fileId()).contains("file_id")
+        assertThat(responseInputFile.fileUrl()).contains("file_url")
         assertThat(responseInputFile.filename()).contains("filename")
     }
 
@@ -30,6 +32,7 @@ internal class ResponseInputFileTest {
             ResponseInputFile.builder()
                 .fileData("file_data")
                 .fileId("file_id")
+                .fileUrl("file_url")
                 .filename("filename")
                 .build()
 

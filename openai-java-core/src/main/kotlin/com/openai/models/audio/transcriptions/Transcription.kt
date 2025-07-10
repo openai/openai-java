@@ -197,12 +197,12 @@ private constructor(
          * Alias for calling [usage] with the following:
          * ```java
          * Usage.Duration.builder()
-         *     .duration(duration)
+         *     .seconds(seconds)
          *     .build()
          * ```
          */
-        fun durationUsage(duration: Double) =
-            usage(Usage.Duration.builder().duration(duration).build())
+        fun durationUsage(seconds: Double) =
+            usage(Usage.Duration.builder().seconds(seconds).build())
 
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
             this.additionalProperties.clear()
@@ -1230,18 +1230,18 @@ private constructor(
         /** Usage statistics for models billed by audio input duration. */
         class Duration
         private constructor(
-            private val duration: JsonField<Double>,
+            private val seconds: JsonField<Double>,
             private val type: JsonValue,
             private val additionalProperties: MutableMap<String, JsonValue>,
         ) {
 
             @JsonCreator
             private constructor(
-                @JsonProperty("duration")
+                @JsonProperty("seconds")
                 @ExcludeMissing
-                duration: JsonField<Double> = JsonMissing.of(),
+                seconds: JsonField<Double> = JsonMissing.of(),
                 @JsonProperty("type") @ExcludeMissing type: JsonValue = JsonMissing.of(),
-            ) : this(duration, type, mutableMapOf())
+            ) : this(seconds, type, mutableMapOf())
 
             /**
              * Duration of the input audio in seconds.
@@ -1250,7 +1250,7 @@ private constructor(
              *   unexpectedly missing or null (e.g. if the server responded with an unexpected
              *   value).
              */
-            fun duration(): Double = duration.getRequired("duration")
+            fun seconds(): Double = seconds.getRequired("seconds")
 
             /**
              * The type of the usage object. Always `duration` for this variant.
@@ -1266,12 +1266,11 @@ private constructor(
             @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
 
             /**
-             * Returns the raw JSON value of [duration].
+             * Returns the raw JSON value of [seconds].
              *
-             * Unlike [duration], this method doesn't throw if the JSON field has an unexpected
-             * type.
+             * Unlike [seconds], this method doesn't throw if the JSON field has an unexpected type.
              */
-            @JsonProperty("duration") @ExcludeMissing fun _duration(): JsonField<Double> = duration
+            @JsonProperty("seconds") @ExcludeMissing fun _seconds(): JsonField<Double> = seconds
 
             @JsonAnySetter
             private fun putAdditionalProperty(key: String, value: JsonValue) {
@@ -1292,7 +1291,7 @@ private constructor(
                  *
                  * The following fields are required:
                  * ```java
-                 * .duration()
+                 * .seconds()
                  * ```
                  */
                 @JvmStatic fun builder() = Builder()
@@ -1301,28 +1300,28 @@ private constructor(
             /** A builder for [Duration]. */
             class Builder internal constructor() {
 
-                private var duration: JsonField<Double>? = null
+                private var seconds: JsonField<Double>? = null
                 private var type: JsonValue = JsonValue.from("duration")
                 private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
                 @JvmSynthetic
                 internal fun from(duration: Duration) = apply {
-                    this.duration = duration.duration
+                    seconds = duration.seconds
                     type = duration.type
                     additionalProperties = duration.additionalProperties.toMutableMap()
                 }
 
                 /** Duration of the input audio in seconds. */
-                fun duration(duration: Double) = duration(JsonField.of(duration))
+                fun seconds(seconds: Double) = seconds(JsonField.of(seconds))
 
                 /**
-                 * Sets [Builder.duration] to an arbitrary JSON value.
+                 * Sets [Builder.seconds] to an arbitrary JSON value.
                  *
-                 * You should usually call [Builder.duration] with a well-typed [Double] value
+                 * You should usually call [Builder.seconds] with a well-typed [Double] value
                  * instead. This method is primarily for setting the field to an undocumented or not
                  * yet supported value.
                  */
-                fun duration(duration: JsonField<Double>) = apply { this.duration = duration }
+                fun seconds(seconds: JsonField<Double>) = apply { this.seconds = seconds }
 
                 /**
                  * Sets the field to an arbitrary JSON value.
@@ -1367,14 +1366,14 @@ private constructor(
                  *
                  * The following fields are required:
                  * ```java
-                 * .duration()
+                 * .seconds()
                  * ```
                  *
                  * @throws IllegalStateException if any required field is unset.
                  */
                 fun build(): Duration =
                     Duration(
-                        checkRequired("duration", duration),
+                        checkRequired("seconds", seconds),
                         type,
                         additionalProperties.toMutableMap(),
                     )
@@ -1387,7 +1386,7 @@ private constructor(
                     return@apply
                 }
 
-                duration()
+                seconds()
                 _type().let {
                     if (it != JsonValue.from("duration")) {
                         throw OpenAIInvalidDataException("'type' is invalid, received $it")
@@ -1412,7 +1411,7 @@ private constructor(
              */
             @JvmSynthetic
             internal fun validity(): Int =
-                (if (duration.asKnown().isPresent) 1 else 0) +
+                (if (seconds.asKnown().isPresent) 1 else 0) +
                     type.let { if (it == JsonValue.from("duration")) 1 else 0 }
 
             override fun equals(other: Any?): Boolean {
@@ -1420,17 +1419,17 @@ private constructor(
                     return true
                 }
 
-                return /* spotless:off */ other is Duration && duration == other.duration && type == other.type && additionalProperties == other.additionalProperties /* spotless:on */
+                return /* spotless:off */ other is Duration && seconds == other.seconds && type == other.type && additionalProperties == other.additionalProperties /* spotless:on */
             }
 
             /* spotless:off */
-            private val hashCode: Int by lazy { Objects.hash(duration, type, additionalProperties) }
+            private val hashCode: Int by lazy { Objects.hash(seconds, type, additionalProperties) }
             /* spotless:on */
 
             override fun hashCode(): Int = hashCode
 
             override fun toString() =
-                "Duration{duration=$duration, type=$type, additionalProperties=$additionalProperties}"
+                "Duration{seconds=$seconds, type=$type, additionalProperties=$additionalProperties}"
         }
     }
 
