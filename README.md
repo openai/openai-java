@@ -508,6 +508,22 @@ the latter when `ResponseCreateParams.Builder.text(Class<T>)` is called.
 For a full example of the usage of _Structured Outputs_ with the Responses API, see
 [`ResponsesStructuredOutputsExample`](openai-java-example/src/main/java/com/openai/example/ResponsesStructuredOutputsExample.java).
 
+### Usage with streaming
+
+_Structured Outputs_ can also be used with [Streaming](#streaming) and the Chat Completions API. As
+responses are returned in "chunks", the full response must first be accumulated to concatenate the
+JSON strings that can then be converted into instances of the arbitrary Java class. Normal streaming
+operations can be performed while accumulating the JSON strings.
+
+Use the [`ChatCompletionAccumulator`](openai-java-core/src/main/kotlin/com/openai/helpers/ChatCompletionAccumulator.kt)
+as described in the section on [Streaming helpers](#streaming-helpers) to accumulate the JSON
+strings. Once accumulated, use `ChatCompletionAccumulator.responseTypeFromJson` to deserialize each
+JSON string into an instance of your Java class.
+
+For a full example of the usage of _Structured Outputs_ with Streaming and the Chat Completions API,
+see
+[`StructuredOutputsStreamingExample`](openai-java-example/src/main/java/com/openai/example/StructuredOutputsStreamingExample.java).
+
 ### Defining JSON schema properties
 
 When a JSON schema is derived from your Java classes, all properties represented by `public` fields
