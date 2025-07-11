@@ -7,6 +7,7 @@ import com.openai.models.chat.completions.ChatCompletion
 import com.openai.models.chat.completions.ChatCompletionChunk
 import com.openai.models.chat.completions.ChatCompletionMessage
 import com.openai.models.chat.completions.ChatCompletionMessageToolCall
+import com.openai.models.chat.completions.StructuredChatCompletion
 import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
@@ -100,17 +101,6 @@ class ChatCompletionAccumulator private constructor() {
     companion object {
         @JvmStatic fun create() = ChatCompletionAccumulator()
 
-        /**
-         * Creates an instance of a Java class using data from a JSON string. The JSON data should
-         * conform to the JSON schema previously extracted from the Java class.
-         *
-         * @throws OpenAIInvalidDataException If the JSON data cannot be parsed to an instance of
-         *   the [responseType] class.
-         */
-        @JvmStatic
-        fun <T> responseTypeFromJson(json: String, responseType: Class<T>): T =
-            com.openai.core.responseTypeFromJson(json, responseType)
-
         @JvmSynthetic
         internal fun convertFunctionCall(
             chunkFunctionCall: ChatCompletionChunk.Choice.Delta.FunctionCall
@@ -132,6 +122,23 @@ class ChatCompletionAccumulator private constructor() {
      */
     fun chatCompletion(): ChatCompletion =
         checkNotNull(chatCompletion) { "Final chat completion chunk(s) not yet received." }
+
+    /**
+     * Gets the final accumulated chat completion with support for structured outputs. Until the
+     * last chunk has been accumulated, a [StructuredChatCompletion] will not be available. Wait
+     * until all chunks have been handled by [accumulate] before calling this method. See that
+     * method for more details on how the last chunk is detected. See the SDK documentation on
+     * _Structured Outputs_ for more details and example code.
+     *
+     * @param responseType The Java class from which the JSON schema in the request was derived. The
+     *   output JSON conforming to that schema can be converted automatically back to an instance of
+     *   that Java class by the [StructuredChatCompletion].
+     * @throws IllegalStateException If called before the last chunk has been accumulated.
+     * @throws OpenAIInvalidDataException If the JSON data cannot be parsed to an instance of the
+     *   [responseType] class.
+     */
+    fun <T : Any> chatCompletion(responseType: Class<T>) =
+        StructuredChatCompletion(responseType, chatCompletion())
 
     /**
      * Accumulates a streamed chunk and uses it to construct a [ChatCompletion]. When all chunks
