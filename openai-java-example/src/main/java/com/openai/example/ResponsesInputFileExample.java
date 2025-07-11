@@ -22,7 +22,7 @@ public final class ResponsesInputFileExample {
 
         ClassLoader classloader = Thread.currentThread().getContextClassLoader();
         String filename = "pdflatex-image.pdf";
-        byte[] pdfBytes = classloader.getResource(filename).openStream().readAllBytes();
+        byte[] pdfBytes = classloader.getResourceAsStream(filename).readAllBytes();
         String pdfBase64Url =
                 "data:application/pdf;base64," + Base64.getEncoder().encodeToString(pdfBytes);
 

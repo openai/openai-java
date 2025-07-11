@@ -4,16 +4,19 @@ import com.openai.client.OpenAIClient;
 import com.openai.client.okhttp.OpenAIOkHttpClient;
 import com.openai.models.ChatModel;
 import com.openai.models.chat.completions.ChatCompletionContentPart;
-import com.openai.models.chat.completions.ChatCompletionContentPartImage;
 import com.openai.models.chat.completions.ChatCompletionContentPartText;
 import com.openai.models.chat.completions.ChatCompletionCreateParams;
+import com.openai.models.files.FileCreateParams;
+import com.openai.models.files.FileObject;
+import com.openai.models.files.FilePurpose;
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.util.Base64;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 
-public final class CompletionsImageUrlExample {
-    private CompletionsImageUrlExample() {}
+public final class CompletionsFileExample {
+    private CompletionsFileExample() {}
 
     public static void main(String[] args) throws URISyntaxException, InterruptedException, IOException {
         // Configures using one of:
@@ -22,15 +25,21 @@ public final class CompletionsImageUrlExample {
         OpenAIClient client = OpenAIOkHttpClient.fromEnv();
 
         ClassLoader classloader = Thread.currentThread().getContextClassLoader();
-        byte[] logoBytes = classloader.getResourceAsStream("logo.png").readAllBytes();
-        String logoBase64Url = "data:image/jpeg;base64," + Base64.getEncoder().encodeToString(logoBytes);
+        Path pdfPath = Paths.get(classloader.getResource("pdflatex-image.pdf").toURI());
 
-        ChatCompletionContentPart logoContentPart =
-                ChatCompletionContentPart.ofImageUrl(ChatCompletionContentPartImage.builder()
-                        .imageUrl(ChatCompletionContentPartImage.ImageUrl.builder()
-                                .url(logoBase64Url)
-                                .build())
+        FileObject logoFileObject = client.files()
+                .create(FileCreateParams.builder()
+                        .file(pdfPath)
+                        .purpose(FilePurpose.USER_DATA)
                         .build());
+
+        ChatCompletionContentPart.File logoFile = ChatCompletionContentPart.File.builder()
+                .file(ChatCompletionContentPart.File.FileObject.builder()
+                        .fileId(logoFileObject.id())
+                        .build())
+                .build();
+        ChatCompletionContentPart logoContentPart = ChatCompletionContentPart.ofFile(logoFile);
+
         ChatCompletionContentPart questionContentPart =
                 ChatCompletionContentPart.ofText(ChatCompletionContentPartText.builder()
                         .text("Describe this image.")
