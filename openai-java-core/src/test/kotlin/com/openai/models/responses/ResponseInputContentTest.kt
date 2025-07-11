@@ -83,6 +83,7 @@ internal class ResponseInputContentTest {
             ResponseInputFile.builder()
                 .fileData("file_data")
                 .fileId("file_id")
+                .fileUrl("file_url")
                 .filename("filename")
                 .build()
 
@@ -101,6 +102,7 @@ internal class ResponseInputContentTest {
                 ResponseInputFile.builder()
                     .fileData("file_data")
                     .fileId("file_id")
+                    .fileUrl("file_url")
                     .filename("filename")
                     .build()
             )

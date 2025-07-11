@@ -67,11 +67,11 @@ private constructor(
     fun sequenceNumber(): Long = sequenceNumber.getRequired("sequence_number")
 
     /**
-     * The type of the event. Always 'response.mcp_call.arguments_delta'.
+     * The type of the event. Always 'response.mcp_call_arguments.delta'.
      *
      * Expected to always return the following:
      * ```java
-     * JsonValue.from("response.mcp_call.arguments_delta")
+     * JsonValue.from("response.mcp_call_arguments.delta")
      * ```
      *
      * However, this method can be useful for debugging and logging (e.g. if the server responded
@@ -138,7 +138,7 @@ private constructor(
         private var itemId: JsonField<String>? = null
         private var outputIndex: JsonField<Long>? = null
         private var sequenceNumber: JsonField<Long>? = null
-        private var type: JsonValue = JsonValue.from("response.mcp_call.arguments_delta")
+        private var type: JsonValue = JsonValue.from("response.mcp_call_arguments.delta")
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
         @JvmSynthetic
@@ -199,7 +199,7 @@ private constructor(
          * It is usually unnecessary to call this method because the field defaults to the
          * following:
          * ```java
-         * JsonValue.from("response.mcp_call.arguments_delta")
+         * JsonValue.from("response.mcp_call_arguments.delta")
          * ```
          *
          * This method is primarily for setting the field to an undocumented or not yet supported
@@ -263,7 +263,7 @@ private constructor(
         outputIndex()
         sequenceNumber()
         _type().let {
-            if (it != JsonValue.from("response.mcp_call.arguments_delta")) {
+            if (it != JsonValue.from("response.mcp_call_arguments.delta")) {
                 throw OpenAIInvalidDataException("'type' is invalid, received $it")
             }
         }
@@ -288,7 +288,7 @@ private constructor(
         (if (itemId.asKnown().isPresent) 1 else 0) +
             (if (outputIndex.asKnown().isPresent) 1 else 0) +
             (if (sequenceNumber.asKnown().isPresent) 1 else 0) +
-            type.let { if (it == JsonValue.from("response.mcp_call.arguments_delta")) 1 else 0 }
+            type.let { if (it == JsonValue.from("response.mcp_call_arguments.delta")) 1 else 0 }
 
     override fun equals(other: Any?): Boolean {
         if (this === other) {

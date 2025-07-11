@@ -100,11 +100,11 @@ private constructor(
     fun sequenceNumber(): Long = sequenceNumber.getRequired("sequence_number")
 
     /**
-     * The type of the event. Always 'response.output_text_annotation.added'.
+     * The type of the event. Always 'response.output_text.annotation.added'.
      *
      * Expected to always return the following:
      * ```java
-     * JsonValue.from("response.output_text_annotation.added")
+     * JsonValue.from("response.output_text.annotation.added")
      * ```
      *
      * However, this method can be useful for debugging and logging (e.g. if the server responded
@@ -193,7 +193,7 @@ private constructor(
         private var itemId: JsonField<String>? = null
         private var outputIndex: JsonField<Long>? = null
         private var sequenceNumber: JsonField<Long>? = null
-        private var type: JsonValue = JsonValue.from("response.output_text_annotation.added")
+        private var type: JsonValue = JsonValue.from("response.output_text.annotation.added")
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
         @JvmSynthetic
@@ -283,7 +283,7 @@ private constructor(
          * It is usually unnecessary to call this method because the field defaults to the
          * following:
          * ```java
-         * JsonValue.from("response.output_text_annotation.added")
+         * JsonValue.from("response.output_text.annotation.added")
          * ```
          *
          * This method is primarily for setting the field to an undocumented or not yet supported
@@ -353,7 +353,7 @@ private constructor(
         outputIndex()
         sequenceNumber()
         _type().let {
-            if (it != JsonValue.from("response.output_text_annotation.added")) {
+            if (it != JsonValue.from("response.output_text.annotation.added")) {
                 throw OpenAIInvalidDataException("'type' is invalid, received $it")
             }
         }
@@ -380,7 +380,7 @@ private constructor(
             (if (itemId.asKnown().isPresent) 1 else 0) +
             (if (outputIndex.asKnown().isPresent) 1 else 0) +
             (if (sequenceNumber.asKnown().isPresent) 1 else 0) +
-            type.let { if (it == JsonValue.from("response.output_text_annotation.added")) 1 else 0 }
+            type.let { if (it == JsonValue.from("response.output_text.annotation.added")) 1 else 0 }
 
     override fun equals(other: Any?): Boolean {
         if (this === other) {
