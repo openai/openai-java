@@ -1,5 +1,14 @@
 # Changelog
 
+## 2.12.4 (2025-07-11)
+
+Full Changelog: [v2.12.3...v2.12.4](https://github.com/openai/openai-java/compare/v2.12.3...v2.12.4)
+
+### Chores
+
+* **api:** specification cleanup ([6fc0efd](https://github.com/openai/openai-java/commit/6fc0efdb8735f8bb4d51631f195634bbb14ea3c4))
+* **internal:** manual updates ([53059a7](https://github.com/openai/openai-java/commit/53059a72d301bc3bd7d65ab31609e8509505b2f7))
+
 ## 2.12.3 (2025-07-11)
 
 Full Changelog: [v2.12.2...v2.12.3](https://github.com/openai/openai-java/compare/v2.12.2...v2.12.3)
