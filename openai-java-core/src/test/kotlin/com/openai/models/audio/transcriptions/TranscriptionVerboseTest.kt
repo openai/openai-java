@@ -31,7 +31,7 @@ internal class TranscriptionVerboseTest {
                         .addToken(0L)
                         .build()
                 )
-                .usage(TranscriptionVerbose.Usage.builder().duration(0.0).build())
+                .usage(TranscriptionVerbose.Usage.builder().seconds(0.0).build())
                 .addWord(TranscriptionWord.builder().end(0.0f).start(0.0f).word("word").build())
                 .build()
 
@@ -54,7 +54,7 @@ internal class TranscriptionVerboseTest {
                     .build()
             )
         assertThat(transcriptionVerbose.usage())
-            .contains(TranscriptionVerbose.Usage.builder().duration(0.0).build())
+            .contains(TranscriptionVerbose.Usage.builder().seconds(0.0).build())
         assertThat(transcriptionVerbose.words().getOrNull())
             .containsExactly(TranscriptionWord.builder().end(0.0f).start(0.0f).word("word").build())
     }
@@ -81,7 +81,7 @@ internal class TranscriptionVerboseTest {
                         .addToken(0L)
                         .build()
                 )
-                .usage(TranscriptionVerbose.Usage.builder().duration(0.0).build())
+                .usage(TranscriptionVerbose.Usage.builder().seconds(0.0).build())
                 .addWord(TranscriptionWord.builder().end(0.0f).start(0.0f).word("word").build())
                 .build()
 
