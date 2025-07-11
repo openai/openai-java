@@ -80,12 +80,12 @@ public final class StructuredOutputsStreamingExample {
                     .flatMap(completion -> completion.choices().stream())
                     .flatMap(choice -> choice.delta().content().stream())
                     .forEach(System.out::print);
+            System.out.println();
         }
 
-        accumulator.chatCompletion().choices().stream()
+        accumulator.chatCompletion(BookList.class).choices().stream()
                 .flatMap(choice -> choice.message().content().stream())
-                .flatMap(jsonContent ->
-                        ChatCompletionAccumulator.responseTypeFromJson(jsonContent, BookList.class).books.stream())
+                .flatMap(bookList -> bookList.books.stream())
                 .forEach(book -> System.out.println(" - " + book));
     }
 }
