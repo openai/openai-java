@@ -2077,7 +2077,7 @@ private constructor(
                             ResponseStreamEvent(imageGenerationCallPartialImage = it, _json = json)
                         } ?: ResponseStreamEvent(_json = json)
                 }
-                "response.mcp_call.arguments_delta" -> {
+                "response.mcp_call_arguments.delta" -> {
                     return tryDeserialize(
                             node,
                             jacksonTypeRef<ResponseMcpCallArgumentsDeltaEvent>(),
@@ -2085,7 +2085,7 @@ private constructor(
                         ?.let { ResponseStreamEvent(mcpCallArgumentsDelta = it, _json = json) }
                         ?: ResponseStreamEvent(_json = json)
                 }
-                "response.mcp_call.arguments_done" -> {
+                "response.mcp_call_arguments.done" -> {
                     return tryDeserialize(node, jacksonTypeRef<ResponseMcpCallArgumentsDoneEvent>())
                         ?.let { ResponseStreamEvent(mcpCallArgumentsDone = it, _json = json) }
                         ?: ResponseStreamEvent(_json = json)
@@ -2126,7 +2126,7 @@ private constructor(
                         ?.let { ResponseStreamEvent(mcpListToolsInProgress = it, _json = json) }
                         ?: ResponseStreamEvent(_json = json)
                 }
-                "response.output_text_annotation.added" -> {
+                "response.output_text.annotation.added" -> {
                     return tryDeserialize(
                             node,
                             jacksonTypeRef<ResponseOutputTextAnnotationAddedEvent>(),

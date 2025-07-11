@@ -116,6 +116,26 @@ interface ResponseService {
     fun createStreaming(requestOptions: RequestOptions): StreamResponse<ResponseStreamEvent> =
         createStreaming(ResponseCreateParams.none(), requestOptions)
 
+    /**
+     * Creates a streaming model response for the given response conversation. The input parameters
+     * can define a JSON schema derived automatically from an arbitrary class to request a
+     * structured output in JSON form. However, that structured output is split over multiple
+     * streamed events, so it will not be deserialized automatically into an instance of that class.
+     * To deserialize the output, first use a helper class to accumulate the stream of events into a
+     * single output value. See the SDK documentation for full details.
+     */
+    @MustBeClosed
+    fun createStreaming(
+        params: StructuredResponseCreateParams<*>
+    ): StreamResponse<ResponseStreamEvent> = createStreaming(params, RequestOptions.none())
+
+    /** @see [createStreaming] */
+    @MustBeClosed
+    fun createStreaming(
+        params: StructuredResponseCreateParams<*>,
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): StreamResponse<ResponseStreamEvent> = createStreaming(params.rawParams, requestOptions)
+
     /** Retrieves a model response with the given ID. */
     fun retrieve(responseId: String): Response = retrieve(responseId, ResponseRetrieveParams.none())
 

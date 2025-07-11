@@ -106,7 +106,7 @@ private constructor(
 
     /**
      * The intended purpose of the file. Supported values are `assistants`, `assistants_output`,
-     * `batch`, `batch_output`, `fine-tune`, `fine-tune-results` and `vision`.
+     * `batch`, `batch_output`, `fine-tune`, `fine-tune-results`, `vision`, and `user_data`.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
      *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
@@ -320,7 +320,7 @@ private constructor(
 
         /**
          * The intended purpose of the file. Supported values are `assistants`, `assistants_output`,
-         * `batch`, `batch_output`, `fine-tune`, `fine-tune-results` and `vision`.
+         * `batch`, `batch_output`, `fine-tune`, `fine-tune-results`, `vision`, and `user_data`.
          */
         fun purpose(purpose: Purpose) = purpose(JsonField.of(purpose))
 
@@ -478,7 +478,7 @@ private constructor(
 
     /**
      * The intended purpose of the file. Supported values are `assistants`, `assistants_output`,
-     * `batch`, `batch_output`, `fine-tune`, `fine-tune-results` and `vision`.
+     * `batch`, `batch_output`, `fine-tune`, `fine-tune-results`, `vision`, and `user_data`.
      */
     class Purpose @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
 
@@ -508,6 +508,8 @@ private constructor(
 
             @JvmField val VISION = of("vision")
 
+            @JvmField val USER_DATA = of("user_data")
+
             @JvmStatic fun of(value: String) = Purpose(JsonField.of(value))
         }
 
@@ -520,6 +522,7 @@ private constructor(
             FINE_TUNE,
             FINE_TUNE_RESULTS,
             VISION,
+            USER_DATA,
         }
 
         /**
@@ -539,6 +542,7 @@ private constructor(
             FINE_TUNE,
             FINE_TUNE_RESULTS,
             VISION,
+            USER_DATA,
             /** An enum member indicating that [Purpose] was instantiated with an unknown value. */
             _UNKNOWN,
         }
@@ -559,6 +563,7 @@ private constructor(
                 FINE_TUNE -> Value.FINE_TUNE
                 FINE_TUNE_RESULTS -> Value.FINE_TUNE_RESULTS
                 VISION -> Value.VISION
+                USER_DATA -> Value.USER_DATA
                 else -> Value._UNKNOWN
             }
 
@@ -580,6 +585,7 @@ private constructor(
                 FINE_TUNE -> Known.FINE_TUNE
                 FINE_TUNE_RESULTS -> Known.FINE_TUNE_RESULTS
                 VISION -> Known.VISION
+                USER_DATA -> Known.USER_DATA
                 else -> throw OpenAIInvalidDataException("Unknown Purpose: $value")
             }
 

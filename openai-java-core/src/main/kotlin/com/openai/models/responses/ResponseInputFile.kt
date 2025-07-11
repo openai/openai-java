@@ -22,6 +22,7 @@ private constructor(
     private val type: JsonValue,
     private val fileData: JsonField<String>,
     private val fileId: JsonField<String>,
+    private val fileUrl: JsonField<String>,
     private val filename: JsonField<String>,
     private val additionalProperties: MutableMap<String, JsonValue>,
 ) {
@@ -31,8 +32,9 @@ private constructor(
         @JsonProperty("type") @ExcludeMissing type: JsonValue = JsonMissing.of(),
         @JsonProperty("file_data") @ExcludeMissing fileData: JsonField<String> = JsonMissing.of(),
         @JsonProperty("file_id") @ExcludeMissing fileId: JsonField<String> = JsonMissing.of(),
+        @JsonProperty("file_url") @ExcludeMissing fileUrl: JsonField<String> = JsonMissing.of(),
         @JsonProperty("filename") @ExcludeMissing filename: JsonField<String> = JsonMissing.of(),
-    ) : this(type, fileData, fileId, filename, mutableMapOf())
+    ) : this(type, fileData, fileId, fileUrl, filename, mutableMapOf())
 
     /**
      * The type of the input item. Always `input_file`.
@@ -64,6 +66,14 @@ private constructor(
     fun fileId(): Optional<String> = fileId.getOptional("file_id")
 
     /**
+     * The URL of the file to be sent to the model.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun fileUrl(): Optional<String> = fileUrl.getOptional("file_url")
+
+    /**
      * The name of the file to be sent to the model.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
@@ -84,6 +94,13 @@ private constructor(
      * Unlike [fileId], this method doesn't throw if the JSON field has an unexpected type.
      */
     @JsonProperty("file_id") @ExcludeMissing fun _fileId(): JsonField<String> = fileId
+
+    /**
+     * Returns the raw JSON value of [fileUrl].
+     *
+     * Unlike [fileUrl], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    @JsonProperty("file_url") @ExcludeMissing fun _fileUrl(): JsonField<String> = fileUrl
 
     /**
      * Returns the raw JSON value of [filename].
@@ -116,6 +133,7 @@ private constructor(
         private var type: JsonValue = JsonValue.from("input_file")
         private var fileData: JsonField<String> = JsonMissing.of()
         private var fileId: JsonField<String> = JsonMissing.of()
+        private var fileUrl: JsonField<String> = JsonMissing.of()
         private var filename: JsonField<String> = JsonMissing.of()
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
@@ -124,6 +142,7 @@ private constructor(
             type = responseInputFile.type
             fileData = responseInputFile.fileData
             fileId = responseInputFile.fileId
+            fileUrl = responseInputFile.fileUrl
             filename = responseInputFile.filename
             additionalProperties = responseInputFile.additionalProperties.toMutableMap()
         }
@@ -167,6 +186,17 @@ private constructor(
          */
         fun fileId(fileId: JsonField<String>) = apply { this.fileId = fileId }
 
+        /** The URL of the file to be sent to the model. */
+        fun fileUrl(fileUrl: String) = fileUrl(JsonField.of(fileUrl))
+
+        /**
+         * Sets [Builder.fileUrl] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.fileUrl] with a well-typed [String] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
+        fun fileUrl(fileUrl: JsonField<String>) = apply { this.fileUrl = fileUrl }
+
         /** The name of the file to be sent to the model. */
         fun filename(filename: String) = filename(JsonField.of(filename))
 
@@ -203,7 +233,14 @@ private constructor(
          * Further updates to this [Builder] will not mutate the returned instance.
          */
         fun build(): ResponseInputFile =
-            ResponseInputFile(type, fileData, fileId, filename, additionalProperties.toMutableMap())
+            ResponseInputFile(
+                type,
+                fileData,
+                fileId,
+                fileUrl,
+                filename,
+                additionalProperties.toMutableMap(),
+            )
     }
 
     private var validated: Boolean = false
@@ -220,6 +257,7 @@ private constructor(
         }
         fileData()
         fileId()
+        fileUrl()
         filename()
         validated = true
     }
@@ -242,6 +280,7 @@ private constructor(
         type.let { if (it == JsonValue.from("input_file")) 1 else 0 } +
             (if (fileData.asKnown().isPresent) 1 else 0) +
             (if (fileId.asKnown().isPresent) 1 else 0) +
+            (if (fileUrl.asKnown().isPresent) 1 else 0) +
             (if (filename.asKnown().isPresent) 1 else 0)
 
     override fun equals(other: Any?): Boolean {
@@ -249,15 +288,15 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is ResponseInputFile && type == other.type && fileData == other.fileData && fileId == other.fileId && filename == other.filename && additionalProperties == other.additionalProperties /* spotless:on */
+        return /* spotless:off */ other is ResponseInputFile && type == other.type && fileData == other.fileData && fileId == other.fileId && fileUrl == other.fileUrl && filename == other.filename && additionalProperties == other.additionalProperties /* spotless:on */
     }
 
     /* spotless:off */
-    private val hashCode: Int by lazy { Objects.hash(type, fileData, fileId, filename, additionalProperties) }
+    private val hashCode: Int by lazy { Objects.hash(type, fileData, fileId, fileUrl, filename, additionalProperties) }
     /* spotless:on */
 
     override fun hashCode(): Int = hashCode
 
     override fun toString() =
-        "ResponseInputFile{type=$type, fileData=$fileData, fileId=$fileId, filename=$filename, additionalProperties=$additionalProperties}"
+        "ResponseInputFile{type=$type, fileData=$fileData, fileId=$fileId, fileUrl=$fileUrl, filename=$filename, additionalProperties=$additionalProperties}"
 }

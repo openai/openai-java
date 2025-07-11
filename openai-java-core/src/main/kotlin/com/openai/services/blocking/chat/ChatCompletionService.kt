@@ -118,6 +118,26 @@ interface ChatCompletionService {
     ): StreamResponse<ChatCompletionChunk>
 
     /**
+     * Creates a streaming model response for the given chat conversation. The input parameters can
+     * define a JSON schema derived automatically from an arbitrary class to request a structured
+     * output in JSON form. However, that structured output is split over multiple streamed events,
+     * so it will not be deserialized automatically into an instance of that class. To deserialize
+     * the output, first use a helper class to accumulate the stream of events into a single output
+     * value. See the SDK documentation for full details.
+     */
+    @MustBeClosed
+    fun createStreaming(
+        params: StructuredChatCompletionCreateParams<*>
+    ): StreamResponse<ChatCompletionChunk> = createStreaming(params, RequestOptions.none())
+
+    /** @see [createStreaming] */
+    @MustBeClosed
+    fun createStreaming(
+        params: StructuredChatCompletionCreateParams<*>,
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): StreamResponse<ChatCompletionChunk> = createStreaming(params.rawParams, requestOptions)
+
+    /**
      * Get a stored chat completion. Only Chat Completions that have been created with the `store`
      * parameter set to `true` will be returned.
      */

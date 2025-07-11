@@ -3,7 +3,6 @@
 package com.openai.services.blocking
 
 import com.openai.core.ClientOptions
-import com.openai.services.blocking.beta.RealtimeService
 import java.util.function.Consumer
 
 interface BetaService {
@@ -20,8 +19,6 @@ interface BetaService {
      */
     fun withOptions(modifier: Consumer<ClientOptions.Builder>): BetaService
 
-    fun realtime(): RealtimeService
-
     /** A view of [BetaService] that provides access to raw HTTP responses for each method. */
     interface WithRawResponse {
 
@@ -31,7 +28,5 @@ interface BetaService {
          * The original service is not modified.
          */
         fun withOptions(modifier: Consumer<ClientOptions.Builder>): BetaService.WithRawResponse
-
-        fun realtime(): RealtimeService.WithRawResponse
     }
 }

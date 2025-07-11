@@ -465,6 +465,7 @@ private constructor(
         private val allowedTools: JsonField<AllowedTools>,
         private val headers: JsonField<Headers>,
         private val requireApproval: JsonField<RequireApproval>,
+        private val serverDescription: JsonField<String>,
         private val additionalProperties: MutableMap<String, JsonValue>,
     ) {
 
@@ -484,6 +485,9 @@ private constructor(
             @JsonProperty("require_approval")
             @ExcludeMissing
             requireApproval: JsonField<RequireApproval> = JsonMissing.of(),
+            @JsonProperty("server_description")
+            @ExcludeMissing
+            serverDescription: JsonField<String> = JsonMissing.of(),
         ) : this(
             serverLabel,
             serverUrl,
@@ -491,6 +495,7 @@ private constructor(
             allowedTools,
             headers,
             requireApproval,
+            serverDescription,
             mutableMapOf(),
         )
 
@@ -550,6 +555,15 @@ private constructor(
             requireApproval.getOptional("require_approval")
 
         /**
+         * Optional description of the MCP server, used to provide more context.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun serverDescription(): Optional<String> =
+            serverDescription.getOptional("server_description")
+
+        /**
          * Returns the raw JSON value of [serverLabel].
          *
          * Unlike [serverLabel], this method doesn't throw if the JSON field has an unexpected type.
@@ -592,6 +606,16 @@ private constructor(
         @ExcludeMissing
         fun _requireApproval(): JsonField<RequireApproval> = requireApproval
 
+        /**
+         * Returns the raw JSON value of [serverDescription].
+         *
+         * Unlike [serverDescription], this method doesn't throw if the JSON field has an unexpected
+         * type.
+         */
+        @JsonProperty("server_description")
+        @ExcludeMissing
+        fun _serverDescription(): JsonField<String> = serverDescription
+
         @JsonAnySetter
         private fun putAdditionalProperty(key: String, value: JsonValue) {
             additionalProperties.put(key, value)
@@ -627,6 +651,7 @@ private constructor(
             private var allowedTools: JsonField<AllowedTools> = JsonMissing.of()
             private var headers: JsonField<Headers> = JsonMissing.of()
             private var requireApproval: JsonField<RequireApproval> = JsonMissing.of()
+            private var serverDescription: JsonField<String> = JsonMissing.of()
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
             @JvmSynthetic
@@ -637,6 +662,7 @@ private constructor(
                 allowedTools = mcp.allowedTools
                 headers = mcp.headers
                 requireApproval = mcp.requireApproval
+                serverDescription = mcp.serverDescription
                 additionalProperties = mcp.additionalProperties.toMutableMap()
             }
 
@@ -760,6 +786,21 @@ private constructor(
             fun requireApproval(mcpToolApprovalSetting: RequireApproval.McpToolApprovalSetting) =
                 requireApproval(RequireApproval.ofMcpToolApprovalSetting(mcpToolApprovalSetting))
 
+            /** Optional description of the MCP server, used to provide more context. */
+            fun serverDescription(serverDescription: String) =
+                serverDescription(JsonField.of(serverDescription))
+
+            /**
+             * Sets [Builder.serverDescription] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.serverDescription] with a well-typed [String] value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun serverDescription(serverDescription: JsonField<String>) = apply {
+                this.serverDescription = serverDescription
+            }
+
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.clear()
                 putAllAdditionalProperties(additionalProperties)
@@ -800,6 +841,7 @@ private constructor(
                     allowedTools,
                     headers,
                     requireApproval,
+                    serverDescription,
                     additionalProperties.toMutableMap(),
                 )
         }
@@ -821,6 +863,7 @@ private constructor(
             allowedTools().ifPresent { it.validate() }
             headers().ifPresent { it.validate() }
             requireApproval().ifPresent { it.validate() }
+            serverDescription()
             validated = true
         }
 
@@ -845,7 +888,8 @@ private constructor(
                 type.let { if (it == JsonValue.from("mcp")) 1 else 0 } +
                 (allowedTools.asKnown().getOrNull()?.validity() ?: 0) +
                 (headers.asKnown().getOrNull()?.validity() ?: 0) +
-                (requireApproval.asKnown().getOrNull()?.validity() ?: 0)
+                (requireApproval.asKnown().getOrNull()?.validity() ?: 0) +
+                (if (serverDescription.asKnown().isPresent) 1 else 0)
 
         /** List of allowed tool names or a filter object. */
         @JsonDeserialize(using = AllowedTools.Deserializer::class)
@@ -2214,17 +2258,17 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is Mcp && serverLabel == other.serverLabel && serverUrl == other.serverUrl && type == other.type && allowedTools == other.allowedTools && headers == other.headers && requireApproval == other.requireApproval && additionalProperties == other.additionalProperties /* spotless:on */
+            return /* spotless:off */ other is Mcp && serverLabel == other.serverLabel && serverUrl == other.serverUrl && type == other.type && allowedTools == other.allowedTools && headers == other.headers && requireApproval == other.requireApproval && serverDescription == other.serverDescription && additionalProperties == other.additionalProperties /* spotless:on */
         }
 
         /* spotless:off */
-        private val hashCode: Int by lazy { Objects.hash(serverLabel, serverUrl, type, allowedTools, headers, requireApproval, additionalProperties) }
+        private val hashCode: Int by lazy { Objects.hash(serverLabel, serverUrl, type, allowedTools, headers, requireApproval, serverDescription, additionalProperties) }
         /* spotless:on */
 
         override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "Mcp{serverLabel=$serverLabel, serverUrl=$serverUrl, type=$type, allowedTools=$allowedTools, headers=$headers, requireApproval=$requireApproval, additionalProperties=$additionalProperties}"
+            "Mcp{serverLabel=$serverLabel, serverUrl=$serverUrl, type=$type, allowedTools=$allowedTools, headers=$headers, requireApproval=$requireApproval, serverDescription=$serverDescription, additionalProperties=$additionalProperties}"
     }
 
     /** A tool that runs Python code to help generate a response to a prompt. */
