@@ -1,5 +1,14 @@
 # Changelog
 
+## 2.12.3 (2025-07-11)
+
+Full Changelog: [v2.12.2...v2.12.3](https://github.com/openai/openai-java/compare/v2.12.2...v2.12.3)
+
+### Documentation
+
+* add file + completions example (closes [#483](https://github.com/openai/openai-java/issues/483)) ([4a826ec](https://github.com/openai/openai-java/commit/4a826ec0fbc1b520a0ffa1478ed41779fb0448fc))
+* add image editing examples (closes [#453](https://github.com/openai/openai-java/issues/453)) ([6fa09ce](https://github.com/openai/openai-java/commit/6fa09ce13b53ca5f242a5482e38cc9d5e8e2d633))
+
 ## 2.12.2 (2025-07-10)
 
 Full Changelog: [v2.12.1...v2.12.2](https://github.com/openai/openai-java/compare/v2.12.1...v2.12.2)
