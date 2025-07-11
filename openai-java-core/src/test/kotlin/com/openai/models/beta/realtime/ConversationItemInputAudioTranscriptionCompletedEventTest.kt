@@ -18,6 +18,24 @@ internal class ConversationItemInputAudioTranscriptionCompletedEventTest {
                 .eventId("event_id")
                 .itemId("item_id")
                 .transcript("transcript")
+                .usage(
+                    ConversationItemInputAudioTranscriptionCompletedEvent.Usage
+                        .TranscriptTextUsageTokens
+                        .builder()
+                        .inputTokens(0L)
+                        .outputTokens(0L)
+                        .totalTokens(0L)
+                        .inputTokenDetails(
+                            ConversationItemInputAudioTranscriptionCompletedEvent.Usage
+                                .TranscriptTextUsageTokens
+                                .InputTokenDetails
+                                .builder()
+                                .audioTokens(0L)
+                                .textTokens(0L)
+                                .build()
+                        )
+                        .build()
+                )
                 .addLogprob(
                     ConversationItemInputAudioTranscriptionCompletedEvent.Logprob.builder()
                         .token("token")
@@ -35,6 +53,28 @@ internal class ConversationItemInputAudioTranscriptionCompletedEventTest {
             .isEqualTo("item_id")
         assertThat(conversationItemInputAudioTranscriptionCompletedEvent.transcript())
             .isEqualTo("transcript")
+        assertThat(conversationItemInputAudioTranscriptionCompletedEvent.usage())
+            .isEqualTo(
+                ConversationItemInputAudioTranscriptionCompletedEvent.Usage
+                    .ofTranscriptTextUsageTokens(
+                        ConversationItemInputAudioTranscriptionCompletedEvent.Usage
+                            .TranscriptTextUsageTokens
+                            .builder()
+                            .inputTokens(0L)
+                            .outputTokens(0L)
+                            .totalTokens(0L)
+                            .inputTokenDetails(
+                                ConversationItemInputAudioTranscriptionCompletedEvent.Usage
+                                    .TranscriptTextUsageTokens
+                                    .InputTokenDetails
+                                    .builder()
+                                    .audioTokens(0L)
+                                    .textTokens(0L)
+                                    .build()
+                            )
+                            .build()
+                    )
+            )
         assertThat(conversationItemInputAudioTranscriptionCompletedEvent.logprobs().getOrNull())
             .containsExactly(
                 ConversationItemInputAudioTranscriptionCompletedEvent.Logprob.builder()
@@ -54,6 +94,24 @@ internal class ConversationItemInputAudioTranscriptionCompletedEventTest {
                 .eventId("event_id")
                 .itemId("item_id")
                 .transcript("transcript")
+                .usage(
+                    ConversationItemInputAudioTranscriptionCompletedEvent.Usage
+                        .TranscriptTextUsageTokens
+                        .builder()
+                        .inputTokens(0L)
+                        .outputTokens(0L)
+                        .totalTokens(0L)
+                        .inputTokenDetails(
+                            ConversationItemInputAudioTranscriptionCompletedEvent.Usage
+                                .TranscriptTextUsageTokens
+                                .InputTokenDetails
+                                .builder()
+                                .audioTokens(0L)
+                                .textTokens(0L)
+                                .build()
+                        )
+                        .build()
+                )
                 .addLogprob(
                     ConversationItemInputAudioTranscriptionCompletedEvent.Logprob.builder()
                         .token("token")

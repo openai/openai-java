@@ -245,6 +245,7 @@ internal class ToolTest {
                         )
                         .build()
                 )
+                .serverDescription("server_description")
                 .build()
 
         val tool = Tool.ofMcp(mcp)
@@ -287,6 +288,7 @@ internal class ToolTest {
                             )
                             .build()
                     )
+                    .serverDescription("server_description")
                     .build()
             )
 
