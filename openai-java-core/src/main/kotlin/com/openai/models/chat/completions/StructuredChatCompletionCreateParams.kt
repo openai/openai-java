@@ -139,6 +139,28 @@ internal constructor(
             paramsBuilder.addMessage(assistant)
         }
 
+        /** @see ChatCompletionCreateParams.Builder.addAssistantMessage */
+        fun addAssistantMessage(content: ChatCompletionAssistantMessageParam.Content?) = apply {
+            paramsBuilder.addAssistantMessage(content)
+        }
+
+        /** @see ChatCompletionCreateParams.Builder.addAssistantMessage */
+        fun addAssistantMessage(content: Optional<ChatCompletionAssistantMessageParam.Content>) =
+            apply {
+                paramsBuilder.addAssistantMessage(content)
+            }
+
+        /** @see ChatCompletionCreateParams.Builder.addAssistantMessage */
+        fun addAssistantMessage(text: String) = apply { paramsBuilder.addAssistantMessage(text) }
+
+        /** @see ChatCompletionCreateParams.Builder.addAssistantMessageOfArrayOfContentParts */
+        fun addAssistantMessageOfArrayOfContentParts(
+            arrayOfContentParts:
+                List<
+                    ChatCompletionAssistantMessageParam.Content.ChatCompletionRequestAssistantMessageContentPart
+                >
+        ) = apply { paramsBuilder.addAssistantMessageOfArrayOfContentParts(arrayOfContentParts) }
+
         /** @see ChatCompletionCreateParams.Builder.addMessage */
         fun addMessage(tool: ChatCompletionToolMessageParam) = apply {
             paramsBuilder.addMessage(tool)
