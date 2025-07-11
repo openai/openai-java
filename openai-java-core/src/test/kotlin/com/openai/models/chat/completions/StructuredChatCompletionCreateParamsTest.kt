@@ -68,6 +68,9 @@ internal class StructuredChatCompletionCreateParamsTest {
             ChatCompletionFunctionMessageParam.builder().content(STRING).name(STRING).build()
         private val MESSAGE_PARAM = ChatCompletionMessageParam.ofUser(USER_MESSAGE_PARAM)
 
+        private val ASSISTANT_MESSAGE_PARAM_CONTENT =
+            ChatCompletionAssistantMessageParam.Content.ofText(STRING)
+
         private val DEV_MESSAGE_PARAM_CONTENT =
             ChatCompletionDeveloperMessageParam.Content.ofText(STRING)
         private val SYS_MESSAGE_PARAM_CONTENT =
@@ -119,6 +122,10 @@ internal class StructuredChatCompletionCreateParamsTest {
                 DelegationWriteTestCase("messages", JSON_FIELD),
                 DelegationWriteTestCase("addMessage", MESSAGE_PARAM),
                 DelegationWriteTestCase("addMessage", DEV_MESSAGE_PARAM),
+                DelegationWriteTestCase("addAssistantMessage", ASSISTANT_MESSAGE_PARAM_CONTENT),
+                DelegationWriteTestCase("addAssistantMessage", OPTIONAL),
+                DelegationWriteTestCase("addAssistantMessage", STRING),
+                DelegationWriteTestCase("addAssistantMessageOfArrayOfContentParts", LIST),
                 DelegationWriteTestCase("addDeveloperMessage", DEV_MESSAGE_PARAM_CONTENT),
                 DelegationWriteTestCase("addDeveloperMessage", STRING),
                 DelegationWriteTestCase("addDeveloperMessageOfArrayOfContentParts", LIST),
