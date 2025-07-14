@@ -123,7 +123,9 @@ interface ChatCompletionService {
      * output in JSON form. However, that structured output is split over multiple streamed events,
      * so it will not be deserialized automatically into an instance of that class. To deserialize
      * the output, first use a helper class to accumulate the stream of events into a single output
-     * value. See the SDK documentation for full details.
+     * value. See the
+     * [SDK documentation](https://github.com/openai/openai-java/#usage-with-streaming) for full
+     * details.
      */
     @MustBeClosed
     fun createStreaming(
