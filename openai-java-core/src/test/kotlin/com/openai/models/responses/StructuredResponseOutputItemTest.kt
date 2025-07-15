@@ -46,10 +46,7 @@ internal class StructuredResponseOutputItemTest {
                 .status(ResponseFunctionWebSearch.Status.COMPLETED)
                 .action(
                     ResponseFunctionWebSearch.Action.ofSearch(
-                        ResponseFunctionWebSearch.Action.Search.builder()
-                            .query("query")
-                            .addDomain("string")
-                            .build()
+                        ResponseFunctionWebSearch.Action.Search.builder().query("query").build()
                     )
                 )
                 .build()

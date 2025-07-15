@@ -1,5 +1,68 @@
 # Changelog
 
+## 2.12.0 (2025-07-01)
+
+Full Changelog: [v2.11.0...v2.12.0](https://github.com/openai/openai-java/compare/v2.11.0...v2.12.0)
+
+### Features
+
+* support new schema constraints for structured outputs ([#520](https://github.com/openai/openai-java/issues/520)) ([5c41ac5](https://github.com/openai/openai-java/commit/5c41ac5f1c8ed986e887e06adc3da73ec7e6b5e5))
+
+
+### Bug Fixes
+
+* **ci:** correct conditional ([a8c7a16](https://github.com/openai/openai-java/commit/a8c7a16184376d0dcfc8dd6f954c303c02888b40))
+* **client:** don't close client on `withOptions` usage when original is gc'd ([e0890e3](https://github.com/openai/openai-java/commit/e0890e398aef9a8b6c14aba23b0b2a3d802ced8f))
+
+
+### Chores
+
+* **ci:** only run for pushes and fork pull requests ([8dc0179](https://github.com/openai/openai-java/commit/8dc0179eeb96772c73e035668904201a86e245c5))
+
+
+### Documentation
+
+* fix readme typoe ([#521](https://github.com/openai/openai-java/issues/521)) ([eb83a83](https://github.com/openai/openai-java/commit/eb83a83d5b32376497dbad8b74b15347a69ce1dd))
+
+
+### Refactors
+
+* **internal:** minor `ClientOptionsTest` change ([a7379a2](https://github.com/openai/openai-java/commit/a7379a239d4f93fe631224df81787fdec08d14bd))
+
+## 2.11.0 (2025-06-27)
+
+Full Changelog: [v2.10.0...v2.11.0](https://github.com/openai/openai-java/compare/v2.10.0...v2.11.0)
+
+### Features
+
+* **api:** add realtime data models ([38d8e89](https://github.com/openai/openai-java/commit/38d8e893a15a9d9c2619ed28ed83cf149a8203a8))
+
+
+### Chores
+
+* add deploymentModel ([60ffc59](https://github.com/openai/openai-java/commit/60ffc59870c76d72a75e16897146663c46c3d0c7))
+
+## 2.10.0 (2025-06-26)
+
+Full Changelog: [v2.9.1...v2.10.0](https://github.com/openai/openai-java/compare/v2.9.1...v2.10.0)
+
+### Features
+
+* **api:** webhook and deep research support ([79859a1](https://github.com/openai/openai-java/commit/79859a13346bceec6b6ebd9c32a984dcc0e7b2ed))
+
+
+### Bug Fixes
+
+* **ci:** release-doctor — report correct token name ([da7f492](https://github.com/openai/openai-java/commit/da7f492db2a39a7c025e3320bcf79fda6a0702bd))
+* **client:** fix webhooks errors ([8051535](https://github.com/openai/openai-java/commit/8051535acfe621614716bc874ae73c31df121b76))
+
+
+### Chores
+
+* **api:** remove unsupported property ([2102d96](https://github.com/openai/openai-java/commit/2102d962596fb31067aa85c88515c318448e42c0))
+* **client:** sync structured outputs features ([cb5c638](https://github.com/openai/openai-java/commit/cb5c638863d56577e6bae9e0787b7fc4633428cb))
+* **docs:** update README to include links to docs on Webhooks ([5698e53](https://github.com/openai/openai-java/commit/5698e53e9f5666036eab58811bffc97e357d9dcb))
+
 ## 2.9.1 (2025-06-25)
 
 Full Changelog: [v2.9.0...v2.9.1](https://github.com/openai/openai-java/compare/v2.9.0...v2.9.1)
