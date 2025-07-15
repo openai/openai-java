@@ -383,7 +383,7 @@ private constructor(
         ) : this(content, role, type, mutableMapOf())
 
         /**
-         * Text inputs to the model - can contain template strings.
+         * Inputs to the model - can contain template strings.
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
          *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
@@ -469,7 +469,7 @@ private constructor(
                 additionalProperties = input.additionalProperties.toMutableMap()
             }
 
-            /** Text inputs to the model - can contain template strings. */
+            /** Inputs to the model - can contain template strings. */
             fun content(content: Content) = content(JsonField.of(content))
 
             /**
@@ -492,6 +492,17 @@ private constructor(
 
             /** Alias for calling [content] with `Content.ofOutputText(outputText)`. */
             fun content(outputText: Content.OutputText) = content(Content.ofOutputText(outputText))
+
+            /** Alias for calling [content] with `Content.ofInputImage(inputImage)`. */
+            fun content(inputImage: Content.InputImage) = content(Content.ofInputImage(inputImage))
+
+            /**
+             * Alias for calling [content] with
+             * `Content.ofAnArrayOfInputTextAndInputImage(anArrayOfInputTextAndInputImage)`.
+             */
+            fun contentOfAnArrayOfInputTextAndInputImage(
+                anArrayOfInputTextAndInputImage: List<JsonValue>
+            ) = content(Content.ofAnArrayOfInputTextAndInputImage(anArrayOfInputTextAndInputImage))
 
             /**
              * The role of the message input. One of `user`, `assistant`, `system`, or `developer`.
@@ -593,7 +604,7 @@ private constructor(
                 (role.asKnown().getOrNull()?.validity() ?: 0) +
                 (type.asKnown().getOrNull()?.validity() ?: 0)
 
-        /** Text inputs to the model - can contain template strings. */
+        /** Inputs to the model - can contain template strings. */
         @JsonDeserialize(using = Content.Deserializer::class)
         @JsonSerialize(using = Content.Serializer::class)
         class Content
@@ -601,6 +612,8 @@ private constructor(
             private val textInput: String? = null,
             private val responseInputText: ResponseInputText? = null,
             private val outputText: OutputText? = null,
+            private val inputImage: InputImage? = null,
+            private val anArrayOfInputTextAndInputImage: List<JsonValue>? = null,
             private val _json: JsonValue? = null,
         ) {
 
@@ -614,11 +627,25 @@ private constructor(
             /** A text output from the model. */
             fun outputText(): Optional<OutputText> = Optional.ofNullable(outputText)
 
+            /** An image input to the model. */
+            fun inputImage(): Optional<InputImage> = Optional.ofNullable(inputImage)
+
+            /**
+             * A list of inputs, each of which may be either an input text or input image object.
+             */
+            fun anArrayOfInputTextAndInputImage(): Optional<List<JsonValue>> =
+                Optional.ofNullable(anArrayOfInputTextAndInputImage)
+
             fun isTextInput(): Boolean = textInput != null
 
             fun isResponseInputText(): Boolean = responseInputText != null
 
             fun isOutputText(): Boolean = outputText != null
+
+            fun isInputImage(): Boolean = inputImage != null
+
+            fun isAnArrayOfInputTextAndInputImage(): Boolean =
+                anArrayOfInputTextAndInputImage != null
 
             /** A text input to the model. */
             fun asTextInput(): String = textInput.getOrThrow("textInput")
@@ -630,6 +657,15 @@ private constructor(
             /** A text output from the model. */
             fun asOutputText(): OutputText = outputText.getOrThrow("outputText")
 
+            /** An image input to the model. */
+            fun asInputImage(): InputImage = inputImage.getOrThrow("inputImage")
+
+            /**
+             * A list of inputs, each of which may be either an input text or input image object.
+             */
+            fun asAnArrayOfInputTextAndInputImage(): List<JsonValue> =
+                anArrayOfInputTextAndInputImage.getOrThrow("anArrayOfInputTextAndInputImage")
+
             fun _json(): Optional<JsonValue> = Optional.ofNullable(_json)
 
             fun <T> accept(visitor: Visitor<T>): T =
@@ -637,6 +673,11 @@ private constructor(
                     textInput != null -> visitor.visitTextInput(textInput)
                     responseInputText != null -> visitor.visitResponseInputText(responseInputText)
                     outputText != null -> visitor.visitOutputText(outputText)
+                    inputImage != null -> visitor.visitInputImage(inputImage)
+                    anArrayOfInputTextAndInputImage != null ->
+                        visitor.visitAnArrayOfInputTextAndInputImage(
+                            anArrayOfInputTextAndInputImage
+                        )
                     else -> visitor.unknown(_json)
                 }
 
@@ -658,6 +699,14 @@ private constructor(
                         override fun visitOutputText(outputText: OutputText) {
                             outputText.validate()
                         }
+
+                        override fun visitInputImage(inputImage: InputImage) {
+                            inputImage.validate()
+                        }
+
+                        override fun visitAnArrayOfInputTextAndInputImage(
+                            anArrayOfInputTextAndInputImage: List<JsonValue>
+                        ) {}
                     }
                 )
                 validated = true
@@ -688,6 +737,12 @@ private constructor(
 
                         override fun visitOutputText(outputText: OutputText) = outputText.validity()
 
+                        override fun visitInputImage(inputImage: InputImage) = inputImage.validity()
+
+                        override fun visitAnArrayOfInputTextAndInputImage(
+                            anArrayOfInputTextAndInputImage: List<JsonValue>
+                        ) = anArrayOfInputTextAndInputImage.size
+
                         override fun unknown(json: JsonValue?) = 0
                     }
                 )
@@ -697,16 +752,19 @@ private constructor(
                     return true
                 }
 
-                return /* spotless:off */ other is Content && textInput == other.textInput && responseInputText == other.responseInputText && outputText == other.outputText /* spotless:on */
+                return /* spotless:off */ other is Content && textInput == other.textInput && responseInputText == other.responseInputText && outputText == other.outputText && inputImage == other.inputImage && anArrayOfInputTextAndInputImage == other.anArrayOfInputTextAndInputImage /* spotless:on */
             }
 
-            override fun hashCode(): Int = /* spotless:off */ Objects.hash(textInput, responseInputText, outputText) /* spotless:on */
+            override fun hashCode(): Int = /* spotless:off */ Objects.hash(textInput, responseInputText, outputText, inputImage, anArrayOfInputTextAndInputImage) /* spotless:on */
 
             override fun toString(): String =
                 when {
                     textInput != null -> "Content{textInput=$textInput}"
                     responseInputText != null -> "Content{responseInputText=$responseInputText}"
                     outputText != null -> "Content{outputText=$outputText}"
+                    inputImage != null -> "Content{inputImage=$inputImage}"
+                    anArrayOfInputTextAndInputImage != null ->
+                        "Content{anArrayOfInputTextAndInputImage=$anArrayOfInputTextAndInputImage}"
                     _json != null -> "Content{_unknown=$_json}"
                     else -> throw IllegalStateException("Invalid Content")
                 }
@@ -724,6 +782,19 @@ private constructor(
                 /** A text output from the model. */
                 @JvmStatic
                 fun ofOutputText(outputText: OutputText) = Content(outputText = outputText)
+
+                /** An image input to the model. */
+                @JvmStatic
+                fun ofInputImage(inputImage: InputImage) = Content(inputImage = inputImage)
+
+                /**
+                 * A list of inputs, each of which may be either an input text or input image
+                 * object.
+                 */
+                @JvmStatic
+                fun ofAnArrayOfInputTextAndInputImage(
+                    anArrayOfInputTextAndInputImage: List<JsonValue>
+                ) = Content(anArrayOfInputTextAndInputImage = anArrayOfInputTextAndInputImage)
             }
 
             /**
@@ -740,6 +811,17 @@ private constructor(
 
                 /** A text output from the model. */
                 fun visitOutputText(outputText: OutputText): T
+
+                /** An image input to the model. */
+                fun visitInputImage(inputImage: InputImage): T
+
+                /**
+                 * A list of inputs, each of which may be either an input text or input image
+                 * object.
+                 */
+                fun visitAnArrayOfInputTextAndInputImage(
+                    anArrayOfInputTextAndInputImage: List<JsonValue>
+                ): T
 
                 /**
                  * Maps an unknown variant of [Content] to a value of type [T].
@@ -769,8 +851,14 @@ private constructor(
                                 tryDeserialize(node, jacksonTypeRef<OutputText>())?.let {
                                     Content(outputText = it, _json = json)
                                 },
+                                tryDeserialize(node, jacksonTypeRef<InputImage>())?.let {
+                                    Content(inputImage = it, _json = json)
+                                },
                                 tryDeserialize(node, jacksonTypeRef<String>())?.let {
                                     Content(textInput = it, _json = json)
+                                },
+                                tryDeserialize(node, jacksonTypeRef<List<JsonValue>>())?.let {
+                                    Content(anArrayOfInputTextAndInputImage = it, _json = json)
                                 },
                             )
                             .filterNotNull()
@@ -778,7 +866,7 @@ private constructor(
                             .toList()
                     return when (bestMatches.size) {
                         // This can happen if what we're deserializing is completely incompatible
-                        // with all the possible variants (e.g. deserializing from array).
+                        // with all the possible variants.
                         0 -> Content(_json = json)
                         1 -> bestMatches.single()
                         // If there's more than one match with the highest validity, then use the
@@ -801,6 +889,9 @@ private constructor(
                         value.responseInputText != null ->
                             generator.writeObject(value.responseInputText)
                         value.outputText != null -> generator.writeObject(value.outputText)
+                        value.inputImage != null -> generator.writeObject(value.inputImage)
+                        value.anArrayOfInputTextAndInputImage != null ->
+                            generator.writeObject(value.anArrayOfInputTextAndInputImage)
                         value._json != null -> generator.writeObject(value._json)
                         else -> throw IllegalStateException("Invalid Content")
                     }
@@ -1011,6 +1102,255 @@ private constructor(
 
                 override fun toString() =
                     "OutputText{text=$text, type=$type, additionalProperties=$additionalProperties}"
+            }
+
+            /** An image input to the model. */
+            class InputImage
+            private constructor(
+                private val imageUrl: JsonField<String>,
+                private val type: JsonValue,
+                private val detail: JsonField<String>,
+                private val additionalProperties: MutableMap<String, JsonValue>,
+            ) {
+
+                @JsonCreator
+                private constructor(
+                    @JsonProperty("image_url")
+                    @ExcludeMissing
+                    imageUrl: JsonField<String> = JsonMissing.of(),
+                    @JsonProperty("type") @ExcludeMissing type: JsonValue = JsonMissing.of(),
+                    @JsonProperty("detail")
+                    @ExcludeMissing
+                    detail: JsonField<String> = JsonMissing.of(),
+                ) : this(imageUrl, type, detail, mutableMapOf())
+
+                /**
+                 * The URL of the image input.
+                 *
+                 * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+                 *   unexpectedly missing or null (e.g. if the server responded with an unexpected
+                 *   value).
+                 */
+                fun imageUrl(): String = imageUrl.getRequired("image_url")
+
+                /**
+                 * The type of the image input. Always `input_image`.
+                 *
+                 * Expected to always return the following:
+                 * ```java
+                 * JsonValue.from("input_image")
+                 * ```
+                 *
+                 * However, this method can be useful for debugging and logging (e.g. if the server
+                 * responded with an unexpected value).
+                 */
+                @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
+
+                /**
+                 * The detail level of the image to be sent to the model. One of `high`, `low`, or
+                 * `auto`. Defaults to `auto`.
+                 *
+                 * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g.
+                 *   if the server responded with an unexpected value).
+                 */
+                fun detail(): Optional<String> = detail.getOptional("detail")
+
+                /**
+                 * Returns the raw JSON value of [imageUrl].
+                 *
+                 * Unlike [imageUrl], this method doesn't throw if the JSON field has an unexpected
+                 * type.
+                 */
+                @JsonProperty("image_url")
+                @ExcludeMissing
+                fun _imageUrl(): JsonField<String> = imageUrl
+
+                /**
+                 * Returns the raw JSON value of [detail].
+                 *
+                 * Unlike [detail], this method doesn't throw if the JSON field has an unexpected
+                 * type.
+                 */
+                @JsonProperty("detail") @ExcludeMissing fun _detail(): JsonField<String> = detail
+
+                @JsonAnySetter
+                private fun putAdditionalProperty(key: String, value: JsonValue) {
+                    additionalProperties.put(key, value)
+                }
+
+                @JsonAnyGetter
+                @ExcludeMissing
+                fun _additionalProperties(): Map<String, JsonValue> =
+                    Collections.unmodifiableMap(additionalProperties)
+
+                fun toBuilder() = Builder().from(this)
+
+                companion object {
+
+                    /**
+                     * Returns a mutable builder for constructing an instance of [InputImage].
+                     *
+                     * The following fields are required:
+                     * ```java
+                     * .imageUrl()
+                     * ```
+                     */
+                    @JvmStatic fun builder() = Builder()
+                }
+
+                /** A builder for [InputImage]. */
+                class Builder internal constructor() {
+
+                    private var imageUrl: JsonField<String>? = null
+                    private var type: JsonValue = JsonValue.from("input_image")
+                    private var detail: JsonField<String> = JsonMissing.of()
+                    private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
+
+                    @JvmSynthetic
+                    internal fun from(inputImage: InputImage) = apply {
+                        imageUrl = inputImage.imageUrl
+                        type = inputImage.type
+                        detail = inputImage.detail
+                        additionalProperties = inputImage.additionalProperties.toMutableMap()
+                    }
+
+                    /** The URL of the image input. */
+                    fun imageUrl(imageUrl: String) = imageUrl(JsonField.of(imageUrl))
+
+                    /**
+                     * Sets [Builder.imageUrl] to an arbitrary JSON value.
+                     *
+                     * You should usually call [Builder.imageUrl] with a well-typed [String] value
+                     * instead. This method is primarily for setting the field to an undocumented or
+                     * not yet supported value.
+                     */
+                    fun imageUrl(imageUrl: JsonField<String>) = apply { this.imageUrl = imageUrl }
+
+                    /**
+                     * Sets the field to an arbitrary JSON value.
+                     *
+                     * It is usually unnecessary to call this method because the field defaults to
+                     * the following:
+                     * ```java
+                     * JsonValue.from("input_image")
+                     * ```
+                     *
+                     * This method is primarily for setting the field to an undocumented or not yet
+                     * supported value.
+                     */
+                    fun type(type: JsonValue) = apply { this.type = type }
+
+                    /**
+                     * The detail level of the image to be sent to the model. One of `high`, `low`,
+                     * or `auto`. Defaults to `auto`.
+                     */
+                    fun detail(detail: String) = detail(JsonField.of(detail))
+
+                    /**
+                     * Sets [Builder.detail] to an arbitrary JSON value.
+                     *
+                     * You should usually call [Builder.detail] with a well-typed [String] value
+                     * instead. This method is primarily for setting the field to an undocumented or
+                     * not yet supported value.
+                     */
+                    fun detail(detail: JsonField<String>) = apply { this.detail = detail }
+
+                    fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                        this.additionalProperties.clear()
+                        putAllAdditionalProperties(additionalProperties)
+                    }
+
+                    fun putAdditionalProperty(key: String, value: JsonValue) = apply {
+                        additionalProperties.put(key, value)
+                    }
+
+                    fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) =
+                        apply {
+                            this.additionalProperties.putAll(additionalProperties)
+                        }
+
+                    fun removeAdditionalProperty(key: String) = apply {
+                        additionalProperties.remove(key)
+                    }
+
+                    fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                        keys.forEach(::removeAdditionalProperty)
+                    }
+
+                    /**
+                     * Returns an immutable instance of [InputImage].
+                     *
+                     * Further updates to this [Builder] will not mutate the returned instance.
+                     *
+                     * The following fields are required:
+                     * ```java
+                     * .imageUrl()
+                     * ```
+                     *
+                     * @throws IllegalStateException if any required field is unset.
+                     */
+                    fun build(): InputImage =
+                        InputImage(
+                            checkRequired("imageUrl", imageUrl),
+                            type,
+                            detail,
+                            additionalProperties.toMutableMap(),
+                        )
+                }
+
+                private var validated: Boolean = false
+
+                fun validate(): InputImage = apply {
+                    if (validated) {
+                        return@apply
+                    }
+
+                    imageUrl()
+                    _type().let {
+                        if (it != JsonValue.from("input_image")) {
+                            throw OpenAIInvalidDataException("'type' is invalid, received $it")
+                        }
+                    }
+                    detail()
+                    validated = true
+                }
+
+                fun isValid(): Boolean =
+                    try {
+                        validate()
+                        true
+                    } catch (e: OpenAIInvalidDataException) {
+                        false
+                    }
+
+                /**
+                 * Returns a score indicating how many valid values are contained in this object
+                 * recursively.
+                 *
+                 * Used for best match union deserialization.
+                 */
+                @JvmSynthetic
+                internal fun validity(): Int =
+                    (if (imageUrl.asKnown().isPresent) 1 else 0) +
+                        type.let { if (it == JsonValue.from("input_image")) 1 else 0 } +
+                        (if (detail.asKnown().isPresent) 1 else 0)
+
+                override fun equals(other: Any?): Boolean {
+                    if (this === other) {
+                        return true
+                    }
+
+                    return /* spotless:off */ other is InputImage && imageUrl == other.imageUrl && type == other.type && detail == other.detail && additionalProperties == other.additionalProperties /* spotless:on */
+                }
+
+                /* spotless:off */
+                private val hashCode: Int by lazy { Objects.hash(imageUrl, type, detail, additionalProperties) }
+                /* spotless:on */
+
+                override fun hashCode(): Int = hashCode
+
+                override fun toString() =
+                    "InputImage{imageUrl=$imageUrl, type=$type, detail=$detail, additionalProperties=$additionalProperties}"
             }
         }
 
