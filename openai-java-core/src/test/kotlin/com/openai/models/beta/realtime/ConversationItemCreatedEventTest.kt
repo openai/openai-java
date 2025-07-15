@@ -63,7 +63,7 @@ internal class ConversationItemCreatedEventTest {
                     .type(ConversationItem.Type.MESSAGE)
                     .build()
             )
-        assertThat(conversationItemCreatedEvent.previousItemId()).isEqualTo("previous_item_id")
+        assertThat(conversationItemCreatedEvent.previousItemId()).contains("previous_item_id")
     }
 
     @Test

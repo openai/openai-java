@@ -811,39 +811,6 @@ private constructor(
         /** Alias for calling [addMessage] with `assistant.toParam()`. */
         fun addMessage(assistant: ChatCompletionMessage) = apply { body.addMessage(assistant) }
 
-        /**
-         * Alias for calling [addMessage] with the following:
-         * ```java
-         * ChatCompletionAssistantMessageParam.builder()
-         *     .content(content)
-         *     .build()
-         * ```
-         */
-        fun addAssistantMessage(content: ChatCompletionAssistantMessageParam.Content?) = apply {
-            body.addAssistantMessage(content)
-        }
-
-        /** Alias for calling [addAssistantMessage] with `content.orElse(null)`. */
-        fun addAssistantMessage(content: Optional<ChatCompletionAssistantMessageParam.Content>) =
-            addAssistantMessage(content.getOrNull())
-
-        /**
-         * Alias for calling [addAssistantMessage] with
-         * `ChatCompletionAssistantMessageParam.Content.ofText(text)`.
-         */
-        fun addAssistantMessage(text: String) = apply { body.addAssistantMessage(text) }
-
-        /**
-         * Alias for calling [addAssistantMessage] with
-         * `ChatCompletionAssistantMessageParam.Content.ofArrayOfContentParts(arrayOfContentParts)`.
-         */
-        fun addAssistantMessageOfArrayOfContentParts(
-            arrayOfContentParts:
-                List<
-                    ChatCompletionAssistantMessageParam.Content.ChatCompletionRequestAssistantMessageContentPart
-                >
-        ) = apply { body.addAssistantMessageOfArrayOfContentParts(arrayOfContentParts) }
-
         /** Alias for calling [addMessage] with `ChatCompletionMessageParam.ofTool(tool)`. */
         fun addMessage(tool: ChatCompletionToolMessageParam) = apply { body.addMessage(tool) }
 
@@ -2806,45 +2773,6 @@ private constructor(
 
             /** Alias for calling [addMessage] with `assistant.toParam()`. */
             fun addMessage(assistant: ChatCompletionMessage) = addMessage(assistant.toParam())
-
-            /**
-             * Alias for calling [addMessage] with the following:
-             * ```java
-             * ChatCompletionAssistantMessageParam.builder()
-             *     .content(content)
-             *     .build()
-             * ```
-             */
-            fun addAssistantMessage(content: ChatCompletionAssistantMessageParam.Content?) =
-                addMessage(ChatCompletionAssistantMessageParam.builder().content(content).build())
-
-            /** Alias for calling [addAssistantMessage] with `content.orElse(null)`. */
-            fun addAssistantMessage(
-                content: Optional<ChatCompletionAssistantMessageParam.Content>
-            ) = addAssistantMessage(content.getOrNull())
-
-            /**
-             * Alias for calling [addAssistantMessage] with
-             * `ChatCompletionAssistantMessageParam.Content.ofText(text)`.
-             */
-            fun addAssistantMessage(text: String) =
-                addAssistantMessage(ChatCompletionAssistantMessageParam.Content.ofText(text))
-
-            /**
-             * Alias for calling [addAssistantMessage] with
-             * `ChatCompletionAssistantMessageParam.Content.ofArrayOfContentParts(arrayOfContentParts)`.
-             */
-            fun addAssistantMessageOfArrayOfContentParts(
-                arrayOfContentParts:
-                    List<
-                        ChatCompletionAssistantMessageParam.Content.ChatCompletionRequestAssistantMessageContentPart
-                    >
-            ) =
-                addAssistantMessage(
-                    ChatCompletionAssistantMessageParam.Content.ofArrayOfContentParts(
-                        arrayOfContentParts
-                    )
-                )
 
             /** Alias for calling [addMessage] with `ChatCompletionMessageParam.ofTool(tool)`. */
             fun addMessage(tool: ChatCompletionToolMessageParam) =

@@ -14,6 +14,8 @@ import com.openai.core.checkRequired
 import com.openai.errors.OpenAIInvalidDataException
 import java.util.Collections
 import java.util.Objects
+import java.util.Optional
+import kotlin.jvm.optionals.getOrNull
 
 /**
  * Returned when an input audio buffer is committed, either by the client or automatically in server
@@ -24,8 +26,8 @@ class InputAudioBufferCommittedEvent
 private constructor(
     private val eventId: JsonField<String>,
     private val itemId: JsonField<String>,
-    private val previousItemId: JsonField<String>,
     private val type: JsonValue,
+    private val previousItemId: JsonField<String>,
     private val additionalProperties: MutableMap<String, JsonValue>,
 ) {
 
@@ -33,11 +35,11 @@ private constructor(
     private constructor(
         @JsonProperty("event_id") @ExcludeMissing eventId: JsonField<String> = JsonMissing.of(),
         @JsonProperty("item_id") @ExcludeMissing itemId: JsonField<String> = JsonMissing.of(),
+        @JsonProperty("type") @ExcludeMissing type: JsonValue = JsonMissing.of(),
         @JsonProperty("previous_item_id")
         @ExcludeMissing
         previousItemId: JsonField<String> = JsonMissing.of(),
-        @JsonProperty("type") @ExcludeMissing type: JsonValue = JsonMissing.of(),
-    ) : this(eventId, itemId, previousItemId, type, mutableMapOf())
+    ) : this(eventId, itemId, type, previousItemId, mutableMapOf())
 
     /**
      * The unique ID of the server event.
@@ -56,14 +58,6 @@ private constructor(
     fun itemId(): String = itemId.getRequired("item_id")
 
     /**
-     * The ID of the preceding item after which the new item will be inserted.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
-     */
-    fun previousItemId(): String = previousItemId.getRequired("previous_item_id")
-
-    /**
      * The event type, must be `input_audio_buffer.committed`.
      *
      * Expected to always return the following:
@@ -75,6 +69,15 @@ private constructor(
      * with an unexpected value).
      */
     @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
+
+    /**
+     * The ID of the preceding item after which the new item will be inserted. Can be `null` if the
+     * item has no predecessor.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun previousItemId(): Optional<String> = previousItemId.getOptional("previous_item_id")
 
     /**
      * Returns the raw JSON value of [eventId].
@@ -121,7 +124,6 @@ private constructor(
          * ```java
          * .eventId()
          * .itemId()
-         * .previousItemId()
          * ```
          */
         @JvmStatic fun builder() = Builder()
@@ -132,16 +134,16 @@ private constructor(
 
         private var eventId: JsonField<String>? = null
         private var itemId: JsonField<String>? = null
-        private var previousItemId: JsonField<String>? = null
         private var type: JsonValue = JsonValue.from("input_audio_buffer.committed")
+        private var previousItemId: JsonField<String> = JsonMissing.of()
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
         @JvmSynthetic
         internal fun from(inputAudioBufferCommittedEvent: InputAudioBufferCommittedEvent) = apply {
             eventId = inputAudioBufferCommittedEvent.eventId
             itemId = inputAudioBufferCommittedEvent.itemId
-            previousItemId = inputAudioBufferCommittedEvent.previousItemId
             type = inputAudioBufferCommittedEvent.type
+            previousItemId = inputAudioBufferCommittedEvent.previousItemId
             additionalProperties =
                 inputAudioBufferCommittedEvent.additionalProperties.toMutableMap()
         }
@@ -168,20 +170,6 @@ private constructor(
          */
         fun itemId(itemId: JsonField<String>) = apply { this.itemId = itemId }
 
-        /** The ID of the preceding item after which the new item will be inserted. */
-        fun previousItemId(previousItemId: String) = previousItemId(JsonField.of(previousItemId))
-
-        /**
-         * Sets [Builder.previousItemId] to an arbitrary JSON value.
-         *
-         * You should usually call [Builder.previousItemId] with a well-typed [String] value
-         * instead. This method is primarily for setting the field to an undocumented or not yet
-         * supported value.
-         */
-        fun previousItemId(previousItemId: JsonField<String>) = apply {
-            this.previousItemId = previousItemId
-        }
-
         /**
          * Sets the field to an arbitrary JSON value.
          *
@@ -195,6 +183,28 @@ private constructor(
          * value.
          */
         fun type(type: JsonValue) = apply { this.type = type }
+
+        /**
+         * The ID of the preceding item after which the new item will be inserted. Can be `null` if
+         * the item has no predecessor.
+         */
+        fun previousItemId(previousItemId: String?) =
+            previousItemId(JsonField.ofNullable(previousItemId))
+
+        /** Alias for calling [Builder.previousItemId] with `previousItemId.orElse(null)`. */
+        fun previousItemId(previousItemId: Optional<String>) =
+            previousItemId(previousItemId.getOrNull())
+
+        /**
+         * Sets [Builder.previousItemId] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.previousItemId] with a well-typed [String] value
+         * instead. This method is primarily for setting the field to an undocumented or not yet
+         * supported value.
+         */
+        fun previousItemId(previousItemId: JsonField<String>) = apply {
+            this.previousItemId = previousItemId
+        }
 
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
             this.additionalProperties.clear()
@@ -224,7 +234,6 @@ private constructor(
          * ```java
          * .eventId()
          * .itemId()
-         * .previousItemId()
          * ```
          *
          * @throws IllegalStateException if any required field is unset.
@@ -233,8 +242,8 @@ private constructor(
             InputAudioBufferCommittedEvent(
                 checkRequired("eventId", eventId),
                 checkRequired("itemId", itemId),
-                checkRequired("previousItemId", previousItemId),
                 type,
+                previousItemId,
                 additionalProperties.toMutableMap(),
             )
     }
@@ -248,12 +257,12 @@ private constructor(
 
         eventId()
         itemId()
-        previousItemId()
         _type().let {
             if (it != JsonValue.from("input_audio_buffer.committed")) {
                 throw OpenAIInvalidDataException("'type' is invalid, received $it")
             }
         }
+        previousItemId()
         validated = true
     }
 
@@ -274,23 +283,23 @@ private constructor(
     internal fun validity(): Int =
         (if (eventId.asKnown().isPresent) 1 else 0) +
             (if (itemId.asKnown().isPresent) 1 else 0) +
-            (if (previousItemId.asKnown().isPresent) 1 else 0) +
-            type.let { if (it == JsonValue.from("input_audio_buffer.committed")) 1 else 0 }
+            type.let { if (it == JsonValue.from("input_audio_buffer.committed")) 1 else 0 } +
+            (if (previousItemId.asKnown().isPresent) 1 else 0)
 
     override fun equals(other: Any?): Boolean {
         if (this === other) {
             return true
         }
 
-        return /* spotless:off */ other is InputAudioBufferCommittedEvent && eventId == other.eventId && itemId == other.itemId && previousItemId == other.previousItemId && type == other.type && additionalProperties == other.additionalProperties /* spotless:on */
+        return /* spotless:off */ other is InputAudioBufferCommittedEvent && eventId == other.eventId && itemId == other.itemId && type == other.type && previousItemId == other.previousItemId && additionalProperties == other.additionalProperties /* spotless:on */
     }
 
     /* spotless:off */
-    private val hashCode: Int by lazy { Objects.hash(eventId, itemId, previousItemId, type, additionalProperties) }
+    private val hashCode: Int by lazy { Objects.hash(eventId, itemId, type, previousItemId, additionalProperties) }
     /* spotless:on */
 
     override fun hashCode(): Int = hashCode
 
     override fun toString() =
-        "InputAudioBufferCommittedEvent{eventId=$eventId, itemId=$itemId, previousItemId=$previousItemId, type=$type, additionalProperties=$additionalProperties}"
+        "InputAudioBufferCommittedEvent{eventId=$eventId, itemId=$itemId, type=$type, previousItemId=$previousItemId, additionalProperties=$additionalProperties}"
 }
