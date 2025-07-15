@@ -1,5 +1,13 @@
 # Changelog
 
+## 2.13.1 (2025-07-15)
+
+Full Changelog: [v2.13.0...v2.13.1](https://github.com/openai/openai-java/compare/v2.13.0...v2.13.1)
+
+### Chores
+
+* **api:** update realtime specs, build config ([babbf87](https://github.com/openai/openai-java/commit/babbf8720e342239d176077eab554039446b30c9))
+
 ## 2.13.0 (2025-07-15)
 
 Full Changelog: [v2.12.4...v2.13.0](https://github.com/openai/openai-java/compare/v2.12.4...v2.13.0)
