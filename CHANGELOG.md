@@ -1,5 +1,13 @@
 # Changelog
 
+## 2.13.0 (2025-07-15)
+
+Full Changelog: [v2.12.4...v2.13.0](https://github.com/openai/openai-java/compare/v2.12.4...v2.13.0)
+
+### Features
+
+* **client:** support completions streaming structured outputs ([#528](https://github.com/openai/openai-java/issues/528)) ([2c8917b](https://github.com/openai/openai-java/commit/2c8917bf8352fab263f736387890fd06c2af5c11))
+
 ## 2.12.4 (2025-07-11)
 
 Full Changelog: [v2.12.3...v2.12.4](https://github.com/openai/openai-java/compare/v2.12.3...v2.12.4)
