@@ -177,7 +177,8 @@ private constructor(
         outputAudioFormat.getOptional("output_audio_format")
 
     /**
-     * The final status of the response (`completed`, `cancelled`, `failed`, or `incomplete`).
+     * The final status of the response (`completed`, `cancelled`, `failed`, or `incomplete`,
+     * `in_progress`).
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -540,7 +541,8 @@ private constructor(
         }
 
         /**
-         * The final status of the response (`completed`, `cancelled`, `failed`, or `incomplete`).
+         * The final status of the response (`completed`, `cancelled`, `failed`, or `incomplete`,
+         * `in_progress`).
          */
         fun status(status: Status) = status(JsonField.of(status))
 
@@ -1384,7 +1386,10 @@ private constructor(
         override fun toString() = value.toString()
     }
 
-    /** The final status of the response (`completed`, `cancelled`, `failed`, or `incomplete`). */
+    /**
+     * The final status of the response (`completed`, `cancelled`, `failed`, or `incomplete`,
+     * `in_progress`).
+     */
     class Status @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
 
         /**
@@ -1407,6 +1412,8 @@ private constructor(
 
             @JvmField val INCOMPLETE = of("incomplete")
 
+            @JvmField val IN_PROGRESS = of("in_progress")
+
             @JvmStatic fun of(value: String) = Status(JsonField.of(value))
         }
 
@@ -1416,6 +1423,7 @@ private constructor(
             CANCELLED,
             FAILED,
             INCOMPLETE,
+            IN_PROGRESS,
         }
 
         /**
@@ -1432,6 +1440,7 @@ private constructor(
             CANCELLED,
             FAILED,
             INCOMPLETE,
+            IN_PROGRESS,
             /** An enum member indicating that [Status] was instantiated with an unknown value. */
             _UNKNOWN,
         }
@@ -1449,6 +1458,7 @@ private constructor(
                 CANCELLED -> Value.CANCELLED
                 FAILED -> Value.FAILED
                 INCOMPLETE -> Value.INCOMPLETE
+                IN_PROGRESS -> Value.IN_PROGRESS
                 else -> Value._UNKNOWN
             }
 
@@ -1467,6 +1477,7 @@ private constructor(
                 CANCELLED -> Known.CANCELLED
                 FAILED -> Known.FAILED
                 INCOMPLETE -> Known.INCOMPLETE
+                IN_PROGRESS -> Known.IN_PROGRESS
                 else -> throw OpenAIInvalidDataException("Unknown Status: $value")
             }
 

@@ -14,6 +14,7 @@ import com.openai.core.checkRequired
 import com.openai.errors.OpenAIInvalidDataException
 import java.util.Collections
 import java.util.Objects
+import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
 /**
@@ -30,8 +31,8 @@ class ConversationItemCreatedEvent
 private constructor(
     private val eventId: JsonField<String>,
     private val item: JsonField<ConversationItem>,
-    private val previousItemId: JsonField<String>,
     private val type: JsonValue,
+    private val previousItemId: JsonField<String>,
     private val additionalProperties: MutableMap<String, JsonValue>,
 ) {
 
@@ -39,11 +40,11 @@ private constructor(
     private constructor(
         @JsonProperty("event_id") @ExcludeMissing eventId: JsonField<String> = JsonMissing.of(),
         @JsonProperty("item") @ExcludeMissing item: JsonField<ConversationItem> = JsonMissing.of(),
+        @JsonProperty("type") @ExcludeMissing type: JsonValue = JsonMissing.of(),
         @JsonProperty("previous_item_id")
         @ExcludeMissing
         previousItemId: JsonField<String> = JsonMissing.of(),
-        @JsonProperty("type") @ExcludeMissing type: JsonValue = JsonMissing.of(),
-    ) : this(eventId, item, previousItemId, type, mutableMapOf())
+    ) : this(eventId, item, type, previousItemId, mutableMapOf())
 
     /**
      * The unique ID of the server event.
@@ -62,15 +63,6 @@ private constructor(
     fun item(): ConversationItem = item.getRequired("item")
 
     /**
-     * The ID of the preceding item in the Conversation context, allows the client to understand the
-     * order of the conversation.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
-     */
-    fun previousItemId(): String = previousItemId.getRequired("previous_item_id")
-
-    /**
      * The event type, must be `conversation.item.created`.
      *
      * Expected to always return the following:
@@ -82,6 +74,15 @@ private constructor(
      * with an unexpected value).
      */
     @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
+
+    /**
+     * The ID of the preceding item in the Conversation context, allows the client to understand the
+     * order of the conversation. Can be `null` if the item has no predecessor.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun previousItemId(): Optional<String> = previousItemId.getOptional("previous_item_id")
 
     /**
      * Returns the raw JSON value of [eventId].
@@ -127,7 +128,6 @@ private constructor(
          * ```java
          * .eventId()
          * .item()
-         * .previousItemId()
          * ```
          */
         @JvmStatic fun builder() = Builder()
@@ -138,16 +138,16 @@ private constructor(
 
         private var eventId: JsonField<String>? = null
         private var item: JsonField<ConversationItem>? = null
-        private var previousItemId: JsonField<String>? = null
         private var type: JsonValue = JsonValue.from("conversation.item.created")
+        private var previousItemId: JsonField<String> = JsonMissing.of()
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
         @JvmSynthetic
         internal fun from(conversationItemCreatedEvent: ConversationItemCreatedEvent) = apply {
             eventId = conversationItemCreatedEvent.eventId
             item = conversationItemCreatedEvent.item
-            previousItemId = conversationItemCreatedEvent.previousItemId
             type = conversationItemCreatedEvent.type
+            previousItemId = conversationItemCreatedEvent.previousItemId
             additionalProperties = conversationItemCreatedEvent.additionalProperties.toMutableMap()
         }
 
@@ -175,23 +175,6 @@ private constructor(
         fun item(item: JsonField<ConversationItem>) = apply { this.item = item }
 
         /**
-         * The ID of the preceding item in the Conversation context, allows the client to understand
-         * the order of the conversation.
-         */
-        fun previousItemId(previousItemId: String) = previousItemId(JsonField.of(previousItemId))
-
-        /**
-         * Sets [Builder.previousItemId] to an arbitrary JSON value.
-         *
-         * You should usually call [Builder.previousItemId] with a well-typed [String] value
-         * instead. This method is primarily for setting the field to an undocumented or not yet
-         * supported value.
-         */
-        fun previousItemId(previousItemId: JsonField<String>) = apply {
-            this.previousItemId = previousItemId
-        }
-
-        /**
          * Sets the field to an arbitrary JSON value.
          *
          * It is usually unnecessary to call this method because the field defaults to the
@@ -204,6 +187,28 @@ private constructor(
          * value.
          */
         fun type(type: JsonValue) = apply { this.type = type }
+
+        /**
+         * The ID of the preceding item in the Conversation context, allows the client to understand
+         * the order of the conversation. Can be `null` if the item has no predecessor.
+         */
+        fun previousItemId(previousItemId: String?) =
+            previousItemId(JsonField.ofNullable(previousItemId))
+
+        /** Alias for calling [Builder.previousItemId] with `previousItemId.orElse(null)`. */
+        fun previousItemId(previousItemId: Optional<String>) =
+            previousItemId(previousItemId.getOrNull())
+
+        /**
+         * Sets [Builder.previousItemId] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.previousItemId] with a well-typed [String] value
+         * instead. This method is primarily for setting the field to an undocumented or not yet
+         * supported value.
+         */
+        fun previousItemId(previousItemId: JsonField<String>) = apply {
+            this.previousItemId = previousItemId
+        }
 
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
             this.additionalProperties.clear()
@@ -233,7 +238,6 @@ private constructor(
          * ```java
          * .eventId()
          * .item()
-         * .previousItemId()
          * ```
          *
          * @throws IllegalStateException if any required field is unset.
@@ -242,8 +246,8 @@ private constructor(
             ConversationItemCreatedEvent(
                 checkRequired("eventId", eventId),
                 checkRequired("item", item),
-                checkRequired("previousItemId", previousItemId),
                 type,
+                previousItemId,
                 additionalProperties.toMutableMap(),
             )
     }
@@ -257,12 +261,12 @@ private constructor(
 
         eventId()
         item().validate()
-        previousItemId()
         _type().let {
             if (it != JsonValue.from("conversation.item.created")) {
                 throw OpenAIInvalidDataException("'type' is invalid, received $it")
             }
         }
+        previousItemId()
         validated = true
     }
 
@@ -283,23 +287,23 @@ private constructor(
     internal fun validity(): Int =
         (if (eventId.asKnown().isPresent) 1 else 0) +
             (item.asKnown().getOrNull()?.validity() ?: 0) +
-            (if (previousItemId.asKnown().isPresent) 1 else 0) +
-            type.let { if (it == JsonValue.from("conversation.item.created")) 1 else 0 }
+            type.let { if (it == JsonValue.from("conversation.item.created")) 1 else 0 } +
+            (if (previousItemId.asKnown().isPresent) 1 else 0)
 
     override fun equals(other: Any?): Boolean {
         if (this === other) {
             return true
         }
 
-        return /* spotless:off */ other is ConversationItemCreatedEvent && eventId == other.eventId && item == other.item && previousItemId == other.previousItemId && type == other.type && additionalProperties == other.additionalProperties /* spotless:on */
+        return /* spotless:off */ other is ConversationItemCreatedEvent && eventId == other.eventId && item == other.item && type == other.type && previousItemId == other.previousItemId && additionalProperties == other.additionalProperties /* spotless:on */
     }
 
     /* spotless:off */
-    private val hashCode: Int by lazy { Objects.hash(eventId, item, previousItemId, type, additionalProperties) }
+    private val hashCode: Int by lazy { Objects.hash(eventId, item, type, previousItemId, additionalProperties) }
     /* spotless:on */
 
     override fun hashCode(): Int = hashCode
 
     override fun toString() =
-        "ConversationItemCreatedEvent{eventId=$eventId, item=$item, previousItemId=$previousItemId, type=$type, additionalProperties=$additionalProperties}"
+        "ConversationItemCreatedEvent{eventId=$eventId, item=$item, type=$type, previousItemId=$previousItemId, additionalProperties=$additionalProperties}"
 }

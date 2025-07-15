@@ -139,8 +139,9 @@ private constructor(
     fun role(): Optional<Role> = role.getOptional("role")
 
     /**
-     * The status of the item (`completed`, `incomplete`). These have no effect on the conversation,
-     * but are accepted for consistency with the `conversation.item.created` event.
+     * The status of the item (`completed`, `incomplete`, `in_progress`). These have no effect on
+     * the conversation, but are accepted for consistency with the `conversation.item.created`
+     * event.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -402,9 +403,9 @@ private constructor(
         fun role(role: JsonField<Role>) = apply { this.role = role }
 
         /**
-         * The status of the item (`completed`, `incomplete`). These have no effect on the
-         * conversation, but are accepted for consistency with the `conversation.item.created`
-         * event.
+         * The status of the item (`completed`, `incomplete`, `in_progress`). These have no effect
+         * on the conversation, but are accepted for consistency with the
+         * `conversation.item.created` event.
          */
         fun status(status: Status) = status(JsonField.of(status))
 
@@ -772,8 +773,9 @@ private constructor(
     }
 
     /**
-     * The status of the item (`completed`, `incomplete`). These have no effect on the conversation,
-     * but are accepted for consistency with the `conversation.item.created` event.
+     * The status of the item (`completed`, `incomplete`, `in_progress`). These have no effect on
+     * the conversation, but are accepted for consistency with the `conversation.item.created`
+     * event.
      */
     class Status @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
 
@@ -793,6 +795,8 @@ private constructor(
 
             @JvmField val INCOMPLETE = of("incomplete")
 
+            @JvmField val IN_PROGRESS = of("in_progress")
+
             @JvmStatic fun of(value: String) = Status(JsonField.of(value))
         }
 
@@ -800,6 +804,7 @@ private constructor(
         enum class Known {
             COMPLETED,
             INCOMPLETE,
+            IN_PROGRESS,
         }
 
         /**
@@ -814,6 +819,7 @@ private constructor(
         enum class Value {
             COMPLETED,
             INCOMPLETE,
+            IN_PROGRESS,
             /** An enum member indicating that [Status] was instantiated with an unknown value. */
             _UNKNOWN,
         }
@@ -829,6 +835,7 @@ private constructor(
             when (this) {
                 COMPLETED -> Value.COMPLETED
                 INCOMPLETE -> Value.INCOMPLETE
+                IN_PROGRESS -> Value.IN_PROGRESS
                 else -> Value._UNKNOWN
             }
 
@@ -845,6 +852,7 @@ private constructor(
             when (this) {
                 COMPLETED -> Known.COMPLETED
                 INCOMPLETE -> Known.INCOMPLETE
+                IN_PROGRESS -> Known.IN_PROGRESS
                 else -> throw OpenAIInvalidDataException("Unknown Status: $value")
             }
 

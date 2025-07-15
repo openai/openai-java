@@ -20,7 +20,7 @@ internal class InputAudioBufferCommittedEventTest {
 
         assertThat(inputAudioBufferCommittedEvent.eventId()).isEqualTo("event_id")
         assertThat(inputAudioBufferCommittedEvent.itemId()).isEqualTo("item_id")
-        assertThat(inputAudioBufferCommittedEvent.previousItemId()).isEqualTo("previous_item_id")
+        assertThat(inputAudioBufferCommittedEvent.previousItemId()).contains("previous_item_id")
     }
 
     @Test
