@@ -2,7 +2,7 @@
 
 ## Setting up the environment
 
-This repository uses [Gradle](https://gradle.org/) with Kotlin DSL for building and dependency management. The project requires Java 8+ to run, but development requires JDK 21 for the Kotlin toolchain.
+This repository uses [Gradle](https://gradle.org/) with Kotlin DSL for building and dependency management. The SDK requires Java 8, but development requires JDK 21 for the Kotlin toolchain.
 
 ## Project structure
 
@@ -18,11 +18,30 @@ The SDK consists of three artifacts:
 - `openai-java`
   - Depends on and exposes the APIs of
 
-## Modifying/adding code
+## Modifying or adding code
 
 Most of the SDK is generated code. Modifications to code will be persisted between generations, but may
 result in merge conflicts between manual patches and changes from the generator. The generator will never
-modify the contents of the `openai-java-example/` directories.
+modify the contents of the `openai-java-example/` directory.
+
+## Adding and running examples
+
+All files in the `openai-java-example/` directory are not modified by the generator and can be freely edited or added to.
+
+```java
+// openai-java-example/src/main/java/com/openai/example/YourExample.java
+package com.openai.example;
+
+public class YourExample {
+    public static void main(String[] args) {
+        // ...
+    }
+}
+```
+
+```sh
+$ ./gradlew :openai-java-example:run -PmainClass=com.openai.example.YourExample
+```
 
 ## Using the repository from source
 
