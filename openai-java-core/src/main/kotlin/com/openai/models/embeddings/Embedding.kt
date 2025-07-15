@@ -22,6 +22,7 @@ import kotlin.jvm.optionals.getOrNull
 class Embedding
 private constructor(
     private val embedding: JsonField<List<Float>>,
+    private val embeddingValue: JsonField<EmbeddingValue>?,
     private val index: JsonField<Long>,
     private val object_: JsonValue,
     private val additionalProperties: MutableMap<String, JsonValue>,
@@ -31,19 +32,52 @@ private constructor(
     private constructor(
         @JsonProperty("embedding")
         @ExcludeMissing
-        embedding: JsonField<List<Float>> = JsonMissing.of(),
+        embedding: JsonField<EmbeddingValue> = JsonMissing.of(),
         @JsonProperty("index") @ExcludeMissing index: JsonField<Long> = JsonMissing.of(),
         @JsonProperty("object") @ExcludeMissing object_: JsonValue = JsonMissing.of(),
-    ) : this(embedding, index, object_, mutableMapOf())
+    ) : this(
+        JsonMissing.of(), // Legacy embedding field will be populated from embeddingValue
+        embedding,
+        index,
+        object_,
+        mutableMapOf(),
+    )
 
     /**
      * The embedding vector, which is a list of floats. The length of vector depends on the model as
      * listed in the [embedding guide](https://platform.openai.com/docs/guides/embeddings).
      *
+     * Important: When Base64 data is received, it is automatically decoded and returned as
+     * List<Float>
+     *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
      *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
      */
-    fun embedding(): List<Float> = embedding.getRequired("embedding")
+    fun embedding(): List<Float> =
+        when {
+            embeddingValue != null ->
+                embeddingValue
+                    .getRequired("embedding")
+                    .asFloatList() // Base64→Float auto conversion
+            !embedding.isMissing() ->
+                embedding.getRequired("embedding") // Original Float format data
+            else -> throw OpenAIInvalidDataException("Embedding data is missing")
+        }
+
+    /**
+     * The embedding data in its original format (either float list or base64 string). This method
+     * provides efficient access to the embedding data without unnecessary conversions.
+     *
+     * @return EmbeddingValue containing the embedding data in its original format
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     */
+    fun embeddingValue(): EmbeddingValue =
+        when {
+            embeddingValue != null -> embeddingValue.getRequired("embedding")
+            !embedding.isMissing() -> EmbeddingValue.ofFloatList(embedding.getRequired("embedding"))
+            else -> throw OpenAIInvalidDataException("Embedding data is missing")
+        }
 
     /**
      * The index of the embedding in the list of embeddings.
@@ -71,7 +105,15 @@ private constructor(
      *
      * Unlike [embedding], this method doesn't throw if the JSON field has an unexpected type.
      */
-    @JsonProperty("embedding") @ExcludeMissing fun _embedding(): JsonField<List<Float>> = embedding
+    @JsonProperty("embedding")
+    @ExcludeMissing
+    fun _embedding(): JsonField<EmbeddingValue> =
+        when {
+            embeddingValue != null -> embeddingValue
+            !embedding.isMissing() ->
+                JsonField.of(EmbeddingValue.ofFloatList(embedding.getRequired("embedding")))
+            else -> JsonMissing.of()
+        }
 
     /**
      * Returns the raw JSON value of [index].
@@ -116,7 +158,12 @@ private constructor(
 
         @JvmSynthetic
         internal fun from(embedding: Embedding) = apply {
-            this.embedding = embedding.embedding.map { it.toMutableList() }
+            try {
+                this.embedding = JsonField.of(embedding.embedding().toMutableList())
+            } catch (e: Exception) {
+                // Fallback to field-level copying if embedding() method fails
+                this.embedding = embedding.embedding.map { it.toMutableList() }
+            }
             index = embedding.index
             object_ = embedding.object_
             additionalProperties = embedding.additionalProperties.toMutableMap()
@@ -212,6 +259,7 @@ private constructor(
         fun build(): Embedding =
             Embedding(
                 checkRequired("embedding", embedding).map { it.toImmutable() },
+                null, // embeddingValue - will be null for builder-created instances
                 checkRequired("index", index),
                 object_,
                 additionalProperties.toMutableMap(),
@@ -225,7 +273,7 @@ private constructor(
             return@apply
         }
 
-        embedding()
+        embedding() // This will call the method that returns List<Float>
         index()
         _object_().let {
             if (it != JsonValue.from("embedding")) {
@@ -250,7 +298,11 @@ private constructor(
      */
     @JvmSynthetic
     internal fun validity(): Int =
-        (embedding.asKnown().getOrNull()?.size ?: 0) +
+        when {
+            embeddingValue != null -> embeddingValue.asKnown().getOrNull()?.validity() ?: 0
+            !embedding.isMissing() -> embedding.asKnown().getOrNull()?.size ?: 0
+            else -> 0
+        } +
             (if (index.asKnown().isPresent) 1 else 0) +
             object_.let { if (it == JsonValue.from("embedding")) 1 else 0 }
 
@@ -259,15 +311,43 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is Embedding && embedding == other.embedding && index == other.index && object_ == other.object_ && additionalProperties == other.additionalProperties /* spotless:on */
+        if (other !is Embedding) {
+            return false
+        }
+
+        return try {
+            embedding() == other.embedding() &&
+                index == other.index &&
+                object_ == other.object_ &&
+                additionalProperties == other.additionalProperties
+        } catch (e: Exception) {
+            // Fallback to field-level comparison if embedding() methods fail
+            embedding == other.embedding &&
+                embeddingValue == other.embeddingValue &&
+                index == other.index &&
+                object_ == other.object_ &&
+                additionalProperties == other.additionalProperties
+        }
     }
 
     /* spotless:off */
-    private val hashCode: Int by lazy { Objects.hash(embedding, index, object_, additionalProperties) }
+    private val hashCode: Int by lazy { 
+        try {
+            Objects.hash(embedding(), index, object_, additionalProperties)
+        } catch (e: Exception) {
+            // Fallback to field-level hashing if embedding() method fails
+            Objects.hash(embedding, embeddingValue, index, object_, additionalProperties)
+        }
+    }
     /* spotless:on */
 
     override fun hashCode(): Int = hashCode
 
     override fun toString() =
-        "Embedding{embedding=$embedding, index=$index, object_=$object_, additionalProperties=$additionalProperties}"
+        when {
+            embeddingValue != null ->
+                "Embedding{embedding=${try { embedding() } catch (e: Exception) { "[]" }}, index=$index, object_=$object_, additionalProperties=$additionalProperties}"
+            else ->
+                "Embedding{embedding=${embedding.asKnown().getOrNull() ?: emptyList<Float>()}, index=$index, object_=$object_, additionalProperties=$additionalProperties}"
+        }
 }
