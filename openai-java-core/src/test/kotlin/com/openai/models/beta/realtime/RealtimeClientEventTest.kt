@@ -441,12 +441,12 @@ internal class RealtimeClientEventTest {
                                 .arguments("arguments")
                                 .callId("call_id")
                                 .addContent(
-                                    ConversationItemContent.builder()
+                                    ConversationItemWithReference.Content.builder()
                                         .id("id")
                                         .audio("audio")
                                         .text("text")
                                         .transcript("transcript")
-                                        .type(ConversationItemContent.Type.INPUT_TEXT)
+                                        .type(ConversationItemWithReference.Content.Type.INPUT_TEXT)
                                         .build()
                                 )
                                 .name("name")
@@ -513,12 +513,15 @@ internal class RealtimeClientEventTest {
                                     .arguments("arguments")
                                     .callId("call_id")
                                     .addContent(
-                                        ConversationItemContent.builder()
+                                        ConversationItemWithReference.Content.builder()
                                             .id("id")
                                             .audio("audio")
                                             .text("text")
                                             .transcript("transcript")
-                                            .type(ConversationItemContent.Type.INPUT_TEXT)
+                                            .type(
+                                                ConversationItemWithReference.Content.Type
+                                                    .INPUT_TEXT
+                                            )
                                             .build()
                                     )
                                     .name("name")

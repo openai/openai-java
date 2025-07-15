@@ -64,7 +64,7 @@ private constructor(
     fun text(): Optional<String> = text.getOptional("text")
 
     /**
-     * The transcript of the audio, used for `input_audio` content type.
+     * The transcript of the audio, used for `input_audio` and `audio` content types.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -72,7 +72,7 @@ private constructor(
     fun transcript(): Optional<String> = transcript.getOptional("transcript")
 
     /**
-     * The content type (`input_text`, `input_audio`, `item_reference`, `text`).
+     * The content type (`input_text`, `input_audio`, `item_reference`, `text`, `audio`).
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -188,7 +188,7 @@ private constructor(
          */
         fun text(text: JsonField<String>) = apply { this.text = text }
 
-        /** The transcript of the audio, used for `input_audio` content type. */
+        /** The transcript of the audio, used for `input_audio` and `audio` content types. */
         fun transcript(transcript: String) = transcript(JsonField.of(transcript))
 
         /**
@@ -200,7 +200,7 @@ private constructor(
          */
         fun transcript(transcript: JsonField<String>) = apply { this.transcript = transcript }
 
-        /** The content type (`input_text`, `input_audio`, `item_reference`, `text`). */
+        /** The content type (`input_text`, `input_audio`, `item_reference`, `text`, `audio`). */
         fun type(type: Type) = type(JsonField.of(type))
 
         /**
@@ -282,7 +282,7 @@ private constructor(
             (if (transcript.asKnown().isPresent) 1 else 0) +
             (type.asKnown().getOrNull()?.validity() ?: 0)
 
-    /** The content type (`input_text`, `input_audio`, `item_reference`, `text`). */
+    /** The content type (`input_text`, `input_audio`, `item_reference`, `text`, `audio`). */
     class Type @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
 
         /**
@@ -305,6 +305,8 @@ private constructor(
 
             @JvmField val TEXT = of("text")
 
+            @JvmField val AUDIO = of("audio")
+
             @JvmStatic fun of(value: String) = Type(JsonField.of(value))
         }
 
@@ -314,6 +316,7 @@ private constructor(
             INPUT_AUDIO,
             ITEM_REFERENCE,
             TEXT,
+            AUDIO,
         }
 
         /**
@@ -330,6 +333,7 @@ private constructor(
             INPUT_AUDIO,
             ITEM_REFERENCE,
             TEXT,
+            AUDIO,
             /** An enum member indicating that [Type] was instantiated with an unknown value. */
             _UNKNOWN,
         }
@@ -347,6 +351,7 @@ private constructor(
                 INPUT_AUDIO -> Value.INPUT_AUDIO
                 ITEM_REFERENCE -> Value.ITEM_REFERENCE
                 TEXT -> Value.TEXT
+                AUDIO -> Value.AUDIO
                 else -> Value._UNKNOWN
             }
 
@@ -365,6 +370,7 @@ private constructor(
                 INPUT_AUDIO -> Known.INPUT_AUDIO
                 ITEM_REFERENCE -> Known.ITEM_REFERENCE
                 TEXT -> Known.TEXT
+                AUDIO -> Known.AUDIO
                 else -> throw OpenAIInvalidDataException("Unknown Type: $value")
             }
 
