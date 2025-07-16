@@ -16,7 +16,8 @@ The SDK consists of three artifacts:
   - Depends on [OkHttp](https://square.github.io/okhttp)
   - Exposes [`OpenAIOkHttpClient`](openai-java-client-okhttp/src/main/kotlin/com/openai/client/okhttp/OpenAIOkHttpClient.kt) and [`OpenAIOkHttpClientAsync`](openai-java-client-okhttp/src/main/kotlin/com/openai/client/okhttp/OpenAIOkHttpClientAsync.kt), which provide a way to construct [`OpenAIClientImpl`](openai-java-core/src/main/kotlin/com/openai/client/OpenAIClientImpl.kt) and [`OpenAIClientAsyncImpl`](openai-java-core/src/main/kotlin/com/openai/client/OpenAIClientAsyncImpl.kt), respectively, using OkHttp
 - `openai-java`
-  - Depends on and exposes the APIs of
+  - Depends on and exposes the APIs of both `openai-java-core` and `openai-java-client-okhttp`
+  - Does not have its own logic
 
 ## Modifying or adding code
 
@@ -53,7 +54,8 @@ To use a local version of this library from source in another project, you can p
 $ ./gradlew publishToMavenLocal
 ```
 
-Note: for now you'll need to comment out the line for `signAllPublications()` here: `buildSrc/src/main/kotlin/openai.publish.gradle.kts`
+> [!NOTE]
+> For now, to publish locally, you'll need to comment out the line for `signAllPublications()` here: `buildSrc/src/main/kotlin/openai.publish.gradle.kts`
 
 Then in your project's `build.gradle.kts` or `pom.xml`, reference the locally published version:
 
