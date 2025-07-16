@@ -53,7 +53,7 @@ To use a local version of this library from source in another project, you can p
 $ ./gradlew publishToMavenLocal
 ```
 
-Note: for now you'll need to comment out the line for `signAllPublications()` here: buildSrc/src/main/kotlin/openai.publish.gradle.kts
+Note: for now you'll need to comment out the line for `signAllPublications()` here: `buildSrc/src/main/kotlin/openai.publish.gradle.kts`
 
 Then in your project's `build.gradle.kts` or `pom.xml`, reference the locally published version:
 
