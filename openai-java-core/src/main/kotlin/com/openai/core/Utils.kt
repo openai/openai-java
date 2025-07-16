@@ -3,6 +3,7 @@
 package com.openai.core
 
 import com.openai.errors.OpenAIInvalidDataException
+import java.net.URI
 import java.util.Collections
 import java.util.SortedMap
 
@@ -96,22 +97,34 @@ internal fun isAzureEndpoint(baseUrl: String): Boolean {
     // Or `https://<region>.azure-api.net` for Azure OpenAI Management URL.
     // Or `<user>-random-<region>.cognitiveservices.azure.com`.
     val trimmedBaseUrl = baseUrl.trim().trimEnd('/')
-    return isAzureLegacyEndpoint(trimmedBaseUrl) || isAzureUnifiedEndpoint(baseUrl) ||
-        // exceptions:
-        trimmedBaseUrl.endsWith(".azure-api.net", true) ||
-        trimmedBaseUrl.endsWith(".cognitiveservices.azure.com", true)
+    val url = URI.create(trimmedBaseUrl)
+    return url.isAzureLegacyEndpoint() || url.isAzureUnifiedEndpoint() || url.isOtherAzureKnownEndpoint()
 }
 
-@JvmSynthetic
-internal fun isAzureLegacyEndpoint(baseUrl: String): Boolean {
-    val trimmedBaseUrl = baseUrl.trim().trimEnd('/')
-    return trimmedBaseUrl.endsWith(".openai.azure.com", true)
-}
+/**
+ * Returns whether [this] is an Azure OpenAI resource URL with the old schema.
+ */
+internal fun URI.isAzureLegacyEndpoint(): Boolean = host.endsWith(".openai.azure.com", true)
 
+/**
+ * Returns whether [this] is an Azure OpenAI resource URL with the OpenAI unified schema.
+ */
+internal fun URI.isAzureUnifiedEndpoint(): Boolean = host.endsWith(".services.ai.azure.com", true)
+
+/**
+ * Returns whether [this] is an Azure OpenAI resource URL, but with a schema different to the known ones.
+ */
+internal fun URI.isOtherAzureKnownEndpoint(): Boolean =
+    host.endsWith(".azure-api.net", true) ||
+    host.endsWith(".cognitiveservices.azure.com", true)
+
+/**
+ * Convenience function to check if the given [baseUrl] is an Azure OpenAI resource URL with the unified schema.
+ */
 @JvmSynthetic
 internal fun isAzureUnifiedEndpoint(baseUrl: String): Boolean {
-    val trimmedBaseUrl = baseUrl.trim().trimEnd('/')
-    return trimmedBaseUrl.endsWith(".services.ai.azure.com", true)
+    val url = URI.create(baseUrl.trim().trimEnd('/'))
+    return url.isAzureUnifiedEndpoint()
 }
 
 internal interface Enum

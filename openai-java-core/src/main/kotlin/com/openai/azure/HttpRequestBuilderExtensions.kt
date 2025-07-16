@@ -13,13 +13,12 @@ internal fun HttpRequest.Builder.addPathSegmentsForAzure(
 ): HttpRequest.Builder = apply {
     val baseUrl = clientOptions.baseUrl()
     if (isAzureEndpoint(baseUrl)) {
-        addPathSegment("openai")
         // Users can toggle off unified Azure routes using the "unifiedAzureRoutes" option.
-        if (clientOptions.unifiedAzureRoutes && isAzureUnifiedEndpoint(baseUrl)) {
-            addPathSegment("v1")
-        } else {
+        // Endpoints are assumed to be provided with `/v1/openai` in their path already.
+        if (!clientOptions.unifiedAzureRoutes || !isAzureUnifiedEndpoint(baseUrl)) {
             // Unknown Azure endpoints and legacy Azure endpoints are treated the old way.
             // We are assuming in this branch that isAzureLegacyEndpoint(baseUrl) would be true for this base URL.
+            addPathSegment("openai")
             deploymentModel?.let { addPathSegments("deployments", it) }
         }
     }

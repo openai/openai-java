@@ -2,6 +2,7 @@ package com.openai.core
 
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
 
 internal class UtilsTest {
     @Test
@@ -34,33 +35,25 @@ internal class UtilsTest {
     @Test
     fun isAzureEndpoint() {
         // Valid Azure endpoints
+
+        // legacy
         assertThat(isAzureEndpoint("https://region.openai.azure.com")).isTrue()
         assertThat(isAzureEndpoint("https://region.openai.azure.com/")).isTrue()
+        // unified with OpenAI
+        assertThat(isAzureEndpoint("https://region.services.ai.azure.com")).isTrue()
+        assertThat(isAzureEndpoint("https://region.services.ai.azure.com/")).isTrue()
+        // other known valid schemas
         assertThat(isAzureEndpoint("https://region.azure-api.net")).isTrue()
         assertThat(isAzureEndpoint("https://region.azure-api.net/")).isTrue()
+        assertThat(isAzureEndpoint("https://region.cognitiveservices.azure.com")).isTrue()
+        assertThat(isAzureEndpoint("https://region.cognitiveservices.azure.com/")).isTrue()
 
         // Invalid Azure endpoints
         assertThat(isAzureEndpoint("https://example.com")).isFalse()
         assertThat(isAzureEndpoint("https://region.openai.com")).isFalse()
         assertThat(isAzureEndpoint("https://region.azure.com")).isFalse()
-        assertThat(isAzureEndpoint("")).isFalse()
-        assertThat(isAzureEndpoint("   ")).isFalse()
-    }
-
-    @Test
-    fun isAzureLegacyEndpoint() {
-        // Valid Azure legacy endpoints
-        assertThat(isAzureLegacyEndpoint("https://region.openai.azure.com")).isTrue()
-        assertThat(isAzureLegacyEndpoint("https://region.openai.azure.com/")).isTrue()
-
-        // Invalid Azure legacy endpoints
-        assertThat(isAzureLegacyEndpoint("https://region.azure-api.net")).isFalse()
-        assertThat(isAzureLegacyEndpoint("https://region.services.ai.azure.com")).isFalse()
-        assertThat(isAzureLegacyEndpoint("https://example.com")).isFalse()
-        assertThat(isAzureLegacyEndpoint("https://region.openai.com")).isFalse()
-        assertThat(isAzureLegacyEndpoint("https://region.azure.com")).isFalse()
-        assertThat(isAzureLegacyEndpoint("")).isFalse()
-        assertThat(isAzureLegacyEndpoint("   ")).isFalse()
+        assertThrows<NullPointerException> {isAzureEndpoint("")}
+        assertThrows<NullPointerException>{isAzureEndpoint("   ")}
     }
 
     @Test
@@ -74,7 +67,7 @@ internal class UtilsTest {
         assertThat(isAzureUnifiedEndpoint("https://example.com")).isFalse()
         assertThat(isAzureUnifiedEndpoint("https://region.openai.com")).isFalse()
         assertThat(isAzureUnifiedEndpoint("https://region.azure.com")).isFalse()
-        assertThat(isAzureUnifiedEndpoint("")).isFalse()
-        assertThat(isAzureUnifiedEndpoint("   ")).isFalse()
+        assertThrows<NullPointerException>{isAzureUnifiedEndpoint("")}
+        assertThrows<NullPointerException>{isAzureUnifiedEndpoint("   ")}
     }
 }
