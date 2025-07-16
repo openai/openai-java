@@ -30,7 +30,7 @@ private constructor(
     ) : this(refusal, type, mutableMapOf())
 
     /**
-     * The refusal explanationfrom the model.
+     * The refusal explanation from the model.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
      *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
@@ -96,7 +96,7 @@ private constructor(
             additionalProperties = responseOutputRefusal.additionalProperties.toMutableMap()
         }
 
-        /** The refusal explanationfrom the model. */
+        /** The refusal explanation from the model. */
         fun refusal(refusal: String) = refusal(JsonField.of(refusal))
 
         /**

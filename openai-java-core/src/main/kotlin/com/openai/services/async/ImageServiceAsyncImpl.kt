@@ -3,21 +3,31 @@
 package com.openai.services.async
 
 import com.openai.core.ClientOptions
+import com.openai.core.JsonValue
+import com.openai.core.MultipartField
 import com.openai.core.RequestOptions
 import com.openai.core.handlers.errorHandler
 import com.openai.core.handlers.jsonHandler
+import com.openai.core.handlers.mapJson
+import com.openai.core.handlers.sseHandler
 import com.openai.core.handlers.withErrorHandler
+import com.openai.core.http.AsyncStreamResponse
 import com.openai.core.http.HttpMethod
 import com.openai.core.http.HttpRequest
 import com.openai.core.http.HttpResponse.Handler
 import com.openai.core.http.HttpResponseFor
+import com.openai.core.http.StreamResponse
 import com.openai.core.http.json
+import com.openai.core.http.map
 import com.openai.core.http.multipartFormData
 import com.openai.core.http.parseable
+import com.openai.core.http.toAsync
 import com.openai.core.prepareAsync
 import com.openai.models.ErrorObject
 import com.openai.models.images.ImageCreateVariationParams
 import com.openai.models.images.ImageEditParams
+import com.openai.models.images.ImageEditStreamEvent
+import com.openai.models.images.ImageGenStreamEvent
 import com.openai.models.images.ImageGenerateParams
 import com.openai.models.images.ImagesResponse
 import java.util.concurrent.CompletableFuture
@@ -49,12 +59,32 @@ class ImageServiceAsyncImpl internal constructor(private val clientOptions: Clie
         // post /images/edits
         withRawResponse().edit(params, requestOptions).thenApply { it.parse() }
 
+    override fun editStreaming(
+        params: ImageEditParams,
+        requestOptions: RequestOptions,
+    ): AsyncStreamResponse<ImageEditStreamEvent> =
+        // post /images/edits
+        withRawResponse()
+            .editStreaming(params, requestOptions)
+            .thenApply { it.parse() }
+            .toAsync(clientOptions.streamHandlerExecutor)
+
     override fun generate(
         params: ImageGenerateParams,
         requestOptions: RequestOptions,
     ): CompletableFuture<ImagesResponse> =
         // post /images/generations
         withRawResponse().generate(params, requestOptions).thenApply { it.parse() }
+
+    override fun generateStreaming(
+        params: ImageGenerateParams,
+        requestOptions: RequestOptions,
+    ): AsyncStreamResponse<ImageGenStreamEvent> =
+        // post /images/generations
+        withRawResponse()
+            .generateStreaming(params, requestOptions)
+            .thenApply { it.parse() }
+            .toAsync(clientOptions.streamHandlerExecutor)
 
     class WithRawResponseImpl internal constructor(private val clientOptions: ClientOptions) :
         ImageServiceAsync.WithRawResponse {
@@ -138,6 +168,46 @@ class ImageServiceAsyncImpl internal constructor(private val clientOptions: Clie
                 }
         }
 
+        private val editStreamingHandler: Handler<StreamResponse<ImageEditStreamEvent>> =
+            sseHandler(clientOptions.jsonMapper)
+                .mapJson<ImageEditStreamEvent>()
+                .withErrorHandler(errorHandler)
+
+        override fun editStreaming(
+            params: ImageEditParams,
+            requestOptions: RequestOptions,
+        ): CompletableFuture<HttpResponseFor<StreamResponse<ImageEditStreamEvent>>> {
+            val request =
+                HttpRequest.builder()
+                    .method(HttpMethod.POST)
+                    .baseUrl(clientOptions.baseUrl())
+                    .addPathSegments("images", "edits")
+                    .body(
+                        multipartFormData(
+                            clientOptions.jsonMapper,
+                            params._body() + ("stream" to MultipartField.of(true)),
+                        )
+                    )
+                    .build()
+                    .prepareAsync(clientOptions, params, deploymentModel = null)
+            val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
+            return request
+                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
+                .thenApply { response ->
+                    response.parseable {
+                        response
+                            .let { editStreamingHandler.handle(it) }
+                            .let { streamResponse ->
+                                if (requestOptions.responseValidation!!) {
+                                    streamResponse.map { it.validate() }
+                                } else {
+                                    streamResponse
+                                }
+                            }
+                    }
+                }
+        }
+
         private val generateHandler: Handler<ImagesResponse> =
             jsonHandler<ImagesResponse>(clientOptions.jsonMapper).withErrorHandler(errorHandler)
 
@@ -167,6 +237,50 @@ class ImageServiceAsyncImpl internal constructor(private val clientOptions: Clie
                             .also {
                                 if (requestOptions.responseValidation!!) {
                                     it.validate()
+                                }
+                            }
+                    }
+                }
+        }
+
+        private val generateStreamingHandler: Handler<StreamResponse<ImageGenStreamEvent>> =
+            sseHandler(clientOptions.jsonMapper)
+                .mapJson<ImageGenStreamEvent>()
+                .withErrorHandler(errorHandler)
+
+        override fun generateStreaming(
+            params: ImageGenerateParams,
+            requestOptions: RequestOptions,
+        ): CompletableFuture<HttpResponseFor<StreamResponse<ImageGenStreamEvent>>> {
+            val request =
+                HttpRequest.builder()
+                    .method(HttpMethod.POST)
+                    .baseUrl(clientOptions.baseUrl())
+                    .addPathSegments("images", "generations")
+                    .body(
+                        json(
+                            clientOptions.jsonMapper,
+                            params
+                                ._body()
+                                .toBuilder()
+                                .putAdditionalProperty("stream", JsonValue.from(true))
+                                .build(),
+                        )
+                    )
+                    .build()
+                    .prepareAsync(clientOptions, params, deploymentModel = null)
+            val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
+            return request
+                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
+                .thenApply { response ->
+                    response.parseable {
+                        response
+                            .let { generateStreamingHandler.handle(it) }
+                            .let { streamResponse ->
+                                if (requestOptions.responseValidation!!) {
+                                    streamResponse.map { it.validate() }
+                                } else {
+                                    streamResponse
                                 }
                             }
                     }

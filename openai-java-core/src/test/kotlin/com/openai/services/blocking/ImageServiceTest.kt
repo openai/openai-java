@@ -53,11 +53,13 @@ internal class ImageServiceTest {
                     .image("some content".byteInputStream())
                     .prompt("A cute baby sea otter wearing a beret")
                     .background(ImageEditParams.Background.TRANSPARENT)
+                    .inputFidelity(ImageEditParams.InputFidelity.HIGH)
                     .mask("some content".byteInputStream())
                     .model(ImageModel.DALL_E_2)
                     .n(1L)
                     .outputCompression(100L)
                     .outputFormat(ImageEditParams.OutputFormat.PNG)
+                    .partialImages(1L)
                     .quality(ImageEditParams.Quality.HIGH)
                     .responseFormat(ImageEditParams.ResponseFormat.URL)
                     .size(ImageEditParams.Size._1024X1024)
@@ -66,6 +68,42 @@ internal class ImageServiceTest {
             )
 
         imagesResponse.validate()
+    }
+
+    @Test
+    fun editStreaming() {
+        val client =
+            OpenAIOkHttpClient.builder()
+                .baseUrl(TestServerExtension.BASE_URL)
+                .apiKey("My API Key")
+                .build()
+        val imageService = client.images()
+
+        val imagesResponseStreamResponse =
+            imageService.editStreaming(
+                ImageEditParams.builder()
+                    .image("some content".byteInputStream())
+                    .prompt("A cute baby sea otter wearing a beret")
+                    .background(ImageEditParams.Background.TRANSPARENT)
+                    .inputFidelity(ImageEditParams.InputFidelity.HIGH)
+                    .mask("some content".byteInputStream())
+                    .model(ImageModel.DALL_E_2)
+                    .n(1L)
+                    .outputCompression(100L)
+                    .outputFormat(ImageEditParams.OutputFormat.PNG)
+                    .partialImages(1L)
+                    .quality(ImageEditParams.Quality.HIGH)
+                    .responseFormat(ImageEditParams.ResponseFormat.URL)
+                    .size(ImageEditParams.Size._1024X1024)
+                    .user("user-1234")
+                    .build()
+            )
+
+        imagesResponseStreamResponse.use {
+            imagesResponseStreamResponse.stream().forEach { imagesResponse ->
+                imagesResponse.validate()
+            }
+        }
     }
 
     @Test
@@ -87,6 +125,7 @@ internal class ImageServiceTest {
                     .n(1L)
                     .outputCompression(100L)
                     .outputFormat(ImageGenerateParams.OutputFormat.PNG)
+                    .partialImages(1L)
                     .quality(ImageGenerateParams.Quality.MEDIUM)
                     .responseFormat(ImageGenerateParams.ResponseFormat.URL)
                     .size(ImageGenerateParams.Size._1024X1024)
@@ -96,5 +135,40 @@ internal class ImageServiceTest {
             )
 
         imagesResponse.validate()
+    }
+
+    @Test
+    fun generateStreaming() {
+        val client =
+            OpenAIOkHttpClient.builder()
+                .baseUrl(TestServerExtension.BASE_URL)
+                .apiKey("My API Key")
+                .build()
+        val imageService = client.images()
+
+        val imagesResponseStreamResponse =
+            imageService.generateStreaming(
+                ImageGenerateParams.builder()
+                    .prompt("A cute baby sea otter")
+                    .background(ImageGenerateParams.Background.TRANSPARENT)
+                    .model(ImageModel.DALL_E_2)
+                    .moderation(ImageGenerateParams.Moderation.LOW)
+                    .n(1L)
+                    .outputCompression(100L)
+                    .outputFormat(ImageGenerateParams.OutputFormat.PNG)
+                    .partialImages(1L)
+                    .quality(ImageGenerateParams.Quality.MEDIUM)
+                    .responseFormat(ImageGenerateParams.ResponseFormat.URL)
+                    .size(ImageGenerateParams.Size._1024X1024)
+                    .style(ImageGenerateParams.Style.VIVID)
+                    .user("user-1234")
+                    .build()
+            )
+
+        imagesResponseStreamResponse.use {
+            imagesResponseStreamResponse.stream().forEach { imagesResponse ->
+                imagesResponse.validate()
+            }
+        }
     }
 }
