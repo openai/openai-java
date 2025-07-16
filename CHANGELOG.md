@@ -1,5 +1,25 @@
 # Changelog
 
+## 2.14.0 (2025-07-16)
+
+Full Changelog: [v2.13.1...v2.14.0](https://github.com/openai/openai-java/compare/v2.13.1...v2.14.0)
+
+### Features
+
+* **api:** manual updates ([d3dd5be](https://github.com/openai/openai-java/commit/d3dd5be0c6797f7f7fb7935df27b7ad67177f6ea))
+
+
+### Bug Fixes
+
+* **internal:** add back addAssistantMessage ([e27b476](https://github.com/openai/openai-java/commit/e27b476b2c4e8287407b40bc2e683c33af992c43))
+* **internal:** add back addAssistantMessage ([d363245](https://github.com/openai/openai-java/commit/d363245365a618bfd75e05f905af4eda90d24e96))
+
+
+### Chores
+
+* **api:** update realtime specs ([dd24c50](https://github.com/openai/openai-java/commit/dd24c500f029db5c1d38e9659eafb3bcd4d6fe99))
+* **ci:** bump `actions/setup-java` to v4 ([e5112cd](https://github.com/openai/openai-java/commit/e5112cdb3d411357886c334b15cc3de62e2fc9c3))
+
 ## 2.13.1 (2025-07-15)
 
 Full Changelog: [v2.13.0...v2.13.1](https://github.com/openai/openai-java/compare/v2.13.0...v2.13.1)
