@@ -79,7 +79,7 @@ Alternatively, you can build and install the JAR files directly:
 $ ./gradlew build
 ```
 
-JAR files will be available in each module's build/libs/ directory
+JAR files will be available in each module's `build/libs/` directory.
 
 ## Running tests
 
@@ -133,7 +133,7 @@ $ ./scripts/lint
 
 This will compile all modules and run static analysis checks.
 
-To format and fix all formatting issues automatically:
+To fix all formatting issues automatically:
 
 ```sh
 $ ./scripts/format
