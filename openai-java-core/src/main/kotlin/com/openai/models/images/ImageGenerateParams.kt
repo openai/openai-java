@@ -100,6 +100,16 @@ private constructor(
     fun outputFormat(): Optional<OutputFormat> = body.outputFormat()
 
     /**
+     * The number of partial images to generate. This parameter is used for streaming responses that
+     * return partial images. Value must be between 0 and 3. When set to 0, the response will be a
+     * single image sent in one streaming event.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun partialImages(): Optional<Long> = body.partialImages()
+
+    /**
      * The quality of the image that will be generated.
      * - `auto` (default value) will automatically select the best quality for the given model.
      * - `high`, `medium` and `low` are supported for `gpt-image-1`.
@@ -203,6 +213,13 @@ private constructor(
      * Unlike [outputFormat], this method doesn't throw if the JSON field has an unexpected type.
      */
     fun _outputFormat(): JsonField<OutputFormat> = body._outputFormat()
+
+    /**
+     * Returns the raw JSON value of [partialImages].
+     *
+     * Unlike [partialImages], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    fun _partialImages(): JsonField<Long> = body._partialImages()
 
     /**
      * Returns the raw JSON value of [quality].
@@ -443,6 +460,34 @@ private constructor(
          */
         fun outputFormat(outputFormat: JsonField<OutputFormat>) = apply {
             body.outputFormat(outputFormat)
+        }
+
+        /**
+         * The number of partial images to generate. This parameter is used for streaming responses
+         * that return partial images. Value must be between 0 and 3. When set to 0, the response
+         * will be a single image sent in one streaming event.
+         */
+        fun partialImages(partialImages: Long?) = apply { body.partialImages(partialImages) }
+
+        /**
+         * Alias for [Builder.partialImages].
+         *
+         * This unboxed primitive overload exists for backwards compatibility.
+         */
+        fun partialImages(partialImages: Long) = partialImages(partialImages as Long?)
+
+        /** Alias for calling [Builder.partialImages] with `partialImages.orElse(null)`. */
+        fun partialImages(partialImages: Optional<Long>) = partialImages(partialImages.getOrNull())
+
+        /**
+         * Sets [Builder.partialImages] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.partialImages] with a well-typed [Long] value instead.
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
+         */
+        fun partialImages(partialImages: JsonField<Long>) = apply {
+            body.partialImages(partialImages)
         }
 
         /**
@@ -695,6 +740,7 @@ private constructor(
         private val n: JsonField<Long>,
         private val outputCompression: JsonField<Long>,
         private val outputFormat: JsonField<OutputFormat>,
+        private val partialImages: JsonField<Long>,
         private val quality: JsonField<Quality>,
         private val responseFormat: JsonField<ResponseFormat>,
         private val size: JsonField<Size>,
@@ -720,6 +766,9 @@ private constructor(
             @JsonProperty("output_format")
             @ExcludeMissing
             outputFormat: JsonField<OutputFormat> = JsonMissing.of(),
+            @JsonProperty("partial_images")
+            @ExcludeMissing
+            partialImages: JsonField<Long> = JsonMissing.of(),
             @JsonProperty("quality") @ExcludeMissing quality: JsonField<Quality> = JsonMissing.of(),
             @JsonProperty("response_format")
             @ExcludeMissing
@@ -735,6 +784,7 @@ private constructor(
             n,
             outputCompression,
             outputFormat,
+            partialImages,
             quality,
             responseFormat,
             size,
@@ -811,6 +861,16 @@ private constructor(
          *   server responded with an unexpected value).
          */
         fun outputFormat(): Optional<OutputFormat> = outputFormat.getOptional("output_format")
+
+        /**
+         * The number of partial images to generate. This parameter is used for streaming responses
+         * that return partial images. Value must be between 0 and 3. When set to 0, the response
+         * will be a single image sent in one streaming event.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun partialImages(): Optional<Long> = partialImages.getOptional("partial_images")
 
         /**
          * The quality of the image that will be generated.
@@ -928,6 +988,16 @@ private constructor(
         fun _outputFormat(): JsonField<OutputFormat> = outputFormat
 
         /**
+         * Returns the raw JSON value of [partialImages].
+         *
+         * Unlike [partialImages], this method doesn't throw if the JSON field has an unexpected
+         * type.
+         */
+        @JsonProperty("partial_images")
+        @ExcludeMissing
+        fun _partialImages(): JsonField<Long> = partialImages
+
+        /**
          * Returns the raw JSON value of [quality].
          *
          * Unlike [quality], this method doesn't throw if the JSON field has an unexpected type.
@@ -1000,6 +1070,7 @@ private constructor(
             private var n: JsonField<Long> = JsonMissing.of()
             private var outputCompression: JsonField<Long> = JsonMissing.of()
             private var outputFormat: JsonField<OutputFormat> = JsonMissing.of()
+            private var partialImages: JsonField<Long> = JsonMissing.of()
             private var quality: JsonField<Quality> = JsonMissing.of()
             private var responseFormat: JsonField<ResponseFormat> = JsonMissing.of()
             private var size: JsonField<Size> = JsonMissing.of()
@@ -1016,6 +1087,7 @@ private constructor(
                 n = body.n
                 outputCompression = body.outputCompression
                 outputFormat = body.outputFormat
+                partialImages = body.partialImages
                 quality = body.quality
                 responseFormat = body.responseFormat
                 size = body.size
@@ -1193,6 +1265,36 @@ private constructor(
             }
 
             /**
+             * The number of partial images to generate. This parameter is used for streaming
+             * responses that return partial images. Value must be between 0 and 3. When set to 0,
+             * the response will be a single image sent in one streaming event.
+             */
+            fun partialImages(partialImages: Long?) =
+                partialImages(JsonField.ofNullable(partialImages))
+
+            /**
+             * Alias for [Builder.partialImages].
+             *
+             * This unboxed primitive overload exists for backwards compatibility.
+             */
+            fun partialImages(partialImages: Long) = partialImages(partialImages as Long?)
+
+            /** Alias for calling [Builder.partialImages] with `partialImages.orElse(null)`. */
+            fun partialImages(partialImages: Optional<Long>) =
+                partialImages(partialImages.getOrNull())
+
+            /**
+             * Sets [Builder.partialImages] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.partialImages] with a well-typed [Long] value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun partialImages(partialImages: JsonField<Long>) = apply {
+                this.partialImages = partialImages
+            }
+
+            /**
              * The quality of the image that will be generated.
              * - `auto` (default value) will automatically select the best quality for the given
              *   model.
@@ -1334,6 +1436,7 @@ private constructor(
                     n,
                     outputCompression,
                     outputFormat,
+                    partialImages,
                     quality,
                     responseFormat,
                     size,
@@ -1357,6 +1460,7 @@ private constructor(
             n()
             outputCompression()
             outputFormat().ifPresent { it.validate() }
+            partialImages()
             quality().ifPresent { it.validate() }
             responseFormat().ifPresent { it.validate() }
             size().ifPresent { it.validate() }
@@ -1388,6 +1492,7 @@ private constructor(
                 (if (n.asKnown().isPresent) 1 else 0) +
                 (if (outputCompression.asKnown().isPresent) 1 else 0) +
                 (outputFormat.asKnown().getOrNull()?.validity() ?: 0) +
+                (if (partialImages.asKnown().isPresent) 1 else 0) +
                 (quality.asKnown().getOrNull()?.validity() ?: 0) +
                 (responseFormat.asKnown().getOrNull()?.validity() ?: 0) +
                 (size.asKnown().getOrNull()?.validity() ?: 0) +
@@ -1399,17 +1504,17 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is Body && prompt == other.prompt && background == other.background && model == other.model && moderation == other.moderation && n == other.n && outputCompression == other.outputCompression && outputFormat == other.outputFormat && quality == other.quality && responseFormat == other.responseFormat && size == other.size && style == other.style && user == other.user && additionalProperties == other.additionalProperties /* spotless:on */
+            return /* spotless:off */ other is Body && prompt == other.prompt && background == other.background && model == other.model && moderation == other.moderation && n == other.n && outputCompression == other.outputCompression && outputFormat == other.outputFormat && partialImages == other.partialImages && quality == other.quality && responseFormat == other.responseFormat && size == other.size && style == other.style && user == other.user && additionalProperties == other.additionalProperties /* spotless:on */
         }
 
         /* spotless:off */
-        private val hashCode: Int by lazy { Objects.hash(prompt, background, model, moderation, n, outputCompression, outputFormat, quality, responseFormat, size, style, user, additionalProperties) }
+        private val hashCode: Int by lazy { Objects.hash(prompt, background, model, moderation, n, outputCompression, outputFormat, partialImages, quality, responseFormat, size, style, user, additionalProperties) }
         /* spotless:on */
 
         override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "Body{prompt=$prompt, background=$background, model=$model, moderation=$moderation, n=$n, outputCompression=$outputCompression, outputFormat=$outputFormat, quality=$quality, responseFormat=$responseFormat, size=$size, style=$style, user=$user, additionalProperties=$additionalProperties}"
+            "Body{prompt=$prompt, background=$background, model=$model, moderation=$moderation, n=$n, outputCompression=$outputCompression, outputFormat=$outputFormat, partialImages=$partialImages, quality=$quality, responseFormat=$responseFormat, size=$size, style=$style, user=$user, additionalProperties=$additionalProperties}"
     }
 
     /**

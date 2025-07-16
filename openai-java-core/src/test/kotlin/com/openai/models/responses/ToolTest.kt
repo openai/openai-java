@@ -331,6 +331,7 @@ internal class ToolTest {
         val imageGeneration =
             Tool.ImageGeneration.builder()
                 .background(Tool.ImageGeneration.Background.TRANSPARENT)
+                .inputFidelity(Tool.ImageGeneration.InputFidelity.HIGH)
                 .inputImageMask(
                     Tool.ImageGeneration.InputImageMask.builder()
                         .fileId("file_id")
@@ -365,6 +366,7 @@ internal class ToolTest {
             Tool.ofImageGeneration(
                 Tool.ImageGeneration.builder()
                     .background(Tool.ImageGeneration.Background.TRANSPARENT)
+                    .inputFidelity(Tool.ImageGeneration.InputFidelity.HIGH)
                     .inputImageMask(
                         Tool.ImageGeneration.InputImageMask.builder()
                             .fileId("file_id")

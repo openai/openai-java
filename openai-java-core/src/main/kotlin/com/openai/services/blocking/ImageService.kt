@@ -6,8 +6,11 @@ import com.google.errorprone.annotations.MustBeClosed
 import com.openai.core.ClientOptions
 import com.openai.core.RequestOptions
 import com.openai.core.http.HttpResponseFor
+import com.openai.core.http.StreamResponse
 import com.openai.models.images.ImageCreateVariationParams
 import com.openai.models.images.ImageEditParams
+import com.openai.models.images.ImageEditStreamEvent
+import com.openai.models.images.ImageGenStreamEvent
 import com.openai.models.images.ImageGenerateParams
 import com.openai.models.images.ImagesResponse
 import java.util.function.Consumer
@@ -49,6 +52,21 @@ interface ImageService {
     ): ImagesResponse
 
     /**
+     * Creates an edited or extended image given one or more source images and a prompt. This
+     * endpoint only supports `gpt-image-1` and `dall-e-2`.
+     */
+    @MustBeClosed
+    fun editStreaming(params: ImageEditParams): StreamResponse<ImageEditStreamEvent> =
+        editStreaming(params, RequestOptions.none())
+
+    /** @see [editStreaming] */
+    @MustBeClosed
+    fun editStreaming(
+        params: ImageEditParams,
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): StreamResponse<ImageEditStreamEvent>
+
+    /**
      * Creates an image given a prompt.
      * [Learn more](https://platform.openai.com/docs/guides/images).
      */
@@ -60,6 +78,21 @@ interface ImageService {
         params: ImageGenerateParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): ImagesResponse
+
+    /**
+     * Creates an image given a prompt.
+     * [Learn more](https://platform.openai.com/docs/guides/images).
+     */
+    @MustBeClosed
+    fun generateStreaming(params: ImageGenerateParams): StreamResponse<ImageGenStreamEvent> =
+        generateStreaming(params, RequestOptions.none())
+
+    /** @see [generateStreaming] */
+    @MustBeClosed
+    fun generateStreaming(
+        params: ImageGenerateParams,
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): StreamResponse<ImageGenStreamEvent>
 
     /** A view of [ImageService] that provides access to raw HTTP responses for each method. */
     interface WithRawResponse {
@@ -102,6 +135,23 @@ interface ImageService {
         ): HttpResponseFor<ImagesResponse>
 
         /**
+         * Returns a raw HTTP response for `post /images/edits`, but is otherwise the same as
+         * [ImageService.editStreaming].
+         */
+        @MustBeClosed
+        fun editStreaming(
+            params: ImageEditParams
+        ): HttpResponseFor<StreamResponse<ImageEditStreamEvent>> =
+            editStreaming(params, RequestOptions.none())
+
+        /** @see [editStreaming] */
+        @MustBeClosed
+        fun editStreaming(
+            params: ImageEditParams,
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): HttpResponseFor<StreamResponse<ImageEditStreamEvent>>
+
+        /**
          * Returns a raw HTTP response for `post /images/generations`, but is otherwise the same as
          * [ImageService.generate].
          */
@@ -115,5 +165,22 @@ interface ImageService {
             params: ImageGenerateParams,
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<ImagesResponse>
+
+        /**
+         * Returns a raw HTTP response for `post /images/generations`, but is otherwise the same as
+         * [ImageService.generateStreaming].
+         */
+        @MustBeClosed
+        fun generateStreaming(
+            params: ImageGenerateParams
+        ): HttpResponseFor<StreamResponse<ImageGenStreamEvent>> =
+            generateStreaming(params, RequestOptions.none())
+
+        /** @see [generateStreaming] */
+        @MustBeClosed
+        fun generateStreaming(
+            params: ImageGenerateParams,
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): HttpResponseFor<StreamResponse<ImageGenStreamEvent>>
     }
 }
