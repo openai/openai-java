@@ -5,17 +5,17 @@ package com.openai.services.async
 import com.openai.core.ClientOptions
 import com.openai.core.RequestOptions
 import com.openai.core.checkRequired
+import com.openai.core.handlers.errorBodyHandler
 import com.openai.core.handlers.errorHandler
 import com.openai.core.handlers.jsonHandler
-import com.openai.core.handlers.withErrorHandler
 import com.openai.core.http.HttpMethod
 import com.openai.core.http.HttpRequest
+import com.openai.core.http.HttpResponse
 import com.openai.core.http.HttpResponse.Handler
 import com.openai.core.http.HttpResponseFor
 import com.openai.core.http.json
 import com.openai.core.http.parseable
 import com.openai.core.prepareAsync
-import com.openai.models.ErrorObject
 import com.openai.models.uploads.Upload
 import com.openai.models.uploads.UploadCancelParams
 import com.openai.models.uploads.UploadCompleteParams
@@ -66,7 +66,8 @@ class UploadServiceAsyncImpl internal constructor(private val clientOptions: Cli
     class WithRawResponseImpl internal constructor(private val clientOptions: ClientOptions) :
         UploadServiceAsync.WithRawResponse {
 
-        private val errorHandler: Handler<ErrorObject?> = errorHandler(clientOptions.jsonMapper)
+        private val errorHandler: Handler<HttpResponse> =
+            errorHandler(errorBodyHandler(clientOptions.jsonMapper))
 
         private val parts: PartServiceAsync.WithRawResponse by lazy {
             PartServiceAsyncImpl.WithRawResponseImpl(clientOptions)
@@ -81,8 +82,7 @@ class UploadServiceAsyncImpl internal constructor(private val clientOptions: Cli
 
         override fun parts(): PartServiceAsync.WithRawResponse = parts
 
-        private val createHandler: Handler<Upload> =
-            jsonHandler<Upload>(clientOptions.jsonMapper).withErrorHandler(errorHandler)
+        private val createHandler: Handler<Upload> = jsonHandler<Upload>(clientOptions.jsonMapper)
 
         override fun create(
             params: UploadCreateParams,
@@ -100,7 +100,7 @@ class UploadServiceAsyncImpl internal constructor(private val clientOptions: Cli
             return request
                 .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
                 .thenApply { response ->
-                    response.parseable {
+                    errorHandler.handle(response).parseable {
                         response
                             .use { createHandler.handle(it) }
                             .also {
@@ -112,8 +112,7 @@ class UploadServiceAsyncImpl internal constructor(private val clientOptions: Cli
                 }
         }
 
-        private val cancelHandler: Handler<Upload> =
-            jsonHandler<Upload>(clientOptions.jsonMapper).withErrorHandler(errorHandler)
+        private val cancelHandler: Handler<Upload> = jsonHandler<Upload>(clientOptions.jsonMapper)
 
         override fun cancel(
             params: UploadCancelParams,
@@ -134,7 +133,7 @@ class UploadServiceAsyncImpl internal constructor(private val clientOptions: Cli
             return request
                 .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
                 .thenApply { response ->
-                    response.parseable {
+                    errorHandler.handle(response).parseable {
                         response
                             .use { cancelHandler.handle(it) }
                             .also {
@@ -146,8 +145,7 @@ class UploadServiceAsyncImpl internal constructor(private val clientOptions: Cli
                 }
         }
 
-        private val completeHandler: Handler<Upload> =
-            jsonHandler<Upload>(clientOptions.jsonMapper).withErrorHandler(errorHandler)
+        private val completeHandler: Handler<Upload> = jsonHandler<Upload>(clientOptions.jsonMapper)
 
         override fun complete(
             params: UploadCompleteParams,
@@ -168,7 +166,7 @@ class UploadServiceAsyncImpl internal constructor(private val clientOptions: Cli
             return request
                 .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
                 .thenApply { response ->
-                    response.parseable {
+                    errorHandler.handle(response).parseable {
                         response
                             .use { completeHandler.handle(it) }
                             .also {

@@ -5,13 +5,14 @@ package com.openai.services.blocking
 import com.openai.core.ClientOptions
 import com.openai.core.JsonValue
 import com.openai.core.RequestOptions
+import com.openai.core.handlers.errorBodyHandler
 import com.openai.core.handlers.errorHandler
 import com.openai.core.handlers.jsonHandler
 import com.openai.core.handlers.mapJson
 import com.openai.core.handlers.sseHandler
-import com.openai.core.handlers.withErrorHandler
 import com.openai.core.http.HttpMethod
 import com.openai.core.http.HttpRequest
+import com.openai.core.http.HttpResponse
 import com.openai.core.http.HttpResponse.Handler
 import com.openai.core.http.HttpResponseFor
 import com.openai.core.http.StreamResponse
@@ -19,7 +20,6 @@ import com.openai.core.http.json
 import com.openai.core.http.map
 import com.openai.core.http.parseable
 import com.openai.core.prepare
-import com.openai.models.ErrorObject
 import com.openai.models.completions.Completion
 import com.openai.models.completions.CompletionCreateParams
 import java.util.function.Consumer
@@ -53,7 +53,8 @@ class CompletionServiceImpl internal constructor(private val clientOptions: Clie
     class WithRawResponseImpl internal constructor(private val clientOptions: ClientOptions) :
         CompletionService.WithRawResponse {
 
-        private val errorHandler: Handler<ErrorObject?> = errorHandler(clientOptions.jsonMapper)
+        private val errorHandler: Handler<HttpResponse> =
+            errorHandler(errorBodyHandler(clientOptions.jsonMapper))
 
         override fun withOptions(
             modifier: Consumer<ClientOptions.Builder>
@@ -63,7 +64,7 @@ class CompletionServiceImpl internal constructor(private val clientOptions: Clie
             )
 
         private val createHandler: Handler<Completion> =
-            jsonHandler<Completion>(clientOptions.jsonMapper).withErrorHandler(errorHandler)
+            jsonHandler<Completion>(clientOptions.jsonMapper)
 
         override fun create(
             params: CompletionCreateParams,
@@ -79,7 +80,7 @@ class CompletionServiceImpl internal constructor(private val clientOptions: Clie
                     .prepare(clientOptions, params, params.model().toString())
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             val response = clientOptions.httpClient.execute(request, requestOptions)
-            return response.parseable {
+            return errorHandler.handle(response).parseable {
                 response
                     .use { createHandler.handle(it) }
                     .also {
@@ -91,9 +92,7 @@ class CompletionServiceImpl internal constructor(private val clientOptions: Clie
         }
 
         private val createStreamingHandler: Handler<StreamResponse<Completion>> =
-            sseHandler(clientOptions.jsonMapper)
-                .mapJson<Completion>()
-                .withErrorHandler(errorHandler)
+            sseHandler(clientOptions.jsonMapper).mapJson<Completion>()
 
         override fun createStreaming(
             params: CompletionCreateParams,
@@ -118,7 +117,7 @@ class CompletionServiceImpl internal constructor(private val clientOptions: Clie
                     .prepare(clientOptions, params, params.model().toString())
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             val response = clientOptions.httpClient.execute(request, requestOptions)
-            return response.parseable {
+            return errorHandler.handle(response).parseable {
                 response
                     .let { createStreamingHandler.handle(it) }
                     .let { streamResponse ->

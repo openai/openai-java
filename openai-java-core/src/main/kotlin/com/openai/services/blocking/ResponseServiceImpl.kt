@@ -7,11 +7,11 @@ import com.openai.core.JsonValue
 import com.openai.core.RequestOptions
 import com.openai.core.checkRequired
 import com.openai.core.handlers.emptyHandler
+import com.openai.core.handlers.errorBodyHandler
 import com.openai.core.handlers.errorHandler
 import com.openai.core.handlers.jsonHandler
 import com.openai.core.handlers.mapJson
 import com.openai.core.handlers.sseHandler
-import com.openai.core.handlers.withErrorHandler
 import com.openai.core.http.HttpMethod
 import com.openai.core.http.HttpRequest
 import com.openai.core.http.HttpResponse
@@ -22,7 +22,6 @@ import com.openai.core.http.json
 import com.openai.core.http.map
 import com.openai.core.http.parseable
 import com.openai.core.prepare
-import com.openai.models.ErrorObject
 import com.openai.models.responses.Response
 import com.openai.models.responses.ResponseCancelParams
 import com.openai.models.responses.ResponseCreateParams
@@ -87,7 +86,8 @@ class ResponseServiceImpl internal constructor(private val clientOptions: Client
     class WithRawResponseImpl internal constructor(private val clientOptions: ClientOptions) :
         ResponseService.WithRawResponse {
 
-        private val errorHandler: Handler<ErrorObject?> = errorHandler(clientOptions.jsonMapper)
+        private val errorHandler: Handler<HttpResponse> =
+            errorHandler(errorBodyHandler(clientOptions.jsonMapper))
 
         private val inputItems: InputItemService.WithRawResponse by lazy {
             InputItemServiceImpl.WithRawResponseImpl(clientOptions)
@@ -103,7 +103,7 @@ class ResponseServiceImpl internal constructor(private val clientOptions: Client
         override fun inputItems(): InputItemService.WithRawResponse = inputItems
 
         private val createHandler: Handler<Response> =
-            jsonHandler<Response>(clientOptions.jsonMapper).withErrorHandler(errorHandler)
+            jsonHandler<Response>(clientOptions.jsonMapper)
 
         override fun create(
             params: ResponseCreateParams,
@@ -119,7 +119,7 @@ class ResponseServiceImpl internal constructor(private val clientOptions: Client
                     .prepare(clientOptions, params, deploymentModel = null)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             val response = clientOptions.httpClient.execute(request, requestOptions)
-            return response.parseable {
+            return errorHandler.handle(response).parseable {
                 response
                     .use { createHandler.handle(it) }
                     .also {
@@ -131,9 +131,7 @@ class ResponseServiceImpl internal constructor(private val clientOptions: Client
         }
 
         private val createStreamingHandler: Handler<StreamResponse<ResponseStreamEvent>> =
-            sseHandler(clientOptions.jsonMapper)
-                .mapJson<ResponseStreamEvent>()
-                .withErrorHandler(errorHandler)
+            sseHandler(clientOptions.jsonMapper).mapJson<ResponseStreamEvent>()
 
         override fun createStreaming(
             params: ResponseCreateParams,
@@ -158,7 +156,7 @@ class ResponseServiceImpl internal constructor(private val clientOptions: Client
                     .prepare(clientOptions, params, deploymentModel = null)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             val response = clientOptions.httpClient.execute(request, requestOptions)
-            return response.parseable {
+            return errorHandler.handle(response).parseable {
                 response
                     .let { createStreamingHandler.handle(it) }
                     .let { streamResponse ->
@@ -172,7 +170,7 @@ class ResponseServiceImpl internal constructor(private val clientOptions: Client
         }
 
         private val retrieveHandler: Handler<Response> =
-            jsonHandler<Response>(clientOptions.jsonMapper).withErrorHandler(errorHandler)
+            jsonHandler<Response>(clientOptions.jsonMapper)
 
         override fun retrieve(
             params: ResponseRetrieveParams,
@@ -190,7 +188,7 @@ class ResponseServiceImpl internal constructor(private val clientOptions: Client
                     .prepare(clientOptions, params, deploymentModel = null)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             val response = clientOptions.httpClient.execute(request, requestOptions)
-            return response.parseable {
+            return errorHandler.handle(response).parseable {
                 response
                     .use { retrieveHandler.handle(it) }
                     .also {
@@ -202,9 +200,7 @@ class ResponseServiceImpl internal constructor(private val clientOptions: Client
         }
 
         private val retrieveStreamingHandler: Handler<StreamResponse<ResponseStreamEvent>> =
-            sseHandler(clientOptions.jsonMapper)
-                .mapJson<ResponseStreamEvent>()
-                .withErrorHandler(errorHandler)
+            sseHandler(clientOptions.jsonMapper).mapJson<ResponseStreamEvent>()
 
         override fun retrieveStreaming(
             params: ResponseRetrieveParams,
@@ -223,7 +219,7 @@ class ResponseServiceImpl internal constructor(private val clientOptions: Client
                     .prepare(clientOptions, params, deploymentModel = null)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             val response = clientOptions.httpClient.execute(request, requestOptions)
-            return response.parseable {
+            return errorHandler.handle(response).parseable {
                 response
                     .let { retrieveStreamingHandler.handle(it) }
                     .let { streamResponse ->
@@ -236,7 +232,7 @@ class ResponseServiceImpl internal constructor(private val clientOptions: Client
             }
         }
 
-        private val deleteHandler: Handler<Void?> = emptyHandler().withErrorHandler(errorHandler)
+        private val deleteHandler: Handler<Void?> = emptyHandler()
 
         override fun delete(
             params: ResponseDeleteParams,
@@ -255,11 +251,13 @@ class ResponseServiceImpl internal constructor(private val clientOptions: Client
                     .prepare(clientOptions, params, deploymentModel = null)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             val response = clientOptions.httpClient.execute(request, requestOptions)
-            return response.parseable { response.use { deleteHandler.handle(it) } }
+            return errorHandler.handle(response).parseable {
+                response.use { deleteHandler.handle(it) }
+            }
         }
 
         private val cancelHandler: Handler<Response> =
-            jsonHandler<Response>(clientOptions.jsonMapper).withErrorHandler(errorHandler)
+            jsonHandler<Response>(clientOptions.jsonMapper)
 
         override fun cancel(
             params: ResponseCancelParams,
@@ -278,7 +276,7 @@ class ResponseServiceImpl internal constructor(private val clientOptions: Client
                     .prepare(clientOptions, params, deploymentModel = null)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             val response = clientOptions.httpClient.execute(request, requestOptions)
-            return response.parseable {
+            return errorHandler.handle(response).parseable {
                 response
                     .use { cancelHandler.handle(it) }
                     .also {

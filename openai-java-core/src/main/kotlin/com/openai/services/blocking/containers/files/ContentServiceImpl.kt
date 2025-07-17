@@ -5,13 +5,13 @@ package com.openai.services.blocking.containers.files
 import com.openai.core.ClientOptions
 import com.openai.core.RequestOptions
 import com.openai.core.checkRequired
+import com.openai.core.handlers.errorBodyHandler
 import com.openai.core.handlers.errorHandler
 import com.openai.core.http.HttpMethod
 import com.openai.core.http.HttpRequest
 import com.openai.core.http.HttpResponse
 import com.openai.core.http.HttpResponse.Handler
 import com.openai.core.prepare
-import com.openai.models.ErrorObject
 import com.openai.models.containers.files.content.ContentRetrieveParams
 import java.util.function.Consumer
 import kotlin.jvm.optionals.getOrNull
@@ -38,7 +38,8 @@ class ContentServiceImpl internal constructor(private val clientOptions: ClientO
     class WithRawResponseImpl internal constructor(private val clientOptions: ClientOptions) :
         ContentService.WithRawResponse {
 
-        private val errorHandler: Handler<ErrorObject?> = errorHandler(clientOptions.jsonMapper)
+        private val errorHandler: Handler<HttpResponse> =
+            errorHandler(errorBodyHandler(clientOptions.jsonMapper))
 
         override fun withOptions(
             modifier: Consumer<ClientOptions.Builder>
@@ -68,7 +69,8 @@ class ContentServiceImpl internal constructor(private val clientOptions: ClientO
                     .build()
                     .prepare(clientOptions, params, deploymentModel = null)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
-            return clientOptions.httpClient.execute(request, requestOptions)
+            val response = clientOptions.httpClient.execute(request, requestOptions)
+            return errorHandler.handle(response)
         }
     }
 }
