@@ -6,14 +6,15 @@ import com.openai.core.ClientOptions
 import com.openai.core.JsonValue
 import com.openai.core.RequestOptions
 import com.openai.core.checkRequired
+import com.openai.core.handlers.errorBodyHandler
 import com.openai.core.handlers.errorHandler
 import com.openai.core.handlers.jsonHandler
 import com.openai.core.handlers.mapJson
 import com.openai.core.handlers.sseHandler
-import com.openai.core.handlers.withErrorHandler
 import com.openai.core.http.AsyncStreamResponse
 import com.openai.core.http.HttpMethod
 import com.openai.core.http.HttpRequest
+import com.openai.core.http.HttpResponse
 import com.openai.core.http.HttpResponse.Handler
 import com.openai.core.http.HttpResponseFor
 import com.openai.core.http.StreamResponse
@@ -22,7 +23,6 @@ import com.openai.core.http.map
 import com.openai.core.http.parseable
 import com.openai.core.http.toAsync
 import com.openai.core.prepareAsync
-import com.openai.models.ErrorObject
 import com.openai.models.chat.completions.ChatCompletion
 import com.openai.models.chat.completions.ChatCompletionChunk
 import com.openai.models.chat.completions.ChatCompletionCreateParams
@@ -105,7 +105,8 @@ internal constructor(private val clientOptions: ClientOptions) : ChatCompletionS
     class WithRawResponseImpl internal constructor(private val clientOptions: ClientOptions) :
         ChatCompletionServiceAsync.WithRawResponse {
 
-        private val errorHandler: Handler<ErrorObject?> = errorHandler(clientOptions.jsonMapper)
+        private val errorHandler: Handler<HttpResponse> =
+            errorHandler(errorBodyHandler(clientOptions.jsonMapper))
 
         private val messages: MessageServiceAsync.WithRawResponse by lazy {
             MessageServiceAsyncImpl.WithRawResponseImpl(clientOptions)
@@ -121,7 +122,7 @@ internal constructor(private val clientOptions: ClientOptions) : ChatCompletionS
         override fun messages(): MessageServiceAsync.WithRawResponse = messages
 
         private val createHandler: Handler<ChatCompletion> =
-            jsonHandler<ChatCompletion>(clientOptions.jsonMapper).withErrorHandler(errorHandler)
+            jsonHandler<ChatCompletion>(clientOptions.jsonMapper)
 
         override fun create(
             params: ChatCompletionCreateParams,
@@ -139,7 +140,7 @@ internal constructor(private val clientOptions: ClientOptions) : ChatCompletionS
             return request
                 .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
                 .thenApply { response ->
-                    response.parseable {
+                    errorHandler.handle(response).parseable {
                         response
                             .use { createHandler.handle(it) }
                             .also {
@@ -152,9 +153,7 @@ internal constructor(private val clientOptions: ClientOptions) : ChatCompletionS
         }
 
         private val createStreamingHandler: Handler<StreamResponse<ChatCompletionChunk>> =
-            sseHandler(clientOptions.jsonMapper)
-                .mapJson<ChatCompletionChunk>()
-                .withErrorHandler(errorHandler)
+            sseHandler(clientOptions.jsonMapper).mapJson<ChatCompletionChunk>()
 
         override fun createStreaming(
             params: ChatCompletionCreateParams,
@@ -181,7 +180,7 @@ internal constructor(private val clientOptions: ClientOptions) : ChatCompletionS
             return request
                 .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
                 .thenApply { response ->
-                    response.parseable {
+                    errorHandler.handle(response).parseable {
                         response
                             .let { createStreamingHandler.handle(it) }
                             .let { streamResponse ->
@@ -196,7 +195,7 @@ internal constructor(private val clientOptions: ClientOptions) : ChatCompletionS
         }
 
         private val retrieveHandler: Handler<ChatCompletion> =
-            jsonHandler<ChatCompletion>(clientOptions.jsonMapper).withErrorHandler(errorHandler)
+            jsonHandler<ChatCompletion>(clientOptions.jsonMapper)
 
         override fun retrieve(
             params: ChatCompletionRetrieveParams,
@@ -216,7 +215,7 @@ internal constructor(private val clientOptions: ClientOptions) : ChatCompletionS
             return request
                 .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
                 .thenApply { response ->
-                    response.parseable {
+                    errorHandler.handle(response).parseable {
                         response
                             .use { retrieveHandler.handle(it) }
                             .also {
@@ -229,7 +228,7 @@ internal constructor(private val clientOptions: ClientOptions) : ChatCompletionS
         }
 
         private val updateHandler: Handler<ChatCompletion> =
-            jsonHandler<ChatCompletion>(clientOptions.jsonMapper).withErrorHandler(errorHandler)
+            jsonHandler<ChatCompletion>(clientOptions.jsonMapper)
 
         override fun update(
             params: ChatCompletionUpdateParams,
@@ -250,7 +249,7 @@ internal constructor(private val clientOptions: ClientOptions) : ChatCompletionS
             return request
                 .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
                 .thenApply { response ->
-                    response.parseable {
+                    errorHandler.handle(response).parseable {
                         response
                             .use { updateHandler.handle(it) }
                             .also {
@@ -264,7 +263,6 @@ internal constructor(private val clientOptions: ClientOptions) : ChatCompletionS
 
         private val listHandler: Handler<ChatCompletionListPageResponse> =
             jsonHandler<ChatCompletionListPageResponse>(clientOptions.jsonMapper)
-                .withErrorHandler(errorHandler)
 
         override fun list(
             params: ChatCompletionListParams,
@@ -281,7 +279,7 @@ internal constructor(private val clientOptions: ClientOptions) : ChatCompletionS
             return request
                 .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
                 .thenApply { response ->
-                    response.parseable {
+                    errorHandler.handle(response).parseable {
                         response
                             .use { listHandler.handle(it) }
                             .also {
@@ -303,7 +301,6 @@ internal constructor(private val clientOptions: ClientOptions) : ChatCompletionS
 
         private val deleteHandler: Handler<ChatCompletionDeleted> =
             jsonHandler<ChatCompletionDeleted>(clientOptions.jsonMapper)
-                .withErrorHandler(errorHandler)
 
         override fun delete(
             params: ChatCompletionDeleteParams,
@@ -324,7 +321,7 @@ internal constructor(private val clientOptions: ClientOptions) : ChatCompletionS
             return request
                 .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
                 .thenApply { response ->
-                    response.parseable {
+                    errorHandler.handle(response).parseable {
                         response
                             .use { deleteHandler.handle(it) }
                             .also {

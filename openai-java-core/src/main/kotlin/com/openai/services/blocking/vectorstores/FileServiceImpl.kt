@@ -5,18 +5,18 @@ package com.openai.services.blocking.vectorstores
 import com.openai.core.ClientOptions
 import com.openai.core.RequestOptions
 import com.openai.core.checkRequired
+import com.openai.core.handlers.errorBodyHandler
 import com.openai.core.handlers.errorHandler
 import com.openai.core.handlers.jsonHandler
-import com.openai.core.handlers.withErrorHandler
 import com.openai.core.http.Headers
 import com.openai.core.http.HttpMethod
 import com.openai.core.http.HttpRequest
+import com.openai.core.http.HttpResponse
 import com.openai.core.http.HttpResponse.Handler
 import com.openai.core.http.HttpResponseFor
 import com.openai.core.http.json
 import com.openai.core.http.parseable
 import com.openai.core.prepare
-import com.openai.models.ErrorObject
 import com.openai.models.vectorstores.files.FileContentPage
 import com.openai.models.vectorstores.files.FileContentPageResponse
 import com.openai.models.vectorstores.files.FileContentParams
@@ -84,7 +84,8 @@ class FileServiceImpl internal constructor(private val clientOptions: ClientOpti
     class WithRawResponseImpl internal constructor(private val clientOptions: ClientOptions) :
         FileService.WithRawResponse {
 
-        private val errorHandler: Handler<ErrorObject?> = errorHandler(clientOptions.jsonMapper)
+        private val errorHandler: Handler<HttpResponse> =
+            errorHandler(errorBodyHandler(clientOptions.jsonMapper))
 
         override fun withOptions(
             modifier: Consumer<ClientOptions.Builder>
@@ -94,7 +95,7 @@ class FileServiceImpl internal constructor(private val clientOptions: ClientOpti
             )
 
         private val createHandler: Handler<VectorStoreFile> =
-            jsonHandler<VectorStoreFile>(clientOptions.jsonMapper).withErrorHandler(errorHandler)
+            jsonHandler<VectorStoreFile>(clientOptions.jsonMapper)
 
         override fun create(
             params: FileCreateParams,
@@ -114,7 +115,7 @@ class FileServiceImpl internal constructor(private val clientOptions: ClientOpti
                     .prepare(clientOptions, params)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             val response = clientOptions.httpClient.execute(request, requestOptions)
-            return response.parseable {
+            return errorHandler.handle(response).parseable {
                 response
                     .use { createHandler.handle(it) }
                     .also {
@@ -126,7 +127,7 @@ class FileServiceImpl internal constructor(private val clientOptions: ClientOpti
         }
 
         private val retrieveHandler: Handler<VectorStoreFile> =
-            jsonHandler<VectorStoreFile>(clientOptions.jsonMapper).withErrorHandler(errorHandler)
+            jsonHandler<VectorStoreFile>(clientOptions.jsonMapper)
 
         override fun retrieve(
             params: FileRetrieveParams,
@@ -150,7 +151,7 @@ class FileServiceImpl internal constructor(private val clientOptions: ClientOpti
                     .prepare(clientOptions, params)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             val response = clientOptions.httpClient.execute(request, requestOptions)
-            return response.parseable {
+            return errorHandler.handle(response).parseable {
                 response
                     .use { retrieveHandler.handle(it) }
                     .also {
@@ -162,7 +163,7 @@ class FileServiceImpl internal constructor(private val clientOptions: ClientOpti
         }
 
         private val updateHandler: Handler<VectorStoreFile> =
-            jsonHandler<VectorStoreFile>(clientOptions.jsonMapper).withErrorHandler(errorHandler)
+            jsonHandler<VectorStoreFile>(clientOptions.jsonMapper)
 
         override fun update(
             params: FileUpdateParams,
@@ -187,7 +188,7 @@ class FileServiceImpl internal constructor(private val clientOptions: ClientOpti
                     .prepare(clientOptions, params)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             val response = clientOptions.httpClient.execute(request, requestOptions)
-            return response.parseable {
+            return errorHandler.handle(response).parseable {
                 response
                     .use { updateHandler.handle(it) }
                     .also {
@@ -200,7 +201,6 @@ class FileServiceImpl internal constructor(private val clientOptions: ClientOpti
 
         private val listHandler: Handler<FileListPageResponse> =
             jsonHandler<FileListPageResponse>(clientOptions.jsonMapper)
-                .withErrorHandler(errorHandler)
 
         override fun list(
             params: FileListParams,
@@ -219,7 +219,7 @@ class FileServiceImpl internal constructor(private val clientOptions: ClientOpti
                     .prepare(clientOptions, params)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             val response = clientOptions.httpClient.execute(request, requestOptions)
-            return response.parseable {
+            return errorHandler.handle(response).parseable {
                 response
                     .use { listHandler.handle(it) }
                     .also {
@@ -239,7 +239,6 @@ class FileServiceImpl internal constructor(private val clientOptions: ClientOpti
 
         private val deleteHandler: Handler<VectorStoreFileDeleted> =
             jsonHandler<VectorStoreFileDeleted>(clientOptions.jsonMapper)
-                .withErrorHandler(errorHandler)
 
         override fun delete(
             params: FileDeleteParams,
@@ -264,7 +263,7 @@ class FileServiceImpl internal constructor(private val clientOptions: ClientOpti
                     .prepare(clientOptions, params)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             val response = clientOptions.httpClient.execute(request, requestOptions)
-            return response.parseable {
+            return errorHandler.handle(response).parseable {
                 response
                     .use { deleteHandler.handle(it) }
                     .also {
@@ -277,7 +276,6 @@ class FileServiceImpl internal constructor(private val clientOptions: ClientOpti
 
         private val contentHandler: Handler<FileContentPageResponse> =
             jsonHandler<FileContentPageResponse>(clientOptions.jsonMapper)
-                .withErrorHandler(errorHandler)
 
         override fun content(
             params: FileContentParams,
@@ -302,7 +300,7 @@ class FileServiceImpl internal constructor(private val clientOptions: ClientOpti
                     .prepare(clientOptions, params)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             val response = clientOptions.httpClient.execute(request, requestOptions)
-            return response.parseable {
+            return errorHandler.handle(response).parseable {
                 response
                     .use { contentHandler.handle(it) }
                     .also {

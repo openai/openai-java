@@ -6,13 +6,14 @@ import com.openai.core.ClientOptions
 import com.openai.core.JsonValue
 import com.openai.core.RequestOptions
 import com.openai.core.checkRequired
+import com.openai.core.handlers.errorBodyHandler
 import com.openai.core.handlers.errorHandler
 import com.openai.core.handlers.jsonHandler
 import com.openai.core.handlers.mapJson
 import com.openai.core.handlers.sseHandler
-import com.openai.core.handlers.withErrorHandler
 import com.openai.core.http.HttpMethod
 import com.openai.core.http.HttpRequest
+import com.openai.core.http.HttpResponse
 import com.openai.core.http.HttpResponse.Handler
 import com.openai.core.http.HttpResponseFor
 import com.openai.core.http.StreamResponse
@@ -20,7 +21,6 @@ import com.openai.core.http.json
 import com.openai.core.http.map
 import com.openai.core.http.parseable
 import com.openai.core.prepare
-import com.openai.models.ErrorObject
 import com.openai.models.chat.completions.ChatCompletion
 import com.openai.models.chat.completions.ChatCompletionChunk
 import com.openai.models.chat.completions.ChatCompletionCreateParams
@@ -97,7 +97,8 @@ class ChatCompletionServiceImpl internal constructor(private val clientOptions: 
     class WithRawResponseImpl internal constructor(private val clientOptions: ClientOptions) :
         ChatCompletionService.WithRawResponse {
 
-        private val errorHandler: Handler<ErrorObject?> = errorHandler(clientOptions.jsonMapper)
+        private val errorHandler: Handler<HttpResponse> =
+            errorHandler(errorBodyHandler(clientOptions.jsonMapper))
 
         private val messages: MessageService.WithRawResponse by lazy {
             MessageServiceImpl.WithRawResponseImpl(clientOptions)
@@ -113,7 +114,7 @@ class ChatCompletionServiceImpl internal constructor(private val clientOptions: 
         override fun messages(): MessageService.WithRawResponse = messages
 
         private val createHandler: Handler<ChatCompletion> =
-            jsonHandler<ChatCompletion>(clientOptions.jsonMapper).withErrorHandler(errorHandler)
+            jsonHandler<ChatCompletion>(clientOptions.jsonMapper)
 
         override fun create(
             params: ChatCompletionCreateParams,
@@ -129,7 +130,7 @@ class ChatCompletionServiceImpl internal constructor(private val clientOptions: 
                     .prepare(clientOptions, params)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             val response = clientOptions.httpClient.execute(request, requestOptions)
-            return response.parseable {
+            return errorHandler.handle(response).parseable {
                 response
                     .use { createHandler.handle(it) }
                     .also {
@@ -141,9 +142,7 @@ class ChatCompletionServiceImpl internal constructor(private val clientOptions: 
         }
 
         private val createStreamingHandler: Handler<StreamResponse<ChatCompletionChunk>> =
-            sseHandler(clientOptions.jsonMapper)
-                .mapJson<ChatCompletionChunk>()
-                .withErrorHandler(errorHandler)
+            sseHandler(clientOptions.jsonMapper).mapJson<ChatCompletionChunk>()
 
         override fun createStreaming(
             params: ChatCompletionCreateParams,
@@ -168,7 +167,7 @@ class ChatCompletionServiceImpl internal constructor(private val clientOptions: 
                     .prepare(clientOptions, params)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             val response = clientOptions.httpClient.execute(request, requestOptions)
-            return response.parseable {
+            return errorHandler.handle(response).parseable {
                 response
                     .let { createStreamingHandler.handle(it) }
                     .let { streamResponse ->
@@ -182,7 +181,7 @@ class ChatCompletionServiceImpl internal constructor(private val clientOptions: 
         }
 
         private val retrieveHandler: Handler<ChatCompletion> =
-            jsonHandler<ChatCompletion>(clientOptions.jsonMapper).withErrorHandler(errorHandler)
+            jsonHandler<ChatCompletion>(clientOptions.jsonMapper)
 
         override fun retrieve(
             params: ChatCompletionRetrieveParams,
@@ -200,7 +199,7 @@ class ChatCompletionServiceImpl internal constructor(private val clientOptions: 
                     .prepare(clientOptions, params)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             val response = clientOptions.httpClient.execute(request, requestOptions)
-            return response.parseable {
+            return errorHandler.handle(response).parseable {
                 response
                     .use { retrieveHandler.handle(it) }
                     .also {
@@ -212,7 +211,7 @@ class ChatCompletionServiceImpl internal constructor(private val clientOptions: 
         }
 
         private val updateHandler: Handler<ChatCompletion> =
-            jsonHandler<ChatCompletion>(clientOptions.jsonMapper).withErrorHandler(errorHandler)
+            jsonHandler<ChatCompletion>(clientOptions.jsonMapper)
 
         override fun update(
             params: ChatCompletionUpdateParams,
@@ -231,7 +230,7 @@ class ChatCompletionServiceImpl internal constructor(private val clientOptions: 
                     .prepare(clientOptions, params)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             val response = clientOptions.httpClient.execute(request, requestOptions)
-            return response.parseable {
+            return errorHandler.handle(response).parseable {
                 response
                     .use { updateHandler.handle(it) }
                     .also {
@@ -244,7 +243,6 @@ class ChatCompletionServiceImpl internal constructor(private val clientOptions: 
 
         private val listHandler: Handler<ChatCompletionListPageResponse> =
             jsonHandler<ChatCompletionListPageResponse>(clientOptions.jsonMapper)
-                .withErrorHandler(errorHandler)
 
         override fun list(
             params: ChatCompletionListParams,
@@ -259,7 +257,7 @@ class ChatCompletionServiceImpl internal constructor(private val clientOptions: 
                     .prepare(clientOptions, params)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             val response = clientOptions.httpClient.execute(request, requestOptions)
-            return response.parseable {
+            return errorHandler.handle(response).parseable {
                 response
                     .use { listHandler.handle(it) }
                     .also {
@@ -279,7 +277,6 @@ class ChatCompletionServiceImpl internal constructor(private val clientOptions: 
 
         private val deleteHandler: Handler<ChatCompletionDeleted> =
             jsonHandler<ChatCompletionDeleted>(clientOptions.jsonMapper)
-                .withErrorHandler(errorHandler)
 
         override fun delete(
             params: ChatCompletionDeleteParams,
@@ -298,7 +295,7 @@ class ChatCompletionServiceImpl internal constructor(private val clientOptions: 
                     .prepare(clientOptions, params)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             val response = clientOptions.httpClient.execute(request, requestOptions)
-            return response.parseable {
+            return errorHandler.handle(response).parseable {
                 response
                     .use { deleteHandler.handle(it) }
                     .also {

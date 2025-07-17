@@ -4,17 +4,17 @@ package com.openai.services.blocking.finetuning.alpha
 
 import com.openai.core.ClientOptions
 import com.openai.core.RequestOptions
+import com.openai.core.handlers.errorBodyHandler
 import com.openai.core.handlers.errorHandler
 import com.openai.core.handlers.jsonHandler
-import com.openai.core.handlers.withErrorHandler
 import com.openai.core.http.HttpMethod
 import com.openai.core.http.HttpRequest
+import com.openai.core.http.HttpResponse
 import com.openai.core.http.HttpResponse.Handler
 import com.openai.core.http.HttpResponseFor
 import com.openai.core.http.json
 import com.openai.core.http.parseable
 import com.openai.core.prepare
-import com.openai.models.ErrorObject
 import com.openai.models.finetuning.alpha.graders.GraderRunParams
 import com.openai.models.finetuning.alpha.graders.GraderRunResponse
 import com.openai.models.finetuning.alpha.graders.GraderValidateParams
@@ -47,7 +47,8 @@ class GraderServiceImpl internal constructor(private val clientOptions: ClientOp
     class WithRawResponseImpl internal constructor(private val clientOptions: ClientOptions) :
         GraderService.WithRawResponse {
 
-        private val errorHandler: Handler<ErrorObject?> = errorHandler(clientOptions.jsonMapper)
+        private val errorHandler: Handler<HttpResponse> =
+            errorHandler(errorBodyHandler(clientOptions.jsonMapper))
 
         override fun withOptions(
             modifier: Consumer<ClientOptions.Builder>
@@ -57,7 +58,7 @@ class GraderServiceImpl internal constructor(private val clientOptions: ClientOp
             )
 
         private val runHandler: Handler<GraderRunResponse> =
-            jsonHandler<GraderRunResponse>(clientOptions.jsonMapper).withErrorHandler(errorHandler)
+            jsonHandler<GraderRunResponse>(clientOptions.jsonMapper)
 
         override fun run(
             params: GraderRunParams,
@@ -73,7 +74,7 @@ class GraderServiceImpl internal constructor(private val clientOptions: ClientOp
                     .prepare(clientOptions, params)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             val response = clientOptions.httpClient.execute(request, requestOptions)
-            return response.parseable {
+            return errorHandler.handle(response).parseable {
                 response
                     .use { runHandler.handle(it) }
                     .also {
@@ -86,7 +87,6 @@ class GraderServiceImpl internal constructor(private val clientOptions: ClientOp
 
         private val validateHandler: Handler<GraderValidateResponse> =
             jsonHandler<GraderValidateResponse>(clientOptions.jsonMapper)
-                .withErrorHandler(errorHandler)
 
         override fun validate(
             params: GraderValidateParams,
@@ -102,7 +102,7 @@ class GraderServiceImpl internal constructor(private val clientOptions: ClientOp
                     .prepare(clientOptions, params)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             val response = clientOptions.httpClient.execute(request, requestOptions)
-            return response.parseable {
+            return errorHandler.handle(response).parseable {
                 response
                     .use { validateHandler.handle(it) }
                     .also {

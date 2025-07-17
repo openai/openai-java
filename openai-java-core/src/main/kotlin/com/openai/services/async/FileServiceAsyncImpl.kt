@@ -5,9 +5,9 @@ package com.openai.services.async
 import com.openai.core.ClientOptions
 import com.openai.core.RequestOptions
 import com.openai.core.checkRequired
+import com.openai.core.handlers.errorBodyHandler
 import com.openai.core.handlers.errorHandler
 import com.openai.core.handlers.jsonHandler
-import com.openai.core.handlers.withErrorHandler
 import com.openai.core.http.HttpMethod
 import com.openai.core.http.HttpRequest
 import com.openai.core.http.HttpResponse
@@ -17,7 +17,6 @@ import com.openai.core.http.json
 import com.openai.core.http.multipartFormData
 import com.openai.core.http.parseable
 import com.openai.core.prepareAsync
-import com.openai.models.ErrorObject
 import com.openai.models.files.FileContentParams
 import com.openai.models.files.FileCreateParams
 import com.openai.models.files.FileDeleteParams
@@ -81,7 +80,8 @@ class FileServiceAsyncImpl internal constructor(private val clientOptions: Clien
     class WithRawResponseImpl internal constructor(private val clientOptions: ClientOptions) :
         FileServiceAsync.WithRawResponse {
 
-        private val errorHandler: Handler<ErrorObject?> = errorHandler(clientOptions.jsonMapper)
+        private val errorHandler: Handler<HttpResponse> =
+            errorHandler(errorBodyHandler(clientOptions.jsonMapper))
 
         override fun withOptions(
             modifier: Consumer<ClientOptions.Builder>
@@ -91,7 +91,7 @@ class FileServiceAsyncImpl internal constructor(private val clientOptions: Clien
             )
 
         private val createHandler: Handler<FileObject> =
-            jsonHandler<FileObject>(clientOptions.jsonMapper).withErrorHandler(errorHandler)
+            jsonHandler<FileObject>(clientOptions.jsonMapper)
 
         override fun create(
             params: FileCreateParams,
@@ -109,7 +109,7 @@ class FileServiceAsyncImpl internal constructor(private val clientOptions: Clien
             return request
                 .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
                 .thenApply { response ->
-                    response.parseable {
+                    errorHandler.handle(response).parseable {
                         response
                             .use { createHandler.handle(it) }
                             .also {
@@ -122,7 +122,7 @@ class FileServiceAsyncImpl internal constructor(private val clientOptions: Clien
         }
 
         private val retrieveHandler: Handler<FileObject> =
-            jsonHandler<FileObject>(clientOptions.jsonMapper).withErrorHandler(errorHandler)
+            jsonHandler<FileObject>(clientOptions.jsonMapper)
 
         override fun retrieve(
             params: FileRetrieveParams,
@@ -142,7 +142,7 @@ class FileServiceAsyncImpl internal constructor(private val clientOptions: Clien
             return request
                 .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
                 .thenApply { response ->
-                    response.parseable {
+                    errorHandler.handle(response).parseable {
                         response
                             .use { retrieveHandler.handle(it) }
                             .also {
@@ -156,7 +156,6 @@ class FileServiceAsyncImpl internal constructor(private val clientOptions: Clien
 
         private val listHandler: Handler<FileListPageResponse> =
             jsonHandler<FileListPageResponse>(clientOptions.jsonMapper)
-                .withErrorHandler(errorHandler)
 
         override fun list(
             params: FileListParams,
@@ -173,7 +172,7 @@ class FileServiceAsyncImpl internal constructor(private val clientOptions: Clien
             return request
                 .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
                 .thenApply { response ->
-                    response.parseable {
+                    errorHandler.handle(response).parseable {
                         response
                             .use { listHandler.handle(it) }
                             .also {
@@ -194,7 +193,7 @@ class FileServiceAsyncImpl internal constructor(private val clientOptions: Clien
         }
 
         private val deleteHandler: Handler<FileDeleted> =
-            jsonHandler<FileDeleted>(clientOptions.jsonMapper).withErrorHandler(errorHandler)
+            jsonHandler<FileDeleted>(clientOptions.jsonMapper)
 
         override fun delete(
             params: FileDeleteParams,
@@ -215,7 +214,7 @@ class FileServiceAsyncImpl internal constructor(private val clientOptions: Clien
             return request
                 .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
                 .thenApply { response ->
-                    response.parseable {
+                    errorHandler.handle(response).parseable {
                         response
                             .use { deleteHandler.handle(it) }
                             .also {
@@ -242,9 +241,9 @@ class FileServiceAsyncImpl internal constructor(private val clientOptions: Clien
                     .build()
                     .prepareAsync(clientOptions, params)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
-            return request.thenComposeAsync {
-                clientOptions.httpClient.executeAsync(it, requestOptions)
-            }
+            return request
+                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
+                .thenApply { response -> errorHandler.handle(response) }
         }
     }
 }

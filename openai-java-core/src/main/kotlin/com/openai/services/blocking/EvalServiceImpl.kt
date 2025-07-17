@@ -5,17 +5,17 @@ package com.openai.services.blocking
 import com.openai.core.ClientOptions
 import com.openai.core.RequestOptions
 import com.openai.core.checkRequired
+import com.openai.core.handlers.errorBodyHandler
 import com.openai.core.handlers.errorHandler
 import com.openai.core.handlers.jsonHandler
-import com.openai.core.handlers.withErrorHandler
 import com.openai.core.http.HttpMethod
 import com.openai.core.http.HttpRequest
+import com.openai.core.http.HttpResponse
 import com.openai.core.http.HttpResponse.Handler
 import com.openai.core.http.HttpResponseFor
 import com.openai.core.http.json
 import com.openai.core.http.parseable
 import com.openai.core.prepare
-import com.openai.models.ErrorObject
 import com.openai.models.evals.EvalCreateParams
 import com.openai.models.evals.EvalCreateResponse
 import com.openai.models.evals.EvalDeleteParams
@@ -82,7 +82,8 @@ class EvalServiceImpl internal constructor(private val clientOptions: ClientOpti
     class WithRawResponseImpl internal constructor(private val clientOptions: ClientOptions) :
         EvalService.WithRawResponse {
 
-        private val errorHandler: Handler<ErrorObject?> = errorHandler(clientOptions.jsonMapper)
+        private val errorHandler: Handler<HttpResponse> =
+            errorHandler(errorBodyHandler(clientOptions.jsonMapper))
 
         private val runs: RunService.WithRawResponse by lazy {
             RunServiceImpl.WithRawResponseImpl(clientOptions)
@@ -98,7 +99,7 @@ class EvalServiceImpl internal constructor(private val clientOptions: ClientOpti
         override fun runs(): RunService.WithRawResponse = runs
 
         private val createHandler: Handler<EvalCreateResponse> =
-            jsonHandler<EvalCreateResponse>(clientOptions.jsonMapper).withErrorHandler(errorHandler)
+            jsonHandler<EvalCreateResponse>(clientOptions.jsonMapper)
 
         override fun create(
             params: EvalCreateParams,
@@ -114,7 +115,7 @@ class EvalServiceImpl internal constructor(private val clientOptions: ClientOpti
                     .prepare(clientOptions, params)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             val response = clientOptions.httpClient.execute(request, requestOptions)
-            return response.parseable {
+            return errorHandler.handle(response).parseable {
                 response
                     .use { createHandler.handle(it) }
                     .also {
@@ -127,7 +128,6 @@ class EvalServiceImpl internal constructor(private val clientOptions: ClientOpti
 
         private val retrieveHandler: Handler<EvalRetrieveResponse> =
             jsonHandler<EvalRetrieveResponse>(clientOptions.jsonMapper)
-                .withErrorHandler(errorHandler)
 
         override fun retrieve(
             params: EvalRetrieveParams,
@@ -145,7 +145,7 @@ class EvalServiceImpl internal constructor(private val clientOptions: ClientOpti
                     .prepare(clientOptions, params)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             val response = clientOptions.httpClient.execute(request, requestOptions)
-            return response.parseable {
+            return errorHandler.handle(response).parseable {
                 response
                     .use { retrieveHandler.handle(it) }
                     .also {
@@ -157,7 +157,7 @@ class EvalServiceImpl internal constructor(private val clientOptions: ClientOpti
         }
 
         private val updateHandler: Handler<EvalUpdateResponse> =
-            jsonHandler<EvalUpdateResponse>(clientOptions.jsonMapper).withErrorHandler(errorHandler)
+            jsonHandler<EvalUpdateResponse>(clientOptions.jsonMapper)
 
         override fun update(
             params: EvalUpdateParams,
@@ -176,7 +176,7 @@ class EvalServiceImpl internal constructor(private val clientOptions: ClientOpti
                     .prepare(clientOptions, params)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             val response = clientOptions.httpClient.execute(request, requestOptions)
-            return response.parseable {
+            return errorHandler.handle(response).parseable {
                 response
                     .use { updateHandler.handle(it) }
                     .also {
@@ -189,7 +189,6 @@ class EvalServiceImpl internal constructor(private val clientOptions: ClientOpti
 
         private val listHandler: Handler<EvalListPageResponse> =
             jsonHandler<EvalListPageResponse>(clientOptions.jsonMapper)
-                .withErrorHandler(errorHandler)
 
         override fun list(
             params: EvalListParams,
@@ -204,7 +203,7 @@ class EvalServiceImpl internal constructor(private val clientOptions: ClientOpti
                     .prepare(clientOptions, params)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             val response = clientOptions.httpClient.execute(request, requestOptions)
-            return response.parseable {
+            return errorHandler.handle(response).parseable {
                 response
                     .use { listHandler.handle(it) }
                     .also {
@@ -223,7 +222,7 @@ class EvalServiceImpl internal constructor(private val clientOptions: ClientOpti
         }
 
         private val deleteHandler: Handler<EvalDeleteResponse> =
-            jsonHandler<EvalDeleteResponse>(clientOptions.jsonMapper).withErrorHandler(errorHandler)
+            jsonHandler<EvalDeleteResponse>(clientOptions.jsonMapper)
 
         override fun delete(
             params: EvalDeleteParams,
@@ -242,7 +241,7 @@ class EvalServiceImpl internal constructor(private val clientOptions: ClientOpti
                     .prepare(clientOptions, params)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             val response = clientOptions.httpClient.execute(request, requestOptions)
-            return response.parseable {
+            return errorHandler.handle(response).parseable {
                 response
                     .use { deleteHandler.handle(it) }
                     .also {

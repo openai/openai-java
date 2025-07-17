@@ -20,7 +20,7 @@ import com.openai.errors.UnprocessableEntityException
 import com.openai.models.ErrorObject
 
 @JvmSynthetic
-internal fun errorHandler(jsonMapper: JsonMapper): Handler<ErrorObject?> {
+internal fun errorBodyHandler(jsonMapper: JsonMapper): Handler<ErrorObject?> {
     val handler = jsonHandler<JsonNode>(jsonMapper)
 
     return object : Handler<ErrorObject?> {
@@ -36,52 +36,52 @@ internal fun errorHandler(jsonMapper: JsonMapper): Handler<ErrorObject?> {
 }
 
 @JvmSynthetic
-internal fun <T> Handler<T>.withErrorHandler(errorHandler: Handler<ErrorObject?>): Handler<T> =
-    object : Handler<T> {
-        override fun handle(response: HttpResponse): T =
+internal fun errorHandler(errorBodyHandler: Handler<ErrorObject?>): Handler<HttpResponse> =
+    object : Handler<HttpResponse> {
+        override fun handle(response: HttpResponse): HttpResponse =
             when (val statusCode = response.statusCode()) {
-                in 200..299 -> this@withErrorHandler.handle(response)
+                in 200..299 -> response
                 400 ->
                     throw BadRequestException.builder()
                         .headers(response.headers())
-                        .error(errorHandler.handle(response))
+                        .error(errorBodyHandler.handle(response))
                         .build()
                 401 ->
                     throw UnauthorizedException.builder()
                         .headers(response.headers())
-                        .error(errorHandler.handle(response))
+                        .error(errorBodyHandler.handle(response))
                         .build()
                 403 ->
                     throw PermissionDeniedException.builder()
                         .headers(response.headers())
-                        .error(errorHandler.handle(response))
+                        .error(errorBodyHandler.handle(response))
                         .build()
                 404 ->
                     throw NotFoundException.builder()
                         .headers(response.headers())
-                        .error(errorHandler.handle(response))
+                        .error(errorBodyHandler.handle(response))
                         .build()
                 422 ->
                     throw UnprocessableEntityException.builder()
                         .headers(response.headers())
-                        .error(errorHandler.handle(response))
+                        .error(errorBodyHandler.handle(response))
                         .build()
                 429 ->
                     throw RateLimitException.builder()
                         .headers(response.headers())
-                        .error(errorHandler.handle(response))
+                        .error(errorBodyHandler.handle(response))
                         .build()
                 in 500..599 ->
                     throw InternalServerException.builder()
                         .statusCode(statusCode)
                         .headers(response.headers())
-                        .error(errorHandler.handle(response))
+                        .error(errorBodyHandler.handle(response))
                         .build()
                 else ->
                     throw UnexpectedStatusCodeException.builder()
                         .statusCode(statusCode)
                         .headers(response.headers())
-                        .error(errorHandler.handle(response))
+                        .error(errorBodyHandler.handle(response))
                         .build()
             }
     }

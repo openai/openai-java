@@ -5,17 +5,17 @@ package com.openai.services.async
 import com.openai.core.ClientOptions
 import com.openai.core.RequestOptions
 import com.openai.core.checkRequired
+import com.openai.core.handlers.errorBodyHandler
 import com.openai.core.handlers.errorHandler
 import com.openai.core.handlers.jsonHandler
-import com.openai.core.handlers.withErrorHandler
 import com.openai.core.http.HttpMethod
 import com.openai.core.http.HttpRequest
+import com.openai.core.http.HttpResponse
 import com.openai.core.http.HttpResponse.Handler
 import com.openai.core.http.HttpResponseFor
 import com.openai.core.http.json
 import com.openai.core.http.parseable
 import com.openai.core.prepareAsync
-import com.openai.models.ErrorObject
 import com.openai.models.evals.EvalCreateParams
 import com.openai.models.evals.EvalCreateResponse
 import com.openai.models.evals.EvalDeleteParams
@@ -87,7 +87,8 @@ class EvalServiceAsyncImpl internal constructor(private val clientOptions: Clien
     class WithRawResponseImpl internal constructor(private val clientOptions: ClientOptions) :
         EvalServiceAsync.WithRawResponse {
 
-        private val errorHandler: Handler<ErrorObject?> = errorHandler(clientOptions.jsonMapper)
+        private val errorHandler: Handler<HttpResponse> =
+            errorHandler(errorBodyHandler(clientOptions.jsonMapper))
 
         private val runs: RunServiceAsync.WithRawResponse by lazy {
             RunServiceAsyncImpl.WithRawResponseImpl(clientOptions)
@@ -103,7 +104,7 @@ class EvalServiceAsyncImpl internal constructor(private val clientOptions: Clien
         override fun runs(): RunServiceAsync.WithRawResponse = runs
 
         private val createHandler: Handler<EvalCreateResponse> =
-            jsonHandler<EvalCreateResponse>(clientOptions.jsonMapper).withErrorHandler(errorHandler)
+            jsonHandler<EvalCreateResponse>(clientOptions.jsonMapper)
 
         override fun create(
             params: EvalCreateParams,
@@ -121,7 +122,7 @@ class EvalServiceAsyncImpl internal constructor(private val clientOptions: Clien
             return request
                 .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
                 .thenApply { response ->
-                    response.parseable {
+                    errorHandler.handle(response).parseable {
                         response
                             .use { createHandler.handle(it) }
                             .also {
@@ -135,7 +136,6 @@ class EvalServiceAsyncImpl internal constructor(private val clientOptions: Clien
 
         private val retrieveHandler: Handler<EvalRetrieveResponse> =
             jsonHandler<EvalRetrieveResponse>(clientOptions.jsonMapper)
-                .withErrorHandler(errorHandler)
 
         override fun retrieve(
             params: EvalRetrieveParams,
@@ -155,7 +155,7 @@ class EvalServiceAsyncImpl internal constructor(private val clientOptions: Clien
             return request
                 .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
                 .thenApply { response ->
-                    response.parseable {
+                    errorHandler.handle(response).parseable {
                         response
                             .use { retrieveHandler.handle(it) }
                             .also {
@@ -168,7 +168,7 @@ class EvalServiceAsyncImpl internal constructor(private val clientOptions: Clien
         }
 
         private val updateHandler: Handler<EvalUpdateResponse> =
-            jsonHandler<EvalUpdateResponse>(clientOptions.jsonMapper).withErrorHandler(errorHandler)
+            jsonHandler<EvalUpdateResponse>(clientOptions.jsonMapper)
 
         override fun update(
             params: EvalUpdateParams,
@@ -189,7 +189,7 @@ class EvalServiceAsyncImpl internal constructor(private val clientOptions: Clien
             return request
                 .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
                 .thenApply { response ->
-                    response.parseable {
+                    errorHandler.handle(response).parseable {
                         response
                             .use { updateHandler.handle(it) }
                             .also {
@@ -203,7 +203,6 @@ class EvalServiceAsyncImpl internal constructor(private val clientOptions: Clien
 
         private val listHandler: Handler<EvalListPageResponse> =
             jsonHandler<EvalListPageResponse>(clientOptions.jsonMapper)
-                .withErrorHandler(errorHandler)
 
         override fun list(
             params: EvalListParams,
@@ -220,7 +219,7 @@ class EvalServiceAsyncImpl internal constructor(private val clientOptions: Clien
             return request
                 .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
                 .thenApply { response ->
-                    response.parseable {
+                    errorHandler.handle(response).parseable {
                         response
                             .use { listHandler.handle(it) }
                             .also {
@@ -241,7 +240,7 @@ class EvalServiceAsyncImpl internal constructor(private val clientOptions: Clien
         }
 
         private val deleteHandler: Handler<EvalDeleteResponse> =
-            jsonHandler<EvalDeleteResponse>(clientOptions.jsonMapper).withErrorHandler(errorHandler)
+            jsonHandler<EvalDeleteResponse>(clientOptions.jsonMapper)
 
         override fun delete(
             params: EvalDeleteParams,
@@ -262,7 +261,7 @@ class EvalServiceAsyncImpl internal constructor(private val clientOptions: Clien
             return request
                 .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
                 .thenApply { response ->
-                    response.parseable {
+                    errorHandler.handle(response).parseable {
                         response
                             .use { deleteHandler.handle(it) }
                             .also {

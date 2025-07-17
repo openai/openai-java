@@ -4,18 +4,18 @@ package com.openai.services.blocking.beta.realtime
 
 import com.openai.core.ClientOptions
 import com.openai.core.RequestOptions
+import com.openai.core.handlers.errorBodyHandler
 import com.openai.core.handlers.errorHandler
 import com.openai.core.handlers.jsonHandler
-import com.openai.core.handlers.withErrorHandler
 import com.openai.core.http.Headers
 import com.openai.core.http.HttpMethod
 import com.openai.core.http.HttpRequest
+import com.openai.core.http.HttpResponse
 import com.openai.core.http.HttpResponse.Handler
 import com.openai.core.http.HttpResponseFor
 import com.openai.core.http.json
 import com.openai.core.http.parseable
 import com.openai.core.prepare
-import com.openai.models.ErrorObject
 import com.openai.models.beta.realtime.transcriptionsessions.TranscriptionSession
 import com.openai.models.beta.realtime.transcriptionsessions.TranscriptionSessionCreateParams
 import java.util.function.Consumer
@@ -49,7 +49,8 @@ internal constructor(private val clientOptions: ClientOptions) : TranscriptionSe
     class WithRawResponseImpl internal constructor(private val clientOptions: ClientOptions) :
         TranscriptionSessionService.WithRawResponse {
 
-        private val errorHandler: Handler<ErrorObject?> = errorHandler(clientOptions.jsonMapper)
+        private val errorHandler: Handler<HttpResponse> =
+            errorHandler(errorBodyHandler(clientOptions.jsonMapper))
 
         override fun withOptions(
             modifier: Consumer<ClientOptions.Builder>
@@ -60,7 +61,6 @@ internal constructor(private val clientOptions: ClientOptions) : TranscriptionSe
 
         private val createHandler: Handler<TranscriptionSession> =
             jsonHandler<TranscriptionSession>(clientOptions.jsonMapper)
-                .withErrorHandler(errorHandler)
 
         override fun create(
             params: TranscriptionSessionCreateParams,
@@ -77,7 +77,7 @@ internal constructor(private val clientOptions: ClientOptions) : TranscriptionSe
                     .prepare(clientOptions, params)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             val response = clientOptions.httpClient.execute(request, requestOptions)
-            return response.parseable {
+            return errorHandler.handle(response).parseable {
                 response
                     .use { createHandler.handle(it) }
                     .also {
