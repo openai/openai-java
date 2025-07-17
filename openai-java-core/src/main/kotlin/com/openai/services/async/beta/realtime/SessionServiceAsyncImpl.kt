@@ -4,18 +4,18 @@ package com.openai.services.async.beta.realtime
 
 import com.openai.core.ClientOptions
 import com.openai.core.RequestOptions
+import com.openai.core.handlers.errorBodyHandler
 import com.openai.core.handlers.errorHandler
 import com.openai.core.handlers.jsonHandler
-import com.openai.core.handlers.withErrorHandler
 import com.openai.core.http.Headers
 import com.openai.core.http.HttpMethod
 import com.openai.core.http.HttpRequest
+import com.openai.core.http.HttpResponse
 import com.openai.core.http.HttpResponse.Handler
 import com.openai.core.http.HttpResponseFor
 import com.openai.core.http.json
 import com.openai.core.http.parseable
 import com.openai.core.prepareAsync
-import com.openai.models.ErrorObject
 import com.openai.models.beta.realtime.sessions.SessionCreateParams
 import com.openai.models.beta.realtime.sessions.SessionCreateResponse
 import java.util.concurrent.CompletableFuture
@@ -48,7 +48,8 @@ class SessionServiceAsyncImpl internal constructor(private val clientOptions: Cl
     class WithRawResponseImpl internal constructor(private val clientOptions: ClientOptions) :
         SessionServiceAsync.WithRawResponse {
 
-        private val errorHandler: Handler<ErrorObject?> = errorHandler(clientOptions.jsonMapper)
+        private val errorHandler: Handler<HttpResponse> =
+            errorHandler(errorBodyHandler(clientOptions.jsonMapper))
 
         override fun withOptions(
             modifier: Consumer<ClientOptions.Builder>
@@ -59,7 +60,6 @@ class SessionServiceAsyncImpl internal constructor(private val clientOptions: Cl
 
         private val createHandler: Handler<SessionCreateResponse> =
             jsonHandler<SessionCreateResponse>(clientOptions.jsonMapper)
-                .withErrorHandler(errorHandler)
 
         override fun create(
             params: SessionCreateParams,
@@ -78,7 +78,7 @@ class SessionServiceAsyncImpl internal constructor(private val clientOptions: Cl
             return request
                 .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
                 .thenApply { response ->
-                    response.parseable {
+                    errorHandler.handle(response).parseable {
                         response
                             .use { createHandler.handle(it) }
                             .also {

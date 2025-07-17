@@ -1,5 +1,25 @@
 # Changelog
 
+## 2.15.0 (2025-07-17)
+
+Full Changelog: [v2.14.0...v2.15.0](https://github.com/openai/openai-java/compare/v2.14.0...v2.15.0)
+
+### Features
+
+* **client:** add `ResponseAccumulator` ([#391](https://github.com/openai/openai-java/issues/391)) ([77f54fd](https://github.com/openai/openai-java/commit/77f54fdea8bf0a609f90ec511977531bffc1a9b1))
+
+
+### Bug Fixes
+
+* **client:** ensure error handling always occurs ([a00c39b](https://github.com/openai/openai-java/commit/a00c39b9b1e06a15fa3a0b2b495adfff86cddd10))
+
+
+### Chores
+
+* **client:** remove non-existent method ([2d185ba](https://github.com/openai/openai-java/commit/2d185ba387569d90ffffa07adf3337ffce918e3e))
+* **internal:** Add CONTRIBUTING.md for SDK developers ([608947c](https://github.com/openai/openai-java/commit/608947cd875167c5aa2beb65cf98f47050914b71))
+* **internal:** allow running specific example from cli ([3239c2d](https://github.com/openai/openai-java/commit/3239c2de360864456786043a2a3ffb1a71ac0a45))
+
 ## 2.14.0 (2025-07-16)
 
 Full Changelog: [v2.13.1...v2.14.0](https://github.com/openai/openai-java/compare/v2.13.1...v2.14.0)

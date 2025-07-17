@@ -5,18 +5,18 @@ package com.openai.services.blocking.vectorstores
 import com.openai.core.ClientOptions
 import com.openai.core.RequestOptions
 import com.openai.core.checkRequired
+import com.openai.core.handlers.errorBodyHandler
 import com.openai.core.handlers.errorHandler
 import com.openai.core.handlers.jsonHandler
-import com.openai.core.handlers.withErrorHandler
 import com.openai.core.http.Headers
 import com.openai.core.http.HttpMethod
 import com.openai.core.http.HttpRequest
+import com.openai.core.http.HttpResponse
 import com.openai.core.http.HttpResponse.Handler
 import com.openai.core.http.HttpResponseFor
 import com.openai.core.http.json
 import com.openai.core.http.parseable
 import com.openai.core.prepare
-import com.openai.models.ErrorObject
 import com.openai.models.vectorstores.filebatches.FileBatchCancelParams
 import com.openai.models.vectorstores.filebatches.FileBatchCreateParams
 import com.openai.models.vectorstores.filebatches.FileBatchListFilesPage
@@ -75,7 +75,8 @@ class FileBatchServiceImpl internal constructor(private val clientOptions: Clien
     class WithRawResponseImpl internal constructor(private val clientOptions: ClientOptions) :
         FileBatchService.WithRawResponse {
 
-        private val errorHandler: Handler<ErrorObject?> = errorHandler(clientOptions.jsonMapper)
+        private val errorHandler: Handler<HttpResponse> =
+            errorHandler(errorBodyHandler(clientOptions.jsonMapper))
 
         override fun withOptions(
             modifier: Consumer<ClientOptions.Builder>
@@ -86,7 +87,6 @@ class FileBatchServiceImpl internal constructor(private val clientOptions: Clien
 
         private val createHandler: Handler<VectorStoreFileBatch> =
             jsonHandler<VectorStoreFileBatch>(clientOptions.jsonMapper)
-                .withErrorHandler(errorHandler)
 
         override fun create(
             params: FileBatchCreateParams,
@@ -106,7 +106,7 @@ class FileBatchServiceImpl internal constructor(private val clientOptions: Clien
                     .prepare(clientOptions, params, deploymentModel = null)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             val response = clientOptions.httpClient.execute(request, requestOptions)
-            return response.parseable {
+            return errorHandler.handle(response).parseable {
                 response
                     .use { createHandler.handle(it) }
                     .also {
@@ -119,7 +119,6 @@ class FileBatchServiceImpl internal constructor(private val clientOptions: Clien
 
         private val retrieveHandler: Handler<VectorStoreFileBatch> =
             jsonHandler<VectorStoreFileBatch>(clientOptions.jsonMapper)
-                .withErrorHandler(errorHandler)
 
         override fun retrieve(
             params: FileBatchRetrieveParams,
@@ -143,7 +142,7 @@ class FileBatchServiceImpl internal constructor(private val clientOptions: Clien
                     .prepare(clientOptions, params, deploymentModel = null)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             val response = clientOptions.httpClient.execute(request, requestOptions)
-            return response.parseable {
+            return errorHandler.handle(response).parseable {
                 response
                     .use { retrieveHandler.handle(it) }
                     .also {
@@ -156,7 +155,6 @@ class FileBatchServiceImpl internal constructor(private val clientOptions: Clien
 
         private val cancelHandler: Handler<VectorStoreFileBatch> =
             jsonHandler<VectorStoreFileBatch>(clientOptions.jsonMapper)
-                .withErrorHandler(errorHandler)
 
         override fun cancel(
             params: FileBatchCancelParams,
@@ -182,7 +180,7 @@ class FileBatchServiceImpl internal constructor(private val clientOptions: Clien
                     .prepare(clientOptions, params, deploymentModel = null)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             val response = clientOptions.httpClient.execute(request, requestOptions)
-            return response.parseable {
+            return errorHandler.handle(response).parseable {
                 response
                     .use { cancelHandler.handle(it) }
                     .also {
@@ -195,7 +193,6 @@ class FileBatchServiceImpl internal constructor(private val clientOptions: Clien
 
         private val listFilesHandler: Handler<FileBatchListFilesPageResponse> =
             jsonHandler<FileBatchListFilesPageResponse>(clientOptions.jsonMapper)
-                .withErrorHandler(errorHandler)
 
         override fun listFiles(
             params: FileBatchListFilesParams,
@@ -220,7 +217,7 @@ class FileBatchServiceImpl internal constructor(private val clientOptions: Clien
                     .prepare(clientOptions, params, deploymentModel = null)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             val response = clientOptions.httpClient.execute(request, requestOptions)
-            return response.parseable {
+            return errorHandler.handle(response).parseable {
                 response
                     .use { listFilesHandler.handle(it) }
                     .also {

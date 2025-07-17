@@ -5,18 +5,18 @@ package com.openai.services.async
 import com.openai.core.ClientOptions
 import com.openai.core.RequestOptions
 import com.openai.core.checkRequired
+import com.openai.core.handlers.errorBodyHandler
 import com.openai.core.handlers.errorHandler
 import com.openai.core.handlers.jsonHandler
-import com.openai.core.handlers.withErrorHandler
 import com.openai.core.http.Headers
 import com.openai.core.http.HttpMethod
 import com.openai.core.http.HttpRequest
+import com.openai.core.http.HttpResponse
 import com.openai.core.http.HttpResponse.Handler
 import com.openai.core.http.HttpResponseFor
 import com.openai.core.http.json
 import com.openai.core.http.parseable
 import com.openai.core.prepareAsync
-import com.openai.models.ErrorObject
 import com.openai.models.vectorstores.VectorStore
 import com.openai.models.vectorstores.VectorStoreCreateParams
 import com.openai.models.vectorstores.VectorStoreDeleteParams
@@ -109,7 +109,8 @@ class VectorStoreServiceAsyncImpl internal constructor(private val clientOptions
     class WithRawResponseImpl internal constructor(private val clientOptions: ClientOptions) :
         VectorStoreServiceAsync.WithRawResponse {
 
-        private val errorHandler: Handler<ErrorObject?> = errorHandler(clientOptions.jsonMapper)
+        private val errorHandler: Handler<HttpResponse> =
+            errorHandler(errorBodyHandler(clientOptions.jsonMapper))
 
         private val files: FileServiceAsync.WithRawResponse by lazy {
             FileServiceAsyncImpl.WithRawResponseImpl(clientOptions)
@@ -131,7 +132,7 @@ class VectorStoreServiceAsyncImpl internal constructor(private val clientOptions
         override fun fileBatches(): FileBatchServiceAsync.WithRawResponse = fileBatches
 
         private val createHandler: Handler<VectorStore> =
-            jsonHandler<VectorStore>(clientOptions.jsonMapper).withErrorHandler(errorHandler)
+            jsonHandler<VectorStore>(clientOptions.jsonMapper)
 
         override fun create(
             params: VectorStoreCreateParams,
@@ -150,7 +151,7 @@ class VectorStoreServiceAsyncImpl internal constructor(private val clientOptions
             return request
                 .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
                 .thenApply { response ->
-                    response.parseable {
+                    errorHandler.handle(response).parseable {
                         response
                             .use { createHandler.handle(it) }
                             .also {
@@ -163,7 +164,7 @@ class VectorStoreServiceAsyncImpl internal constructor(private val clientOptions
         }
 
         private val retrieveHandler: Handler<VectorStore> =
-            jsonHandler<VectorStore>(clientOptions.jsonMapper).withErrorHandler(errorHandler)
+            jsonHandler<VectorStore>(clientOptions.jsonMapper)
 
         override fun retrieve(
             params: VectorStoreRetrieveParams,
@@ -184,7 +185,7 @@ class VectorStoreServiceAsyncImpl internal constructor(private val clientOptions
             return request
                 .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
                 .thenApply { response ->
-                    response.parseable {
+                    errorHandler.handle(response).parseable {
                         response
                             .use { retrieveHandler.handle(it) }
                             .also {
@@ -197,7 +198,7 @@ class VectorStoreServiceAsyncImpl internal constructor(private val clientOptions
         }
 
         private val updateHandler: Handler<VectorStore> =
-            jsonHandler<VectorStore>(clientOptions.jsonMapper).withErrorHandler(errorHandler)
+            jsonHandler<VectorStore>(clientOptions.jsonMapper)
 
         override fun update(
             params: VectorStoreUpdateParams,
@@ -219,7 +220,7 @@ class VectorStoreServiceAsyncImpl internal constructor(private val clientOptions
             return request
                 .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
                 .thenApply { response ->
-                    response.parseable {
+                    errorHandler.handle(response).parseable {
                         response
                             .use { updateHandler.handle(it) }
                             .also {
@@ -233,7 +234,6 @@ class VectorStoreServiceAsyncImpl internal constructor(private val clientOptions
 
         private val listHandler: Handler<VectorStoreListPageResponse> =
             jsonHandler<VectorStoreListPageResponse>(clientOptions.jsonMapper)
-                .withErrorHandler(errorHandler)
 
         override fun list(
             params: VectorStoreListParams,
@@ -251,7 +251,7 @@ class VectorStoreServiceAsyncImpl internal constructor(private val clientOptions
             return request
                 .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
                 .thenApply { response ->
-                    response.parseable {
+                    errorHandler.handle(response).parseable {
                         response
                             .use { listHandler.handle(it) }
                             .also {
@@ -272,7 +272,7 @@ class VectorStoreServiceAsyncImpl internal constructor(private val clientOptions
         }
 
         private val deleteHandler: Handler<VectorStoreDeleted> =
-            jsonHandler<VectorStoreDeleted>(clientOptions.jsonMapper).withErrorHandler(errorHandler)
+            jsonHandler<VectorStoreDeleted>(clientOptions.jsonMapper)
 
         override fun delete(
             params: VectorStoreDeleteParams,
@@ -294,7 +294,7 @@ class VectorStoreServiceAsyncImpl internal constructor(private val clientOptions
             return request
                 .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
                 .thenApply { response ->
-                    response.parseable {
+                    errorHandler.handle(response).parseable {
                         response
                             .use { deleteHandler.handle(it) }
                             .also {
@@ -308,7 +308,6 @@ class VectorStoreServiceAsyncImpl internal constructor(private val clientOptions
 
         private val searchHandler: Handler<VectorStoreSearchPageResponse> =
             jsonHandler<VectorStoreSearchPageResponse>(clientOptions.jsonMapper)
-                .withErrorHandler(errorHandler)
 
         override fun search(
             params: VectorStoreSearchParams,
@@ -330,7 +329,7 @@ class VectorStoreServiceAsyncImpl internal constructor(private val clientOptions
             return request
                 .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
                 .thenApply { response ->
-                    response.parseable {
+                    errorHandler.handle(response).parseable {
                         response
                             .use { searchHandler.handle(it) }
                             .also {

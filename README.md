@@ -2,8 +2,8 @@
 
 <!-- x-release-please-start-version -->
 
-[![Maven Central](https://img.shields.io/maven-central/v/com.openai/openai-java)](https://central.sonatype.com/artifact/com.openai/openai-java/2.14.0)
-[![javadoc](https://javadoc.io/badge2/com.openai/openai-java/2.14.0/javadoc.svg)](https://javadoc.io/doc/com.openai/openai-java/2.14.0)
+[![Maven Central](https://img.shields.io/maven-central/v/com.openai/openai-java)](https://central.sonatype.com/artifact/com.openai/openai-java/2.15.0)
+[![javadoc](https://javadoc.io/badge2/com.openai/openai-java/2.15.0/javadoc.svg)](https://javadoc.io/doc/com.openai/openai-java/2.15.0)
 
 <!-- x-release-please-end -->
 
@@ -11,7 +11,7 @@ The OpenAI Java SDK provides convenient access to the [OpenAI REST API](https://
 
 <!-- x-release-please-start-version -->
 
-The REST API documentation can be found on [platform.openai.com](https://platform.openai.com/docs). Javadocs are available on [javadoc.io](https://javadoc.io/doc/com.openai/openai-java/2.14.0).
+The REST API documentation can be found on [platform.openai.com](https://platform.openai.com/docs). Javadocs are available on [javadoc.io](https://javadoc.io/doc/com.openai/openai-java/2.15.0).
 
 <!-- x-release-please-end -->
 
@@ -22,7 +22,7 @@ The REST API documentation can be found on [platform.openai.com](https://platfor
 ### Gradle
 
 ```kotlin
-implementation("com.openai:openai-java:2.14.0")
+implementation("com.openai:openai-java:2.15.0")
 ```
 
 ### Maven
@@ -31,7 +31,7 @@ implementation("com.openai:openai-java:2.14.0")
 <dependency>
   <groupId>com.openai</groupId>
   <artifactId>openai-java</artifactId>
-  <version>2.14.0</version>
+  <version>2.15.0</version>
 </dependency>
 ```
 
@@ -350,6 +350,53 @@ client.chat()
 ChatCompletion chatCompletion = chatCompletionAccumulator.chatCompletion();
 ```
 
+The SDK provides conveniences for streamed responses. A
+[`ResponseAccumulator`](openai-java-core/src/main/kotlin/com/openai/helpers/ResponseAccumulator.kt)
+can record the stream of response events as they are processed and accumulate a
+[`Response`](openai-java-core/src/main/kotlin/com/openai/models/responses/Response.kt)
+object similar to that which would have been returned by the non-streaming API.
+
+For a synchronous response add a
+[`Stream.peek()`](https://docs.oracle.com/javase/8/docs/api/java/util/stream/Stream.html#peek-java.util.function.Consumer-)
+call to the stream pipeline to accumulate each event:
+
+```java
+import com.openai.core.http.StreamResponse;
+import com.openai.helpers.ResponseAccumulator;
+import com.openai.models.responses.Response;
+import com.openai.models.responses.ResponseStreamEvent;
+
+ResponseAccumulator responseAccumulator = ResponseAccumulator.create();
+
+try (StreamResponse<ResponseStreamEvent> streamResponse =
+        client.responses().createStreaming(createParams)) {
+    streamResponse.stream()
+            .peek(responseAccumulator::accumulate)
+            .flatMap(event -> event.outputTextDelta().stream())
+            .forEach(textEvent -> System.out.print(textEvent.delta()));
+}
+
+Response response = responseAccumulator.response();
+```
+
+For an asynchronous response, add the `ResponseAccumulator` to the `subscribe()` call:
+
+```java
+import com.openai.helpers.ResponseAccumulator;
+import com.openai.models.responses.Response;
+
+ResponseAccumulator responseAccumulator = ResponseAccumulator.create();
+
+client.responses()
+        .createStreaming(createParams)
+        .subscribe(event -> responseAccumulator.accumulate(event)
+                .outputTextDelta().ifPresent(textEvent -> System.out.print(textEvent.delta())))
+        .onCompleteFuture()
+        .join();
+
+Response response = responseAccumulator.response();
+```
+
 ## Structured outputs with JSON schemas
 
 Open AI [Structured Outputs](https://platform.openai.com/docs/guides/structured-outputs?api-mode=chat)
@@ -527,11 +574,16 @@ For a full example of the usage of _Structured Outputs_ with Streaming and the C
 see
 [`StructuredOutputsStreamingExample`](openai-java-example/src/main/java/com/openai/example/StructuredOutputsStreamingExample.java).
 
-At present, there is no accumulator for streaming responses using the Responses API. It is still
-possible to derive a JSON schema from a Java class and create a streaming response for a
-[`StructuredResponseCreateParams`](openai-java-core/src/main/kotlin/com/openai/models/responses/StructuredResponseCreateParams.kt)
-object, but there is no helper for deserialization of the response to an instance of that Java
-class.
+With the Responses API, accumulate events while streaming using the
+[`ResponseAccumulator`](openai-java-core/src/main/kotlin/com/openai/helpers/ResponseAccumulator.kt).
+Once accumulated, use `ResponseAccumulator.response(Class<T>)` to convert the accumulated `Response`
+into a
+[`StructuredResponse`](openai-java-core/src/main/kotlin/com/openai/models/responses/StructuredResponse.kt).
+The [`StructuredResponse`] can then automatically deserialize the JSON strings into instances of
+your Java class.
+
+For a full example of the usage of _Structured Outputs_ with Streaming and the Responses API, see
+[`ResponsesStructuredOutputsStreamingExample`](openai-java-example/src/main/java/com/openai/example/ResponsesStructuredOutputsStreamingExample.java).
 
 ### Defining JSON schema properties
 

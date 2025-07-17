@@ -193,8 +193,240 @@ internal class ErrorHandlingTest {
     }
 
     @Test
+    fun jobsCreate400WithRawResponse() {
+        val jobService = client.fineTuning().jobs().withRawResponse()
+        stubFor(
+            post(anyUrl())
+                .willReturn(
+                    status(400).withHeader(HEADER_NAME, HEADER_VALUE).withBody(ERROR_JSON_BYTES)
+                )
+        )
+
+        val e =
+            assertThrows<BadRequestException> {
+                jobService.create(
+                    JobCreateParams.builder()
+                        .model(JobCreateParams.Model.BABBAGE_002)
+                        .trainingFile("file-abc123")
+                        .hyperparameters(
+                            JobCreateParams.Hyperparameters.builder()
+                                .batchSizeAuto()
+                                .learningRateMultiplierAuto()
+                                .nEpochsAuto()
+                                .build()
+                        )
+                        .addIntegration(
+                            JobCreateParams.Integration.builder()
+                                .wandb(
+                                    JobCreateParams.Integration.Wandb.builder()
+                                        .project("my-wandb-project")
+                                        .entity("entity")
+                                        .name("name")
+                                        .addTag("custom-tag")
+                                        .build()
+                                )
+                                .build()
+                        )
+                        .metadata(
+                            JobCreateParams.Metadata.builder()
+                                .putAdditionalProperty("foo", JsonValue.from("string"))
+                                .build()
+                        )
+                        .method(
+                            JobCreateParams.Method.builder()
+                                .type(JobCreateParams.Method.Type.SUPERVISED)
+                                .dpo(
+                                    DpoMethod.builder()
+                                        .hyperparameters(
+                                            DpoHyperparameters.builder()
+                                                .batchSizeAuto()
+                                                .betaAuto()
+                                                .learningRateMultiplierAuto()
+                                                .nEpochsAuto()
+                                                .build()
+                                        )
+                                        .build()
+                                )
+                                .reinforcement(
+                                    ReinforcementMethod.builder()
+                                        .grader(
+                                            StringCheckGrader.builder()
+                                                .input("input")
+                                                .name("name")
+                                                .operation(StringCheckGrader.Operation.EQ)
+                                                .reference("reference")
+                                                .build()
+                                        )
+                                        .hyperparameters(
+                                            ReinforcementHyperparameters.builder()
+                                                .batchSizeAuto()
+                                                .computeMultiplierAuto()
+                                                .evalIntervalAuto()
+                                                .evalSamplesAuto()
+                                                .learningRateMultiplierAuto()
+                                                .nEpochsAuto()
+                                                .reasoningEffort(
+                                                    ReinforcementHyperparameters.ReasoningEffort
+                                                        .DEFAULT
+                                                )
+                                                .build()
+                                        )
+                                        .build()
+                                )
+                                .supervised(
+                                    SupervisedMethod.builder()
+                                        .hyperparameters(
+                                            SupervisedHyperparameters.builder()
+                                                .batchSizeAuto()
+                                                .learningRateMultiplierAuto()
+                                                .nEpochsAuto()
+                                                .build()
+                                        )
+                                        .build()
+                                )
+                                .build()
+                        )
+                        .seed(42L)
+                        .suffix("x")
+                        .validationFile("file-abc123")
+                        .build()
+                )
+            }
+
+        assertThat(e.statusCode()).isEqualTo(400)
+        assertThat(e.headers().toMap()).contains(entry(HEADER_NAME, listOf(HEADER_VALUE)))
+        assertThat(e.body())
+            .isEqualTo(
+                JsonValue.from(
+                    mapOf(
+                        "code" to "code",
+                        "message" to "message",
+                        "param" to "param",
+                        "type" to "type",
+                    )
+                )
+            )
+    }
+
+    @Test
     fun jobsCreate401() {
         val jobService = client.fineTuning().jobs()
+        stubFor(
+            post(anyUrl())
+                .willReturn(
+                    status(401).withHeader(HEADER_NAME, HEADER_VALUE).withBody(ERROR_JSON_BYTES)
+                )
+        )
+
+        val e =
+            assertThrows<UnauthorizedException> {
+                jobService.create(
+                    JobCreateParams.builder()
+                        .model(JobCreateParams.Model.BABBAGE_002)
+                        .trainingFile("file-abc123")
+                        .hyperparameters(
+                            JobCreateParams.Hyperparameters.builder()
+                                .batchSizeAuto()
+                                .learningRateMultiplierAuto()
+                                .nEpochsAuto()
+                                .build()
+                        )
+                        .addIntegration(
+                            JobCreateParams.Integration.builder()
+                                .wandb(
+                                    JobCreateParams.Integration.Wandb.builder()
+                                        .project("my-wandb-project")
+                                        .entity("entity")
+                                        .name("name")
+                                        .addTag("custom-tag")
+                                        .build()
+                                )
+                                .build()
+                        )
+                        .metadata(
+                            JobCreateParams.Metadata.builder()
+                                .putAdditionalProperty("foo", JsonValue.from("string"))
+                                .build()
+                        )
+                        .method(
+                            JobCreateParams.Method.builder()
+                                .type(JobCreateParams.Method.Type.SUPERVISED)
+                                .dpo(
+                                    DpoMethod.builder()
+                                        .hyperparameters(
+                                            DpoHyperparameters.builder()
+                                                .batchSizeAuto()
+                                                .betaAuto()
+                                                .learningRateMultiplierAuto()
+                                                .nEpochsAuto()
+                                                .build()
+                                        )
+                                        .build()
+                                )
+                                .reinforcement(
+                                    ReinforcementMethod.builder()
+                                        .grader(
+                                            StringCheckGrader.builder()
+                                                .input("input")
+                                                .name("name")
+                                                .operation(StringCheckGrader.Operation.EQ)
+                                                .reference("reference")
+                                                .build()
+                                        )
+                                        .hyperparameters(
+                                            ReinforcementHyperparameters.builder()
+                                                .batchSizeAuto()
+                                                .computeMultiplierAuto()
+                                                .evalIntervalAuto()
+                                                .evalSamplesAuto()
+                                                .learningRateMultiplierAuto()
+                                                .nEpochsAuto()
+                                                .reasoningEffort(
+                                                    ReinforcementHyperparameters.ReasoningEffort
+                                                        .DEFAULT
+                                                )
+                                                .build()
+                                        )
+                                        .build()
+                                )
+                                .supervised(
+                                    SupervisedMethod.builder()
+                                        .hyperparameters(
+                                            SupervisedHyperparameters.builder()
+                                                .batchSizeAuto()
+                                                .learningRateMultiplierAuto()
+                                                .nEpochsAuto()
+                                                .build()
+                                        )
+                                        .build()
+                                )
+                                .build()
+                        )
+                        .seed(42L)
+                        .suffix("x")
+                        .validationFile("file-abc123")
+                        .build()
+                )
+            }
+
+        assertThat(e.statusCode()).isEqualTo(401)
+        assertThat(e.headers().toMap()).contains(entry(HEADER_NAME, listOf(HEADER_VALUE)))
+        assertThat(e.body())
+            .isEqualTo(
+                JsonValue.from(
+                    mapOf(
+                        "code" to "code",
+                        "message" to "message",
+                        "param" to "param",
+                        "type" to "type",
+                    )
+                )
+            )
+    }
+
+    @Test
+    fun jobsCreate401WithRawResponse() {
+        val jobService = client.fineTuning().jobs().withRawResponse()
         stubFor(
             post(anyUrl())
                 .willReturn(
@@ -425,8 +657,240 @@ internal class ErrorHandlingTest {
     }
 
     @Test
+    fun jobsCreate403WithRawResponse() {
+        val jobService = client.fineTuning().jobs().withRawResponse()
+        stubFor(
+            post(anyUrl())
+                .willReturn(
+                    status(403).withHeader(HEADER_NAME, HEADER_VALUE).withBody(ERROR_JSON_BYTES)
+                )
+        )
+
+        val e =
+            assertThrows<PermissionDeniedException> {
+                jobService.create(
+                    JobCreateParams.builder()
+                        .model(JobCreateParams.Model.BABBAGE_002)
+                        .trainingFile("file-abc123")
+                        .hyperparameters(
+                            JobCreateParams.Hyperparameters.builder()
+                                .batchSizeAuto()
+                                .learningRateMultiplierAuto()
+                                .nEpochsAuto()
+                                .build()
+                        )
+                        .addIntegration(
+                            JobCreateParams.Integration.builder()
+                                .wandb(
+                                    JobCreateParams.Integration.Wandb.builder()
+                                        .project("my-wandb-project")
+                                        .entity("entity")
+                                        .name("name")
+                                        .addTag("custom-tag")
+                                        .build()
+                                )
+                                .build()
+                        )
+                        .metadata(
+                            JobCreateParams.Metadata.builder()
+                                .putAdditionalProperty("foo", JsonValue.from("string"))
+                                .build()
+                        )
+                        .method(
+                            JobCreateParams.Method.builder()
+                                .type(JobCreateParams.Method.Type.SUPERVISED)
+                                .dpo(
+                                    DpoMethod.builder()
+                                        .hyperparameters(
+                                            DpoHyperparameters.builder()
+                                                .batchSizeAuto()
+                                                .betaAuto()
+                                                .learningRateMultiplierAuto()
+                                                .nEpochsAuto()
+                                                .build()
+                                        )
+                                        .build()
+                                )
+                                .reinforcement(
+                                    ReinforcementMethod.builder()
+                                        .grader(
+                                            StringCheckGrader.builder()
+                                                .input("input")
+                                                .name("name")
+                                                .operation(StringCheckGrader.Operation.EQ)
+                                                .reference("reference")
+                                                .build()
+                                        )
+                                        .hyperparameters(
+                                            ReinforcementHyperparameters.builder()
+                                                .batchSizeAuto()
+                                                .computeMultiplierAuto()
+                                                .evalIntervalAuto()
+                                                .evalSamplesAuto()
+                                                .learningRateMultiplierAuto()
+                                                .nEpochsAuto()
+                                                .reasoningEffort(
+                                                    ReinforcementHyperparameters.ReasoningEffort
+                                                        .DEFAULT
+                                                )
+                                                .build()
+                                        )
+                                        .build()
+                                )
+                                .supervised(
+                                    SupervisedMethod.builder()
+                                        .hyperparameters(
+                                            SupervisedHyperparameters.builder()
+                                                .batchSizeAuto()
+                                                .learningRateMultiplierAuto()
+                                                .nEpochsAuto()
+                                                .build()
+                                        )
+                                        .build()
+                                )
+                                .build()
+                        )
+                        .seed(42L)
+                        .suffix("x")
+                        .validationFile("file-abc123")
+                        .build()
+                )
+            }
+
+        assertThat(e.statusCode()).isEqualTo(403)
+        assertThat(e.headers().toMap()).contains(entry(HEADER_NAME, listOf(HEADER_VALUE)))
+        assertThat(e.body())
+            .isEqualTo(
+                JsonValue.from(
+                    mapOf(
+                        "code" to "code",
+                        "message" to "message",
+                        "param" to "param",
+                        "type" to "type",
+                    )
+                )
+            )
+    }
+
+    @Test
     fun jobsCreate404() {
         val jobService = client.fineTuning().jobs()
+        stubFor(
+            post(anyUrl())
+                .willReturn(
+                    status(404).withHeader(HEADER_NAME, HEADER_VALUE).withBody(ERROR_JSON_BYTES)
+                )
+        )
+
+        val e =
+            assertThrows<NotFoundException> {
+                jobService.create(
+                    JobCreateParams.builder()
+                        .model(JobCreateParams.Model.BABBAGE_002)
+                        .trainingFile("file-abc123")
+                        .hyperparameters(
+                            JobCreateParams.Hyperparameters.builder()
+                                .batchSizeAuto()
+                                .learningRateMultiplierAuto()
+                                .nEpochsAuto()
+                                .build()
+                        )
+                        .addIntegration(
+                            JobCreateParams.Integration.builder()
+                                .wandb(
+                                    JobCreateParams.Integration.Wandb.builder()
+                                        .project("my-wandb-project")
+                                        .entity("entity")
+                                        .name("name")
+                                        .addTag("custom-tag")
+                                        .build()
+                                )
+                                .build()
+                        )
+                        .metadata(
+                            JobCreateParams.Metadata.builder()
+                                .putAdditionalProperty("foo", JsonValue.from("string"))
+                                .build()
+                        )
+                        .method(
+                            JobCreateParams.Method.builder()
+                                .type(JobCreateParams.Method.Type.SUPERVISED)
+                                .dpo(
+                                    DpoMethod.builder()
+                                        .hyperparameters(
+                                            DpoHyperparameters.builder()
+                                                .batchSizeAuto()
+                                                .betaAuto()
+                                                .learningRateMultiplierAuto()
+                                                .nEpochsAuto()
+                                                .build()
+                                        )
+                                        .build()
+                                )
+                                .reinforcement(
+                                    ReinforcementMethod.builder()
+                                        .grader(
+                                            StringCheckGrader.builder()
+                                                .input("input")
+                                                .name("name")
+                                                .operation(StringCheckGrader.Operation.EQ)
+                                                .reference("reference")
+                                                .build()
+                                        )
+                                        .hyperparameters(
+                                            ReinforcementHyperparameters.builder()
+                                                .batchSizeAuto()
+                                                .computeMultiplierAuto()
+                                                .evalIntervalAuto()
+                                                .evalSamplesAuto()
+                                                .learningRateMultiplierAuto()
+                                                .nEpochsAuto()
+                                                .reasoningEffort(
+                                                    ReinforcementHyperparameters.ReasoningEffort
+                                                        .DEFAULT
+                                                )
+                                                .build()
+                                        )
+                                        .build()
+                                )
+                                .supervised(
+                                    SupervisedMethod.builder()
+                                        .hyperparameters(
+                                            SupervisedHyperparameters.builder()
+                                                .batchSizeAuto()
+                                                .learningRateMultiplierAuto()
+                                                .nEpochsAuto()
+                                                .build()
+                                        )
+                                        .build()
+                                )
+                                .build()
+                        )
+                        .seed(42L)
+                        .suffix("x")
+                        .validationFile("file-abc123")
+                        .build()
+                )
+            }
+
+        assertThat(e.statusCode()).isEqualTo(404)
+        assertThat(e.headers().toMap()).contains(entry(HEADER_NAME, listOf(HEADER_VALUE)))
+        assertThat(e.body())
+            .isEqualTo(
+                JsonValue.from(
+                    mapOf(
+                        "code" to "code",
+                        "message" to "message",
+                        "param" to "param",
+                        "type" to "type",
+                    )
+                )
+            )
+    }
+
+    @Test
+    fun jobsCreate404WithRawResponse() {
+        val jobService = client.fineTuning().jobs().withRawResponse()
         stubFor(
             post(anyUrl())
                 .willReturn(
@@ -657,8 +1121,240 @@ internal class ErrorHandlingTest {
     }
 
     @Test
+    fun jobsCreate422WithRawResponse() {
+        val jobService = client.fineTuning().jobs().withRawResponse()
+        stubFor(
+            post(anyUrl())
+                .willReturn(
+                    status(422).withHeader(HEADER_NAME, HEADER_VALUE).withBody(ERROR_JSON_BYTES)
+                )
+        )
+
+        val e =
+            assertThrows<UnprocessableEntityException> {
+                jobService.create(
+                    JobCreateParams.builder()
+                        .model(JobCreateParams.Model.BABBAGE_002)
+                        .trainingFile("file-abc123")
+                        .hyperparameters(
+                            JobCreateParams.Hyperparameters.builder()
+                                .batchSizeAuto()
+                                .learningRateMultiplierAuto()
+                                .nEpochsAuto()
+                                .build()
+                        )
+                        .addIntegration(
+                            JobCreateParams.Integration.builder()
+                                .wandb(
+                                    JobCreateParams.Integration.Wandb.builder()
+                                        .project("my-wandb-project")
+                                        .entity("entity")
+                                        .name("name")
+                                        .addTag("custom-tag")
+                                        .build()
+                                )
+                                .build()
+                        )
+                        .metadata(
+                            JobCreateParams.Metadata.builder()
+                                .putAdditionalProperty("foo", JsonValue.from("string"))
+                                .build()
+                        )
+                        .method(
+                            JobCreateParams.Method.builder()
+                                .type(JobCreateParams.Method.Type.SUPERVISED)
+                                .dpo(
+                                    DpoMethod.builder()
+                                        .hyperparameters(
+                                            DpoHyperparameters.builder()
+                                                .batchSizeAuto()
+                                                .betaAuto()
+                                                .learningRateMultiplierAuto()
+                                                .nEpochsAuto()
+                                                .build()
+                                        )
+                                        .build()
+                                )
+                                .reinforcement(
+                                    ReinforcementMethod.builder()
+                                        .grader(
+                                            StringCheckGrader.builder()
+                                                .input("input")
+                                                .name("name")
+                                                .operation(StringCheckGrader.Operation.EQ)
+                                                .reference("reference")
+                                                .build()
+                                        )
+                                        .hyperparameters(
+                                            ReinforcementHyperparameters.builder()
+                                                .batchSizeAuto()
+                                                .computeMultiplierAuto()
+                                                .evalIntervalAuto()
+                                                .evalSamplesAuto()
+                                                .learningRateMultiplierAuto()
+                                                .nEpochsAuto()
+                                                .reasoningEffort(
+                                                    ReinforcementHyperparameters.ReasoningEffort
+                                                        .DEFAULT
+                                                )
+                                                .build()
+                                        )
+                                        .build()
+                                )
+                                .supervised(
+                                    SupervisedMethod.builder()
+                                        .hyperparameters(
+                                            SupervisedHyperparameters.builder()
+                                                .batchSizeAuto()
+                                                .learningRateMultiplierAuto()
+                                                .nEpochsAuto()
+                                                .build()
+                                        )
+                                        .build()
+                                )
+                                .build()
+                        )
+                        .seed(42L)
+                        .suffix("x")
+                        .validationFile("file-abc123")
+                        .build()
+                )
+            }
+
+        assertThat(e.statusCode()).isEqualTo(422)
+        assertThat(e.headers().toMap()).contains(entry(HEADER_NAME, listOf(HEADER_VALUE)))
+        assertThat(e.body())
+            .isEqualTo(
+                JsonValue.from(
+                    mapOf(
+                        "code" to "code",
+                        "message" to "message",
+                        "param" to "param",
+                        "type" to "type",
+                    )
+                )
+            )
+    }
+
+    @Test
     fun jobsCreate429() {
         val jobService = client.fineTuning().jobs()
+        stubFor(
+            post(anyUrl())
+                .willReturn(
+                    status(429).withHeader(HEADER_NAME, HEADER_VALUE).withBody(ERROR_JSON_BYTES)
+                )
+        )
+
+        val e =
+            assertThrows<RateLimitException> {
+                jobService.create(
+                    JobCreateParams.builder()
+                        .model(JobCreateParams.Model.BABBAGE_002)
+                        .trainingFile("file-abc123")
+                        .hyperparameters(
+                            JobCreateParams.Hyperparameters.builder()
+                                .batchSizeAuto()
+                                .learningRateMultiplierAuto()
+                                .nEpochsAuto()
+                                .build()
+                        )
+                        .addIntegration(
+                            JobCreateParams.Integration.builder()
+                                .wandb(
+                                    JobCreateParams.Integration.Wandb.builder()
+                                        .project("my-wandb-project")
+                                        .entity("entity")
+                                        .name("name")
+                                        .addTag("custom-tag")
+                                        .build()
+                                )
+                                .build()
+                        )
+                        .metadata(
+                            JobCreateParams.Metadata.builder()
+                                .putAdditionalProperty("foo", JsonValue.from("string"))
+                                .build()
+                        )
+                        .method(
+                            JobCreateParams.Method.builder()
+                                .type(JobCreateParams.Method.Type.SUPERVISED)
+                                .dpo(
+                                    DpoMethod.builder()
+                                        .hyperparameters(
+                                            DpoHyperparameters.builder()
+                                                .batchSizeAuto()
+                                                .betaAuto()
+                                                .learningRateMultiplierAuto()
+                                                .nEpochsAuto()
+                                                .build()
+                                        )
+                                        .build()
+                                )
+                                .reinforcement(
+                                    ReinforcementMethod.builder()
+                                        .grader(
+                                            StringCheckGrader.builder()
+                                                .input("input")
+                                                .name("name")
+                                                .operation(StringCheckGrader.Operation.EQ)
+                                                .reference("reference")
+                                                .build()
+                                        )
+                                        .hyperparameters(
+                                            ReinforcementHyperparameters.builder()
+                                                .batchSizeAuto()
+                                                .computeMultiplierAuto()
+                                                .evalIntervalAuto()
+                                                .evalSamplesAuto()
+                                                .learningRateMultiplierAuto()
+                                                .nEpochsAuto()
+                                                .reasoningEffort(
+                                                    ReinforcementHyperparameters.ReasoningEffort
+                                                        .DEFAULT
+                                                )
+                                                .build()
+                                        )
+                                        .build()
+                                )
+                                .supervised(
+                                    SupervisedMethod.builder()
+                                        .hyperparameters(
+                                            SupervisedHyperparameters.builder()
+                                                .batchSizeAuto()
+                                                .learningRateMultiplierAuto()
+                                                .nEpochsAuto()
+                                                .build()
+                                        )
+                                        .build()
+                                )
+                                .build()
+                        )
+                        .seed(42L)
+                        .suffix("x")
+                        .validationFile("file-abc123")
+                        .build()
+                )
+            }
+
+        assertThat(e.statusCode()).isEqualTo(429)
+        assertThat(e.headers().toMap()).contains(entry(HEADER_NAME, listOf(HEADER_VALUE)))
+        assertThat(e.body())
+            .isEqualTo(
+                JsonValue.from(
+                    mapOf(
+                        "code" to "code",
+                        "message" to "message",
+                        "param" to "param",
+                        "type" to "type",
+                    )
+                )
+            )
+    }
+
+    @Test
+    fun jobsCreate429WithRawResponse() {
+        val jobService = client.fineTuning().jobs().withRawResponse()
         stubFor(
             post(anyUrl())
                 .willReturn(
@@ -889,8 +1585,240 @@ internal class ErrorHandlingTest {
     }
 
     @Test
+    fun jobsCreate500WithRawResponse() {
+        val jobService = client.fineTuning().jobs().withRawResponse()
+        stubFor(
+            post(anyUrl())
+                .willReturn(
+                    status(500).withHeader(HEADER_NAME, HEADER_VALUE).withBody(ERROR_JSON_BYTES)
+                )
+        )
+
+        val e =
+            assertThrows<InternalServerException> {
+                jobService.create(
+                    JobCreateParams.builder()
+                        .model(JobCreateParams.Model.BABBAGE_002)
+                        .trainingFile("file-abc123")
+                        .hyperparameters(
+                            JobCreateParams.Hyperparameters.builder()
+                                .batchSizeAuto()
+                                .learningRateMultiplierAuto()
+                                .nEpochsAuto()
+                                .build()
+                        )
+                        .addIntegration(
+                            JobCreateParams.Integration.builder()
+                                .wandb(
+                                    JobCreateParams.Integration.Wandb.builder()
+                                        .project("my-wandb-project")
+                                        .entity("entity")
+                                        .name("name")
+                                        .addTag("custom-tag")
+                                        .build()
+                                )
+                                .build()
+                        )
+                        .metadata(
+                            JobCreateParams.Metadata.builder()
+                                .putAdditionalProperty("foo", JsonValue.from("string"))
+                                .build()
+                        )
+                        .method(
+                            JobCreateParams.Method.builder()
+                                .type(JobCreateParams.Method.Type.SUPERVISED)
+                                .dpo(
+                                    DpoMethod.builder()
+                                        .hyperparameters(
+                                            DpoHyperparameters.builder()
+                                                .batchSizeAuto()
+                                                .betaAuto()
+                                                .learningRateMultiplierAuto()
+                                                .nEpochsAuto()
+                                                .build()
+                                        )
+                                        .build()
+                                )
+                                .reinforcement(
+                                    ReinforcementMethod.builder()
+                                        .grader(
+                                            StringCheckGrader.builder()
+                                                .input("input")
+                                                .name("name")
+                                                .operation(StringCheckGrader.Operation.EQ)
+                                                .reference("reference")
+                                                .build()
+                                        )
+                                        .hyperparameters(
+                                            ReinforcementHyperparameters.builder()
+                                                .batchSizeAuto()
+                                                .computeMultiplierAuto()
+                                                .evalIntervalAuto()
+                                                .evalSamplesAuto()
+                                                .learningRateMultiplierAuto()
+                                                .nEpochsAuto()
+                                                .reasoningEffort(
+                                                    ReinforcementHyperparameters.ReasoningEffort
+                                                        .DEFAULT
+                                                )
+                                                .build()
+                                        )
+                                        .build()
+                                )
+                                .supervised(
+                                    SupervisedMethod.builder()
+                                        .hyperparameters(
+                                            SupervisedHyperparameters.builder()
+                                                .batchSizeAuto()
+                                                .learningRateMultiplierAuto()
+                                                .nEpochsAuto()
+                                                .build()
+                                        )
+                                        .build()
+                                )
+                                .build()
+                        )
+                        .seed(42L)
+                        .suffix("x")
+                        .validationFile("file-abc123")
+                        .build()
+                )
+            }
+
+        assertThat(e.statusCode()).isEqualTo(500)
+        assertThat(e.headers().toMap()).contains(entry(HEADER_NAME, listOf(HEADER_VALUE)))
+        assertThat(e.body())
+            .isEqualTo(
+                JsonValue.from(
+                    mapOf(
+                        "code" to "code",
+                        "message" to "message",
+                        "param" to "param",
+                        "type" to "type",
+                    )
+                )
+            )
+    }
+
+    @Test
     fun jobsCreate999() {
         val jobService = client.fineTuning().jobs()
+        stubFor(
+            post(anyUrl())
+                .willReturn(
+                    status(999).withHeader(HEADER_NAME, HEADER_VALUE).withBody(ERROR_JSON_BYTES)
+                )
+        )
+
+        val e =
+            assertThrows<UnexpectedStatusCodeException> {
+                jobService.create(
+                    JobCreateParams.builder()
+                        .model(JobCreateParams.Model.BABBAGE_002)
+                        .trainingFile("file-abc123")
+                        .hyperparameters(
+                            JobCreateParams.Hyperparameters.builder()
+                                .batchSizeAuto()
+                                .learningRateMultiplierAuto()
+                                .nEpochsAuto()
+                                .build()
+                        )
+                        .addIntegration(
+                            JobCreateParams.Integration.builder()
+                                .wandb(
+                                    JobCreateParams.Integration.Wandb.builder()
+                                        .project("my-wandb-project")
+                                        .entity("entity")
+                                        .name("name")
+                                        .addTag("custom-tag")
+                                        .build()
+                                )
+                                .build()
+                        )
+                        .metadata(
+                            JobCreateParams.Metadata.builder()
+                                .putAdditionalProperty("foo", JsonValue.from("string"))
+                                .build()
+                        )
+                        .method(
+                            JobCreateParams.Method.builder()
+                                .type(JobCreateParams.Method.Type.SUPERVISED)
+                                .dpo(
+                                    DpoMethod.builder()
+                                        .hyperparameters(
+                                            DpoHyperparameters.builder()
+                                                .batchSizeAuto()
+                                                .betaAuto()
+                                                .learningRateMultiplierAuto()
+                                                .nEpochsAuto()
+                                                .build()
+                                        )
+                                        .build()
+                                )
+                                .reinforcement(
+                                    ReinforcementMethod.builder()
+                                        .grader(
+                                            StringCheckGrader.builder()
+                                                .input("input")
+                                                .name("name")
+                                                .operation(StringCheckGrader.Operation.EQ)
+                                                .reference("reference")
+                                                .build()
+                                        )
+                                        .hyperparameters(
+                                            ReinforcementHyperparameters.builder()
+                                                .batchSizeAuto()
+                                                .computeMultiplierAuto()
+                                                .evalIntervalAuto()
+                                                .evalSamplesAuto()
+                                                .learningRateMultiplierAuto()
+                                                .nEpochsAuto()
+                                                .reasoningEffort(
+                                                    ReinforcementHyperparameters.ReasoningEffort
+                                                        .DEFAULT
+                                                )
+                                                .build()
+                                        )
+                                        .build()
+                                )
+                                .supervised(
+                                    SupervisedMethod.builder()
+                                        .hyperparameters(
+                                            SupervisedHyperparameters.builder()
+                                                .batchSizeAuto()
+                                                .learningRateMultiplierAuto()
+                                                .nEpochsAuto()
+                                                .build()
+                                        )
+                                        .build()
+                                )
+                                .build()
+                        )
+                        .seed(42L)
+                        .suffix("x")
+                        .validationFile("file-abc123")
+                        .build()
+                )
+            }
+
+        assertThat(e.statusCode()).isEqualTo(999)
+        assertThat(e.headers().toMap()).contains(entry(HEADER_NAME, listOf(HEADER_VALUE)))
+        assertThat(e.body())
+            .isEqualTo(
+                JsonValue.from(
+                    mapOf(
+                        "code" to "code",
+                        "message" to "message",
+                        "param" to "param",
+                        "type" to "type",
+                    )
+                )
+            )
+    }
+
+    @Test
+    fun jobsCreate999WithRawResponse() {
+        val jobService = client.fineTuning().jobs().withRawResponse()
         stubFor(
             post(anyUrl())
                 .willReturn(

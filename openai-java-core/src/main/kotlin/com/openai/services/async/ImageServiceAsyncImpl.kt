@@ -6,14 +6,15 @@ import com.openai.core.ClientOptions
 import com.openai.core.JsonValue
 import com.openai.core.MultipartField
 import com.openai.core.RequestOptions
+import com.openai.core.handlers.errorBodyHandler
 import com.openai.core.handlers.errorHandler
 import com.openai.core.handlers.jsonHandler
 import com.openai.core.handlers.mapJson
 import com.openai.core.handlers.sseHandler
-import com.openai.core.handlers.withErrorHandler
 import com.openai.core.http.AsyncStreamResponse
 import com.openai.core.http.HttpMethod
 import com.openai.core.http.HttpRequest
+import com.openai.core.http.HttpResponse
 import com.openai.core.http.HttpResponse.Handler
 import com.openai.core.http.HttpResponseFor
 import com.openai.core.http.StreamResponse
@@ -23,7 +24,6 @@ import com.openai.core.http.multipartFormData
 import com.openai.core.http.parseable
 import com.openai.core.http.toAsync
 import com.openai.core.prepareAsync
-import com.openai.models.ErrorObject
 import com.openai.models.images.ImageCreateVariationParams
 import com.openai.models.images.ImageEditParams
 import com.openai.models.images.ImageEditStreamEvent
@@ -89,7 +89,8 @@ class ImageServiceAsyncImpl internal constructor(private val clientOptions: Clie
     class WithRawResponseImpl internal constructor(private val clientOptions: ClientOptions) :
         ImageServiceAsync.WithRawResponse {
 
-        private val errorHandler: Handler<ErrorObject?> = errorHandler(clientOptions.jsonMapper)
+        private val errorHandler: Handler<HttpResponse> =
+            errorHandler(errorBodyHandler(clientOptions.jsonMapper))
 
         override fun withOptions(
             modifier: Consumer<ClientOptions.Builder>
@@ -99,7 +100,7 @@ class ImageServiceAsyncImpl internal constructor(private val clientOptions: Clie
             )
 
         private val createVariationHandler: Handler<ImagesResponse> =
-            jsonHandler<ImagesResponse>(clientOptions.jsonMapper).withErrorHandler(errorHandler)
+            jsonHandler<ImagesResponse>(clientOptions.jsonMapper)
 
         override fun createVariation(
             params: ImageCreateVariationParams,
@@ -121,7 +122,7 @@ class ImageServiceAsyncImpl internal constructor(private val clientOptions: Clie
             return request
                 .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
                 .thenApply { response ->
-                    response.parseable {
+                    errorHandler.handle(response).parseable {
                         response
                             .use { createVariationHandler.handle(it) }
                             .also {
@@ -134,7 +135,7 @@ class ImageServiceAsyncImpl internal constructor(private val clientOptions: Clie
         }
 
         private val editHandler: Handler<ImagesResponse> =
-            jsonHandler<ImagesResponse>(clientOptions.jsonMapper).withErrorHandler(errorHandler)
+            jsonHandler<ImagesResponse>(clientOptions.jsonMapper)
 
         override fun edit(
             params: ImageEditParams,
@@ -156,7 +157,7 @@ class ImageServiceAsyncImpl internal constructor(private val clientOptions: Clie
             return request
                 .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
                 .thenApply { response ->
-                    response.parseable {
+                    errorHandler.handle(response).parseable {
                         response
                             .use { editHandler.handle(it) }
                             .also {
@@ -169,9 +170,7 @@ class ImageServiceAsyncImpl internal constructor(private val clientOptions: Clie
         }
 
         private val editStreamingHandler: Handler<StreamResponse<ImageEditStreamEvent>> =
-            sseHandler(clientOptions.jsonMapper)
-                .mapJson<ImageEditStreamEvent>()
-                .withErrorHandler(errorHandler)
+            sseHandler(clientOptions.jsonMapper).mapJson<ImageEditStreamEvent>()
 
         override fun editStreaming(
             params: ImageEditParams,
@@ -194,7 +193,7 @@ class ImageServiceAsyncImpl internal constructor(private val clientOptions: Clie
             return request
                 .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
                 .thenApply { response ->
-                    response.parseable {
+                    errorHandler.handle(response).parseable {
                         response
                             .let { editStreamingHandler.handle(it) }
                             .let { streamResponse ->
@@ -209,7 +208,7 @@ class ImageServiceAsyncImpl internal constructor(private val clientOptions: Clie
         }
 
         private val generateHandler: Handler<ImagesResponse> =
-            jsonHandler<ImagesResponse>(clientOptions.jsonMapper).withErrorHandler(errorHandler)
+            jsonHandler<ImagesResponse>(clientOptions.jsonMapper)
 
         override fun generate(
             params: ImageGenerateParams,
@@ -231,7 +230,7 @@ class ImageServiceAsyncImpl internal constructor(private val clientOptions: Clie
             return request
                 .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
                 .thenApply { response ->
-                    response.parseable {
+                    errorHandler.handle(response).parseable {
                         response
                             .use { generateHandler.handle(it) }
                             .also {
@@ -244,9 +243,7 @@ class ImageServiceAsyncImpl internal constructor(private val clientOptions: Clie
         }
 
         private val generateStreamingHandler: Handler<StreamResponse<ImageGenStreamEvent>> =
-            sseHandler(clientOptions.jsonMapper)
-                .mapJson<ImageGenStreamEvent>()
-                .withErrorHandler(errorHandler)
+            sseHandler(clientOptions.jsonMapper).mapJson<ImageGenStreamEvent>()
 
         override fun generateStreaming(
             params: ImageGenerateParams,
@@ -273,7 +270,7 @@ class ImageServiceAsyncImpl internal constructor(private val clientOptions: Clie
             return request
                 .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
                 .thenApply { response ->
-                    response.parseable {
+                    errorHandler.handle(response).parseable {
                         response
                             .let { generateStreamingHandler.handle(it) }
                             .let { streamResponse ->

@@ -6,9 +6,9 @@ import com.openai.core.ClientOptions
 import com.openai.core.RequestOptions
 import com.openai.core.checkRequired
 import com.openai.core.handlers.emptyHandler
+import com.openai.core.handlers.errorBodyHandler
 import com.openai.core.handlers.errorHandler
 import com.openai.core.handlers.jsonHandler
-import com.openai.core.handlers.withErrorHandler
 import com.openai.core.http.HttpMethod
 import com.openai.core.http.HttpRequest
 import com.openai.core.http.HttpResponse
@@ -17,7 +17,6 @@ import com.openai.core.http.HttpResponseFor
 import com.openai.core.http.json
 import com.openai.core.http.parseable
 import com.openai.core.prepareAsync
-import com.openai.models.ErrorObject
 import com.openai.models.containers.ContainerCreateParams
 import com.openai.models.containers.ContainerCreateResponse
 import com.openai.models.containers.ContainerDeleteParams
@@ -79,7 +78,8 @@ class ContainerServiceAsyncImpl internal constructor(private val clientOptions: 
     class WithRawResponseImpl internal constructor(private val clientOptions: ClientOptions) :
         ContainerServiceAsync.WithRawResponse {
 
-        private val errorHandler: Handler<ErrorObject?> = errorHandler(clientOptions.jsonMapper)
+        private val errorHandler: Handler<HttpResponse> =
+            errorHandler(errorBodyHandler(clientOptions.jsonMapper))
 
         private val files: FileServiceAsync.WithRawResponse by lazy {
             FileServiceAsyncImpl.WithRawResponseImpl(clientOptions)
@@ -96,7 +96,6 @@ class ContainerServiceAsyncImpl internal constructor(private val clientOptions: 
 
         private val createHandler: Handler<ContainerCreateResponse> =
             jsonHandler<ContainerCreateResponse>(clientOptions.jsonMapper)
-                .withErrorHandler(errorHandler)
 
         override fun create(
             params: ContainerCreateParams,
@@ -114,7 +113,7 @@ class ContainerServiceAsyncImpl internal constructor(private val clientOptions: 
             return request
                 .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
                 .thenApply { response ->
-                    response.parseable {
+                    errorHandler.handle(response).parseable {
                         response
                             .use { createHandler.handle(it) }
                             .also {
@@ -128,7 +127,6 @@ class ContainerServiceAsyncImpl internal constructor(private val clientOptions: 
 
         private val retrieveHandler: Handler<ContainerRetrieveResponse> =
             jsonHandler<ContainerRetrieveResponse>(clientOptions.jsonMapper)
-                .withErrorHandler(errorHandler)
 
         override fun retrieve(
             params: ContainerRetrieveParams,
@@ -148,7 +146,7 @@ class ContainerServiceAsyncImpl internal constructor(private val clientOptions: 
             return request
                 .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
                 .thenApply { response ->
-                    response.parseable {
+                    errorHandler.handle(response).parseable {
                         response
                             .use { retrieveHandler.handle(it) }
                             .also {
@@ -162,7 +160,6 @@ class ContainerServiceAsyncImpl internal constructor(private val clientOptions: 
 
         private val listHandler: Handler<ContainerListPageResponse> =
             jsonHandler<ContainerListPageResponse>(clientOptions.jsonMapper)
-                .withErrorHandler(errorHandler)
 
         override fun list(
             params: ContainerListParams,
@@ -179,7 +176,7 @@ class ContainerServiceAsyncImpl internal constructor(private val clientOptions: 
             return request
                 .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
                 .thenApply { response ->
-                    response.parseable {
+                    errorHandler.handle(response).parseable {
                         response
                             .use { listHandler.handle(it) }
                             .also {
@@ -199,7 +196,7 @@ class ContainerServiceAsyncImpl internal constructor(private val clientOptions: 
                 }
         }
 
-        private val deleteHandler: Handler<Void?> = emptyHandler().withErrorHandler(errorHandler)
+        private val deleteHandler: Handler<Void?> = emptyHandler()
 
         override fun delete(
             params: ContainerDeleteParams,
@@ -220,7 +217,9 @@ class ContainerServiceAsyncImpl internal constructor(private val clientOptions: 
             return request
                 .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
                 .thenApply { response ->
-                    response.parseable { response.use { deleteHandler.handle(it) } }
+                    errorHandler.handle(response).parseable {
+                        response.use { deleteHandler.handle(it) }
+                    }
                 }
         }
     }

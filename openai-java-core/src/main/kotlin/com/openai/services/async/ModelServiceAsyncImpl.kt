@@ -5,17 +5,17 @@ package com.openai.services.async
 import com.openai.core.ClientOptions
 import com.openai.core.RequestOptions
 import com.openai.core.checkRequired
+import com.openai.core.handlers.errorBodyHandler
 import com.openai.core.handlers.errorHandler
 import com.openai.core.handlers.jsonHandler
-import com.openai.core.handlers.withErrorHandler
 import com.openai.core.http.HttpMethod
 import com.openai.core.http.HttpRequest
+import com.openai.core.http.HttpResponse
 import com.openai.core.http.HttpResponse.Handler
 import com.openai.core.http.HttpResponseFor
 import com.openai.core.http.json
 import com.openai.core.http.parseable
 import com.openai.core.prepareAsync
-import com.openai.models.ErrorObject
 import com.openai.models.models.Model
 import com.openai.models.models.ModelDeleteParams
 import com.openai.models.models.ModelDeleted
@@ -63,7 +63,8 @@ class ModelServiceAsyncImpl internal constructor(private val clientOptions: Clie
     class WithRawResponseImpl internal constructor(private val clientOptions: ClientOptions) :
         ModelServiceAsync.WithRawResponse {
 
-        private val errorHandler: Handler<ErrorObject?> = errorHandler(clientOptions.jsonMapper)
+        private val errorHandler: Handler<HttpResponse> =
+            errorHandler(errorBodyHandler(clientOptions.jsonMapper))
 
         override fun withOptions(
             modifier: Consumer<ClientOptions.Builder>
@@ -72,8 +73,7 @@ class ModelServiceAsyncImpl internal constructor(private val clientOptions: Clie
                 clientOptions.toBuilder().apply(modifier::accept).build()
             )
 
-        private val retrieveHandler: Handler<Model> =
-            jsonHandler<Model>(clientOptions.jsonMapper).withErrorHandler(errorHandler)
+        private val retrieveHandler: Handler<Model> = jsonHandler<Model>(clientOptions.jsonMapper)
 
         override fun retrieve(
             params: ModelRetrieveParams,
@@ -93,7 +93,7 @@ class ModelServiceAsyncImpl internal constructor(private val clientOptions: Clie
             return request
                 .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
                 .thenApply { response ->
-                    response.parseable {
+                    errorHandler.handle(response).parseable {
                         response
                             .use { retrieveHandler.handle(it) }
                             .also {
@@ -107,7 +107,6 @@ class ModelServiceAsyncImpl internal constructor(private val clientOptions: Clie
 
         private val listHandler: Handler<ModelListPageResponse> =
             jsonHandler<ModelListPageResponse>(clientOptions.jsonMapper)
-                .withErrorHandler(errorHandler)
 
         override fun list(
             params: ModelListParams,
@@ -124,7 +123,7 @@ class ModelServiceAsyncImpl internal constructor(private val clientOptions: Clie
             return request
                 .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
                 .thenApply { response ->
-                    response.parseable {
+                    errorHandler.handle(response).parseable {
                         response
                             .use { listHandler.handle(it) }
                             .also {
@@ -145,7 +144,7 @@ class ModelServiceAsyncImpl internal constructor(private val clientOptions: Clie
         }
 
         private val deleteHandler: Handler<ModelDeleted> =
-            jsonHandler<ModelDeleted>(clientOptions.jsonMapper).withErrorHandler(errorHandler)
+            jsonHandler<ModelDeleted>(clientOptions.jsonMapper)
 
         override fun delete(
             params: ModelDeleteParams,
@@ -166,7 +165,7 @@ class ModelServiceAsyncImpl internal constructor(private val clientOptions: Clie
             return request
                 .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
                 .thenApply { response ->
-                    response.parseable {
+                    errorHandler.handle(response).parseable {
                         response
                             .use { deleteHandler.handle(it) }
                             .also {
