@@ -1,5 +1,6 @@
 package com.openai.helpers
 
+import com.openai.errors.OpenAIInvalidDataException
 import com.openai.models.responses.Response
 import com.openai.models.responses.ResponseAudioDeltaEvent
 import com.openai.models.responses.ResponseAudioDoneEvent
@@ -21,19 +22,41 @@ import com.openai.models.responses.ResponseFileSearchCallInProgressEvent
 import com.openai.models.responses.ResponseFileSearchCallSearchingEvent
 import com.openai.models.responses.ResponseFunctionCallArgumentsDeltaEvent
 import com.openai.models.responses.ResponseFunctionCallArgumentsDoneEvent
+import com.openai.models.responses.ResponseImageGenCallCompletedEvent
+import com.openai.models.responses.ResponseImageGenCallGeneratingEvent
+import com.openai.models.responses.ResponseImageGenCallInProgressEvent
+import com.openai.models.responses.ResponseImageGenCallPartialImageEvent
 import com.openai.models.responses.ResponseInProgressEvent
 import com.openai.models.responses.ResponseIncompleteEvent
+import com.openai.models.responses.ResponseMcpCallArgumentsDeltaEvent
+import com.openai.models.responses.ResponseMcpCallArgumentsDoneEvent
+import com.openai.models.responses.ResponseMcpCallCompletedEvent
+import com.openai.models.responses.ResponseMcpCallFailedEvent
+import com.openai.models.responses.ResponseMcpCallInProgressEvent
+import com.openai.models.responses.ResponseMcpListToolsCompletedEvent
+import com.openai.models.responses.ResponseMcpListToolsFailedEvent
+import com.openai.models.responses.ResponseMcpListToolsInProgressEvent
 import com.openai.models.responses.ResponseOutputItemAddedEvent
 import com.openai.models.responses.ResponseOutputItemDoneEvent
+import com.openai.models.responses.ResponseOutputTextAnnotationAddedEvent
+import com.openai.models.responses.ResponseQueuedEvent
+import com.openai.models.responses.ResponseReasoningDeltaEvent
+import com.openai.models.responses.ResponseReasoningDoneEvent
+import com.openai.models.responses.ResponseReasoningSummaryDeltaEvent
+import com.openai.models.responses.ResponseReasoningSummaryDoneEvent
+import com.openai.models.responses.ResponseReasoningSummaryPartAddedEvent
+import com.openai.models.responses.ResponseReasoningSummaryPartDoneEvent
+import com.openai.models.responses.ResponseReasoningSummaryTextDeltaEvent
+import com.openai.models.responses.ResponseReasoningSummaryTextDoneEvent
 import com.openai.models.responses.ResponseRefusalDeltaEvent
 import com.openai.models.responses.ResponseRefusalDoneEvent
 import com.openai.models.responses.ResponseStreamEvent
-import com.openai.models.responses.ResponseTextAnnotationDeltaEvent
 import com.openai.models.responses.ResponseTextDeltaEvent
 import com.openai.models.responses.ResponseTextDoneEvent
 import com.openai.models.responses.ResponseWebSearchCallCompletedEvent
 import com.openai.models.responses.ResponseWebSearchCallInProgressEvent
 import com.openai.models.responses.ResponseWebSearchCallSearchingEvent
+import com.openai.models.responses.StructuredResponse
 
 /**
  * An accumulator that constructs a [Response] from a sequence of streamed events. Pass all events
@@ -65,8 +88,27 @@ class ResponseAccumulator private constructor() {
     fun response() = checkNotNull(response) { "Completed response is not yet received." }
 
     /**
+     * Gets the final accumulated response with support for structured outputs. Until the last event
+     * has been accumulated, a [StructuredResponse] will not be available. Wait until all events
+     * have been handled by [accumulate] before calling this method. See that method for more
+     * details on how the last event is detected. See the
+     * [SDK documentation](https://github.com/openai/openai-java/#usage-with-streaming) for more
+     * details and example code.
+     *
+     * @param responseType The Java class from which the JSON schema in the request was derived. The
+     *   output JSON conforming to that schema can be converted automatically back to an instance of
+     *   that Java class by the [StructuredResponse].
+     * @throws IllegalStateException If called before the last event has been accumulated.
+     * @throws OpenAIInvalidDataException If the JSON data cannot be parsed to an instance of the
+     *   [responseType] class.
+     */
+    fun <T : Any> response(responseType: Class<T>) = StructuredResponse(responseType, response())
+
+    /**
      * Accumulates a streamed event and uses it to construct a [Response]. When all events have been
-     * accumulated, the response can be retrieved by calling [response].
+     * accumulated, the response can be retrieved by calling [response]. The last event is detected
+     * if one of `ResponseCompletedEvent`, `ResponseIncompleteEvent`, or `ResponseFailedEvent` is
+     * accumulated. After that event, no more events are expected.
      *
      * @return The given [event] for convenience, such as when chaining method calls.
      * @throws IllegalStateException If [accumulate] is called again after the last event has been
@@ -78,96 +120,41 @@ class ResponseAccumulator private constructor() {
         event.accept(
             object : ResponseStreamEvent.Visitor<Unit> {
                 // --------------------------------------------------------------------------------
-                // The following events _all_ have a `Response` property.
+                // The following events _all_ have a `response` property.
 
                 override fun visitCreated(created: ResponseCreatedEvent) {
-                    // TODO: Taking not action here on the assumption that there is no need to store
-                    //   the initial `Response` (devoid of any content), as it will be replaced
-                    //   later by one of the "terminal" events. OTOH, this could be useful if the
-                    //   events stop suddenly before any further response details can be recorded.
-                }
-
-                override fun visitInProgress(inProgress: ResponseInProgressEvent) {
-                    // TODO: Taking no action here on the assumption that this is just some sort of
-                    //   "keep-alive" event that carries no new data that needs to be accumulated.
-                    //   OTOH, if the events stop suddenly, this could be used as a "partial"
-                    //   response, or an ongoing "story so far".
+                    // The initial response (on creation) has no content, so it is not stored.
                 }
 
                 override fun visitCompleted(completed: ResponseCompletedEvent) {
                     response = completed.response()
                 }
 
+                override fun visitInProgress(inProgress: ResponseInProgressEvent) {
+                    // An in-progress response is not complete, so it is not stored.
+                }
+
+                override fun visitQueued(queued: ResponseQueuedEvent) {
+                    // A queued response that is awaiting processing is not complete, so it is not
+                    // stored.
+                }
+
                 override fun visitFailed(failed: ResponseFailedEvent) {
                     // TODO: Confirm that this is a "terminal" event and will occur _instead of_
-                    //   `ResponseCompletedEvent`.
+                    //   `ResponseCompletedEvent` or `ResponseIncompleteEvent`.
+                    // Store the response so the reason for the failure can be interrogated.
                     response = failed.response()
                 }
 
                 override fun visitIncomplete(incomplete: ResponseIncompleteEvent) {
                     // TODO: Confirm that this is a "terminal" event and will occur _instead of_
-                    //   `ResponseCompletedEvent`.
+                    //   `ResponseCompletedEvent` or `ResponseFailedEvent`.
+                    // Store the response so the reason for the incompleteness can be interrogated.
                     response = incomplete.response()
                 }
 
                 // --------------------------------------------------------------------------------
                 // The following events do _not_ have a `Response` property.
-
-                override fun visitError(error: ResponseErrorEvent) {}
-
-                override fun visitOutputItemAdded(outputItemAdded: ResponseOutputItemAddedEvent) {}
-
-                override fun visitOutputItemDone(outputItemDone: ResponseOutputItemDoneEvent) {}
-
-                override fun visitContentPartAdded(
-                    contentPartAdded: ResponseContentPartAddedEvent
-                ) {}
-
-                override fun visitContentPartDone(contentPartDone: ResponseContentPartDoneEvent) {}
-
-                override fun visitOutputTextDelta(outputTextDelta: ResponseTextDeltaEvent) {}
-
-                override fun visitOutputTextAnnotationAdded(
-                    outputTextAnnotationAdded: ResponseTextAnnotationDeltaEvent
-                ) {}
-
-                override fun visitOutputTextDone(outputTextDone: ResponseTextDoneEvent) {}
-
-                override fun visitRefusalDelta(refusalDelta: ResponseRefusalDeltaEvent) {}
-
-                override fun visitRefusalDone(refusalDone: ResponseRefusalDoneEvent) {}
-
-                override fun visitFunctionCallArgumentsDelta(
-                    functionCallArgumentsDelta: ResponseFunctionCallArgumentsDeltaEvent
-                ) {}
-
-                override fun visitFunctionCallArgumentsDone(
-                    functionCallArgumentsDone: ResponseFunctionCallArgumentsDoneEvent
-                ) {}
-
-                override fun visitFileSearchCallInProgress(
-                    fileSearchCallInProgress: ResponseFileSearchCallInProgressEvent
-                ) {}
-
-                override fun visitFileSearchCallSearching(
-                    fileSearchCallSearching: ResponseFileSearchCallSearchingEvent
-                ) {}
-
-                override fun visitFileSearchCallCompleted(
-                    fileSearchCallCompleted: ResponseFileSearchCallCompletedEvent
-                ) {}
-
-                override fun visitWebSearchCallInProgress(
-                    webSearchCallInProgress: ResponseWebSearchCallInProgressEvent
-                ) {}
-
-                override fun visitWebSearchCallSearching(
-                    webSearchCallSearching: ResponseWebSearchCallSearchingEvent
-                ) {}
-
-                override fun visitWebSearchCallCompleted(
-                    webSearchCallCompleted: ResponseWebSearchCallCompletedEvent
-                ) {}
 
                 override fun visitAudioDelta(audioDelta: ResponseAudioDeltaEvent) {}
 
@@ -189,6 +176,10 @@ class ResponseAccumulator private constructor() {
                     codeInterpreterCallCodeDone: ResponseCodeInterpreterCallCodeDoneEvent
                 ) {}
 
+                override fun visitCodeInterpreterCallCompleted(
+                    codeInterpreterCallCompleted: ResponseCodeInterpreterCallCompletedEvent
+                ) {}
+
                 override fun visitCodeInterpreterCallInProgress(
                     codeInterpreterCallInProgress: ResponseCodeInterpreterCallInProgressEvent
                 ) {}
@@ -197,8 +188,134 @@ class ResponseAccumulator private constructor() {
                     codeInterpreterCallInterpreting: ResponseCodeInterpreterCallInterpretingEvent
                 ) {}
 
-                override fun visitCodeInterpreterCallCompleted(
-                    codeInterpreterCallCompleted: ResponseCodeInterpreterCallCompletedEvent
+                override fun visitContentPartAdded(
+                    contentPartAdded: ResponseContentPartAddedEvent
+                ) {}
+
+                override fun visitContentPartDone(contentPartDone: ResponseContentPartDoneEvent) {}
+
+                override fun visitError(error: ResponseErrorEvent) {}
+
+                override fun visitFileSearchCallCompleted(
+                    fileSearchCallCompleted: ResponseFileSearchCallCompletedEvent
+                ) {}
+
+                override fun visitFileSearchCallInProgress(
+                    fileSearchCallInProgress: ResponseFileSearchCallInProgressEvent
+                ) {}
+
+                override fun visitFileSearchCallSearching(
+                    fileSearchCallSearching: ResponseFileSearchCallSearchingEvent
+                ) {}
+
+                override fun visitFunctionCallArgumentsDelta(
+                    functionCallArgumentsDelta: ResponseFunctionCallArgumentsDeltaEvent
+                ) {}
+
+                override fun visitFunctionCallArgumentsDone(
+                    functionCallArgumentsDone: ResponseFunctionCallArgumentsDoneEvent
+                ) {}
+
+                override fun visitOutputItemAdded(outputItemAdded: ResponseOutputItemAddedEvent) {}
+
+                override fun visitOutputItemDone(outputItemDone: ResponseOutputItemDoneEvent) {}
+
+                override fun visitReasoningSummaryPartAdded(
+                    reasoningSummaryPartAdded: ResponseReasoningSummaryPartAddedEvent
+                ) {}
+
+                override fun visitReasoningSummaryPartDone(
+                    reasoningSummaryPartDone: ResponseReasoningSummaryPartDoneEvent
+                ) {}
+
+                override fun visitReasoningSummaryTextDelta(
+                    reasoningSummaryTextDelta: ResponseReasoningSummaryTextDeltaEvent
+                ) {}
+
+                override fun visitReasoningSummaryTextDone(
+                    reasoningSummaryTextDone: ResponseReasoningSummaryTextDoneEvent
+                ) {}
+
+                override fun visitRefusalDelta(refusalDelta: ResponseRefusalDeltaEvent) {}
+
+                override fun visitRefusalDone(refusalDone: ResponseRefusalDoneEvent) {}
+
+                override fun visitOutputTextDelta(outputTextDelta: ResponseTextDeltaEvent) {}
+
+                override fun visitOutputTextDone(outputTextDone: ResponseTextDoneEvent) {}
+
+                override fun visitWebSearchCallCompleted(
+                    webSearchCallCompleted: ResponseWebSearchCallCompletedEvent
+                ) {}
+
+                override fun visitWebSearchCallInProgress(
+                    webSearchCallInProgress: ResponseWebSearchCallInProgressEvent
+                ) {}
+
+                override fun visitWebSearchCallSearching(
+                    webSearchCallSearching: ResponseWebSearchCallSearchingEvent
+                ) {}
+
+                override fun visitImageGenerationCallCompleted(
+                    imageGenerationCallCompleted: ResponseImageGenCallCompletedEvent
+                ) {}
+
+                override fun visitImageGenerationCallGenerating(
+                    imageGenerationCallGenerating: ResponseImageGenCallGeneratingEvent
+                ) {}
+
+                override fun visitImageGenerationCallInProgress(
+                    imageGenerationCallInProgress: ResponseImageGenCallInProgressEvent
+                ) {}
+
+                override fun visitImageGenerationCallPartialImage(
+                    imageGenerationCallPartialImage: ResponseImageGenCallPartialImageEvent
+                ) {}
+
+                override fun visitMcpCallArgumentsDelta(
+                    mcpCallArgumentsDelta: ResponseMcpCallArgumentsDeltaEvent
+                ) {}
+
+                override fun visitMcpCallArgumentsDone(
+                    mcpCallArgumentsDone: ResponseMcpCallArgumentsDoneEvent
+                ) {}
+
+                override fun visitMcpCallCompleted(
+                    mcpCallCompleted: ResponseMcpCallCompletedEvent
+                ) {}
+
+                override fun visitMcpCallFailed(mcpCallFailed: ResponseMcpCallFailedEvent) {}
+
+                override fun visitMcpCallInProgress(
+                    mcpCallInProgress: ResponseMcpCallInProgressEvent
+                ) {}
+
+                override fun visitMcpListToolsCompleted(
+                    mcpListToolsCompleted: ResponseMcpListToolsCompletedEvent
+                ) {}
+
+                override fun visitMcpListToolsFailed(
+                    mcpListToolsFailed: ResponseMcpListToolsFailedEvent
+                ) {}
+
+                override fun visitMcpListToolsInProgress(
+                    mcpListToolsInProgress: ResponseMcpListToolsInProgressEvent
+                ) {}
+
+                override fun visitOutputTextAnnotationAdded(
+                    outputTextAnnotationAdded: ResponseOutputTextAnnotationAddedEvent
+                ) {}
+
+                override fun visitReasoningDelta(reasoningDelta: ResponseReasoningDeltaEvent) {}
+
+                override fun visitReasoningDone(reasoningDone: ResponseReasoningDoneEvent) {}
+
+                override fun visitReasoningSummaryDelta(
+                    reasoningSummaryDelta: ResponseReasoningSummaryDeltaEvent
+                ) {}
+
+                override fun visitReasoningSummaryDone(
+                    reasoningSummaryDone: ResponseReasoningSummaryDoneEvent
                 ) {}
             }
         )

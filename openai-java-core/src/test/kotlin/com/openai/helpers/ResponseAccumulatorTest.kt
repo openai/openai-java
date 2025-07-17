@@ -29,6 +29,15 @@ internal class ResponseAccumulatorTest {
     }
 
     @Test
+    fun structuredResponseBeforeAccumulation() {
+        val accumulator = ResponseAccumulator.create()
+
+        assertThatThrownBy { accumulator.response(String::class.java) }
+            .isExactlyInstanceOf(IllegalStateException::class.java)
+            .hasMessage("Completed response is not yet received.")
+    }
+
+    @Test
     fun responseAfterAccumulation() {
         val accumulator = ResponseAccumulator.create()
 
@@ -36,6 +45,20 @@ internal class ResponseAccumulatorTest {
 
         assertThatNoException().isThrownBy { accumulator.response() }
         assertThat(accumulator.response().id()).isEqualTo("response-id")
+    }
+
+    @Test
+    fun structuredResponseAfterAccumulation() {
+        val accumulator = ResponseAccumulator.create()
+
+        accumulator.accumulate(ResponseStreamEvent.ofCompleted(responseCompletedEvent()))
+
+        // No deserialization is attempted, so the `Class<T>` does not matter. Deserialization is
+        // beyond the scope of this test; it is tested elsewhere at a lower level.
+        assertThatNoException().isThrownBy { accumulator.response(String::class.java) }
+        assertThat(accumulator.response(String::class.java).id()).isEqualTo("response-id")
+        assertThat(accumulator.response(String::class.java).responseType)
+            .isEqualTo(String::class.java)
     }
 
     @Test
@@ -96,18 +119,20 @@ internal class ResponseAccumulatorTest {
         assertThat(response.id()).isEqualTo("response-id")
     }
 
-    private fun responseCreatedEvent() = ResponseCreatedEvent.builder().response(response()).build()
+    private fun responseCreatedEvent() =
+        ResponseCreatedEvent.builder().response(response()).sequenceNumber(1L).build()
 
     private fun responseInProgressEvent() =
-        ResponseInProgressEvent.builder().response(response()).build()
+        ResponseInProgressEvent.builder().response(response()).sequenceNumber(1L).build()
 
     private fun responseCompletedEvent() =
-        ResponseCompletedEvent.builder().response(response()).build()
+        ResponseCompletedEvent.builder().response(response()).sequenceNumber(1L).build()
 
-    private fun responseFailedEvent() = ResponseFailedEvent.builder().response(response()).build()
+    private fun responseFailedEvent() =
+        ResponseFailedEvent.builder().response(response()).sequenceNumber(1L).build()
 
     private fun responseIncompleteEvent() =
-        ResponseIncompleteEvent.builder().response(response()).build()
+        ResponseIncompleteEvent.builder().response(response()).sequenceNumber(1L).build()
 
     private fun response() =
         Response.builder()
@@ -117,7 +142,7 @@ internal class ResponseAccumulatorTest {
             .incompleteDetails(null)
             .instructions(null)
             .metadata(null)
-            .model(ResponsesModel.UnionMember2.O1_PRO)
+            .model(ResponsesModel.ResponsesOnlyModel.O1_PRO)
             .addOutput(responseOutputItemOfMessage())
             .parallelToolCalls(false)
             .temperature(null)
