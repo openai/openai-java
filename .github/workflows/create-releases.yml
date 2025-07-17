@@ -53,7 +53,7 @@ jobs:
 
       - name: Run tests on the openai-java-core project with the GraalVM native-image agent
         run: |
-          ./gradlew :openai-java-core:test -x compileJava -x compileTestJava -x compileKotlin -x compileTestKotlin -Pagent
+          ./gradlew :openai-java-core:test -x compileJava -x compileTestJava -x compileKotlin -x compileTestKotlin -PgraalvmAgent
 
       - name: Check generated GraalVM file
         run: |

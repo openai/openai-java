@@ -45,7 +45,7 @@ dependencies {
     testImplementation("org.mockito.kotlin:mockito-kotlin:4.1.0")
 }
 
-if (project.hasProperty("agent")) {
+if (project.hasProperty("graalvmAgent")) {
     java {
         toolchain {
             languageVersion.set(JavaLanguageVersion.of(21))
