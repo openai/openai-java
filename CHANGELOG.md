@@ -1,5 +1,13 @@
 # Changelog
 
+## 2.16.0 (2025-07-17)
+
+Full Changelog: [v2.15.0...v2.16.0](https://github.com/openai/openai-java/compare/v2.15.0...v2.16.0)
+
+### Features
+
+* **client:** publish GraalVM metadata files ([#534](https://github.com/openai/openai-java/issues/534)) ([e6b4fe0](https://github.com/openai/openai-java/commit/e6b4fe0f8690d9b513ab2b33c7bec685397b5438))
+
 ## 2.15.0 (2025-07-17)
 
 Full Changelog: [v2.14.0...v2.15.0](https://github.com/openai/openai-java/compare/v2.14.0...v2.15.0)
