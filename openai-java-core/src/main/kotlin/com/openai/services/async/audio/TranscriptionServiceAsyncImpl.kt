@@ -78,7 +78,7 @@ class TranscriptionServiceAsyncImpl internal constructor(private val clientOptio
         private val createStringHandler: Handler<TranscriptionCreateResponse> =
             object : Handler<TranscriptionCreateResponse> {
 
-                private val stringHandler = stringHandler().withErrorHandler(errorHandler)
+                private val stringHandler = stringHandler()
 
                 override fun handle(response: HttpResponse): TranscriptionCreateResponse =
                     TranscriptionCreateResponse.ofTranscription(
