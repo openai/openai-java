@@ -36,6 +36,37 @@ jobs:
         if: ${{ steps.release.outputs.releases_created }}
         uses: gradle/gradle-build-action@v2
 
+      - name: Compile the openai-java-core project
+        run: |
+          ./gradlew :openai-java-core:compileJava :openai-java-core:compileTestJava -x test
+
+      - name: Run the Prism server
+        run: |
+          ./scripts/mock --daemon
+
+      - name: Setup GraalVM
+        uses: graalvm/setup-graalvm@v1
+        with:
+          java-version: 21
+          distribution: 'graalvm-community'
+          cache: gradle
+
+      - name: Run tests on the openai-java-core project with the GraalVM native-image agent
+        run: |
+          ./gradlew :openai-java-core:test -x compileJava -x compileTestJava -x compileKotlin -x compileTestKotlin -PgraalvmAgent
+
+      - name: Check generated GraalVM file
+        run: |
+          echo "Checking for GraalVM agent metadata files..."
+          DIRECTORY=openai-java-core/src/main/resources/META-INF/native-image
+          if [ -d "$DIRECTORY" ] && [ "$(ls -A $DIRECTORY)" ]; then
+            echo "Files found in $DIRECTORY:"
+            ls -l $DIRECTORY
+          else
+            echo "No files found in $DIRECTORY"
+            exit 1
+          fi
+
       - name: Publish to Sonatype
         if: ${{ steps.release.outputs.releases_created }}
         run: |-
