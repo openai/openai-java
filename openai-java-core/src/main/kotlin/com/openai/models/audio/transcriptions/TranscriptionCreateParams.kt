@@ -209,6 +209,8 @@ private constructor(
     fun _timestampGranularities(): MultipartField<List<TimestampGranularity>> =
         body._timestampGranularities()
 
+    fun _additionalBodyProperties(): Map<String, JsonValue> = body._additionalProperties()
+
     fun _additionalHeaders(): Headers = additionalHeaders
 
     fun _additionalQueryParams(): QueryParams = additionalQueryParams
@@ -466,6 +468,25 @@ private constructor(
             body.addTimestampGranularity(timestampGranularity)
         }
 
+        fun additionalBodyProperties(additionalBodyProperties: Map<String, JsonValue>) = apply {
+            body.additionalProperties(additionalBodyProperties)
+        }
+
+        fun putAdditionalBodyProperty(key: String, value: JsonValue) = apply {
+            body.putAdditionalProperty(key, value)
+        }
+
+        fun putAllAdditionalBodyProperties(additionalBodyProperties: Map<String, JsonValue>) =
+            apply {
+                body.putAllAdditionalProperties(additionalBodyProperties)
+            }
+
+        fun removeAdditionalBodyProperty(key: String) = apply { body.removeAdditionalProperty(key) }
+
+        fun removeAllAdditionalBodyProperties(keys: Set<String>) = apply {
+            body.removeAllAdditionalProperties(keys)
+        }
+
         fun additionalHeaders(additionalHeaders: Headers) = apply {
             this.additionalHeaders.clear()
             putAllAdditionalHeaders(additionalHeaders)
@@ -586,7 +607,7 @@ private constructor(
     }
 
     fun _body(): Map<String, MultipartField<*>> =
-        mapOf(
+        (mapOf(
                 "file" to _file(),
                 "model" to _model(),
                 "chunking_strategy" to _chunkingStrategy(),
@@ -596,7 +617,7 @@ private constructor(
                 "response_format" to _responseFormat(),
                 "temperature" to _temperature(),
                 "timestamp_granularities" to _timestampGranularities(),
-            )
+            ) + _additionalBodyProperties().mapValues { MultipartField.of(it) })
             .toImmutable()
 
     override fun _headers(): Headers = additionalHeaders
@@ -614,6 +635,7 @@ private constructor(
         private val responseFormat: MultipartField<AudioResponseFormat>,
         private val temperature: MultipartField<Double>,
         private val timestampGranularities: MultipartField<List<TimestampGranularity>>,
+        private val additionalProperties: MutableMap<String, JsonValue>,
     ) {
 
         /**
@@ -792,6 +814,16 @@ private constructor(
         fun _timestampGranularities(): MultipartField<List<TimestampGranularity>> =
             timestampGranularities
 
+        @JsonAnySetter
+        private fun putAdditionalProperty(key: String, value: JsonValue) {
+            additionalProperties.put(key, value)
+        }
+
+        @JsonAnyGetter
+        @ExcludeMissing
+        fun _additionalProperties(): Map<String, JsonValue> =
+            Collections.unmodifiableMap(additionalProperties)
+
         fun toBuilder() = Builder().from(this)
 
         companion object {
@@ -822,6 +854,7 @@ private constructor(
             private var temperature: MultipartField<Double> = MultipartField.of(null)
             private var timestampGranularities: MultipartField<MutableList<TimestampGranularity>>? =
                 null
+            private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
             @JvmSynthetic
             internal fun from(body: Body) = apply {
@@ -834,6 +867,7 @@ private constructor(
                 responseFormat = body.responseFormat
                 temperature = body.temperature
                 timestampGranularities = body.timestampGranularities.map { it.toMutableList() }
+                additionalProperties = body.additionalProperties.toMutableMap()
             }
 
             /**
@@ -1065,6 +1099,25 @@ private constructor(
                     }
             }
 
+            fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                this.additionalProperties.clear()
+                putAllAdditionalProperties(additionalProperties)
+            }
+
+            fun putAdditionalProperty(key: String, value: JsonValue) = apply {
+                additionalProperties.put(key, value)
+            }
+
+            fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                this.additionalProperties.putAll(additionalProperties)
+            }
+
+            fun removeAdditionalProperty(key: String) = apply { additionalProperties.remove(key) }
+
+            fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                keys.forEach(::removeAdditionalProperty)
+            }
+
             /**
              * Returns an immutable instance of [Body].
              *
@@ -1089,6 +1142,7 @@ private constructor(
                     responseFormat,
                     temperature,
                     (timestampGranularities ?: MultipartField.of(null)).map { it.toImmutable() },
+                    additionalProperties.toMutableMap(),
                 )
         }
 
@@ -1124,17 +1178,17 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is Body && file == other.file && model == other.model && chunkingStrategy == other.chunkingStrategy && include == other.include && language == other.language && prompt == other.prompt && responseFormat == other.responseFormat && temperature == other.temperature && timestampGranularities == other.timestampGranularities /* spotless:on */
+            return /* spotless:off */ other is Body && file == other.file && model == other.model && chunkingStrategy == other.chunkingStrategy && include == other.include && language == other.language && prompt == other.prompt && responseFormat == other.responseFormat && temperature == other.temperature && timestampGranularities == other.timestampGranularities && additionalProperties == other.additionalProperties /* spotless:on */
         }
 
         /* spotless:off */
-        private val hashCode: Int by lazy { Objects.hash(file, model, chunkingStrategy, include, language, prompt, responseFormat, temperature, timestampGranularities) }
+        private val hashCode: Int by lazy { Objects.hash(file, model, chunkingStrategy, include, language, prompt, responseFormat, temperature, timestampGranularities, additionalProperties) }
         /* spotless:on */
 
         override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "Body{file=$file, model=$model, chunkingStrategy=$chunkingStrategy, include=$include, language=$language, prompt=$prompt, responseFormat=$responseFormat, temperature=$temperature, timestampGranularities=$timestampGranularities}"
+            "Body{file=$file, model=$model, chunkingStrategy=$chunkingStrategy, include=$include, language=$language, prompt=$prompt, responseFormat=$responseFormat, temperature=$temperature, timestampGranularities=$timestampGranularities, additionalProperties=$additionalProperties}"
     }
 
     /**

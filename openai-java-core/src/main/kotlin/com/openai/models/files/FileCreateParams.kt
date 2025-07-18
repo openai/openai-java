@@ -2,8 +2,11 @@
 
 package com.openai.models.files
 
+import com.fasterxml.jackson.annotation.JsonAnyGetter
+import com.fasterxml.jackson.annotation.JsonAnySetter
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.openai.core.ExcludeMissing
+import com.openai.core.JsonValue
 import com.openai.core.MultipartField
 import com.openai.core.Params
 import com.openai.core.checkRequired
@@ -13,6 +16,7 @@ import com.openai.core.toImmutable
 import com.openai.errors.OpenAIInvalidDataException
 import java.io.InputStream
 import java.nio.file.Path
+import java.util.Collections
 import java.util.Objects
 import kotlin.io.path.inputStream
 import kotlin.io.path.name
@@ -73,6 +77,8 @@ private constructor(
      * Unlike [purpose], this method doesn't throw if the multipart field has an unexpected type.
      */
     fun _purpose(): MultipartField<FilePurpose> = body._purpose()
+
+    fun _additionalBodyProperties(): Map<String, JsonValue> = body._additionalProperties()
 
     fun _additionalHeaders(): Headers = additionalHeaders
 
@@ -152,6 +158,25 @@ private constructor(
          * value.
          */
         fun purpose(purpose: MultipartField<FilePurpose>) = apply { body.purpose(purpose) }
+
+        fun additionalBodyProperties(additionalBodyProperties: Map<String, JsonValue>) = apply {
+            body.additionalProperties(additionalBodyProperties)
+        }
+
+        fun putAdditionalBodyProperty(key: String, value: JsonValue) = apply {
+            body.putAdditionalProperty(key, value)
+        }
+
+        fun putAllAdditionalBodyProperties(additionalBodyProperties: Map<String, JsonValue>) =
+            apply {
+                body.putAllAdditionalProperties(additionalBodyProperties)
+            }
+
+        fun removeAdditionalBodyProperty(key: String) = apply { body.removeAdditionalProperty(key) }
+
+        fun removeAllAdditionalBodyProperties(keys: Set<String>) = apply {
+            body.removeAllAdditionalProperties(keys)
+        }
 
         fun additionalHeaders(additionalHeaders: Headers) = apply {
             this.additionalHeaders.clear()
@@ -269,7 +294,9 @@ private constructor(
     }
 
     fun _body(): Map<String, MultipartField<*>> =
-        mapOf("file" to _file(), "purpose" to _purpose()).toImmutable()
+        (mapOf("file" to _file(), "purpose" to _purpose()) +
+                _additionalBodyProperties().mapValues { MultipartField.of(it) })
+            .toImmutable()
 
     override fun _headers(): Headers = additionalHeaders
 
@@ -279,6 +306,7 @@ private constructor(
     private constructor(
         private val file: MultipartField<InputStream>,
         private val purpose: MultipartField<FilePurpose>,
+        private val additionalProperties: MutableMap<String, JsonValue>,
     ) {
 
         /**
@@ -317,6 +345,16 @@ private constructor(
         @ExcludeMissing
         fun _purpose(): MultipartField<FilePurpose> = purpose
 
+        @JsonAnySetter
+        private fun putAdditionalProperty(key: String, value: JsonValue) {
+            additionalProperties.put(key, value)
+        }
+
+        @JsonAnyGetter
+        @ExcludeMissing
+        fun _additionalProperties(): Map<String, JsonValue> =
+            Collections.unmodifiableMap(additionalProperties)
+
         fun toBuilder() = Builder().from(this)
 
         companion object {
@@ -338,11 +376,13 @@ private constructor(
 
             private var file: MultipartField<InputStream>? = null
             private var purpose: MultipartField<FilePurpose>? = null
+            private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
             @JvmSynthetic
             internal fun from(body: Body) = apply {
                 file = body.file
                 purpose = body.purpose
+                additionalProperties = body.additionalProperties.toMutableMap()
             }
 
             /** The File object (not file name) to be uploaded. */
@@ -386,6 +426,25 @@ private constructor(
              */
             fun purpose(purpose: MultipartField<FilePurpose>) = apply { this.purpose = purpose }
 
+            fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                this.additionalProperties.clear()
+                putAllAdditionalProperties(additionalProperties)
+            }
+
+            fun putAdditionalProperty(key: String, value: JsonValue) = apply {
+                additionalProperties.put(key, value)
+            }
+
+            fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                this.additionalProperties.putAll(additionalProperties)
+            }
+
+            fun removeAdditionalProperty(key: String) = apply { additionalProperties.remove(key) }
+
+            fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                keys.forEach(::removeAdditionalProperty)
+            }
+
             /**
              * Returns an immutable instance of [Body].
              *
@@ -399,7 +458,12 @@ private constructor(
              *
              * @throws IllegalStateException if any required field is unset.
              */
-            fun build(): Body = Body(checkRequired("file", file), checkRequired("purpose", purpose))
+            fun build(): Body =
+                Body(
+                    checkRequired("file", file),
+                    checkRequired("purpose", purpose),
+                    additionalProperties.toMutableMap(),
+                )
         }
 
         private var validated: Boolean = false
@@ -427,16 +491,17 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is Body && file == other.file && purpose == other.purpose /* spotless:on */
+            return /* spotless:off */ other is Body && file == other.file && purpose == other.purpose && additionalProperties == other.additionalProperties /* spotless:on */
         }
 
         /* spotless:off */
-        private val hashCode: Int by lazy { Objects.hash(file, purpose) }
+        private val hashCode: Int by lazy { Objects.hash(file, purpose, additionalProperties) }
         /* spotless:on */
 
         override fun hashCode(): Int = hashCode
 
-        override fun toString() = "Body{file=$file, purpose=$purpose}"
+        override fun toString() =
+            "Body{file=$file, purpose=$purpose, additionalProperties=$additionalProperties}"
     }
 
     override fun equals(other: Any?): Boolean {
