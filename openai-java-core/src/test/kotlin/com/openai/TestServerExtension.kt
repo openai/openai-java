@@ -21,7 +21,8 @@ class TestServerExtension : BeforeAllCallback, ExecutionCondition {
             get() = "http://${prismContainer.host}:${prismContainer.getMappedPort(INTERNAL_PORT)}"
 
         const val SKIP_TESTS_ENV: String = "SKIP_MOCK_TESTS"
-        private const val PRISM_IMAGE = "stoplight/prism:5"
+        private const val NODEJS_IMAGE = "node:22"
+        private const val PRISM_CLI_VERSION = "5.8.5"
         private const val API_SPEC_PATH = "/app/openapi.yml" // Path inside the container
 
         // Track if the container has been started
@@ -59,9 +60,9 @@ class TestServerExtension : BeforeAllCallback, ExecutionCondition {
             val isUrl = apiSpecPath.startsWith("http://") || apiSpecPath.startsWith("https://")
 
             // Create container with or without copying the file based on whether apiSpecPath is a URL
-            val container = GenericContainer(DockerImageName.parse(PRISM_IMAGE))
+            val container = GenericContainer(DockerImageName.parse(NODEJS_IMAGE))
                 .withExposedPorts(INTERNAL_PORT)
-                .withCommand("mock", apiSpecPath, "--host", "0.0.0.0", "--port", INTERNAL_PORT.toString())
+                .withCommand("npm", "exec", "--package=@stainless-api/prism-cli@$PRISM_CLI_VERSION", "--", "prism", "mock", apiSpecPath, "--host", "0.0.0.0", "--port", INTERNAL_PORT.toString())
                 .withReuse(true)
 
             // Only copy the file to the container if apiSpecPath is a local file
