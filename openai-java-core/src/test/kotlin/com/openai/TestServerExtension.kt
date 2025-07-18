@@ -1,7 +1,8 @@
 package com.openai
 
-import java.lang.RuntimeException
 import java.io.File
+import java.lang.RuntimeException
+import java.time.Duration
 import org.junit.jupiter.api.extension.BeforeAllCallback
 import org.junit.jupiter.api.extension.ConditionEvaluationResult
 import org.junit.jupiter.api.extension.ExecutionCondition
@@ -10,7 +11,6 @@ import org.testcontainers.containers.GenericContainer
 import org.testcontainers.containers.wait.strategy.Wait
 import org.testcontainers.utility.DockerImageName
 import org.testcontainers.utility.MountableFile
-import java.time.Duration
 
 class TestServerExtension : BeforeAllCallback, ExecutionCondition {
 
@@ -46,11 +46,13 @@ class TestServerExtension : BeforeAllCallback, ExecutionCondition {
                         if (url.isNotEmpty()) {
                             return url
                         }
-                      }
-                  }
-              } catch (e: Exception) {
-                  println("Could not read .stats.yml fails, fall back to default. Error is: ${e.message}")
-              }
+                    }
+                }
+            } catch (e: Exception) {
+                println(
+                    "Could not read .stats.yml fails, fall back to default. Error is: ${e.message}"
+                )
+            }
             return "/tmp/openapi.yml"
         }
 
@@ -59,18 +61,35 @@ class TestServerExtension : BeforeAllCallback, ExecutionCondition {
             println("Using OpenAPI spec path: $apiSpecPath")
             val isUrl = apiSpecPath.startsWith("http://") || apiSpecPath.startsWith("https://")
 
-            // Create container with or without copying the file based on whether apiSpecPath is a URL
-            val container = GenericContainer(DockerImageName.parse(NODEJS_IMAGE))
-                .withExposedPorts(INTERNAL_PORT)
-                .withCommand("npm", "exec", "--package=@stainless-api/prism-cli@$PRISM_CLI_VERSION", "--", "prism", "mock", apiSpecPath, "--host", "0.0.0.0", "--port", INTERNAL_PORT.toString())
-                .withReuse(true)
+            // Create container with or without copying the file based on whether apiSpecPath is a
+            // URL
+            val container =
+                GenericContainer(DockerImageName.parse(NODEJS_IMAGE))
+                    .withExposedPorts(INTERNAL_PORT)
+                    .withCommand(
+                        "npm",
+                        "exec",
+                        "--package=@stainless-api/prism-cli@$PRISM_CLI_VERSION",
+                        "--",
+                        "prism",
+                        "mock",
+                        apiSpecPath,
+                        "--host",
+                        "0.0.0.0",
+                        "--port",
+                        INTERNAL_PORT.toString(),
+                    )
+                    .withReuse(true)
 
             // Only copy the file to the container if apiSpecPath is a local file
             if (!isUrl) {
                 try {
                     val file = File(apiSpecPath)
                     if (file.exists()) {
-                        container.withCopyToContainer(MountableFile.forHostPath(apiSpecPath), API_SPEC_PATH)
+                        container.withCopyToContainer(
+                            MountableFile.forHostPath(apiSpecPath),
+                            API_SPEC_PATH,
+                        )
                     } else {
                         println("OpenAPI spec file not found at: $apiSpecPath")
                         throw RuntimeException("OpenAPI spec file not found at: $apiSpecPath")
@@ -90,7 +109,9 @@ class TestServerExtension : BeforeAllCallback, ExecutionCondition {
             // Start the container here once during lazy initialization
             container.start()
             containerStarted = true
-            println("Prism container started at: ${container.host}:${container.getMappedPort(INTERNAL_PORT)}")
+            println(
+                "Prism container started at: ${container.host}:${container.getMappedPort(INTERNAL_PORT)}"
+            )
 
             container
         }
@@ -117,7 +138,8 @@ class TestServerExtension : BeforeAllCallback, ExecutionCondition {
                 that require the mock server.
                 
                 You may also need to set `OPENAPI_SPEC_PATH` to the path of your OpenAPI spec file.
-                """.trimIndent(),
+                """
+                    .trimIndent(),
                 e,
             )
         }
