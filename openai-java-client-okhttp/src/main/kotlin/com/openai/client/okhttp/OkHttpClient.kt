@@ -14,6 +14,9 @@ import java.io.InputStream
 import java.net.Proxy
 import java.time.Duration
 import java.util.concurrent.CompletableFuture
+import javax.net.ssl.HostnameVerifier
+import javax.net.ssl.SSLSocketFactory
+import javax.net.ssl.X509TrustManager
 import okhttp3.Call
 import okhttp3.Callback
 import okhttp3.HttpUrl.Companion.toHttpUrl
@@ -189,12 +192,27 @@ class OkHttpClient private constructor(private val okHttpClient: okhttp3.OkHttpC
 
         private var timeout: Timeout = Timeout.default()
         private var proxy: Proxy? = null
+        private var sslSocketFactory: SSLSocketFactory? = null
+        private var trustManager: X509TrustManager? = null
+        private var hostnameVerifier: HostnameVerifier? = null
 
         fun timeout(timeout: Timeout) = apply { this.timeout = timeout }
 
         fun timeout(timeout: Duration) = timeout(Timeout.builder().request(timeout).build())
 
         fun proxy(proxy: Proxy?) = apply { this.proxy = proxy }
+
+        fun sslSocketFactory(sslSocketFactory: SSLSocketFactory?) = apply {
+            this.sslSocketFactory = sslSocketFactory
+        }
+
+        fun trustManager(trustManager: X509TrustManager?) = apply {
+            this.trustManager = trustManager
+        }
+
+        fun hostnameVerifier(hostnameVerifier: HostnameVerifier?) = apply {
+            this.hostnameVerifier = hostnameVerifier
+        }
 
         fun build(): OkHttpClient =
             OkHttpClient(
@@ -204,6 +222,19 @@ class OkHttpClient private constructor(private val okHttpClient: okhttp3.OkHttpC
                     .writeTimeout(timeout.write())
                     .callTimeout(timeout.request())
                     .proxy(proxy)
+                    .apply {
+                        val sslSocketFactory = sslSocketFactory
+                        val trustManager = trustManager
+                        if (sslSocketFactory != null && trustManager != null) {
+                            sslSocketFactory(sslSocketFactory, trustManager)
+                        } else {
+                            check((sslSocketFactory != null) == (trustManager != null)) {
+                                "Both or none of `sslSocketFactory` and `trustManager` must be set, but only one was set"
+                            }
+                        }
+
+                        hostnameVerifier?.let(::hostnameVerifier)
+                    }
                     .build()
                     .apply {
                         // We usually make all our requests to the same host so it makes sense to
