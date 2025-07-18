@@ -34,6 +34,7 @@ class OpenAIOkHttpClient private constructor() {
         private var clientOptions: ClientOptions.Builder = ClientOptions.builder()
         private var timeout: Timeout = Timeout.default()
         private var proxy: Proxy? = null
+        private var disableSslVerification: Boolean = false
 
         fun baseUrl(baseUrl: String) = apply { clientOptions.baseUrl(baseUrl) }
 
@@ -184,6 +185,10 @@ class OpenAIOkHttpClient private constructor() {
         fun webhookSecret(webhookSecret: Optional<String>) =
             webhookSecret(webhookSecret.getOrNull())
 
+        fun disableSslVerification(disable: Boolean = true) = apply { 
+            this.disableSslVerification = disable 
+        }
+
         fun fromEnv() = apply { clientOptions.fromEnv() }
 
         /**
@@ -194,7 +199,13 @@ class OpenAIOkHttpClient private constructor() {
         fun build(): OpenAIClient =
             OpenAIClientImpl(
                 clientOptions
-                    .httpClient(OkHttpClient.builder().timeout(timeout).proxy(proxy).build())
+                    .httpClient(
+                        OkHttpClient.builder()
+                            .timeout(timeout)
+                            .proxy(proxy)
+                            .disableSslVerification(disableSslVerification)
+                            .build()
+                    )
                     .build()
             )
     }
