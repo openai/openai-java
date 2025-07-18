@@ -9,6 +9,7 @@ import com.openai.core.ClientOptions
 import com.openai.core.Timeout
 import com.openai.core.http.Headers
 import com.openai.core.http.QueryParams
+import com.openai.core.jsonMapper
 import java.net.Proxy
 import java.time.Clock
 import java.time.Duration
@@ -30,10 +31,9 @@ class OpenAIOkHttpClientAsync private constructor() {
     class Builder internal constructor() {
 
         private var clientOptions: ClientOptions.Builder = ClientOptions.builder()
-        private var timeout: Timeout = Timeout.default()
         private var proxy: Proxy? = null
 
-        fun baseUrl(baseUrl: String) = apply { clientOptions.baseUrl(baseUrl) }
+        fun proxy(proxy: Proxy) = apply { this.proxy = proxy }
 
         /**
          * Whether to throw an exception if any of the Jackson versions detected at runtime are
@@ -53,6 +53,48 @@ class OpenAIOkHttpClientAsync private constructor() {
         }
 
         fun clock(clock: Clock) = apply { clientOptions.clock(clock) }
+
+        fun baseUrl(baseUrl: String?) = apply { clientOptions.baseUrl(baseUrl) }
+
+        /** Alias for calling [Builder.baseUrl] with `baseUrl.orElse(null)`. */
+        fun baseUrl(baseUrl: Optional<String>) = baseUrl(baseUrl.getOrNull())
+
+        fun responseValidation(responseValidation: Boolean) = apply {
+            clientOptions.responseValidation(responseValidation)
+        }
+
+        fun timeout(timeout: Timeout) = apply { clientOptions.timeout(timeout) }
+
+        /**
+         * Sets the maximum time allowed for a complete HTTP call, not including retries.
+         *
+         * See [Timeout.request] for more details.
+         *
+         * For fine-grained control, pass a [Timeout] object.
+         */
+        fun timeout(timeout: Duration) = apply { clientOptions.timeout(timeout) }
+
+        fun maxRetries(maxRetries: Int) = apply { clientOptions.maxRetries(maxRetries) }
+
+        fun apiKey(apiKey: String) = apply { clientOptions.apiKey(apiKey) }
+
+        fun organization(organization: String?) = apply { clientOptions.organization(organization) }
+
+        /** Alias for calling [Builder.organization] with `organization.orElse(null)`. */
+        fun organization(organization: Optional<String>) = organization(organization.getOrNull())
+
+        fun project(project: String?) = apply { clientOptions.project(project) }
+
+        /** Alias for calling [Builder.project] with `project.orElse(null)`. */
+        fun project(project: Optional<String>) = project(project.getOrNull())
+
+        fun webhookSecret(webhookSecret: String?) = apply {
+            clientOptions.webhookSecret(webhookSecret)
+        }
+
+        /** Alias for calling [Builder.webhookSecret] with `webhookSecret.orElse(null)`. */
+        fun webhookSecret(webhookSecret: Optional<String>) =
+            webhookSecret(webhookSecret.getOrNull())
 
         fun headers(headers: Headers) = apply { clientOptions.headers(headers) }
 
@@ -134,48 +176,6 @@ class OpenAIOkHttpClientAsync private constructor() {
             clientOptions.removeAllQueryParams(keys)
         }
 
-        fun timeout(timeout: Timeout) = apply {
-            clientOptions.timeout(timeout)
-            this.timeout = timeout
-        }
-
-        /**
-         * Sets the maximum time allowed for a complete HTTP call, not including retries.
-         *
-         * See [Timeout.request] for more details.
-         *
-         * For fine-grained control, pass a [Timeout] object.
-         */
-        fun timeout(timeout: Duration) = timeout(Timeout.builder().request(timeout).build())
-
-        fun maxRetries(maxRetries: Int) = apply { clientOptions.maxRetries(maxRetries) }
-
-        fun proxy(proxy: Proxy) = apply { this.proxy = proxy }
-
-        fun responseValidation(responseValidation: Boolean) = apply {
-            clientOptions.responseValidation(responseValidation)
-        }
-
-        fun apiKey(apiKey: String) = apply { clientOptions.apiKey(apiKey) }
-
-        fun organization(organization: String?) = apply { clientOptions.organization(organization) }
-
-        /** Alias for calling [Builder.organization] with `organization.orElse(null)`. */
-        fun organization(organization: Optional<String>) = organization(organization.getOrNull())
-
-        fun project(project: String?) = apply { clientOptions.project(project) }
-
-        /** Alias for calling [Builder.project] with `project.orElse(null)`. */
-        fun project(project: Optional<String>) = project(project.getOrNull())
-
-        fun webhookSecret(webhookSecret: String?) = apply {
-            clientOptions.webhookSecret(webhookSecret)
-        }
-
-        /** Alias for calling [Builder.webhookSecret] with `webhookSecret.orElse(null)`. */
-        fun webhookSecret(webhookSecret: Optional<String>) =
-            webhookSecret(webhookSecret.getOrNull())
-
         fun fromEnv() = apply { clientOptions.fromEnv() }
 
         /**
@@ -186,7 +186,9 @@ class OpenAIOkHttpClientAsync private constructor() {
         fun build(): OpenAIClientAsync =
             OpenAIClientAsyncImpl(
                 clientOptions
-                    .httpClient(OkHttpClient.builder().timeout(timeout).proxy(proxy).build())
+                    .httpClient(
+                        OkHttpClient.builder().timeout(clientOptions.timeout()).proxy(proxy).build()
+                    )
                     .build()
             )
     }
