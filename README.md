@@ -133,6 +133,24 @@ See this table for the available options:
 > Don't create more than one client in the same application. Each client has a connection pool and
 > thread pools, which are more efficient to share between requests.
 
+### Disabling SSL verification
+
+For testing purposes, you can disable SSL certificate verification when connecting to local mock servers or development environments with self-signed certificates:
+
+```java
+import com.openai.client.OpenAIClient;
+import com.openai.client.okhttp.OpenAIOkHttpClient;
+
+OpenAIClient client = OpenAIOkHttpClient.builder()
+    .baseUrl("https://localhost:8443/v1") // Your local mock server
+    .apiKey("test-api-key")
+    .disableSslVerification(true) // Disable SSL verification
+    .build();
+```
+
+> [!WARNING]
+> **Only use this for testing and development environments.** Never disable SSL verification in production as it makes your application vulnerable to man-in-the-middle attacks.
+
 ### Modifying configuration
 
 To temporarily use a modified client configuration, while reusing the same connection and thread pools, call `withOptions()` on any client or service:

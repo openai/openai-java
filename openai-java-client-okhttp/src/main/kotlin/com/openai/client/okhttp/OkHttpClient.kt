@@ -12,8 +12,12 @@ import com.openai.errors.OpenAIIoException
 import java.io.IOException
 import java.io.InputStream
 import java.net.Proxy
+import java.security.cert.X509Certificate
 import java.time.Duration
 import java.util.concurrent.CompletableFuture
+import javax.net.ssl.SSLContext
+import javax.net.ssl.TrustManager
+import javax.net.ssl.X509TrustManager
 import okhttp3.Call
 import okhttp3.Callback
 import okhttp3.HttpUrl.Companion.toHttpUrl
@@ -189,12 +193,17 @@ class OkHttpClient private constructor(private val okHttpClient: okhttp3.OkHttpC
 
         private var timeout: Timeout = Timeout.default()
         private var proxy: Proxy? = null
+        private var disableSslVerification: Boolean = false
 
         fun timeout(timeout: Timeout) = apply { this.timeout = timeout }
 
         fun timeout(timeout: Duration) = timeout(Timeout.builder().request(timeout).build())
 
         fun proxy(proxy: Proxy?) = apply { this.proxy = proxy }
+
+        fun disableSslVerification(disable: Boolean = true) = apply { 
+            this.disableSslVerification = disable 
+        }
 
         fun build(): OkHttpClient =
             OkHttpClient(
@@ -204,6 +213,21 @@ class OkHttpClient private constructor(private val okHttpClient: okhttp3.OkHttpC
                     .writeTimeout(timeout.write())
                     .callTimeout(timeout.request())
                     .proxy(proxy)
+                    .apply {
+                        if (disableSslVerification) {
+                            val trustAllCerts = arrayOf<TrustManager>(
+                                object : X509TrustManager {
+                                    override fun checkClientTrusted(chain: Array<X509Certificate>, authType: String) {}
+                                    override fun checkServerTrusted(chain: Array<X509Certificate>, authType: String) {}
+                                    override fun getAcceptedIssuers(): Array<X509Certificate> = arrayOf()
+                                }
+                            )
+                            val sslContext = SSLContext.getInstance("SSL")
+                            sslContext.init(null, trustAllCerts, java.security.SecureRandom())
+                            sslSocketFactory(sslContext.socketFactory, trustAllCerts[0] as X509TrustManager)
+                            hostnameVerifier { _, _ -> true }
+                        }
+                    }
                     .build()
                     .apply {
                         // We usually make all our requests to the same host so it makes sense to
