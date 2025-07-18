@@ -57,7 +57,7 @@ jobs:
         uses: gradle/gradle-build-action@v2
 
       - name: Run tests
-        run: ./gradlew test
+        run: ./scripts/test
   examples:
     timeout-minutes: 10
     name: examples
