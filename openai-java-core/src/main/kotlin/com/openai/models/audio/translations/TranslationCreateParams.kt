@@ -2,11 +2,14 @@
 
 package com.openai.models.audio.translations
 
+import com.fasterxml.jackson.annotation.JsonAnyGetter
+import com.fasterxml.jackson.annotation.JsonAnySetter
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.openai.core.Enum
 import com.openai.core.ExcludeMissing
 import com.openai.core.JsonField
+import com.openai.core.JsonValue
 import com.openai.core.MultipartField
 import com.openai.core.Params
 import com.openai.core.checkRequired
@@ -17,6 +20,7 @@ import com.openai.errors.OpenAIInvalidDataException
 import com.openai.models.audio.AudioModel
 import java.io.InputStream
 import java.nio.file.Path
+import java.util.Collections
 import java.util.Objects
 import java.util.Optional
 import kotlin.io.path.inputStream
@@ -114,6 +118,8 @@ private constructor(
      * type.
      */
     fun _temperature(): MultipartField<Double> = body._temperature()
+
+    fun _additionalBodyProperties(): Map<String, JsonValue> = body._additionalProperties()
 
     fun _additionalHeaders(): Headers = additionalHeaders
 
@@ -267,6 +273,25 @@ private constructor(
             body.temperature(temperature)
         }
 
+        fun additionalBodyProperties(additionalBodyProperties: Map<String, JsonValue>) = apply {
+            body.additionalProperties(additionalBodyProperties)
+        }
+
+        fun putAdditionalBodyProperty(key: String, value: JsonValue) = apply {
+            body.putAdditionalProperty(key, value)
+        }
+
+        fun putAllAdditionalBodyProperties(additionalBodyProperties: Map<String, JsonValue>) =
+            apply {
+                body.putAllAdditionalProperties(additionalBodyProperties)
+            }
+
+        fun removeAdditionalBodyProperty(key: String) = apply { body.removeAdditionalProperty(key) }
+
+        fun removeAllAdditionalBodyProperties(keys: Set<String>) = apply {
+            body.removeAllAdditionalProperties(keys)
+        }
+
         fun additionalHeaders(additionalHeaders: Headers) = apply {
             this.additionalHeaders.clear()
             putAllAdditionalHeaders(additionalHeaders)
@@ -387,13 +412,13 @@ private constructor(
     }
 
     fun _body(): Map<String, MultipartField<*>> =
-        mapOf(
+        (mapOf(
                 "file" to _file(),
                 "model" to _model(),
                 "prompt" to _prompt(),
                 "response_format" to _responseFormat(),
                 "temperature" to _temperature(),
-            )
+            ) + _additionalBodyProperties().mapValues { MultipartField.of(it) })
             .toImmutable()
 
     override fun _headers(): Headers = additionalHeaders
@@ -407,6 +432,7 @@ private constructor(
         private val prompt: MultipartField<String>,
         private val responseFormat: MultipartField<ResponseFormat>,
         private val temperature: MultipartField<Double>,
+        private val additionalProperties: MutableMap<String, JsonValue>,
     ) {
 
         /**
@@ -500,6 +526,16 @@ private constructor(
         @ExcludeMissing
         fun _temperature(): MultipartField<Double> = temperature
 
+        @JsonAnySetter
+        private fun putAdditionalProperty(key: String, value: JsonValue) {
+            additionalProperties.put(key, value)
+        }
+
+        @JsonAnyGetter
+        @ExcludeMissing
+        fun _additionalProperties(): Map<String, JsonValue> =
+            Collections.unmodifiableMap(additionalProperties)
+
         fun toBuilder() = Builder().from(this)
 
         companion object {
@@ -524,6 +560,7 @@ private constructor(
             private var prompt: MultipartField<String> = MultipartField.of(null)
             private var responseFormat: MultipartField<ResponseFormat> = MultipartField.of(null)
             private var temperature: MultipartField<Double> = MultipartField.of(null)
+            private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
             @JvmSynthetic
             internal fun from(body: Body) = apply {
@@ -532,6 +569,7 @@ private constructor(
                 prompt = body.prompt
                 responseFormat = body.responseFormat
                 temperature = body.temperature
+                additionalProperties = body.additionalProperties.toMutableMap()
             }
 
             /**
@@ -645,6 +683,25 @@ private constructor(
                 this.temperature = temperature
             }
 
+            fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                this.additionalProperties.clear()
+                putAllAdditionalProperties(additionalProperties)
+            }
+
+            fun putAdditionalProperty(key: String, value: JsonValue) = apply {
+                additionalProperties.put(key, value)
+            }
+
+            fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                this.additionalProperties.putAll(additionalProperties)
+            }
+
+            fun removeAdditionalProperty(key: String) = apply { additionalProperties.remove(key) }
+
+            fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                keys.forEach(::removeAdditionalProperty)
+            }
+
             /**
              * Returns an immutable instance of [Body].
              *
@@ -665,6 +722,7 @@ private constructor(
                     prompt,
                     responseFormat,
                     temperature,
+                    additionalProperties.toMutableMap(),
                 )
         }
 
@@ -696,17 +754,17 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is Body && file == other.file && model == other.model && prompt == other.prompt && responseFormat == other.responseFormat && temperature == other.temperature /* spotless:on */
+            return /* spotless:off */ other is Body && file == other.file && model == other.model && prompt == other.prompt && responseFormat == other.responseFormat && temperature == other.temperature && additionalProperties == other.additionalProperties /* spotless:on */
         }
 
         /* spotless:off */
-        private val hashCode: Int by lazy { Objects.hash(file, model, prompt, responseFormat, temperature) }
+        private val hashCode: Int by lazy { Objects.hash(file, model, prompt, responseFormat, temperature, additionalProperties) }
         /* spotless:on */
 
         override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "Body{file=$file, model=$model, prompt=$prompt, responseFormat=$responseFormat, temperature=$temperature}"
+            "Body{file=$file, model=$model, prompt=$prompt, responseFormat=$responseFormat, temperature=$temperature, additionalProperties=$additionalProperties}"
     }
 
     /**

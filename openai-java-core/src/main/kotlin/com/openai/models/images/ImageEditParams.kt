@@ -2,6 +2,8 @@
 
 package com.openai.models.images
 
+import com.fasterxml.jackson.annotation.JsonAnyGetter
+import com.fasterxml.jackson.annotation.JsonAnySetter
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.core.JsonGenerator
@@ -28,6 +30,7 @@ import com.openai.core.toImmutable
 import com.openai.errors.OpenAIInvalidDataException
 import java.io.InputStream
 import java.nio.file.Path
+import java.util.Collections
 import java.util.Objects
 import java.util.Optional
 import kotlin.io.path.inputStream
@@ -289,6 +292,8 @@ private constructor(
      * Unlike [user], this method doesn't throw if the multipart field has an unexpected type.
      */
     fun _user(): MultipartField<String> = body._user()
+
+    fun _additionalBodyProperties(): Map<String, JsonValue> = body._additionalProperties()
 
     fun _additionalHeaders(): Headers = additionalHeaders
 
@@ -686,6 +691,25 @@ private constructor(
          */
         fun user(user: MultipartField<String>) = apply { body.user(user) }
 
+        fun additionalBodyProperties(additionalBodyProperties: Map<String, JsonValue>) = apply {
+            body.additionalProperties(additionalBodyProperties)
+        }
+
+        fun putAdditionalBodyProperty(key: String, value: JsonValue) = apply {
+            body.putAdditionalProperty(key, value)
+        }
+
+        fun putAllAdditionalBodyProperties(additionalBodyProperties: Map<String, JsonValue>) =
+            apply {
+                body.putAllAdditionalProperties(additionalBodyProperties)
+            }
+
+        fun removeAdditionalBodyProperty(key: String) = apply { body.removeAdditionalProperty(key) }
+
+        fun removeAllAdditionalBodyProperties(keys: Set<String>) = apply {
+            body.removeAllAdditionalProperties(keys)
+        }
+
         fun additionalHeaders(additionalHeaders: Headers) = apply {
             this.additionalHeaders.clear()
             putAllAdditionalHeaders(additionalHeaders)
@@ -802,7 +826,7 @@ private constructor(
     }
 
     fun _body(): Map<String, MultipartField<*>> =
-        mapOf(
+        (mapOf(
                 "image" to _image(),
                 "prompt" to _prompt(),
                 "background" to _background(),
@@ -817,7 +841,7 @@ private constructor(
                 "response_format" to _responseFormat(),
                 "size" to _size(),
                 "user" to _user(),
-            )
+            ) + _additionalBodyProperties().mapValues { MultipartField.of(it) })
             .toImmutable()
 
     override fun _headers(): Headers = additionalHeaders
@@ -840,6 +864,7 @@ private constructor(
         private val responseFormat: MultipartField<ResponseFormat>,
         private val size: MultipartField<Size>,
         private val user: MultipartField<String>,
+        private val additionalProperties: MutableMap<String, JsonValue>,
     ) {
 
         /**
@@ -1106,6 +1131,16 @@ private constructor(
          */
         @JsonProperty("user") @ExcludeMissing fun _user(): MultipartField<String> = user
 
+        @JsonAnySetter
+        private fun putAdditionalProperty(key: String, value: JsonValue) {
+            additionalProperties.put(key, value)
+        }
+
+        @JsonAnyGetter
+        @ExcludeMissing
+        fun _additionalProperties(): Map<String, JsonValue> =
+            Collections.unmodifiableMap(additionalProperties)
+
         fun toBuilder() = Builder().from(this)
 
         companion object {
@@ -1139,6 +1174,7 @@ private constructor(
             private var responseFormat: MultipartField<ResponseFormat> = MultipartField.of(null)
             private var size: MultipartField<Size> = MultipartField.of(null)
             private var user: MultipartField<String> = MultipartField.of(null)
+            private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
             @JvmSynthetic
             internal fun from(body: Body) = apply {
@@ -1156,6 +1192,7 @@ private constructor(
                 responseFormat = body.responseFormat
                 size = body.size
                 user = body.user
+                additionalProperties = body.additionalProperties.toMutableMap()
             }
 
             /**
@@ -1529,6 +1566,25 @@ private constructor(
              */
             fun user(user: MultipartField<String>) = apply { this.user = user }
 
+            fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                this.additionalProperties.clear()
+                putAllAdditionalProperties(additionalProperties)
+            }
+
+            fun putAdditionalProperty(key: String, value: JsonValue) = apply {
+                additionalProperties.put(key, value)
+            }
+
+            fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                this.additionalProperties.putAll(additionalProperties)
+            }
+
+            fun removeAdditionalProperty(key: String) = apply { additionalProperties.remove(key) }
+
+            fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                keys.forEach(::removeAdditionalProperty)
+            }
+
             /**
              * Returns an immutable instance of [Body].
              *
@@ -1558,6 +1614,7 @@ private constructor(
                     responseFormat,
                     size,
                     user,
+                    additionalProperties.toMutableMap(),
                 )
         }
 
@@ -1598,17 +1655,17 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is Body && image == other.image && prompt == other.prompt && background == other.background && inputFidelity == other.inputFidelity && mask == other.mask && model == other.model && n == other.n && outputCompression == other.outputCompression && outputFormat == other.outputFormat && partialImages == other.partialImages && quality == other.quality && responseFormat == other.responseFormat && size == other.size && user == other.user /* spotless:on */
+            return /* spotless:off */ other is Body && image == other.image && prompt == other.prompt && background == other.background && inputFidelity == other.inputFidelity && mask == other.mask && model == other.model && n == other.n && outputCompression == other.outputCompression && outputFormat == other.outputFormat && partialImages == other.partialImages && quality == other.quality && responseFormat == other.responseFormat && size == other.size && user == other.user && additionalProperties == other.additionalProperties /* spotless:on */
         }
 
         /* spotless:off */
-        private val hashCode: Int by lazy { Objects.hash(image, prompt, background, inputFidelity, mask, model, n, outputCompression, outputFormat, partialImages, quality, responseFormat, size, user) }
+        private val hashCode: Int by lazy { Objects.hash(image, prompt, background, inputFidelity, mask, model, n, outputCompression, outputFormat, partialImages, quality, responseFormat, size, user, additionalProperties) }
         /* spotless:on */
 
         override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "Body{image=$image, prompt=$prompt, background=$background, inputFidelity=$inputFidelity, mask=$mask, model=$model, n=$n, outputCompression=$outputCompression, outputFormat=$outputFormat, partialImages=$partialImages, quality=$quality, responseFormat=$responseFormat, size=$size, user=$user}"
+            "Body{image=$image, prompt=$prompt, background=$background, inputFidelity=$inputFidelity, mask=$mask, model=$model, n=$n, outputCompression=$outputCompression, outputFormat=$outputFormat, partialImages=$partialImages, quality=$quality, responseFormat=$responseFormat, size=$size, user=$user, additionalProperties=$additionalProperties}"
     }
 
     /**
