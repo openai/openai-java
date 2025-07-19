@@ -1,5 +1,13 @@
 # Changelog
 
+## 2.16.1 (2025-07-19)
+
+Full Changelog: [v2.16.0...v2.16.1](https://github.com/openai/openai-java/compare/v2.16.0...v2.16.1)
+
+### Chores
+
+* **internal:** refactor delegating from client to options ([ee6259b](https://github.com/openai/openai-java/commit/ee6259b6f0c74fc47ad94925313f44c05e11f9d0))
+
 ## 2.16.0 (2025-07-17)
 
 Full Changelog: [v2.15.0...v2.16.0](https://github.com/openai/openai-java/compare/v2.15.0...v2.16.0)

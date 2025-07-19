@@ -13,6 +13,7 @@ import com.openai.core.http.RetryingHttpClient
 import com.openai.credential.BearerTokenCredential
 import com.openai.credential.Credential
 import java.time.Clock
+import java.time.Duration
 import java.util.Optional
 import java.util.concurrent.Executor
 import java.util.concurrent.Executors
@@ -24,6 +25,13 @@ class ClientOptions
 private constructor(
     private val originalHttpClient: HttpClient,
     @get:JvmName("httpClient") val httpClient: HttpClient,
+    /**
+     * Whether to throw an exception if any of the Jackson versions detected at runtime are
+     * incompatible with the SDK's minimum supported Jackson version (2.13.4).
+     *
+     * Defaults to true. Use extreme caution when disabling this option. There is no guarantee that
+     * the SDK will work correctly when using an incompatible Jackson version.
+     */
     @get:JvmName("checkJacksonVersionCompatibility") val checkJacksonVersionCompatibility: Boolean,
     @get:JvmName("jsonMapper") val jsonMapper: JsonMapper,
     @get:JvmName("streamHandlerExecutor") val streamHandlerExecutor: Executor,
@@ -119,6 +127,13 @@ private constructor(
             this.httpClient = PhantomReachableClosingHttpClient(httpClient)
         }
 
+        /**
+         * Whether to throw an exception if any of the Jackson versions detected at runtime are
+         * incompatible with the SDK's minimum supported Jackson version (2.13.4).
+         *
+         * Defaults to true. Use extreme caution when disabling this option. There is no guarantee
+         * that the SDK will work correctly when using an incompatible Jackson version.
+         */
         fun checkJacksonVersionCompatibility(checkJacksonVersionCompatibility: Boolean) = apply {
             this.checkJacksonVersionCompatibility = checkJacksonVersionCompatibility
         }
@@ -141,6 +156,15 @@ private constructor(
         }
 
         fun timeout(timeout: Timeout) = apply { this.timeout = timeout }
+
+        /**
+         * Sets the maximum time allowed for a complete HTTP call, not including retries.
+         *
+         * See [Timeout.request] for more details.
+         *
+         * For fine-grained control, pass a [Timeout] object.
+         */
+        fun timeout(timeout: Duration) = timeout(Timeout.builder().request(timeout).build())
 
         fun maxRetries(maxRetries: Int) = apply { this.maxRetries = maxRetries }
 
@@ -249,6 +273,8 @@ private constructor(
         fun removeQueryParams(key: String) = apply { queryParams.remove(key) }
 
         fun removeAllQueryParams(keys: Set<String>) = apply { queryParams.removeAll(keys) }
+
+        fun timeout(): Timeout = timeout
 
         fun fromEnv() = apply {
             System.getenv("OPENAI_BASE_URL")?.let { baseUrl(it) }
