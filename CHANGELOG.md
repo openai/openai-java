@@ -1,5 +1,19 @@
 # Changelog
 
+## 2.17.0 (2025-07-21)
+
+Full Changelog: [v2.16.0...v2.17.0](https://github.com/openai/openai-java/compare/v2.16.0...v2.17.0)
+
+### Features
+
+* **client:** add https config options ([3f74519](https://github.com/openai/openai-java/commit/3f745195fa5d72ee72653adbd8087915c0db2fa5))
+* **client:** allow setting additional multipart body props ([220503e](https://github.com/openai/openai-java/commit/220503efc745bd1c74c02f1d4d6d3305198bf942))
+
+
+### Chores
+
+* **internal:** refactor delegating from client to options ([e89596d](https://github.com/openai/openai-java/commit/e89596d624fd77fdef750fb65a9ca5c6497e76cb))
+
 ## 2.16.0 (2025-07-17)
 
 Full Changelog: [v2.15.0...v2.16.0](https://github.com/openai/openai-java/compare/v2.15.0...v2.16.0)
