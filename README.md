@@ -73,7 +73,8 @@ import com.openai.models.ChatModel;
 import com.openai.models.chat.completions.ChatCompletion;
 import com.openai.models.chat.completions.ChatCompletionCreateParams;
 
-// Configures using the `OPENAI_API_KEY`, `OPENAI_ORG_ID`, `OPENAI_PROJECT_ID`, `OPENAI_WEBHOOK_SECRET` and `OPENAI_BASE_URL` environment variables
+// Configures using the `openai.apiKey`, `openai.orgId`, `openai.projectId`, `openai.webhookSecret` and `openai.baseUrl` system properties
+// Or configures using the `OPENAI_API_KEY`, `OPENAI_ORG_ID`, `OPENAI_PROJECT_ID`, `OPENAI_WEBHOOK_SECRET` and `OPENAI_BASE_URL` environment variables
 OpenAIClient client = OpenAIOkHttpClient.fromEnv();
 
 ChatCompletionCreateParams params = ChatCompletionCreateParams.builder()
@@ -85,13 +86,14 @@ ChatCompletion chatCompletion = client.chat().completions().create(params);
 
 ## Client configuration
 
-Configure the client using environment variables:
+Configure the client using system properties or environment variables:
 
 ```java
 import com.openai.client.OpenAIClient;
 import com.openai.client.okhttp.OpenAIOkHttpClient;
 
-// Configures using the `OPENAI_API_KEY`, `OPENAI_ORG_ID`, `OPENAI_PROJECT_ID`, `OPENAI_WEBHOOK_SECRET` and `OPENAI_BASE_URL` environment variables
+// Configures using the `openai.apiKey`, `openai.orgId`, `openai.projectId`, `openai.webhookSecret` and `openai.baseUrl` system properties
+// Or configures using the `OPENAI_API_KEY`, `OPENAI_ORG_ID`, `OPENAI_PROJECT_ID`, `OPENAI_WEBHOOK_SECRET` and `OPENAI_BASE_URL` environment variables
 OpenAIClient client = OpenAIOkHttpClient.fromEnv();
 ```
 
@@ -113,7 +115,8 @@ import com.openai.client.OpenAIClient;
 import com.openai.client.okhttp.OpenAIOkHttpClient;
 
 OpenAIClient client = OpenAIOkHttpClient.builder()
-    // Configures using the `OPENAI_API_KEY`, `OPENAI_ORG_ID`, `OPENAI_PROJECT_ID`, `OPENAI_WEBHOOK_SECRET` and `OPENAI_BASE_URL` environment variables
+    // Configures using the `openai.apiKey`, `openai.orgId`, `openai.projectId`, `openai.webhookSecret` and `openai.baseUrl` system properties
+    Or configures using the `OPENAI_API_KEY`, `OPENAI_ORG_ID`, `OPENAI_PROJECT_ID`, `OPENAI_WEBHOOK_SECRET` and `OPENAI_BASE_URL` environment variables
     .fromEnv()
     .apiKey("My API Key")
     .build();
@@ -121,13 +124,15 @@ OpenAIClient client = OpenAIOkHttpClient.builder()
 
 See this table for the available options:
 
-| Setter          | Environment variable    | Required | Default value                 |
-| --------------- | ----------------------- | -------- | ----------------------------- |
-| `apiKey`        | `OPENAI_API_KEY`        | true     | -                             |
-| `organization`  | `OPENAI_ORG_ID`         | false    | -                             |
-| `project`       | `OPENAI_PROJECT_ID`     | false    | -                             |
-| `webhookSecret` | `OPENAI_WEBHOOK_SECRET` | false    | -                             |
-| `baseUrl`       | `OPENAI_BASE_URL`       | true     | `"https://api.openai.com/v1"` |
+| Setter          | System property        | Environment variable    | Required | Default value                 |
+| --------------- | ---------------------- | ----------------------- | -------- | ----------------------------- |
+| `apiKey`        | `openai.apiKey`        | `OPENAI_API_KEY`        | true     | -                             |
+| `organization`  | `openai.orgId`         | `OPENAI_ORG_ID`         | false    | -                             |
+| `project`       | `openai.projectId`     | `OPENAI_PROJECT_ID`     | false    | -                             |
+| `webhookSecret` | `openai.webhookSecret` | `OPENAI_WEBHOOK_SECRET` | false    | -                             |
+| `baseUrl`       | `openai.baseUrl`       | `OPENAI_BASE_URL`       | true     | `"https://api.openai.com/v1"` |
+
+System properties take precedence over environment variables.
 
 > [!TIP]
 > Don't create more than one client in the same application. Each client has a connection pool and
@@ -174,7 +179,8 @@ import com.openai.models.chat.completions.ChatCompletion;
 import com.openai.models.chat.completions.ChatCompletionCreateParams;
 import java.util.concurrent.CompletableFuture;
 
-// Configures using the `OPENAI_API_KEY`, `OPENAI_ORG_ID`, `OPENAI_PROJECT_ID`, `OPENAI_WEBHOOK_SECRET` and `OPENAI_BASE_URL` environment variables
+// Configures using the `openai.apiKey`, `openai.orgId`, `openai.projectId`, `openai.webhookSecret` and `openai.baseUrl` system properties
+// Or configures using the `OPENAI_API_KEY`, `OPENAI_ORG_ID`, `OPENAI_PROJECT_ID`, `OPENAI_WEBHOOK_SECRET` and `OPENAI_BASE_URL` environment variables
 OpenAIClient client = OpenAIOkHttpClient.fromEnv();
 
 ChatCompletionCreateParams params = ChatCompletionCreateParams.builder()
@@ -194,7 +200,8 @@ import com.openai.models.chat.completions.ChatCompletion;
 import com.openai.models.chat.completions.ChatCompletionCreateParams;
 import java.util.concurrent.CompletableFuture;
 
-// Configures using the `OPENAI_API_KEY`, `OPENAI_ORG_ID`, `OPENAI_PROJECT_ID`, `OPENAI_WEBHOOK_SECRET` and `OPENAI_BASE_URL` environment variables
+// Configures using the `openai.apiKey`, `openai.orgId`, `openai.projectId`, `openai.webhookSecret` and `openai.baseUrl` system properties
+// Or configures using the `OPENAI_API_KEY`, `OPENAI_ORG_ID`, `OPENAI_PROJECT_ID`, `OPENAI_WEBHOOK_SECRET` and `OPENAI_BASE_URL` environment variables
 OpenAIClientAsync client = OpenAIOkHttpClientAsync.fromEnv();
 
 ChatCompletionCreateParams params = ChatCompletionCreateParams.builder()
