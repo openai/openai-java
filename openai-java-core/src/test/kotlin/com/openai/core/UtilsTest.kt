@@ -59,15 +59,17 @@ internal class UtilsTest {
     @Test
     fun isAzureUnifiedEndpoint() {
         // Valid Azure unified endpoints
-        assertThat(isAzureUnifiedEndpoint("https://region.services.ai.azure.com")).isTrue()
-        assertThat(isAzureUnifiedEndpoint("https://region.services.ai.azure.com/")).isTrue()
+        assertThat(isAzureUnifiedEndpoint("https://region.services.ai.azure.com/openai/v1")).isTrue()
+        assertThat(isAzureUnifiedEndpoint("https://region.services.ai.azure.com/openai/v1/")).isTrue()
 
         // Invalid Azure unified endpoints
+        assertThat(isAzureUnifiedEndpoint("https://region.services.ai.azure.com")).isFalse()
+        assertThat(isAzureUnifiedEndpoint("https://region.services.ai.azure.com/")).isFalse()
         assertThat(isAzureUnifiedEndpoint("https://region.openai.azure.com")).isFalse()
         assertThat(isAzureUnifiedEndpoint("https://example.com")).isFalse()
         assertThat(isAzureUnifiedEndpoint("https://region.openai.com")).isFalse()
         assertThat(isAzureUnifiedEndpoint("https://region.azure.com")).isFalse()
-        assertThrows<NullPointerException>{isAzureUnifiedEndpoint("")}
-        assertThrows<NullPointerException>{isAzureUnifiedEndpoint("   ")}
+        assertThat(isAzureUnifiedEndpoint("")).isFalse()
+        assertThat(isAzureUnifiedEndpoint("    ")).isFalse()
     }
 }

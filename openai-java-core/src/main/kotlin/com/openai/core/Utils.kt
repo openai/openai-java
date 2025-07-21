@@ -122,9 +122,6 @@ internal fun URI.isOtherAzureKnownEndpoint(): Boolean =
  * Convenience function to check if the given [baseUrl] is an Azure OpenAI resource URL with the unified schema.
  */
 @JvmSynthetic
-internal fun isAzureUnifiedEndpoint(baseUrl: String): Boolean {
-    val url = URI.create(baseUrl.trim().trimEnd('/'))
-    return url.isAzureUnifiedEndpoint()
-}
+internal fun isAzureUnifiedEndpoint(baseUrl: String): Boolean = baseUrl.trimEnd('/').endsWith("openai/v1")
 
 internal interface Enum
