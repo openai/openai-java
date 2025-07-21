@@ -2,8 +2,8 @@
 
 <!-- x-release-please-start-version -->
 
-[![Maven Central](https://img.shields.io/maven-central/v/com.openai/openai-java)](https://central.sonatype.com/artifact/com.openai/openai-java/2.16.0)
-[![javadoc](https://javadoc.io/badge2/com.openai/openai-java/2.16.0/javadoc.svg)](https://javadoc.io/doc/com.openai/openai-java/2.16.0)
+[![Maven Central](https://img.shields.io/maven-central/v/com.openai/openai-java)](https://central.sonatype.com/artifact/com.openai/openai-java/2.17.0)
+[![javadoc](https://javadoc.io/badge2/com.openai/openai-java/2.17.0/javadoc.svg)](https://javadoc.io/doc/com.openai/openai-java/2.17.0)
 
 <!-- x-release-please-end -->
 
@@ -11,7 +11,7 @@ The OpenAI Java SDK provides convenient access to the [OpenAI REST API](https://
 
 <!-- x-release-please-start-version -->
 
-The REST API documentation can be found on [platform.openai.com](https://platform.openai.com/docs). Javadocs are available on [javadoc.io](https://javadoc.io/doc/com.openai/openai-java/2.16.0).
+The REST API documentation can be found on [platform.openai.com](https://platform.openai.com/docs). Javadocs are available on [javadoc.io](https://javadoc.io/doc/com.openai/openai-java/2.17.0).
 
 <!-- x-release-please-end -->
 
@@ -22,7 +22,7 @@ The REST API documentation can be found on [platform.openai.com](https://platfor
 ### Gradle
 
 ```kotlin
-implementation("com.openai:openai-java:2.16.0")
+implementation("com.openai:openai-java:2.17.0")
 ```
 
 ### Maven
@@ -31,7 +31,7 @@ implementation("com.openai:openai-java:2.16.0")
 <dependency>
   <groupId>com.openai</groupId>
   <artifactId>openai-java</artifactId>
-  <version>2.16.0</version>
+  <version>2.17.0</version>
 </dependency>
 ```
 
@@ -1395,6 +1395,27 @@ OpenAIClient client = OpenAIOkHttpClient.builder()
         "https://example.com", 8080
       )
     ))
+    .build();
+```
+
+### HTTPS
+
+> [!NOTE]
+> Most applications should not call these methods, and instead use the system defaults. The defaults include
+> special optimizations that can be lost if the implementations are modified.
+
+To configure how HTTPS connections are secured, configure the client using the `sslSocketFactory`, `trustManager`, and `hostnameVerifier` methods:
+
+```java
+import com.openai.client.OpenAIClient;
+import com.openai.client.okhttp.OpenAIOkHttpClient;
+
+OpenAIClient client = OpenAIOkHttpClient.builder()
+    .fromEnv()
+    // If `sslSocketFactory` is set, then `trustManager` must be set, and vice versa.
+    .sslSocketFactory(yourSSLSocketFactory)
+    .trustManager(yourTrustManager)
+    .hostnameVerifier(yourHostnameVerifier)
     .build();
 ```
 
