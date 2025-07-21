@@ -937,12 +937,6 @@ private constructor(
 
             @JvmField val ECHO = of("echo")
 
-            @JvmField val FABLE = of("fable")
-
-            @JvmField val ONYX = of("onyx")
-
-            @JvmField val NOVA = of("nova")
-
             @JvmField val SAGE = of("sage")
 
             @JvmField val SHIMMER = of("shimmer")
@@ -959,9 +953,6 @@ private constructor(
             BALLAD,
             CORAL,
             ECHO,
-            FABLE,
-            ONYX,
-            NOVA,
             SAGE,
             SHIMMER,
             VERSE,
@@ -982,9 +973,6 @@ private constructor(
             BALLAD,
             CORAL,
             ECHO,
-            FABLE,
-            ONYX,
-            NOVA,
             SAGE,
             SHIMMER,
             VERSE,
@@ -1006,9 +994,6 @@ private constructor(
                 BALLAD -> Value.BALLAD
                 CORAL -> Value.CORAL
                 ECHO -> Value.ECHO
-                FABLE -> Value.FABLE
-                ONYX -> Value.ONYX
-                NOVA -> Value.NOVA
                 SAGE -> Value.SAGE
                 SHIMMER -> Value.SHIMMER
                 VERSE -> Value.VERSE
@@ -1031,9 +1016,6 @@ private constructor(
                 BALLAD -> Known.BALLAD
                 CORAL -> Known.CORAL
                 ECHO -> Known.ECHO
-                FABLE -> Known.FABLE
-                ONYX -> Known.ONYX
-                NOVA -> Known.NOVA
                 SAGE -> Known.SAGE
                 SHIMMER -> Known.SHIMMER
                 VERSE -> Known.VERSE

@@ -18,6 +18,8 @@ import java.util.Objects
 /** Emitted when the attempt to list available MCP tools has failed. */
 class ResponseMcpListToolsFailedEvent
 private constructor(
+    private val itemId: JsonField<String>,
+    private val outputIndex: JsonField<Long>,
     private val sequenceNumber: JsonField<Long>,
     private val type: JsonValue,
     private val additionalProperties: MutableMap<String, JsonValue>,
@@ -25,11 +27,31 @@ private constructor(
 
     @JsonCreator
     private constructor(
+        @JsonProperty("item_id") @ExcludeMissing itemId: JsonField<String> = JsonMissing.of(),
+        @JsonProperty("output_index")
+        @ExcludeMissing
+        outputIndex: JsonField<Long> = JsonMissing.of(),
         @JsonProperty("sequence_number")
         @ExcludeMissing
         sequenceNumber: JsonField<Long> = JsonMissing.of(),
         @JsonProperty("type") @ExcludeMissing type: JsonValue = JsonMissing.of(),
-    ) : this(sequenceNumber, type, mutableMapOf())
+    ) : this(itemId, outputIndex, sequenceNumber, type, mutableMapOf())
+
+    /**
+     * The ID of the MCP tool call item that failed.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     */
+    fun itemId(): String = itemId.getRequired("item_id")
+
+    /**
+     * The index of the output item that failed.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     */
+    fun outputIndex(): Long = outputIndex.getRequired("output_index")
 
     /**
      * The sequence number of this event.
@@ -51,6 +73,20 @@ private constructor(
      * with an unexpected value).
      */
     @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
+
+    /**
+     * Returns the raw JSON value of [itemId].
+     *
+     * Unlike [itemId], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    @JsonProperty("item_id") @ExcludeMissing fun _itemId(): JsonField<String> = itemId
+
+    /**
+     * Returns the raw JSON value of [outputIndex].
+     *
+     * Unlike [outputIndex], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    @JsonProperty("output_index") @ExcludeMissing fun _outputIndex(): JsonField<Long> = outputIndex
 
     /**
      * Returns the raw JSON value of [sequenceNumber].
@@ -81,6 +117,8 @@ private constructor(
          *
          * The following fields are required:
          * ```java
+         * .itemId()
+         * .outputIndex()
          * .sequenceNumber()
          * ```
          */
@@ -90,6 +128,8 @@ private constructor(
     /** A builder for [ResponseMcpListToolsFailedEvent]. */
     class Builder internal constructor() {
 
+        private var itemId: JsonField<String>? = null
+        private var outputIndex: JsonField<Long>? = null
         private var sequenceNumber: JsonField<Long>? = null
         private var type: JsonValue = JsonValue.from("response.mcp_list_tools.failed")
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
@@ -97,11 +137,36 @@ private constructor(
         @JvmSynthetic
         internal fun from(responseMcpListToolsFailedEvent: ResponseMcpListToolsFailedEvent) =
             apply {
+                itemId = responseMcpListToolsFailedEvent.itemId
+                outputIndex = responseMcpListToolsFailedEvent.outputIndex
                 sequenceNumber = responseMcpListToolsFailedEvent.sequenceNumber
                 type = responseMcpListToolsFailedEvent.type
                 additionalProperties =
                     responseMcpListToolsFailedEvent.additionalProperties.toMutableMap()
             }
+
+        /** The ID of the MCP tool call item that failed. */
+        fun itemId(itemId: String) = itemId(JsonField.of(itemId))
+
+        /**
+         * Sets [Builder.itemId] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.itemId] with a well-typed [String] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
+        fun itemId(itemId: JsonField<String>) = apply { this.itemId = itemId }
+
+        /** The index of the output item that failed. */
+        fun outputIndex(outputIndex: Long) = outputIndex(JsonField.of(outputIndex))
+
+        /**
+         * Sets [Builder.outputIndex] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.outputIndex] with a well-typed [Long] value instead.
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
+         */
+        fun outputIndex(outputIndex: JsonField<Long>) = apply { this.outputIndex = outputIndex }
 
         /** The sequence number of this event. */
         fun sequenceNumber(sequenceNumber: Long) = sequenceNumber(JsonField.of(sequenceNumber))
@@ -157,6 +222,8 @@ private constructor(
          *
          * The following fields are required:
          * ```java
+         * .itemId()
+         * .outputIndex()
          * .sequenceNumber()
          * ```
          *
@@ -164,6 +231,8 @@ private constructor(
          */
         fun build(): ResponseMcpListToolsFailedEvent =
             ResponseMcpListToolsFailedEvent(
+                checkRequired("itemId", itemId),
+                checkRequired("outputIndex", outputIndex),
                 checkRequired("sequenceNumber", sequenceNumber),
                 type,
                 additionalProperties.toMutableMap(),
@@ -177,6 +246,8 @@ private constructor(
             return@apply
         }
 
+        itemId()
+        outputIndex()
         sequenceNumber()
         _type().let {
             if (it != JsonValue.from("response.mcp_list_tools.failed")) {
@@ -201,7 +272,9 @@ private constructor(
      */
     @JvmSynthetic
     internal fun validity(): Int =
-        (if (sequenceNumber.asKnown().isPresent) 1 else 0) +
+        (if (itemId.asKnown().isPresent) 1 else 0) +
+            (if (outputIndex.asKnown().isPresent) 1 else 0) +
+            (if (sequenceNumber.asKnown().isPresent) 1 else 0) +
             type.let { if (it == JsonValue.from("response.mcp_list_tools.failed")) 1 else 0 }
 
     override fun equals(other: Any?): Boolean {
@@ -209,15 +282,15 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is ResponseMcpListToolsFailedEvent && sequenceNumber == other.sequenceNumber && type == other.type && additionalProperties == other.additionalProperties /* spotless:on */
+        return /* spotless:off */ other is ResponseMcpListToolsFailedEvent && itemId == other.itemId && outputIndex == other.outputIndex && sequenceNumber == other.sequenceNumber && type == other.type && additionalProperties == other.additionalProperties /* spotless:on */
     }
 
     /* spotless:off */
-    private val hashCode: Int by lazy { Objects.hash(sequenceNumber, type, additionalProperties) }
+    private val hashCode: Int by lazy { Objects.hash(itemId, outputIndex, sequenceNumber, type, additionalProperties) }
     /* spotless:on */
 
     override fun hashCode(): Int = hashCode
 
     override fun toString() =
-        "ResponseMcpListToolsFailedEvent{sequenceNumber=$sequenceNumber, type=$type, additionalProperties=$additionalProperties}"
+        "ResponseMcpListToolsFailedEvent{itemId=$itemId, outputIndex=$outputIndex, sequenceNumber=$sequenceNumber, type=$type, additionalProperties=$additionalProperties}"
 }

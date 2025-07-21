@@ -19,6 +19,8 @@ The REST API documentation can be found on [platform.openai.com](https://platfor
 
 <!-- x-release-please-start-version -->
 
+[_Try `openai-java-spring-boot-starter` if you're using Spring Boot!_](#spring-boot)
+
 ### Gradle
 
 ```kotlin
@@ -1301,6 +1303,85 @@ Or to `debug` for more verbose logging:
 ```sh
 $ export OPENAI_LOG=debug
 ```
+
+## GraalVM
+
+Although the SDK uses reflection, it is still usable in [GraalVM](https://www.graalvm.org) because `openai-java-core` is published with [reachability metadata](https://www.graalvm.org/latest/reference-manual/native-image/metadata/).
+
+GraalVM should automatically detect and use the published metadata, but [manual configuration](https://www.graalvm.org/jdk24/reference-manual/native-image/overview/BuildConfiguration/) is also available.
+
+## Spring Boot
+
+If you're using Spring Boot, then you can use the SDK's [Spring Boot starter](https://docs.spring.io/spring-boot/docs/2.7.18/reference/htmlsingle/#using.build-systems.starters) to simplify configuration and get set up quickly.
+
+### Installation
+
+<!-- x-release-please-start-version -->
+
+#### Gradle
+
+```kotlin
+implementation("com.openai:openai-java-spring-boot-starter:2.17.0")
+```
+
+#### Maven
+
+```xml
+<dependency>
+  <groupId>com.openai</groupId>
+  <artifactId>openai-java-spring-boot-starter</artifactId>
+  <version>2.17.0</version>
+</dependency>
+```
+
+<!-- x-release-please-end -->
+
+### Configuration
+
+The [client's environment variable options](#client-configuration) can be configured in [`application.properties` or `application.yml`](https://docs.spring.io/spring-boot/how-to/properties-and-configuration.html).
+
+#### `application.properties`
+
+```properties
+openai.base-url=https://api.openai.com/v1
+openai.api-key=My API Key
+openai.org-id=My Organization
+openai.project-id=My Project
+openai.webhook-secret=My Webhook Secret
+```
+
+#### `application.yml`
+
+```yaml
+openai:
+  base-url: https://api.openai.com/v1
+  api-key: My API Key
+  org-id: My Organization
+  project-id: My Project
+  webhook-secret: My Webhook Secret
+```
+
+#### Other configuration
+
+Configure any other client option by providing one or more instances of [`OpenAIClientCustomizer`](openai-java-core/src/main/kotlin/com/openai/springboot/OpenAIClientCustomizer.kt). For example, here's how you'd set [`maxRetries`](#retries):
+
+```java
+import com.openai.springboot.OpenAIClientCustomizer;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+
+@Configuration
+public class OpenAIConfig {
+    @Bean
+    public OpenAIClientCustomizer customizer() {
+        return builder -> builder.maxRetries(3);
+    }
+}
+```
+
+### Usage
+
+[Inject](https://docs.spring.io/spring-framework/reference/core/beans/dependencies/factory-collaborators.html) [`OpenAIClient`](openai-java-core/src/main/kotlin/com/openai/client/OpenAIClient.kt) anywhere and start using it!
 
 ## Jackson
 

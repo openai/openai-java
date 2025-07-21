@@ -90,7 +90,8 @@ private constructor(
     fun outputs(): Optional<List<Output>> = outputs.getOptional("outputs")
 
     /**
-     * The status of the code interpreter tool call.
+     * The status of the code interpreter tool call. Valid values are `in_progress`, `completed`,
+     * `incomplete`, `interpreting`, and `failed`.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
      *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
@@ -296,7 +297,10 @@ private constructor(
          */
         fun addImageOutput(url: String) = addOutput(Output.Image.builder().url(url).build())
 
-        /** The status of the code interpreter tool call. */
+        /**
+         * The status of the code interpreter tool call. Valid values are `in_progress`,
+         * `completed`, `incomplete`, `interpreting`, and `failed`.
+         */
         fun status(status: Status) = status(JsonField.of(status))
 
         /**
@@ -981,7 +985,10 @@ private constructor(
         }
     }
 
-    /** The status of the code interpreter tool call. */
+    /**
+     * The status of the code interpreter tool call. Valid values are `in_progress`, `completed`,
+     * `incomplete`, `interpreting`, and `failed`.
+     */
     class Status @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
 
         /**
