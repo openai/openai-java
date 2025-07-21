@@ -73,8 +73,6 @@ internal class ResponseStreamEventTest {
         assertThat(responseStreamEvent.mcpListToolsInProgress()).isEmpty
         assertThat(responseStreamEvent.outputTextAnnotationAdded()).isEmpty
         assertThat(responseStreamEvent.queued()).isEmpty
-        assertThat(responseStreamEvent.reasoningDelta()).isEmpty
-        assertThat(responseStreamEvent.reasoningDone()).isEmpty
         assertThat(responseStreamEvent.reasoningSummaryDelta()).isEmpty
         assertThat(responseStreamEvent.reasoningSummaryDone()).isEmpty
     }
@@ -151,8 +149,6 @@ internal class ResponseStreamEventTest {
         assertThat(responseStreamEvent.mcpListToolsInProgress()).isEmpty
         assertThat(responseStreamEvent.outputTextAnnotationAdded()).isEmpty
         assertThat(responseStreamEvent.queued()).isEmpty
-        assertThat(responseStreamEvent.reasoningDelta()).isEmpty
-        assertThat(responseStreamEvent.reasoningDone()).isEmpty
         assertThat(responseStreamEvent.reasoningSummaryDelta()).isEmpty
         assertThat(responseStreamEvent.reasoningSummaryDone()).isEmpty
     }
@@ -230,8 +226,6 @@ internal class ResponseStreamEventTest {
         assertThat(responseStreamEvent.mcpListToolsInProgress()).isEmpty
         assertThat(responseStreamEvent.outputTextAnnotationAdded()).isEmpty
         assertThat(responseStreamEvent.queued()).isEmpty
-        assertThat(responseStreamEvent.reasoningDelta()).isEmpty
-        assertThat(responseStreamEvent.reasoningDone()).isEmpty
         assertThat(responseStreamEvent.reasoningSummaryDelta()).isEmpty
         assertThat(responseStreamEvent.reasoningSummaryDone()).isEmpty
     }
@@ -312,8 +306,6 @@ internal class ResponseStreamEventTest {
         assertThat(responseStreamEvent.mcpListToolsInProgress()).isEmpty
         assertThat(responseStreamEvent.outputTextAnnotationAdded()).isEmpty
         assertThat(responseStreamEvent.queued()).isEmpty
-        assertThat(responseStreamEvent.reasoningDelta()).isEmpty
-        assertThat(responseStreamEvent.reasoningDone()).isEmpty
         assertThat(responseStreamEvent.reasoningSummaryDelta()).isEmpty
         assertThat(responseStreamEvent.reasoningSummaryDone()).isEmpty
     }
@@ -398,8 +390,6 @@ internal class ResponseStreamEventTest {
         assertThat(responseStreamEvent.mcpListToolsInProgress()).isEmpty
         assertThat(responseStreamEvent.outputTextAnnotationAdded()).isEmpty
         assertThat(responseStreamEvent.queued()).isEmpty
-        assertThat(responseStreamEvent.reasoningDelta()).isEmpty
-        assertThat(responseStreamEvent.reasoningDone()).isEmpty
         assertThat(responseStreamEvent.reasoningSummaryDelta()).isEmpty
         assertThat(responseStreamEvent.reasoningSummaryDone()).isEmpty
     }
@@ -489,8 +479,6 @@ internal class ResponseStreamEventTest {
         assertThat(responseStreamEvent.mcpListToolsInProgress()).isEmpty
         assertThat(responseStreamEvent.outputTextAnnotationAdded()).isEmpty
         assertThat(responseStreamEvent.queued()).isEmpty
-        assertThat(responseStreamEvent.reasoningDelta()).isEmpty
-        assertThat(responseStreamEvent.reasoningDone()).isEmpty
         assertThat(responseStreamEvent.reasoningSummaryDelta()).isEmpty
         assertThat(responseStreamEvent.reasoningSummaryDone()).isEmpty
     }
@@ -579,8 +567,6 @@ internal class ResponseStreamEventTest {
         assertThat(responseStreamEvent.mcpListToolsInProgress()).isEmpty
         assertThat(responseStreamEvent.outputTextAnnotationAdded()).isEmpty
         assertThat(responseStreamEvent.queued()).isEmpty
-        assertThat(responseStreamEvent.reasoningDelta()).isEmpty
-        assertThat(responseStreamEvent.reasoningDone()).isEmpty
         assertThat(responseStreamEvent.reasoningSummaryDelta()).isEmpty
         assertThat(responseStreamEvent.reasoningSummaryDone()).isEmpty
     }
@@ -668,8 +654,6 @@ internal class ResponseStreamEventTest {
         assertThat(responseStreamEvent.mcpListToolsInProgress()).isEmpty
         assertThat(responseStreamEvent.outputTextAnnotationAdded()).isEmpty
         assertThat(responseStreamEvent.queued()).isEmpty
-        assertThat(responseStreamEvent.reasoningDelta()).isEmpty
-        assertThat(responseStreamEvent.reasoningDone()).isEmpty
         assertThat(responseStreamEvent.reasoningSummaryDelta()).isEmpty
         assertThat(responseStreamEvent.reasoningSummaryDone()).isEmpty
     }
@@ -757,8 +741,6 @@ internal class ResponseStreamEventTest {
         assertThat(responseStreamEvent.mcpListToolsInProgress()).isEmpty
         assertThat(responseStreamEvent.outputTextAnnotationAdded()).isEmpty
         assertThat(responseStreamEvent.queued()).isEmpty
-        assertThat(responseStreamEvent.reasoningDelta()).isEmpty
-        assertThat(responseStreamEvent.reasoningDone()).isEmpty
         assertThat(responseStreamEvent.reasoningSummaryDelta()).isEmpty
         assertThat(responseStreamEvent.reasoningSummaryDone()).isEmpty
     }
@@ -963,8 +945,6 @@ internal class ResponseStreamEventTest {
         assertThat(responseStreamEvent.mcpListToolsInProgress()).isEmpty
         assertThat(responseStreamEvent.outputTextAnnotationAdded()).isEmpty
         assertThat(responseStreamEvent.queued()).isEmpty
-        assertThat(responseStreamEvent.reasoningDelta()).isEmpty
-        assertThat(responseStreamEvent.reasoningDone()).isEmpty
         assertThat(responseStreamEvent.reasoningSummaryDelta()).isEmpty
         assertThat(responseStreamEvent.reasoningSummaryDone()).isEmpty
     }
@@ -1197,8 +1177,6 @@ internal class ResponseStreamEventTest {
         assertThat(responseStreamEvent.mcpListToolsInProgress()).isEmpty
         assertThat(responseStreamEvent.outputTextAnnotationAdded()).isEmpty
         assertThat(responseStreamEvent.queued()).isEmpty
-        assertThat(responseStreamEvent.reasoningDelta()).isEmpty
-        assertThat(responseStreamEvent.reasoningDone()).isEmpty
         assertThat(responseStreamEvent.reasoningSummaryDelta()).isEmpty
         assertThat(responseStreamEvent.reasoningSummaryDone()).isEmpty
     }
@@ -1338,8 +1316,6 @@ internal class ResponseStreamEventTest {
         assertThat(responseStreamEvent.mcpListToolsInProgress()).isEmpty
         assertThat(responseStreamEvent.outputTextAnnotationAdded()).isEmpty
         assertThat(responseStreamEvent.queued()).isEmpty
-        assertThat(responseStreamEvent.reasoningDelta()).isEmpty
-        assertThat(responseStreamEvent.reasoningDone()).isEmpty
         assertThat(responseStreamEvent.reasoningSummaryDelta()).isEmpty
         assertThat(responseStreamEvent.reasoningSummaryDone()).isEmpty
     }
@@ -1571,8 +1547,6 @@ internal class ResponseStreamEventTest {
         assertThat(responseStreamEvent.mcpListToolsInProgress()).isEmpty
         assertThat(responseStreamEvent.outputTextAnnotationAdded()).isEmpty
         assertThat(responseStreamEvent.queued()).isEmpty
-        assertThat(responseStreamEvent.reasoningDelta()).isEmpty
-        assertThat(responseStreamEvent.reasoningDone()).isEmpty
         assertThat(responseStreamEvent.reasoningSummaryDelta()).isEmpty
         assertThat(responseStreamEvent.reasoningSummaryDone()).isEmpty
     }
@@ -1779,8 +1753,6 @@ internal class ResponseStreamEventTest {
         assertThat(responseStreamEvent.mcpListToolsInProgress()).isEmpty
         assertThat(responseStreamEvent.outputTextAnnotationAdded()).isEmpty
         assertThat(responseStreamEvent.queued()).isEmpty
-        assertThat(responseStreamEvent.reasoningDelta()).isEmpty
-        assertThat(responseStreamEvent.reasoningDone()).isEmpty
         assertThat(responseStreamEvent.reasoningSummaryDelta()).isEmpty
         assertThat(responseStreamEvent.reasoningSummaryDone()).isEmpty
     }
@@ -1868,8 +1840,6 @@ internal class ResponseStreamEventTest {
         assertThat(responseStreamEvent.mcpListToolsInProgress()).isEmpty
         assertThat(responseStreamEvent.outputTextAnnotationAdded()).isEmpty
         assertThat(responseStreamEvent.queued()).isEmpty
-        assertThat(responseStreamEvent.reasoningDelta()).isEmpty
-        assertThat(responseStreamEvent.reasoningDone()).isEmpty
         assertThat(responseStreamEvent.reasoningSummaryDelta()).isEmpty
         assertThat(responseStreamEvent.reasoningSummaryDone()).isEmpty
     }
@@ -1957,8 +1927,6 @@ internal class ResponseStreamEventTest {
         assertThat(responseStreamEvent.mcpListToolsInProgress()).isEmpty
         assertThat(responseStreamEvent.outputTextAnnotationAdded()).isEmpty
         assertThat(responseStreamEvent.queued()).isEmpty
-        assertThat(responseStreamEvent.reasoningDelta()).isEmpty
-        assertThat(responseStreamEvent.reasoningDone()).isEmpty
         assertThat(responseStreamEvent.reasoningSummaryDelta()).isEmpty
         assertThat(responseStreamEvent.reasoningSummaryDone()).isEmpty
     }
@@ -2045,8 +2013,6 @@ internal class ResponseStreamEventTest {
         assertThat(responseStreamEvent.mcpListToolsInProgress()).isEmpty
         assertThat(responseStreamEvent.outputTextAnnotationAdded()).isEmpty
         assertThat(responseStreamEvent.queued()).isEmpty
-        assertThat(responseStreamEvent.reasoningDelta()).isEmpty
-        assertThat(responseStreamEvent.reasoningDone()).isEmpty
         assertThat(responseStreamEvent.reasoningSummaryDelta()).isEmpty
         assertThat(responseStreamEvent.reasoningSummaryDone()).isEmpty
     }
@@ -2135,8 +2101,6 @@ internal class ResponseStreamEventTest {
         assertThat(responseStreamEvent.mcpListToolsInProgress()).isEmpty
         assertThat(responseStreamEvent.outputTextAnnotationAdded()).isEmpty
         assertThat(responseStreamEvent.queued()).isEmpty
-        assertThat(responseStreamEvent.reasoningDelta()).isEmpty
-        assertThat(responseStreamEvent.reasoningDone()).isEmpty
         assertThat(responseStreamEvent.reasoningSummaryDelta()).isEmpty
         assertThat(responseStreamEvent.reasoningSummaryDone()).isEmpty
     }
@@ -2226,8 +2190,6 @@ internal class ResponseStreamEventTest {
         assertThat(responseStreamEvent.mcpListToolsInProgress()).isEmpty
         assertThat(responseStreamEvent.outputTextAnnotationAdded()).isEmpty
         assertThat(responseStreamEvent.queued()).isEmpty
-        assertThat(responseStreamEvent.reasoningDelta()).isEmpty
-        assertThat(responseStreamEvent.reasoningDone()).isEmpty
         assertThat(responseStreamEvent.reasoningSummaryDelta()).isEmpty
         assertThat(responseStreamEvent.reasoningSummaryDone()).isEmpty
     }
@@ -2433,8 +2395,6 @@ internal class ResponseStreamEventTest {
         assertThat(responseStreamEvent.mcpListToolsInProgress()).isEmpty
         assertThat(responseStreamEvent.outputTextAnnotationAdded()).isEmpty
         assertThat(responseStreamEvent.queued()).isEmpty
-        assertThat(responseStreamEvent.reasoningDelta()).isEmpty
-        assertThat(responseStreamEvent.reasoningDone()).isEmpty
         assertThat(responseStreamEvent.reasoningSummaryDelta()).isEmpty
         assertThat(responseStreamEvent.reasoningSummaryDone()).isEmpty
     }
@@ -2759,8 +2719,6 @@ internal class ResponseStreamEventTest {
         assertThat(responseStreamEvent.mcpListToolsInProgress()).isEmpty
         assertThat(responseStreamEvent.outputTextAnnotationAdded()).isEmpty
         assertThat(responseStreamEvent.queued()).isEmpty
-        assertThat(responseStreamEvent.reasoningDelta()).isEmpty
-        assertThat(responseStreamEvent.reasoningDone()).isEmpty
         assertThat(responseStreamEvent.reasoningSummaryDelta()).isEmpty
         assertThat(responseStreamEvent.reasoningSummaryDone()).isEmpty
     }
@@ -3085,8 +3043,6 @@ internal class ResponseStreamEventTest {
         assertThat(responseStreamEvent.mcpListToolsInProgress()).isEmpty
         assertThat(responseStreamEvent.outputTextAnnotationAdded()).isEmpty
         assertThat(responseStreamEvent.queued()).isEmpty
-        assertThat(responseStreamEvent.reasoningDelta()).isEmpty
-        assertThat(responseStreamEvent.reasoningDone()).isEmpty
         assertThat(responseStreamEvent.reasoningSummaryDelta()).isEmpty
         assertThat(responseStreamEvent.reasoningSummaryDone()).isEmpty
     }
@@ -3323,8 +3279,6 @@ internal class ResponseStreamEventTest {
         assertThat(responseStreamEvent.mcpListToolsInProgress()).isEmpty
         assertThat(responseStreamEvent.outputTextAnnotationAdded()).isEmpty
         assertThat(responseStreamEvent.queued()).isEmpty
-        assertThat(responseStreamEvent.reasoningDelta()).isEmpty
-        assertThat(responseStreamEvent.reasoningDone()).isEmpty
         assertThat(responseStreamEvent.reasoningSummaryDelta()).isEmpty
         assertThat(responseStreamEvent.reasoningSummaryDone()).isEmpty
     }
@@ -3472,8 +3426,6 @@ internal class ResponseStreamEventTest {
         assertThat(responseStreamEvent.mcpListToolsInProgress()).isEmpty
         assertThat(responseStreamEvent.outputTextAnnotationAdded()).isEmpty
         assertThat(responseStreamEvent.queued()).isEmpty
-        assertThat(responseStreamEvent.reasoningDelta()).isEmpty
-        assertThat(responseStreamEvent.reasoningDone()).isEmpty
         assertThat(responseStreamEvent.reasoningSummaryDelta()).isEmpty
         assertThat(responseStreamEvent.reasoningSummaryDone()).isEmpty
     }
@@ -3594,8 +3546,6 @@ internal class ResponseStreamEventTest {
         assertThat(responseStreamEvent.mcpListToolsInProgress()).isEmpty
         assertThat(responseStreamEvent.outputTextAnnotationAdded()).isEmpty
         assertThat(responseStreamEvent.queued()).isEmpty
-        assertThat(responseStreamEvent.reasoningDelta()).isEmpty
-        assertThat(responseStreamEvent.reasoningDone()).isEmpty
         assertThat(responseStreamEvent.reasoningSummaryDelta()).isEmpty
         assertThat(responseStreamEvent.reasoningSummaryDone()).isEmpty
     }
@@ -3689,8 +3639,6 @@ internal class ResponseStreamEventTest {
         assertThat(responseStreamEvent.mcpListToolsInProgress()).isEmpty
         assertThat(responseStreamEvent.outputTextAnnotationAdded()).isEmpty
         assertThat(responseStreamEvent.queued()).isEmpty
-        assertThat(responseStreamEvent.reasoningDelta()).isEmpty
-        assertThat(responseStreamEvent.reasoningDone()).isEmpty
         assertThat(responseStreamEvent.reasoningSummaryDelta()).isEmpty
         assertThat(responseStreamEvent.reasoningSummaryDone()).isEmpty
     }
@@ -3782,8 +3730,6 @@ internal class ResponseStreamEventTest {
         assertThat(responseStreamEvent.mcpListToolsInProgress()).isEmpty
         assertThat(responseStreamEvent.outputTextAnnotationAdded()).isEmpty
         assertThat(responseStreamEvent.queued()).isEmpty
-        assertThat(responseStreamEvent.reasoningDelta()).isEmpty
-        assertThat(responseStreamEvent.reasoningDone()).isEmpty
         assertThat(responseStreamEvent.reasoningSummaryDelta()).isEmpty
         assertThat(responseStreamEvent.reasoningSummaryDone()).isEmpty
     }
@@ -3875,8 +3821,6 @@ internal class ResponseStreamEventTest {
         assertThat(responseStreamEvent.mcpListToolsInProgress()).isEmpty
         assertThat(responseStreamEvent.outputTextAnnotationAdded()).isEmpty
         assertThat(responseStreamEvent.queued()).isEmpty
-        assertThat(responseStreamEvent.reasoningDelta()).isEmpty
-        assertThat(responseStreamEvent.reasoningDone()).isEmpty
         assertThat(responseStreamEvent.reasoningSummaryDelta()).isEmpty
         assertThat(responseStreamEvent.reasoningSummaryDone()).isEmpty
     }
@@ -3966,8 +3910,6 @@ internal class ResponseStreamEventTest {
         assertThat(responseStreamEvent.mcpListToolsInProgress()).isEmpty
         assertThat(responseStreamEvent.outputTextAnnotationAdded()).isEmpty
         assertThat(responseStreamEvent.queued()).isEmpty
-        assertThat(responseStreamEvent.reasoningDelta()).isEmpty
-        assertThat(responseStreamEvent.reasoningDone()).isEmpty
         assertThat(responseStreamEvent.reasoningSummaryDelta()).isEmpty
         assertThat(responseStreamEvent.reasoningSummaryDone()).isEmpty
     }
@@ -4057,8 +3999,6 @@ internal class ResponseStreamEventTest {
         assertThat(responseStreamEvent.mcpListToolsInProgress()).isEmpty
         assertThat(responseStreamEvent.outputTextAnnotationAdded()).isEmpty
         assertThat(responseStreamEvent.queued()).isEmpty
-        assertThat(responseStreamEvent.reasoningDelta()).isEmpty
-        assertThat(responseStreamEvent.reasoningDone()).isEmpty
         assertThat(responseStreamEvent.reasoningSummaryDelta()).isEmpty
         assertThat(responseStreamEvent.reasoningSummaryDone()).isEmpty
     }
@@ -4093,6 +4033,18 @@ internal class ResponseStreamEventTest {
                 .contentIndex(0L)
                 .delta("delta")
                 .itemId("item_id")
+                .addLogprob(
+                    ResponseTextDeltaEvent.Logprob.builder()
+                        .token("token")
+                        .logprob(0.0)
+                        .addTopLogprob(
+                            ResponseTextDeltaEvent.Logprob.TopLogprob.builder()
+                                .token("token")
+                                .logprob(0.0)
+                                .build()
+                        )
+                        .build()
+                )
                 .outputIndex(0L)
                 .sequenceNumber(0L)
                 .build()
@@ -4148,8 +4100,6 @@ internal class ResponseStreamEventTest {
         assertThat(responseStreamEvent.mcpListToolsInProgress()).isEmpty
         assertThat(responseStreamEvent.outputTextAnnotationAdded()).isEmpty
         assertThat(responseStreamEvent.queued()).isEmpty
-        assertThat(responseStreamEvent.reasoningDelta()).isEmpty
-        assertThat(responseStreamEvent.reasoningDone()).isEmpty
         assertThat(responseStreamEvent.reasoningSummaryDelta()).isEmpty
         assertThat(responseStreamEvent.reasoningSummaryDone()).isEmpty
     }
@@ -4163,6 +4113,18 @@ internal class ResponseStreamEventTest {
                     .contentIndex(0L)
                     .delta("delta")
                     .itemId("item_id")
+                    .addLogprob(
+                        ResponseTextDeltaEvent.Logprob.builder()
+                            .token("token")
+                            .logprob(0.0)
+                            .addTopLogprob(
+                                ResponseTextDeltaEvent.Logprob.TopLogprob.builder()
+                                    .token("token")
+                                    .logprob(0.0)
+                                    .build()
+                            )
+                            .build()
+                    )
                     .outputIndex(0L)
                     .sequenceNumber(0L)
                     .build()
@@ -4183,6 +4145,18 @@ internal class ResponseStreamEventTest {
             ResponseTextDoneEvent.builder()
                 .contentIndex(0L)
                 .itemId("item_id")
+                .addLogprob(
+                    ResponseTextDoneEvent.Logprob.builder()
+                        .token("token")
+                        .logprob(0.0)
+                        .addTopLogprob(
+                            ResponseTextDoneEvent.Logprob.TopLogprob.builder()
+                                .token("token")
+                                .logprob(0.0)
+                                .build()
+                        )
+                        .build()
+                )
                 .outputIndex(0L)
                 .sequenceNumber(0L)
                 .text("text")
@@ -4239,8 +4213,6 @@ internal class ResponseStreamEventTest {
         assertThat(responseStreamEvent.mcpListToolsInProgress()).isEmpty
         assertThat(responseStreamEvent.outputTextAnnotationAdded()).isEmpty
         assertThat(responseStreamEvent.queued()).isEmpty
-        assertThat(responseStreamEvent.reasoningDelta()).isEmpty
-        assertThat(responseStreamEvent.reasoningDone()).isEmpty
         assertThat(responseStreamEvent.reasoningSummaryDelta()).isEmpty
         assertThat(responseStreamEvent.reasoningSummaryDone()).isEmpty
     }
@@ -4253,6 +4225,18 @@ internal class ResponseStreamEventTest {
                 ResponseTextDoneEvent.builder()
                     .contentIndex(0L)
                     .itemId("item_id")
+                    .addLogprob(
+                        ResponseTextDoneEvent.Logprob.builder()
+                            .token("token")
+                            .logprob(0.0)
+                            .addTopLogprob(
+                                ResponseTextDoneEvent.Logprob.TopLogprob.builder()
+                                    .token("token")
+                                    .logprob(0.0)
+                                    .build()
+                            )
+                            .build()
+                    )
                     .outputIndex(0L)
                     .sequenceNumber(0L)
                     .text("text")
@@ -4329,8 +4313,6 @@ internal class ResponseStreamEventTest {
         assertThat(responseStreamEvent.mcpListToolsInProgress()).isEmpty
         assertThat(responseStreamEvent.outputTextAnnotationAdded()).isEmpty
         assertThat(responseStreamEvent.queued()).isEmpty
-        assertThat(responseStreamEvent.reasoningDelta()).isEmpty
-        assertThat(responseStreamEvent.reasoningDone()).isEmpty
         assertThat(responseStreamEvent.reasoningSummaryDelta()).isEmpty
         assertThat(responseStreamEvent.reasoningSummaryDone()).isEmpty
     }
@@ -4417,8 +4399,6 @@ internal class ResponseStreamEventTest {
         assertThat(responseStreamEvent.mcpListToolsInProgress()).isEmpty
         assertThat(responseStreamEvent.outputTextAnnotationAdded()).isEmpty
         assertThat(responseStreamEvent.queued()).isEmpty
-        assertThat(responseStreamEvent.reasoningDelta()).isEmpty
-        assertThat(responseStreamEvent.reasoningDone()).isEmpty
         assertThat(responseStreamEvent.reasoningSummaryDelta()).isEmpty
         assertThat(responseStreamEvent.reasoningSummaryDone()).isEmpty
     }
@@ -4505,8 +4485,6 @@ internal class ResponseStreamEventTest {
         assertThat(responseStreamEvent.mcpListToolsInProgress()).isEmpty
         assertThat(responseStreamEvent.outputTextAnnotationAdded()).isEmpty
         assertThat(responseStreamEvent.queued()).isEmpty
-        assertThat(responseStreamEvent.reasoningDelta()).isEmpty
-        assertThat(responseStreamEvent.reasoningDone()).isEmpty
         assertThat(responseStreamEvent.reasoningSummaryDelta()).isEmpty
         assertThat(responseStreamEvent.reasoningSummaryDone()).isEmpty
     }
@@ -4594,8 +4572,6 @@ internal class ResponseStreamEventTest {
         assertThat(responseStreamEvent.mcpListToolsInProgress()).isEmpty
         assertThat(responseStreamEvent.outputTextAnnotationAdded()).isEmpty
         assertThat(responseStreamEvent.queued()).isEmpty
-        assertThat(responseStreamEvent.reasoningDelta()).isEmpty
-        assertThat(responseStreamEvent.reasoningDone()).isEmpty
         assertThat(responseStreamEvent.reasoningSummaryDelta()).isEmpty
         assertThat(responseStreamEvent.reasoningSummaryDone()).isEmpty
     }
@@ -4683,8 +4659,6 @@ internal class ResponseStreamEventTest {
         assertThat(responseStreamEvent.mcpListToolsInProgress()).isEmpty
         assertThat(responseStreamEvent.outputTextAnnotationAdded()).isEmpty
         assertThat(responseStreamEvent.queued()).isEmpty
-        assertThat(responseStreamEvent.reasoningDelta()).isEmpty
-        assertThat(responseStreamEvent.reasoningDone()).isEmpty
         assertThat(responseStreamEvent.reasoningSummaryDelta()).isEmpty
         assertThat(responseStreamEvent.reasoningSummaryDone()).isEmpty
     }
@@ -4772,8 +4746,6 @@ internal class ResponseStreamEventTest {
         assertThat(responseStreamEvent.mcpListToolsInProgress()).isEmpty
         assertThat(responseStreamEvent.outputTextAnnotationAdded()).isEmpty
         assertThat(responseStreamEvent.queued()).isEmpty
-        assertThat(responseStreamEvent.reasoningDelta()).isEmpty
-        assertThat(responseStreamEvent.reasoningDone()).isEmpty
         assertThat(responseStreamEvent.reasoningSummaryDelta()).isEmpty
         assertThat(responseStreamEvent.reasoningSummaryDone()).isEmpty
     }
@@ -4863,8 +4835,6 @@ internal class ResponseStreamEventTest {
         assertThat(responseStreamEvent.mcpListToolsInProgress()).isEmpty
         assertThat(responseStreamEvent.outputTextAnnotationAdded()).isEmpty
         assertThat(responseStreamEvent.queued()).isEmpty
-        assertThat(responseStreamEvent.reasoningDelta()).isEmpty
-        assertThat(responseStreamEvent.reasoningDone()).isEmpty
         assertThat(responseStreamEvent.reasoningSummaryDelta()).isEmpty
         assertThat(responseStreamEvent.reasoningSummaryDone()).isEmpty
     }
@@ -4896,7 +4866,7 @@ internal class ResponseStreamEventTest {
     fun ofMcpCallArgumentsDelta() {
         val mcpCallArgumentsDelta =
             ResponseMcpCallArgumentsDeltaEvent.builder()
-                .delta(JsonValue.from(mapOf<String, Any>()))
+                .delta("delta")
                 .itemId("item_id")
                 .outputIndex(0L)
                 .sequenceNumber(0L)
@@ -4953,8 +4923,6 @@ internal class ResponseStreamEventTest {
         assertThat(responseStreamEvent.mcpListToolsInProgress()).isEmpty
         assertThat(responseStreamEvent.outputTextAnnotationAdded()).isEmpty
         assertThat(responseStreamEvent.queued()).isEmpty
-        assertThat(responseStreamEvent.reasoningDelta()).isEmpty
-        assertThat(responseStreamEvent.reasoningDone()).isEmpty
         assertThat(responseStreamEvent.reasoningSummaryDelta()).isEmpty
         assertThat(responseStreamEvent.reasoningSummaryDone()).isEmpty
     }
@@ -4965,7 +4933,7 @@ internal class ResponseStreamEventTest {
         val responseStreamEvent =
             ResponseStreamEvent.ofMcpCallArgumentsDelta(
                 ResponseMcpCallArgumentsDeltaEvent.builder()
-                    .delta(JsonValue.from(mapOf<String, Any>()))
+                    .delta("delta")
                     .itemId("item_id")
                     .outputIndex(0L)
                     .sequenceNumber(0L)
@@ -4985,7 +4953,7 @@ internal class ResponseStreamEventTest {
     fun ofMcpCallArgumentsDone() {
         val mcpCallArgumentsDone =
             ResponseMcpCallArgumentsDoneEvent.builder()
-                .arguments(JsonValue.from(mapOf<String, Any>()))
+                .arguments("arguments")
                 .itemId("item_id")
                 .outputIndex(0L)
                 .sequenceNumber(0L)
@@ -5042,8 +5010,6 @@ internal class ResponseStreamEventTest {
         assertThat(responseStreamEvent.mcpListToolsInProgress()).isEmpty
         assertThat(responseStreamEvent.outputTextAnnotationAdded()).isEmpty
         assertThat(responseStreamEvent.queued()).isEmpty
-        assertThat(responseStreamEvent.reasoningDelta()).isEmpty
-        assertThat(responseStreamEvent.reasoningDone()).isEmpty
         assertThat(responseStreamEvent.reasoningSummaryDelta()).isEmpty
         assertThat(responseStreamEvent.reasoningSummaryDone()).isEmpty
     }
@@ -5054,7 +5020,7 @@ internal class ResponseStreamEventTest {
         val responseStreamEvent =
             ResponseStreamEvent.ofMcpCallArgumentsDone(
                 ResponseMcpCallArgumentsDoneEvent.builder()
-                    .arguments(JsonValue.from(mapOf<String, Any>()))
+                    .arguments("arguments")
                     .itemId("item_id")
                     .outputIndex(0L)
                     .sequenceNumber(0L)
@@ -5072,7 +5038,12 @@ internal class ResponseStreamEventTest {
 
     @Test
     fun ofMcpCallCompleted() {
-        val mcpCallCompleted = ResponseMcpCallCompletedEvent.builder().sequenceNumber(0L).build()
+        val mcpCallCompleted =
+            ResponseMcpCallCompletedEvent.builder()
+                .itemId("item_id")
+                .outputIndex(0L)
+                .sequenceNumber(0L)
+                .build()
 
         val responseStreamEvent = ResponseStreamEvent.ofMcpCallCompleted(mcpCallCompleted)
 
@@ -5125,8 +5096,6 @@ internal class ResponseStreamEventTest {
         assertThat(responseStreamEvent.mcpListToolsInProgress()).isEmpty
         assertThat(responseStreamEvent.outputTextAnnotationAdded()).isEmpty
         assertThat(responseStreamEvent.queued()).isEmpty
-        assertThat(responseStreamEvent.reasoningDelta()).isEmpty
-        assertThat(responseStreamEvent.reasoningDone()).isEmpty
         assertThat(responseStreamEvent.reasoningSummaryDelta()).isEmpty
         assertThat(responseStreamEvent.reasoningSummaryDone()).isEmpty
     }
@@ -5136,7 +5105,11 @@ internal class ResponseStreamEventTest {
         val jsonMapper = jsonMapper()
         val responseStreamEvent =
             ResponseStreamEvent.ofMcpCallCompleted(
-                ResponseMcpCallCompletedEvent.builder().sequenceNumber(0L).build()
+                ResponseMcpCallCompletedEvent.builder()
+                    .itemId("item_id")
+                    .outputIndex(0L)
+                    .sequenceNumber(0L)
+                    .build()
             )
 
         val roundtrippedResponseStreamEvent =
@@ -5150,7 +5123,12 @@ internal class ResponseStreamEventTest {
 
     @Test
     fun ofMcpCallFailed() {
-        val mcpCallFailed = ResponseMcpCallFailedEvent.builder().sequenceNumber(0L).build()
+        val mcpCallFailed =
+            ResponseMcpCallFailedEvent.builder()
+                .itemId("item_id")
+                .outputIndex(0L)
+                .sequenceNumber(0L)
+                .build()
 
         val responseStreamEvent = ResponseStreamEvent.ofMcpCallFailed(mcpCallFailed)
 
@@ -5203,8 +5181,6 @@ internal class ResponseStreamEventTest {
         assertThat(responseStreamEvent.mcpListToolsInProgress()).isEmpty
         assertThat(responseStreamEvent.outputTextAnnotationAdded()).isEmpty
         assertThat(responseStreamEvent.queued()).isEmpty
-        assertThat(responseStreamEvent.reasoningDelta()).isEmpty
-        assertThat(responseStreamEvent.reasoningDone()).isEmpty
         assertThat(responseStreamEvent.reasoningSummaryDelta()).isEmpty
         assertThat(responseStreamEvent.reasoningSummaryDone()).isEmpty
     }
@@ -5214,7 +5190,11 @@ internal class ResponseStreamEventTest {
         val jsonMapper = jsonMapper()
         val responseStreamEvent =
             ResponseStreamEvent.ofMcpCallFailed(
-                ResponseMcpCallFailedEvent.builder().sequenceNumber(0L).build()
+                ResponseMcpCallFailedEvent.builder()
+                    .itemId("item_id")
+                    .outputIndex(0L)
+                    .sequenceNumber(0L)
+                    .build()
             )
 
         val roundtrippedResponseStreamEvent =
@@ -5286,8 +5266,6 @@ internal class ResponseStreamEventTest {
         assertThat(responseStreamEvent.mcpListToolsInProgress()).isEmpty
         assertThat(responseStreamEvent.outputTextAnnotationAdded()).isEmpty
         assertThat(responseStreamEvent.queued()).isEmpty
-        assertThat(responseStreamEvent.reasoningDelta()).isEmpty
-        assertThat(responseStreamEvent.reasoningDone()).isEmpty
         assertThat(responseStreamEvent.reasoningSummaryDelta()).isEmpty
         assertThat(responseStreamEvent.reasoningSummaryDone()).isEmpty
     }
@@ -5316,7 +5294,11 @@ internal class ResponseStreamEventTest {
     @Test
     fun ofMcpListToolsCompleted() {
         val mcpListToolsCompleted =
-            ResponseMcpListToolsCompletedEvent.builder().sequenceNumber(0L).build()
+            ResponseMcpListToolsCompletedEvent.builder()
+                .itemId("item_id")
+                .outputIndex(0L)
+                .sequenceNumber(0L)
+                .build()
 
         val responseStreamEvent = ResponseStreamEvent.ofMcpListToolsCompleted(mcpListToolsCompleted)
 
@@ -5369,8 +5351,6 @@ internal class ResponseStreamEventTest {
         assertThat(responseStreamEvent.mcpListToolsInProgress()).isEmpty
         assertThat(responseStreamEvent.outputTextAnnotationAdded()).isEmpty
         assertThat(responseStreamEvent.queued()).isEmpty
-        assertThat(responseStreamEvent.reasoningDelta()).isEmpty
-        assertThat(responseStreamEvent.reasoningDone()).isEmpty
         assertThat(responseStreamEvent.reasoningSummaryDelta()).isEmpty
         assertThat(responseStreamEvent.reasoningSummaryDone()).isEmpty
     }
@@ -5380,7 +5360,11 @@ internal class ResponseStreamEventTest {
         val jsonMapper = jsonMapper()
         val responseStreamEvent =
             ResponseStreamEvent.ofMcpListToolsCompleted(
-                ResponseMcpListToolsCompletedEvent.builder().sequenceNumber(0L).build()
+                ResponseMcpListToolsCompletedEvent.builder()
+                    .itemId("item_id")
+                    .outputIndex(0L)
+                    .sequenceNumber(0L)
+                    .build()
             )
 
         val roundtrippedResponseStreamEvent =
@@ -5395,7 +5379,11 @@ internal class ResponseStreamEventTest {
     @Test
     fun ofMcpListToolsFailed() {
         val mcpListToolsFailed =
-            ResponseMcpListToolsFailedEvent.builder().sequenceNumber(0L).build()
+            ResponseMcpListToolsFailedEvent.builder()
+                .itemId("item_id")
+                .outputIndex(0L)
+                .sequenceNumber(0L)
+                .build()
 
         val responseStreamEvent = ResponseStreamEvent.ofMcpListToolsFailed(mcpListToolsFailed)
 
@@ -5448,8 +5436,6 @@ internal class ResponseStreamEventTest {
         assertThat(responseStreamEvent.mcpListToolsInProgress()).isEmpty
         assertThat(responseStreamEvent.outputTextAnnotationAdded()).isEmpty
         assertThat(responseStreamEvent.queued()).isEmpty
-        assertThat(responseStreamEvent.reasoningDelta()).isEmpty
-        assertThat(responseStreamEvent.reasoningDone()).isEmpty
         assertThat(responseStreamEvent.reasoningSummaryDelta()).isEmpty
         assertThat(responseStreamEvent.reasoningSummaryDone()).isEmpty
     }
@@ -5459,7 +5445,11 @@ internal class ResponseStreamEventTest {
         val jsonMapper = jsonMapper()
         val responseStreamEvent =
             ResponseStreamEvent.ofMcpListToolsFailed(
-                ResponseMcpListToolsFailedEvent.builder().sequenceNumber(0L).build()
+                ResponseMcpListToolsFailedEvent.builder()
+                    .itemId("item_id")
+                    .outputIndex(0L)
+                    .sequenceNumber(0L)
+                    .build()
             )
 
         val roundtrippedResponseStreamEvent =
@@ -5474,7 +5464,11 @@ internal class ResponseStreamEventTest {
     @Test
     fun ofMcpListToolsInProgress() {
         val mcpListToolsInProgress =
-            ResponseMcpListToolsInProgressEvent.builder().sequenceNumber(0L).build()
+            ResponseMcpListToolsInProgressEvent.builder()
+                .itemId("item_id")
+                .outputIndex(0L)
+                .sequenceNumber(0L)
+                .build()
 
         val responseStreamEvent =
             ResponseStreamEvent.ofMcpListToolsInProgress(mcpListToolsInProgress)
@@ -5528,8 +5522,6 @@ internal class ResponseStreamEventTest {
         assertThat(responseStreamEvent.mcpListToolsInProgress()).contains(mcpListToolsInProgress)
         assertThat(responseStreamEvent.outputTextAnnotationAdded()).isEmpty
         assertThat(responseStreamEvent.queued()).isEmpty
-        assertThat(responseStreamEvent.reasoningDelta()).isEmpty
-        assertThat(responseStreamEvent.reasoningDone()).isEmpty
         assertThat(responseStreamEvent.reasoningSummaryDelta()).isEmpty
         assertThat(responseStreamEvent.reasoningSummaryDone()).isEmpty
     }
@@ -5539,7 +5531,11 @@ internal class ResponseStreamEventTest {
         val jsonMapper = jsonMapper()
         val responseStreamEvent =
             ResponseStreamEvent.ofMcpListToolsInProgress(
-                ResponseMcpListToolsInProgressEvent.builder().sequenceNumber(0L).build()
+                ResponseMcpListToolsInProgressEvent.builder()
+                    .itemId("item_id")
+                    .outputIndex(0L)
+                    .sequenceNumber(0L)
+                    .build()
             )
 
         val roundtrippedResponseStreamEvent =
@@ -5616,8 +5612,6 @@ internal class ResponseStreamEventTest {
         assertThat(responseStreamEvent.outputTextAnnotationAdded())
             .contains(outputTextAnnotationAdded)
         assertThat(responseStreamEvent.queued()).isEmpty
-        assertThat(responseStreamEvent.reasoningDelta()).isEmpty
-        assertThat(responseStreamEvent.reasoningDone()).isEmpty
         assertThat(responseStreamEvent.reasoningSummaryDelta()).isEmpty
         assertThat(responseStreamEvent.reasoningSummaryDone()).isEmpty
     }
@@ -5825,8 +5819,6 @@ internal class ResponseStreamEventTest {
         assertThat(responseStreamEvent.mcpListToolsInProgress()).isEmpty
         assertThat(responseStreamEvent.outputTextAnnotationAdded()).isEmpty
         assertThat(responseStreamEvent.queued()).contains(queued)
-        assertThat(responseStreamEvent.reasoningDelta()).isEmpty
-        assertThat(responseStreamEvent.reasoningDone()).isEmpty
         assertThat(responseStreamEvent.reasoningSummaryDelta()).isEmpty
         assertThat(responseStreamEvent.reasoningSummaryDone()).isEmpty
     }
@@ -5973,188 +5965,6 @@ internal class ResponseStreamEventTest {
     }
 
     @Test
-    fun ofReasoningDelta() {
-        val reasoningDelta =
-            ResponseReasoningDeltaEvent.builder()
-                .contentIndex(0L)
-                .delta(JsonValue.from(mapOf<String, Any>()))
-                .itemId("item_id")
-                .outputIndex(0L)
-                .sequenceNumber(0L)
-                .build()
-
-        val responseStreamEvent = ResponseStreamEvent.ofReasoningDelta(reasoningDelta)
-
-        assertThat(responseStreamEvent.audioDelta()).isEmpty
-        assertThat(responseStreamEvent.audioDone()).isEmpty
-        assertThat(responseStreamEvent.audioTranscriptDelta()).isEmpty
-        assertThat(responseStreamEvent.audioTranscriptDone()).isEmpty
-        assertThat(responseStreamEvent.codeInterpreterCallCodeDelta()).isEmpty
-        assertThat(responseStreamEvent.codeInterpreterCallCodeDone()).isEmpty
-        assertThat(responseStreamEvent.codeInterpreterCallCompleted()).isEmpty
-        assertThat(responseStreamEvent.codeInterpreterCallInProgress()).isEmpty
-        assertThat(responseStreamEvent.codeInterpreterCallInterpreting()).isEmpty
-        assertThat(responseStreamEvent.completed()).isEmpty
-        assertThat(responseStreamEvent.contentPartAdded()).isEmpty
-        assertThat(responseStreamEvent.contentPartDone()).isEmpty
-        assertThat(responseStreamEvent.created()).isEmpty
-        assertThat(responseStreamEvent.error()).isEmpty
-        assertThat(responseStreamEvent.fileSearchCallCompleted()).isEmpty
-        assertThat(responseStreamEvent.fileSearchCallInProgress()).isEmpty
-        assertThat(responseStreamEvent.fileSearchCallSearching()).isEmpty
-        assertThat(responseStreamEvent.functionCallArgumentsDelta()).isEmpty
-        assertThat(responseStreamEvent.functionCallArgumentsDone()).isEmpty
-        assertThat(responseStreamEvent.inProgress()).isEmpty
-        assertThat(responseStreamEvent.failed()).isEmpty
-        assertThat(responseStreamEvent.incomplete()).isEmpty
-        assertThat(responseStreamEvent.outputItemAdded()).isEmpty
-        assertThat(responseStreamEvent.outputItemDone()).isEmpty
-        assertThat(responseStreamEvent.reasoningSummaryPartAdded()).isEmpty
-        assertThat(responseStreamEvent.reasoningSummaryPartDone()).isEmpty
-        assertThat(responseStreamEvent.reasoningSummaryTextDelta()).isEmpty
-        assertThat(responseStreamEvent.reasoningSummaryTextDone()).isEmpty
-        assertThat(responseStreamEvent.refusalDelta()).isEmpty
-        assertThat(responseStreamEvent.refusalDone()).isEmpty
-        assertThat(responseStreamEvent.outputTextDelta()).isEmpty
-        assertThat(responseStreamEvent.outputTextDone()).isEmpty
-        assertThat(responseStreamEvent.webSearchCallCompleted()).isEmpty
-        assertThat(responseStreamEvent.webSearchCallInProgress()).isEmpty
-        assertThat(responseStreamEvent.webSearchCallSearching()).isEmpty
-        assertThat(responseStreamEvent.imageGenerationCallCompleted()).isEmpty
-        assertThat(responseStreamEvent.imageGenerationCallGenerating()).isEmpty
-        assertThat(responseStreamEvent.imageGenerationCallInProgress()).isEmpty
-        assertThat(responseStreamEvent.imageGenerationCallPartialImage()).isEmpty
-        assertThat(responseStreamEvent.mcpCallArgumentsDelta()).isEmpty
-        assertThat(responseStreamEvent.mcpCallArgumentsDone()).isEmpty
-        assertThat(responseStreamEvent.mcpCallCompleted()).isEmpty
-        assertThat(responseStreamEvent.mcpCallFailed()).isEmpty
-        assertThat(responseStreamEvent.mcpCallInProgress()).isEmpty
-        assertThat(responseStreamEvent.mcpListToolsCompleted()).isEmpty
-        assertThat(responseStreamEvent.mcpListToolsFailed()).isEmpty
-        assertThat(responseStreamEvent.mcpListToolsInProgress()).isEmpty
-        assertThat(responseStreamEvent.outputTextAnnotationAdded()).isEmpty
-        assertThat(responseStreamEvent.queued()).isEmpty
-        assertThat(responseStreamEvent.reasoningDelta()).contains(reasoningDelta)
-        assertThat(responseStreamEvent.reasoningDone()).isEmpty
-        assertThat(responseStreamEvent.reasoningSummaryDelta()).isEmpty
-        assertThat(responseStreamEvent.reasoningSummaryDone()).isEmpty
-    }
-
-    @Test
-    fun ofReasoningDeltaRoundtrip() {
-        val jsonMapper = jsonMapper()
-        val responseStreamEvent =
-            ResponseStreamEvent.ofReasoningDelta(
-                ResponseReasoningDeltaEvent.builder()
-                    .contentIndex(0L)
-                    .delta(JsonValue.from(mapOf<String, Any>()))
-                    .itemId("item_id")
-                    .outputIndex(0L)
-                    .sequenceNumber(0L)
-                    .build()
-            )
-
-        val roundtrippedResponseStreamEvent =
-            jsonMapper.readValue(
-                jsonMapper.writeValueAsString(responseStreamEvent),
-                jacksonTypeRef<ResponseStreamEvent>(),
-            )
-
-        assertThat(roundtrippedResponseStreamEvent).isEqualTo(responseStreamEvent)
-    }
-
-    @Test
-    fun ofReasoningDone() {
-        val reasoningDone =
-            ResponseReasoningDoneEvent.builder()
-                .contentIndex(0L)
-                .itemId("item_id")
-                .outputIndex(0L)
-                .sequenceNumber(0L)
-                .text("text")
-                .build()
-
-        val responseStreamEvent = ResponseStreamEvent.ofReasoningDone(reasoningDone)
-
-        assertThat(responseStreamEvent.audioDelta()).isEmpty
-        assertThat(responseStreamEvent.audioDone()).isEmpty
-        assertThat(responseStreamEvent.audioTranscriptDelta()).isEmpty
-        assertThat(responseStreamEvent.audioTranscriptDone()).isEmpty
-        assertThat(responseStreamEvent.codeInterpreterCallCodeDelta()).isEmpty
-        assertThat(responseStreamEvent.codeInterpreterCallCodeDone()).isEmpty
-        assertThat(responseStreamEvent.codeInterpreterCallCompleted()).isEmpty
-        assertThat(responseStreamEvent.codeInterpreterCallInProgress()).isEmpty
-        assertThat(responseStreamEvent.codeInterpreterCallInterpreting()).isEmpty
-        assertThat(responseStreamEvent.completed()).isEmpty
-        assertThat(responseStreamEvent.contentPartAdded()).isEmpty
-        assertThat(responseStreamEvent.contentPartDone()).isEmpty
-        assertThat(responseStreamEvent.created()).isEmpty
-        assertThat(responseStreamEvent.error()).isEmpty
-        assertThat(responseStreamEvent.fileSearchCallCompleted()).isEmpty
-        assertThat(responseStreamEvent.fileSearchCallInProgress()).isEmpty
-        assertThat(responseStreamEvent.fileSearchCallSearching()).isEmpty
-        assertThat(responseStreamEvent.functionCallArgumentsDelta()).isEmpty
-        assertThat(responseStreamEvent.functionCallArgumentsDone()).isEmpty
-        assertThat(responseStreamEvent.inProgress()).isEmpty
-        assertThat(responseStreamEvent.failed()).isEmpty
-        assertThat(responseStreamEvent.incomplete()).isEmpty
-        assertThat(responseStreamEvent.outputItemAdded()).isEmpty
-        assertThat(responseStreamEvent.outputItemDone()).isEmpty
-        assertThat(responseStreamEvent.reasoningSummaryPartAdded()).isEmpty
-        assertThat(responseStreamEvent.reasoningSummaryPartDone()).isEmpty
-        assertThat(responseStreamEvent.reasoningSummaryTextDelta()).isEmpty
-        assertThat(responseStreamEvent.reasoningSummaryTextDone()).isEmpty
-        assertThat(responseStreamEvent.refusalDelta()).isEmpty
-        assertThat(responseStreamEvent.refusalDone()).isEmpty
-        assertThat(responseStreamEvent.outputTextDelta()).isEmpty
-        assertThat(responseStreamEvent.outputTextDone()).isEmpty
-        assertThat(responseStreamEvent.webSearchCallCompleted()).isEmpty
-        assertThat(responseStreamEvent.webSearchCallInProgress()).isEmpty
-        assertThat(responseStreamEvent.webSearchCallSearching()).isEmpty
-        assertThat(responseStreamEvent.imageGenerationCallCompleted()).isEmpty
-        assertThat(responseStreamEvent.imageGenerationCallGenerating()).isEmpty
-        assertThat(responseStreamEvent.imageGenerationCallInProgress()).isEmpty
-        assertThat(responseStreamEvent.imageGenerationCallPartialImage()).isEmpty
-        assertThat(responseStreamEvent.mcpCallArgumentsDelta()).isEmpty
-        assertThat(responseStreamEvent.mcpCallArgumentsDone()).isEmpty
-        assertThat(responseStreamEvent.mcpCallCompleted()).isEmpty
-        assertThat(responseStreamEvent.mcpCallFailed()).isEmpty
-        assertThat(responseStreamEvent.mcpCallInProgress()).isEmpty
-        assertThat(responseStreamEvent.mcpListToolsCompleted()).isEmpty
-        assertThat(responseStreamEvent.mcpListToolsFailed()).isEmpty
-        assertThat(responseStreamEvent.mcpListToolsInProgress()).isEmpty
-        assertThat(responseStreamEvent.outputTextAnnotationAdded()).isEmpty
-        assertThat(responseStreamEvent.queued()).isEmpty
-        assertThat(responseStreamEvent.reasoningDelta()).isEmpty
-        assertThat(responseStreamEvent.reasoningDone()).contains(reasoningDone)
-        assertThat(responseStreamEvent.reasoningSummaryDelta()).isEmpty
-        assertThat(responseStreamEvent.reasoningSummaryDone()).isEmpty
-    }
-
-    @Test
-    fun ofReasoningDoneRoundtrip() {
-        val jsonMapper = jsonMapper()
-        val responseStreamEvent =
-            ResponseStreamEvent.ofReasoningDone(
-                ResponseReasoningDoneEvent.builder()
-                    .contentIndex(0L)
-                    .itemId("item_id")
-                    .outputIndex(0L)
-                    .sequenceNumber(0L)
-                    .text("text")
-                    .build()
-            )
-
-        val roundtrippedResponseStreamEvent =
-            jsonMapper.readValue(
-                jsonMapper.writeValueAsString(responseStreamEvent),
-                jacksonTypeRef<ResponseStreamEvent>(),
-            )
-
-        assertThat(roundtrippedResponseStreamEvent).isEqualTo(responseStreamEvent)
-    }
-
-    @Test
     fun ofReasoningSummaryDelta() {
         val reasoningSummaryDelta =
             ResponseReasoningSummaryDeltaEvent.builder()
@@ -6216,8 +6026,6 @@ internal class ResponseStreamEventTest {
         assertThat(responseStreamEvent.mcpListToolsInProgress()).isEmpty
         assertThat(responseStreamEvent.outputTextAnnotationAdded()).isEmpty
         assertThat(responseStreamEvent.queued()).isEmpty
-        assertThat(responseStreamEvent.reasoningDelta()).isEmpty
-        assertThat(responseStreamEvent.reasoningDone()).isEmpty
         assertThat(responseStreamEvent.reasoningSummaryDelta()).contains(reasoningSummaryDelta)
         assertThat(responseStreamEvent.reasoningSummaryDone()).isEmpty
     }
@@ -6307,8 +6115,6 @@ internal class ResponseStreamEventTest {
         assertThat(responseStreamEvent.mcpListToolsInProgress()).isEmpty
         assertThat(responseStreamEvent.outputTextAnnotationAdded()).isEmpty
         assertThat(responseStreamEvent.queued()).isEmpty
-        assertThat(responseStreamEvent.reasoningDelta()).isEmpty
-        assertThat(responseStreamEvent.reasoningDone()).isEmpty
         assertThat(responseStreamEvent.reasoningSummaryDelta()).isEmpty
         assertThat(responseStreamEvent.reasoningSummaryDone()).contains(reasoningSummaryDone)
     }

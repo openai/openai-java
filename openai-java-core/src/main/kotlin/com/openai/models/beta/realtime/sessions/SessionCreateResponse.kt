@@ -237,7 +237,7 @@ private constructor(
     /**
      * The voice the model uses to respond. Voice cannot be changed during the session once the
      * model has responded with audio at least once. Current voice options are `alloy`, `ash`,
-     * `ballad`, `coral`, `echo` `sage`, `shimmer` and `verse`.
+     * `ballad`, `coral`, `echo`, `sage`, `shimmer`, and `verse`.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -684,7 +684,7 @@ private constructor(
         /**
          * The voice the model uses to respond. Voice cannot be changed during the session once the
          * model has responded with audio at least once. Current voice options are `alloy`, `ash`,
-         * `ballad`, `coral`, `echo` `sage`, `shimmer` and `verse`.
+         * `ballad`, `coral`, `echo`, `sage`, `shimmer`, and `verse`.
          */
         fun voice(voice: Voice) = voice(JsonField.of(voice))
 
@@ -2532,7 +2532,7 @@ private constructor(
     /**
      * The voice the model uses to respond. Voice cannot be changed during the session once the
      * model has responded with audio at least once. Current voice options are `alloy`, `ash`,
-     * `ballad`, `coral`, `echo` `sage`, `shimmer` and `verse`.
+     * `ballad`, `coral`, `echo`, `sage`, `shimmer`, and `verse`.
      */
     class Voice @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
 
@@ -2558,12 +2558,6 @@ private constructor(
 
             @JvmField val ECHO = of("echo")
 
-            @JvmField val FABLE = of("fable")
-
-            @JvmField val ONYX = of("onyx")
-
-            @JvmField val NOVA = of("nova")
-
             @JvmField val SAGE = of("sage")
 
             @JvmField val SHIMMER = of("shimmer")
@@ -2580,9 +2574,6 @@ private constructor(
             BALLAD,
             CORAL,
             ECHO,
-            FABLE,
-            ONYX,
-            NOVA,
             SAGE,
             SHIMMER,
             VERSE,
@@ -2603,9 +2594,6 @@ private constructor(
             BALLAD,
             CORAL,
             ECHO,
-            FABLE,
-            ONYX,
-            NOVA,
             SAGE,
             SHIMMER,
             VERSE,
@@ -2627,9 +2615,6 @@ private constructor(
                 BALLAD -> Value.BALLAD
                 CORAL -> Value.CORAL
                 ECHO -> Value.ECHO
-                FABLE -> Value.FABLE
-                ONYX -> Value.ONYX
-                NOVA -> Value.NOVA
                 SAGE -> Value.SAGE
                 SHIMMER -> Value.SHIMMER
                 VERSE -> Value.VERSE
@@ -2652,9 +2637,6 @@ private constructor(
                 BALLAD -> Known.BALLAD
                 CORAL -> Known.CORAL
                 ECHO -> Known.ECHO
-                FABLE -> Known.FABLE
-                ONYX -> Known.ONYX
-                NOVA -> Known.NOVA
                 SAGE -> Known.SAGE
                 SHIMMER -> Known.SHIMMER
                 VERSE -> Known.VERSE

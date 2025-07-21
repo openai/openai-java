@@ -1,4 +1,5 @@
 plugins {
+    id("java")
     id("openai.kotlin")
     id("openai.publish")
 }
@@ -38,4 +39,20 @@ dependencies {
     testImplementation("org.mockito:mockito-core:5.14.2")
     testImplementation("org.mockito:mockito-junit-jupiter:5.14.2")
     testImplementation("org.mockito.kotlin:mockito-kotlin:4.1.0")
+}
+
+if (project.hasProperty("graalvmAgent")) {
+    java {
+        toolchain {
+            languageVersion.set(JavaLanguageVersion.of(21))
+            vendor.set(JvmVendorSpec.GRAAL_VM)
+        }
+    }
+
+    tasks.test {
+        maxParallelForks = 1
+        forkEvery = 0
+        jvmArgs =
+            listOf("-agentlib:native-image-agent=config-output-dir=src/main/resources/META-INF/native-image")
+    }
 }

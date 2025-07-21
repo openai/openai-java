@@ -12,8 +12,14 @@ internal class ResponseMcpCallCompletedEventTest {
     @Test
     fun create() {
         val responseMcpCallCompletedEvent =
-            ResponseMcpCallCompletedEvent.builder().sequenceNumber(0L).build()
+            ResponseMcpCallCompletedEvent.builder()
+                .itemId("item_id")
+                .outputIndex(0L)
+                .sequenceNumber(0L)
+                .build()
 
+        assertThat(responseMcpCallCompletedEvent.itemId()).isEqualTo("item_id")
+        assertThat(responseMcpCallCompletedEvent.outputIndex()).isEqualTo(0L)
         assertThat(responseMcpCallCompletedEvent.sequenceNumber()).isEqualTo(0L)
     }
 
@@ -21,7 +27,11 @@ internal class ResponseMcpCallCompletedEventTest {
     fun roundtrip() {
         val jsonMapper = jsonMapper()
         val responseMcpCallCompletedEvent =
-            ResponseMcpCallCompletedEvent.builder().sequenceNumber(0L).build()
+            ResponseMcpCallCompletedEvent.builder()
+                .itemId("item_id")
+                .outputIndex(0L)
+                .sequenceNumber(0L)
+                .build()
 
         val roundtrippedResponseMcpCallCompletedEvent =
             jsonMapper.readValue(

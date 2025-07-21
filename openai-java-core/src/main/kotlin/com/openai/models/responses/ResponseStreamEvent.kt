@@ -73,8 +73,6 @@ private constructor(
     private val mcpListToolsInProgress: ResponseMcpListToolsInProgressEvent? = null,
     private val outputTextAnnotationAdded: ResponseOutputTextAnnotationAddedEvent? = null,
     private val queued: ResponseQueuedEvent? = null,
-    private val reasoningDelta: ResponseReasoningDeltaEvent? = null,
-    private val reasoningDone: ResponseReasoningDoneEvent? = null,
     private val reasoningSummaryDelta: ResponseReasoningSummaryDeltaEvent? = null,
     private val reasoningSummaryDone: ResponseReasoningSummaryDoneEvent? = null,
     private val _json: JsonValue? = null,
@@ -267,13 +265,6 @@ private constructor(
     /** Emitted when a response is queued and waiting to be processed. */
     fun queued(): Optional<ResponseQueuedEvent> = Optional.ofNullable(queued)
 
-    /** Emitted when there is a delta (partial update) to the reasoning content. */
-    fun reasoningDelta(): Optional<ResponseReasoningDeltaEvent> =
-        Optional.ofNullable(reasoningDelta)
-
-    /** Emitted when the reasoning content is finalized for an item. */
-    fun reasoningDone(): Optional<ResponseReasoningDoneEvent> = Optional.ofNullable(reasoningDone)
-
     /** Emitted when there is a delta (partial update) to the reasoning summary content. */
     fun reasoningSummaryDelta(): Optional<ResponseReasoningSummaryDeltaEvent> =
         Optional.ofNullable(reasoningSummaryDelta)
@@ -379,10 +370,6 @@ private constructor(
     fun isOutputTextAnnotationAdded(): Boolean = outputTextAnnotationAdded != null
 
     fun isQueued(): Boolean = queued != null
-
-    fun isReasoningDelta(): Boolean = reasoningDelta != null
-
-    fun isReasoningDone(): Boolean = reasoningDone != null
 
     fun isReasoningSummaryDelta(): Boolean = reasoningSummaryDelta != null
 
@@ -575,13 +562,6 @@ private constructor(
     /** Emitted when a response is queued and waiting to be processed. */
     fun asQueued(): ResponseQueuedEvent = queued.getOrThrow("queued")
 
-    /** Emitted when there is a delta (partial update) to the reasoning content. */
-    fun asReasoningDelta(): ResponseReasoningDeltaEvent =
-        reasoningDelta.getOrThrow("reasoningDelta")
-
-    /** Emitted when the reasoning content is finalized for an item. */
-    fun asReasoningDone(): ResponseReasoningDoneEvent = reasoningDone.getOrThrow("reasoningDone")
-
     /** Emitted when there is a delta (partial update) to the reasoning summary content. */
     fun asReasoningSummaryDelta(): ResponseReasoningSummaryDeltaEvent =
         reasoningSummaryDelta.getOrThrow("reasoningSummaryDelta")
@@ -668,8 +648,6 @@ private constructor(
             outputTextAnnotationAdded != null ->
                 visitor.visitOutputTextAnnotationAdded(outputTextAnnotationAdded)
             queued != null -> visitor.visitQueued(queued)
-            reasoningDelta != null -> visitor.visitReasoningDelta(reasoningDelta)
-            reasoningDone != null -> visitor.visitReasoningDone(reasoningDone)
             reasoningSummaryDelta != null ->
                 visitor.visitReasoningSummaryDelta(reasoningSummaryDelta)
             reasoningSummaryDone != null -> visitor.visitReasoningSummaryDone(reasoningSummaryDone)
@@ -945,14 +923,6 @@ private constructor(
                     queued.validate()
                 }
 
-                override fun visitReasoningDelta(reasoningDelta: ResponseReasoningDeltaEvent) {
-                    reasoningDelta.validate()
-                }
-
-                override fun visitReasoningDone(reasoningDone: ResponseReasoningDoneEvent) {
-                    reasoningDone.validate()
-                }
-
                 override fun visitReasoningSummaryDelta(
                     reasoningSummaryDelta: ResponseReasoningSummaryDeltaEvent
                 ) {
@@ -1161,12 +1131,6 @@ private constructor(
 
                 override fun visitQueued(queued: ResponseQueuedEvent) = queued.validity()
 
-                override fun visitReasoningDelta(reasoningDelta: ResponseReasoningDeltaEvent) =
-                    reasoningDelta.validity()
-
-                override fun visitReasoningDone(reasoningDone: ResponseReasoningDoneEvent) =
-                    reasoningDone.validity()
-
                 override fun visitReasoningSummaryDelta(
                     reasoningSummaryDelta: ResponseReasoningSummaryDeltaEvent
                 ) = reasoningSummaryDelta.validity()
@@ -1184,10 +1148,10 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is ResponseStreamEvent && audioDelta == other.audioDelta && audioDone == other.audioDone && audioTranscriptDelta == other.audioTranscriptDelta && audioTranscriptDone == other.audioTranscriptDone && codeInterpreterCallCodeDelta == other.codeInterpreterCallCodeDelta && codeInterpreterCallCodeDone == other.codeInterpreterCallCodeDone && codeInterpreterCallCompleted == other.codeInterpreterCallCompleted && codeInterpreterCallInProgress == other.codeInterpreterCallInProgress && codeInterpreterCallInterpreting == other.codeInterpreterCallInterpreting && completed == other.completed && contentPartAdded == other.contentPartAdded && contentPartDone == other.contentPartDone && created == other.created && error == other.error && fileSearchCallCompleted == other.fileSearchCallCompleted && fileSearchCallInProgress == other.fileSearchCallInProgress && fileSearchCallSearching == other.fileSearchCallSearching && functionCallArgumentsDelta == other.functionCallArgumentsDelta && functionCallArgumentsDone == other.functionCallArgumentsDone && inProgress == other.inProgress && failed == other.failed && incomplete == other.incomplete && outputItemAdded == other.outputItemAdded && outputItemDone == other.outputItemDone && reasoningSummaryPartAdded == other.reasoningSummaryPartAdded && reasoningSummaryPartDone == other.reasoningSummaryPartDone && reasoningSummaryTextDelta == other.reasoningSummaryTextDelta && reasoningSummaryTextDone == other.reasoningSummaryTextDone && refusalDelta == other.refusalDelta && refusalDone == other.refusalDone && outputTextDelta == other.outputTextDelta && outputTextDone == other.outputTextDone && webSearchCallCompleted == other.webSearchCallCompleted && webSearchCallInProgress == other.webSearchCallInProgress && webSearchCallSearching == other.webSearchCallSearching && imageGenerationCallCompleted == other.imageGenerationCallCompleted && imageGenerationCallGenerating == other.imageGenerationCallGenerating && imageGenerationCallInProgress == other.imageGenerationCallInProgress && imageGenerationCallPartialImage == other.imageGenerationCallPartialImage && mcpCallArgumentsDelta == other.mcpCallArgumentsDelta && mcpCallArgumentsDone == other.mcpCallArgumentsDone && mcpCallCompleted == other.mcpCallCompleted && mcpCallFailed == other.mcpCallFailed && mcpCallInProgress == other.mcpCallInProgress && mcpListToolsCompleted == other.mcpListToolsCompleted && mcpListToolsFailed == other.mcpListToolsFailed && mcpListToolsInProgress == other.mcpListToolsInProgress && outputTextAnnotationAdded == other.outputTextAnnotationAdded && queued == other.queued && reasoningDelta == other.reasoningDelta && reasoningDone == other.reasoningDone && reasoningSummaryDelta == other.reasoningSummaryDelta && reasoningSummaryDone == other.reasoningSummaryDone /* spotless:on */
+        return /* spotless:off */ other is ResponseStreamEvent && audioDelta == other.audioDelta && audioDone == other.audioDone && audioTranscriptDelta == other.audioTranscriptDelta && audioTranscriptDone == other.audioTranscriptDone && codeInterpreterCallCodeDelta == other.codeInterpreterCallCodeDelta && codeInterpreterCallCodeDone == other.codeInterpreterCallCodeDone && codeInterpreterCallCompleted == other.codeInterpreterCallCompleted && codeInterpreterCallInProgress == other.codeInterpreterCallInProgress && codeInterpreterCallInterpreting == other.codeInterpreterCallInterpreting && completed == other.completed && contentPartAdded == other.contentPartAdded && contentPartDone == other.contentPartDone && created == other.created && error == other.error && fileSearchCallCompleted == other.fileSearchCallCompleted && fileSearchCallInProgress == other.fileSearchCallInProgress && fileSearchCallSearching == other.fileSearchCallSearching && functionCallArgumentsDelta == other.functionCallArgumentsDelta && functionCallArgumentsDone == other.functionCallArgumentsDone && inProgress == other.inProgress && failed == other.failed && incomplete == other.incomplete && outputItemAdded == other.outputItemAdded && outputItemDone == other.outputItemDone && reasoningSummaryPartAdded == other.reasoningSummaryPartAdded && reasoningSummaryPartDone == other.reasoningSummaryPartDone && reasoningSummaryTextDelta == other.reasoningSummaryTextDelta && reasoningSummaryTextDone == other.reasoningSummaryTextDone && refusalDelta == other.refusalDelta && refusalDone == other.refusalDone && outputTextDelta == other.outputTextDelta && outputTextDone == other.outputTextDone && webSearchCallCompleted == other.webSearchCallCompleted && webSearchCallInProgress == other.webSearchCallInProgress && webSearchCallSearching == other.webSearchCallSearching && imageGenerationCallCompleted == other.imageGenerationCallCompleted && imageGenerationCallGenerating == other.imageGenerationCallGenerating && imageGenerationCallInProgress == other.imageGenerationCallInProgress && imageGenerationCallPartialImage == other.imageGenerationCallPartialImage && mcpCallArgumentsDelta == other.mcpCallArgumentsDelta && mcpCallArgumentsDone == other.mcpCallArgumentsDone && mcpCallCompleted == other.mcpCallCompleted && mcpCallFailed == other.mcpCallFailed && mcpCallInProgress == other.mcpCallInProgress && mcpListToolsCompleted == other.mcpListToolsCompleted && mcpListToolsFailed == other.mcpListToolsFailed && mcpListToolsInProgress == other.mcpListToolsInProgress && outputTextAnnotationAdded == other.outputTextAnnotationAdded && queued == other.queued && reasoningSummaryDelta == other.reasoningSummaryDelta && reasoningSummaryDone == other.reasoningSummaryDone /* spotless:on */
     }
 
-    override fun hashCode(): Int = /* spotless:off */ Objects.hash(audioDelta, audioDone, audioTranscriptDelta, audioTranscriptDone, codeInterpreterCallCodeDelta, codeInterpreterCallCodeDone, codeInterpreterCallCompleted, codeInterpreterCallInProgress, codeInterpreterCallInterpreting, completed, contentPartAdded, contentPartDone, created, error, fileSearchCallCompleted, fileSearchCallInProgress, fileSearchCallSearching, functionCallArgumentsDelta, functionCallArgumentsDone, inProgress, failed, incomplete, outputItemAdded, outputItemDone, reasoningSummaryPartAdded, reasoningSummaryPartDone, reasoningSummaryTextDelta, reasoningSummaryTextDone, refusalDelta, refusalDone, outputTextDelta, outputTextDone, webSearchCallCompleted, webSearchCallInProgress, webSearchCallSearching, imageGenerationCallCompleted, imageGenerationCallGenerating, imageGenerationCallInProgress, imageGenerationCallPartialImage, mcpCallArgumentsDelta, mcpCallArgumentsDone, mcpCallCompleted, mcpCallFailed, mcpCallInProgress, mcpListToolsCompleted, mcpListToolsFailed, mcpListToolsInProgress, outputTextAnnotationAdded, queued, reasoningDelta, reasoningDone, reasoningSummaryDelta, reasoningSummaryDone) /* spotless:on */
+    override fun hashCode(): Int = /* spotless:off */ Objects.hash(audioDelta, audioDone, audioTranscriptDelta, audioTranscriptDone, codeInterpreterCallCodeDelta, codeInterpreterCallCodeDone, codeInterpreterCallCompleted, codeInterpreterCallInProgress, codeInterpreterCallInterpreting, completed, contentPartAdded, contentPartDone, created, error, fileSearchCallCompleted, fileSearchCallInProgress, fileSearchCallSearching, functionCallArgumentsDelta, functionCallArgumentsDone, inProgress, failed, incomplete, outputItemAdded, outputItemDone, reasoningSummaryPartAdded, reasoningSummaryPartDone, reasoningSummaryTextDelta, reasoningSummaryTextDone, refusalDelta, refusalDone, outputTextDelta, outputTextDone, webSearchCallCompleted, webSearchCallInProgress, webSearchCallSearching, imageGenerationCallCompleted, imageGenerationCallGenerating, imageGenerationCallInProgress, imageGenerationCallPartialImage, mcpCallArgumentsDelta, mcpCallArgumentsDone, mcpCallCompleted, mcpCallFailed, mcpCallInProgress, mcpListToolsCompleted, mcpListToolsFailed, mcpListToolsInProgress, outputTextAnnotationAdded, queued, reasoningSummaryDelta, reasoningSummaryDone) /* spotless:on */
 
     override fun toString(): String =
         when {
@@ -1269,8 +1233,6 @@ private constructor(
             outputTextAnnotationAdded != null ->
                 "ResponseStreamEvent{outputTextAnnotationAdded=$outputTextAnnotationAdded}"
             queued != null -> "ResponseStreamEvent{queued=$queued}"
-            reasoningDelta != null -> "ResponseStreamEvent{reasoningDelta=$reasoningDelta}"
-            reasoningDone != null -> "ResponseStreamEvent{reasoningDone=$reasoningDone}"
             reasoningSummaryDelta != null ->
                 "ResponseStreamEvent{reasoningSummaryDelta=$reasoningSummaryDelta}"
             reasoningSummaryDone != null ->
@@ -1547,16 +1509,6 @@ private constructor(
         /** Emitted when a response is queued and waiting to be processed. */
         @JvmStatic fun ofQueued(queued: ResponseQueuedEvent) = ResponseStreamEvent(queued = queued)
 
-        /** Emitted when there is a delta (partial update) to the reasoning content. */
-        @JvmStatic
-        fun ofReasoningDelta(reasoningDelta: ResponseReasoningDeltaEvent) =
-            ResponseStreamEvent(reasoningDelta = reasoningDelta)
-
-        /** Emitted when the reasoning content is finalized for an item. */
-        @JvmStatic
-        fun ofReasoningDone(reasoningDone: ResponseReasoningDoneEvent) =
-            ResponseStreamEvent(reasoningDone = reasoningDone)
-
         /** Emitted when there is a delta (partial update) to the reasoning summary content. */
         @JvmStatic
         fun ofReasoningSummaryDelta(reasoningSummaryDelta: ResponseReasoningSummaryDeltaEvent) =
@@ -1774,12 +1726,6 @@ private constructor(
 
         /** Emitted when a response is queued and waiting to be processed. */
         fun visitQueued(queued: ResponseQueuedEvent): T
-
-        /** Emitted when there is a delta (partial update) to the reasoning content. */
-        fun visitReasoningDelta(reasoningDelta: ResponseReasoningDeltaEvent): T
-
-        /** Emitted when the reasoning content is finalized for an item. */
-        fun visitReasoningDone(reasoningDone: ResponseReasoningDoneEvent): T
 
         /** Emitted when there is a delta (partial update) to the reasoning summary content. */
         fun visitReasoningSummaryDelta(reasoningSummaryDelta: ResponseReasoningSummaryDeltaEvent): T
@@ -2139,16 +2085,6 @@ private constructor(
                         ResponseStreamEvent(queued = it, _json = json)
                     } ?: ResponseStreamEvent(_json = json)
                 }
-                "response.reasoning.delta" -> {
-                    return tryDeserialize(node, jacksonTypeRef<ResponseReasoningDeltaEvent>())
-                        ?.let { ResponseStreamEvent(reasoningDelta = it, _json = json) }
-                        ?: ResponseStreamEvent(_json = json)
-                }
-                "response.reasoning.done" -> {
-                    return tryDeserialize(node, jacksonTypeRef<ResponseReasoningDoneEvent>())?.let {
-                        ResponseStreamEvent(reasoningDone = it, _json = json)
-                    } ?: ResponseStreamEvent(_json = json)
-                }
                 "response.reasoning_summary.delta" -> {
                     return tryDeserialize(
                             node,
@@ -2253,8 +2189,6 @@ private constructor(
                 value.outputTextAnnotationAdded != null ->
                     generator.writeObject(value.outputTextAnnotationAdded)
                 value.queued != null -> generator.writeObject(value.queued)
-                value.reasoningDelta != null -> generator.writeObject(value.reasoningDelta)
-                value.reasoningDone != null -> generator.writeObject(value.reasoningDone)
                 value.reasoningSummaryDelta != null ->
                     generator.writeObject(value.reasoningSummaryDelta)
                 value.reasoningSummaryDone != null ->
