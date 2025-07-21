@@ -40,8 +40,6 @@ import com.openai.models.responses.ResponseOutputItemAddedEvent
 import com.openai.models.responses.ResponseOutputItemDoneEvent
 import com.openai.models.responses.ResponseOutputTextAnnotationAddedEvent
 import com.openai.models.responses.ResponseQueuedEvent
-import com.openai.models.responses.ResponseReasoningDeltaEvent
-import com.openai.models.responses.ResponseReasoningDoneEvent
 import com.openai.models.responses.ResponseReasoningSummaryDeltaEvent
 import com.openai.models.responses.ResponseReasoningSummaryDoneEvent
 import com.openai.models.responses.ResponseReasoningSummaryPartAddedEvent
@@ -305,10 +303,6 @@ class ResponseAccumulator private constructor() {
                 override fun visitOutputTextAnnotationAdded(
                     outputTextAnnotationAdded: ResponseOutputTextAnnotationAddedEvent
                 ) {}
-
-                override fun visitReasoningDelta(reasoningDelta: ResponseReasoningDeltaEvent) {}
-
-                override fun visitReasoningDone(reasoningDone: ResponseReasoningDoneEvent) {}
 
                 override fun visitReasoningSummaryDelta(
                     reasoningSummaryDelta: ResponseReasoningSummaryDeltaEvent
