@@ -262,11 +262,20 @@ private constructor(
         fun timeout(): Timeout = timeout
 
         fun fromEnv() = apply {
-            System.getenv("OPENAI_BASE_URL")?.let { baseUrl(it) }
-            System.getenv("OPENAI_API_KEY")?.let { apiKey(it) }
-            System.getenv("OPENAI_ORG_ID")?.let { organization(it) }
-            System.getenv("OPENAI_PROJECT_ID")?.let { project(it) }
-            System.getenv("OPENAI_WEBHOOK_SECRET")?.let { webhookSecret(it) }
+            (System.getProperty("openai.baseUrl") ?: System.getenv("OPENAI_BASE_URL"))?.let {
+                baseUrl(it)
+            }
+            (System.getProperty("openai.apiKey") ?: System.getenv("OPENAI_API_KEY"))?.let {
+                apiKey(it)
+            }
+            (System.getProperty("openai.orgId") ?: System.getenv("OPENAI_ORG_ID"))?.let {
+                organization(it)
+            }
+            (System.getProperty("openai.projectId") ?: System.getenv("OPENAI_PROJECT_ID"))?.let {
+                project(it)
+            }
+            (System.getProperty("openai.webhookSecret") ?: System.getenv("OPENAI_WEBHOOK_SECRET"))
+                ?.let { webhookSecret(it) }
         }
 
         /**
