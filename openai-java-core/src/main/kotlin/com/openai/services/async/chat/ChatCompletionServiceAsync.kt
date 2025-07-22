@@ -17,6 +17,8 @@ import com.openai.models.chat.completions.ChatCompletionListPageAsync
 import com.openai.models.chat.completions.ChatCompletionListParams
 import com.openai.models.chat.completions.ChatCompletionRetrieveParams
 import com.openai.models.chat.completions.ChatCompletionUpdateParams
+import com.openai.models.chat.completions.StructuredChatCompletion
+import com.openai.models.chat.completions.StructuredChatCompletionCreateParams
 import com.openai.services.async.chat.completions.MessageServiceAsync
 import java.util.concurrent.CompletableFuture
 import java.util.function.Consumer
@@ -65,6 +67,32 @@ interface ChatCompletionServiceAsync {
     ): CompletableFuture<ChatCompletion>
 
     /**
+     * Creates a model response for the given chat conversation. The model's structured output in
+     * JSON form will be deserialized automatically into an instance of the class `T`. See the SDK
+     * documentation for more details.
+     *
+     * @see create
+     */
+    fun <T : Any> create(
+        params: StructuredChatCompletionCreateParams<T>
+    ): CompletableFuture<StructuredChatCompletion<T>> = create(params, RequestOptions.none())
+
+    /**
+     * Creates a model response for the given chat conversation. The model's structured output in
+     * JSON form will be deserialized automatically into an instance of the class `T`. See the SDK
+     * documentation for more details.
+     *
+     * @see create
+     */
+    fun <T : Any> create(
+        params: StructuredChatCompletionCreateParams<T>,
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): CompletableFuture<StructuredChatCompletion<T>> =
+        create(params.rawParams, requestOptions).thenApply {
+            StructuredChatCompletion<T>(params.responseType, it)
+        }
+
+    /**
      * **Starting a new project?** We recommend trying
      * [Responses](https://platform.openai.com/docs/api-reference/responses) to take advantage of
      * the latest OpenAI platform features. Compare
@@ -91,6 +119,26 @@ interface ChatCompletionServiceAsync {
         params: ChatCompletionCreateParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): AsyncStreamResponse<ChatCompletionChunk>
+
+    /**
+     * Creates a streaming model response for the given chat conversation. The input parameters can
+     * define a JSON schema derived automatically from an arbitrary class to request a structured
+     * output in JSON form. However, that structured output is split over multiple streamed events,
+     * so it will not be deserialized automatically into an instance of that class. To deserialize
+     * the output, first use a helper class to accumulate the stream of events into a single output
+     * value. See the
+     * [SDK documentation](https://github.com/openai/openai-java/#usage-with-streaming) for full
+     * details.
+     */
+    fun createStreaming(
+        params: StructuredChatCompletionCreateParams<*>
+    ): AsyncStreamResponse<ChatCompletionChunk> = createStreaming(params, RequestOptions.none())
+
+    /** @see [createStreaming] */
+    fun createStreaming(
+        params: StructuredChatCompletionCreateParams<*>,
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): AsyncStreamResponse<ChatCompletionChunk> = createStreaming(params.rawParams, requestOptions)
 
     /**
      * Get a stored chat completion. Only Chat Completions that have been created with the `store`
