@@ -2,6 +2,14 @@
 
 package com.openai.core.http
 
+import com.openai.core.JsonArray
+import com.openai.core.JsonBoolean
+import com.openai.core.JsonMissing
+import com.openai.core.JsonNull
+import com.openai.core.JsonNumber
+import com.openai.core.JsonObject
+import com.openai.core.JsonString
+import com.openai.core.JsonValue
 import com.openai.core.toImmutable
 
 class QueryParams
@@ -27,6 +35,19 @@ private constructor(
 
         private val map: MutableMap<String, MutableList<String>> = mutableMapOf()
         private var size: Int = 0
+
+        fun put(key: String, value: JsonValue): Builder = apply {
+            when (value) {
+                is JsonMissing,
+                is JsonNull -> {}
+                is JsonBoolean -> put(key, value.value.toString())
+                is JsonNumber -> put(key, value.value.toString())
+                is JsonString -> put(key, value.value)
+                is JsonArray -> value.values.forEach { put("$key[]", it) }
+                is JsonObject ->
+                    value.values.forEach { (nestedKey, value) -> put("$key[$nestedKey]", value) }
+            }
+        }
 
         fun put(key: String, value: String) = apply {
             map.getOrPut(key) { mutableListOf() }.add(value)
