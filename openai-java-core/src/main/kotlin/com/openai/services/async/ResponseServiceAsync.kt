@@ -15,6 +15,8 @@ import com.openai.models.responses.ResponseCreateParams
 import com.openai.models.responses.ResponseDeleteParams
 import com.openai.models.responses.ResponseRetrieveParams
 import com.openai.models.responses.ResponseStreamEvent
+import com.openai.models.responses.StructuredResponse
+import com.openai.models.responses.StructuredResponseCreateParams
 import com.openai.services.async.responses.InputItemServiceAsync
 import java.util.concurrent.CompletableFuture
 import java.util.function.Consumer
@@ -64,6 +66,30 @@ interface ResponseServiceAsync {
         create(ResponseCreateParams.none(), requestOptions)
 
     /**
+     * Creates a model response. The model's structured output in JSON form will be deserialized
+     * automatically into an instance of the class `T`. See the SDK documentation for more details.
+     *
+     * @see create
+     */
+    fun <T : Any> create(
+        params: StructuredResponseCreateParams<T>
+    ): CompletableFuture<StructuredResponse<T>> = create(params, RequestOptions.none())
+
+    /**
+     * Creates a model response. The model's structured output in JSON form will be deserialized
+     * automatically into an instance of the class `T`. See the SDK documentation for more details.
+     *
+     * @see create
+     */
+    fun <T : Any> create(
+        params: StructuredResponseCreateParams<T>,
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): CompletableFuture<StructuredResponse<T>> =
+        create(params.rawParams, requestOptions).thenApply {
+            StructuredResponse<T>(params.responseType, it)
+        }
+
+    /**
      * Creates a model response. Provide [text](https://platform.openai.com/docs/guides/text) or
      * [image](https://platform.openai.com/docs/guides/images) inputs to generate
      * [text](https://platform.openai.com/docs/guides/text) or
@@ -91,6 +117,26 @@ interface ResponseServiceAsync {
     /** @see [createStreaming] */
     fun createStreaming(requestOptions: RequestOptions): AsyncStreamResponse<ResponseStreamEvent> =
         createStreaming(ResponseCreateParams.none(), requestOptions)
+
+    /**
+     * Creates a streaming model response for the given response conversation. The input parameters
+     * can define a JSON schema derived automatically from an arbitrary class to request a
+     * structured output in JSON form. However, that structured output is split over multiple
+     * streamed events, so it will not be deserialized automatically into an instance of that class.
+     * To deserialize the output, first use a helper class to accumulate the stream of events into a
+     * single output value. See the
+     * [SDK documentation](https://github.com/openai/openai-java/#usage-with-streaming) for full
+     * details.
+     */
+    fun createStreaming(
+        params: StructuredResponseCreateParams<*>
+    ): AsyncStreamResponse<ResponseStreamEvent> = createStreaming(params, RequestOptions.none())
+
+    /** @see [createStreaming] */
+    fun createStreaming(
+        params: StructuredResponseCreateParams<*>,
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): AsyncStreamResponse<ResponseStreamEvent> = createStreaming(params.rawParams, requestOptions)
 
     /** Retrieves a model response with the given ID. */
     fun retrieve(responseId: String): CompletableFuture<Response> =
