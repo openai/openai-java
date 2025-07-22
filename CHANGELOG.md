@@ -1,5 +1,19 @@
 # Changelog
 
+## 2.18.0 (2025-07-22)
+
+Full Changelog: [v2.17.0...v2.18.0](https://github.com/openai/openai-java/compare/v2.17.0...v2.18.0)
+
+### Features
+
+* **client:** add `{QueryParams,Headers}#put(String, JsonValue)` methods ([1973f9a](https://github.com/openai/openai-java/commit/1973f9a7049505a27a7ec908549254f192d74be0))
+* **client:** allow configuring env via system properties ([5f8deb3](https://github.com/openai/openai-java/commit/5f8deb34ebe2982dee1aa6fd1bb1a08122a80a8d))
+
+
+### Chores
+
+* **api:** event shapes more accurate ([b7ba592](https://github.com/openai/openai-java/commit/b7ba592a4b0ebdcf53719017afb064227136d59d))
+
 ## 2.17.0 (2025-07-21)
 
 Full Changelog: [v2.16.0...v2.17.0](https://github.com/openai/openai-java/compare/v2.16.0...v2.17.0)
