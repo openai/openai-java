@@ -1363,7 +1363,7 @@ openai:
 
 #### Other configuration
 
-Configure any other client option by providing one or more instances of [`OpenAIClientCustomizer`](openai-java-core/src/main/kotlin/com/openai/springboot/OpenAIClientCustomizer.kt). For example, here's how you'd set [`maxRetries`](#retries):
+Configure any other client option by providing one or more instances of [`OpenAIClientCustomizer`](openai-java-spring-boot-starter/src/main/kotlin/com/openai/springboot/OpenAIClientCustomizer.kt). For example, here's how you'd set [`maxRetries`](#retries):
 
 ```java
 import com.openai.springboot.OpenAIClientCustomizer;
