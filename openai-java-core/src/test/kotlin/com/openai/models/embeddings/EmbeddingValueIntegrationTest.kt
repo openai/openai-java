@@ -50,20 +50,20 @@ class EmbeddingValueIntegrationTest {
     @Test
     @DisplayName("Test EmbeddingValue creation and format conversion")
     fun testEmbeddingValueCreationAndConversion() {
-        val floatList = listOf(1.0f, 2.0f, 3.0f, 4.0f)
+        val floats = listOf(1.0f, 2.0f, 3.0f, 4.0f)
 
         // Create EmbeddingValue from Float array
-        val embeddingFromFloat = EmbeddingValue.ofFloatList(floatList)
+        val embeddingFromFloat = EmbeddingValue.ofFloatList(floats)
         assertThat(embeddingFromFloat.isFloatList())
             .describedAs("EmbeddingValue created from Float array must be in Float format")
             .isTrue()
         assertThat(embeddingFromFloat.asFloatList())
             .describedAs("Float array contents must match")
-            .isEqualTo(floatList)
+            .isEqualTo(floats)
 
         // Test conversion to Base64
-        val base64String = embeddingFromFloat.asBase64String()
-        assertThat(base64String).describedAs("Base64 string must not be empty").isNotEmpty()
+        val base64 = embeddingFromFloat.asBase64String()
+        assertThat(base64).describedAs("Base64 string must not be empty").isNotEmpty()
 
         // Create EmbeddingValue from Base64 string
         val embeddingFromBase64 = EmbeddingValue.ofBase64String(base64String)
@@ -72,13 +72,13 @@ class EmbeddingValueIntegrationTest {
             .isTrue()
         assertThat(embeddingFromBase64.base64String())
             .describedAs("Base64 string contents must match")
-            .isEqualTo(base64String)
+            .isEqualTo(base64)
 
         // Test auto-decode: Base64 → List<Float>
-        val decodedFloatList = embeddingFromBase64.asFloatList()
-        assertThat(decodedFloatList)
+        val decodedFloats = embeddingFromBase64.asFloatList()
+        assertThat(decodedFloats)
             .describedAs("Decoded Float array must match the original array")
-            .isEqualTo(floatList)
+            .isEqualTo(floats)
     }
 
     /**
@@ -203,8 +203,8 @@ class EmbeddingValueIntegrationTest {
     @DisplayName("Test EmbeddingValue validation functionality")
     fun testEmbeddingValueValidation() {
         // Test validation success with valid data
-        val validFloatList = listOf(1.0f, 2.0f, 3.0f)
-        val validEmbedding = EmbeddingValue.ofFloatList(validFloatList)
+        val validFloats = listOf(1.0f, 2.0f, 3.0f)
+        val validEmbedding = EmbeddingValue.ofFloatList(validFloats)
 
         assertThat(validEmbedding.validate())
             .describedAs("Validation with valid data must succeed")
@@ -220,16 +220,16 @@ class EmbeddingValueIntegrationTest {
     @Test
     @DisplayName("Test EmbeddingValue visitor pattern")
     fun testEmbeddingValueVisitorPattern() {
-        val floatList = listOf(1.0f, 2.0f, 3.0f)
-        val embeddingFromFloat = EmbeddingValue.ofFloatList(floatList)
+        val floats = listOf(1.0f, 2.0f, 3.0f)
+        val embeddingFromFloat = EmbeddingValue.ofFloatList(floats)
 
         // Visitor for Float array case
         val floatResult =
             embeddingFromFloat.accept(
                 object : EmbeddingValue.Visitor<String> {
-                    override fun visitFloatList(floatList: List<Float>): String = "float_visited"
+                    override fun visitFloatList(floats: List<Float>): String = "float_visited"
 
-                    override fun visitBase64String(base64String: String): String = "base64_visited"
+                    override fun visitBase64String(base64: String): String = "base64_visited"
 
                     override fun unknown(json: com.openai.core.JsonValue?): String =
                         "unknown_visited"
@@ -241,13 +241,13 @@ class EmbeddingValueIntegrationTest {
             .isEqualTo("float_visited")
 
         // Visitor for Base64 case
-        val base64String = embeddingFromFloat.asBase64String()
-        val embeddingFromBase64 = EmbeddingValue.ofBase64String(base64String)
+        val base64 = embeddingFromFloat.asBase64String()
+        val embeddingFromBase64 = EmbeddingValue.ofBase64String(base64)
 
         val base64Result =
             embeddingFromBase64.accept(
                 object : EmbeddingValue.Visitor<String> {
-                    override fun visitFloatList(floatList: List<Float>): String = "float_visited"
+                    override fun visitFloatList(floats: List<Float>): String = "float_visited"
 
                     override fun visitBase64String(base64String: String): String = "base64_visited"
 

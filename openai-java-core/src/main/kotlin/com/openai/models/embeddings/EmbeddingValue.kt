@@ -28,25 +28,25 @@ import java.util.Objects
 @JsonSerialize(using = EmbeddingValue.Serializer::class)
 class EmbeddingValue
 private constructor(
-    private val floatList: List<Float>? = null,
-    private val base64String: String? = null,
+    private val floats: List<Float>? = null,
+    private val base64: String? = null,
     private val _json: JsonValue? = null,
 ) {
 
     /** Returns the embedding as a list of floats, or null if this value represents base64 data. */
-    fun floatList(): List<Float>? = floatList
+    fun floatList(): List<Float>? = floats
 
     /**
      * Returns the embedding as a base64-encoded string, or null if this value represents float
      * data.
      */
-    fun base64String(): String? = base64String
+    fun base64String(): String? = base64
 
     /** Returns true if this value contains float list data. */
-    fun isFloatList(): Boolean = floatList != null
+    fun isFloatList(): Boolean = floats != null
 
     /** Returns true if this value contains base64 string data. */
-    fun isBase64String(): Boolean = base64String != null
+    fun isBase64String(): Boolean = base64 != null
 
     /**
      * Returns the embedding data as a list of floats.
@@ -63,9 +63,9 @@ private constructor(
      */
     fun asFloatList(): List<Float> =
         when {
-            floatList != null -> floatList
-            base64String != null ->
-                decodeBase64ToFloatList(base64String) // Automatic Base64 decoding
+            floats != null -> floats
+            base64 != null ->
+                decodeBase64ToFloatList(base64) // Automatic Base64 decoding
             else -> throw IllegalStateException("No valid embedding data")
         }
 
@@ -75,8 +75,8 @@ private constructor(
      */
     fun asBase64String(): String =
         when {
-            base64String != null -> base64String
-            floatList != null -> encodeFloatListToBase64(floatList)
+            base64 != null -> base64
+            floats != null -> encodeFloatListToBase64(floats)
             else -> throw IllegalStateException("No valid embedding data")
         }
 
@@ -86,8 +86,8 @@ private constructor(
     /** Accepts a visitor that can handle both float list and base64 string cases. */
     fun <T> accept(visitor: Visitor<T>): T =
         when {
-            floatList != null -> visitor.visitFloatList(floatList)
-            base64String != null -> visitor.visitBase64String(base64String)
+            floats != null -> visitor.visitFloatList(floats)
+            base64 != null -> visitor.visitBase64String(base64)
             else -> visitor.unknown(_json)
         }
 
@@ -102,22 +102,22 @@ private constructor(
     fun validate(): EmbeddingValue {
         accept(
             object : Visitor<Unit> {
-                override fun visitFloatList(floatList: List<Float>) {
+                override fun visitFloatList(floats: List<Float>) {
                     // Validate that float list is not empty and contains valid values
-                    if (floatList.isEmpty()) {
+                    if (floats.isEmpty()) {
                         throw OpenAIInvalidDataException("Float list cannot be empty")
                     }
-                    floatList.forEach { value ->
+                    floats.forEach { value ->
                         if (!value.isFinite()) {
                             throw OpenAIInvalidDataException("Float values must be finite")
                         }
                     }
                 }
 
-                override fun visitBase64String(base64String: String) {
+                override fun visitBase64String(base64: String) {
                     // Validate base64 format
                     try {
-                        Base64.getDecoder().decode(base64String)
+                        Base64.getDecoder().decode(base64)
                     } catch (e: IllegalArgumentException) {
                         throw OpenAIInvalidDataException("Invalid base64 string", e)
                     }
@@ -138,16 +138,16 @@ private constructor(
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         return other is EmbeddingValue &&
-            floatList == other.floatList &&
-            base64String == other.base64String
+            floats == other.floats &&
+            base64 == other.base64
     }
 
-    override fun hashCode(): Int = Objects.hash(floatList, base64String)
+    override fun hashCode(): Int = Objects.hash(floats, base64)
 
     override fun toString(): String =
         when {
-            floatList != null -> "EmbeddingValue{floatList=$floatList}"
-            base64String != null -> "EmbeddingValue{base64String=$base64String}"
+            floats != null -> "EmbeddingValue{floats=$floats}"
+            base64 != null -> "EmbeddingValue{base64=$base64}"
             _json != null -> "EmbeddingValue{_unknown=$_json}"
             else -> throw IllegalStateException("Invalid EmbeddingValue")
         }
@@ -157,15 +157,15 @@ private constructor(
          * Creates an EmbeddingValue from a list of floats. The input list is defensively copied to
          * ensure immutability.
          *
-         * @param floatList the list of float values (will be copied)
+         * @param floats the list of float values (will be copied)
          * @return a new immutable EmbeddingValue instance
          * @throws OpenAIInvalidDataException if validation fails
          */
         @JvmStatic
-        fun ofFloatList(floatList: List<Float>): EmbeddingValue {
+        fun ofFloatList(floats: List<Float>): EmbeddingValue {
             // Defensive copy to ensure immutability
-            val immutableList = floatList.toList()
-            val instance = EmbeddingValue(floatList = immutableList)
+            val immutableList = floats.toList()
+            val instance = EmbeddingValue(floats = immutableList)
             return instance.validate() // Validate upon creation
         }
 
@@ -177,8 +177,8 @@ private constructor(
          * @throws OpenAIInvalidDataException if validation fails
          */
         @JvmStatic
-        fun ofBase64String(base64String: String): EmbeddingValue {
-            val instance = EmbeddingValue(base64String = base64String)
+        fun ofBase64String(base64: String): EmbeddingValue {
+            val instance = EmbeddingValue(base64 = base64)
             return instance.validate() // Validate upon creation
         }
 
@@ -186,8 +186,8 @@ private constructor(
          * Decodes a base64 string to a list of floats. Assumes the base64 string represents an
          * array of 32-bit IEEE 754 floats in little-endian format.
          */
-        private fun decodeBase64ToFloatList(base64String: String): List<Float> {
-            val bytes = Base64.getDecoder().decode(base64String)
+        private fun decodeBase64ToFloatList(base64: String): List<Float> {
+            val bytes = Base64.getDecoder().decode(base64)
             val buffer = ByteBuffer.wrap(bytes).asFloatBuffer()
             return (0 until buffer.remaining()).map { buffer.get() }
         }
@@ -196,18 +196,18 @@ private constructor(
          * Encodes a list of floats to a base64 string. Encodes the floats as an array of 32-bit
          * IEEE 754 floats in little-endian format.
          */
-        private fun encodeFloatListToBase64(floatList: List<Float>): String {
-            val buffer = ByteBuffer.allocate(floatList.size * 4)
-            floatList.forEach { buffer.putFloat(it) }
+        private fun encodeFloatListToBase64(floats: List<Float>): String {
+            val buffer = ByteBuffer.allocate(floats.size * 4)
+            floats.forEach { buffer.putFloat(it) }
             return Base64.getEncoder().encodeToString(buffer.array())
         }
     }
 
     /** Visitor interface for handling different types of embedding data. */
     interface Visitor<out T> {
-        fun visitFloatList(floatList: List<Float>): T
+        fun visitFloatList(floats: List<Float>): T
 
-        fun visitBase64String(base64String: String): T
+        fun visitBase64String(base64: String): T
 
         fun unknown(json: JsonValue?): T {
             throw OpenAIInvalidDataException("Unknown EmbeddingValue: $json")
@@ -221,10 +221,10 @@ private constructor(
             val bestMatches =
                 sequenceOf(
                         tryDeserialize(node, jacksonTypeRef<List<Float>>())?.let {
-                            EmbeddingValue(floatList = it, _json = json)
+                            EmbeddingValue(floats = it, _json = json)
                         },
                         tryDeserialize(node, jacksonTypeRef<String>())?.let {
-                            EmbeddingValue(base64String = it, _json = json)
+                            EmbeddingValue(base64 = it, _json = json)
                         },
                     )
                     .filterNotNull()
@@ -246,8 +246,8 @@ private constructor(
             provider: SerializerProvider,
         ) {
             when {
-                value.floatList != null -> generator.writeObject(value.floatList)
-                value.base64String != null -> generator.writeObject(value.base64String)
+                value.floats != null -> generator.writeObject(value.floats)
+                value.base64 != null -> generator.writeObject(value.base64)
                 value._json != null -> generator.writeObject(value._json)
                 else -> throw IllegalStateException("Invalid EmbeddingValue")
             }
@@ -258,8 +258,8 @@ private constructor(
     @JvmSynthetic
     internal fun validity(): Int =
         when {
-            floatList != null -> floatList.size
-            base64String != null -> 1
+            floats != null -> floats.size
+            base64 != null -> 1
             else -> 0
         }
 }
