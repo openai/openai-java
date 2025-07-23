@@ -159,6 +159,7 @@ private constructor(
         private var body: Body.Builder = Body.builder()
         private var additionalHeaders: Headers.Builder = Headers.builder()
         private var additionalQueryParams: QueryParams.Builder = QueryParams.builder()
+        private var encodingFormat: JsonField<EncodingFormat> = JsonField.of(EmbeddingDefaults.defaultEncodingFormat)
 
         @JvmSynthetic
         internal fun from(embeddingCreateParams: EmbeddingCreateParams) = apply {
@@ -262,7 +263,7 @@ private constructor(
          * [`base64`](https://pypi.org/project/pybase64/).
          */
         fun encodingFormat(encodingFormat: EncodingFormat) = apply {
-            body.encodingFormat(encodingFormat)
+            this.encodingFormat = JsonField.of(encodingFormat)
         }
 
         /**
@@ -273,7 +274,7 @@ private constructor(
          * supported value.
          */
         fun encodingFormat(encodingFormat: JsonField<EncodingFormat>) = apply {
-            body.encodingFormat(encodingFormat)
+            this.encodingFormat = encodingFormat
         }
 
         /**
@@ -422,11 +423,6 @@ private constructor(
          * @throws IllegalStateException if any required field is unset.
          */
         fun build(): EmbeddingCreateParams {
-            // Apply default encoding format if not explicitly set
-            if (body._encodingFormat().isMissing()) {
-                body.encodingFormat(EmbeddingDefaults.defaultEncodingFormat)
-            }
-
             return EmbeddingCreateParams(
                 body.build(),
                 additionalHeaders.build(),
@@ -732,12 +728,6 @@ private constructor(
             fun removeAllAdditionalProperties(keys: Set<String>) = apply {
                 keys.forEach(::removeAdditionalProperty)
             }
-
-            /**
-             * Internal method to check if encodingFormat has been set. Used by the main Builder to
-             * determine if default should be applied.
-             */
-            internal fun _encodingFormat(): JsonField<EncodingFormat> = encodingFormat
 
             /**
              * Returns an immutable instance of [Body].
