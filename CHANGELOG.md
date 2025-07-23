@@ -1,5 +1,18 @@
 # Changelog
 
+## 2.19.0 (2025-07-23)
+
+Full Changelog: [v2.18.2...v2.19.0](https://github.com/openai/openai-java/compare/v2.18.2...v2.19.0)
+
+### Features
+
+* **client:** support base64 embeddings and use as default ([#519](https://github.com/openai/openai-java/issues/519)) ([12b0ff7](https://github.com/openai/openai-java/commit/12b0ff75cf2a3bc93cf5c41adbbf2b5097a8e941))
+
+
+### Documentation
+
+* fix missing readme comment ([720ed2c](https://github.com/openai/openai-java/commit/720ed2cff555977efa00043b3f424920811ce339))
+
 ## 2.18.2 (2025-07-22)
 
 Full Changelog: [v2.18.1...v2.18.2](https://github.com/openai/openai-java/compare/v2.18.1...v2.18.2)
