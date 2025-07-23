@@ -16,6 +16,7 @@ import com.openai.core.allMaxBy
 import com.openai.core.toImmutable
 import com.openai.errors.OpenAIInvalidDataException
 import java.nio.ByteBuffer
+import java.nio.ByteOrder
 import java.util.Base64
 import java.util.Objects
 import java.util.Optional
@@ -137,22 +138,25 @@ private constructor(
          * Decodes a base64 string to a list of floats. Assumes the base64 string represents an
          * array of 32-bit IEEE 754 floats in little-endian format.
          */
-        private fun decodeBase64ToFloats(base64: String): List<Float> =
-            Base64.getDecoder().decode(base64).let { bytes ->
-                ByteBuffer.wrap(bytes).asFloatBuffer().let { buffer ->
-                    (0 until buffer.remaining()).map { buffer.get() }
+        private fun decodeBase64ToFloats(base64: String): List<Float> {
+            val bytes = Base64.getDecoder().decode(base64)
+            val floats = ByteBuffer.wrap(bytes).order(ByteOrder.LITTLE_ENDIAN).asFloatBuffer()
+            return buildList(floats.remaining()) {
+                while (floats.hasRemaining()) {
+                    add(floats.get())
                 }
             }
+        }
 
         /**
          * Encodes a list of floats to a base64 string. Encodes the floats as an array of 32-bit
          * IEEE 754 floats in little-endian format.
          */
-        private fun encodeFloatsAsBase64(floats: List<Float>): String =
-            ByteBuffer.allocate(floats.size * 4)
-                .apply { floats.forEach { putFloat(it) } }
-                .array()
-                .let { bytes -> Base64.getEncoder().encodeToString(bytes) }
+        private fun encodeFloatsAsBase64(floats: List<Float>): String {
+            val buffer = ByteBuffer.allocate(floats.size * 4).order(ByteOrder.LITTLE_ENDIAN)
+            floats.forEach { buffer.putFloat(it) }
+            return Base64.getEncoder().encodeToString(buffer.array())
+        }
     }
 
     /**

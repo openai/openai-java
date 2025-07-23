@@ -16,12 +16,12 @@ internal class EmbeddingValueTest {
         assertThat(embeddingValue.floats()).hasValue(floats)
         assertThat(embeddingValue.base64()).isEmpty
         assertThat(embeddingValue.asFloats()).isEqualTo(floats)
-        assertThat(embeddingValue.asBase64()).isEqualTo("P4AAAEAAAABAQAAAQIAAAA==")
+        assertThat(embeddingValue.asBase64()).isEqualTo("AACAPwAAAEAAAEBAAACAQA==")
     }
 
     @Test
     fun ofBase64() {
-        val base64 = "P4AAAEAAAABAQAAAQIAAAA=="
+        val base64 = "AACAPwAAAEAAAEBAAACAQA=="
 
         val embeddingValue = EmbeddingValue.ofBase64(base64)
 
