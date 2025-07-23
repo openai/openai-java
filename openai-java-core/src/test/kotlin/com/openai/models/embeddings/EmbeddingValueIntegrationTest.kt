@@ -1,8 +1,6 @@
 package com.openai.models.embeddings
 
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.jupiter.api.AfterEach
-import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
 
@@ -13,32 +11,6 @@ import org.junit.jupiter.api.Test
  */
 @DisplayName("EmbeddingValue Integration Test")
 class EmbeddingValueIntegrationTest {
-
-    private var originalDefault: EmbeddingCreateParams.EncodingFormat? = null
-
-    @BeforeEach
-    fun setUp() {
-        // Save default settings before test
-        originalDefault = EmbeddingDefaults.defaultEncodingFormat
-    }
-
-    @AfterEach
-    fun tearDown() {
-        // Restore default settings after test
-        originalDefault?.let { EmbeddingDefaults.setDefaultEncodingFormat(it) }
-    }
-
-    /**
-     * Test to confirm that the default encoding format is Base64. In the new implementation, Base64
-     * becomes the default for performance improvements.
-     */
-    @Test
-    @DisplayName("Confirm that default encoding format is Base64")
-    fun testDefaultEncodingFormatIsBase64() {
-        assertThat(EmbeddingDefaults.defaultEncodingFormat)
-            .describedAs("Default encoding format must be Base64")
-            .isEqualTo(EmbeddingCreateParams.EncodingFormat.BASE64)
-    }
 
     /**
      * Test EmbeddingValue creation and format conversion functionality.
@@ -66,7 +38,7 @@ class EmbeddingValueIntegrationTest {
         assertThat(base64).describedAs("Base64 string must not be empty").isNotEmpty()
 
         // Create EmbeddingValue from Base64 string
-        val embeddingFromBase64 = EmbeddingValue.ofBase64String(base64String)
+        val embeddingFromBase64 = EmbeddingValue.ofBase64String(base64)
         assertThat(embeddingFromBase64.isBase64String())
             .describedAs("EmbeddingValue created from Base64 string must be in Base64 format")
             .isTrue()
@@ -142,56 +114,6 @@ class EmbeddingValueIntegrationTest {
                 "Explicitly specified encoding format for backward compatibility must be Float"
             )
             .isEqualTo(EmbeddingCreateParams.EncodingFormat.FLOAT)
-    }
-
-    /**
-     * Test EmbeddingDefaults global configuration change functionality.
-     * - Change default setting to Float
-     * - Confirm that new default setting is applied
-     * - Confirm that settings can be reset
-     */
-    @Test
-    @DisplayName("Test EmbeddingDefaults global configuration change")
-    fun testEmbeddingDefaultsCanBeChanged() {
-        val originalDefault = EmbeddingDefaults.defaultEncodingFormat
-
-        try {
-            // Change default to FLOAT
-            EmbeddingDefaults.setDefaultEncodingFormat(EmbeddingCreateParams.EncodingFormat.FLOAT)
-            assertThat(EmbeddingDefaults.defaultEncodingFormat)
-                .describedAs("Default setting must be changed to FLOAT")
-                .isEqualTo(EmbeddingCreateParams.EncodingFormat.FLOAT)
-
-            // Test that new instances use the new default
-            val params =
-                EmbeddingCreateParams.builder()
-                    .input("test input")
-                    .model("text-embedding-ada-002")
-                    .build()
-
-            // Debug information
-            println(
-                "EmbeddingDefaults.defaultEncodingFormat = ${EmbeddingDefaults.defaultEncodingFormat}"
-            )
-            println("params.encodingFormat() = ${params.encodingFormat()}")
-            println("params.encodingFormat().isPresent = ${params.encodingFormat().isPresent}")
-            if (params.encodingFormat().isPresent) {
-                println("params.encodingFormat().get() = ${params.encodingFormat().get()}")
-            }
-
-            assertThat(params.encodingFormat().get())
-                .describedAs("New instances must use the changed default setting")
-                .isEqualTo(EmbeddingCreateParams.EncodingFormat.FLOAT)
-
-            // Test default reset functionality
-            EmbeddingDefaults.resetToDefaults()
-            assertThat(EmbeddingDefaults.defaultEncodingFormat)
-                .describedAs("After reset, Base64 must be returned as default")
-                .isEqualTo(EmbeddingCreateParams.EncodingFormat.BASE64)
-        } finally {
-            // Restore original default setting
-            EmbeddingDefaults.setDefaultEncodingFormat(originalDefault)
-        }
     }
 
     /**

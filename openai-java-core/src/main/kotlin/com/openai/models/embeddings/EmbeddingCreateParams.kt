@@ -159,7 +159,7 @@ private constructor(
         private var body: Body.Builder = Body.builder()
         private var additionalHeaders: Headers.Builder = Headers.builder()
         private var additionalQueryParams: QueryParams.Builder = QueryParams.builder()
-        private var encodingFormat: JsonField<EncodingFormat> = JsonField.of(EmbeddingDefaults.defaultEncodingFormat)
+        private var encodingFormat: JsonField<EncodingFormat> = JsonField.of(EncodingFormat.BASE64)
 
         @JvmSynthetic
         internal fun from(embeddingCreateParams: EmbeddingCreateParams) = apply {

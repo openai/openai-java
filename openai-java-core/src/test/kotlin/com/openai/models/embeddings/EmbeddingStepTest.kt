@@ -11,11 +11,15 @@ class EmbeddingStepTest {
     @DisplayName("Step 1: Check initial state")
     fun step1_checkInitialState() {
         println("===== Step 1: Check initial state =====")
-        val defaultFormat = EmbeddingDefaults.defaultEncodingFormat
-        println("EmbeddingDefaults.defaultEncodingFormat = $defaultFormat")
+        val params =
+            EmbeddingCreateParams.builder().input("test").model("text-embedding-ada-002").build()
+        val defaultFormat = params.encodingFormat().orElse(null)
+        println("Default encodingFormat in params = $defaultFormat")
         println("EncodingFormat.BASE64 = ${EmbeddingCreateParams.EncodingFormat.BASE64}")
         println("EncodingFormat.FLOAT = ${EmbeddingCreateParams.EncodingFormat.FLOAT}")
-        println("Are they equal? ${defaultFormat == EmbeddingCreateParams.EncodingFormat.BASE64}")
+        println(
+            "Is default BASE64? ${defaultFormat == EmbeddingCreateParams.EncodingFormat.BASE64}"
+        )
     }
 
     @Test
