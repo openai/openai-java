@@ -1,5 +1,26 @@
 # Changelog
 
+## 2.18.2 (2025-07-22)
+
+Full Changelog: [v2.18.1...v2.18.2](https://github.com/openai/openai-java/compare/v2.18.1...v2.18.2)
+
+### Bug Fixes
+
+* **client:** support structured outputs in async requests ([#548](https://github.com/openai/openai-java/issues/548)). ([#550](https://github.com/openai/openai-java/issues/550)) ([b9d52cf](https://github.com/openai/openai-java/commit/b9d52cf6e03c886dcdd5e0da3f16ea436220f09c))
+
+## 2.18.1 (2025-07-22)
+
+Full Changelog: [v2.18.0...v2.18.1](https://github.com/openai/openai-java/compare/v2.18.0...v2.18.1)
+
+### Bug Fixes
+
+* actually add system properties ([09bb653](https://github.com/openai/openai-java/commit/09bb653a31e6cf89ddac952c776ded8f77903128))
+
+
+### Documentation
+
+* fix readme link ([d98571c](https://github.com/openai/openai-java/commit/d98571c70ebf646497dd1139b13848882261af8f))
+
 ## 2.18.0 (2025-07-22)
 
 Full Changelog: [v2.17.0...v2.18.0](https://github.com/openai/openai-java/compare/v2.17.0...v2.18.0)
