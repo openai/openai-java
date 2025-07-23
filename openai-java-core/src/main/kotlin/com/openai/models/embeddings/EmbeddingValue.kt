@@ -64,8 +64,7 @@ private constructor(
     fun asFloatList(): List<Float> =
         when {
             floats != null -> floats
-            base64 != null ->
-                decodeBase64ToFloatList(base64) // Automatic Base64 decoding
+            base64 != null -> decodeBase64ToFloatList(base64) // Automatic Base64 decoding
             else -> throw IllegalStateException("No valid embedding data")
         }
 
@@ -101,8 +100,9 @@ private constructor(
      */
     fun validate(): EmbeddingValue {
         accept(
-            object : Visitor<Unit> {            
+            object : Visitor<Unit> {
                 override fun visitFloatList(floatList: List<Float>) {}
+
                 override fun visitBase64String(base64String: String) {}
             }
         )
@@ -119,9 +119,7 @@ private constructor(
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
-        return other is EmbeddingValue &&
-            floats == other.floats &&
-            base64 == other.base64
+        return other is EmbeddingValue && floats == other.floats && base64 == other.base64
     }
 
     override fun hashCode(): Int = Objects.hash(floats, base64)
@@ -177,11 +175,10 @@ private constructor(
          * IEEE 754 floats in little-endian format.
          */
         private fun encodeFloatListToBase64(floats: List<Float>): String {
-            return ByteBuffer.allocate(floats.size * 4).apply {
-                floats.forEach { putFloat(it) }
-            }.array().let { bytes ->
-                Base64.getEncoder().encodeToString(bytes)
-            }
+            return ByteBuffer.allocate(floats.size * 4)
+                .apply { floats.forEach { putFloat(it) } }
+                .array()
+                .let { bytes -> Base64.getEncoder().encodeToString(bytes) }
         }
     }
 
