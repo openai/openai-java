@@ -59,17 +59,17 @@ internal class UtilsTest {
     @Test
     fun isAzureUnifiedEndpoint() {
         // Valid Azure unified endpoints
-        assertThat(isAzureUnifiedEndpoint("https://region.services.ai.azure.com/openai/v1")).isTrue()
-        assertThat(isAzureUnifiedEndpoint("https://region.services.ai.azure.com/openai/v1/")).isTrue()
+        assertThat(isAzureUnifiedEndpointPath("https://region.services.ai.azure.com/openai/v1")).isTrue()
+        assertThat(isAzureUnifiedEndpointPath("https://region.services.ai.azure.com/openai/v1/")).isTrue()
 
         // Invalid Azure unified endpoints
-        assertThat(isAzureUnifiedEndpoint("https://region.services.ai.azure.com")).isFalse()
-        assertThat(isAzureUnifiedEndpoint("https://region.services.ai.azure.com/")).isFalse()
-        assertThat(isAzureUnifiedEndpoint("https://region.openai.azure.com")).isFalse()
-        assertThat(isAzureUnifiedEndpoint("https://example.com")).isFalse()
-        assertThat(isAzureUnifiedEndpoint("https://region.openai.com")).isFalse()
-        assertThat(isAzureUnifiedEndpoint("https://region.azure.com")).isFalse()
-        assertThat(isAzureUnifiedEndpoint("")).isFalse()
-        assertThat(isAzureUnifiedEndpoint("    ")).isFalse()
+        assertThat(isAzureUnifiedEndpointPath("https://region.services.ai.azure.com")).isFalse()
+        assertThat(isAzureUnifiedEndpointPath("https://region.services.ai.azure.com/")).isFalse()
+        assertThat(isAzureUnifiedEndpointPath("https://region.openai.azure.com")).isFalse()
+        assertThat(isAzureUnifiedEndpointPath("https://example.com")).isFalse()
+        assertThat(isAzureUnifiedEndpointPath("https://region.openai.com")).isFalse()
+        assertThat(isAzureUnifiedEndpointPath("https://region.azure.com")).isFalse()
+        assertThat(isAzureUnifiedEndpointPath("")).isFalse()
+        assertThat(isAzureUnifiedEndpointPath("    ")).isFalse()
     }
 }

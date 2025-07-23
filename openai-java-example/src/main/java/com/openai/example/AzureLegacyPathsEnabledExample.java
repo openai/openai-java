@@ -6,16 +6,16 @@ import com.openai.client.okhttp.OpenAIOkHttpClient;
 import com.openai.models.ChatModel;
 import com.openai.models.chat.completions.ChatCompletionCreateParams;
 
-public final class AzureDisabledUnifiedEndpointsExample {
-    private AzureDisabledUnifiedEndpointsExample() {}
+public final class AzureLegacyPathsEnabledExample {
+    private AzureLegacyPathsEnabledExample() {}
 
     public static void main(String[] args) {
         OpenAIClient client = OpenAIOkHttpClient.builder()
                 // Gets the API key from the `AZURE_OPENAI_KEY` environment variable
                 .fromEnv()
                 .azureServiceVersion(AzureOpenAIServiceVersion.getV2024_05_01_PREVIEW())
-                // Disabling unified endpoints will result in the deployment name being passed as a path parameter
-                .unifiedAzureRoutes(false)
+                // Enabling Azure legacy paths will result in the deployment name being passed as a path parameter
+                .azureLegacyPaths(true)
                 .build();
 
         ChatCompletionCreateParams createParams = ChatCompletionCreateParams.builder()

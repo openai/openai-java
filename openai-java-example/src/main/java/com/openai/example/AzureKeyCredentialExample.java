@@ -1,6 +1,5 @@
 package com.openai.example;
 
-import com.openai.azure.AzureOpenAIServiceVersion;
 import com.openai.azure.credential.AzureApiKeyCredential;
 import com.openai.client.OpenAIClient;
 import com.openai.client.okhttp.OpenAIOkHttpClient;
@@ -13,7 +12,6 @@ public class AzureKeyCredentialExample {
     public static void main(String[] args) {
         OpenAIClient client = OpenAIOkHttpClient.builder()
                 .baseUrl("{your-azure-openai-endpoint}")
-                .azureServiceVersion(AzureOpenAIServiceVersion.fromString("preview"))
                 .credential(AzureApiKeyCredential.create("{your-azure-openai-key}"))
                 .build();
 

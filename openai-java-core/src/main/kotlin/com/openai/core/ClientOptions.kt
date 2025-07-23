@@ -36,7 +36,7 @@ private constructor(
     @get:JvmName("maxRetries") val maxRetries: Int,
     @get:JvmName("credential") val credential: Credential,
     @get:JvmName("azureServiceVersion") val azureServiceVersion: AzureOpenAIServiceVersion?,
-    @get:JvmName("unifiedAzureRoutes") val unifiedAzureRoutes: Boolean = true,
+    @get:JvmName("azureLegacyPaths") val azureLegacyPaths: Boolean = false,
     private val organization: String?,
     private val project: String?,
     private val webhookSecret: String?,
@@ -95,7 +95,7 @@ private constructor(
         private var organization: String? = null
         private var project: String? = null
         private var webhookSecret: String? = null
-        private var unifiedAzureRoutes: Boolean = true
+        private var azureLegacyPaths: Boolean = true
 
         @JvmSynthetic
         internal fun from(clientOptions: ClientOptions) = apply {
@@ -115,7 +115,7 @@ private constructor(
             organization = clientOptions.organization
             project = clientOptions.project
             webhookSecret = clientOptions.webhookSecret
-            unifiedAzureRoutes = clientOptions.unifiedAzureRoutes
+            azureLegacyPaths = clientOptions.azureLegacyPaths
         }
 
         fun httpClient(httpClient: HttpClient) = apply {
@@ -282,7 +282,7 @@ private constructor(
             }
         }
 
-        fun unifiedAzureRoutes(unifiedAzureRoutes: Boolean) = apply { this.unifiedAzureRoutes = unifiedAzureRoutes }
+        fun azureLegacyPaths(unifiedAzureRoutes: Boolean) = apply { this.azureLegacyPaths = unifiedAzureRoutes }
 
         /**
          * Returns an immutable instance of [ClientOptions].
@@ -328,7 +328,7 @@ private constructor(
             baseUrl?.let {
                 if (isAzureEndpoint(it)) {
                     // Non Azure-unified routes will still require an api-version value.
-                    if (!unifiedAzureRoutes || !isAzureUnifiedEndpoint(it)) {
+                    if (!azureLegacyPaths || !isAzureUnifiedEndpointPath(it)) {
                         replaceQueryParams(
                             "api-version",
                             (azureServiceVersion ?: AzureOpenAIServiceVersion.latestStableVersion())
@@ -379,7 +379,7 @@ private constructor(
                 maxRetries,
                 credential,
                 azureServiceVersion,
-                unifiedAzureRoutes,
+                azureLegacyPaths,
                 organization,
                 project,
                 webhookSecret,

@@ -1,6 +1,5 @@
 package com.openai.example;
 
-import com.openai.azure.AzureOpenAIServiceVersion;
 import com.openai.client.OpenAIClient;
 import com.openai.client.okhttp.OpenAIOkHttpClient;
 import com.openai.models.ChatModel;
@@ -13,8 +12,6 @@ public final class AzureUnifiedEndpointExample {
         OpenAIClient client = OpenAIOkHttpClient.builder()
                 // Gets the API key from the `AZURE_OPENAI_KEY` environment variable
                 .fromEnv()
-                // TODO: remove preview once the api-version has become optional
-                .azureServiceVersion(AzureOpenAIServiceVersion.fromString("preview"))
                 .build();
 
         ChatCompletionCreateParams createParams = ChatCompletionCreateParams.builder()

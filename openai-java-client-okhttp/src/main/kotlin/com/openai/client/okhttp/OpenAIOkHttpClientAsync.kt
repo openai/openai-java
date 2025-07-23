@@ -186,8 +186,8 @@ class OpenAIOkHttpClientAsync private constructor() {
 
         fun fromEnv() = apply { clientOptions.fromEnv() }
 
-        fun unifiedAzureRoutes(unifiedAzureRoutes: Boolean) = apply {
-            clientOptions.unifiedAzureRoutes(unifiedAzureRoutes)
+        fun azureLegacyPaths(azureLegacyPaths: Boolean) = apply {
+            clientOptions.azureLegacyPaths(azureLegacyPaths)
         }
         /**
          * Returns an immutable instance of [OpenAIClientAsync].

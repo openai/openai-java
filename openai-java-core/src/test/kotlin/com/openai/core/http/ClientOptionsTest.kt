@@ -67,25 +67,25 @@ internal class ClientOptionsTest {
     }
 
     @Test
-    fun unifiedAzureRoutesTestSetFalse() {
+    fun azureLegacyPathsTestSetTrue() {
         val clientOptions =
             ClientOptions.builder()
                 .httpClient(createOkHttpClient())
                 .credential(BearerTokenCredential.create(FAKE_API_KEY))
-                .unifiedAzureRoutes(false)
+                .azureLegacyPaths(true)
                 .build()
 
-        assertThat(clientOptions.unifiedAzureRoutes).isFalse()
+        assertThat(clientOptions.azureLegacyPaths).isTrue()
     }
 
     @Test
-    fun unifiedAzureRoutesTestDefaultTrue() {
+    fun azureLegacyPathsTestDefaultFalse() {
         val clientOptions =
             ClientOptions.builder()
                 .httpClient(createOkHttpClient())
                 .credential(BearerTokenCredential.create(FAKE_API_KEY))
                 .build()
 
-        assertThat(clientOptions.unifiedAzureRoutes).isTrue()
+        assertThat(clientOptions.azureLegacyPaths).isTrue()
     }
 }
