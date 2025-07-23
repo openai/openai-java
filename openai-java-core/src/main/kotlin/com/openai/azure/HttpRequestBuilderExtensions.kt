@@ -15,7 +15,7 @@ internal fun HttpRequest.Builder.addPathSegmentsForAzure(
     if (isAzureEndpoint(baseUrl)) {
         // Users can toggle off unified Azure routes using the "unifiedAzureRoutes" option.
         // Endpoints are assumed to be provided with `/v1/openai` in their path already.
-        if (clientOptions.azureLegacyPaths && !isAzureUnifiedEndpointPath(baseUrl)) {
+        if (clientOptions.azureLegacyPaths || !isAzureUnifiedEndpointPath(baseUrl)) {
             // Unknown Azure endpoints and legacy Azure endpoints are treated the old way.
             // We are assuming in this branch that isAzureLegacyEndpoint(baseUrl) would be true for this base URL.
             addPathSegment("openai")

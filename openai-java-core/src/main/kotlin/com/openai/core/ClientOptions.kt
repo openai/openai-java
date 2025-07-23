@@ -95,7 +95,7 @@ private constructor(
         private var organization: String? = null
         private var project: String? = null
         private var webhookSecret: String? = null
-        private var azureLegacyPaths: Boolean = true
+        private var azureLegacyPaths: Boolean = false
 
         @JvmSynthetic
         internal fun from(clientOptions: ClientOptions) = apply {
@@ -282,7 +282,7 @@ private constructor(
             }
         }
 
-        fun azureLegacyPaths(unifiedAzureRoutes: Boolean) = apply { this.azureLegacyPaths = unifiedAzureRoutes }
+        fun azureLegacyPaths(azureLegacyPaths: Boolean) = apply { this.azureLegacyPaths = azureLegacyPaths }
 
         /**
          * Returns an immutable instance of [ClientOptions].
