@@ -12,7 +12,6 @@ import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
 import com.openai.core.checkKnown
 import com.openai.core.checkRequired
-import com.openai.core.toImmutable
 import com.openai.errors.OpenAIInvalidDataException
 import java.util.Collections
 import java.util.Objects
@@ -21,7 +20,7 @@ import kotlin.jvm.optionals.getOrNull
 /** Represents an embedding vector returned by embedding endpoint. */
 class Embedding
 private constructor(
-    private val embedding: JsonField<List<Float>>,
+    private val embedding: JsonField<EmbeddingValue>,
     private val index: JsonField<Long>,
     private val object_: JsonValue,
     private val additionalProperties: MutableMap<String, JsonValue>,
@@ -31,7 +30,7 @@ private constructor(
     private constructor(
         @JsonProperty("embedding")
         @ExcludeMissing
-        embedding: JsonField<List<Float>> = JsonMissing.of(),
+        embedding: JsonField<EmbeddingValue> = JsonMissing.of(),
         @JsonProperty("index") @ExcludeMissing index: JsonField<Long> = JsonMissing.of(),
         @JsonProperty("object") @ExcludeMissing object_: JsonValue = JsonMissing.of(),
     ) : this(embedding, index, object_, mutableMapOf())
@@ -43,7 +42,16 @@ private constructor(
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
      *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
      */
-    fun embedding(): List<Float> = embedding.getRequired("embedding")
+    fun embedding(): List<Float> = embeddingValue().asFloats()
+
+    /**
+     * The embedding data in its original format (either float list or base64 string). This method
+     * provides efficient access to the embedding data without unnecessary conversions.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     */
+    fun embeddingValue(): EmbeddingValue = embedding.getRequired("embedding")
 
     /**
      * The index of the embedding in the list of embeddings.
@@ -71,7 +79,16 @@ private constructor(
      *
      * Unlike [embedding], this method doesn't throw if the JSON field has an unexpected type.
      */
-    @JsonProperty("embedding") @ExcludeMissing fun _embedding(): JsonField<List<Float>> = embedding
+    fun _embedding(): JsonField<List<Float>> = embedding.map { it.asFloats() }
+
+    /**
+     * Returns the raw JSON value of [embedding].
+     *
+     * Unlike [embeddingValue], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    @JsonProperty("embedding")
+    @ExcludeMissing
+    fun _embeddingValue(): JsonField<EmbeddingValue> = embedding
 
     /**
      * Returns the raw JSON value of [index].
@@ -109,25 +126,38 @@ private constructor(
     /** A builder for [Embedding]. */
     class Builder internal constructor() {
 
-        private var embedding: JsonField<MutableList<Float>>? = null
+        private var embeddingFloats: MutableList<Float>? = null
+        private var embedding: JsonField<EmbeddingValue>? = null
         private var index: JsonField<Long>? = null
         private var object_: JsonValue = JsonValue.from("embedding")
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
         @JvmSynthetic
         internal fun from(embedding: Embedding) = apply {
-            this.embedding = embedding.embedding.map { it.toMutableList() }
+            this.embedding = embedding.embedding
             index = embedding.index
             object_ = embedding.object_
             additionalProperties = embedding.additionalProperties.toMutableMap()
         }
 
         /**
+         * The embedding vector. The length of vector depends on the model as listed in the
+         * [embedding guide](https://platform.openai.com/docs/guides/embeddings).
+         */
+        fun embedding(embedding: EmbeddingValue) = embedding(JsonField.of(embedding))
+
+        /**
          * The embedding vector, which is a list of floats. The length of vector depends on the
          * model as listed in the
          * [embedding guide](https://platform.openai.com/docs/guides/embeddings).
          */
-        fun embedding(embedding: List<Float>) = embedding(JsonField.of(embedding))
+        fun embedding(floats: List<Float>) = embedding(EmbeddingValue.ofFloats(floats))
+
+        /**
+         * The embedding vector, which is a base64 string. The length of vector depends on the model
+         * as listed in the [embedding guide](https://platform.openai.com/docs/guides/embeddings).
+         */
+        fun embedding(base64: String) = embedding(EmbeddingValue.ofBase64(base64))
 
         /**
          * Sets [Builder.embedding] to an arbitrary JSON value.
@@ -136,8 +166,9 @@ private constructor(
          * instead. This method is primarily for setting the field to an undocumented or not yet
          * supported value.
          */
-        fun embedding(embedding: JsonField<List<Float>>) = apply {
-            this.embedding = embedding.map { it.toMutableList() }
+        fun embedding(embedding: JsonField<EmbeddingValue>) = apply {
+            embeddingFloats = null
+            this.embedding = embedding
         }
 
         /**
@@ -146,10 +177,12 @@ private constructor(
          * @throws IllegalStateException if the field was previously set to a non-list.
          */
         fun addEmbedding(embedding: Float) = apply {
-            this.embedding =
-                (this.embedding ?: JsonField.of(mutableListOf())).also {
-                    checkKnown("embedding", it).add(embedding)
-                }
+            embeddingFloats =
+                (this.embedding?.let { checkKnown("embedding", it) }?.asFloats()?.toMutableList()
+                        ?: embeddingFloats
+                        ?: mutableListOf())
+                    .apply { add(embedding) }
+            this.embedding = null
         }
 
         /** The index of the embedding in the list of embeddings. */
@@ -211,7 +244,10 @@ private constructor(
          */
         fun build(): Embedding =
             Embedding(
-                checkRequired("embedding", embedding).map { it.toImmutable() },
+                checkRequired(
+                    "embedding",
+                    embedding ?: embeddingFloats?.let { JsonField.of(EmbeddingValue.ofFloats(it)) },
+                ),
                 checkRequired("index", index),
                 object_,
                 additionalProperties.toMutableMap(),
@@ -225,7 +261,7 @@ private constructor(
             return@apply
         }
 
-        embedding()
+        embeddingValue().validate()
         index()
         _object_().let {
             if (it != JsonValue.from("embedding")) {
@@ -250,7 +286,7 @@ private constructor(
      */
     @JvmSynthetic
     internal fun validity(): Int =
-        (embedding.asKnown().getOrNull()?.size ?: 0) +
+        (embedding.asKnown().getOrNull()?.validity() ?: 0) +
             (if (index.asKnown().isPresent) 1 else 0) +
             object_.let { if (it == JsonValue.from("embedding")) 1 else 0 }
 
