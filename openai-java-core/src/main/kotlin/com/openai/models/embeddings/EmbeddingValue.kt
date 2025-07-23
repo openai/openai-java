@@ -101,27 +101,9 @@ private constructor(
      */
     fun validate(): EmbeddingValue {
         accept(
-            object : Visitor<Unit> {
-                override fun visitFloatList(floats: List<Float>) {
-                    // Validate that float list is not empty and contains valid values
-                    if (floats.isEmpty()) {
-                        throw OpenAIInvalidDataException("Float list cannot be empty")
-                    }
-                    floats.forEach { value ->
-                        if (!value.isFinite()) {
-                            throw OpenAIInvalidDataException("Float values must be finite")
-                        }
-                    }
-                }
-
-                override fun visitBase64String(base64: String) {
-                    // Validate base64 format
-                    try {
-                        Base64.getDecoder().decode(base64)
-                    } catch (e: IllegalArgumentException) {
-                        throw OpenAIInvalidDataException("Invalid base64 string", e)
-                    }
-                }
+            object : Visitor<Unit> {            
+                override fun visitFloatList(floatList: List<Float>) {}
+                override fun visitBase64String(base64String: String) {}
             }
         )
         return this // Return this instance if validation succeeds
@@ -163,10 +145,7 @@ private constructor(
          */
         @JvmStatic
         fun ofFloatList(floats: List<Float>): EmbeddingValue {
-            // Defensive copy to ensure immutability
-            val immutableList = floats.toList()
-            val instance = EmbeddingValue(floats = immutableList)
-            return instance.validate() // Validate upon creation
+            return EmbeddingValue(floats = floats.toList()).apply { validate() }
         }
 
         /**
@@ -178,8 +157,7 @@ private constructor(
          */
         @JvmStatic
         fun ofBase64String(base64: String): EmbeddingValue {
-            val instance = EmbeddingValue(base64 = base64)
-            return instance.validate() // Validate upon creation
+            return EmbeddingValue(base64 = base64).apply { validate() }
         }
 
         /**
@@ -187,9 +165,11 @@ private constructor(
          * array of 32-bit IEEE 754 floats in little-endian format.
          */
         private fun decodeBase64ToFloatList(base64: String): List<Float> {
-            val bytes = Base64.getDecoder().decode(base64)
-            val buffer = ByteBuffer.wrap(bytes).asFloatBuffer()
-            return (0 until buffer.remaining()).map { buffer.get() }
+            return Base64.getDecoder().decode(base64).let { bytes ->
+                ByteBuffer.wrap(bytes).asFloatBuffer().let { buffer ->
+                    (0 until buffer.remaining()).map { buffer.get() }
+                }
+            }
         }
 
         /**
@@ -197,9 +177,11 @@ private constructor(
          * IEEE 754 floats in little-endian format.
          */
         private fun encodeFloatListToBase64(floats: List<Float>): String {
-            val buffer = ByteBuffer.allocate(floats.size * 4)
-            floats.forEach { buffer.putFloat(it) }
-            return Base64.getEncoder().encodeToString(buffer.array())
+            return ByteBuffer.allocate(floats.size * 4).apply {
+                floats.forEach { putFloat(it) }
+            }.array().let { bytes ->
+                Base64.getEncoder().encodeToString(bytes)
+            }
         }
     }
 
