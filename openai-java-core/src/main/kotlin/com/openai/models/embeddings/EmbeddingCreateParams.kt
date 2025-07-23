@@ -78,9 +78,6 @@ private constructor(
      * The format to return the embeddings in. Can be either `float` or
      * [`base64`](https://pypi.org/project/pybase64/).
      *
-     * Returns the encoding format that was set (either explicitly or via default) when this
-     * EmbeddingCreateParams instance was built.
-     *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
      */
@@ -159,7 +156,6 @@ private constructor(
         private var body: Body.Builder = Body.builder()
         private var additionalHeaders: Headers.Builder = Headers.builder()
         private var additionalQueryParams: QueryParams.Builder = QueryParams.builder()
-        private var encodingFormat: JsonField<EncodingFormat> = JsonField.of(EncodingFormat.BASE64)
 
         @JvmSynthetic
         internal fun from(embeddingCreateParams: EmbeddingCreateParams) = apply {
@@ -263,7 +259,7 @@ private constructor(
          * [`base64`](https://pypi.org/project/pybase64/).
          */
         fun encodingFormat(encodingFormat: EncodingFormat) = apply {
-            this.encodingFormat = JsonField.of(encodingFormat)
+            body.encodingFormat(encodingFormat)
         }
 
         /**
@@ -274,7 +270,7 @@ private constructor(
          * supported value.
          */
         fun encodingFormat(encodingFormat: JsonField<EncodingFormat>) = apply {
-            this.encodingFormat = encodingFormat
+            body.encodingFormat(encodingFormat)
         }
 
         /**
@@ -422,13 +418,12 @@ private constructor(
          *
          * @throws IllegalStateException if any required field is unset.
          */
-        fun build(): EmbeddingCreateParams {
-            return EmbeddingCreateParams(
+        fun build(): EmbeddingCreateParams =
+            EmbeddingCreateParams(
                 body.build(),
                 additionalHeaders.build(),
                 additionalQueryParams.build(),
             )
-        }
     }
 
     fun _body(): Body = body
@@ -586,7 +581,8 @@ private constructor(
             private var input: JsonField<Input>? = null
             private var model: JsonField<EmbeddingModel>? = null
             private var dimensions: JsonField<Long> = JsonMissing.of()
-            private var encodingFormat: JsonField<EncodingFormat> = JsonMissing.of()
+            private var encodingFormat: JsonField<EncodingFormat> =
+                JsonField.of(EncodingFormat.BASE64)
             private var user: JsonField<String> = JsonMissing.of()
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
