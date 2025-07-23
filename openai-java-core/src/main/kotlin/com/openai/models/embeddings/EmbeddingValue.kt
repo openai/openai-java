@@ -34,19 +34,19 @@ private constructor(
 ) {
 
     /** Returns the embedding as a list of floats, or null if this value represents base64 data. */
-    fun floatList(): List<Float>? = floats
+    fun floats(): List<Float>? = floats
 
     /**
      * Returns the embedding as a base64-encoded string, or null if this value represents float
      * data.
      */
-    fun base64String(): String? = base64
+    fun base64(): String? = base64
 
     /** Returns true if this value contains float list data. */
-    fun isFloatList(): Boolean = floats != null
+    fun isFloats(): Boolean = floats != null
 
     /** Returns true if this value contains base64 string data. */
-    fun isBase64String(): Boolean = base64 != null
+    fun isBase64(): Boolean = base64 != null
 
     /**
      * Returns the embedding data as a list of floats.
@@ -61,10 +61,10 @@ private constructor(
      *
      * @return Decoded embedding data in List<Float> format
      */
-    fun asFloatList(): List<Float> =
+    fun asFloats(): List<Float> =
         when {
             floats != null -> floats
-            base64 != null -> decodeBase64ToFloatList(base64) // Automatic Base64 decoding
+            base64 != null -> decodeBase64ToFloats(base64) // Automatic Base64 decoding
             else -> throw IllegalStateException("No valid embedding data")
         }
 
@@ -72,10 +72,10 @@ private constructor(
      * Returns the embedding data as a base64-encoded string. If the data is a float list, it will
      * be encoded automatically.
      */
-    fun asBase64String(): String =
+    fun asBase64(): String =
         when {
             base64 != null -> base64
-            floats != null -> encodeFloatListToBase64(floats)
+            floats != null -> encodeFloatsToBase64(floats)
             else -> throw IllegalStateException("No valid embedding data")
         }
 
@@ -85,8 +85,8 @@ private constructor(
     /** Accepts a visitor that can handle both float list and base64 string cases. */
     fun <T> accept(visitor: Visitor<T>): T =
         when {
-            floats != null -> visitor.visitFloatList(floats)
-            base64 != null -> visitor.visitBase64String(base64)
+            floats != null -> visitor.visitFloats(floats)
+            base64 != null -> visitor.visitBase64(base64)
             else -> visitor.unknown(_json)
         }
 
@@ -101,9 +101,9 @@ private constructor(
     fun validate(): EmbeddingValue {
         accept(
             object : Visitor<Unit> {
-                override fun visitFloatList(floatList: List<Float>) {}
+                override fun visitFloats(floats: List<Float>) {}
 
-                override fun visitBase64String(base64String: String) {}
+                override fun visitBase64(base64: String) {}
             }
         )
         return this // Return this instance if validation succeeds
@@ -142,19 +142,19 @@ private constructor(
          * @throws OpenAIInvalidDataException if validation fails
          */
         @JvmStatic
-        fun ofFloatList(floats: List<Float>): EmbeddingValue {
+        fun ofFloats(floats: List<Float>): EmbeddingValue {
             return EmbeddingValue(floats = floats.toList()).apply { validate() }
         }
 
         /**
          * Creates an EmbeddingValue from a base64-encoded string.
          *
-         * @param base64String the base64-encoded string
+         * @param base64 the base64-encoded string
          * @return a new immutable EmbeddingValue instance
          * @throws OpenAIInvalidDataException if validation fails
          */
         @JvmStatic
-        fun ofBase64String(base64: String): EmbeddingValue {
+        fun ofBase64(base64: String): EmbeddingValue {
             return EmbeddingValue(base64 = base64).apply { validate() }
         }
 
@@ -162,7 +162,7 @@ private constructor(
          * Decodes a base64 string to a list of floats. Assumes the base64 string represents an
          * array of 32-bit IEEE 754 floats in little-endian format.
          */
-        private fun decodeBase64ToFloatList(base64: String): List<Float> {
+        private fun decodeBase64ToFloats(base64: String): List<Float> {
             return Base64.getDecoder().decode(base64).let { bytes ->
                 ByteBuffer.wrap(bytes).asFloatBuffer().let { buffer ->
                     (0 until buffer.remaining()).map { buffer.get() }
@@ -174,7 +174,7 @@ private constructor(
          * Encodes a list of floats to a base64 string. Encodes the floats as an array of 32-bit
          * IEEE 754 floats in little-endian format.
          */
-        private fun encodeFloatListToBase64(floats: List<Float>): String {
+        private fun encodeFloatsToBase64(floats: List<Float>): String {
             return ByteBuffer.allocate(floats.size * 4)
                 .apply { floats.forEach { putFloat(it) } }
                 .array()
@@ -184,9 +184,9 @@ private constructor(
 
     /** Visitor interface for handling different types of embedding data. */
     interface Visitor<out T> {
-        fun visitFloatList(floats: List<Float>): T
+        fun visitFloats(floats: List<Float>): T
 
-        fun visitBase64String(base64: String): T
+        fun visitBase64(base64: String): T
 
         fun unknown(json: JsonValue?): T {
             throw OpenAIInvalidDataException("Unknown EmbeddingValue: $json")

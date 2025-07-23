@@ -25,29 +25,29 @@ class EmbeddingValueIntegrationTest {
         val floats = listOf(1.0f, 2.0f, 3.0f, 4.0f)
 
         // Create EmbeddingValue from Float array
-        val embeddingFromFloat = EmbeddingValue.ofFloatList(floats)
-        assertThat(embeddingFromFloat.isFloatList())
+        val embeddingFromFloat = EmbeddingValue.ofFloats(floats)
+        assertThat(embeddingFromFloat.isFloats())
             .describedAs("EmbeddingValue created from Float array must be in Float format")
             .isTrue()
-        assertThat(embeddingFromFloat.asFloatList())
+        assertThat(embeddingFromFloat.asFloats())
             .describedAs("Float array contents must match")
             .isEqualTo(floats)
 
         // Test conversion to Base64
-        val base64 = embeddingFromFloat.asBase64String()
+        val base64 = embeddingFromFloat.asBase64()
         assertThat(base64).describedAs("Base64 string must not be empty").isNotEmpty()
 
         // Create EmbeddingValue from Base64 string
-        val embeddingFromBase64 = EmbeddingValue.ofBase64String(base64)
-        assertThat(embeddingFromBase64.isBase64String())
+        val embeddingFromBase64 = EmbeddingValue.ofBase64(base64)
+        assertThat(embeddingFromBase64.isBase64())
             .describedAs("EmbeddingValue created from Base64 string must be in Base64 format")
             .isTrue()
-        assertThat(embeddingFromBase64.base64String())
+        assertThat(embeddingFromBase64.base64())
             .describedAs("Base64 string contents must match")
             .isEqualTo(base64)
 
         // Test auto-decode: Base64 → List<Float>
-        val decodedFloats = embeddingFromBase64.asFloatList()
+        val decodedFloats = embeddingFromBase64.asFloats()
         assertThat(decodedFloats)
             .describedAs("Decoded Float array must match the original array")
             .isEqualTo(floats)
@@ -126,7 +126,7 @@ class EmbeddingValueIntegrationTest {
     fun testEmbeddingValueValidation() {
         // Test validation success with valid data
         val validFloats = listOf(1.0f, 2.0f, 3.0f)
-        val validEmbedding = EmbeddingValue.ofFloatList(validFloats)
+        val validEmbedding = EmbeddingValue.ofFloats(validFloats)
 
         assertThat(validEmbedding.validate())
             .describedAs("Validation with valid data must succeed")
@@ -143,15 +143,15 @@ class EmbeddingValueIntegrationTest {
     @DisplayName("Test EmbeddingValue visitor pattern")
     fun testEmbeddingValueVisitorPattern() {
         val floats = listOf(1.0f, 2.0f, 3.0f)
-        val embeddingFromFloat = EmbeddingValue.ofFloatList(floats)
+        val embeddingFromFloat = EmbeddingValue.ofFloats(floats)
 
         // Visitor for Float array case
         val floatResult =
             embeddingFromFloat.accept(
                 object : EmbeddingValue.Visitor<String> {
-                    override fun visitFloatList(floats: List<Float>): String = "float_visited"
+                    override fun visitFloats(floats: List<Float>): String = "float_visited"
 
-                    override fun visitBase64String(base64: String): String = "base64_visited"
+                    override fun visitBase64(base64: String): String = "base64_visited"
 
                     override fun unknown(json: com.openai.core.JsonValue?): String =
                         "unknown_visited"
@@ -159,19 +159,19 @@ class EmbeddingValueIntegrationTest {
             )
 
         assertThat(floatResult)
-            .describedAs("For Float array case, visitFloatList must be called")
+            .describedAs("For Float array case, visitFloats must be called")
             .isEqualTo("float_visited")
 
         // Visitor for Base64 case
-        val base64 = embeddingFromFloat.asBase64String()
-        val embeddingFromBase64 = EmbeddingValue.ofBase64String(base64)
+        val base64 = embeddingFromFloat.asBase64()
+        val embeddingFromBase64 = EmbeddingValue.ofBase64(base64)
 
         val base64Result =
             embeddingFromBase64.accept(
                 object : EmbeddingValue.Visitor<String> {
-                    override fun visitFloatList(floats: List<Float>): String = "float_visited"
+                    override fun visitFloats(floats: List<Float>): String = "float_visited"
 
-                    override fun visitBase64String(base64String: String): String = "base64_visited"
+                    override fun visitBase64(base64: String): String = "base64_visited"
 
                     override fun unknown(json: com.openai.core.JsonValue?): String =
                         "unknown_visited"
@@ -179,7 +179,7 @@ class EmbeddingValueIntegrationTest {
             )
 
         assertThat(base64Result)
-            .describedAs("For Base64 string case, visitBase64String must be called")
+            .describedAs("For Base64 string case, visitBase64 must be called")
             .isEqualTo("base64_visited")
     }
 }

@@ -56,9 +56,7 @@ private constructor(
     fun embedding(): List<Float> =
         when {
             embeddingValue != null ->
-                embeddingValue
-                    .getRequired("embedding")
-                    .asFloatList() // Base64→Float auto conversion
+                embeddingValue.getRequired("embedding").asFloats() // Base64→Float auto conversion
             !embedding.isMissing() ->
                 embedding.getRequired("embedding") // Original Float format data
             else -> throw OpenAIInvalidDataException("Embedding data is missing")
@@ -75,7 +73,7 @@ private constructor(
     fun embeddingValue(): EmbeddingValue =
         when {
             embeddingValue != null -> embeddingValue.getRequired("embedding")
-            !embedding.isMissing() -> EmbeddingValue.ofFloatList(embedding.getRequired("embedding"))
+            !embedding.isMissing() -> EmbeddingValue.ofFloats(embedding.getRequired("embedding"))
             else -> throw OpenAIInvalidDataException("Embedding data is missing")
         }
 
@@ -111,7 +109,7 @@ private constructor(
         when {
             embeddingValue != null -> embeddingValue
             !embedding.isMissing() ->
-                JsonField.of(EmbeddingValue.ofFloatList(embedding.getRequired("embedding")))
+                JsonField.of(EmbeddingValue.ofFloats(embedding.getRequired("embedding")))
             else -> JsonMissing.of()
         }
 
