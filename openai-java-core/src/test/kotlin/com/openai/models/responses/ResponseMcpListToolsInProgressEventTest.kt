@@ -12,8 +12,14 @@ internal class ResponseMcpListToolsInProgressEventTest {
     @Test
     fun create() {
         val responseMcpListToolsInProgressEvent =
-            ResponseMcpListToolsInProgressEvent.builder().sequenceNumber(0L).build()
+            ResponseMcpListToolsInProgressEvent.builder()
+                .itemId("item_id")
+                .outputIndex(0L)
+                .sequenceNumber(0L)
+                .build()
 
+        assertThat(responseMcpListToolsInProgressEvent.itemId()).isEqualTo("item_id")
+        assertThat(responseMcpListToolsInProgressEvent.outputIndex()).isEqualTo(0L)
         assertThat(responseMcpListToolsInProgressEvent.sequenceNumber()).isEqualTo(0L)
     }
 
@@ -21,7 +27,11 @@ internal class ResponseMcpListToolsInProgressEventTest {
     fun roundtrip() {
         val jsonMapper = jsonMapper()
         val responseMcpListToolsInProgressEvent =
-            ResponseMcpListToolsInProgressEvent.builder().sequenceNumber(0L).build()
+            ResponseMcpListToolsInProgressEvent.builder()
+                .itemId("item_id")
+                .outputIndex(0L)
+                .sequenceNumber(0L)
+                .build()
 
         val roundtrippedResponseMcpListToolsInProgressEvent =
             jsonMapper.readValue(

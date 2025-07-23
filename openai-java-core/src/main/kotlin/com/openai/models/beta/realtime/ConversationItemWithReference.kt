@@ -25,7 +25,7 @@ private constructor(
     private val id: JsonField<String>,
     private val arguments: JsonField<String>,
     private val callId: JsonField<String>,
-    private val content: JsonField<List<ConversationItemContent>>,
+    private val content: JsonField<List<Content>>,
     private val name: JsonField<String>,
     private val object_: JsonField<Object>,
     private val output: JsonField<String>,
@@ -42,7 +42,7 @@ private constructor(
         @JsonProperty("call_id") @ExcludeMissing callId: JsonField<String> = JsonMissing.of(),
         @JsonProperty("content")
         @ExcludeMissing
-        content: JsonField<List<ConversationItemContent>> = JsonMissing.of(),
+        content: JsonField<List<Content>> = JsonMissing.of(),
         @JsonProperty("name") @ExcludeMissing name: JsonField<String> = JsonMissing.of(),
         @JsonProperty("object") @ExcludeMissing object_: JsonField<Object> = JsonMissing.of(),
         @JsonProperty("output") @ExcludeMissing output: JsonField<String> = JsonMissing.of(),
@@ -103,7 +103,7 @@ private constructor(
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
      */
-    fun content(): Optional<List<ConversationItemContent>> = content.getOptional("content")
+    fun content(): Optional<List<Content>> = content.getOptional("content")
 
     /**
      * The name of the function being called (for `function_call` items).
@@ -139,8 +139,9 @@ private constructor(
     fun role(): Optional<Role> = role.getOptional("role")
 
     /**
-     * The status of the item (`completed`, `incomplete`). These have no effect on the conversation,
-     * but are accepted for consistency with the `conversation.item.created` event.
+     * The status of the item (`completed`, `incomplete`, `in_progress`). These have no effect on
+     * the conversation, but are accepted for consistency with the `conversation.item.created`
+     * event.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -181,9 +182,7 @@ private constructor(
      *
      * Unlike [content], this method doesn't throw if the JSON field has an unexpected type.
      */
-    @JsonProperty("content")
-    @ExcludeMissing
-    fun _content(): JsonField<List<ConversationItemContent>> = content
+    @JsonProperty("content") @ExcludeMissing fun _content(): JsonField<List<Content>> = content
 
     /**
      * Returns the raw JSON value of [name].
@@ -254,7 +253,7 @@ private constructor(
         private var id: JsonField<String> = JsonMissing.of()
         private var arguments: JsonField<String> = JsonMissing.of()
         private var callId: JsonField<String> = JsonMissing.of()
-        private var content: JsonField<MutableList<ConversationItemContent>>? = null
+        private var content: JsonField<MutableList<Content>>? = null
         private var name: JsonField<String> = JsonMissing.of()
         private var object_: JsonField<Object> = JsonMissing.of()
         private var output: JsonField<String> = JsonMissing.of()
@@ -329,25 +328,25 @@ private constructor(
          * - Message items of role `user` support `input_text` and `input_audio` content
          * - Message items of role `assistant` support `text` content.
          */
-        fun content(content: List<ConversationItemContent>) = content(JsonField.of(content))
+        fun content(content: List<Content>) = content(JsonField.of(content))
 
         /**
          * Sets [Builder.content] to an arbitrary JSON value.
          *
-         * You should usually call [Builder.content] with a well-typed
-         * `List<ConversationItemContent>` value instead. This method is primarily for setting the
-         * field to an undocumented or not yet supported value.
+         * You should usually call [Builder.content] with a well-typed `List<Content>` value
+         * instead. This method is primarily for setting the field to an undocumented or not yet
+         * supported value.
          */
-        fun content(content: JsonField<List<ConversationItemContent>>) = apply {
+        fun content(content: JsonField<List<Content>>) = apply {
             this.content = content.map { it.toMutableList() }
         }
 
         /**
-         * Adds a single [ConversationItemContent] to [Builder.content].
+         * Adds a single [Content] to [Builder.content].
          *
          * @throws IllegalStateException if the field was previously set to a non-list.
          */
-        fun addContent(content: ConversationItemContent) = apply {
+        fun addContent(content: Content) = apply {
             this.content =
                 (this.content ?: JsonField.of(mutableListOf())).also {
                     checkKnown("content", it).add(content)
@@ -402,9 +401,9 @@ private constructor(
         fun role(role: JsonField<Role>) = apply { this.role = role }
 
         /**
-         * The status of the item (`completed`, `incomplete`). These have no effect on the
-         * conversation, but are accepted for consistency with the `conversation.item.created`
-         * event.
+         * The status of the item (`completed`, `incomplete`, `in_progress`). These have no effect
+         * on the conversation, but are accepted for consistency with the
+         * `conversation.item.created` event.
          */
         fun status(status: Status) = status(JsonField.of(status))
 
@@ -515,6 +514,430 @@ private constructor(
             (role.asKnown().getOrNull()?.validity() ?: 0) +
             (status.asKnown().getOrNull()?.validity() ?: 0) +
             (type.asKnown().getOrNull()?.validity() ?: 0)
+
+    class Content
+    private constructor(
+        private val id: JsonField<String>,
+        private val audio: JsonField<String>,
+        private val text: JsonField<String>,
+        private val transcript: JsonField<String>,
+        private val type: JsonField<Type>,
+        private val additionalProperties: MutableMap<String, JsonValue>,
+    ) {
+
+        @JsonCreator
+        private constructor(
+            @JsonProperty("id") @ExcludeMissing id: JsonField<String> = JsonMissing.of(),
+            @JsonProperty("audio") @ExcludeMissing audio: JsonField<String> = JsonMissing.of(),
+            @JsonProperty("text") @ExcludeMissing text: JsonField<String> = JsonMissing.of(),
+            @JsonProperty("transcript")
+            @ExcludeMissing
+            transcript: JsonField<String> = JsonMissing.of(),
+            @JsonProperty("type") @ExcludeMissing type: JsonField<Type> = JsonMissing.of(),
+        ) : this(id, audio, text, transcript, type, mutableMapOf())
+
+        /**
+         * ID of a previous conversation item to reference (for `item_reference` content types in
+         * `response.create` events). These can reference both client and server created items.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun id(): Optional<String> = id.getOptional("id")
+
+        /**
+         * Base64-encoded audio bytes, used for `input_audio` content type.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun audio(): Optional<String> = audio.getOptional("audio")
+
+        /**
+         * The text content, used for `input_text` and `text` content types.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun text(): Optional<String> = text.getOptional("text")
+
+        /**
+         * The transcript of the audio, used for `input_audio` content type.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun transcript(): Optional<String> = transcript.getOptional("transcript")
+
+        /**
+         * The content type (`input_text`, `input_audio`, `item_reference`, `text`).
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun type(): Optional<Type> = type.getOptional("type")
+
+        /**
+         * Returns the raw JSON value of [id].
+         *
+         * Unlike [id], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("id") @ExcludeMissing fun _id(): JsonField<String> = id
+
+        /**
+         * Returns the raw JSON value of [audio].
+         *
+         * Unlike [audio], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("audio") @ExcludeMissing fun _audio(): JsonField<String> = audio
+
+        /**
+         * Returns the raw JSON value of [text].
+         *
+         * Unlike [text], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("text") @ExcludeMissing fun _text(): JsonField<String> = text
+
+        /**
+         * Returns the raw JSON value of [transcript].
+         *
+         * Unlike [transcript], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("transcript")
+        @ExcludeMissing
+        fun _transcript(): JsonField<String> = transcript
+
+        /**
+         * Returns the raw JSON value of [type].
+         *
+         * Unlike [type], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<Type> = type
+
+        @JsonAnySetter
+        private fun putAdditionalProperty(key: String, value: JsonValue) {
+            additionalProperties.put(key, value)
+        }
+
+        @JsonAnyGetter
+        @ExcludeMissing
+        fun _additionalProperties(): Map<String, JsonValue> =
+            Collections.unmodifiableMap(additionalProperties)
+
+        fun toBuilder() = Builder().from(this)
+
+        companion object {
+
+            /** Returns a mutable builder for constructing an instance of [Content]. */
+            @JvmStatic fun builder() = Builder()
+        }
+
+        /** A builder for [Content]. */
+        class Builder internal constructor() {
+
+            private var id: JsonField<String> = JsonMissing.of()
+            private var audio: JsonField<String> = JsonMissing.of()
+            private var text: JsonField<String> = JsonMissing.of()
+            private var transcript: JsonField<String> = JsonMissing.of()
+            private var type: JsonField<Type> = JsonMissing.of()
+            private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
+
+            @JvmSynthetic
+            internal fun from(content: Content) = apply {
+                id = content.id
+                audio = content.audio
+                text = content.text
+                transcript = content.transcript
+                type = content.type
+                additionalProperties = content.additionalProperties.toMutableMap()
+            }
+
+            /**
+             * ID of a previous conversation item to reference (for `item_reference` content types
+             * in `response.create` events). These can reference both client and server created
+             * items.
+             */
+            fun id(id: String) = id(JsonField.of(id))
+
+            /**
+             * Sets [Builder.id] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.id] with a well-typed [String] value instead. This
+             * method is primarily for setting the field to an undocumented or not yet supported
+             * value.
+             */
+            fun id(id: JsonField<String>) = apply { this.id = id }
+
+            /** Base64-encoded audio bytes, used for `input_audio` content type. */
+            fun audio(audio: String) = audio(JsonField.of(audio))
+
+            /**
+             * Sets [Builder.audio] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.audio] with a well-typed [String] value instead.
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun audio(audio: JsonField<String>) = apply { this.audio = audio }
+
+            /** The text content, used for `input_text` and `text` content types. */
+            fun text(text: String) = text(JsonField.of(text))
+
+            /**
+             * Sets [Builder.text] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.text] with a well-typed [String] value instead. This
+             * method is primarily for setting the field to an undocumented or not yet supported
+             * value.
+             */
+            fun text(text: JsonField<String>) = apply { this.text = text }
+
+            /** The transcript of the audio, used for `input_audio` content type. */
+            fun transcript(transcript: String) = transcript(JsonField.of(transcript))
+
+            /**
+             * Sets [Builder.transcript] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.transcript] with a well-typed [String] value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun transcript(transcript: JsonField<String>) = apply { this.transcript = transcript }
+
+            /** The content type (`input_text`, `input_audio`, `item_reference`, `text`). */
+            fun type(type: Type) = type(JsonField.of(type))
+
+            /**
+             * Sets [Builder.type] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.type] with a well-typed [Type] value instead. This
+             * method is primarily for setting the field to an undocumented or not yet supported
+             * value.
+             */
+            fun type(type: JsonField<Type>) = apply { this.type = type }
+
+            fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                this.additionalProperties.clear()
+                putAllAdditionalProperties(additionalProperties)
+            }
+
+            fun putAdditionalProperty(key: String, value: JsonValue) = apply {
+                additionalProperties.put(key, value)
+            }
+
+            fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                this.additionalProperties.putAll(additionalProperties)
+            }
+
+            fun removeAdditionalProperty(key: String) = apply { additionalProperties.remove(key) }
+
+            fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                keys.forEach(::removeAdditionalProperty)
+            }
+
+            /**
+             * Returns an immutable instance of [Content].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             */
+            fun build(): Content =
+                Content(id, audio, text, transcript, type, additionalProperties.toMutableMap())
+        }
+
+        private var validated: Boolean = false
+
+        fun validate(): Content = apply {
+            if (validated) {
+                return@apply
+            }
+
+            id()
+            audio()
+            text()
+            transcript()
+            type().ifPresent { it.validate() }
+            validated = true
+        }
+
+        fun isValid(): Boolean =
+            try {
+                validate()
+                true
+            } catch (e: OpenAIInvalidDataException) {
+                false
+            }
+
+        /**
+         * Returns a score indicating how many valid values are contained in this object
+         * recursively.
+         *
+         * Used for best match union deserialization.
+         */
+        @JvmSynthetic
+        internal fun validity(): Int =
+            (if (id.asKnown().isPresent) 1 else 0) +
+                (if (audio.asKnown().isPresent) 1 else 0) +
+                (if (text.asKnown().isPresent) 1 else 0) +
+                (if (transcript.asKnown().isPresent) 1 else 0) +
+                (type.asKnown().getOrNull()?.validity() ?: 0)
+
+        /** The content type (`input_text`, `input_audio`, `item_reference`, `text`). */
+        class Type @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
+
+            /**
+             * Returns this class instance's raw value.
+             *
+             * This is usually only useful if this instance was deserialized from data that doesn't
+             * match any known member, and you want to know that value. For example, if the SDK is
+             * on an older version than the API, then the API may respond with new members that the
+             * SDK is unaware of.
+             */
+            @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
+
+            companion object {
+
+                @JvmField val INPUT_TEXT = of("input_text")
+
+                @JvmField val INPUT_AUDIO = of("input_audio")
+
+                @JvmField val ITEM_REFERENCE = of("item_reference")
+
+                @JvmField val TEXT = of("text")
+
+                @JvmStatic fun of(value: String) = Type(JsonField.of(value))
+            }
+
+            /** An enum containing [Type]'s known values. */
+            enum class Known {
+                INPUT_TEXT,
+                INPUT_AUDIO,
+                ITEM_REFERENCE,
+                TEXT,
+            }
+
+            /**
+             * An enum containing [Type]'s known values, as well as an [_UNKNOWN] member.
+             *
+             * An instance of [Type] can contain an unknown value in a couple of cases:
+             * - It was deserialized from data that doesn't match any known member. For example, if
+             *   the SDK is on an older version than the API, then the API may respond with new
+             *   members that the SDK is unaware of.
+             * - It was constructed with an arbitrary value using the [of] method.
+             */
+            enum class Value {
+                INPUT_TEXT,
+                INPUT_AUDIO,
+                ITEM_REFERENCE,
+                TEXT,
+                /** An enum member indicating that [Type] was instantiated with an unknown value. */
+                _UNKNOWN,
+            }
+
+            /**
+             * Returns an enum member corresponding to this class instance's value, or
+             * [Value._UNKNOWN] if the class was instantiated with an unknown value.
+             *
+             * Use the [known] method instead if you're certain the value is always known or if you
+             * want to throw for the unknown case.
+             */
+            fun value(): Value =
+                when (this) {
+                    INPUT_TEXT -> Value.INPUT_TEXT
+                    INPUT_AUDIO -> Value.INPUT_AUDIO
+                    ITEM_REFERENCE -> Value.ITEM_REFERENCE
+                    TEXT -> Value.TEXT
+                    else -> Value._UNKNOWN
+                }
+
+            /**
+             * Returns an enum member corresponding to this class instance's value.
+             *
+             * Use the [value] method instead if you're uncertain the value is always known and
+             * don't want to throw for the unknown case.
+             *
+             * @throws OpenAIInvalidDataException if this class instance's value is a not a known
+             *   member.
+             */
+            fun known(): Known =
+                when (this) {
+                    INPUT_TEXT -> Known.INPUT_TEXT
+                    INPUT_AUDIO -> Known.INPUT_AUDIO
+                    ITEM_REFERENCE -> Known.ITEM_REFERENCE
+                    TEXT -> Known.TEXT
+                    else -> throw OpenAIInvalidDataException("Unknown Type: $value")
+                }
+
+            /**
+             * Returns this class instance's primitive wire representation.
+             *
+             * This differs from the [toString] method because that method is primarily for
+             * debugging and generally doesn't throw.
+             *
+             * @throws OpenAIInvalidDataException if this class instance's value does not have the
+             *   expected primitive type.
+             */
+            fun asString(): String =
+                _value().asString().orElseThrow {
+                    OpenAIInvalidDataException("Value is not a String")
+                }
+
+            private var validated: Boolean = false
+
+            fun validate(): Type = apply {
+                if (validated) {
+                    return@apply
+                }
+
+                known()
+                validated = true
+            }
+
+            fun isValid(): Boolean =
+                try {
+                    validate()
+                    true
+                } catch (e: OpenAIInvalidDataException) {
+                    false
+                }
+
+            /**
+             * Returns a score indicating how many valid values are contained in this object
+             * recursively.
+             *
+             * Used for best match union deserialization.
+             */
+            @JvmSynthetic internal fun validity(): Int = if (value() == Value._UNKNOWN) 0 else 1
+
+            override fun equals(other: Any?): Boolean {
+                if (this === other) {
+                    return true
+                }
+
+                return /* spotless:off */ other is Type && value == other.value /* spotless:on */
+            }
+
+            override fun hashCode() = value.hashCode()
+
+            override fun toString() = value.toString()
+        }
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) {
+                return true
+            }
+
+            return /* spotless:off */ other is Content && id == other.id && audio == other.audio && text == other.text && transcript == other.transcript && type == other.type && additionalProperties == other.additionalProperties /* spotless:on */
+        }
+
+        /* spotless:off */
+        private val hashCode: Int by lazy { Objects.hash(id, audio, text, transcript, type, additionalProperties) }
+        /* spotless:on */
+
+        override fun hashCode(): Int = hashCode
+
+        override fun toString() =
+            "Content{id=$id, audio=$audio, text=$text, transcript=$transcript, type=$type, additionalProperties=$additionalProperties}"
+    }
 
     /** Identifier for the API object being returned - always `realtime.item`. */
     class Object @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
@@ -772,8 +1195,9 @@ private constructor(
     }
 
     /**
-     * The status of the item (`completed`, `incomplete`). These have no effect on the conversation,
-     * but are accepted for consistency with the `conversation.item.created` event.
+     * The status of the item (`completed`, `incomplete`, `in_progress`). These have no effect on
+     * the conversation, but are accepted for consistency with the `conversation.item.created`
+     * event.
      */
     class Status @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
 
@@ -793,6 +1217,8 @@ private constructor(
 
             @JvmField val INCOMPLETE = of("incomplete")
 
+            @JvmField val IN_PROGRESS = of("in_progress")
+
             @JvmStatic fun of(value: String) = Status(JsonField.of(value))
         }
 
@@ -800,6 +1226,7 @@ private constructor(
         enum class Known {
             COMPLETED,
             INCOMPLETE,
+            IN_PROGRESS,
         }
 
         /**
@@ -814,6 +1241,7 @@ private constructor(
         enum class Value {
             COMPLETED,
             INCOMPLETE,
+            IN_PROGRESS,
             /** An enum member indicating that [Status] was instantiated with an unknown value. */
             _UNKNOWN,
         }
@@ -829,6 +1257,7 @@ private constructor(
             when (this) {
                 COMPLETED -> Value.COMPLETED
                 INCOMPLETE -> Value.INCOMPLETE
+                IN_PROGRESS -> Value.IN_PROGRESS
                 else -> Value._UNKNOWN
             }
 
@@ -845,6 +1274,7 @@ private constructor(
             when (this) {
                 COMPLETED -> Known.COMPLETED
                 INCOMPLETE -> Known.INCOMPLETE
+                IN_PROGRESS -> Known.IN_PROGRESS
                 else -> throw OpenAIInvalidDataException("Unknown Status: $value")
             }
 

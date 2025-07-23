@@ -18,7 +18,7 @@ import java.util.Objects
 /** Emitted when the arguments for an MCP tool call are finalized. */
 class ResponseMcpCallArgumentsDoneEvent
 private constructor(
-    private val arguments: JsonValue,
+    private val arguments: JsonField<String>,
     private val itemId: JsonField<String>,
     private val outputIndex: JsonField<Long>,
     private val sequenceNumber: JsonField<Long>,
@@ -28,7 +28,7 @@ private constructor(
 
     @JsonCreator
     private constructor(
-        @JsonProperty("arguments") @ExcludeMissing arguments: JsonValue = JsonMissing.of(),
+        @JsonProperty("arguments") @ExcludeMissing arguments: JsonField<String> = JsonMissing.of(),
         @JsonProperty("item_id") @ExcludeMissing itemId: JsonField<String> = JsonMissing.of(),
         @JsonProperty("output_index")
         @ExcludeMissing
@@ -39,8 +39,13 @@ private constructor(
         @JsonProperty("type") @ExcludeMissing type: JsonValue = JsonMissing.of(),
     ) : this(arguments, itemId, outputIndex, sequenceNumber, type, mutableMapOf())
 
-    /** The finalized arguments for the MCP tool call. */
-    @JsonProperty("arguments") @ExcludeMissing fun _arguments(): JsonValue = arguments
+    /**
+     * A JSON string containing the finalized arguments for the MCP tool call.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     */
+    fun arguments(): String = arguments.getRequired("arguments")
 
     /**
      * The unique identifier of the MCP tool call item being processed.
@@ -67,17 +72,24 @@ private constructor(
     fun sequenceNumber(): Long = sequenceNumber.getRequired("sequence_number")
 
     /**
-     * The type of the event. Always 'response.mcp_call.arguments_done'.
+     * The type of the event. Always 'response.mcp_call_arguments.done'.
      *
      * Expected to always return the following:
      * ```java
-     * JsonValue.from("response.mcp_call.arguments_done")
+     * JsonValue.from("response.mcp_call_arguments.done")
      * ```
      *
      * However, this method can be useful for debugging and logging (e.g. if the server responded
      * with an unexpected value).
      */
     @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
+
+    /**
+     * Returns the raw JSON value of [arguments].
+     *
+     * Unlike [arguments], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    @JsonProperty("arguments") @ExcludeMissing fun _arguments(): JsonField<String> = arguments
 
     /**
      * Returns the raw JSON value of [itemId].
@@ -134,11 +146,11 @@ private constructor(
     /** A builder for [ResponseMcpCallArgumentsDoneEvent]. */
     class Builder internal constructor() {
 
-        private var arguments: JsonValue? = null
+        private var arguments: JsonField<String>? = null
         private var itemId: JsonField<String>? = null
         private var outputIndex: JsonField<Long>? = null
         private var sequenceNumber: JsonField<Long>? = null
-        private var type: JsonValue = JsonValue.from("response.mcp_call.arguments_done")
+        private var type: JsonValue = JsonValue.from("response.mcp_call_arguments.done")
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
         @JvmSynthetic
@@ -153,8 +165,17 @@ private constructor(
                     responseMcpCallArgumentsDoneEvent.additionalProperties.toMutableMap()
             }
 
-        /** The finalized arguments for the MCP tool call. */
-        fun arguments(arguments: JsonValue) = apply { this.arguments = arguments }
+        /** A JSON string containing the finalized arguments for the MCP tool call. */
+        fun arguments(arguments: String) = arguments(JsonField.of(arguments))
+
+        /**
+         * Sets [Builder.arguments] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.arguments] with a well-typed [String] value instead.
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
+         */
+        fun arguments(arguments: JsonField<String>) = apply { this.arguments = arguments }
 
         /** The unique identifier of the MCP tool call item being processed. */
         fun itemId(itemId: String) = itemId(JsonField.of(itemId))
@@ -199,7 +220,7 @@ private constructor(
          * It is usually unnecessary to call this method because the field defaults to the
          * following:
          * ```java
-         * JsonValue.from("response.mcp_call.arguments_done")
+         * JsonValue.from("response.mcp_call_arguments.done")
          * ```
          *
          * This method is primarily for setting the field to an undocumented or not yet supported
@@ -259,11 +280,12 @@ private constructor(
             return@apply
         }
 
+        arguments()
         itemId()
         outputIndex()
         sequenceNumber()
         _type().let {
-            if (it != JsonValue.from("response.mcp_call.arguments_done")) {
+            if (it != JsonValue.from("response.mcp_call_arguments.done")) {
                 throw OpenAIInvalidDataException("'type' is invalid, received $it")
             }
         }
@@ -285,10 +307,11 @@ private constructor(
      */
     @JvmSynthetic
     internal fun validity(): Int =
-        (if (itemId.asKnown().isPresent) 1 else 0) +
+        (if (arguments.asKnown().isPresent) 1 else 0) +
+            (if (itemId.asKnown().isPresent) 1 else 0) +
             (if (outputIndex.asKnown().isPresent) 1 else 0) +
             (if (sequenceNumber.asKnown().isPresent) 1 else 0) +
-            type.let { if (it == JsonValue.from("response.mcp_call.arguments_done")) 1 else 0 }
+            type.let { if (it == JsonValue.from("response.mcp_call_arguments.done")) 1 else 0 }
 
     override fun equals(other: Any?): Boolean {
         if (this === other) {

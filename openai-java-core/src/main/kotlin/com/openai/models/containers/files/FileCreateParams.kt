@@ -2,8 +2,11 @@
 
 package com.openai.models.containers.files
 
+import com.fasterxml.jackson.annotation.JsonAnyGetter
+import com.fasterxml.jackson.annotation.JsonAnySetter
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.openai.core.ExcludeMissing
+import com.openai.core.JsonValue
 import com.openai.core.MultipartField
 import com.openai.core.Params
 import com.openai.core.http.Headers
@@ -12,6 +15,7 @@ import com.openai.core.toImmutable
 import com.openai.errors.OpenAIInvalidDataException
 import java.io.InputStream
 import java.nio.file.Path
+import java.util.Collections
 import java.util.Objects
 import java.util.Optional
 import kotlin.io.path.inputStream
@@ -63,6 +67,8 @@ private constructor(
      * Unlike [fileId], this method doesn't throw if the multipart field has an unexpected type.
      */
     fun _fileId(): MultipartField<String> = body._fileId()
+
+    fun _additionalBodyProperties(): Map<String, JsonValue> = body._additionalProperties()
 
     fun _additionalHeaders(): Headers = additionalHeaders
 
@@ -137,6 +143,25 @@ private constructor(
          * method is primarily for setting the field to an undocumented or not yet supported value.
          */
         fun fileId(fileId: MultipartField<String>) = apply { body.fileId(fileId) }
+
+        fun additionalBodyProperties(additionalBodyProperties: Map<String, JsonValue>) = apply {
+            body.additionalProperties(additionalBodyProperties)
+        }
+
+        fun putAdditionalBodyProperty(key: String, value: JsonValue) = apply {
+            body.putAdditionalProperty(key, value)
+        }
+
+        fun putAllAdditionalBodyProperties(additionalBodyProperties: Map<String, JsonValue>) =
+            apply {
+                body.putAllAdditionalProperties(additionalBodyProperties)
+            }
+
+        fun removeAdditionalBodyProperty(key: String) = apply { body.removeAdditionalProperty(key) }
+
+        fun removeAllAdditionalBodyProperties(keys: Set<String>) = apply {
+            body.removeAllAdditionalProperties(keys)
+        }
 
         fun additionalHeaders(additionalHeaders: Headers) = apply {
             this.additionalHeaders.clear()
@@ -251,7 +276,9 @@ private constructor(
     }
 
     fun _body(): Map<String, MultipartField<*>> =
-        mapOf("file" to _file(), "file_id" to _fileId()).toImmutable()
+        (mapOf("file" to _file(), "file_id" to _fileId()) +
+                _additionalBodyProperties().mapValues { MultipartField.of(it) })
+            .toImmutable()
 
     fun _pathParam(index: Int): String =
         when (index) {
@@ -267,6 +294,7 @@ private constructor(
     private constructor(
         private val file: MultipartField<InputStream>,
         private val fileId: MultipartField<String>,
+        private val additionalProperties: MutableMap<String, JsonValue>,
     ) {
 
         /**
@@ -299,6 +327,16 @@ private constructor(
          */
         @JsonProperty("file_id") @ExcludeMissing fun _fileId(): MultipartField<String> = fileId
 
+        @JsonAnySetter
+        private fun putAdditionalProperty(key: String, value: JsonValue) {
+            additionalProperties.put(key, value)
+        }
+
+        @JsonAnyGetter
+        @ExcludeMissing
+        fun _additionalProperties(): Map<String, JsonValue> =
+            Collections.unmodifiableMap(additionalProperties)
+
         fun toBuilder() = Builder().from(this)
 
         companion object {
@@ -312,11 +350,13 @@ private constructor(
 
             private var file: MultipartField<InputStream> = MultipartField.of(null)
             private var fileId: MultipartField<String> = MultipartField.of(null)
+            private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
             @JvmSynthetic
             internal fun from(body: Body) = apply {
                 file = body.file
                 fileId = body.fileId
+                additionalProperties = body.additionalProperties.toMutableMap()
             }
 
             /** The File object (not file name) to be uploaded. */
@@ -355,12 +395,31 @@ private constructor(
              */
             fun fileId(fileId: MultipartField<String>) = apply { this.fileId = fileId }
 
+            fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                this.additionalProperties.clear()
+                putAllAdditionalProperties(additionalProperties)
+            }
+
+            fun putAdditionalProperty(key: String, value: JsonValue) = apply {
+                additionalProperties.put(key, value)
+            }
+
+            fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                this.additionalProperties.putAll(additionalProperties)
+            }
+
+            fun removeAdditionalProperty(key: String) = apply { additionalProperties.remove(key) }
+
+            fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                keys.forEach(::removeAdditionalProperty)
+            }
+
             /**
              * Returns an immutable instance of [Body].
              *
              * Further updates to this [Builder] will not mutate the returned instance.
              */
-            fun build(): Body = Body(file, fileId)
+            fun build(): Body = Body(file, fileId, additionalProperties.toMutableMap())
         }
 
         private var validated: Boolean = false
@@ -388,16 +447,17 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is Body && file == other.file && fileId == other.fileId /* spotless:on */
+            return /* spotless:off */ other is Body && file == other.file && fileId == other.fileId && additionalProperties == other.additionalProperties /* spotless:on */
         }
 
         /* spotless:off */
-        private val hashCode: Int by lazy { Objects.hash(file, fileId) }
+        private val hashCode: Int by lazy { Objects.hash(file, fileId, additionalProperties) }
         /* spotless:on */
 
         override fun hashCode(): Int = hashCode
 
-        override fun toString() = "Body{file=$file, fileId=$fileId}"
+        override fun toString() =
+            "Body{file=$file, fileId=$fileId, additionalProperties=$additionalProperties}"
     }
 
     override fun equals(other: Any?): Boolean {

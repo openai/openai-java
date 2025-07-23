@@ -2,8 +2,8 @@
 
 <!-- x-release-please-start-version -->
 
-[![Maven Central](https://img.shields.io/maven-central/v/com.openai/openai-java)](https://central.sonatype.com/artifact/com.openai/openai-java/2.11.0)
-[![javadoc](https://javadoc.io/badge2/com.openai/openai-java/2.11.0/javadoc.svg)](https://javadoc.io/doc/com.openai/openai-java/2.11.0)
+[![Maven Central](https://img.shields.io/maven-central/v/com.openai/openai-java)](https://central.sonatype.com/artifact/com.openai/openai-java/2.18.0)
+[![javadoc](https://javadoc.io/badge2/com.openai/openai-java/2.18.0/javadoc.svg)](https://javadoc.io/doc/com.openai/openai-java/2.18.0)
 
 <!-- x-release-please-end -->
 
@@ -11,7 +11,7 @@ The OpenAI Java SDK provides convenient access to the [OpenAI REST API](https://
 
 <!-- x-release-please-start-version -->
 
-The REST API documentation can be found on [platform.openai.com](https://platform.openai.com/docs). Javadocs are available on [javadoc.io](https://javadoc.io/doc/com.openai/openai-java/2.11.0).
+The REST API documentation can be found on [platform.openai.com](https://platform.openai.com/docs). Javadocs are available on [javadoc.io](https://javadoc.io/doc/com.openai/openai-java/2.18.0).
 
 <!-- x-release-please-end -->
 
@@ -19,10 +19,12 @@ The REST API documentation can be found on [platform.openai.com](https://platfor
 
 <!-- x-release-please-start-version -->
 
+[_Try `openai-java-spring-boot-starter` if you're using Spring Boot!_](#spring-boot)
+
 ### Gradle
 
 ```kotlin
-implementation("com.openai:openai-java:2.11.0")
+implementation("com.openai:openai-java:2.18.0")
 ```
 
 ### Maven
@@ -31,7 +33,7 @@ implementation("com.openai:openai-java:2.11.0")
 <dependency>
   <groupId>com.openai</groupId>
   <artifactId>openai-java</artifactId>
-  <version>2.11.0</version>
+  <version>2.18.0</version>
 </dependency>
 ```
 
@@ -73,7 +75,8 @@ import com.openai.models.ChatModel;
 import com.openai.models.chat.completions.ChatCompletion;
 import com.openai.models.chat.completions.ChatCompletionCreateParams;
 
-// Configures using the `OPENAI_API_KEY`, `OPENAI_ORG_ID`, `OPENAI_PROJECT_ID`, `OPENAI_WEBHOOK_SECRET` and `OPENAI_BASE_URL` environment variables
+// Configures using the `openai.apiKey`, `openai.orgId`, `openai.projectId`, `openai.webhookSecret` and `openai.baseUrl` system properties
+// Or configures using the `OPENAI_API_KEY`, `OPENAI_ORG_ID`, `OPENAI_PROJECT_ID`, `OPENAI_WEBHOOK_SECRET` and `OPENAI_BASE_URL` environment variables
 OpenAIClient client = OpenAIOkHttpClient.fromEnv();
 
 ChatCompletionCreateParams params = ChatCompletionCreateParams.builder()
@@ -85,13 +88,14 @@ ChatCompletion chatCompletion = client.chat().completions().create(params);
 
 ## Client configuration
 
-Configure the client using environment variables:
+Configure the client using system properties or environment variables:
 
 ```java
 import com.openai.client.OpenAIClient;
 import com.openai.client.okhttp.OpenAIOkHttpClient;
 
-// Configures using the `OPENAI_API_KEY`, `OPENAI_ORG_ID`, `OPENAI_PROJECT_ID`, `OPENAI_WEBHOOK_SECRET` and `OPENAI_BASE_URL` environment variables
+// Configures using the `openai.apiKey`, `openai.orgId`, `openai.projectId`, `openai.webhookSecret` and `openai.baseUrl` system properties
+// Or configures using the `OPENAI_API_KEY`, `OPENAI_ORG_ID`, `OPENAI_PROJECT_ID`, `OPENAI_WEBHOOK_SECRET` and `OPENAI_BASE_URL` environment variables
 OpenAIClient client = OpenAIOkHttpClient.fromEnv();
 ```
 
@@ -113,7 +117,8 @@ import com.openai.client.OpenAIClient;
 import com.openai.client.okhttp.OpenAIOkHttpClient;
 
 OpenAIClient client = OpenAIOkHttpClient.builder()
-    // Configures using the `OPENAI_API_KEY`, `OPENAI_ORG_ID`, `OPENAI_PROJECT_ID`, `OPENAI_WEBHOOK_SECRET` and `OPENAI_BASE_URL` environment variables
+    // Configures using the `openai.apiKey`, `openai.orgId`, `openai.projectId`, `openai.webhookSecret` and `openai.baseUrl` system properties
+    Or configures using the `OPENAI_API_KEY`, `OPENAI_ORG_ID`, `OPENAI_PROJECT_ID`, `OPENAI_WEBHOOK_SECRET` and `OPENAI_BASE_URL` environment variables
     .fromEnv()
     .apiKey("My API Key")
     .build();
@@ -121,13 +126,15 @@ OpenAIClient client = OpenAIOkHttpClient.builder()
 
 See this table for the available options:
 
-| Setter          | Environment variable    | Required | Default value                 |
-| --------------- | ----------------------- | -------- | ----------------------------- |
-| `apiKey`        | `OPENAI_API_KEY`        | true     | -                             |
-| `organization`  | `OPENAI_ORG_ID`         | false    | -                             |
-| `project`       | `OPENAI_PROJECT_ID`     | false    | -                             |
-| `webhookSecret` | `OPENAI_WEBHOOK_SECRET` | false    | -                             |
-| `baseUrl`       | `OPENAI_BASE_URL`       | true     | `"https://api.openai.com/v1"` |
+| Setter          | System property        | Environment variable    | Required | Default value                 |
+| --------------- | ---------------------- | ----------------------- | -------- | ----------------------------- |
+| `apiKey`        | `openai.apiKey`        | `OPENAI_API_KEY`        | true     | -                             |
+| `organization`  | `openai.orgId`         | `OPENAI_ORG_ID`         | false    | -                             |
+| `project`       | `openai.projectId`     | `OPENAI_PROJECT_ID`     | false    | -                             |
+| `webhookSecret` | `openai.webhookSecret` | `OPENAI_WEBHOOK_SECRET` | false    | -                             |
+| `baseUrl`       | `openai.baseUrl`       | `OPENAI_BASE_URL`       | true     | `"https://api.openai.com/v1"` |
+
+System properties take precedence over environment variables.
 
 > [!TIP]
 > Don't create more than one client in the same application. Each client has a connection pool and
@@ -174,7 +181,8 @@ import com.openai.models.chat.completions.ChatCompletion;
 import com.openai.models.chat.completions.ChatCompletionCreateParams;
 import java.util.concurrent.CompletableFuture;
 
-// Configures using the `OPENAI_API_KEY`, `OPENAI_ORG_ID`, `OPENAI_PROJECT_ID`, `OPENAI_WEBHOOK_SECRET` and `OPENAI_BASE_URL` environment variables
+// Configures using the `openai.apiKey`, `openai.orgId`, `openai.projectId`, `openai.webhookSecret` and `openai.baseUrl` system properties
+// Or configures using the `OPENAI_API_KEY`, `OPENAI_ORG_ID`, `OPENAI_PROJECT_ID`, `OPENAI_WEBHOOK_SECRET` and `OPENAI_BASE_URL` environment variables
 OpenAIClient client = OpenAIOkHttpClient.fromEnv();
 
 ChatCompletionCreateParams params = ChatCompletionCreateParams.builder()
@@ -194,7 +202,8 @@ import com.openai.models.chat.completions.ChatCompletion;
 import com.openai.models.chat.completions.ChatCompletionCreateParams;
 import java.util.concurrent.CompletableFuture;
 
-// Configures using the `OPENAI_API_KEY`, `OPENAI_ORG_ID`, `OPENAI_PROJECT_ID`, `OPENAI_WEBHOOK_SECRET` and `OPENAI_BASE_URL` environment variables
+// Configures using the `openai.apiKey`, `openai.orgId`, `openai.projectId`, `openai.webhookSecret` and `openai.baseUrl` system properties
+// Or configures using the `OPENAI_API_KEY`, `OPENAI_ORG_ID`, `OPENAI_PROJECT_ID`, `OPENAI_WEBHOOK_SECRET` and `OPENAI_BASE_URL` environment variables
 OpenAIClientAsync client = OpenAIOkHttpClientAsync.fromEnv();
 
 ChatCompletionCreateParams params = ChatCompletionCreateParams.builder()
@@ -348,6 +357,53 @@ client.chat()
         .join();
 
 ChatCompletion chatCompletion = chatCompletionAccumulator.chatCompletion();
+```
+
+The SDK provides conveniences for streamed responses. A
+[`ResponseAccumulator`](openai-java-core/src/main/kotlin/com/openai/helpers/ResponseAccumulator.kt)
+can record the stream of response events as they are processed and accumulate a
+[`Response`](openai-java-core/src/main/kotlin/com/openai/models/responses/Response.kt)
+object similar to that which would have been returned by the non-streaming API.
+
+For a synchronous response add a
+[`Stream.peek()`](https://docs.oracle.com/javase/8/docs/api/java/util/stream/Stream.html#peek-java.util.function.Consumer-)
+call to the stream pipeline to accumulate each event:
+
+```java
+import com.openai.core.http.StreamResponse;
+import com.openai.helpers.ResponseAccumulator;
+import com.openai.models.responses.Response;
+import com.openai.models.responses.ResponseStreamEvent;
+
+ResponseAccumulator responseAccumulator = ResponseAccumulator.create();
+
+try (StreamResponse<ResponseStreamEvent> streamResponse =
+        client.responses().createStreaming(createParams)) {
+    streamResponse.stream()
+            .peek(responseAccumulator::accumulate)
+            .flatMap(event -> event.outputTextDelta().stream())
+            .forEach(textEvent -> System.out.print(textEvent.delta()));
+}
+
+Response response = responseAccumulator.response();
+```
+
+For an asynchronous response, add the `ResponseAccumulator` to the `subscribe()` call:
+
+```java
+import com.openai.helpers.ResponseAccumulator;
+import com.openai.models.responses.Response;
+
+ResponseAccumulator responseAccumulator = ResponseAccumulator.create();
+
+client.responses()
+        .createStreaming(createParams)
+        .subscribe(event -> responseAccumulator.accumulate(event)
+                .outputTextDelta().ifPresent(textEvent -> System.out.print(textEvent.delta())))
+        .onCompleteFuture()
+        .join();
+
+Response response = responseAccumulator.response();
 ```
 
 ## Structured outputs with JSON schemas
@@ -508,6 +564,36 @@ the latter when `ResponseCreateParams.Builder.text(Class<T>)` is called.
 For a full example of the usage of _Structured Outputs_ with the Responses API, see
 [`ResponsesStructuredOutputsExample`](openai-java-example/src/main/java/com/openai/example/ResponsesStructuredOutputsExample.java).
 
+### Usage with streaming
+
+_Structured Outputs_ can also be used with [Streaming](#streaming) and the Chat Completions API. As
+responses are returned in "chunks", the full response must first be accumulated to concatenate the
+JSON strings that can then be converted into instances of the arbitrary Java class. Normal streaming
+operations can be performed while accumulating the JSON strings.
+
+Use the [`ChatCompletionAccumulator`](openai-java-core/src/main/kotlin/com/openai/helpers/ChatCompletionAccumulator.kt)
+as described in the section on [Streaming helpers](#streaming-helpers) to accumulate the JSON
+strings. Once accumulated, use `ChatCompletionAccumulator.chatCompletion(Class<T>)` to convert the
+accumulated `ChatCompletion` into a
+[`StructuredChatCompletion`](openai-java-core/src/main/kotlin/com/openai/models/chat/completions/StructuredChatCompletion.kt).
+The `StructuredChatCompletion` can then automatically deserialize the JSON strings into instances of
+your Java class.
+
+For a full example of the usage of _Structured Outputs_ with Streaming and the Chat Completions API,
+see
+[`StructuredOutputsStreamingExample`](openai-java-example/src/main/java/com/openai/example/StructuredOutputsStreamingExample.java).
+
+With the Responses API, accumulate events while streaming using the
+[`ResponseAccumulator`](openai-java-core/src/main/kotlin/com/openai/helpers/ResponseAccumulator.kt).
+Once accumulated, use `ResponseAccumulator.response(Class<T>)` to convert the accumulated `Response`
+into a
+[`StructuredResponse`](openai-java-core/src/main/kotlin/com/openai/models/responses/StructuredResponse.kt).
+The [`StructuredResponse`] can then automatically deserialize the JSON strings into instances of
+your Java class.
+
+For a full example of the usage of _Structured Outputs_ with Streaming and the Responses API, see
+[`ResponsesStructuredOutputsStreamingExample`](openai-java-example/src/main/java/com/openai/example/ResponsesStructuredOutputsStreamingExample.java).
+
 ### Defining JSON schema properties
 
 When a JSON schema is derived from your Java classes, all properties represented by `public` fields
@@ -579,6 +665,53 @@ class BookList {
 If you use `@JsonProperty(required = false)`, the `false` value will be ignored. OpenAI JSON schemas
 must mark all properties as _required_, so the schema generated from your Java classes will respect
 that restriction and ignore any annotation that would violate it.
+
+You can also use [OpenAPI Swagger 2](https://swagger.io/specification/v2/)
+[`@Schema`](https://github.com/swagger-api/swagger-core/wiki/Swagger-2.X---Annotations#schema) and
+[`@ArraySchema`](https://github.com/swagger-api/swagger-core/wiki/Swagger-2.X---Annotations#arrayschema)
+annotations. These allow type-specific constraints to be added to your schema properties. You can
+learn more about the supported constraints in the OpenAI documentation on
+[Supported properties](https://platform.openai.com/docs/guides/structured-outputs#supported-properties).
+
+```java
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
+
+class Article {
+    @ArraySchema(minItems = 1, maxItems = 10)
+    public List<String> authors;
+
+    @Schema(pattern = "^[A-Za-z ]+$")
+    public String title;
+
+    @Schema(format = "date")
+    public String publicationDate;
+
+    @Schema(minimum = "1")
+    public int pageCount;
+}
+```
+
+Local validation will check that you have not used any unsupported constraint keywords. However, the
+values of the constraints are _not_ validated locally. For example, if you use a value for the
+`"format"` constraint of a string property that is not in the list of
+[supported format names](https://platform.openai.com/docs/guides/structured-outputs#supported-properties),
+then local validation will pass, but the AI model may report an error.
+
+If you use both Jackson and Swagger annotations to set the same schema field, the Jackson annotation
+will take precedence. In the following example, the description of `myProperty` will be set to
+"Jackson description"; "Swagger description" will be ignored:
+
+```java
+import com.fasterxml.jackson.annotation.JsonPropertyDescription;
+import io.swagger.v3.oas.annotations.media.Schema;
+
+class MyObject {
+    @Schema(description = "Swagger description")
+    @JsonPropertyDescription("Jackson description")
+    public String myProperty;
+}
+```
 
 ## Function calling with JSON schemas
 
@@ -1171,6 +1304,85 @@ Or to `debug` for more verbose logging:
 $ export OPENAI_LOG=debug
 ```
 
+## GraalVM
+
+Although the SDK uses reflection, it is still usable in [GraalVM](https://www.graalvm.org) because `openai-java-core` is published with [reachability metadata](https://www.graalvm.org/latest/reference-manual/native-image/metadata/).
+
+GraalVM should automatically detect and use the published metadata, but [manual configuration](https://www.graalvm.org/jdk24/reference-manual/native-image/overview/BuildConfiguration/) is also available.
+
+## Spring Boot
+
+If you're using Spring Boot, then you can use the SDK's [Spring Boot starter](https://docs.spring.io/spring-boot/docs/2.7.18/reference/htmlsingle/#using.build-systems.starters) to simplify configuration and get set up quickly.
+
+### Installation
+
+<!-- x-release-please-start-version -->
+
+#### Gradle
+
+```kotlin
+implementation("com.openai:openai-java-spring-boot-starter:2.18.0")
+```
+
+#### Maven
+
+```xml
+<dependency>
+  <groupId>com.openai</groupId>
+  <artifactId>openai-java-spring-boot-starter</artifactId>
+  <version>2.18.0</version>
+</dependency>
+```
+
+<!-- x-release-please-end -->
+
+### Configuration
+
+The [client's environment variable options](#client-configuration) can be configured in [`application.properties` or `application.yml`](https://docs.spring.io/spring-boot/how-to/properties-and-configuration.html).
+
+#### `application.properties`
+
+```properties
+openai.base-url=https://api.openai.com/v1
+openai.api-key=My API Key
+openai.org-id=My Organization
+openai.project-id=My Project
+openai.webhook-secret=My Webhook Secret
+```
+
+#### `application.yml`
+
+```yaml
+openai:
+  base-url: https://api.openai.com/v1
+  api-key: My API Key
+  org-id: My Organization
+  project-id: My Project
+  webhook-secret: My Webhook Secret
+```
+
+#### Other configuration
+
+Configure any other client option by providing one or more instances of [`OpenAIClientCustomizer`](openai-java-core/src/main/kotlin/com/openai/springboot/OpenAIClientCustomizer.kt). For example, here's how you'd set [`maxRetries`](#retries):
+
+```java
+import com.openai.springboot.OpenAIClientCustomizer;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+
+@Configuration
+public class OpenAIConfig {
+    @Bean
+    public OpenAIClientCustomizer customizer() {
+        return builder -> builder.maxRetries(3);
+    }
+}
+```
+
+### Usage
+
+[Inject](https://docs.spring.io/spring-framework/reference/core/beans/dependencies/factory-collaborators.html) [`OpenAIClient`](openai-java-core/src/main/kotlin/com/openai/client/OpenAIClient.kt) anywhere and start using it!
+
 ## Jackson
 
 The SDK depends on [Jackson](https://github.com/FasterXML/jackson) for JSON serialization/deserialization. It is compatible with version 2.13.4 or higher, but depends on version 2.18.2 by default.
@@ -1271,6 +1483,27 @@ OpenAIClient client = OpenAIOkHttpClient.builder()
         "https://example.com", 8080
       )
     ))
+    .build();
+```
+
+### HTTPS
+
+> [!NOTE]
+> Most applications should not call these methods, and instead use the system defaults. The defaults include
+> special optimizations that can be lost if the implementations are modified.
+
+To configure how HTTPS connections are secured, configure the client using the `sslSocketFactory`, `trustManager`, and `hostnameVerifier` methods:
+
+```java
+import com.openai.client.OpenAIClient;
+import com.openai.client.okhttp.OpenAIOkHttpClient;
+
+OpenAIClient client = OpenAIOkHttpClient.builder()
+    .fromEnv()
+    // If `sslSocketFactory` is set, then `trustManager` must be set, and vice versa.
+    .sslSocketFactory(yourSSLSocketFactory)
+    .trustManager(yourTrustManager)
+    .hostnameVerifier(yourHostnameVerifier)
     .build();
 ```
 

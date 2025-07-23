@@ -103,7 +103,7 @@ internal class TranscriptionCreateResponseTest {
                         .addToken(0L)
                         .build()
                 )
-                .usage(TranscriptionVerbose.Usage.builder().duration(0.0).build())
+                .usage(TranscriptionVerbose.Usage.builder().seconds(0.0).build())
                 .addWord(TranscriptionWord.builder().end(0.0f).start(0.0f).word("word").build())
                 .build()
 
@@ -136,7 +136,7 @@ internal class TranscriptionCreateResponseTest {
                             .addToken(0L)
                             .build()
                     )
-                    .usage(TranscriptionVerbose.Usage.builder().duration(0.0).build())
+                    .usage(TranscriptionVerbose.Usage.builder().seconds(0.0).build())
                     .addWord(TranscriptionWord.builder().end(0.0f).start(0.0f).word("word").build())
                     .build()
             )

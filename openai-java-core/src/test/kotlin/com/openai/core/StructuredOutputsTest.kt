@@ -9,6 +9,8 @@ import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.node.ObjectNode
 import com.openai.errors.OpenAIInvalidDataException
+import io.swagger.v3.oas.annotations.media.ArraySchema
+import io.swagger.v3.oas.annotations.media.Schema
 import java.util.Optional
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatNoException
@@ -494,20 +496,16 @@ internal class StructuredOutputsTest {
 
     @Test
     fun schemaTest_unsupportedKeywords() {
-        // OpenAI lists a set of keywords that are not allowed, but the set is not exhaustive. Check
-        // that everything named in that set is identified as not allowed, as that is the minimum
-        // level of validation expected. Check at the root schema and a sub-schema. There is no need
-        // to match the keywords to their expected schema types or be concerned about the values of
-        // the keyword fields, which makes testing easier.
+        // OpenAI lists a set of keywords that are allowed (for non "fine-tuned" models). Check that
+        // a selection of keywords that are not listed as supported are identified as not allowed.
+        // Check at the root schema and a sub-schema. There is no need to match the keywords to
+        // their expected schema types or be concerned about the values of the keyword fields, which
+        // makes testing easier. Supported keywords are tested elsewhere (mostly when applied via
+        // annotations).
         val keywordsNotAllowed =
             listOf(
                 "minLength",
                 "maxLength",
-                "pattern",
-                "format",
-                "minimum",
-                "maximum",
-                "multipleOf",
                 "patternProperties",
                 "unevaluatedProperties",
                 "propertyNames",
@@ -517,8 +515,6 @@ internal class StructuredOutputsTest {
                 "contains",
                 "minContains",
                 "maxContains",
-                "minItems",
-                "maxItems",
                 "uniqueItems",
             )
         val notAllowedUses = keywordsNotAllowed.joinToString(", ") { "\"$it\" : \"\"" }
@@ -1357,6 +1353,182 @@ internal class StructuredOutputsTest {
         assertThat(validator.isValid()).isTrue
         assertThat(s1Property).isNull()
         assertThat(s2Property).isNotNull
+    }
+
+    @Test
+    fun schemaTest_annotatedWithSchemaStringConstraints() {
+        @Suppress("unused")
+        class X(@get:Schema(pattern = "^[a-z]+$", format = "email") val s: String)
+
+        schema = extractSchema(X::class.java)
+        validator.validate(schema)
+
+        val properties = schema.get("properties")
+        val stringProperty = properties.get("s")
+
+        assertThat(validator.isValid()).isTrue
+        assertThat(stringProperty).isNotNull
+
+        assertThat(stringProperty.get("pattern")).isNotNull
+        assertThat(stringProperty.get("pattern").isTextual).isTrue
+        assertThat(stringProperty.get("pattern").asText()).isEqualTo("^[a-z]+$")
+
+        assertThat(stringProperty.get("format")).isNotNull
+        assertThat(stringProperty.get("format").isTextual).isTrue
+        assertThat(stringProperty.get("format").asText()).isEqualTo("email")
+    }
+
+    @Test
+    fun schemaTest_annotatedWithSchemaNumberConstraints() {
+        @Suppress("unused")
+        class X(@get:Schema(multipleOf = 5.0, minimum = "10.0", maximum = "55.0") val d: Double)
+
+        schema = extractSchema(X::class.java)
+        validator.validate(schema)
+
+        val properties = schema.get("properties")
+        val numberProperty = properties.get("d")
+
+        assertThat(validator.isValid()).isTrue
+        assertThat(numberProperty).isNotNull
+
+        assertThat(numberProperty.get("multipleOf")).isNotNull
+        assertThat(numberProperty.get("multipleOf").isNumber).isTrue
+        assertThat(numberProperty.get("multipleOf").asDouble()).isEqualTo(5.0)
+
+        assertThat(numberProperty.get("minimum")).isNotNull
+        assertThat(numberProperty.get("minimum").isNumber).isTrue
+        assertThat(numberProperty.get("minimum").asDouble()).isEqualTo(10.0)
+
+        assertThat(numberProperty.get("maximum")).isNotNull
+        assertThat(numberProperty.get("maximum").isNumber).isTrue
+        assertThat(numberProperty.get("maximum").asDouble()).isEqualTo(55.0)
+    }
+
+    @Test
+    fun schemaTest_annotatedWithSchemaNumberConstraintsExclusive() {
+        @Suppress("unused")
+        class X(
+            @get:Schema(
+                multipleOf = 5.0,
+                minimum = "10.0",
+                exclusiveMinimum = true,
+                maximum = "55.0",
+                exclusiveMaximum = true,
+            )
+            val d: Double
+        )
+
+        schema = extractSchema(X::class.java)
+        validator.validate(schema)
+
+        val properties = schema.get("properties")
+        val numberProperty = properties.get("d")
+
+        assertThat(validator.isValid()).isTrue
+        assertThat(numberProperty).isNotNull
+
+        assertThat(numberProperty.get("multipleOf")).isNotNull
+        assertThat(numberProperty.get("multipleOf").isNumber).isTrue
+        assertThat(numberProperty.get("multipleOf").asDouble()).isEqualTo(5.0)
+
+        // The pairing of `minimum` and `exclusiveMinimum` in the annotation is reduced to a single
+        // `"exclusiveMinimum"` field in the schema with a numeric value. Same for the maximum.
+        assertThat(numberProperty.get("exclusiveMinimum")).isNotNull
+        assertThat(numberProperty.get("exclusiveMinimum").isNumber).isTrue
+        assertThat(numberProperty.get("exclusiveMinimum").asDouble()).isEqualTo(10.0)
+
+        assertThat(numberProperty.get("exclusiveMaximum")).isNotNull
+        assertThat(numberProperty.get("exclusiveMaximum").isNumber).isTrue
+        assertThat(numberProperty.get("exclusiveMaximum").asDouble()).isEqualTo(55.0)
+    }
+
+    @Test
+    fun schemaTest_annotatedWithSchemaIntegerConstraints() {
+        @Suppress("unused")
+        class X(@get:Schema(multipleOf = 5.0, minimum = "10", maximum = "55") val i: Int)
+
+        schema = extractSchema(X::class.java)
+        validator.validate(schema)
+
+        val properties = schema.get("properties")
+        val integerProperty = properties.get("i")
+
+        assertThat(validator.isValid()).isTrue
+        assertThat(integerProperty).isNotNull
+
+        assertThat(integerProperty.get("multipleOf")).isNotNull
+        assertThat(integerProperty.get("multipleOf").isNumber).isTrue
+        assertThat(integerProperty.get("multipleOf").asDouble()).isEqualTo(5.0)
+
+        assertThat(integerProperty.get("minimum")).isNotNull
+        assertThat(integerProperty.get("minimum").isNumber).isTrue
+        assertThat(integerProperty.get("minimum").asInt()).isEqualTo(10)
+
+        assertThat(integerProperty.get("maximum")).isNotNull
+        assertThat(integerProperty.get("maximum").isNumber).isTrue
+        assertThat(integerProperty.get("maximum").asInt()).isEqualTo(55)
+    }
+
+    @Test
+    fun schemaTest_annotatedWithSchemaIntegerConstraintsExclusive() {
+        @Suppress("unused")
+        class X(
+            @get:Schema(
+                multipleOf = 5.0,
+                minimum = "10",
+                exclusiveMinimum = true,
+                maximum = "55",
+                exclusiveMaximum = true,
+            )
+            val i: Int
+        )
+
+        schema = extractSchema(X::class.java)
+        validator.validate(schema)
+
+        val properties = schema.get("properties")
+        val integerProperty = properties.get("i")
+
+        assertThat(validator.isValid()).isTrue
+        assertThat(integerProperty).isNotNull
+
+        assertThat(integerProperty.get("multipleOf")).isNotNull
+        assertThat(integerProperty.get("multipleOf").isNumber).isTrue
+        assertThat(integerProperty.get("multipleOf").asDouble()).isEqualTo(5.0)
+
+        // The pairing of `minimum` and `exclusiveMinimum` in the annotation is reduced to a single
+        // `"exclusiveMinimum"` field in the schema with a numeric value. Same for the maximum.
+        assertThat(integerProperty.get("exclusiveMinimum")).isNotNull
+        assertThat(integerProperty.get("exclusiveMinimum").isNumber).isTrue
+        assertThat(integerProperty.get("exclusiveMinimum").asInt()).isEqualTo(10)
+
+        assertThat(integerProperty.get("exclusiveMaximum")).isNotNull
+        assertThat(integerProperty.get("exclusiveMaximum").isNumber).isTrue
+        assertThat(integerProperty.get("exclusiveMaximum").asInt()).isEqualTo(55)
+    }
+
+    @Test
+    fun schemaTest_annotatedWithArraySchemaArrayConstraints() {
+        @Suppress("unused")
+        class X(@get:ArraySchema(minItems = 11, maxItems = 42) val a: List<String>)
+
+        schema = extractSchema(X::class.java)
+        validator.validate(schema)
+
+        val properties = schema.get("properties")
+        val arrayProperty = properties.get("a")
+
+        assertThat(validator.isValid()).isTrue
+        assertThat(arrayProperty).isNotNull
+
+        assertThat(arrayProperty.get("minItems")).isNotNull
+        assertThat(arrayProperty.get("minItems").isInt).isTrue
+        assertThat(arrayProperty.get("minItems").asInt()).isEqualTo(11)
+
+        assertThat(arrayProperty.get("maxItems")).isNotNull
+        assertThat(arrayProperty.get("maxItems").isInt).isTrue
+        assertThat(arrayProperty.get("maxItems").asInt()).isEqualTo(42)
     }
 
     @Test

@@ -2,8 +2,11 @@
 
 package com.openai.models.uploads.parts
 
+import com.fasterxml.jackson.annotation.JsonAnyGetter
+import com.fasterxml.jackson.annotation.JsonAnySetter
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.openai.core.ExcludeMissing
+import com.openai.core.JsonValue
 import com.openai.core.MultipartField
 import com.openai.core.Params
 import com.openai.core.checkRequired
@@ -13,6 +16,7 @@ import com.openai.core.toImmutable
 import com.openai.errors.OpenAIInvalidDataException
 import java.io.InputStream
 import java.nio.file.Path
+import java.util.Collections
 import java.util.Objects
 import java.util.Optional
 import kotlin.io.path.inputStream
@@ -53,6 +57,8 @@ private constructor(
      * Unlike [data], this method doesn't throw if the multipart field has an unexpected type.
      */
     fun _data(): MultipartField<InputStream> = body._data()
+
+    fun _additionalBodyProperties(): Map<String, JsonValue> = body._additionalProperties()
 
     fun _additionalHeaders(): Headers = additionalHeaders
 
@@ -120,6 +126,25 @@ private constructor(
 
         /** The chunk of bytes for this Part. */
         fun data(data: Path) = apply { body.data(data) }
+
+        fun additionalBodyProperties(additionalBodyProperties: Map<String, JsonValue>) = apply {
+            body.additionalProperties(additionalBodyProperties)
+        }
+
+        fun putAdditionalBodyProperty(key: String, value: JsonValue) = apply {
+            body.putAdditionalProperty(key, value)
+        }
+
+        fun putAllAdditionalBodyProperties(additionalBodyProperties: Map<String, JsonValue>) =
+            apply {
+                body.putAllAdditionalProperties(additionalBodyProperties)
+            }
+
+        fun removeAdditionalBodyProperty(key: String) = apply { body.removeAdditionalProperty(key) }
+
+        fun removeAllAdditionalBodyProperties(keys: Set<String>) = apply {
+            body.removeAllAdditionalProperties(keys)
+        }
 
         fun additionalHeaders(additionalHeaders: Headers) = apply {
             this.additionalHeaders.clear()
@@ -240,7 +265,9 @@ private constructor(
             )
     }
 
-    fun _body(): Map<String, MultipartField<*>> = mapOf("data" to _data()).toImmutable()
+    fun _body(): Map<String, MultipartField<*>> =
+        (mapOf("data" to _data()) + _additionalBodyProperties().mapValues { MultipartField.of(it) })
+            .toImmutable()
 
     fun _pathParam(index: Int): String =
         when (index) {
@@ -252,7 +279,11 @@ private constructor(
 
     override fun _queryParams(): QueryParams = additionalQueryParams
 
-    class Body private constructor(private val data: MultipartField<InputStream>) {
+    class Body
+    private constructor(
+        private val data: MultipartField<InputStream>,
+        private val additionalProperties: MutableMap<String, JsonValue>,
+    ) {
 
         /**
          * The chunk of bytes for this Part.
@@ -268,6 +299,16 @@ private constructor(
          * Unlike [data], this method doesn't throw if the multipart field has an unexpected type.
          */
         @JsonProperty("data") @ExcludeMissing fun _data(): MultipartField<InputStream> = data
+
+        @JsonAnySetter
+        private fun putAdditionalProperty(key: String, value: JsonValue) {
+            additionalProperties.put(key, value)
+        }
+
+        @JsonAnyGetter
+        @ExcludeMissing
+        fun _additionalProperties(): Map<String, JsonValue> =
+            Collections.unmodifiableMap(additionalProperties)
 
         fun toBuilder() = Builder().from(this)
 
@@ -288,8 +329,13 @@ private constructor(
         class Builder internal constructor() {
 
             private var data: MultipartField<InputStream>? = null
+            private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
-            @JvmSynthetic internal fun from(body: Body) = apply { data = body.data }
+            @JvmSynthetic
+            internal fun from(body: Body) = apply {
+                data = body.data
+                additionalProperties = body.additionalProperties.toMutableMap()
+            }
 
             /** The chunk of bytes for this Part. */
             fun data(data: InputStream) = data(MultipartField.of(data))
@@ -315,6 +361,25 @@ private constructor(
                         .build()
                 )
 
+            fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                this.additionalProperties.clear()
+                putAllAdditionalProperties(additionalProperties)
+            }
+
+            fun putAdditionalProperty(key: String, value: JsonValue) = apply {
+                additionalProperties.put(key, value)
+            }
+
+            fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                this.additionalProperties.putAll(additionalProperties)
+            }
+
+            fun removeAdditionalProperty(key: String) = apply { additionalProperties.remove(key) }
+
+            fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                keys.forEach(::removeAdditionalProperty)
+            }
+
             /**
              * Returns an immutable instance of [Body].
              *
@@ -327,7 +392,8 @@ private constructor(
              *
              * @throws IllegalStateException if any required field is unset.
              */
-            fun build(): Body = Body(checkRequired("data", data))
+            fun build(): Body =
+                Body(checkRequired("data", data), additionalProperties.toMutableMap())
         }
 
         private var validated: Boolean = false
@@ -354,16 +420,16 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is Body && data == other.data /* spotless:on */
+            return /* spotless:off */ other is Body && data == other.data && additionalProperties == other.additionalProperties /* spotless:on */
         }
 
         /* spotless:off */
-        private val hashCode: Int by lazy { Objects.hash(data) }
+        private val hashCode: Int by lazy { Objects.hash(data, additionalProperties) }
         /* spotless:on */
 
         override fun hashCode(): Int = hashCode
 
-        override fun toString() = "Body{data=$data}"
+        override fun toString() = "Body{data=$data, additionalProperties=$additionalProperties}"
     }
 
     override fun equals(other: Any?): Boolean {

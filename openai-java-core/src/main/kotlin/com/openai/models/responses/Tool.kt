@@ -465,6 +465,7 @@ private constructor(
         private val allowedTools: JsonField<AllowedTools>,
         private val headers: JsonField<Headers>,
         private val requireApproval: JsonField<RequireApproval>,
+        private val serverDescription: JsonField<String>,
         private val additionalProperties: MutableMap<String, JsonValue>,
     ) {
 
@@ -484,6 +485,9 @@ private constructor(
             @JsonProperty("require_approval")
             @ExcludeMissing
             requireApproval: JsonField<RequireApproval> = JsonMissing.of(),
+            @JsonProperty("server_description")
+            @ExcludeMissing
+            serverDescription: JsonField<String> = JsonMissing.of(),
         ) : this(
             serverLabel,
             serverUrl,
@@ -491,6 +495,7 @@ private constructor(
             allowedTools,
             headers,
             requireApproval,
+            serverDescription,
             mutableMapOf(),
         )
 
@@ -550,6 +555,15 @@ private constructor(
             requireApproval.getOptional("require_approval")
 
         /**
+         * Optional description of the MCP server, used to provide more context.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun serverDescription(): Optional<String> =
+            serverDescription.getOptional("server_description")
+
+        /**
          * Returns the raw JSON value of [serverLabel].
          *
          * Unlike [serverLabel], this method doesn't throw if the JSON field has an unexpected type.
@@ -592,6 +606,16 @@ private constructor(
         @ExcludeMissing
         fun _requireApproval(): JsonField<RequireApproval> = requireApproval
 
+        /**
+         * Returns the raw JSON value of [serverDescription].
+         *
+         * Unlike [serverDescription], this method doesn't throw if the JSON field has an unexpected
+         * type.
+         */
+        @JsonProperty("server_description")
+        @ExcludeMissing
+        fun _serverDescription(): JsonField<String> = serverDescription
+
         @JsonAnySetter
         private fun putAdditionalProperty(key: String, value: JsonValue) {
             additionalProperties.put(key, value)
@@ -627,6 +651,7 @@ private constructor(
             private var allowedTools: JsonField<AllowedTools> = JsonMissing.of()
             private var headers: JsonField<Headers> = JsonMissing.of()
             private var requireApproval: JsonField<RequireApproval> = JsonMissing.of()
+            private var serverDescription: JsonField<String> = JsonMissing.of()
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
             @JvmSynthetic
@@ -637,6 +662,7 @@ private constructor(
                 allowedTools = mcp.allowedTools
                 headers = mcp.headers
                 requireApproval = mcp.requireApproval
+                serverDescription = mcp.serverDescription
                 additionalProperties = mcp.additionalProperties.toMutableMap()
             }
 
@@ -760,6 +786,21 @@ private constructor(
             fun requireApproval(mcpToolApprovalSetting: RequireApproval.McpToolApprovalSetting) =
                 requireApproval(RequireApproval.ofMcpToolApprovalSetting(mcpToolApprovalSetting))
 
+            /** Optional description of the MCP server, used to provide more context. */
+            fun serverDescription(serverDescription: String) =
+                serverDescription(JsonField.of(serverDescription))
+
+            /**
+             * Sets [Builder.serverDescription] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.serverDescription] with a well-typed [String] value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun serverDescription(serverDescription: JsonField<String>) = apply {
+                this.serverDescription = serverDescription
+            }
+
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.clear()
                 putAllAdditionalProperties(additionalProperties)
@@ -800,6 +841,7 @@ private constructor(
                     allowedTools,
                     headers,
                     requireApproval,
+                    serverDescription,
                     additionalProperties.toMutableMap(),
                 )
         }
@@ -821,6 +863,7 @@ private constructor(
             allowedTools().ifPresent { it.validate() }
             headers().ifPresent { it.validate() }
             requireApproval().ifPresent { it.validate() }
+            serverDescription()
             validated = true
         }
 
@@ -845,7 +888,8 @@ private constructor(
                 type.let { if (it == JsonValue.from("mcp")) 1 else 0 } +
                 (allowedTools.asKnown().getOrNull()?.validity() ?: 0) +
                 (headers.asKnown().getOrNull()?.validity() ?: 0) +
-                (requireApproval.asKnown().getOrNull()?.validity() ?: 0)
+                (requireApproval.asKnown().getOrNull()?.validity() ?: 0) +
+                (if (serverDescription.asKnown().isPresent) 1 else 0)
 
         /** List of allowed tool names or a filter object. */
         @JsonDeserialize(using = AllowedTools.Deserializer::class)
@@ -2214,17 +2258,17 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is Mcp && serverLabel == other.serverLabel && serverUrl == other.serverUrl && type == other.type && allowedTools == other.allowedTools && headers == other.headers && requireApproval == other.requireApproval && additionalProperties == other.additionalProperties /* spotless:on */
+            return /* spotless:off */ other is Mcp && serverLabel == other.serverLabel && serverUrl == other.serverUrl && type == other.type && allowedTools == other.allowedTools && headers == other.headers && requireApproval == other.requireApproval && serverDescription == other.serverDescription && additionalProperties == other.additionalProperties /* spotless:on */
         }
 
         /* spotless:off */
-        private val hashCode: Int by lazy { Objects.hash(serverLabel, serverUrl, type, allowedTools, headers, requireApproval, additionalProperties) }
+        private val hashCode: Int by lazy { Objects.hash(serverLabel, serverUrl, type, allowedTools, headers, requireApproval, serverDescription, additionalProperties) }
         /* spotless:on */
 
         override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "Mcp{serverLabel=$serverLabel, serverUrl=$serverUrl, type=$type, allowedTools=$allowedTools, headers=$headers, requireApproval=$requireApproval, additionalProperties=$additionalProperties}"
+            "Mcp{serverLabel=$serverLabel, serverUrl=$serverUrl, type=$type, allowedTools=$allowedTools, headers=$headers, requireApproval=$requireApproval, serverDescription=$serverDescription, additionalProperties=$additionalProperties}"
     }
 
     /** A tool that runs Python code to help generate a response to a prompt. */
@@ -2871,6 +2915,7 @@ private constructor(
     private constructor(
         private val type: JsonValue,
         private val background: JsonField<Background>,
+        private val inputFidelity: JsonField<InputFidelity>,
         private val inputImageMask: JsonField<InputImageMask>,
         private val model: JsonField<Model>,
         private val moderation: JsonField<Moderation>,
@@ -2888,6 +2933,9 @@ private constructor(
             @JsonProperty("background")
             @ExcludeMissing
             background: JsonField<Background> = JsonMissing.of(),
+            @JsonProperty("input_fidelity")
+            @ExcludeMissing
+            inputFidelity: JsonField<InputFidelity> = JsonMissing.of(),
             @JsonProperty("input_image_mask")
             @ExcludeMissing
             inputImageMask: JsonField<InputImageMask> = JsonMissing.of(),
@@ -2909,6 +2957,7 @@ private constructor(
         ) : this(
             type,
             background,
+            inputFidelity,
             inputImageMask,
             model,
             moderation,
@@ -2941,6 +2990,16 @@ private constructor(
          *   server responded with an unexpected value).
          */
         fun background(): Optional<Background> = background.getOptional("background")
+
+        /**
+         * Control how much effort the model will exert to match the style and features, especially
+         * facial features, of input images. This parameter is only supported for `gpt-image-1`.
+         * Supports `high` and `low`. Defaults to `low`.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun inputFidelity(): Optional<InputFidelity> = inputFidelity.getOptional("input_fidelity")
 
         /**
          * Optional mask for inpainting. Contains `image_url` (string, optional) and `file_id`
@@ -3020,6 +3079,16 @@ private constructor(
         @JsonProperty("background")
         @ExcludeMissing
         fun _background(): JsonField<Background> = background
+
+        /**
+         * Returns the raw JSON value of [inputFidelity].
+         *
+         * Unlike [inputFidelity], this method doesn't throw if the JSON field has an unexpected
+         * type.
+         */
+        @JsonProperty("input_fidelity")
+        @ExcludeMissing
+        fun _inputFidelity(): JsonField<InputFidelity> = inputFidelity
 
         /**
          * Returns the raw JSON value of [inputImageMask].
@@ -3114,6 +3183,7 @@ private constructor(
 
             private var type: JsonValue = JsonValue.from("image_generation")
             private var background: JsonField<Background> = JsonMissing.of()
+            private var inputFidelity: JsonField<InputFidelity> = JsonMissing.of()
             private var inputImageMask: JsonField<InputImageMask> = JsonMissing.of()
             private var model: JsonField<Model> = JsonMissing.of()
             private var moderation: JsonField<Moderation> = JsonMissing.of()
@@ -3128,6 +3198,7 @@ private constructor(
             internal fun from(imageGeneration: ImageGeneration) = apply {
                 type = imageGeneration.type
                 background = imageGeneration.background
+                inputFidelity = imageGeneration.inputFidelity
                 inputImageMask = imageGeneration.inputImageMask
                 model = imageGeneration.model
                 moderation = imageGeneration.moderation
@@ -3168,6 +3239,29 @@ private constructor(
              */
             fun background(background: JsonField<Background>) = apply {
                 this.background = background
+            }
+
+            /**
+             * Control how much effort the model will exert to match the style and features,
+             * especially facial features, of input images. This parameter is only supported for
+             * `gpt-image-1`. Supports `high` and `low`. Defaults to `low`.
+             */
+            fun inputFidelity(inputFidelity: InputFidelity?) =
+                inputFidelity(JsonField.ofNullable(inputFidelity))
+
+            /** Alias for calling [Builder.inputFidelity] with `inputFidelity.orElse(null)`. */
+            fun inputFidelity(inputFidelity: Optional<InputFidelity>) =
+                inputFidelity(inputFidelity.getOrNull())
+
+            /**
+             * Sets [Builder.inputFidelity] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.inputFidelity] with a well-typed [InputFidelity]
+             * value instead. This method is primarily for setting the field to an undocumented or
+             * not yet supported value.
+             */
+            fun inputFidelity(inputFidelity: JsonField<InputFidelity>) = apply {
+                this.inputFidelity = inputFidelity
             }
 
             /**
@@ -3320,6 +3414,7 @@ private constructor(
                 ImageGeneration(
                     type,
                     background,
+                    inputFidelity,
                     inputImageMask,
                     model,
                     moderation,
@@ -3345,6 +3440,7 @@ private constructor(
                 }
             }
             background().ifPresent { it.validate() }
+            inputFidelity().ifPresent { it.validate() }
             inputImageMask().ifPresent { it.validate() }
             model().ifPresent { it.validate() }
             moderation().ifPresent { it.validate() }
@@ -3374,6 +3470,7 @@ private constructor(
         internal fun validity(): Int =
             type.let { if (it == JsonValue.from("image_generation")) 1 else 0 } +
                 (background.asKnown().getOrNull()?.validity() ?: 0) +
+                (inputFidelity.asKnown().getOrNull()?.validity() ?: 0) +
                 (inputImageMask.asKnown().getOrNull()?.validity() ?: 0) +
                 (model.asKnown().getOrNull()?.validity() ?: 0) +
                 (moderation.asKnown().getOrNull()?.validity() ?: 0) +
@@ -3517,6 +3614,142 @@ private constructor(
                 }
 
                 return /* spotless:off */ other is Background && value == other.value /* spotless:on */
+            }
+
+            override fun hashCode() = value.hashCode()
+
+            override fun toString() = value.toString()
+        }
+
+        /**
+         * Control how much effort the model will exert to match the style and features, especially
+         * facial features, of input images. This parameter is only supported for `gpt-image-1`.
+         * Supports `high` and `low`. Defaults to `low`.
+         */
+        class InputFidelity @JsonCreator private constructor(private val value: JsonField<String>) :
+            Enum {
+
+            /**
+             * Returns this class instance's raw value.
+             *
+             * This is usually only useful if this instance was deserialized from data that doesn't
+             * match any known member, and you want to know that value. For example, if the SDK is
+             * on an older version than the API, then the API may respond with new members that the
+             * SDK is unaware of.
+             */
+            @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
+
+            companion object {
+
+                @JvmField val HIGH = of("high")
+
+                @JvmField val LOW = of("low")
+
+                @JvmStatic fun of(value: String) = InputFidelity(JsonField.of(value))
+            }
+
+            /** An enum containing [InputFidelity]'s known values. */
+            enum class Known {
+                HIGH,
+                LOW,
+            }
+
+            /**
+             * An enum containing [InputFidelity]'s known values, as well as an [_UNKNOWN] member.
+             *
+             * An instance of [InputFidelity] can contain an unknown value in a couple of cases:
+             * - It was deserialized from data that doesn't match any known member. For example, if
+             *   the SDK is on an older version than the API, then the API may respond with new
+             *   members that the SDK is unaware of.
+             * - It was constructed with an arbitrary value using the [of] method.
+             */
+            enum class Value {
+                HIGH,
+                LOW,
+                /**
+                 * An enum member indicating that [InputFidelity] was instantiated with an unknown
+                 * value.
+                 */
+                _UNKNOWN,
+            }
+
+            /**
+             * Returns an enum member corresponding to this class instance's value, or
+             * [Value._UNKNOWN] if the class was instantiated with an unknown value.
+             *
+             * Use the [known] method instead if you're certain the value is always known or if you
+             * want to throw for the unknown case.
+             */
+            fun value(): Value =
+                when (this) {
+                    HIGH -> Value.HIGH
+                    LOW -> Value.LOW
+                    else -> Value._UNKNOWN
+                }
+
+            /**
+             * Returns an enum member corresponding to this class instance's value.
+             *
+             * Use the [value] method instead if you're uncertain the value is always known and
+             * don't want to throw for the unknown case.
+             *
+             * @throws OpenAIInvalidDataException if this class instance's value is a not a known
+             *   member.
+             */
+            fun known(): Known =
+                when (this) {
+                    HIGH -> Known.HIGH
+                    LOW -> Known.LOW
+                    else -> throw OpenAIInvalidDataException("Unknown InputFidelity: $value")
+                }
+
+            /**
+             * Returns this class instance's primitive wire representation.
+             *
+             * This differs from the [toString] method because that method is primarily for
+             * debugging and generally doesn't throw.
+             *
+             * @throws OpenAIInvalidDataException if this class instance's value does not have the
+             *   expected primitive type.
+             */
+            fun asString(): String =
+                _value().asString().orElseThrow {
+                    OpenAIInvalidDataException("Value is not a String")
+                }
+
+            private var validated: Boolean = false
+
+            fun validate(): InputFidelity = apply {
+                if (validated) {
+                    return@apply
+                }
+
+                known()
+                validated = true
+            }
+
+            fun isValid(): Boolean =
+                try {
+                    validate()
+                    true
+                } catch (e: OpenAIInvalidDataException) {
+                    false
+                }
+
+            /**
+             * Returns a score indicating how many valid values are contained in this object
+             * recursively.
+             *
+             * Used for best match union deserialization.
+             */
+            @JvmSynthetic internal fun validity(): Int = if (value() == Value._UNKNOWN) 0 else 1
+
+            override fun equals(other: Any?): Boolean {
+                if (this === other) {
+                    return true
+                }
+
+                return /* spotless:off */ other is InputFidelity && value == other.value /* spotless:on */
             }
 
             override fun hashCode() = value.hashCode()
@@ -4403,16 +4636,16 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is ImageGeneration && type == other.type && background == other.background && inputImageMask == other.inputImageMask && model == other.model && moderation == other.moderation && outputCompression == other.outputCompression && outputFormat == other.outputFormat && partialImages == other.partialImages && quality == other.quality && size == other.size && additionalProperties == other.additionalProperties /* spotless:on */
+            return /* spotless:off */ other is ImageGeneration && type == other.type && background == other.background && inputFidelity == other.inputFidelity && inputImageMask == other.inputImageMask && model == other.model && moderation == other.moderation && outputCompression == other.outputCompression && outputFormat == other.outputFormat && partialImages == other.partialImages && quality == other.quality && size == other.size && additionalProperties == other.additionalProperties /* spotless:on */
         }
 
         /* spotless:off */
-        private val hashCode: Int by lazy { Objects.hash(type, background, inputImageMask, model, moderation, outputCompression, outputFormat, partialImages, quality, size, additionalProperties) }
+        private val hashCode: Int by lazy { Objects.hash(type, background, inputFidelity, inputImageMask, model, moderation, outputCompression, outputFormat, partialImages, quality, size, additionalProperties) }
         /* spotless:on */
 
         override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "ImageGeneration{type=$type, background=$background, inputImageMask=$inputImageMask, model=$model, moderation=$moderation, outputCompression=$outputCompression, outputFormat=$outputFormat, partialImages=$partialImages, quality=$quality, size=$size, additionalProperties=$additionalProperties}"
+            "ImageGeneration{type=$type, background=$background, inputFidelity=$inputFidelity, inputImageMask=$inputImageMask, model=$model, moderation=$moderation, outputCompression=$outputCompression, outputFormat=$outputFormat, partialImages=$partialImages, quality=$quality, size=$size, additionalProperties=$additionalProperties}"
     }
 }

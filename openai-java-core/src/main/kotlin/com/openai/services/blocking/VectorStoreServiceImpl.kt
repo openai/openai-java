@@ -5,18 +5,18 @@ package com.openai.services.blocking
 import com.openai.core.ClientOptions
 import com.openai.core.RequestOptions
 import com.openai.core.checkRequired
+import com.openai.core.handlers.errorBodyHandler
 import com.openai.core.handlers.errorHandler
 import com.openai.core.handlers.jsonHandler
-import com.openai.core.handlers.withErrorHandler
 import com.openai.core.http.Headers
 import com.openai.core.http.HttpMethod
 import com.openai.core.http.HttpRequest
+import com.openai.core.http.HttpResponse
 import com.openai.core.http.HttpResponse.Handler
 import com.openai.core.http.HttpResponseFor
 import com.openai.core.http.json
 import com.openai.core.http.parseable
 import com.openai.core.prepare
-import com.openai.models.ErrorObject
 import com.openai.models.vectorstores.VectorStore
 import com.openai.models.vectorstores.VectorStoreCreateParams
 import com.openai.models.vectorstores.VectorStoreDeleteParams
@@ -106,7 +106,8 @@ class VectorStoreServiceImpl internal constructor(private val clientOptions: Cli
     class WithRawResponseImpl internal constructor(private val clientOptions: ClientOptions) :
         VectorStoreService.WithRawResponse {
 
-        private val errorHandler: Handler<ErrorObject?> = errorHandler(clientOptions.jsonMapper)
+        private val errorHandler: Handler<HttpResponse> =
+            errorHandler(errorBodyHandler(clientOptions.jsonMapper))
 
         private val files: FileService.WithRawResponse by lazy {
             FileServiceImpl.WithRawResponseImpl(clientOptions)
@@ -128,7 +129,7 @@ class VectorStoreServiceImpl internal constructor(private val clientOptions: Cli
         override fun fileBatches(): FileBatchService.WithRawResponse = fileBatches
 
         private val createHandler: Handler<VectorStore> =
-            jsonHandler<VectorStore>(clientOptions.jsonMapper).withErrorHandler(errorHandler)
+            jsonHandler<VectorStore>(clientOptions.jsonMapper)
 
         override fun create(
             params: VectorStoreCreateParams,
@@ -145,7 +146,7 @@ class VectorStoreServiceImpl internal constructor(private val clientOptions: Cli
                     .prepare(clientOptions, params, deploymentModel = null)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             val response = clientOptions.httpClient.execute(request, requestOptions)
-            return response.parseable {
+            return errorHandler.handle(response).parseable {
                 response
                     .use { createHandler.handle(it) }
                     .also {
@@ -157,7 +158,7 @@ class VectorStoreServiceImpl internal constructor(private val clientOptions: Cli
         }
 
         private val retrieveHandler: Handler<VectorStore> =
-            jsonHandler<VectorStore>(clientOptions.jsonMapper).withErrorHandler(errorHandler)
+            jsonHandler<VectorStore>(clientOptions.jsonMapper)
 
         override fun retrieve(
             params: VectorStoreRetrieveParams,
@@ -176,7 +177,7 @@ class VectorStoreServiceImpl internal constructor(private val clientOptions: Cli
                     .prepare(clientOptions, params, deploymentModel = null)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             val response = clientOptions.httpClient.execute(request, requestOptions)
-            return response.parseable {
+            return errorHandler.handle(response).parseable {
                 response
                     .use { retrieveHandler.handle(it) }
                     .also {
@@ -188,7 +189,7 @@ class VectorStoreServiceImpl internal constructor(private val clientOptions: Cli
         }
 
         private val updateHandler: Handler<VectorStore> =
-            jsonHandler<VectorStore>(clientOptions.jsonMapper).withErrorHandler(errorHandler)
+            jsonHandler<VectorStore>(clientOptions.jsonMapper)
 
         override fun update(
             params: VectorStoreUpdateParams,
@@ -208,7 +209,7 @@ class VectorStoreServiceImpl internal constructor(private val clientOptions: Cli
                     .prepare(clientOptions, params, deploymentModel = null)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             val response = clientOptions.httpClient.execute(request, requestOptions)
-            return response.parseable {
+            return errorHandler.handle(response).parseable {
                 response
                     .use { updateHandler.handle(it) }
                     .also {
@@ -221,7 +222,6 @@ class VectorStoreServiceImpl internal constructor(private val clientOptions: Cli
 
         private val listHandler: Handler<VectorStoreListPageResponse> =
             jsonHandler<VectorStoreListPageResponse>(clientOptions.jsonMapper)
-                .withErrorHandler(errorHandler)
 
         override fun list(
             params: VectorStoreListParams,
@@ -237,7 +237,7 @@ class VectorStoreServiceImpl internal constructor(private val clientOptions: Cli
                     .prepare(clientOptions, params, deploymentModel = null)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             val response = clientOptions.httpClient.execute(request, requestOptions)
-            return response.parseable {
+            return errorHandler.handle(response).parseable {
                 response
                     .use { listHandler.handle(it) }
                     .also {
@@ -256,7 +256,7 @@ class VectorStoreServiceImpl internal constructor(private val clientOptions: Cli
         }
 
         private val deleteHandler: Handler<VectorStoreDeleted> =
-            jsonHandler<VectorStoreDeleted>(clientOptions.jsonMapper).withErrorHandler(errorHandler)
+            jsonHandler<VectorStoreDeleted>(clientOptions.jsonMapper)
 
         override fun delete(
             params: VectorStoreDeleteParams,
@@ -276,7 +276,7 @@ class VectorStoreServiceImpl internal constructor(private val clientOptions: Cli
                     .prepare(clientOptions, params, deploymentModel = null)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             val response = clientOptions.httpClient.execute(request, requestOptions)
-            return response.parseable {
+            return errorHandler.handle(response).parseable {
                 response
                     .use { deleteHandler.handle(it) }
                     .also {
@@ -289,7 +289,6 @@ class VectorStoreServiceImpl internal constructor(private val clientOptions: Cli
 
         private val searchHandler: Handler<VectorStoreSearchPageResponse> =
             jsonHandler<VectorStoreSearchPageResponse>(clientOptions.jsonMapper)
-                .withErrorHandler(errorHandler)
 
         override fun search(
             params: VectorStoreSearchParams,
@@ -309,7 +308,7 @@ class VectorStoreServiceImpl internal constructor(private val clientOptions: Cli
                     .prepare(clientOptions, params, deploymentModel = null)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             val response = clientOptions.httpClient.execute(request, requestOptions)
-            return response.parseable {
+            return errorHandler.handle(response).parseable {
                 response
                     .use { searchHandler.handle(it) }
                     .also {

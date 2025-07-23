@@ -177,7 +177,8 @@ private constructor(
         outputAudioFormat.getOptional("output_audio_format")
 
     /**
-     * The final status of the response (`completed`, `cancelled`, `failed`, or `incomplete`).
+     * The final status of the response (`completed`, `cancelled`, `failed`, or `incomplete`,
+     * `in_progress`).
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -213,7 +214,7 @@ private constructor(
 
     /**
      * The voice the model used to respond. Current voice options are `alloy`, `ash`, `ballad`,
-     * `coral`, `echo`, `fable`, `onyx`, `nova`, `sage`, `shimmer`, and `verse`.
+     * `coral`, `echo`, `sage`, `shimmer`, and `verse`.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -540,7 +541,8 @@ private constructor(
         }
 
         /**
-         * The final status of the response (`completed`, `cancelled`, `failed`, or `incomplete`).
+         * The final status of the response (`completed`, `cancelled`, `failed`, or `incomplete`,
+         * `in_progress`).
          */
         fun status(status: Status) = status(JsonField.of(status))
 
@@ -598,7 +600,7 @@ private constructor(
 
         /**
          * The voice the model used to respond. Current voice options are `alloy`, `ash`, `ballad`,
-         * `coral`, `echo`, `fable`, `onyx`, `nova`, `sage`, `shimmer`, and `verse`.
+         * `coral`, `echo`, `sage`, `shimmer`, and `verse`.
          */
         fun voice(voice: Voice) = voice(JsonField.of(voice))
 
@@ -1384,7 +1386,10 @@ private constructor(
         override fun toString() = value.toString()
     }
 
-    /** The final status of the response (`completed`, `cancelled`, `failed`, or `incomplete`). */
+    /**
+     * The final status of the response (`completed`, `cancelled`, `failed`, or `incomplete`,
+     * `in_progress`).
+     */
     class Status @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
 
         /**
@@ -1407,6 +1412,8 @@ private constructor(
 
             @JvmField val INCOMPLETE = of("incomplete")
 
+            @JvmField val IN_PROGRESS = of("in_progress")
+
             @JvmStatic fun of(value: String) = Status(JsonField.of(value))
         }
 
@@ -1416,6 +1423,7 @@ private constructor(
             CANCELLED,
             FAILED,
             INCOMPLETE,
+            IN_PROGRESS,
         }
 
         /**
@@ -1432,6 +1440,7 @@ private constructor(
             CANCELLED,
             FAILED,
             INCOMPLETE,
+            IN_PROGRESS,
             /** An enum member indicating that [Status] was instantiated with an unknown value. */
             _UNKNOWN,
         }
@@ -1449,6 +1458,7 @@ private constructor(
                 CANCELLED -> Value.CANCELLED
                 FAILED -> Value.FAILED
                 INCOMPLETE -> Value.INCOMPLETE
+                IN_PROGRESS -> Value.IN_PROGRESS
                 else -> Value._UNKNOWN
             }
 
@@ -1467,6 +1477,7 @@ private constructor(
                 CANCELLED -> Known.CANCELLED
                 FAILED -> Known.FAILED
                 INCOMPLETE -> Known.INCOMPLETE
+                IN_PROGRESS -> Known.IN_PROGRESS
                 else -> throw OpenAIInvalidDataException("Unknown Status: $value")
             }
 
@@ -1524,7 +1535,7 @@ private constructor(
 
     /**
      * The voice the model used to respond. Current voice options are `alloy`, `ash`, `ballad`,
-     * `coral`, `echo`, `fable`, `onyx`, `nova`, `sage`, `shimmer`, and `verse`.
+     * `coral`, `echo`, `sage`, `shimmer`, and `verse`.
      */
     class Voice @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
 
@@ -1550,12 +1561,6 @@ private constructor(
 
             @JvmField val ECHO = of("echo")
 
-            @JvmField val FABLE = of("fable")
-
-            @JvmField val ONYX = of("onyx")
-
-            @JvmField val NOVA = of("nova")
-
             @JvmField val SAGE = of("sage")
 
             @JvmField val SHIMMER = of("shimmer")
@@ -1572,9 +1577,6 @@ private constructor(
             BALLAD,
             CORAL,
             ECHO,
-            FABLE,
-            ONYX,
-            NOVA,
             SAGE,
             SHIMMER,
             VERSE,
@@ -1595,9 +1597,6 @@ private constructor(
             BALLAD,
             CORAL,
             ECHO,
-            FABLE,
-            ONYX,
-            NOVA,
             SAGE,
             SHIMMER,
             VERSE,
@@ -1619,9 +1618,6 @@ private constructor(
                 BALLAD -> Value.BALLAD
                 CORAL -> Value.CORAL
                 ECHO -> Value.ECHO
-                FABLE -> Value.FABLE
-                ONYX -> Value.ONYX
-                NOVA -> Value.NOVA
                 SAGE -> Value.SAGE
                 SHIMMER -> Value.SHIMMER
                 VERSE -> Value.VERSE
@@ -1644,9 +1640,6 @@ private constructor(
                 BALLAD -> Known.BALLAD
                 CORAL -> Known.CORAL
                 ECHO -> Known.ECHO
-                FABLE -> Known.FABLE
-                ONYX -> Known.ONYX
-                NOVA -> Known.NOVA
                 SAGE -> Known.SAGE
                 SHIMMER -> Known.SHIMMER
                 VERSE -> Known.VERSE

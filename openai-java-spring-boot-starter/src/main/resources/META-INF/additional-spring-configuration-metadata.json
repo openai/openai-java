@@ -1,0 +1,30 @@
+{
+  "properties": [
+    {
+      "name": "openai.base-url",
+      "type": "java.lang.String",
+      "defaultValue": "https://api.openai.com/v1",
+      "sourceType": "com.openai.springboot.OpenAIClientProperties"
+    },
+    {
+      "name": "openai.api-key",
+      "type": "java.lang.String",
+      "sourceType": "com.openai.springboot.OpenAIClientProperties"
+    },
+    {
+      "name": "openai.org-id",
+      "type": "java.lang.String",
+      "sourceType": "com.openai.springboot.OpenAIClientProperties"
+    },
+    {
+      "name": "openai.project-id",
+      "type": "java.lang.String",
+      "sourceType": "com.openai.springboot.OpenAIClientProperties"
+    },
+    {
+      "name": "openai.webhook-secret",
+      "type": "java.lang.String",
+      "sourceType": "com.openai.springboot.OpenAIClientProperties"
+    }
+  ]
+}

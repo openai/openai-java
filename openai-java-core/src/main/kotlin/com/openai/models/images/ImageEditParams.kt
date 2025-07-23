@@ -2,6 +2,8 @@
 
 package com.openai.models.images
 
+import com.fasterxml.jackson.annotation.JsonAnyGetter
+import com.fasterxml.jackson.annotation.JsonAnySetter
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.core.JsonGenerator
@@ -28,6 +30,7 @@ import com.openai.core.toImmutable
 import com.openai.errors.OpenAIInvalidDataException
 import java.io.InputStream
 import java.nio.file.Path
+import java.util.Collections
 import java.util.Objects
 import java.util.Optional
 import kotlin.io.path.inputStream
@@ -83,6 +86,16 @@ private constructor(
     fun background(): Optional<Background> = body.background()
 
     /**
+     * Control how much effort the model will exert to match the style and features, especially
+     * facial features, of input images. This parameter is only supported for `gpt-image-1`.
+     * Supports `high` and `low`. Defaults to `low`.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun inputFidelity(): Optional<InputFidelity> = body.inputFidelity()
+
+    /**
      * An additional image whose fully transparent areas (e.g. where alpha is zero) indicate where
      * `image` should be edited. If there are multiple images provided, the mask will be applied on
      * the first image. Must be a valid PNG file, less than 4MB, and have the same dimensions as
@@ -127,6 +140,19 @@ private constructor(
      *   server responded with an unexpected value).
      */
     fun outputFormat(): Optional<OutputFormat> = body.outputFormat()
+
+    /**
+     * The number of partial images to generate. This parameter is used for streaming responses that
+     * return partial images. Value must be between 0 and 3. When set to 0, the response will be a
+     * single image sent in one streaming event.
+     *
+     * Note that the final image may be sent before the full number of partial images are generated
+     * if the full image is generated more quickly.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun partialImages(): Optional<Long> = body.partialImages()
 
     /**
      * The quality of the image that will be generated. `high`, `medium` and `low` are only
@@ -189,6 +215,14 @@ private constructor(
     fun _background(): MultipartField<Background> = body._background()
 
     /**
+     * Returns the raw multipart value of [inputFidelity].
+     *
+     * Unlike [inputFidelity], this method doesn't throw if the multipart field has an unexpected
+     * type.
+     */
+    fun _inputFidelity(): MultipartField<InputFidelity> = body._inputFidelity()
+
+    /**
      * Returns the raw multipart value of [mask].
      *
      * Unlike [mask], this method doesn't throw if the multipart field has an unexpected type.
@@ -226,6 +260,14 @@ private constructor(
     fun _outputFormat(): MultipartField<OutputFormat> = body._outputFormat()
 
     /**
+     * Returns the raw multipart value of [partialImages].
+     *
+     * Unlike [partialImages], this method doesn't throw if the multipart field has an unexpected
+     * type.
+     */
+    fun _partialImages(): MultipartField<Long> = body._partialImages()
+
+    /**
      * Returns the raw multipart value of [quality].
      *
      * Unlike [quality], this method doesn't throw if the multipart field has an unexpected type.
@@ -253,6 +295,8 @@ private constructor(
      * Unlike [user], this method doesn't throw if the multipart field has an unexpected type.
      */
     fun _user(): MultipartField<String> = body._user()
+
+    fun _additionalBodyProperties(): Map<String, JsonValue> = body._additionalProperties()
 
     fun _additionalHeaders(): Headers = additionalHeaders
 
@@ -296,8 +340,8 @@ private constructor(
          * - [image]
          * - [prompt]
          * - [background]
+         * - [inputFidelity]
          * - [mask]
-         * - [model]
          * - etc.
          */
         fun body(body: Body) = apply { this.body = body.toBuilder() }
@@ -388,6 +432,30 @@ private constructor(
          */
         fun background(background: MultipartField<Background>) = apply {
             body.background(background)
+        }
+
+        /**
+         * Control how much effort the model will exert to match the style and features, especially
+         * facial features, of input images. This parameter is only supported for `gpt-image-1`.
+         * Supports `high` and `low`. Defaults to `low`.
+         */
+        fun inputFidelity(inputFidelity: InputFidelity?) = apply {
+            body.inputFidelity(inputFidelity)
+        }
+
+        /** Alias for calling [Builder.inputFidelity] with `inputFidelity.orElse(null)`. */
+        fun inputFidelity(inputFidelity: Optional<InputFidelity>) =
+            inputFidelity(inputFidelity.getOrNull())
+
+        /**
+         * Sets [Builder.inputFidelity] to an arbitrary multipart value.
+         *
+         * You should usually call [Builder.inputFidelity] with a well-typed [InputFidelity] value
+         * instead. This method is primarily for setting the field to an undocumented or not yet
+         * supported value.
+         */
+        fun inputFidelity(inputFidelity: MultipartField<InputFidelity>) = apply {
+            body.inputFidelity(inputFidelity)
         }
 
         /**
@@ -523,6 +591,37 @@ private constructor(
         }
 
         /**
+         * The number of partial images to generate. This parameter is used for streaming responses
+         * that return partial images. Value must be between 0 and 3. When set to 0, the response
+         * will be a single image sent in one streaming event.
+         *
+         * Note that the final image may be sent before the full number of partial images are
+         * generated if the full image is generated more quickly.
+         */
+        fun partialImages(partialImages: Long?) = apply { body.partialImages(partialImages) }
+
+        /**
+         * Alias for [Builder.partialImages].
+         *
+         * This unboxed primitive overload exists for backwards compatibility.
+         */
+        fun partialImages(partialImages: Long) = partialImages(partialImages as Long?)
+
+        /** Alias for calling [Builder.partialImages] with `partialImages.orElse(null)`. */
+        fun partialImages(partialImages: Optional<Long>) = partialImages(partialImages.getOrNull())
+
+        /**
+         * Sets [Builder.partialImages] to an arbitrary multipart value.
+         *
+         * You should usually call [Builder.partialImages] with a well-typed [Long] value instead.
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
+         */
+        fun partialImages(partialImages: MultipartField<Long>) = apply {
+            body.partialImages(partialImages)
+        }
+
+        /**
          * The quality of the image that will be generated. `high`, `medium` and `low` are only
          * supported for `gpt-image-1`. `dall-e-2` only supports `standard` quality. Defaults to
          * `auto`.
@@ -597,6 +696,25 @@ private constructor(
          * method is primarily for setting the field to an undocumented or not yet supported value.
          */
         fun user(user: MultipartField<String>) = apply { body.user(user) }
+
+        fun additionalBodyProperties(additionalBodyProperties: Map<String, JsonValue>) = apply {
+            body.additionalProperties(additionalBodyProperties)
+        }
+
+        fun putAdditionalBodyProperty(key: String, value: JsonValue) = apply {
+            body.putAdditionalProperty(key, value)
+        }
+
+        fun putAllAdditionalBodyProperties(additionalBodyProperties: Map<String, JsonValue>) =
+            apply {
+                body.putAllAdditionalProperties(additionalBodyProperties)
+            }
+
+        fun removeAdditionalBodyProperty(key: String) = apply { body.removeAdditionalProperty(key) }
+
+        fun removeAllAdditionalBodyProperties(keys: Set<String>) = apply {
+            body.removeAllAdditionalProperties(keys)
+        }
 
         fun additionalHeaders(additionalHeaders: Headers) = apply {
             this.additionalHeaders.clear()
@@ -714,20 +832,22 @@ private constructor(
     }
 
     fun _body(): Map<String, MultipartField<*>> =
-        mapOf(
+        (mapOf(
                 "image" to _image(),
                 "prompt" to _prompt(),
                 "background" to _background(),
+                "input_fidelity" to _inputFidelity(),
                 "mask" to _mask(),
                 "model" to _model(),
                 "n" to _n(),
                 "output_compression" to _outputCompression(),
                 "output_format" to _outputFormat(),
+                "partial_images" to _partialImages(),
                 "quality" to _quality(),
                 "response_format" to _responseFormat(),
                 "size" to _size(),
                 "user" to _user(),
-            )
+            ) + _additionalBodyProperties().mapValues { MultipartField.of(it) })
             .toImmutable()
 
     override fun _headers(): Headers = additionalHeaders
@@ -739,15 +859,18 @@ private constructor(
         private val image: MultipartField<Image>,
         private val prompt: MultipartField<String>,
         private val background: MultipartField<Background>,
+        private val inputFidelity: MultipartField<InputFidelity>,
         private val mask: MultipartField<InputStream>,
         private val model: MultipartField<ImageModel>,
         private val n: MultipartField<Long>,
         private val outputCompression: MultipartField<Long>,
         private val outputFormat: MultipartField<OutputFormat>,
+        private val partialImages: MultipartField<Long>,
         private val quality: MultipartField<Quality>,
         private val responseFormat: MultipartField<ResponseFormat>,
         private val size: MultipartField<Size>,
         private val user: MultipartField<String>,
+        private val additionalProperties: MutableMap<String, JsonValue>,
     ) {
 
         /**
@@ -786,6 +909,17 @@ private constructor(
          *   server responded with an unexpected value).
          */
         fun background(): Optional<Background> = background.value.getOptional("background")
+
+        /**
+         * Control how much effort the model will exert to match the style and features, especially
+         * facial features, of input images. This parameter is only supported for `gpt-image-1`.
+         * Supports `high` and `low`. Defaults to `low`.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun inputFidelity(): Optional<InputFidelity> =
+            inputFidelity.value.getOptional("input_fidelity")
 
         /**
          * An additional image whose fully transparent areas (e.g. where alpha is zero) indicate
@@ -833,6 +967,19 @@ private constructor(
          *   server responded with an unexpected value).
          */
         fun outputFormat(): Optional<OutputFormat> = outputFormat.value.getOptional("output_format")
+
+        /**
+         * The number of partial images to generate. This parameter is used for streaming responses
+         * that return partial images. Value must be between 0 and 3. When set to 0, the response
+         * will be a single image sent in one streaming event.
+         *
+         * Note that the final image may be sent before the full number of partial images are
+         * generated if the full image is generated more quickly.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun partialImages(): Optional<Long> = partialImages.value.getOptional("partial_images")
 
         /**
          * The quality of the image that will be generated. `high`, `medium` and `low` are only
@@ -901,6 +1048,16 @@ private constructor(
         fun _background(): MultipartField<Background> = background
 
         /**
+         * Returns the raw multipart value of [inputFidelity].
+         *
+         * Unlike [inputFidelity], this method doesn't throw if the multipart field has an
+         * unexpected type.
+         */
+        @JsonProperty("input_fidelity")
+        @ExcludeMissing
+        fun _inputFidelity(): MultipartField<InputFidelity> = inputFidelity
+
+        /**
          * Returns the raw multipart value of [mask].
          *
          * Unlike [mask], this method doesn't throw if the multipart field has an unexpected type.
@@ -942,6 +1099,16 @@ private constructor(
         fun _outputFormat(): MultipartField<OutputFormat> = outputFormat
 
         /**
+         * Returns the raw multipart value of [partialImages].
+         *
+         * Unlike [partialImages], this method doesn't throw if the multipart field has an
+         * unexpected type.
+         */
+        @JsonProperty("partial_images")
+        @ExcludeMissing
+        fun _partialImages(): MultipartField<Long> = partialImages
+
+        /**
          * Returns the raw multipart value of [quality].
          *
          * Unlike [quality], this method doesn't throw if the multipart field has an unexpected
@@ -973,6 +1140,16 @@ private constructor(
          */
         @JsonProperty("user") @ExcludeMissing fun _user(): MultipartField<String> = user
 
+        @JsonAnySetter
+        private fun putAdditionalProperty(key: String, value: JsonValue) {
+            additionalProperties.put(key, value)
+        }
+
+        @JsonAnyGetter
+        @ExcludeMissing
+        fun _additionalProperties(): Map<String, JsonValue> =
+            Collections.unmodifiableMap(additionalProperties)
+
         fun toBuilder() = Builder().from(this)
 
         companion object {
@@ -995,30 +1172,36 @@ private constructor(
             private var image: MultipartField<Image>? = null
             private var prompt: MultipartField<String>? = null
             private var background: MultipartField<Background> = MultipartField.of(null)
+            private var inputFidelity: MultipartField<InputFidelity> = MultipartField.of(null)
             private var mask: MultipartField<InputStream> = MultipartField.of(null)
             private var model: MultipartField<ImageModel> = MultipartField.of(null)
             private var n: MultipartField<Long> = MultipartField.of(null)
             private var outputCompression: MultipartField<Long> = MultipartField.of(null)
             private var outputFormat: MultipartField<OutputFormat> = MultipartField.of(null)
+            private var partialImages: MultipartField<Long> = MultipartField.of(null)
             private var quality: MultipartField<Quality> = MultipartField.of(null)
             private var responseFormat: MultipartField<ResponseFormat> = MultipartField.of(null)
             private var size: MultipartField<Size> = MultipartField.of(null)
             private var user: MultipartField<String> = MultipartField.of(null)
+            private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
             @JvmSynthetic
             internal fun from(body: Body) = apply {
                 image = body.image
                 prompt = body.prompt
                 background = body.background
+                inputFidelity = body.inputFidelity
                 mask = body.mask
                 model = body.model
                 n = body.n
                 outputCompression = body.outputCompression
                 outputFormat = body.outputFormat
+                partialImages = body.partialImages
                 quality = body.quality
                 responseFormat = body.responseFormat
                 size = body.size
                 user = body.user
+                additionalProperties = body.additionalProperties.toMutableMap()
             }
 
             /**
@@ -1114,6 +1297,29 @@ private constructor(
              */
             fun background(background: MultipartField<Background>) = apply {
                 this.background = background
+            }
+
+            /**
+             * Control how much effort the model will exert to match the style and features,
+             * especially facial features, of input images. This parameter is only supported for
+             * `gpt-image-1`. Supports `high` and `low`. Defaults to `low`.
+             */
+            fun inputFidelity(inputFidelity: InputFidelity?) =
+                inputFidelity(MultipartField.of(inputFidelity))
+
+            /** Alias for calling [Builder.inputFidelity] with `inputFidelity.orElse(null)`. */
+            fun inputFidelity(inputFidelity: Optional<InputFidelity>) =
+                inputFidelity(inputFidelity.getOrNull())
+
+            /**
+             * Sets [Builder.inputFidelity] to an arbitrary multipart value.
+             *
+             * You should usually call [Builder.inputFidelity] with a well-typed [InputFidelity]
+             * value instead. This method is primarily for setting the field to an undocumented or
+             * not yet supported value.
+             */
+            fun inputFidelity(inputFidelity: MultipartField<InputFidelity>) = apply {
+                this.inputFidelity = inputFidelity
             }
 
             /**
@@ -1262,6 +1468,39 @@ private constructor(
             }
 
             /**
+             * The number of partial images to generate. This parameter is used for streaming
+             * responses that return partial images. Value must be between 0 and 3. When set to 0,
+             * the response will be a single image sent in one streaming event.
+             *
+             * Note that the final image may be sent before the full number of partial images are
+             * generated if the full image is generated more quickly.
+             */
+            fun partialImages(partialImages: Long?) =
+                partialImages(MultipartField.of(partialImages))
+
+            /**
+             * Alias for [Builder.partialImages].
+             *
+             * This unboxed primitive overload exists for backwards compatibility.
+             */
+            fun partialImages(partialImages: Long) = partialImages(partialImages as Long?)
+
+            /** Alias for calling [Builder.partialImages] with `partialImages.orElse(null)`. */
+            fun partialImages(partialImages: Optional<Long>) =
+                partialImages(partialImages.getOrNull())
+
+            /**
+             * Sets [Builder.partialImages] to an arbitrary multipart value.
+             *
+             * You should usually call [Builder.partialImages] with a well-typed [Long] value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun partialImages(partialImages: MultipartField<Long>) = apply {
+                this.partialImages = partialImages
+            }
+
+            /**
              * The quality of the image that will be generated. `high`, `medium` and `low` are only
              * supported for `gpt-image-1`. `dall-e-2` only supports `standard` quality. Defaults to
              * `auto`.
@@ -1339,6 +1578,25 @@ private constructor(
              */
             fun user(user: MultipartField<String>) = apply { this.user = user }
 
+            fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                this.additionalProperties.clear()
+                putAllAdditionalProperties(additionalProperties)
+            }
+
+            fun putAdditionalProperty(key: String, value: JsonValue) = apply {
+                additionalProperties.put(key, value)
+            }
+
+            fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                this.additionalProperties.putAll(additionalProperties)
+            }
+
+            fun removeAdditionalProperty(key: String) = apply { additionalProperties.remove(key) }
+
+            fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                keys.forEach(::removeAdditionalProperty)
+            }
+
             /**
              * Returns an immutable instance of [Body].
              *
@@ -1357,15 +1615,18 @@ private constructor(
                     checkRequired("image", image),
                     checkRequired("prompt", prompt),
                     background,
+                    inputFidelity,
                     mask,
                     model,
                     n,
                     outputCompression,
                     outputFormat,
+                    partialImages,
                     quality,
                     responseFormat,
                     size,
                     user,
+                    additionalProperties.toMutableMap(),
                 )
         }
 
@@ -1379,11 +1640,13 @@ private constructor(
             image().validate()
             prompt()
             background().ifPresent { it.validate() }
+            inputFidelity().ifPresent { it.validate() }
             mask()
             model().ifPresent { it.validate() }
             n()
             outputCompression()
             outputFormat().ifPresent { it.validate() }
+            partialImages()
             quality().ifPresent { it.validate() }
             responseFormat().ifPresent { it.validate() }
             size().ifPresent { it.validate() }
@@ -1404,17 +1667,17 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is Body && image == other.image && prompt == other.prompt && background == other.background && mask == other.mask && model == other.model && n == other.n && outputCompression == other.outputCompression && outputFormat == other.outputFormat && quality == other.quality && responseFormat == other.responseFormat && size == other.size && user == other.user /* spotless:on */
+            return /* spotless:off */ other is Body && image == other.image && prompt == other.prompt && background == other.background && inputFidelity == other.inputFidelity && mask == other.mask && model == other.model && n == other.n && outputCompression == other.outputCompression && outputFormat == other.outputFormat && partialImages == other.partialImages && quality == other.quality && responseFormat == other.responseFormat && size == other.size && user == other.user && additionalProperties == other.additionalProperties /* spotless:on */
         }
 
         /* spotless:off */
-        private val hashCode: Int by lazy { Objects.hash(image, prompt, background, mask, model, n, outputCompression, outputFormat, quality, responseFormat, size, user) }
+        private val hashCode: Int by lazy { Objects.hash(image, prompt, background, inputFidelity, mask, model, n, outputCompression, outputFormat, partialImages, quality, responseFormat, size, user, additionalProperties) }
         /* spotless:on */
 
         override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "Body{image=$image, prompt=$prompt, background=$background, mask=$mask, model=$model, n=$n, outputCompression=$outputCompression, outputFormat=$outputFormat, quality=$quality, responseFormat=$responseFormat, size=$size, user=$user}"
+            "Body{image=$image, prompt=$prompt, background=$background, inputFidelity=$inputFidelity, mask=$mask, model=$model, n=$n, outputCompression=$outputCompression, outputFormat=$outputFormat, partialImages=$partialImages, quality=$quality, responseFormat=$responseFormat, size=$size, user=$user, additionalProperties=$additionalProperties}"
     }
 
     /**
@@ -1731,6 +1994,140 @@ private constructor(
             }
 
             return /* spotless:off */ other is Background && value == other.value /* spotless:on */
+        }
+
+        override fun hashCode() = value.hashCode()
+
+        override fun toString() = value.toString()
+    }
+
+    /**
+     * Control how much effort the model will exert to match the style and features, especially
+     * facial features, of input images. This parameter is only supported for `gpt-image-1`.
+     * Supports `high` and `low`. Defaults to `low`.
+     */
+    class InputFidelity @JsonCreator private constructor(private val value: JsonField<String>) :
+        Enum {
+
+        /**
+         * Returns this class instance's raw value.
+         *
+         * This is usually only useful if this instance was deserialized from data that doesn't
+         * match any known member, and you want to know that value. For example, if the SDK is on an
+         * older version than the API, then the API may respond with new members that the SDK is
+         * unaware of.
+         */
+        @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
+
+        companion object {
+
+            @JvmField val HIGH = of("high")
+
+            @JvmField val LOW = of("low")
+
+            @JvmStatic fun of(value: String) = InputFidelity(JsonField.of(value))
+        }
+
+        /** An enum containing [InputFidelity]'s known values. */
+        enum class Known {
+            HIGH,
+            LOW,
+        }
+
+        /**
+         * An enum containing [InputFidelity]'s known values, as well as an [_UNKNOWN] member.
+         *
+         * An instance of [InputFidelity] can contain an unknown value in a couple of cases:
+         * - It was deserialized from data that doesn't match any known member. For example, if the
+         *   SDK is on an older version than the API, then the API may respond with new members that
+         *   the SDK is unaware of.
+         * - It was constructed with an arbitrary value using the [of] method.
+         */
+        enum class Value {
+            HIGH,
+            LOW,
+            /**
+             * An enum member indicating that [InputFidelity] was instantiated with an unknown
+             * value.
+             */
+            _UNKNOWN,
+        }
+
+        /**
+         * Returns an enum member corresponding to this class instance's value, or [Value._UNKNOWN]
+         * if the class was instantiated with an unknown value.
+         *
+         * Use the [known] method instead if you're certain the value is always known or if you want
+         * to throw for the unknown case.
+         */
+        fun value(): Value =
+            when (this) {
+                HIGH -> Value.HIGH
+                LOW -> Value.LOW
+                else -> Value._UNKNOWN
+            }
+
+        /**
+         * Returns an enum member corresponding to this class instance's value.
+         *
+         * Use the [value] method instead if you're uncertain the value is always known and don't
+         * want to throw for the unknown case.
+         *
+         * @throws OpenAIInvalidDataException if this class instance's value is a not a known
+         *   member.
+         */
+        fun known(): Known =
+            when (this) {
+                HIGH -> Known.HIGH
+                LOW -> Known.LOW
+                else -> throw OpenAIInvalidDataException("Unknown InputFidelity: $value")
+            }
+
+        /**
+         * Returns this class instance's primitive wire representation.
+         *
+         * This differs from the [toString] method because that method is primarily for debugging
+         * and generally doesn't throw.
+         *
+         * @throws OpenAIInvalidDataException if this class instance's value does not have the
+         *   expected primitive type.
+         */
+        fun asString(): String =
+            _value().asString().orElseThrow { OpenAIInvalidDataException("Value is not a String") }
+
+        private var validated: Boolean = false
+
+        fun validate(): InputFidelity = apply {
+            if (validated) {
+                return@apply
+            }
+
+            known()
+            validated = true
+        }
+
+        fun isValid(): Boolean =
+            try {
+                validate()
+                true
+            } catch (e: OpenAIInvalidDataException) {
+                false
+            }
+
+        /**
+         * Returns a score indicating how many valid values are contained in this object
+         * recursively.
+         *
+         * Used for best match union deserialization.
+         */
+        @JvmSynthetic internal fun validity(): Int = if (value() == Value._UNKNOWN) 0 else 1
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) {
+                return true
+            }
+
+            return /* spotless:off */ other is InputFidelity && value == other.value /* spotless:on */
         }
 
         override fun hashCode() = value.hashCode()

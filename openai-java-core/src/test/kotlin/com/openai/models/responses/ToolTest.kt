@@ -245,6 +245,7 @@ internal class ToolTest {
                         )
                         .build()
                 )
+                .serverDescription("server_description")
                 .build()
 
         val tool = Tool.ofMcp(mcp)
@@ -287,6 +288,7 @@ internal class ToolTest {
                             )
                             .build()
                     )
+                    .serverDescription("server_description")
                     .build()
             )
 
@@ -329,6 +331,7 @@ internal class ToolTest {
         val imageGeneration =
             Tool.ImageGeneration.builder()
                 .background(Tool.ImageGeneration.Background.TRANSPARENT)
+                .inputFidelity(Tool.ImageGeneration.InputFidelity.HIGH)
                 .inputImageMask(
                     Tool.ImageGeneration.InputImageMask.builder()
                         .fileId("file_id")
@@ -363,6 +366,7 @@ internal class ToolTest {
             Tool.ofImageGeneration(
                 Tool.ImageGeneration.builder()
                     .background(Tool.ImageGeneration.Background.TRANSPARENT)
+                    .inputFidelity(Tool.ImageGeneration.InputFidelity.HIGH)
                     .inputImageMask(
                         Tool.ImageGeneration.InputImageMask.builder()
                             .fileId("file_id")

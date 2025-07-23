@@ -22,7 +22,7 @@ public final class CompletionsImageUrlExample {
         OpenAIClient client = OpenAIOkHttpClient.fromEnv();
 
         ClassLoader classloader = Thread.currentThread().getContextClassLoader();
-        byte[] logoBytes = classloader.getResource("logo.png").openStream().readAllBytes();
+        byte[] logoBytes = classloader.getResourceAsStream("logo.png").readAllBytes();
         String logoBase64Url = "data:image/jpeg;base64," + Base64.getEncoder().encodeToString(logoBytes);
 
         ChatCompletionContentPart logoContentPart =

@@ -5,17 +5,17 @@ package com.openai.services.blocking.finetuning
 import com.openai.core.ClientOptions
 import com.openai.core.RequestOptions
 import com.openai.core.checkRequired
+import com.openai.core.handlers.errorBodyHandler
 import com.openai.core.handlers.errorHandler
 import com.openai.core.handlers.jsonHandler
-import com.openai.core.handlers.withErrorHandler
 import com.openai.core.http.HttpMethod
 import com.openai.core.http.HttpRequest
+import com.openai.core.http.HttpResponse
 import com.openai.core.http.HttpResponse.Handler
 import com.openai.core.http.HttpResponseFor
 import com.openai.core.http.json
 import com.openai.core.http.parseable
 import com.openai.core.prepare
-import com.openai.models.ErrorObject
 import com.openai.models.finetuning.jobs.FineTuningJob
 import com.openai.models.finetuning.jobs.JobCancelParams
 import com.openai.models.finetuning.jobs.JobCreateParams
@@ -85,7 +85,8 @@ class JobServiceImpl internal constructor(private val clientOptions: ClientOptio
     class WithRawResponseImpl internal constructor(private val clientOptions: ClientOptions) :
         JobService.WithRawResponse {
 
-        private val errorHandler: Handler<ErrorObject?> = errorHandler(clientOptions.jsonMapper)
+        private val errorHandler: Handler<HttpResponse> =
+            errorHandler(errorBodyHandler(clientOptions.jsonMapper))
 
         private val checkpoints: CheckpointService.WithRawResponse by lazy {
             CheckpointServiceImpl.WithRawResponseImpl(clientOptions)
@@ -101,7 +102,7 @@ class JobServiceImpl internal constructor(private val clientOptions: ClientOptio
         override fun checkpoints(): CheckpointService.WithRawResponse = checkpoints
 
         private val createHandler: Handler<FineTuningJob> =
-            jsonHandler<FineTuningJob>(clientOptions.jsonMapper).withErrorHandler(errorHandler)
+            jsonHandler<FineTuningJob>(clientOptions.jsonMapper)
 
         override fun create(
             params: JobCreateParams,
@@ -117,7 +118,7 @@ class JobServiceImpl internal constructor(private val clientOptions: ClientOptio
                     .prepare(clientOptions, params, params.model().toString())
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             val response = clientOptions.httpClient.execute(request, requestOptions)
-            return response.parseable {
+            return errorHandler.handle(response).parseable {
                 response
                     .use { createHandler.handle(it) }
                     .also {
@@ -129,7 +130,7 @@ class JobServiceImpl internal constructor(private val clientOptions: ClientOptio
         }
 
         private val retrieveHandler: Handler<FineTuningJob> =
-            jsonHandler<FineTuningJob>(clientOptions.jsonMapper).withErrorHandler(errorHandler)
+            jsonHandler<FineTuningJob>(clientOptions.jsonMapper)
 
         override fun retrieve(
             params: JobRetrieveParams,
@@ -147,7 +148,7 @@ class JobServiceImpl internal constructor(private val clientOptions: ClientOptio
                     .prepare(clientOptions, params, deploymentModel = null)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             val response = clientOptions.httpClient.execute(request, requestOptions)
-            return response.parseable {
+            return errorHandler.handle(response).parseable {
                 response
                     .use { retrieveHandler.handle(it) }
                     .also {
@@ -160,7 +161,6 @@ class JobServiceImpl internal constructor(private val clientOptions: ClientOptio
 
         private val listHandler: Handler<JobListPageResponse> =
             jsonHandler<JobListPageResponse>(clientOptions.jsonMapper)
-                .withErrorHandler(errorHandler)
 
         override fun list(
             params: JobListParams,
@@ -175,7 +175,7 @@ class JobServiceImpl internal constructor(private val clientOptions: ClientOptio
                     .prepare(clientOptions, params, deploymentModel = null)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             val response = clientOptions.httpClient.execute(request, requestOptions)
-            return response.parseable {
+            return errorHandler.handle(response).parseable {
                 response
                     .use { listHandler.handle(it) }
                     .also {
@@ -194,7 +194,7 @@ class JobServiceImpl internal constructor(private val clientOptions: ClientOptio
         }
 
         private val cancelHandler: Handler<FineTuningJob> =
-            jsonHandler<FineTuningJob>(clientOptions.jsonMapper).withErrorHandler(errorHandler)
+            jsonHandler<FineTuningJob>(clientOptions.jsonMapper)
 
         override fun cancel(
             params: JobCancelParams,
@@ -213,7 +213,7 @@ class JobServiceImpl internal constructor(private val clientOptions: ClientOptio
                     .prepare(clientOptions, params, deploymentModel = null)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             val response = clientOptions.httpClient.execute(request, requestOptions)
-            return response.parseable {
+            return errorHandler.handle(response).parseable {
                 response
                     .use { cancelHandler.handle(it) }
                     .also {
@@ -226,7 +226,6 @@ class JobServiceImpl internal constructor(private val clientOptions: ClientOptio
 
         private val listEventsHandler: Handler<JobListEventsPageResponse> =
             jsonHandler<JobListEventsPageResponse>(clientOptions.jsonMapper)
-                .withErrorHandler(errorHandler)
 
         override fun listEvents(
             params: JobListEventsParams,
@@ -244,7 +243,7 @@ class JobServiceImpl internal constructor(private val clientOptions: ClientOptio
                     .prepare(clientOptions, params, deploymentModel = null)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             val response = clientOptions.httpClient.execute(request, requestOptions)
-            return response.parseable {
+            return errorHandler.handle(response).parseable {
                 response
                     .use { listEventsHandler.handle(it) }
                     .also {
@@ -263,7 +262,7 @@ class JobServiceImpl internal constructor(private val clientOptions: ClientOptio
         }
 
         private val pauseHandler: Handler<FineTuningJob> =
-            jsonHandler<FineTuningJob>(clientOptions.jsonMapper).withErrorHandler(errorHandler)
+            jsonHandler<FineTuningJob>(clientOptions.jsonMapper)
 
         override fun pause(
             params: JobPauseParams,
@@ -282,7 +281,7 @@ class JobServiceImpl internal constructor(private val clientOptions: ClientOptio
                     .prepare(clientOptions, params, deploymentModel = null)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             val response = clientOptions.httpClient.execute(request, requestOptions)
-            return response.parseable {
+            return errorHandler.handle(response).parseable {
                 response
                     .use { pauseHandler.handle(it) }
                     .also {
@@ -294,7 +293,7 @@ class JobServiceImpl internal constructor(private val clientOptions: ClientOptio
         }
 
         private val resumeHandler: Handler<FineTuningJob> =
-            jsonHandler<FineTuningJob>(clientOptions.jsonMapper).withErrorHandler(errorHandler)
+            jsonHandler<FineTuningJob>(clientOptions.jsonMapper)
 
         override fun resume(
             params: JobResumeParams,
@@ -313,7 +312,7 @@ class JobServiceImpl internal constructor(private val clientOptions: ClientOptio
                     .prepare(clientOptions, params, deploymentModel = null)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             val response = clientOptions.httpClient.execute(request, requestOptions)
-            return response.parseable {
+            return errorHandler.handle(response).parseable {
                 response
                     .use { resumeHandler.handle(it) }
                     .also {

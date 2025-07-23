@@ -5,17 +5,17 @@ package com.openai.services.blocking.evals
 import com.openai.core.ClientOptions
 import com.openai.core.RequestOptions
 import com.openai.core.checkRequired
+import com.openai.core.handlers.errorBodyHandler
 import com.openai.core.handlers.errorHandler
 import com.openai.core.handlers.jsonHandler
-import com.openai.core.handlers.withErrorHandler
 import com.openai.core.http.HttpMethod
 import com.openai.core.http.HttpRequest
+import com.openai.core.http.HttpResponse
 import com.openai.core.http.HttpResponse.Handler
 import com.openai.core.http.HttpResponseFor
 import com.openai.core.http.json
 import com.openai.core.http.parseable
 import com.openai.core.prepare
-import com.openai.models.ErrorObject
 import com.openai.models.evals.runs.RunCancelParams
 import com.openai.models.evals.runs.RunCancelResponse
 import com.openai.models.evals.runs.RunCreateParams
@@ -82,7 +82,8 @@ class RunServiceImpl internal constructor(private val clientOptions: ClientOptio
     class WithRawResponseImpl internal constructor(private val clientOptions: ClientOptions) :
         RunService.WithRawResponse {
 
-        private val errorHandler: Handler<ErrorObject?> = errorHandler(clientOptions.jsonMapper)
+        private val errorHandler: Handler<HttpResponse> =
+            errorHandler(errorBodyHandler(clientOptions.jsonMapper))
 
         private val outputItems: OutputItemService.WithRawResponse by lazy {
             OutputItemServiceImpl.WithRawResponseImpl(clientOptions)
@@ -98,7 +99,7 @@ class RunServiceImpl internal constructor(private val clientOptions: ClientOptio
         override fun outputItems(): OutputItemService.WithRawResponse = outputItems
 
         private val createHandler: Handler<RunCreateResponse> =
-            jsonHandler<RunCreateResponse>(clientOptions.jsonMapper).withErrorHandler(errorHandler)
+            jsonHandler<RunCreateResponse>(clientOptions.jsonMapper)
 
         override fun create(
             params: RunCreateParams,
@@ -117,7 +118,7 @@ class RunServiceImpl internal constructor(private val clientOptions: ClientOptio
                     .prepare(clientOptions, params, deploymentModel = null)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             val response = clientOptions.httpClient.execute(request, requestOptions)
-            return response.parseable {
+            return errorHandler.handle(response).parseable {
                 response
                     .use { createHandler.handle(it) }
                     .also {
@@ -130,7 +131,6 @@ class RunServiceImpl internal constructor(private val clientOptions: ClientOptio
 
         private val retrieveHandler: Handler<RunRetrieveResponse> =
             jsonHandler<RunRetrieveResponse>(clientOptions.jsonMapper)
-                .withErrorHandler(errorHandler)
 
         override fun retrieve(
             params: RunRetrieveParams,
@@ -148,7 +148,7 @@ class RunServiceImpl internal constructor(private val clientOptions: ClientOptio
                     .prepare(clientOptions, params, deploymentModel = null)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             val response = clientOptions.httpClient.execute(request, requestOptions)
-            return response.parseable {
+            return errorHandler.handle(response).parseable {
                 response
                     .use { retrieveHandler.handle(it) }
                     .also {
@@ -161,7 +161,6 @@ class RunServiceImpl internal constructor(private val clientOptions: ClientOptio
 
         private val listHandler: Handler<RunListPageResponse> =
             jsonHandler<RunListPageResponse>(clientOptions.jsonMapper)
-                .withErrorHandler(errorHandler)
 
         override fun list(
             params: RunListParams,
@@ -179,7 +178,7 @@ class RunServiceImpl internal constructor(private val clientOptions: ClientOptio
                     .prepare(clientOptions, params, deploymentModel = null)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             val response = clientOptions.httpClient.execute(request, requestOptions)
-            return response.parseable {
+            return errorHandler.handle(response).parseable {
                 response
                     .use { listHandler.handle(it) }
                     .also {
@@ -198,7 +197,7 @@ class RunServiceImpl internal constructor(private val clientOptions: ClientOptio
         }
 
         private val deleteHandler: Handler<RunDeleteResponse> =
-            jsonHandler<RunDeleteResponse>(clientOptions.jsonMapper).withErrorHandler(errorHandler)
+            jsonHandler<RunDeleteResponse>(clientOptions.jsonMapper)
 
         override fun delete(
             params: RunDeleteParams,
@@ -217,7 +216,7 @@ class RunServiceImpl internal constructor(private val clientOptions: ClientOptio
                     .prepare(clientOptions, params, deploymentModel = null)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             val response = clientOptions.httpClient.execute(request, requestOptions)
-            return response.parseable {
+            return errorHandler.handle(response).parseable {
                 response
                     .use { deleteHandler.handle(it) }
                     .also {
@@ -229,7 +228,7 @@ class RunServiceImpl internal constructor(private val clientOptions: ClientOptio
         }
 
         private val cancelHandler: Handler<RunCancelResponse> =
-            jsonHandler<RunCancelResponse>(clientOptions.jsonMapper).withErrorHandler(errorHandler)
+            jsonHandler<RunCancelResponse>(clientOptions.jsonMapper)
 
         override fun cancel(
             params: RunCancelParams,
@@ -248,7 +247,7 @@ class RunServiceImpl internal constructor(private val clientOptions: ClientOptio
                     .prepare(clientOptions, params, deploymentModel = null)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             val response = clientOptions.httpClient.execute(request, requestOptions)
-            return response.parseable {
+            return errorHandler.handle(response).parseable {
                 response
                     .use { cancelHandler.handle(it) }
                     .also {

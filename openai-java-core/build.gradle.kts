@@ -1,4 +1,5 @@
 plugins {
+    id("java")
     id("openai.kotlin")
     id("openai.publish")
 }
@@ -20,6 +21,7 @@ dependencies {
     api("com.fasterxml.jackson.core:jackson-core:2.18.2")
     api("com.fasterxml.jackson.core:jackson-databind:2.18.2")
     api("com.google.errorprone:error_prone_annotations:2.33.0")
+    api("io.swagger.core.v3:swagger-annotations:2.2.31")
 
     implementation("com.fasterxml.jackson.core:jackson-annotations:2.18.2")
     implementation("com.fasterxml.jackson.datatype:jackson-datatype-jdk8:2.18.2")
@@ -29,6 +31,7 @@ dependencies {
     implementation("org.apache.httpcomponents.client5:httpclient5:5.3.1")
     implementation("com.github.victools:jsonschema-generator:4.38.0")
     implementation("com.github.victools:jsonschema-module-jackson:4.38.0")
+    implementation("com.github.victools:jsonschema-module-swagger-2:4.38.0")
 
     testImplementation(kotlin("test"))
     testImplementation(project(":openai-java-client-okhttp"))
@@ -40,4 +43,20 @@ dependencies {
     testImplementation("org.mockito:mockito-core:5.14.2")
     testImplementation("org.mockito:mockito-junit-jupiter:5.14.2")
     testImplementation("org.mockito.kotlin:mockito-kotlin:4.1.0")
+}
+
+if (project.hasProperty("graalvmAgent")) {
+    java {
+        toolchain {
+            languageVersion.set(JavaLanguageVersion.of(21))
+            vendor.set(JvmVendorSpec.GRAAL_VM)
+        }
+    }
+
+    tasks.test {
+        maxParallelForks = 1
+        forkEvery = 0
+        jvmArgs =
+            listOf("-agentlib:native-image-agent=config-output-dir=src/main/resources/META-INF/native-image")
+    }
 }

@@ -13,6 +13,7 @@ import com.openai.core.http.RetryingHttpClient
 import com.openai.credential.BearerTokenCredential
 import com.openai.credential.Credential
 import java.time.Clock
+import java.time.Duration
 import java.util.Optional
 import java.util.concurrent.Executor
 import java.util.concurrent.Executors
@@ -24,6 +25,13 @@ class ClientOptions
 private constructor(
     private val originalHttpClient: HttpClient,
     @get:JvmName("httpClient") val httpClient: HttpClient,
+    /**
+     * Whether to throw an exception if any of the Jackson versions detected at runtime are
+     * incompatible with the SDK's minimum supported Jackson version (2.13.4).
+     *
+     * Defaults to true. Use extreme caution when disabling this option. There is no guarantee that
+     * the SDK will work correctly when using an incompatible Jackson version.
+     */
     @get:JvmName("checkJacksonVersionCompatibility") val checkJacksonVersionCompatibility: Boolean,
     @get:JvmName("jsonMapper") val jsonMapper: JsonMapper,
     @get:JvmName("streamHandlerExecutor") val streamHandlerExecutor: Executor,
@@ -115,8 +123,17 @@ private constructor(
             webhookSecret = clientOptions.webhookSecret
         }
 
-        fun httpClient(httpClient: HttpClient) = apply { this.httpClient = httpClient }
+        fun httpClient(httpClient: HttpClient) = apply {
+            this.httpClient = PhantomReachableClosingHttpClient(httpClient)
+        }
 
+        /**
+         * Whether to throw an exception if any of the Jackson versions detected at runtime are
+         * incompatible with the SDK's minimum supported Jackson version (2.13.4).
+         *
+         * Defaults to true. Use extreme caution when disabling this option. There is no guarantee
+         * that the SDK will work correctly when using an incompatible Jackson version.
+         */
         fun checkJacksonVersionCompatibility(checkJacksonVersionCompatibility: Boolean) = apply {
             this.checkJacksonVersionCompatibility = checkJacksonVersionCompatibility
         }
@@ -139,6 +156,15 @@ private constructor(
         }
 
         fun timeout(timeout: Timeout) = apply { this.timeout = timeout }
+
+        /**
+         * Sets the maximum time allowed for a complete HTTP call, not including retries.
+         *
+         * See [Timeout.request] for more details.
+         *
+         * For fine-grained control, pass a [Timeout] object.
+         */
+        fun timeout(timeout: Duration) = timeout(Timeout.builder().request(timeout).build())
 
         fun maxRetries(maxRetries: Int) = apply { this.maxRetries = maxRetries }
 
@@ -248,14 +274,20 @@ private constructor(
 
         fun removeAllQueryParams(keys: Set<String>) = apply { queryParams.removeAll(keys) }
 
-        fun fromEnv() = apply {
-            System.getenv("OPENAI_BASE_URL")?.let { baseUrl(it) }
+        fun timeout(): Timeout = timeout
 
-            val openAIKey = System.getenv("OPENAI_API_KEY")
-            val openAIOrgId = System.getenv("OPENAI_ORG_ID")
-            val openAIProjectId = System.getenv("OPENAI_PROJECT_ID")
+        fun fromEnv() = apply {
+            (System.getProperty("openai.baseUrl") ?: System.getenv("OPENAI_BASE_URL"))?.let {
+                baseUrl(it)
+            }
+
+            val openAIKey = System.getProperty("openai.apiKey") ?: System.getenv("OPENAI_API_KEY")
+            val openAIOrgId = System.getProperty("openai.orgId") ?: System.getenv("OPENAI_ORG_ID")
+            val openAIProjectId =
+                System.getProperty("openai.projectId") ?: System.getenv("OPENAI_PROJECT_ID")
             val azureOpenAIKey = System.getenv("AZURE_OPENAI_KEY")
-            val openAIWebhookSecret = System.getenv("OPENAI_WEBHOOK_SECRET")
+            val openAIWebhookSecret =
+                System.getProperty("openai.webhookSecret") ?: System.getenv("OPENAI_WEBHOOK_SECRET")
             if (!openAIWebhookSecret.isNullOrEmpty()) {
                 webhookSecret(openAIWebhookSecret)
             }
@@ -335,13 +367,11 @@ private constructor(
 
             return ClientOptions(
                 httpClient,
-                PhantomReachableClosingHttpClient(
-                    RetryingHttpClient.builder()
-                        .httpClient(httpClient)
-                        .clock(clock)
-                        .maxRetries(maxRetries)
-                        .build()
-                ),
+                RetryingHttpClient.builder()
+                    .httpClient(httpClient)
+                    .clock(clock)
+                    .maxRetries(maxRetries)
+                    .build(),
                 checkJacksonVersionCompatibility,
                 jsonMapper,
                 streamHandlerExecutor

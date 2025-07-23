@@ -5,17 +5,17 @@ package com.openai.services.async.evals
 import com.openai.core.ClientOptions
 import com.openai.core.RequestOptions
 import com.openai.core.checkRequired
+import com.openai.core.handlers.errorBodyHandler
 import com.openai.core.handlers.errorHandler
 import com.openai.core.handlers.jsonHandler
-import com.openai.core.handlers.withErrorHandler
 import com.openai.core.http.HttpMethod
 import com.openai.core.http.HttpRequest
+import com.openai.core.http.HttpResponse
 import com.openai.core.http.HttpResponse.Handler
 import com.openai.core.http.HttpResponseFor
 import com.openai.core.http.json
 import com.openai.core.http.parseable
 import com.openai.core.prepareAsync
-import com.openai.models.ErrorObject
 import com.openai.models.evals.runs.RunCancelParams
 import com.openai.models.evals.runs.RunCancelResponse
 import com.openai.models.evals.runs.RunCreateParams
@@ -89,7 +89,8 @@ class RunServiceAsyncImpl internal constructor(private val clientOptions: Client
     class WithRawResponseImpl internal constructor(private val clientOptions: ClientOptions) :
         RunServiceAsync.WithRawResponse {
 
-        private val errorHandler: Handler<ErrorObject?> = errorHandler(clientOptions.jsonMapper)
+        private val errorHandler: Handler<HttpResponse> =
+            errorHandler(errorBodyHandler(clientOptions.jsonMapper))
 
         private val outputItems: OutputItemServiceAsync.WithRawResponse by lazy {
             OutputItemServiceAsyncImpl.WithRawResponseImpl(clientOptions)
@@ -105,7 +106,7 @@ class RunServiceAsyncImpl internal constructor(private val clientOptions: Client
         override fun outputItems(): OutputItemServiceAsync.WithRawResponse = outputItems
 
         private val createHandler: Handler<RunCreateResponse> =
-            jsonHandler<RunCreateResponse>(clientOptions.jsonMapper).withErrorHandler(errorHandler)
+            jsonHandler<RunCreateResponse>(clientOptions.jsonMapper)
 
         override fun create(
             params: RunCreateParams,
@@ -126,7 +127,7 @@ class RunServiceAsyncImpl internal constructor(private val clientOptions: Client
             return request
                 .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
                 .thenApply { response ->
-                    response.parseable {
+                    errorHandler.handle(response).parseable {
                         response
                             .use { createHandler.handle(it) }
                             .also {
@@ -140,7 +141,6 @@ class RunServiceAsyncImpl internal constructor(private val clientOptions: Client
 
         private val retrieveHandler: Handler<RunRetrieveResponse> =
             jsonHandler<RunRetrieveResponse>(clientOptions.jsonMapper)
-                .withErrorHandler(errorHandler)
 
         override fun retrieve(
             params: RunRetrieveParams,
@@ -160,7 +160,7 @@ class RunServiceAsyncImpl internal constructor(private val clientOptions: Client
             return request
                 .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
                 .thenApply { response ->
-                    response.parseable {
+                    errorHandler.handle(response).parseable {
                         response
                             .use { retrieveHandler.handle(it) }
                             .also {
@@ -174,7 +174,6 @@ class RunServiceAsyncImpl internal constructor(private val clientOptions: Client
 
         private val listHandler: Handler<RunListPageResponse> =
             jsonHandler<RunListPageResponse>(clientOptions.jsonMapper)
-                .withErrorHandler(errorHandler)
 
         override fun list(
             params: RunListParams,
@@ -194,7 +193,7 @@ class RunServiceAsyncImpl internal constructor(private val clientOptions: Client
             return request
                 .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
                 .thenApply { response ->
-                    response.parseable {
+                    errorHandler.handle(response).parseable {
                         response
                             .use { listHandler.handle(it) }
                             .also {
@@ -215,7 +214,7 @@ class RunServiceAsyncImpl internal constructor(private val clientOptions: Client
         }
 
         private val deleteHandler: Handler<RunDeleteResponse> =
-            jsonHandler<RunDeleteResponse>(clientOptions.jsonMapper).withErrorHandler(errorHandler)
+            jsonHandler<RunDeleteResponse>(clientOptions.jsonMapper)
 
         override fun delete(
             params: RunDeleteParams,
@@ -236,7 +235,7 @@ class RunServiceAsyncImpl internal constructor(private val clientOptions: Client
             return request
                 .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
                 .thenApply { response ->
-                    response.parseable {
+                    errorHandler.handle(response).parseable {
                         response
                             .use { deleteHandler.handle(it) }
                             .also {
@@ -249,7 +248,7 @@ class RunServiceAsyncImpl internal constructor(private val clientOptions: Client
         }
 
         private val cancelHandler: Handler<RunCancelResponse> =
-            jsonHandler<RunCancelResponse>(clientOptions.jsonMapper).withErrorHandler(errorHandler)
+            jsonHandler<RunCancelResponse>(clientOptions.jsonMapper)
 
         override fun cancel(
             params: RunCancelParams,
@@ -270,7 +269,7 @@ class RunServiceAsyncImpl internal constructor(private val clientOptions: Client
             return request
                 .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
                 .thenApply { response ->
-                    response.parseable {
+                    errorHandler.handle(response).parseable {
                         response
                             .use { cancelHandler.handle(it) }
                             .also {
