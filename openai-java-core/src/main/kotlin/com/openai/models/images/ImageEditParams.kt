@@ -1787,7 +1787,8 @@ private constructor(
             fun ofInputStream(inputStream: InputStream) = Image(inputStream = inputStream)
 
             @JvmStatic
-            fun ofInputStreams(inputStreams: List<InputStream>) = Image(inputStreams = inputStreams)
+            fun ofInputStreams(inputStreams: List<InputStream>) =
+                Image(inputStreams = inputStreams.toImmutable())
         }
 
         /** An interface that defines how to map each variant of [Image] to a value of type [T]. */

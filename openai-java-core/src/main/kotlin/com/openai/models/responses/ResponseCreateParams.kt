@@ -2848,7 +2848,8 @@ private constructor(
              * A list of one or many input items to the model, containing different content types.
              */
             @JvmStatic
-            fun ofResponse(response: List<ResponseInputItem>) = Input(response = response)
+            fun ofResponse(response: List<ResponseInputItem>) =
+                Input(response = response.toImmutable())
         }
 
         /** An interface that defines how to map each variant of [Input] to a value of type [T]. */

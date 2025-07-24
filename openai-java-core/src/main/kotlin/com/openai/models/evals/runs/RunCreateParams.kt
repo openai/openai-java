@@ -4500,7 +4500,7 @@ private constructor(
                                     ) =
                                         Content(
                                             anArrayOfInputTextAndInputImage =
-                                                anArrayOfInputTextAndInputImage
+                                                anArrayOfInputTextAndInputImage.toImmutable()
                                         )
                                 }
 

@@ -830,7 +830,11 @@ private constructor(
                 @JvmStatic
                 fun ofAnArrayOfInputTextAndInputImage(
                     anArrayOfInputTextAndInputImage: List<JsonValue>
-                ) = Content(anArrayOfInputTextAndInputImage = anArrayOfInputTextAndInputImage)
+                ) =
+                    Content(
+                        anArrayOfInputTextAndInputImage =
+                            anArrayOfInputTextAndInputImage.toImmutable()
+                    )
             }
 
             /**

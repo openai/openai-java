@@ -22,6 +22,7 @@ import com.openai.core.JsonValue
 import com.openai.core.allMaxBy
 import com.openai.core.checkRequired
 import com.openai.core.getOrThrow
+import com.openai.core.toImmutable
 import com.openai.core.toJsonString
 import com.openai.errors.OpenAIInvalidDataException
 import java.util.Collections
@@ -385,7 +386,7 @@ private constructor(
              */
             @JvmStatic
             fun ofArrayOfContentParts(arrayOfContentParts: List<ChatCompletionContentPartText>) =
-                Content(arrayOfContentParts = arrayOfContentParts)
+                Content(arrayOfContentParts = arrayOfContentParts.toImmutable())
         }
 
         /**

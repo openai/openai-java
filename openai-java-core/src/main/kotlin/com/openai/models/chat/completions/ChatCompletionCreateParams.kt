@@ -5380,7 +5380,7 @@ private constructor(
 
             @JvmStatic fun ofString(string: String) = Stop(string = string)
 
-            @JvmStatic fun ofStrings(strings: List<String>) = Stop(strings = strings)
+            @JvmStatic fun ofStrings(strings: List<String>) = Stop(strings = strings.toImmutable())
         }
 
         /** An interface that defines how to map each variant of [Stop] to a value of type [T]. */

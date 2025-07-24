@@ -25,6 +25,7 @@ import com.openai.core.checkRequired
 import com.openai.core.getOrThrow
 import com.openai.core.http.Headers
 import com.openai.core.http.QueryParams
+import com.openai.core.toImmutable
 import com.openai.errors.OpenAIInvalidDataException
 import java.util.Collections
 import java.util.Objects
@@ -671,13 +672,13 @@ private constructor(
             @JvmStatic fun ofString(string: String) = Input(string = string)
 
             /** An array of strings to classify for moderation. */
-            @JvmStatic fun ofStrings(strings: List<String>) = Input(strings = strings)
+            @JvmStatic fun ofStrings(strings: List<String>) = Input(strings = strings.toImmutable())
 
             /** An array of multi-modal inputs to the moderation model. */
             @JvmStatic
             fun ofModerationMultiModalArray(
                 moderationMultiModalArray: List<ModerationMultiModalInput>
-            ) = Input(moderationMultiModalArray = moderationMultiModalArray)
+            ) = Input(moderationMultiModalArray = moderationMultiModalArray.toImmutable())
         }
 
         /** An interface that defines how to map each variant of [Input] to a value of type [T]. */
