@@ -10,7 +10,7 @@ import java.util.Objects
 import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
-/** @see [EvalService.list] */
+/** @see EvalService.list */
 class EvalListPage
 private constructor(
     private val service: EvalService,
@@ -21,7 +21,7 @@ private constructor(
     /**
      * Delegates to [EvalListPageResponse], but gracefully handles missing data.
      *
-     * @see [EvalListPageResponse.data]
+     * @see EvalListPageResponse.data
      */
     fun data(): List<EvalListResponse> =
         response._data().getOptional("data").getOrNull() ?: emptyList()
@@ -29,7 +29,7 @@ private constructor(
     /**
      * Delegates to [EvalListPageResponse], but gracefully handles missing data.
      *
-     * @see [EvalListPageResponse.hasMore]
+     * @see EvalListPageResponse.hasMore
      */
     fun hasMore(): Optional<Boolean> = response._hasMore().getOptional("has_more")
 

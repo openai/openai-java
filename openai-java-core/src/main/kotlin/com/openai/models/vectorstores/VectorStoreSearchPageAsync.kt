@@ -12,7 +12,7 @@ import java.util.concurrent.CompletableFuture
 import java.util.concurrent.Executor
 import kotlin.jvm.optionals.getOrNull
 
-/** @see [VectorStoreServiceAsync.search] */
+/** @see VectorStoreServiceAsync.search */
 class VectorStoreSearchPageAsync
 private constructor(
     private val service: VectorStoreServiceAsync,
@@ -24,12 +24,12 @@ private constructor(
     /**
      * Delegates to [VectorStoreSearchPageResponse], but gracefully handles missing data.
      *
-     * @see [VectorStoreSearchPageResponse.data]
+     * @see VectorStoreSearchPageResponse.data
      */
     fun data(): List<VectorStoreSearchResponse> =
         response._data().getOptional("data").getOrNull() ?: emptyList()
 
-    /** @see [VectorStoreSearchPageResponse.object_] */
+    /** @see VectorStoreSearchPageResponse.object\_ */
     fun object_(): JsonValue = response._object_()
 
     override fun items(): List<VectorStoreSearchResponse> = data()

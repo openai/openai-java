@@ -11,7 +11,7 @@ import java.util.Objects
 import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
-/** @see [FileBatchService.listFiles] */
+/** @see FileBatchService.listFiles */
 class FileBatchListFilesPage
 private constructor(
     private val service: FileBatchService,
@@ -22,7 +22,7 @@ private constructor(
     /**
      * Delegates to [FileBatchListFilesPageResponse], but gracefully handles missing data.
      *
-     * @see [FileBatchListFilesPageResponse.data]
+     * @see FileBatchListFilesPageResponse.data
      */
     fun data(): List<VectorStoreFile> =
         response._data().getOptional("data").getOrNull() ?: emptyList()
@@ -30,7 +30,7 @@ private constructor(
     /**
      * Delegates to [FileBatchListFilesPageResponse], but gracefully handles missing data.
      *
-     * @see [FileBatchListFilesPageResponse.hasMore]
+     * @see FileBatchListFilesPageResponse.hasMore
      */
     fun hasMore(): Optional<Boolean> = response._hasMore().getOptional("has_more")
 

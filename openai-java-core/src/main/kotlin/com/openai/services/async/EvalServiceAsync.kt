@@ -45,7 +45,7 @@ interface EvalServiceAsync {
     fun create(params: EvalCreateParams): CompletableFuture<EvalCreateResponse> =
         create(params, RequestOptions.none())
 
-    /** @see [create] */
+    /** @see create */
     fun create(
         params: EvalCreateParams,
         requestOptions: RequestOptions = RequestOptions.none(),
@@ -55,7 +55,7 @@ interface EvalServiceAsync {
     fun retrieve(evalId: String): CompletableFuture<EvalRetrieveResponse> =
         retrieve(evalId, EvalRetrieveParams.none())
 
-    /** @see [retrieve] */
+    /** @see retrieve */
     fun retrieve(
         evalId: String,
         params: EvalRetrieveParams = EvalRetrieveParams.none(),
@@ -63,23 +63,23 @@ interface EvalServiceAsync {
     ): CompletableFuture<EvalRetrieveResponse> =
         retrieve(params.toBuilder().evalId(evalId).build(), requestOptions)
 
-    /** @see [retrieve] */
+    /** @see retrieve */
     fun retrieve(
         evalId: String,
         params: EvalRetrieveParams = EvalRetrieveParams.none(),
     ): CompletableFuture<EvalRetrieveResponse> = retrieve(evalId, params, RequestOptions.none())
 
-    /** @see [retrieve] */
+    /** @see retrieve */
     fun retrieve(
         params: EvalRetrieveParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): CompletableFuture<EvalRetrieveResponse>
 
-    /** @see [retrieve] */
+    /** @see retrieve */
     fun retrieve(params: EvalRetrieveParams): CompletableFuture<EvalRetrieveResponse> =
         retrieve(params, RequestOptions.none())
 
-    /** @see [retrieve] */
+    /** @see retrieve */
     fun retrieve(
         evalId: String,
         requestOptions: RequestOptions,
@@ -90,7 +90,7 @@ interface EvalServiceAsync {
     fun update(evalId: String): CompletableFuture<EvalUpdateResponse> =
         update(evalId, EvalUpdateParams.none())
 
-    /** @see [update] */
+    /** @see update */
     fun update(
         evalId: String,
         params: EvalUpdateParams = EvalUpdateParams.none(),
@@ -98,23 +98,23 @@ interface EvalServiceAsync {
     ): CompletableFuture<EvalUpdateResponse> =
         update(params.toBuilder().evalId(evalId).build(), requestOptions)
 
-    /** @see [update] */
+    /** @see update */
     fun update(
         evalId: String,
         params: EvalUpdateParams = EvalUpdateParams.none(),
     ): CompletableFuture<EvalUpdateResponse> = update(evalId, params, RequestOptions.none())
 
-    /** @see [update] */
+    /** @see update */
     fun update(
         params: EvalUpdateParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): CompletableFuture<EvalUpdateResponse>
 
-    /** @see [update] */
+    /** @see update */
     fun update(params: EvalUpdateParams): CompletableFuture<EvalUpdateResponse> =
         update(params, RequestOptions.none())
 
-    /** @see [update] */
+    /** @see update */
     fun update(
         evalId: String,
         requestOptions: RequestOptions,
@@ -124,17 +124,17 @@ interface EvalServiceAsync {
     /** List evaluations for a project. */
     fun list(): CompletableFuture<EvalListPageAsync> = list(EvalListParams.none())
 
-    /** @see [list] */
+    /** @see list */
     fun list(
         params: EvalListParams = EvalListParams.none(),
         requestOptions: RequestOptions = RequestOptions.none(),
     ): CompletableFuture<EvalListPageAsync>
 
-    /** @see [list] */
+    /** @see list */
     fun list(params: EvalListParams = EvalListParams.none()): CompletableFuture<EvalListPageAsync> =
         list(params, RequestOptions.none())
 
-    /** @see [list] */
+    /** @see list */
     fun list(requestOptions: RequestOptions): CompletableFuture<EvalListPageAsync> =
         list(EvalListParams.none(), requestOptions)
 
@@ -142,7 +142,7 @@ interface EvalServiceAsync {
     fun delete(evalId: String): CompletableFuture<EvalDeleteResponse> =
         delete(evalId, EvalDeleteParams.none())
 
-    /** @see [delete] */
+    /** @see delete */
     fun delete(
         evalId: String,
         params: EvalDeleteParams = EvalDeleteParams.none(),
@@ -150,23 +150,23 @@ interface EvalServiceAsync {
     ): CompletableFuture<EvalDeleteResponse> =
         delete(params.toBuilder().evalId(evalId).build(), requestOptions)
 
-    /** @see [delete] */
+    /** @see delete */
     fun delete(
         evalId: String,
         params: EvalDeleteParams = EvalDeleteParams.none(),
     ): CompletableFuture<EvalDeleteResponse> = delete(evalId, params, RequestOptions.none())
 
-    /** @see [delete] */
+    /** @see delete */
     fun delete(
         params: EvalDeleteParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): CompletableFuture<EvalDeleteResponse>
 
-    /** @see [delete] */
+    /** @see delete */
     fun delete(params: EvalDeleteParams): CompletableFuture<EvalDeleteResponse> =
         delete(params, RequestOptions.none())
 
-    /** @see [delete] */
+    /** @see delete */
     fun delete(
         evalId: String,
         requestOptions: RequestOptions,
@@ -194,7 +194,7 @@ interface EvalServiceAsync {
         ): CompletableFuture<HttpResponseFor<EvalCreateResponse>> =
             create(params, RequestOptions.none())
 
-        /** @see [create] */
+        /** @see create */
         fun create(
             params: EvalCreateParams,
             requestOptions: RequestOptions = RequestOptions.none(),
@@ -207,7 +207,7 @@ interface EvalServiceAsync {
         fun retrieve(evalId: String): CompletableFuture<HttpResponseFor<EvalRetrieveResponse>> =
             retrieve(evalId, EvalRetrieveParams.none())
 
-        /** @see [retrieve] */
+        /** @see retrieve */
         fun retrieve(
             evalId: String,
             params: EvalRetrieveParams = EvalRetrieveParams.none(),
@@ -215,26 +215,26 @@ interface EvalServiceAsync {
         ): CompletableFuture<HttpResponseFor<EvalRetrieveResponse>> =
             retrieve(params.toBuilder().evalId(evalId).build(), requestOptions)
 
-        /** @see [retrieve] */
+        /** @see retrieve */
         fun retrieve(
             evalId: String,
             params: EvalRetrieveParams = EvalRetrieveParams.none(),
         ): CompletableFuture<HttpResponseFor<EvalRetrieveResponse>> =
             retrieve(evalId, params, RequestOptions.none())
 
-        /** @see [retrieve] */
+        /** @see retrieve */
         fun retrieve(
             params: EvalRetrieveParams,
             requestOptions: RequestOptions = RequestOptions.none(),
         ): CompletableFuture<HttpResponseFor<EvalRetrieveResponse>>
 
-        /** @see [retrieve] */
+        /** @see retrieve */
         fun retrieve(
             params: EvalRetrieveParams
         ): CompletableFuture<HttpResponseFor<EvalRetrieveResponse>> =
             retrieve(params, RequestOptions.none())
 
-        /** @see [retrieve] */
+        /** @see retrieve */
         fun retrieve(
             evalId: String,
             requestOptions: RequestOptions,
@@ -248,7 +248,7 @@ interface EvalServiceAsync {
         fun update(evalId: String): CompletableFuture<HttpResponseFor<EvalUpdateResponse>> =
             update(evalId, EvalUpdateParams.none())
 
-        /** @see [update] */
+        /** @see update */
         fun update(
             evalId: String,
             params: EvalUpdateParams = EvalUpdateParams.none(),
@@ -256,26 +256,26 @@ interface EvalServiceAsync {
         ): CompletableFuture<HttpResponseFor<EvalUpdateResponse>> =
             update(params.toBuilder().evalId(evalId).build(), requestOptions)
 
-        /** @see [update] */
+        /** @see update */
         fun update(
             evalId: String,
             params: EvalUpdateParams = EvalUpdateParams.none(),
         ): CompletableFuture<HttpResponseFor<EvalUpdateResponse>> =
             update(evalId, params, RequestOptions.none())
 
-        /** @see [update] */
+        /** @see update */
         fun update(
             params: EvalUpdateParams,
             requestOptions: RequestOptions = RequestOptions.none(),
         ): CompletableFuture<HttpResponseFor<EvalUpdateResponse>>
 
-        /** @see [update] */
+        /** @see update */
         fun update(
             params: EvalUpdateParams
         ): CompletableFuture<HttpResponseFor<EvalUpdateResponse>> =
             update(params, RequestOptions.none())
 
-        /** @see [update] */
+        /** @see update */
         fun update(
             evalId: String,
             requestOptions: RequestOptions,
@@ -289,19 +289,19 @@ interface EvalServiceAsync {
         fun list(): CompletableFuture<HttpResponseFor<EvalListPageAsync>> =
             list(EvalListParams.none())
 
-        /** @see [list] */
+        /** @see list */
         fun list(
             params: EvalListParams = EvalListParams.none(),
             requestOptions: RequestOptions = RequestOptions.none(),
         ): CompletableFuture<HttpResponseFor<EvalListPageAsync>>
 
-        /** @see [list] */
+        /** @see list */
         fun list(
             params: EvalListParams = EvalListParams.none()
         ): CompletableFuture<HttpResponseFor<EvalListPageAsync>> =
             list(params, RequestOptions.none())
 
-        /** @see [list] */
+        /** @see list */
         fun list(
             requestOptions: RequestOptions
         ): CompletableFuture<HttpResponseFor<EvalListPageAsync>> =
@@ -314,7 +314,7 @@ interface EvalServiceAsync {
         fun delete(evalId: String): CompletableFuture<HttpResponseFor<EvalDeleteResponse>> =
             delete(evalId, EvalDeleteParams.none())
 
-        /** @see [delete] */
+        /** @see delete */
         fun delete(
             evalId: String,
             params: EvalDeleteParams = EvalDeleteParams.none(),
@@ -322,26 +322,26 @@ interface EvalServiceAsync {
         ): CompletableFuture<HttpResponseFor<EvalDeleteResponse>> =
             delete(params.toBuilder().evalId(evalId).build(), requestOptions)
 
-        /** @see [delete] */
+        /** @see delete */
         fun delete(
             evalId: String,
             params: EvalDeleteParams = EvalDeleteParams.none(),
         ): CompletableFuture<HttpResponseFor<EvalDeleteResponse>> =
             delete(evalId, params, RequestOptions.none())
 
-        /** @see [delete] */
+        /** @see delete */
         fun delete(
             params: EvalDeleteParams,
             requestOptions: RequestOptions = RequestOptions.none(),
         ): CompletableFuture<HttpResponseFor<EvalDeleteResponse>>
 
-        /** @see [delete] */
+        /** @see delete */
         fun delete(
             params: EvalDeleteParams
         ): CompletableFuture<HttpResponseFor<EvalDeleteResponse>> =
             delete(params, RequestOptions.none())
 
-        /** @see [delete] */
+        /** @see delete */
         fun delete(
             evalId: String,
             requestOptions: RequestOptions,

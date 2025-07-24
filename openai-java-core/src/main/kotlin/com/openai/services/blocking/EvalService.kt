@@ -44,7 +44,7 @@ interface EvalService {
      */
     fun create(params: EvalCreateParams): EvalCreateResponse = create(params, RequestOptions.none())
 
-    /** @see [create] */
+    /** @see create */
     fun create(
         params: EvalCreateParams,
         requestOptions: RequestOptions = RequestOptions.none(),
@@ -53,105 +53,105 @@ interface EvalService {
     /** Get an evaluation by ID. */
     fun retrieve(evalId: String): EvalRetrieveResponse = retrieve(evalId, EvalRetrieveParams.none())
 
-    /** @see [retrieve] */
+    /** @see retrieve */
     fun retrieve(
         evalId: String,
         params: EvalRetrieveParams = EvalRetrieveParams.none(),
         requestOptions: RequestOptions = RequestOptions.none(),
     ): EvalRetrieveResponse = retrieve(params.toBuilder().evalId(evalId).build(), requestOptions)
 
-    /** @see [retrieve] */
+    /** @see retrieve */
     fun retrieve(
         evalId: String,
         params: EvalRetrieveParams = EvalRetrieveParams.none(),
     ): EvalRetrieveResponse = retrieve(evalId, params, RequestOptions.none())
 
-    /** @see [retrieve] */
+    /** @see retrieve */
     fun retrieve(
         params: EvalRetrieveParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): EvalRetrieveResponse
 
-    /** @see [retrieve] */
+    /** @see retrieve */
     fun retrieve(params: EvalRetrieveParams): EvalRetrieveResponse =
         retrieve(params, RequestOptions.none())
 
-    /** @see [retrieve] */
+    /** @see retrieve */
     fun retrieve(evalId: String, requestOptions: RequestOptions): EvalRetrieveResponse =
         retrieve(evalId, EvalRetrieveParams.none(), requestOptions)
 
     /** Update certain properties of an evaluation. */
     fun update(evalId: String): EvalUpdateResponse = update(evalId, EvalUpdateParams.none())
 
-    /** @see [update] */
+    /** @see update */
     fun update(
         evalId: String,
         params: EvalUpdateParams = EvalUpdateParams.none(),
         requestOptions: RequestOptions = RequestOptions.none(),
     ): EvalUpdateResponse = update(params.toBuilder().evalId(evalId).build(), requestOptions)
 
-    /** @see [update] */
+    /** @see update */
     fun update(
         evalId: String,
         params: EvalUpdateParams = EvalUpdateParams.none(),
     ): EvalUpdateResponse = update(evalId, params, RequestOptions.none())
 
-    /** @see [update] */
+    /** @see update */
     fun update(
         params: EvalUpdateParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): EvalUpdateResponse
 
-    /** @see [update] */
+    /** @see update */
     fun update(params: EvalUpdateParams): EvalUpdateResponse = update(params, RequestOptions.none())
 
-    /** @see [update] */
+    /** @see update */
     fun update(evalId: String, requestOptions: RequestOptions): EvalUpdateResponse =
         update(evalId, EvalUpdateParams.none(), requestOptions)
 
     /** List evaluations for a project. */
     fun list(): EvalListPage = list(EvalListParams.none())
 
-    /** @see [list] */
+    /** @see list */
     fun list(
         params: EvalListParams = EvalListParams.none(),
         requestOptions: RequestOptions = RequestOptions.none(),
     ): EvalListPage
 
-    /** @see [list] */
+    /** @see list */
     fun list(params: EvalListParams = EvalListParams.none()): EvalListPage =
         list(params, RequestOptions.none())
 
-    /** @see [list] */
+    /** @see list */
     fun list(requestOptions: RequestOptions): EvalListPage =
         list(EvalListParams.none(), requestOptions)
 
     /** Delete an evaluation. */
     fun delete(evalId: String): EvalDeleteResponse = delete(evalId, EvalDeleteParams.none())
 
-    /** @see [delete] */
+    /** @see delete */
     fun delete(
         evalId: String,
         params: EvalDeleteParams = EvalDeleteParams.none(),
         requestOptions: RequestOptions = RequestOptions.none(),
     ): EvalDeleteResponse = delete(params.toBuilder().evalId(evalId).build(), requestOptions)
 
-    /** @see [delete] */
+    /** @see delete */
     fun delete(
         evalId: String,
         params: EvalDeleteParams = EvalDeleteParams.none(),
     ): EvalDeleteResponse = delete(evalId, params, RequestOptions.none())
 
-    /** @see [delete] */
+    /** @see delete */
     fun delete(
         params: EvalDeleteParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): EvalDeleteResponse
 
-    /** @see [delete] */
+    /** @see delete */
     fun delete(params: EvalDeleteParams): EvalDeleteResponse = delete(params, RequestOptions.none())
 
-    /** @see [delete] */
+    /** @see delete */
     fun delete(evalId: String, requestOptions: RequestOptions): EvalDeleteResponse =
         delete(evalId, EvalDeleteParams.none(), requestOptions)
 
@@ -175,7 +175,7 @@ interface EvalService {
         fun create(params: EvalCreateParams): HttpResponseFor<EvalCreateResponse> =
             create(params, RequestOptions.none())
 
-        /** @see [create] */
+        /** @see create */
         @MustBeClosed
         fun create(
             params: EvalCreateParams,
@@ -190,7 +190,7 @@ interface EvalService {
         fun retrieve(evalId: String): HttpResponseFor<EvalRetrieveResponse> =
             retrieve(evalId, EvalRetrieveParams.none())
 
-        /** @see [retrieve] */
+        /** @see retrieve */
         @MustBeClosed
         fun retrieve(
             evalId: String,
@@ -199,26 +199,26 @@ interface EvalService {
         ): HttpResponseFor<EvalRetrieveResponse> =
             retrieve(params.toBuilder().evalId(evalId).build(), requestOptions)
 
-        /** @see [retrieve] */
+        /** @see retrieve */
         @MustBeClosed
         fun retrieve(
             evalId: String,
             params: EvalRetrieveParams = EvalRetrieveParams.none(),
         ): HttpResponseFor<EvalRetrieveResponse> = retrieve(evalId, params, RequestOptions.none())
 
-        /** @see [retrieve] */
+        /** @see retrieve */
         @MustBeClosed
         fun retrieve(
             params: EvalRetrieveParams,
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<EvalRetrieveResponse>
 
-        /** @see [retrieve] */
+        /** @see retrieve */
         @MustBeClosed
         fun retrieve(params: EvalRetrieveParams): HttpResponseFor<EvalRetrieveResponse> =
             retrieve(params, RequestOptions.none())
 
-        /** @see [retrieve] */
+        /** @see retrieve */
         @MustBeClosed
         fun retrieve(
             evalId: String,
@@ -234,7 +234,7 @@ interface EvalService {
         fun update(evalId: String): HttpResponseFor<EvalUpdateResponse> =
             update(evalId, EvalUpdateParams.none())
 
-        /** @see [update] */
+        /** @see update */
         @MustBeClosed
         fun update(
             evalId: String,
@@ -243,26 +243,26 @@ interface EvalService {
         ): HttpResponseFor<EvalUpdateResponse> =
             update(params.toBuilder().evalId(evalId).build(), requestOptions)
 
-        /** @see [update] */
+        /** @see update */
         @MustBeClosed
         fun update(
             evalId: String,
             params: EvalUpdateParams = EvalUpdateParams.none(),
         ): HttpResponseFor<EvalUpdateResponse> = update(evalId, params, RequestOptions.none())
 
-        /** @see [update] */
+        /** @see update */
         @MustBeClosed
         fun update(
             params: EvalUpdateParams,
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<EvalUpdateResponse>
 
-        /** @see [update] */
+        /** @see update */
         @MustBeClosed
         fun update(params: EvalUpdateParams): HttpResponseFor<EvalUpdateResponse> =
             update(params, RequestOptions.none())
 
-        /** @see [update] */
+        /** @see update */
         @MustBeClosed
         fun update(
             evalId: String,
@@ -276,19 +276,19 @@ interface EvalService {
          */
         @MustBeClosed fun list(): HttpResponseFor<EvalListPage> = list(EvalListParams.none())
 
-        /** @see [list] */
+        /** @see list */
         @MustBeClosed
         fun list(
             params: EvalListParams = EvalListParams.none(),
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<EvalListPage>
 
-        /** @see [list] */
+        /** @see list */
         @MustBeClosed
         fun list(params: EvalListParams = EvalListParams.none()): HttpResponseFor<EvalListPage> =
             list(params, RequestOptions.none())
 
-        /** @see [list] */
+        /** @see list */
         @MustBeClosed
         fun list(requestOptions: RequestOptions): HttpResponseFor<EvalListPage> =
             list(EvalListParams.none(), requestOptions)
@@ -301,7 +301,7 @@ interface EvalService {
         fun delete(evalId: String): HttpResponseFor<EvalDeleteResponse> =
             delete(evalId, EvalDeleteParams.none())
 
-        /** @see [delete] */
+        /** @see delete */
         @MustBeClosed
         fun delete(
             evalId: String,
@@ -310,26 +310,26 @@ interface EvalService {
         ): HttpResponseFor<EvalDeleteResponse> =
             delete(params.toBuilder().evalId(evalId).build(), requestOptions)
 
-        /** @see [delete] */
+        /** @see delete */
         @MustBeClosed
         fun delete(
             evalId: String,
             params: EvalDeleteParams = EvalDeleteParams.none(),
         ): HttpResponseFor<EvalDeleteResponse> = delete(evalId, params, RequestOptions.none())
 
-        /** @see [delete] */
+        /** @see delete */
         @MustBeClosed
         fun delete(
             params: EvalDeleteParams,
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<EvalDeleteResponse>
 
-        /** @see [delete] */
+        /** @see delete */
         @MustBeClosed
         fun delete(params: EvalDeleteParams): HttpResponseFor<EvalDeleteResponse> =
             delete(params, RequestOptions.none())
 
-        /** @see [delete] */
+        /** @see delete */
         @MustBeClosed
         fun delete(
             evalId: String,

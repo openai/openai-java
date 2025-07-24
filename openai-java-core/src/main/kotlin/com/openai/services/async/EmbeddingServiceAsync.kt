@@ -28,7 +28,7 @@ interface EmbeddingServiceAsync {
     fun create(params: EmbeddingCreateParams): CompletableFuture<CreateEmbeddingResponse> =
         create(params, RequestOptions.none())
 
-    /** @see [create] */
+    /** @see create */
     fun create(
         params: EmbeddingCreateParams,
         requestOptions: RequestOptions = RequestOptions.none(),
@@ -57,7 +57,7 @@ interface EmbeddingServiceAsync {
         ): CompletableFuture<HttpResponseFor<CreateEmbeddingResponse>> =
             create(params, RequestOptions.none())
 
-        /** @see [create] */
+        /** @see create */
         fun create(
             params: EmbeddingCreateParams,
             requestOptions: RequestOptions = RequestOptions.none(),

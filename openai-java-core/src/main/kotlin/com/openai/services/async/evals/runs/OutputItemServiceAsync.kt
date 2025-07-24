@@ -33,7 +33,7 @@ interface OutputItemServiceAsync {
     ): CompletableFuture<OutputItemRetrieveResponse> =
         retrieve(outputItemId, params, RequestOptions.none())
 
-    /** @see [retrieve] */
+    /** @see retrieve */
     fun retrieve(
         outputItemId: String,
         params: OutputItemRetrieveParams,
@@ -41,11 +41,11 @@ interface OutputItemServiceAsync {
     ): CompletableFuture<OutputItemRetrieveResponse> =
         retrieve(params.toBuilder().outputItemId(outputItemId).build(), requestOptions)
 
-    /** @see [retrieve] */
+    /** @see retrieve */
     fun retrieve(params: OutputItemRetrieveParams): CompletableFuture<OutputItemRetrieveResponse> =
         retrieve(params, RequestOptions.none())
 
-    /** @see [retrieve] */
+    /** @see retrieve */
     fun retrieve(
         params: OutputItemRetrieveParams,
         requestOptions: RequestOptions = RequestOptions.none(),
@@ -57,7 +57,7 @@ interface OutputItemServiceAsync {
         params: OutputItemListParams,
     ): CompletableFuture<OutputItemListPageAsync> = list(runId, params, RequestOptions.none())
 
-    /** @see [list] */
+    /** @see list */
     fun list(
         runId: String,
         params: OutputItemListParams,
@@ -65,11 +65,11 @@ interface OutputItemServiceAsync {
     ): CompletableFuture<OutputItemListPageAsync> =
         list(params.toBuilder().runId(runId).build(), requestOptions)
 
-    /** @see [list] */
+    /** @see list */
     fun list(params: OutputItemListParams): CompletableFuture<OutputItemListPageAsync> =
         list(params, RequestOptions.none())
 
-    /** @see [list] */
+    /** @see list */
     fun list(
         params: OutputItemListParams,
         requestOptions: RequestOptions = RequestOptions.none(),
@@ -101,7 +101,7 @@ interface OutputItemServiceAsync {
         ): CompletableFuture<HttpResponseFor<OutputItemRetrieveResponse>> =
             retrieve(outputItemId, params, RequestOptions.none())
 
-        /** @see [retrieve] */
+        /** @see retrieve */
         fun retrieve(
             outputItemId: String,
             params: OutputItemRetrieveParams,
@@ -109,13 +109,13 @@ interface OutputItemServiceAsync {
         ): CompletableFuture<HttpResponseFor<OutputItemRetrieveResponse>> =
             retrieve(params.toBuilder().outputItemId(outputItemId).build(), requestOptions)
 
-        /** @see [retrieve] */
+        /** @see retrieve */
         fun retrieve(
             params: OutputItemRetrieveParams
         ): CompletableFuture<HttpResponseFor<OutputItemRetrieveResponse>> =
             retrieve(params, RequestOptions.none())
 
-        /** @see [retrieve] */
+        /** @see retrieve */
         fun retrieve(
             params: OutputItemRetrieveParams,
             requestOptions: RequestOptions = RequestOptions.none(),
@@ -131,7 +131,7 @@ interface OutputItemServiceAsync {
         ): CompletableFuture<HttpResponseFor<OutputItemListPageAsync>> =
             list(runId, params, RequestOptions.none())
 
-        /** @see [list] */
+        /** @see list */
         fun list(
             runId: String,
             params: OutputItemListParams,
@@ -139,13 +139,13 @@ interface OutputItemServiceAsync {
         ): CompletableFuture<HttpResponseFor<OutputItemListPageAsync>> =
             list(params.toBuilder().runId(runId).build(), requestOptions)
 
-        /** @see [list] */
+        /** @see list */
         fun list(
             params: OutputItemListParams
         ): CompletableFuture<HttpResponseFor<OutputItemListPageAsync>> =
             list(params, RequestOptions.none())
 
-        /** @see [list] */
+        /** @see list */
         fun list(
             params: OutputItemListParams,
             requestOptions: RequestOptions = RequestOptions.none(),

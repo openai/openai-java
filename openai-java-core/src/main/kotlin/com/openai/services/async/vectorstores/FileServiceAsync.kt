@@ -42,7 +42,7 @@ interface FileServiceAsync {
         params: FileCreateParams,
     ): CompletableFuture<VectorStoreFile> = create(vectorStoreId, params, RequestOptions.none())
 
-    /** @see [create] */
+    /** @see create */
     fun create(
         vectorStoreId: String,
         params: FileCreateParams,
@@ -50,11 +50,11 @@ interface FileServiceAsync {
     ): CompletableFuture<VectorStoreFile> =
         create(params.toBuilder().vectorStoreId(vectorStoreId).build(), requestOptions)
 
-    /** @see [create] */
+    /** @see create */
     fun create(params: FileCreateParams): CompletableFuture<VectorStoreFile> =
         create(params, RequestOptions.none())
 
-    /** @see [create] */
+    /** @see create */
     fun create(
         params: FileCreateParams,
         requestOptions: RequestOptions = RequestOptions.none(),
@@ -64,7 +64,7 @@ interface FileServiceAsync {
     fun retrieve(fileId: String, params: FileRetrieveParams): CompletableFuture<VectorStoreFile> =
         retrieve(fileId, params, RequestOptions.none())
 
-    /** @see [retrieve] */
+    /** @see retrieve */
     fun retrieve(
         fileId: String,
         params: FileRetrieveParams,
@@ -72,11 +72,11 @@ interface FileServiceAsync {
     ): CompletableFuture<VectorStoreFile> =
         retrieve(params.toBuilder().fileId(fileId).build(), requestOptions)
 
-    /** @see [retrieve] */
+    /** @see retrieve */
     fun retrieve(params: FileRetrieveParams): CompletableFuture<VectorStoreFile> =
         retrieve(params, RequestOptions.none())
 
-    /** @see [retrieve] */
+    /** @see retrieve */
     fun retrieve(
         params: FileRetrieveParams,
         requestOptions: RequestOptions = RequestOptions.none(),
@@ -86,7 +86,7 @@ interface FileServiceAsync {
     fun update(fileId: String, params: FileUpdateParams): CompletableFuture<VectorStoreFile> =
         update(fileId, params, RequestOptions.none())
 
-    /** @see [update] */
+    /** @see update */
     fun update(
         fileId: String,
         params: FileUpdateParams,
@@ -94,11 +94,11 @@ interface FileServiceAsync {
     ): CompletableFuture<VectorStoreFile> =
         update(params.toBuilder().fileId(fileId).build(), requestOptions)
 
-    /** @see [update] */
+    /** @see update */
     fun update(params: FileUpdateParams): CompletableFuture<VectorStoreFile> =
         update(params, RequestOptions.none())
 
-    /** @see [update] */
+    /** @see update */
     fun update(
         params: FileUpdateParams,
         requestOptions: RequestOptions = RequestOptions.none(),
@@ -108,7 +108,7 @@ interface FileServiceAsync {
     fun list(vectorStoreId: String): CompletableFuture<FileListPageAsync> =
         list(vectorStoreId, FileListParams.none())
 
-    /** @see [list] */
+    /** @see list */
     fun list(
         vectorStoreId: String,
         params: FileListParams = FileListParams.none(),
@@ -116,23 +116,23 @@ interface FileServiceAsync {
     ): CompletableFuture<FileListPageAsync> =
         list(params.toBuilder().vectorStoreId(vectorStoreId).build(), requestOptions)
 
-    /** @see [list] */
+    /** @see list */
     fun list(
         vectorStoreId: String,
         params: FileListParams = FileListParams.none(),
     ): CompletableFuture<FileListPageAsync> = list(vectorStoreId, params, RequestOptions.none())
 
-    /** @see [list] */
+    /** @see list */
     fun list(
         params: FileListParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): CompletableFuture<FileListPageAsync>
 
-    /** @see [list] */
+    /** @see list */
     fun list(params: FileListParams): CompletableFuture<FileListPageAsync> =
         list(params, RequestOptions.none())
 
-    /** @see [list] */
+    /** @see list */
     fun list(
         vectorStoreId: String,
         requestOptions: RequestOptions,
@@ -149,7 +149,7 @@ interface FileServiceAsync {
         params: FileDeleteParams,
     ): CompletableFuture<VectorStoreFileDeleted> = delete(fileId, params, RequestOptions.none())
 
-    /** @see [delete] */
+    /** @see delete */
     fun delete(
         fileId: String,
         params: FileDeleteParams,
@@ -157,11 +157,11 @@ interface FileServiceAsync {
     ): CompletableFuture<VectorStoreFileDeleted> =
         delete(params.toBuilder().fileId(fileId).build(), requestOptions)
 
-    /** @see [delete] */
+    /** @see delete */
     fun delete(params: FileDeleteParams): CompletableFuture<VectorStoreFileDeleted> =
         delete(params, RequestOptions.none())
 
-    /** @see [delete] */
+    /** @see delete */
     fun delete(
         params: FileDeleteParams,
         requestOptions: RequestOptions = RequestOptions.none(),
@@ -173,7 +173,7 @@ interface FileServiceAsync {
         params: FileContentParams,
     ): CompletableFuture<FileContentPageAsync> = content(fileId, params, RequestOptions.none())
 
-    /** @see [content] */
+    /** @see content */
     fun content(
         fileId: String,
         params: FileContentParams,
@@ -181,11 +181,11 @@ interface FileServiceAsync {
     ): CompletableFuture<FileContentPageAsync> =
         content(params.toBuilder().fileId(fileId).build(), requestOptions)
 
-    /** @see [content] */
+    /** @see content */
     fun content(params: FileContentParams): CompletableFuture<FileContentPageAsync> =
         content(params, RequestOptions.none())
 
-    /** @see [content] */
+    /** @see content */
     fun content(
         params: FileContentParams,
         requestOptions: RequestOptions = RequestOptions.none(),
@@ -211,7 +211,7 @@ interface FileServiceAsync {
         ): CompletableFuture<HttpResponseFor<VectorStoreFile>> =
             create(vectorStoreId, params, RequestOptions.none())
 
-        /** @see [create] */
+        /** @see create */
         fun create(
             vectorStoreId: String,
             params: FileCreateParams,
@@ -219,11 +219,11 @@ interface FileServiceAsync {
         ): CompletableFuture<HttpResponseFor<VectorStoreFile>> =
             create(params.toBuilder().vectorStoreId(vectorStoreId).build(), requestOptions)
 
-        /** @see [create] */
+        /** @see create */
         fun create(params: FileCreateParams): CompletableFuture<HttpResponseFor<VectorStoreFile>> =
             create(params, RequestOptions.none())
 
-        /** @see [create] */
+        /** @see create */
         fun create(
             params: FileCreateParams,
             requestOptions: RequestOptions = RequestOptions.none(),
@@ -239,7 +239,7 @@ interface FileServiceAsync {
         ): CompletableFuture<HttpResponseFor<VectorStoreFile>> =
             retrieve(fileId, params, RequestOptions.none())
 
-        /** @see [retrieve] */
+        /** @see retrieve */
         fun retrieve(
             fileId: String,
             params: FileRetrieveParams,
@@ -247,13 +247,13 @@ interface FileServiceAsync {
         ): CompletableFuture<HttpResponseFor<VectorStoreFile>> =
             retrieve(params.toBuilder().fileId(fileId).build(), requestOptions)
 
-        /** @see [retrieve] */
+        /** @see retrieve */
         fun retrieve(
             params: FileRetrieveParams
         ): CompletableFuture<HttpResponseFor<VectorStoreFile>> =
             retrieve(params, RequestOptions.none())
 
-        /** @see [retrieve] */
+        /** @see retrieve */
         fun retrieve(
             params: FileRetrieveParams,
             requestOptions: RequestOptions = RequestOptions.none(),
@@ -269,7 +269,7 @@ interface FileServiceAsync {
         ): CompletableFuture<HttpResponseFor<VectorStoreFile>> =
             update(fileId, params, RequestOptions.none())
 
-        /** @see [update] */
+        /** @see update */
         fun update(
             fileId: String,
             params: FileUpdateParams,
@@ -277,11 +277,11 @@ interface FileServiceAsync {
         ): CompletableFuture<HttpResponseFor<VectorStoreFile>> =
             update(params.toBuilder().fileId(fileId).build(), requestOptions)
 
-        /** @see [update] */
+        /** @see update */
         fun update(params: FileUpdateParams): CompletableFuture<HttpResponseFor<VectorStoreFile>> =
             update(params, RequestOptions.none())
 
-        /** @see [update] */
+        /** @see update */
         fun update(
             params: FileUpdateParams,
             requestOptions: RequestOptions = RequestOptions.none(),
@@ -294,7 +294,7 @@ interface FileServiceAsync {
         fun list(vectorStoreId: String): CompletableFuture<HttpResponseFor<FileListPageAsync>> =
             list(vectorStoreId, FileListParams.none())
 
-        /** @see [list] */
+        /** @see list */
         fun list(
             vectorStoreId: String,
             params: FileListParams = FileListParams.none(),
@@ -302,24 +302,24 @@ interface FileServiceAsync {
         ): CompletableFuture<HttpResponseFor<FileListPageAsync>> =
             list(params.toBuilder().vectorStoreId(vectorStoreId).build(), requestOptions)
 
-        /** @see [list] */
+        /** @see list */
         fun list(
             vectorStoreId: String,
             params: FileListParams = FileListParams.none(),
         ): CompletableFuture<HttpResponseFor<FileListPageAsync>> =
             list(vectorStoreId, params, RequestOptions.none())
 
-        /** @see [list] */
+        /** @see list */
         fun list(
             params: FileListParams,
             requestOptions: RequestOptions = RequestOptions.none(),
         ): CompletableFuture<HttpResponseFor<FileListPageAsync>>
 
-        /** @see [list] */
+        /** @see list */
         fun list(params: FileListParams): CompletableFuture<HttpResponseFor<FileListPageAsync>> =
             list(params, RequestOptions.none())
 
-        /** @see [list] */
+        /** @see list */
         fun list(
             vectorStoreId: String,
             requestOptions: RequestOptions,
@@ -337,7 +337,7 @@ interface FileServiceAsync {
         ): CompletableFuture<HttpResponseFor<VectorStoreFileDeleted>> =
             delete(fileId, params, RequestOptions.none())
 
-        /** @see [delete] */
+        /** @see delete */
         fun delete(
             fileId: String,
             params: FileDeleteParams,
@@ -345,13 +345,13 @@ interface FileServiceAsync {
         ): CompletableFuture<HttpResponseFor<VectorStoreFileDeleted>> =
             delete(params.toBuilder().fileId(fileId).build(), requestOptions)
 
-        /** @see [delete] */
+        /** @see delete */
         fun delete(
             params: FileDeleteParams
         ): CompletableFuture<HttpResponseFor<VectorStoreFileDeleted>> =
             delete(params, RequestOptions.none())
 
-        /** @see [delete] */
+        /** @see delete */
         fun delete(
             params: FileDeleteParams,
             requestOptions: RequestOptions = RequestOptions.none(),
@@ -368,7 +368,7 @@ interface FileServiceAsync {
         ): CompletableFuture<HttpResponseFor<FileContentPageAsync>> =
             content(fileId, params, RequestOptions.none())
 
-        /** @see [content] */
+        /** @see content */
         fun content(
             fileId: String,
             params: FileContentParams,
@@ -376,13 +376,13 @@ interface FileServiceAsync {
         ): CompletableFuture<HttpResponseFor<FileContentPageAsync>> =
             content(params.toBuilder().fileId(fileId).build(), requestOptions)
 
-        /** @see [content] */
+        /** @see content */
         fun content(
             params: FileContentParams
         ): CompletableFuture<HttpResponseFor<FileContentPageAsync>> =
             content(params, RequestOptions.none())
 
-        /** @see [content] */
+        /** @see content */
         fun content(
             params: FileContentParams,
             requestOptions: RequestOptions = RequestOptions.none(),

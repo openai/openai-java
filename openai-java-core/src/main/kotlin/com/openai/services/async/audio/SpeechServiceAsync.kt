@@ -27,7 +27,7 @@ interface SpeechServiceAsync {
     fun create(params: SpeechCreateParams): CompletableFuture<HttpResponse> =
         create(params, RequestOptions.none())
 
-    /** @see [create] */
+    /** @see create */
     fun create(
         params: SpeechCreateParams,
         requestOptions: RequestOptions = RequestOptions.none(),
@@ -54,7 +54,7 @@ interface SpeechServiceAsync {
         fun create(params: SpeechCreateParams): CompletableFuture<HttpResponse> =
             create(params, RequestOptions.none())
 
-        /** @see [create] */
+        /** @see create */
         fun create(
             params: SpeechCreateParams,
             requestOptions: RequestOptions = RequestOptions.none(),

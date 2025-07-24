@@ -48,18 +48,18 @@ interface ResponseServiceAsync {
      */
     fun create(): CompletableFuture<Response> = create(ResponseCreateParams.none())
 
-    /** @see [create] */
+    /** @see create */
     fun create(
         params: ResponseCreateParams = ResponseCreateParams.none(),
         requestOptions: RequestOptions = RequestOptions.none(),
     ): CompletableFuture<Response>
 
-    /** @see [create] */
+    /** @see create */
     fun create(
         params: ResponseCreateParams = ResponseCreateParams.none()
     ): CompletableFuture<Response> = create(params, RequestOptions.none())
 
-    /** @see [create] */
+    /** @see create */
     fun create(requestOptions: RequestOptions): CompletableFuture<Response> =
         create(ResponseCreateParams.none(), requestOptions)
 
@@ -77,18 +77,18 @@ interface ResponseServiceAsync {
     fun createStreaming(): AsyncStreamResponse<ResponseStreamEvent> =
         createStreaming(ResponseCreateParams.none())
 
-    /** @see [createStreaming] */
+    /** @see createStreaming */
     fun createStreaming(
         params: ResponseCreateParams = ResponseCreateParams.none(),
         requestOptions: RequestOptions = RequestOptions.none(),
     ): AsyncStreamResponse<ResponseStreamEvent>
 
-    /** @see [createStreaming] */
+    /** @see createStreaming */
     fun createStreaming(
         params: ResponseCreateParams = ResponseCreateParams.none()
     ): AsyncStreamResponse<ResponseStreamEvent> = createStreaming(params, RequestOptions.none())
 
-    /** @see [createStreaming] */
+    /** @see createStreaming */
     fun createStreaming(requestOptions: RequestOptions): AsyncStreamResponse<ResponseStreamEvent> =
         createStreaming(ResponseCreateParams.none(), requestOptions)
 
@@ -96,7 +96,7 @@ interface ResponseServiceAsync {
     fun retrieve(responseId: String): CompletableFuture<Response> =
         retrieve(responseId, ResponseRetrieveParams.none())
 
-    /** @see [retrieve] */
+    /** @see retrieve */
     fun retrieve(
         responseId: String,
         params: ResponseRetrieveParams = ResponseRetrieveParams.none(),
@@ -104,23 +104,23 @@ interface ResponseServiceAsync {
     ): CompletableFuture<Response> =
         retrieve(params.toBuilder().responseId(responseId).build(), requestOptions)
 
-    /** @see [retrieve] */
+    /** @see retrieve */
     fun retrieve(
         responseId: String,
         params: ResponseRetrieveParams = ResponseRetrieveParams.none(),
     ): CompletableFuture<Response> = retrieve(responseId, params, RequestOptions.none())
 
-    /** @see [retrieve] */
+    /** @see retrieve */
     fun retrieve(
         params: ResponseRetrieveParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): CompletableFuture<Response>
 
-    /** @see [retrieve] */
+    /** @see retrieve */
     fun retrieve(params: ResponseRetrieveParams): CompletableFuture<Response> =
         retrieve(params, RequestOptions.none())
 
-    /** @see [retrieve] */
+    /** @see retrieve */
     fun retrieve(responseId: String, requestOptions: RequestOptions): CompletableFuture<Response> =
         retrieve(responseId, ResponseRetrieveParams.none(), requestOptions)
 
@@ -128,7 +128,7 @@ interface ResponseServiceAsync {
     fun retrieveStreaming(responseId: String): AsyncStreamResponse<ResponseStreamEvent> =
         retrieveStreaming(responseId, ResponseRetrieveParams.none())
 
-    /** @see [retrieveStreaming] */
+    /** @see retrieveStreaming */
     fun retrieveStreaming(
         responseId: String,
         params: ResponseRetrieveParams = ResponseRetrieveParams.none(),
@@ -136,25 +136,25 @@ interface ResponseServiceAsync {
     ): AsyncStreamResponse<ResponseStreamEvent> =
         retrieveStreaming(params.toBuilder().responseId(responseId).build(), requestOptions)
 
-    /** @see [retrieveStreaming] */
+    /** @see retrieveStreaming */
     fun retrieveStreaming(
         responseId: String,
         params: ResponseRetrieveParams = ResponseRetrieveParams.none(),
     ): AsyncStreamResponse<ResponseStreamEvent> =
         retrieveStreaming(responseId, params, RequestOptions.none())
 
-    /** @see [retrieveStreaming] */
+    /** @see retrieveStreaming */
     fun retrieveStreaming(
         params: ResponseRetrieveParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): AsyncStreamResponse<ResponseStreamEvent>
 
-    /** @see [retrieveStreaming] */
+    /** @see retrieveStreaming */
     fun retrieveStreaming(
         params: ResponseRetrieveParams
     ): AsyncStreamResponse<ResponseStreamEvent> = retrieveStreaming(params, RequestOptions.none())
 
-    /** @see [retrieveStreaming] */
+    /** @see retrieveStreaming */
     fun retrieveStreaming(
         responseId: String,
         requestOptions: RequestOptions,
@@ -165,7 +165,7 @@ interface ResponseServiceAsync {
     fun delete(responseId: String): CompletableFuture<Void?> =
         delete(responseId, ResponseDeleteParams.none())
 
-    /** @see [delete] */
+    /** @see delete */
     fun delete(
         responseId: String,
         params: ResponseDeleteParams = ResponseDeleteParams.none(),
@@ -173,23 +173,23 @@ interface ResponseServiceAsync {
     ): CompletableFuture<Void?> =
         delete(params.toBuilder().responseId(responseId).build(), requestOptions)
 
-    /** @see [delete] */
+    /** @see delete */
     fun delete(
         responseId: String,
         params: ResponseDeleteParams = ResponseDeleteParams.none(),
     ): CompletableFuture<Void?> = delete(responseId, params, RequestOptions.none())
 
-    /** @see [delete] */
+    /** @see delete */
     fun delete(
         params: ResponseDeleteParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): CompletableFuture<Void?>
 
-    /** @see [delete] */
+    /** @see delete */
     fun delete(params: ResponseDeleteParams): CompletableFuture<Void?> =
         delete(params, RequestOptions.none())
 
-    /** @see [delete] */
+    /** @see delete */
     fun delete(responseId: String, requestOptions: RequestOptions): CompletableFuture<Void?> =
         delete(responseId, ResponseDeleteParams.none(), requestOptions)
 
@@ -201,7 +201,7 @@ interface ResponseServiceAsync {
     fun cancel(responseId: String): CompletableFuture<Response> =
         cancel(responseId, ResponseCancelParams.none())
 
-    /** @see [cancel] */
+    /** @see cancel */
     fun cancel(
         responseId: String,
         params: ResponseCancelParams = ResponseCancelParams.none(),
@@ -209,23 +209,23 @@ interface ResponseServiceAsync {
     ): CompletableFuture<Response> =
         cancel(params.toBuilder().responseId(responseId).build(), requestOptions)
 
-    /** @see [cancel] */
+    /** @see cancel */
     fun cancel(
         responseId: String,
         params: ResponseCancelParams = ResponseCancelParams.none(),
     ): CompletableFuture<Response> = cancel(responseId, params, RequestOptions.none())
 
-    /** @see [cancel] */
+    /** @see cancel */
     fun cancel(
         params: ResponseCancelParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): CompletableFuture<Response>
 
-    /** @see [cancel] */
+    /** @see cancel */
     fun cancel(params: ResponseCancelParams): CompletableFuture<Response> =
         cancel(params, RequestOptions.none())
 
-    /** @see [cancel] */
+    /** @see cancel */
     fun cancel(responseId: String, requestOptions: RequestOptions): CompletableFuture<Response> =
         cancel(responseId, ResponseCancelParams.none(), requestOptions)
 
@@ -252,18 +252,18 @@ interface ResponseServiceAsync {
         fun create(): CompletableFuture<HttpResponseFor<Response>> =
             create(ResponseCreateParams.none())
 
-        /** @see [create] */
+        /** @see create */
         fun create(
             params: ResponseCreateParams = ResponseCreateParams.none(),
             requestOptions: RequestOptions = RequestOptions.none(),
         ): CompletableFuture<HttpResponseFor<Response>>
 
-        /** @see [create] */
+        /** @see create */
         fun create(
             params: ResponseCreateParams = ResponseCreateParams.none()
         ): CompletableFuture<HttpResponseFor<Response>> = create(params, RequestOptions.none())
 
-        /** @see [create] */
+        /** @see create */
         fun create(requestOptions: RequestOptions): CompletableFuture<HttpResponseFor<Response>> =
             create(ResponseCreateParams.none(), requestOptions)
 
@@ -276,21 +276,21 @@ interface ResponseServiceAsync {
             CompletableFuture<HttpResponseFor<StreamResponse<ResponseStreamEvent>>> =
             createStreaming(ResponseCreateParams.none())
 
-        /** @see [createStreaming] */
+        /** @see createStreaming */
         @MustBeClosed
         fun createStreaming(
             params: ResponseCreateParams = ResponseCreateParams.none(),
             requestOptions: RequestOptions = RequestOptions.none(),
         ): CompletableFuture<HttpResponseFor<StreamResponse<ResponseStreamEvent>>>
 
-        /** @see [createStreaming] */
+        /** @see createStreaming */
         @MustBeClosed
         fun createStreaming(
             params: ResponseCreateParams = ResponseCreateParams.none()
         ): CompletableFuture<HttpResponseFor<StreamResponse<ResponseStreamEvent>>> =
             createStreaming(params, RequestOptions.none())
 
-        /** @see [createStreaming] */
+        /** @see createStreaming */
         @MustBeClosed
         fun createStreaming(
             requestOptions: RequestOptions
@@ -304,7 +304,7 @@ interface ResponseServiceAsync {
         fun retrieve(responseId: String): CompletableFuture<HttpResponseFor<Response>> =
             retrieve(responseId, ResponseRetrieveParams.none())
 
-        /** @see [retrieve] */
+        /** @see retrieve */
         fun retrieve(
             responseId: String,
             params: ResponseRetrieveParams = ResponseRetrieveParams.none(),
@@ -312,24 +312,24 @@ interface ResponseServiceAsync {
         ): CompletableFuture<HttpResponseFor<Response>> =
             retrieve(params.toBuilder().responseId(responseId).build(), requestOptions)
 
-        /** @see [retrieve] */
+        /** @see retrieve */
         fun retrieve(
             responseId: String,
             params: ResponseRetrieveParams = ResponseRetrieveParams.none(),
         ): CompletableFuture<HttpResponseFor<Response>> =
             retrieve(responseId, params, RequestOptions.none())
 
-        /** @see [retrieve] */
+        /** @see retrieve */
         fun retrieve(
             params: ResponseRetrieveParams,
             requestOptions: RequestOptions = RequestOptions.none(),
         ): CompletableFuture<HttpResponseFor<Response>>
 
-        /** @see [retrieve] */
+        /** @see retrieve */
         fun retrieve(params: ResponseRetrieveParams): CompletableFuture<HttpResponseFor<Response>> =
             retrieve(params, RequestOptions.none())
 
-        /** @see [retrieve] */
+        /** @see retrieve */
         fun retrieve(
             responseId: String,
             requestOptions: RequestOptions,
@@ -346,7 +346,7 @@ interface ResponseServiceAsync {
         ): CompletableFuture<HttpResponseFor<StreamResponse<ResponseStreamEvent>>> =
             retrieveStreaming(responseId, ResponseRetrieveParams.none())
 
-        /** @see [retrieveStreaming] */
+        /** @see retrieveStreaming */
         @MustBeClosed
         fun retrieveStreaming(
             responseId: String,
@@ -355,7 +355,7 @@ interface ResponseServiceAsync {
         ): CompletableFuture<HttpResponseFor<StreamResponse<ResponseStreamEvent>>> =
             retrieveStreaming(params.toBuilder().responseId(responseId).build(), requestOptions)
 
-        /** @see [retrieveStreaming] */
+        /** @see retrieveStreaming */
         @MustBeClosed
         fun retrieveStreaming(
             responseId: String,
@@ -363,21 +363,21 @@ interface ResponseServiceAsync {
         ): CompletableFuture<HttpResponseFor<StreamResponse<ResponseStreamEvent>>> =
             retrieveStreaming(responseId, params, RequestOptions.none())
 
-        /** @see [retrieveStreaming] */
+        /** @see retrieveStreaming */
         @MustBeClosed
         fun retrieveStreaming(
             params: ResponseRetrieveParams,
             requestOptions: RequestOptions = RequestOptions.none(),
         ): CompletableFuture<HttpResponseFor<StreamResponse<ResponseStreamEvent>>>
 
-        /** @see [retrieveStreaming] */
+        /** @see retrieveStreaming */
         @MustBeClosed
         fun retrieveStreaming(
             params: ResponseRetrieveParams
         ): CompletableFuture<HttpResponseFor<StreamResponse<ResponseStreamEvent>>> =
             retrieveStreaming(params, RequestOptions.none())
 
-        /** @see [retrieveStreaming] */
+        /** @see retrieveStreaming */
         @MustBeClosed
         fun retrieveStreaming(
             responseId: String,
@@ -392,7 +392,7 @@ interface ResponseServiceAsync {
         fun delete(responseId: String): CompletableFuture<HttpResponse> =
             delete(responseId, ResponseDeleteParams.none())
 
-        /** @see [delete] */
+        /** @see delete */
         fun delete(
             responseId: String,
             params: ResponseDeleteParams = ResponseDeleteParams.none(),
@@ -400,23 +400,23 @@ interface ResponseServiceAsync {
         ): CompletableFuture<HttpResponse> =
             delete(params.toBuilder().responseId(responseId).build(), requestOptions)
 
-        /** @see [delete] */
+        /** @see delete */
         fun delete(
             responseId: String,
             params: ResponseDeleteParams = ResponseDeleteParams.none(),
         ): CompletableFuture<HttpResponse> = delete(responseId, params, RequestOptions.none())
 
-        /** @see [delete] */
+        /** @see delete */
         fun delete(
             params: ResponseDeleteParams,
             requestOptions: RequestOptions = RequestOptions.none(),
         ): CompletableFuture<HttpResponse>
 
-        /** @see [delete] */
+        /** @see delete */
         fun delete(params: ResponseDeleteParams): CompletableFuture<HttpResponse> =
             delete(params, RequestOptions.none())
 
-        /** @see [delete] */
+        /** @see delete */
         fun delete(
             responseId: String,
             requestOptions: RequestOptions,
@@ -430,7 +430,7 @@ interface ResponseServiceAsync {
         fun cancel(responseId: String): CompletableFuture<HttpResponseFor<Response>> =
             cancel(responseId, ResponseCancelParams.none())
 
-        /** @see [cancel] */
+        /** @see cancel */
         fun cancel(
             responseId: String,
             params: ResponseCancelParams = ResponseCancelParams.none(),
@@ -438,24 +438,24 @@ interface ResponseServiceAsync {
         ): CompletableFuture<HttpResponseFor<Response>> =
             cancel(params.toBuilder().responseId(responseId).build(), requestOptions)
 
-        /** @see [cancel] */
+        /** @see cancel */
         fun cancel(
             responseId: String,
             params: ResponseCancelParams = ResponseCancelParams.none(),
         ): CompletableFuture<HttpResponseFor<Response>> =
             cancel(responseId, params, RequestOptions.none())
 
-        /** @see [cancel] */
+        /** @see cancel */
         fun cancel(
             params: ResponseCancelParams,
             requestOptions: RequestOptions = RequestOptions.none(),
         ): CompletableFuture<HttpResponseFor<Response>>
 
-        /** @see [cancel] */
+        /** @see cancel */
         fun cancel(params: ResponseCancelParams): CompletableFuture<HttpResponseFor<Response>> =
             cancel(params, RequestOptions.none())
 
-        /** @see [cancel] */
+        /** @see cancel */
         fun cancel(
             responseId: String,
             requestOptions: RequestOptions,

@@ -33,18 +33,18 @@ interface SessionServiceAsync {
      */
     fun create(): CompletableFuture<SessionCreateResponse> = create(SessionCreateParams.none())
 
-    /** @see [create] */
+    /** @see create */
     fun create(
         params: SessionCreateParams = SessionCreateParams.none(),
         requestOptions: RequestOptions = RequestOptions.none(),
     ): CompletableFuture<SessionCreateResponse>
 
-    /** @see [create] */
+    /** @see create */
     fun create(
         params: SessionCreateParams = SessionCreateParams.none()
     ): CompletableFuture<SessionCreateResponse> = create(params, RequestOptions.none())
 
-    /** @see [create] */
+    /** @see create */
     fun create(requestOptions: RequestOptions): CompletableFuture<SessionCreateResponse> =
         create(SessionCreateParams.none(), requestOptions)
 
@@ -69,19 +69,19 @@ interface SessionServiceAsync {
         fun create(): CompletableFuture<HttpResponseFor<SessionCreateResponse>> =
             create(SessionCreateParams.none())
 
-        /** @see [create] */
+        /** @see create */
         fun create(
             params: SessionCreateParams = SessionCreateParams.none(),
             requestOptions: RequestOptions = RequestOptions.none(),
         ): CompletableFuture<HttpResponseFor<SessionCreateResponse>>
 
-        /** @see [create] */
+        /** @see create */
         fun create(
             params: SessionCreateParams = SessionCreateParams.none()
         ): CompletableFuture<HttpResponseFor<SessionCreateResponse>> =
             create(params, RequestOptions.none())
 
-        /** @see [create] */
+        /** @see create */
         fun create(
             requestOptions: RequestOptions
         ): CompletableFuture<HttpResponseFor<SessionCreateResponse>> =

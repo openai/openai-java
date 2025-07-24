@@ -37,7 +37,7 @@ interface ContainerService {
     fun create(params: ContainerCreateParams): ContainerCreateResponse =
         create(params, RequestOptions.none())
 
-    /** @see [create] */
+    /** @see create */
     fun create(
         params: ContainerCreateParams,
         requestOptions: RequestOptions = RequestOptions.none(),
@@ -47,7 +47,7 @@ interface ContainerService {
     fun retrieve(containerId: String): ContainerRetrieveResponse =
         retrieve(containerId, ContainerRetrieveParams.none())
 
-    /** @see [retrieve] */
+    /** @see retrieve */
     fun retrieve(
         containerId: String,
         params: ContainerRetrieveParams = ContainerRetrieveParams.none(),
@@ -55,67 +55,67 @@ interface ContainerService {
     ): ContainerRetrieveResponse =
         retrieve(params.toBuilder().containerId(containerId).build(), requestOptions)
 
-    /** @see [retrieve] */
+    /** @see retrieve */
     fun retrieve(
         containerId: String,
         params: ContainerRetrieveParams = ContainerRetrieveParams.none(),
     ): ContainerRetrieveResponse = retrieve(containerId, params, RequestOptions.none())
 
-    /** @see [retrieve] */
+    /** @see retrieve */
     fun retrieve(
         params: ContainerRetrieveParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): ContainerRetrieveResponse
 
-    /** @see [retrieve] */
+    /** @see retrieve */
     fun retrieve(params: ContainerRetrieveParams): ContainerRetrieveResponse =
         retrieve(params, RequestOptions.none())
 
-    /** @see [retrieve] */
+    /** @see retrieve */
     fun retrieve(containerId: String, requestOptions: RequestOptions): ContainerRetrieveResponse =
         retrieve(containerId, ContainerRetrieveParams.none(), requestOptions)
 
     /** List Containers */
     fun list(): ContainerListPage = list(ContainerListParams.none())
 
-    /** @see [list] */
+    /** @see list */
     fun list(
         params: ContainerListParams = ContainerListParams.none(),
         requestOptions: RequestOptions = RequestOptions.none(),
     ): ContainerListPage
 
-    /** @see [list] */
+    /** @see list */
     fun list(params: ContainerListParams = ContainerListParams.none()): ContainerListPage =
         list(params, RequestOptions.none())
 
-    /** @see [list] */
+    /** @see list */
     fun list(requestOptions: RequestOptions): ContainerListPage =
         list(ContainerListParams.none(), requestOptions)
 
     /** Delete Container */
     fun delete(containerId: String) = delete(containerId, ContainerDeleteParams.none())
 
-    /** @see [delete] */
+    /** @see delete */
     fun delete(
         containerId: String,
         params: ContainerDeleteParams = ContainerDeleteParams.none(),
         requestOptions: RequestOptions = RequestOptions.none(),
     ) = delete(params.toBuilder().containerId(containerId).build(), requestOptions)
 
-    /** @see [delete] */
+    /** @see delete */
     fun delete(containerId: String, params: ContainerDeleteParams = ContainerDeleteParams.none()) =
         delete(containerId, params, RequestOptions.none())
 
-    /** @see [delete] */
+    /** @see delete */
     fun delete(
         params: ContainerDeleteParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     )
 
-    /** @see [delete] */
+    /** @see delete */
     fun delete(params: ContainerDeleteParams) = delete(params, RequestOptions.none())
 
-    /** @see [delete] */
+    /** @see delete */
     fun delete(containerId: String, requestOptions: RequestOptions) =
         delete(containerId, ContainerDeleteParams.none(), requestOptions)
 
@@ -139,7 +139,7 @@ interface ContainerService {
         fun create(params: ContainerCreateParams): HttpResponseFor<ContainerCreateResponse> =
             create(params, RequestOptions.none())
 
-        /** @see [create] */
+        /** @see create */
         @MustBeClosed
         fun create(
             params: ContainerCreateParams,
@@ -154,7 +154,7 @@ interface ContainerService {
         fun retrieve(containerId: String): HttpResponseFor<ContainerRetrieveResponse> =
             retrieve(containerId, ContainerRetrieveParams.none())
 
-        /** @see [retrieve] */
+        /** @see retrieve */
         @MustBeClosed
         fun retrieve(
             containerId: String,
@@ -163,7 +163,7 @@ interface ContainerService {
         ): HttpResponseFor<ContainerRetrieveResponse> =
             retrieve(params.toBuilder().containerId(containerId).build(), requestOptions)
 
-        /** @see [retrieve] */
+        /** @see retrieve */
         @MustBeClosed
         fun retrieve(
             containerId: String,
@@ -171,19 +171,19 @@ interface ContainerService {
         ): HttpResponseFor<ContainerRetrieveResponse> =
             retrieve(containerId, params, RequestOptions.none())
 
-        /** @see [retrieve] */
+        /** @see retrieve */
         @MustBeClosed
         fun retrieve(
             params: ContainerRetrieveParams,
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<ContainerRetrieveResponse>
 
-        /** @see [retrieve] */
+        /** @see retrieve */
         @MustBeClosed
         fun retrieve(params: ContainerRetrieveParams): HttpResponseFor<ContainerRetrieveResponse> =
             retrieve(params, RequestOptions.none())
 
-        /** @see [retrieve] */
+        /** @see retrieve */
         @MustBeClosed
         fun retrieve(
             containerId: String,
@@ -198,20 +198,20 @@ interface ContainerService {
         @MustBeClosed
         fun list(): HttpResponseFor<ContainerListPage> = list(ContainerListParams.none())
 
-        /** @see [list] */
+        /** @see list */
         @MustBeClosed
         fun list(
             params: ContainerListParams = ContainerListParams.none(),
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<ContainerListPage>
 
-        /** @see [list] */
+        /** @see list */
         @MustBeClosed
         fun list(
             params: ContainerListParams = ContainerListParams.none()
         ): HttpResponseFor<ContainerListPage> = list(params, RequestOptions.none())
 
-        /** @see [list] */
+        /** @see list */
         @MustBeClosed
         fun list(requestOptions: RequestOptions): HttpResponseFor<ContainerListPage> =
             list(ContainerListParams.none(), requestOptions)
@@ -224,7 +224,7 @@ interface ContainerService {
         fun delete(containerId: String): HttpResponse =
             delete(containerId, ContainerDeleteParams.none())
 
-        /** @see [delete] */
+        /** @see delete */
         @MustBeClosed
         fun delete(
             containerId: String,
@@ -233,26 +233,26 @@ interface ContainerService {
         ): HttpResponse =
             delete(params.toBuilder().containerId(containerId).build(), requestOptions)
 
-        /** @see [delete] */
+        /** @see delete */
         @MustBeClosed
         fun delete(
             containerId: String,
             params: ContainerDeleteParams = ContainerDeleteParams.none(),
         ): HttpResponse = delete(containerId, params, RequestOptions.none())
 
-        /** @see [delete] */
+        /** @see delete */
         @MustBeClosed
         fun delete(
             params: ContainerDeleteParams,
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponse
 
-        /** @see [delete] */
+        /** @see delete */
         @MustBeClosed
         fun delete(params: ContainerDeleteParams): HttpResponse =
             delete(params, RequestOptions.none())
 
-        /** @see [delete] */
+        /** @see delete */
         @MustBeClosed
         fun delete(containerId: String, requestOptions: RequestOptions): HttpResponse =
             delete(containerId, ContainerDeleteParams.none(), requestOptions)

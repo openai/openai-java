@@ -35,18 +35,18 @@ interface TranscriptionSessionServiceAsync {
     fun create(): CompletableFuture<TranscriptionSession> =
         create(TranscriptionSessionCreateParams.none())
 
-    /** @see [create] */
+    /** @see create */
     fun create(
         params: TranscriptionSessionCreateParams = TranscriptionSessionCreateParams.none(),
         requestOptions: RequestOptions = RequestOptions.none(),
     ): CompletableFuture<TranscriptionSession>
 
-    /** @see [create] */
+    /** @see create */
     fun create(
         params: TranscriptionSessionCreateParams = TranscriptionSessionCreateParams.none()
     ): CompletableFuture<TranscriptionSession> = create(params, RequestOptions.none())
 
-    /** @see [create] */
+    /** @see create */
     fun create(requestOptions: RequestOptions): CompletableFuture<TranscriptionSession> =
         create(TranscriptionSessionCreateParams.none(), requestOptions)
 
@@ -72,19 +72,19 @@ interface TranscriptionSessionServiceAsync {
         fun create(): CompletableFuture<HttpResponseFor<TranscriptionSession>> =
             create(TranscriptionSessionCreateParams.none())
 
-        /** @see [create] */
+        /** @see create */
         fun create(
             params: TranscriptionSessionCreateParams = TranscriptionSessionCreateParams.none(),
             requestOptions: RequestOptions = RequestOptions.none(),
         ): CompletableFuture<HttpResponseFor<TranscriptionSession>>
 
-        /** @see [create] */
+        /** @see create */
         fun create(
             params: TranscriptionSessionCreateParams = TranscriptionSessionCreateParams.none()
         ): CompletableFuture<HttpResponseFor<TranscriptionSession>> =
             create(params, RequestOptions.none())
 
-        /** @see [create] */
+        /** @see create */
         fun create(
             requestOptions: RequestOptions
         ): CompletableFuture<HttpResponseFor<TranscriptionSession>> =

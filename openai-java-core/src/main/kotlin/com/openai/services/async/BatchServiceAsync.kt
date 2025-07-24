@@ -32,7 +32,7 @@ interface BatchServiceAsync {
     fun create(params: BatchCreateParams): CompletableFuture<Batch> =
         create(params, RequestOptions.none())
 
-    /** @see [create] */
+    /** @see create */
     fun create(
         params: BatchCreateParams,
         requestOptions: RequestOptions = RequestOptions.none(),
@@ -42,7 +42,7 @@ interface BatchServiceAsync {
     fun retrieve(batchId: String): CompletableFuture<Batch> =
         retrieve(batchId, BatchRetrieveParams.none())
 
-    /** @see [retrieve] */
+    /** @see retrieve */
     fun retrieve(
         batchId: String,
         params: BatchRetrieveParams = BatchRetrieveParams.none(),
@@ -50,41 +50,41 @@ interface BatchServiceAsync {
     ): CompletableFuture<Batch> =
         retrieve(params.toBuilder().batchId(batchId).build(), requestOptions)
 
-    /** @see [retrieve] */
+    /** @see retrieve */
     fun retrieve(
         batchId: String,
         params: BatchRetrieveParams = BatchRetrieveParams.none(),
     ): CompletableFuture<Batch> = retrieve(batchId, params, RequestOptions.none())
 
-    /** @see [retrieve] */
+    /** @see retrieve */
     fun retrieve(
         params: BatchRetrieveParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): CompletableFuture<Batch>
 
-    /** @see [retrieve] */
+    /** @see retrieve */
     fun retrieve(params: BatchRetrieveParams): CompletableFuture<Batch> =
         retrieve(params, RequestOptions.none())
 
-    /** @see [retrieve] */
+    /** @see retrieve */
     fun retrieve(batchId: String, requestOptions: RequestOptions): CompletableFuture<Batch> =
         retrieve(batchId, BatchRetrieveParams.none(), requestOptions)
 
     /** List your organization's batches. */
     fun list(): CompletableFuture<BatchListPageAsync> = list(BatchListParams.none())
 
-    /** @see [list] */
+    /** @see list */
     fun list(
         params: BatchListParams = BatchListParams.none(),
         requestOptions: RequestOptions = RequestOptions.none(),
     ): CompletableFuture<BatchListPageAsync>
 
-    /** @see [list] */
+    /** @see list */
     fun list(
         params: BatchListParams = BatchListParams.none()
     ): CompletableFuture<BatchListPageAsync> = list(params, RequestOptions.none())
 
-    /** @see [list] */
+    /** @see list */
     fun list(requestOptions: RequestOptions): CompletableFuture<BatchListPageAsync> =
         list(BatchListParams.none(), requestOptions)
 
@@ -96,7 +96,7 @@ interface BatchServiceAsync {
     fun cancel(batchId: String): CompletableFuture<Batch> =
         cancel(batchId, BatchCancelParams.none())
 
-    /** @see [cancel] */
+    /** @see cancel */
     fun cancel(
         batchId: String,
         params: BatchCancelParams = BatchCancelParams.none(),
@@ -104,23 +104,23 @@ interface BatchServiceAsync {
     ): CompletableFuture<Batch> =
         cancel(params.toBuilder().batchId(batchId).build(), requestOptions)
 
-    /** @see [cancel] */
+    /** @see cancel */
     fun cancel(
         batchId: String,
         params: BatchCancelParams = BatchCancelParams.none(),
     ): CompletableFuture<Batch> = cancel(batchId, params, RequestOptions.none())
 
-    /** @see [cancel] */
+    /** @see cancel */
     fun cancel(
         params: BatchCancelParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): CompletableFuture<Batch>
 
-    /** @see [cancel] */
+    /** @see cancel */
     fun cancel(params: BatchCancelParams): CompletableFuture<Batch> =
         cancel(params, RequestOptions.none())
 
-    /** @see [cancel] */
+    /** @see cancel */
     fun cancel(batchId: String, requestOptions: RequestOptions): CompletableFuture<Batch> =
         cancel(batchId, BatchCancelParams.none(), requestOptions)
 
@@ -143,7 +143,7 @@ interface BatchServiceAsync {
         fun create(params: BatchCreateParams): CompletableFuture<HttpResponseFor<Batch>> =
             create(params, RequestOptions.none())
 
-        /** @see [create] */
+        /** @see create */
         fun create(
             params: BatchCreateParams,
             requestOptions: RequestOptions = RequestOptions.none(),
@@ -156,7 +156,7 @@ interface BatchServiceAsync {
         fun retrieve(batchId: String): CompletableFuture<HttpResponseFor<Batch>> =
             retrieve(batchId, BatchRetrieveParams.none())
 
-        /** @see [retrieve] */
+        /** @see retrieve */
         fun retrieve(
             batchId: String,
             params: BatchRetrieveParams = BatchRetrieveParams.none(),
@@ -164,24 +164,24 @@ interface BatchServiceAsync {
         ): CompletableFuture<HttpResponseFor<Batch>> =
             retrieve(params.toBuilder().batchId(batchId).build(), requestOptions)
 
-        /** @see [retrieve] */
+        /** @see retrieve */
         fun retrieve(
             batchId: String,
             params: BatchRetrieveParams = BatchRetrieveParams.none(),
         ): CompletableFuture<HttpResponseFor<Batch>> =
             retrieve(batchId, params, RequestOptions.none())
 
-        /** @see [retrieve] */
+        /** @see retrieve */
         fun retrieve(
             params: BatchRetrieveParams,
             requestOptions: RequestOptions = RequestOptions.none(),
         ): CompletableFuture<HttpResponseFor<Batch>>
 
-        /** @see [retrieve] */
+        /** @see retrieve */
         fun retrieve(params: BatchRetrieveParams): CompletableFuture<HttpResponseFor<Batch>> =
             retrieve(params, RequestOptions.none())
 
-        /** @see [retrieve] */
+        /** @see retrieve */
         fun retrieve(
             batchId: String,
             requestOptions: RequestOptions,
@@ -195,19 +195,19 @@ interface BatchServiceAsync {
         fun list(): CompletableFuture<HttpResponseFor<BatchListPageAsync>> =
             list(BatchListParams.none())
 
-        /** @see [list] */
+        /** @see list */
         fun list(
             params: BatchListParams = BatchListParams.none(),
             requestOptions: RequestOptions = RequestOptions.none(),
         ): CompletableFuture<HttpResponseFor<BatchListPageAsync>>
 
-        /** @see [list] */
+        /** @see list */
         fun list(
             params: BatchListParams = BatchListParams.none()
         ): CompletableFuture<HttpResponseFor<BatchListPageAsync>> =
             list(params, RequestOptions.none())
 
-        /** @see [list] */
+        /** @see list */
         fun list(
             requestOptions: RequestOptions
         ): CompletableFuture<HttpResponseFor<BatchListPageAsync>> =
@@ -220,7 +220,7 @@ interface BatchServiceAsync {
         fun cancel(batchId: String): CompletableFuture<HttpResponseFor<Batch>> =
             cancel(batchId, BatchCancelParams.none())
 
-        /** @see [cancel] */
+        /** @see cancel */
         fun cancel(
             batchId: String,
             params: BatchCancelParams = BatchCancelParams.none(),
@@ -228,24 +228,24 @@ interface BatchServiceAsync {
         ): CompletableFuture<HttpResponseFor<Batch>> =
             cancel(params.toBuilder().batchId(batchId).build(), requestOptions)
 
-        /** @see [cancel] */
+        /** @see cancel */
         fun cancel(
             batchId: String,
             params: BatchCancelParams = BatchCancelParams.none(),
         ): CompletableFuture<HttpResponseFor<Batch>> =
             cancel(batchId, params, RequestOptions.none())
 
-        /** @see [cancel] */
+        /** @see cancel */
         fun cancel(
             params: BatchCancelParams,
             requestOptions: RequestOptions = RequestOptions.none(),
         ): CompletableFuture<HttpResponseFor<Batch>>
 
-        /** @see [cancel] */
+        /** @see cancel */
         fun cancel(params: BatchCancelParams): CompletableFuture<HttpResponseFor<Batch>> =
             cancel(params, RequestOptions.none())
 
-        /** @see [cancel] */
+        /** @see cancel */
         fun cancel(
             batchId: String,
             requestOptions: RequestOptions,

@@ -12,7 +12,7 @@ import java.util.concurrent.CompletableFuture
 import java.util.concurrent.Executor
 import kotlin.jvm.optionals.getOrNull
 
-/** @see [BatchServiceAsync.list] */
+/** @see BatchServiceAsync.list */
 class BatchListPageAsync
 private constructor(
     private val service: BatchServiceAsync,
@@ -24,14 +24,14 @@ private constructor(
     /**
      * Delegates to [BatchListPageResponse], but gracefully handles missing data.
      *
-     * @see [BatchListPageResponse.data]
+     * @see BatchListPageResponse.data
      */
     fun data(): List<Batch> = response._data().getOptional("data").getOrNull() ?: emptyList()
 
     /**
      * Delegates to [BatchListPageResponse], but gracefully handles missing data.
      *
-     * @see [BatchListPageResponse.hasMore]
+     * @see BatchListPageResponse.hasMore
      */
     fun hasMore(): Optional<Boolean> = response._hasMore().getOptional("has_more")
 

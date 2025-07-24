@@ -10,7 +10,7 @@ import java.util.Objects
 import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
-/** @see [ChatCompletionService.list] */
+/** @see ChatCompletionService.list */
 class ChatCompletionListPage
 private constructor(
     private val service: ChatCompletionService,
@@ -21,7 +21,7 @@ private constructor(
     /**
      * Delegates to [ChatCompletionListPageResponse], but gracefully handles missing data.
      *
-     * @see [ChatCompletionListPageResponse.data]
+     * @see ChatCompletionListPageResponse.data
      */
     fun data(): List<ChatCompletion> =
         response._data().getOptional("data").getOrNull() ?: emptyList()
@@ -29,7 +29,7 @@ private constructor(
     /**
      * Delegates to [ChatCompletionListPageResponse], but gracefully handles missing data.
      *
-     * @see [ChatCompletionListPageResponse.hasMore]
+     * @see ChatCompletionListPageResponse.hasMore
      */
     fun hasMore(): Optional<Boolean> = response._hasMore().getOptional("has_more")
 

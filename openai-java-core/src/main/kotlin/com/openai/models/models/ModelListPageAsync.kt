@@ -12,7 +12,7 @@ import java.util.concurrent.CompletableFuture
 import java.util.concurrent.Executor
 import kotlin.jvm.optionals.getOrNull
 
-/** @see [ModelServiceAsync.list] */
+/** @see ModelServiceAsync.list */
 class ModelListPageAsync
 private constructor(
     private val service: ModelServiceAsync,
@@ -24,11 +24,11 @@ private constructor(
     /**
      * Delegates to [ModelListPageResponse], but gracefully handles missing data.
      *
-     * @see [ModelListPageResponse.data]
+     * @see ModelListPageResponse.data
      */
     fun data(): List<Model> = response._data().getOptional("data").getOrNull() ?: emptyList()
 
-    /** @see [ModelListPageResponse.object_] */
+    /** @see ModelListPageResponse.object\_ */
     fun object_(): JsonValue = response._object_()
 
     override fun items(): List<Model> = data()

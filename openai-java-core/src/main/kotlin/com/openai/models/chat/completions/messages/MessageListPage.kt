@@ -11,7 +11,7 @@ import java.util.Objects
 import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
-/** @see [MessageService.list] */
+/** @see MessageService.list */
 class MessageListPage
 private constructor(
     private val service: MessageService,
@@ -22,7 +22,7 @@ private constructor(
     /**
      * Delegates to [MessageListPageResponse], but gracefully handles missing data.
      *
-     * @see [MessageListPageResponse.data]
+     * @see MessageListPageResponse.data
      */
     fun data(): List<ChatCompletionStoreMessage> =
         response._data().getOptional("data").getOrNull() ?: emptyList()
@@ -30,7 +30,7 @@ private constructor(
     /**
      * Delegates to [MessageListPageResponse], but gracefully handles missing data.
      *
-     * @see [MessageListPageResponse.hasMore]
+     * @see MessageListPageResponse.hasMore
      */
     fun hasMore(): Optional<Boolean> = response._hasMore().getOptional("has_more")
 

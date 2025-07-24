@@ -12,7 +12,7 @@ import java.util.concurrent.CompletableFuture
 import java.util.concurrent.Executor
 import kotlin.jvm.optionals.getOrNull
 
-/** @see [ContainerServiceAsync.list] */
+/** @see ContainerServiceAsync.list */
 class ContainerListPageAsync
 private constructor(
     private val service: ContainerServiceAsync,
@@ -24,7 +24,7 @@ private constructor(
     /**
      * Delegates to [ContainerListPageResponse], but gracefully handles missing data.
      *
-     * @see [ContainerListPageResponse.data]
+     * @see ContainerListPageResponse.data
      */
     fun data(): List<ContainerListResponse> =
         response._data().getOptional("data").getOrNull() ?: emptyList()
@@ -32,7 +32,7 @@ private constructor(
     /**
      * Delegates to [ContainerListPageResponse], but gracefully handles missing data.
      *
-     * @see [ContainerListPageResponse.hasMore]
+     * @see ContainerListPageResponse.hasMore
      */
     fun hasMore(): Optional<Boolean> = response._hasMore().getOptional("has_more")
 

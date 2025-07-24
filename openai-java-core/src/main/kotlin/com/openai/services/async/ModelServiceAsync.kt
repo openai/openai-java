@@ -35,30 +35,30 @@ interface ModelServiceAsync {
     fun retrieve(model: String): CompletableFuture<Model> =
         retrieve(model, ModelRetrieveParams.none())
 
-    /** @see [retrieve] */
+    /** @see retrieve */
     fun retrieve(
         model: String,
         params: ModelRetrieveParams = ModelRetrieveParams.none(),
         requestOptions: RequestOptions = RequestOptions.none(),
     ): CompletableFuture<Model> = retrieve(params.toBuilder().model(model).build(), requestOptions)
 
-    /** @see [retrieve] */
+    /** @see retrieve */
     fun retrieve(
         model: String,
         params: ModelRetrieveParams = ModelRetrieveParams.none(),
     ): CompletableFuture<Model> = retrieve(model, params, RequestOptions.none())
 
-    /** @see [retrieve] */
+    /** @see retrieve */
     fun retrieve(
         params: ModelRetrieveParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): CompletableFuture<Model>
 
-    /** @see [retrieve] */
+    /** @see retrieve */
     fun retrieve(params: ModelRetrieveParams): CompletableFuture<Model> =
         retrieve(params, RequestOptions.none())
 
-    /** @see [retrieve] */
+    /** @see retrieve */
     fun retrieve(model: String, requestOptions: RequestOptions): CompletableFuture<Model> =
         retrieve(model, ModelRetrieveParams.none(), requestOptions)
 
@@ -68,18 +68,18 @@ interface ModelServiceAsync {
      */
     fun list(): CompletableFuture<ModelListPageAsync> = list(ModelListParams.none())
 
-    /** @see [list] */
+    /** @see list */
     fun list(
         params: ModelListParams = ModelListParams.none(),
         requestOptions: RequestOptions = RequestOptions.none(),
     ): CompletableFuture<ModelListPageAsync>
 
-    /** @see [list] */
+    /** @see list */
     fun list(
         params: ModelListParams = ModelListParams.none()
     ): CompletableFuture<ModelListPageAsync> = list(params, RequestOptions.none())
 
-    /** @see [list] */
+    /** @see list */
     fun list(requestOptions: RequestOptions): CompletableFuture<ModelListPageAsync> =
         list(ModelListParams.none(), requestOptions)
 
@@ -90,7 +90,7 @@ interface ModelServiceAsync {
     fun delete(model: String): CompletableFuture<ModelDeleted> =
         delete(model, ModelDeleteParams.none())
 
-    /** @see [delete] */
+    /** @see delete */
     fun delete(
         model: String,
         params: ModelDeleteParams = ModelDeleteParams.none(),
@@ -98,23 +98,23 @@ interface ModelServiceAsync {
     ): CompletableFuture<ModelDeleted> =
         delete(params.toBuilder().model(model).build(), requestOptions)
 
-    /** @see [delete] */
+    /** @see delete */
     fun delete(
         model: String,
         params: ModelDeleteParams = ModelDeleteParams.none(),
     ): CompletableFuture<ModelDeleted> = delete(model, params, RequestOptions.none())
 
-    /** @see [delete] */
+    /** @see delete */
     fun delete(
         params: ModelDeleteParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): CompletableFuture<ModelDeleted>
 
-    /** @see [delete] */
+    /** @see delete */
     fun delete(params: ModelDeleteParams): CompletableFuture<ModelDeleted> =
         delete(params, RequestOptions.none())
 
-    /** @see [delete] */
+    /** @see delete */
     fun delete(model: String, requestOptions: RequestOptions): CompletableFuture<ModelDeleted> =
         delete(model, ModelDeleteParams.none(), requestOptions)
 
@@ -137,7 +137,7 @@ interface ModelServiceAsync {
         fun retrieve(model: String): CompletableFuture<HttpResponseFor<Model>> =
             retrieve(model, ModelRetrieveParams.none())
 
-        /** @see [retrieve] */
+        /** @see retrieve */
         fun retrieve(
             model: String,
             params: ModelRetrieveParams = ModelRetrieveParams.none(),
@@ -145,24 +145,24 @@ interface ModelServiceAsync {
         ): CompletableFuture<HttpResponseFor<Model>> =
             retrieve(params.toBuilder().model(model).build(), requestOptions)
 
-        /** @see [retrieve] */
+        /** @see retrieve */
         fun retrieve(
             model: String,
             params: ModelRetrieveParams = ModelRetrieveParams.none(),
         ): CompletableFuture<HttpResponseFor<Model>> =
             retrieve(model, params, RequestOptions.none())
 
-        /** @see [retrieve] */
+        /** @see retrieve */
         fun retrieve(
             params: ModelRetrieveParams,
             requestOptions: RequestOptions = RequestOptions.none(),
         ): CompletableFuture<HttpResponseFor<Model>>
 
-        /** @see [retrieve] */
+        /** @see retrieve */
         fun retrieve(params: ModelRetrieveParams): CompletableFuture<HttpResponseFor<Model>> =
             retrieve(params, RequestOptions.none())
 
-        /** @see [retrieve] */
+        /** @see retrieve */
         fun retrieve(
             model: String,
             requestOptions: RequestOptions,
@@ -176,19 +176,19 @@ interface ModelServiceAsync {
         fun list(): CompletableFuture<HttpResponseFor<ModelListPageAsync>> =
             list(ModelListParams.none())
 
-        /** @see [list] */
+        /** @see list */
         fun list(
             params: ModelListParams = ModelListParams.none(),
             requestOptions: RequestOptions = RequestOptions.none(),
         ): CompletableFuture<HttpResponseFor<ModelListPageAsync>>
 
-        /** @see [list] */
+        /** @see list */
         fun list(
             params: ModelListParams = ModelListParams.none()
         ): CompletableFuture<HttpResponseFor<ModelListPageAsync>> =
             list(params, RequestOptions.none())
 
-        /** @see [list] */
+        /** @see list */
         fun list(
             requestOptions: RequestOptions
         ): CompletableFuture<HttpResponseFor<ModelListPageAsync>> =
@@ -201,7 +201,7 @@ interface ModelServiceAsync {
         fun delete(model: String): CompletableFuture<HttpResponseFor<ModelDeleted>> =
             delete(model, ModelDeleteParams.none())
 
-        /** @see [delete] */
+        /** @see delete */
         fun delete(
             model: String,
             params: ModelDeleteParams = ModelDeleteParams.none(),
@@ -209,24 +209,24 @@ interface ModelServiceAsync {
         ): CompletableFuture<HttpResponseFor<ModelDeleted>> =
             delete(params.toBuilder().model(model).build(), requestOptions)
 
-        /** @see [delete] */
+        /** @see delete */
         fun delete(
             model: String,
             params: ModelDeleteParams = ModelDeleteParams.none(),
         ): CompletableFuture<HttpResponseFor<ModelDeleted>> =
             delete(model, params, RequestOptions.none())
 
-        /** @see [delete] */
+        /** @see delete */
         fun delete(
             params: ModelDeleteParams,
             requestOptions: RequestOptions = RequestOptions.none(),
         ): CompletableFuture<HttpResponseFor<ModelDeleted>>
 
-        /** @see [delete] */
+        /** @see delete */
         fun delete(params: ModelDeleteParams): CompletableFuture<HttpResponseFor<ModelDeleted>> =
             delete(params, RequestOptions.none())
 
-        /** @see [delete] */
+        /** @see delete */
         fun delete(
             model: String,
             requestOptions: RequestOptions,

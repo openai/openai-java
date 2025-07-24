@@ -31,7 +31,7 @@ interface MessageServiceAsync {
     fun list(completionId: String): CompletableFuture<MessageListPageAsync> =
         list(completionId, MessageListParams.none())
 
-    /** @see [list] */
+    /** @see list */
     fun list(
         completionId: String,
         params: MessageListParams = MessageListParams.none(),
@@ -39,23 +39,23 @@ interface MessageServiceAsync {
     ): CompletableFuture<MessageListPageAsync> =
         list(params.toBuilder().completionId(completionId).build(), requestOptions)
 
-    /** @see [list] */
+    /** @see list */
     fun list(
         completionId: String,
         params: MessageListParams = MessageListParams.none(),
     ): CompletableFuture<MessageListPageAsync> = list(completionId, params, RequestOptions.none())
 
-    /** @see [list] */
+    /** @see list */
     fun list(
         params: MessageListParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): CompletableFuture<MessageListPageAsync>
 
-    /** @see [list] */
+    /** @see list */
     fun list(params: MessageListParams): CompletableFuture<MessageListPageAsync> =
         list(params, RequestOptions.none())
 
-    /** @see [list] */
+    /** @see list */
     fun list(
         completionId: String,
         requestOptions: RequestOptions,
@@ -83,7 +83,7 @@ interface MessageServiceAsync {
         fun list(completionId: String): CompletableFuture<HttpResponseFor<MessageListPageAsync>> =
             list(completionId, MessageListParams.none())
 
-        /** @see [list] */
+        /** @see list */
         fun list(
             completionId: String,
             params: MessageListParams = MessageListParams.none(),
@@ -91,26 +91,26 @@ interface MessageServiceAsync {
         ): CompletableFuture<HttpResponseFor<MessageListPageAsync>> =
             list(params.toBuilder().completionId(completionId).build(), requestOptions)
 
-        /** @see [list] */
+        /** @see list */
         fun list(
             completionId: String,
             params: MessageListParams = MessageListParams.none(),
         ): CompletableFuture<HttpResponseFor<MessageListPageAsync>> =
             list(completionId, params, RequestOptions.none())
 
-        /** @see [list] */
+        /** @see list */
         fun list(
             params: MessageListParams,
             requestOptions: RequestOptions = RequestOptions.none(),
         ): CompletableFuture<HttpResponseFor<MessageListPageAsync>>
 
-        /** @see [list] */
+        /** @see list */
         fun list(
             params: MessageListParams
         ): CompletableFuture<HttpResponseFor<MessageListPageAsync>> =
             list(params, RequestOptions.none())
 
-        /** @see [list] */
+        /** @see list */
         fun list(
             completionId: String,
             requestOptions: RequestOptions,

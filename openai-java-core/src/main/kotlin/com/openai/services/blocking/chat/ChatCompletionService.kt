@@ -56,7 +56,7 @@ interface ChatCompletionService {
     fun create(params: ChatCompletionCreateParams): ChatCompletion =
         create(params, RequestOptions.none())
 
-    /** @see [create] */
+    /** @see create */
     fun create(
         params: ChatCompletionCreateParams,
         requestOptions: RequestOptions = RequestOptions.none(),
@@ -84,7 +84,7 @@ interface ChatCompletionService {
     fun createStreaming(params: ChatCompletionCreateParams): StreamResponse<ChatCompletionChunk> =
         createStreaming(params, RequestOptions.none())
 
-    /** @see [createStreaming] */
+    /** @see createStreaming */
     @MustBeClosed
     fun createStreaming(
         params: ChatCompletionCreateParams,
@@ -98,7 +98,7 @@ interface ChatCompletionService {
     fun retrieve(completionId: String): ChatCompletion =
         retrieve(completionId, ChatCompletionRetrieveParams.none())
 
-    /** @see [retrieve] */
+    /** @see retrieve */
     fun retrieve(
         completionId: String,
         params: ChatCompletionRetrieveParams = ChatCompletionRetrieveParams.none(),
@@ -106,23 +106,23 @@ interface ChatCompletionService {
     ): ChatCompletion =
         retrieve(params.toBuilder().completionId(completionId).build(), requestOptions)
 
-    /** @see [retrieve] */
+    /** @see retrieve */
     fun retrieve(
         completionId: String,
         params: ChatCompletionRetrieveParams = ChatCompletionRetrieveParams.none(),
     ): ChatCompletion = retrieve(completionId, params, RequestOptions.none())
 
-    /** @see [retrieve] */
+    /** @see retrieve */
     fun retrieve(
         params: ChatCompletionRetrieveParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): ChatCompletion
 
-    /** @see [retrieve] */
+    /** @see retrieve */
     fun retrieve(params: ChatCompletionRetrieveParams): ChatCompletion =
         retrieve(params, RequestOptions.none())
 
-    /** @see [retrieve] */
+    /** @see retrieve */
     fun retrieve(completionId: String, requestOptions: RequestOptions): ChatCompletion =
         retrieve(completionId, ChatCompletionRetrieveParams.none(), requestOptions)
 
@@ -134,7 +134,7 @@ interface ChatCompletionService {
     fun update(completionId: String, params: ChatCompletionUpdateParams): ChatCompletion =
         update(completionId, params, RequestOptions.none())
 
-    /** @see [update] */
+    /** @see update */
     fun update(
         completionId: String,
         params: ChatCompletionUpdateParams,
@@ -142,11 +142,11 @@ interface ChatCompletionService {
     ): ChatCompletion =
         update(params.toBuilder().completionId(completionId).build(), requestOptions)
 
-    /** @see [update] */
+    /** @see update */
     fun update(params: ChatCompletionUpdateParams): ChatCompletion =
         update(params, RequestOptions.none())
 
-    /** @see [update] */
+    /** @see update */
     fun update(
         params: ChatCompletionUpdateParams,
         requestOptions: RequestOptions = RequestOptions.none(),
@@ -158,18 +158,18 @@ interface ChatCompletionService {
      */
     fun list(): ChatCompletionListPage = list(ChatCompletionListParams.none())
 
-    /** @see [list] */
+    /** @see list */
     fun list(
         params: ChatCompletionListParams = ChatCompletionListParams.none(),
         requestOptions: RequestOptions = RequestOptions.none(),
     ): ChatCompletionListPage
 
-    /** @see [list] */
+    /** @see list */
     fun list(
         params: ChatCompletionListParams = ChatCompletionListParams.none()
     ): ChatCompletionListPage = list(params, RequestOptions.none())
 
-    /** @see [list] */
+    /** @see list */
     fun list(requestOptions: RequestOptions): ChatCompletionListPage =
         list(ChatCompletionListParams.none(), requestOptions)
 
@@ -180,7 +180,7 @@ interface ChatCompletionService {
     fun delete(completionId: String): ChatCompletionDeleted =
         delete(completionId, ChatCompletionDeleteParams.none())
 
-    /** @see [delete] */
+    /** @see delete */
     fun delete(
         completionId: String,
         params: ChatCompletionDeleteParams = ChatCompletionDeleteParams.none(),
@@ -188,23 +188,23 @@ interface ChatCompletionService {
     ): ChatCompletionDeleted =
         delete(params.toBuilder().completionId(completionId).build(), requestOptions)
 
-    /** @see [delete] */
+    /** @see delete */
     fun delete(
         completionId: String,
         params: ChatCompletionDeleteParams = ChatCompletionDeleteParams.none(),
     ): ChatCompletionDeleted = delete(completionId, params, RequestOptions.none())
 
-    /** @see [delete] */
+    /** @see delete */
     fun delete(
         params: ChatCompletionDeleteParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): ChatCompletionDeleted
 
-    /** @see [delete] */
+    /** @see delete */
     fun delete(params: ChatCompletionDeleteParams): ChatCompletionDeleted =
         delete(params, RequestOptions.none())
 
-    /** @see [delete] */
+    /** @see delete */
     fun delete(completionId: String, requestOptions: RequestOptions): ChatCompletionDeleted =
         delete(completionId, ChatCompletionDeleteParams.none(), requestOptions)
 
@@ -232,7 +232,7 @@ interface ChatCompletionService {
         fun create(params: ChatCompletionCreateParams): HttpResponseFor<ChatCompletion> =
             create(params, RequestOptions.none())
 
-        /** @see [create] */
+        /** @see create */
         @MustBeClosed
         fun create(
             params: ChatCompletionCreateParams,
@@ -249,7 +249,7 @@ interface ChatCompletionService {
         ): HttpResponseFor<StreamResponse<ChatCompletionChunk>> =
             createStreaming(params, RequestOptions.none())
 
-        /** @see [createStreaming] */
+        /** @see createStreaming */
         @MustBeClosed
         fun createStreaming(
             params: ChatCompletionCreateParams,
@@ -264,7 +264,7 @@ interface ChatCompletionService {
         fun retrieve(completionId: String): HttpResponseFor<ChatCompletion> =
             retrieve(completionId, ChatCompletionRetrieveParams.none())
 
-        /** @see [retrieve] */
+        /** @see retrieve */
         @MustBeClosed
         fun retrieve(
             completionId: String,
@@ -273,26 +273,26 @@ interface ChatCompletionService {
         ): HttpResponseFor<ChatCompletion> =
             retrieve(params.toBuilder().completionId(completionId).build(), requestOptions)
 
-        /** @see [retrieve] */
+        /** @see retrieve */
         @MustBeClosed
         fun retrieve(
             completionId: String,
             params: ChatCompletionRetrieveParams = ChatCompletionRetrieveParams.none(),
         ): HttpResponseFor<ChatCompletion> = retrieve(completionId, params, RequestOptions.none())
 
-        /** @see [retrieve] */
+        /** @see retrieve */
         @MustBeClosed
         fun retrieve(
             params: ChatCompletionRetrieveParams,
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<ChatCompletion>
 
-        /** @see [retrieve] */
+        /** @see retrieve */
         @MustBeClosed
         fun retrieve(params: ChatCompletionRetrieveParams): HttpResponseFor<ChatCompletion> =
             retrieve(params, RequestOptions.none())
 
-        /** @see [retrieve] */
+        /** @see retrieve */
         @MustBeClosed
         fun retrieve(
             completionId: String,
@@ -310,7 +310,7 @@ interface ChatCompletionService {
             params: ChatCompletionUpdateParams,
         ): HttpResponseFor<ChatCompletion> = update(completionId, params, RequestOptions.none())
 
-        /** @see [update] */
+        /** @see update */
         @MustBeClosed
         fun update(
             completionId: String,
@@ -319,12 +319,12 @@ interface ChatCompletionService {
         ): HttpResponseFor<ChatCompletion> =
             update(params.toBuilder().completionId(completionId).build(), requestOptions)
 
-        /** @see [update] */
+        /** @see update */
         @MustBeClosed
         fun update(params: ChatCompletionUpdateParams): HttpResponseFor<ChatCompletion> =
             update(params, RequestOptions.none())
 
-        /** @see [update] */
+        /** @see update */
         @MustBeClosed
         fun update(
             params: ChatCompletionUpdateParams,
@@ -338,20 +338,20 @@ interface ChatCompletionService {
         @MustBeClosed
         fun list(): HttpResponseFor<ChatCompletionListPage> = list(ChatCompletionListParams.none())
 
-        /** @see [list] */
+        /** @see list */
         @MustBeClosed
         fun list(
             params: ChatCompletionListParams = ChatCompletionListParams.none(),
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<ChatCompletionListPage>
 
-        /** @see [list] */
+        /** @see list */
         @MustBeClosed
         fun list(
             params: ChatCompletionListParams = ChatCompletionListParams.none()
         ): HttpResponseFor<ChatCompletionListPage> = list(params, RequestOptions.none())
 
-        /** @see [list] */
+        /** @see list */
         @MustBeClosed
         fun list(requestOptions: RequestOptions): HttpResponseFor<ChatCompletionListPage> =
             list(ChatCompletionListParams.none(), requestOptions)
@@ -364,7 +364,7 @@ interface ChatCompletionService {
         fun delete(completionId: String): HttpResponseFor<ChatCompletionDeleted> =
             delete(completionId, ChatCompletionDeleteParams.none())
 
-        /** @see [delete] */
+        /** @see delete */
         @MustBeClosed
         fun delete(
             completionId: String,
@@ -373,7 +373,7 @@ interface ChatCompletionService {
         ): HttpResponseFor<ChatCompletionDeleted> =
             delete(params.toBuilder().completionId(completionId).build(), requestOptions)
 
-        /** @see [delete] */
+        /** @see delete */
         @MustBeClosed
         fun delete(
             completionId: String,
@@ -381,19 +381,19 @@ interface ChatCompletionService {
         ): HttpResponseFor<ChatCompletionDeleted> =
             delete(completionId, params, RequestOptions.none())
 
-        /** @see [delete] */
+        /** @see delete */
         @MustBeClosed
         fun delete(
             params: ChatCompletionDeleteParams,
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<ChatCompletionDeleted>
 
-        /** @see [delete] */
+        /** @see delete */
         @MustBeClosed
         fun delete(params: ChatCompletionDeleteParams): HttpResponseFor<ChatCompletionDeleted> =
             delete(params, RequestOptions.none())
 
-        /** @see [delete] */
+        /** @see delete */
         @MustBeClosed
         fun delete(
             completionId: String,

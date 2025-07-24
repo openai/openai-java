@@ -20,7 +20,7 @@ import java.util.Objects
 import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
-/** @see [InputItemService.list] */
+/** @see InputItemService.list */
 class InputItemListPage
 private constructor(
     private val service: InputItemService,
@@ -31,14 +31,14 @@ private constructor(
     /**
      * Delegates to [ResponseItemList], but gracefully handles missing data.
      *
-     * @see [ResponseItemList.data]
+     * @see ResponseItemList.data
      */
     fun data(): List<ResponseItem> = response._data().getOptional("data").getOrNull() ?: emptyList()
 
     /**
      * Delegates to [ResponseItemList], but gracefully handles missing data.
      *
-     * @see [ResponseItemList.hasMore]
+     * @see ResponseItemList.hasMore
      */
     fun hasMore(): Optional<Boolean> = response._hasMore().getOptional("has_more")
 

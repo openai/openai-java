@@ -30,7 +30,7 @@ interface TranscriptionService {
     fun create(params: TranscriptionCreateParams): TranscriptionCreateResponse =
         create(params, RequestOptions.none())
 
-    /** @see [create] */
+    /** @see create */
     fun create(
         params: TranscriptionCreateParams,
         requestOptions: RequestOptions = RequestOptions.none(),
@@ -42,7 +42,7 @@ interface TranscriptionService {
         params: TranscriptionCreateParams
     ): StreamResponse<TranscriptionStreamEvent> = createStreaming(params, RequestOptions.none())
 
-    /** @see [createStreaming] */
+    /** @see createStreaming */
     @MustBeClosed
     fun createStreaming(
         params: TranscriptionCreateParams,
@@ -72,7 +72,7 @@ interface TranscriptionService {
             params: TranscriptionCreateParams
         ): HttpResponseFor<TranscriptionCreateResponse> = create(params, RequestOptions.none())
 
-        /** @see [create] */
+        /** @see create */
         @MustBeClosed
         fun create(
             params: TranscriptionCreateParams,
@@ -89,7 +89,7 @@ interface TranscriptionService {
         ): HttpResponseFor<StreamResponse<TranscriptionStreamEvent>> =
             createStreaming(params, RequestOptions.none())
 
-        /** @see [createStreaming] */
+        /** @see createStreaming */
         @MustBeClosed
         fun createStreaming(
             params: TranscriptionCreateParams,

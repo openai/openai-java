@@ -12,7 +12,7 @@ import java.util.concurrent.CompletableFuture
 import java.util.concurrent.Executor
 import kotlin.jvm.optionals.getOrNull
 
-/** @see [FileServiceAsync.content] */
+/** @see FileServiceAsync.content */
 class FileContentPageAsync
 private constructor(
     private val service: FileServiceAsync,
@@ -24,12 +24,12 @@ private constructor(
     /**
      * Delegates to [FileContentPageResponse], but gracefully handles missing data.
      *
-     * @see [FileContentPageResponse.data]
+     * @see FileContentPageResponse.data
      */
     fun data(): List<FileContentResponse> =
         response._data().getOptional("data").getOrNull() ?: emptyList()
 
-    /** @see [FileContentPageResponse.object_] */
+    /** @see FileContentPageResponse.object\_ */
     fun object_(): JsonValue = response._object_()
 
     override fun items(): List<FileContentResponse> = data()
