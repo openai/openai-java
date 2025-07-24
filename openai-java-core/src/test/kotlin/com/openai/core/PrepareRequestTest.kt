@@ -9,14 +9,14 @@ import org.junit.jupiter.api.Test
 
 internal class PrepareRequestTest {
     @Test
-    fun testNoModelFunction() {
+    fun noModelFunction() {
         val params = UploadCancelParams.builder().uploadId("my-upload-id").build()
 
         assertThat(params.modelNameOrNull()).isNull()
     }
 
     @Test
-    fun testModelLiteralNotNull() {
+    fun modelLiteralNotNull() {
         val params =
             EmbeddingCreateParams.builder().model("my-model").input("Hello, world!").build()
 
@@ -25,7 +25,7 @@ internal class PrepareRequestTest {
     }
 
     @Test
-    fun testModelEnumNotNull() {
+    fun modelEnumNotNull() {
         val params =
             EmbeddingCreateParams.builder()
                 .model(EmbeddingModel.TEXT_EMBEDDING_3_LARGE)
@@ -37,13 +37,13 @@ internal class PrepareRequestTest {
     }
 
     @Test
-    fun testModelNull() {
+    fun modelNull() {
         // There are no instances where a `Params.model()` returns a nullable value. If a model can
         // be `null`, it is always returned in a non-nullable `Optional`.
     }
 
     @Test
-    fun testModelOptionalNotNull() {
+    fun modelOptionalNotNull() {
         val params = ChatCompletionListParams.builder().model("my-model-id").build()
 
         assertThat(params.modelNameOrNull()).isNotNull()
@@ -51,7 +51,7 @@ internal class PrepareRequestTest {
     }
 
     @Test
-    fun testModelOptionalNull() {
+    fun modelOptionalNull() {
         // Test the same type of `Params` with and without `null`, to ensure `model()` is being
         // detected, but its `null` value is correctly returned when set. (Rather than `model()`
         // not being detected, which would also return `null`.)
