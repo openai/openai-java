@@ -12,7 +12,7 @@ import java.util.concurrent.CompletableFuture
 import java.util.concurrent.Executor
 import kotlin.jvm.optionals.getOrNull
 
-/** @see [PermissionServiceAsync.create] */
+/** @see PermissionServiceAsync.create */
 class PermissionCreatePageAsync
 private constructor(
     private val service: PermissionServiceAsync,
@@ -24,12 +24,12 @@ private constructor(
     /**
      * Delegates to [PermissionCreatePageResponse], but gracefully handles missing data.
      *
-     * @see [PermissionCreatePageResponse.data]
+     * @see PermissionCreatePageResponse.data
      */
     fun data(): List<PermissionCreateResponse> =
         response._data().getOptional("data").getOrNull() ?: emptyList()
 
-    /** @see [PermissionCreatePageResponse.object_] */
+    /** @see PermissionCreatePageResponse.object\_ */
     fun object_(): JsonValue = response._object_()
 
     override fun items(): List<PermissionCreateResponse> = data()

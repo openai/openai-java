@@ -51,7 +51,7 @@ interface UploadService {
      */
     fun create(params: UploadCreateParams): Upload = create(params, RequestOptions.none())
 
-    /** @see [create] */
+    /** @see create */
     fun create(
         params: UploadCreateParams,
         requestOptions: RequestOptions = RequestOptions.none(),
@@ -60,27 +60,27 @@ interface UploadService {
     /** Cancels the Upload. No Parts may be added after an Upload is cancelled. */
     fun cancel(uploadId: String): Upload = cancel(uploadId, UploadCancelParams.none())
 
-    /** @see [cancel] */
+    /** @see cancel */
     fun cancel(
         uploadId: String,
         params: UploadCancelParams = UploadCancelParams.none(),
         requestOptions: RequestOptions = RequestOptions.none(),
     ): Upload = cancel(params.toBuilder().uploadId(uploadId).build(), requestOptions)
 
-    /** @see [cancel] */
+    /** @see cancel */
     fun cancel(uploadId: String, params: UploadCancelParams = UploadCancelParams.none()): Upload =
         cancel(uploadId, params, RequestOptions.none())
 
-    /** @see [cancel] */
+    /** @see cancel */
     fun cancel(
         params: UploadCancelParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): Upload
 
-    /** @see [cancel] */
+    /** @see cancel */
     fun cancel(params: UploadCancelParams): Upload = cancel(params, RequestOptions.none())
 
-    /** @see [cancel] */
+    /** @see cancel */
     fun cancel(uploadId: String, requestOptions: RequestOptions): Upload =
         cancel(uploadId, UploadCancelParams.none(), requestOptions)
 
@@ -100,17 +100,17 @@ interface UploadService {
     fun complete(uploadId: String, params: UploadCompleteParams): Upload =
         complete(uploadId, params, RequestOptions.none())
 
-    /** @see [complete] */
+    /** @see complete */
     fun complete(
         uploadId: String,
         params: UploadCompleteParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): Upload = complete(params.toBuilder().uploadId(uploadId).build(), requestOptions)
 
-    /** @see [complete] */
+    /** @see complete */
     fun complete(params: UploadCompleteParams): Upload = complete(params, RequestOptions.none())
 
-    /** @see [complete] */
+    /** @see complete */
     fun complete(
         params: UploadCompleteParams,
         requestOptions: RequestOptions = RequestOptions.none(),
@@ -136,7 +136,7 @@ interface UploadService {
         fun create(params: UploadCreateParams): HttpResponseFor<Upload> =
             create(params, RequestOptions.none())
 
-        /** @see [create] */
+        /** @see create */
         @MustBeClosed
         fun create(
             params: UploadCreateParams,
@@ -151,7 +151,7 @@ interface UploadService {
         fun cancel(uploadId: String): HttpResponseFor<Upload> =
             cancel(uploadId, UploadCancelParams.none())
 
-        /** @see [cancel] */
+        /** @see cancel */
         @MustBeClosed
         fun cancel(
             uploadId: String,
@@ -160,26 +160,26 @@ interface UploadService {
         ): HttpResponseFor<Upload> =
             cancel(params.toBuilder().uploadId(uploadId).build(), requestOptions)
 
-        /** @see [cancel] */
+        /** @see cancel */
         @MustBeClosed
         fun cancel(
             uploadId: String,
             params: UploadCancelParams = UploadCancelParams.none(),
         ): HttpResponseFor<Upload> = cancel(uploadId, params, RequestOptions.none())
 
-        /** @see [cancel] */
+        /** @see cancel */
         @MustBeClosed
         fun cancel(
             params: UploadCancelParams,
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<Upload>
 
-        /** @see [cancel] */
+        /** @see cancel */
         @MustBeClosed
         fun cancel(params: UploadCancelParams): HttpResponseFor<Upload> =
             cancel(params, RequestOptions.none())
 
-        /** @see [cancel] */
+        /** @see cancel */
         @MustBeClosed
         fun cancel(uploadId: String, requestOptions: RequestOptions): HttpResponseFor<Upload> =
             cancel(uploadId, UploadCancelParams.none(), requestOptions)
@@ -192,7 +192,7 @@ interface UploadService {
         fun complete(uploadId: String, params: UploadCompleteParams): HttpResponseFor<Upload> =
             complete(uploadId, params, RequestOptions.none())
 
-        /** @see [complete] */
+        /** @see complete */
         @MustBeClosed
         fun complete(
             uploadId: String,
@@ -201,12 +201,12 @@ interface UploadService {
         ): HttpResponseFor<Upload> =
             complete(params.toBuilder().uploadId(uploadId).build(), requestOptions)
 
-        /** @see [complete] */
+        /** @see complete */
         @MustBeClosed
         fun complete(params: UploadCompleteParams): HttpResponseFor<Upload> =
             complete(params, RequestOptions.none())
 
-        /** @see [complete] */
+        /** @see complete */
         @MustBeClosed
         fun complete(
             params: UploadCompleteParams,

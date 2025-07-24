@@ -12,7 +12,7 @@ import java.util.concurrent.CompletableFuture
 import java.util.concurrent.Executor
 import kotlin.jvm.optionals.getOrNull
 
-/** @see [RunServiceAsync.list] */
+/** @see RunServiceAsync.list */
 class RunListPageAsync
 private constructor(
     private val service: RunServiceAsync,
@@ -24,7 +24,7 @@ private constructor(
     /**
      * Delegates to [RunListPageResponse], but gracefully handles missing data.
      *
-     * @see [RunListPageResponse.data]
+     * @see RunListPageResponse.data
      */
     fun data(): List<RunListResponse> =
         response._data().getOptional("data").getOrNull() ?: emptyList()
@@ -32,7 +32,7 @@ private constructor(
     /**
      * Delegates to [RunListPageResponse], but gracefully handles missing data.
      *
-     * @see [RunListPageResponse.hasMore]
+     * @see RunListPageResponse.hasMore
      */
     fun hasMore(): Optional<Boolean> = response._hasMore().getOptional("has_more")
 

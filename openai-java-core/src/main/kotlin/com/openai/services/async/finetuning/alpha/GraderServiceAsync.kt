@@ -30,7 +30,7 @@ interface GraderServiceAsync {
     fun run(params: GraderRunParams): CompletableFuture<GraderRunResponse> =
         run(params, RequestOptions.none())
 
-    /** @see [run] */
+    /** @see run */
     fun run(
         params: GraderRunParams,
         requestOptions: RequestOptions = RequestOptions.none(),
@@ -40,7 +40,7 @@ interface GraderServiceAsync {
     fun validate(params: GraderValidateParams): CompletableFuture<GraderValidateResponse> =
         validate(params, RequestOptions.none())
 
-    /** @see [validate] */
+    /** @see validate */
     fun validate(
         params: GraderValidateParams,
         requestOptions: RequestOptions = RequestOptions.none(),
@@ -67,7 +67,7 @@ interface GraderServiceAsync {
         fun run(params: GraderRunParams): CompletableFuture<HttpResponseFor<GraderRunResponse>> =
             run(params, RequestOptions.none())
 
-        /** @see [run] */
+        /** @see run */
         fun run(
             params: GraderRunParams,
             requestOptions: RequestOptions = RequestOptions.none(),
@@ -82,7 +82,7 @@ interface GraderServiceAsync {
         ): CompletableFuture<HttpResponseFor<GraderValidateResponse>> =
             validate(params, RequestOptions.none())
 
-        /** @see [validate] */
+        /** @see validate */
         fun validate(
             params: GraderValidateParams,
             requestOptions: RequestOptions = RequestOptions.none(),

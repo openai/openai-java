@@ -28,7 +28,7 @@ interface ContentService {
     fun retrieve(fileId: String, params: ContentRetrieveParams): HttpResponse =
         retrieve(fileId, params, RequestOptions.none())
 
-    /** @see [retrieve] */
+    /** @see retrieve */
     @MustBeClosed
     fun retrieve(
         fileId: String,
@@ -36,12 +36,12 @@ interface ContentService {
         requestOptions: RequestOptions = RequestOptions.none(),
     ): HttpResponse = retrieve(params.toBuilder().fileId(fileId).build(), requestOptions)
 
-    /** @see [retrieve] */
+    /** @see retrieve */
     @MustBeClosed
     fun retrieve(params: ContentRetrieveParams): HttpResponse =
         retrieve(params, RequestOptions.none())
 
-    /** @see [retrieve] */
+    /** @see retrieve */
     @MustBeClosed
     fun retrieve(
         params: ContentRetrieveParams,
@@ -66,7 +66,7 @@ interface ContentService {
         fun retrieve(fileId: String, params: ContentRetrieveParams): HttpResponse =
             retrieve(fileId, params, RequestOptions.none())
 
-        /** @see [retrieve] */
+        /** @see retrieve */
         @MustBeClosed
         fun retrieve(
             fileId: String,
@@ -74,12 +74,12 @@ interface ContentService {
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponse = retrieve(params.toBuilder().fileId(fileId).build(), requestOptions)
 
-        /** @see [retrieve] */
+        /** @see retrieve */
         @MustBeClosed
         fun retrieve(params: ContentRetrieveParams): HttpResponse =
             retrieve(params, RequestOptions.none())
 
-        /** @see [retrieve] */
+        /** @see retrieve */
         @MustBeClosed
         fun retrieve(
             params: ContentRetrieveParams,

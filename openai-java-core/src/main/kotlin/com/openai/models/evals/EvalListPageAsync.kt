@@ -12,7 +12,7 @@ import java.util.concurrent.CompletableFuture
 import java.util.concurrent.Executor
 import kotlin.jvm.optionals.getOrNull
 
-/** @see [EvalServiceAsync.list] */
+/** @see EvalServiceAsync.list */
 class EvalListPageAsync
 private constructor(
     private val service: EvalServiceAsync,
@@ -24,7 +24,7 @@ private constructor(
     /**
      * Delegates to [EvalListPageResponse], but gracefully handles missing data.
      *
-     * @see [EvalListPageResponse.data]
+     * @see EvalListPageResponse.data
      */
     fun data(): List<EvalListResponse> =
         response._data().getOptional("data").getOrNull() ?: emptyList()
@@ -32,7 +32,7 @@ private constructor(
     /**
      * Delegates to [EvalListPageResponse], but gracefully handles missing data.
      *
-     * @see [EvalListPageResponse.hasMore]
+     * @see EvalListPageResponse.hasMore
      */
     fun hasMore(): Optional<Boolean> = response._hasMore().getOptional("has_more")
 

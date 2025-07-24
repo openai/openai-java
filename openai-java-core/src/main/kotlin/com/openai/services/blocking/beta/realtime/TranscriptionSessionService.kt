@@ -34,18 +34,18 @@ interface TranscriptionSessionService {
      */
     fun create(): TranscriptionSession = create(TranscriptionSessionCreateParams.none())
 
-    /** @see [create] */
+    /** @see create */
     fun create(
         params: TranscriptionSessionCreateParams = TranscriptionSessionCreateParams.none(),
         requestOptions: RequestOptions = RequestOptions.none(),
     ): TranscriptionSession
 
-    /** @see [create] */
+    /** @see create */
     fun create(
         params: TranscriptionSessionCreateParams = TranscriptionSessionCreateParams.none()
     ): TranscriptionSession = create(params, RequestOptions.none())
 
-    /** @see [create] */
+    /** @see create */
     fun create(requestOptions: RequestOptions): TranscriptionSession =
         create(TranscriptionSessionCreateParams.none(), requestOptions)
 
@@ -72,20 +72,20 @@ interface TranscriptionSessionService {
         fun create(): HttpResponseFor<TranscriptionSession> =
             create(TranscriptionSessionCreateParams.none())
 
-        /** @see [create] */
+        /** @see create */
         @MustBeClosed
         fun create(
             params: TranscriptionSessionCreateParams = TranscriptionSessionCreateParams.none(),
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<TranscriptionSession>
 
-        /** @see [create] */
+        /** @see create */
         @MustBeClosed
         fun create(
             params: TranscriptionSessionCreateParams = TranscriptionSessionCreateParams.none()
         ): HttpResponseFor<TranscriptionSession> = create(params, RequestOptions.none())
 
-        /** @see [create] */
+        /** @see create */
         @MustBeClosed
         fun create(requestOptions: RequestOptions): HttpResponseFor<TranscriptionSession> =
             create(TranscriptionSessionCreateParams.none(), requestOptions)

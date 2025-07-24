@@ -10,7 +10,7 @@ import com.openai.services.blocking.ModelService
 import java.util.Objects
 import kotlin.jvm.optionals.getOrNull
 
-/** @see [ModelService.list] */
+/** @see ModelService.list */
 class ModelListPage
 private constructor(
     private val service: ModelService,
@@ -21,11 +21,11 @@ private constructor(
     /**
      * Delegates to [ModelListPageResponse], but gracefully handles missing data.
      *
-     * @see [ModelListPageResponse.data]
+     * @see ModelListPageResponse.data
      */
     fun data(): List<Model> = response._data().getOptional("data").getOrNull() ?: emptyList()
 
-    /** @see [ModelListPageResponse.object_] */
+    /** @see ModelListPageResponse.object\_ */
     fun object_(): JsonValue = response._object_()
 
     override fun items(): List<Model> = data()

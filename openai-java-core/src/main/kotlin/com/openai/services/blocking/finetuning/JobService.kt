@@ -46,7 +46,7 @@ interface JobService {
      */
     fun create(params: JobCreateParams): FineTuningJob = create(params, RequestOptions.none())
 
-    /** @see [create] */
+    /** @see create */
     fun create(
         params: JobCreateParams,
         requestOptions: RequestOptions = RequestOptions.none(),
@@ -60,7 +60,7 @@ interface JobService {
     fun retrieve(fineTuningJobId: String): FineTuningJob =
         retrieve(fineTuningJobId, JobRetrieveParams.none())
 
-    /** @see [retrieve] */
+    /** @see retrieve */
     fun retrieve(
         fineTuningJobId: String,
         params: JobRetrieveParams = JobRetrieveParams.none(),
@@ -68,39 +68,39 @@ interface JobService {
     ): FineTuningJob =
         retrieve(params.toBuilder().fineTuningJobId(fineTuningJobId).build(), requestOptions)
 
-    /** @see [retrieve] */
+    /** @see retrieve */
     fun retrieve(
         fineTuningJobId: String,
         params: JobRetrieveParams = JobRetrieveParams.none(),
     ): FineTuningJob = retrieve(fineTuningJobId, params, RequestOptions.none())
 
-    /** @see [retrieve] */
+    /** @see retrieve */
     fun retrieve(
         params: JobRetrieveParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): FineTuningJob
 
-    /** @see [retrieve] */
+    /** @see retrieve */
     fun retrieve(params: JobRetrieveParams): FineTuningJob = retrieve(params, RequestOptions.none())
 
-    /** @see [retrieve] */
+    /** @see retrieve */
     fun retrieve(fineTuningJobId: String, requestOptions: RequestOptions): FineTuningJob =
         retrieve(fineTuningJobId, JobRetrieveParams.none(), requestOptions)
 
     /** List your organization's fine-tuning jobs */
     fun list(): JobListPage = list(JobListParams.none())
 
-    /** @see [list] */
+    /** @see list */
     fun list(
         params: JobListParams = JobListParams.none(),
         requestOptions: RequestOptions = RequestOptions.none(),
     ): JobListPage
 
-    /** @see [list] */
+    /** @see list */
     fun list(params: JobListParams = JobListParams.none()): JobListPage =
         list(params, RequestOptions.none())
 
-    /** @see [list] */
+    /** @see list */
     fun list(requestOptions: RequestOptions): JobListPage =
         list(JobListParams.none(), requestOptions)
 
@@ -108,7 +108,7 @@ interface JobService {
     fun cancel(fineTuningJobId: String): FineTuningJob =
         cancel(fineTuningJobId, JobCancelParams.none())
 
-    /** @see [cancel] */
+    /** @see cancel */
     fun cancel(
         fineTuningJobId: String,
         params: JobCancelParams = JobCancelParams.none(),
@@ -116,22 +116,22 @@ interface JobService {
     ): FineTuningJob =
         cancel(params.toBuilder().fineTuningJobId(fineTuningJobId).build(), requestOptions)
 
-    /** @see [cancel] */
+    /** @see cancel */
     fun cancel(
         fineTuningJobId: String,
         params: JobCancelParams = JobCancelParams.none(),
     ): FineTuningJob = cancel(fineTuningJobId, params, RequestOptions.none())
 
-    /** @see [cancel] */
+    /** @see cancel */
     fun cancel(
         params: JobCancelParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): FineTuningJob
 
-    /** @see [cancel] */
+    /** @see cancel */
     fun cancel(params: JobCancelParams): FineTuningJob = cancel(params, RequestOptions.none())
 
-    /** @see [cancel] */
+    /** @see cancel */
     fun cancel(fineTuningJobId: String, requestOptions: RequestOptions): FineTuningJob =
         cancel(fineTuningJobId, JobCancelParams.none(), requestOptions)
 
@@ -139,7 +139,7 @@ interface JobService {
     fun listEvents(fineTuningJobId: String): JobListEventsPage =
         listEvents(fineTuningJobId, JobListEventsParams.none())
 
-    /** @see [listEvents] */
+    /** @see listEvents */
     fun listEvents(
         fineTuningJobId: String,
         params: JobListEventsParams = JobListEventsParams.none(),
@@ -147,23 +147,23 @@ interface JobService {
     ): JobListEventsPage =
         listEvents(params.toBuilder().fineTuningJobId(fineTuningJobId).build(), requestOptions)
 
-    /** @see [listEvents] */
+    /** @see listEvents */
     fun listEvents(
         fineTuningJobId: String,
         params: JobListEventsParams = JobListEventsParams.none(),
     ): JobListEventsPage = listEvents(fineTuningJobId, params, RequestOptions.none())
 
-    /** @see [listEvents] */
+    /** @see listEvents */
     fun listEvents(
         params: JobListEventsParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): JobListEventsPage
 
-    /** @see [listEvents] */
+    /** @see listEvents */
     fun listEvents(params: JobListEventsParams): JobListEventsPage =
         listEvents(params, RequestOptions.none())
 
-    /** @see [listEvents] */
+    /** @see listEvents */
     fun listEvents(fineTuningJobId: String, requestOptions: RequestOptions): JobListEventsPage =
         listEvents(fineTuningJobId, JobListEventsParams.none(), requestOptions)
 
@@ -171,7 +171,7 @@ interface JobService {
     fun pause(fineTuningJobId: String): FineTuningJob =
         pause(fineTuningJobId, JobPauseParams.none())
 
-    /** @see [pause] */
+    /** @see pause */
     fun pause(
         fineTuningJobId: String,
         params: JobPauseParams = JobPauseParams.none(),
@@ -179,22 +179,22 @@ interface JobService {
     ): FineTuningJob =
         pause(params.toBuilder().fineTuningJobId(fineTuningJobId).build(), requestOptions)
 
-    /** @see [pause] */
+    /** @see pause */
     fun pause(
         fineTuningJobId: String,
         params: JobPauseParams = JobPauseParams.none(),
     ): FineTuningJob = pause(fineTuningJobId, params, RequestOptions.none())
 
-    /** @see [pause] */
+    /** @see pause */
     fun pause(
         params: JobPauseParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): FineTuningJob
 
-    /** @see [pause] */
+    /** @see pause */
     fun pause(params: JobPauseParams): FineTuningJob = pause(params, RequestOptions.none())
 
-    /** @see [pause] */
+    /** @see pause */
     fun pause(fineTuningJobId: String, requestOptions: RequestOptions): FineTuningJob =
         pause(fineTuningJobId, JobPauseParams.none(), requestOptions)
 
@@ -202,7 +202,7 @@ interface JobService {
     fun resume(fineTuningJobId: String): FineTuningJob =
         resume(fineTuningJobId, JobResumeParams.none())
 
-    /** @see [resume] */
+    /** @see resume */
     fun resume(
         fineTuningJobId: String,
         params: JobResumeParams = JobResumeParams.none(),
@@ -210,22 +210,22 @@ interface JobService {
     ): FineTuningJob =
         resume(params.toBuilder().fineTuningJobId(fineTuningJobId).build(), requestOptions)
 
-    /** @see [resume] */
+    /** @see resume */
     fun resume(
         fineTuningJobId: String,
         params: JobResumeParams = JobResumeParams.none(),
     ): FineTuningJob = resume(fineTuningJobId, params, RequestOptions.none())
 
-    /** @see [resume] */
+    /** @see resume */
     fun resume(
         params: JobResumeParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): FineTuningJob
 
-    /** @see [resume] */
+    /** @see resume */
     fun resume(params: JobResumeParams): FineTuningJob = resume(params, RequestOptions.none())
 
-    /** @see [resume] */
+    /** @see resume */
     fun resume(fineTuningJobId: String, requestOptions: RequestOptions): FineTuningJob =
         resume(fineTuningJobId, JobResumeParams.none(), requestOptions)
 
@@ -249,7 +249,7 @@ interface JobService {
         fun create(params: JobCreateParams): HttpResponseFor<FineTuningJob> =
             create(params, RequestOptions.none())
 
-        /** @see [create] */
+        /** @see create */
         @MustBeClosed
         fun create(
             params: JobCreateParams,
@@ -264,7 +264,7 @@ interface JobService {
         fun retrieve(fineTuningJobId: String): HttpResponseFor<FineTuningJob> =
             retrieve(fineTuningJobId, JobRetrieveParams.none())
 
-        /** @see [retrieve] */
+        /** @see retrieve */
         @MustBeClosed
         fun retrieve(
             fineTuningJobId: String,
@@ -273,26 +273,26 @@ interface JobService {
         ): HttpResponseFor<FineTuningJob> =
             retrieve(params.toBuilder().fineTuningJobId(fineTuningJobId).build(), requestOptions)
 
-        /** @see [retrieve] */
+        /** @see retrieve */
         @MustBeClosed
         fun retrieve(
             fineTuningJobId: String,
             params: JobRetrieveParams = JobRetrieveParams.none(),
         ): HttpResponseFor<FineTuningJob> = retrieve(fineTuningJobId, params, RequestOptions.none())
 
-        /** @see [retrieve] */
+        /** @see retrieve */
         @MustBeClosed
         fun retrieve(
             params: JobRetrieveParams,
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<FineTuningJob>
 
-        /** @see [retrieve] */
+        /** @see retrieve */
         @MustBeClosed
         fun retrieve(params: JobRetrieveParams): HttpResponseFor<FineTuningJob> =
             retrieve(params, RequestOptions.none())
 
-        /** @see [retrieve] */
+        /** @see retrieve */
         @MustBeClosed
         fun retrieve(
             fineTuningJobId: String,
@@ -306,19 +306,19 @@ interface JobService {
          */
         @MustBeClosed fun list(): HttpResponseFor<JobListPage> = list(JobListParams.none())
 
-        /** @see [list] */
+        /** @see list */
         @MustBeClosed
         fun list(
             params: JobListParams = JobListParams.none(),
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<JobListPage>
 
-        /** @see [list] */
+        /** @see list */
         @MustBeClosed
         fun list(params: JobListParams = JobListParams.none()): HttpResponseFor<JobListPage> =
             list(params, RequestOptions.none())
 
-        /** @see [list] */
+        /** @see list */
         @MustBeClosed
         fun list(requestOptions: RequestOptions): HttpResponseFor<JobListPage> =
             list(JobListParams.none(), requestOptions)
@@ -331,7 +331,7 @@ interface JobService {
         fun cancel(fineTuningJobId: String): HttpResponseFor<FineTuningJob> =
             cancel(fineTuningJobId, JobCancelParams.none())
 
-        /** @see [cancel] */
+        /** @see cancel */
         @MustBeClosed
         fun cancel(
             fineTuningJobId: String,
@@ -340,26 +340,26 @@ interface JobService {
         ): HttpResponseFor<FineTuningJob> =
             cancel(params.toBuilder().fineTuningJobId(fineTuningJobId).build(), requestOptions)
 
-        /** @see [cancel] */
+        /** @see cancel */
         @MustBeClosed
         fun cancel(
             fineTuningJobId: String,
             params: JobCancelParams = JobCancelParams.none(),
         ): HttpResponseFor<FineTuningJob> = cancel(fineTuningJobId, params, RequestOptions.none())
 
-        /** @see [cancel] */
+        /** @see cancel */
         @MustBeClosed
         fun cancel(
             params: JobCancelParams,
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<FineTuningJob>
 
-        /** @see [cancel] */
+        /** @see cancel */
         @MustBeClosed
         fun cancel(params: JobCancelParams): HttpResponseFor<FineTuningJob> =
             cancel(params, RequestOptions.none())
 
-        /** @see [cancel] */
+        /** @see cancel */
         @MustBeClosed
         fun cancel(
             fineTuningJobId: String,
@@ -375,7 +375,7 @@ interface JobService {
         fun listEvents(fineTuningJobId: String): HttpResponseFor<JobListEventsPage> =
             listEvents(fineTuningJobId, JobListEventsParams.none())
 
-        /** @see [listEvents] */
+        /** @see listEvents */
         @MustBeClosed
         fun listEvents(
             fineTuningJobId: String,
@@ -384,7 +384,7 @@ interface JobService {
         ): HttpResponseFor<JobListEventsPage> =
             listEvents(params.toBuilder().fineTuningJobId(fineTuningJobId).build(), requestOptions)
 
-        /** @see [listEvents] */
+        /** @see listEvents */
         @MustBeClosed
         fun listEvents(
             fineTuningJobId: String,
@@ -392,19 +392,19 @@ interface JobService {
         ): HttpResponseFor<JobListEventsPage> =
             listEvents(fineTuningJobId, params, RequestOptions.none())
 
-        /** @see [listEvents] */
+        /** @see listEvents */
         @MustBeClosed
         fun listEvents(
             params: JobListEventsParams,
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<JobListEventsPage>
 
-        /** @see [listEvents] */
+        /** @see listEvents */
         @MustBeClosed
         fun listEvents(params: JobListEventsParams): HttpResponseFor<JobListEventsPage> =
             listEvents(params, RequestOptions.none())
 
-        /** @see [listEvents] */
+        /** @see listEvents */
         @MustBeClosed
         fun listEvents(
             fineTuningJobId: String,
@@ -420,7 +420,7 @@ interface JobService {
         fun pause(fineTuningJobId: String): HttpResponseFor<FineTuningJob> =
             pause(fineTuningJobId, JobPauseParams.none())
 
-        /** @see [pause] */
+        /** @see pause */
         @MustBeClosed
         fun pause(
             fineTuningJobId: String,
@@ -429,26 +429,26 @@ interface JobService {
         ): HttpResponseFor<FineTuningJob> =
             pause(params.toBuilder().fineTuningJobId(fineTuningJobId).build(), requestOptions)
 
-        /** @see [pause] */
+        /** @see pause */
         @MustBeClosed
         fun pause(
             fineTuningJobId: String,
             params: JobPauseParams = JobPauseParams.none(),
         ): HttpResponseFor<FineTuningJob> = pause(fineTuningJobId, params, RequestOptions.none())
 
-        /** @see [pause] */
+        /** @see pause */
         @MustBeClosed
         fun pause(
             params: JobPauseParams,
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<FineTuningJob>
 
-        /** @see [pause] */
+        /** @see pause */
         @MustBeClosed
         fun pause(params: JobPauseParams): HttpResponseFor<FineTuningJob> =
             pause(params, RequestOptions.none())
 
-        /** @see [pause] */
+        /** @see pause */
         @MustBeClosed
         fun pause(
             fineTuningJobId: String,
@@ -464,7 +464,7 @@ interface JobService {
         fun resume(fineTuningJobId: String): HttpResponseFor<FineTuningJob> =
             resume(fineTuningJobId, JobResumeParams.none())
 
-        /** @see [resume] */
+        /** @see resume */
         @MustBeClosed
         fun resume(
             fineTuningJobId: String,
@@ -473,26 +473,26 @@ interface JobService {
         ): HttpResponseFor<FineTuningJob> =
             resume(params.toBuilder().fineTuningJobId(fineTuningJobId).build(), requestOptions)
 
-        /** @see [resume] */
+        /** @see resume */
         @MustBeClosed
         fun resume(
             fineTuningJobId: String,
             params: JobResumeParams = JobResumeParams.none(),
         ): HttpResponseFor<FineTuningJob> = resume(fineTuningJobId, params, RequestOptions.none())
 
-        /** @see [resume] */
+        /** @see resume */
         @MustBeClosed
         fun resume(
             params: JobResumeParams,
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<FineTuningJob>
 
-        /** @see [resume] */
+        /** @see resume */
         @MustBeClosed
         fun resume(params: JobResumeParams): HttpResponseFor<FineTuningJob> =
             resume(params, RequestOptions.none())
 
-        /** @see [resume] */
+        /** @see resume */
         @MustBeClosed
         fun resume(
             fineTuningJobId: String,

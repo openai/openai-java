@@ -32,7 +32,7 @@ interface FileBatchService {
     fun create(vectorStoreId: String, params: FileBatchCreateParams): VectorStoreFileBatch =
         create(vectorStoreId, params, RequestOptions.none())
 
-    /** @see [create] */
+    /** @see create */
     fun create(
         vectorStoreId: String,
         params: FileBatchCreateParams,
@@ -40,11 +40,11 @@ interface FileBatchService {
     ): VectorStoreFileBatch =
         create(params.toBuilder().vectorStoreId(vectorStoreId).build(), requestOptions)
 
-    /** @see [create] */
+    /** @see create */
     fun create(params: FileBatchCreateParams): VectorStoreFileBatch =
         create(params, RequestOptions.none())
 
-    /** @see [create] */
+    /** @see create */
     fun create(
         params: FileBatchCreateParams,
         requestOptions: RequestOptions = RequestOptions.none(),
@@ -54,18 +54,18 @@ interface FileBatchService {
     fun retrieve(batchId: String, params: FileBatchRetrieveParams): VectorStoreFileBatch =
         retrieve(batchId, params, RequestOptions.none())
 
-    /** @see [retrieve] */
+    /** @see retrieve */
     fun retrieve(
         batchId: String,
         params: FileBatchRetrieveParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): VectorStoreFileBatch = retrieve(params.toBuilder().batchId(batchId).build(), requestOptions)
 
-    /** @see [retrieve] */
+    /** @see retrieve */
     fun retrieve(params: FileBatchRetrieveParams): VectorStoreFileBatch =
         retrieve(params, RequestOptions.none())
 
-    /** @see [retrieve] */
+    /** @see retrieve */
     fun retrieve(
         params: FileBatchRetrieveParams,
         requestOptions: RequestOptions = RequestOptions.none(),
@@ -78,18 +78,18 @@ interface FileBatchService {
     fun cancel(batchId: String, params: FileBatchCancelParams): VectorStoreFileBatch =
         cancel(batchId, params, RequestOptions.none())
 
-    /** @see [cancel] */
+    /** @see cancel */
     fun cancel(
         batchId: String,
         params: FileBatchCancelParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): VectorStoreFileBatch = cancel(params.toBuilder().batchId(batchId).build(), requestOptions)
 
-    /** @see [cancel] */
+    /** @see cancel */
     fun cancel(params: FileBatchCancelParams): VectorStoreFileBatch =
         cancel(params, RequestOptions.none())
 
-    /** @see [cancel] */
+    /** @see cancel */
     fun cancel(
         params: FileBatchCancelParams,
         requestOptions: RequestOptions = RequestOptions.none(),
@@ -99,7 +99,7 @@ interface FileBatchService {
     fun listFiles(batchId: String, params: FileBatchListFilesParams): FileBatchListFilesPage =
         listFiles(batchId, params, RequestOptions.none())
 
-    /** @see [listFiles] */
+    /** @see listFiles */
     fun listFiles(
         batchId: String,
         params: FileBatchListFilesParams,
@@ -107,11 +107,11 @@ interface FileBatchService {
     ): FileBatchListFilesPage =
         listFiles(params.toBuilder().batchId(batchId).build(), requestOptions)
 
-    /** @see [listFiles] */
+    /** @see listFiles */
     fun listFiles(params: FileBatchListFilesParams): FileBatchListFilesPage =
         listFiles(params, RequestOptions.none())
 
-    /** @see [listFiles] */
+    /** @see listFiles */
     fun listFiles(
         params: FileBatchListFilesParams,
         requestOptions: RequestOptions = RequestOptions.none(),
@@ -138,7 +138,7 @@ interface FileBatchService {
         ): HttpResponseFor<VectorStoreFileBatch> =
             create(vectorStoreId, params, RequestOptions.none())
 
-        /** @see [create] */
+        /** @see create */
         @MustBeClosed
         fun create(
             vectorStoreId: String,
@@ -147,12 +147,12 @@ interface FileBatchService {
         ): HttpResponseFor<VectorStoreFileBatch> =
             create(params.toBuilder().vectorStoreId(vectorStoreId).build(), requestOptions)
 
-        /** @see [create] */
+        /** @see create */
         @MustBeClosed
         fun create(params: FileBatchCreateParams): HttpResponseFor<VectorStoreFileBatch> =
             create(params, RequestOptions.none())
 
-        /** @see [create] */
+        /** @see create */
         @MustBeClosed
         fun create(
             params: FileBatchCreateParams,
@@ -170,7 +170,7 @@ interface FileBatchService {
             params: FileBatchRetrieveParams,
         ): HttpResponseFor<VectorStoreFileBatch> = retrieve(batchId, params, RequestOptions.none())
 
-        /** @see [retrieve] */
+        /** @see retrieve */
         @MustBeClosed
         fun retrieve(
             batchId: String,
@@ -179,12 +179,12 @@ interface FileBatchService {
         ): HttpResponseFor<VectorStoreFileBatch> =
             retrieve(params.toBuilder().batchId(batchId).build(), requestOptions)
 
-        /** @see [retrieve] */
+        /** @see retrieve */
         @MustBeClosed
         fun retrieve(params: FileBatchRetrieveParams): HttpResponseFor<VectorStoreFileBatch> =
             retrieve(params, RequestOptions.none())
 
-        /** @see [retrieve] */
+        /** @see retrieve */
         @MustBeClosed
         fun retrieve(
             params: FileBatchRetrieveParams,
@@ -202,7 +202,7 @@ interface FileBatchService {
             params: FileBatchCancelParams,
         ): HttpResponseFor<VectorStoreFileBatch> = cancel(batchId, params, RequestOptions.none())
 
-        /** @see [cancel] */
+        /** @see cancel */
         @MustBeClosed
         fun cancel(
             batchId: String,
@@ -211,12 +211,12 @@ interface FileBatchService {
         ): HttpResponseFor<VectorStoreFileBatch> =
             cancel(params.toBuilder().batchId(batchId).build(), requestOptions)
 
-        /** @see [cancel] */
+        /** @see cancel */
         @MustBeClosed
         fun cancel(params: FileBatchCancelParams): HttpResponseFor<VectorStoreFileBatch> =
             cancel(params, RequestOptions.none())
 
-        /** @see [cancel] */
+        /** @see cancel */
         @MustBeClosed
         fun cancel(
             params: FileBatchCancelParams,
@@ -235,7 +235,7 @@ interface FileBatchService {
         ): HttpResponseFor<FileBatchListFilesPage> =
             listFiles(batchId, params, RequestOptions.none())
 
-        /** @see [listFiles] */
+        /** @see listFiles */
         @MustBeClosed
         fun listFiles(
             batchId: String,
@@ -244,12 +244,12 @@ interface FileBatchService {
         ): HttpResponseFor<FileBatchListFilesPage> =
             listFiles(params.toBuilder().batchId(batchId).build(), requestOptions)
 
-        /** @see [listFiles] */
+        /** @see listFiles */
         @MustBeClosed
         fun listFiles(params: FileBatchListFilesParams): HttpResponseFor<FileBatchListFilesPage> =
             listFiles(params, RequestOptions.none())
 
-        /** @see [listFiles] */
+        /** @see listFiles */
         @MustBeClosed
         fun listFiles(
             params: FileBatchListFilesParams,

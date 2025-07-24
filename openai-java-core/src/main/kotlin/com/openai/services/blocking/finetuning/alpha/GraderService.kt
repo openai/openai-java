@@ -29,7 +29,7 @@ interface GraderService {
     /** Run a grader. */
     fun run(params: GraderRunParams): GraderRunResponse = run(params, RequestOptions.none())
 
-    /** @see [run] */
+    /** @see run */
     fun run(
         params: GraderRunParams,
         requestOptions: RequestOptions = RequestOptions.none(),
@@ -39,7 +39,7 @@ interface GraderService {
     fun validate(params: GraderValidateParams): GraderValidateResponse =
         validate(params, RequestOptions.none())
 
-    /** @see [validate] */
+    /** @see validate */
     fun validate(
         params: GraderValidateParams,
         requestOptions: RequestOptions = RequestOptions.none(),
@@ -63,7 +63,7 @@ interface GraderService {
         fun run(params: GraderRunParams): HttpResponseFor<GraderRunResponse> =
             run(params, RequestOptions.none())
 
-        /** @see [run] */
+        /** @see run */
         @MustBeClosed
         fun run(
             params: GraderRunParams,
@@ -78,7 +78,7 @@ interface GraderService {
         fun validate(params: GraderValidateParams): HttpResponseFor<GraderValidateResponse> =
             validate(params, RequestOptions.none())
 
-        /** @see [validate] */
+        /** @see validate */
         @MustBeClosed
         fun validate(
             params: GraderValidateParams,

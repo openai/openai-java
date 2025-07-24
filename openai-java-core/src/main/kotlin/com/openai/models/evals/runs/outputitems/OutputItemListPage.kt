@@ -10,7 +10,7 @@ import java.util.Objects
 import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
-/** @see [OutputItemService.list] */
+/** @see OutputItemService.list */
 class OutputItemListPage
 private constructor(
     private val service: OutputItemService,
@@ -21,7 +21,7 @@ private constructor(
     /**
      * Delegates to [OutputItemListPageResponse], but gracefully handles missing data.
      *
-     * @see [OutputItemListPageResponse.data]
+     * @see OutputItemListPageResponse.data
      */
     fun data(): List<OutputItemListResponse> =
         response._data().getOptional("data").getOrNull() ?: emptyList()
@@ -29,7 +29,7 @@ private constructor(
     /**
      * Delegates to [OutputItemListPageResponse], but gracefully handles missing data.
      *
-     * @see [OutputItemListPageResponse.hasMore]
+     * @see OutputItemListPageResponse.hasMore
      */
     fun hasMore(): Optional<Boolean> = response._hasMore().getOptional("has_more")
 

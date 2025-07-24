@@ -10,7 +10,7 @@ import java.util.Objects
 import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
-/** @see [ContainerService.list] */
+/** @see ContainerService.list */
 class ContainerListPage
 private constructor(
     private val service: ContainerService,
@@ -21,7 +21,7 @@ private constructor(
     /**
      * Delegates to [ContainerListPageResponse], but gracefully handles missing data.
      *
-     * @see [ContainerListPageResponse.data]
+     * @see ContainerListPageResponse.data
      */
     fun data(): List<ContainerListResponse> =
         response._data().getOptional("data").getOrNull() ?: emptyList()
@@ -29,7 +29,7 @@ private constructor(
     /**
      * Delegates to [ContainerListPageResponse], but gracefully handles missing data.
      *
-     * @see [ContainerListPageResponse.hasMore]
+     * @see ContainerListPageResponse.hasMore
      */
     fun hasMore(): Optional<Boolean> = response._hasMore().getOptional("has_more")
 

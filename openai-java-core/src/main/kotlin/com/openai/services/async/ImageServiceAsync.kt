@@ -35,7 +35,7 @@ interface ImageServiceAsync {
     fun createVariation(params: ImageCreateVariationParams): CompletableFuture<ImagesResponse> =
         createVariation(params, RequestOptions.none())
 
-    /** @see [createVariation] */
+    /** @see createVariation */
     fun createVariation(
         params: ImageCreateVariationParams,
         requestOptions: RequestOptions = RequestOptions.none(),
@@ -48,7 +48,7 @@ interface ImageServiceAsync {
     fun edit(params: ImageEditParams): CompletableFuture<ImagesResponse> =
         edit(params, RequestOptions.none())
 
-    /** @see [edit] */
+    /** @see edit */
     fun edit(
         params: ImageEditParams,
         requestOptions: RequestOptions = RequestOptions.none(),
@@ -61,7 +61,7 @@ interface ImageServiceAsync {
     fun editStreaming(params: ImageEditParams): AsyncStreamResponse<ImageEditStreamEvent> =
         editStreaming(params, RequestOptions.none())
 
-    /** @see [editStreaming] */
+    /** @see editStreaming */
     fun editStreaming(
         params: ImageEditParams,
         requestOptions: RequestOptions = RequestOptions.none(),
@@ -74,7 +74,7 @@ interface ImageServiceAsync {
     fun generate(params: ImageGenerateParams): CompletableFuture<ImagesResponse> =
         generate(params, RequestOptions.none())
 
-    /** @see [generate] */
+    /** @see generate */
     fun generate(
         params: ImageGenerateParams,
         requestOptions: RequestOptions = RequestOptions.none(),
@@ -87,7 +87,7 @@ interface ImageServiceAsync {
     fun generateStreaming(params: ImageGenerateParams): AsyncStreamResponse<ImageGenStreamEvent> =
         generateStreaming(params, RequestOptions.none())
 
-    /** @see [generateStreaming] */
+    /** @see generateStreaming */
     fun generateStreaming(
         params: ImageGenerateParams,
         requestOptions: RequestOptions = RequestOptions.none(),
@@ -114,7 +114,7 @@ interface ImageServiceAsync {
         ): CompletableFuture<HttpResponseFor<ImagesResponse>> =
             createVariation(params, RequestOptions.none())
 
-        /** @see [createVariation] */
+        /** @see createVariation */
         fun createVariation(
             params: ImageCreateVariationParams,
             requestOptions: RequestOptions = RequestOptions.none(),
@@ -127,7 +127,7 @@ interface ImageServiceAsync {
         fun edit(params: ImageEditParams): CompletableFuture<HttpResponseFor<ImagesResponse>> =
             edit(params, RequestOptions.none())
 
-        /** @see [edit] */
+        /** @see edit */
         fun edit(
             params: ImageEditParams,
             requestOptions: RequestOptions = RequestOptions.none(),
@@ -143,7 +143,7 @@ interface ImageServiceAsync {
         ): CompletableFuture<HttpResponseFor<StreamResponse<ImageEditStreamEvent>>> =
             editStreaming(params, RequestOptions.none())
 
-        /** @see [editStreaming] */
+        /** @see editStreaming */
         @MustBeClosed
         fun editStreaming(
             params: ImageEditParams,
@@ -159,7 +159,7 @@ interface ImageServiceAsync {
         ): CompletableFuture<HttpResponseFor<ImagesResponse>> =
             generate(params, RequestOptions.none())
 
-        /** @see [generate] */
+        /** @see generate */
         fun generate(
             params: ImageGenerateParams,
             requestOptions: RequestOptions = RequestOptions.none(),
@@ -175,7 +175,7 @@ interface ImageServiceAsync {
         ): CompletableFuture<HttpResponseFor<StreamResponse<ImageGenStreamEvent>>> =
             generateStreaming(params, RequestOptions.none())
 
-        /** @see [generateStreaming] */
+        /** @see generateStreaming */
         @MustBeClosed
         fun generateStreaming(
             params: ImageGenerateParams,

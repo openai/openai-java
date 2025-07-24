@@ -13,7 +13,7 @@ import java.util.concurrent.CompletableFuture
 import java.util.concurrent.Executor
 import kotlin.jvm.optionals.getOrNull
 
-/** @see [FileBatchServiceAsync.listFiles] */
+/** @see FileBatchServiceAsync.listFiles */
 class FileBatchListFilesPageAsync
 private constructor(
     private val service: FileBatchServiceAsync,
@@ -25,7 +25,7 @@ private constructor(
     /**
      * Delegates to [FileBatchListFilesPageResponse], but gracefully handles missing data.
      *
-     * @see [FileBatchListFilesPageResponse.data]
+     * @see FileBatchListFilesPageResponse.data
      */
     fun data(): List<VectorStoreFile> =
         response._data().getOptional("data").getOrNull() ?: emptyList()
@@ -33,7 +33,7 @@ private constructor(
     /**
      * Delegates to [FileBatchListFilesPageResponse], but gracefully handles missing data.
      *
-     * @see [FileBatchListFilesPageResponse.hasMore]
+     * @see FileBatchListFilesPageResponse.hasMore
      */
     fun hasMore(): Optional<Boolean> = response._hasMore().getOptional("has_more")
 
