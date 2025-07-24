@@ -243,6 +243,10 @@ class OpenAIOkHttpClient private constructor() {
 
         fun fromEnv() = apply { clientOptions.fromEnv() }
 
+        fun azureLegacyPaths(azureLegacyPaths: Boolean) = apply {
+            clientOptions.azureLegacyPaths(azureLegacyPaths)
+        }
+
         /**
          * Returns an immutable instance of [OpenAIClient].
          *

@@ -65,4 +65,27 @@ internal class ClientOptionsTest {
             .isInstanceOf(IllegalArgumentException::class.java)
             .hasMessage("Azure API key cannot be empty.")
     }
+
+    @Test
+    fun azureLegacyPathsTestSetTrue() {
+        val clientOptions =
+            ClientOptions.builder()
+                .httpClient(createOkHttpClient())
+                .credential(BearerTokenCredential.create(FAKE_API_KEY))
+                .azureLegacyPaths(true)
+                .build()
+
+        assertThat(clientOptions.azureLegacyPaths).isTrue()
+    }
+
+    @Test
+    fun azureLegacyPathsTestDefaultFalse() {
+        val clientOptions =
+            ClientOptions.builder()
+                .httpClient(createOkHttpClient())
+                .credential(BearerTokenCredential.create(FAKE_API_KEY))
+                .build()
+
+        assertThat(clientOptions.azureLegacyPaths).isTrue()
+    }
 }
