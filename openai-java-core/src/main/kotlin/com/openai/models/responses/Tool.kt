@@ -1000,7 +1000,7 @@ private constructor(
             companion object {
 
                 /** A string array of allowed tool names */
-                @JvmStatic fun ofMcp(mcp: List<String>) = AllowedTools(mcp = mcp)
+                @JvmStatic fun ofMcp(mcp: List<String>) = AllowedTools(mcp = mcp.toImmutable())
 
                 /** A filter object to specify which tools are allowed. */
                 @JvmStatic

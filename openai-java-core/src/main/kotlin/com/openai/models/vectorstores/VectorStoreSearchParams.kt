@@ -26,6 +26,7 @@ import com.openai.core.checkRequired
 import com.openai.core.getOrThrow
 import com.openai.core.http.Headers
 import com.openai.core.http.QueryParams
+import com.openai.core.toImmutable
 import com.openai.errors.OpenAIInvalidDataException
 import com.openai.models.ComparisonFilter
 import com.openai.models.CompoundFilter
@@ -841,7 +842,7 @@ private constructor(
 
             @JvmStatic fun ofString(string: String) = Query(string = string)
 
-            @JvmStatic fun ofStrings(strings: List<String>) = Query(strings = strings)
+            @JvmStatic fun ofStrings(strings: List<String>) = Query(strings = strings.toImmutable())
         }
 
         /** An interface that defines how to map each variant of [Query] to a value of type [T]. */

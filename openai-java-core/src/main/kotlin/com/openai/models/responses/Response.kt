@@ -2036,7 +2036,7 @@ private constructor(
              */
             @JvmStatic
             fun ofInputItemList(inputItemList: List<ResponseInputItem>) =
-                Instructions(inputItemList = inputItemList)
+                Instructions(inputItemList = inputItemList.toImmutable())
         }
 
         /**
