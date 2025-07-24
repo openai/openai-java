@@ -31,8 +31,10 @@ private constructor(
     /** The sequence number of the event after which to start streaming. */
     fun startingAfter(): Optional<Long> = Optional.ofNullable(startingAfter)
 
+    /** Additional headers to send with the request. */
     fun _additionalHeaders(): Headers = additionalHeaders
 
+    /** Additional query param to send with the request. */
     fun _additionalQueryParams(): QueryParams = additionalQueryParams
 
     fun toBuilder() = Builder().from(this)
