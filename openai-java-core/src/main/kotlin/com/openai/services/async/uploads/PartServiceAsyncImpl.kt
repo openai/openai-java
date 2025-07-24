@@ -71,7 +71,7 @@ class PartServiceAsyncImpl internal constructor(private val clientOptions: Clien
                     .addPathSegments("uploads", params._pathParam(0), "parts")
                     .body(multipartFormData(clientOptions.jsonMapper, params._body()))
                     .build()
-                    .prepareAsync(clientOptions, params, deploymentModel = null)
+                    .prepareAsync(clientOptions, params)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             return request
                 .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }

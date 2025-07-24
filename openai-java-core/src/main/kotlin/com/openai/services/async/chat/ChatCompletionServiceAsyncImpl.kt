@@ -135,7 +135,7 @@ internal constructor(private val clientOptions: ClientOptions) : ChatCompletionS
                     .addPathSegments("chat", "completions")
                     .body(json(clientOptions.jsonMapper, params._body()))
                     .build()
-                    .prepareAsync(clientOptions, params, params.model().toString())
+                    .prepareAsync(clientOptions, params)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             return request
                 .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
@@ -175,7 +175,7 @@ internal constructor(private val clientOptions: ClientOptions) : ChatCompletionS
                         )
                     )
                     .build()
-                    .prepareAsync(clientOptions, params, params.model().toString())
+                    .prepareAsync(clientOptions, params)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             return request
                 .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
@@ -210,7 +210,7 @@ internal constructor(private val clientOptions: ClientOptions) : ChatCompletionS
                     .baseUrl(clientOptions.baseUrl())
                     .addPathSegments("chat", "completions", params._pathParam(0))
                     .build()
-                    .prepareAsync(clientOptions, params, null)
+                    .prepareAsync(clientOptions, params)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             return request
                 .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
@@ -244,7 +244,7 @@ internal constructor(private val clientOptions: ClientOptions) : ChatCompletionS
                     .addPathSegments("chat", "completions", params._pathParam(0))
                     .body(json(clientOptions.jsonMapper, params._body()))
                     .build()
-                    .prepareAsync(clientOptions, params, null)
+                    .prepareAsync(clientOptions, params)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             return request
                 .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
@@ -274,11 +274,7 @@ internal constructor(private val clientOptions: ClientOptions) : ChatCompletionS
                     .baseUrl(clientOptions.baseUrl())
                     .addPathSegments("chat", "completions")
                     .build()
-                    .prepareAsync(
-                        clientOptions,
-                        params,
-                        deploymentModel = params.model().map { it.toString() }.getOrNull(),
-                    )
+                    .prepareAsync(clientOptions, params)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             return request
                 .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
@@ -320,7 +316,7 @@ internal constructor(private val clientOptions: ClientOptions) : ChatCompletionS
                     .addPathSegments("chat", "completions", params._pathParam(0))
                     .apply { params._body().ifPresent { body(json(clientOptions.jsonMapper, it)) } }
                     .build()
-                    .prepareAsync(clientOptions, params, null)
+                    .prepareAsync(clientOptions, params)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             return request
                 .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }

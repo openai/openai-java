@@ -91,7 +91,7 @@ class TranscriptionServiceImpl internal constructor(private val clientOptions: C
                     .addPathSegments("audio", "transcriptions")
                     .body(multipartFormData(clientOptions.jsonMapper, params._body()))
                     .build()
-                    .prepare(clientOptions, params, deploymentModel = params.model().toString())
+                    .prepare(clientOptions, params)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             val response = clientOptions.httpClient.execute(request, requestOptions)
             return errorHandler.handle(response).parseable {
@@ -127,7 +127,7 @@ class TranscriptionServiceImpl internal constructor(private val clientOptions: C
                         )
                     )
                     .build()
-                    .prepare(clientOptions, params, deploymentModel = params.model().toString())
+                    .prepare(clientOptions, params)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             val response = clientOptions.httpClient.execute(request, requestOptions)
             return errorHandler.handle(response).parseable {
