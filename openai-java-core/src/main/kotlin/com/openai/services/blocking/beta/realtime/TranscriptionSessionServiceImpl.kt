@@ -74,7 +74,7 @@ internal constructor(private val clientOptions: ClientOptions) : TranscriptionSe
                     .putAllHeaders(DEFAULT_HEADERS)
                     .body(json(clientOptions.jsonMapper, params._body()))
                     .build()
-                    .prepare(clientOptions, params, deploymentModel = null)
+                    .prepare(clientOptions, params)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             val response = clientOptions.httpClient.execute(request, requestOptions)
             return errorHandler.handle(response).parseable {

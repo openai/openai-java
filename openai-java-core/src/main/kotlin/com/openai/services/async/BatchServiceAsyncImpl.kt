@@ -93,7 +93,7 @@ class BatchServiceAsyncImpl internal constructor(private val clientOptions: Clie
                     .addPathSegments("batches")
                     .body(json(clientOptions.jsonMapper, params._body()))
                     .build()
-                    .prepareAsync(clientOptions, params, deploymentModel = null)
+                    .prepareAsync(clientOptions, params)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             return request
                 .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
@@ -125,7 +125,7 @@ class BatchServiceAsyncImpl internal constructor(private val clientOptions: Clie
                     .baseUrl(clientOptions.baseUrl())
                     .addPathSegments("batches", params._pathParam(0))
                     .build()
-                    .prepareAsync(clientOptions, params, deploymentModel = null)
+                    .prepareAsync(clientOptions, params)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             return request
                 .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
@@ -155,7 +155,7 @@ class BatchServiceAsyncImpl internal constructor(private val clientOptions: Clie
                     .baseUrl(clientOptions.baseUrl())
                     .addPathSegments("batches")
                     .build()
-                    .prepareAsync(clientOptions, params, deploymentModel = null)
+                    .prepareAsync(clientOptions, params)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             return request
                 .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
@@ -196,7 +196,7 @@ class BatchServiceAsyncImpl internal constructor(private val clientOptions: Clie
                     .addPathSegments("batches", params._pathParam(0), "cancel")
                     .apply { params._body().ifPresent { body(json(clientOptions.jsonMapper, it)) } }
                     .build()
-                    .prepareAsync(clientOptions, params, deploymentModel = null)
+                    .prepareAsync(clientOptions, params)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             return request
                 .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }

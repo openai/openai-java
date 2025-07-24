@@ -70,7 +70,7 @@ class MessageServiceAsyncImpl internal constructor(private val clientOptions: Cl
                     .baseUrl(clientOptions.baseUrl())
                     .addPathSegments("chat", "completions", params._pathParam(0), "messages")
                     .build()
-                    .prepareAsync(clientOptions, params, null)
+                    .prepareAsync(clientOptions, params)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             return request
                 .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }

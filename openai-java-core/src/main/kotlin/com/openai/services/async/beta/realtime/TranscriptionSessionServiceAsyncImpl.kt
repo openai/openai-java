@@ -78,7 +78,7 @@ internal constructor(private val clientOptions: ClientOptions) : TranscriptionSe
                     .putAllHeaders(DEFAULT_HEADERS)
                     .body(json(clientOptions.jsonMapper, params._body()))
                     .build()
-                    .prepareAsync(clientOptions, params, deploymentModel = null)
+                    .prepareAsync(clientOptions, params)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             return request
                 .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }

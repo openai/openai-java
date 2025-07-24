@@ -113,11 +113,7 @@ class ImageServiceAsyncImpl internal constructor(private val clientOptions: Clie
                     .addPathSegments("images", "variations")
                     .body(multipartFormData(clientOptions.jsonMapper, params._body()))
                     .build()
-                    .prepareAsync(
-                        clientOptions,
-                        params,
-                        deploymentModel = params.model().map { it.toString() }.orElse(null),
-                    )
+                    .prepareAsync(clientOptions, params)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             return request
                 .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
@@ -148,11 +144,7 @@ class ImageServiceAsyncImpl internal constructor(private val clientOptions: Clie
                     .addPathSegments("images", "edits")
                     .body(multipartFormData(clientOptions.jsonMapper, params._body()))
                     .build()
-                    .prepareAsync(
-                        clientOptions,
-                        params,
-                        deploymentModel = params.model().map { it.toString() }.orElse(null),
-                    )
+                    .prepareAsync(clientOptions, params)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             return request
                 .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
@@ -188,7 +180,7 @@ class ImageServiceAsyncImpl internal constructor(private val clientOptions: Clie
                         )
                     )
                     .build()
-                    .prepareAsync(clientOptions, params, deploymentModel = null)
+                    .prepareAsync(clientOptions, params)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             return request
                 .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
@@ -221,11 +213,7 @@ class ImageServiceAsyncImpl internal constructor(private val clientOptions: Clie
                     .addPathSegments("images", "generations")
                     .body(json(clientOptions.jsonMapper, params._body()))
                     .build()
-                    .prepareAsync(
-                        clientOptions,
-                        params,
-                        deploymentModel = params.model().map { it.toString() }.orElse(null),
-                    )
+                    .prepareAsync(clientOptions, params)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             return request
                 .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
@@ -265,7 +253,7 @@ class ImageServiceAsyncImpl internal constructor(private val clientOptions: Clie
                         )
                     )
                     .build()
-                    .prepareAsync(clientOptions, params, deploymentModel = null)
+                    .prepareAsync(clientOptions, params)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             return request
                 .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
