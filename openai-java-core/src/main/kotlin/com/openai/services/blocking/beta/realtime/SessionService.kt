@@ -33,17 +33,17 @@ interface SessionService {
      */
     fun create(): SessionCreateResponse = create(SessionCreateParams.none())
 
-    /** @see [create] */
+    /** @see create */
     fun create(
         params: SessionCreateParams = SessionCreateParams.none(),
         requestOptions: RequestOptions = RequestOptions.none(),
     ): SessionCreateResponse
 
-    /** @see [create] */
+    /** @see create */
     fun create(params: SessionCreateParams = SessionCreateParams.none()): SessionCreateResponse =
         create(params, RequestOptions.none())
 
-    /** @see [create] */
+    /** @see create */
     fun create(requestOptions: RequestOptions): SessionCreateResponse =
         create(SessionCreateParams.none(), requestOptions)
 
@@ -64,20 +64,20 @@ interface SessionService {
         @MustBeClosed
         fun create(): HttpResponseFor<SessionCreateResponse> = create(SessionCreateParams.none())
 
-        /** @see [create] */
+        /** @see create */
         @MustBeClosed
         fun create(
             params: SessionCreateParams = SessionCreateParams.none(),
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<SessionCreateResponse>
 
-        /** @see [create] */
+        /** @see create */
         @MustBeClosed
         fun create(
             params: SessionCreateParams = SessionCreateParams.none()
         ): HttpResponseFor<SessionCreateResponse> = create(params, RequestOptions.none())
 
-        /** @see [create] */
+        /** @see create */
         @MustBeClosed
         fun create(requestOptions: RequestOptions): HttpResponseFor<SessionCreateResponse> =
             create(SessionCreateParams.none(), requestOptions)

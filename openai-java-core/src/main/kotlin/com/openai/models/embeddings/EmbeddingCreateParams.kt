@@ -26,6 +26,7 @@ import com.openai.core.checkRequired
 import com.openai.core.getOrThrow
 import com.openai.core.http.Headers
 import com.openai.core.http.QueryParams
+import com.openai.core.toImmutable
 import com.openai.errors.OpenAIInvalidDataException
 import java.util.Collections
 import java.util.Objects
@@ -130,8 +131,10 @@ private constructor(
 
     fun _additionalBodyProperties(): Map<String, JsonValue> = body._additionalProperties()
 
+    /** Additional headers to send with the request. */
     fun _additionalHeaders(): Headers = additionalHeaders
 
+    /** Additional query param to send with the request. */
     fun _additionalQueryParams(): QueryParams = additionalQueryParams
 
     fun toBuilder() = Builder().from(this)
@@ -950,16 +953,17 @@ private constructor(
             /** The array of strings that will be turned into an embedding. */
             @JvmStatic
             fun ofArrayOfStrings(arrayOfStrings: List<String>) =
-                Input(arrayOfStrings = arrayOfStrings)
+                Input(arrayOfStrings = arrayOfStrings.toImmutable())
 
             /** The array of integers that will be turned into an embedding. */
             @JvmStatic
-            fun ofArrayOfTokens(arrayOfTokens: List<Long>) = Input(arrayOfTokens = arrayOfTokens)
+            fun ofArrayOfTokens(arrayOfTokens: List<Long>) =
+                Input(arrayOfTokens = arrayOfTokens.toImmutable())
 
             /** The array of arrays containing integers that will be turned into an embedding. */
             @JvmStatic
             fun ofArrayOfTokenArrays(arrayOfTokenArrays: List<List<Long>>) =
-                Input(arrayOfTokenArrays = arrayOfTokenArrays)
+                Input(arrayOfTokenArrays = arrayOfTokenArrays.toImmutable())
         }
 
         /** An interface that defines how to map each variant of [Input] to a value of type [T]. */

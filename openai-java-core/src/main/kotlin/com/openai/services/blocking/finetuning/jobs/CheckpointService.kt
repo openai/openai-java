@@ -28,7 +28,7 @@ interface CheckpointService {
     fun list(fineTuningJobId: String): CheckpointListPage =
         list(fineTuningJobId, CheckpointListParams.none())
 
-    /** @see [list] */
+    /** @see list */
     fun list(
         fineTuningJobId: String,
         params: CheckpointListParams = CheckpointListParams.none(),
@@ -36,22 +36,22 @@ interface CheckpointService {
     ): CheckpointListPage =
         list(params.toBuilder().fineTuningJobId(fineTuningJobId).build(), requestOptions)
 
-    /** @see [list] */
+    /** @see list */
     fun list(
         fineTuningJobId: String,
         params: CheckpointListParams = CheckpointListParams.none(),
     ): CheckpointListPage = list(fineTuningJobId, params, RequestOptions.none())
 
-    /** @see [list] */
+    /** @see list */
     fun list(
         params: CheckpointListParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): CheckpointListPage
 
-    /** @see [list] */
+    /** @see list */
     fun list(params: CheckpointListParams): CheckpointListPage = list(params, RequestOptions.none())
 
-    /** @see [list] */
+    /** @see list */
     fun list(fineTuningJobId: String, requestOptions: RequestOptions): CheckpointListPage =
         list(fineTuningJobId, CheckpointListParams.none(), requestOptions)
 
@@ -75,7 +75,7 @@ interface CheckpointService {
         fun list(fineTuningJobId: String): HttpResponseFor<CheckpointListPage> =
             list(fineTuningJobId, CheckpointListParams.none())
 
-        /** @see [list] */
+        /** @see list */
         @MustBeClosed
         fun list(
             fineTuningJobId: String,
@@ -84,7 +84,7 @@ interface CheckpointService {
         ): HttpResponseFor<CheckpointListPage> =
             list(params.toBuilder().fineTuningJobId(fineTuningJobId).build(), requestOptions)
 
-        /** @see [list] */
+        /** @see list */
         @MustBeClosed
         fun list(
             fineTuningJobId: String,
@@ -92,19 +92,19 @@ interface CheckpointService {
         ): HttpResponseFor<CheckpointListPage> =
             list(fineTuningJobId, params, RequestOptions.none())
 
-        /** @see [list] */
+        /** @see list */
         @MustBeClosed
         fun list(
             params: CheckpointListParams,
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<CheckpointListPage>
 
-        /** @see [list] */
+        /** @see list */
         @MustBeClosed
         fun list(params: CheckpointListParams): HttpResponseFor<CheckpointListPage> =
             list(params, RequestOptions.none())
 
-        /** @see [list] */
+        /** @see list */
         @MustBeClosed
         fun list(
             fineTuningJobId: String,

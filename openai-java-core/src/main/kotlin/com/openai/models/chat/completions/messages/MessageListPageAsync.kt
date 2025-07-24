@@ -13,7 +13,7 @@ import java.util.concurrent.CompletableFuture
 import java.util.concurrent.Executor
 import kotlin.jvm.optionals.getOrNull
 
-/** @see [MessageServiceAsync.list] */
+/** @see MessageServiceAsync.list */
 class MessageListPageAsync
 private constructor(
     private val service: MessageServiceAsync,
@@ -25,7 +25,7 @@ private constructor(
     /**
      * Delegates to [MessageListPageResponse], but gracefully handles missing data.
      *
-     * @see [MessageListPageResponse.data]
+     * @see MessageListPageResponse.data
      */
     fun data(): List<ChatCompletionStoreMessage> =
         response._data().getOptional("data").getOrNull() ?: emptyList()
@@ -33,7 +33,7 @@ private constructor(
     /**
      * Delegates to [MessageListPageResponse], but gracefully handles missing data.
      *
-     * @see [MessageListPageResponse.hasMore]
+     * @see MessageListPageResponse.hasMore
      */
     fun hasMore(): Optional<Boolean> = response._hasMore().getOptional("has_more")
 

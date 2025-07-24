@@ -53,7 +53,7 @@ interface FileServiceAsync {
     fun create(params: FileCreateParams): CompletableFuture<FileObject> =
         create(params, RequestOptions.none())
 
-    /** @see [create] */
+    /** @see create */
     fun create(
         params: FileCreateParams,
         requestOptions: RequestOptions = RequestOptions.none(),
@@ -63,7 +63,7 @@ interface FileServiceAsync {
     fun retrieve(fileId: String): CompletableFuture<FileObject> =
         retrieve(fileId, FileRetrieveParams.none())
 
-    /** @see [retrieve] */
+    /** @see retrieve */
     fun retrieve(
         fileId: String,
         params: FileRetrieveParams = FileRetrieveParams.none(),
@@ -71,40 +71,40 @@ interface FileServiceAsync {
     ): CompletableFuture<FileObject> =
         retrieve(params.toBuilder().fileId(fileId).build(), requestOptions)
 
-    /** @see [retrieve] */
+    /** @see retrieve */
     fun retrieve(
         fileId: String,
         params: FileRetrieveParams = FileRetrieveParams.none(),
     ): CompletableFuture<FileObject> = retrieve(fileId, params, RequestOptions.none())
 
-    /** @see [retrieve] */
+    /** @see retrieve */
     fun retrieve(
         params: FileRetrieveParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): CompletableFuture<FileObject>
 
-    /** @see [retrieve] */
+    /** @see retrieve */
     fun retrieve(params: FileRetrieveParams): CompletableFuture<FileObject> =
         retrieve(params, RequestOptions.none())
 
-    /** @see [retrieve] */
+    /** @see retrieve */
     fun retrieve(fileId: String, requestOptions: RequestOptions): CompletableFuture<FileObject> =
         retrieve(fileId, FileRetrieveParams.none(), requestOptions)
 
     /** Returns a list of files. */
     fun list(): CompletableFuture<FileListPageAsync> = list(FileListParams.none())
 
-    /** @see [list] */
+    /** @see list */
     fun list(
         params: FileListParams = FileListParams.none(),
         requestOptions: RequestOptions = RequestOptions.none(),
     ): CompletableFuture<FileListPageAsync>
 
-    /** @see [list] */
+    /** @see list */
     fun list(params: FileListParams = FileListParams.none()): CompletableFuture<FileListPageAsync> =
         list(params, RequestOptions.none())
 
-    /** @see [list] */
+    /** @see list */
     fun list(requestOptions: RequestOptions): CompletableFuture<FileListPageAsync> =
         list(FileListParams.none(), requestOptions)
 
@@ -112,7 +112,7 @@ interface FileServiceAsync {
     fun delete(fileId: String): CompletableFuture<FileDeleted> =
         delete(fileId, FileDeleteParams.none())
 
-    /** @see [delete] */
+    /** @see delete */
     fun delete(
         fileId: String,
         params: FileDeleteParams = FileDeleteParams.none(),
@@ -120,23 +120,23 @@ interface FileServiceAsync {
     ): CompletableFuture<FileDeleted> =
         delete(params.toBuilder().fileId(fileId).build(), requestOptions)
 
-    /** @see [delete] */
+    /** @see delete */
     fun delete(
         fileId: String,
         params: FileDeleteParams = FileDeleteParams.none(),
     ): CompletableFuture<FileDeleted> = delete(fileId, params, RequestOptions.none())
 
-    /** @see [delete] */
+    /** @see delete */
     fun delete(
         params: FileDeleteParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): CompletableFuture<FileDeleted>
 
-    /** @see [delete] */
+    /** @see delete */
     fun delete(params: FileDeleteParams): CompletableFuture<FileDeleted> =
         delete(params, RequestOptions.none())
 
-    /** @see [delete] */
+    /** @see delete */
     fun delete(fileId: String, requestOptions: RequestOptions): CompletableFuture<FileDeleted> =
         delete(fileId, FileDeleteParams.none(), requestOptions)
 
@@ -144,7 +144,7 @@ interface FileServiceAsync {
     fun content(fileId: String): CompletableFuture<HttpResponse> =
         content(fileId, FileContentParams.none())
 
-    /** @see [content] */
+    /** @see content */
     fun content(
         fileId: String,
         params: FileContentParams = FileContentParams.none(),
@@ -152,23 +152,23 @@ interface FileServiceAsync {
     ): CompletableFuture<HttpResponse> =
         content(params.toBuilder().fileId(fileId).build(), requestOptions)
 
-    /** @see [content] */
+    /** @see content */
     fun content(
         fileId: String,
         params: FileContentParams = FileContentParams.none(),
     ): CompletableFuture<HttpResponse> = content(fileId, params, RequestOptions.none())
 
-    /** @see [content] */
+    /** @see content */
     fun content(
         params: FileContentParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): CompletableFuture<HttpResponse>
 
-    /** @see [content] */
+    /** @see content */
     fun content(params: FileContentParams): CompletableFuture<HttpResponse> =
         content(params, RequestOptions.none())
 
-    /** @see [content] */
+    /** @see content */
     fun content(fileId: String, requestOptions: RequestOptions): CompletableFuture<HttpResponse> =
         content(fileId, FileContentParams.none(), requestOptions)
 
@@ -189,7 +189,7 @@ interface FileServiceAsync {
         fun create(params: FileCreateParams): CompletableFuture<HttpResponseFor<FileObject>> =
             create(params, RequestOptions.none())
 
-        /** @see [create] */
+        /** @see create */
         fun create(
             params: FileCreateParams,
             requestOptions: RequestOptions = RequestOptions.none(),
@@ -202,7 +202,7 @@ interface FileServiceAsync {
         fun retrieve(fileId: String): CompletableFuture<HttpResponseFor<FileObject>> =
             retrieve(fileId, FileRetrieveParams.none())
 
-        /** @see [retrieve] */
+        /** @see retrieve */
         fun retrieve(
             fileId: String,
             params: FileRetrieveParams = FileRetrieveParams.none(),
@@ -210,24 +210,24 @@ interface FileServiceAsync {
         ): CompletableFuture<HttpResponseFor<FileObject>> =
             retrieve(params.toBuilder().fileId(fileId).build(), requestOptions)
 
-        /** @see [retrieve] */
+        /** @see retrieve */
         fun retrieve(
             fileId: String,
             params: FileRetrieveParams = FileRetrieveParams.none(),
         ): CompletableFuture<HttpResponseFor<FileObject>> =
             retrieve(fileId, params, RequestOptions.none())
 
-        /** @see [retrieve] */
+        /** @see retrieve */
         fun retrieve(
             params: FileRetrieveParams,
             requestOptions: RequestOptions = RequestOptions.none(),
         ): CompletableFuture<HttpResponseFor<FileObject>>
 
-        /** @see [retrieve] */
+        /** @see retrieve */
         fun retrieve(params: FileRetrieveParams): CompletableFuture<HttpResponseFor<FileObject>> =
             retrieve(params, RequestOptions.none())
 
-        /** @see [retrieve] */
+        /** @see retrieve */
         fun retrieve(
             fileId: String,
             requestOptions: RequestOptions,
@@ -241,19 +241,19 @@ interface FileServiceAsync {
         fun list(): CompletableFuture<HttpResponseFor<FileListPageAsync>> =
             list(FileListParams.none())
 
-        /** @see [list] */
+        /** @see list */
         fun list(
             params: FileListParams = FileListParams.none(),
             requestOptions: RequestOptions = RequestOptions.none(),
         ): CompletableFuture<HttpResponseFor<FileListPageAsync>>
 
-        /** @see [list] */
+        /** @see list */
         fun list(
             params: FileListParams = FileListParams.none()
         ): CompletableFuture<HttpResponseFor<FileListPageAsync>> =
             list(params, RequestOptions.none())
 
-        /** @see [list] */
+        /** @see list */
         fun list(
             requestOptions: RequestOptions
         ): CompletableFuture<HttpResponseFor<FileListPageAsync>> =
@@ -266,7 +266,7 @@ interface FileServiceAsync {
         fun delete(fileId: String): CompletableFuture<HttpResponseFor<FileDeleted>> =
             delete(fileId, FileDeleteParams.none())
 
-        /** @see [delete] */
+        /** @see delete */
         fun delete(
             fileId: String,
             params: FileDeleteParams = FileDeleteParams.none(),
@@ -274,24 +274,24 @@ interface FileServiceAsync {
         ): CompletableFuture<HttpResponseFor<FileDeleted>> =
             delete(params.toBuilder().fileId(fileId).build(), requestOptions)
 
-        /** @see [delete] */
+        /** @see delete */
         fun delete(
             fileId: String,
             params: FileDeleteParams = FileDeleteParams.none(),
         ): CompletableFuture<HttpResponseFor<FileDeleted>> =
             delete(fileId, params, RequestOptions.none())
 
-        /** @see [delete] */
+        /** @see delete */
         fun delete(
             params: FileDeleteParams,
             requestOptions: RequestOptions = RequestOptions.none(),
         ): CompletableFuture<HttpResponseFor<FileDeleted>>
 
-        /** @see [delete] */
+        /** @see delete */
         fun delete(params: FileDeleteParams): CompletableFuture<HttpResponseFor<FileDeleted>> =
             delete(params, RequestOptions.none())
 
-        /** @see [delete] */
+        /** @see delete */
         fun delete(
             fileId: String,
             requestOptions: RequestOptions,
@@ -305,7 +305,7 @@ interface FileServiceAsync {
         fun content(fileId: String): CompletableFuture<HttpResponse> =
             content(fileId, FileContentParams.none())
 
-        /** @see [content] */
+        /** @see content */
         fun content(
             fileId: String,
             params: FileContentParams = FileContentParams.none(),
@@ -313,23 +313,23 @@ interface FileServiceAsync {
         ): CompletableFuture<HttpResponse> =
             content(params.toBuilder().fileId(fileId).build(), requestOptions)
 
-        /** @see [content] */
+        /** @see content */
         fun content(
             fileId: String,
             params: FileContentParams = FileContentParams.none(),
         ): CompletableFuture<HttpResponse> = content(fileId, params, RequestOptions.none())
 
-        /** @see [content] */
+        /** @see content */
         fun content(
             params: FileContentParams,
             requestOptions: RequestOptions = RequestOptions.none(),
         ): CompletableFuture<HttpResponse>
 
-        /** @see [content] */
+        /** @see content */
         fun content(params: FileContentParams): CompletableFuture<HttpResponse> =
             content(params, RequestOptions.none())
 
-        /** @see [content] */
+        /** @see content */
         fun content(
             fileId: String,
             requestOptions: RequestOptions,

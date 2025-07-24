@@ -28,7 +28,7 @@ interface CheckpointServiceAsync {
     fun list(fineTuningJobId: String): CompletableFuture<CheckpointListPageAsync> =
         list(fineTuningJobId, CheckpointListParams.none())
 
-    /** @see [list] */
+    /** @see list */
     fun list(
         fineTuningJobId: String,
         params: CheckpointListParams = CheckpointListParams.none(),
@@ -36,24 +36,24 @@ interface CheckpointServiceAsync {
     ): CompletableFuture<CheckpointListPageAsync> =
         list(params.toBuilder().fineTuningJobId(fineTuningJobId).build(), requestOptions)
 
-    /** @see [list] */
+    /** @see list */
     fun list(
         fineTuningJobId: String,
         params: CheckpointListParams = CheckpointListParams.none(),
     ): CompletableFuture<CheckpointListPageAsync> =
         list(fineTuningJobId, params, RequestOptions.none())
 
-    /** @see [list] */
+    /** @see list */
     fun list(
         params: CheckpointListParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): CompletableFuture<CheckpointListPageAsync>
 
-    /** @see [list] */
+    /** @see list */
     fun list(params: CheckpointListParams): CompletableFuture<CheckpointListPageAsync> =
         list(params, RequestOptions.none())
 
-    /** @see [list] */
+    /** @see list */
     fun list(
         fineTuningJobId: String,
         requestOptions: RequestOptions,
@@ -84,7 +84,7 @@ interface CheckpointServiceAsync {
         ): CompletableFuture<HttpResponseFor<CheckpointListPageAsync>> =
             list(fineTuningJobId, CheckpointListParams.none())
 
-        /** @see [list] */
+        /** @see list */
         fun list(
             fineTuningJobId: String,
             params: CheckpointListParams = CheckpointListParams.none(),
@@ -92,26 +92,26 @@ interface CheckpointServiceAsync {
         ): CompletableFuture<HttpResponseFor<CheckpointListPageAsync>> =
             list(params.toBuilder().fineTuningJobId(fineTuningJobId).build(), requestOptions)
 
-        /** @see [list] */
+        /** @see list */
         fun list(
             fineTuningJobId: String,
             params: CheckpointListParams = CheckpointListParams.none(),
         ): CompletableFuture<HttpResponseFor<CheckpointListPageAsync>> =
             list(fineTuningJobId, params, RequestOptions.none())
 
-        /** @see [list] */
+        /** @see list */
         fun list(
             params: CheckpointListParams,
             requestOptions: RequestOptions = RequestOptions.none(),
         ): CompletableFuture<HttpResponseFor<CheckpointListPageAsync>>
 
-        /** @see [list] */
+        /** @see list */
         fun list(
             params: CheckpointListParams
         ): CompletableFuture<HttpResponseFor<CheckpointListPageAsync>> =
             list(params, RequestOptions.none())
 
-        /** @see [list] */
+        /** @see list */
         fun list(
             fineTuningJobId: String,
             requestOptions: RequestOptions,

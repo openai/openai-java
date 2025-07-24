@@ -85,7 +85,7 @@ class OutputItemServiceImpl internal constructor(private val clientOptions: Clie
                         params._pathParam(2),
                     )
                     .build()
-                    .prepare(clientOptions, params, deploymentModel = null)
+                    .prepare(clientOptions, params)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             val response = clientOptions.httpClient.execute(request, requestOptions)
             return errorHandler.handle(response).parseable {
@@ -121,7 +121,7 @@ class OutputItemServiceImpl internal constructor(private val clientOptions: Clie
                         "output_items",
                     )
                     .build()
-                    .prepare(clientOptions, params, deploymentModel = null)
+                    .prepare(clientOptions, params)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             val response = clientOptions.httpClient.execute(request, requestOptions)
             return errorHandler.handle(response).parseable {

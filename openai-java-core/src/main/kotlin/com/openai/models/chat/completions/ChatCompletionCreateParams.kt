@@ -636,8 +636,10 @@ private constructor(
 
     fun _additionalBodyProperties(): Map<String, JsonValue> = body._additionalProperties()
 
+    /** Additional headers to send with the request. */
     fun _additionalHeaders(): Headers = additionalHeaders
 
+    /** Additional query param to send with the request. */
     fun _additionalQueryParams(): QueryParams = additionalQueryParams
 
     fun toBuilder() = Builder().from(this)
@@ -5380,7 +5382,7 @@ private constructor(
 
             @JvmStatic fun ofString(string: String) = Stop(string = string)
 
-            @JvmStatic fun ofStrings(strings: List<String>) = Stop(strings = strings)
+            @JvmStatic fun ofStrings(strings: List<String>) = Stop(strings = strings.toImmutable())
         }
 
         /** An interface that defines how to map each variant of [Stop] to a value of type [T]. */

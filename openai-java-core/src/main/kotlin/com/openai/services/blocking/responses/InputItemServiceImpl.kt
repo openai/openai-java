@@ -69,7 +69,7 @@ class InputItemServiceImpl internal constructor(private val clientOptions: Clien
                     .baseUrl(clientOptions.baseUrl())
                     .addPathSegments("responses", params._pathParam(0), "input_items")
                     .build()
-                    .prepare(clientOptions, params, deploymentModel = null)
+                    .prepare(clientOptions, params)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             val response = clientOptions.httpClient.execute(request, requestOptions)
             return errorHandler.handle(response).parseable {

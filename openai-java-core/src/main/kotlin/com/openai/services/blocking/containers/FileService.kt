@@ -42,7 +42,7 @@ interface FileService {
     fun create(containerId: String): FileCreateResponse =
         create(containerId, FileCreateParams.none())
 
-    /** @see [create] */
+    /** @see create */
     fun create(
         containerId: String,
         params: FileCreateParams = FileCreateParams.none(),
@@ -50,22 +50,22 @@ interface FileService {
     ): FileCreateResponse =
         create(params.toBuilder().containerId(containerId).build(), requestOptions)
 
-    /** @see [create] */
+    /** @see create */
     fun create(
         containerId: String,
         params: FileCreateParams = FileCreateParams.none(),
     ): FileCreateResponse = create(containerId, params, RequestOptions.none())
 
-    /** @see [create] */
+    /** @see create */
     fun create(
         params: FileCreateParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): FileCreateResponse
 
-    /** @see [create] */
+    /** @see create */
     fun create(params: FileCreateParams): FileCreateResponse = create(params, RequestOptions.none())
 
-    /** @see [create] */
+    /** @see create */
     fun create(containerId: String, requestOptions: RequestOptions): FileCreateResponse =
         create(containerId, FileCreateParams.none(), requestOptions)
 
@@ -73,18 +73,18 @@ interface FileService {
     fun retrieve(fileId: String, params: FileRetrieveParams): FileRetrieveResponse =
         retrieve(fileId, params, RequestOptions.none())
 
-    /** @see [retrieve] */
+    /** @see retrieve */
     fun retrieve(
         fileId: String,
         params: FileRetrieveParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): FileRetrieveResponse = retrieve(params.toBuilder().fileId(fileId).build(), requestOptions)
 
-    /** @see [retrieve] */
+    /** @see retrieve */
     fun retrieve(params: FileRetrieveParams): FileRetrieveResponse =
         retrieve(params, RequestOptions.none())
 
-    /** @see [retrieve] */
+    /** @see retrieve */
     fun retrieve(
         params: FileRetrieveParams,
         requestOptions: RequestOptions = RequestOptions.none(),
@@ -93,27 +93,27 @@ interface FileService {
     /** List Container files */
     fun list(containerId: String): FileListPage = list(containerId, FileListParams.none())
 
-    /** @see [list] */
+    /** @see list */
     fun list(
         containerId: String,
         params: FileListParams = FileListParams.none(),
         requestOptions: RequestOptions = RequestOptions.none(),
     ): FileListPage = list(params.toBuilder().containerId(containerId).build(), requestOptions)
 
-    /** @see [list] */
+    /** @see list */
     fun list(containerId: String, params: FileListParams = FileListParams.none()): FileListPage =
         list(containerId, params, RequestOptions.none())
 
-    /** @see [list] */
+    /** @see list */
     fun list(
         params: FileListParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): FileListPage
 
-    /** @see [list] */
+    /** @see list */
     fun list(params: FileListParams): FileListPage = list(params, RequestOptions.none())
 
-    /** @see [list] */
+    /** @see list */
     fun list(containerId: String, requestOptions: RequestOptions): FileListPage =
         list(containerId, FileListParams.none(), requestOptions)
 
@@ -121,17 +121,17 @@ interface FileService {
     fun delete(fileId: String, params: FileDeleteParams) =
         delete(fileId, params, RequestOptions.none())
 
-    /** @see [delete] */
+    /** @see delete */
     fun delete(
         fileId: String,
         params: FileDeleteParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ) = delete(params.toBuilder().fileId(fileId).build(), requestOptions)
 
-    /** @see [delete] */
+    /** @see delete */
     fun delete(params: FileDeleteParams) = delete(params, RequestOptions.none())
 
-    /** @see [delete] */
+    /** @see delete */
     fun delete(params: FileDeleteParams, requestOptions: RequestOptions = RequestOptions.none())
 
     /** A view of [FileService] that provides access to raw HTTP responses for each method. */
@@ -154,7 +154,7 @@ interface FileService {
         fun create(containerId: String): HttpResponseFor<FileCreateResponse> =
             create(containerId, FileCreateParams.none())
 
-        /** @see [create] */
+        /** @see create */
         @MustBeClosed
         fun create(
             containerId: String,
@@ -163,26 +163,26 @@ interface FileService {
         ): HttpResponseFor<FileCreateResponse> =
             create(params.toBuilder().containerId(containerId).build(), requestOptions)
 
-        /** @see [create] */
+        /** @see create */
         @MustBeClosed
         fun create(
             containerId: String,
             params: FileCreateParams = FileCreateParams.none(),
         ): HttpResponseFor<FileCreateResponse> = create(containerId, params, RequestOptions.none())
 
-        /** @see [create] */
+        /** @see create */
         @MustBeClosed
         fun create(
             params: FileCreateParams,
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<FileCreateResponse>
 
-        /** @see [create] */
+        /** @see create */
         @MustBeClosed
         fun create(params: FileCreateParams): HttpResponseFor<FileCreateResponse> =
             create(params, RequestOptions.none())
 
-        /** @see [create] */
+        /** @see create */
         @MustBeClosed
         fun create(
             containerId: String,
@@ -200,7 +200,7 @@ interface FileService {
             params: FileRetrieveParams,
         ): HttpResponseFor<FileRetrieveResponse> = retrieve(fileId, params, RequestOptions.none())
 
-        /** @see [retrieve] */
+        /** @see retrieve */
         @MustBeClosed
         fun retrieve(
             fileId: String,
@@ -209,12 +209,12 @@ interface FileService {
         ): HttpResponseFor<FileRetrieveResponse> =
             retrieve(params.toBuilder().fileId(fileId).build(), requestOptions)
 
-        /** @see [retrieve] */
+        /** @see retrieve */
         @MustBeClosed
         fun retrieve(params: FileRetrieveParams): HttpResponseFor<FileRetrieveResponse> =
             retrieve(params, RequestOptions.none())
 
-        /** @see [retrieve] */
+        /** @see retrieve */
         @MustBeClosed
         fun retrieve(
             params: FileRetrieveParams,
@@ -229,7 +229,7 @@ interface FileService {
         fun list(containerId: String): HttpResponseFor<FileListPage> =
             list(containerId, FileListParams.none())
 
-        /** @see [list] */
+        /** @see list */
         @MustBeClosed
         fun list(
             containerId: String,
@@ -238,26 +238,26 @@ interface FileService {
         ): HttpResponseFor<FileListPage> =
             list(params.toBuilder().containerId(containerId).build(), requestOptions)
 
-        /** @see [list] */
+        /** @see list */
         @MustBeClosed
         fun list(
             containerId: String,
             params: FileListParams = FileListParams.none(),
         ): HttpResponseFor<FileListPage> = list(containerId, params, RequestOptions.none())
 
-        /** @see [list] */
+        /** @see list */
         @MustBeClosed
         fun list(
             params: FileListParams,
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<FileListPage>
 
-        /** @see [list] */
+        /** @see list */
         @MustBeClosed
         fun list(params: FileListParams): HttpResponseFor<FileListPage> =
             list(params, RequestOptions.none())
 
-        /** @see [list] */
+        /** @see list */
         @MustBeClosed
         fun list(
             containerId: String,
@@ -272,7 +272,7 @@ interface FileService {
         fun delete(fileId: String, params: FileDeleteParams): HttpResponse =
             delete(fileId, params, RequestOptions.none())
 
-        /** @see [delete] */
+        /** @see delete */
         @MustBeClosed
         fun delete(
             fileId: String,
@@ -280,11 +280,11 @@ interface FileService {
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponse = delete(params.toBuilder().fileId(fileId).build(), requestOptions)
 
-        /** @see [delete] */
+        /** @see delete */
         @MustBeClosed
         fun delete(params: FileDeleteParams): HttpResponse = delete(params, RequestOptions.none())
 
-        /** @see [delete] */
+        /** @see delete */
         @MustBeClosed
         fun delete(
             params: FileDeleteParams,

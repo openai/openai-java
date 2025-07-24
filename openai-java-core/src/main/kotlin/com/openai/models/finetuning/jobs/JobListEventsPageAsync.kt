@@ -12,7 +12,7 @@ import java.util.concurrent.CompletableFuture
 import java.util.concurrent.Executor
 import kotlin.jvm.optionals.getOrNull
 
-/** @see [JobServiceAsync.listEvents] */
+/** @see JobServiceAsync.listEvents */
 class JobListEventsPageAsync
 private constructor(
     private val service: JobServiceAsync,
@@ -24,7 +24,7 @@ private constructor(
     /**
      * Delegates to [JobListEventsPageResponse], but gracefully handles missing data.
      *
-     * @see [JobListEventsPageResponse.data]
+     * @see JobListEventsPageResponse.data
      */
     fun data(): List<FineTuningJobEvent> =
         response._data().getOptional("data").getOrNull() ?: emptyList()
@@ -32,7 +32,7 @@ private constructor(
     /**
      * Delegates to [JobListEventsPageResponse], but gracefully handles missing data.
      *
-     * @see [JobListEventsPageResponse.hasMore]
+     * @see JobListEventsPageResponse.hasMore
      */
     fun hasMore(): Optional<Boolean> = response._hasMore().getOptional("has_more")
 

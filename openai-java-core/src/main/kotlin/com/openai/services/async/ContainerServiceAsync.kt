@@ -37,7 +37,7 @@ interface ContainerServiceAsync {
     fun create(params: ContainerCreateParams): CompletableFuture<ContainerCreateResponse> =
         create(params, RequestOptions.none())
 
-    /** @see [create] */
+    /** @see create */
     fun create(
         params: ContainerCreateParams,
         requestOptions: RequestOptions = RequestOptions.none(),
@@ -47,7 +47,7 @@ interface ContainerServiceAsync {
     fun retrieve(containerId: String): CompletableFuture<ContainerRetrieveResponse> =
         retrieve(containerId, ContainerRetrieveParams.none())
 
-    /** @see [retrieve] */
+    /** @see retrieve */
     fun retrieve(
         containerId: String,
         params: ContainerRetrieveParams = ContainerRetrieveParams.none(),
@@ -55,24 +55,24 @@ interface ContainerServiceAsync {
     ): CompletableFuture<ContainerRetrieveResponse> =
         retrieve(params.toBuilder().containerId(containerId).build(), requestOptions)
 
-    /** @see [retrieve] */
+    /** @see retrieve */
     fun retrieve(
         containerId: String,
         params: ContainerRetrieveParams = ContainerRetrieveParams.none(),
     ): CompletableFuture<ContainerRetrieveResponse> =
         retrieve(containerId, params, RequestOptions.none())
 
-    /** @see [retrieve] */
+    /** @see retrieve */
     fun retrieve(
         params: ContainerRetrieveParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): CompletableFuture<ContainerRetrieveResponse>
 
-    /** @see [retrieve] */
+    /** @see retrieve */
     fun retrieve(params: ContainerRetrieveParams): CompletableFuture<ContainerRetrieveResponse> =
         retrieve(params, RequestOptions.none())
 
-    /** @see [retrieve] */
+    /** @see retrieve */
     fun retrieve(
         containerId: String,
         requestOptions: RequestOptions,
@@ -82,18 +82,18 @@ interface ContainerServiceAsync {
     /** List Containers */
     fun list(): CompletableFuture<ContainerListPageAsync> = list(ContainerListParams.none())
 
-    /** @see [list] */
+    /** @see list */
     fun list(
         params: ContainerListParams = ContainerListParams.none(),
         requestOptions: RequestOptions = RequestOptions.none(),
     ): CompletableFuture<ContainerListPageAsync>
 
-    /** @see [list] */
+    /** @see list */
     fun list(
         params: ContainerListParams = ContainerListParams.none()
     ): CompletableFuture<ContainerListPageAsync> = list(params, RequestOptions.none())
 
-    /** @see [list] */
+    /** @see list */
     fun list(requestOptions: RequestOptions): CompletableFuture<ContainerListPageAsync> =
         list(ContainerListParams.none(), requestOptions)
 
@@ -101,7 +101,7 @@ interface ContainerServiceAsync {
     fun delete(containerId: String): CompletableFuture<Void?> =
         delete(containerId, ContainerDeleteParams.none())
 
-    /** @see [delete] */
+    /** @see delete */
     fun delete(
         containerId: String,
         params: ContainerDeleteParams = ContainerDeleteParams.none(),
@@ -109,23 +109,23 @@ interface ContainerServiceAsync {
     ): CompletableFuture<Void?> =
         delete(params.toBuilder().containerId(containerId).build(), requestOptions)
 
-    /** @see [delete] */
+    /** @see delete */
     fun delete(
         containerId: String,
         params: ContainerDeleteParams = ContainerDeleteParams.none(),
     ): CompletableFuture<Void?> = delete(containerId, params, RequestOptions.none())
 
-    /** @see [delete] */
+    /** @see delete */
     fun delete(
         params: ContainerDeleteParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): CompletableFuture<Void?>
 
-    /** @see [delete] */
+    /** @see delete */
     fun delete(params: ContainerDeleteParams): CompletableFuture<Void?> =
         delete(params, RequestOptions.none())
 
-    /** @see [delete] */
+    /** @see delete */
     fun delete(containerId: String, requestOptions: RequestOptions): CompletableFuture<Void?> =
         delete(containerId, ContainerDeleteParams.none(), requestOptions)
 
@@ -154,7 +154,7 @@ interface ContainerServiceAsync {
         ): CompletableFuture<HttpResponseFor<ContainerCreateResponse>> =
             create(params, RequestOptions.none())
 
-        /** @see [create] */
+        /** @see create */
         fun create(
             params: ContainerCreateParams,
             requestOptions: RequestOptions = RequestOptions.none(),
@@ -169,7 +169,7 @@ interface ContainerServiceAsync {
         ): CompletableFuture<HttpResponseFor<ContainerRetrieveResponse>> =
             retrieve(containerId, ContainerRetrieveParams.none())
 
-        /** @see [retrieve] */
+        /** @see retrieve */
         fun retrieve(
             containerId: String,
             params: ContainerRetrieveParams = ContainerRetrieveParams.none(),
@@ -177,26 +177,26 @@ interface ContainerServiceAsync {
         ): CompletableFuture<HttpResponseFor<ContainerRetrieveResponse>> =
             retrieve(params.toBuilder().containerId(containerId).build(), requestOptions)
 
-        /** @see [retrieve] */
+        /** @see retrieve */
         fun retrieve(
             containerId: String,
             params: ContainerRetrieveParams = ContainerRetrieveParams.none(),
         ): CompletableFuture<HttpResponseFor<ContainerRetrieveResponse>> =
             retrieve(containerId, params, RequestOptions.none())
 
-        /** @see [retrieve] */
+        /** @see retrieve */
         fun retrieve(
             params: ContainerRetrieveParams,
             requestOptions: RequestOptions = RequestOptions.none(),
         ): CompletableFuture<HttpResponseFor<ContainerRetrieveResponse>>
 
-        /** @see [retrieve] */
+        /** @see retrieve */
         fun retrieve(
             params: ContainerRetrieveParams
         ): CompletableFuture<HttpResponseFor<ContainerRetrieveResponse>> =
             retrieve(params, RequestOptions.none())
 
-        /** @see [retrieve] */
+        /** @see retrieve */
         fun retrieve(
             containerId: String,
             requestOptions: RequestOptions,
@@ -210,19 +210,19 @@ interface ContainerServiceAsync {
         fun list(): CompletableFuture<HttpResponseFor<ContainerListPageAsync>> =
             list(ContainerListParams.none())
 
-        /** @see [list] */
+        /** @see list */
         fun list(
             params: ContainerListParams = ContainerListParams.none(),
             requestOptions: RequestOptions = RequestOptions.none(),
         ): CompletableFuture<HttpResponseFor<ContainerListPageAsync>>
 
-        /** @see [list] */
+        /** @see list */
         fun list(
             params: ContainerListParams = ContainerListParams.none()
         ): CompletableFuture<HttpResponseFor<ContainerListPageAsync>> =
             list(params, RequestOptions.none())
 
-        /** @see [list] */
+        /** @see list */
         fun list(
             requestOptions: RequestOptions
         ): CompletableFuture<HttpResponseFor<ContainerListPageAsync>> =
@@ -235,7 +235,7 @@ interface ContainerServiceAsync {
         fun delete(containerId: String): CompletableFuture<HttpResponse> =
             delete(containerId, ContainerDeleteParams.none())
 
-        /** @see [delete] */
+        /** @see delete */
         fun delete(
             containerId: String,
             params: ContainerDeleteParams = ContainerDeleteParams.none(),
@@ -243,23 +243,23 @@ interface ContainerServiceAsync {
         ): CompletableFuture<HttpResponse> =
             delete(params.toBuilder().containerId(containerId).build(), requestOptions)
 
-        /** @see [delete] */
+        /** @see delete */
         fun delete(
             containerId: String,
             params: ContainerDeleteParams = ContainerDeleteParams.none(),
         ): CompletableFuture<HttpResponse> = delete(containerId, params, RequestOptions.none())
 
-        /** @see [delete] */
+        /** @see delete */
         fun delete(
             params: ContainerDeleteParams,
             requestOptions: RequestOptions = RequestOptions.none(),
         ): CompletableFuture<HttpResponse>
 
-        /** @see [delete] */
+        /** @see delete */
         fun delete(params: ContainerDeleteParams): CompletableFuture<HttpResponse> =
             delete(params, RequestOptions.none())
 
-        /** @see [delete] */
+        /** @see delete */
         fun delete(
             containerId: String,
             requestOptions: RequestOptions,

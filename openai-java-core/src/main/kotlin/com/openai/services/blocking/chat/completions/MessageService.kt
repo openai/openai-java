@@ -30,29 +30,29 @@ interface MessageService {
      */
     fun list(completionId: String): MessageListPage = list(completionId, MessageListParams.none())
 
-    /** @see [list] */
+    /** @see list */
     fun list(
         completionId: String,
         params: MessageListParams = MessageListParams.none(),
         requestOptions: RequestOptions = RequestOptions.none(),
     ): MessageListPage = list(params.toBuilder().completionId(completionId).build(), requestOptions)
 
-    /** @see [list] */
+    /** @see list */
     fun list(
         completionId: String,
         params: MessageListParams = MessageListParams.none(),
     ): MessageListPage = list(completionId, params, RequestOptions.none())
 
-    /** @see [list] */
+    /** @see list */
     fun list(
         params: MessageListParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): MessageListPage
 
-    /** @see [list] */
+    /** @see list */
     fun list(params: MessageListParams): MessageListPage = list(params, RequestOptions.none())
 
-    /** @see [list] */
+    /** @see list */
     fun list(completionId: String, requestOptions: RequestOptions): MessageListPage =
         list(completionId, MessageListParams.none(), requestOptions)
 
@@ -74,7 +74,7 @@ interface MessageService {
         fun list(completionId: String): HttpResponseFor<MessageListPage> =
             list(completionId, MessageListParams.none())
 
-        /** @see [list] */
+        /** @see list */
         @MustBeClosed
         fun list(
             completionId: String,
@@ -83,26 +83,26 @@ interface MessageService {
         ): HttpResponseFor<MessageListPage> =
             list(params.toBuilder().completionId(completionId).build(), requestOptions)
 
-        /** @see [list] */
+        /** @see list */
         @MustBeClosed
         fun list(
             completionId: String,
             params: MessageListParams = MessageListParams.none(),
         ): HttpResponseFor<MessageListPage> = list(completionId, params, RequestOptions.none())
 
-        /** @see [list] */
+        /** @see list */
         @MustBeClosed
         fun list(
             params: MessageListParams,
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<MessageListPage>
 
-        /** @see [list] */
+        /** @see list */
         @MustBeClosed
         fun list(params: MessageListParams): HttpResponseFor<MessageListPage> =
             list(params, RequestOptions.none())
 
-        /** @see [list] */
+        /** @see list */
         @MustBeClosed
         fun list(
             completionId: String,

@@ -31,7 +31,7 @@ interface BatchService {
     /** Creates and executes a batch from an uploaded file of requests */
     fun create(params: BatchCreateParams): Batch = create(params, RequestOptions.none())
 
-    /** @see [create] */
+    /** @see create */
     fun create(
         params: BatchCreateParams,
         requestOptions: RequestOptions = RequestOptions.none(),
@@ -40,44 +40,44 @@ interface BatchService {
     /** Retrieves a batch. */
     fun retrieve(batchId: String): Batch = retrieve(batchId, BatchRetrieveParams.none())
 
-    /** @see [retrieve] */
+    /** @see retrieve */
     fun retrieve(
         batchId: String,
         params: BatchRetrieveParams = BatchRetrieveParams.none(),
         requestOptions: RequestOptions = RequestOptions.none(),
     ): Batch = retrieve(params.toBuilder().batchId(batchId).build(), requestOptions)
 
-    /** @see [retrieve] */
+    /** @see retrieve */
     fun retrieve(batchId: String, params: BatchRetrieveParams = BatchRetrieveParams.none()): Batch =
         retrieve(batchId, params, RequestOptions.none())
 
-    /** @see [retrieve] */
+    /** @see retrieve */
     fun retrieve(
         params: BatchRetrieveParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): Batch
 
-    /** @see [retrieve] */
+    /** @see retrieve */
     fun retrieve(params: BatchRetrieveParams): Batch = retrieve(params, RequestOptions.none())
 
-    /** @see [retrieve] */
+    /** @see retrieve */
     fun retrieve(batchId: String, requestOptions: RequestOptions): Batch =
         retrieve(batchId, BatchRetrieveParams.none(), requestOptions)
 
     /** List your organization's batches. */
     fun list(): BatchListPage = list(BatchListParams.none())
 
-    /** @see [list] */
+    /** @see list */
     fun list(
         params: BatchListParams = BatchListParams.none(),
         requestOptions: RequestOptions = RequestOptions.none(),
     ): BatchListPage
 
-    /** @see [list] */
+    /** @see list */
     fun list(params: BatchListParams = BatchListParams.none()): BatchListPage =
         list(params, RequestOptions.none())
 
-    /** @see [list] */
+    /** @see list */
     fun list(requestOptions: RequestOptions): BatchListPage =
         list(BatchListParams.none(), requestOptions)
 
@@ -88,27 +88,27 @@ interface BatchService {
      */
     fun cancel(batchId: String): Batch = cancel(batchId, BatchCancelParams.none())
 
-    /** @see [cancel] */
+    /** @see cancel */
     fun cancel(
         batchId: String,
         params: BatchCancelParams = BatchCancelParams.none(),
         requestOptions: RequestOptions = RequestOptions.none(),
     ): Batch = cancel(params.toBuilder().batchId(batchId).build(), requestOptions)
 
-    /** @see [cancel] */
+    /** @see cancel */
     fun cancel(batchId: String, params: BatchCancelParams = BatchCancelParams.none()): Batch =
         cancel(batchId, params, RequestOptions.none())
 
-    /** @see [cancel] */
+    /** @see cancel */
     fun cancel(
         params: BatchCancelParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): Batch
 
-    /** @see [cancel] */
+    /** @see cancel */
     fun cancel(params: BatchCancelParams): Batch = cancel(params, RequestOptions.none())
 
-    /** @see [cancel] */
+    /** @see cancel */
     fun cancel(batchId: String, requestOptions: RequestOptions): Batch =
         cancel(batchId, BatchCancelParams.none(), requestOptions)
 
@@ -130,7 +130,7 @@ interface BatchService {
         fun create(params: BatchCreateParams): HttpResponseFor<Batch> =
             create(params, RequestOptions.none())
 
-        /** @see [create] */
+        /** @see create */
         @MustBeClosed
         fun create(
             params: BatchCreateParams,
@@ -145,7 +145,7 @@ interface BatchService {
         fun retrieve(batchId: String): HttpResponseFor<Batch> =
             retrieve(batchId, BatchRetrieveParams.none())
 
-        /** @see [retrieve] */
+        /** @see retrieve */
         @MustBeClosed
         fun retrieve(
             batchId: String,
@@ -154,26 +154,26 @@ interface BatchService {
         ): HttpResponseFor<Batch> =
             retrieve(params.toBuilder().batchId(batchId).build(), requestOptions)
 
-        /** @see [retrieve] */
+        /** @see retrieve */
         @MustBeClosed
         fun retrieve(
             batchId: String,
             params: BatchRetrieveParams = BatchRetrieveParams.none(),
         ): HttpResponseFor<Batch> = retrieve(batchId, params, RequestOptions.none())
 
-        /** @see [retrieve] */
+        /** @see retrieve */
         @MustBeClosed
         fun retrieve(
             params: BatchRetrieveParams,
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<Batch>
 
-        /** @see [retrieve] */
+        /** @see retrieve */
         @MustBeClosed
         fun retrieve(params: BatchRetrieveParams): HttpResponseFor<Batch> =
             retrieve(params, RequestOptions.none())
 
-        /** @see [retrieve] */
+        /** @see retrieve */
         @MustBeClosed
         fun retrieve(batchId: String, requestOptions: RequestOptions): HttpResponseFor<Batch> =
             retrieve(batchId, BatchRetrieveParams.none(), requestOptions)
@@ -184,19 +184,19 @@ interface BatchService {
          */
         @MustBeClosed fun list(): HttpResponseFor<BatchListPage> = list(BatchListParams.none())
 
-        /** @see [list] */
+        /** @see list */
         @MustBeClosed
         fun list(
             params: BatchListParams = BatchListParams.none(),
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<BatchListPage>
 
-        /** @see [list] */
+        /** @see list */
         @MustBeClosed
         fun list(params: BatchListParams = BatchListParams.none()): HttpResponseFor<BatchListPage> =
             list(params, RequestOptions.none())
 
-        /** @see [list] */
+        /** @see list */
         @MustBeClosed
         fun list(requestOptions: RequestOptions): HttpResponseFor<BatchListPage> =
             list(BatchListParams.none(), requestOptions)
@@ -209,7 +209,7 @@ interface BatchService {
         fun cancel(batchId: String): HttpResponseFor<Batch> =
             cancel(batchId, BatchCancelParams.none())
 
-        /** @see [cancel] */
+        /** @see cancel */
         @MustBeClosed
         fun cancel(
             batchId: String,
@@ -218,26 +218,26 @@ interface BatchService {
         ): HttpResponseFor<Batch> =
             cancel(params.toBuilder().batchId(batchId).build(), requestOptions)
 
-        /** @see [cancel] */
+        /** @see cancel */
         @MustBeClosed
         fun cancel(
             batchId: String,
             params: BatchCancelParams = BatchCancelParams.none(),
         ): HttpResponseFor<Batch> = cancel(batchId, params, RequestOptions.none())
 
-        /** @see [cancel] */
+        /** @see cancel */
         @MustBeClosed
         fun cancel(
             params: BatchCancelParams,
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<Batch>
 
-        /** @see [cancel] */
+        /** @see cancel */
         @MustBeClosed
         fun cancel(params: BatchCancelParams): HttpResponseFor<Batch> =
             cancel(params, RequestOptions.none())
 
-        /** @see [cancel] */
+        /** @see cancel */
         @MustBeClosed
         fun cancel(batchId: String, requestOptions: RequestOptions): HttpResponseFor<Batch> =
             cancel(batchId, BatchCancelParams.none(), requestOptions)

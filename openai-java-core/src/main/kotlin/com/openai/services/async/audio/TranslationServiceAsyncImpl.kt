@@ -66,11 +66,7 @@ class TranslationServiceAsyncImpl internal constructor(private val clientOptions
                     .addPathSegments("audio", "translations")
                     .body(multipartFormData(clientOptions.jsonMapper, params._body()))
                     .build()
-                    .prepareAsync(
-                        clientOptions,
-                        params,
-                        deploymentModel = params.model().toString(),
-                    )
+                    .prepareAsync(clientOptions, params)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             return request
                 .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }

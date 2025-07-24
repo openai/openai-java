@@ -31,7 +31,7 @@ interface ModerationServiceAsync {
     fun create(params: ModerationCreateParams): CompletableFuture<ModerationCreateResponse> =
         create(params, RequestOptions.none())
 
-    /** @see [create] */
+    /** @see create */
     fun create(
         params: ModerationCreateParams,
         requestOptions: RequestOptions = RequestOptions.none(),
@@ -61,7 +61,7 @@ interface ModerationServiceAsync {
         ): CompletableFuture<HttpResponseFor<ModerationCreateResponse>> =
             create(params, RequestOptions.none())
 
-        /** @see [create] */
+        /** @see create */
         fun create(
             params: ModerationCreateParams,
             requestOptions: RequestOptions = RequestOptions.none(),

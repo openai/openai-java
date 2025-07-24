@@ -127,7 +127,7 @@ class ChatCompletionServiceImpl internal constructor(private val clientOptions: 
                     .addPathSegments("chat", "completions")
                     .body(json(clientOptions.jsonMapper, params._body()))
                     .build()
-                    .prepare(clientOptions, params, params.model().toString())
+                    .prepare(clientOptions, params)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             val response = clientOptions.httpClient.execute(request, requestOptions)
             return errorHandler.handle(response).parseable {
@@ -164,7 +164,7 @@ class ChatCompletionServiceImpl internal constructor(private val clientOptions: 
                         )
                     )
                     .build()
-                    .prepare(clientOptions, params, params.model().toString())
+                    .prepare(clientOptions, params)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             val response = clientOptions.httpClient.execute(request, requestOptions)
             return errorHandler.handle(response).parseable {
@@ -196,7 +196,7 @@ class ChatCompletionServiceImpl internal constructor(private val clientOptions: 
                     .baseUrl(clientOptions.baseUrl())
                     .addPathSegments("chat", "completions", params._pathParam(0))
                     .build()
-                    .prepare(clientOptions, params, null)
+                    .prepare(clientOptions, params)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             val response = clientOptions.httpClient.execute(request, requestOptions)
             return errorHandler.handle(response).parseable {
@@ -227,7 +227,7 @@ class ChatCompletionServiceImpl internal constructor(private val clientOptions: 
                     .addPathSegments("chat", "completions", params._pathParam(0))
                     .body(json(clientOptions.jsonMapper, params._body()))
                     .build()
-                    .prepare(clientOptions, params, null)
+                    .prepare(clientOptions, params)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             val response = clientOptions.httpClient.execute(request, requestOptions)
             return errorHandler.handle(response).parseable {
@@ -254,11 +254,7 @@ class ChatCompletionServiceImpl internal constructor(private val clientOptions: 
                     .baseUrl(clientOptions.baseUrl())
                     .addPathSegments("chat", "completions")
                     .build()
-                    .prepare(
-                        clientOptions,
-                        params,
-                        deploymentModel = params.model().map { it.toString() }.getOrNull(),
-                    )
+                    .prepare(clientOptions, params)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             val response = clientOptions.httpClient.execute(request, requestOptions)
             return errorHandler.handle(response).parseable {
@@ -296,7 +292,7 @@ class ChatCompletionServiceImpl internal constructor(private val clientOptions: 
                     .addPathSegments("chat", "completions", params._pathParam(0))
                     .apply { params._body().ifPresent { body(json(clientOptions.jsonMapper, it)) } }
                     .build()
-                    .prepare(clientOptions, params, null)
+                    .prepare(clientOptions, params)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             val response = clientOptions.httpClient.execute(request, requestOptions)
             return errorHandler.handle(response).parseable {

@@ -97,11 +97,7 @@ class TranscriptionServiceAsyncImpl internal constructor(private val clientOptio
                     .addPathSegments("audio", "transcriptions")
                     .body(multipartFormData(clientOptions.jsonMapper, params._body()))
                     .build()
-                    .prepareAsync(
-                        clientOptions,
-                        params,
-                        deploymentModel = params.model().toString(),
-                    )
+                    .prepareAsync(clientOptions, params)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             return request
                 .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
@@ -141,11 +137,7 @@ class TranscriptionServiceAsyncImpl internal constructor(private val clientOptio
                         )
                     )
                     .build()
-                    .prepareAsync(
-                        clientOptions,
-                        params,
-                        deploymentModel = params.model().toString(),
-                    )
+                    .prepareAsync(clientOptions, params)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             return request
                 .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }

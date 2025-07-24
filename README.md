@@ -2,8 +2,8 @@
 
 <!-- x-release-please-start-version -->
 
-[![Maven Central](https://img.shields.io/maven-central/v/com.openai/openai-java)](https://central.sonatype.com/artifact/com.openai/openai-java/2.19.0)
-[![javadoc](https://javadoc.io/badge2/com.openai/openai-java/2.19.0/javadoc.svg)](https://javadoc.io/doc/com.openai/openai-java/2.19.0)
+[![Maven Central](https://img.shields.io/maven-central/v/com.openai/openai-java)](https://central.sonatype.com/artifact/com.openai/openai-java/2.19.1)
+[![javadoc](https://javadoc.io/badge2/com.openai/openai-java/2.19.1/javadoc.svg)](https://javadoc.io/doc/com.openai/openai-java/2.19.1)
 
 <!-- x-release-please-end -->
 
@@ -11,7 +11,7 @@ The OpenAI Java SDK provides convenient access to the [OpenAI REST API](https://
 
 <!-- x-release-please-start-version -->
 
-The REST API documentation can be found on [platform.openai.com](https://platform.openai.com/docs). Javadocs are available on [javadoc.io](https://javadoc.io/doc/com.openai/openai-java/2.19.0).
+The REST API documentation can be found on [platform.openai.com](https://platform.openai.com/docs). Javadocs are available on [javadoc.io](https://javadoc.io/doc/com.openai/openai-java/2.19.1).
 
 <!-- x-release-please-end -->
 
@@ -24,7 +24,7 @@ The REST API documentation can be found on [platform.openai.com](https://platfor
 ### Gradle
 
 ```kotlin
-implementation("com.openai:openai-java:2.19.0")
+implementation("com.openai:openai-java:2.19.1")
 ```
 
 ### Maven
@@ -33,7 +33,7 @@ implementation("com.openai:openai-java:2.19.0")
 <dependency>
   <groupId>com.openai</groupId>
   <artifactId>openai-java</artifactId>
-  <version>2.19.0</version>
+  <version>2.19.1</version>
 </dependency>
 ```
 
@@ -1321,7 +1321,7 @@ If you're using Spring Boot, then you can use the SDK's [Spring Boot starter](ht
 #### Gradle
 
 ```kotlin
-implementation("com.openai:openai-java-spring-boot-starter:2.19.0")
+implementation("com.openai:openai-java-spring-boot-starter:2.19.1")
 ```
 
 #### Maven
@@ -1330,7 +1330,7 @@ implementation("com.openai:openai-java-spring-boot-starter:2.19.0")
 <dependency>
   <groupId>com.openai</groupId>
   <artifactId>openai-java-spring-boot-starter</artifactId>
-  <version>2.19.0</version>
+  <version>2.19.1</version>
 </dependency>
 ```
 
@@ -1415,7 +1415,7 @@ See the complete Azure OpenAI example in the [`openai-java-example`](openai-java
 
 ### Retries
 
-The SDK automatically retries 2 times by default, with a short exponential backoff.
+The SDK automatically retries 2 times by default, with a short exponential backoff between requests.
 
 Only the following error types are retried:
 
@@ -1425,7 +1425,7 @@ Only the following error types are retried:
 - 429 Rate Limit
 - 5xx Internal
 
-The API may also explicitly instruct the SDK to retry or not retry a response.
+The API may also explicitly instruct the SDK to retry or not retry a request.
 
 To set a custom number of retries, configure the client using the `maxRetries` method:
 

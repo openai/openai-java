@@ -10,7 +10,7 @@ import com.openai.services.blocking.finetuning.checkpoints.PermissionService
 import java.util.Objects
 import kotlin.jvm.optionals.getOrNull
 
-/** @see [PermissionService.create] */
+/** @see PermissionService.create */
 class PermissionCreatePage
 private constructor(
     private val service: PermissionService,
@@ -21,12 +21,12 @@ private constructor(
     /**
      * Delegates to [PermissionCreatePageResponse], but gracefully handles missing data.
      *
-     * @see [PermissionCreatePageResponse.data]
+     * @see PermissionCreatePageResponse.data
      */
     fun data(): List<PermissionCreateResponse> =
         response._data().getOptional("data").getOrNull() ?: emptyList()
 
-    /** @see [PermissionCreatePageResponse.object_] */
+    /** @see PermissionCreatePageResponse.object\_ */
     fun object_(): JsonValue = response._object_()
 
     override fun items(): List<PermissionCreateResponse> = data()

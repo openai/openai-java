@@ -43,7 +43,7 @@ interface RunServiceAsync {
     fun create(evalId: String, params: RunCreateParams): CompletableFuture<RunCreateResponse> =
         create(evalId, params, RequestOptions.none())
 
-    /** @see [create] */
+    /** @see create */
     fun create(
         evalId: String,
         params: RunCreateParams,
@@ -51,11 +51,11 @@ interface RunServiceAsync {
     ): CompletableFuture<RunCreateResponse> =
         create(params.toBuilder().evalId(evalId).build(), requestOptions)
 
-    /** @see [create] */
+    /** @see create */
     fun create(params: RunCreateParams): CompletableFuture<RunCreateResponse> =
         create(params, RequestOptions.none())
 
-    /** @see [create] */
+    /** @see create */
     fun create(
         params: RunCreateParams,
         requestOptions: RequestOptions = RequestOptions.none(),
@@ -65,7 +65,7 @@ interface RunServiceAsync {
     fun retrieve(runId: String, params: RunRetrieveParams): CompletableFuture<RunRetrieveResponse> =
         retrieve(runId, params, RequestOptions.none())
 
-    /** @see [retrieve] */
+    /** @see retrieve */
     fun retrieve(
         runId: String,
         params: RunRetrieveParams,
@@ -73,11 +73,11 @@ interface RunServiceAsync {
     ): CompletableFuture<RunRetrieveResponse> =
         retrieve(params.toBuilder().runId(runId).build(), requestOptions)
 
-    /** @see [retrieve] */
+    /** @see retrieve */
     fun retrieve(params: RunRetrieveParams): CompletableFuture<RunRetrieveResponse> =
         retrieve(params, RequestOptions.none())
 
-    /** @see [retrieve] */
+    /** @see retrieve */
     fun retrieve(
         params: RunRetrieveParams,
         requestOptions: RequestOptions = RequestOptions.none(),
@@ -87,7 +87,7 @@ interface RunServiceAsync {
     fun list(evalId: String): CompletableFuture<RunListPageAsync> =
         list(evalId, RunListParams.none())
 
-    /** @see [list] */
+    /** @see list */
     fun list(
         evalId: String,
         params: RunListParams = RunListParams.none(),
@@ -95,23 +95,23 @@ interface RunServiceAsync {
     ): CompletableFuture<RunListPageAsync> =
         list(params.toBuilder().evalId(evalId).build(), requestOptions)
 
-    /** @see [list] */
+    /** @see list */
     fun list(
         evalId: String,
         params: RunListParams = RunListParams.none(),
     ): CompletableFuture<RunListPageAsync> = list(evalId, params, RequestOptions.none())
 
-    /** @see [list] */
+    /** @see list */
     fun list(
         params: RunListParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): CompletableFuture<RunListPageAsync>
 
-    /** @see [list] */
+    /** @see list */
     fun list(params: RunListParams): CompletableFuture<RunListPageAsync> =
         list(params, RequestOptions.none())
 
-    /** @see [list] */
+    /** @see list */
     fun list(evalId: String, requestOptions: RequestOptions): CompletableFuture<RunListPageAsync> =
         list(evalId, RunListParams.none(), requestOptions)
 
@@ -119,7 +119,7 @@ interface RunServiceAsync {
     fun delete(runId: String, params: RunDeleteParams): CompletableFuture<RunDeleteResponse> =
         delete(runId, params, RequestOptions.none())
 
-    /** @see [delete] */
+    /** @see delete */
     fun delete(
         runId: String,
         params: RunDeleteParams,
@@ -127,11 +127,11 @@ interface RunServiceAsync {
     ): CompletableFuture<RunDeleteResponse> =
         delete(params.toBuilder().runId(runId).build(), requestOptions)
 
-    /** @see [delete] */
+    /** @see delete */
     fun delete(params: RunDeleteParams): CompletableFuture<RunDeleteResponse> =
         delete(params, RequestOptions.none())
 
-    /** @see [delete] */
+    /** @see delete */
     fun delete(
         params: RunDeleteParams,
         requestOptions: RequestOptions = RequestOptions.none(),
@@ -141,7 +141,7 @@ interface RunServiceAsync {
     fun cancel(runId: String, params: RunCancelParams): CompletableFuture<RunCancelResponse> =
         cancel(runId, params, RequestOptions.none())
 
-    /** @see [cancel] */
+    /** @see cancel */
     fun cancel(
         runId: String,
         params: RunCancelParams,
@@ -149,11 +149,11 @@ interface RunServiceAsync {
     ): CompletableFuture<RunCancelResponse> =
         cancel(params.toBuilder().runId(runId).build(), requestOptions)
 
-    /** @see [cancel] */
+    /** @see cancel */
     fun cancel(params: RunCancelParams): CompletableFuture<RunCancelResponse> =
         cancel(params, RequestOptions.none())
 
-    /** @see [cancel] */
+    /** @see cancel */
     fun cancel(
         params: RunCancelParams,
         requestOptions: RequestOptions = RequestOptions.none(),
@@ -181,7 +181,7 @@ interface RunServiceAsync {
         ): CompletableFuture<HttpResponseFor<RunCreateResponse>> =
             create(evalId, params, RequestOptions.none())
 
-        /** @see [create] */
+        /** @see create */
         fun create(
             evalId: String,
             params: RunCreateParams,
@@ -189,11 +189,11 @@ interface RunServiceAsync {
         ): CompletableFuture<HttpResponseFor<RunCreateResponse>> =
             create(params.toBuilder().evalId(evalId).build(), requestOptions)
 
-        /** @see [create] */
+        /** @see create */
         fun create(params: RunCreateParams): CompletableFuture<HttpResponseFor<RunCreateResponse>> =
             create(params, RequestOptions.none())
 
-        /** @see [create] */
+        /** @see create */
         fun create(
             params: RunCreateParams,
             requestOptions: RequestOptions = RequestOptions.none(),
@@ -209,7 +209,7 @@ interface RunServiceAsync {
         ): CompletableFuture<HttpResponseFor<RunRetrieveResponse>> =
             retrieve(runId, params, RequestOptions.none())
 
-        /** @see [retrieve] */
+        /** @see retrieve */
         fun retrieve(
             runId: String,
             params: RunRetrieveParams,
@@ -217,13 +217,13 @@ interface RunServiceAsync {
         ): CompletableFuture<HttpResponseFor<RunRetrieveResponse>> =
             retrieve(params.toBuilder().runId(runId).build(), requestOptions)
 
-        /** @see [retrieve] */
+        /** @see retrieve */
         fun retrieve(
             params: RunRetrieveParams
         ): CompletableFuture<HttpResponseFor<RunRetrieveResponse>> =
             retrieve(params, RequestOptions.none())
 
-        /** @see [retrieve] */
+        /** @see retrieve */
         fun retrieve(
             params: RunRetrieveParams,
             requestOptions: RequestOptions = RequestOptions.none(),
@@ -236,7 +236,7 @@ interface RunServiceAsync {
         fun list(evalId: String): CompletableFuture<HttpResponseFor<RunListPageAsync>> =
             list(evalId, RunListParams.none())
 
-        /** @see [list] */
+        /** @see list */
         fun list(
             evalId: String,
             params: RunListParams = RunListParams.none(),
@@ -244,24 +244,24 @@ interface RunServiceAsync {
         ): CompletableFuture<HttpResponseFor<RunListPageAsync>> =
             list(params.toBuilder().evalId(evalId).build(), requestOptions)
 
-        /** @see [list] */
+        /** @see list */
         fun list(
             evalId: String,
             params: RunListParams = RunListParams.none(),
         ): CompletableFuture<HttpResponseFor<RunListPageAsync>> =
             list(evalId, params, RequestOptions.none())
 
-        /** @see [list] */
+        /** @see list */
         fun list(
             params: RunListParams,
             requestOptions: RequestOptions = RequestOptions.none(),
         ): CompletableFuture<HttpResponseFor<RunListPageAsync>>
 
-        /** @see [list] */
+        /** @see list */
         fun list(params: RunListParams): CompletableFuture<HttpResponseFor<RunListPageAsync>> =
             list(params, RequestOptions.none())
 
-        /** @see [list] */
+        /** @see list */
         fun list(
             evalId: String,
             requestOptions: RequestOptions,
@@ -278,7 +278,7 @@ interface RunServiceAsync {
         ): CompletableFuture<HttpResponseFor<RunDeleteResponse>> =
             delete(runId, params, RequestOptions.none())
 
-        /** @see [delete] */
+        /** @see delete */
         fun delete(
             runId: String,
             params: RunDeleteParams,
@@ -286,11 +286,11 @@ interface RunServiceAsync {
         ): CompletableFuture<HttpResponseFor<RunDeleteResponse>> =
             delete(params.toBuilder().runId(runId).build(), requestOptions)
 
-        /** @see [delete] */
+        /** @see delete */
         fun delete(params: RunDeleteParams): CompletableFuture<HttpResponseFor<RunDeleteResponse>> =
             delete(params, RequestOptions.none())
 
-        /** @see [delete] */
+        /** @see delete */
         fun delete(
             params: RunDeleteParams,
             requestOptions: RequestOptions = RequestOptions.none(),
@@ -306,7 +306,7 @@ interface RunServiceAsync {
         ): CompletableFuture<HttpResponseFor<RunCancelResponse>> =
             cancel(runId, params, RequestOptions.none())
 
-        /** @see [cancel] */
+        /** @see cancel */
         fun cancel(
             runId: String,
             params: RunCancelParams,
@@ -314,11 +314,11 @@ interface RunServiceAsync {
         ): CompletableFuture<HttpResponseFor<RunCancelResponse>> =
             cancel(params.toBuilder().runId(runId).build(), requestOptions)
 
-        /** @see [cancel] */
+        /** @see cancel */
         fun cancel(params: RunCancelParams): CompletableFuture<HttpResponseFor<RunCancelResponse>> =
             cancel(params, RequestOptions.none())
 
-        /** @see [cancel] */
+        /** @see cancel */
         fun cancel(
             params: RunCancelParams,
             requestOptions: RequestOptions = RequestOptions.none(),

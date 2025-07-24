@@ -39,7 +39,7 @@ interface PartServiceAsync {
     fun create(uploadId: String, params: PartCreateParams): CompletableFuture<UploadPart> =
         create(uploadId, params, RequestOptions.none())
 
-    /** @see [create] */
+    /** @see create */
     fun create(
         uploadId: String,
         params: PartCreateParams,
@@ -47,11 +47,11 @@ interface PartServiceAsync {
     ): CompletableFuture<UploadPart> =
         create(params.toBuilder().uploadId(uploadId).build(), requestOptions)
 
-    /** @see [create] */
+    /** @see create */
     fun create(params: PartCreateParams): CompletableFuture<UploadPart> =
         create(params, RequestOptions.none())
 
-    /** @see [create] */
+    /** @see create */
     fun create(
         params: PartCreateParams,
         requestOptions: RequestOptions = RequestOptions.none(),
@@ -77,7 +77,7 @@ interface PartServiceAsync {
         ): CompletableFuture<HttpResponseFor<UploadPart>> =
             create(uploadId, params, RequestOptions.none())
 
-        /** @see [create] */
+        /** @see create */
         fun create(
             uploadId: String,
             params: PartCreateParams,
@@ -85,11 +85,11 @@ interface PartServiceAsync {
         ): CompletableFuture<HttpResponseFor<UploadPart>> =
             create(params.toBuilder().uploadId(uploadId).build(), requestOptions)
 
-        /** @see [create] */
+        /** @see create */
         fun create(params: PartCreateParams): CompletableFuture<HttpResponseFor<UploadPart>> =
             create(params, RequestOptions.none())
 
-        /** @see [create] */
+        /** @see create */
         fun create(
             params: PartCreateParams,
             requestOptions: RequestOptions = RequestOptions.none(),

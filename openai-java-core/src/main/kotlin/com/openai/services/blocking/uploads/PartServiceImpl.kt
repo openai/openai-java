@@ -66,7 +66,7 @@ class PartServiceImpl internal constructor(private val clientOptions: ClientOpti
                     .addPathSegments("uploads", params._pathParam(0), "parts")
                     .body(multipartFormData(clientOptions.jsonMapper, params._body()))
                     .build()
-                    .prepare(clientOptions, params, deploymentModel = null)
+                    .prepare(clientOptions, params)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             val response = clientOptions.httpClient.execute(request, requestOptions)
             return errorHandler.handle(response).parseable {

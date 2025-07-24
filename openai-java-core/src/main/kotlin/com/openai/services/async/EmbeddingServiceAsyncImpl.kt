@@ -66,7 +66,7 @@ class EmbeddingServiceAsyncImpl internal constructor(private val clientOptions: 
                     .addPathSegments("embeddings")
                     .body(json(clientOptions.jsonMapper, params._body()))
                     .build()
-                    .prepareAsync(clientOptions, params, params.model().toString())
+                    .prepareAsync(clientOptions, params)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             return request
                 .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }

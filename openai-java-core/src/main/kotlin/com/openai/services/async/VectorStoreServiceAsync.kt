@@ -41,18 +41,18 @@ interface VectorStoreServiceAsync {
     /** Create a vector store. */
     fun create(): CompletableFuture<VectorStore> = create(VectorStoreCreateParams.none())
 
-    /** @see [create] */
+    /** @see create */
     fun create(
         params: VectorStoreCreateParams = VectorStoreCreateParams.none(),
         requestOptions: RequestOptions = RequestOptions.none(),
     ): CompletableFuture<VectorStore>
 
-    /** @see [create] */
+    /** @see create */
     fun create(
         params: VectorStoreCreateParams = VectorStoreCreateParams.none()
     ): CompletableFuture<VectorStore> = create(params, RequestOptions.none())
 
-    /** @see [create] */
+    /** @see create */
     fun create(requestOptions: RequestOptions): CompletableFuture<VectorStore> =
         create(VectorStoreCreateParams.none(), requestOptions)
 
@@ -60,7 +60,7 @@ interface VectorStoreServiceAsync {
     fun retrieve(vectorStoreId: String): CompletableFuture<VectorStore> =
         retrieve(vectorStoreId, VectorStoreRetrieveParams.none())
 
-    /** @see [retrieve] */
+    /** @see retrieve */
     fun retrieve(
         vectorStoreId: String,
         params: VectorStoreRetrieveParams = VectorStoreRetrieveParams.none(),
@@ -68,23 +68,23 @@ interface VectorStoreServiceAsync {
     ): CompletableFuture<VectorStore> =
         retrieve(params.toBuilder().vectorStoreId(vectorStoreId).build(), requestOptions)
 
-    /** @see [retrieve] */
+    /** @see retrieve */
     fun retrieve(
         vectorStoreId: String,
         params: VectorStoreRetrieveParams = VectorStoreRetrieveParams.none(),
     ): CompletableFuture<VectorStore> = retrieve(vectorStoreId, params, RequestOptions.none())
 
-    /** @see [retrieve] */
+    /** @see retrieve */
     fun retrieve(
         params: VectorStoreRetrieveParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): CompletableFuture<VectorStore>
 
-    /** @see [retrieve] */
+    /** @see retrieve */
     fun retrieve(params: VectorStoreRetrieveParams): CompletableFuture<VectorStore> =
         retrieve(params, RequestOptions.none())
 
-    /** @see [retrieve] */
+    /** @see retrieve */
     fun retrieve(
         vectorStoreId: String,
         requestOptions: RequestOptions,
@@ -95,7 +95,7 @@ interface VectorStoreServiceAsync {
     fun update(vectorStoreId: String): CompletableFuture<VectorStore> =
         update(vectorStoreId, VectorStoreUpdateParams.none())
 
-    /** @see [update] */
+    /** @see update */
     fun update(
         vectorStoreId: String,
         params: VectorStoreUpdateParams = VectorStoreUpdateParams.none(),
@@ -103,23 +103,23 @@ interface VectorStoreServiceAsync {
     ): CompletableFuture<VectorStore> =
         update(params.toBuilder().vectorStoreId(vectorStoreId).build(), requestOptions)
 
-    /** @see [update] */
+    /** @see update */
     fun update(
         vectorStoreId: String,
         params: VectorStoreUpdateParams = VectorStoreUpdateParams.none(),
     ): CompletableFuture<VectorStore> = update(vectorStoreId, params, RequestOptions.none())
 
-    /** @see [update] */
+    /** @see update */
     fun update(
         params: VectorStoreUpdateParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): CompletableFuture<VectorStore>
 
-    /** @see [update] */
+    /** @see update */
     fun update(params: VectorStoreUpdateParams): CompletableFuture<VectorStore> =
         update(params, RequestOptions.none())
 
-    /** @see [update] */
+    /** @see update */
     fun update(
         vectorStoreId: String,
         requestOptions: RequestOptions,
@@ -129,18 +129,18 @@ interface VectorStoreServiceAsync {
     /** Returns a list of vector stores. */
     fun list(): CompletableFuture<VectorStoreListPageAsync> = list(VectorStoreListParams.none())
 
-    /** @see [list] */
+    /** @see list */
     fun list(
         params: VectorStoreListParams = VectorStoreListParams.none(),
         requestOptions: RequestOptions = RequestOptions.none(),
     ): CompletableFuture<VectorStoreListPageAsync>
 
-    /** @see [list] */
+    /** @see list */
     fun list(
         params: VectorStoreListParams = VectorStoreListParams.none()
     ): CompletableFuture<VectorStoreListPageAsync> = list(params, RequestOptions.none())
 
-    /** @see [list] */
+    /** @see list */
     fun list(requestOptions: RequestOptions): CompletableFuture<VectorStoreListPageAsync> =
         list(VectorStoreListParams.none(), requestOptions)
 
@@ -148,7 +148,7 @@ interface VectorStoreServiceAsync {
     fun delete(vectorStoreId: String): CompletableFuture<VectorStoreDeleted> =
         delete(vectorStoreId, VectorStoreDeleteParams.none())
 
-    /** @see [delete] */
+    /** @see delete */
     fun delete(
         vectorStoreId: String,
         params: VectorStoreDeleteParams = VectorStoreDeleteParams.none(),
@@ -156,23 +156,23 @@ interface VectorStoreServiceAsync {
     ): CompletableFuture<VectorStoreDeleted> =
         delete(params.toBuilder().vectorStoreId(vectorStoreId).build(), requestOptions)
 
-    /** @see [delete] */
+    /** @see delete */
     fun delete(
         vectorStoreId: String,
         params: VectorStoreDeleteParams = VectorStoreDeleteParams.none(),
     ): CompletableFuture<VectorStoreDeleted> = delete(vectorStoreId, params, RequestOptions.none())
 
-    /** @see [delete] */
+    /** @see delete */
     fun delete(
         params: VectorStoreDeleteParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): CompletableFuture<VectorStoreDeleted>
 
-    /** @see [delete] */
+    /** @see delete */
     fun delete(params: VectorStoreDeleteParams): CompletableFuture<VectorStoreDeleted> =
         delete(params, RequestOptions.none())
 
-    /** @see [delete] */
+    /** @see delete */
     fun delete(
         vectorStoreId: String,
         requestOptions: RequestOptions,
@@ -186,7 +186,7 @@ interface VectorStoreServiceAsync {
     ): CompletableFuture<VectorStoreSearchPageAsync> =
         search(vectorStoreId, params, RequestOptions.none())
 
-    /** @see [search] */
+    /** @see search */
     fun search(
         vectorStoreId: String,
         params: VectorStoreSearchParams,
@@ -194,11 +194,11 @@ interface VectorStoreServiceAsync {
     ): CompletableFuture<VectorStoreSearchPageAsync> =
         search(params.toBuilder().vectorStoreId(vectorStoreId).build(), requestOptions)
 
-    /** @see [search] */
+    /** @see search */
     fun search(params: VectorStoreSearchParams): CompletableFuture<VectorStoreSearchPageAsync> =
         search(params, RequestOptions.none())
 
-    /** @see [search] */
+    /** @see search */
     fun search(
         params: VectorStoreSearchParams,
         requestOptions: RequestOptions = RequestOptions.none(),
@@ -230,18 +230,18 @@ interface VectorStoreServiceAsync {
         fun create(): CompletableFuture<HttpResponseFor<VectorStore>> =
             create(VectorStoreCreateParams.none())
 
-        /** @see [create] */
+        /** @see create */
         fun create(
             params: VectorStoreCreateParams = VectorStoreCreateParams.none(),
             requestOptions: RequestOptions = RequestOptions.none(),
         ): CompletableFuture<HttpResponseFor<VectorStore>>
 
-        /** @see [create] */
+        /** @see create */
         fun create(
             params: VectorStoreCreateParams = VectorStoreCreateParams.none()
         ): CompletableFuture<HttpResponseFor<VectorStore>> = create(params, RequestOptions.none())
 
-        /** @see [create] */
+        /** @see create */
         fun create(
             requestOptions: RequestOptions
         ): CompletableFuture<HttpResponseFor<VectorStore>> =
@@ -254,7 +254,7 @@ interface VectorStoreServiceAsync {
         fun retrieve(vectorStoreId: String): CompletableFuture<HttpResponseFor<VectorStore>> =
             retrieve(vectorStoreId, VectorStoreRetrieveParams.none())
 
-        /** @see [retrieve] */
+        /** @see retrieve */
         fun retrieve(
             vectorStoreId: String,
             params: VectorStoreRetrieveParams = VectorStoreRetrieveParams.none(),
@@ -262,25 +262,25 @@ interface VectorStoreServiceAsync {
         ): CompletableFuture<HttpResponseFor<VectorStore>> =
             retrieve(params.toBuilder().vectorStoreId(vectorStoreId).build(), requestOptions)
 
-        /** @see [retrieve] */
+        /** @see retrieve */
         fun retrieve(
             vectorStoreId: String,
             params: VectorStoreRetrieveParams = VectorStoreRetrieveParams.none(),
         ): CompletableFuture<HttpResponseFor<VectorStore>> =
             retrieve(vectorStoreId, params, RequestOptions.none())
 
-        /** @see [retrieve] */
+        /** @see retrieve */
         fun retrieve(
             params: VectorStoreRetrieveParams,
             requestOptions: RequestOptions = RequestOptions.none(),
         ): CompletableFuture<HttpResponseFor<VectorStore>>
 
-        /** @see [retrieve] */
+        /** @see retrieve */
         fun retrieve(
             params: VectorStoreRetrieveParams
         ): CompletableFuture<HttpResponseFor<VectorStore>> = retrieve(params, RequestOptions.none())
 
-        /** @see [retrieve] */
+        /** @see retrieve */
         fun retrieve(
             vectorStoreId: String,
             requestOptions: RequestOptions,
@@ -294,7 +294,7 @@ interface VectorStoreServiceAsync {
         fun update(vectorStoreId: String): CompletableFuture<HttpResponseFor<VectorStore>> =
             update(vectorStoreId, VectorStoreUpdateParams.none())
 
-        /** @see [update] */
+        /** @see update */
         fun update(
             vectorStoreId: String,
             params: VectorStoreUpdateParams = VectorStoreUpdateParams.none(),
@@ -302,25 +302,25 @@ interface VectorStoreServiceAsync {
         ): CompletableFuture<HttpResponseFor<VectorStore>> =
             update(params.toBuilder().vectorStoreId(vectorStoreId).build(), requestOptions)
 
-        /** @see [update] */
+        /** @see update */
         fun update(
             vectorStoreId: String,
             params: VectorStoreUpdateParams = VectorStoreUpdateParams.none(),
         ): CompletableFuture<HttpResponseFor<VectorStore>> =
             update(vectorStoreId, params, RequestOptions.none())
 
-        /** @see [update] */
+        /** @see update */
         fun update(
             params: VectorStoreUpdateParams,
             requestOptions: RequestOptions = RequestOptions.none(),
         ): CompletableFuture<HttpResponseFor<VectorStore>>
 
-        /** @see [update] */
+        /** @see update */
         fun update(
             params: VectorStoreUpdateParams
         ): CompletableFuture<HttpResponseFor<VectorStore>> = update(params, RequestOptions.none())
 
-        /** @see [update] */
+        /** @see update */
         fun update(
             vectorStoreId: String,
             requestOptions: RequestOptions,
@@ -334,19 +334,19 @@ interface VectorStoreServiceAsync {
         fun list(): CompletableFuture<HttpResponseFor<VectorStoreListPageAsync>> =
             list(VectorStoreListParams.none())
 
-        /** @see [list] */
+        /** @see list */
         fun list(
             params: VectorStoreListParams = VectorStoreListParams.none(),
             requestOptions: RequestOptions = RequestOptions.none(),
         ): CompletableFuture<HttpResponseFor<VectorStoreListPageAsync>>
 
-        /** @see [list] */
+        /** @see list */
         fun list(
             params: VectorStoreListParams = VectorStoreListParams.none()
         ): CompletableFuture<HttpResponseFor<VectorStoreListPageAsync>> =
             list(params, RequestOptions.none())
 
-        /** @see [list] */
+        /** @see list */
         fun list(
             requestOptions: RequestOptions
         ): CompletableFuture<HttpResponseFor<VectorStoreListPageAsync>> =
@@ -359,7 +359,7 @@ interface VectorStoreServiceAsync {
         fun delete(vectorStoreId: String): CompletableFuture<HttpResponseFor<VectorStoreDeleted>> =
             delete(vectorStoreId, VectorStoreDeleteParams.none())
 
-        /** @see [delete] */
+        /** @see delete */
         fun delete(
             vectorStoreId: String,
             params: VectorStoreDeleteParams = VectorStoreDeleteParams.none(),
@@ -367,26 +367,26 @@ interface VectorStoreServiceAsync {
         ): CompletableFuture<HttpResponseFor<VectorStoreDeleted>> =
             delete(params.toBuilder().vectorStoreId(vectorStoreId).build(), requestOptions)
 
-        /** @see [delete] */
+        /** @see delete */
         fun delete(
             vectorStoreId: String,
             params: VectorStoreDeleteParams = VectorStoreDeleteParams.none(),
         ): CompletableFuture<HttpResponseFor<VectorStoreDeleted>> =
             delete(vectorStoreId, params, RequestOptions.none())
 
-        /** @see [delete] */
+        /** @see delete */
         fun delete(
             params: VectorStoreDeleteParams,
             requestOptions: RequestOptions = RequestOptions.none(),
         ): CompletableFuture<HttpResponseFor<VectorStoreDeleted>>
 
-        /** @see [delete] */
+        /** @see delete */
         fun delete(
             params: VectorStoreDeleteParams
         ): CompletableFuture<HttpResponseFor<VectorStoreDeleted>> =
             delete(params, RequestOptions.none())
 
-        /** @see [delete] */
+        /** @see delete */
         fun delete(
             vectorStoreId: String,
             requestOptions: RequestOptions,
@@ -403,7 +403,7 @@ interface VectorStoreServiceAsync {
         ): CompletableFuture<HttpResponseFor<VectorStoreSearchPageAsync>> =
             search(vectorStoreId, params, RequestOptions.none())
 
-        /** @see [search] */
+        /** @see search */
         fun search(
             vectorStoreId: String,
             params: VectorStoreSearchParams,
@@ -411,13 +411,13 @@ interface VectorStoreServiceAsync {
         ): CompletableFuture<HttpResponseFor<VectorStoreSearchPageAsync>> =
             search(params.toBuilder().vectorStoreId(vectorStoreId).build(), requestOptions)
 
-        /** @see [search] */
+        /** @see search */
         fun search(
             params: VectorStoreSearchParams
         ): CompletableFuture<HttpResponseFor<VectorStoreSearchPageAsync>> =
             search(params, RequestOptions.none())
 
-        /** @see [search] */
+        /** @see search */
         fun search(
             params: VectorStoreSearchParams,
             requestOptions: RequestOptions = RequestOptions.none(),

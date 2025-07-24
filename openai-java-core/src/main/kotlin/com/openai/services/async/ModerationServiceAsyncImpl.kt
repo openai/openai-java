@@ -66,11 +66,7 @@ class ModerationServiceAsyncImpl internal constructor(private val clientOptions:
                     .addPathSegments("moderations")
                     .body(json(clientOptions.jsonMapper, params._body()))
                     .build()
-                    .prepareAsync(
-                        clientOptions,
-                        params,
-                        params.model().map { it.toString() }.orElse(null),
-                    )
+                    .prepareAsync(clientOptions, params)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             return request
                 .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }

@@ -33,7 +33,7 @@ interface ImageService {
     fun createVariation(params: ImageCreateVariationParams): ImagesResponse =
         createVariation(params, RequestOptions.none())
 
-    /** @see [createVariation] */
+    /** @see createVariation */
     fun createVariation(
         params: ImageCreateVariationParams,
         requestOptions: RequestOptions = RequestOptions.none(),
@@ -45,7 +45,7 @@ interface ImageService {
      */
     fun edit(params: ImageEditParams): ImagesResponse = edit(params, RequestOptions.none())
 
-    /** @see [edit] */
+    /** @see edit */
     fun edit(
         params: ImageEditParams,
         requestOptions: RequestOptions = RequestOptions.none(),
@@ -59,7 +59,7 @@ interface ImageService {
     fun editStreaming(params: ImageEditParams): StreamResponse<ImageEditStreamEvent> =
         editStreaming(params, RequestOptions.none())
 
-    /** @see [editStreaming] */
+    /** @see editStreaming */
     @MustBeClosed
     fun editStreaming(
         params: ImageEditParams,
@@ -73,7 +73,7 @@ interface ImageService {
     fun generate(params: ImageGenerateParams): ImagesResponse =
         generate(params, RequestOptions.none())
 
-    /** @see [generate] */
+    /** @see generate */
     fun generate(
         params: ImageGenerateParams,
         requestOptions: RequestOptions = RequestOptions.none(),
@@ -87,7 +87,7 @@ interface ImageService {
     fun generateStreaming(params: ImageGenerateParams): StreamResponse<ImageGenStreamEvent> =
         generateStreaming(params, RequestOptions.none())
 
-    /** @see [generateStreaming] */
+    /** @see generateStreaming */
     @MustBeClosed
     fun generateStreaming(
         params: ImageGenerateParams,
@@ -112,7 +112,7 @@ interface ImageService {
         fun createVariation(params: ImageCreateVariationParams): HttpResponseFor<ImagesResponse> =
             createVariation(params, RequestOptions.none())
 
-        /** @see [createVariation] */
+        /** @see createVariation */
         @MustBeClosed
         fun createVariation(
             params: ImageCreateVariationParams,
@@ -127,7 +127,7 @@ interface ImageService {
         fun edit(params: ImageEditParams): HttpResponseFor<ImagesResponse> =
             edit(params, RequestOptions.none())
 
-        /** @see [edit] */
+        /** @see edit */
         @MustBeClosed
         fun edit(
             params: ImageEditParams,
@@ -144,7 +144,7 @@ interface ImageService {
         ): HttpResponseFor<StreamResponse<ImageEditStreamEvent>> =
             editStreaming(params, RequestOptions.none())
 
-        /** @see [editStreaming] */
+        /** @see editStreaming */
         @MustBeClosed
         fun editStreaming(
             params: ImageEditParams,
@@ -159,7 +159,7 @@ interface ImageService {
         fun generate(params: ImageGenerateParams): HttpResponseFor<ImagesResponse> =
             generate(params, RequestOptions.none())
 
-        /** @see [generate] */
+        /** @see generate */
         @MustBeClosed
         fun generate(
             params: ImageGenerateParams,
@@ -176,7 +176,7 @@ interface ImageService {
         ): HttpResponseFor<StreamResponse<ImageGenStreamEvent>> =
             generateStreaming(params, RequestOptions.none())
 
-        /** @see [generateStreaming] */
+        /** @see generateStreaming */
         @MustBeClosed
         fun generateStreaming(
             params: ImageGenerateParams,

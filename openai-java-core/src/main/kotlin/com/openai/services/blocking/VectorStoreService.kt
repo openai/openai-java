@@ -41,17 +41,17 @@ interface VectorStoreService {
     /** Create a vector store. */
     fun create(): VectorStore = create(VectorStoreCreateParams.none())
 
-    /** @see [create] */
+    /** @see create */
     fun create(
         params: VectorStoreCreateParams = VectorStoreCreateParams.none(),
         requestOptions: RequestOptions = RequestOptions.none(),
     ): VectorStore
 
-    /** @see [create] */
+    /** @see create */
     fun create(params: VectorStoreCreateParams = VectorStoreCreateParams.none()): VectorStore =
         create(params, RequestOptions.none())
 
-    /** @see [create] */
+    /** @see create */
     fun create(requestOptions: RequestOptions): VectorStore =
         create(VectorStoreCreateParams.none(), requestOptions)
 
@@ -59,7 +59,7 @@ interface VectorStoreService {
     fun retrieve(vectorStoreId: String): VectorStore =
         retrieve(vectorStoreId, VectorStoreRetrieveParams.none())
 
-    /** @see [retrieve] */
+    /** @see retrieve */
     fun retrieve(
         vectorStoreId: String,
         params: VectorStoreRetrieveParams = VectorStoreRetrieveParams.none(),
@@ -67,23 +67,23 @@ interface VectorStoreService {
     ): VectorStore =
         retrieve(params.toBuilder().vectorStoreId(vectorStoreId).build(), requestOptions)
 
-    /** @see [retrieve] */
+    /** @see retrieve */
     fun retrieve(
         vectorStoreId: String,
         params: VectorStoreRetrieveParams = VectorStoreRetrieveParams.none(),
     ): VectorStore = retrieve(vectorStoreId, params, RequestOptions.none())
 
-    /** @see [retrieve] */
+    /** @see retrieve */
     fun retrieve(
         params: VectorStoreRetrieveParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): VectorStore
 
-    /** @see [retrieve] */
+    /** @see retrieve */
     fun retrieve(params: VectorStoreRetrieveParams): VectorStore =
         retrieve(params, RequestOptions.none())
 
-    /** @see [retrieve] */
+    /** @see retrieve */
     fun retrieve(vectorStoreId: String, requestOptions: RequestOptions): VectorStore =
         retrieve(vectorStoreId, VectorStoreRetrieveParams.none(), requestOptions)
 
@@ -91,46 +91,46 @@ interface VectorStoreService {
     fun update(vectorStoreId: String): VectorStore =
         update(vectorStoreId, VectorStoreUpdateParams.none())
 
-    /** @see [update] */
+    /** @see update */
     fun update(
         vectorStoreId: String,
         params: VectorStoreUpdateParams = VectorStoreUpdateParams.none(),
         requestOptions: RequestOptions = RequestOptions.none(),
     ): VectorStore = update(params.toBuilder().vectorStoreId(vectorStoreId).build(), requestOptions)
 
-    /** @see [update] */
+    /** @see update */
     fun update(
         vectorStoreId: String,
         params: VectorStoreUpdateParams = VectorStoreUpdateParams.none(),
     ): VectorStore = update(vectorStoreId, params, RequestOptions.none())
 
-    /** @see [update] */
+    /** @see update */
     fun update(
         params: VectorStoreUpdateParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): VectorStore
 
-    /** @see [update] */
+    /** @see update */
     fun update(params: VectorStoreUpdateParams): VectorStore = update(params, RequestOptions.none())
 
-    /** @see [update] */
+    /** @see update */
     fun update(vectorStoreId: String, requestOptions: RequestOptions): VectorStore =
         update(vectorStoreId, VectorStoreUpdateParams.none(), requestOptions)
 
     /** Returns a list of vector stores. */
     fun list(): VectorStoreListPage = list(VectorStoreListParams.none())
 
-    /** @see [list] */
+    /** @see list */
     fun list(
         params: VectorStoreListParams = VectorStoreListParams.none(),
         requestOptions: RequestOptions = RequestOptions.none(),
     ): VectorStoreListPage
 
-    /** @see [list] */
+    /** @see list */
     fun list(params: VectorStoreListParams = VectorStoreListParams.none()): VectorStoreListPage =
         list(params, RequestOptions.none())
 
-    /** @see [list] */
+    /** @see list */
     fun list(requestOptions: RequestOptions): VectorStoreListPage =
         list(VectorStoreListParams.none(), requestOptions)
 
@@ -138,7 +138,7 @@ interface VectorStoreService {
     fun delete(vectorStoreId: String): VectorStoreDeleted =
         delete(vectorStoreId, VectorStoreDeleteParams.none())
 
-    /** @see [delete] */
+    /** @see delete */
     fun delete(
         vectorStoreId: String,
         params: VectorStoreDeleteParams = VectorStoreDeleteParams.none(),
@@ -146,23 +146,23 @@ interface VectorStoreService {
     ): VectorStoreDeleted =
         delete(params.toBuilder().vectorStoreId(vectorStoreId).build(), requestOptions)
 
-    /** @see [delete] */
+    /** @see delete */
     fun delete(
         vectorStoreId: String,
         params: VectorStoreDeleteParams = VectorStoreDeleteParams.none(),
     ): VectorStoreDeleted = delete(vectorStoreId, params, RequestOptions.none())
 
-    /** @see [delete] */
+    /** @see delete */
     fun delete(
         params: VectorStoreDeleteParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): VectorStoreDeleted
 
-    /** @see [delete] */
+    /** @see delete */
     fun delete(params: VectorStoreDeleteParams): VectorStoreDeleted =
         delete(params, RequestOptions.none())
 
-    /** @see [delete] */
+    /** @see delete */
     fun delete(vectorStoreId: String, requestOptions: RequestOptions): VectorStoreDeleted =
         delete(vectorStoreId, VectorStoreDeleteParams.none(), requestOptions)
 
@@ -170,7 +170,7 @@ interface VectorStoreService {
     fun search(vectorStoreId: String, params: VectorStoreSearchParams): VectorStoreSearchPage =
         search(vectorStoreId, params, RequestOptions.none())
 
-    /** @see [search] */
+    /** @see search */
     fun search(
         vectorStoreId: String,
         params: VectorStoreSearchParams,
@@ -178,11 +178,11 @@ interface VectorStoreService {
     ): VectorStoreSearchPage =
         search(params.toBuilder().vectorStoreId(vectorStoreId).build(), requestOptions)
 
-    /** @see [search] */
+    /** @see search */
     fun search(params: VectorStoreSearchParams): VectorStoreSearchPage =
         search(params, RequestOptions.none())
 
-    /** @see [search] */
+    /** @see search */
     fun search(
         params: VectorStoreSearchParams,
         requestOptions: RequestOptions = RequestOptions.none(),
@@ -213,20 +213,20 @@ interface VectorStoreService {
         @MustBeClosed
         fun create(): HttpResponseFor<VectorStore> = create(VectorStoreCreateParams.none())
 
-        /** @see [create] */
+        /** @see create */
         @MustBeClosed
         fun create(
             params: VectorStoreCreateParams = VectorStoreCreateParams.none(),
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<VectorStore>
 
-        /** @see [create] */
+        /** @see create */
         @MustBeClosed
         fun create(
             params: VectorStoreCreateParams = VectorStoreCreateParams.none()
         ): HttpResponseFor<VectorStore> = create(params, RequestOptions.none())
 
-        /** @see [create] */
+        /** @see create */
         @MustBeClosed
         fun create(requestOptions: RequestOptions): HttpResponseFor<VectorStore> =
             create(VectorStoreCreateParams.none(), requestOptions)
@@ -239,7 +239,7 @@ interface VectorStoreService {
         fun retrieve(vectorStoreId: String): HttpResponseFor<VectorStore> =
             retrieve(vectorStoreId, VectorStoreRetrieveParams.none())
 
-        /** @see [retrieve] */
+        /** @see retrieve */
         @MustBeClosed
         fun retrieve(
             vectorStoreId: String,
@@ -248,26 +248,26 @@ interface VectorStoreService {
         ): HttpResponseFor<VectorStore> =
             retrieve(params.toBuilder().vectorStoreId(vectorStoreId).build(), requestOptions)
 
-        /** @see [retrieve] */
+        /** @see retrieve */
         @MustBeClosed
         fun retrieve(
             vectorStoreId: String,
             params: VectorStoreRetrieveParams = VectorStoreRetrieveParams.none(),
         ): HttpResponseFor<VectorStore> = retrieve(vectorStoreId, params, RequestOptions.none())
 
-        /** @see [retrieve] */
+        /** @see retrieve */
         @MustBeClosed
         fun retrieve(
             params: VectorStoreRetrieveParams,
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<VectorStore>
 
-        /** @see [retrieve] */
+        /** @see retrieve */
         @MustBeClosed
         fun retrieve(params: VectorStoreRetrieveParams): HttpResponseFor<VectorStore> =
             retrieve(params, RequestOptions.none())
 
-        /** @see [retrieve] */
+        /** @see retrieve */
         @MustBeClosed
         fun retrieve(
             vectorStoreId: String,
@@ -283,7 +283,7 @@ interface VectorStoreService {
         fun update(vectorStoreId: String): HttpResponseFor<VectorStore> =
             update(vectorStoreId, VectorStoreUpdateParams.none())
 
-        /** @see [update] */
+        /** @see update */
         @MustBeClosed
         fun update(
             vectorStoreId: String,
@@ -292,26 +292,26 @@ interface VectorStoreService {
         ): HttpResponseFor<VectorStore> =
             update(params.toBuilder().vectorStoreId(vectorStoreId).build(), requestOptions)
 
-        /** @see [update] */
+        /** @see update */
         @MustBeClosed
         fun update(
             vectorStoreId: String,
             params: VectorStoreUpdateParams = VectorStoreUpdateParams.none(),
         ): HttpResponseFor<VectorStore> = update(vectorStoreId, params, RequestOptions.none())
 
-        /** @see [update] */
+        /** @see update */
         @MustBeClosed
         fun update(
             params: VectorStoreUpdateParams,
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<VectorStore>
 
-        /** @see [update] */
+        /** @see update */
         @MustBeClosed
         fun update(params: VectorStoreUpdateParams): HttpResponseFor<VectorStore> =
             update(params, RequestOptions.none())
 
-        /** @see [update] */
+        /** @see update */
         @MustBeClosed
         fun update(
             vectorStoreId: String,
@@ -326,20 +326,20 @@ interface VectorStoreService {
         @MustBeClosed
         fun list(): HttpResponseFor<VectorStoreListPage> = list(VectorStoreListParams.none())
 
-        /** @see [list] */
+        /** @see list */
         @MustBeClosed
         fun list(
             params: VectorStoreListParams = VectorStoreListParams.none(),
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<VectorStoreListPage>
 
-        /** @see [list] */
+        /** @see list */
         @MustBeClosed
         fun list(
             params: VectorStoreListParams = VectorStoreListParams.none()
         ): HttpResponseFor<VectorStoreListPage> = list(params, RequestOptions.none())
 
-        /** @see [list] */
+        /** @see list */
         @MustBeClosed
         fun list(requestOptions: RequestOptions): HttpResponseFor<VectorStoreListPage> =
             list(VectorStoreListParams.none(), requestOptions)
@@ -352,7 +352,7 @@ interface VectorStoreService {
         fun delete(vectorStoreId: String): HttpResponseFor<VectorStoreDeleted> =
             delete(vectorStoreId, VectorStoreDeleteParams.none())
 
-        /** @see [delete] */
+        /** @see delete */
         @MustBeClosed
         fun delete(
             vectorStoreId: String,
@@ -361,7 +361,7 @@ interface VectorStoreService {
         ): HttpResponseFor<VectorStoreDeleted> =
             delete(params.toBuilder().vectorStoreId(vectorStoreId).build(), requestOptions)
 
-        /** @see [delete] */
+        /** @see delete */
         @MustBeClosed
         fun delete(
             vectorStoreId: String,
@@ -369,19 +369,19 @@ interface VectorStoreService {
         ): HttpResponseFor<VectorStoreDeleted> =
             delete(vectorStoreId, params, RequestOptions.none())
 
-        /** @see [delete] */
+        /** @see delete */
         @MustBeClosed
         fun delete(
             params: VectorStoreDeleteParams,
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<VectorStoreDeleted>
 
-        /** @see [delete] */
+        /** @see delete */
         @MustBeClosed
         fun delete(params: VectorStoreDeleteParams): HttpResponseFor<VectorStoreDeleted> =
             delete(params, RequestOptions.none())
 
-        /** @see [delete] */
+        /** @see delete */
         @MustBeClosed
         fun delete(
             vectorStoreId: String,
@@ -400,7 +400,7 @@ interface VectorStoreService {
         ): HttpResponseFor<VectorStoreSearchPage> =
             search(vectorStoreId, params, RequestOptions.none())
 
-        /** @see [search] */
+        /** @see search */
         @MustBeClosed
         fun search(
             vectorStoreId: String,
@@ -409,12 +409,12 @@ interface VectorStoreService {
         ): HttpResponseFor<VectorStoreSearchPage> =
             search(params.toBuilder().vectorStoreId(vectorStoreId).build(), requestOptions)
 
-        /** @see [search] */
+        /** @see search */
         @MustBeClosed
         fun search(params: VectorStoreSearchParams): HttpResponseFor<VectorStoreSearchPage> =
             search(params, RequestOptions.none())
 
-        /** @see [search] */
+        /** @see search */
         @MustBeClosed
         fun search(
             params: VectorStoreSearchParams,

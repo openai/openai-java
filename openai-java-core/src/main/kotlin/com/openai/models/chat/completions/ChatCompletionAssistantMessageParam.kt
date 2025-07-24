@@ -723,7 +723,7 @@ private constructor(
             @JvmStatic
             fun ofArrayOfContentParts(
                 arrayOfContentParts: List<ChatCompletionRequestAssistantMessageContentPart>
-            ) = Content(arrayOfContentParts = arrayOfContentParts)
+            ) = Content(arrayOfContentParts = arrayOfContentParts.toImmutable())
         }
 
         /**

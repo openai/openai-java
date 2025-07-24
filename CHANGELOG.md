@@ -1,5 +1,24 @@
 # Changelog
 
+## 2.19.1 (2025-07-24)
+
+Full Changelog: [v2.19.0...v2.19.1](https://github.com/openai/openai-java/compare/v2.19.0...v2.19.1)
+
+### Bug Fixes
+
+* **client:** accidental mutability of some classes ([8f377c4](https://github.com/openai/openai-java/commit/8f377c400550b7f99f8b91b59caf92c9274f174f))
+
+
+### Chores
+
+* **internal:** remove unnecessary `[...]` in `[@see](https://github.com/see)` ([ba7945f](https://github.com/openai/openai-java/commit/ba7945f92514c41c5ebb367272082d6658f06ad4))
+* **internal:** simplify handling of deployment models ([#556](https://github.com/openai/openai-java/issues/556)) ([2c7e661](https://github.com/openai/openai-java/commit/2c7e661877d07372ad7e54f788d665a459b18fba))
+
+
+### Documentation
+
+* more code comments ([2110f40](https://github.com/openai/openai-java/commit/2110f40666a81e08ad2f493773fe1f2ca4a562b2))
+
 ## 2.19.0 (2025-07-23)
 
 Full Changelog: [v2.18.2...v2.19.0](https://github.com/openai/openai-java/compare/v2.18.2...v2.19.0)

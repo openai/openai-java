@@ -39,17 +39,17 @@ interface PartService {
     fun create(uploadId: String, params: PartCreateParams): UploadPart =
         create(uploadId, params, RequestOptions.none())
 
-    /** @see [create] */
+    /** @see create */
     fun create(
         uploadId: String,
         params: PartCreateParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): UploadPart = create(params.toBuilder().uploadId(uploadId).build(), requestOptions)
 
-    /** @see [create] */
+    /** @see create */
     fun create(params: PartCreateParams): UploadPart = create(params, RequestOptions.none())
 
-    /** @see [create] */
+    /** @see create */
     fun create(
         params: PartCreateParams,
         requestOptions: RequestOptions = RequestOptions.none(),
@@ -73,7 +73,7 @@ interface PartService {
         fun create(uploadId: String, params: PartCreateParams): HttpResponseFor<UploadPart> =
             create(uploadId, params, RequestOptions.none())
 
-        /** @see [create] */
+        /** @see create */
         @MustBeClosed
         fun create(
             uploadId: String,
@@ -82,12 +82,12 @@ interface PartService {
         ): HttpResponseFor<UploadPart> =
             create(params.toBuilder().uploadId(uploadId).build(), requestOptions)
 
-        /** @see [create] */
+        /** @see create */
         @MustBeClosed
         fun create(params: PartCreateParams): HttpResponseFor<UploadPart> =
             create(params, RequestOptions.none())
 
-        /** @see [create] */
+        /** @see create */
         @MustBeClosed
         fun create(
             params: PartCreateParams,

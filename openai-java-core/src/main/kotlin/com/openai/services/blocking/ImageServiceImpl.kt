@@ -99,11 +99,7 @@ class ImageServiceImpl internal constructor(private val clientOptions: ClientOpt
                     .addPathSegments("images", "variations")
                     .body(multipartFormData(clientOptions.jsonMapper, params._body()))
                     .build()
-                    .prepare(
-                        clientOptions,
-                        params,
-                        deploymentModel = params.model().map { it.toString() }.orElse(null),
-                    )
+                    .prepare(clientOptions, params)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             val response = clientOptions.httpClient.execute(request, requestOptions)
             return errorHandler.handle(response).parseable {
@@ -131,11 +127,7 @@ class ImageServiceImpl internal constructor(private val clientOptions: ClientOpt
                     .addPathSegments("images", "edits")
                     .body(multipartFormData(clientOptions.jsonMapper, params._body()))
                     .build()
-                    .prepare(
-                        clientOptions,
-                        params,
-                        deploymentModel = params.model().map { it.toString() }.orElse(null),
-                    )
+                    .prepare(clientOptions, params)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             val response = clientOptions.httpClient.execute(request, requestOptions)
             return errorHandler.handle(response).parseable {
@@ -168,7 +160,7 @@ class ImageServiceImpl internal constructor(private val clientOptions: ClientOpt
                         )
                     )
                     .build()
-                    .prepare(clientOptions, params, deploymentModel = null)
+                    .prepare(clientOptions, params)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             val response = clientOptions.httpClient.execute(request, requestOptions)
             return errorHandler.handle(response).parseable {
@@ -198,11 +190,7 @@ class ImageServiceImpl internal constructor(private val clientOptions: ClientOpt
                     .addPathSegments("images", "generations")
                     .body(json(clientOptions.jsonMapper, params._body()))
                     .build()
-                    .prepare(
-                        clientOptions,
-                        params,
-                        params.model().map { it.toString() }.orElse(null),
-                    )
+                    .prepare(clientOptions, params)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             val response = clientOptions.httpClient.execute(request, requestOptions)
             return errorHandler.handle(response).parseable {
@@ -239,7 +227,7 @@ class ImageServiceImpl internal constructor(private val clientOptions: ClientOpt
                         )
                     )
                     .build()
-                    .prepare(clientOptions, params, deploymentModel = null)
+                    .prepare(clientOptions, params)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             val response = clientOptions.httpClient.execute(request, requestOptions)
             return errorHandler.handle(response).parseable {

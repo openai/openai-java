@@ -39,7 +39,7 @@ interface PermissionService {
         params: PermissionCreateParams,
     ): PermissionCreatePage = create(fineTunedModelCheckpoint, params, RequestOptions.none())
 
-    /** @see [create] */
+    /** @see create */
     fun create(
         fineTunedModelCheckpoint: String,
         params: PermissionCreateParams,
@@ -50,11 +50,11 @@ interface PermissionService {
             requestOptions,
         )
 
-    /** @see [create] */
+    /** @see create */
     fun create(params: PermissionCreateParams): PermissionCreatePage =
         create(params, RequestOptions.none())
 
-    /** @see [create] */
+    /** @see create */
     fun create(
         params: PermissionCreateParams,
         requestOptions: RequestOptions = RequestOptions.none(),
@@ -69,7 +69,7 @@ interface PermissionService {
     fun retrieve(fineTunedModelCheckpoint: String): PermissionRetrieveResponse =
         retrieve(fineTunedModelCheckpoint, PermissionRetrieveParams.none())
 
-    /** @see [retrieve] */
+    /** @see retrieve */
     fun retrieve(
         fineTunedModelCheckpoint: String,
         params: PermissionRetrieveParams = PermissionRetrieveParams.none(),
@@ -80,24 +80,24 @@ interface PermissionService {
             requestOptions,
         )
 
-    /** @see [retrieve] */
+    /** @see retrieve */
     fun retrieve(
         fineTunedModelCheckpoint: String,
         params: PermissionRetrieveParams = PermissionRetrieveParams.none(),
     ): PermissionRetrieveResponse =
         retrieve(fineTunedModelCheckpoint, params, RequestOptions.none())
 
-    /** @see [retrieve] */
+    /** @see retrieve */
     fun retrieve(
         params: PermissionRetrieveParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): PermissionRetrieveResponse
 
-    /** @see [retrieve] */
+    /** @see retrieve */
     fun retrieve(params: PermissionRetrieveParams): PermissionRetrieveResponse =
         retrieve(params, RequestOptions.none())
 
-    /** @see [retrieve] */
+    /** @see retrieve */
     fun retrieve(
         fineTunedModelCheckpoint: String,
         requestOptions: RequestOptions,
@@ -113,7 +113,7 @@ interface PermissionService {
     fun delete(permissionId: String, params: PermissionDeleteParams): PermissionDeleteResponse =
         delete(permissionId, params, RequestOptions.none())
 
-    /** @see [delete] */
+    /** @see delete */
     fun delete(
         permissionId: String,
         params: PermissionDeleteParams,
@@ -121,11 +121,11 @@ interface PermissionService {
     ): PermissionDeleteResponse =
         delete(params.toBuilder().permissionId(permissionId).build(), requestOptions)
 
-    /** @see [delete] */
+    /** @see delete */
     fun delete(params: PermissionDeleteParams): PermissionDeleteResponse =
         delete(params, RequestOptions.none())
 
-    /** @see [delete] */
+    /** @see delete */
     fun delete(
         params: PermissionDeleteParams,
         requestOptions: RequestOptions = RequestOptions.none(),
@@ -155,7 +155,7 @@ interface PermissionService {
         ): HttpResponseFor<PermissionCreatePage> =
             create(fineTunedModelCheckpoint, params, RequestOptions.none())
 
-        /** @see [create] */
+        /** @see create */
         @MustBeClosed
         fun create(
             fineTunedModelCheckpoint: String,
@@ -167,12 +167,12 @@ interface PermissionService {
                 requestOptions,
             )
 
-        /** @see [create] */
+        /** @see create */
         @MustBeClosed
         fun create(params: PermissionCreateParams): HttpResponseFor<PermissionCreatePage> =
             create(params, RequestOptions.none())
 
-        /** @see [create] */
+        /** @see create */
         @MustBeClosed
         fun create(
             params: PermissionCreateParams,
@@ -190,7 +190,7 @@ interface PermissionService {
         ): HttpResponseFor<PermissionRetrieveResponse> =
             retrieve(fineTunedModelCheckpoint, PermissionRetrieveParams.none())
 
-        /** @see [retrieve] */
+        /** @see retrieve */
         @MustBeClosed
         fun retrieve(
             fineTunedModelCheckpoint: String,
@@ -202,7 +202,7 @@ interface PermissionService {
                 requestOptions,
             )
 
-        /** @see [retrieve] */
+        /** @see retrieve */
         @MustBeClosed
         fun retrieve(
             fineTunedModelCheckpoint: String,
@@ -210,20 +210,20 @@ interface PermissionService {
         ): HttpResponseFor<PermissionRetrieveResponse> =
             retrieve(fineTunedModelCheckpoint, params, RequestOptions.none())
 
-        /** @see [retrieve] */
+        /** @see retrieve */
         @MustBeClosed
         fun retrieve(
             params: PermissionRetrieveParams,
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<PermissionRetrieveResponse>
 
-        /** @see [retrieve] */
+        /** @see retrieve */
         @MustBeClosed
         fun retrieve(
             params: PermissionRetrieveParams
         ): HttpResponseFor<PermissionRetrieveResponse> = retrieve(params, RequestOptions.none())
 
-        /** @see [retrieve] */
+        /** @see retrieve */
         @MustBeClosed
         fun retrieve(
             fineTunedModelCheckpoint: String,
@@ -243,7 +243,7 @@ interface PermissionService {
         ): HttpResponseFor<PermissionDeleteResponse> =
             delete(permissionId, params, RequestOptions.none())
 
-        /** @see [delete] */
+        /** @see delete */
         @MustBeClosed
         fun delete(
             permissionId: String,
@@ -252,12 +252,12 @@ interface PermissionService {
         ): HttpResponseFor<PermissionDeleteResponse> =
             delete(params.toBuilder().permissionId(permissionId).build(), requestOptions)
 
-        /** @see [delete] */
+        /** @see delete */
         @MustBeClosed
         fun delete(params: PermissionDeleteParams): HttpResponseFor<PermissionDeleteResponse> =
             delete(params, RequestOptions.none())
 
-        /** @see [delete] */
+        /** @see delete */
         @MustBeClosed
         fun delete(
             params: PermissionDeleteParams,
