@@ -33,19 +33,18 @@ internal fun HttpRequest.prepareAsync(
     CompletableFuture.completedFuture(prepare(clientOptions, params))
 
 @JvmSynthetic
-internal fun Params.modelNameOrNull(): String? =
-    try {
-        this::class
-            .declaredFunctions
-            .find { it.name == "model" }
-            ?.call(this)
-            ?.let {
-                when (it) {
-                    is Optional<*> -> it.orElse(null)?.toString()
-                    else -> it.toString()
-                }
-            }
-    } catch (_: Exception) {
-        // Return `null` if `model()` takes parameters, is `private`, or other similar issues.
-        null
+internal fun Params.modelNameOrNull(): String? {
+    val modelName =
+        try {
+            this::class.declaredFunctions.find { it.name == "model" }?.call(this)
+        } catch (_: Exception) {
+            // Use `null` if `model()` takes parameters, is `private`, or other similar issues that
+            // prevent it from being called successfully.
+            null
+        }
+
+    return when (modelName) {
+        is Optional<*> -> modelName.orElse(null)?.toString()
+        else -> modelName?.toString()
     }
+}

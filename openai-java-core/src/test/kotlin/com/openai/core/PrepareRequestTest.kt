@@ -1,10 +1,13 @@
 package com.openai.core
 
+import com.openai.core.http.Headers
+import com.openai.core.http.QueryParams
 import com.openai.models.chat.completions.ChatCompletionListParams
 import com.openai.models.embeddings.EmbeddingCreateParams
 import com.openai.models.embeddings.EmbeddingModel
 import com.openai.models.uploads.UploadCancelParams
 import org.assertj.core.api.Assertions.assertThat
+import org.assertj.core.api.Assertions.assertThatNoException
 import org.junit.jupiter.api.Test
 
 internal class PrepareRequestTest {
@@ -62,5 +65,45 @@ internal class PrepareRequestTest {
         assertThat(params1.modelNameOrNull()).isEqualTo("my-model-id")
 
         assertThat(params2.modelNameOrNull()).isNull()
+    }
+
+    @Test
+    fun modelCannotBeCalledIfPrivate() {
+        class X : Params {
+            private fun model(): String = "my-model-id"
+
+            override fun _headers(): Headers {
+                throw RuntimeException()
+            }
+
+            override fun _queryParams(): QueryParams {
+                throw RuntimeException()
+            }
+        }
+
+        val params = X()
+
+        assertThatNoException().isThrownBy { params.modelNameOrNull() }
+        assertThat(params.modelNameOrNull()).isNull()
+    }
+
+    @Test
+    fun modelCannotBeCalledIfHasParameters() {
+        class X : Params {
+            private fun model(s: String): String = "my-model-id"
+
+            override fun _headers(): Headers {
+                throw RuntimeException()
+            }
+
+            override fun _queryParams(): QueryParams {
+                throw RuntimeException()
+            }
+        }
+
+        val params = X()
+
+        assertThatNoException().isThrownBy { params.modelNameOrNull() }
+        assertThat(params.modelNameOrNull()).isNull()
     }
 }
