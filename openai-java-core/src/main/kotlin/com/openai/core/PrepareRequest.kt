@@ -34,13 +34,18 @@ internal fun HttpRequest.prepareAsync(
 
 @JvmSynthetic
 internal fun Params.modelNameOrNull(): String? =
-    this::class
-        .declaredFunctions
-        .find { it.name == "model" }
-        ?.call(this)
-        ?.let {
-            when (it) {
-                is Optional<*> -> it.orElse(null)?.toString()
-                else -> it.toString()
+    try {
+        this::class
+            .declaredFunctions
+            .find { it.name == "model" }
+            ?.call(this)
+            ?.let {
+                when (it) {
+                    is Optional<*> -> it.orElse(null)?.toString()
+                    else -> it.toString()
+                }
             }
-        }
+    } catch (_: Exception) {
+        // Return `null` if `model()` takes parameters, is `private`, or other similar issues.
+        null
+    }
