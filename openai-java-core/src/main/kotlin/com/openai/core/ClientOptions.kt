@@ -357,8 +357,8 @@ private constructor(
 
             baseUrl?.let {
                 if (isAzureEndpoint(it)) {
-                    // Non Azure-unified routes will still require an api-version value.
-                    if (!azureLegacyPaths || !isAzureUnifiedEndpointPath(it)) {
+                    // Legacy Azure routes will still require an api-version value.
+                    if (azureLegacyPaths || !isAzureUnifiedEndpointPath(it)) {
                         replaceQueryParams(
                             "api-version",
                             (azureServiceVersion ?: AzureOpenAIServiceVersion.latestStableVersion())
