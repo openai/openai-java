@@ -8,14 +8,14 @@ package com.openai.azure
  *  Azure OpenAI management URLs should be in the format of `https://<region>.azure-api.net`
  *  Other known Azure URLs `https://<region>.cognitiveservices.azure.com`.
  */
-enum class AzureUrlCategory {
+internal enum class AzureUrlCategory {
     AZURE_LEGACY, AZURE_UNIFIED, AZURE_OTHER, NON_AZURE;
 
     companion object {
         /**
          * Returns whether the given [urlHost] is an Azure endpoint.
          */
-        fun isAzureEndpoint(urlHost: String): Boolean =
+        internal fun isAzureEndpoint(urlHost: String): Boolean =
             categorizeBaseUrl(urlHost) != NON_AZURE
 
         /**
