@@ -98,6 +98,7 @@ private constructor(
     @get:JvmName("maxRetries") val maxRetries: Int,
     @get:JvmName("credential") val credential: Credential,
     @get:JvmName("azureServiceVersion") val azureServiceVersion: AzureOpenAIServiceVersion?,
+    @get:JvmName("azureLegacyPaths") val azureLegacyPaths: Boolean = false,
     private val organization: String?,
     private val project: String?,
     private val webhookSecret: String?,
@@ -163,6 +164,7 @@ private constructor(
         private var maxRetries: Int = 2
         private var credential: Credential? = null
         private var azureServiceVersion: AzureOpenAIServiceVersion? = null
+        private var azureLegacyPaths: Boolean = false
         private var organization: String? = null
         private var project: String? = null
         private var webhookSecret: String? = null
@@ -182,6 +184,7 @@ private constructor(
             maxRetries = clientOptions.maxRetries
             credential = clientOptions.credential
             azureServiceVersion = clientOptions.azureServiceVersion
+            azureLegacyPaths = clientOptions.azureLegacyPaths
             organization = clientOptions.organization
             project = clientOptions.project
             webhookSecret = clientOptions.webhookSecret
@@ -295,6 +298,10 @@ private constructor(
 
         fun azureServiceVersion(azureServiceVersion: AzureOpenAIServiceVersion) = apply {
             this.azureServiceVersion = azureServiceVersion
+        }
+
+        fun azureLegacyPaths(azureLegacyPaths: Boolean) = apply {
+            this.azureLegacyPaths = azureLegacyPaths
         }
 
         fun organization(organization: String?) = apply { this.organization = organization }
@@ -486,13 +493,19 @@ private constructor(
 
             baseUrl?.let {
                 if (isAzureEndpoint(it)) {
-                    // Default Azure OpenAI version is used if Azure user doesn't
-                    // specific a service API version in 'queryParams'.
-                    replaceQueryParams(
-                        "api-version",
-                        (azureServiceVersion ?: AzureOpenAIServiceVersion.latestStableVersion())
-                            .value,
-                    )
+                    // Legacy Azure routes will still require an api-version value.
+                    if (azureLegacyPaths || !isAzureUnifiedEndpointPath(it)) {
+                        replaceQueryParams(
+                            "api-version",
+                            (azureServiceVersion ?: AzureOpenAIServiceVersion.latestStableVersion())
+                                .value,
+                        )
+                    } else {
+                        // We only add the value if it's defined by the user for unified Azure routes.
+                        azureServiceVersion?.let { version ->
+                            replaceQueryParams("api-version", version.value)
+                        }
+                    }
                 }
             }
 
@@ -532,6 +545,7 @@ private constructor(
                 maxRetries,
                 credential,
                 azureServiceVersion,
+                azureLegacyPaths,
                 organization,
                 project,
                 webhookSecret,
