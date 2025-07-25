@@ -143,6 +143,10 @@ class OpenAIOkHttpClient private constructor() {
             clientOptions.azureServiceVersion(azureServiceVersion)
         }
 
+        fun azureLegacyPaths(azureLegacyPaths: Boolean) = apply {
+            clientOptions.azureLegacyPaths(azureLegacyPaths)
+        }
+
         fun organization(organization: String?) = apply { clientOptions.organization(organization) }
 
         /** Alias for calling [Builder.organization] with `organization.orElse(null)`. */
@@ -242,10 +246,6 @@ class OpenAIOkHttpClient private constructor() {
         }
 
         fun fromEnv() = apply { clientOptions.fromEnv() }
-
-        fun azureLegacyPaths(azureLegacyPaths: Boolean) = apply {
-            clientOptions.azureLegacyPaths(azureLegacyPaths)
-        }
 
         /**
          * Returns an immutable instance of [OpenAIClient].
