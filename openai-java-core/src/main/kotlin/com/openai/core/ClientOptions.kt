@@ -100,10 +100,10 @@ private constructor(
         private var maxRetries: Int = 2
         private var credential: Credential? = null
         private var azureServiceVersion: AzureOpenAIServiceVersion? = null
+        private var azureLegacyPaths: Boolean = false
         private var organization: String? = null
         private var project: String? = null
         private var webhookSecret: String? = null
-        private var azureLegacyPaths: Boolean = false
 
         @JvmSynthetic
         internal fun from(clientOptions: ClientOptions) = apply {
@@ -120,10 +120,10 @@ private constructor(
             maxRetries = clientOptions.maxRetries
             credential = clientOptions.credential
             azureServiceVersion = clientOptions.azureServiceVersion
+            azureLegacyPaths = clientOptions.azureLegacyPaths
             organization = clientOptions.organization
             project = clientOptions.project
             webhookSecret = clientOptions.webhookSecret
-            azureLegacyPaths = clientOptions.azureLegacyPaths
         }
 
         fun httpClient(httpClient: HttpClient) = apply {
@@ -179,6 +179,10 @@ private constructor(
 
         fun azureServiceVersion(azureServiceVersion: AzureOpenAIServiceVersion) = apply {
             this.azureServiceVersion = azureServiceVersion
+        }
+
+        fun azureLegacyPaths(azureLegacyPaths: Boolean) = apply {
+            this.azureLegacyPaths = azureLegacyPaths
         }
 
         fun organization(organization: String?) = apply { this.organization = organization }
@@ -311,8 +315,6 @@ private constructor(
                 }
             }
         }
-
-        fun azureLegacyPaths(azureLegacyPaths: Boolean) = apply { this.azureLegacyPaths = azureLegacyPaths }
 
         /**
          * Returns an immutable instance of [ClientOptions].

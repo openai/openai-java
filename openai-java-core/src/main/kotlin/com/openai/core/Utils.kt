@@ -2,6 +2,7 @@
 
 package com.openai.core
 
+import com.openai.azure.AzureUrlCategory
 import com.openai.errors.OpenAIInvalidDataException
 import java.net.URI
 import java.util.Collections
@@ -90,33 +91,14 @@ internal fun Any?.contentToString(): String {
     return string
 }
 
+/**
+ * Convenience function to check if the given [baseUrl] is an Azure OpenAI resource URL.
+ */
 @JvmSynthetic
 internal fun isAzureEndpoint(baseUrl: String): Boolean {
-    // Azure legacy endpoint should be in the format of `https://<region>.openai.azure.com`.
-    // Or Azure unified endpoint should be in the format of `https://<region>.services.ai.azure.com`.
-    // Or `https://<region>.azure-api.net` for Azure OpenAI Management URL.
-    // Or `<user>-random-<region>.cognitiveservices.azure.com`.
     val trimmedBaseUrl = baseUrl.trim().trimEnd('/')
-    val url = URI.create(trimmedBaseUrl)
-    return url.isAzureLegacyEndpoint() || url.isAzureUnifiedEndpoint() || url.isOtherAzureKnownEndpoint()
+    return AzureUrlCategory.isAzureEndpoint(URI.create(trimmedBaseUrl).host)
 }
-
-/**
- * Returns whether [this] is an Azure OpenAI resource URL with the old schema.
- */
-internal fun URI.isAzureLegacyEndpoint(): Boolean = host.endsWith(".openai.azure.com", true)
-
-/**
- * Returns whether [this] is an Azure OpenAI resource URL with the OpenAI unified schema.
- */
-internal fun URI.isAzureUnifiedEndpoint(): Boolean = host.endsWith(".services.ai.azure.com", true)
-
-/**
- * Returns whether [this] is an Azure OpenAI resource URL, but with a schema different to the known ones.
- */
-internal fun URI.isOtherAzureKnownEndpoint(): Boolean =
-    host.endsWith(".azure-api.net", true) ||
-    host.endsWith(".cognitiveservices.azure.com", true)
 
 /**
  * Convenience function to check if the given [baseUrl] is an Azure OpenAI resource URL with the unified schema.

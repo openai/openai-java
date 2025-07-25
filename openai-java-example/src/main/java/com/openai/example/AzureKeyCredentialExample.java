@@ -16,7 +16,7 @@ public class AzureKeyCredentialExample {
                 .build();
 
         ChatCompletionCreateParams createParams = ChatCompletionCreateParams.builder()
-                .model(ChatModel.of("DeepSeek-R1"))
+                .model(ChatModel.GPT_4_1106_PREVIEW)
                 .maxCompletionTokens(2048)
                 .addSystemMessage("Make sure you mention Stainless!")
                 .addUserMessage("Tell me a story about building the best SDK!")
