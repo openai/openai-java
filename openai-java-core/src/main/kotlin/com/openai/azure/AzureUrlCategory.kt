@@ -19,7 +19,7 @@ enum class AzureUrlCategory {
             categorizeBaseUrl(urlHost) != NON_AZURE
 
         /**
-         * Returns the [AzureUrlCategory] of the given [urlHost] based on its host.
+         * Returns the [AzureUrlCategory] of the given [urlHost].
          */
         private fun categorizeBaseUrl(urlHost: String): AzureUrlCategory {
             return when {
