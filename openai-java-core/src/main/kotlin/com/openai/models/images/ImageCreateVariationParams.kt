@@ -450,7 +450,7 @@ private constructor(
                 "response_format" to _responseFormat(),
                 "size" to _size(),
                 "user" to _user(),
-            ) + _additionalBodyProperties().mapValues { MultipartField.of(it) })
+            ) + _additionalBodyProperties().mapValues { (_, value) -> MultipartField.of(value) })
             .toImmutable()
 
     override fun _headers(): Headers = additionalHeaders
