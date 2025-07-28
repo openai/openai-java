@@ -297,7 +297,7 @@ private constructor(
 
     fun _body(): Map<String, MultipartField<*>> =
         (mapOf("file" to _file(), "purpose" to _purpose()) +
-                _additionalBodyProperties().mapValues { MultipartField.of(it) })
+                _additionalBodyProperties().mapValues { (_, value) -> MultipartField.of(value) })
             .toImmutable()
 
     override fun _headers(): Headers = additionalHeaders

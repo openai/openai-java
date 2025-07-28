@@ -279,7 +279,7 @@ private constructor(
 
     fun _body(): Map<String, MultipartField<*>> =
         (mapOf("file" to _file(), "file_id" to _fileId()) +
-                _additionalBodyProperties().mapValues { MultipartField.of(it) })
+                _additionalBodyProperties().mapValues { (_, value) -> MultipartField.of(value) })
             .toImmutable()
 
     fun _pathParam(index: Int): String =

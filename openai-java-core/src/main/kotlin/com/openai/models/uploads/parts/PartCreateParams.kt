@@ -268,7 +268,8 @@ private constructor(
     }
 
     fun _body(): Map<String, MultipartField<*>> =
-        (mapOf("data" to _data()) + _additionalBodyProperties().mapValues { MultipartField.of(it) })
+        (mapOf("data" to _data()) +
+                _additionalBodyProperties().mapValues { (_, value) -> MultipartField.of(value) })
             .toImmutable()
 
     fun _pathParam(index: Int): String =

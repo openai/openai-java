@@ -420,7 +420,7 @@ private constructor(
                 "prompt" to _prompt(),
                 "response_format" to _responseFormat(),
                 "temperature" to _temperature(),
-            ) + _additionalBodyProperties().mapValues { MultipartField.of(it) })
+            ) + _additionalBodyProperties().mapValues { (_, value) -> MultipartField.of(value) })
             .toImmutable()
 
     override fun _headers(): Headers = additionalHeaders
