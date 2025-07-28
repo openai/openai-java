@@ -1,5 +1,13 @@
 # Changelog
 
+## 2.19.2 (2025-07-28)
+
+Full Changelog: [v2.19.1...v2.19.2](https://github.com/openai/openai-java/compare/v2.19.1...v2.19.2)
+
+### Bug Fixes
+
+* **client:** some bad `_additionalBodyProperties` serialization ([ae900c6](https://github.com/openai/openai-java/commit/ae900c6e6bd37de7ba084e753b38705baed9c56a))
+
 ## 2.19.1 (2025-07-24)
 
 Full Changelog: [v2.19.0...v2.19.1](https://github.com/openai/openai-java/compare/v2.19.0...v2.19.1)

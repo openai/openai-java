@@ -619,7 +619,7 @@ private constructor(
                 "response_format" to _responseFormat(),
                 "temperature" to _temperature(),
                 "timestamp_granularities" to _timestampGranularities(),
-            ) + _additionalBodyProperties().mapValues { MultipartField.of(it) })
+            ) + _additionalBodyProperties().mapValues { (_, value) -> MultipartField.of(value) })
             .toImmutable()
 
     override fun _headers(): Headers = additionalHeaders
