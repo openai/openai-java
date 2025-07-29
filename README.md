@@ -572,6 +572,12 @@ Or to `debug` for more verbose logging:
 $ export OPENAI_LOG=debug
 ```
 
+## ProGuard and R8
+
+Although the SDK uses reflection, it is still usable with [ProGuard](https://github.com/Guardsquare/proguard) and [R8](https://developer.android.com/topic/performance/app-optimization/enable-app-optimization) because `openai-java-core` is published with a [configuration file](openai-java-core/src/main/resources/META-INF/proguard/openai-java-core.pro) containing [keep rules](https://www.guardsquare.com/manual/configuration/usage).
+
+ProGuard and R8 should automatically detect and use the published rules, but you can also manually copy the keep rules if necessary.
+
 ## GraalVM
 
 Although the SDK uses reflection, it is still usable in [GraalVM](https://www.graalvm.org) because `openai-java-core` is published with [reachability metadata](https://www.graalvm.org/latest/reference-manual/native-image/metadata/).
