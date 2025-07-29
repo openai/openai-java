@@ -1184,6 +1184,8 @@ The SDK throws custom unchecked exception types:
 
 - [`OpenAIIoException`](openai-java-core/src/main/kotlin/com/openai/errors/OpenAIIoException.kt): I/O networking errors.
 
+- [`OpenAIRetryableException`](openai-java-core/src/main/kotlin/com/openai/errors/OpenAIRetryableException.kt): Generic error indicating a failure that could be retried by the client.
+
 - [`OpenAIInvalidDataException`](openai-java-core/src/main/kotlin/com/openai/errors/OpenAIInvalidDataException.kt): Failure to interpret successfully parsed data. For example, when accessing a property that's supposed to be required, but the API unexpectedly omitted it from the response.
 
 - [`OpenAIException`](openai-java-core/src/main/kotlin/com/openai/errors/OpenAIException.kt): Base class for all exceptions. Most errors will result in one of the previously mentioned ones, but completely generic errors may be thrown using the base class.
