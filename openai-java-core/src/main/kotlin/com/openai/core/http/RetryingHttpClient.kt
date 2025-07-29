@@ -3,6 +3,7 @@ package com.openai.core.http
 import com.openai.core.RequestOptions
 import com.openai.core.checkRequired
 import com.openai.errors.OpenAIIoException
+import com.openai.errors.OpenAIRetryableException
 import java.io.IOException
 import java.time.Clock
 import java.time.Duration
@@ -176,9 +177,10 @@ private constructor(
     }
 
     private fun shouldRetry(throwable: Throwable): Boolean =
-        // Only retry IOException and OpenAIIoException, other exceptions are not intended to be
-        // retried.
-        throwable is IOException || throwable is OpenAIIoException
+        // Only retry known retryable exceptions, other exceptions are not intended to be retried.
+        throwable is IOException ||
+            throwable is OpenAIIoException ||
+            throwable is OpenAIRetryableException
 
     private fun getRetryBackoffDuration(retries: Int, response: HttpResponse?): Duration {
         // About the Retry-After header:
