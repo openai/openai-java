@@ -855,6 +855,7 @@ internal class ResponseStreamEventTest {
                                 .version("version")
                                 .build()
                         )
+                        .promptCacheKey("prompt-cache-key-1234")
                         .reasoning(
                             Reasoning.builder()
                                 .effort(ReasoningEffort.LOW)
@@ -862,6 +863,7 @@ internal class ResponseStreamEventTest {
                                 .summary(Reasoning.Summary.AUTO)
                                 .build()
                         )
+                        .safetyIdentifier("safety-identifier-1234")
                         .serviceTier(Response.ServiceTier.AUTO)
                         .status(ResponseStatus.COMPLETED)
                         .text(
@@ -1041,6 +1043,7 @@ internal class ResponseStreamEventTest {
                                     .version("version")
                                     .build()
                             )
+                            .promptCacheKey("prompt-cache-key-1234")
                             .reasoning(
                                 Reasoning.builder()
                                     .effort(ReasoningEffort.LOW)
@@ -1048,6 +1051,7 @@ internal class ResponseStreamEventTest {
                                     .summary(Reasoning.Summary.AUTO)
                                     .build()
                             )
+                            .safetyIdentifier("safety-identifier-1234")
                             .serviceTier(Response.ServiceTier.AUTO)
                             .status(ResponseStatus.COMPLETED)
                             .text(
@@ -1457,6 +1461,7 @@ internal class ResponseStreamEventTest {
                                 .version("version")
                                 .build()
                         )
+                        .promptCacheKey("prompt-cache-key-1234")
                         .reasoning(
                             Reasoning.builder()
                                 .effort(ReasoningEffort.LOW)
@@ -1464,6 +1469,7 @@ internal class ResponseStreamEventTest {
                                 .summary(Reasoning.Summary.AUTO)
                                 .build()
                         )
+                        .safetyIdentifier("safety-identifier-1234")
                         .serviceTier(Response.ServiceTier.AUTO)
                         .status(ResponseStatus.COMPLETED)
                         .text(
@@ -1643,6 +1649,7 @@ internal class ResponseStreamEventTest {
                                     .version("version")
                                     .build()
                             )
+                            .promptCacheKey("prompt-cache-key-1234")
                             .reasoning(
                                 Reasoning.builder()
                                     .effort(ReasoningEffort.LOW)
@@ -1650,6 +1657,7 @@ internal class ResponseStreamEventTest {
                                     .summary(Reasoning.Summary.AUTO)
                                     .build()
                             )
+                            .safetyIdentifier("safety-identifier-1234")
                             .serviceTier(Response.ServiceTier.AUTO)
                             .status(ResponseStatus.COMPLETED)
                             .text(
@@ -2305,6 +2313,7 @@ internal class ResponseStreamEventTest {
                                 .version("version")
                                 .build()
                         )
+                        .promptCacheKey("prompt-cache-key-1234")
                         .reasoning(
                             Reasoning.builder()
                                 .effort(ReasoningEffort.LOW)
@@ -2312,6 +2321,7 @@ internal class ResponseStreamEventTest {
                                 .summary(Reasoning.Summary.AUTO)
                                 .build()
                         )
+                        .safetyIdentifier("safety-identifier-1234")
                         .serviceTier(Response.ServiceTier.AUTO)
                         .status(ResponseStatus.COMPLETED)
                         .text(
@@ -2491,6 +2501,7 @@ internal class ResponseStreamEventTest {
                                     .version("version")
                                     .build()
                             )
+                            .promptCacheKey("prompt-cache-key-1234")
                             .reasoning(
                                 Reasoning.builder()
                                     .effort(ReasoningEffort.LOW)
@@ -2498,6 +2509,7 @@ internal class ResponseStreamEventTest {
                                     .summary(Reasoning.Summary.AUTO)
                                     .build()
                             )
+                            .safetyIdentifier("safety-identifier-1234")
                             .serviceTier(Response.ServiceTier.AUTO)
                             .status(ResponseStatus.COMPLETED)
                             .text(
@@ -2629,6 +2641,7 @@ internal class ResponseStreamEventTest {
                                 .version("version")
                                 .build()
                         )
+                        .promptCacheKey("prompt-cache-key-1234")
                         .reasoning(
                             Reasoning.builder()
                                 .effort(ReasoningEffort.LOW)
@@ -2636,6 +2649,7 @@ internal class ResponseStreamEventTest {
                                 .summary(Reasoning.Summary.AUTO)
                                 .build()
                         )
+                        .safetyIdentifier("safety-identifier-1234")
                         .serviceTier(Response.ServiceTier.AUTO)
                         .status(ResponseStatus.COMPLETED)
                         .text(
@@ -2815,6 +2829,7 @@ internal class ResponseStreamEventTest {
                                     .version("version")
                                     .build()
                             )
+                            .promptCacheKey("prompt-cache-key-1234")
                             .reasoning(
                                 Reasoning.builder()
                                     .effort(ReasoningEffort.LOW)
@@ -2822,6 +2837,7 @@ internal class ResponseStreamEventTest {
                                     .summary(Reasoning.Summary.AUTO)
                                     .build()
                             )
+                            .safetyIdentifier("safety-identifier-1234")
                             .serviceTier(Response.ServiceTier.AUTO)
                             .status(ResponseStatus.COMPLETED)
                             .text(
@@ -2953,6 +2969,7 @@ internal class ResponseStreamEventTest {
                                 .version("version")
                                 .build()
                         )
+                        .promptCacheKey("prompt-cache-key-1234")
                         .reasoning(
                             Reasoning.builder()
                                 .effort(ReasoningEffort.LOW)
@@ -2960,6 +2977,7 @@ internal class ResponseStreamEventTest {
                                 .summary(Reasoning.Summary.AUTO)
                                 .build()
                         )
+                        .safetyIdentifier("safety-identifier-1234")
                         .serviceTier(Response.ServiceTier.AUTO)
                         .status(ResponseStatus.COMPLETED)
                         .text(
@@ -3139,6 +3157,7 @@ internal class ResponseStreamEventTest {
                                     .version("version")
                                     .build()
                             )
+                            .promptCacheKey("prompt-cache-key-1234")
                             .reasoning(
                                 Reasoning.builder()
                                     .effort(ReasoningEffort.LOW)
@@ -3146,6 +3165,7 @@ internal class ResponseStreamEventTest {
                                     .summary(Reasoning.Summary.AUTO)
                                     .build()
                             )
+                            .safetyIdentifier("safety-identifier-1234")
                             .serviceTier(Response.ServiceTier.AUTO)
                             .status(ResponseStatus.COMPLETED)
                             .text(
@@ -5729,6 +5749,7 @@ internal class ResponseStreamEventTest {
                                 .version("version")
                                 .build()
                         )
+                        .promptCacheKey("prompt-cache-key-1234")
                         .reasoning(
                             Reasoning.builder()
                                 .effort(ReasoningEffort.LOW)
@@ -5736,6 +5757,7 @@ internal class ResponseStreamEventTest {
                                 .summary(Reasoning.Summary.AUTO)
                                 .build()
                         )
+                        .safetyIdentifier("safety-identifier-1234")
                         .serviceTier(Response.ServiceTier.AUTO)
                         .status(ResponseStatus.COMPLETED)
                         .text(
@@ -5915,6 +5937,7 @@ internal class ResponseStreamEventTest {
                                     .version("version")
                                     .build()
                             )
+                            .promptCacheKey("prompt-cache-key-1234")
                             .reasoning(
                                 Reasoning.builder()
                                     .effort(ReasoningEffort.LOW)
@@ -5922,6 +5945,7 @@ internal class ResponseStreamEventTest {
                                     .summary(Reasoning.Summary.AUTO)
                                     .build()
                             )
+                            .safetyIdentifier("safety-identifier-1234")
                             .serviceTier(Response.ServiceTier.AUTO)
                             .status(ResponseStatus.COMPLETED)
                             .text(

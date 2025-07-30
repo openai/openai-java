@@ -54,6 +54,7 @@ internal class ChatCompletionStoreMessageTest {
                         .build()
                 )
                 .id("id")
+                .addContentPart(ChatCompletionContentPartText.builder().text("text").build())
                 .build()
 
         assertThat(chatCompletionStoreMessage.content()).contains("content")
@@ -100,6 +101,12 @@ internal class ChatCompletionStoreMessageTest {
                     .build()
             )
         assertThat(chatCompletionStoreMessage.id()).isEqualTo("id")
+        assertThat(chatCompletionStoreMessage.contentParts().getOrNull())
+            .containsExactly(
+                ChatCompletionStoreMessage.ContentPart.ofChatCompletionContentPartText(
+                    ChatCompletionContentPartText.builder().text("text").build()
+                )
+            )
     }
 
     @Test
@@ -147,6 +154,7 @@ internal class ChatCompletionStoreMessageTest {
                         .build()
                 )
                 .id("id")
+                .addContentPart(ChatCompletionContentPartText.builder().text("text").build())
                 .build()
 
         val roundtrippedChatCompletionStoreMessage =

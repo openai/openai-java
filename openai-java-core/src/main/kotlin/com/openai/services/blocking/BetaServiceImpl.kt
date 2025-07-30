@@ -3,8 +3,12 @@
 package com.openai.services.blocking
 
 import com.openai.core.ClientOptions
+import com.openai.services.blocking.beta.AssistantService
+import com.openai.services.blocking.beta.AssistantServiceImpl
 import com.openai.services.blocking.beta.RealtimeService
 import com.openai.services.blocking.beta.RealtimeServiceImpl
+import com.openai.services.blocking.beta.ThreadService
+import com.openai.services.blocking.beta.ThreadServiceImpl
 import java.util.function.Consumer
 
 class BetaServiceImpl internal constructor(private val clientOptions: ClientOptions) : BetaService {
@@ -15,6 +19,10 @@ class BetaServiceImpl internal constructor(private val clientOptions: ClientOpti
 
     private val realtime: RealtimeService by lazy { RealtimeServiceImpl(clientOptions) }
 
+    private val assistants: AssistantService by lazy { AssistantServiceImpl(clientOptions) }
+
+    private val threads: ThreadService by lazy { ThreadServiceImpl(clientOptions) }
+
     override fun withRawResponse(): BetaService.WithRawResponse = withRawResponse
 
     override fun withOptions(modifier: Consumer<ClientOptions.Builder>): BetaService =
@@ -22,11 +30,24 @@ class BetaServiceImpl internal constructor(private val clientOptions: ClientOpti
 
     override fun realtime(): RealtimeService = realtime
 
+    override fun assistants(): AssistantService = assistants
+
+    @Deprecated("The Assistants API is deprecated in favor of the Responses API")
+    override fun threads(): ThreadService = threads
+
     class WithRawResponseImpl internal constructor(private val clientOptions: ClientOptions) :
         BetaService.WithRawResponse {
 
         private val realtime: RealtimeService.WithRawResponse by lazy {
             RealtimeServiceImpl.WithRawResponseImpl(clientOptions)
+        }
+
+        private val assistants: AssistantService.WithRawResponse by lazy {
+            AssistantServiceImpl.WithRawResponseImpl(clientOptions)
+        }
+
+        private val threads: ThreadService.WithRawResponse by lazy {
+            ThreadServiceImpl.WithRawResponseImpl(clientOptions)
         }
 
         override fun withOptions(
@@ -37,5 +58,10 @@ class BetaServiceImpl internal constructor(private val clientOptions: ClientOpti
             )
 
         override fun realtime(): RealtimeService.WithRawResponse = realtime
+
+        override fun assistants(): AssistantService.WithRawResponse = assistants
+
+        @Deprecated("The Assistants API is deprecated in favor of the Responses API")
+        override fun threads(): ThreadService.WithRawResponse = threads
     }
 }

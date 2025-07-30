@@ -42,6 +42,7 @@ internal class ResponseCreateParamsTest {
                     .version("version")
                     .build()
             )
+            .promptCacheKey("prompt-cache-key-1234")
             .reasoning(
                 Reasoning.builder()
                     .effort(ReasoningEffort.LOW)
@@ -49,6 +50,7 @@ internal class ResponseCreateParamsTest {
                     .summary(Reasoning.Summary.AUTO)
                     .build()
             )
+            .safetyIdentifier("safety-identifier-1234")
             .serviceTier(ResponseCreateParams.ServiceTier.AUTO)
             .store(true)
             .temperature(1.0)
@@ -102,6 +104,7 @@ internal class ResponseCreateParamsTest {
                         .version("version")
                         .build()
                 )
+                .promptCacheKey("prompt-cache-key-1234")
                 .reasoning(
                     Reasoning.builder()
                         .effort(ReasoningEffort.LOW)
@@ -109,6 +112,7 @@ internal class ResponseCreateParamsTest {
                         .summary(Reasoning.Summary.AUTO)
                         .build()
                 )
+                .safetyIdentifier("safety-identifier-1234")
                 .serviceTier(ResponseCreateParams.ServiceTier.AUTO)
                 .store(true)
                 .temperature(1.0)
@@ -166,6 +170,7 @@ internal class ResponseCreateParamsTest {
                     .version("version")
                     .build()
             )
+        assertThat(body.promptCacheKey()).contains("prompt-cache-key-1234")
         assertThat(body.reasoning())
             .contains(
                 Reasoning.builder()
@@ -174,6 +179,7 @@ internal class ResponseCreateParamsTest {
                     .summary(Reasoning.Summary.AUTO)
                     .build()
             )
+        assertThat(body.safetyIdentifier()).contains("safety-identifier-1234")
         assertThat(body.serviceTier()).contains(ResponseCreateParams.ServiceTier.AUTO)
         assertThat(body.store()).contains(true)
         assertThat(body.temperature()).contains(1.0)
