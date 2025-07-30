@@ -387,6 +387,16 @@ internal constructor(
             paramsBuilder.prediction(prediction)
         }
 
+        /** @see ChatCompletionCreateParams.Builder.promptCacheKey */
+        fun promptCacheKey(promptCacheKey: String) = apply {
+            paramsBuilder.promptCacheKey(promptCacheKey)
+        }
+
+        /** @see ChatCompletionCreateParams.Builder.promptCacheKey */
+        fun promptCacheKey(promptCacheKey: JsonField<String>) = apply {
+            paramsBuilder.promptCacheKey(promptCacheKey)
+        }
+
         /** @see ChatCompletionCreateParams.Builder.presencePenalty */
         fun presencePenalty(presencePenalty: Double?) = apply {
             paramsBuilder.presencePenalty(presencePenalty)
@@ -420,6 +430,16 @@ internal constructor(
         /** @see ChatCompletionCreateParams.Builder.reasoningEffort */
         fun reasoningEffort(reasoningEffort: JsonField<ReasoningEffort>) = apply {
             paramsBuilder.reasoningEffort(reasoningEffort)
+        }
+
+        /** @see ChatCompletionCreateParams.Builder.safetyIdentifier */
+        fun safetyIdentifier(safetyIdentifier: String) = apply {
+            paramsBuilder.safetyIdentifier(safetyIdentifier)
+        }
+
+        /** @see ChatCompletionCreateParams.Builder.safetyIdentifier */
+        fun safetyIdentifier(safetyIdentifier: JsonField<String>) = apply {
+            paramsBuilder.safetyIdentifier(safetyIdentifier)
         }
 
         /**

@@ -6,12 +6,23 @@ import com.fasterxml.jackson.annotation.JsonAnyGetter
 import com.fasterxml.jackson.annotation.JsonAnySetter
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonProperty
+import com.fasterxml.jackson.core.JsonGenerator
+import com.fasterxml.jackson.core.ObjectCodec
+import com.fasterxml.jackson.databind.JsonNode
+import com.fasterxml.jackson.databind.SerializerProvider
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize
+import com.fasterxml.jackson.databind.annotation.JsonSerialize
+import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
+import com.openai.core.BaseDeserializer
+import com.openai.core.BaseSerializer
 import com.openai.core.ExcludeMissing
 import com.openai.core.JsonField
 import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
+import com.openai.core.allMaxBy
 import com.openai.core.checkKnown
 import com.openai.core.checkRequired
+import com.openai.core.getOrThrow
 import com.openai.core.toImmutable
 import com.openai.errors.OpenAIInvalidDataException
 import java.util.Collections
@@ -30,6 +41,7 @@ private constructor(
     private val functionCall: JsonField<ChatCompletionMessage.FunctionCall>,
     private val toolCalls: JsonField<List<ChatCompletionMessageToolCall>>,
     private val id: JsonField<String>,
+    private val contentParts: JsonField<List<ContentPart>>,
     private val additionalProperties: MutableMap<String, JsonValue>,
 ) {
 
@@ -51,6 +63,9 @@ private constructor(
         @ExcludeMissing
         toolCalls: JsonField<List<ChatCompletionMessageToolCall>> = JsonMissing.of(),
         @JsonProperty("id") @ExcludeMissing id: JsonField<String> = JsonMissing.of(),
+        @JsonProperty("content_parts")
+        @ExcludeMissing
+        contentParts: JsonField<List<ContentPart>> = JsonMissing.of(),
     ) : this(
         content,
         refusal,
@@ -60,6 +75,7 @@ private constructor(
         functionCall,
         toolCalls,
         id,
+        contentParts,
         mutableMapOf(),
     )
 
@@ -151,6 +167,15 @@ private constructor(
     fun id(): String = id.getRequired("id")
 
     /**
+     * If a content parts array was provided, this is an array of `text` and `image_url` parts.
+     * Otherwise, null.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun contentParts(): Optional<List<ContentPart>> = contentParts.getOptional("content_parts")
+
+    /**
      * Returns the raw JSON value of [content].
      *
      * Unlike [content], this method doesn't throw if the JSON field has an unexpected type.
@@ -206,6 +231,15 @@ private constructor(
      */
     @JsonProperty("id") @ExcludeMissing fun _id(): JsonField<String> = id
 
+    /**
+     * Returns the raw JSON value of [contentParts].
+     *
+     * Unlike [contentParts], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    @JsonProperty("content_parts")
+    @ExcludeMissing
+    fun _contentParts(): JsonField<List<ContentPart>> = contentParts
+
     @JsonAnySetter
     private fun putAdditionalProperty(key: String, value: JsonValue) {
         additionalProperties.put(key, value)
@@ -244,6 +278,7 @@ private constructor(
         private var functionCall: JsonField<ChatCompletionMessage.FunctionCall> = JsonMissing.of()
         private var toolCalls: JsonField<MutableList<ChatCompletionMessageToolCall>>? = null
         private var id: JsonField<String>? = null
+        private var contentParts: JsonField<MutableList<ContentPart>>? = null
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
         @JvmSynthetic
@@ -256,6 +291,7 @@ private constructor(
             functionCall = chatCompletionStoreMessage.functionCall
             toolCalls = chatCompletionStoreMessage.toolCalls.map { it.toMutableList() }
             id = chatCompletionStoreMessage.id
+            contentParts = chatCompletionStoreMessage.contentParts.map { it.toMutableList() }
             additionalProperties = chatCompletionStoreMessage.additionalProperties.toMutableMap()
         }
 
@@ -407,6 +443,58 @@ private constructor(
          */
         fun id(id: JsonField<String>) = apply { this.id = id }
 
+        /**
+         * If a content parts array was provided, this is an array of `text` and `image_url` parts.
+         * Otherwise, null.
+         */
+        fun contentParts(contentParts: List<ContentPart>?) =
+            contentParts(JsonField.ofNullable(contentParts))
+
+        /** Alias for calling [Builder.contentParts] with `contentParts.orElse(null)`. */
+        fun contentParts(contentParts: Optional<List<ContentPart>>) =
+            contentParts(contentParts.getOrNull())
+
+        /**
+         * Sets [Builder.contentParts] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.contentParts] with a well-typed `List<ContentPart>`
+         * value instead. This method is primarily for setting the field to an undocumented or not
+         * yet supported value.
+         */
+        fun contentParts(contentParts: JsonField<List<ContentPart>>) = apply {
+            this.contentParts = contentParts.map { it.toMutableList() }
+        }
+
+        /**
+         * Adds a single [ContentPart] to [contentParts].
+         *
+         * @throws IllegalStateException if the field was previously set to a non-list.
+         */
+        fun addContentPart(contentPart: ContentPart) = apply {
+            contentParts =
+                (contentParts ?: JsonField.of(mutableListOf())).also {
+                    checkKnown("contentParts", it).add(contentPart)
+                }
+        }
+
+        /**
+         * Alias for calling [addContentPart] with
+         * `ContentPart.ofChatCompletionContentPartText(chatCompletionContentPartText)`.
+         */
+        fun addContentPart(chatCompletionContentPartText: ChatCompletionContentPartText) =
+            addContentPart(
+                ContentPart.ofChatCompletionContentPartText(chatCompletionContentPartText)
+            )
+
+        /**
+         * Alias for calling [addContentPart] with
+         * `ContentPart.ofChatCompletionContentPartImage(chatCompletionContentPartImage)`.
+         */
+        fun addContentPart(chatCompletionContentPartImage: ChatCompletionContentPartImage) =
+            addContentPart(
+                ContentPart.ofChatCompletionContentPartImage(chatCompletionContentPartImage)
+            )
+
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
             this.additionalProperties.clear()
             putAllAdditionalProperties(additionalProperties)
@@ -450,6 +538,7 @@ private constructor(
                 functionCall,
                 (toolCalls ?: JsonMissing.of()).map { it.toImmutable() },
                 checkRequired("id", id),
+                (contentParts ?: JsonMissing.of()).map { it.toImmutable() },
                 additionalProperties.toMutableMap(),
             )
     }
@@ -473,6 +562,7 @@ private constructor(
         functionCall().ifPresent { it.validate() }
         toolCalls().ifPresent { it.forEach { it.validate() } }
         id()
+        contentParts().ifPresent { it.forEach { it.validate() } }
         validated = true
     }
 
@@ -498,22 +588,240 @@ private constructor(
             (audio.asKnown().getOrNull()?.validity() ?: 0) +
             (functionCall.asKnown().getOrNull()?.validity() ?: 0) +
             (toolCalls.asKnown().getOrNull()?.sumOf { it.validity().toInt() } ?: 0) +
-            (if (id.asKnown().isPresent) 1 else 0)
+            (if (id.asKnown().isPresent) 1 else 0) +
+            (contentParts.asKnown().getOrNull()?.sumOf { it.validity().toInt() } ?: 0)
+
+    /** Learn about [text inputs](https://platform.openai.com/docs/guides/text-generation). */
+    @JsonDeserialize(using = ContentPart.Deserializer::class)
+    @JsonSerialize(using = ContentPart.Serializer::class)
+    class ContentPart
+    private constructor(
+        private val chatCompletionContentPartText: ChatCompletionContentPartText? = null,
+        private val chatCompletionContentPartImage: ChatCompletionContentPartImage? = null,
+        private val _json: JsonValue? = null,
+    ) {
+
+        /** Learn about [text inputs](https://platform.openai.com/docs/guides/text-generation). */
+        fun chatCompletionContentPartText(): Optional<ChatCompletionContentPartText> =
+            Optional.ofNullable(chatCompletionContentPartText)
+
+        /** Learn about [image inputs](https://platform.openai.com/docs/guides/vision). */
+        fun chatCompletionContentPartImage(): Optional<ChatCompletionContentPartImage> =
+            Optional.ofNullable(chatCompletionContentPartImage)
+
+        fun isChatCompletionContentPartText(): Boolean = chatCompletionContentPartText != null
+
+        fun isChatCompletionContentPartImage(): Boolean = chatCompletionContentPartImage != null
+
+        /** Learn about [text inputs](https://platform.openai.com/docs/guides/text-generation). */
+        fun asChatCompletionContentPartText(): ChatCompletionContentPartText =
+            chatCompletionContentPartText.getOrThrow("chatCompletionContentPartText")
+
+        /** Learn about [image inputs](https://platform.openai.com/docs/guides/vision). */
+        fun asChatCompletionContentPartImage(): ChatCompletionContentPartImage =
+            chatCompletionContentPartImage.getOrThrow("chatCompletionContentPartImage")
+
+        fun _json(): Optional<JsonValue> = Optional.ofNullable(_json)
+
+        fun <T> accept(visitor: Visitor<T>): T =
+            when {
+                chatCompletionContentPartText != null ->
+                    visitor.visitChatCompletionContentPartText(chatCompletionContentPartText)
+                chatCompletionContentPartImage != null ->
+                    visitor.visitChatCompletionContentPartImage(chatCompletionContentPartImage)
+                else -> visitor.unknown(_json)
+            }
+
+        private var validated: Boolean = false
+
+        fun validate(): ContentPart = apply {
+            if (validated) {
+                return@apply
+            }
+
+            accept(
+                object : Visitor<Unit> {
+                    override fun visitChatCompletionContentPartText(
+                        chatCompletionContentPartText: ChatCompletionContentPartText
+                    ) {
+                        chatCompletionContentPartText.validate()
+                    }
+
+                    override fun visitChatCompletionContentPartImage(
+                        chatCompletionContentPartImage: ChatCompletionContentPartImage
+                    ) {
+                        chatCompletionContentPartImage.validate()
+                    }
+                }
+            )
+            validated = true
+        }
+
+        fun isValid(): Boolean =
+            try {
+                validate()
+                true
+            } catch (e: OpenAIInvalidDataException) {
+                false
+            }
+
+        /**
+         * Returns a score indicating how many valid values are contained in this object
+         * recursively.
+         *
+         * Used for best match union deserialization.
+         */
+        @JvmSynthetic
+        internal fun validity(): Int =
+            accept(
+                object : Visitor<Int> {
+                    override fun visitChatCompletionContentPartText(
+                        chatCompletionContentPartText: ChatCompletionContentPartText
+                    ) = chatCompletionContentPartText.validity()
+
+                    override fun visitChatCompletionContentPartImage(
+                        chatCompletionContentPartImage: ChatCompletionContentPartImage
+                    ) = chatCompletionContentPartImage.validity()
+
+                    override fun unknown(json: JsonValue?) = 0
+                }
+            )
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) {
+                return true
+            }
+
+            return /* spotless:off */ other is ContentPart && chatCompletionContentPartText == other.chatCompletionContentPartText && chatCompletionContentPartImage == other.chatCompletionContentPartImage /* spotless:on */
+        }
+
+        override fun hashCode(): Int = /* spotless:off */ Objects.hash(chatCompletionContentPartText, chatCompletionContentPartImage) /* spotless:on */
+
+        override fun toString(): String =
+            when {
+                chatCompletionContentPartText != null ->
+                    "ContentPart{chatCompletionContentPartText=$chatCompletionContentPartText}"
+                chatCompletionContentPartImage != null ->
+                    "ContentPart{chatCompletionContentPartImage=$chatCompletionContentPartImage}"
+                _json != null -> "ContentPart{_unknown=$_json}"
+                else -> throw IllegalStateException("Invalid ContentPart")
+            }
+
+        companion object {
+
+            /**
+             * Learn about [text inputs](https://platform.openai.com/docs/guides/text-generation).
+             */
+            @JvmStatic
+            fun ofChatCompletionContentPartText(
+                chatCompletionContentPartText: ChatCompletionContentPartText
+            ) = ContentPart(chatCompletionContentPartText = chatCompletionContentPartText)
+
+            /** Learn about [image inputs](https://platform.openai.com/docs/guides/vision). */
+            @JvmStatic
+            fun ofChatCompletionContentPartImage(
+                chatCompletionContentPartImage: ChatCompletionContentPartImage
+            ) = ContentPart(chatCompletionContentPartImage = chatCompletionContentPartImage)
+        }
+
+        /**
+         * An interface that defines how to map each variant of [ContentPart] to a value of type
+         * [T].
+         */
+        interface Visitor<out T> {
+
+            /**
+             * Learn about [text inputs](https://platform.openai.com/docs/guides/text-generation).
+             */
+            fun visitChatCompletionContentPartText(
+                chatCompletionContentPartText: ChatCompletionContentPartText
+            ): T
+
+            /** Learn about [image inputs](https://platform.openai.com/docs/guides/vision). */
+            fun visitChatCompletionContentPartImage(
+                chatCompletionContentPartImage: ChatCompletionContentPartImage
+            ): T
+
+            /**
+             * Maps an unknown variant of [ContentPart] to a value of type [T].
+             *
+             * An instance of [ContentPart] can contain an unknown variant if it was deserialized
+             * from data that doesn't match any known variant. For example, if the SDK is on an
+             * older version than the API, then the API may respond with new variants that the SDK
+             * is unaware of.
+             *
+             * @throws OpenAIInvalidDataException in the default implementation.
+             */
+            fun unknown(json: JsonValue?): T {
+                throw OpenAIInvalidDataException("Unknown ContentPart: $json")
+            }
+        }
+
+        internal class Deserializer : BaseDeserializer<ContentPart>(ContentPart::class) {
+
+            override fun ObjectCodec.deserialize(node: JsonNode): ContentPart {
+                val json = JsonValue.fromJsonNode(node)
+
+                val bestMatches =
+                    sequenceOf(
+                            tryDeserialize(node, jacksonTypeRef<ChatCompletionContentPartText>())
+                                ?.let {
+                                    ContentPart(chatCompletionContentPartText = it, _json = json)
+                                },
+                            tryDeserialize(node, jacksonTypeRef<ChatCompletionContentPartImage>())
+                                ?.let {
+                                    ContentPart(chatCompletionContentPartImage = it, _json = json)
+                                },
+                        )
+                        .filterNotNull()
+                        .allMaxBy { it.validity() }
+                        .toList()
+                return when (bestMatches.size) {
+                    // This can happen if what we're deserializing is completely incompatible with
+                    // all the possible variants (e.g. deserializing from boolean).
+                    0 -> ContentPart(_json = json)
+                    1 -> bestMatches.single()
+                    // If there's more than one match with the highest validity, then use the first
+                    // completely valid match, or simply the first match if none are completely
+                    // valid.
+                    else -> bestMatches.firstOrNull { it.isValid() } ?: bestMatches.first()
+                }
+            }
+        }
+
+        internal class Serializer : BaseSerializer<ContentPart>(ContentPart::class) {
+
+            override fun serialize(
+                value: ContentPart,
+                generator: JsonGenerator,
+                provider: SerializerProvider,
+            ) {
+                when {
+                    value.chatCompletionContentPartText != null ->
+                        generator.writeObject(value.chatCompletionContentPartText)
+                    value.chatCompletionContentPartImage != null ->
+                        generator.writeObject(value.chatCompletionContentPartImage)
+                    value._json != null -> generator.writeObject(value._json)
+                    else -> throw IllegalStateException("Invalid ContentPart")
+                }
+            }
+        }
+    }
 
     override fun equals(other: Any?): Boolean {
         if (this === other) {
             return true
         }
 
-        return /* spotless:off */ other is ChatCompletionStoreMessage && content == other.content && refusal == other.refusal && role == other.role && annotations == other.annotations && audio == other.audio && functionCall == other.functionCall && toolCalls == other.toolCalls && id == other.id && additionalProperties == other.additionalProperties /* spotless:on */
+        return /* spotless:off */ other is ChatCompletionStoreMessage && content == other.content && refusal == other.refusal && role == other.role && annotations == other.annotations && audio == other.audio && functionCall == other.functionCall && toolCalls == other.toolCalls && id == other.id && contentParts == other.contentParts && additionalProperties == other.additionalProperties /* spotless:on */
     }
 
     /* spotless:off */
-    private val hashCode: Int by lazy { Objects.hash(content, refusal, role, annotations, audio, functionCall, toolCalls, id, additionalProperties) }
+    private val hashCode: Int by lazy { Objects.hash(content, refusal, role, annotations, audio, functionCall, toolCalls, id, contentParts, additionalProperties) }
     /* spotless:on */
 
     override fun hashCode(): Int = hashCode
 
     override fun toString() =
-        "ChatCompletionStoreMessage{content=$content, refusal=$refusal, role=$role, annotations=$annotations, audio=$audio, functionCall=$functionCall, toolCalls=$toolCalls, id=$id, additionalProperties=$additionalProperties}"
+        "ChatCompletionStoreMessage{content=$content, refusal=$refusal, role=$role, annotations=$annotations, audio=$audio, functionCall=$functionCall, toolCalls=$toolCalls, id=$id, contentParts=$contentParts, additionalProperties=$additionalProperties}"
 }

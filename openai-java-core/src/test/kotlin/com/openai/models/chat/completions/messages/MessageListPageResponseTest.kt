@@ -5,6 +5,7 @@ package com.openai.models.chat.completions.messages
 import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
 import com.openai.core.jsonMapper
 import com.openai.models.chat.completions.ChatCompletionAudio
+import com.openai.models.chat.completions.ChatCompletionContentPartText
 import com.openai.models.chat.completions.ChatCompletionMessage
 import com.openai.models.chat.completions.ChatCompletionMessageToolCall
 import com.openai.models.chat.completions.ChatCompletionStoreMessage
@@ -59,6 +60,9 @@ internal class MessageListPageResponseTest {
                                 .build()
                         )
                         .id("id")
+                        .addContentPart(
+                            ChatCompletionContentPartText.builder().text("text").build()
+                        )
                         .build()
                 )
                 .firstId("first_id")
@@ -109,6 +113,7 @@ internal class MessageListPageResponseTest {
                             .build()
                     )
                     .id("id")
+                    .addContentPart(ChatCompletionContentPartText.builder().text("text").build())
                     .build()
             )
         assertThat(messageListPageResponse.firstId()).isEqualTo("first_id")
@@ -163,6 +168,9 @@ internal class MessageListPageResponseTest {
                                 .build()
                         )
                         .id("id")
+                        .addContentPart(
+                            ChatCompletionContentPartText.builder().text("text").build()
+                        )
                         .build()
                 )
                 .firstId("first_id")

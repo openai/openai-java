@@ -55,7 +55,9 @@ private constructor(
     private val maxToolCalls: JsonField<Long>,
     private val previousResponseId: JsonField<String>,
     private val prompt: JsonField<ResponsePrompt>,
+    private val promptCacheKey: JsonField<String>,
     private val reasoning: JsonField<Reasoning>,
+    private val safetyIdentifier: JsonField<String>,
     private val serviceTier: JsonField<ServiceTier>,
     private val status: JsonField<ResponseStatus>,
     private val text: JsonField<ResponseTextConfig>,
@@ -109,9 +111,15 @@ private constructor(
         @JsonProperty("prompt")
         @ExcludeMissing
         prompt: JsonField<ResponsePrompt> = JsonMissing.of(),
+        @JsonProperty("prompt_cache_key")
+        @ExcludeMissing
+        promptCacheKey: JsonField<String> = JsonMissing.of(),
         @JsonProperty("reasoning")
         @ExcludeMissing
         reasoning: JsonField<Reasoning> = JsonMissing.of(),
+        @JsonProperty("safety_identifier")
+        @ExcludeMissing
+        safetyIdentifier: JsonField<String> = JsonMissing.of(),
         @JsonProperty("service_tier")
         @ExcludeMissing
         serviceTier: JsonField<ServiceTier> = JsonMissing.of(),
@@ -149,7 +157,9 @@ private constructor(
         maxToolCalls,
         previousResponseId,
         prompt,
+        promptCacheKey,
         reasoning,
+        safetyIdentifier,
         serviceTier,
         status,
         text,
@@ -361,6 +371,16 @@ private constructor(
     fun prompt(): Optional<ResponsePrompt> = prompt.getOptional("prompt")
 
     /**
+     * Used by OpenAI to cache responses for similar requests to optimize your cache hit rates.
+     * Replaces the `user` field.
+     * [Learn more](https://platform.openai.com/docs/guides/prompt-caching).
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun promptCacheKey(): Optional<String> = promptCacheKey.getOptional("prompt_cache_key")
+
+    /**
      * **o-series models only**
      *
      * Configuration options for
@@ -370,6 +390,18 @@ private constructor(
      *   server responded with an unexpected value).
      */
     fun reasoning(): Optional<Reasoning> = reasoning.getOptional("reasoning")
+
+    /**
+     * A stable identifier used to help detect users of your application that may be violating
+     * OpenAI's usage policies. The IDs should be a string that uniquely identifies each user. We
+     * recommend hashing their username or email address, in order to avoid sending us any
+     * identifying information.
+     * [Learn more](https://platform.openai.com/docs/guides/safety-best-practices#safety-identifiers).
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun safetyIdentifier(): Optional<String> = safetyIdentifier.getOptional("safety_identifier")
 
     /**
      * Specifies the processing type used for serving the request.
@@ -443,14 +475,16 @@ private constructor(
     fun usage(): Optional<ResponseUsage> = usage.getOptional("usage")
 
     /**
-     * A stable identifier for your end-users. Used to boost cache hit rates by better bucketing
-     * similar requests and to help OpenAI detect and prevent abuse.
-     * [Learn more](https://platform.openai.com/docs/guides/safety-best-practices#end-user-ids).
+     * This field is being replaced by `safety_identifier` and `prompt_cache_key`. Use
+     * `prompt_cache_key` instead to maintain caching optimizations. A stable identifier for your
+     * end-users. Used to boost cache hit rates by better bucketing similar requests and to help
+     * OpenAI detect and prevent abuse.
+     * [Learn more](https://platform.openai.com/docs/guides/safety-best-practices#safety-identifiers).
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
      */
-    fun user(): Optional<String> = user.getOptional("user")
+    @Deprecated("deprecated") fun user(): Optional<String> = user.getOptional("user")
 
     /**
      * Returns the raw JSON value of [id].
@@ -598,11 +632,30 @@ private constructor(
     @JsonProperty("prompt") @ExcludeMissing fun _prompt(): JsonField<ResponsePrompt> = prompt
 
     /**
+     * Returns the raw JSON value of [promptCacheKey].
+     *
+     * Unlike [promptCacheKey], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    @JsonProperty("prompt_cache_key")
+    @ExcludeMissing
+    fun _promptCacheKey(): JsonField<String> = promptCacheKey
+
+    /**
      * Returns the raw JSON value of [reasoning].
      *
      * Unlike [reasoning], this method doesn't throw if the JSON field has an unexpected type.
      */
     @JsonProperty("reasoning") @ExcludeMissing fun _reasoning(): JsonField<Reasoning> = reasoning
+
+    /**
+     * Returns the raw JSON value of [safetyIdentifier].
+     *
+     * Unlike [safetyIdentifier], this method doesn't throw if the JSON field has an unexpected
+     * type.
+     */
+    @JsonProperty("safety_identifier")
+    @ExcludeMissing
+    fun _safetyIdentifier(): JsonField<String> = safetyIdentifier
 
     /**
      * Returns the raw JSON value of [serviceTier].
@@ -655,7 +708,10 @@ private constructor(
      *
      * Unlike [user], this method doesn't throw if the JSON field has an unexpected type.
      */
-    @JsonProperty("user") @ExcludeMissing fun _user(): JsonField<String> = user
+    @Deprecated("deprecated")
+    @JsonProperty("user")
+    @ExcludeMissing
+    fun _user(): JsonField<String> = user
 
     @JsonAnySetter
     private fun putAdditionalProperty(key: String, value: JsonValue) {
@@ -716,7 +772,9 @@ private constructor(
         private var maxToolCalls: JsonField<Long> = JsonMissing.of()
         private var previousResponseId: JsonField<String> = JsonMissing.of()
         private var prompt: JsonField<ResponsePrompt> = JsonMissing.of()
+        private var promptCacheKey: JsonField<String> = JsonMissing.of()
         private var reasoning: JsonField<Reasoning> = JsonMissing.of()
+        private var safetyIdentifier: JsonField<String> = JsonMissing.of()
         private var serviceTier: JsonField<ServiceTier> = JsonMissing.of()
         private var status: JsonField<ResponseStatus> = JsonMissing.of()
         private var text: JsonField<ResponseTextConfig> = JsonMissing.of()
@@ -747,7 +805,9 @@ private constructor(
             maxToolCalls = response.maxToolCalls
             previousResponseId = response.previousResponseId
             prompt = response.prompt
+            promptCacheKey = response.promptCacheKey
             reasoning = response.reasoning
+            safetyIdentifier = response.safetyIdentifier
             serviceTier = response.serviceTier
             status = response.status
             text = response.text
@@ -1329,6 +1389,24 @@ private constructor(
         fun prompt(prompt: JsonField<ResponsePrompt>) = apply { this.prompt = prompt }
 
         /**
+         * Used by OpenAI to cache responses for similar requests to optimize your cache hit rates.
+         * Replaces the `user` field.
+         * [Learn more](https://platform.openai.com/docs/guides/prompt-caching).
+         */
+        fun promptCacheKey(promptCacheKey: String) = promptCacheKey(JsonField.of(promptCacheKey))
+
+        /**
+         * Sets [Builder.promptCacheKey] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.promptCacheKey] with a well-typed [String] value
+         * instead. This method is primarily for setting the field to an undocumented or not yet
+         * supported value.
+         */
+        fun promptCacheKey(promptCacheKey: JsonField<String>) = apply {
+            this.promptCacheKey = promptCacheKey
+        }
+
+        /**
          * **o-series models only**
          *
          * Configuration options for
@@ -1347,6 +1425,27 @@ private constructor(
          * value.
          */
         fun reasoning(reasoning: JsonField<Reasoning>) = apply { this.reasoning = reasoning }
+
+        /**
+         * A stable identifier used to help detect users of your application that may be violating
+         * OpenAI's usage policies. The IDs should be a string that uniquely identifies each user.
+         * We recommend hashing their username or email address, in order to avoid sending us any
+         * identifying information.
+         * [Learn more](https://platform.openai.com/docs/guides/safety-best-practices#safety-identifiers).
+         */
+        fun safetyIdentifier(safetyIdentifier: String) =
+            safetyIdentifier(JsonField.of(safetyIdentifier))
+
+        /**
+         * Sets [Builder.safetyIdentifier] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.safetyIdentifier] with a well-typed [String] value
+         * instead. This method is primarily for setting the field to an undocumented or not yet
+         * supported value.
+         */
+        fun safetyIdentifier(safetyIdentifier: JsonField<String>) = apply {
+            this.safetyIdentifier = safetyIdentifier
+        }
 
         /**
          * Specifies the processing type used for serving the request.
@@ -1475,11 +1574,13 @@ private constructor(
         fun usage(usage: JsonField<ResponseUsage>) = apply { this.usage = usage }
 
         /**
-         * A stable identifier for your end-users. Used to boost cache hit rates by better bucketing
-         * similar requests and to help OpenAI detect and prevent abuse.
-         * [Learn more](https://platform.openai.com/docs/guides/safety-best-practices#end-user-ids).
+         * This field is being replaced by `safety_identifier` and `prompt_cache_key`. Use
+         * `prompt_cache_key` instead to maintain caching optimizations. A stable identifier for
+         * your end-users. Used to boost cache hit rates by better bucketing similar requests and to
+         * help OpenAI detect and prevent abuse.
+         * [Learn more](https://platform.openai.com/docs/guides/safety-best-practices#safety-identifiers).
          */
-        fun user(user: String) = user(JsonField.of(user))
+        @Deprecated("deprecated") fun user(user: String) = user(JsonField.of(user))
 
         /**
          * Sets [Builder.user] to an arbitrary JSON value.
@@ -1487,7 +1588,7 @@ private constructor(
          * You should usually call [Builder.user] with a well-typed [String] value instead. This
          * method is primarily for setting the field to an undocumented or not yet supported value.
          */
-        fun user(user: JsonField<String>) = apply { this.user = user }
+        @Deprecated("deprecated") fun user(user: JsonField<String>) = apply { this.user = user }
 
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
             this.additionalProperties.clear()
@@ -1553,7 +1654,9 @@ private constructor(
                 maxToolCalls,
                 previousResponseId,
                 prompt,
+                promptCacheKey,
                 reasoning,
+                safetyIdentifier,
                 serviceTier,
                 status,
                 text,
@@ -1595,7 +1698,9 @@ private constructor(
         maxToolCalls()
         previousResponseId()
         prompt().ifPresent { it.validate() }
+        promptCacheKey()
         reasoning().ifPresent { it.validate() }
+        safetyIdentifier()
         serviceTier().ifPresent { it.validate() }
         status().ifPresent { it.validate() }
         text().ifPresent { it.validate() }
@@ -1640,7 +1745,9 @@ private constructor(
             (if (maxToolCalls.asKnown().isPresent) 1 else 0) +
             (if (previousResponseId.asKnown().isPresent) 1 else 0) +
             (prompt.asKnown().getOrNull()?.validity() ?: 0) +
+            (if (promptCacheKey.asKnown().isPresent) 1 else 0) +
             (reasoning.asKnown().getOrNull()?.validity() ?: 0) +
+            (if (safetyIdentifier.asKnown().isPresent) 1 else 0) +
             (serviceTier.asKnown().getOrNull()?.validity() ?: 0) +
             (status.asKnown().getOrNull()?.validity() ?: 0) +
             (text.asKnown().getOrNull()?.validity() ?: 0) +
@@ -2817,15 +2924,15 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is Response && id == other.id && createdAt == other.createdAt && error == other.error && incompleteDetails == other.incompleteDetails && instructions == other.instructions && metadata == other.metadata && model == other.model && object_ == other.object_ && output == other.output && parallelToolCalls == other.parallelToolCalls && temperature == other.temperature && toolChoice == other.toolChoice && tools == other.tools && topP == other.topP && background == other.background && maxOutputTokens == other.maxOutputTokens && maxToolCalls == other.maxToolCalls && previousResponseId == other.previousResponseId && prompt == other.prompt && reasoning == other.reasoning && serviceTier == other.serviceTier && status == other.status && text == other.text && topLogprobs == other.topLogprobs && truncation == other.truncation && usage == other.usage && user == other.user && additionalProperties == other.additionalProperties /* spotless:on */
+        return /* spotless:off */ other is Response && id == other.id && createdAt == other.createdAt && error == other.error && incompleteDetails == other.incompleteDetails && instructions == other.instructions && metadata == other.metadata && model == other.model && object_ == other.object_ && output == other.output && parallelToolCalls == other.parallelToolCalls && temperature == other.temperature && toolChoice == other.toolChoice && tools == other.tools && topP == other.topP && background == other.background && maxOutputTokens == other.maxOutputTokens && maxToolCalls == other.maxToolCalls && previousResponseId == other.previousResponseId && prompt == other.prompt && promptCacheKey == other.promptCacheKey && reasoning == other.reasoning && safetyIdentifier == other.safetyIdentifier && serviceTier == other.serviceTier && status == other.status && text == other.text && topLogprobs == other.topLogprobs && truncation == other.truncation && usage == other.usage && user == other.user && additionalProperties == other.additionalProperties /* spotless:on */
     }
 
     /* spotless:off */
-    private val hashCode: Int by lazy { Objects.hash(id, createdAt, error, incompleteDetails, instructions, metadata, model, object_, output, parallelToolCalls, temperature, toolChoice, tools, topP, background, maxOutputTokens, maxToolCalls, previousResponseId, prompt, reasoning, serviceTier, status, text, topLogprobs, truncation, usage, user, additionalProperties) }
+    private val hashCode: Int by lazy { Objects.hash(id, createdAt, error, incompleteDetails, instructions, metadata, model, object_, output, parallelToolCalls, temperature, toolChoice, tools, topP, background, maxOutputTokens, maxToolCalls, previousResponseId, prompt, promptCacheKey, reasoning, safetyIdentifier, serviceTier, status, text, topLogprobs, truncation, usage, user, additionalProperties) }
     /* spotless:on */
 
     override fun hashCode(): Int = hashCode
 
     override fun toString() =
-        "Response{id=$id, createdAt=$createdAt, error=$error, incompleteDetails=$incompleteDetails, instructions=$instructions, metadata=$metadata, model=$model, object_=$object_, output=$output, parallelToolCalls=$parallelToolCalls, temperature=$temperature, toolChoice=$toolChoice, tools=$tools, topP=$topP, background=$background, maxOutputTokens=$maxOutputTokens, maxToolCalls=$maxToolCalls, previousResponseId=$previousResponseId, prompt=$prompt, reasoning=$reasoning, serviceTier=$serviceTier, status=$status, text=$text, topLogprobs=$topLogprobs, truncation=$truncation, usage=$usage, user=$user, additionalProperties=$additionalProperties}"
+        "Response{id=$id, createdAt=$createdAt, error=$error, incompleteDetails=$incompleteDetails, instructions=$instructions, metadata=$metadata, model=$model, object_=$object_, output=$output, parallelToolCalls=$parallelToolCalls, temperature=$temperature, toolChoice=$toolChoice, tools=$tools, topP=$topP, background=$background, maxOutputTokens=$maxOutputTokens, maxToolCalls=$maxToolCalls, previousResponseId=$previousResponseId, prompt=$prompt, promptCacheKey=$promptCacheKey, reasoning=$reasoning, safetyIdentifier=$safetyIdentifier, serviceTier=$serviceTier, status=$status, text=$text, topLogprobs=$topLogprobs, truncation=$truncation, usage=$usage, user=$user, additionalProperties=$additionalProperties}"
 }

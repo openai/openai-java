@@ -189,6 +189,8 @@ internal class StructuredChatCompletionCreateParamsTest {
                 DelegationWriteTestCase("prediction", NULLABLE),
                 DelegationWriteTestCase("prediction", OPTIONAL),
                 DelegationWriteTestCase("prediction", JSON_FIELD),
+                DelegationWriteTestCase("promptCacheKey", STRING),
+                DelegationWriteTestCase("promptCacheKey", JSON_FIELD),
                 DelegationWriteTestCase("presencePenalty", NULLABLE_DOUBLE),
                 DelegationWriteTestCase("presencePenalty", DOUBLE),
                 DelegationWriteTestCase("presencePenalty", OPTIONAL),
@@ -197,6 +199,8 @@ internal class StructuredChatCompletionCreateParamsTest {
                 DelegationWriteTestCase("reasoningEffort", OPTIONAL),
                 DelegationWriteTestCase("reasoningEffort", JSON_FIELD),
                 // `responseFormat()` is a special case and has its own unit test.
+                DelegationWriteTestCase("safetyIdentifier", STRING),
+                DelegationWriteTestCase("safetyIdentifier", JSON_FIELD),
                 DelegationWriteTestCase("seed", NULLABLE_LONG),
                 DelegationWriteTestCase("seed", LONG),
                 DelegationWriteTestCase("seed", OPTIONAL),
