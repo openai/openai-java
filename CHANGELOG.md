@@ -1,5 +1,15 @@
 # Changelog
 
+## 2.20.0 (2025-07-30)
+
+Full Changelog: [v2.19.2...v2.20.0](https://github.com/openai/openai-java/compare/v2.19.2...v2.20.0)
+
+### Features
+
+* add retryable exception ([4916163](https://github.com/openai/openai-java/commit/4916163ef5e9d06b137341373ab3eb4cc7e3038b))
+* **api:** manual updates ([c4f9a92](https://github.com/openai/openai-java/commit/c4f9a921b63366b3abf3d502c895ec2bfed5329a))
+* **client:** ensure compat with proguard ([0d4db65](https://github.com/openai/openai-java/commit/0d4db656adbbdced4d7d9493cf176045e38d3b89))
+
 ## 2.19.2 (2025-07-28)
 
 Full Changelog: [v2.19.1...v2.19.2](https://github.com/openai/openai-java/compare/v2.19.1...v2.19.2)
