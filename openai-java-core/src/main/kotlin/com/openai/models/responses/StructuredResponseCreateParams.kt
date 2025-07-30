@@ -230,6 +230,16 @@ class StructuredResponseCreateParams<T : Any>(
         /** @see ResponseCreateParams.Builder.prompt */
         fun prompt(prompt: JsonField<ResponsePrompt>) = apply { paramsBuilder.prompt(prompt) }
 
+        /** @see ResponseCreateParams.Builder.promptCacheKey */
+        fun promptCacheKey(promptCacheKey: String) = apply {
+            paramsBuilder.promptCacheKey(promptCacheKey)
+        }
+
+        /** @see ResponseCreateParams.Builder.promptCacheKey */
+        fun promptCacheKey(promptCacheKey: JsonField<String>) = apply {
+            paramsBuilder.promptCacheKey(promptCacheKey)
+        }
+
         /** @see ResponseCreateParams.Builder.reasoning */
         fun reasoning(reasoning: Reasoning?) = apply { paramsBuilder.reasoning(reasoning) }
 
@@ -239,6 +249,16 @@ class StructuredResponseCreateParams<T : Any>(
         /** @see ResponseCreateParams.Builder.reasoning */
         fun reasoning(reasoning: JsonField<Reasoning>) = apply {
             paramsBuilder.reasoning(reasoning)
+        }
+
+        /** @see ResponseCreateParams.Builder.safetyIdentifier */
+        fun safetyIdentifier(safetyIdentifier: String) = apply {
+            paramsBuilder.safetyIdentifier(safetyIdentifier)
+        }
+
+        /** @see ResponseCreateParams.Builder.safetyIdentifier */
+        fun safetyIdentifier(safetyIdentifier: JsonField<String>) = apply {
+            paramsBuilder.safetyIdentifier(safetyIdentifier)
         }
 
         /** @see ResponseCreateParams.Builder.serviceTier */

@@ -82,8 +82,14 @@ class StructuredResponse<T : Any>(
     /** @see Response.prompt */
     fun prompt(): Optional<ResponsePrompt> = rawResponse.prompt()
 
+    /** @see Response.promptCacheKey */
+    fun promptCacheKey(): Optional<String> = rawResponse.promptCacheKey()
+
     /** @see Response.reasoning */
     fun reasoning(): Optional<Reasoning> = rawResponse.reasoning()
+
+    /** @see Response.safetyIdentifier */
+    fun safetyIdentifier(): Optional<String> = rawResponse.safetyIdentifier()
 
     /** @see Response.serviceTier */
     fun serviceTier(): Optional<Response.ServiceTier> = rawResponse.serviceTier()
@@ -161,8 +167,14 @@ class StructuredResponse<T : Any>(
     /** @see Response._prompt */
     fun _prompt(): JsonField<ResponsePrompt> = rawResponse._prompt()
 
+    /** @see Response._promptCacheKey */
+    fun _promptCacheKey(): JsonField<String> = rawResponse._promptCacheKey()
+
     /** @see Response._reasoning */
     fun _reasoning(): JsonField<Reasoning> = rawResponse._reasoning()
+
+    /** @see Response._safetyIdentifier */
+    fun _safetyIdentifier(): JsonField<String> = rawResponse._safetyIdentifier()
 
     /** @see Response._serviceTier */
     fun _serviceTier(): JsonField<Response.ServiceTier> = rawResponse._serviceTier()

@@ -59,6 +59,7 @@ internal class ResponseServiceAsyncTest {
                             .version("version")
                             .build()
                     )
+                    .promptCacheKey("prompt-cache-key-1234")
                     .reasoning(
                         Reasoning.builder()
                             .effort(ReasoningEffort.LOW)
@@ -66,6 +67,7 @@ internal class ResponseServiceAsyncTest {
                             .summary(Reasoning.Summary.AUTO)
                             .build()
                     )
+                    .safetyIdentifier("safety-identifier-1234")
                     .serviceTier(ResponseCreateParams.ServiceTier.AUTO)
                     .store(true)
                     .temperature(1.0)
@@ -135,6 +137,7 @@ internal class ResponseServiceAsyncTest {
                             .version("version")
                             .build()
                     )
+                    .promptCacheKey("prompt-cache-key-1234")
                     .reasoning(
                         Reasoning.builder()
                             .effort(ReasoningEffort.LOW)
@@ -142,6 +145,7 @@ internal class ResponseServiceAsyncTest {
                             .summary(Reasoning.Summary.AUTO)
                             .build()
                     )
+                    .safetyIdentifier("safety-identifier-1234")
                     .serviceTier(ResponseCreateParams.ServiceTier.AUTO)
                     .store(true)
                     .temperature(1.0)
