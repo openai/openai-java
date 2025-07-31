@@ -1,6 +1,7 @@
 package com.openai.example;
 
 import com.openai.azure.AzureOpenAIServiceVersion;
+import com.openai.azure.AzureUrlPathMode;
 import com.openai.client.OpenAIClient;
 import com.openai.client.okhttp.OpenAIOkHttpClient;
 import com.openai.models.ChatModel;
@@ -15,7 +16,7 @@ public final class AzureLegacyPathsEnabledExample {
                 .fromEnv()
                 .azureServiceVersion(AzureOpenAIServiceVersion.getV2024_05_01_PREVIEW())
                 // Enabling Azure legacy paths will result in the deployment name being passed as a path parameter
-                .azureLegacyPaths(true)
+                .azureUrlPathMode(AzureUrlPathMode.LEGACY)
                 .build();
 
         ChatCompletionCreateParams createParams = ChatCompletionCreateParams.builder()

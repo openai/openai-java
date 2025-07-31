@@ -4,13 +4,13 @@ package com.openai.client.okhttp
 
 import com.fasterxml.jackson.databind.json.JsonMapper
 import com.openai.azure.AzureOpenAIServiceVersion
+import com.openai.azure.AzureUrlPathMode
 import com.openai.client.OpenAIClient
 import com.openai.client.OpenAIClientImpl
 import com.openai.core.ClientOptions
 import com.openai.core.Timeout
 import com.openai.core.http.Headers
 import com.openai.core.http.QueryParams
-import com.openai.core.jsonMapper
 import com.openai.credential.Credential
 import java.net.Proxy
 import java.time.Clock
@@ -143,8 +143,8 @@ class OpenAIOkHttpClient private constructor() {
             clientOptions.azureServiceVersion(azureServiceVersion)
         }
 
-        fun azureLegacyPaths(azureLegacyPaths: Boolean) = apply {
-            clientOptions.azureLegacyPaths(azureLegacyPaths)
+        fun azureUrlPathMode(azureUrlPathMode: AzureUrlPathMode) = apply {
+            clientOptions.azureUrlPathMode(azureUrlPathMode)
         }
 
         fun organization(organization: String?) = apply { clientOptions.organization(organization) }
