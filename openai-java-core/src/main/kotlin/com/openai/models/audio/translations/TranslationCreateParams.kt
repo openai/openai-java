@@ -121,8 +121,10 @@ private constructor(
 
     fun _additionalBodyProperties(): Map<String, JsonValue> = body._additionalProperties()
 
+    /** Additional headers to send with the request. */
     fun _additionalHeaders(): Headers = additionalHeaders
 
+    /** Additional query param to send with the request. */
     fun _additionalQueryParams(): QueryParams = additionalQueryParams
 
     fun toBuilder() = Builder().from(this)
@@ -418,7 +420,7 @@ private constructor(
                 "prompt" to _prompt(),
                 "response_format" to _responseFormat(),
                 "temperature" to _temperature(),
-            ) + _additionalBodyProperties().mapValues { MultipartField.of(it) })
+            ) + _additionalBodyProperties().mapValues { (_, value) -> MultipartField.of(value) })
             .toImmutable()
 
     override fun _headers(): Headers = additionalHeaders

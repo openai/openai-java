@@ -35,7 +35,7 @@ interface FileBatchServiceAsync {
     ): CompletableFuture<VectorStoreFileBatch> =
         create(vectorStoreId, params, RequestOptions.none())
 
-    /** @see [create] */
+    /** @see create */
     fun create(
         vectorStoreId: String,
         params: FileBatchCreateParams,
@@ -43,11 +43,11 @@ interface FileBatchServiceAsync {
     ): CompletableFuture<VectorStoreFileBatch> =
         create(params.toBuilder().vectorStoreId(vectorStoreId).build(), requestOptions)
 
-    /** @see [create] */
+    /** @see create */
     fun create(params: FileBatchCreateParams): CompletableFuture<VectorStoreFileBatch> =
         create(params, RequestOptions.none())
 
-    /** @see [create] */
+    /** @see create */
     fun create(
         params: FileBatchCreateParams,
         requestOptions: RequestOptions = RequestOptions.none(),
@@ -59,7 +59,7 @@ interface FileBatchServiceAsync {
         params: FileBatchRetrieveParams,
     ): CompletableFuture<VectorStoreFileBatch> = retrieve(batchId, params, RequestOptions.none())
 
-    /** @see [retrieve] */
+    /** @see retrieve */
     fun retrieve(
         batchId: String,
         params: FileBatchRetrieveParams,
@@ -67,11 +67,11 @@ interface FileBatchServiceAsync {
     ): CompletableFuture<VectorStoreFileBatch> =
         retrieve(params.toBuilder().batchId(batchId).build(), requestOptions)
 
-    /** @see [retrieve] */
+    /** @see retrieve */
     fun retrieve(params: FileBatchRetrieveParams): CompletableFuture<VectorStoreFileBatch> =
         retrieve(params, RequestOptions.none())
 
-    /** @see [retrieve] */
+    /** @see retrieve */
     fun retrieve(
         params: FileBatchRetrieveParams,
         requestOptions: RequestOptions = RequestOptions.none(),
@@ -86,7 +86,7 @@ interface FileBatchServiceAsync {
         params: FileBatchCancelParams,
     ): CompletableFuture<VectorStoreFileBatch> = cancel(batchId, params, RequestOptions.none())
 
-    /** @see [cancel] */
+    /** @see cancel */
     fun cancel(
         batchId: String,
         params: FileBatchCancelParams,
@@ -94,11 +94,11 @@ interface FileBatchServiceAsync {
     ): CompletableFuture<VectorStoreFileBatch> =
         cancel(params.toBuilder().batchId(batchId).build(), requestOptions)
 
-    /** @see [cancel] */
+    /** @see cancel */
     fun cancel(params: FileBatchCancelParams): CompletableFuture<VectorStoreFileBatch> =
         cancel(params, RequestOptions.none())
 
-    /** @see [cancel] */
+    /** @see cancel */
     fun cancel(
         params: FileBatchCancelParams,
         requestOptions: RequestOptions = RequestOptions.none(),
@@ -111,7 +111,7 @@ interface FileBatchServiceAsync {
     ): CompletableFuture<FileBatchListFilesPageAsync> =
         listFiles(batchId, params, RequestOptions.none())
 
-    /** @see [listFiles] */
+    /** @see listFiles */
     fun listFiles(
         batchId: String,
         params: FileBatchListFilesParams,
@@ -119,12 +119,12 @@ interface FileBatchServiceAsync {
     ): CompletableFuture<FileBatchListFilesPageAsync> =
         listFiles(params.toBuilder().batchId(batchId).build(), requestOptions)
 
-    /** @see [listFiles] */
+    /** @see listFiles */
     fun listFiles(
         params: FileBatchListFilesParams
     ): CompletableFuture<FileBatchListFilesPageAsync> = listFiles(params, RequestOptions.none())
 
-    /** @see [listFiles] */
+    /** @see listFiles */
     fun listFiles(
         params: FileBatchListFilesParams,
         requestOptions: RequestOptions = RequestOptions.none(),
@@ -154,7 +154,7 @@ interface FileBatchServiceAsync {
         ): CompletableFuture<HttpResponseFor<VectorStoreFileBatch>> =
             create(vectorStoreId, params, RequestOptions.none())
 
-        /** @see [create] */
+        /** @see create */
         fun create(
             vectorStoreId: String,
             params: FileBatchCreateParams,
@@ -162,13 +162,13 @@ interface FileBatchServiceAsync {
         ): CompletableFuture<HttpResponseFor<VectorStoreFileBatch>> =
             create(params.toBuilder().vectorStoreId(vectorStoreId).build(), requestOptions)
 
-        /** @see [create] */
+        /** @see create */
         fun create(
             params: FileBatchCreateParams
         ): CompletableFuture<HttpResponseFor<VectorStoreFileBatch>> =
             create(params, RequestOptions.none())
 
-        /** @see [create] */
+        /** @see create */
         fun create(
             params: FileBatchCreateParams,
             requestOptions: RequestOptions = RequestOptions.none(),
@@ -185,7 +185,7 @@ interface FileBatchServiceAsync {
         ): CompletableFuture<HttpResponseFor<VectorStoreFileBatch>> =
             retrieve(batchId, params, RequestOptions.none())
 
-        /** @see [retrieve] */
+        /** @see retrieve */
         fun retrieve(
             batchId: String,
             params: FileBatchRetrieveParams,
@@ -193,13 +193,13 @@ interface FileBatchServiceAsync {
         ): CompletableFuture<HttpResponseFor<VectorStoreFileBatch>> =
             retrieve(params.toBuilder().batchId(batchId).build(), requestOptions)
 
-        /** @see [retrieve] */
+        /** @see retrieve */
         fun retrieve(
             params: FileBatchRetrieveParams
         ): CompletableFuture<HttpResponseFor<VectorStoreFileBatch>> =
             retrieve(params, RequestOptions.none())
 
-        /** @see [retrieve] */
+        /** @see retrieve */
         fun retrieve(
             params: FileBatchRetrieveParams,
             requestOptions: RequestOptions = RequestOptions.none(),
@@ -216,7 +216,7 @@ interface FileBatchServiceAsync {
         ): CompletableFuture<HttpResponseFor<VectorStoreFileBatch>> =
             cancel(batchId, params, RequestOptions.none())
 
-        /** @see [cancel] */
+        /** @see cancel */
         fun cancel(
             batchId: String,
             params: FileBatchCancelParams,
@@ -224,13 +224,13 @@ interface FileBatchServiceAsync {
         ): CompletableFuture<HttpResponseFor<VectorStoreFileBatch>> =
             cancel(params.toBuilder().batchId(batchId).build(), requestOptions)
 
-        /** @see [cancel] */
+        /** @see cancel */
         fun cancel(
             params: FileBatchCancelParams
         ): CompletableFuture<HttpResponseFor<VectorStoreFileBatch>> =
             cancel(params, RequestOptions.none())
 
-        /** @see [cancel] */
+        /** @see cancel */
         fun cancel(
             params: FileBatchCancelParams,
             requestOptions: RequestOptions = RequestOptions.none(),
@@ -247,7 +247,7 @@ interface FileBatchServiceAsync {
         ): CompletableFuture<HttpResponseFor<FileBatchListFilesPageAsync>> =
             listFiles(batchId, params, RequestOptions.none())
 
-        /** @see [listFiles] */
+        /** @see listFiles */
         fun listFiles(
             batchId: String,
             params: FileBatchListFilesParams,
@@ -255,13 +255,13 @@ interface FileBatchServiceAsync {
         ): CompletableFuture<HttpResponseFor<FileBatchListFilesPageAsync>> =
             listFiles(params.toBuilder().batchId(batchId).build(), requestOptions)
 
-        /** @see [listFiles] */
+        /** @see listFiles */
         fun listFiles(
             params: FileBatchListFilesParams
         ): CompletableFuture<HttpResponseFor<FileBatchListFilesPageAsync>> =
             listFiles(params, RequestOptions.none())
 
-        /** @see [listFiles] */
+        /** @see listFiles */
         fun listFiles(
             params: FileBatchListFilesParams,
             requestOptions: RequestOptions = RequestOptions.none(),

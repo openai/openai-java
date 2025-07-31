@@ -1,5 +1,55 @@
 # Changelog
 
+## 2.20.0 (2025-07-30)
+
+Full Changelog: [v2.19.2...v2.20.0](https://github.com/openai/openai-java/compare/v2.19.2...v2.20.0)
+
+### Features
+
+* add retryable exception ([4916163](https://github.com/openai/openai-java/commit/4916163ef5e9d06b137341373ab3eb4cc7e3038b))
+* **api:** manual updates ([c4f9a92](https://github.com/openai/openai-java/commit/c4f9a921b63366b3abf3d502c895ec2bfed5329a))
+* **client:** ensure compat with proguard ([0d4db65](https://github.com/openai/openai-java/commit/0d4db656adbbdced4d7d9493cf176045e38d3b89))
+
+## 2.19.2 (2025-07-28)
+
+Full Changelog: [v2.19.1...v2.19.2](https://github.com/openai/openai-java/compare/v2.19.1...v2.19.2)
+
+### Bug Fixes
+
+* **client:** some bad `_additionalBodyProperties` serialization ([ae900c6](https://github.com/openai/openai-java/commit/ae900c6e6bd37de7ba084e753b38705baed9c56a))
+
+## 2.19.1 (2025-07-24)
+
+Full Changelog: [v2.19.0...v2.19.1](https://github.com/openai/openai-java/compare/v2.19.0...v2.19.1)
+
+### Bug Fixes
+
+* **client:** accidental mutability of some classes ([8f377c4](https://github.com/openai/openai-java/commit/8f377c400550b7f99f8b91b59caf92c9274f174f))
+
+
+### Chores
+
+* **internal:** remove unnecessary `[...]` in `[@see](https://github.com/see)` ([ba7945f](https://github.com/openai/openai-java/commit/ba7945f92514c41c5ebb367272082d6658f06ad4))
+* **internal:** simplify handling of deployment models ([#556](https://github.com/openai/openai-java/issues/556)) ([2c7e661](https://github.com/openai/openai-java/commit/2c7e661877d07372ad7e54f788d665a459b18fba))
+
+
+### Documentation
+
+* more code comments ([2110f40](https://github.com/openai/openai-java/commit/2110f40666a81e08ad2f493773fe1f2ca4a562b2))
+
+## 2.19.0 (2025-07-23)
+
+Full Changelog: [v2.18.2...v2.19.0](https://github.com/openai/openai-java/compare/v2.18.2...v2.19.0)
+
+### Features
+
+* **client:** support base64 embeddings and use as default ([#519](https://github.com/openai/openai-java/issues/519)) ([12b0ff7](https://github.com/openai/openai-java/commit/12b0ff75cf2a3bc93cf5c41adbbf2b5097a8e941))
+
+
+### Documentation
+
+* fix missing readme comment ([720ed2c](https://github.com/openai/openai-java/commit/720ed2cff555977efa00043b3f424920811ce339))
+
 ## 2.18.2 (2025-07-22)
 
 Full Changelog: [v2.18.1...v2.18.2](https://github.com/openai/openai-java/compare/v2.18.1...v2.18.2)

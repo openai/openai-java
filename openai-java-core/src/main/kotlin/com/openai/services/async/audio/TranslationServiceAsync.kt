@@ -28,7 +28,7 @@ interface TranslationServiceAsync {
     fun create(params: TranslationCreateParams): CompletableFuture<TranslationCreateResponse> =
         create(params, RequestOptions.none())
 
-    /** @see [create] */
+    /** @see create */
     fun create(
         params: TranslationCreateParams,
         requestOptions: RequestOptions = RequestOptions.none(),
@@ -58,7 +58,7 @@ interface TranslationServiceAsync {
         ): CompletableFuture<HttpResponseFor<TranslationCreateResponse>> =
             create(params, RequestOptions.none())
 
-        /** @see [create] */
+        /** @see create */
         fun create(
             params: TranslationCreateParams,
             requestOptions: RequestOptions = RequestOptions.none(),

@@ -66,7 +66,7 @@ class MessageServiceImpl internal constructor(private val clientOptions: ClientO
                     .baseUrl(clientOptions.baseUrl())
                     .addPathSegments("chat", "completions", params._pathParam(0), "messages")
                     .build()
-                    .prepare(clientOptions, params, null)
+                    .prepare(clientOptions, params)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             val response = clientOptions.httpClient.execute(request, requestOptions)
             return errorHandler.handle(response).parseable {

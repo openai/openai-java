@@ -32,7 +32,7 @@ interface OutputItemService {
         params: OutputItemRetrieveParams,
     ): OutputItemRetrieveResponse = retrieve(outputItemId, params, RequestOptions.none())
 
-    /** @see [retrieve] */
+    /** @see retrieve */
     fun retrieve(
         outputItemId: String,
         params: OutputItemRetrieveParams,
@@ -40,11 +40,11 @@ interface OutputItemService {
     ): OutputItemRetrieveResponse =
         retrieve(params.toBuilder().outputItemId(outputItemId).build(), requestOptions)
 
-    /** @see [retrieve] */
+    /** @see retrieve */
     fun retrieve(params: OutputItemRetrieveParams): OutputItemRetrieveResponse =
         retrieve(params, RequestOptions.none())
 
-    /** @see [retrieve] */
+    /** @see retrieve */
     fun retrieve(
         params: OutputItemRetrieveParams,
         requestOptions: RequestOptions = RequestOptions.none(),
@@ -54,17 +54,17 @@ interface OutputItemService {
     fun list(runId: String, params: OutputItemListParams): OutputItemListPage =
         list(runId, params, RequestOptions.none())
 
-    /** @see [list] */
+    /** @see list */
     fun list(
         runId: String,
         params: OutputItemListParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): OutputItemListPage = list(params.toBuilder().runId(runId).build(), requestOptions)
 
-    /** @see [list] */
+    /** @see list */
     fun list(params: OutputItemListParams): OutputItemListPage = list(params, RequestOptions.none())
 
-    /** @see [list] */
+    /** @see list */
     fun list(
         params: OutputItemListParams,
         requestOptions: RequestOptions = RequestOptions.none(),
@@ -94,7 +94,7 @@ interface OutputItemService {
         ): HttpResponseFor<OutputItemRetrieveResponse> =
             retrieve(outputItemId, params, RequestOptions.none())
 
-        /** @see [retrieve] */
+        /** @see retrieve */
         @MustBeClosed
         fun retrieve(
             outputItemId: String,
@@ -103,13 +103,13 @@ interface OutputItemService {
         ): HttpResponseFor<OutputItemRetrieveResponse> =
             retrieve(params.toBuilder().outputItemId(outputItemId).build(), requestOptions)
 
-        /** @see [retrieve] */
+        /** @see retrieve */
         @MustBeClosed
         fun retrieve(
             params: OutputItemRetrieveParams
         ): HttpResponseFor<OutputItemRetrieveResponse> = retrieve(params, RequestOptions.none())
 
-        /** @see [retrieve] */
+        /** @see retrieve */
         @MustBeClosed
         fun retrieve(
             params: OutputItemRetrieveParams,
@@ -124,7 +124,7 @@ interface OutputItemService {
         fun list(runId: String, params: OutputItemListParams): HttpResponseFor<OutputItemListPage> =
             list(runId, params, RequestOptions.none())
 
-        /** @see [list] */
+        /** @see list */
         @MustBeClosed
         fun list(
             runId: String,
@@ -133,12 +133,12 @@ interface OutputItemService {
         ): HttpResponseFor<OutputItemListPage> =
             list(params.toBuilder().runId(runId).build(), requestOptions)
 
-        /** @see [list] */
+        /** @see list */
         @MustBeClosed
         fun list(params: OutputItemListParams): HttpResponseFor<OutputItemListPage> =
             list(params, RequestOptions.none())
 
-        /** @see [list] */
+        /** @see list */
         @MustBeClosed
         fun list(
             params: OutputItemListParams,

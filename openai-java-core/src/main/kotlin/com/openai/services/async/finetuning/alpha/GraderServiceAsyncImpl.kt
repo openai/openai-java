@@ -75,7 +75,7 @@ class GraderServiceAsyncImpl internal constructor(private val clientOptions: Cli
                     .addPathSegments("fine_tuning", "alpha", "graders", "run")
                     .body(json(clientOptions.jsonMapper, params._body()))
                     .build()
-                    .prepareAsync(clientOptions, params, deploymentModel = null)
+                    .prepareAsync(clientOptions, params)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             return request
                 .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
@@ -106,7 +106,7 @@ class GraderServiceAsyncImpl internal constructor(private val clientOptions: Cli
                     .addPathSegments("fine_tuning", "alpha", "graders", "validate")
                     .body(json(clientOptions.jsonMapper, params._body()))
                     .build()
-                    .prepareAsync(clientOptions, params, deploymentModel = null)
+                    .prepareAsync(clientOptions, params)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             return request
                 .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }

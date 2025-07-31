@@ -6,6 +6,7 @@ import com.github.tomakehurst.wiremock.junit5.WireMockTest
 import com.github.tomakehurst.wiremock.stubbing.Scenario
 import com.openai.client.okhttp.OkHttpClient
 import com.openai.core.RequestOptions
+import com.openai.errors.OpenAIRetryableException
 import java.io.InputStream
 import java.time.Duration
 import java.util.concurrent.CompletableFuture
@@ -248,6 +249,82 @@ internal class RetryingHttpClientTest {
 
         assertThat(response.statusCode()).isEqualTo(200)
         verify(2, postRequestedFor(urlPathEqualTo("/something")))
+        assertNoResponseLeaks()
+    }
+
+    @ParameterizedTest
+    @ValueSource(booleans = [false, true])
+    fun execute_withRetryableException(async: Boolean) {
+        stubFor(post(urlPathEqualTo("/something")).willReturn(ok()))
+
+        var callCount = 0
+        val failingHttpClient =
+            object : HttpClient {
+                override fun execute(
+                    request: HttpRequest,
+                    requestOptions: RequestOptions,
+                ): HttpResponse {
+                    callCount++
+                    if (callCount == 1) {
+                        throw OpenAIRetryableException("Simulated retryable failure")
+                    }
+                    return httpClient.execute(request, requestOptions)
+                }
+
+                override fun executeAsync(
+                    request: HttpRequest,
+                    requestOptions: RequestOptions,
+                ): CompletableFuture<HttpResponse> {
+                    callCount++
+                    if (callCount == 1) {
+                        val future = CompletableFuture<HttpResponse>()
+                        future.completeExceptionally(
+                            OpenAIRetryableException("Simulated retryable failure")
+                        )
+                        return future
+                    }
+                    return httpClient.executeAsync(request, requestOptions)
+                }
+
+                override fun close() = httpClient.close()
+            }
+
+        val retryingClient =
+            RetryingHttpClient.builder()
+                .httpClient(failingHttpClient)
+                .maxRetries(2)
+                .sleeper(
+                    object : RetryingHttpClient.Sleeper {
+
+                        override fun sleep(duration: Duration) {}
+
+                        override fun sleepAsync(duration: Duration): CompletableFuture<Void> =
+                            CompletableFuture.completedFuture(null)
+                    }
+                )
+                .build()
+
+        val response =
+            retryingClient.execute(
+                HttpRequest.builder()
+                    .method(HttpMethod.POST)
+                    .baseUrl(baseUrl)
+                    .addPathSegment("something")
+                    .build(),
+                async,
+            )
+
+        assertThat(response.statusCode()).isEqualTo(200)
+        verify(
+            1,
+            postRequestedFor(urlPathEqualTo("/something"))
+                .withHeader("x-stainless-retry-count", equalTo("1")),
+        )
+        verify(
+            0,
+            postRequestedFor(urlPathEqualTo("/something"))
+                .withHeader("x-stainless-retry-count", equalTo("0")),
+        )
         assertNoResponseLeaks()
     }
 

@@ -2,8 +2,8 @@
 
 <!-- x-release-please-start-version -->
 
-[![Maven Central](https://img.shields.io/maven-central/v/com.openai/openai-java)](https://central.sonatype.com/artifact/com.openai/openai-java/2.18.2)
-[![javadoc](https://javadoc.io/badge2/com.openai/openai-java/2.18.2/javadoc.svg)](https://javadoc.io/doc/com.openai/openai-java/2.18.2)
+[![Maven Central](https://img.shields.io/maven-central/v/com.openai/openai-java)](https://central.sonatype.com/artifact/com.openai/openai-java/2.20.0)
+[![javadoc](https://javadoc.io/badge2/com.openai/openai-java/2.20.0/javadoc.svg)](https://javadoc.io/doc/com.openai/openai-java/2.20.0)
 
 <!-- x-release-please-end -->
 
@@ -11,7 +11,7 @@ The OpenAI Java SDK provides convenient access to the [OpenAI REST API](https://
 
 <!-- x-release-please-start-version -->
 
-The REST API documentation can be found on [platform.openai.com](https://platform.openai.com/docs). Javadocs are available on [javadoc.io](https://javadoc.io/doc/com.openai/openai-java/2.18.2).
+The REST API documentation can be found on [platform.openai.com](https://platform.openai.com/docs). Javadocs are available on [javadoc.io](https://javadoc.io/doc/com.openai/openai-java/2.20.0).
 
 <!-- x-release-please-end -->
 
@@ -24,7 +24,7 @@ The REST API documentation can be found on [platform.openai.com](https://platfor
 ### Gradle
 
 ```kotlin
-implementation("com.openai:openai-java:2.18.2")
+implementation("com.openai:openai-java:2.20.0")
 ```
 
 ### Maven
@@ -33,7 +33,7 @@ implementation("com.openai:openai-java:2.18.2")
 <dependency>
   <groupId>com.openai</groupId>
   <artifactId>openai-java</artifactId>
-  <version>2.18.2</version>
+  <version>2.20.0</version>
 </dependency>
 ```
 
@@ -118,7 +118,7 @@ import com.openai.client.okhttp.OpenAIOkHttpClient;
 
 OpenAIClient client = OpenAIOkHttpClient.builder()
     // Configures using the `openai.apiKey`, `openai.orgId`, `openai.projectId`, `openai.webhookSecret` and `openai.baseUrl` system properties
-    Or configures using the `OPENAI_API_KEY`, `OPENAI_ORG_ID`, `OPENAI_PROJECT_ID`, `OPENAI_WEBHOOK_SECRET` and `OPENAI_BASE_URL` environment variables
+    // Or configures using the `OPENAI_API_KEY`, `OPENAI_ORG_ID`, `OPENAI_PROJECT_ID`, `OPENAI_WEBHOOK_SECRET` and `OPENAI_BASE_URL` environment variables
     .fromEnv()
     .apiKey("My API Key")
     .build();
@@ -1184,6 +1184,8 @@ The SDK throws custom unchecked exception types:
 
 - [`OpenAIIoException`](openai-java-core/src/main/kotlin/com/openai/errors/OpenAIIoException.kt): I/O networking errors.
 
+- [`OpenAIRetryableException`](openai-java-core/src/main/kotlin/com/openai/errors/OpenAIRetryableException.kt): Generic error indicating a failure that could be retried by the client.
+
 - [`OpenAIInvalidDataException`](openai-java-core/src/main/kotlin/com/openai/errors/OpenAIInvalidDataException.kt): Failure to interpret successfully parsed data. For example, when accessing a property that's supposed to be required, but the API unexpectedly omitted it from the response.
 
 - [`OpenAIException`](openai-java-core/src/main/kotlin/com/openai/errors/OpenAIException.kt): Base class for all exceptions. Most errors will result in one of the previously mentioned ones, but completely generic errors may be thrown using the base class.
@@ -1304,6 +1306,12 @@ Or to `debug` for more verbose logging:
 $ export OPENAI_LOG=debug
 ```
 
+## ProGuard and R8
+
+Although the SDK uses reflection, it is still usable with [ProGuard](https://github.com/Guardsquare/proguard) and [R8](https://developer.android.com/topic/performance/app-optimization/enable-app-optimization) because `openai-java-core` is published with a [configuration file](openai-java-core/src/main/resources/META-INF/proguard/openai-java-core.pro) containing [keep rules](https://www.guardsquare.com/manual/configuration/usage).
+
+ProGuard and R8 should automatically detect and use the published rules, but you can also manually copy the keep rules if necessary.
+
 ## GraalVM
 
 Although the SDK uses reflection, it is still usable in [GraalVM](https://www.graalvm.org) because `openai-java-core` is published with [reachability metadata](https://www.graalvm.org/latest/reference-manual/native-image/metadata/).
@@ -1321,7 +1329,7 @@ If you're using Spring Boot, then you can use the SDK's [Spring Boot starter](ht
 #### Gradle
 
 ```kotlin
-implementation("com.openai:openai-java-spring-boot-starter:2.18.2")
+implementation("com.openai:openai-java-spring-boot-starter:2.20.0")
 ```
 
 #### Maven
@@ -1330,7 +1338,7 @@ implementation("com.openai:openai-java-spring-boot-starter:2.18.2")
 <dependency>
   <groupId>com.openai</groupId>
   <artifactId>openai-java-spring-boot-starter</artifactId>
-  <version>2.18.2</version>
+  <version>2.20.0</version>
 </dependency>
 ```
 
@@ -1415,7 +1423,7 @@ See the complete Azure OpenAI example in the [`openai-java-example`](openai-java
 
 ### Retries
 
-The SDK automatically retries 2 times by default, with a short exponential backoff.
+The SDK automatically retries 2 times by default, with a short exponential backoff between requests.
 
 Only the following error types are retried:
 
@@ -1425,7 +1433,7 @@ Only the following error types are retried:
 - 429 Rate Limit
 - 5xx Internal
 
-The API may also explicitly instruct the SDK to retry or not retry a response.
+The API may also explicitly instruct the SDK to retry or not retry a request.
 
 To set a custom number of retries, configure the client using the `maxRetries` method:
 

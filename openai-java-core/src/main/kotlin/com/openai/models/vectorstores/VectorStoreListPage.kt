@@ -10,7 +10,7 @@ import java.util.Objects
 import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
-/** @see [VectorStoreService.list] */
+/** @see VectorStoreService.list */
 class VectorStoreListPage
 private constructor(
     private val service: VectorStoreService,
@@ -21,14 +21,14 @@ private constructor(
     /**
      * Delegates to [VectorStoreListPageResponse], but gracefully handles missing data.
      *
-     * @see [VectorStoreListPageResponse.data]
+     * @see VectorStoreListPageResponse.data
      */
     fun data(): List<VectorStore> = response._data().getOptional("data").getOrNull() ?: emptyList()
 
     /**
      * Delegates to [VectorStoreListPageResponse], but gracefully handles missing data.
      *
-     * @see [VectorStoreListPageResponse.hasMore]
+     * @see VectorStoreListPageResponse.hasMore
      */
     fun hasMore(): Optional<Boolean> = response._hasMore().getOptional("has_more")
 

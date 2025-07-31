@@ -22,7 +22,7 @@ import java.util.concurrent.CompletableFuture
 import java.util.concurrent.Executor
 import kotlin.jvm.optionals.getOrNull
 
-/** @see [InputItemServiceAsync.list] */
+/** @see InputItemServiceAsync.list */
 class InputItemListPageAsync
 private constructor(
     private val service: InputItemServiceAsync,
@@ -34,14 +34,14 @@ private constructor(
     /**
      * Delegates to [ResponseItemList], but gracefully handles missing data.
      *
-     * @see [ResponseItemList.data]
+     * @see ResponseItemList.data
      */
     fun data(): List<ResponseItem> = response._data().getOptional("data").getOrNull() ?: emptyList()
 
     /**
      * Delegates to [ResponseItemList], but gracefully handles missing data.
      *
-     * @see [ResponseItemList.hasMore]
+     * @see ResponseItemList.hasMore
      */
     fun hasMore(): Optional<Boolean> = response._hasMore().getOptional("has_more")
 

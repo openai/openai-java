@@ -28,7 +28,7 @@ interface TranslationService {
     fun create(params: TranslationCreateParams): TranslationCreateResponse =
         create(params, RequestOptions.none())
 
-    /** @see [create] */
+    /** @see create */
     fun create(
         params: TranslationCreateParams,
         requestOptions: RequestOptions = RequestOptions.none(),
@@ -56,7 +56,7 @@ interface TranslationService {
         fun create(params: TranslationCreateParams): HttpResponseFor<TranslationCreateResponse> =
             create(params, RequestOptions.none())
 
-        /** @see [create] */
+        /** @see create */
         @MustBeClosed
         fun create(
             params: TranslationCreateParams,

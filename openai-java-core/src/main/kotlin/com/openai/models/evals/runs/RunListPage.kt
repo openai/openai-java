@@ -10,7 +10,7 @@ import java.util.Objects
 import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
-/** @see [RunService.list] */
+/** @see RunService.list */
 class RunListPage
 private constructor(
     private val service: RunService,
@@ -21,7 +21,7 @@ private constructor(
     /**
      * Delegates to [RunListPageResponse], but gracefully handles missing data.
      *
-     * @see [RunListPageResponse.data]
+     * @see RunListPageResponse.data
      */
     fun data(): List<RunListResponse> =
         response._data().getOptional("data").getOrNull() ?: emptyList()
@@ -29,7 +29,7 @@ private constructor(
     /**
      * Delegates to [RunListPageResponse], but gracefully handles missing data.
      *
-     * @see [RunListPageResponse.hasMore]
+     * @see RunListPageResponse.hasMore
      */
     fun hasMore(): Optional<Boolean> = response._hasMore().getOptional("has_more")
 

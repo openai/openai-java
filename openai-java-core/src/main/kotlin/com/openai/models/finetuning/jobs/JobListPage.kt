@@ -10,7 +10,7 @@ import java.util.Objects
 import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
-/** @see [JobService.list] */
+/** @see JobService.list */
 class JobListPage
 private constructor(
     private val service: JobService,
@@ -21,7 +21,7 @@ private constructor(
     /**
      * Delegates to [JobListPageResponse], but gracefully handles missing data.
      *
-     * @see [JobListPageResponse.data]
+     * @see JobListPageResponse.data
      */
     fun data(): List<FineTuningJob> =
         response._data().getOptional("data").getOrNull() ?: emptyList()
@@ -29,7 +29,7 @@ private constructor(
     /**
      * Delegates to [JobListPageResponse], but gracefully handles missing data.
      *
-     * @see [JobListPageResponse.hasMore]
+     * @see JobListPageResponse.hasMore
      */
     fun hasMore(): Optional<Boolean> = response._hasMore().getOptional("has_more")
 

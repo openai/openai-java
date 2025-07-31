@@ -44,8 +44,10 @@ private constructor(
     /** The ID of the project to get permissions for. */
     fun projectId(): Optional<String> = Optional.ofNullable(projectId)
 
+    /** Additional headers to send with the request. */
     fun _additionalHeaders(): Headers = additionalHeaders
 
+    /** Additional query param to send with the request. */
     fun _additionalQueryParams(): QueryParams = additionalQueryParams
 
     fun toBuilder() = Builder().from(this)

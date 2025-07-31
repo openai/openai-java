@@ -10,7 +10,7 @@ import com.openai.services.blocking.VectorStoreService
 import java.util.Objects
 import kotlin.jvm.optionals.getOrNull
 
-/** @see [VectorStoreService.search] */
+/** @see VectorStoreService.search */
 class VectorStoreSearchPage
 private constructor(
     private val service: VectorStoreService,
@@ -21,12 +21,12 @@ private constructor(
     /**
      * Delegates to [VectorStoreSearchPageResponse], but gracefully handles missing data.
      *
-     * @see [VectorStoreSearchPageResponse.data]
+     * @see VectorStoreSearchPageResponse.data
      */
     fun data(): List<VectorStoreSearchResponse> =
         response._data().getOptional("data").getOrNull() ?: emptyList()
 
-    /** @see [VectorStoreSearchPageResponse.object_] */
+    /** @see VectorStoreSearchPageResponse.object\_ */
     fun object_(): JsonValue = response._object_()
 
     override fun items(): List<VectorStoreSearchResponse> = data()

@@ -43,17 +43,17 @@ interface RunService {
     fun create(evalId: String, params: RunCreateParams): RunCreateResponse =
         create(evalId, params, RequestOptions.none())
 
-    /** @see [create] */
+    /** @see create */
     fun create(
         evalId: String,
         params: RunCreateParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): RunCreateResponse = create(params.toBuilder().evalId(evalId).build(), requestOptions)
 
-    /** @see [create] */
+    /** @see create */
     fun create(params: RunCreateParams): RunCreateResponse = create(params, RequestOptions.none())
 
-    /** @see [create] */
+    /** @see create */
     fun create(
         params: RunCreateParams,
         requestOptions: RequestOptions = RequestOptions.none(),
@@ -63,18 +63,18 @@ interface RunService {
     fun retrieve(runId: String, params: RunRetrieveParams): RunRetrieveResponse =
         retrieve(runId, params, RequestOptions.none())
 
-    /** @see [retrieve] */
+    /** @see retrieve */
     fun retrieve(
         runId: String,
         params: RunRetrieveParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): RunRetrieveResponse = retrieve(params.toBuilder().runId(runId).build(), requestOptions)
 
-    /** @see [retrieve] */
+    /** @see retrieve */
     fun retrieve(params: RunRetrieveParams): RunRetrieveResponse =
         retrieve(params, RequestOptions.none())
 
-    /** @see [retrieve] */
+    /** @see retrieve */
     fun retrieve(
         params: RunRetrieveParams,
         requestOptions: RequestOptions = RequestOptions.none(),
@@ -83,27 +83,27 @@ interface RunService {
     /** Get a list of runs for an evaluation. */
     fun list(evalId: String): RunListPage = list(evalId, RunListParams.none())
 
-    /** @see [list] */
+    /** @see list */
     fun list(
         evalId: String,
         params: RunListParams = RunListParams.none(),
         requestOptions: RequestOptions = RequestOptions.none(),
     ): RunListPage = list(params.toBuilder().evalId(evalId).build(), requestOptions)
 
-    /** @see [list] */
+    /** @see list */
     fun list(evalId: String, params: RunListParams = RunListParams.none()): RunListPage =
         list(evalId, params, RequestOptions.none())
 
-    /** @see [list] */
+    /** @see list */
     fun list(
         params: RunListParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): RunListPage
 
-    /** @see [list] */
+    /** @see list */
     fun list(params: RunListParams): RunListPage = list(params, RequestOptions.none())
 
-    /** @see [list] */
+    /** @see list */
     fun list(evalId: String, requestOptions: RequestOptions): RunListPage =
         list(evalId, RunListParams.none(), requestOptions)
 
@@ -111,17 +111,17 @@ interface RunService {
     fun delete(runId: String, params: RunDeleteParams): RunDeleteResponse =
         delete(runId, params, RequestOptions.none())
 
-    /** @see [delete] */
+    /** @see delete */
     fun delete(
         runId: String,
         params: RunDeleteParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): RunDeleteResponse = delete(params.toBuilder().runId(runId).build(), requestOptions)
 
-    /** @see [delete] */
+    /** @see delete */
     fun delete(params: RunDeleteParams): RunDeleteResponse = delete(params, RequestOptions.none())
 
-    /** @see [delete] */
+    /** @see delete */
     fun delete(
         params: RunDeleteParams,
         requestOptions: RequestOptions = RequestOptions.none(),
@@ -131,17 +131,17 @@ interface RunService {
     fun cancel(runId: String, params: RunCancelParams): RunCancelResponse =
         cancel(runId, params, RequestOptions.none())
 
-    /** @see [cancel] */
+    /** @see cancel */
     fun cancel(
         runId: String,
         params: RunCancelParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): RunCancelResponse = cancel(params.toBuilder().runId(runId).build(), requestOptions)
 
-    /** @see [cancel] */
+    /** @see cancel */
     fun cancel(params: RunCancelParams): RunCancelResponse = cancel(params, RequestOptions.none())
 
-    /** @see [cancel] */
+    /** @see cancel */
     fun cancel(
         params: RunCancelParams,
         requestOptions: RequestOptions = RequestOptions.none(),
@@ -167,7 +167,7 @@ interface RunService {
         fun create(evalId: String, params: RunCreateParams): HttpResponseFor<RunCreateResponse> =
             create(evalId, params, RequestOptions.none())
 
-        /** @see [create] */
+        /** @see create */
         @MustBeClosed
         fun create(
             evalId: String,
@@ -176,12 +176,12 @@ interface RunService {
         ): HttpResponseFor<RunCreateResponse> =
             create(params.toBuilder().evalId(evalId).build(), requestOptions)
 
-        /** @see [create] */
+        /** @see create */
         @MustBeClosed
         fun create(params: RunCreateParams): HttpResponseFor<RunCreateResponse> =
             create(params, RequestOptions.none())
 
-        /** @see [create] */
+        /** @see create */
         @MustBeClosed
         fun create(
             params: RunCreateParams,
@@ -198,7 +198,7 @@ interface RunService {
             params: RunRetrieveParams,
         ): HttpResponseFor<RunRetrieveResponse> = retrieve(runId, params, RequestOptions.none())
 
-        /** @see [retrieve] */
+        /** @see retrieve */
         @MustBeClosed
         fun retrieve(
             runId: String,
@@ -207,12 +207,12 @@ interface RunService {
         ): HttpResponseFor<RunRetrieveResponse> =
             retrieve(params.toBuilder().runId(runId).build(), requestOptions)
 
-        /** @see [retrieve] */
+        /** @see retrieve */
         @MustBeClosed
         fun retrieve(params: RunRetrieveParams): HttpResponseFor<RunRetrieveResponse> =
             retrieve(params, RequestOptions.none())
 
-        /** @see [retrieve] */
+        /** @see retrieve */
         @MustBeClosed
         fun retrieve(
             params: RunRetrieveParams,
@@ -226,7 +226,7 @@ interface RunService {
         @MustBeClosed
         fun list(evalId: String): HttpResponseFor<RunListPage> = list(evalId, RunListParams.none())
 
-        /** @see [list] */
+        /** @see list */
         @MustBeClosed
         fun list(
             evalId: String,
@@ -235,26 +235,26 @@ interface RunService {
         ): HttpResponseFor<RunListPage> =
             list(params.toBuilder().evalId(evalId).build(), requestOptions)
 
-        /** @see [list] */
+        /** @see list */
         @MustBeClosed
         fun list(
             evalId: String,
             params: RunListParams = RunListParams.none(),
         ): HttpResponseFor<RunListPage> = list(evalId, params, RequestOptions.none())
 
-        /** @see [list] */
+        /** @see list */
         @MustBeClosed
         fun list(
             params: RunListParams,
             requestOptions: RequestOptions = RequestOptions.none(),
         ): HttpResponseFor<RunListPage>
 
-        /** @see [list] */
+        /** @see list */
         @MustBeClosed
         fun list(params: RunListParams): HttpResponseFor<RunListPage> =
             list(params, RequestOptions.none())
 
-        /** @see [list] */
+        /** @see list */
         @MustBeClosed
         fun list(evalId: String, requestOptions: RequestOptions): HttpResponseFor<RunListPage> =
             list(evalId, RunListParams.none(), requestOptions)
@@ -267,7 +267,7 @@ interface RunService {
         fun delete(runId: String, params: RunDeleteParams): HttpResponseFor<RunDeleteResponse> =
             delete(runId, params, RequestOptions.none())
 
-        /** @see [delete] */
+        /** @see delete */
         @MustBeClosed
         fun delete(
             runId: String,
@@ -276,12 +276,12 @@ interface RunService {
         ): HttpResponseFor<RunDeleteResponse> =
             delete(params.toBuilder().runId(runId).build(), requestOptions)
 
-        /** @see [delete] */
+        /** @see delete */
         @MustBeClosed
         fun delete(params: RunDeleteParams): HttpResponseFor<RunDeleteResponse> =
             delete(params, RequestOptions.none())
 
-        /** @see [delete] */
+        /** @see delete */
         @MustBeClosed
         fun delete(
             params: RunDeleteParams,
@@ -296,7 +296,7 @@ interface RunService {
         fun cancel(runId: String, params: RunCancelParams): HttpResponseFor<RunCancelResponse> =
             cancel(runId, params, RequestOptions.none())
 
-        /** @see [cancel] */
+        /** @see cancel */
         @MustBeClosed
         fun cancel(
             runId: String,
@@ -305,12 +305,12 @@ interface RunService {
         ): HttpResponseFor<RunCancelResponse> =
             cancel(params.toBuilder().runId(runId).build(), requestOptions)
 
-        /** @see [cancel] */
+        /** @see cancel */
         @MustBeClosed
         fun cancel(params: RunCancelParams): HttpResponseFor<RunCancelResponse> =
             cancel(params, RequestOptions.none())
 
-        /** @see [cancel] */
+        /** @see cancel */
         @MustBeClosed
         fun cancel(
             params: RunCancelParams,

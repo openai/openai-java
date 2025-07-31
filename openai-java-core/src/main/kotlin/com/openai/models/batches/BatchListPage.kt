@@ -10,7 +10,7 @@ import java.util.Objects
 import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
-/** @see [BatchService.list] */
+/** @see BatchService.list */
 class BatchListPage
 private constructor(
     private val service: BatchService,
@@ -21,14 +21,14 @@ private constructor(
     /**
      * Delegates to [BatchListPageResponse], but gracefully handles missing data.
      *
-     * @see [BatchListPageResponse.data]
+     * @see BatchListPageResponse.data
      */
     fun data(): List<Batch> = response._data().getOptional("data").getOrNull() ?: emptyList()
 
     /**
      * Delegates to [BatchListPageResponse], but gracefully handles missing data.
      *
-     * @see [BatchListPageResponse.hasMore]
+     * @see BatchListPageResponse.hasMore
      */
     fun hasMore(): Optional<Boolean> = response._hasMore().getOptional("has_more")
 

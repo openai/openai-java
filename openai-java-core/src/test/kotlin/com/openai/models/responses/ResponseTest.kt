@@ -102,6 +102,7 @@ internal class ResponseTest {
                         .version("version")
                         .build()
                 )
+                .promptCacheKey("prompt-cache-key-1234")
                 .reasoning(
                     Reasoning.builder()
                         .effort(ReasoningEffort.LOW)
@@ -109,6 +110,7 @@ internal class ResponseTest {
                         .summary(Reasoning.Summary.AUTO)
                         .build()
                 )
+                .safetyIdentifier("safety-identifier-1234")
                 .serviceTier(Response.ServiceTier.AUTO)
                 .status(ResponseStatus.COMPLETED)
                 .text(
@@ -228,6 +230,7 @@ internal class ResponseTest {
                     .version("version")
                     .build()
             )
+        assertThat(response.promptCacheKey()).contains("prompt-cache-key-1234")
         assertThat(response.reasoning())
             .contains(
                 Reasoning.builder()
@@ -236,6 +239,7 @@ internal class ResponseTest {
                     .summary(Reasoning.Summary.AUTO)
                     .build()
             )
+        assertThat(response.safetyIdentifier()).contains("safety-identifier-1234")
         assertThat(response.serviceTier()).contains(Response.ServiceTier.AUTO)
         assertThat(response.status()).contains(ResponseStatus.COMPLETED)
         assertThat(response.text())
@@ -349,6 +353,7 @@ internal class ResponseTest {
                         .version("version")
                         .build()
                 )
+                .promptCacheKey("prompt-cache-key-1234")
                 .reasoning(
                     Reasoning.builder()
                         .effort(ReasoningEffort.LOW)
@@ -356,6 +361,7 @@ internal class ResponseTest {
                         .summary(Reasoning.Summary.AUTO)
                         .build()
                 )
+                .safetyIdentifier("safety-identifier-1234")
                 .serviceTier(Response.ServiceTier.AUTO)
                 .status(ResponseStatus.COMPLETED)
                 .text(

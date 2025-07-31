@@ -12,7 +12,7 @@ import java.util.concurrent.CompletableFuture
 import java.util.concurrent.Executor
 import kotlin.jvm.optionals.getOrNull
 
-/** @see [CheckpointServiceAsync.list] */
+/** @see CheckpointServiceAsync.list */
 class CheckpointListPageAsync
 private constructor(
     private val service: CheckpointServiceAsync,
@@ -24,7 +24,7 @@ private constructor(
     /**
      * Delegates to [CheckpointListPageResponse], but gracefully handles missing data.
      *
-     * @see [CheckpointListPageResponse.data]
+     * @see CheckpointListPageResponse.data
      */
     fun data(): List<FineTuningJobCheckpoint> =
         response._data().getOptional("data").getOrNull() ?: emptyList()
@@ -32,7 +32,7 @@ private constructor(
     /**
      * Delegates to [CheckpointListPageResponse], but gracefully handles missing data.
      *
-     * @see [CheckpointListPageResponse.hasMore]
+     * @see CheckpointListPageResponse.hasMore
      */
     fun hasMore(): Optional<Boolean> = response._hasMore().getOptional("has_more")
 

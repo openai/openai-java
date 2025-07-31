@@ -10,7 +10,7 @@ import java.util.Objects
 import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
-/** @see [FileService.list] */
+/** @see FileService.list */
 class FileListPage
 private constructor(
     private val service: FileService,
@@ -21,14 +21,14 @@ private constructor(
     /**
      * Delegates to [FileListPageResponse], but gracefully handles missing data.
      *
-     * @see [FileListPageResponse.data]
+     * @see FileListPageResponse.data
      */
     fun data(): List<FileObject> = response._data().getOptional("data").getOrNull() ?: emptyList()
 
     /**
      * Delegates to [FileListPageResponse], but gracefully handles missing data.
      *
-     * @see [FileListPageResponse.hasMore]
+     * @see FileListPageResponse.hasMore
      */
     fun hasMore(): Optional<Boolean> = response._hasMore().getOptional("has_more")
 

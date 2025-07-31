@@ -365,8 +365,10 @@ private constructor(
 
     fun _additionalBodyProperties(): Map<String, JsonValue> = body._additionalProperties()
 
+    /** Additional headers to send with the request. */
     fun _additionalHeaders(): Headers = additionalHeaders
 
+    /** Additional query param to send with the request. */
     fun _additionalQueryParams(): QueryParams = additionalQueryParams
 
     fun toBuilder() = Builder().from(this)
@@ -2368,14 +2370,15 @@ private constructor(
 
             @JvmStatic
             fun ofArrayOfStrings(arrayOfStrings: List<String>) =
-                Prompt(arrayOfStrings = arrayOfStrings)
+                Prompt(arrayOfStrings = arrayOfStrings.toImmutable())
 
             @JvmStatic
-            fun ofArrayOfTokens(arrayOfTokens: List<Long>) = Prompt(arrayOfTokens = arrayOfTokens)
+            fun ofArrayOfTokens(arrayOfTokens: List<Long>) =
+                Prompt(arrayOfTokens = arrayOfTokens.toImmutable())
 
             @JvmStatic
             fun ofArrayOfTokenArrays(arrayOfTokenArrays: List<List<Long>>) =
-                Prompt(arrayOfTokenArrays = arrayOfTokenArrays)
+                Prompt(arrayOfTokenArrays = arrayOfTokenArrays.toImmutable())
         }
 
         /** An interface that defines how to map each variant of [Prompt] to a value of type [T]. */
@@ -2675,7 +2678,7 @@ private constructor(
 
             @JvmStatic fun ofString(string: String) = Stop(string = string)
 
-            @JvmStatic fun ofStrings(strings: List<String>) = Stop(strings = strings)
+            @JvmStatic fun ofStrings(strings: List<String>) = Stop(strings = strings.toImmutable())
         }
 
         /** An interface that defines how to map each variant of [Stop] to a value of type [T]. */
