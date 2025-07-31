@@ -15,6 +15,7 @@ internal enum class AzureUrlCategory {
         /**
          * Returns whether the given [urlHost] is an Azure endpoint.
          */
+				@JvmSynthetic
         internal fun isAzureEndpoint(urlHost: String): Boolean =
             categorizeBaseUrl(urlHost) != NON_AZURE
 
