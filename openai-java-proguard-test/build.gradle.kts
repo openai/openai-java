@@ -4,8 +4,13 @@ plugins {
 }
 
 buildscript {
+    repositories {
+        google()
+    }
+
     dependencies {
         classpath("com.guardsquare:proguard-gradle:7.4.2")
+        classpath("com.android.tools:r8:8.3.37")
     }
 }
 
@@ -15,7 +20,6 @@ dependencies {
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.9.3")
     testImplementation("org.assertj:assertj-core:3.25.3")
     testImplementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.13.4")
-    testImplementation("org.junit.platform:junit-platform-console:1.10.1")
 }
 
 tasks.shadowJar {
@@ -33,7 +37,6 @@ val proguardJar by tasks.registering(proguard.gradle.ProGuardTask::class) {
     outjars(proguardJarPath)
     printmapping("${layout.buildDirectory.get()}/proguard-mapping.txt")
 
-    verbose()
     dontwarn()
 
     val javaHome = System.getProperty("java.home")
@@ -58,17 +61,43 @@ val testProGuard by tasks.registering(JavaExec::class) {
     dependsOn(proguardJar)
     notCompatibleWithConfigurationCache("ProGuard")
 
-    mainClass.set("org.junit.platform.console.ConsoleLauncher")
+    mainClass.set("com.openai.proguard.ProGuardCompatibilityTest")
     classpath = files(proguardJarPath)
+}
+
+val r8JarPath = "${layout.buildDirectory.get()}/libs/${project.name}-${project.version}-r8.jar"
+val r8Jar by tasks.registering(JavaExec::class) {
+    group = "verification"
+    dependsOn(tasks.shadowJar)
+    notCompatibleWithConfigurationCache("R8")
+
+    mainClass.set("com.android.tools.r8.R8")
+    classpath = buildscript.configurations["classpath"]
+
     args = listOf(
-        "--classpath", proguardJarPath,
-        "--scan-classpath",
-        "--details", "verbose",
+        "--release",
+        "--classfile",
+        "--output", r8JarPath,
+        "--lib", System.getProperty("java.home"),
+        "--pg-conf", "./test.pro",
+        "--pg-conf", "../openai-java-core/src/main/resources/META-INF/proguard/openai-java-core.pro",
+        "--pg-map-output", "${layout.buildDirectory.get()}/r8-mapping.txt",
+        tasks.shadowJar.get().archiveFile.get().asFile.absolutePath,
     )
+}
+
+val testR8 by tasks.registering(JavaExec::class) {
+    group = "verification"
+    dependsOn(r8Jar)
+    notCompatibleWithConfigurationCache("R8")
+
+    mainClass.set("com.openai.proguard.ProGuardCompatibilityTest")
+    classpath = files(r8JarPath)
 }
 
 tasks.test {
     dependsOn(testProGuard)
+    dependsOn(testR8)
     // We defer to the tests run via the ProGuard JAR.
     enabled = false
 }

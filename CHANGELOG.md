@@ -1,5 +1,19 @@
 # Changelog
 
+## 2.20.1 (2025-07-31)
+
+Full Changelog: [v2.20.0...v2.20.1](https://github.com/openai/openai-java/compare/v2.20.0...v2.20.1)
+
+### Bug Fixes
+
+* **client:** r8 support ([aa76f63](https://github.com/openai/openai-java/commit/aa76f638ca761ef63b336ee3e960f7302b4ec9dc))
+
+
+### Chores
+
+* **internal:** bump ci test timeout ([0ea80f0](https://github.com/openai/openai-java/commit/0ea80f0f4e914919e95c6914e907617bfadea369))
+* **internal:** reduce proguard ci logging ([876aa8f](https://github.com/openai/openai-java/commit/876aa8fa7b801ff0ed62ff933088bead3f7d5d66))
+
 ## 2.20.0 (2025-07-30)
 
 Full Changelog: [v2.19.2...v2.20.0](https://github.com/openai/openai-java/compare/v2.19.2...v2.20.0)
