@@ -1,5 +1,5 @@
 # Jackson uses reflection and depends heavily on runtime attributes.
--keepattributes
+-keepattributes Exceptions,InnerClasses,Signature,Deprecated,*Annotation*
 
 # Jackson uses Kotlin reflection utilities, which themselves use reflection to access things.
 -keep class kotlin.reflect.** { *; }
@@ -17,13 +17,13 @@
     *;
 }
 
-# Jackson uses reflection to access the default constructors of serializers and deserializers.
--keepclassmembers class * extends com.openai.core.BaseSerializer {
-    <init>();
-}
--keepclassmembers class * extends com.openai.core.BaseDeserializer {
-    <init>();
-}
+# Jackson uses reified type information to serialize and deserialize our classes (via `TypeReference`).
+-keep class com.fasterxml.jackson.core.type.TypeReference { *; }
+-keep class * extends com.fasterxml.jackson.core.type.TypeReference { *; }
+
+# Jackson uses reflection to access our class serializers and deserializers.
+-keep @com.fasterxml.jackson.databind.annotation.JsonSerialize class com.openai.** { *; }
+-keep @com.fasterxml.jackson.databind.annotation.JsonDeserialize class com.openai.** { *; }
 
 # Jackson uses reflection to serialize and deserialize our classes based on their constructors and annotated members.
 -keepclassmembers class com.openai.** {
