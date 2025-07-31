@@ -37,7 +37,6 @@ val proguardJar by tasks.registering(proguard.gradle.ProGuardTask::class) {
     outjars(proguardJarPath)
     printmapping("${layout.buildDirectory.get()}/proguard-mapping.txt")
 
-    verbose()
     dontwarn()
 
     val javaHome = System.getProperty("java.home")
