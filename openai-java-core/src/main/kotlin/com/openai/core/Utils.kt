@@ -5,6 +5,8 @@ package com.openai.core
 import com.openai.errors.OpenAIInvalidDataException
 import java.util.Collections
 import java.util.SortedMap
+import java.util.concurrent.CompletableFuture
+import java.util.concurrent.locks.Lock
 
 @JvmSynthetic
 internal fun <T : Any> T?.getOrThrow(name: String): T =
@@ -101,3 +103,24 @@ internal fun isAzureEndpoint(baseUrl: String): Boolean {
 }
 
 internal interface Enum
+
+/**
+ * Executes the given [action] while holding the lock, returning a [CompletableFuture] with the
+ * result.
+ *
+ * @param action The asynchronous action to execute while holding the lock
+ * @return A [CompletableFuture] that completes with the result of the action
+ */
+@JvmSynthetic
+internal fun <T> Lock.withLockAsync(action: () -> CompletableFuture<T>): CompletableFuture<T> {
+    lock()
+    val future =
+        try {
+            action()
+        } catch (e: Throwable) {
+            unlock()
+            throw e
+        }
+    future.whenComplete { _, _ -> unlock() }
+    return future
+}
