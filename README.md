@@ -45,7 +45,8 @@ This library requires Java 8 or later.
 
 ## Usage
 
-See the [`openai-java-example`](openai-java-example/src/main/java/com/openai/example) directory for complete and runnable examples.
+> [!TIP]
+> See the [`openai-java-example`](openai-java-example/src/main/java/com/openai/example) directory for complete and runnable examples!
 
 The primary API for interacting with OpenAI models is the [Responses API](https://platform.openai.com/docs/api-reference/responses). You can generate text from the model with the code below.
 
