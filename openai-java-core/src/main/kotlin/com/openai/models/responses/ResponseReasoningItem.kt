@@ -31,6 +31,7 @@ private constructor(
     private val id: JsonField<String>,
     private val summary: JsonField<List<Summary>>,
     private val type: JsonValue,
+    private val content: JsonField<List<Content>>,
     private val encryptedContent: JsonField<String>,
     private val status: JsonField<Status>,
     private val additionalProperties: MutableMap<String, JsonValue>,
@@ -43,11 +44,14 @@ private constructor(
         @ExcludeMissing
         summary: JsonField<List<Summary>> = JsonMissing.of(),
         @JsonProperty("type") @ExcludeMissing type: JsonValue = JsonMissing.of(),
+        @JsonProperty("content")
+        @ExcludeMissing
+        content: JsonField<List<Content>> = JsonMissing.of(),
         @JsonProperty("encrypted_content")
         @ExcludeMissing
         encryptedContent: JsonField<String> = JsonMissing.of(),
         @JsonProperty("status") @ExcludeMissing status: JsonField<Status> = JsonMissing.of(),
-    ) : this(id, summary, type, encryptedContent, status, mutableMapOf())
+    ) : this(id, summary, type, content, encryptedContent, status, mutableMapOf())
 
     /**
      * The unique identifier of the reasoning content.
@@ -58,7 +62,7 @@ private constructor(
     fun id(): String = id.getRequired("id")
 
     /**
-     * Reasoning text contents.
+     * Reasoning summary content.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
      *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
@@ -77,6 +81,14 @@ private constructor(
      * with an unexpected value).
      */
     @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
+
+    /**
+     * Reasoning text content.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun content(): Optional<List<Content>> = content.getOptional("content")
 
     /**
      * The encrypted content of the reasoning item - populated when a response is generated with
@@ -109,6 +121,13 @@ private constructor(
      * Unlike [summary], this method doesn't throw if the JSON field has an unexpected type.
      */
     @JsonProperty("summary") @ExcludeMissing fun _summary(): JsonField<List<Summary>> = summary
+
+    /**
+     * Returns the raw JSON value of [content].
+     *
+     * Unlike [content], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    @JsonProperty("content") @ExcludeMissing fun _content(): JsonField<List<Content>> = content
 
     /**
      * Returns the raw JSON value of [encryptedContent].
@@ -159,6 +178,7 @@ private constructor(
         private var id: JsonField<String>? = null
         private var summary: JsonField<MutableList<Summary>>? = null
         private var type: JsonValue = JsonValue.from("reasoning")
+        private var content: JsonField<MutableList<Content>>? = null
         private var encryptedContent: JsonField<String> = JsonMissing.of()
         private var status: JsonField<Status> = JsonMissing.of()
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
@@ -168,6 +188,7 @@ private constructor(
             id = responseReasoningItem.id
             summary = responseReasoningItem.summary.map { it.toMutableList() }
             type = responseReasoningItem.type
+            content = responseReasoningItem.content.map { it.toMutableList() }
             encryptedContent = responseReasoningItem.encryptedContent
             status = responseReasoningItem.status
             additionalProperties = responseReasoningItem.additionalProperties.toMutableMap()
@@ -184,7 +205,7 @@ private constructor(
          */
         fun id(id: JsonField<String>) = apply { this.id = id }
 
-        /** Reasoning text contents. */
+        /** Reasoning summary content. */
         fun summary(summary: List<Summary>) = summary(JsonField.of(summary))
 
         /**
@@ -223,6 +244,32 @@ private constructor(
          * value.
          */
         fun type(type: JsonValue) = apply { this.type = type }
+
+        /** Reasoning text content. */
+        fun content(content: List<Content>) = content(JsonField.of(content))
+
+        /**
+         * Sets [Builder.content] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.content] with a well-typed `List<Content>` value
+         * instead. This method is primarily for setting the field to an undocumented or not yet
+         * supported value.
+         */
+        fun content(content: JsonField<List<Content>>) = apply {
+            this.content = content.map { it.toMutableList() }
+        }
+
+        /**
+         * Adds a single [Content] to [Builder.content].
+         *
+         * @throws IllegalStateException if the field was previously set to a non-list.
+         */
+        fun addContent(content: Content) = apply {
+            this.content =
+                (this.content ?: JsonField.of(mutableListOf())).also {
+                    checkKnown("content", it).add(content)
+                }
+        }
 
         /**
          * The encrypted content of the reasoning item - populated when a response is generated with
@@ -297,6 +344,7 @@ private constructor(
                 checkRequired("id", id),
                 checkRequired("summary", summary).map { it.toImmutable() },
                 type,
+                (content ?: JsonMissing.of()).map { it.toImmutable() },
                 encryptedContent,
                 status,
                 additionalProperties.toMutableMap(),
@@ -317,6 +365,7 @@ private constructor(
                 throw OpenAIInvalidDataException("'type' is invalid, received $it")
             }
         }
+        content().ifPresent { it.forEach { it.validate() } }
         encryptedContent()
         status().ifPresent { it.validate() }
         validated = true
@@ -340,6 +389,7 @@ private constructor(
         (if (id.asKnown().isPresent) 1 else 0) +
             (summary.asKnown().getOrNull()?.sumOf { it.validity().toInt() } ?: 0) +
             type.let { if (it == JsonValue.from("reasoning")) 1 else 0 } +
+            (content.asKnown().getOrNull()?.sumOf { it.validity().toInt() } ?: 0) +
             (if (encryptedContent.asKnown().isPresent) 1 else 0) +
             (status.asKnown().getOrNull()?.validity() ?: 0)
 
@@ -357,7 +407,7 @@ private constructor(
         ) : this(text, type, mutableMapOf())
 
         /**
-         * A short summary of the reasoning used by the model when generating the response.
+         * A summary of the reasoning output from the model so far.
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
          *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
@@ -423,7 +473,7 @@ private constructor(
                 additionalProperties = summary.additionalProperties.toMutableMap()
             }
 
-            /** A short summary of the reasoning used by the model when generating the response. */
+            /** A summary of the reasoning output from the model so far. */
             fun text(text: String) = text(JsonField.of(text))
 
             /**
@@ -535,6 +585,200 @@ private constructor(
 
         override fun toString() =
             "Summary{text=$text, type=$type, additionalProperties=$additionalProperties}"
+    }
+
+    class Content
+    private constructor(
+        private val text: JsonField<String>,
+        private val type: JsonValue,
+        private val additionalProperties: MutableMap<String, JsonValue>,
+    ) {
+
+        @JsonCreator
+        private constructor(
+            @JsonProperty("text") @ExcludeMissing text: JsonField<String> = JsonMissing.of(),
+            @JsonProperty("type") @ExcludeMissing type: JsonValue = JsonMissing.of(),
+        ) : this(text, type, mutableMapOf())
+
+        /**
+         * Reasoning text output from the model.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         */
+        fun text(): String = text.getRequired("text")
+
+        /**
+         * The type of the object. Always `reasoning_text`.
+         *
+         * Expected to always return the following:
+         * ```java
+         * JsonValue.from("reasoning_text")
+         * ```
+         *
+         * However, this method can be useful for debugging and logging (e.g. if the server
+         * responded with an unexpected value).
+         */
+        @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
+
+        /**
+         * Returns the raw JSON value of [text].
+         *
+         * Unlike [text], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("text") @ExcludeMissing fun _text(): JsonField<String> = text
+
+        @JsonAnySetter
+        private fun putAdditionalProperty(key: String, value: JsonValue) {
+            additionalProperties.put(key, value)
+        }
+
+        @JsonAnyGetter
+        @ExcludeMissing
+        fun _additionalProperties(): Map<String, JsonValue> =
+            Collections.unmodifiableMap(additionalProperties)
+
+        fun toBuilder() = Builder().from(this)
+
+        companion object {
+
+            /**
+             * Returns a mutable builder for constructing an instance of [Content].
+             *
+             * The following fields are required:
+             * ```java
+             * .text()
+             * ```
+             */
+            @JvmStatic fun builder() = Builder()
+        }
+
+        /** A builder for [Content]. */
+        class Builder internal constructor() {
+
+            private var text: JsonField<String>? = null
+            private var type: JsonValue = JsonValue.from("reasoning_text")
+            private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
+
+            @JvmSynthetic
+            internal fun from(content: Content) = apply {
+                text = content.text
+                type = content.type
+                additionalProperties = content.additionalProperties.toMutableMap()
+            }
+
+            /** Reasoning text output from the model. */
+            fun text(text: String) = text(JsonField.of(text))
+
+            /**
+             * Sets [Builder.text] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.text] with a well-typed [String] value instead. This
+             * method is primarily for setting the field to an undocumented or not yet supported
+             * value.
+             */
+            fun text(text: JsonField<String>) = apply { this.text = text }
+
+            /**
+             * Sets the field to an arbitrary JSON value.
+             *
+             * It is usually unnecessary to call this method because the field defaults to the
+             * following:
+             * ```java
+             * JsonValue.from("reasoning_text")
+             * ```
+             *
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun type(type: JsonValue) = apply { this.type = type }
+
+            fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                this.additionalProperties.clear()
+                putAllAdditionalProperties(additionalProperties)
+            }
+
+            fun putAdditionalProperty(key: String, value: JsonValue) = apply {
+                additionalProperties.put(key, value)
+            }
+
+            fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                this.additionalProperties.putAll(additionalProperties)
+            }
+
+            fun removeAdditionalProperty(key: String) = apply { additionalProperties.remove(key) }
+
+            fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                keys.forEach(::removeAdditionalProperty)
+            }
+
+            /**
+             * Returns an immutable instance of [Content].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             *
+             * The following fields are required:
+             * ```java
+             * .text()
+             * ```
+             *
+             * @throws IllegalStateException if any required field is unset.
+             */
+            fun build(): Content =
+                Content(checkRequired("text", text), type, additionalProperties.toMutableMap())
+        }
+
+        private var validated: Boolean = false
+
+        fun validate(): Content = apply {
+            if (validated) {
+                return@apply
+            }
+
+            text()
+            _type().let {
+                if (it != JsonValue.from("reasoning_text")) {
+                    throw OpenAIInvalidDataException("'type' is invalid, received $it")
+                }
+            }
+            validated = true
+        }
+
+        fun isValid(): Boolean =
+            try {
+                validate()
+                true
+            } catch (e: OpenAIInvalidDataException) {
+                false
+            }
+
+        /**
+         * Returns a score indicating how many valid values are contained in this object
+         * recursively.
+         *
+         * Used for best match union deserialization.
+         */
+        @JvmSynthetic
+        internal fun validity(): Int =
+            (if (text.asKnown().isPresent) 1 else 0) +
+                type.let { if (it == JsonValue.from("reasoning_text")) 1 else 0 }
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) {
+                return true
+            }
+
+            return /* spotless:off */ other is Content && text == other.text && type == other.type && additionalProperties == other.additionalProperties /* spotless:on */
+        }
+
+        /* spotless:off */
+        private val hashCode: Int by lazy { Objects.hash(text, type, additionalProperties) }
+        /* spotless:on */
+
+        override fun hashCode(): Int = hashCode
+
+        override fun toString() =
+            "Content{text=$text, type=$type, additionalProperties=$additionalProperties}"
     }
 
     /**
@@ -677,15 +921,15 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is ResponseReasoningItem && id == other.id && summary == other.summary && type == other.type && encryptedContent == other.encryptedContent && status == other.status && additionalProperties == other.additionalProperties /* spotless:on */
+        return /* spotless:off */ other is ResponseReasoningItem && id == other.id && summary == other.summary && type == other.type && content == other.content && encryptedContent == other.encryptedContent && status == other.status && additionalProperties == other.additionalProperties /* spotless:on */
     }
 
     /* spotless:off */
-    private val hashCode: Int by lazy { Objects.hash(id, summary, type, encryptedContent, status, additionalProperties) }
+    private val hashCode: Int by lazy { Objects.hash(id, summary, type, content, encryptedContent, status, additionalProperties) }
     /* spotless:on */
 
     override fun hashCode(): Int = hashCode
 
     override fun toString() =
-        "ResponseReasoningItem{id=$id, summary=$summary, type=$type, encryptedContent=$encryptedContent, status=$status, additionalProperties=$additionalProperties}"
+        "ResponseReasoningItem{id=$id, summary=$summary, type=$type, content=$content, encryptedContent=$encryptedContent, status=$status, additionalProperties=$additionalProperties}"
 }

@@ -52,6 +52,8 @@ private constructor(
     private val reasoningSummaryPartDone: ResponseReasoningSummaryPartDoneEvent? = null,
     private val reasoningSummaryTextDelta: ResponseReasoningSummaryTextDeltaEvent? = null,
     private val reasoningSummaryTextDone: ResponseReasoningSummaryTextDoneEvent? = null,
+    private val reasoningTextDelta: ResponseReasoningTextDeltaEvent? = null,
+    private val reasoningTextDone: ResponseReasoningTextDoneEvent? = null,
     private val refusalDelta: ResponseRefusalDeltaEvent? = null,
     private val refusalDone: ResponseRefusalDoneEvent? = null,
     private val outputTextDelta: ResponseTextDeltaEvent? = null,
@@ -73,8 +75,6 @@ private constructor(
     private val mcpListToolsInProgress: ResponseMcpListToolsInProgressEvent? = null,
     private val outputTextAnnotationAdded: ResponseOutputTextAnnotationAddedEvent? = null,
     private val queued: ResponseQueuedEvent? = null,
-    private val reasoningSummaryDelta: ResponseReasoningSummaryDeltaEvent? = null,
-    private val reasoningSummaryDone: ResponseReasoningSummaryDoneEvent? = null,
     private val _json: JsonValue? = null,
 ) {
 
@@ -182,6 +182,14 @@ private constructor(
     fun reasoningSummaryTextDone(): Optional<ResponseReasoningSummaryTextDoneEvent> =
         Optional.ofNullable(reasoningSummaryTextDone)
 
+    /** Emitted when a delta is added to a reasoning text. */
+    fun reasoningTextDelta(): Optional<ResponseReasoningTextDeltaEvent> =
+        Optional.ofNullable(reasoningTextDelta)
+
+    /** Emitted when a reasoning text is completed. */
+    fun reasoningTextDone(): Optional<ResponseReasoningTextDoneEvent> =
+        Optional.ofNullable(reasoningTextDone)
+
     /** Emitted when there is a partial refusal text. */
     fun refusalDelta(): Optional<ResponseRefusalDeltaEvent> = Optional.ofNullable(refusalDelta)
 
@@ -265,14 +273,6 @@ private constructor(
     /** Emitted when a response is queued and waiting to be processed. */
     fun queued(): Optional<ResponseQueuedEvent> = Optional.ofNullable(queued)
 
-    /** Emitted when there is a delta (partial update) to the reasoning summary content. */
-    fun reasoningSummaryDelta(): Optional<ResponseReasoningSummaryDeltaEvent> =
-        Optional.ofNullable(reasoningSummaryDelta)
-
-    /** Emitted when the reasoning summary content is finalized for an item. */
-    fun reasoningSummaryDone(): Optional<ResponseReasoningSummaryDoneEvent> =
-        Optional.ofNullable(reasoningSummaryDone)
-
     fun isAudioDelta(): Boolean = audioDelta != null
 
     fun isAudioDone(): Boolean = audioDone != null
@@ -329,6 +329,10 @@ private constructor(
 
     fun isReasoningSummaryTextDone(): Boolean = reasoningSummaryTextDone != null
 
+    fun isReasoningTextDelta(): Boolean = reasoningTextDelta != null
+
+    fun isReasoningTextDone(): Boolean = reasoningTextDone != null
+
     fun isRefusalDelta(): Boolean = refusalDelta != null
 
     fun isRefusalDone(): Boolean = refusalDone != null
@@ -370,10 +374,6 @@ private constructor(
     fun isOutputTextAnnotationAdded(): Boolean = outputTextAnnotationAdded != null
 
     fun isQueued(): Boolean = queued != null
-
-    fun isReasoningSummaryDelta(): Boolean = reasoningSummaryDelta != null
-
-    fun isReasoningSummaryDone(): Boolean = reasoningSummaryDone != null
 
     /** Emitted when there is a partial audio response. */
     fun asAudioDelta(): ResponseAudioDeltaEvent = audioDelta.getOrThrow("audioDelta")
@@ -479,6 +479,14 @@ private constructor(
     fun asReasoningSummaryTextDone(): ResponseReasoningSummaryTextDoneEvent =
         reasoningSummaryTextDone.getOrThrow("reasoningSummaryTextDone")
 
+    /** Emitted when a delta is added to a reasoning text. */
+    fun asReasoningTextDelta(): ResponseReasoningTextDeltaEvent =
+        reasoningTextDelta.getOrThrow("reasoningTextDelta")
+
+    /** Emitted when a reasoning text is completed. */
+    fun asReasoningTextDone(): ResponseReasoningTextDoneEvent =
+        reasoningTextDone.getOrThrow("reasoningTextDone")
+
     /** Emitted when there is a partial refusal text. */
     fun asRefusalDelta(): ResponseRefusalDeltaEvent = refusalDelta.getOrThrow("refusalDelta")
 
@@ -562,14 +570,6 @@ private constructor(
     /** Emitted when a response is queued and waiting to be processed. */
     fun asQueued(): ResponseQueuedEvent = queued.getOrThrow("queued")
 
-    /** Emitted when there is a delta (partial update) to the reasoning summary content. */
-    fun asReasoningSummaryDelta(): ResponseReasoningSummaryDeltaEvent =
-        reasoningSummaryDelta.getOrThrow("reasoningSummaryDelta")
-
-    /** Emitted when the reasoning summary content is finalized for an item. */
-    fun asReasoningSummaryDone(): ResponseReasoningSummaryDoneEvent =
-        reasoningSummaryDone.getOrThrow("reasoningSummaryDone")
-
     fun _json(): Optional<JsonValue> = Optional.ofNullable(_json)
 
     fun <T> accept(visitor: Visitor<T>): T =
@@ -616,6 +616,8 @@ private constructor(
                 visitor.visitReasoningSummaryTextDelta(reasoningSummaryTextDelta)
             reasoningSummaryTextDone != null ->
                 visitor.visitReasoningSummaryTextDone(reasoningSummaryTextDone)
+            reasoningTextDelta != null -> visitor.visitReasoningTextDelta(reasoningTextDelta)
+            reasoningTextDone != null -> visitor.visitReasoningTextDone(reasoningTextDone)
             refusalDelta != null -> visitor.visitRefusalDelta(refusalDelta)
             refusalDone != null -> visitor.visitRefusalDone(refusalDone)
             outputTextDelta != null -> visitor.visitOutputTextDelta(outputTextDelta)
@@ -648,9 +650,6 @@ private constructor(
             outputTextAnnotationAdded != null ->
                 visitor.visitOutputTextAnnotationAdded(outputTextAnnotationAdded)
             queued != null -> visitor.visitQueued(queued)
-            reasoningSummaryDelta != null ->
-                visitor.visitReasoningSummaryDelta(reasoningSummaryDelta)
-            reasoningSummaryDone != null -> visitor.visitReasoningSummaryDone(reasoningSummaryDone)
             else -> visitor.unknown(_json)
         }
 
@@ -809,6 +808,18 @@ private constructor(
                     reasoningSummaryTextDone.validate()
                 }
 
+                override fun visitReasoningTextDelta(
+                    reasoningTextDelta: ResponseReasoningTextDeltaEvent
+                ) {
+                    reasoningTextDelta.validate()
+                }
+
+                override fun visitReasoningTextDone(
+                    reasoningTextDone: ResponseReasoningTextDoneEvent
+                ) {
+                    reasoningTextDone.validate()
+                }
+
                 override fun visitRefusalDelta(refusalDelta: ResponseRefusalDeltaEvent) {
                     refusalDelta.validate()
                 }
@@ -921,18 +932,6 @@ private constructor(
 
                 override fun visitQueued(queued: ResponseQueuedEvent) {
                     queued.validate()
-                }
-
-                override fun visitReasoningSummaryDelta(
-                    reasoningSummaryDelta: ResponseReasoningSummaryDeltaEvent
-                ) {
-                    reasoningSummaryDelta.validate()
-                }
-
-                override fun visitReasoningSummaryDone(
-                    reasoningSummaryDone: ResponseReasoningSummaryDoneEvent
-                ) {
-                    reasoningSummaryDone.validate()
                 }
             }
         )
@@ -1054,6 +1053,14 @@ private constructor(
                     reasoningSummaryTextDone: ResponseReasoningSummaryTextDoneEvent
                 ) = reasoningSummaryTextDone.validity()
 
+                override fun visitReasoningTextDelta(
+                    reasoningTextDelta: ResponseReasoningTextDeltaEvent
+                ) = reasoningTextDelta.validity()
+
+                override fun visitReasoningTextDone(
+                    reasoningTextDone: ResponseReasoningTextDoneEvent
+                ) = reasoningTextDone.validity()
+
                 override fun visitRefusalDelta(refusalDelta: ResponseRefusalDeltaEvent) =
                     refusalDelta.validity()
 
@@ -1131,14 +1138,6 @@ private constructor(
 
                 override fun visitQueued(queued: ResponseQueuedEvent) = queued.validity()
 
-                override fun visitReasoningSummaryDelta(
-                    reasoningSummaryDelta: ResponseReasoningSummaryDeltaEvent
-                ) = reasoningSummaryDelta.validity()
-
-                override fun visitReasoningSummaryDone(
-                    reasoningSummaryDone: ResponseReasoningSummaryDoneEvent
-                ) = reasoningSummaryDone.validity()
-
                 override fun unknown(json: JsonValue?) = 0
             }
         )
@@ -1148,10 +1147,10 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is ResponseStreamEvent && audioDelta == other.audioDelta && audioDone == other.audioDone && audioTranscriptDelta == other.audioTranscriptDelta && audioTranscriptDone == other.audioTranscriptDone && codeInterpreterCallCodeDelta == other.codeInterpreterCallCodeDelta && codeInterpreterCallCodeDone == other.codeInterpreterCallCodeDone && codeInterpreterCallCompleted == other.codeInterpreterCallCompleted && codeInterpreterCallInProgress == other.codeInterpreterCallInProgress && codeInterpreterCallInterpreting == other.codeInterpreterCallInterpreting && completed == other.completed && contentPartAdded == other.contentPartAdded && contentPartDone == other.contentPartDone && created == other.created && error == other.error && fileSearchCallCompleted == other.fileSearchCallCompleted && fileSearchCallInProgress == other.fileSearchCallInProgress && fileSearchCallSearching == other.fileSearchCallSearching && functionCallArgumentsDelta == other.functionCallArgumentsDelta && functionCallArgumentsDone == other.functionCallArgumentsDone && inProgress == other.inProgress && failed == other.failed && incomplete == other.incomplete && outputItemAdded == other.outputItemAdded && outputItemDone == other.outputItemDone && reasoningSummaryPartAdded == other.reasoningSummaryPartAdded && reasoningSummaryPartDone == other.reasoningSummaryPartDone && reasoningSummaryTextDelta == other.reasoningSummaryTextDelta && reasoningSummaryTextDone == other.reasoningSummaryTextDone && refusalDelta == other.refusalDelta && refusalDone == other.refusalDone && outputTextDelta == other.outputTextDelta && outputTextDone == other.outputTextDone && webSearchCallCompleted == other.webSearchCallCompleted && webSearchCallInProgress == other.webSearchCallInProgress && webSearchCallSearching == other.webSearchCallSearching && imageGenerationCallCompleted == other.imageGenerationCallCompleted && imageGenerationCallGenerating == other.imageGenerationCallGenerating && imageGenerationCallInProgress == other.imageGenerationCallInProgress && imageGenerationCallPartialImage == other.imageGenerationCallPartialImage && mcpCallArgumentsDelta == other.mcpCallArgumentsDelta && mcpCallArgumentsDone == other.mcpCallArgumentsDone && mcpCallCompleted == other.mcpCallCompleted && mcpCallFailed == other.mcpCallFailed && mcpCallInProgress == other.mcpCallInProgress && mcpListToolsCompleted == other.mcpListToolsCompleted && mcpListToolsFailed == other.mcpListToolsFailed && mcpListToolsInProgress == other.mcpListToolsInProgress && outputTextAnnotationAdded == other.outputTextAnnotationAdded && queued == other.queued && reasoningSummaryDelta == other.reasoningSummaryDelta && reasoningSummaryDone == other.reasoningSummaryDone /* spotless:on */
+        return /* spotless:off */ other is ResponseStreamEvent && audioDelta == other.audioDelta && audioDone == other.audioDone && audioTranscriptDelta == other.audioTranscriptDelta && audioTranscriptDone == other.audioTranscriptDone && codeInterpreterCallCodeDelta == other.codeInterpreterCallCodeDelta && codeInterpreterCallCodeDone == other.codeInterpreterCallCodeDone && codeInterpreterCallCompleted == other.codeInterpreterCallCompleted && codeInterpreterCallInProgress == other.codeInterpreterCallInProgress && codeInterpreterCallInterpreting == other.codeInterpreterCallInterpreting && completed == other.completed && contentPartAdded == other.contentPartAdded && contentPartDone == other.contentPartDone && created == other.created && error == other.error && fileSearchCallCompleted == other.fileSearchCallCompleted && fileSearchCallInProgress == other.fileSearchCallInProgress && fileSearchCallSearching == other.fileSearchCallSearching && functionCallArgumentsDelta == other.functionCallArgumentsDelta && functionCallArgumentsDone == other.functionCallArgumentsDone && inProgress == other.inProgress && failed == other.failed && incomplete == other.incomplete && outputItemAdded == other.outputItemAdded && outputItemDone == other.outputItemDone && reasoningSummaryPartAdded == other.reasoningSummaryPartAdded && reasoningSummaryPartDone == other.reasoningSummaryPartDone && reasoningSummaryTextDelta == other.reasoningSummaryTextDelta && reasoningSummaryTextDone == other.reasoningSummaryTextDone && reasoningTextDelta == other.reasoningTextDelta && reasoningTextDone == other.reasoningTextDone && refusalDelta == other.refusalDelta && refusalDone == other.refusalDone && outputTextDelta == other.outputTextDelta && outputTextDone == other.outputTextDone && webSearchCallCompleted == other.webSearchCallCompleted && webSearchCallInProgress == other.webSearchCallInProgress && webSearchCallSearching == other.webSearchCallSearching && imageGenerationCallCompleted == other.imageGenerationCallCompleted && imageGenerationCallGenerating == other.imageGenerationCallGenerating && imageGenerationCallInProgress == other.imageGenerationCallInProgress && imageGenerationCallPartialImage == other.imageGenerationCallPartialImage && mcpCallArgumentsDelta == other.mcpCallArgumentsDelta && mcpCallArgumentsDone == other.mcpCallArgumentsDone && mcpCallCompleted == other.mcpCallCompleted && mcpCallFailed == other.mcpCallFailed && mcpCallInProgress == other.mcpCallInProgress && mcpListToolsCompleted == other.mcpListToolsCompleted && mcpListToolsFailed == other.mcpListToolsFailed && mcpListToolsInProgress == other.mcpListToolsInProgress && outputTextAnnotationAdded == other.outputTextAnnotationAdded && queued == other.queued /* spotless:on */
     }
 
-    override fun hashCode(): Int = /* spotless:off */ Objects.hash(audioDelta, audioDone, audioTranscriptDelta, audioTranscriptDone, codeInterpreterCallCodeDelta, codeInterpreterCallCodeDone, codeInterpreterCallCompleted, codeInterpreterCallInProgress, codeInterpreterCallInterpreting, completed, contentPartAdded, contentPartDone, created, error, fileSearchCallCompleted, fileSearchCallInProgress, fileSearchCallSearching, functionCallArgumentsDelta, functionCallArgumentsDone, inProgress, failed, incomplete, outputItemAdded, outputItemDone, reasoningSummaryPartAdded, reasoningSummaryPartDone, reasoningSummaryTextDelta, reasoningSummaryTextDone, refusalDelta, refusalDone, outputTextDelta, outputTextDone, webSearchCallCompleted, webSearchCallInProgress, webSearchCallSearching, imageGenerationCallCompleted, imageGenerationCallGenerating, imageGenerationCallInProgress, imageGenerationCallPartialImage, mcpCallArgumentsDelta, mcpCallArgumentsDone, mcpCallCompleted, mcpCallFailed, mcpCallInProgress, mcpListToolsCompleted, mcpListToolsFailed, mcpListToolsInProgress, outputTextAnnotationAdded, queued, reasoningSummaryDelta, reasoningSummaryDone) /* spotless:on */
+    override fun hashCode(): Int = /* spotless:off */ Objects.hash(audioDelta, audioDone, audioTranscriptDelta, audioTranscriptDone, codeInterpreterCallCodeDelta, codeInterpreterCallCodeDone, codeInterpreterCallCompleted, codeInterpreterCallInProgress, codeInterpreterCallInterpreting, completed, contentPartAdded, contentPartDone, created, error, fileSearchCallCompleted, fileSearchCallInProgress, fileSearchCallSearching, functionCallArgumentsDelta, functionCallArgumentsDone, inProgress, failed, incomplete, outputItemAdded, outputItemDone, reasoningSummaryPartAdded, reasoningSummaryPartDone, reasoningSummaryTextDelta, reasoningSummaryTextDone, reasoningTextDelta, reasoningTextDone, refusalDelta, refusalDone, outputTextDelta, outputTextDone, webSearchCallCompleted, webSearchCallInProgress, webSearchCallSearching, imageGenerationCallCompleted, imageGenerationCallGenerating, imageGenerationCallInProgress, imageGenerationCallPartialImage, mcpCallArgumentsDelta, mcpCallArgumentsDone, mcpCallCompleted, mcpCallFailed, mcpCallInProgress, mcpListToolsCompleted, mcpListToolsFailed, mcpListToolsInProgress, outputTextAnnotationAdded, queued) /* spotless:on */
 
     override fun toString(): String =
         when {
@@ -1199,6 +1198,9 @@ private constructor(
                 "ResponseStreamEvent{reasoningSummaryTextDelta=$reasoningSummaryTextDelta}"
             reasoningSummaryTextDone != null ->
                 "ResponseStreamEvent{reasoningSummaryTextDone=$reasoningSummaryTextDone}"
+            reasoningTextDelta != null ->
+                "ResponseStreamEvent{reasoningTextDelta=$reasoningTextDelta}"
+            reasoningTextDone != null -> "ResponseStreamEvent{reasoningTextDone=$reasoningTextDone}"
             refusalDelta != null -> "ResponseStreamEvent{refusalDelta=$refusalDelta}"
             refusalDone != null -> "ResponseStreamEvent{refusalDone=$refusalDone}"
             outputTextDelta != null -> "ResponseStreamEvent{outputTextDelta=$outputTextDelta}"
@@ -1233,10 +1235,6 @@ private constructor(
             outputTextAnnotationAdded != null ->
                 "ResponseStreamEvent{outputTextAnnotationAdded=$outputTextAnnotationAdded}"
             queued != null -> "ResponseStreamEvent{queued=$queued}"
-            reasoningSummaryDelta != null ->
-                "ResponseStreamEvent{reasoningSummaryDelta=$reasoningSummaryDelta}"
-            reasoningSummaryDone != null ->
-                "ResponseStreamEvent{reasoningSummaryDone=$reasoningSummaryDone}"
             _json != null -> "ResponseStreamEvent{_unknown=$_json}"
             else -> throw IllegalStateException("Invalid ResponseStreamEvent")
         }
@@ -1392,6 +1390,16 @@ private constructor(
             reasoningSummaryTextDone: ResponseReasoningSummaryTextDoneEvent
         ) = ResponseStreamEvent(reasoningSummaryTextDone = reasoningSummaryTextDone)
 
+        /** Emitted when a delta is added to a reasoning text. */
+        @JvmStatic
+        fun ofReasoningTextDelta(reasoningTextDelta: ResponseReasoningTextDeltaEvent) =
+            ResponseStreamEvent(reasoningTextDelta = reasoningTextDelta)
+
+        /** Emitted when a reasoning text is completed. */
+        @JvmStatic
+        fun ofReasoningTextDone(reasoningTextDone: ResponseReasoningTextDoneEvent) =
+            ResponseStreamEvent(reasoningTextDone = reasoningTextDone)
+
         /** Emitted when there is a partial refusal text. */
         @JvmStatic
         fun ofRefusalDelta(refusalDelta: ResponseRefusalDeltaEvent) =
@@ -1508,16 +1516,6 @@ private constructor(
 
         /** Emitted when a response is queued and waiting to be processed. */
         @JvmStatic fun ofQueued(queued: ResponseQueuedEvent) = ResponseStreamEvent(queued = queued)
-
-        /** Emitted when there is a delta (partial update) to the reasoning summary content. */
-        @JvmStatic
-        fun ofReasoningSummaryDelta(reasoningSummaryDelta: ResponseReasoningSummaryDeltaEvent) =
-            ResponseStreamEvent(reasoningSummaryDelta = reasoningSummaryDelta)
-
-        /** Emitted when the reasoning summary content is finalized for an item. */
-        @JvmStatic
-        fun ofReasoningSummaryDone(reasoningSummaryDone: ResponseReasoningSummaryDoneEvent) =
-            ResponseStreamEvent(reasoningSummaryDone = reasoningSummaryDone)
     }
 
     /**
@@ -1638,6 +1636,12 @@ private constructor(
             reasoningSummaryTextDone: ResponseReasoningSummaryTextDoneEvent
         ): T
 
+        /** Emitted when a delta is added to a reasoning text. */
+        fun visitReasoningTextDelta(reasoningTextDelta: ResponseReasoningTextDeltaEvent): T
+
+        /** Emitted when a reasoning text is completed. */
+        fun visitReasoningTextDone(reasoningTextDone: ResponseReasoningTextDoneEvent): T
+
         /** Emitted when there is a partial refusal text. */
         fun visitRefusalDelta(refusalDelta: ResponseRefusalDeltaEvent): T
 
@@ -1726,12 +1730,6 @@ private constructor(
 
         /** Emitted when a response is queued and waiting to be processed. */
         fun visitQueued(queued: ResponseQueuedEvent): T
-
-        /** Emitted when there is a delta (partial update) to the reasoning summary content. */
-        fun visitReasoningSummaryDelta(reasoningSummaryDelta: ResponseReasoningSummaryDeltaEvent): T
-
-        /** Emitted when the reasoning summary content is finalized for an item. */
-        fun visitReasoningSummaryDone(reasoningSummaryDone: ResponseReasoningSummaryDoneEvent): T
 
         /**
          * Maps an unknown variant of [ResponseStreamEvent] to a value of type [T].
@@ -1943,6 +1941,16 @@ private constructor(
                         ?.let { ResponseStreamEvent(reasoningSummaryTextDone = it, _json = json) }
                         ?: ResponseStreamEvent(_json = json)
                 }
+                "response.reasoning_text.delta" -> {
+                    return tryDeserialize(node, jacksonTypeRef<ResponseReasoningTextDeltaEvent>())
+                        ?.let { ResponseStreamEvent(reasoningTextDelta = it, _json = json) }
+                        ?: ResponseStreamEvent(_json = json)
+                }
+                "response.reasoning_text.done" -> {
+                    return tryDeserialize(node, jacksonTypeRef<ResponseReasoningTextDoneEvent>())
+                        ?.let { ResponseStreamEvent(reasoningTextDone = it, _json = json) }
+                        ?: ResponseStreamEvent(_json = json)
+                }
                 "response.refusal.delta" -> {
                     return tryDeserialize(node, jacksonTypeRef<ResponseRefusalDeltaEvent>())?.let {
                         ResponseStreamEvent(refusalDelta = it, _json = json)
@@ -2085,19 +2093,6 @@ private constructor(
                         ResponseStreamEvent(queued = it, _json = json)
                     } ?: ResponseStreamEvent(_json = json)
                 }
-                "response.reasoning_summary.delta" -> {
-                    return tryDeserialize(
-                            node,
-                            jacksonTypeRef<ResponseReasoningSummaryDeltaEvent>(),
-                        )
-                        ?.let { ResponseStreamEvent(reasoningSummaryDelta = it, _json = json) }
-                        ?: ResponseStreamEvent(_json = json)
-                }
-                "response.reasoning_summary.done" -> {
-                    return tryDeserialize(node, jacksonTypeRef<ResponseReasoningSummaryDoneEvent>())
-                        ?.let { ResponseStreamEvent(reasoningSummaryDone = it, _json = json) }
-                        ?: ResponseStreamEvent(_json = json)
-                }
             }
 
             return ResponseStreamEvent(_json = json)
@@ -2156,6 +2151,8 @@ private constructor(
                     generator.writeObject(value.reasoningSummaryTextDelta)
                 value.reasoningSummaryTextDone != null ->
                     generator.writeObject(value.reasoningSummaryTextDone)
+                value.reasoningTextDelta != null -> generator.writeObject(value.reasoningTextDelta)
+                value.reasoningTextDone != null -> generator.writeObject(value.reasoningTextDone)
                 value.refusalDelta != null -> generator.writeObject(value.refusalDelta)
                 value.refusalDone != null -> generator.writeObject(value.refusalDone)
                 value.outputTextDelta != null -> generator.writeObject(value.outputTextDelta)
@@ -2189,10 +2186,6 @@ private constructor(
                 value.outputTextAnnotationAdded != null ->
                     generator.writeObject(value.outputTextAnnotationAdded)
                 value.queued != null -> generator.writeObject(value.queued)
-                value.reasoningSummaryDelta != null ->
-                    generator.writeObject(value.reasoningSummaryDelta)
-                value.reasoningSummaryDone != null ->
-                    generator.writeObject(value.reasoningSummaryDone)
                 value._json != null -> generator.writeObject(value._json)
                 else -> throw IllegalStateException("Invalid ResponseStreamEvent")
             }
