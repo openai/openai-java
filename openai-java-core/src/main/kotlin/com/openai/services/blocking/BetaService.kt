@@ -3,9 +3,7 @@
 package com.openai.services.blocking
 
 import com.openai.core.ClientOptions
-import com.openai.services.blocking.beta.AssistantService
 import com.openai.services.blocking.beta.RealtimeService
-import com.openai.services.blocking.beta.ThreadService
 import java.util.function.Consumer
 
 interface BetaService {
@@ -24,11 +22,6 @@ interface BetaService {
 
     fun realtime(): RealtimeService
 
-    fun assistants(): AssistantService
-
-    @Deprecated("The Assistants API is deprecated in favor of the Responses API")
-    fun threads(): ThreadService
-
     /** A view of [BetaService] that provides access to raw HTTP responses for each method. */
     interface WithRawResponse {
 
@@ -40,10 +33,5 @@ interface BetaService {
         fun withOptions(modifier: Consumer<ClientOptions.Builder>): BetaService.WithRawResponse
 
         fun realtime(): RealtimeService.WithRawResponse
-
-        fun assistants(): AssistantService.WithRawResponse
-
-        @Deprecated("The Assistants API is deprecated in favor of the Responses API")
-        fun threads(): ThreadService.WithRawResponse
     }
 }

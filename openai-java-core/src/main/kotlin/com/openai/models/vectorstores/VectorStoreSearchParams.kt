@@ -1133,6 +1133,8 @@ private constructor(
         ) : this(ranker, scoreThreshold, mutableMapOf())
 
         /**
+         * Enable re-ranking; set to `none` to disable, which can help reduce latency.
+         *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
          */
@@ -1193,6 +1195,7 @@ private constructor(
                 additionalProperties = rankingOptions.additionalProperties.toMutableMap()
             }
 
+            /** Enable re-ranking; set to `none` to disable, which can help reduce latency. */
             fun ranker(ranker: Ranker) = ranker(JsonField.of(ranker))
 
             /**
@@ -1277,6 +1280,7 @@ private constructor(
             (ranker.asKnown().getOrNull()?.validity() ?: 0) +
                 (if (scoreThreshold.asKnown().isPresent) 1 else 0)
 
+        /** Enable re-ranking; set to `none` to disable, which can help reduce latency. */
         class Ranker @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
 
             /**
@@ -1291,6 +1295,8 @@ private constructor(
 
             companion object {
 
+                @JvmField val NONE = of("none")
+
                 @JvmField val AUTO = of("auto")
 
                 @JvmField val DEFAULT_2024_11_15 = of("default-2024-11-15")
@@ -1300,6 +1306,7 @@ private constructor(
 
             /** An enum containing [Ranker]'s known values. */
             enum class Known {
+                NONE,
                 AUTO,
                 DEFAULT_2024_11_15,
             }
@@ -1314,6 +1321,7 @@ private constructor(
              * - It was constructed with an arbitrary value using the [of] method.
              */
             enum class Value {
+                NONE,
                 AUTO,
                 DEFAULT_2024_11_15,
                 /**
@@ -1331,6 +1339,7 @@ private constructor(
              */
             fun value(): Value =
                 when (this) {
+                    NONE -> Value.NONE
                     AUTO -> Value.AUTO
                     DEFAULT_2024_11_15 -> Value.DEFAULT_2024_11_15
                     else -> Value._UNKNOWN
@@ -1347,6 +1356,7 @@ private constructor(
              */
             fun known(): Known =
                 when (this) {
+                    NONE -> Known.NONE
                     AUTO -> Known.AUTO
                     DEFAULT_2024_11_15 -> Known.DEFAULT_2024_11_15
                     else -> throw OpenAIInvalidDataException("Unknown Ranker: $value")

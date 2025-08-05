@@ -15,21 +15,24 @@ import com.openai.errors.OpenAIInvalidDataException
 import java.util.Collections
 import java.util.Objects
 
-/** Emitted when there is a delta (partial update) to the reasoning summary content. */
-class ResponseReasoningSummaryDeltaEvent
+/** Emitted when a delta is added to a reasoning text. */
+class ResponseReasoningTextDeltaEvent
 private constructor(
-    private val delta: JsonValue,
+    private val contentIndex: JsonField<Long>,
+    private val delta: JsonField<String>,
     private val itemId: JsonField<String>,
     private val outputIndex: JsonField<Long>,
     private val sequenceNumber: JsonField<Long>,
-    private val summaryIndex: JsonField<Long>,
     private val type: JsonValue,
     private val additionalProperties: MutableMap<String, JsonValue>,
 ) {
 
     @JsonCreator
     private constructor(
-        @JsonProperty("delta") @ExcludeMissing delta: JsonValue = JsonMissing.of(),
+        @JsonProperty("content_index")
+        @ExcludeMissing
+        contentIndex: JsonField<Long> = JsonMissing.of(),
+        @JsonProperty("delta") @ExcludeMissing delta: JsonField<String> = JsonMissing.of(),
         @JsonProperty("item_id") @ExcludeMissing itemId: JsonField<String> = JsonMissing.of(),
         @JsonProperty("output_index")
         @ExcludeMissing
@@ -37,17 +40,27 @@ private constructor(
         @JsonProperty("sequence_number")
         @ExcludeMissing
         sequenceNumber: JsonField<Long> = JsonMissing.of(),
-        @JsonProperty("summary_index")
-        @ExcludeMissing
-        summaryIndex: JsonField<Long> = JsonMissing.of(),
         @JsonProperty("type") @ExcludeMissing type: JsonValue = JsonMissing.of(),
-    ) : this(delta, itemId, outputIndex, sequenceNumber, summaryIndex, type, mutableMapOf())
-
-    /** The partial update to the reasoning summary content. */
-    @JsonProperty("delta") @ExcludeMissing fun _delta(): JsonValue = delta
+    ) : this(contentIndex, delta, itemId, outputIndex, sequenceNumber, type, mutableMapOf())
 
     /**
-     * The unique identifier of the item for which the reasoning summary is being updated.
+     * The index of the reasoning content part this delta is associated with.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     */
+    fun contentIndex(): Long = contentIndex.getRequired("content_index")
+
+    /**
+     * The text delta that was added to the reasoning content.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     */
+    fun delta(): String = delta.getRequired("delta")
+
+    /**
+     * The ID of the item this reasoning text delta is associated with.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
      *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
@@ -55,7 +68,7 @@ private constructor(
     fun itemId(): String = itemId.getRequired("item_id")
 
     /**
-     * The index of the output item in the response's output array.
+     * The index of the output item this reasoning text delta is associated with.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
      *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
@@ -71,25 +84,33 @@ private constructor(
     fun sequenceNumber(): Long = sequenceNumber.getRequired("sequence_number")
 
     /**
-     * The index of the summary part within the output item.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
-     */
-    fun summaryIndex(): Long = summaryIndex.getRequired("summary_index")
-
-    /**
-     * The type of the event. Always 'response.reasoning_summary.delta'.
+     * The type of the event. Always `response.reasoning_text.delta`.
      *
      * Expected to always return the following:
      * ```java
-     * JsonValue.from("response.reasoning_summary.delta")
+     * JsonValue.from("response.reasoning_text.delta")
      * ```
      *
      * However, this method can be useful for debugging and logging (e.g. if the server responded
      * with an unexpected value).
      */
     @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
+
+    /**
+     * Returns the raw JSON value of [contentIndex].
+     *
+     * Unlike [contentIndex], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    @JsonProperty("content_index")
+    @ExcludeMissing
+    fun _contentIndex(): JsonField<Long> = contentIndex
+
+    /**
+     * Returns the raw JSON value of [delta].
+     *
+     * Unlike [delta], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    @JsonProperty("delta") @ExcludeMissing fun _delta(): JsonField<String> = delta
 
     /**
      * Returns the raw JSON value of [itemId].
@@ -114,15 +135,6 @@ private constructor(
     @ExcludeMissing
     fun _sequenceNumber(): JsonField<Long> = sequenceNumber
 
-    /**
-     * Returns the raw JSON value of [summaryIndex].
-     *
-     * Unlike [summaryIndex], this method doesn't throw if the JSON field has an unexpected type.
-     */
-    @JsonProperty("summary_index")
-    @ExcludeMissing
-    fun _summaryIndex(): JsonField<Long> = summaryIndex
-
     @JsonAnySetter
     private fun putAdditionalProperty(key: String, value: JsonValue) {
         additionalProperties.put(key, value)
@@ -139,48 +151,68 @@ private constructor(
 
         /**
          * Returns a mutable builder for constructing an instance of
-         * [ResponseReasoningSummaryDeltaEvent].
+         * [ResponseReasoningTextDeltaEvent].
          *
          * The following fields are required:
          * ```java
+         * .contentIndex()
          * .delta()
          * .itemId()
          * .outputIndex()
          * .sequenceNumber()
-         * .summaryIndex()
          * ```
          */
         @JvmStatic fun builder() = Builder()
     }
 
-    /** A builder for [ResponseReasoningSummaryDeltaEvent]. */
+    /** A builder for [ResponseReasoningTextDeltaEvent]. */
     class Builder internal constructor() {
 
-        private var delta: JsonValue? = null
+        private var contentIndex: JsonField<Long>? = null
+        private var delta: JsonField<String>? = null
         private var itemId: JsonField<String>? = null
         private var outputIndex: JsonField<Long>? = null
         private var sequenceNumber: JsonField<Long>? = null
-        private var summaryIndex: JsonField<Long>? = null
-        private var type: JsonValue = JsonValue.from("response.reasoning_summary.delta")
+        private var type: JsonValue = JsonValue.from("response.reasoning_text.delta")
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
         @JvmSynthetic
-        internal fun from(responseReasoningSummaryDeltaEvent: ResponseReasoningSummaryDeltaEvent) =
+        internal fun from(responseReasoningTextDeltaEvent: ResponseReasoningTextDeltaEvent) =
             apply {
-                delta = responseReasoningSummaryDeltaEvent.delta
-                itemId = responseReasoningSummaryDeltaEvent.itemId
-                outputIndex = responseReasoningSummaryDeltaEvent.outputIndex
-                sequenceNumber = responseReasoningSummaryDeltaEvent.sequenceNumber
-                summaryIndex = responseReasoningSummaryDeltaEvent.summaryIndex
-                type = responseReasoningSummaryDeltaEvent.type
+                contentIndex = responseReasoningTextDeltaEvent.contentIndex
+                delta = responseReasoningTextDeltaEvent.delta
+                itemId = responseReasoningTextDeltaEvent.itemId
+                outputIndex = responseReasoningTextDeltaEvent.outputIndex
+                sequenceNumber = responseReasoningTextDeltaEvent.sequenceNumber
+                type = responseReasoningTextDeltaEvent.type
                 additionalProperties =
-                    responseReasoningSummaryDeltaEvent.additionalProperties.toMutableMap()
+                    responseReasoningTextDeltaEvent.additionalProperties.toMutableMap()
             }
 
-        /** The partial update to the reasoning summary content. */
-        fun delta(delta: JsonValue) = apply { this.delta = delta }
+        /** The index of the reasoning content part this delta is associated with. */
+        fun contentIndex(contentIndex: Long) = contentIndex(JsonField.of(contentIndex))
 
-        /** The unique identifier of the item for which the reasoning summary is being updated. */
+        /**
+         * Sets [Builder.contentIndex] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.contentIndex] with a well-typed [Long] value instead.
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
+         */
+        fun contentIndex(contentIndex: JsonField<Long>) = apply { this.contentIndex = contentIndex }
+
+        /** The text delta that was added to the reasoning content. */
+        fun delta(delta: String) = delta(JsonField.of(delta))
+
+        /**
+         * Sets [Builder.delta] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.delta] with a well-typed [String] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
+        fun delta(delta: JsonField<String>) = apply { this.delta = delta }
+
+        /** The ID of the item this reasoning text delta is associated with. */
         fun itemId(itemId: String) = itemId(JsonField.of(itemId))
 
         /**
@@ -191,7 +223,7 @@ private constructor(
          */
         fun itemId(itemId: JsonField<String>) = apply { this.itemId = itemId }
 
-        /** The index of the output item in the response's output array. */
+        /** The index of the output item this reasoning text delta is associated with. */
         fun outputIndex(outputIndex: Long) = outputIndex(JsonField.of(outputIndex))
 
         /**
@@ -217,25 +249,13 @@ private constructor(
             this.sequenceNumber = sequenceNumber
         }
 
-        /** The index of the summary part within the output item. */
-        fun summaryIndex(summaryIndex: Long) = summaryIndex(JsonField.of(summaryIndex))
-
-        /**
-         * Sets [Builder.summaryIndex] to an arbitrary JSON value.
-         *
-         * You should usually call [Builder.summaryIndex] with a well-typed [Long] value instead.
-         * This method is primarily for setting the field to an undocumented or not yet supported
-         * value.
-         */
-        fun summaryIndex(summaryIndex: JsonField<Long>) = apply { this.summaryIndex = summaryIndex }
-
         /**
          * Sets the field to an arbitrary JSON value.
          *
          * It is usually unnecessary to call this method because the field defaults to the
          * following:
          * ```java
-         * JsonValue.from("response.reasoning_summary.delta")
+         * JsonValue.from("response.reasoning_text.delta")
          * ```
          *
          * This method is primarily for setting the field to an undocumented or not yet supported
@@ -263,28 +283,28 @@ private constructor(
         }
 
         /**
-         * Returns an immutable instance of [ResponseReasoningSummaryDeltaEvent].
+         * Returns an immutable instance of [ResponseReasoningTextDeltaEvent].
          *
          * Further updates to this [Builder] will not mutate the returned instance.
          *
          * The following fields are required:
          * ```java
+         * .contentIndex()
          * .delta()
          * .itemId()
          * .outputIndex()
          * .sequenceNumber()
-         * .summaryIndex()
          * ```
          *
          * @throws IllegalStateException if any required field is unset.
          */
-        fun build(): ResponseReasoningSummaryDeltaEvent =
-            ResponseReasoningSummaryDeltaEvent(
+        fun build(): ResponseReasoningTextDeltaEvent =
+            ResponseReasoningTextDeltaEvent(
+                checkRequired("contentIndex", contentIndex),
                 checkRequired("delta", delta),
                 checkRequired("itemId", itemId),
                 checkRequired("outputIndex", outputIndex),
                 checkRequired("sequenceNumber", sequenceNumber),
-                checkRequired("summaryIndex", summaryIndex),
                 type,
                 additionalProperties.toMutableMap(),
             )
@@ -292,17 +312,18 @@ private constructor(
 
     private var validated: Boolean = false
 
-    fun validate(): ResponseReasoningSummaryDeltaEvent = apply {
+    fun validate(): ResponseReasoningTextDeltaEvent = apply {
         if (validated) {
             return@apply
         }
 
+        contentIndex()
+        delta()
         itemId()
         outputIndex()
         sequenceNumber()
-        summaryIndex()
         _type().let {
-            if (it != JsonValue.from("response.reasoning_summary.delta")) {
+            if (it != JsonValue.from("response.reasoning_text.delta")) {
                 throw OpenAIInvalidDataException("'type' is invalid, received $it")
             }
         }
@@ -324,26 +345,27 @@ private constructor(
      */
     @JvmSynthetic
     internal fun validity(): Int =
-        (if (itemId.asKnown().isPresent) 1 else 0) +
+        (if (contentIndex.asKnown().isPresent) 1 else 0) +
+            (if (delta.asKnown().isPresent) 1 else 0) +
+            (if (itemId.asKnown().isPresent) 1 else 0) +
             (if (outputIndex.asKnown().isPresent) 1 else 0) +
             (if (sequenceNumber.asKnown().isPresent) 1 else 0) +
-            (if (summaryIndex.asKnown().isPresent) 1 else 0) +
-            type.let { if (it == JsonValue.from("response.reasoning_summary.delta")) 1 else 0 }
+            type.let { if (it == JsonValue.from("response.reasoning_text.delta")) 1 else 0 }
 
     override fun equals(other: Any?): Boolean {
         if (this === other) {
             return true
         }
 
-        return /* spotless:off */ other is ResponseReasoningSummaryDeltaEvent && delta == other.delta && itemId == other.itemId && outputIndex == other.outputIndex && sequenceNumber == other.sequenceNumber && summaryIndex == other.summaryIndex && type == other.type && additionalProperties == other.additionalProperties /* spotless:on */
+        return /* spotless:off */ other is ResponseReasoningTextDeltaEvent && contentIndex == other.contentIndex && delta == other.delta && itemId == other.itemId && outputIndex == other.outputIndex && sequenceNumber == other.sequenceNumber && type == other.type && additionalProperties == other.additionalProperties /* spotless:on */
     }
 
     /* spotless:off */
-    private val hashCode: Int by lazy { Objects.hash(delta, itemId, outputIndex, sequenceNumber, summaryIndex, type, additionalProperties) }
+    private val hashCode: Int by lazy { Objects.hash(contentIndex, delta, itemId, outputIndex, sequenceNumber, type, additionalProperties) }
     /* spotless:on */
 
     override fun hashCode(): Int = hashCode
 
     override fun toString() =
-        "ResponseReasoningSummaryDeltaEvent{delta=$delta, itemId=$itemId, outputIndex=$outputIndex, sequenceNumber=$sequenceNumber, summaryIndex=$summaryIndex, type=$type, additionalProperties=$additionalProperties}"
+        "ResponseReasoningTextDeltaEvent{contentIndex=$contentIndex, delta=$delta, itemId=$itemId, outputIndex=$outputIndex, sequenceNumber=$sequenceNumber, type=$type, additionalProperties=$additionalProperties}"
 }
