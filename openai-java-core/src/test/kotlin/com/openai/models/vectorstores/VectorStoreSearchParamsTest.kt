@@ -23,7 +23,7 @@ internal class VectorStoreSearchParamsTest {
             .maxNumResults(1L)
             .rankingOptions(
                 VectorStoreSearchParams.RankingOptions.builder()
-                    .ranker(VectorStoreSearchParams.RankingOptions.Ranker.AUTO)
+                    .ranker(VectorStoreSearchParams.RankingOptions.Ranker.NONE)
                     .scoreThreshold(0.0)
                     .build()
             )
@@ -57,7 +57,7 @@ internal class VectorStoreSearchParamsTest {
                 .maxNumResults(1L)
                 .rankingOptions(
                     VectorStoreSearchParams.RankingOptions.builder()
-                        .ranker(VectorStoreSearchParams.RankingOptions.Ranker.AUTO)
+                        .ranker(VectorStoreSearchParams.RankingOptions.Ranker.NONE)
                         .scoreThreshold(0.0)
                         .build()
                 )
@@ -81,7 +81,7 @@ internal class VectorStoreSearchParamsTest {
         assertThat(body.rankingOptions())
             .contains(
                 VectorStoreSearchParams.RankingOptions.builder()
-                    .ranker(VectorStoreSearchParams.RankingOptions.Ranker.AUTO)
+                    .ranker(VectorStoreSearchParams.RankingOptions.Ranker.NONE)
                     .scoreThreshold(0.0)
                     .build()
             )
