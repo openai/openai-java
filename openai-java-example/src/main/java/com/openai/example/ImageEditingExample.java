@@ -26,7 +26,9 @@ public final class ImageEditingExample {
         ImageEditParams editParams = ImageEditParams.builder()
                 .responseFormat(ImageEditParams.ResponseFormat.URL)
                 .image(MultipartField.<Image>builder()
-                        .value(Image.ofInputStream(alohaStream))
+                        .value(
+                                // Or use `Image.ofInputStreams` and pass a `List` to edit multiple images.
+                                Image.ofInputStream(alohaStream))
                         .contentType("image/png")
                         .filename(alohaFilename)
                         .build())
