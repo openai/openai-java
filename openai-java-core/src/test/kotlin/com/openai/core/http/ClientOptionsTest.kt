@@ -1,5 +1,6 @@
 package com.openai.core.http
 
+import com.openai.azure.AzureUrlPathMode
 import com.openai.azure.credential.AzureApiKeyCredential
 import com.openai.client.okhttp.OkHttpClient
 import com.openai.core.ClientOptions
@@ -64,5 +65,28 @@ internal class ClientOptionsTest {
         assertThatThrownBy { AzureApiKeyCredential.create("") }
             .isInstanceOf(IllegalArgumentException::class.java)
             .hasMessage("Azure API key cannot be empty.")
+    }
+
+    @Test
+    fun azureUrlPathMode_setToLegacy() {
+        val clientOptions =
+            ClientOptions.builder()
+                .httpClient(createOkHttpClient())
+                .credential(BearerTokenCredential.create(FAKE_API_KEY))
+                .azureUrlPathMode(AzureUrlPathMode.LEGACY)
+                .build()
+
+        assertThat(clientOptions.azureUrlPathMode).isEqualTo(AzureUrlPathMode.LEGACY)
+    }
+
+    @Test
+    fun azureUrlPathMode_defaultsToUnified() {
+        val clientOptions =
+            ClientOptions.builder()
+                .httpClient(createOkHttpClient())
+                .credential(BearerTokenCredential.create(FAKE_API_KEY))
+                .build()
+
+        assertThat(clientOptions.azureUrlPathMode).isEqualTo(AzureUrlPathMode.UNIFIED)
     }
 }
