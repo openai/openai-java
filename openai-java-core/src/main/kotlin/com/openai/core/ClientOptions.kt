@@ -4,6 +4,8 @@ package com.openai.core
 
 import com.fasterxml.jackson.databind.json.JsonMapper
 import com.openai.azure.AzureOpenAIServiceVersion
+import com.openai.azure.AzureUrlCategory
+import com.openai.azure.AzureUrlPathMode
 import com.openai.azure.credential.AzureApiKeyCredential
 import com.openai.core.http.AsyncStreamResponse
 import com.openai.core.http.Headers
@@ -98,6 +100,7 @@ private constructor(
     @get:JvmName("maxRetries") val maxRetries: Int,
     @get:JvmName("credential") val credential: Credential,
     @get:JvmName("azureServiceVersion") val azureServiceVersion: AzureOpenAIServiceVersion?,
+    @get:JvmName("azureUrlPathMode") val azureUrlPathMode: AzureUrlPathMode,
     private val organization: String?,
     private val project: String?,
     private val webhookSecret: String?,
@@ -163,6 +166,7 @@ private constructor(
         private var maxRetries: Int = 2
         private var credential: Credential? = null
         private var azureServiceVersion: AzureOpenAIServiceVersion? = null
+        private var azureUrlPathMode: AzureUrlPathMode = AzureUrlPathMode.UNIFIED
         private var organization: String? = null
         private var project: String? = null
         private var webhookSecret: String? = null
@@ -182,6 +186,7 @@ private constructor(
             maxRetries = clientOptions.maxRetries
             credential = clientOptions.credential
             azureServiceVersion = clientOptions.azureServiceVersion
+            azureUrlPathMode = clientOptions.azureUrlPathMode
             organization = clientOptions.organization
             project = clientOptions.project
             webhookSecret = clientOptions.webhookSecret
@@ -295,6 +300,10 @@ private constructor(
 
         fun azureServiceVersion(azureServiceVersion: AzureOpenAIServiceVersion) = apply {
             this.azureServiceVersion = azureServiceVersion
+        }
+
+        fun azureUrlPathMode(azureUrlPathMode: AzureUrlPathMode) = apply {
+            this.azureUrlPathMode = azureUrlPathMode
         }
 
         fun organization(organization: String?) = apply { this.organization = organization }
@@ -485,14 +494,20 @@ private constructor(
             }
 
             baseUrl?.let {
-                if (isAzureEndpoint(it)) {
-                    // Default Azure OpenAI version is used if Azure user doesn't
-                    // specific a service API version in 'queryParams'.
-                    replaceQueryParams(
-                        "api-version",
-                        (azureServiceVersion ?: AzureOpenAIServiceVersion.latestStableVersion())
-                            .value,
-                    )
+                when (AzureUrlCategory.categorizeBaseUrl(it, azureUrlPathMode)) {
+                    // Legacy Azure routes will still require an api-version value.
+                    AzureUrlCategory.AZURE_LEGACY ->
+                        replaceQueryParams(
+                            "api-version",
+                            (azureServiceVersion ?: AzureOpenAIServiceVersion.latestStableVersion())
+                                .value,
+                        )
+                    // We only add the value if it's defined by the user for unified Azure routes.
+                    AzureUrlCategory.AZURE_UNIFIED ->
+                        azureServiceVersion?.let { version ->
+                            replaceQueryParams("api-version", version.value)
+                        }
+                    AzureUrlCategory.NON_AZURE -> {}
                 }
             }
 
@@ -532,6 +547,7 @@ private constructor(
                 maxRetries,
                 credential,
                 azureServiceVersion,
+                azureUrlPathMode,
                 organization,
                 project,
                 webhookSecret,
