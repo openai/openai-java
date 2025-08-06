@@ -1,36 +1,43 @@
 package com.openai.azure
 
-/**
- * Represents the category of an Azure URL based on the endpoint host.
- *
- *  Azure legacy endpoint should be in the format of `https://<region>.openai.azure.com`.
- *  Azure unified endpoint should be in the format of `https://<region>.services.ai.azure.com`.
- *  Azure OpenAI management URLs should be in the format of `https://<region>.azure-api.net`
- *  Other known Azure URLs `https://<region>.cognitiveservices.azure.com`.
- */
+import java.net.URI
+
+/** Represents the category of an Azure URL. */
 internal enum class AzureUrlCategory {
-    AZURE_LEGACY, AZURE_UNIFIED, AZURE_OTHER, NON_AZURE;
+    /** Azure host _not_ ending with `/openai/v1`. */
+    AZURE_LEGACY,
+    /** Azure host ending with `/openai/v1`. */
+    AZURE_UNIFIED,
+    /** Anything else. */
+    NON_AZURE;
+
+    fun isAzure(): Boolean =
+        when (this) {
+            AZURE_LEGACY,
+            AZURE_UNIFIED -> true
+            NON_AZURE -> false
+        }
 
     companion object {
-        /**
-         * Returns whether the given [urlHost] is an Azure endpoint.
-         */
-        @JvmSynthetic
-        internal fun isAzureEndpoint(urlHost: String): Boolean =
-            categorizeBaseUrl(urlHost) != NON_AZURE
 
-        /**
-         * Returns the [AzureUrlCategory] of the given [urlHost].
-         */
-        private fun categorizeBaseUrl(urlHost: String): AzureUrlCategory {
+        fun categorizeBaseUrl(baseUrl: String, pathMode: AzureUrlPathMode): AzureUrlCategory {
+            val trimmedBaseUrl = baseUrl.trim().trimEnd('/')
+            val host = URI.create(trimmedBaseUrl).host
             return when {
                 // Azure OpenAI resource URL with the old schema.
-                urlHost.endsWith(".openai.azure.com", true) -> AZURE_LEGACY
-                // Azure OpenAI resource URL with the OpenAI unified schema.
-                urlHost.endsWith(".services.ai.azure.com", true) -> AZURE_UNIFIED
-                // Azure OpenAI resource URL, but with a schema different to the known ones.
-                urlHost.endsWith(".azure-api.net", true) ||
-                        urlHost.endsWith(".cognitiveservices.azure.com", true) -> AZURE_OTHER
+                host.endsWith(".openai.azure.com", ignoreCase = true) ||
+                    // Azure OpenAI resource URL with the OpenAI unified schema.
+                    host.endsWith(".services.ai.azure.com", ignoreCase = true) ||
+                    // Azure OpenAI resource URL, but with a schema different to the known ones.
+                    host.endsWith(".azure-api.net", ignoreCase = true) ||
+                    host.endsWith(".cognitiveservices.azure.com", ignoreCase = true) ->
+                    when (pathMode) {
+                        AzureUrlPathMode.LEGACY -> AZURE_LEGACY
+                        AzureUrlPathMode.UNIFIED ->
+                            if (trimmedBaseUrl.endsWith("/openai/v1")) AZURE_UNIFIED
+                            else AZURE_LEGACY
+                    }
+
                 else -> NON_AZURE
             }
         }

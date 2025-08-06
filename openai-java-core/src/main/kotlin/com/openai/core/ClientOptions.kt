@@ -4,9 +4,9 @@ package com.openai.core
 
 import com.fasterxml.jackson.databind.json.JsonMapper
 import com.openai.azure.AzureOpenAIServiceVersion
+import com.openai.azure.AzureUrlCategory
 import com.openai.azure.AzureUrlPathMode
 import com.openai.azure.credential.AzureApiKeyCredential
-import com.openai.azure.isUnifiedPathDisabled
 import com.openai.core.http.AsyncStreamResponse
 import com.openai.core.http.Headers
 import com.openai.core.http.HttpClient
@@ -100,7 +100,7 @@ private constructor(
     @get:JvmName("maxRetries") val maxRetries: Int,
     @get:JvmName("credential") val credential: Credential,
     @get:JvmName("azureServiceVersion") val azureServiceVersion: AzureOpenAIServiceVersion?,
-    @get:JvmName("azureUrlPathMode") val azureUrlPathMode: AzureUrlPathMode = AzureUrlPathMode.UNIFIED,
+    @get:JvmName("azureUrlPathMode") val azureUrlPathMode: AzureUrlPathMode,
     private val organization: String?,
     private val project: String?,
     private val webhookSecret: String?,
@@ -494,20 +494,20 @@ private constructor(
             }
 
             baseUrl?.let {
-                if (isAzureEndpoint(it)) {
+                when (AzureUrlCategory.categorizeBaseUrl(it, azureUrlPathMode)) {
                     // Legacy Azure routes will still require an api-version value.
-                    if (azureUrlPathMode.isUnifiedPathDisabled() || !isAzureUnifiedEndpointPath(it)) {
+                    AzureUrlCategory.AZURE_LEGACY ->
                         replaceQueryParams(
                             "api-version",
                             (azureServiceVersion ?: AzureOpenAIServiceVersion.latestStableVersion())
                                 .value,
                         )
-                    } else {
-                        // We only add the value if it's defined by the user for unified Azure routes.
+                    // We only add the value if it's defined by the user for unified Azure routes.
+                    AzureUrlCategory.AZURE_UNIFIED ->
                         azureServiceVersion?.let { version ->
                             replaceQueryParams("api-version", version.value)
                         }
-                    }
+                    AzureUrlCategory.NON_AZURE -> {}
                 }
             }
 

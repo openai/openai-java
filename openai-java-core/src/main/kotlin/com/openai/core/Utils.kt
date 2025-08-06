@@ -2,9 +2,7 @@
 
 package com.openai.core
 
-import com.openai.azure.AzureUrlCategory
 import com.openai.errors.OpenAIInvalidDataException
-import java.net.URI
 import java.util.Collections
 import java.util.SortedMap
 
@@ -90,20 +88,5 @@ internal fun Any?.contentToString(): String {
     }
     return string
 }
-
-/**
- * Convenience function to check if the given [baseUrl] is an Azure OpenAI resource URL.
- */
-@JvmSynthetic
-internal fun isAzureEndpoint(baseUrl: String): Boolean {
-    val trimmedBaseUrl = baseUrl.trim().trimEnd('/')
-    return AzureUrlCategory.isAzureEndpoint(URI.create(trimmedBaseUrl).host)
-}
-
-/**
- * Convenience function to check if the given [baseUrl] is an Azure OpenAI resource URL with the unified schema.
- */
-@JvmSynthetic
-internal fun isAzureUnifiedEndpointPath(baseUrl: String): Boolean = baseUrl.trimEnd('/').endsWith("openai/v1")
 
 internal interface Enum

@@ -2,7 +2,6 @@ package com.openai.core.http
 
 import com.openai.azure.AzureUrlPathMode
 import com.openai.azure.credential.AzureApiKeyCredential
-import com.openai.azure.isUnifiedPathDisabled
 import com.openai.client.okhttp.OkHttpClient
 import com.openai.core.ClientOptions
 import com.openai.credential.BearerTokenCredential
@@ -69,7 +68,7 @@ internal class ClientOptionsTest {
     }
 
     @Test
-    fun azureLegacyPathsTestSetTrue() {
+    fun azureUrlPathMode_setToLegacy() {
         val clientOptions =
             ClientOptions.builder()
                 .httpClient(createOkHttpClient())
@@ -77,17 +76,17 @@ internal class ClientOptionsTest {
                 .azureUrlPathMode(AzureUrlPathMode.LEGACY)
                 .build()
 
-        assertThat(clientOptions.azureUrlPathMode.isUnifiedPathDisabled()).isTrue()
+        assertThat(clientOptions.azureUrlPathMode).isEqualTo(AzureUrlPathMode.LEGACY)
     }
 
     @Test
-    fun azureLegacyPathsTestDefaultFalse() {
+    fun azureUrlPathMode_defaultsToUnified() {
         val clientOptions =
             ClientOptions.builder()
                 .httpClient(createOkHttpClient())
                 .credential(BearerTokenCredential.create(FAKE_API_KEY))
                 .build()
 
-        assertThat(clientOptions.azureUrlPathMode.isUnifiedPathDisabled()).isFalse()
+        assertThat(clientOptions.azureUrlPathMode).isEqualTo(AzureUrlPathMode.UNIFIED)
     }
 }

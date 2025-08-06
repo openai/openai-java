@@ -2,7 +2,6 @@ package com.openai.core
 
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.assertThrows
 
 internal class UtilsTest {
     @Test
@@ -30,46 +29,5 @@ internal class UtilsTest {
         assertThat(byteArrayOf(1, 2, 3).contentToString()).isEqualTo("[1, 2, 3]")
         assertThat(arrayOf(byteArrayOf(1, 2), byteArrayOf(3)).contentToString())
             .isEqualTo("[[1, 2], [3]]")
-    }
-
-    @Test
-    fun isAzureEndpoint() {
-        // Valid Azure endpoints
-
-        // legacy
-        assertThat(isAzureEndpoint("https://region.openai.azure.com")).isTrue()
-        assertThat(isAzureEndpoint("https://region.openai.azure.com/")).isTrue()
-        // unified with OpenAI
-        assertThat(isAzureEndpoint("https://region.services.ai.azure.com")).isTrue()
-        assertThat(isAzureEndpoint("https://region.services.ai.azure.com/")).isTrue()
-        // other known valid schemas
-        assertThat(isAzureEndpoint("https://region.azure-api.net")).isTrue()
-        assertThat(isAzureEndpoint("https://region.azure-api.net/")).isTrue()
-        assertThat(isAzureEndpoint("https://region.cognitiveservices.azure.com")).isTrue()
-        assertThat(isAzureEndpoint("https://region.cognitiveservices.azure.com/")).isTrue()
-
-        // Invalid Azure endpoints
-        assertThat(isAzureEndpoint("https://example.com")).isFalse()
-        assertThat(isAzureEndpoint("https://region.openai.com")).isFalse()
-        assertThat(isAzureEndpoint("https://region.azure.com")).isFalse()
-        assertThrows<NullPointerException> {isAzureEndpoint("")}
-        assertThrows<NullPointerException>{isAzureEndpoint("   ")}
-    }
-
-    @Test
-    fun isAzureUnifiedEndpoint() {
-        // Valid Azure unified endpoints
-        assertThat(isAzureUnifiedEndpointPath("https://region.services.ai.azure.com/openai/v1")).isTrue()
-        assertThat(isAzureUnifiedEndpointPath("https://region.services.ai.azure.com/openai/v1/")).isTrue()
-
-        // Invalid Azure unified endpoints
-        assertThat(isAzureUnifiedEndpointPath("https://region.services.ai.azure.com")).isFalse()
-        assertThat(isAzureUnifiedEndpointPath("https://region.services.ai.azure.com/")).isFalse()
-        assertThat(isAzureUnifiedEndpointPath("https://region.openai.azure.com")).isFalse()
-        assertThat(isAzureUnifiedEndpointPath("https://example.com")).isFalse()
-        assertThat(isAzureUnifiedEndpointPath("https://region.openai.com")).isFalse()
-        assertThat(isAzureUnifiedEndpointPath("https://region.azure.com")).isFalse()
-        assertThat(isAzureUnifiedEndpointPath("")).isFalse()
-        assertThat(isAzureUnifiedEndpointPath("    ")).isFalse()
     }
 }
