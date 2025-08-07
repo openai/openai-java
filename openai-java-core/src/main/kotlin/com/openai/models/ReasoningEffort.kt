@@ -8,12 +8,10 @@ import com.openai.core.JsonField
 import com.openai.errors.OpenAIInvalidDataException
 
 /**
- * **o-series models only**
- *
  * Constrains effort on reasoning for
  * [reasoning models](https://platform.openai.com/docs/guides/reasoning). Currently supported values
- * are `low`, `medium`, and `high`. Reducing reasoning effort can result in faster responses and
- * fewer tokens used on reasoning in a response.
+ * are `minimal`, `low`, `medium`, and `high`. Reducing reasoning effort can result in faster
+ * responses and fewer tokens used on reasoning in a response.
  */
 class ReasoningEffort @JsonCreator private constructor(private val value: JsonField<String>) :
     Enum {
@@ -29,6 +27,8 @@ class ReasoningEffort @JsonCreator private constructor(private val value: JsonFi
 
     companion object {
 
+        @JvmField val MINIMAL = of("minimal")
+
         @JvmField val LOW = of("low")
 
         @JvmField val MEDIUM = of("medium")
@@ -40,6 +40,7 @@ class ReasoningEffort @JsonCreator private constructor(private val value: JsonFi
 
     /** An enum containing [ReasoningEffort]'s known values. */
     enum class Known {
+        MINIMAL,
         LOW,
         MEDIUM,
         HIGH,
@@ -55,6 +56,7 @@ class ReasoningEffort @JsonCreator private constructor(private val value: JsonFi
      * - It was constructed with an arbitrary value using the [of] method.
      */
     enum class Value {
+        MINIMAL,
         LOW,
         MEDIUM,
         HIGH,
@@ -73,6 +75,7 @@ class ReasoningEffort @JsonCreator private constructor(private val value: JsonFi
      */
     fun value(): Value =
         when (this) {
+            MINIMAL -> Value.MINIMAL
             LOW -> Value.LOW
             MEDIUM -> Value.MEDIUM
             HIGH -> Value.HIGH
@@ -89,6 +92,7 @@ class ReasoningEffort @JsonCreator private constructor(private val value: JsonFi
      */
     fun known(): Known =
         when (this) {
+            MINIMAL -> Known.MINIMAL
             LOW -> Known.LOW
             MEDIUM -> Known.MEDIUM
             HIGH -> Known.HIGH

@@ -90,6 +90,13 @@ internal class StructuredResponseCreateParamsTest {
             Tool.CodeInterpreter.builder().container(CODE_INTERPRETER_CONTAINER).build()
         private val IMAGE_GENERATION_TOOL = Tool.ImageGeneration.builder().build()
 
+        private val CUSTOM_TOOL = CustomTool.builder().name(STRING).build()
+        private val STREAM_OPTIONS = ResponseCreateParams.StreamOptions.builder().build()
+        private val TOOL_CHOICE_ALLOWED =
+            ToolChoiceAllowed.builder().mode(ToolChoiceAllowed.Mode.AUTO).tools(listOf()).build()
+        private val TOOL_CHOICE_CUSTOM = ToolChoiceCustom.builder().name(STRING).build()
+        private val RESPONSE_VERBOSITY = ResponseCreateParams.Verbosity.HIGH
+
         private val HEADERS = Headers.builder().build()
         private val QUERY_PARAMS = QueryParams.builder().build()
 
@@ -156,6 +163,9 @@ internal class StructuredResponseCreateParamsTest {
                 DelegationWriteTestCase("store", BOOLEAN),
                 DelegationWriteTestCase("store", OPTIONAL),
                 DelegationWriteTestCase("store", JSON_FIELD),
+                DelegationWriteTestCase("streamOptions", NULLABLE),
+                DelegationWriteTestCase("streamOptions", STREAM_OPTIONS),
+                DelegationWriteTestCase("streamOptions", OPTIONAL),
                 DelegationWriteTestCase("temperature", NULLABLE_DOUBLE),
                 DelegationWriteTestCase("temperature", DOUBLE),
                 DelegationWriteTestCase("temperature", OPTIONAL),
@@ -167,6 +177,8 @@ internal class StructuredResponseCreateParamsTest {
                 DelegationWriteTestCase("toolChoice", TOOL_CHOICE_TYPES),
                 DelegationWriteTestCase("toolChoice", TOOL_CHOICE_FUNCTION),
                 DelegationWriteTestCase("toolChoice", TOOL_CHOICE_MCP),
+                DelegationWriteTestCase("toolChoice", TOOL_CHOICE_ALLOWED),
+                DelegationWriteTestCase("toolChoice", TOOL_CHOICE_CUSTOM),
                 DelegationWriteTestCase("tools", LIST),
                 DelegationWriteTestCase("tools", JSON_FIELD),
                 DelegationWriteTestCase("addTool", TOOL),
@@ -182,6 +194,8 @@ internal class StructuredResponseCreateParamsTest {
                 DelegationWriteTestCase("addCodeInterpreterTool", STRING),
                 DelegationWriteTestCase("addCodeInterpreterTool", CODE_INTERPRETER_TOOL_AUTO),
                 DelegationWriteTestCase("addTool", IMAGE_GENERATION_TOOL),
+                DelegationWriteTestCase("addTool", CUSTOM_TOOL),
+                DelegationWriteTestCase("addCustomTool", STRING),
                 DelegationWriteTestCase("addToolLocalShell"),
                 DelegationWriteTestCase("topP", NULLABLE_DOUBLE),
                 DelegationWriteTestCase("topP", DOUBLE),
@@ -196,6 +210,9 @@ internal class StructuredResponseCreateParamsTest {
                 DelegationWriteTestCase("truncation", JSON_FIELD),
                 DelegationWriteTestCase("user", STRING),
                 DelegationWriteTestCase("user", JSON_FIELD),
+                DelegationWriteTestCase("verbosity", NULLABLE),
+                DelegationWriteTestCase("verbosity", RESPONSE_VERBOSITY),
+                DelegationWriteTestCase("verbosity", OPTIONAL),
                 DelegationWriteTestCase("additionalBodyProperties", MAP),
                 DelegationWriteTestCase("putAdditionalBodyProperty", STRING, JSON_VALUE),
                 DelegationWriteTestCase("putAllAdditionalBodyProperties", MAP),

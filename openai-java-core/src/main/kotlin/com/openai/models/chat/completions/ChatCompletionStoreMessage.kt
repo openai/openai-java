@@ -432,6 +432,19 @@ private constructor(
                 }
         }
 
+        /**
+         * Alias for calling [addToolCall] with
+         * `ChatCompletionMessageToolCall.ofFunction(function)`.
+         */
+        fun addToolCall(function: ChatCompletionMessageFunctionToolCall) =
+            addToolCall(ChatCompletionMessageToolCall.ofFunction(function))
+
+        /**
+         * Alias for calling [addToolCall] with `ChatCompletionMessageToolCall.ofCustom(custom)`.
+         */
+        fun addToolCall(custom: ChatCompletionMessageCustomToolCall) =
+            addToolCall(ChatCompletionMessageToolCall.ofCustom(custom))
+
         /** The identifier of the chat message. */
         fun id(id: String) = id(JsonField.of(id))
 

@@ -371,6 +371,19 @@ private constructor(
                 }
         }
 
+        /**
+         * Alias for calling [addToolCall] with
+         * `ChatCompletionMessageToolCall.ofFunction(function)`.
+         */
+        fun addToolCall(function: ChatCompletionMessageFunctionToolCall) =
+            addToolCall(ChatCompletionMessageToolCall.ofFunction(function))
+
+        /**
+         * Alias for calling [addToolCall] with `ChatCompletionMessageToolCall.ofCustom(custom)`.
+         */
+        fun addToolCall(custom: ChatCompletionMessageCustomToolCall) =
+            addToolCall(ChatCompletionMessageToolCall.ofCustom(custom))
+
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
             this.additionalProperties.clear()
             putAllAdditionalProperties(additionalProperties)

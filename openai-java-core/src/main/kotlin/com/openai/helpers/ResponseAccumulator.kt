@@ -15,6 +15,8 @@ import com.openai.models.responses.ResponseCompletedEvent
 import com.openai.models.responses.ResponseContentPartAddedEvent
 import com.openai.models.responses.ResponseContentPartDoneEvent
 import com.openai.models.responses.ResponseCreatedEvent
+import com.openai.models.responses.ResponseCustomToolCallInputDeltaEvent
+import com.openai.models.responses.ResponseCustomToolCallInputDoneEvent
 import com.openai.models.responses.ResponseErrorEvent
 import com.openai.models.responses.ResponseFailedEvent
 import com.openai.models.responses.ResponseFileSearchCallCompletedEvent
@@ -40,12 +42,12 @@ import com.openai.models.responses.ResponseOutputItemAddedEvent
 import com.openai.models.responses.ResponseOutputItemDoneEvent
 import com.openai.models.responses.ResponseOutputTextAnnotationAddedEvent
 import com.openai.models.responses.ResponseQueuedEvent
-import com.openai.models.responses.ResponseReasoningSummaryDeltaEvent
-import com.openai.models.responses.ResponseReasoningSummaryDoneEvent
 import com.openai.models.responses.ResponseReasoningSummaryPartAddedEvent
 import com.openai.models.responses.ResponseReasoningSummaryPartDoneEvent
 import com.openai.models.responses.ResponseReasoningSummaryTextDeltaEvent
 import com.openai.models.responses.ResponseReasoningSummaryTextDoneEvent
+import com.openai.models.responses.ResponseReasoningTextDeltaEvent
+import com.openai.models.responses.ResponseReasoningTextDoneEvent
 import com.openai.models.responses.ResponseRefusalDeltaEvent
 import com.openai.models.responses.ResponseRefusalDoneEvent
 import com.openai.models.responses.ResponseStreamEvent
@@ -136,6 +138,14 @@ class ResponseAccumulator private constructor() {
                     // A queued response that is awaiting processing is not complete, so it is not
                     // stored.
                 }
+
+                override fun visitCustomToolCallInputDelta(
+                    customToolCallInputDelta: ResponseCustomToolCallInputDeltaEvent
+                ) {}
+
+                override fun visitCustomToolCallInputDone(
+                    customToolCallInputDone: ResponseCustomToolCallInputDoneEvent
+                ) {}
 
                 override fun visitFailed(failed: ResponseFailedEvent) {
                     // TODO: Confirm that this is a "terminal" event and will occur _instead of_
@@ -234,6 +244,14 @@ class ResponseAccumulator private constructor() {
                     reasoningSummaryTextDone: ResponseReasoningSummaryTextDoneEvent
                 ) {}
 
+                override fun visitReasoningTextDelta(
+                    reasoningTextDelta: ResponseReasoningTextDeltaEvent
+                ) {}
+
+                override fun visitReasoningTextDone(
+                    reasoningTextDone: ResponseReasoningTextDoneEvent
+                ) {}
+
                 override fun visitRefusalDelta(refusalDelta: ResponseRefusalDeltaEvent) {}
 
                 override fun visitRefusalDone(refusalDone: ResponseRefusalDoneEvent) {}
@@ -302,14 +320,6 @@ class ResponseAccumulator private constructor() {
 
                 override fun visitOutputTextAnnotationAdded(
                     outputTextAnnotationAdded: ResponseOutputTextAnnotationAddedEvent
-                ) {}
-
-                override fun visitReasoningSummaryDelta(
-                    reasoningSummaryDelta: ResponseReasoningSummaryDeltaEvent
-                ) {}
-
-                override fun visitReasoningSummaryDone(
-                    reasoningSummaryDone: ResponseReasoningSummaryDoneEvent
                 ) {}
             }
         )

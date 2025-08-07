@@ -16,6 +16,7 @@ import com.github.victools.jsonschema.module.swagger2.Swagger2Module
 import com.openai.errors.OpenAIInvalidDataException
 import com.openai.models.FunctionDefinition
 import com.openai.models.ResponseFormatJsonSchema
+import com.openai.models.chat.completions.ChatCompletionFunctionTool
 import com.openai.models.chat.completions.ChatCompletionTool
 import com.openai.models.responses.FunctionTool
 import com.openai.models.responses.ResponseFormatTextJsonSchemaConfig
@@ -149,19 +150,21 @@ internal fun functionToolFromClass(
 ): ChatCompletionTool {
     val functionInfo = extractFunctionInfo(parametersType, localValidation)
 
-    return ChatCompletionTool.builder()
-        .function(
-            FunctionDefinition.builder()
-                .name(functionInfo.name)
-                .apply { functionInfo.description?.let(::description) }
-                .parameters(JsonValue.fromJsonNode(functionInfo.schema))
-                // OpenAI: "Setting strict to true will ensure function calls reliably adhere to the
-                // function schema, instead of being best effort. We recommend always enabling
-                // strict mode."
-                .strict(true)
-                .build()
-        )
-        .build()
+    return ChatCompletionTool.ofFunction(
+        ChatCompletionFunctionTool.builder()
+            .function(
+                FunctionDefinition.builder()
+                    .name(functionInfo.name)
+                    .apply { functionInfo.description?.let(::description) }
+                    .parameters(JsonValue.fromJsonNode(functionInfo.schema))
+                    // OpenAI: "Setting strict to true will ensure function calls reliably adhere to
+                    // the function schema, instead of being best effort. We recommend always
+                    // enabling strict mode."
+                    .strict(true)
+                    .build()
+            )
+            .build()
+    )
 }
 
 /**

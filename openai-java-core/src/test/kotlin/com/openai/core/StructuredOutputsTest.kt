@@ -1902,7 +1902,7 @@ internal class StructuredOutputsTest {
         @Suppress("unused") @JsonClassDescription("Something about X") class X(val s: String)
 
         val functionTool = functionToolFromClass(X::class.java)
-        val fnDef = functionTool.function()
+        val fnDef = functionTool.function().get().function()
 
         // The "strict" flag _must_ be set to ensure that the model's output will _always_ conform
         // to the JSON schema.

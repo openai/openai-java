@@ -18,16 +18,34 @@ import java.util.Optional
 /** Options for streaming response. Only set this when you set `stream: true`. */
 class ChatCompletionStreamOptions
 private constructor(
+    private val includeObfuscation: JsonField<Boolean>,
     private val includeUsage: JsonField<Boolean>,
     private val additionalProperties: MutableMap<String, JsonValue>,
 ) {
 
     @JsonCreator
     private constructor(
+        @JsonProperty("include_obfuscation")
+        @ExcludeMissing
+        includeObfuscation: JsonField<Boolean> = JsonMissing.of(),
         @JsonProperty("include_usage")
         @ExcludeMissing
-        includeUsage: JsonField<Boolean> = JsonMissing.of()
-    ) : this(includeUsage, mutableMapOf())
+        includeUsage: JsonField<Boolean> = JsonMissing.of(),
+    ) : this(includeObfuscation, includeUsage, mutableMapOf())
+
+    /**
+     * When true, stream obfuscation will be enabled. Stream obfuscation adds random characters to
+     * an `obfuscation` field on streaming delta events to normalize payload sizes as a mitigation
+     * to certain side-channel attacks. These obfuscation fields are included by default, but add a
+     * small amount of overhead to the data stream. You can set `include_obfuscation` to false to
+     * optimize for bandwidth if you trust the network links between your application and the OpenAI
+     * API.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun includeObfuscation(): Optional<Boolean> =
+        includeObfuscation.getOptional("include_obfuscation")
 
     /**
      * If set, an additional chunk will be streamed before the `data: [DONE]` message. The `usage`
@@ -42,6 +60,16 @@ private constructor(
      *   server responded with an unexpected value).
      */
     fun includeUsage(): Optional<Boolean> = includeUsage.getOptional("include_usage")
+
+    /**
+     * Returns the raw JSON value of [includeObfuscation].
+     *
+     * Unlike [includeObfuscation], this method doesn't throw if the JSON field has an unexpected
+     * type.
+     */
+    @JsonProperty("include_obfuscation")
+    @ExcludeMissing
+    fun _includeObfuscation(): JsonField<Boolean> = includeObfuscation
 
     /**
      * Returns the raw JSON value of [includeUsage].
@@ -75,13 +103,37 @@ private constructor(
     /** A builder for [ChatCompletionStreamOptions]. */
     class Builder internal constructor() {
 
+        private var includeObfuscation: JsonField<Boolean> = JsonMissing.of()
         private var includeUsage: JsonField<Boolean> = JsonMissing.of()
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
         @JvmSynthetic
         internal fun from(chatCompletionStreamOptions: ChatCompletionStreamOptions) = apply {
+            includeObfuscation = chatCompletionStreamOptions.includeObfuscation
             includeUsage = chatCompletionStreamOptions.includeUsage
             additionalProperties = chatCompletionStreamOptions.additionalProperties.toMutableMap()
+        }
+
+        /**
+         * When true, stream obfuscation will be enabled. Stream obfuscation adds random characters
+         * to an `obfuscation` field on streaming delta events to normalize payload sizes as a
+         * mitigation to certain side-channel attacks. These obfuscation fields are included by
+         * default, but add a small amount of overhead to the data stream. You can set
+         * `include_obfuscation` to false to optimize for bandwidth if you trust the network links
+         * between your application and the OpenAI API.
+         */
+        fun includeObfuscation(includeObfuscation: Boolean) =
+            includeObfuscation(JsonField.of(includeObfuscation))
+
+        /**
+         * Sets [Builder.includeObfuscation] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.includeObfuscation] with a well-typed [Boolean] value
+         * instead. This method is primarily for setting the field to an undocumented or not yet
+         * supported value.
+         */
+        fun includeObfuscation(includeObfuscation: JsonField<Boolean>) = apply {
+            this.includeObfuscation = includeObfuscation
         }
 
         /**
@@ -131,7 +183,11 @@ private constructor(
          * Further updates to this [Builder] will not mutate the returned instance.
          */
         fun build(): ChatCompletionStreamOptions =
-            ChatCompletionStreamOptions(includeUsage, additionalProperties.toMutableMap())
+            ChatCompletionStreamOptions(
+                includeObfuscation,
+                includeUsage,
+                additionalProperties.toMutableMap(),
+            )
     }
 
     private var validated: Boolean = false
@@ -141,6 +197,7 @@ private constructor(
             return@apply
         }
 
+        includeObfuscation()
         includeUsage()
         validated = true
     }
@@ -158,22 +215,25 @@ private constructor(
      *
      * Used for best match union deserialization.
      */
-    @JvmSynthetic internal fun validity(): Int = (if (includeUsage.asKnown().isPresent) 1 else 0)
+    @JvmSynthetic
+    internal fun validity(): Int =
+        (if (includeObfuscation.asKnown().isPresent) 1 else 0) +
+            (if (includeUsage.asKnown().isPresent) 1 else 0)
 
     override fun equals(other: Any?): Boolean {
         if (this === other) {
             return true
         }
 
-        return /* spotless:off */ other is ChatCompletionStreamOptions && includeUsage == other.includeUsage && additionalProperties == other.additionalProperties /* spotless:on */
+        return /* spotless:off */ other is ChatCompletionStreamOptions && includeObfuscation == other.includeObfuscation && includeUsage == other.includeUsage && additionalProperties == other.additionalProperties /* spotless:on */
     }
 
     /* spotless:off */
-    private val hashCode: Int by lazy { Objects.hash(includeUsage, additionalProperties) }
+    private val hashCode: Int by lazy { Objects.hash(includeObfuscation, includeUsage, additionalProperties) }
     /* spotless:on */
 
     override fun hashCode(): Int = hashCode
 
     override fun toString() =
-        "ChatCompletionStreamOptions{includeUsage=$includeUsage, additionalProperties=$additionalProperties}"
+        "ChatCompletionStreamOptions{includeObfuscation=$includeObfuscation, includeUsage=$includeUsage, additionalProperties=$additionalProperties}"
 }

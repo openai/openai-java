@@ -75,6 +75,8 @@ private constructor(
     private val mcpListToolsInProgress: ResponseMcpListToolsInProgressEvent? = null,
     private val outputTextAnnotationAdded: ResponseOutputTextAnnotationAddedEvent? = null,
     private val queued: ResponseQueuedEvent? = null,
+    private val customToolCallInputDelta: ResponseCustomToolCallInputDeltaEvent? = null,
+    private val customToolCallInputDone: ResponseCustomToolCallInputDoneEvent? = null,
     private val _json: JsonValue? = null,
 ) {
 
@@ -273,6 +275,14 @@ private constructor(
     /** Emitted when a response is queued and waiting to be processed. */
     fun queued(): Optional<ResponseQueuedEvent> = Optional.ofNullable(queued)
 
+    /** Event representing a delta (partial update) to the input of a custom tool call. */
+    fun customToolCallInputDelta(): Optional<ResponseCustomToolCallInputDeltaEvent> =
+        Optional.ofNullable(customToolCallInputDelta)
+
+    /** Event indicating that input for a custom tool call is complete. */
+    fun customToolCallInputDone(): Optional<ResponseCustomToolCallInputDoneEvent> =
+        Optional.ofNullable(customToolCallInputDone)
+
     fun isAudioDelta(): Boolean = audioDelta != null
 
     fun isAudioDone(): Boolean = audioDone != null
@@ -374,6 +384,10 @@ private constructor(
     fun isOutputTextAnnotationAdded(): Boolean = outputTextAnnotationAdded != null
 
     fun isQueued(): Boolean = queued != null
+
+    fun isCustomToolCallInputDelta(): Boolean = customToolCallInputDelta != null
+
+    fun isCustomToolCallInputDone(): Boolean = customToolCallInputDone != null
 
     /** Emitted when there is a partial audio response. */
     fun asAudioDelta(): ResponseAudioDeltaEvent = audioDelta.getOrThrow("audioDelta")
@@ -570,6 +584,14 @@ private constructor(
     /** Emitted when a response is queued and waiting to be processed. */
     fun asQueued(): ResponseQueuedEvent = queued.getOrThrow("queued")
 
+    /** Event representing a delta (partial update) to the input of a custom tool call. */
+    fun asCustomToolCallInputDelta(): ResponseCustomToolCallInputDeltaEvent =
+        customToolCallInputDelta.getOrThrow("customToolCallInputDelta")
+
+    /** Event indicating that input for a custom tool call is complete. */
+    fun asCustomToolCallInputDone(): ResponseCustomToolCallInputDoneEvent =
+        customToolCallInputDone.getOrThrow("customToolCallInputDone")
+
     fun _json(): Optional<JsonValue> = Optional.ofNullable(_json)
 
     fun <T> accept(visitor: Visitor<T>): T =
@@ -650,6 +672,10 @@ private constructor(
             outputTextAnnotationAdded != null ->
                 visitor.visitOutputTextAnnotationAdded(outputTextAnnotationAdded)
             queued != null -> visitor.visitQueued(queued)
+            customToolCallInputDelta != null ->
+                visitor.visitCustomToolCallInputDelta(customToolCallInputDelta)
+            customToolCallInputDone != null ->
+                visitor.visitCustomToolCallInputDone(customToolCallInputDone)
             else -> visitor.unknown(_json)
         }
 
@@ -933,6 +959,18 @@ private constructor(
                 override fun visitQueued(queued: ResponseQueuedEvent) {
                     queued.validate()
                 }
+
+                override fun visitCustomToolCallInputDelta(
+                    customToolCallInputDelta: ResponseCustomToolCallInputDeltaEvent
+                ) {
+                    customToolCallInputDelta.validate()
+                }
+
+                override fun visitCustomToolCallInputDone(
+                    customToolCallInputDone: ResponseCustomToolCallInputDoneEvent
+                ) {
+                    customToolCallInputDone.validate()
+                }
             }
         )
         validated = true
@@ -1138,6 +1176,14 @@ private constructor(
 
                 override fun visitQueued(queued: ResponseQueuedEvent) = queued.validity()
 
+                override fun visitCustomToolCallInputDelta(
+                    customToolCallInputDelta: ResponseCustomToolCallInputDeltaEvent
+                ) = customToolCallInputDelta.validity()
+
+                override fun visitCustomToolCallInputDone(
+                    customToolCallInputDone: ResponseCustomToolCallInputDoneEvent
+                ) = customToolCallInputDone.validity()
+
                 override fun unknown(json: JsonValue?) = 0
             }
         )
@@ -1147,10 +1193,10 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is ResponseStreamEvent && audioDelta == other.audioDelta && audioDone == other.audioDone && audioTranscriptDelta == other.audioTranscriptDelta && audioTranscriptDone == other.audioTranscriptDone && codeInterpreterCallCodeDelta == other.codeInterpreterCallCodeDelta && codeInterpreterCallCodeDone == other.codeInterpreterCallCodeDone && codeInterpreterCallCompleted == other.codeInterpreterCallCompleted && codeInterpreterCallInProgress == other.codeInterpreterCallInProgress && codeInterpreterCallInterpreting == other.codeInterpreterCallInterpreting && completed == other.completed && contentPartAdded == other.contentPartAdded && contentPartDone == other.contentPartDone && created == other.created && error == other.error && fileSearchCallCompleted == other.fileSearchCallCompleted && fileSearchCallInProgress == other.fileSearchCallInProgress && fileSearchCallSearching == other.fileSearchCallSearching && functionCallArgumentsDelta == other.functionCallArgumentsDelta && functionCallArgumentsDone == other.functionCallArgumentsDone && inProgress == other.inProgress && failed == other.failed && incomplete == other.incomplete && outputItemAdded == other.outputItemAdded && outputItemDone == other.outputItemDone && reasoningSummaryPartAdded == other.reasoningSummaryPartAdded && reasoningSummaryPartDone == other.reasoningSummaryPartDone && reasoningSummaryTextDelta == other.reasoningSummaryTextDelta && reasoningSummaryTextDone == other.reasoningSummaryTextDone && reasoningTextDelta == other.reasoningTextDelta && reasoningTextDone == other.reasoningTextDone && refusalDelta == other.refusalDelta && refusalDone == other.refusalDone && outputTextDelta == other.outputTextDelta && outputTextDone == other.outputTextDone && webSearchCallCompleted == other.webSearchCallCompleted && webSearchCallInProgress == other.webSearchCallInProgress && webSearchCallSearching == other.webSearchCallSearching && imageGenerationCallCompleted == other.imageGenerationCallCompleted && imageGenerationCallGenerating == other.imageGenerationCallGenerating && imageGenerationCallInProgress == other.imageGenerationCallInProgress && imageGenerationCallPartialImage == other.imageGenerationCallPartialImage && mcpCallArgumentsDelta == other.mcpCallArgumentsDelta && mcpCallArgumentsDone == other.mcpCallArgumentsDone && mcpCallCompleted == other.mcpCallCompleted && mcpCallFailed == other.mcpCallFailed && mcpCallInProgress == other.mcpCallInProgress && mcpListToolsCompleted == other.mcpListToolsCompleted && mcpListToolsFailed == other.mcpListToolsFailed && mcpListToolsInProgress == other.mcpListToolsInProgress && outputTextAnnotationAdded == other.outputTextAnnotationAdded && queued == other.queued /* spotless:on */
+        return /* spotless:off */ other is ResponseStreamEvent && audioDelta == other.audioDelta && audioDone == other.audioDone && audioTranscriptDelta == other.audioTranscriptDelta && audioTranscriptDone == other.audioTranscriptDone && codeInterpreterCallCodeDelta == other.codeInterpreterCallCodeDelta && codeInterpreterCallCodeDone == other.codeInterpreterCallCodeDone && codeInterpreterCallCompleted == other.codeInterpreterCallCompleted && codeInterpreterCallInProgress == other.codeInterpreterCallInProgress && codeInterpreterCallInterpreting == other.codeInterpreterCallInterpreting && completed == other.completed && contentPartAdded == other.contentPartAdded && contentPartDone == other.contentPartDone && created == other.created && error == other.error && fileSearchCallCompleted == other.fileSearchCallCompleted && fileSearchCallInProgress == other.fileSearchCallInProgress && fileSearchCallSearching == other.fileSearchCallSearching && functionCallArgumentsDelta == other.functionCallArgumentsDelta && functionCallArgumentsDone == other.functionCallArgumentsDone && inProgress == other.inProgress && failed == other.failed && incomplete == other.incomplete && outputItemAdded == other.outputItemAdded && outputItemDone == other.outputItemDone && reasoningSummaryPartAdded == other.reasoningSummaryPartAdded && reasoningSummaryPartDone == other.reasoningSummaryPartDone && reasoningSummaryTextDelta == other.reasoningSummaryTextDelta && reasoningSummaryTextDone == other.reasoningSummaryTextDone && reasoningTextDelta == other.reasoningTextDelta && reasoningTextDone == other.reasoningTextDone && refusalDelta == other.refusalDelta && refusalDone == other.refusalDone && outputTextDelta == other.outputTextDelta && outputTextDone == other.outputTextDone && webSearchCallCompleted == other.webSearchCallCompleted && webSearchCallInProgress == other.webSearchCallInProgress && webSearchCallSearching == other.webSearchCallSearching && imageGenerationCallCompleted == other.imageGenerationCallCompleted && imageGenerationCallGenerating == other.imageGenerationCallGenerating && imageGenerationCallInProgress == other.imageGenerationCallInProgress && imageGenerationCallPartialImage == other.imageGenerationCallPartialImage && mcpCallArgumentsDelta == other.mcpCallArgumentsDelta && mcpCallArgumentsDone == other.mcpCallArgumentsDone && mcpCallCompleted == other.mcpCallCompleted && mcpCallFailed == other.mcpCallFailed && mcpCallInProgress == other.mcpCallInProgress && mcpListToolsCompleted == other.mcpListToolsCompleted && mcpListToolsFailed == other.mcpListToolsFailed && mcpListToolsInProgress == other.mcpListToolsInProgress && outputTextAnnotationAdded == other.outputTextAnnotationAdded && queued == other.queued && customToolCallInputDelta == other.customToolCallInputDelta && customToolCallInputDone == other.customToolCallInputDone /* spotless:on */
     }
 
-    override fun hashCode(): Int = /* spotless:off */ Objects.hash(audioDelta, audioDone, audioTranscriptDelta, audioTranscriptDone, codeInterpreterCallCodeDelta, codeInterpreterCallCodeDone, codeInterpreterCallCompleted, codeInterpreterCallInProgress, codeInterpreterCallInterpreting, completed, contentPartAdded, contentPartDone, created, error, fileSearchCallCompleted, fileSearchCallInProgress, fileSearchCallSearching, functionCallArgumentsDelta, functionCallArgumentsDone, inProgress, failed, incomplete, outputItemAdded, outputItemDone, reasoningSummaryPartAdded, reasoningSummaryPartDone, reasoningSummaryTextDelta, reasoningSummaryTextDone, reasoningTextDelta, reasoningTextDone, refusalDelta, refusalDone, outputTextDelta, outputTextDone, webSearchCallCompleted, webSearchCallInProgress, webSearchCallSearching, imageGenerationCallCompleted, imageGenerationCallGenerating, imageGenerationCallInProgress, imageGenerationCallPartialImage, mcpCallArgumentsDelta, mcpCallArgumentsDone, mcpCallCompleted, mcpCallFailed, mcpCallInProgress, mcpListToolsCompleted, mcpListToolsFailed, mcpListToolsInProgress, outputTextAnnotationAdded, queued) /* spotless:on */
+    override fun hashCode(): Int = /* spotless:off */ Objects.hash(audioDelta, audioDone, audioTranscriptDelta, audioTranscriptDone, codeInterpreterCallCodeDelta, codeInterpreterCallCodeDone, codeInterpreterCallCompleted, codeInterpreterCallInProgress, codeInterpreterCallInterpreting, completed, contentPartAdded, contentPartDone, created, error, fileSearchCallCompleted, fileSearchCallInProgress, fileSearchCallSearching, functionCallArgumentsDelta, functionCallArgumentsDone, inProgress, failed, incomplete, outputItemAdded, outputItemDone, reasoningSummaryPartAdded, reasoningSummaryPartDone, reasoningSummaryTextDelta, reasoningSummaryTextDone, reasoningTextDelta, reasoningTextDone, refusalDelta, refusalDone, outputTextDelta, outputTextDone, webSearchCallCompleted, webSearchCallInProgress, webSearchCallSearching, imageGenerationCallCompleted, imageGenerationCallGenerating, imageGenerationCallInProgress, imageGenerationCallPartialImage, mcpCallArgumentsDelta, mcpCallArgumentsDone, mcpCallCompleted, mcpCallFailed, mcpCallInProgress, mcpListToolsCompleted, mcpListToolsFailed, mcpListToolsInProgress, outputTextAnnotationAdded, queued, customToolCallInputDelta, customToolCallInputDone) /* spotless:on */
 
     override fun toString(): String =
         when {
@@ -1235,6 +1281,10 @@ private constructor(
             outputTextAnnotationAdded != null ->
                 "ResponseStreamEvent{outputTextAnnotationAdded=$outputTextAnnotationAdded}"
             queued != null -> "ResponseStreamEvent{queued=$queued}"
+            customToolCallInputDelta != null ->
+                "ResponseStreamEvent{customToolCallInputDelta=$customToolCallInputDelta}"
+            customToolCallInputDone != null ->
+                "ResponseStreamEvent{customToolCallInputDone=$customToolCallInputDone}"
             _json != null -> "ResponseStreamEvent{_unknown=$_json}"
             else -> throw IllegalStateException("Invalid ResponseStreamEvent")
         }
@@ -1516,6 +1566,18 @@ private constructor(
 
         /** Emitted when a response is queued and waiting to be processed. */
         @JvmStatic fun ofQueued(queued: ResponseQueuedEvent) = ResponseStreamEvent(queued = queued)
+
+        /** Event representing a delta (partial update) to the input of a custom tool call. */
+        @JvmStatic
+        fun ofCustomToolCallInputDelta(
+            customToolCallInputDelta: ResponseCustomToolCallInputDeltaEvent
+        ) = ResponseStreamEvent(customToolCallInputDelta = customToolCallInputDelta)
+
+        /** Event indicating that input for a custom tool call is complete. */
+        @JvmStatic
+        fun ofCustomToolCallInputDone(
+            customToolCallInputDone: ResponseCustomToolCallInputDoneEvent
+        ) = ResponseStreamEvent(customToolCallInputDone = customToolCallInputDone)
     }
 
     /**
@@ -1730,6 +1792,16 @@ private constructor(
 
         /** Emitted when a response is queued and waiting to be processed. */
         fun visitQueued(queued: ResponseQueuedEvent): T
+
+        /** Event representing a delta (partial update) to the input of a custom tool call. */
+        fun visitCustomToolCallInputDelta(
+            customToolCallInputDelta: ResponseCustomToolCallInputDeltaEvent
+        ): T
+
+        /** Event indicating that input for a custom tool call is complete. */
+        fun visitCustomToolCallInputDone(
+            customToolCallInputDone: ResponseCustomToolCallInputDoneEvent
+        ): T
 
         /**
          * Maps an unknown variant of [ResponseStreamEvent] to a value of type [T].
@@ -2093,6 +2165,22 @@ private constructor(
                         ResponseStreamEvent(queued = it, _json = json)
                     } ?: ResponseStreamEvent(_json = json)
                 }
+                "response.custom_tool_call_input.delta" -> {
+                    return tryDeserialize(
+                            node,
+                            jacksonTypeRef<ResponseCustomToolCallInputDeltaEvent>(),
+                        )
+                        ?.let { ResponseStreamEvent(customToolCallInputDelta = it, _json = json) }
+                        ?: ResponseStreamEvent(_json = json)
+                }
+                "response.custom_tool_call_input.done" -> {
+                    return tryDeserialize(
+                            node,
+                            jacksonTypeRef<ResponseCustomToolCallInputDoneEvent>(),
+                        )
+                        ?.let { ResponseStreamEvent(customToolCallInputDone = it, _json = json) }
+                        ?: ResponseStreamEvent(_json = json)
+                }
             }
 
             return ResponseStreamEvent(_json = json)
@@ -2186,6 +2274,11 @@ private constructor(
                 value.outputTextAnnotationAdded != null ->
                     generator.writeObject(value.outputTextAnnotationAdded)
                 value.queued != null -> generator.writeObject(value.queued)
+                value.customToolCallInputDelta != null ->
+                    generator.writeObject(value.customToolCallInputDelta)
+                value.customToolCallInputDone != null ->
+                    generator.writeObject(value.customToolCallInputDone)
+
                 value._json != null -> generator.writeObject(value._json)
                 else -> throw IllegalStateException("Invalid ResponseStreamEvent")
             }

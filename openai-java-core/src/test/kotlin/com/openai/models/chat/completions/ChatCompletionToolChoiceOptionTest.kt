@@ -19,7 +19,9 @@ internal class ChatCompletionToolChoiceOptionTest {
         val chatCompletionToolChoiceOption = ChatCompletionToolChoiceOption.ofAuto(auto)
 
         assertThat(chatCompletionToolChoiceOption.auto()).contains(auto)
+        assertThat(chatCompletionToolChoiceOption.allowedToolChoice()).isEmpty
         assertThat(chatCompletionToolChoiceOption.namedToolChoice()).isEmpty
+        assertThat(chatCompletionToolChoiceOption.namedToolChoiceCustom()).isEmpty
     }
 
     @Test
@@ -27,6 +29,60 @@ internal class ChatCompletionToolChoiceOptionTest {
         val jsonMapper = jsonMapper()
         val chatCompletionToolChoiceOption =
             ChatCompletionToolChoiceOption.ofAuto(ChatCompletionToolChoiceOption.Auto.NONE)
+
+        val roundtrippedChatCompletionToolChoiceOption =
+            jsonMapper.readValue(
+                jsonMapper.writeValueAsString(chatCompletionToolChoiceOption),
+                jacksonTypeRef<ChatCompletionToolChoiceOption>(),
+            )
+
+        assertThat(roundtrippedChatCompletionToolChoiceOption)
+            .isEqualTo(chatCompletionToolChoiceOption)
+    }
+
+    @Test
+    fun ofAllowedToolChoice() {
+        val allowedToolChoice =
+            ChatCompletionAllowedToolChoice.builder()
+                .allowedTools(
+                    ChatCompletionAllowedTools.builder()
+                        .mode(ChatCompletionAllowedTools.Mode.AUTO)
+                        .addTool(
+                            ChatCompletionAllowedTools.Tool.builder()
+                                .putAdditionalProperty("foo", JsonValue.from("bar"))
+                                .build()
+                        )
+                        .build()
+                )
+                .build()
+
+        val chatCompletionToolChoiceOption =
+            ChatCompletionToolChoiceOption.ofAllowedToolChoice(allowedToolChoice)
+
+        assertThat(chatCompletionToolChoiceOption.auto()).isEmpty
+        assertThat(chatCompletionToolChoiceOption.allowedToolChoice()).contains(allowedToolChoice)
+        assertThat(chatCompletionToolChoiceOption.namedToolChoice()).isEmpty
+        assertThat(chatCompletionToolChoiceOption.namedToolChoiceCustom()).isEmpty
+    }
+
+    @Test
+    fun ofAllowedToolChoiceRoundtrip() {
+        val jsonMapper = jsonMapper()
+        val chatCompletionToolChoiceOption =
+            ChatCompletionToolChoiceOption.ofAllowedToolChoice(
+                ChatCompletionAllowedToolChoice.builder()
+                    .allowedTools(
+                        ChatCompletionAllowedTools.builder()
+                            .mode(ChatCompletionAllowedTools.Mode.AUTO)
+                            .addTool(
+                                ChatCompletionAllowedTools.Tool.builder()
+                                    .putAdditionalProperty("foo", JsonValue.from("bar"))
+                                    .build()
+                            )
+                            .build()
+                    )
+                    .build()
+            )
 
         val roundtrippedChatCompletionToolChoiceOption =
             jsonMapper.readValue(
@@ -49,7 +105,9 @@ internal class ChatCompletionToolChoiceOptionTest {
             ChatCompletionToolChoiceOption.ofNamedToolChoice(namedToolChoice)
 
         assertThat(chatCompletionToolChoiceOption.auto()).isEmpty
+        assertThat(chatCompletionToolChoiceOption.allowedToolChoice()).isEmpty
         assertThat(chatCompletionToolChoiceOption.namedToolChoice()).contains(namedToolChoice)
+        assertThat(chatCompletionToolChoiceOption.namedToolChoiceCustom()).isEmpty
     }
 
     @Test
@@ -59,6 +117,45 @@ internal class ChatCompletionToolChoiceOptionTest {
             ChatCompletionToolChoiceOption.ofNamedToolChoice(
                 ChatCompletionNamedToolChoice.builder()
                     .function(ChatCompletionNamedToolChoice.Function.builder().name("name").build())
+                    .build()
+            )
+
+        val roundtrippedChatCompletionToolChoiceOption =
+            jsonMapper.readValue(
+                jsonMapper.writeValueAsString(chatCompletionToolChoiceOption),
+                jacksonTypeRef<ChatCompletionToolChoiceOption>(),
+            )
+
+        assertThat(roundtrippedChatCompletionToolChoiceOption)
+            .isEqualTo(chatCompletionToolChoiceOption)
+    }
+
+    @Test
+    fun ofNamedToolChoiceCustom() {
+        val namedToolChoiceCustom =
+            ChatCompletionNamedToolChoiceCustom.builder()
+                .custom(ChatCompletionNamedToolChoiceCustom.Custom.builder().name("name").build())
+                .build()
+
+        val chatCompletionToolChoiceOption =
+            ChatCompletionToolChoiceOption.ofNamedToolChoiceCustom(namedToolChoiceCustom)
+
+        assertThat(chatCompletionToolChoiceOption.auto()).isEmpty
+        assertThat(chatCompletionToolChoiceOption.allowedToolChoice()).isEmpty
+        assertThat(chatCompletionToolChoiceOption.namedToolChoice()).isEmpty
+        assertThat(chatCompletionToolChoiceOption.namedToolChoiceCustom())
+            .contains(namedToolChoiceCustom)
+    }
+
+    @Test
+    fun ofNamedToolChoiceCustomRoundtrip() {
+        val jsonMapper = jsonMapper()
+        val chatCompletionToolChoiceOption =
+            ChatCompletionToolChoiceOption.ofNamedToolChoiceCustom(
+                ChatCompletionNamedToolChoiceCustom.builder()
+                    .custom(
+                        ChatCompletionNamedToolChoiceCustom.Custom.builder().name("name").build()
+                    )
                     .build()
             )
 

@@ -565,6 +565,16 @@ internal constructor(
             paramsBuilder.toolChoice(namedToolChoice)
         }
 
+        /** @see ChatCompletionCreateParams.Builder.toolChoice */
+        fun toolChoice(allowedToolChoice: ChatCompletionAllowedToolChoice) = apply {
+            paramsBuilder.toolChoice(allowedToolChoice)
+        }
+
+        /** @see ChatCompletionCreateParams.Builder.toolChoice */
+        fun toolChoice(namedToolChoiceCustom: ChatCompletionNamedToolChoiceCustom) = apply {
+            paramsBuilder.toolChoice(namedToolChoiceCustom)
+        }
+
         /** @see ChatCompletionCreateParams.Builder.tools */
         fun tools(tools: List<ChatCompletionTool>) = apply { paramsBuilder.tools(tools) }
 
@@ -573,6 +583,24 @@ internal constructor(
 
         /** @see ChatCompletionCreateParams.Builder.addTool */
         fun addTool(tool: ChatCompletionTool) = apply { paramsBuilder.addTool(tool) }
+
+        /** @see ChatCompletionCreateParams.Builder.addTool */
+        fun addTool(function: ChatCompletionFunctionTool) = apply {
+            paramsBuilder.addTool(function)
+        }
+
+        /** @see ChatCompletionCreateParams.Builder.addTool */
+        fun addTool(custom: ChatCompletionCustomTool) = apply { paramsBuilder.addTool(custom) }
+
+        /** @see ChatCompletionCreateParams.Builder.addFunctionTool */
+        fun addFunctionTool(function: com.openai.models.FunctionDefinition) = apply {
+            paramsBuilder.addFunctionTool(function)
+        }
+
+        /** @see ChatCompletionCreateParams.Builder.addCustomTool */
+        fun addCustomTool(custom: ChatCompletionCustomTool.Custom) = apply {
+            paramsBuilder.addCustomTool(custom)
+        }
 
         /** @see ChatCompletionCreateParams.Builder.addTool */
         @JvmOverloads
@@ -625,6 +653,21 @@ internal constructor(
         fun webSearchOptions(
             webSearchOptions: JsonField<ChatCompletionCreateParams.WebSearchOptions>
         ) = apply { paramsBuilder.webSearchOptions(webSearchOptions) }
+
+        /** @see ChatCompletionCreateParams.Builder.verbosity */
+        fun verbosity(verbosity: ChatCompletionCreateParams.Verbosity?) = apply {
+            paramsBuilder.verbosity(verbosity)
+        }
+
+        /** @see ChatCompletionCreateParams.Builder.verbosity */
+        fun verbosity(verbosity: Optional<ChatCompletionCreateParams.Verbosity>) = apply {
+            paramsBuilder.verbosity(verbosity)
+        }
+
+        /** @see ChatCompletionCreateParams.Builder.verbosity */
+        fun verbosity(verbosity: JsonField<ChatCompletionCreateParams.Verbosity>) = apply {
+            paramsBuilder.verbosity(verbosity)
+        }
 
         /** @see ChatCompletionCreateParams.Builder.additionalBodyProperties */
         fun additionalBodyProperties(additionalBodyProperties: Map<String, JsonValue>) = apply {

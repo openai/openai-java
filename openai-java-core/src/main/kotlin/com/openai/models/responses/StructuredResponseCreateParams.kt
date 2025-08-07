@@ -341,6 +341,14 @@ class StructuredResponseCreateParams<T : Any>(
         /** @see ResponseCreateParams.Builder.toolChoice */
         fun toolChoice(mcp: ToolChoiceMcp) = apply { paramsBuilder.toolChoice(mcp) }
 
+        /** @see ResponseCreateParams.Builder.toolChoice */
+        fun toolChoice(allowed: com.openai.models.responses.ToolChoiceAllowed) = apply {
+            paramsBuilder.toolChoice(allowed)
+        }
+
+        /** @see ResponseCreateParams.Builder.toolChoice */
+        fun toolChoice(custom: ToolChoiceCustom) = apply { paramsBuilder.toolChoice(custom) }
+
         /** @see ResponseCreateParams.Builder.tools */
         fun tools(tools: List<Tool>) = apply { paramsBuilder.tools(tools) }
 
@@ -407,6 +415,12 @@ class StructuredResponseCreateParams<T : Any>(
         /** @see ResponseCreateParams.Builder.addToolLocalShell */
         fun addToolLocalShell() = apply { paramsBuilder.addToolLocalShell() }
 
+        /** @see ResponseCreateParams.Builder.addTool */
+        fun addTool(custom: CustomTool) = apply { paramsBuilder.addTool(custom) }
+
+        /** @see ResponseCreateParams.Builder.addCustomTool */
+        fun addCustomTool(name: String) = apply { paramsBuilder.addCustomTool(name) }
+
         /** @see ResponseCreateParams.Builder.topP */
         fun topP(topP: Double?) = apply { paramsBuilder.topP(topP) }
 
@@ -448,6 +462,36 @@ class StructuredResponseCreateParams<T : Any>(
         /** @see ResponseCreateParams.Builder.truncation */
         fun truncation(truncation: JsonField<ResponseCreateParams.Truncation>) = apply {
             paramsBuilder.truncation(truncation)
+        }
+
+        /** @see ResponseCreateParams.Builder.streamOptions */
+        fun streamOptions(streamOptions: ResponseCreateParams.StreamOptions?) = apply {
+            paramsBuilder.streamOptions(streamOptions)
+        }
+
+        /** @see ResponseCreateParams.Builder.streamOptions */
+        fun streamOptions(streamOptions: Optional<ResponseCreateParams.StreamOptions>) = apply {
+            paramsBuilder.streamOptions(streamOptions)
+        }
+
+        /** @see ResponseCreateParams.Builder.streamOptions */
+        fun streamOptions(streamOptions: JsonField<ResponseCreateParams.StreamOptions>) = apply {
+            paramsBuilder.streamOptions(streamOptions)
+        }
+
+        /** @see ResponseCreateParams.Builder.verbosity */
+        fun verbosity(verbosity: ResponseCreateParams.Verbosity?) = apply {
+            paramsBuilder.verbosity(verbosity)
+        }
+
+        /** @see ResponseCreateParams.Builder.verbosity */
+        fun verbosity(verbosity: Optional<ResponseCreateParams.Verbosity>) = apply {
+            paramsBuilder.verbosity(verbosity)
+        }
+
+        /** @see ResponseCreateParams.Builder.verbosity */
+        fun verbosity(verbosity: JsonField<ResponseCreateParams.Verbosity>) = apply {
+            paramsBuilder.verbosity(verbosity)
         }
 
         /** @see ResponseCreateParams.Builder.user */

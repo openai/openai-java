@@ -42,12 +42,10 @@ private constructor(
     ) : this(effort, generateSummary, summary, mutableMapOf())
 
     /**
-     * **o-series models only**
-     *
      * Constrains effort on reasoning for
      * [reasoning models](https://platform.openai.com/docs/guides/reasoning). Currently supported
-     * values are `low`, `medium`, and `high`. Reducing reasoning effort can result in faster
-     * responses and fewer tokens used on reasoning in a response.
+     * values are `minimal`, `low`, `medium`, and `high`. Reducing reasoning effort can result in
+     * faster responses and fewer tokens used on reasoning in a response.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -135,12 +133,10 @@ private constructor(
         }
 
         /**
-         * **o-series models only**
-         *
          * Constrains effort on reasoning for
          * [reasoning models](https://platform.openai.com/docs/guides/reasoning). Currently
-         * supported values are `low`, `medium`, and `high`. Reducing reasoning effort can result in
-         * faster responses and fewer tokens used on reasoning in a response.
+         * supported values are `minimal`, `low`, `medium`, and `high`. Reducing reasoning effort
+         * can result in faster responses and fewer tokens used on reasoning in a response.
          */
         fun effort(effort: ReasoningEffort?) = effort(JsonField.ofNullable(effort))
 
