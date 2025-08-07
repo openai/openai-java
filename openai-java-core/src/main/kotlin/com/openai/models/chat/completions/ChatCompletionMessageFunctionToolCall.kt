@@ -11,6 +11,7 @@ import com.openai.core.JsonField
 import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
 import com.openai.core.checkRequired
+import com.openai.core.responseTypeFromJson
 import com.openai.errors.OpenAIInvalidDataException
 import java.util.Collections
 import java.util.Objects
@@ -261,6 +262,22 @@ private constructor(
          *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
          */
         fun arguments(): String = arguments.getRequired("arguments")
+
+        /**
+         * Gets the arguments to the function call, converting the values from the model in JSON
+         * format to an instance of a class that holds those values. The class must previously have
+         * been used to define the JSON schema for the function definition's parameters, so that the
+         * JSON corresponds to structure of the given class.
+         *
+         * @throws OpenAIInvalidDataException If the JSON data is missing, `null`, or cannot be
+         *   parsed to an instance of the [functionParametersType] class. This might occur if the
+         *   class is not the same as the class that was originally used to define the arguments, or
+         *   if the data from the AI model is invalid or incomplete (e.g., truncated).
+         * @see ChatCompletionCreateParams.Builder.addTool
+         * @see arguments
+         */
+        fun <T> arguments(functionParametersType: Class<T>): T =
+            responseTypeFromJson(arguments(), functionParametersType)
 
         /**
          * The name of the function to call.
