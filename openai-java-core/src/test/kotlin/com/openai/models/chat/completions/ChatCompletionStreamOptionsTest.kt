@@ -12,8 +12,12 @@ internal class ChatCompletionStreamOptionsTest {
     @Test
     fun create() {
         val chatCompletionStreamOptions =
-            ChatCompletionStreamOptions.builder().includeUsage(true).build()
+            ChatCompletionStreamOptions.builder()
+                .includeObfuscation(true)
+                .includeUsage(true)
+                .build()
 
+        assertThat(chatCompletionStreamOptions.includeObfuscation()).contains(true)
         assertThat(chatCompletionStreamOptions.includeUsage()).contains(true)
     }
 
@@ -21,7 +25,10 @@ internal class ChatCompletionStreamOptionsTest {
     fun roundtrip() {
         val jsonMapper = jsonMapper()
         val chatCompletionStreamOptions =
-            ChatCompletionStreamOptions.builder().includeUsage(true).build()
+            ChatCompletionStreamOptions.builder()
+                .includeObfuscation(true)
+                .includeUsage(true)
+                .build()
 
         val roundtrippedChatCompletionStreamOptions =
             jsonMapper.readValue(

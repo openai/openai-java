@@ -62,7 +62,7 @@ internal class ResponseServiceAsyncTest {
                     .promptCacheKey("prompt-cache-key-1234")
                     .reasoning(
                         Reasoning.builder()
-                            .effort(ReasoningEffort.LOW)
+                            .effort(ReasoningEffort.MINIMAL)
                             .generateSummary(Reasoning.GenerateSummary.AUTO)
                             .summary(Reasoning.Summary.AUTO)
                             .build()
@@ -70,6 +70,11 @@ internal class ResponseServiceAsyncTest {
                     .safetyIdentifier("safety-identifier-1234")
                     .serviceTier(ResponseCreateParams.ServiceTier.AUTO)
                     .store(true)
+                    .streamOptions(
+                        ResponseCreateParams.StreamOptions.builder()
+                            .includeObfuscation(true)
+                            .build()
+                    )
                     .temperature(1.0)
                     .text(
                         ResponseTextConfig.builder()
@@ -93,6 +98,7 @@ internal class ResponseServiceAsyncTest {
                     .topP(1.0)
                     .truncation(ResponseCreateParams.Truncation.AUTO)
                     .user("user-1234")
+                    .verbosity(ResponseCreateParams.Verbosity.LOW)
                     .build()
             )
 
@@ -140,7 +146,7 @@ internal class ResponseServiceAsyncTest {
                     .promptCacheKey("prompt-cache-key-1234")
                     .reasoning(
                         Reasoning.builder()
-                            .effort(ReasoningEffort.LOW)
+                            .effort(ReasoningEffort.MINIMAL)
                             .generateSummary(Reasoning.GenerateSummary.AUTO)
                             .summary(Reasoning.Summary.AUTO)
                             .build()
@@ -148,6 +154,11 @@ internal class ResponseServiceAsyncTest {
                     .safetyIdentifier("safety-identifier-1234")
                     .serviceTier(ResponseCreateParams.ServiceTier.AUTO)
                     .store(true)
+                    .streamOptions(
+                        ResponseCreateParams.StreamOptions.builder()
+                            .includeObfuscation(true)
+                            .build()
+                    )
                     .temperature(1.0)
                     .text(
                         ResponseTextConfig.builder()
@@ -171,6 +182,7 @@ internal class ResponseServiceAsyncTest {
                     .topP(1.0)
                     .truncation(ResponseCreateParams.Truncation.AUTO)
                     .user("user-1234")
+                    .verbosity(ResponseCreateParams.Verbosity.LOW)
                     .build()
             )
 
@@ -193,6 +205,7 @@ internal class ResponseServiceAsyncTest {
                 ResponseRetrieveParams.builder()
                     .responseId("resp_677efb5139a88190b512bc3fef8e535d")
                     .addInclude(ResponseIncludable.CODE_INTERPRETER_CALL_OUTPUTS)
+                    .includeObfuscation(true)
                     .startingAfter(0L)
                     .build()
             )
@@ -215,6 +228,7 @@ internal class ResponseServiceAsyncTest {
                 ResponseRetrieveParams.builder()
                     .responseId("resp_677efb5139a88190b512bc3fef8e535d")
                     .addInclude(ResponseIncludable.CODE_INTERPRETER_CALL_OUTPUTS)
+                    .includeObfuscation(true)
                     .startingAfter(0L)
                     .build()
             )

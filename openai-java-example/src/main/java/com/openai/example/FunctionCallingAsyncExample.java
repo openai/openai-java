@@ -27,7 +27,7 @@ public final class FunctionCallingAsyncExample {
         ChatCompletionCreateParams.Builder createParamsBuilder = ChatCompletionCreateParams.builder()
                 .model(ChatModel.GPT_3_5_TURBO)
                 .maxCompletionTokens(2048)
-                .addTool(ChatCompletionTool.builder()
+                .addTool(ChatCompletionFunctionTool.builder()
                         .function(FunctionDefinition.builder()
                                 .name("get-sdk-quality")
                                 .description("Gets the quality of the given SDK.")
@@ -57,10 +57,11 @@ public final class FunctionCallingAsyncExample {
                                 return message.toolCalls().stream().flatMap(Collection::stream);
                             })
                             .forEach(toolCall -> {
-                                String content = callFunction(toolCall.function());
+                                String content =
+                                        callFunction(toolCall.asFunction().function());
                                 // Add the tool call result to the conversation.
                                 createParamsBuilder.addMessage(ChatCompletionToolMessageParam.builder()
-                                        .toolCallId(toolCall.id())
+                                        .toolCallId(toolCall.asFunction().id())
                                         .content(content)
                                         .build());
                                 System.out.println(content);
@@ -77,7 +78,7 @@ public final class FunctionCallingAsyncExample {
                 .join();
     }
 
-    private static String callFunction(ChatCompletionMessageToolCall.Function function) {
+    private static String callFunction(ChatCompletionMessageFunctionToolCall.Function function) {
         if (!function.name().equals("get-sdk-quality")) {
             throw new IllegalArgumentException("Unknown function: " + function.name());
         }

@@ -62,6 +62,7 @@ internal class ResponseOutputItemTest {
         assertThat(responseOutputItem.mcpCall()).isEmpty
         assertThat(responseOutputItem.mcpListTools()).isEmpty
         assertThat(responseOutputItem.mcpApprovalRequest()).isEmpty
+        assertThat(responseOutputItem.customToolCall()).isEmpty
     }
 
     @Test
@@ -146,6 +147,7 @@ internal class ResponseOutputItemTest {
         assertThat(responseOutputItem.mcpCall()).isEmpty
         assertThat(responseOutputItem.mcpListTools()).isEmpty
         assertThat(responseOutputItem.mcpApprovalRequest()).isEmpty
+        assertThat(responseOutputItem.customToolCall()).isEmpty
     }
 
     @Test
@@ -207,6 +209,7 @@ internal class ResponseOutputItemTest {
         assertThat(responseOutputItem.mcpCall()).isEmpty
         assertThat(responseOutputItem.mcpListTools()).isEmpty
         assertThat(responseOutputItem.mcpApprovalRequest()).isEmpty
+        assertThat(responseOutputItem.customToolCall()).isEmpty
     }
 
     @Test
@@ -255,6 +258,7 @@ internal class ResponseOutputItemTest {
         assertThat(responseOutputItem.mcpCall()).isEmpty
         assertThat(responseOutputItem.mcpListTools()).isEmpty
         assertThat(responseOutputItem.mcpApprovalRequest()).isEmpty
+        assertThat(responseOutputItem.customToolCall()).isEmpty
     }
 
     @Test
@@ -316,6 +320,7 @@ internal class ResponseOutputItemTest {
         assertThat(responseOutputItem.mcpCall()).isEmpty
         assertThat(responseOutputItem.mcpListTools()).isEmpty
         assertThat(responseOutputItem.mcpApprovalRequest()).isEmpty
+        assertThat(responseOutputItem.customToolCall()).isEmpty
     }
 
     @Test
@@ -379,6 +384,7 @@ internal class ResponseOutputItemTest {
         assertThat(responseOutputItem.mcpCall()).isEmpty
         assertThat(responseOutputItem.mcpListTools()).isEmpty
         assertThat(responseOutputItem.mcpApprovalRequest()).isEmpty
+        assertThat(responseOutputItem.customToolCall()).isEmpty
     }
 
     @Test
@@ -427,6 +433,7 @@ internal class ResponseOutputItemTest {
         assertThat(responseOutputItem.mcpCall()).isEmpty
         assertThat(responseOutputItem.mcpListTools()).isEmpty
         assertThat(responseOutputItem.mcpApprovalRequest()).isEmpty
+        assertThat(responseOutputItem.customToolCall()).isEmpty
     }
 
     @Test
@@ -475,6 +482,7 @@ internal class ResponseOutputItemTest {
         assertThat(responseOutputItem.mcpCall()).isEmpty
         assertThat(responseOutputItem.mcpListTools()).isEmpty
         assertThat(responseOutputItem.mcpApprovalRequest()).isEmpty
+        assertThat(responseOutputItem.customToolCall()).isEmpty
     }
 
     @Test
@@ -536,6 +544,7 @@ internal class ResponseOutputItemTest {
         assertThat(responseOutputItem.mcpCall()).isEmpty
         assertThat(responseOutputItem.mcpListTools()).isEmpty
         assertThat(responseOutputItem.mcpApprovalRequest()).isEmpty
+        assertThat(responseOutputItem.customToolCall()).isEmpty
     }
 
     @Test
@@ -598,6 +607,7 @@ internal class ResponseOutputItemTest {
         assertThat(responseOutputItem.mcpCall()).contains(mcpCall)
         assertThat(responseOutputItem.mcpListTools()).isEmpty
         assertThat(responseOutputItem.mcpApprovalRequest()).isEmpty
+        assertThat(responseOutputItem.customToolCall()).isEmpty
     }
 
     @Test
@@ -655,6 +665,7 @@ internal class ResponseOutputItemTest {
         assertThat(responseOutputItem.mcpCall()).isEmpty
         assertThat(responseOutputItem.mcpListTools()).contains(mcpListTools)
         assertThat(responseOutputItem.mcpApprovalRequest()).isEmpty
+        assertThat(responseOutputItem.customToolCall()).isEmpty
     }
 
     @Test
@@ -710,6 +721,7 @@ internal class ResponseOutputItemTest {
         assertThat(responseOutputItem.mcpCall()).isEmpty
         assertThat(responseOutputItem.mcpListTools()).isEmpty
         assertThat(responseOutputItem.mcpApprovalRequest()).contains(mcpApprovalRequest)
+        assertThat(responseOutputItem.customToolCall()).isEmpty
     }
 
     @Test
@@ -722,6 +734,55 @@ internal class ResponseOutputItemTest {
                     .arguments("arguments")
                     .name("name")
                     .serverLabel("server_label")
+                    .build()
+            )
+
+        val roundtrippedResponseOutputItem =
+            jsonMapper.readValue(
+                jsonMapper.writeValueAsString(responseOutputItem),
+                jacksonTypeRef<ResponseOutputItem>(),
+            )
+
+        assertThat(roundtrippedResponseOutputItem).isEqualTo(responseOutputItem)
+    }
+
+    @Test
+    fun ofCustomToolCall() {
+        val customToolCall =
+            ResponseCustomToolCall.builder()
+                .callId("call_id")
+                .input("input")
+                .name("name")
+                .id("id")
+                .build()
+
+        val responseOutputItem = ResponseOutputItem.ofCustomToolCall(customToolCall)
+
+        assertThat(responseOutputItem.message()).isEmpty
+        assertThat(responseOutputItem.fileSearchCall()).isEmpty
+        assertThat(responseOutputItem.functionCall()).isEmpty
+        assertThat(responseOutputItem.webSearchCall()).isEmpty
+        assertThat(responseOutputItem.computerCall()).isEmpty
+        assertThat(responseOutputItem.reasoning()).isEmpty
+        assertThat(responseOutputItem.imageGenerationCall()).isEmpty
+        assertThat(responseOutputItem.codeInterpreterCall()).isEmpty
+        assertThat(responseOutputItem.localShellCall()).isEmpty
+        assertThat(responseOutputItem.mcpCall()).isEmpty
+        assertThat(responseOutputItem.mcpListTools()).isEmpty
+        assertThat(responseOutputItem.mcpApprovalRequest()).isEmpty
+        assertThat(responseOutputItem.customToolCall()).contains(customToolCall)
+    }
+
+    @Test
+    fun ofCustomToolCallRoundtrip() {
+        val jsonMapper = jsonMapper()
+        val responseOutputItem =
+            ResponseOutputItem.ofCustomToolCall(
+                ResponseCustomToolCall.builder()
+                    .callId("call_id")
+                    .input("input")
+                    .name("name")
+                    .id("id")
                     .build()
             )
 

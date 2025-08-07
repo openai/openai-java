@@ -108,6 +108,8 @@ internal class StructuredResponseOutputItemTest {
                 .serverLabel(STRING)
                 .tools(listOf())
                 .build()
+        private val CUSTOM_TOOL_CALL =
+            ResponseCustomToolCall.builder().callId(STRING).input(STRING).name(STRING).build()
         private val MESSAGE =
             ResponseOutputMessage.builder()
                 .id(STRING)
@@ -151,6 +153,10 @@ internal class StructuredResponseOutputItemTest {
                 DelegationReadTestCase("asMcpApprovalRequest", MCP_APPROVAL_REQUEST),
                 DelegationReadTestCase("asMcpCall", MCP_CALL),
                 DelegationReadTestCase("asMcpListTools", MCP_LIST_TOOLS),
+                DelegationReadTestCase("customToolCall", OPTIONAL),
+                DelegationReadTestCase("isCustomToolCall", true),
+                DelegationReadTestCase("isCustomToolCall", false),
+                DelegationReadTestCase("asCustomToolCall", CUSTOM_TOOL_CALL),
                 DelegationReadTestCase("_json", OPTIONAL),
             )
     }

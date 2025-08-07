@@ -64,10 +64,10 @@ public final class FunctionCallingExample {
                     return message.toolCalls().stream().flatMap(Collection::stream);
                 })
                 .forEach(toolCall -> {
-                    Object result = callFunction(toolCall.function());
+                    Object result = callFunction(toolCall.asFunction().function());
                     // Add the tool call result to the conversation.
                     createParamsBuilder.addMessage(ChatCompletionToolMessageParam.builder()
-                            .toolCallId(toolCall.id())
+                            .toolCallId(toolCall.asFunction().id())
                             .contentAsJson(result)
                             .build());
                 });
@@ -79,7 +79,7 @@ public final class FunctionCallingExample {
                 .forEach(System.out::println);
     }
 
-    private static Object callFunction(ChatCompletionMessageToolCall.Function function) {
+    private static Object callFunction(ChatCompletionMessageFunctionToolCall.Function function) {
         switch (function.name()) {
             case "GetSdkQuality":
                 return function.arguments(GetSdkQuality.class).execute();

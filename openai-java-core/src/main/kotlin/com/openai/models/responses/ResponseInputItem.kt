@@ -60,6 +60,8 @@ private constructor(
     private val mcpApprovalRequest: McpApprovalRequest? = null,
     private val mcpApprovalResponse: McpApprovalResponse? = null,
     private val mcpCall: McpCall? = null,
+    private val customToolCallOutput: ResponseCustomToolCallOutput? = null,
+    private val customToolCall: ResponseCustomToolCall? = null,
     private val itemReference: ItemReference? = null,
     private val _json: JsonValue? = null,
 ) {
@@ -153,6 +155,13 @@ private constructor(
     /** An invocation of a tool on an MCP server. */
     fun mcpCall(): Optional<McpCall> = Optional.ofNullable(mcpCall)
 
+    /** The output of a custom tool call from your code, being sent back to the model. */
+    fun customToolCallOutput(): Optional<ResponseCustomToolCallOutput> =
+        Optional.ofNullable(customToolCallOutput)
+
+    /** A call to a custom tool created by the model. */
+    fun customToolCall(): Optional<ResponseCustomToolCall> = Optional.ofNullable(customToolCall)
+
     /** An internal identifier for an item to reference. */
     fun itemReference(): Optional<ItemReference> = Optional.ofNullable(itemReference)
 
@@ -191,6 +200,10 @@ private constructor(
     fun isMcpApprovalResponse(): Boolean = mcpApprovalResponse != null
 
     fun isMcpCall(): Boolean = mcpCall != null
+
+    fun isCustomToolCallOutput(): Boolean = customToolCallOutput != null
+
+    fun isCustomToolCall(): Boolean = customToolCall != null
 
     fun isItemReference(): Boolean = itemReference != null
 
@@ -286,6 +299,13 @@ private constructor(
     /** An invocation of a tool on an MCP server. */
     fun asMcpCall(): McpCall = mcpCall.getOrThrow("mcpCall")
 
+    /** The output of a custom tool call from your code, being sent back to the model. */
+    fun asCustomToolCallOutput(): ResponseCustomToolCallOutput =
+        customToolCallOutput.getOrThrow("customToolCallOutput")
+
+    /** A call to a custom tool created by the model. */
+    fun asCustomToolCall(): ResponseCustomToolCall = customToolCall.getOrThrow("customToolCall")
+
     /** An internal identifier for an item to reference. */
     fun asItemReference(): ItemReference = itemReference.getOrThrow("itemReference")
 
@@ -312,6 +332,8 @@ private constructor(
             mcpApprovalRequest != null -> visitor.visitMcpApprovalRequest(mcpApprovalRequest)
             mcpApprovalResponse != null -> visitor.visitMcpApprovalResponse(mcpApprovalResponse)
             mcpCall != null -> visitor.visitMcpCall(mcpCall)
+            customToolCallOutput != null -> visitor.visitCustomToolCallOutput(customToolCallOutput)
+            customToolCall != null -> visitor.visitCustomToolCall(customToolCall)
             itemReference != null -> visitor.visitItemReference(itemReference)
             else -> visitor.unknown(_json)
         }
@@ -401,6 +423,16 @@ private constructor(
                     mcpCall.validate()
                 }
 
+                override fun visitCustomToolCallOutput(
+                    customToolCallOutput: ResponseCustomToolCallOutput
+                ) {
+                    customToolCallOutput.validate()
+                }
+
+                override fun visitCustomToolCall(customToolCall: ResponseCustomToolCall) {
+                    customToolCall.validate()
+                }
+
                 override fun visitItemReference(itemReference: ItemReference) {
                     itemReference.validate()
                 }
@@ -478,6 +510,13 @@ private constructor(
 
                 override fun visitMcpCall(mcpCall: McpCall) = mcpCall.validity()
 
+                override fun visitCustomToolCallOutput(
+                    customToolCallOutput: ResponseCustomToolCallOutput
+                ) = customToolCallOutput.validity()
+
+                override fun visitCustomToolCall(customToolCall: ResponseCustomToolCall) =
+                    customToolCall.validity()
+
                 override fun visitItemReference(itemReference: ItemReference) =
                     itemReference.validity()
 
@@ -490,10 +529,10 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is ResponseInputItem && easyInputMessage == other.easyInputMessage && message == other.message && responseOutputMessage == other.responseOutputMessage && fileSearchCall == other.fileSearchCall && computerCall == other.computerCall && computerCallOutput == other.computerCallOutput && webSearchCall == other.webSearchCall && functionCall == other.functionCall && functionCallOutput == other.functionCallOutput && reasoning == other.reasoning && imageGenerationCall == other.imageGenerationCall && codeInterpreterCall == other.codeInterpreterCall && localShellCall == other.localShellCall && localShellCallOutput == other.localShellCallOutput && mcpListTools == other.mcpListTools && mcpApprovalRequest == other.mcpApprovalRequest && mcpApprovalResponse == other.mcpApprovalResponse && mcpCall == other.mcpCall && itemReference == other.itemReference /* spotless:on */
+        return /* spotless:off */ other is ResponseInputItem && easyInputMessage == other.easyInputMessage && message == other.message && responseOutputMessage == other.responseOutputMessage && fileSearchCall == other.fileSearchCall && computerCall == other.computerCall && computerCallOutput == other.computerCallOutput && webSearchCall == other.webSearchCall && functionCall == other.functionCall && functionCallOutput == other.functionCallOutput && reasoning == other.reasoning && imageGenerationCall == other.imageGenerationCall && codeInterpreterCall == other.codeInterpreterCall && localShellCall == other.localShellCall && localShellCallOutput == other.localShellCallOutput && mcpListTools == other.mcpListTools && mcpApprovalRequest == other.mcpApprovalRequest && mcpApprovalResponse == other.mcpApprovalResponse && mcpCall == other.mcpCall && customToolCallOutput == other.customToolCallOutput && customToolCall == other.customToolCall && itemReference == other.itemReference /* spotless:on */
     }
 
-    override fun hashCode(): Int = /* spotless:off */ Objects.hash(easyInputMessage, message, responseOutputMessage, fileSearchCall, computerCall, computerCallOutput, webSearchCall, functionCall, functionCallOutput, reasoning, imageGenerationCall, codeInterpreterCall, localShellCall, localShellCallOutput, mcpListTools, mcpApprovalRequest, mcpApprovalResponse, mcpCall, itemReference) /* spotless:on */
+    override fun hashCode(): Int = /* spotless:off */ Objects.hash(easyInputMessage, message, responseOutputMessage, fileSearchCall, computerCall, computerCallOutput, webSearchCall, functionCall, functionCallOutput, reasoning, imageGenerationCall, codeInterpreterCall, localShellCall, localShellCallOutput, mcpListTools, mcpApprovalRequest, mcpApprovalResponse, mcpCall, customToolCallOutput, customToolCall, itemReference) /* spotless:on */
 
     override fun toString(): String =
         when {
@@ -523,6 +562,9 @@ private constructor(
             mcpApprovalResponse != null ->
                 "ResponseInputItem{mcpApprovalResponse=$mcpApprovalResponse}"
             mcpCall != null -> "ResponseInputItem{mcpCall=$mcpCall}"
+            customToolCallOutput != null ->
+                "ResponseInputItem{customToolCallOutput=$customToolCallOutput}"
+            customToolCall != null -> "ResponseInputItem{customToolCall=$customToolCall}"
             itemReference != null -> "ResponseInputItem{itemReference=$itemReference}"
             _json != null -> "ResponseInputItem{_unknown=$_json}"
             else -> throw IllegalStateException("Invalid ResponseInputItem")
@@ -645,6 +687,16 @@ private constructor(
         /** An invocation of a tool on an MCP server. */
         @JvmStatic fun ofMcpCall(mcpCall: McpCall) = ResponseInputItem(mcpCall = mcpCall)
 
+        /** The output of a custom tool call from your code, being sent back to the model. */
+        @JvmStatic
+        fun ofCustomToolCallOutput(customToolCallOutput: ResponseCustomToolCallOutput) =
+            ResponseInputItem(customToolCallOutput = customToolCallOutput)
+
+        /** A call to a custom tool created by the model. */
+        @JvmStatic
+        fun ofCustomToolCall(customToolCall: ResponseCustomToolCall) =
+            ResponseInputItem(customToolCall = customToolCall)
+
         /** An internal identifier for an item to reference. */
         @JvmStatic
         fun ofItemReference(itemReference: ItemReference) =
@@ -740,6 +792,12 @@ private constructor(
 
         /** An invocation of a tool on an MCP server. */
         fun visitMcpCall(mcpCall: McpCall): T
+
+        /** The output of a custom tool call from your code, being sent back to the model. */
+        fun visitCustomToolCallOutput(customToolCallOutput: ResponseCustomToolCallOutput): T
+
+        /** A call to a custom tool created by the model. */
+        fun visitCustomToolCall(customToolCall: ResponseCustomToolCall): T
 
         /** An internal identifier for an item to reference. */
         fun visitItemReference(itemReference: ItemReference): T
@@ -868,6 +926,16 @@ private constructor(
                         ResponseInputItem(mcpCall = it, _json = json)
                     } ?: ResponseInputItem(_json = json)
                 }
+                "custom_tool_call_output" -> {
+                    return tryDeserialize(node, jacksonTypeRef<ResponseCustomToolCallOutput>())
+                        ?.let { ResponseInputItem(customToolCallOutput = it, _json = json) }
+                        ?: ResponseInputItem(_json = json)
+                }
+                "custom_tool_call" -> {
+                    return tryDeserialize(node, jacksonTypeRef<ResponseCustomToolCall>())?.let {
+                        ResponseInputItem(customToolCall = it, _json = json)
+                    } ?: ResponseInputItem(_json = json)
+                }
                 "item_reference" -> {
                     return tryDeserialize(node, jacksonTypeRef<ItemReference>())?.let {
                         ResponseInputItem(itemReference = it, _json = json)
@@ -910,6 +978,9 @@ private constructor(
                 value.mcpApprovalResponse != null ->
                     generator.writeObject(value.mcpApprovalResponse)
                 value.mcpCall != null -> generator.writeObject(value.mcpCall)
+                value.customToolCallOutput != null ->
+                    generator.writeObject(value.customToolCallOutput)
+                value.customToolCall != null -> generator.writeObject(value.customToolCall)
                 value.itemReference != null -> generator.writeObject(value.itemReference)
                 value._json != null -> generator.writeObject(value._json)
                 else -> throw IllegalStateException("Invalid ResponseInputItem")

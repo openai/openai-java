@@ -2,10 +2,7 @@ package com.openai.helpers
 
 import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
-import com.openai.models.chat.completions.ChatCompletion
-import com.openai.models.chat.completions.ChatCompletionChunk
-import com.openai.models.chat.completions.ChatCompletionMessageToolCall
-import com.openai.models.chat.completions.ChatCompletionTokenLogprob
+import com.openai.models.chat.completions.*
 import com.openai.models.completions.CompletionUsage
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
@@ -284,7 +281,16 @@ internal class ChatCompletionAccumulatorTest {
         assertThat(chatCompletion.choices()[0].message().functionCall().get().name())
             .isEqualTo("fc_fn_name")
         assertThat(chatCompletion.choices()[0].message().toolCalls().get().size).isEqualTo(1)
-        assertThat(chatCompletion.choices()[0].message().toolCalls().get()[0].function().name())
+        assertThat(
+                chatCompletion
+                    .choices()[0]
+                    .message()
+                    .toolCalls()
+                    .get()[0]
+                    .asFunction()
+                    .function()
+                    .name()
+            )
             .isEqualTo("tc_fn_name")
         assertThat(chatCompletion.choices()[0].message().content().get()).isEqualTo("hello world")
     }
@@ -387,27 +393,27 @@ internal class ChatCompletionAccumulatorTest {
         accumulator.accumulate(finalChunk(1L))
 
         val chatCompletion = accumulator.chatCompletion()
-        var tc: ChatCompletionMessageToolCall
+        var tc: ChatCompletionMessageFunctionToolCall
 
         // Not interested in much here except the order and details of the accumulated tool calls.
         assertThat(chatCompletion.choices().size).isEqualTo(2)
 
         assertThat(chatCompletion.choices()[0].message().toolCalls().get().size).isEqualTo(2)
-        tc = chatCompletion.choices()[0].message().toolCalls().get()[0]
+        tc = chatCompletion.choices()[0].message().toolCalls().get()[0].asFunction()
         assertThat(tc.id()).isEqualTo("tc-id-0-0")
         assertThat(tc.function().name()).isEqualTo("fn-0-0")
         assertThat(tc.function().arguments()).isEqualTo("{a-0-0-0, a-0-0-1}")
-        tc = chatCompletion.choices()[0].message().toolCalls().get()[1]
+        tc = chatCompletion.choices()[0].message().toolCalls().get()[1].asFunction()
         assertThat(tc.id()).isEqualTo("tc-id-0-1")
         assertThat(tc.function().name()).isEqualTo("fn-0-1")
         assertThat(tc.function().arguments()).isEqualTo("{a-0-1-0, a-0-1-1}")
 
         assertThat(chatCompletion.choices()[1].message().toolCalls().get().size).isEqualTo(2)
-        tc = chatCompletion.choices()[1].message().toolCalls().get()[0]
+        tc = chatCompletion.choices()[1].message().toolCalls().get()[0].asFunction()
         assertThat(tc.id()).isEqualTo("tc-id-1-0")
         assertThat(tc.function().name()).isEqualTo("fn-1-0")
         assertThat(tc.function().arguments()).isEqualTo("{a-1-0-0, a-1-0-1}")
-        tc = chatCompletion.choices()[1].message().toolCalls().get()[1]
+        tc = chatCompletion.choices()[1].message().toolCalls().get()[1].asFunction()
         assertThat(tc.id()).isEqualTo("tc-id-1-1")
         assertThat(tc.function().name()).isEqualTo("fn-1-1")
         assertThat(tc.function().arguments()).isEqualTo("{a-1-1-0, a-1-1-1}")

@@ -97,7 +97,10 @@ internal class StructuredChatCompletionCreateParamsTest {
         private val METADATA = ChatCompletionCreateParams.Metadata.builder().build()
         private val MODALITY = ChatCompletionCreateParams.Modality.TEXT
         private val FUNCTION_DEFINITION = FunctionDefinition.builder().name(STRING).build()
-        private val TOOL = ChatCompletionTool.builder().function(FUNCTION_DEFINITION).build()
+        private val TOOL =
+            ChatCompletionTool.ofFunction(
+                ChatCompletionFunctionTool.builder().function(FUNCTION_DEFINITION).build()
+            )
 
         private val NAMED_TOOL_CHOICE_FUNCTION =
             ChatCompletionNamedToolChoice.Function.builder().name(STRING).build()
@@ -106,6 +109,29 @@ internal class StructuredChatCompletionCreateParamsTest {
         private val TOOL_CHOICE_OPTION_AUTO = ChatCompletionToolChoiceOption.Auto.AUTO
         private val TOOL_CHOICE_OPTION =
             ChatCompletionToolChoiceOption.ofAuto(TOOL_CHOICE_OPTION_AUTO)
+
+        private val CUSTOM_TOOL =
+            ChatCompletionCustomTool.builder()
+                .custom(ChatCompletionCustomTool.Custom.builder().name(STRING).build())
+                .build()
+        private val CUSTOM_TOOL_CUSTOM =
+            ChatCompletionCustomTool.Custom.builder().name(STRING).build()
+        private val FUNCTION_TOOL =
+            ChatCompletionFunctionTool.builder().function(FUNCTION_DEFINITION).build()
+        private val ALLOWED_TOOL_CHOICE =
+            ChatCompletionAllowedToolChoice.builder()
+                .allowedTools(
+                    ChatCompletionAllowedTools.builder()
+                        .mode(ChatCompletionAllowedTools.Mode.AUTO)
+                        .tools(listOf())
+                        .build()
+                )
+                .build()
+        private val NAMED_TOOL_CHOICE_CUSTOM =
+            ChatCompletionNamedToolChoiceCustom.builder()
+                .custom(ChatCompletionNamedToolChoiceCustom.Custom.builder().name(STRING).build())
+                .build()
+        private val VERBOSITY = ChatCompletionCreateParams.Verbosity.HIGH
 
         private val HEADERS = Headers.builder().build()
         private val QUERY_PARAMS = QueryParams.builder().build()
@@ -232,6 +258,15 @@ internal class StructuredChatCompletionCreateParamsTest {
                 DelegationWriteTestCase("tools", JSON_FIELD),
                 DelegationWriteTestCase("addTool", TOOL),
                 DelegationWriteTestCase("addTool", CLASS, VALIDATION),
+                DelegationWriteTestCase("addTool", FUNCTION_TOOL),
+                DelegationWriteTestCase("addTool", CUSTOM_TOOL),
+                DelegationWriteTestCase("addFunctionTool", FUNCTION_DEFINITION),
+                DelegationWriteTestCase("addCustomTool", CUSTOM_TOOL_CUSTOM),
+                DelegationWriteTestCase("toolChoice", ALLOWED_TOOL_CHOICE),
+                DelegationWriteTestCase("toolChoice", NAMED_TOOL_CHOICE_CUSTOM),
+                DelegationWriteTestCase("verbosity", NULLABLE),
+                DelegationWriteTestCase("verbosity", VERBOSITY),
+                DelegationWriteTestCase("verbosity", OPTIONAL),
                 DelegationWriteTestCase("topLogprobs", NULLABLE_LONG),
                 DelegationWriteTestCase("topLogprobs", LONG),
                 DelegationWriteTestCase("topLogprobs", OPTIONAL),

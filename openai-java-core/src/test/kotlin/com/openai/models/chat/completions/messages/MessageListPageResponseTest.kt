@@ -7,7 +7,7 @@ import com.openai.core.jsonMapper
 import com.openai.models.chat.completions.ChatCompletionAudio
 import com.openai.models.chat.completions.ChatCompletionContentPartText
 import com.openai.models.chat.completions.ChatCompletionMessage
-import com.openai.models.chat.completions.ChatCompletionMessageToolCall
+import com.openai.models.chat.completions.ChatCompletionMessageFunctionToolCall
 import com.openai.models.chat.completions.ChatCompletionStoreMessage
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
@@ -49,10 +49,10 @@ internal class MessageListPageResponseTest {
                                 .build()
                         )
                         .addToolCall(
-                            ChatCompletionMessageToolCall.builder()
+                            ChatCompletionMessageFunctionToolCall.builder()
                                 .id("id")
                                 .function(
-                                    ChatCompletionMessageToolCall.Function.builder()
+                                    ChatCompletionMessageFunctionToolCall.Function.builder()
                                         .arguments("arguments")
                                         .name("name")
                                         .build()
@@ -102,10 +102,10 @@ internal class MessageListPageResponseTest {
                             .build()
                     )
                     .addToolCall(
-                        ChatCompletionMessageToolCall.builder()
+                        ChatCompletionMessageFunctionToolCall.builder()
                             .id("id")
                             .function(
-                                ChatCompletionMessageToolCall.Function.builder()
+                                ChatCompletionMessageFunctionToolCall.Function.builder()
                                     .arguments("arguments")
                                     .name("name")
                                     .build()
@@ -157,10 +157,10 @@ internal class MessageListPageResponseTest {
                                 .build()
                         )
                         .addToolCall(
-                            ChatCompletionMessageToolCall.builder()
+                            ChatCompletionMessageFunctionToolCall.builder()
                                 .id("id")
                                 .function(
-                                    ChatCompletionMessageToolCall.Function.builder()
+                                    ChatCompletionMessageFunctionToolCall.Function.builder()
                                         .arguments("arguments")
                                         .name("name")
                                         .build()

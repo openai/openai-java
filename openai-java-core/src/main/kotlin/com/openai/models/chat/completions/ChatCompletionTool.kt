@@ -2,166 +2,56 @@
 
 package com.openai.models.chat.completions
 
-import com.fasterxml.jackson.annotation.JsonAnyGetter
-import com.fasterxml.jackson.annotation.JsonAnySetter
-import com.fasterxml.jackson.annotation.JsonCreator
-import com.fasterxml.jackson.annotation.JsonProperty
-import com.openai.core.ExcludeMissing
-import com.openai.core.JsonField
-import com.openai.core.JsonMissing
+import com.fasterxml.jackson.core.JsonGenerator
+import com.fasterxml.jackson.core.ObjectCodec
+import com.fasterxml.jackson.databind.JsonNode
+import com.fasterxml.jackson.databind.SerializerProvider
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize
+import com.fasterxml.jackson.databind.annotation.JsonSerialize
+import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
+import com.openai.core.BaseDeserializer
+import com.openai.core.BaseSerializer
 import com.openai.core.JsonValue
-import com.openai.core.checkRequired
+import com.openai.core.getOrThrow
 import com.openai.errors.OpenAIInvalidDataException
-import com.openai.models.FunctionDefinition
-import java.util.Collections
 import java.util.Objects
+import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
+/** A function tool that can be used to generate a response. */
+@JsonDeserialize(using = ChatCompletionTool.Deserializer::class)
+@JsonSerialize(using = ChatCompletionTool.Serializer::class)
 class ChatCompletionTool
 private constructor(
-    private val function: JsonField<FunctionDefinition>,
-    private val type: JsonValue,
-    private val additionalProperties: MutableMap<String, JsonValue>,
+    private val function: ChatCompletionFunctionTool? = null,
+    private val custom: ChatCompletionCustomTool? = null,
+    private val _json: JsonValue? = null,
 ) {
 
-    @JsonCreator
-    private constructor(
-        @JsonProperty("function")
-        @ExcludeMissing
-        function: JsonField<FunctionDefinition> = JsonMissing.of(),
-        @JsonProperty("type") @ExcludeMissing type: JsonValue = JsonMissing.of(),
-    ) : this(function, type, mutableMapOf())
+    /** A function tool that can be used to generate a response. */
+    fun function(): Optional<ChatCompletionFunctionTool> = Optional.ofNullable(function)
 
-    /**
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
-     */
-    fun function(): FunctionDefinition = function.getRequired("function")
+    /** A custom tool that processes input using a specified format. */
+    fun custom(): Optional<ChatCompletionCustomTool> = Optional.ofNullable(custom)
 
-    /**
-     * The type of the tool. Currently, only `function` is supported.
-     *
-     * Expected to always return the following:
-     * ```java
-     * JsonValue.from("function")
-     * ```
-     *
-     * However, this method can be useful for debugging and logging (e.g. if the server responded
-     * with an unexpected value).
-     */
-    @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
+    fun isFunction(): Boolean = function != null
 
-    /**
-     * Returns the raw JSON value of [function].
-     *
-     * Unlike [function], this method doesn't throw if the JSON field has an unexpected type.
-     */
-    @JsonProperty("function")
-    @ExcludeMissing
-    fun _function(): JsonField<FunctionDefinition> = function
+    fun isCustom(): Boolean = custom != null
 
-    @JsonAnySetter
-    private fun putAdditionalProperty(key: String, value: JsonValue) {
-        additionalProperties.put(key, value)
-    }
+    /** A function tool that can be used to generate a response. */
+    fun asFunction(): ChatCompletionFunctionTool = function.getOrThrow("function")
 
-    @JsonAnyGetter
-    @ExcludeMissing
-    fun _additionalProperties(): Map<String, JsonValue> =
-        Collections.unmodifiableMap(additionalProperties)
+    /** A custom tool that processes input using a specified format. */
+    fun asCustom(): ChatCompletionCustomTool = custom.getOrThrow("custom")
 
-    fun toBuilder() = Builder().from(this)
+    fun _json(): Optional<JsonValue> = Optional.ofNullable(_json)
 
-    companion object {
-
-        /**
-         * Returns a mutable builder for constructing an instance of [ChatCompletionTool].
-         *
-         * The following fields are required:
-         * ```java
-         * .function()
-         * ```
-         */
-        @JvmStatic fun builder() = Builder()
-    }
-
-    /** A builder for [ChatCompletionTool]. */
-    class Builder internal constructor() {
-
-        private var function: JsonField<FunctionDefinition>? = null
-        private var type: JsonValue = JsonValue.from("function")
-        private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
-
-        @JvmSynthetic
-        internal fun from(chatCompletionTool: ChatCompletionTool) = apply {
-            function = chatCompletionTool.function
-            type = chatCompletionTool.type
-            additionalProperties = chatCompletionTool.additionalProperties.toMutableMap()
+    fun <T> accept(visitor: Visitor<T>): T =
+        when {
+            function != null -> visitor.visitFunction(function)
+            custom != null -> visitor.visitCustom(custom)
+            else -> visitor.unknown(_json)
         }
-
-        fun function(function: FunctionDefinition) = function(JsonField.of(function))
-
-        /**
-         * Sets [Builder.function] to an arbitrary JSON value.
-         *
-         * You should usually call [Builder.function] with a well-typed [FunctionDefinition] value
-         * instead. This method is primarily for setting the field to an undocumented or not yet
-         * supported value.
-         */
-        fun function(function: JsonField<FunctionDefinition>) = apply { this.function = function }
-
-        /**
-         * Sets the field to an arbitrary JSON value.
-         *
-         * It is usually unnecessary to call this method because the field defaults to the
-         * following:
-         * ```java
-         * JsonValue.from("function")
-         * ```
-         *
-         * This method is primarily for setting the field to an undocumented or not yet supported
-         * value.
-         */
-        fun type(type: JsonValue) = apply { this.type = type }
-
-        fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
-            this.additionalProperties.clear()
-            putAllAdditionalProperties(additionalProperties)
-        }
-
-        fun putAdditionalProperty(key: String, value: JsonValue) = apply {
-            additionalProperties.put(key, value)
-        }
-
-        fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
-            this.additionalProperties.putAll(additionalProperties)
-        }
-
-        fun removeAdditionalProperty(key: String) = apply { additionalProperties.remove(key) }
-
-        fun removeAllAdditionalProperties(keys: Set<String>) = apply {
-            keys.forEach(::removeAdditionalProperty)
-        }
-
-        /**
-         * Returns an immutable instance of [ChatCompletionTool].
-         *
-         * Further updates to this [Builder] will not mutate the returned instance.
-         *
-         * The following fields are required:
-         * ```java
-         * .function()
-         * ```
-         *
-         * @throws IllegalStateException if any required field is unset.
-         */
-        fun build(): ChatCompletionTool =
-            ChatCompletionTool(
-                checkRequired("function", function),
-                type,
-                additionalProperties.toMutableMap(),
-            )
-    }
 
     private var validated: Boolean = false
 
@@ -170,12 +60,17 @@ private constructor(
             return@apply
         }
 
-        function().validate()
-        _type().let {
-            if (it != JsonValue.from("function")) {
-                throw OpenAIInvalidDataException("'type' is invalid, received $it")
+        accept(
+            object : Visitor<Unit> {
+                override fun visitFunction(function: ChatCompletionFunctionTool) {
+                    function.validate()
+                }
+
+                override fun visitCustom(custom: ChatCompletionCustomTool) {
+                    custom.validate()
+                }
             }
-        }
+        )
         validated = true
     }
 
@@ -194,23 +89,110 @@ private constructor(
      */
     @JvmSynthetic
     internal fun validity(): Int =
-        (function.asKnown().getOrNull()?.validity() ?: 0) +
-            type.let { if (it == JsonValue.from("function")) 1 else 0 }
+        accept(
+            object : Visitor<Int> {
+                override fun visitFunction(function: ChatCompletionFunctionTool) =
+                    function.validity()
+
+                override fun visitCustom(custom: ChatCompletionCustomTool) = custom.validity()
+
+                override fun unknown(json: JsonValue?) = 0
+            }
+        )
 
     override fun equals(other: Any?): Boolean {
         if (this === other) {
             return true
         }
 
-        return /* spotless:off */ other is ChatCompletionTool && function == other.function && type == other.type && additionalProperties == other.additionalProperties /* spotless:on */
+        return /* spotless:off */ other is ChatCompletionTool && function == other.function && custom == other.custom /* spotless:on */
     }
 
-    /* spotless:off */
-    private val hashCode: Int by lazy { Objects.hash(function, type, additionalProperties) }
-    /* spotless:on */
+    override fun hashCode(): Int = /* spotless:off */ Objects.hash(function, custom) /* spotless:on */
 
-    override fun hashCode(): Int = hashCode
+    override fun toString(): String =
+        when {
+            function != null -> "ChatCompletionTool{function=$function}"
+            custom != null -> "ChatCompletionTool{custom=$custom}"
+            _json != null -> "ChatCompletionTool{_unknown=$_json}"
+            else -> throw IllegalStateException("Invalid ChatCompletionTool")
+        }
 
-    override fun toString() =
-        "ChatCompletionTool{function=$function, type=$type, additionalProperties=$additionalProperties}"
+    companion object {
+
+        /** A function tool that can be used to generate a response. */
+        @JvmStatic
+        fun ofFunction(function: ChatCompletionFunctionTool) =
+            ChatCompletionTool(function = function)
+
+        /** A custom tool that processes input using a specified format. */
+        @JvmStatic
+        fun ofCustom(custom: ChatCompletionCustomTool) = ChatCompletionTool(custom = custom)
+    }
+
+    /**
+     * An interface that defines how to map each variant of [ChatCompletionTool] to a value of type
+     * [T].
+     */
+    interface Visitor<out T> {
+
+        /** A function tool that can be used to generate a response. */
+        fun visitFunction(function: ChatCompletionFunctionTool): T
+
+        /** A custom tool that processes input using a specified format. */
+        fun visitCustom(custom: ChatCompletionCustomTool): T
+
+        /**
+         * Maps an unknown variant of [ChatCompletionTool] to a value of type [T].
+         *
+         * An instance of [ChatCompletionTool] can contain an unknown variant if it was deserialized
+         * from data that doesn't match any known variant. For example, if the SDK is on an older
+         * version than the API, then the API may respond with new variants that the SDK is unaware
+         * of.
+         *
+         * @throws OpenAIInvalidDataException in the default implementation.
+         */
+        fun unknown(json: JsonValue?): T {
+            throw OpenAIInvalidDataException("Unknown ChatCompletionTool: $json")
+        }
+    }
+
+    internal class Deserializer : BaseDeserializer<ChatCompletionTool>(ChatCompletionTool::class) {
+
+        override fun ObjectCodec.deserialize(node: JsonNode): ChatCompletionTool {
+            val json = JsonValue.fromJsonNode(node)
+            val type = json.asObject().getOrNull()?.get("type")?.asString()?.getOrNull()
+
+            when (type) {
+                "function" -> {
+                    return tryDeserialize(node, jacksonTypeRef<ChatCompletionFunctionTool>())?.let {
+                        ChatCompletionTool(function = it, _json = json)
+                    } ?: ChatCompletionTool(_json = json)
+                }
+                "custom" -> {
+                    return tryDeserialize(node, jacksonTypeRef<ChatCompletionCustomTool>())?.let {
+                        ChatCompletionTool(custom = it, _json = json)
+                    } ?: ChatCompletionTool(_json = json)
+                }
+            }
+
+            return ChatCompletionTool(_json = json)
+        }
+    }
+
+    internal class Serializer : BaseSerializer<ChatCompletionTool>(ChatCompletionTool::class) {
+
+        override fun serialize(
+            value: ChatCompletionTool,
+            generator: JsonGenerator,
+            provider: SerializerProvider,
+        ) {
+            when {
+                value.function != null -> generator.writeObject(value.function)
+                value.custom != null -> generator.writeObject(value.custom)
+                value._json != null -> generator.writeObject(value._json)
+                else -> throw IllegalStateException("Invalid ChatCompletionTool")
+            }
+        }
+    }
 }

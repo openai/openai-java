@@ -20,6 +20,20 @@ class ChatModel @JsonCreator private constructor(private val value: JsonField<St
 
     companion object {
 
+        @JvmField val GPT_5 = of("gpt-5")
+
+        @JvmField val GPT_5_MINI = of("gpt-5-mini")
+
+        @JvmField val GPT_5_NANO = of("gpt-5-nano")
+
+        @JvmField val GPT_5_2025_08_07 = of("gpt-5-2025-08-07")
+
+        @JvmField val GPT_5_MINI_2025_08_07 = of("gpt-5-mini-2025-08-07")
+
+        @JvmField val GPT_5_NANO_2025_08_07 = of("gpt-5-nano-2025-08-07")
+
+        @JvmField val GPT_5_CHAT_LATEST = of("gpt-5-chat-latest")
+
         @JvmField val GPT_4_1 = of("gpt-4.1")
 
         @JvmField val GPT_4_1_MINI = of("gpt-4.1-mini")
@@ -137,6 +151,13 @@ class ChatModel @JsonCreator private constructor(private val value: JsonField<St
 
     /** An enum containing [ChatModel]'s known values. */
     enum class Known {
+        GPT_5,
+        GPT_5_MINI,
+        GPT_5_NANO,
+        GPT_5_2025_08_07,
+        GPT_5_MINI_2025_08_07,
+        GPT_5_NANO_2025_08_07,
+        GPT_5_CHAT_LATEST,
         GPT_4_1,
         GPT_4_1_MINI,
         GPT_4_1_NANO,
@@ -204,6 +225,13 @@ class ChatModel @JsonCreator private constructor(private val value: JsonField<St
      * - It was constructed with an arbitrary value using the [of] method.
      */
     enum class Value {
+        GPT_5,
+        GPT_5_MINI,
+        GPT_5_NANO,
+        GPT_5_2025_08_07,
+        GPT_5_MINI_2025_08_07,
+        GPT_5_NANO_2025_08_07,
+        GPT_5_CHAT_LATEST,
         GPT_4_1,
         GPT_4_1_MINI,
         GPT_4_1_NANO,
@@ -272,6 +300,13 @@ class ChatModel @JsonCreator private constructor(private val value: JsonField<St
      */
     fun value(): Value =
         when (this) {
+            GPT_5 -> Value.GPT_5
+            GPT_5_MINI -> Value.GPT_5_MINI
+            GPT_5_NANO -> Value.GPT_5_NANO
+            GPT_5_2025_08_07 -> Value.GPT_5_2025_08_07
+            GPT_5_MINI_2025_08_07 -> Value.GPT_5_MINI_2025_08_07
+            GPT_5_NANO_2025_08_07 -> Value.GPT_5_NANO_2025_08_07
+            GPT_5_CHAT_LATEST -> Value.GPT_5_CHAT_LATEST
             GPT_4_1 -> Value.GPT_4_1
             GPT_4_1_MINI -> Value.GPT_4_1_MINI
             GPT_4_1_NANO -> Value.GPT_4_1_NANO
@@ -340,6 +375,13 @@ class ChatModel @JsonCreator private constructor(private val value: JsonField<St
      */
     fun known(): Known =
         when (this) {
+            GPT_5 -> Known.GPT_5
+            GPT_5_MINI -> Known.GPT_5_MINI
+            GPT_5_NANO -> Known.GPT_5_NANO
+            GPT_5_2025_08_07 -> Known.GPT_5_2025_08_07
+            GPT_5_MINI_2025_08_07 -> Known.GPT_5_MINI_2025_08_07
+            GPT_5_NANO_2025_08_07 -> Known.GPT_5_NANO_2025_08_07
+            GPT_5_CHAT_LATEST -> Known.GPT_5_CHAT_LATEST
             GPT_4_1 -> Known.GPT_4_1
             GPT_4_1_MINI -> Known.GPT_4_1_MINI
             GPT_4_1_NANO -> Known.GPT_4_1_NANO

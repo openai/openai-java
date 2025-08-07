@@ -244,6 +244,14 @@ private constructor(
     fun store(): Optional<Boolean> = body.store()
 
     /**
+     * Options for streaming responses. Only set this when you set `stream: true`.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun streamOptions(): Optional<StreamOptions> = body.streamOptions()
+
+    /**
      * What sampling temperature to use, between 0 and 2. Higher values like 0.8 will make the
      * output more random, while lower values like 0.2 will make it more focused and deterministic.
      * We generally recommend altering this or `top_p` but not both.
@@ -283,8 +291,9 @@ private constructor(
      *   [file search](https://platform.openai.com/docs/guides/tools-file-search). Learn more about
      *   [built-in tools](https://platform.openai.com/docs/guides/tools).
      * - **Function calls (custom tools)**: Functions that are defined by you, enabling the model to
-     *   call your own code. Learn more about
-     *   [function calling](https://platform.openai.com/docs/guides/function-calling).
+     *   call your own code with strongly typed arguments and outputs. Learn more about
+     *   [function calling](https://platform.openai.com/docs/guides/function-calling). You can also
+     *   use custom tools to call your own code.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -336,6 +345,16 @@ private constructor(
      *   server responded with an unexpected value).
      */
     @Deprecated("deprecated") fun user(): Optional<String> = body.user()
+
+    /**
+     * Constrains the verbosity of the model's response. Lower values will result in more concise
+     * responses, while higher values will result in more verbose responses. Currently supported
+     * values are `low`, `medium`, and `high`.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun verbosity(): Optional<Verbosity> = body.verbosity()
 
     /**
      * Returns the raw JSON value of [background].
@@ -453,6 +472,13 @@ private constructor(
     fun _store(): JsonField<Boolean> = body._store()
 
     /**
+     * Returns the raw JSON value of [streamOptions].
+     *
+     * Unlike [streamOptions], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    fun _streamOptions(): JsonField<StreamOptions> = body._streamOptions()
+
+    /**
      * Returns the raw JSON value of [temperature].
      *
      * Unlike [temperature], this method doesn't throw if the JSON field has an unexpected type.
@@ -507,6 +533,13 @@ private constructor(
      * Unlike [user], this method doesn't throw if the JSON field has an unexpected type.
      */
     @Deprecated("deprecated") fun _user(): JsonField<String> = body._user()
+
+    /**
+     * Returns the raw JSON value of [verbosity].
+     *
+     * Unlike [verbosity], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    fun _verbosity(): JsonField<Verbosity> = body._verbosity()
 
     fun _additionalBodyProperties(): Map<String, JsonValue> = body._additionalProperties()
 
@@ -957,6 +990,26 @@ private constructor(
          */
         fun store(store: JsonField<Boolean>) = apply { body.store(store) }
 
+        /** Options for streaming responses. Only set this when you set `stream: true`. */
+        fun streamOptions(streamOptions: StreamOptions?) = apply {
+            body.streamOptions(streamOptions)
+        }
+
+        /** Alias for calling [Builder.streamOptions] with `streamOptions.orElse(null)`. */
+        fun streamOptions(streamOptions: Optional<StreamOptions>) =
+            streamOptions(streamOptions.getOrNull())
+
+        /**
+         * Sets [Builder.streamOptions] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.streamOptions] with a well-typed [StreamOptions] value
+         * instead. This method is primarily for setting the field to an undocumented or not yet
+         * supported value.
+         */
+        fun streamOptions(streamOptions: JsonField<StreamOptions>) = apply {
+            body.streamOptions(streamOptions)
+        }
+
         /**
          * What sampling temperature to use, between 0 and 2. Higher values like 0.8 will make the
          * output more random, while lower values like 0.2 will make it more focused and
@@ -1040,6 +1093,9 @@ private constructor(
         /** Alias for calling [toolChoice] with `ToolChoice.ofOptions(options)`. */
         fun toolChoice(options: ToolChoiceOptions) = apply { body.toolChoice(options) }
 
+        /** Alias for calling [toolChoice] with `ToolChoice.ofAllowed(allowed)`. */
+        fun toolChoice(allowed: ToolChoiceAllowed) = apply { body.toolChoice(allowed) }
+
         /** Alias for calling [toolChoice] with `ToolChoice.ofTypes(types)`. */
         fun toolChoice(types: ToolChoiceTypes) = apply { body.toolChoice(types) }
 
@@ -1048,6 +1104,9 @@ private constructor(
 
         /** Alias for calling [toolChoice] with `ToolChoice.ofMcp(mcp)`. */
         fun toolChoice(mcp: ToolChoiceMcp) = apply { body.toolChoice(mcp) }
+
+        /** Alias for calling [toolChoice] with `ToolChoice.ofCustom(custom)`. */
+        fun toolChoice(custom: ToolChoiceCustom) = apply { body.toolChoice(custom) }
 
         /**
          * An array of tools the model may call while generating a response. You can specify which
@@ -1060,8 +1119,9 @@ private constructor(
          *   [file search](https://platform.openai.com/docs/guides/tools-file-search). Learn more
          *   about [built-in tools](https://platform.openai.com/docs/guides/tools).
          * - **Function calls (custom tools)**: Functions that are defined by you, enabling the
-         *   model to call your own code. Learn more about
-         *   [function calling](https://platform.openai.com/docs/guides/function-calling).
+         *   model to call your own code with strongly typed arguments and outputs. Learn more about
+         *   [function calling](https://platform.openai.com/docs/guides/function-calling). You can
+         *   also use custom tools to call your own code.
          */
         fun tools(tools: List<Tool>) = apply { body.tools(tools) }
 
@@ -1160,6 +1220,19 @@ private constructor(
         /** Alias for calling [addTool] with `Tool.ofLocalShell()`. */
         fun addToolLocalShell() = apply { body.addToolLocalShell() }
 
+        /** Alias for calling [addTool] with `Tool.ofCustom(custom)`. */
+        fun addTool(custom: CustomTool) = apply { body.addTool(custom) }
+
+        /**
+         * Alias for calling [addTool] with the following:
+         * ```java
+         * CustomTool.builder()
+         *     .name(name)
+         *     .build()
+         * ```
+         */
+        fun addCustomTool(name: String) = apply { body.addCustomTool(name) }
+
         /**
          * An integer between 0 and 20 specifying the number of most likely tokens to return at each
          * token position, each with an associated log probability.
@@ -1250,6 +1323,25 @@ private constructor(
          * method is primarily for setting the field to an undocumented or not yet supported value.
          */
         @Deprecated("deprecated") fun user(user: JsonField<String>) = apply { body.user(user) }
+
+        /**
+         * Constrains the verbosity of the model's response. Lower values will result in more
+         * concise responses, while higher values will result in more verbose responses. Currently
+         * supported values are `low`, `medium`, and `high`.
+         */
+        fun verbosity(verbosity: Verbosity?) = apply { body.verbosity(verbosity) }
+
+        /** Alias for calling [Builder.verbosity] with `verbosity.orElse(null)`. */
+        fun verbosity(verbosity: Optional<Verbosity>) = verbosity(verbosity.getOrNull())
+
+        /**
+         * Sets [Builder.verbosity] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.verbosity] with a well-typed [Verbosity] value instead.
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
+         */
+        fun verbosity(verbosity: JsonField<Verbosity>) = apply { body.verbosity(verbosity) }
 
         fun additionalBodyProperties(additionalBodyProperties: Map<String, JsonValue>) = apply {
             body.additionalProperties(additionalBodyProperties)
@@ -1405,6 +1497,7 @@ private constructor(
         private val safetyIdentifier: JsonField<String>,
         private val serviceTier: JsonField<ServiceTier>,
         private val store: JsonField<Boolean>,
+        private val streamOptions: JsonField<StreamOptions>,
         private val temperature: JsonField<Double>,
         private val text: JsonField<ResponseTextConfig>,
         private val toolChoice: JsonField<ToolChoice>,
@@ -1413,6 +1506,7 @@ private constructor(
         private val topP: JsonField<Double>,
         private val truncation: JsonField<Truncation>,
         private val user: JsonField<String>,
+        private val verbosity: JsonField<Verbosity>,
         private val additionalProperties: MutableMap<String, JsonValue>,
     ) {
 
@@ -1462,6 +1556,9 @@ private constructor(
             @ExcludeMissing
             serviceTier: JsonField<ServiceTier> = JsonMissing.of(),
             @JsonProperty("store") @ExcludeMissing store: JsonField<Boolean> = JsonMissing.of(),
+            @JsonProperty("stream_options")
+            @ExcludeMissing
+            streamOptions: JsonField<StreamOptions> = JsonMissing.of(),
             @JsonProperty("temperature")
             @ExcludeMissing
             temperature: JsonField<Double> = JsonMissing.of(),
@@ -1480,6 +1577,9 @@ private constructor(
             @ExcludeMissing
             truncation: JsonField<Truncation> = JsonMissing.of(),
             @JsonProperty("user") @ExcludeMissing user: JsonField<String> = JsonMissing.of(),
+            @JsonProperty("verbosity")
+            @ExcludeMissing
+            verbosity: JsonField<Verbosity> = JsonMissing.of(),
         ) : this(
             background,
             include,
@@ -1497,6 +1597,7 @@ private constructor(
             safetyIdentifier,
             serviceTier,
             store,
+            streamOptions,
             temperature,
             text,
             toolChoice,
@@ -1505,6 +1606,7 @@ private constructor(
             topP,
             truncation,
             user,
+            verbosity,
             mutableMapOf(),
         )
 
@@ -1701,6 +1803,14 @@ private constructor(
         fun store(): Optional<Boolean> = store.getOptional("store")
 
         /**
+         * Options for streaming responses. Only set this when you set `stream: true`.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun streamOptions(): Optional<StreamOptions> = streamOptions.getOptional("stream_options")
+
+        /**
          * What sampling temperature to use, between 0 and 2. Higher values like 0.8 will make the
          * output more random, while lower values like 0.2 will make it more focused and
          * deterministic. We generally recommend altering this or `top_p` but not both.
@@ -1741,8 +1851,9 @@ private constructor(
          *   [file search](https://platform.openai.com/docs/guides/tools-file-search). Learn more
          *   about [built-in tools](https://platform.openai.com/docs/guides/tools).
          * - **Function calls (custom tools)**: Functions that are defined by you, enabling the
-         *   model to call your own code. Learn more about
-         *   [function calling](https://platform.openai.com/docs/guides/function-calling).
+         *   model to call your own code with strongly typed arguments and outputs. Learn more about
+         *   [function calling](https://platform.openai.com/docs/guides/function-calling). You can
+         *   also use custom tools to call your own code.
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
@@ -1794,6 +1905,16 @@ private constructor(
          *   server responded with an unexpected value).
          */
         @Deprecated("deprecated") fun user(): Optional<String> = user.getOptional("user")
+
+        /**
+         * Constrains the verbosity of the model's response. Lower values will result in more
+         * concise responses, while higher values will result in more verbose responses. Currently
+         * supported values are `low`, `medium`, and `high`.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun verbosity(): Optional<Verbosity> = verbosity.getOptional("verbosity")
 
         /**
          * Returns the raw JSON value of [background].
@@ -1937,6 +2058,16 @@ private constructor(
         @JsonProperty("store") @ExcludeMissing fun _store(): JsonField<Boolean> = store
 
         /**
+         * Returns the raw JSON value of [streamOptions].
+         *
+         * Unlike [streamOptions], this method doesn't throw if the JSON field has an unexpected
+         * type.
+         */
+        @JsonProperty("stream_options")
+        @ExcludeMissing
+        fun _streamOptions(): JsonField<StreamOptions> = streamOptions
+
+        /**
          * Returns the raw JSON value of [temperature].
          *
          * Unlike [temperature], this method doesn't throw if the JSON field has an unexpected type.
@@ -2003,6 +2134,15 @@ private constructor(
         @ExcludeMissing
         fun _user(): JsonField<String> = user
 
+        /**
+         * Returns the raw JSON value of [verbosity].
+         *
+         * Unlike [verbosity], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("verbosity")
+        @ExcludeMissing
+        fun _verbosity(): JsonField<Verbosity> = verbosity
+
         @JsonAnySetter
         private fun putAdditionalProperty(key: String, value: JsonValue) {
             additionalProperties.put(key, value)
@@ -2040,6 +2180,7 @@ private constructor(
             private var safetyIdentifier: JsonField<String> = JsonMissing.of()
             private var serviceTier: JsonField<ServiceTier> = JsonMissing.of()
             private var store: JsonField<Boolean> = JsonMissing.of()
+            private var streamOptions: JsonField<StreamOptions> = JsonMissing.of()
             private var temperature: JsonField<Double> = JsonMissing.of()
             private var text: JsonField<ResponseTextConfig> = JsonMissing.of()
             private var toolChoice: JsonField<ToolChoice> = JsonMissing.of()
@@ -2048,6 +2189,7 @@ private constructor(
             private var topP: JsonField<Double> = JsonMissing.of()
             private var truncation: JsonField<Truncation> = JsonMissing.of()
             private var user: JsonField<String> = JsonMissing.of()
+            private var verbosity: JsonField<Verbosity> = JsonMissing.of()
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
             @JvmSynthetic
@@ -2068,6 +2210,7 @@ private constructor(
                 safetyIdentifier = body.safetyIdentifier
                 serviceTier = body.serviceTier
                 store = body.store
+                streamOptions = body.streamOptions
                 temperature = body.temperature
                 text = body.text
                 toolChoice = body.toolChoice
@@ -2076,6 +2219,7 @@ private constructor(
                 topP = body.topP
                 truncation = body.truncation
                 user = body.user
+                verbosity = body.verbosity
                 additionalProperties = body.additionalProperties.toMutableMap()
             }
 
@@ -2498,6 +2642,25 @@ private constructor(
              */
             fun store(store: JsonField<Boolean>) = apply { this.store = store }
 
+            /** Options for streaming responses. Only set this when you set `stream: true`. */
+            fun streamOptions(streamOptions: StreamOptions?) =
+                streamOptions(JsonField.ofNullable(streamOptions))
+
+            /** Alias for calling [Builder.streamOptions] with `streamOptions.orElse(null)`. */
+            fun streamOptions(streamOptions: Optional<StreamOptions>) =
+                streamOptions(streamOptions.getOrNull())
+
+            /**
+             * Sets [Builder.streamOptions] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.streamOptions] with a well-typed [StreamOptions]
+             * value instead. This method is primarily for setting the field to an undocumented or
+             * not yet supported value.
+             */
+            fun streamOptions(streamOptions: JsonField<StreamOptions>) = apply {
+                this.streamOptions = streamOptions
+            }
+
             /**
              * What sampling temperature to use, between 0 and 2. Higher values like 0.8 will make
              * the output more random, while lower values like 0.2 will make it more focused and
@@ -2563,6 +2726,9 @@ private constructor(
             /** Alias for calling [toolChoice] with `ToolChoice.ofOptions(options)`. */
             fun toolChoice(options: ToolChoiceOptions) = toolChoice(ToolChoice.ofOptions(options))
 
+            /** Alias for calling [toolChoice] with `ToolChoice.ofAllowed(allowed)`. */
+            fun toolChoice(allowed: ToolChoiceAllowed) = toolChoice(ToolChoice.ofAllowed(allowed))
+
             /** Alias for calling [toolChoice] with `ToolChoice.ofTypes(types)`. */
             fun toolChoice(types: ToolChoiceTypes) = toolChoice(ToolChoice.ofTypes(types))
 
@@ -2572,6 +2738,9 @@ private constructor(
 
             /** Alias for calling [toolChoice] with `ToolChoice.ofMcp(mcp)`. */
             fun toolChoice(mcp: ToolChoiceMcp) = toolChoice(ToolChoice.ofMcp(mcp))
+
+            /** Alias for calling [toolChoice] with `ToolChoice.ofCustom(custom)`. */
+            fun toolChoice(custom: ToolChoiceCustom) = toolChoice(ToolChoice.ofCustom(custom))
 
             /**
              * An array of tools the model may call while generating a response. You can specify
@@ -2584,8 +2753,9 @@ private constructor(
              *   [file search](https://platform.openai.com/docs/guides/tools-file-search). Learn
              *   more about [built-in tools](https://platform.openai.com/docs/guides/tools).
              * - **Function calls (custom tools)**: Functions that are defined by you, enabling the
-             *   model to call your own code. Learn more about
-             *   [function calling](https://platform.openai.com/docs/guides/function-calling).
+             *   model to call your own code with strongly typed arguments and outputs. Learn more
+             *   about [function calling](https://platform.openai.com/docs/guides/function-calling).
+             *   You can also use custom tools to call your own code.
              */
             fun tools(tools: List<Tool>) = tools(JsonField.of(tools))
 
@@ -2680,6 +2850,19 @@ private constructor(
 
             /** Alias for calling [addTool] with `Tool.ofLocalShell()`. */
             fun addToolLocalShell() = addTool(Tool.ofLocalShell())
+
+            /** Alias for calling [addTool] with `Tool.ofCustom(custom)`. */
+            fun addTool(custom: CustomTool) = addTool(Tool.ofCustom(custom))
+
+            /**
+             * Alias for calling [addTool] with the following:
+             * ```java
+             * CustomTool.builder()
+             *     .name(name)
+             *     .build()
+             * ```
+             */
+            fun addCustomTool(name: String) = addTool(CustomTool.builder().name(name).build())
 
             /**
              * An integer between 0 and 20 specifying the number of most likely tokens to return at
@@ -2776,6 +2959,25 @@ private constructor(
              */
             @Deprecated("deprecated") fun user(user: JsonField<String>) = apply { this.user = user }
 
+            /**
+             * Constrains the verbosity of the model's response. Lower values will result in more
+             * concise responses, while higher values will result in more verbose responses.
+             * Currently supported values are `low`, `medium`, and `high`.
+             */
+            fun verbosity(verbosity: Verbosity?) = verbosity(JsonField.ofNullable(verbosity))
+
+            /** Alias for calling [Builder.verbosity] with `verbosity.orElse(null)`. */
+            fun verbosity(verbosity: Optional<Verbosity>) = verbosity(verbosity.getOrNull())
+
+            /**
+             * Sets [Builder.verbosity] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.verbosity] with a well-typed [Verbosity] value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun verbosity(verbosity: JsonField<Verbosity>) = apply { this.verbosity = verbosity }
+
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.clear()
                 putAllAdditionalProperties(additionalProperties)
@@ -2818,6 +3020,7 @@ private constructor(
                     safetyIdentifier,
                     serviceTier,
                     store,
+                    streamOptions,
                     temperature,
                     text,
                     toolChoice,
@@ -2826,6 +3029,7 @@ private constructor(
                     topP,
                     truncation,
                     user,
+                    verbosity,
                     additionalProperties.toMutableMap(),
                 )
         }
@@ -2853,6 +3057,7 @@ private constructor(
             safetyIdentifier()
             serviceTier().ifPresent { it.validate() }
             store()
+            streamOptions().ifPresent { it.validate() }
             temperature()
             text().ifPresent { it.validate() }
             toolChoice().ifPresent { it.validate() }
@@ -2861,6 +3066,7 @@ private constructor(
             topP()
             truncation().ifPresent { it.validate() }
             user()
+            verbosity().ifPresent { it.validate() }
             validated = true
         }
 
@@ -2896,6 +3102,7 @@ private constructor(
                 (if (safetyIdentifier.asKnown().isPresent) 1 else 0) +
                 (serviceTier.asKnown().getOrNull()?.validity() ?: 0) +
                 (if (store.asKnown().isPresent) 1 else 0) +
+                (streamOptions.asKnown().getOrNull()?.validity() ?: 0) +
                 (if (temperature.asKnown().isPresent) 1 else 0) +
                 (text.asKnown().getOrNull()?.validity() ?: 0) +
                 (toolChoice.asKnown().getOrNull()?.validity() ?: 0) +
@@ -2903,24 +3110,25 @@ private constructor(
                 (if (topLogprobs.asKnown().isPresent) 1 else 0) +
                 (if (topP.asKnown().isPresent) 1 else 0) +
                 (truncation.asKnown().getOrNull()?.validity() ?: 0) +
-                (if (user.asKnown().isPresent) 1 else 0)
+                (if (user.asKnown().isPresent) 1 else 0) +
+                (verbosity.asKnown().getOrNull()?.validity() ?: 0)
 
         override fun equals(other: Any?): Boolean {
             if (this === other) {
                 return true
             }
 
-            return /* spotless:off */ other is Body && background == other.background && include == other.include && input == other.input && instructions == other.instructions && maxOutputTokens == other.maxOutputTokens && maxToolCalls == other.maxToolCalls && metadata == other.metadata && model == other.model && parallelToolCalls == other.parallelToolCalls && previousResponseId == other.previousResponseId && prompt == other.prompt && promptCacheKey == other.promptCacheKey && reasoning == other.reasoning && safetyIdentifier == other.safetyIdentifier && serviceTier == other.serviceTier && store == other.store && temperature == other.temperature && text == other.text && toolChoice == other.toolChoice && tools == other.tools && topLogprobs == other.topLogprobs && topP == other.topP && truncation == other.truncation && user == other.user && additionalProperties == other.additionalProperties /* spotless:on */
+            return /* spotless:off */ other is Body && background == other.background && include == other.include && input == other.input && instructions == other.instructions && maxOutputTokens == other.maxOutputTokens && maxToolCalls == other.maxToolCalls && metadata == other.metadata && model == other.model && parallelToolCalls == other.parallelToolCalls && previousResponseId == other.previousResponseId && prompt == other.prompt && promptCacheKey == other.promptCacheKey && reasoning == other.reasoning && safetyIdentifier == other.safetyIdentifier && serviceTier == other.serviceTier && store == other.store && streamOptions == other.streamOptions && temperature == other.temperature && text == other.text && toolChoice == other.toolChoice && tools == other.tools && topLogprobs == other.topLogprobs && topP == other.topP && truncation == other.truncation && user == other.user && verbosity == other.verbosity && additionalProperties == other.additionalProperties /* spotless:on */
         }
 
         /* spotless:off */
-        private val hashCode: Int by lazy { Objects.hash(background, include, input, instructions, maxOutputTokens, maxToolCalls, metadata, model, parallelToolCalls, previousResponseId, prompt, promptCacheKey, reasoning, safetyIdentifier, serviceTier, store, temperature, text, toolChoice, tools, topLogprobs, topP, truncation, user, additionalProperties) }
+        private val hashCode: Int by lazy { Objects.hash(background, include, input, instructions, maxOutputTokens, maxToolCalls, metadata, model, parallelToolCalls, previousResponseId, prompt, promptCacheKey, reasoning, safetyIdentifier, serviceTier, store, streamOptions, temperature, text, toolChoice, tools, topLogprobs, topP, truncation, user, verbosity, additionalProperties) }
         /* spotless:on */
 
         override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "Body{background=$background, include=$include, input=$input, instructions=$instructions, maxOutputTokens=$maxOutputTokens, maxToolCalls=$maxToolCalls, metadata=$metadata, model=$model, parallelToolCalls=$parallelToolCalls, previousResponseId=$previousResponseId, prompt=$prompt, promptCacheKey=$promptCacheKey, reasoning=$reasoning, safetyIdentifier=$safetyIdentifier, serviceTier=$serviceTier, store=$store, temperature=$temperature, text=$text, toolChoice=$toolChoice, tools=$tools, topLogprobs=$topLogprobs, topP=$topP, truncation=$truncation, user=$user, additionalProperties=$additionalProperties}"
+            "Body{background=$background, include=$include, input=$input, instructions=$instructions, maxOutputTokens=$maxOutputTokens, maxToolCalls=$maxToolCalls, metadata=$metadata, model=$model, parallelToolCalls=$parallelToolCalls, previousResponseId=$previousResponseId, prompt=$prompt, promptCacheKey=$promptCacheKey, reasoning=$reasoning, safetyIdentifier=$safetyIdentifier, serviceTier=$serviceTier, store=$store, streamOptions=$streamOptions, temperature=$temperature, text=$text, toolChoice=$toolChoice, tools=$tools, topLogprobs=$topLogprobs, topP=$topP, truncation=$truncation, user=$user, verbosity=$verbosity, additionalProperties=$additionalProperties}"
     }
 
     /**
@@ -3387,6 +3595,170 @@ private constructor(
         override fun toString() = value.toString()
     }
 
+    /** Options for streaming responses. Only set this when you set `stream: true`. */
+    class StreamOptions
+    private constructor(
+        private val includeObfuscation: JsonField<Boolean>,
+        private val additionalProperties: MutableMap<String, JsonValue>,
+    ) {
+
+        @JsonCreator
+        private constructor(
+            @JsonProperty("include_obfuscation")
+            @ExcludeMissing
+            includeObfuscation: JsonField<Boolean> = JsonMissing.of()
+        ) : this(includeObfuscation, mutableMapOf())
+
+        /**
+         * When true, stream obfuscation will be enabled. Stream obfuscation adds random characters
+         * to an `obfuscation` field on streaming delta events to normalize payload sizes as a
+         * mitigation to certain side-channel attacks. These obfuscation fields are included by
+         * default, but add a small amount of overhead to the data stream. You can set
+         * `include_obfuscation` to false to optimize for bandwidth if you trust the network links
+         * between your application and the OpenAI API.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun includeObfuscation(): Optional<Boolean> =
+            includeObfuscation.getOptional("include_obfuscation")
+
+        /**
+         * Returns the raw JSON value of [includeObfuscation].
+         *
+         * Unlike [includeObfuscation], this method doesn't throw if the JSON field has an
+         * unexpected type.
+         */
+        @JsonProperty("include_obfuscation")
+        @ExcludeMissing
+        fun _includeObfuscation(): JsonField<Boolean> = includeObfuscation
+
+        @JsonAnySetter
+        private fun putAdditionalProperty(key: String, value: JsonValue) {
+            additionalProperties.put(key, value)
+        }
+
+        @JsonAnyGetter
+        @ExcludeMissing
+        fun _additionalProperties(): Map<String, JsonValue> =
+            Collections.unmodifiableMap(additionalProperties)
+
+        fun toBuilder() = Builder().from(this)
+
+        companion object {
+
+            /** Returns a mutable builder for constructing an instance of [StreamOptions]. */
+            @JvmStatic fun builder() = Builder()
+        }
+
+        /** A builder for [StreamOptions]. */
+        class Builder internal constructor() {
+
+            private var includeObfuscation: JsonField<Boolean> = JsonMissing.of()
+            private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
+
+            @JvmSynthetic
+            internal fun from(streamOptions: StreamOptions) = apply {
+                includeObfuscation = streamOptions.includeObfuscation
+                additionalProperties = streamOptions.additionalProperties.toMutableMap()
+            }
+
+            /**
+             * When true, stream obfuscation will be enabled. Stream obfuscation adds random
+             * characters to an `obfuscation` field on streaming delta events to normalize payload
+             * sizes as a mitigation to certain side-channel attacks. These obfuscation fields are
+             * included by default, but add a small amount of overhead to the data stream. You can
+             * set `include_obfuscation` to false to optimize for bandwidth if you trust the network
+             * links between your application and the OpenAI API.
+             */
+            fun includeObfuscation(includeObfuscation: Boolean) =
+                includeObfuscation(JsonField.of(includeObfuscation))
+
+            /**
+             * Sets [Builder.includeObfuscation] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.includeObfuscation] with a well-typed [Boolean]
+             * value instead. This method is primarily for setting the field to an undocumented or
+             * not yet supported value.
+             */
+            fun includeObfuscation(includeObfuscation: JsonField<Boolean>) = apply {
+                this.includeObfuscation = includeObfuscation
+            }
+
+            fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                this.additionalProperties.clear()
+                putAllAdditionalProperties(additionalProperties)
+            }
+
+            fun putAdditionalProperty(key: String, value: JsonValue) = apply {
+                additionalProperties.put(key, value)
+            }
+
+            fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                this.additionalProperties.putAll(additionalProperties)
+            }
+
+            fun removeAdditionalProperty(key: String) = apply { additionalProperties.remove(key) }
+
+            fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                keys.forEach(::removeAdditionalProperty)
+            }
+
+            /**
+             * Returns an immutable instance of [StreamOptions].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             */
+            fun build(): StreamOptions =
+                StreamOptions(includeObfuscation, additionalProperties.toMutableMap())
+        }
+
+        private var validated: Boolean = false
+
+        fun validate(): StreamOptions = apply {
+            if (validated) {
+                return@apply
+            }
+
+            includeObfuscation()
+            validated = true
+        }
+
+        fun isValid(): Boolean =
+            try {
+                validate()
+                true
+            } catch (e: OpenAIInvalidDataException) {
+                false
+            }
+
+        /**
+         * Returns a score indicating how many valid values are contained in this object
+         * recursively.
+         *
+         * Used for best match union deserialization.
+         */
+        @JvmSynthetic
+        internal fun validity(): Int = (if (includeObfuscation.asKnown().isPresent) 1 else 0)
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) {
+                return true
+            }
+
+            return /* spotless:off */ other is StreamOptions && includeObfuscation == other.includeObfuscation && additionalProperties == other.additionalProperties /* spotless:on */
+        }
+
+        /* spotless:off */
+        private val hashCode: Int by lazy { Objects.hash(includeObfuscation, additionalProperties) }
+        /* spotless:on */
+
+        override fun hashCode(): Int = hashCode
+
+        override fun toString() =
+            "StreamOptions{includeObfuscation=$includeObfuscation, additionalProperties=$additionalProperties}"
+    }
+
     /**
      * How the model should select which tool (or tools) to use when generating a response. See the
      * `tools` parameter to see how to specify which tools the model can call.
@@ -3396,9 +3768,11 @@ private constructor(
     class ToolChoice
     private constructor(
         private val options: ToolChoiceOptions? = null,
+        private val allowed: ToolChoiceAllowed? = null,
         private val types: ToolChoiceTypes? = null,
         private val function: ToolChoiceFunction? = null,
         private val mcp: ToolChoiceMcp? = null,
+        private val custom: ToolChoiceCustom? = null,
         private val _json: JsonValue? = null,
     ) {
 
@@ -3414,6 +3788,9 @@ private constructor(
          */
         fun options(): Optional<ToolChoiceOptions> = Optional.ofNullable(options)
 
+        /** Constrains the tools available to the model to a pre-defined set. */
+        fun allowed(): Optional<ToolChoiceAllowed> = Optional.ofNullable(allowed)
+
         /**
          * Indicates that the model should use a built-in tool to generate a response.
          * [Learn more about built-in tools](https://platform.openai.com/docs/guides/tools).
@@ -3426,13 +3803,20 @@ private constructor(
         /** Use this option to force the model to call a specific tool on a remote MCP server. */
         fun mcp(): Optional<ToolChoiceMcp> = Optional.ofNullable(mcp)
 
+        /** Use this option to force the model to call a specific custom tool. */
+        fun custom(): Optional<ToolChoiceCustom> = Optional.ofNullable(custom)
+
         fun isOptions(): Boolean = options != null
+
+        fun isAllowed(): Boolean = allowed != null
 
         fun isTypes(): Boolean = types != null
 
         fun isFunction(): Boolean = function != null
 
         fun isMcp(): Boolean = mcp != null
+
+        fun isCustom(): Boolean = custom != null
 
         /**
          * Controls which (if any) tool is called by the model.
@@ -3446,6 +3830,9 @@ private constructor(
          */
         fun asOptions(): ToolChoiceOptions = options.getOrThrow("options")
 
+        /** Constrains the tools available to the model to a pre-defined set. */
+        fun asAllowed(): ToolChoiceAllowed = allowed.getOrThrow("allowed")
+
         /**
          * Indicates that the model should use a built-in tool to generate a response.
          * [Learn more about built-in tools](https://platform.openai.com/docs/guides/tools).
@@ -3458,14 +3845,19 @@ private constructor(
         /** Use this option to force the model to call a specific tool on a remote MCP server. */
         fun asMcp(): ToolChoiceMcp = mcp.getOrThrow("mcp")
 
+        /** Use this option to force the model to call a specific custom tool. */
+        fun asCustom(): ToolChoiceCustom = custom.getOrThrow("custom")
+
         fun _json(): Optional<JsonValue> = Optional.ofNullable(_json)
 
         fun <T> accept(visitor: Visitor<T>): T =
             when {
                 options != null -> visitor.visitOptions(options)
+                allowed != null -> visitor.visitAllowed(allowed)
                 types != null -> visitor.visitTypes(types)
                 function != null -> visitor.visitFunction(function)
                 mcp != null -> visitor.visitMcp(mcp)
+                custom != null -> visitor.visitCustom(custom)
                 else -> visitor.unknown(_json)
             }
 
@@ -3482,6 +3874,10 @@ private constructor(
                         options.validate()
                     }
 
+                    override fun visitAllowed(allowed: ToolChoiceAllowed) {
+                        allowed.validate()
+                    }
+
                     override fun visitTypes(types: ToolChoiceTypes) {
                         types.validate()
                     }
@@ -3492,6 +3888,10 @@ private constructor(
 
                     override fun visitMcp(mcp: ToolChoiceMcp) {
                         mcp.validate()
+                    }
+
+                    override fun visitCustom(custom: ToolChoiceCustom) {
+                        custom.validate()
                     }
                 }
             )
@@ -3518,11 +3918,15 @@ private constructor(
                 object : Visitor<Int> {
                     override fun visitOptions(options: ToolChoiceOptions) = options.validity()
 
+                    override fun visitAllowed(allowed: ToolChoiceAllowed) = allowed.validity()
+
                     override fun visitTypes(types: ToolChoiceTypes) = types.validity()
 
                     override fun visitFunction(function: ToolChoiceFunction) = function.validity()
 
                     override fun visitMcp(mcp: ToolChoiceMcp) = mcp.validity()
+
+                    override fun visitCustom(custom: ToolChoiceCustom) = custom.validity()
 
                     override fun unknown(json: JsonValue?) = 0
                 }
@@ -3533,17 +3937,19 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is ToolChoice && options == other.options && types == other.types && function == other.function && mcp == other.mcp /* spotless:on */
+            return /* spotless:off */ other is ToolChoice && options == other.options && allowed == other.allowed && types == other.types && function == other.function && mcp == other.mcp && custom == other.custom /* spotless:on */
         }
 
-        override fun hashCode(): Int = /* spotless:off */ Objects.hash(options, types, function, mcp) /* spotless:on */
+        override fun hashCode(): Int = /* spotless:off */ Objects.hash(options, allowed, types, function, mcp, custom) /* spotless:on */
 
         override fun toString(): String =
             when {
                 options != null -> "ToolChoice{options=$options}"
+                allowed != null -> "ToolChoice{allowed=$allowed}"
                 types != null -> "ToolChoice{types=$types}"
                 function != null -> "ToolChoice{function=$function}"
                 mcp != null -> "ToolChoice{mcp=$mcp}"
+                custom != null -> "ToolChoice{custom=$custom}"
                 _json != null -> "ToolChoice{_unknown=$_json}"
                 else -> throw IllegalStateException("Invalid ToolChoice")
             }
@@ -3562,6 +3968,9 @@ private constructor(
              */
             @JvmStatic fun ofOptions(options: ToolChoiceOptions) = ToolChoice(options = options)
 
+            /** Constrains the tools available to the model to a pre-defined set. */
+            @JvmStatic fun ofAllowed(allowed: ToolChoiceAllowed) = ToolChoice(allowed = allowed)
+
             /**
              * Indicates that the model should use a built-in tool to generate a response.
              * [Learn more about built-in tools](https://platform.openai.com/docs/guides/tools).
@@ -3576,6 +3985,9 @@ private constructor(
              * Use this option to force the model to call a specific tool on a remote MCP server.
              */
             @JvmStatic fun ofMcp(mcp: ToolChoiceMcp) = ToolChoice(mcp = mcp)
+
+            /** Use this option to force the model to call a specific custom tool. */
+            @JvmStatic fun ofCustom(custom: ToolChoiceCustom) = ToolChoice(custom = custom)
         }
 
         /**
@@ -3595,6 +4007,9 @@ private constructor(
              */
             fun visitOptions(options: ToolChoiceOptions): T
 
+            /** Constrains the tools available to the model to a pre-defined set. */
+            fun visitAllowed(allowed: ToolChoiceAllowed): T
+
             /**
              * Indicates that the model should use a built-in tool to generate a response.
              * [Learn more about built-in tools](https://platform.openai.com/docs/guides/tools).
@@ -3608,6 +4023,9 @@ private constructor(
              * Use this option to force the model to call a specific tool on a remote MCP server.
              */
             fun visitMcp(mcp: ToolChoiceMcp): T
+
+            /** Use this option to force the model to call a specific custom tool. */
+            fun visitCustom(custom: ToolChoiceCustom): T
 
             /**
              * Maps an unknown variant of [ToolChoice] to a value of type [T].
@@ -3634,6 +4052,9 @@ private constructor(
                             tryDeserialize(node, jacksonTypeRef<ToolChoiceOptions>())?.let {
                                 ToolChoice(options = it, _json = json)
                             },
+                            tryDeserialize(node, jacksonTypeRef<ToolChoiceAllowed>())?.let {
+                                ToolChoice(allowed = it, _json = json)
+                            },
                             tryDeserialize(node, jacksonTypeRef<ToolChoiceTypes>())?.let {
                                 ToolChoice(types = it, _json = json)
                             },
@@ -3642,6 +4063,9 @@ private constructor(
                             },
                             tryDeserialize(node, jacksonTypeRef<ToolChoiceMcp>())?.let {
                                 ToolChoice(mcp = it, _json = json)
+                            },
+                            tryDeserialize(node, jacksonTypeRef<ToolChoiceCustom>())?.let {
+                                ToolChoice(custom = it, _json = json)
                             },
                         )
                         .filterNotNull()
@@ -3669,9 +4093,11 @@ private constructor(
             ) {
                 when {
                     value.options != null -> generator.writeObject(value.options)
+                    value.allowed != null -> generator.writeObject(value.allowed)
                     value.types != null -> generator.writeObject(value.types)
                     value.function != null -> generator.writeObject(value.function)
                     value.mcp != null -> generator.writeObject(value.mcp)
+                    value.custom != null -> generator.writeObject(value.custom)
                     value._json != null -> generator.writeObject(value._json)
                     else -> throw IllegalStateException("Invalid ToolChoice")
                 }
@@ -3807,6 +4233,144 @@ private constructor(
             }
 
             return /* spotless:off */ other is Truncation && value == other.value /* spotless:on */
+        }
+
+        override fun hashCode() = value.hashCode()
+
+        override fun toString() = value.toString()
+    }
+
+    /**
+     * Constrains the verbosity of the model's response. Lower values will result in more concise
+     * responses, while higher values will result in more verbose responses. Currently supported
+     * values are `low`, `medium`, and `high`.
+     */
+    class Verbosity @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
+
+        /**
+         * Returns this class instance's raw value.
+         *
+         * This is usually only useful if this instance was deserialized from data that doesn't
+         * match any known member, and you want to know that value. For example, if the SDK is on an
+         * older version than the API, then the API may respond with new members that the SDK is
+         * unaware of.
+         */
+        @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
+
+        companion object {
+
+            @JvmField val LOW = of("low")
+
+            @JvmField val MEDIUM = of("medium")
+
+            @JvmField val HIGH = of("high")
+
+            @JvmStatic fun of(value: String) = Verbosity(JsonField.of(value))
+        }
+
+        /** An enum containing [Verbosity]'s known values. */
+        enum class Known {
+            LOW,
+            MEDIUM,
+            HIGH,
+        }
+
+        /**
+         * An enum containing [Verbosity]'s known values, as well as an [_UNKNOWN] member.
+         *
+         * An instance of [Verbosity] can contain an unknown value in a couple of cases:
+         * - It was deserialized from data that doesn't match any known member. For example, if the
+         *   SDK is on an older version than the API, then the API may respond with new members that
+         *   the SDK is unaware of.
+         * - It was constructed with an arbitrary value using the [of] method.
+         */
+        enum class Value {
+            LOW,
+            MEDIUM,
+            HIGH,
+            /**
+             * An enum member indicating that [Verbosity] was instantiated with an unknown value.
+             */
+            _UNKNOWN,
+        }
+
+        /**
+         * Returns an enum member corresponding to this class instance's value, or [Value._UNKNOWN]
+         * if the class was instantiated with an unknown value.
+         *
+         * Use the [known] method instead if you're certain the value is always known or if you want
+         * to throw for the unknown case.
+         */
+        fun value(): Value =
+            when (this) {
+                LOW -> Value.LOW
+                MEDIUM -> Value.MEDIUM
+                HIGH -> Value.HIGH
+                else -> Value._UNKNOWN
+            }
+
+        /**
+         * Returns an enum member corresponding to this class instance's value.
+         *
+         * Use the [value] method instead if you're uncertain the value is always known and don't
+         * want to throw for the unknown case.
+         *
+         * @throws OpenAIInvalidDataException if this class instance's value is a not a known
+         *   member.
+         */
+        fun known(): Known =
+            when (this) {
+                LOW -> Known.LOW
+                MEDIUM -> Known.MEDIUM
+                HIGH -> Known.HIGH
+                else -> throw OpenAIInvalidDataException("Unknown Verbosity: $value")
+            }
+
+        /**
+         * Returns this class instance's primitive wire representation.
+         *
+         * This differs from the [toString] method because that method is primarily for debugging
+         * and generally doesn't throw.
+         *
+         * @throws OpenAIInvalidDataException if this class instance's value does not have the
+         *   expected primitive type.
+         */
+        fun asString(): String =
+            _value().asString().orElseThrow { OpenAIInvalidDataException("Value is not a String") }
+
+        private var validated: Boolean = false
+
+        fun validate(): Verbosity = apply {
+            if (validated) {
+                return@apply
+            }
+
+            known()
+            validated = true
+        }
+
+        fun isValid(): Boolean =
+            try {
+                validate()
+                true
+            } catch (e: OpenAIInvalidDataException) {
+                false
+            }
+
+        /**
+         * Returns a score indicating how many valid values are contained in this object
+         * recursively.
+         *
+         * Used for best match union deserialization.
+         */
+        @JvmSynthetic internal fun validity(): Int = if (value() == Value._UNKNOWN) 0 else 1
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) {
+                return true
+            }
+
+            return /* spotless:off */ other is Verbosity && value == other.value /* spotless:on */
         }
 
         override fun hashCode() = value.hashCode()

@@ -25,10 +25,10 @@ internal class ChatCompletionAssistantMessageParamTest {
                 .name("name")
                 .refusal("refusal")
                 .addToolCall(
-                    ChatCompletionMessageToolCall.builder()
+                    ChatCompletionMessageFunctionToolCall.builder()
                         .id("id")
                         .function(
-                            ChatCompletionMessageToolCall.Function.builder()
+                            ChatCompletionMessageFunctionToolCall.Function.builder()
                                 .arguments("arguments")
                                 .name("name")
                                 .build()
@@ -52,15 +52,17 @@ internal class ChatCompletionAssistantMessageParamTest {
         assertThat(chatCompletionAssistantMessageParam.refusal()).contains("refusal")
         assertThat(chatCompletionAssistantMessageParam.toolCalls().getOrNull())
             .containsExactly(
-                ChatCompletionMessageToolCall.builder()
-                    .id("id")
-                    .function(
-                        ChatCompletionMessageToolCall.Function.builder()
-                            .arguments("arguments")
-                            .name("name")
-                            .build()
-                    )
-                    .build()
+                ChatCompletionMessageToolCall.ofFunction(
+                    ChatCompletionMessageFunctionToolCall.builder()
+                        .id("id")
+                        .function(
+                            ChatCompletionMessageFunctionToolCall.Function.builder()
+                                .arguments("arguments")
+                                .name("name")
+                                .build()
+                        )
+                        .build()
+                )
             )
     }
 
@@ -80,10 +82,10 @@ internal class ChatCompletionAssistantMessageParamTest {
                 .name("name")
                 .refusal("refusal")
                 .addToolCall(
-                    ChatCompletionMessageToolCall.builder()
+                    ChatCompletionMessageFunctionToolCall.builder()
                         .id("id")
                         .function(
-                            ChatCompletionMessageToolCall.Function.builder()
+                            ChatCompletionMessageFunctionToolCall.Function.builder()
                                 .arguments("arguments")
                                 .name("name")
                                 .build()

@@ -63,6 +63,9 @@ class StructuredResponseOutputItem<T : Any>(
     /** @see ResponseOutputItem.mcpListTools */
     fun mcpListTools(): Optional<ResponseOutputItem.McpListTools> = rawOutputItem.mcpListTools()
 
+    /** @see ResponseOutputItem.customToolCall */
+    fun customToolCall(): Optional<ResponseCustomToolCall> = rawOutputItem.customToolCall()
+
     /** @see ResponseOutputItem.isMessage */
     fun isMessage(): Boolean = message().isPresent
 
@@ -98,6 +101,9 @@ class StructuredResponseOutputItem<T : Any>(
 
     /** @see ResponseOutputItem.isMcpListTools */
     fun isMcpListTools(): Boolean = rawOutputItem.isMcpListTools()
+
+    /** @see ResponseOutputItem.isCustomToolCall */
+    fun isCustomToolCall(): Boolean = rawOutputItem.isCustomToolCall()
 
     /** @see ResponseOutputItem.asMessage */
     fun asMessage(): StructuredResponseOutputMessage<T> =
@@ -141,6 +147,9 @@ class StructuredResponseOutputItem<T : Any>(
 
     /** @see ResponseOutputItem.asMcpListTools */
     fun asMcpListTools(): ResponseOutputItem.McpListTools = rawOutputItem.asMcpListTools()
+
+    /** @see ResponseOutputItem.asCustomToolCall */
+    fun asCustomToolCall(): ResponseCustomToolCall = rawOutputItem.asCustomToolCall()
 
     /** @see ResponseOutputItem._json */
     fun _json(): Optional<JsonValue> = rawOutputItem._json()

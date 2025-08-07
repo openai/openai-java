@@ -29,7 +29,7 @@ import com.openai.errors.OpenAIInvalidDataException
 import com.openai.models.ResponseFormatJsonObject
 import com.openai.models.ResponseFormatJsonSchema
 import com.openai.models.ResponseFormatText
-import com.openai.models.chat.completions.ChatCompletionTool
+import com.openai.models.chat.completions.ChatCompletionFunctionTool
 import com.openai.models.responses.EasyInputMessage
 import com.openai.models.responses.ResponseInputText
 import java.util.Collections
@@ -4315,7 +4315,7 @@ private constructor(
         private val responseFormat: JsonField<ResponseFormat>,
         private val seed: JsonField<Long>,
         private val temperature: JsonField<Double>,
-        private val tools: JsonField<List<ChatCompletionTool>>,
+        private val tools: JsonField<List<ChatCompletionFunctionTool>>,
         private val topP: JsonField<Double>,
         private val additionalProperties: MutableMap<String, JsonValue>,
     ) {
@@ -4334,7 +4334,7 @@ private constructor(
             temperature: JsonField<Double> = JsonMissing.of(),
             @JsonProperty("tools")
             @ExcludeMissing
-            tools: JsonField<List<ChatCompletionTool>> = JsonMissing.of(),
+            tools: JsonField<List<ChatCompletionFunctionTool>> = JsonMissing.of(),
             @JsonProperty("top_p") @ExcludeMissing topP: JsonField<Double> = JsonMissing.of(),
         ) : this(
             maxCompletionTokens,
@@ -4396,7 +4396,7 @@ private constructor(
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
          */
-        fun tools(): Optional<List<ChatCompletionTool>> = tools.getOptional("tools")
+        fun tools(): Optional<List<ChatCompletionFunctionTool>> = tools.getOptional("tools")
 
         /**
          * An alternative to temperature for nucleus sampling; 1.0 includes all tokens.
@@ -4449,7 +4449,7 @@ private constructor(
          */
         @JsonProperty("tools")
         @ExcludeMissing
-        fun _tools(): JsonField<List<ChatCompletionTool>> = tools
+        fun _tools(): JsonField<List<ChatCompletionFunctionTool>> = tools
 
         /**
          * Returns the raw JSON value of [topP].
@@ -4483,7 +4483,7 @@ private constructor(
             private var responseFormat: JsonField<ResponseFormat> = JsonMissing.of()
             private var seed: JsonField<Long> = JsonMissing.of()
             private var temperature: JsonField<Double> = JsonMissing.of()
-            private var tools: JsonField<MutableList<ChatCompletionTool>>? = null
+            private var tools: JsonField<MutableList<ChatCompletionFunctionTool>>? = null
             private var topP: JsonField<Double> = JsonMissing.of()
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
@@ -4586,25 +4586,25 @@ private constructor(
              * tool. Use this to provide a list of functions the model may generate JSON inputs for.
              * A max of 128 functions are supported.
              */
-            fun tools(tools: List<ChatCompletionTool>) = tools(JsonField.of(tools))
+            fun tools(tools: List<ChatCompletionFunctionTool>) = tools(JsonField.of(tools))
 
             /**
              * Sets [Builder.tools] to an arbitrary JSON value.
              *
-             * You should usually call [Builder.tools] with a well-typed `List<ChatCompletionTool>`
-             * value instead. This method is primarily for setting the field to an undocumented or
-             * not yet supported value.
+             * You should usually call [Builder.tools] with a well-typed
+             * `List<ChatCompletionFunctionTool>` value instead. This method is primarily for
+             * setting the field to an undocumented or not yet supported value.
              */
-            fun tools(tools: JsonField<List<ChatCompletionTool>>) = apply {
+            fun tools(tools: JsonField<List<ChatCompletionFunctionTool>>) = apply {
                 this.tools = tools.map { it.toMutableList() }
             }
 
             /**
-             * Adds a single [ChatCompletionTool] to [tools].
+             * Adds a single [ChatCompletionFunctionTool] to [tools].
              *
              * @throws IllegalStateException if the field was previously set to a non-list.
              */
-            fun addTool(tool: ChatCompletionTool) = apply {
+            fun addTool(tool: ChatCompletionFunctionTool) = apply {
                 tools =
                     (tools ?: JsonField.of(mutableListOf())).also {
                         checkKnown("tools", it).add(tool)

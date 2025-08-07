@@ -3,11 +3,7 @@ package com.openai.helpers
 import com.openai.core.JsonNull
 import com.openai.core.JsonValue
 import com.openai.errors.OpenAIInvalidDataException
-import com.openai.models.chat.completions.ChatCompletion
-import com.openai.models.chat.completions.ChatCompletionChunk
-import com.openai.models.chat.completions.ChatCompletionMessage
-import com.openai.models.chat.completions.ChatCompletionMessageToolCall
-import com.openai.models.chat.completions.StructuredChatCompletion
+import com.openai.models.chat.completions.*
 import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
@@ -74,14 +70,17 @@ class ChatCompletionAccumulator private constructor() {
      * of each tool call in the message's list of tool calls (the tool call index).
      */
     private val toolCallBuilders =
-        mutableMapOf<Long, MutableMap<Long, ChatCompletionMessageToolCall.Builder>>()
+        mutableMapOf<Long, MutableMap<Long, ChatCompletionMessageFunctionToolCall.Builder>>()
 
     /**
      * The accumulated tool call function builders for the tool call builders of each message. The
      * entries correspond to those in [toolCallBuilders].
      */
     private val toolCallFunctionBuilders =
-        mutableMapOf<Long, MutableMap<Long, ChatCompletionMessageToolCall.Function.Builder>>()
+        mutableMapOf<
+            Long,
+            MutableMap<Long, ChatCompletionMessageFunctionToolCall.Function.Builder>,
+        >()
 
     /**
      * The accumulated tool call function arguments that will be set on the function builders when
@@ -278,7 +277,7 @@ class ChatCompletionAccumulator private constructor() {
                 val messageToolCallBuilders = toolCallBuilders.getOrPut(index) { mutableMapOf() }
 
                 messageToolCallBuilders.getOrPut(deltaToolCall.index()) {
-                    ChatCompletionMessageToolCall.builder()
+                    ChatCompletionMessageFunctionToolCall.builder()
                         .id(deltaToolCall._id())
                         .additionalProperties(deltaToolCall._additionalProperties())
                     // Must wait until the `function` is accumulated and built before adding it to
@@ -289,7 +288,7 @@ class ChatCompletionAccumulator private constructor() {
                     toolCallFunctionBuilders.getOrPut(index) { mutableMapOf() }
 
                 messageToolCallFunctionBuilders.getOrPut(deltaToolCall.index()) {
-                    ChatCompletionMessageToolCall.Function.builder()
+                    ChatCompletionMessageFunctionToolCall.Function.builder()
                         .name(ensureFunction(deltaToolCall.function())._name())
                         .additionalProperties(deltaToolCall._additionalProperties())
                 }
@@ -338,10 +337,10 @@ class ChatCompletionAccumulator private constructor() {
         toolCallBuilders[index]
             ?.entries
             ?.sortedBy { it.key }
-            ?.map { messageToolCallBuilderEntry ->
-                messageToolCallBuilderEntry.value
-                    .function(buildFunction(index, messageToolCallBuilderEntry.key))
-                    .build()
+            ?.map { (toolCallIndex, toolCallBuilder) ->
+                ChatCompletionMessageToolCall.ofFunction(
+                    toolCallBuilder.function(buildFunction(index, toolCallIndex)).build()
+                )
             } ?: listOf()
 
     private fun buildFunction(index: Long, toolCallIndex: Long) =
