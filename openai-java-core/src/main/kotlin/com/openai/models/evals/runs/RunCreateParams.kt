@@ -33,6 +33,7 @@ import com.openai.models.ReasoningEffort
 import com.openai.models.ResponseFormatJsonObject
 import com.openai.models.ResponseFormatText
 import com.openai.models.responses.ComputerTool
+import com.openai.models.responses.CustomTool
 import com.openai.models.responses.FileSearchTool
 import com.openai.models.responses.FunctionTool
 import com.openai.models.responses.ResponseFormatTextConfig
@@ -6071,6 +6072,20 @@ private constructor(
 
                     /** Alias for calling [addTool] with `Tool.ofLocalShell()`. */
                     fun addToolLocalShell() = addTool(Tool.ofLocalShell())
+
+                    /** Alias for calling [addTool] with `Tool.ofCustom(custom)`. */
+                    fun addTool(custom: CustomTool) = addTool(Tool.ofCustom(custom))
+
+                    /**
+                     * Alias for calling [addTool] with the following:
+                     * ```java
+                     * CustomTool.builder()
+                     *     .name(name)
+                     *     .build()
+                     * ```
+                     */
+                    fun addCustomTool(name: String) =
+                        addTool(CustomTool.builder().name(name).build())
 
                     /**
                      * An alternative to temperature for nucleus sampling; 1.0 includes all tokens.

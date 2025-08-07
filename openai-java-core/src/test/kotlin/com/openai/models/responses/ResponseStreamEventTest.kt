@@ -75,6 +75,8 @@ internal class ResponseStreamEventTest {
         assertThat(responseStreamEvent.mcpListToolsInProgress()).isEmpty
         assertThat(responseStreamEvent.outputTextAnnotationAdded()).isEmpty
         assertThat(responseStreamEvent.queued()).isEmpty
+        assertThat(responseStreamEvent.customToolCallInputDelta()).isEmpty
+        assertThat(responseStreamEvent.customToolCallInputDone()).isEmpty
     }
 
     @Test
@@ -151,6 +153,8 @@ internal class ResponseStreamEventTest {
         assertThat(responseStreamEvent.mcpListToolsInProgress()).isEmpty
         assertThat(responseStreamEvent.outputTextAnnotationAdded()).isEmpty
         assertThat(responseStreamEvent.queued()).isEmpty
+        assertThat(responseStreamEvent.customToolCallInputDelta()).isEmpty
+        assertThat(responseStreamEvent.customToolCallInputDone()).isEmpty
     }
 
     @Test
@@ -228,6 +232,8 @@ internal class ResponseStreamEventTest {
         assertThat(responseStreamEvent.mcpListToolsInProgress()).isEmpty
         assertThat(responseStreamEvent.outputTextAnnotationAdded()).isEmpty
         assertThat(responseStreamEvent.queued()).isEmpty
+        assertThat(responseStreamEvent.customToolCallInputDelta()).isEmpty
+        assertThat(responseStreamEvent.customToolCallInputDone()).isEmpty
     }
 
     @Test
@@ -308,6 +314,8 @@ internal class ResponseStreamEventTest {
         assertThat(responseStreamEvent.mcpListToolsInProgress()).isEmpty
         assertThat(responseStreamEvent.outputTextAnnotationAdded()).isEmpty
         assertThat(responseStreamEvent.queued()).isEmpty
+        assertThat(responseStreamEvent.customToolCallInputDelta()).isEmpty
+        assertThat(responseStreamEvent.customToolCallInputDone()).isEmpty
     }
 
     @Test
@@ -392,6 +400,8 @@ internal class ResponseStreamEventTest {
         assertThat(responseStreamEvent.mcpListToolsInProgress()).isEmpty
         assertThat(responseStreamEvent.outputTextAnnotationAdded()).isEmpty
         assertThat(responseStreamEvent.queued()).isEmpty
+        assertThat(responseStreamEvent.customToolCallInputDelta()).isEmpty
+        assertThat(responseStreamEvent.customToolCallInputDone()).isEmpty
     }
 
     @Test
@@ -481,6 +491,8 @@ internal class ResponseStreamEventTest {
         assertThat(responseStreamEvent.mcpListToolsInProgress()).isEmpty
         assertThat(responseStreamEvent.outputTextAnnotationAdded()).isEmpty
         assertThat(responseStreamEvent.queued()).isEmpty
+        assertThat(responseStreamEvent.customToolCallInputDelta()).isEmpty
+        assertThat(responseStreamEvent.customToolCallInputDone()).isEmpty
     }
 
     @Test
@@ -569,6 +581,8 @@ internal class ResponseStreamEventTest {
         assertThat(responseStreamEvent.mcpListToolsInProgress()).isEmpty
         assertThat(responseStreamEvent.outputTextAnnotationAdded()).isEmpty
         assertThat(responseStreamEvent.queued()).isEmpty
+        assertThat(responseStreamEvent.customToolCallInputDelta()).isEmpty
+        assertThat(responseStreamEvent.customToolCallInputDone()).isEmpty
     }
 
     @Test
@@ -656,6 +670,8 @@ internal class ResponseStreamEventTest {
         assertThat(responseStreamEvent.mcpListToolsInProgress()).isEmpty
         assertThat(responseStreamEvent.outputTextAnnotationAdded()).isEmpty
         assertThat(responseStreamEvent.queued()).isEmpty
+        assertThat(responseStreamEvent.customToolCallInputDelta()).isEmpty
+        assertThat(responseStreamEvent.customToolCallInputDone()).isEmpty
     }
 
     @Test
@@ -743,6 +759,8 @@ internal class ResponseStreamEventTest {
         assertThat(responseStreamEvent.mcpListToolsInProgress()).isEmpty
         assertThat(responseStreamEvent.outputTextAnnotationAdded()).isEmpty
         assertThat(responseStreamEvent.queued()).isEmpty
+        assertThat(responseStreamEvent.customToolCallInputDelta()).isEmpty
+        assertThat(responseStreamEvent.customToolCallInputDone()).isEmpty
     }
 
     @Test
@@ -858,7 +876,7 @@ internal class ResponseStreamEventTest {
                         .promptCacheKey("prompt-cache-key-1234")
                         .reasoning(
                             Reasoning.builder()
-                                .effort(ReasoningEffort.LOW)
+                                .effort(ReasoningEffort.MINIMAL)
                                 .generateSummary(Reasoning.GenerateSummary.AUTO)
                                 .summary(Reasoning.Summary.AUTO)
                                 .build()
@@ -891,6 +909,7 @@ internal class ResponseStreamEventTest {
                                 .build()
                         )
                         .user("user-1234")
+                        .verbosity(Response.Verbosity.LOW)
                         .build()
                 )
                 .sequenceNumber(0L)
@@ -949,6 +968,8 @@ internal class ResponseStreamEventTest {
         assertThat(responseStreamEvent.mcpListToolsInProgress()).isEmpty
         assertThat(responseStreamEvent.outputTextAnnotationAdded()).isEmpty
         assertThat(responseStreamEvent.queued()).isEmpty
+        assertThat(responseStreamEvent.customToolCallInputDelta()).isEmpty
+        assertThat(responseStreamEvent.customToolCallInputDone()).isEmpty
     }
 
     @Test
@@ -1046,7 +1067,7 @@ internal class ResponseStreamEventTest {
                             .promptCacheKey("prompt-cache-key-1234")
                             .reasoning(
                                 Reasoning.builder()
-                                    .effort(ReasoningEffort.LOW)
+                                    .effort(ReasoningEffort.MINIMAL)
                                     .generateSummary(Reasoning.GenerateSummary.AUTO)
                                     .summary(Reasoning.Summary.AUTO)
                                     .build()
@@ -1079,6 +1100,7 @@ internal class ResponseStreamEventTest {
                                     .build()
                             )
                             .user("user-1234")
+                            .verbosity(Response.Verbosity.LOW)
                             .build()
                     )
                     .sequenceNumber(0L)
@@ -1183,6 +1205,8 @@ internal class ResponseStreamEventTest {
         assertThat(responseStreamEvent.mcpListToolsInProgress()).isEmpty
         assertThat(responseStreamEvent.outputTextAnnotationAdded()).isEmpty
         assertThat(responseStreamEvent.queued()).isEmpty
+        assertThat(responseStreamEvent.customToolCallInputDelta()).isEmpty
+        assertThat(responseStreamEvent.customToolCallInputDone()).isEmpty
     }
 
     @Test
@@ -1322,6 +1346,8 @@ internal class ResponseStreamEventTest {
         assertThat(responseStreamEvent.mcpListToolsInProgress()).isEmpty
         assertThat(responseStreamEvent.outputTextAnnotationAdded()).isEmpty
         assertThat(responseStreamEvent.queued()).isEmpty
+        assertThat(responseStreamEvent.customToolCallInputDelta()).isEmpty
+        assertThat(responseStreamEvent.customToolCallInputDone()).isEmpty
     }
 
     @Test
@@ -1464,7 +1490,7 @@ internal class ResponseStreamEventTest {
                         .promptCacheKey("prompt-cache-key-1234")
                         .reasoning(
                             Reasoning.builder()
-                                .effort(ReasoningEffort.LOW)
+                                .effort(ReasoningEffort.MINIMAL)
                                 .generateSummary(Reasoning.GenerateSummary.AUTO)
                                 .summary(Reasoning.Summary.AUTO)
                                 .build()
@@ -1497,6 +1523,7 @@ internal class ResponseStreamEventTest {
                                 .build()
                         )
                         .user("user-1234")
+                        .verbosity(Response.Verbosity.LOW)
                         .build()
                 )
                 .sequenceNumber(0L)
@@ -1555,6 +1582,8 @@ internal class ResponseStreamEventTest {
         assertThat(responseStreamEvent.mcpListToolsInProgress()).isEmpty
         assertThat(responseStreamEvent.outputTextAnnotationAdded()).isEmpty
         assertThat(responseStreamEvent.queued()).isEmpty
+        assertThat(responseStreamEvent.customToolCallInputDelta()).isEmpty
+        assertThat(responseStreamEvent.customToolCallInputDone()).isEmpty
     }
 
     @Test
@@ -1652,7 +1681,7 @@ internal class ResponseStreamEventTest {
                             .promptCacheKey("prompt-cache-key-1234")
                             .reasoning(
                                 Reasoning.builder()
-                                    .effort(ReasoningEffort.LOW)
+                                    .effort(ReasoningEffort.MINIMAL)
                                     .generateSummary(Reasoning.GenerateSummary.AUTO)
                                     .summary(Reasoning.Summary.AUTO)
                                     .build()
@@ -1685,6 +1714,7 @@ internal class ResponseStreamEventTest {
                                     .build()
                             )
                             .user("user-1234")
+                            .verbosity(Response.Verbosity.LOW)
                             .build()
                     )
                     .sequenceNumber(0L)
@@ -1763,6 +1793,8 @@ internal class ResponseStreamEventTest {
         assertThat(responseStreamEvent.mcpListToolsInProgress()).isEmpty
         assertThat(responseStreamEvent.outputTextAnnotationAdded()).isEmpty
         assertThat(responseStreamEvent.queued()).isEmpty
+        assertThat(responseStreamEvent.customToolCallInputDelta()).isEmpty
+        assertThat(responseStreamEvent.customToolCallInputDone()).isEmpty
     }
 
     @Test
@@ -1850,6 +1882,8 @@ internal class ResponseStreamEventTest {
         assertThat(responseStreamEvent.mcpListToolsInProgress()).isEmpty
         assertThat(responseStreamEvent.outputTextAnnotationAdded()).isEmpty
         assertThat(responseStreamEvent.queued()).isEmpty
+        assertThat(responseStreamEvent.customToolCallInputDelta()).isEmpty
+        assertThat(responseStreamEvent.customToolCallInputDone()).isEmpty
     }
 
     @Test
@@ -1937,6 +1971,8 @@ internal class ResponseStreamEventTest {
         assertThat(responseStreamEvent.mcpListToolsInProgress()).isEmpty
         assertThat(responseStreamEvent.outputTextAnnotationAdded()).isEmpty
         assertThat(responseStreamEvent.queued()).isEmpty
+        assertThat(responseStreamEvent.customToolCallInputDelta()).isEmpty
+        assertThat(responseStreamEvent.customToolCallInputDone()).isEmpty
     }
 
     @Test
@@ -2023,6 +2059,8 @@ internal class ResponseStreamEventTest {
         assertThat(responseStreamEvent.mcpListToolsInProgress()).isEmpty
         assertThat(responseStreamEvent.outputTextAnnotationAdded()).isEmpty
         assertThat(responseStreamEvent.queued()).isEmpty
+        assertThat(responseStreamEvent.customToolCallInputDelta()).isEmpty
+        assertThat(responseStreamEvent.customToolCallInputDone()).isEmpty
     }
 
     @Test
@@ -2111,6 +2149,8 @@ internal class ResponseStreamEventTest {
         assertThat(responseStreamEvent.mcpListToolsInProgress()).isEmpty
         assertThat(responseStreamEvent.outputTextAnnotationAdded()).isEmpty
         assertThat(responseStreamEvent.queued()).isEmpty
+        assertThat(responseStreamEvent.customToolCallInputDelta()).isEmpty
+        assertThat(responseStreamEvent.customToolCallInputDone()).isEmpty
     }
 
     @Test
@@ -2200,6 +2240,8 @@ internal class ResponseStreamEventTest {
         assertThat(responseStreamEvent.mcpListToolsInProgress()).isEmpty
         assertThat(responseStreamEvent.outputTextAnnotationAdded()).isEmpty
         assertThat(responseStreamEvent.queued()).isEmpty
+        assertThat(responseStreamEvent.customToolCallInputDelta()).isEmpty
+        assertThat(responseStreamEvent.customToolCallInputDone()).isEmpty
     }
 
     @Test
@@ -2316,7 +2358,7 @@ internal class ResponseStreamEventTest {
                         .promptCacheKey("prompt-cache-key-1234")
                         .reasoning(
                             Reasoning.builder()
-                                .effort(ReasoningEffort.LOW)
+                                .effort(ReasoningEffort.MINIMAL)
                                 .generateSummary(Reasoning.GenerateSummary.AUTO)
                                 .summary(Reasoning.Summary.AUTO)
                                 .build()
@@ -2349,6 +2391,7 @@ internal class ResponseStreamEventTest {
                                 .build()
                         )
                         .user("user-1234")
+                        .verbosity(Response.Verbosity.LOW)
                         .build()
                 )
                 .sequenceNumber(0L)
@@ -2407,6 +2450,8 @@ internal class ResponseStreamEventTest {
         assertThat(responseStreamEvent.mcpListToolsInProgress()).isEmpty
         assertThat(responseStreamEvent.outputTextAnnotationAdded()).isEmpty
         assertThat(responseStreamEvent.queued()).isEmpty
+        assertThat(responseStreamEvent.customToolCallInputDelta()).isEmpty
+        assertThat(responseStreamEvent.customToolCallInputDone()).isEmpty
     }
 
     @Test
@@ -2504,7 +2549,7 @@ internal class ResponseStreamEventTest {
                             .promptCacheKey("prompt-cache-key-1234")
                             .reasoning(
                                 Reasoning.builder()
-                                    .effort(ReasoningEffort.LOW)
+                                    .effort(ReasoningEffort.MINIMAL)
                                     .generateSummary(Reasoning.GenerateSummary.AUTO)
                                     .summary(Reasoning.Summary.AUTO)
                                     .build()
@@ -2537,6 +2582,7 @@ internal class ResponseStreamEventTest {
                                     .build()
                             )
                             .user("user-1234")
+                            .verbosity(Response.Verbosity.LOW)
                             .build()
                     )
                     .sequenceNumber(0L)
@@ -2644,7 +2690,7 @@ internal class ResponseStreamEventTest {
                         .promptCacheKey("prompt-cache-key-1234")
                         .reasoning(
                             Reasoning.builder()
-                                .effort(ReasoningEffort.LOW)
+                                .effort(ReasoningEffort.MINIMAL)
                                 .generateSummary(Reasoning.GenerateSummary.AUTO)
                                 .summary(Reasoning.Summary.AUTO)
                                 .build()
@@ -2677,6 +2723,7 @@ internal class ResponseStreamEventTest {
                                 .build()
                         )
                         .user("user-1234")
+                        .verbosity(Response.Verbosity.LOW)
                         .build()
                 )
                 .sequenceNumber(0L)
@@ -2735,6 +2782,8 @@ internal class ResponseStreamEventTest {
         assertThat(responseStreamEvent.mcpListToolsInProgress()).isEmpty
         assertThat(responseStreamEvent.outputTextAnnotationAdded()).isEmpty
         assertThat(responseStreamEvent.queued()).isEmpty
+        assertThat(responseStreamEvent.customToolCallInputDelta()).isEmpty
+        assertThat(responseStreamEvent.customToolCallInputDone()).isEmpty
     }
 
     @Test
@@ -2832,7 +2881,7 @@ internal class ResponseStreamEventTest {
                             .promptCacheKey("prompt-cache-key-1234")
                             .reasoning(
                                 Reasoning.builder()
-                                    .effort(ReasoningEffort.LOW)
+                                    .effort(ReasoningEffort.MINIMAL)
                                     .generateSummary(Reasoning.GenerateSummary.AUTO)
                                     .summary(Reasoning.Summary.AUTO)
                                     .build()
@@ -2865,6 +2914,7 @@ internal class ResponseStreamEventTest {
                                     .build()
                             )
                             .user("user-1234")
+                            .verbosity(Response.Verbosity.LOW)
                             .build()
                     )
                     .sequenceNumber(0L)
@@ -2972,7 +3022,7 @@ internal class ResponseStreamEventTest {
                         .promptCacheKey("prompt-cache-key-1234")
                         .reasoning(
                             Reasoning.builder()
-                                .effort(ReasoningEffort.LOW)
+                                .effort(ReasoningEffort.MINIMAL)
                                 .generateSummary(Reasoning.GenerateSummary.AUTO)
                                 .summary(Reasoning.Summary.AUTO)
                                 .build()
@@ -3005,6 +3055,7 @@ internal class ResponseStreamEventTest {
                                 .build()
                         )
                         .user("user-1234")
+                        .verbosity(Response.Verbosity.LOW)
                         .build()
                 )
                 .sequenceNumber(0L)
@@ -3063,6 +3114,8 @@ internal class ResponseStreamEventTest {
         assertThat(responseStreamEvent.mcpListToolsInProgress()).isEmpty
         assertThat(responseStreamEvent.outputTextAnnotationAdded()).isEmpty
         assertThat(responseStreamEvent.queued()).isEmpty
+        assertThat(responseStreamEvent.customToolCallInputDelta()).isEmpty
+        assertThat(responseStreamEvent.customToolCallInputDone()).isEmpty
     }
 
     @Test
@@ -3160,7 +3213,7 @@ internal class ResponseStreamEventTest {
                             .promptCacheKey("prompt-cache-key-1234")
                             .reasoning(
                                 Reasoning.builder()
-                                    .effort(ReasoningEffort.LOW)
+                                    .effort(ReasoningEffort.MINIMAL)
                                     .generateSummary(Reasoning.GenerateSummary.AUTO)
                                     .summary(Reasoning.Summary.AUTO)
                                     .build()
@@ -3193,6 +3246,7 @@ internal class ResponseStreamEventTest {
                                     .build()
                             )
                             .user("user-1234")
+                            .verbosity(Response.Verbosity.LOW)
                             .build()
                     )
                     .sequenceNumber(0L)
@@ -3301,6 +3355,8 @@ internal class ResponseStreamEventTest {
         assertThat(responseStreamEvent.mcpListToolsInProgress()).isEmpty
         assertThat(responseStreamEvent.outputTextAnnotationAdded()).isEmpty
         assertThat(responseStreamEvent.queued()).isEmpty
+        assertThat(responseStreamEvent.customToolCallInputDelta()).isEmpty
+        assertThat(responseStreamEvent.customToolCallInputDone()).isEmpty
     }
 
     @Test
@@ -3448,6 +3504,8 @@ internal class ResponseStreamEventTest {
         assertThat(responseStreamEvent.mcpListToolsInProgress()).isEmpty
         assertThat(responseStreamEvent.outputTextAnnotationAdded()).isEmpty
         assertThat(responseStreamEvent.queued()).isEmpty
+        assertThat(responseStreamEvent.customToolCallInputDelta()).isEmpty
+        assertThat(responseStreamEvent.customToolCallInputDone()).isEmpty
     }
 
     @Test
@@ -3568,6 +3626,8 @@ internal class ResponseStreamEventTest {
         assertThat(responseStreamEvent.mcpListToolsInProgress()).isEmpty
         assertThat(responseStreamEvent.outputTextAnnotationAdded()).isEmpty
         assertThat(responseStreamEvent.queued()).isEmpty
+        assertThat(responseStreamEvent.customToolCallInputDelta()).isEmpty
+        assertThat(responseStreamEvent.customToolCallInputDone()).isEmpty
     }
 
     @Test
@@ -3661,6 +3721,8 @@ internal class ResponseStreamEventTest {
         assertThat(responseStreamEvent.mcpListToolsInProgress()).isEmpty
         assertThat(responseStreamEvent.outputTextAnnotationAdded()).isEmpty
         assertThat(responseStreamEvent.queued()).isEmpty
+        assertThat(responseStreamEvent.customToolCallInputDelta()).isEmpty
+        assertThat(responseStreamEvent.customToolCallInputDone()).isEmpty
     }
 
     @Test
@@ -3752,6 +3814,8 @@ internal class ResponseStreamEventTest {
         assertThat(responseStreamEvent.mcpListToolsInProgress()).isEmpty
         assertThat(responseStreamEvent.outputTextAnnotationAdded()).isEmpty
         assertThat(responseStreamEvent.queued()).isEmpty
+        assertThat(responseStreamEvent.customToolCallInputDelta()).isEmpty
+        assertThat(responseStreamEvent.customToolCallInputDone()).isEmpty
     }
 
     @Test
@@ -3843,6 +3907,8 @@ internal class ResponseStreamEventTest {
         assertThat(responseStreamEvent.mcpListToolsInProgress()).isEmpty
         assertThat(responseStreamEvent.outputTextAnnotationAdded()).isEmpty
         assertThat(responseStreamEvent.queued()).isEmpty
+        assertThat(responseStreamEvent.customToolCallInputDelta()).isEmpty
+        assertThat(responseStreamEvent.customToolCallInputDone()).isEmpty
     }
 
     @Test
@@ -3932,6 +3998,8 @@ internal class ResponseStreamEventTest {
         assertThat(responseStreamEvent.mcpListToolsInProgress()).isEmpty
         assertThat(responseStreamEvent.outputTextAnnotationAdded()).isEmpty
         assertThat(responseStreamEvent.queued()).isEmpty
+        assertThat(responseStreamEvent.customToolCallInputDelta()).isEmpty
+        assertThat(responseStreamEvent.customToolCallInputDone()).isEmpty
     }
 
     @Test
@@ -4021,6 +4089,8 @@ internal class ResponseStreamEventTest {
         assertThat(responseStreamEvent.mcpListToolsInProgress()).isEmpty
         assertThat(responseStreamEvent.outputTextAnnotationAdded()).isEmpty
         assertThat(responseStreamEvent.queued()).isEmpty
+        assertThat(responseStreamEvent.customToolCallInputDelta()).isEmpty
+        assertThat(responseStreamEvent.customToolCallInputDone()).isEmpty
     }
 
     @Test
@@ -4110,6 +4180,8 @@ internal class ResponseStreamEventTest {
         assertThat(responseStreamEvent.mcpListToolsInProgress()).isEmpty
         assertThat(responseStreamEvent.outputTextAnnotationAdded()).isEmpty
         assertThat(responseStreamEvent.queued()).isEmpty
+        assertThat(responseStreamEvent.customToolCallInputDelta()).isEmpty
+        assertThat(responseStreamEvent.customToolCallInputDone()).isEmpty
     }
 
     @Test
@@ -4199,6 +4271,8 @@ internal class ResponseStreamEventTest {
         assertThat(responseStreamEvent.mcpListToolsInProgress()).isEmpty
         assertThat(responseStreamEvent.outputTextAnnotationAdded()).isEmpty
         assertThat(responseStreamEvent.queued()).isEmpty
+        assertThat(responseStreamEvent.customToolCallInputDelta()).isEmpty
+        assertThat(responseStreamEvent.customToolCallInputDone()).isEmpty
     }
 
     @Test
@@ -4300,6 +4374,8 @@ internal class ResponseStreamEventTest {
         assertThat(responseStreamEvent.mcpListToolsInProgress()).isEmpty
         assertThat(responseStreamEvent.outputTextAnnotationAdded()).isEmpty
         assertThat(responseStreamEvent.queued()).isEmpty
+        assertThat(responseStreamEvent.customToolCallInputDelta()).isEmpty
+        assertThat(responseStreamEvent.customToolCallInputDone()).isEmpty
     }
 
     @Test
@@ -4413,6 +4489,8 @@ internal class ResponseStreamEventTest {
         assertThat(responseStreamEvent.mcpListToolsInProgress()).isEmpty
         assertThat(responseStreamEvent.outputTextAnnotationAdded()).isEmpty
         assertThat(responseStreamEvent.queued()).isEmpty
+        assertThat(responseStreamEvent.customToolCallInputDelta()).isEmpty
+        assertThat(responseStreamEvent.customToolCallInputDone()).isEmpty
     }
 
     @Test
@@ -4513,6 +4591,8 @@ internal class ResponseStreamEventTest {
         assertThat(responseStreamEvent.mcpListToolsInProgress()).isEmpty
         assertThat(responseStreamEvent.outputTextAnnotationAdded()).isEmpty
         assertThat(responseStreamEvent.queued()).isEmpty
+        assertThat(responseStreamEvent.customToolCallInputDelta()).isEmpty
+        assertThat(responseStreamEvent.customToolCallInputDone()).isEmpty
     }
 
     @Test
@@ -4599,6 +4679,8 @@ internal class ResponseStreamEventTest {
         assertThat(responseStreamEvent.mcpListToolsInProgress()).isEmpty
         assertThat(responseStreamEvent.outputTextAnnotationAdded()).isEmpty
         assertThat(responseStreamEvent.queued()).isEmpty
+        assertThat(responseStreamEvent.customToolCallInputDelta()).isEmpty
+        assertThat(responseStreamEvent.customToolCallInputDone()).isEmpty
     }
 
     @Test
@@ -4685,6 +4767,8 @@ internal class ResponseStreamEventTest {
         assertThat(responseStreamEvent.mcpListToolsInProgress()).isEmpty
         assertThat(responseStreamEvent.outputTextAnnotationAdded()).isEmpty
         assertThat(responseStreamEvent.queued()).isEmpty
+        assertThat(responseStreamEvent.customToolCallInputDelta()).isEmpty
+        assertThat(responseStreamEvent.customToolCallInputDone()).isEmpty
     }
 
     @Test
@@ -4772,6 +4856,8 @@ internal class ResponseStreamEventTest {
         assertThat(responseStreamEvent.mcpListToolsInProgress()).isEmpty
         assertThat(responseStreamEvent.outputTextAnnotationAdded()).isEmpty
         assertThat(responseStreamEvent.queued()).isEmpty
+        assertThat(responseStreamEvent.customToolCallInputDelta()).isEmpty
+        assertThat(responseStreamEvent.customToolCallInputDone()).isEmpty
     }
 
     @Test
@@ -4859,6 +4945,8 @@ internal class ResponseStreamEventTest {
         assertThat(responseStreamEvent.mcpListToolsInProgress()).isEmpty
         assertThat(responseStreamEvent.outputTextAnnotationAdded()).isEmpty
         assertThat(responseStreamEvent.queued()).isEmpty
+        assertThat(responseStreamEvent.customToolCallInputDelta()).isEmpty
+        assertThat(responseStreamEvent.customToolCallInputDone()).isEmpty
     }
 
     @Test
@@ -4946,6 +5034,8 @@ internal class ResponseStreamEventTest {
         assertThat(responseStreamEvent.mcpListToolsInProgress()).isEmpty
         assertThat(responseStreamEvent.outputTextAnnotationAdded()).isEmpty
         assertThat(responseStreamEvent.queued()).isEmpty
+        assertThat(responseStreamEvent.customToolCallInputDelta()).isEmpty
+        assertThat(responseStreamEvent.customToolCallInputDone()).isEmpty
     }
 
     @Test
@@ -5035,6 +5125,8 @@ internal class ResponseStreamEventTest {
         assertThat(responseStreamEvent.mcpListToolsInProgress()).isEmpty
         assertThat(responseStreamEvent.outputTextAnnotationAdded()).isEmpty
         assertThat(responseStreamEvent.queued()).isEmpty
+        assertThat(responseStreamEvent.customToolCallInputDelta()).isEmpty
+        assertThat(responseStreamEvent.customToolCallInputDone()).isEmpty
     }
 
     @Test
@@ -5123,6 +5215,8 @@ internal class ResponseStreamEventTest {
         assertThat(responseStreamEvent.mcpListToolsInProgress()).isEmpty
         assertThat(responseStreamEvent.outputTextAnnotationAdded()).isEmpty
         assertThat(responseStreamEvent.queued()).isEmpty
+        assertThat(responseStreamEvent.customToolCallInputDelta()).isEmpty
+        assertThat(responseStreamEvent.customToolCallInputDone()).isEmpty
     }
 
     @Test
@@ -5210,6 +5304,8 @@ internal class ResponseStreamEventTest {
         assertThat(responseStreamEvent.mcpListToolsInProgress()).isEmpty
         assertThat(responseStreamEvent.outputTextAnnotationAdded()).isEmpty
         assertThat(responseStreamEvent.queued()).isEmpty
+        assertThat(responseStreamEvent.customToolCallInputDelta()).isEmpty
+        assertThat(responseStreamEvent.customToolCallInputDone()).isEmpty
     }
 
     @Test
@@ -5296,6 +5392,8 @@ internal class ResponseStreamEventTest {
         assertThat(responseStreamEvent.mcpListToolsInProgress()).isEmpty
         assertThat(responseStreamEvent.outputTextAnnotationAdded()).isEmpty
         assertThat(responseStreamEvent.queued()).isEmpty
+        assertThat(responseStreamEvent.customToolCallInputDelta()).isEmpty
+        assertThat(responseStreamEvent.customToolCallInputDone()).isEmpty
     }
 
     @Test
@@ -5381,6 +5479,8 @@ internal class ResponseStreamEventTest {
         assertThat(responseStreamEvent.mcpListToolsInProgress()).isEmpty
         assertThat(responseStreamEvent.outputTextAnnotationAdded()).isEmpty
         assertThat(responseStreamEvent.queued()).isEmpty
+        assertThat(responseStreamEvent.customToolCallInputDelta()).isEmpty
+        assertThat(responseStreamEvent.customToolCallInputDone()).isEmpty
     }
 
     @Test
@@ -5466,6 +5566,8 @@ internal class ResponseStreamEventTest {
         assertThat(responseStreamEvent.mcpListToolsInProgress()).isEmpty
         assertThat(responseStreamEvent.outputTextAnnotationAdded()).isEmpty
         assertThat(responseStreamEvent.queued()).isEmpty
+        assertThat(responseStreamEvent.customToolCallInputDelta()).isEmpty
+        assertThat(responseStreamEvent.customToolCallInputDone()).isEmpty
     }
 
     @Test
@@ -5551,6 +5653,8 @@ internal class ResponseStreamEventTest {
         assertThat(responseStreamEvent.mcpListToolsInProgress()).isEmpty
         assertThat(responseStreamEvent.outputTextAnnotationAdded()).isEmpty
         assertThat(responseStreamEvent.queued()).isEmpty
+        assertThat(responseStreamEvent.customToolCallInputDelta()).isEmpty
+        assertThat(responseStreamEvent.customToolCallInputDone()).isEmpty
     }
 
     @Test
@@ -5636,6 +5740,8 @@ internal class ResponseStreamEventTest {
         assertThat(responseStreamEvent.mcpListToolsInProgress()).isEmpty
         assertThat(responseStreamEvent.outputTextAnnotationAdded()).isEmpty
         assertThat(responseStreamEvent.queued()).isEmpty
+        assertThat(responseStreamEvent.customToolCallInputDelta()).isEmpty
+        assertThat(responseStreamEvent.customToolCallInputDone()).isEmpty
     }
 
     @Test
@@ -5722,6 +5828,8 @@ internal class ResponseStreamEventTest {
         assertThat(responseStreamEvent.mcpListToolsInProgress()).contains(mcpListToolsInProgress)
         assertThat(responseStreamEvent.outputTextAnnotationAdded()).isEmpty
         assertThat(responseStreamEvent.queued()).isEmpty
+        assertThat(responseStreamEvent.customToolCallInputDelta()).isEmpty
+        assertThat(responseStreamEvent.customToolCallInputDone()).isEmpty
     }
 
     @Test
@@ -5812,6 +5920,8 @@ internal class ResponseStreamEventTest {
         assertThat(responseStreamEvent.outputTextAnnotationAdded())
             .contains(outputTextAnnotationAdded)
         assertThat(responseStreamEvent.queued()).isEmpty
+        assertThat(responseStreamEvent.customToolCallInputDelta()).isEmpty
+        assertThat(responseStreamEvent.customToolCallInputDone()).isEmpty
     }
 
     @Test
@@ -5930,7 +6040,7 @@ internal class ResponseStreamEventTest {
                         .promptCacheKey("prompt-cache-key-1234")
                         .reasoning(
                             Reasoning.builder()
-                                .effort(ReasoningEffort.LOW)
+                                .effort(ReasoningEffort.MINIMAL)
                                 .generateSummary(Reasoning.GenerateSummary.AUTO)
                                 .summary(Reasoning.Summary.AUTO)
                                 .build()
@@ -5963,6 +6073,7 @@ internal class ResponseStreamEventTest {
                                 .build()
                         )
                         .user("user-1234")
+                        .verbosity(Response.Verbosity.LOW)
                         .build()
                 )
                 .sequenceNumber(0L)
@@ -6021,6 +6132,8 @@ internal class ResponseStreamEventTest {
         assertThat(responseStreamEvent.mcpListToolsInProgress()).isEmpty
         assertThat(responseStreamEvent.outputTextAnnotationAdded()).isEmpty
         assertThat(responseStreamEvent.queued()).contains(queued)
+        assertThat(responseStreamEvent.customToolCallInputDelta()).isEmpty
+        assertThat(responseStreamEvent.customToolCallInputDone()).isEmpty
     }
 
     @Test
@@ -6118,7 +6231,7 @@ internal class ResponseStreamEventTest {
                             .promptCacheKey("prompt-cache-key-1234")
                             .reasoning(
                                 Reasoning.builder()
-                                    .effort(ReasoningEffort.LOW)
+                                    .effort(ReasoningEffort.MINIMAL)
                                     .generateSummary(Reasoning.GenerateSummary.AUTO)
                                     .summary(Reasoning.Summary.AUTO)
                                     .build()
@@ -6151,8 +6264,190 @@ internal class ResponseStreamEventTest {
                                     .build()
                             )
                             .user("user-1234")
+                            .verbosity(Response.Verbosity.LOW)
                             .build()
                     )
+                    .sequenceNumber(0L)
+                    .build()
+            )
+
+        val roundtrippedResponseStreamEvent =
+            jsonMapper.readValue(
+                jsonMapper.writeValueAsString(responseStreamEvent),
+                jacksonTypeRef<ResponseStreamEvent>(),
+            )
+
+        assertThat(roundtrippedResponseStreamEvent).isEqualTo(responseStreamEvent)
+    }
+
+    @Test
+    fun ofCustomToolCallInputDelta() {
+        val customToolCallInputDelta =
+            ResponseCustomToolCallInputDeltaEvent.builder()
+                .delta("delta")
+                .itemId("item_id")
+                .outputIndex(0L)
+                .sequenceNumber(0L)
+                .build()
+
+        val responseStreamEvent =
+            ResponseStreamEvent.ofCustomToolCallInputDelta(customToolCallInputDelta)
+
+        assertThat(responseStreamEvent.audioDelta()).isEmpty
+        assertThat(responseStreamEvent.audioDone()).isEmpty
+        assertThat(responseStreamEvent.audioTranscriptDelta()).isEmpty
+        assertThat(responseStreamEvent.audioTranscriptDone()).isEmpty
+        assertThat(responseStreamEvent.codeInterpreterCallCodeDelta()).isEmpty
+        assertThat(responseStreamEvent.codeInterpreterCallCodeDone()).isEmpty
+        assertThat(responseStreamEvent.codeInterpreterCallCompleted()).isEmpty
+        assertThat(responseStreamEvent.codeInterpreterCallInProgress()).isEmpty
+        assertThat(responseStreamEvent.codeInterpreterCallInterpreting()).isEmpty
+        assertThat(responseStreamEvent.completed()).isEmpty
+        assertThat(responseStreamEvent.contentPartAdded()).isEmpty
+        assertThat(responseStreamEvent.contentPartDone()).isEmpty
+        assertThat(responseStreamEvent.created()).isEmpty
+        assertThat(responseStreamEvent.error()).isEmpty
+        assertThat(responseStreamEvent.fileSearchCallCompleted()).isEmpty
+        assertThat(responseStreamEvent.fileSearchCallInProgress()).isEmpty
+        assertThat(responseStreamEvent.fileSearchCallSearching()).isEmpty
+        assertThat(responseStreamEvent.functionCallArgumentsDelta()).isEmpty
+        assertThat(responseStreamEvent.functionCallArgumentsDone()).isEmpty
+        assertThat(responseStreamEvent.inProgress()).isEmpty
+        assertThat(responseStreamEvent.failed()).isEmpty
+        assertThat(responseStreamEvent.incomplete()).isEmpty
+        assertThat(responseStreamEvent.outputItemAdded()).isEmpty
+        assertThat(responseStreamEvent.outputItemDone()).isEmpty
+        assertThat(responseStreamEvent.reasoningSummaryPartAdded()).isEmpty
+        assertThat(responseStreamEvent.reasoningSummaryPartDone()).isEmpty
+        assertThat(responseStreamEvent.reasoningSummaryTextDelta()).isEmpty
+        assertThat(responseStreamEvent.reasoningSummaryTextDone()).isEmpty
+        assertThat(responseStreamEvent.reasoningTextDelta()).isEmpty
+        assertThat(responseStreamEvent.reasoningTextDone()).isEmpty
+        assertThat(responseStreamEvent.refusalDelta()).isEmpty
+        assertThat(responseStreamEvent.refusalDone()).isEmpty
+        assertThat(responseStreamEvent.outputTextDelta()).isEmpty
+        assertThat(responseStreamEvent.outputTextDone()).isEmpty
+        assertThat(responseStreamEvent.webSearchCallCompleted()).isEmpty
+        assertThat(responseStreamEvent.webSearchCallInProgress()).isEmpty
+        assertThat(responseStreamEvent.webSearchCallSearching()).isEmpty
+        assertThat(responseStreamEvent.imageGenerationCallCompleted()).isEmpty
+        assertThat(responseStreamEvent.imageGenerationCallGenerating()).isEmpty
+        assertThat(responseStreamEvent.imageGenerationCallInProgress()).isEmpty
+        assertThat(responseStreamEvent.imageGenerationCallPartialImage()).isEmpty
+        assertThat(responseStreamEvent.mcpCallArgumentsDelta()).isEmpty
+        assertThat(responseStreamEvent.mcpCallArgumentsDone()).isEmpty
+        assertThat(responseStreamEvent.mcpCallCompleted()).isEmpty
+        assertThat(responseStreamEvent.mcpCallFailed()).isEmpty
+        assertThat(responseStreamEvent.mcpCallInProgress()).isEmpty
+        assertThat(responseStreamEvent.mcpListToolsCompleted()).isEmpty
+        assertThat(responseStreamEvent.mcpListToolsFailed()).isEmpty
+        assertThat(responseStreamEvent.mcpListToolsInProgress()).isEmpty
+        assertThat(responseStreamEvent.outputTextAnnotationAdded()).isEmpty
+        assertThat(responseStreamEvent.queued()).isEmpty
+        assertThat(responseStreamEvent.customToolCallInputDelta())
+            .contains(customToolCallInputDelta)
+        assertThat(responseStreamEvent.customToolCallInputDone()).isEmpty
+    }
+
+    @Test
+    fun ofCustomToolCallInputDeltaRoundtrip() {
+        val jsonMapper = jsonMapper()
+        val responseStreamEvent =
+            ResponseStreamEvent.ofCustomToolCallInputDelta(
+                ResponseCustomToolCallInputDeltaEvent.builder()
+                    .delta("delta")
+                    .itemId("item_id")
+                    .outputIndex(0L)
+                    .sequenceNumber(0L)
+                    .build()
+            )
+
+        val roundtrippedResponseStreamEvent =
+            jsonMapper.readValue(
+                jsonMapper.writeValueAsString(responseStreamEvent),
+                jacksonTypeRef<ResponseStreamEvent>(),
+            )
+
+        assertThat(roundtrippedResponseStreamEvent).isEqualTo(responseStreamEvent)
+    }
+
+    @Test
+    fun ofCustomToolCallInputDone() {
+        val customToolCallInputDone =
+            ResponseCustomToolCallInputDoneEvent.builder()
+                .input("input")
+                .itemId("item_id")
+                .outputIndex(0L)
+                .sequenceNumber(0L)
+                .build()
+
+        val responseStreamEvent =
+            ResponseStreamEvent.ofCustomToolCallInputDone(customToolCallInputDone)
+
+        assertThat(responseStreamEvent.audioDelta()).isEmpty
+        assertThat(responseStreamEvent.audioDone()).isEmpty
+        assertThat(responseStreamEvent.audioTranscriptDelta()).isEmpty
+        assertThat(responseStreamEvent.audioTranscriptDone()).isEmpty
+        assertThat(responseStreamEvent.codeInterpreterCallCodeDelta()).isEmpty
+        assertThat(responseStreamEvent.codeInterpreterCallCodeDone()).isEmpty
+        assertThat(responseStreamEvent.codeInterpreterCallCompleted()).isEmpty
+        assertThat(responseStreamEvent.codeInterpreterCallInProgress()).isEmpty
+        assertThat(responseStreamEvent.codeInterpreterCallInterpreting()).isEmpty
+        assertThat(responseStreamEvent.completed()).isEmpty
+        assertThat(responseStreamEvent.contentPartAdded()).isEmpty
+        assertThat(responseStreamEvent.contentPartDone()).isEmpty
+        assertThat(responseStreamEvent.created()).isEmpty
+        assertThat(responseStreamEvent.error()).isEmpty
+        assertThat(responseStreamEvent.fileSearchCallCompleted()).isEmpty
+        assertThat(responseStreamEvent.fileSearchCallInProgress()).isEmpty
+        assertThat(responseStreamEvent.fileSearchCallSearching()).isEmpty
+        assertThat(responseStreamEvent.functionCallArgumentsDelta()).isEmpty
+        assertThat(responseStreamEvent.functionCallArgumentsDone()).isEmpty
+        assertThat(responseStreamEvent.inProgress()).isEmpty
+        assertThat(responseStreamEvent.failed()).isEmpty
+        assertThat(responseStreamEvent.incomplete()).isEmpty
+        assertThat(responseStreamEvent.outputItemAdded()).isEmpty
+        assertThat(responseStreamEvent.outputItemDone()).isEmpty
+        assertThat(responseStreamEvent.reasoningSummaryPartAdded()).isEmpty
+        assertThat(responseStreamEvent.reasoningSummaryPartDone()).isEmpty
+        assertThat(responseStreamEvent.reasoningSummaryTextDelta()).isEmpty
+        assertThat(responseStreamEvent.reasoningSummaryTextDone()).isEmpty
+        assertThat(responseStreamEvent.reasoningTextDelta()).isEmpty
+        assertThat(responseStreamEvent.reasoningTextDone()).isEmpty
+        assertThat(responseStreamEvent.refusalDelta()).isEmpty
+        assertThat(responseStreamEvent.refusalDone()).isEmpty
+        assertThat(responseStreamEvent.outputTextDelta()).isEmpty
+        assertThat(responseStreamEvent.outputTextDone()).isEmpty
+        assertThat(responseStreamEvent.webSearchCallCompleted()).isEmpty
+        assertThat(responseStreamEvent.webSearchCallInProgress()).isEmpty
+        assertThat(responseStreamEvent.webSearchCallSearching()).isEmpty
+        assertThat(responseStreamEvent.imageGenerationCallCompleted()).isEmpty
+        assertThat(responseStreamEvent.imageGenerationCallGenerating()).isEmpty
+        assertThat(responseStreamEvent.imageGenerationCallInProgress()).isEmpty
+        assertThat(responseStreamEvent.imageGenerationCallPartialImage()).isEmpty
+        assertThat(responseStreamEvent.mcpCallArgumentsDelta()).isEmpty
+        assertThat(responseStreamEvent.mcpCallArgumentsDone()).isEmpty
+        assertThat(responseStreamEvent.mcpCallCompleted()).isEmpty
+        assertThat(responseStreamEvent.mcpCallFailed()).isEmpty
+        assertThat(responseStreamEvent.mcpCallInProgress()).isEmpty
+        assertThat(responseStreamEvent.mcpListToolsCompleted()).isEmpty
+        assertThat(responseStreamEvent.mcpListToolsFailed()).isEmpty
+        assertThat(responseStreamEvent.mcpListToolsInProgress()).isEmpty
+        assertThat(responseStreamEvent.outputTextAnnotationAdded()).isEmpty
+        assertThat(responseStreamEvent.queued()).isEmpty
+        assertThat(responseStreamEvent.customToolCallInputDelta()).isEmpty
+        assertThat(responseStreamEvent.customToolCallInputDone()).contains(customToolCallInputDone)
+    }
+
+    @Test
+    fun ofCustomToolCallInputDoneRoundtrip() {
+        val jsonMapper = jsonMapper()
+        val responseStreamEvent =
+            ResponseStreamEvent.ofCustomToolCallInputDone(
+                ResponseCustomToolCallInputDoneEvent.builder()
+                    .input("input")
+                    .itemId("item_id")
+                    .outputIndex(0L)
                     .sequenceNumber(0L)
                     .build()
             )

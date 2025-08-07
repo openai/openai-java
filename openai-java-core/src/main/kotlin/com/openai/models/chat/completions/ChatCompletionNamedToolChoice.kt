@@ -37,7 +37,7 @@ private constructor(
     fun function(): Function = function.getRequired("function")
 
     /**
-     * The type of the tool. Currently, only `function` is supported.
+     * For function calling, the type is always `function`.
      *
      * Expected to always return the following:
      * ```java

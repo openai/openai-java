@@ -85,10 +85,11 @@ internal class ChatCompletionListPageResponseTest {
                                                 .build()
                                         )
                                         .addToolCall(
-                                            ChatCompletionMessageToolCall.builder()
+                                            ChatCompletionMessageFunctionToolCall.builder()
                                                 .id("id")
                                                 .function(
-                                                    ChatCompletionMessageToolCall.Function.builder()
+                                                    ChatCompletionMessageFunctionToolCall.Function
+                                                        .builder()
                                                         .arguments("arguments")
                                                         .name("name")
                                                         .build()
@@ -203,10 +204,11 @@ internal class ChatCompletionListPageResponseTest {
                                             .build()
                                     )
                                     .addToolCall(
-                                        ChatCompletionMessageToolCall.builder()
+                                        ChatCompletionMessageFunctionToolCall.builder()
                                             .id("id")
                                             .function(
-                                                ChatCompletionMessageToolCall.Function.builder()
+                                                ChatCompletionMessageFunctionToolCall.Function
+                                                    .builder()
                                                     .arguments("arguments")
                                                     .name("name")
                                                     .build()
@@ -325,10 +327,11 @@ internal class ChatCompletionListPageResponseTest {
                                                 .build()
                                         )
                                         .addToolCall(
-                                            ChatCompletionMessageToolCall.builder()
+                                            ChatCompletionMessageFunctionToolCall.builder()
                                                 .id("id")
                                                 .function(
-                                                    ChatCompletionMessageToolCall.Function.builder()
+                                                    ChatCompletionMessageFunctionToolCall.Function
+                                                        .builder()
                                                         .arguments("arguments")
                                                         .name("name")
                                                         .build()

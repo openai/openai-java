@@ -43,10 +43,10 @@ internal class ChatCompletionStoreMessageTest {
                         .build()
                 )
                 .addToolCall(
-                    ChatCompletionMessageToolCall.builder()
+                    ChatCompletionMessageFunctionToolCall.builder()
                         .id("id")
                         .function(
-                            ChatCompletionMessageToolCall.Function.builder()
+                            ChatCompletionMessageFunctionToolCall.Function.builder()
                                 .arguments("arguments")
                                 .name("name")
                                 .build()
@@ -90,15 +90,17 @@ internal class ChatCompletionStoreMessageTest {
             )
         assertThat(chatCompletionStoreMessage.toolCalls().getOrNull())
             .containsExactly(
-                ChatCompletionMessageToolCall.builder()
-                    .id("id")
-                    .function(
-                        ChatCompletionMessageToolCall.Function.builder()
-                            .arguments("arguments")
-                            .name("name")
-                            .build()
-                    )
-                    .build()
+                ChatCompletionMessageToolCall.ofFunction(
+                    ChatCompletionMessageFunctionToolCall.builder()
+                        .id("id")
+                        .function(
+                            ChatCompletionMessageFunctionToolCall.Function.builder()
+                                .arguments("arguments")
+                                .name("name")
+                                .build()
+                        )
+                        .build()
+                )
             )
         assertThat(chatCompletionStoreMessage.id()).isEqualTo("id")
         assertThat(chatCompletionStoreMessage.contentParts().getOrNull())
@@ -143,10 +145,10 @@ internal class ChatCompletionStoreMessageTest {
                         .build()
                 )
                 .addToolCall(
-                    ChatCompletionMessageToolCall.builder()
+                    ChatCompletionMessageFunctionToolCall.builder()
                         .id("id")
                         .function(
-                            ChatCompletionMessageToolCall.Function.builder()
+                            ChatCompletionMessageFunctionToolCall.Function.builder()
                                 .arguments("arguments")
                                 .name("name")
                                 .build()

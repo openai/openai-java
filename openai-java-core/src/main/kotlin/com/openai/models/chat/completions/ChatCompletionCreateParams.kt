@@ -30,6 +30,7 @@ import com.openai.core.http.QueryParams
 import com.openai.core.toImmutable
 import com.openai.errors.OpenAIInvalidDataException
 import com.openai.models.ChatModel
+import com.openai.models.FunctionDefinition
 import com.openai.models.FunctionParameters
 import com.openai.models.ReasoningEffort
 import com.openai.models.ResponseFormatJsonObject
@@ -263,12 +264,10 @@ private constructor(
     fun promptCacheKey(): Optional<String> = body.promptCacheKey()
 
     /**
-     * **o-series models only**
-     *
      * Constrains effort on reasoning for
      * [reasoning models](https://platform.openai.com/docs/guides/reasoning). Currently supported
-     * values are `low`, `medium`, and `high`. Reducing reasoning effort can result in faster
-     * responses and fewer tokens used on reasoning in a response.
+     * values are `minimal`, `low`, `medium`, and `high`. Reducing reasoning effort can result in
+     * faster responses and fewer tokens used on reasoning in a response.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -390,9 +389,9 @@ private constructor(
     fun toolChoice(): Optional<ChatCompletionToolChoiceOption> = body.toolChoice()
 
     /**
-     * A list of tools the model may call. Currently, only functions are supported as a tool. Use
-     * this to provide a list of functions the model may generate JSON inputs for. A max of 128
-     * functions are supported.
+     * A list of tools the model may call. You can provide either
+     * [custom tools](https://platform.openai.com/docs/guides/function-calling#custom-tools) or
+     * [function tools](https://platform.openai.com/docs/guides/function-calling).
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -432,6 +431,16 @@ private constructor(
      *   server responded with an unexpected value).
      */
     @Deprecated("deprecated") fun user(): Optional<String> = body.user()
+
+    /**
+     * Constrains the verbosity of the model's response. Lower values will result in more concise
+     * responses, while higher values will result in more verbose responses. Currently supported
+     * values are `low`, `medium`, and `high`.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun verbosity(): Optional<Verbosity> = body.verbosity()
 
     /**
      * This tool searches the web for relevant results to use in a response. Learn more about the
@@ -662,6 +671,13 @@ private constructor(
      * Unlike [user], this method doesn't throw if the JSON field has an unexpected type.
      */
     @Deprecated("deprecated") fun _user(): JsonField<String> = body._user()
+
+    /**
+     * Returns the raw JSON value of [verbosity].
+     *
+     * Unlike [verbosity], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    fun _verbosity(): JsonField<Verbosity> = body._verbosity()
 
     /**
      * Returns the raw JSON value of [webSearchOptions].
@@ -1326,12 +1342,10 @@ private constructor(
         }
 
         /**
-         * **o-series models only**
-         *
          * Constrains effort on reasoning for
          * [reasoning models](https://platform.openai.com/docs/guides/reasoning). Currently
-         * supported values are `low`, `medium`, and `high`. Reducing reasoning effort can result in
-         * faster responses and fewer tokens used on reasoning in a response.
+         * supported values are `minimal`, `low`, `medium`, and `high`. Reducing reasoning effort
+         * can result in faster responses and fewer tokens used on reasoning in a response.
          */
         fun reasoningEffort(reasoningEffort: ReasoningEffort?) = apply {
             body.reasoningEffort(reasoningEffort)
@@ -1599,6 +1613,14 @@ private constructor(
 
         /**
          * Alias for calling [toolChoice] with
+         * `ChatCompletionToolChoiceOption.ofAllowedToolChoice(allowedToolChoice)`.
+         */
+        fun toolChoice(allowedToolChoice: ChatCompletionAllowedToolChoice) = apply {
+            body.toolChoice(allowedToolChoice)
+        }
+
+        /**
+         * Alias for calling [toolChoice] with
          * `ChatCompletionToolChoiceOption.ofNamedToolChoice(namedToolChoice)`.
          */
         fun toolChoice(namedToolChoice: ChatCompletionNamedToolChoice) = apply {
@@ -1606,9 +1628,17 @@ private constructor(
         }
 
         /**
-         * A list of tools the model may call. Currently, only functions are supported as a tool.
-         * Use this to provide a list of functions the model may generate JSON inputs for. A max of
-         * 128 functions are supported.
+         * Alias for calling [toolChoice] with
+         * `ChatCompletionToolChoiceOption.ofNamedToolChoiceCustom(namedToolChoiceCustom)`.
+         */
+        fun toolChoice(namedToolChoiceCustom: ChatCompletionNamedToolChoiceCustom) = apply {
+            body.toolChoice(namedToolChoiceCustom)
+        }
+
+        /**
+         * A list of tools the model may call. You can provide either
+         * [custom tools](https://platform.openai.com/docs/guides/function-calling#custom-tools) or
+         * [function tools](https://platform.openai.com/docs/guides/function-calling).
          */
         fun tools(tools: List<ChatCompletionTool>) = apply { body.tools(tools) }
 
@@ -1627,6 +1657,34 @@ private constructor(
          * @throws IllegalStateException if the field was previously set to a non-list.
          */
         fun addTool(tool: ChatCompletionTool) = apply { body.addTool(tool) }
+
+        /** Alias for calling [addTool] with `ChatCompletionTool.ofFunction(function)`. */
+        fun addTool(function: ChatCompletionFunctionTool) = apply { body.addTool(function) }
+
+        /**
+         * Alias for calling [addTool] with the following:
+         * ```java
+         * ChatCompletionFunctionTool.builder()
+         *     .function(function)
+         *     .build()
+         * ```
+         */
+        fun addFunctionTool(function: FunctionDefinition) = apply { body.addFunctionTool(function) }
+
+        /** Alias for calling [addTool] with `ChatCompletionTool.ofCustom(custom)`. */
+        fun addTool(custom: ChatCompletionCustomTool) = apply { body.addTool(custom) }
+
+        /**
+         * Alias for calling [addTool] with the following:
+         * ```java
+         * ChatCompletionCustomTool.builder()
+         *     .custom(custom)
+         *     .build()
+         * ```
+         */
+        fun addCustomTool(custom: ChatCompletionCustomTool.Custom) = apply {
+            body.addCustomTool(custom)
+        }
 
         /**
          * An integer between 0 and 20 specifying the number of most likely tokens to return at each
@@ -1697,6 +1755,25 @@ private constructor(
          * method is primarily for setting the field to an undocumented or not yet supported value.
          */
         @Deprecated("deprecated") fun user(user: JsonField<String>) = apply { body.user(user) }
+
+        /**
+         * Constrains the verbosity of the model's response. Lower values will result in more
+         * concise responses, while higher values will result in more verbose responses. Currently
+         * supported values are `low`, `medium`, and `high`.
+         */
+        fun verbosity(verbosity: Verbosity?) = apply { body.verbosity(verbosity) }
+
+        /** Alias for calling [Builder.verbosity] with `verbosity.orElse(null)`. */
+        fun verbosity(verbosity: Optional<Verbosity>) = verbosity(verbosity.getOrNull())
+
+        /**
+         * Sets [Builder.verbosity] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.verbosity] with a well-typed [Verbosity] value instead.
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
+         */
+        fun verbosity(verbosity: JsonField<Verbosity>) = apply { body.verbosity(verbosity) }
 
         /**
          * This tool searches the web for relevant results to use in a response. Learn more about
@@ -1895,6 +1972,7 @@ private constructor(
         private val topLogprobs: JsonField<Long>,
         private val topP: JsonField<Double>,
         private val user: JsonField<String>,
+        private val verbosity: JsonField<Verbosity>,
         private val webSearchOptions: JsonField<WebSearchOptions>,
         private val additionalProperties: MutableMap<String, JsonValue>,
     ) {
@@ -1980,6 +2058,9 @@ private constructor(
             topLogprobs: JsonField<Long> = JsonMissing.of(),
             @JsonProperty("top_p") @ExcludeMissing topP: JsonField<Double> = JsonMissing.of(),
             @JsonProperty("user") @ExcludeMissing user: JsonField<String> = JsonMissing.of(),
+            @JsonProperty("verbosity")
+            @ExcludeMissing
+            verbosity: JsonField<Verbosity> = JsonMissing.of(),
             @JsonProperty("web_search_options")
             @ExcludeMissing
             webSearchOptions: JsonField<WebSearchOptions> = JsonMissing.of(),
@@ -2015,6 +2096,7 @@ private constructor(
             topLogprobs,
             topP,
             user,
+            verbosity,
             webSearchOptions,
             mutableMapOf(),
         )
@@ -2223,12 +2305,10 @@ private constructor(
         fun promptCacheKey(): Optional<String> = promptCacheKey.getOptional("prompt_cache_key")
 
         /**
-         * **o-series models only**
-         *
          * Constrains effort on reasoning for
          * [reasoning models](https://platform.openai.com/docs/guides/reasoning). Currently
-         * supported values are `low`, `medium`, and `high`. Reducing reasoning effort can result in
-         * faster responses and fewer tokens used on reasoning in a response.
+         * supported values are `minimal`, `low`, `medium`, and `high`. Reducing reasoning effort
+         * can result in faster responses and fewer tokens used on reasoning in a response.
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
@@ -2356,9 +2436,9 @@ private constructor(
             toolChoice.getOptional("tool_choice")
 
         /**
-         * A list of tools the model may call. Currently, only functions are supported as a tool.
-         * Use this to provide a list of functions the model may generate JSON inputs for. A max of
-         * 128 functions are supported.
+         * A list of tools the model may call. You can provide either
+         * [custom tools](https://platform.openai.com/docs/guides/function-calling#custom-tools) or
+         * [function tools](https://platform.openai.com/docs/guides/function-calling).
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
@@ -2398,6 +2478,16 @@ private constructor(
          *   server responded with an unexpected value).
          */
         @Deprecated("deprecated") fun user(): Optional<String> = user.getOptional("user")
+
+        /**
+         * Constrains the verbosity of the model's response. Lower values will result in more
+         * concise responses, while higher values will result in more verbose responses. Currently
+         * supported values are `low`, `medium`, and `high`.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun verbosity(): Optional<Verbosity> = verbosity.getOptional("verbosity")
 
         /**
          * This tool searches the web for relevant results to use in a response. Learn more about
@@ -2688,6 +2778,15 @@ private constructor(
         fun _user(): JsonField<String> = user
 
         /**
+         * Returns the raw JSON value of [verbosity].
+         *
+         * Unlike [verbosity], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("verbosity")
+        @ExcludeMissing
+        fun _verbosity(): JsonField<Verbosity> = verbosity
+
+        /**
          * Returns the raw JSON value of [webSearchOptions].
          *
          * Unlike [webSearchOptions], this method doesn't throw if the JSON field has an unexpected
@@ -2757,6 +2856,7 @@ private constructor(
             private var topLogprobs: JsonField<Long> = JsonMissing.of()
             private var topP: JsonField<Double> = JsonMissing.of()
             private var user: JsonField<String> = JsonMissing.of()
+            private var verbosity: JsonField<Verbosity> = JsonMissing.of()
             private var webSearchOptions: JsonField<WebSearchOptions> = JsonMissing.of()
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
@@ -2793,6 +2893,7 @@ private constructor(
                 topLogprobs = body.topLogprobs
                 topP = body.topP
                 user = body.user
+                verbosity = body.verbosity
                 webSearchOptions = body.webSearchOptions
                 additionalProperties = body.additionalProperties.toMutableMap()
             }
@@ -3452,12 +3553,11 @@ private constructor(
             }
 
             /**
-             * **o-series models only**
-             *
              * Constrains effort on reasoning for
              * [reasoning models](https://platform.openai.com/docs/guides/reasoning). Currently
-             * supported values are `low`, `medium`, and `high`. Reducing reasoning effort can
-             * result in faster responses and fewer tokens used on reasoning in a response.
+             * supported values are `minimal`, `low`, `medium`, and `high`. Reducing reasoning
+             * effort can result in faster responses and fewer tokens used on reasoning in a
+             * response.
              */
             fun reasoningEffort(reasoningEffort: ReasoningEffort?) =
                 reasoningEffort(JsonField.ofNullable(reasoningEffort))
@@ -3735,15 +3835,31 @@ private constructor(
 
             /**
              * Alias for calling [toolChoice] with
+             * `ChatCompletionToolChoiceOption.ofAllowedToolChoice(allowedToolChoice)`.
+             */
+            fun toolChoice(allowedToolChoice: ChatCompletionAllowedToolChoice) =
+                toolChoice(ChatCompletionToolChoiceOption.ofAllowedToolChoice(allowedToolChoice))
+
+            /**
+             * Alias for calling [toolChoice] with
              * `ChatCompletionToolChoiceOption.ofNamedToolChoice(namedToolChoice)`.
              */
             fun toolChoice(namedToolChoice: ChatCompletionNamedToolChoice) =
                 toolChoice(ChatCompletionToolChoiceOption.ofNamedToolChoice(namedToolChoice))
 
             /**
-             * A list of tools the model may call. Currently, only functions are supported as a
-             * tool. Use this to provide a list of functions the model may generate JSON inputs for.
-             * A max of 128 functions are supported.
+             * Alias for calling [toolChoice] with
+             * `ChatCompletionToolChoiceOption.ofNamedToolChoiceCustom(namedToolChoiceCustom)`.
+             */
+            fun toolChoice(namedToolChoiceCustom: ChatCompletionNamedToolChoiceCustom) =
+                toolChoice(
+                    ChatCompletionToolChoiceOption.ofNamedToolChoiceCustom(namedToolChoiceCustom)
+                )
+
+            /**
+             * A list of tools the model may call. You can provide either
+             * [custom tools](https://platform.openai.com/docs/guides/function-calling#custom-tools)
+             * or [function tools](https://platform.openai.com/docs/guides/function-calling).
              */
             fun tools(tools: List<ChatCompletionTool>) = tools(JsonField.of(tools))
 
@@ -3769,6 +3885,36 @@ private constructor(
                         checkKnown("tools", it).add(tool)
                     }
             }
+
+            /** Alias for calling [addTool] with `ChatCompletionTool.ofFunction(function)`. */
+            fun addTool(function: ChatCompletionFunctionTool) =
+                addTool(ChatCompletionTool.ofFunction(function))
+
+            /**
+             * Alias for calling [addTool] with the following:
+             * ```java
+             * ChatCompletionFunctionTool.builder()
+             *     .function(function)
+             *     .build()
+             * ```
+             */
+            fun addFunctionTool(function: FunctionDefinition) =
+                addTool(ChatCompletionFunctionTool.builder().function(function).build())
+
+            /** Alias for calling [addTool] with `ChatCompletionTool.ofCustom(custom)`. */
+            fun addTool(custom: ChatCompletionCustomTool) =
+                addTool(ChatCompletionTool.ofCustom(custom))
+
+            /**
+             * Alias for calling [addTool] with the following:
+             * ```java
+             * ChatCompletionCustomTool.builder()
+             *     .custom(custom)
+             *     .build()
+             * ```
+             */
+            fun addCustomTool(custom: ChatCompletionCustomTool.Custom) =
+                addTool(ChatCompletionCustomTool.builder().custom(custom).build())
 
             /**
              * An integer between 0 and 20 specifying the number of most likely tokens to return at
@@ -3841,6 +3987,25 @@ private constructor(
              * value.
              */
             @Deprecated("deprecated") fun user(user: JsonField<String>) = apply { this.user = user }
+
+            /**
+             * Constrains the verbosity of the model's response. Lower values will result in more
+             * concise responses, while higher values will result in more verbose responses.
+             * Currently supported values are `low`, `medium`, and `high`.
+             */
+            fun verbosity(verbosity: Verbosity?) = verbosity(JsonField.ofNullable(verbosity))
+
+            /** Alias for calling [Builder.verbosity] with `verbosity.orElse(null)`. */
+            fun verbosity(verbosity: Optional<Verbosity>) = verbosity(verbosity.getOrNull())
+
+            /**
+             * Sets [Builder.verbosity] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.verbosity] with a well-typed [Verbosity] value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun verbosity(verbosity: JsonField<Verbosity>) = apply { this.verbosity = verbosity }
 
             /**
              * This tool searches the web for relevant results to use in a response. Learn more
@@ -3926,6 +4091,7 @@ private constructor(
                     topLogprobs,
                     topP,
                     user,
+                    verbosity,
                     webSearchOptions,
                     additionalProperties.toMutableMap(),
                 )
@@ -3969,6 +4135,7 @@ private constructor(
             topLogprobs()
             topP()
             user()
+            verbosity().ifPresent { it.validate() }
             webSearchOptions().ifPresent { it.validate() }
             validated = true
         }
@@ -4020,6 +4187,7 @@ private constructor(
                 (if (topLogprobs.asKnown().isPresent) 1 else 0) +
                 (if (topP.asKnown().isPresent) 1 else 0) +
                 (if (user.asKnown().isPresent) 1 else 0) +
+                (verbosity.asKnown().getOrNull()?.validity() ?: 0) +
                 (webSearchOptions.asKnown().getOrNull()?.validity() ?: 0)
 
         override fun equals(other: Any?): Boolean {
@@ -4027,17 +4195,17 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is Body && messages == other.messages && model == other.model && audio == other.audio && frequencyPenalty == other.frequencyPenalty && functionCall == other.functionCall && functions == other.functions && logitBias == other.logitBias && logprobs == other.logprobs && maxCompletionTokens == other.maxCompletionTokens && maxTokens == other.maxTokens && metadata == other.metadata && modalities == other.modalities && n == other.n && parallelToolCalls == other.parallelToolCalls && prediction == other.prediction && presencePenalty == other.presencePenalty && promptCacheKey == other.promptCacheKey && reasoningEffort == other.reasoningEffort && responseFormat == other.responseFormat && safetyIdentifier == other.safetyIdentifier && seed == other.seed && serviceTier == other.serviceTier && stop == other.stop && store == other.store && streamOptions == other.streamOptions && temperature == other.temperature && toolChoice == other.toolChoice && tools == other.tools && topLogprobs == other.topLogprobs && topP == other.topP && user == other.user && webSearchOptions == other.webSearchOptions && additionalProperties == other.additionalProperties /* spotless:on */
+            return /* spotless:off */ other is Body && messages == other.messages && model == other.model && audio == other.audio && frequencyPenalty == other.frequencyPenalty && functionCall == other.functionCall && functions == other.functions && logitBias == other.logitBias && logprobs == other.logprobs && maxCompletionTokens == other.maxCompletionTokens && maxTokens == other.maxTokens && metadata == other.metadata && modalities == other.modalities && n == other.n && parallelToolCalls == other.parallelToolCalls && prediction == other.prediction && presencePenalty == other.presencePenalty && promptCacheKey == other.promptCacheKey && reasoningEffort == other.reasoningEffort && responseFormat == other.responseFormat && safetyIdentifier == other.safetyIdentifier && seed == other.seed && serviceTier == other.serviceTier && stop == other.stop && store == other.store && streamOptions == other.streamOptions && temperature == other.temperature && toolChoice == other.toolChoice && tools == other.tools && topLogprobs == other.topLogprobs && topP == other.topP && user == other.user && verbosity == other.verbosity && webSearchOptions == other.webSearchOptions && additionalProperties == other.additionalProperties /* spotless:on */
         }
 
         /* spotless:off */
-        private val hashCode: Int by lazy { Objects.hash(messages, model, audio, frequencyPenalty, functionCall, functions, logitBias, logprobs, maxCompletionTokens, maxTokens, metadata, modalities, n, parallelToolCalls, prediction, presencePenalty, promptCacheKey, reasoningEffort, responseFormat, safetyIdentifier, seed, serviceTier, stop, store, streamOptions, temperature, toolChoice, tools, topLogprobs, topP, user, webSearchOptions, additionalProperties) }
+        private val hashCode: Int by lazy { Objects.hash(messages, model, audio, frequencyPenalty, functionCall, functions, logitBias, logprobs, maxCompletionTokens, maxTokens, metadata, modalities, n, parallelToolCalls, prediction, presencePenalty, promptCacheKey, reasoningEffort, responseFormat, safetyIdentifier, seed, serviceTier, stop, store, streamOptions, temperature, toolChoice, tools, topLogprobs, topP, user, verbosity, webSearchOptions, additionalProperties) }
         /* spotless:on */
 
         override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "Body{messages=$messages, model=$model, audio=$audio, frequencyPenalty=$frequencyPenalty, functionCall=$functionCall, functions=$functions, logitBias=$logitBias, logprobs=$logprobs, maxCompletionTokens=$maxCompletionTokens, maxTokens=$maxTokens, metadata=$metadata, modalities=$modalities, n=$n, parallelToolCalls=$parallelToolCalls, prediction=$prediction, presencePenalty=$presencePenalty, promptCacheKey=$promptCacheKey, reasoningEffort=$reasoningEffort, responseFormat=$responseFormat, safetyIdentifier=$safetyIdentifier, seed=$seed, serviceTier=$serviceTier, stop=$stop, store=$store, streamOptions=$streamOptions, temperature=$temperature, toolChoice=$toolChoice, tools=$tools, topLogprobs=$topLogprobs, topP=$topP, user=$user, webSearchOptions=$webSearchOptions, additionalProperties=$additionalProperties}"
+            "Body{messages=$messages, model=$model, audio=$audio, frequencyPenalty=$frequencyPenalty, functionCall=$functionCall, functions=$functions, logitBias=$logitBias, logprobs=$logprobs, maxCompletionTokens=$maxCompletionTokens, maxTokens=$maxTokens, metadata=$metadata, modalities=$modalities, n=$n, parallelToolCalls=$parallelToolCalls, prediction=$prediction, presencePenalty=$presencePenalty, promptCacheKey=$promptCacheKey, reasoningEffort=$reasoningEffort, responseFormat=$responseFormat, safetyIdentifier=$safetyIdentifier, seed=$seed, serviceTier=$serviceTier, stop=$stop, store=$store, streamOptions=$streamOptions, temperature=$temperature, toolChoice=$toolChoice, tools=$tools, topLogprobs=$topLogprobs, topP=$topP, user=$user, verbosity=$verbosity, webSearchOptions=$webSearchOptions, additionalProperties=$additionalProperties}"
     }
 
     /**
@@ -5599,6 +5767,144 @@ private constructor(
                 }
             }
         }
+    }
+
+    /**
+     * Constrains the verbosity of the model's response. Lower values will result in more concise
+     * responses, while higher values will result in more verbose responses. Currently supported
+     * values are `low`, `medium`, and `high`.
+     */
+    class Verbosity @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
+
+        /**
+         * Returns this class instance's raw value.
+         *
+         * This is usually only useful if this instance was deserialized from data that doesn't
+         * match any known member, and you want to know that value. For example, if the SDK is on an
+         * older version than the API, then the API may respond with new members that the SDK is
+         * unaware of.
+         */
+        @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
+
+        companion object {
+
+            @JvmField val LOW = of("low")
+
+            @JvmField val MEDIUM = of("medium")
+
+            @JvmField val HIGH = of("high")
+
+            @JvmStatic fun of(value: String) = Verbosity(JsonField.of(value))
+        }
+
+        /** An enum containing [Verbosity]'s known values. */
+        enum class Known {
+            LOW,
+            MEDIUM,
+            HIGH,
+        }
+
+        /**
+         * An enum containing [Verbosity]'s known values, as well as an [_UNKNOWN] member.
+         *
+         * An instance of [Verbosity] can contain an unknown value in a couple of cases:
+         * - It was deserialized from data that doesn't match any known member. For example, if the
+         *   SDK is on an older version than the API, then the API may respond with new members that
+         *   the SDK is unaware of.
+         * - It was constructed with an arbitrary value using the [of] method.
+         */
+        enum class Value {
+            LOW,
+            MEDIUM,
+            HIGH,
+            /**
+             * An enum member indicating that [Verbosity] was instantiated with an unknown value.
+             */
+            _UNKNOWN,
+        }
+
+        /**
+         * Returns an enum member corresponding to this class instance's value, or [Value._UNKNOWN]
+         * if the class was instantiated with an unknown value.
+         *
+         * Use the [known] method instead if you're certain the value is always known or if you want
+         * to throw for the unknown case.
+         */
+        fun value(): Value =
+            when (this) {
+                LOW -> Value.LOW
+                MEDIUM -> Value.MEDIUM
+                HIGH -> Value.HIGH
+                else -> Value._UNKNOWN
+            }
+
+        /**
+         * Returns an enum member corresponding to this class instance's value.
+         *
+         * Use the [value] method instead if you're uncertain the value is always known and don't
+         * want to throw for the unknown case.
+         *
+         * @throws OpenAIInvalidDataException if this class instance's value is a not a known
+         *   member.
+         */
+        fun known(): Known =
+            when (this) {
+                LOW -> Known.LOW
+                MEDIUM -> Known.MEDIUM
+                HIGH -> Known.HIGH
+                else -> throw OpenAIInvalidDataException("Unknown Verbosity: $value")
+            }
+
+        /**
+         * Returns this class instance's primitive wire representation.
+         *
+         * This differs from the [toString] method because that method is primarily for debugging
+         * and generally doesn't throw.
+         *
+         * @throws OpenAIInvalidDataException if this class instance's value does not have the
+         *   expected primitive type.
+         */
+        fun asString(): String =
+            _value().asString().orElseThrow { OpenAIInvalidDataException("Value is not a String") }
+
+        private var validated: Boolean = false
+
+        fun validate(): Verbosity = apply {
+            if (validated) {
+                return@apply
+            }
+
+            known()
+            validated = true
+        }
+
+        fun isValid(): Boolean =
+            try {
+                validate()
+                true
+            } catch (e: OpenAIInvalidDataException) {
+                false
+            }
+
+        /**
+         * Returns a score indicating how many valid values are contained in this object
+         * recursively.
+         *
+         * Used for best match union deserialization.
+         */
+        @JvmSynthetic internal fun validity(): Int = if (value() == Value._UNKNOWN) 0 else 1
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) {
+                return true
+            }
+
+            return /* spotless:off */ other is Verbosity && value == other.value /* spotless:on */
+        }
+
+        override fun hashCode() = value.hashCode()
+
+        override fun toString() = value.toString()
     }
 
     /**

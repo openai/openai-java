@@ -41,12 +41,21 @@ private constructor(
         fun build(): SseMessage = SseMessage(jsonMapper!!, event, data, id, retry)
     }
 
-    inline fun <reified T> json(): T =
+    inline fun <reified T> json(includeEventAndData: Boolean = false): T {
+        var jsonNode = jsonNode
+        if (includeEventAndData) {
+            val newJsonNode = jsonMapper.createObjectNode()
+            event?.let { newJsonNode.put("event", event) }
+            newJsonNode.replace("data", jsonNode)
+            jsonNode = newJsonNode
+        }
+
         try {
-            jsonMapper.readerFor(jacksonTypeRef<T>()).readValue(jsonNode)
+            return jsonMapper.readerFor(jacksonTypeRef<T>()).readValue(jsonNode)
         } catch (e: Exception) {
             throw OpenAIInvalidDataException("Error reading response", e)
         }
+    }
 
     private val jsonNode by lazy {
         try {

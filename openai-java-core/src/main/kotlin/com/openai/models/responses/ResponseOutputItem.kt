@@ -47,6 +47,7 @@ private constructor(
     private val mcpCall: McpCall? = null,
     private val mcpListTools: McpListTools? = null,
     private val mcpApprovalRequest: McpApprovalRequest? = null,
+    private val customToolCall: ResponseCustomToolCall? = null,
     private val _json: JsonValue? = null,
 ) {
 
@@ -109,6 +110,9 @@ private constructor(
     /** A request for human approval of a tool invocation. */
     fun mcpApprovalRequest(): Optional<McpApprovalRequest> = Optional.ofNullable(mcpApprovalRequest)
 
+    /** A call to a custom tool created by the model. */
+    fun customToolCall(): Optional<ResponseCustomToolCall> = Optional.ofNullable(customToolCall)
+
     fun isMessage(): Boolean = message != null
 
     fun isFileSearchCall(): Boolean = fileSearchCall != null
@@ -132,6 +136,8 @@ private constructor(
     fun isMcpListTools(): Boolean = mcpListTools != null
 
     fun isMcpApprovalRequest(): Boolean = mcpApprovalRequest != null
+
+    fun isCustomToolCall(): Boolean = customToolCall != null
 
     /** An output message from the model. */
     fun asMessage(): ResponseOutputMessage = message.getOrThrow("message")
@@ -193,6 +199,9 @@ private constructor(
     fun asMcpApprovalRequest(): McpApprovalRequest =
         mcpApprovalRequest.getOrThrow("mcpApprovalRequest")
 
+    /** A call to a custom tool created by the model. */
+    fun asCustomToolCall(): ResponseCustomToolCall = customToolCall.getOrThrow("customToolCall")
+
     fun _json(): Optional<JsonValue> = Optional.ofNullable(_json)
 
     fun <T> accept(visitor: Visitor<T>): T =
@@ -209,6 +218,7 @@ private constructor(
             mcpCall != null -> visitor.visitMcpCall(mcpCall)
             mcpListTools != null -> visitor.visitMcpListTools(mcpListTools)
             mcpApprovalRequest != null -> visitor.visitMcpApprovalRequest(mcpApprovalRequest)
+            customToolCall != null -> visitor.visitCustomToolCall(customToolCall)
             else -> visitor.unknown(_json)
         }
 
@@ -270,6 +280,10 @@ private constructor(
                 override fun visitMcpApprovalRequest(mcpApprovalRequest: McpApprovalRequest) {
                     mcpApprovalRequest.validate()
                 }
+
+                override fun visitCustomToolCall(customToolCall: ResponseCustomToolCall) {
+                    customToolCall.validate()
+                }
             }
         )
         validated = true
@@ -325,6 +339,9 @@ private constructor(
                 override fun visitMcpApprovalRequest(mcpApprovalRequest: McpApprovalRequest) =
                     mcpApprovalRequest.validity()
 
+                override fun visitCustomToolCall(customToolCall: ResponseCustomToolCall) =
+                    customToolCall.validity()
+
                 override fun unknown(json: JsonValue?) = 0
             }
         )
@@ -334,10 +351,10 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is ResponseOutputItem && message == other.message && fileSearchCall == other.fileSearchCall && functionCall == other.functionCall && webSearchCall == other.webSearchCall && computerCall == other.computerCall && reasoning == other.reasoning && imageGenerationCall == other.imageGenerationCall && codeInterpreterCall == other.codeInterpreterCall && localShellCall == other.localShellCall && mcpCall == other.mcpCall && mcpListTools == other.mcpListTools && mcpApprovalRequest == other.mcpApprovalRequest /* spotless:on */
+        return /* spotless:off */ other is ResponseOutputItem && message == other.message && fileSearchCall == other.fileSearchCall && functionCall == other.functionCall && webSearchCall == other.webSearchCall && computerCall == other.computerCall && reasoning == other.reasoning && imageGenerationCall == other.imageGenerationCall && codeInterpreterCall == other.codeInterpreterCall && localShellCall == other.localShellCall && mcpCall == other.mcpCall && mcpListTools == other.mcpListTools && mcpApprovalRequest == other.mcpApprovalRequest && customToolCall == other.customToolCall /* spotless:on */
     }
 
-    override fun hashCode(): Int = /* spotless:off */ Objects.hash(message, fileSearchCall, functionCall, webSearchCall, computerCall, reasoning, imageGenerationCall, codeInterpreterCall, localShellCall, mcpCall, mcpListTools, mcpApprovalRequest) /* spotless:on */
+    override fun hashCode(): Int = /* spotless:off */ Objects.hash(message, fileSearchCall, functionCall, webSearchCall, computerCall, reasoning, imageGenerationCall, codeInterpreterCall, localShellCall, mcpCall, mcpListTools, mcpApprovalRequest, customToolCall) /* spotless:on */
 
     override fun toString(): String =
         when {
@@ -356,6 +373,7 @@ private constructor(
             mcpListTools != null -> "ResponseOutputItem{mcpListTools=$mcpListTools}"
             mcpApprovalRequest != null ->
                 "ResponseOutputItem{mcpApprovalRequest=$mcpApprovalRequest}"
+            customToolCall != null -> "ResponseOutputItem{customToolCall=$customToolCall}"
             _json != null -> "ResponseOutputItem{_unknown=$_json}"
             else -> throw IllegalStateException("Invalid ResponseOutputItem")
         }
@@ -439,6 +457,11 @@ private constructor(
         @JvmStatic
         fun ofMcpApprovalRequest(mcpApprovalRequest: McpApprovalRequest) =
             ResponseOutputItem(mcpApprovalRequest = mcpApprovalRequest)
+
+        /** A call to a custom tool created by the model. */
+        @JvmStatic
+        fun ofCustomToolCall(customToolCall: ResponseCustomToolCall) =
+            ResponseOutputItem(customToolCall = customToolCall)
     }
 
     /**
@@ -503,6 +526,9 @@ private constructor(
 
         /** A request for human approval of a tool invocation. */
         fun visitMcpApprovalRequest(mcpApprovalRequest: McpApprovalRequest): T
+
+        /** A call to a custom tool created by the model. */
+        fun visitCustomToolCall(customToolCall: ResponseCustomToolCall): T
 
         /**
          * Maps an unknown variant of [ResponseOutputItem] to a value of type [T].
@@ -586,6 +612,11 @@ private constructor(
                         ResponseOutputItem(mcpApprovalRequest = it, _json = json)
                     } ?: ResponseOutputItem(_json = json)
                 }
+                "custom_tool_call" -> {
+                    return tryDeserialize(node, jacksonTypeRef<ResponseCustomToolCall>())?.let {
+                        ResponseOutputItem(customToolCall = it, _json = json)
+                    } ?: ResponseOutputItem(_json = json)
+                }
             }
 
             return ResponseOutputItem(_json = json)
@@ -614,6 +645,7 @@ private constructor(
                 value.mcpCall != null -> generator.writeObject(value.mcpCall)
                 value.mcpListTools != null -> generator.writeObject(value.mcpListTools)
                 value.mcpApprovalRequest != null -> generator.writeObject(value.mcpApprovalRequest)
+                value.customToolCall != null -> generator.writeObject(value.customToolCall)
                 value._json != null -> generator.writeObject(value._json)
                 else -> throw IllegalStateException("Invalid ResponseOutputItem")
             }

@@ -15,6 +15,7 @@ class ResponseRetrieveParams
 private constructor(
     private val responseId: String?,
     private val include: List<ResponseIncludable>?,
+    private val includeObfuscation: Boolean?,
     private val startingAfter: Long?,
     private val additionalHeaders: Headers,
     private val additionalQueryParams: QueryParams,
@@ -27,6 +28,16 @@ private constructor(
      * creation above for more information.
      */
     fun include(): Optional<List<ResponseIncludable>> = Optional.ofNullable(include)
+
+    /**
+     * When true, stream obfuscation will be enabled. Stream obfuscation adds random characters to
+     * an `obfuscation` field on streaming delta events to normalize payload sizes as a mitigation
+     * to certain side-channel attacks. These obfuscation fields are included by default, but add a
+     * small amount of overhead to the data stream. You can set `include_obfuscation` to false to
+     * optimize for bandwidth if you trust the network links between your application and the OpenAI
+     * API.
+     */
+    fun includeObfuscation(): Optional<Boolean> = Optional.ofNullable(includeObfuscation)
 
     /** The sequence number of the event after which to start streaming. */
     fun startingAfter(): Optional<Long> = Optional.ofNullable(startingAfter)
@@ -52,6 +63,7 @@ private constructor(
 
         private var responseId: String? = null
         private var include: MutableList<ResponseIncludable>? = null
+        private var includeObfuscation: Boolean? = null
         private var startingAfter: Long? = null
         private var additionalHeaders: Headers.Builder = Headers.builder()
         private var additionalQueryParams: QueryParams.Builder = QueryParams.builder()
@@ -60,6 +72,7 @@ private constructor(
         internal fun from(responseRetrieveParams: ResponseRetrieveParams) = apply {
             responseId = responseRetrieveParams.responseId
             include = responseRetrieveParams.include?.toMutableList()
+            includeObfuscation = responseRetrieveParams.includeObfuscation
             startingAfter = responseRetrieveParams.startingAfter
             additionalHeaders = responseRetrieveParams.additionalHeaders.toBuilder()
             additionalQueryParams = responseRetrieveParams.additionalQueryParams.toBuilder()
@@ -89,6 +102,32 @@ private constructor(
         fun addInclude(include: ResponseIncludable) = apply {
             this.include = (this.include ?: mutableListOf()).apply { add(include) }
         }
+
+        /**
+         * When true, stream obfuscation will be enabled. Stream obfuscation adds random characters
+         * to an `obfuscation` field on streaming delta events to normalize payload sizes as a
+         * mitigation to certain side-channel attacks. These obfuscation fields are included by
+         * default, but add a small amount of overhead to the data stream. You can set
+         * `include_obfuscation` to false to optimize for bandwidth if you trust the network links
+         * between your application and the OpenAI API.
+         */
+        fun includeObfuscation(includeObfuscation: Boolean?) = apply {
+            this.includeObfuscation = includeObfuscation
+        }
+
+        /**
+         * Alias for [Builder.includeObfuscation].
+         *
+         * This unboxed primitive overload exists for backwards compatibility.
+         */
+        fun includeObfuscation(includeObfuscation: Boolean) =
+            includeObfuscation(includeObfuscation as Boolean?)
+
+        /**
+         * Alias for calling [Builder.includeObfuscation] with `includeObfuscation.orElse(null)`.
+         */
+        fun includeObfuscation(includeObfuscation: Optional<Boolean>) =
+            includeObfuscation(includeObfuscation.getOrNull())
 
         /** The sequence number of the event after which to start streaming. */
         fun startingAfter(startingAfter: Long?) = apply { this.startingAfter = startingAfter }
@@ -210,6 +249,7 @@ private constructor(
             ResponseRetrieveParams(
                 responseId,
                 include?.toImmutable(),
+                includeObfuscation,
                 startingAfter,
                 additionalHeaders.build(),
                 additionalQueryParams.build(),
@@ -228,6 +268,7 @@ private constructor(
         QueryParams.builder()
             .apply {
                 include?.forEach { put("include[]", it.toString()) }
+                includeObfuscation?.let { put("include_obfuscation", it.toString()) }
                 startingAfter?.let { put("starting_after", it.toString()) }
                 putAll(additionalQueryParams)
             }
@@ -238,11 +279,11 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is ResponseRetrieveParams && responseId == other.responseId && include == other.include && startingAfter == other.startingAfter && additionalHeaders == other.additionalHeaders && additionalQueryParams == other.additionalQueryParams /* spotless:on */
+        return /* spotless:off */ other is ResponseRetrieveParams && responseId == other.responseId && include == other.include && includeObfuscation == other.includeObfuscation && startingAfter == other.startingAfter && additionalHeaders == other.additionalHeaders && additionalQueryParams == other.additionalQueryParams /* spotless:on */
     }
 
-    override fun hashCode(): Int = /* spotless:off */ Objects.hash(responseId, include, startingAfter, additionalHeaders, additionalQueryParams) /* spotless:on */
+    override fun hashCode(): Int = /* spotless:off */ Objects.hash(responseId, include, includeObfuscation, startingAfter, additionalHeaders, additionalQueryParams) /* spotless:on */
 
     override fun toString() =
-        "ResponseRetrieveParams{responseId=$responseId, include=$include, startingAfter=$startingAfter, additionalHeaders=$additionalHeaders, additionalQueryParams=$additionalQueryParams}"
+        "ResponseRetrieveParams{responseId=$responseId, include=$include, includeObfuscation=$includeObfuscation, startingAfter=$startingAfter, additionalHeaders=$additionalHeaders, additionalQueryParams=$additionalQueryParams}"
 }

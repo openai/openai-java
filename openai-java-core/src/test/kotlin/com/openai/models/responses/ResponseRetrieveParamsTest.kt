@@ -13,6 +13,7 @@ internal class ResponseRetrieveParamsTest {
         ResponseRetrieveParams.builder()
             .responseId("resp_677efb5139a88190b512bc3fef8e535d")
             .addInclude(ResponseIncludable.CODE_INTERPRETER_CALL_OUTPUTS)
+            .includeObfuscation(true)
             .startingAfter(0L)
             .build()
     }
@@ -35,6 +36,7 @@ internal class ResponseRetrieveParamsTest {
             ResponseRetrieveParams.builder()
                 .responseId("resp_677efb5139a88190b512bc3fef8e535d")
                 .addInclude(ResponseIncludable.CODE_INTERPRETER_CALL_OUTPUTS)
+                .includeObfuscation(true)
                 .startingAfter(0L)
                 .build()
 
@@ -44,6 +46,7 @@ internal class ResponseRetrieveParamsTest {
             .isEqualTo(
                 QueryParams.builder()
                     .put("include[]", "code_interpreter_call.outputs")
+                    .put("include_obfuscation", "true")
                     .put("starting_after", "0")
                     .build()
             )

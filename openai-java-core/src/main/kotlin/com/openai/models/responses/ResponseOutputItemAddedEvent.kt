@@ -211,6 +211,10 @@ private constructor(
         fun item(mcpApprovalRequest: ResponseOutputItem.McpApprovalRequest) =
             item(ResponseOutputItem.ofMcpApprovalRequest(mcpApprovalRequest))
 
+        /** Alias for calling [item] with `ResponseOutputItem.ofCustomToolCall(customToolCall)`. */
+        fun item(customToolCall: ResponseCustomToolCall) =
+            item(ResponseOutputItem.ofCustomToolCall(customToolCall))
+
         /** The index of the output item that was added. */
         fun outputIndex(outputIndex: Long) = outputIndex(JsonField.of(outputIndex))
 

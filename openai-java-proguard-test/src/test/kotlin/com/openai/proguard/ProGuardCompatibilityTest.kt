@@ -10,7 +10,7 @@ import com.openai.models.chat.completions.ChatCompletionAudio
 import com.openai.models.chat.completions.ChatCompletionContentPart
 import com.openai.models.chat.completions.ChatCompletionContentPartText
 import com.openai.models.chat.completions.ChatCompletionMessage
-import com.openai.models.chat.completions.ChatCompletionMessageToolCall
+import com.openai.models.chat.completions.ChatCompletionMessageFunctionToolCall
 import com.openai.models.chat.completions.ChatCompletionModality
 import com.openai.models.chat.completions.ChatCompletionTokenLogprob
 import com.openai.models.completions.CompletionUsage
@@ -148,10 +148,10 @@ internal class ProGuardCompatibilityTest {
                                         .build()
                                 )
                                 .addToolCall(
-                                    ChatCompletionMessageToolCall.builder()
+                                    ChatCompletionMessageFunctionToolCall.builder()
                                         .id("id")
                                         .function(
-                                            ChatCompletionMessageToolCall.Function.builder()
+                                            ChatCompletionMessageFunctionToolCall.Function.builder()
                                                 .arguments("arguments")
                                                 .name("name")
                                                 .build()

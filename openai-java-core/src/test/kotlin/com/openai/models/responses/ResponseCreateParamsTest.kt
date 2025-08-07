@@ -45,7 +45,7 @@ internal class ResponseCreateParamsTest {
             .promptCacheKey("prompt-cache-key-1234")
             .reasoning(
                 Reasoning.builder()
-                    .effort(ReasoningEffort.LOW)
+                    .effort(ReasoningEffort.MINIMAL)
                     .generateSummary(Reasoning.GenerateSummary.AUTO)
                     .summary(Reasoning.Summary.AUTO)
                     .build()
@@ -53,6 +53,9 @@ internal class ResponseCreateParamsTest {
             .safetyIdentifier("safety-identifier-1234")
             .serviceTier(ResponseCreateParams.ServiceTier.AUTO)
             .store(true)
+            .streamOptions(
+                ResponseCreateParams.StreamOptions.builder().includeObfuscation(true).build()
+            )
             .temperature(1.0)
             .text(ResponseTextConfig.builder().format(ResponseFormatText.builder().build()).build())
             .toolChoice(ToolChoiceOptions.NONE)
@@ -72,6 +75,7 @@ internal class ResponseCreateParamsTest {
             .topP(1.0)
             .truncation(ResponseCreateParams.Truncation.AUTO)
             .user("user-1234")
+            .verbosity(ResponseCreateParams.Verbosity.LOW)
             .build()
     }
 
@@ -107,7 +111,7 @@ internal class ResponseCreateParamsTest {
                 .promptCacheKey("prompt-cache-key-1234")
                 .reasoning(
                     Reasoning.builder()
-                        .effort(ReasoningEffort.LOW)
+                        .effort(ReasoningEffort.MINIMAL)
                         .generateSummary(Reasoning.GenerateSummary.AUTO)
                         .summary(Reasoning.Summary.AUTO)
                         .build()
@@ -115,6 +119,9 @@ internal class ResponseCreateParamsTest {
                 .safetyIdentifier("safety-identifier-1234")
                 .serviceTier(ResponseCreateParams.ServiceTier.AUTO)
                 .store(true)
+                .streamOptions(
+                    ResponseCreateParams.StreamOptions.builder().includeObfuscation(true).build()
+                )
                 .temperature(1.0)
                 .text(
                     ResponseTextConfig.builder()
@@ -138,6 +145,7 @@ internal class ResponseCreateParamsTest {
                 .topP(1.0)
                 .truncation(ResponseCreateParams.Truncation.AUTO)
                 .user("user-1234")
+                .verbosity(ResponseCreateParams.Verbosity.LOW)
                 .build()
 
         val body = params._body()
@@ -174,7 +182,7 @@ internal class ResponseCreateParamsTest {
         assertThat(body.reasoning())
             .contains(
                 Reasoning.builder()
-                    .effort(ReasoningEffort.LOW)
+                    .effort(ReasoningEffort.MINIMAL)
                     .generateSummary(Reasoning.GenerateSummary.AUTO)
                     .summary(Reasoning.Summary.AUTO)
                     .build()
@@ -182,6 +190,8 @@ internal class ResponseCreateParamsTest {
         assertThat(body.safetyIdentifier()).contains("safety-identifier-1234")
         assertThat(body.serviceTier()).contains(ResponseCreateParams.ServiceTier.AUTO)
         assertThat(body.store()).contains(true)
+        assertThat(body.streamOptions())
+            .contains(ResponseCreateParams.StreamOptions.builder().includeObfuscation(true).build())
         assertThat(body.temperature()).contains(1.0)
         assertThat(body.text())
             .contains(
@@ -208,6 +218,7 @@ internal class ResponseCreateParamsTest {
         assertThat(body.topP()).contains(1.0)
         assertThat(body.truncation()).contains(ResponseCreateParams.Truncation.AUTO)
         assertThat(body.user()).contains("user-1234")
+        assertThat(body.verbosity()).contains(ResponseCreateParams.Verbosity.LOW)
     }
 
     @Test

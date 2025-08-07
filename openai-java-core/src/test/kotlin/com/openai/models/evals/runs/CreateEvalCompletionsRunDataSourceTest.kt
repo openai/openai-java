@@ -8,7 +8,7 @@ import com.openai.core.jsonMapper
 import com.openai.models.FunctionDefinition
 import com.openai.models.FunctionParameters
 import com.openai.models.ResponseFormatText
-import com.openai.models.chat.completions.ChatCompletionTool
+import com.openai.models.chat.completions.ChatCompletionFunctionTool
 import com.openai.models.responses.EasyInputMessage
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
@@ -58,7 +58,7 @@ internal class CreateEvalCompletionsRunDataSourceTest {
                         .seed(0L)
                         .temperature(0.0)
                         .addTool(
-                            ChatCompletionTool.builder()
+                            ChatCompletionFunctionTool.builder()
                                 .function(
                                     FunctionDefinition.builder()
                                         .name("name")
@@ -128,7 +128,7 @@ internal class CreateEvalCompletionsRunDataSourceTest {
                     .seed(0L)
                     .temperature(0.0)
                     .addTool(
-                        ChatCompletionTool.builder()
+                        ChatCompletionFunctionTool.builder()
                             .function(
                                 FunctionDefinition.builder()
                                     .name("name")
@@ -192,7 +192,7 @@ internal class CreateEvalCompletionsRunDataSourceTest {
                         .seed(0L)
                         .temperature(0.0)
                         .addTool(
-                            ChatCompletionTool.builder()
+                            ChatCompletionFunctionTool.builder()
                                 .function(
                                     FunctionDefinition.builder()
                                         .name("name")

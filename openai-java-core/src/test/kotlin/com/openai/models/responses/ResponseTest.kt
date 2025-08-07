@@ -105,7 +105,7 @@ internal class ResponseTest {
                 .promptCacheKey("prompt-cache-key-1234")
                 .reasoning(
                     Reasoning.builder()
-                        .effort(ReasoningEffort.LOW)
+                        .effort(ReasoningEffort.MINIMAL)
                         .generateSummary(Reasoning.GenerateSummary.AUTO)
                         .summary(Reasoning.Summary.AUTO)
                         .build()
@@ -134,6 +134,7 @@ internal class ResponseTest {
                         .build()
                 )
                 .user("user-1234")
+                .verbosity(Response.Verbosity.LOW)
                 .build()
 
         assertThat(response.id()).isEqualTo("id")
@@ -234,7 +235,7 @@ internal class ResponseTest {
         assertThat(response.reasoning())
             .contains(
                 Reasoning.builder()
-                    .effort(ReasoningEffort.LOW)
+                    .effort(ReasoningEffort.MINIMAL)
                     .generateSummary(Reasoning.GenerateSummary.AUTO)
                     .summary(Reasoning.Summary.AUTO)
                     .build()
@@ -263,6 +264,7 @@ internal class ResponseTest {
                     .build()
             )
         assertThat(response.user()).contains("user-1234")
+        assertThat(response.verbosity()).contains(Response.Verbosity.LOW)
     }
 
     @Test
@@ -356,7 +358,7 @@ internal class ResponseTest {
                 .promptCacheKey("prompt-cache-key-1234")
                 .reasoning(
                     Reasoning.builder()
-                        .effort(ReasoningEffort.LOW)
+                        .effort(ReasoningEffort.MINIMAL)
                         .generateSummary(Reasoning.GenerateSummary.AUTO)
                         .summary(Reasoning.Summary.AUTO)
                         .build()
@@ -385,6 +387,7 @@ internal class ResponseTest {
                         .build()
                 )
                 .user("user-1234")
+                .verbosity(Response.Verbosity.LOW)
                 .build()
 
         val roundtrippedResponse =

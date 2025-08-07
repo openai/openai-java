@@ -20,7 +20,7 @@ internal class ChatCompletionCreateParamsTest {
             .addMessage(
                 ChatCompletionDeveloperMessageParam.builder().content("string").name("name").build()
             )
-            .model(ChatModel.GPT_4_1)
+            .model(ChatModel.GPT_5)
             .audio(
                 ChatCompletionAudioParam.builder()
                     .format(ChatCompletionAudioParam.Format.WAV)
@@ -59,35 +59,37 @@ internal class ChatCompletionCreateParamsTest {
             .prediction(ChatCompletionPredictionContent.builder().content("string").build())
             .presencePenalty(-2.0)
             .promptCacheKey("prompt-cache-key-1234")
-            .reasoningEffort(ReasoningEffort.LOW)
+            .reasoningEffort(ReasoningEffort.MINIMAL)
             .responseFormat(ResponseFormatText.builder().build())
             .safetyIdentifier("safety-identifier-1234")
             .seed(-9007199254740991L)
             .serviceTier(ChatCompletionCreateParams.ServiceTier.AUTO)
             .stop("\n")
             .store(true)
-            .streamOptions(ChatCompletionStreamOptions.builder().includeUsage(true).build())
+            .streamOptions(
+                ChatCompletionStreamOptions.builder()
+                    .includeObfuscation(true)
+                    .includeUsage(true)
+                    .build()
+            )
             .temperature(1.0)
             .toolChoice(ChatCompletionToolChoiceOption.Auto.NONE)
-            .addTool(
-                ChatCompletionTool.builder()
-                    .function(
-                        FunctionDefinition.builder()
-                            .name("name")
-                            .description("description")
-                            .parameters(
-                                FunctionParameters.builder()
-                                    .putAdditionalProperty("foo", JsonValue.from("bar"))
-                                    .build()
-                            )
-                            .strict(true)
+            .addFunctionTool(
+                FunctionDefinition.builder()
+                    .name("name")
+                    .description("description")
+                    .parameters(
+                        FunctionParameters.builder()
+                            .putAdditionalProperty("foo", JsonValue.from("bar"))
                             .build()
                     )
+                    .strict(true)
                     .build()
             )
             .topLogprobs(0L)
             .topP(1.0)
             .user("user-1234")
+            .verbosity(ChatCompletionCreateParams.Verbosity.LOW)
             .webSearchOptions(
                 ChatCompletionCreateParams.WebSearchOptions.builder()
                     .searchContextSize(
@@ -121,7 +123,7 @@ internal class ChatCompletionCreateParamsTest {
                         .name("name")
                         .build()
                 )
-                .model(ChatModel.GPT_4_1)
+                .model(ChatModel.GPT_5)
                 .audio(
                     ChatCompletionAudioParam.builder()
                         .format(ChatCompletionAudioParam.Format.WAV)
@@ -160,35 +162,37 @@ internal class ChatCompletionCreateParamsTest {
                 .prediction(ChatCompletionPredictionContent.builder().content("string").build())
                 .presencePenalty(-2.0)
                 .promptCacheKey("prompt-cache-key-1234")
-                .reasoningEffort(ReasoningEffort.LOW)
+                .reasoningEffort(ReasoningEffort.MINIMAL)
                 .responseFormat(ResponseFormatText.builder().build())
                 .safetyIdentifier("safety-identifier-1234")
                 .seed(-9007199254740991L)
                 .serviceTier(ChatCompletionCreateParams.ServiceTier.AUTO)
                 .stop("\n")
                 .store(true)
-                .streamOptions(ChatCompletionStreamOptions.builder().includeUsage(true).build())
+                .streamOptions(
+                    ChatCompletionStreamOptions.builder()
+                        .includeObfuscation(true)
+                        .includeUsage(true)
+                        .build()
+                )
                 .temperature(1.0)
                 .toolChoice(ChatCompletionToolChoiceOption.Auto.NONE)
-                .addTool(
-                    ChatCompletionTool.builder()
-                        .function(
-                            FunctionDefinition.builder()
-                                .name("name")
-                                .description("description")
-                                .parameters(
-                                    FunctionParameters.builder()
-                                        .putAdditionalProperty("foo", JsonValue.from("bar"))
-                                        .build()
-                                )
-                                .strict(true)
+                .addFunctionTool(
+                    FunctionDefinition.builder()
+                        .name("name")
+                        .description("description")
+                        .parameters(
+                            FunctionParameters.builder()
+                                .putAdditionalProperty("foo", JsonValue.from("bar"))
                                 .build()
                         )
+                        .strict(true)
                         .build()
                 )
                 .topLogprobs(0L)
                 .topP(1.0)
                 .user("user-1234")
+                .verbosity(ChatCompletionCreateParams.Verbosity.LOW)
                 .webSearchOptions(
                     ChatCompletionCreateParams.WebSearchOptions.builder()
                         .searchContextSize(
@@ -223,7 +227,7 @@ internal class ChatCompletionCreateParamsTest {
                         .build()
                 )
             )
-        assertThat(body.model()).isEqualTo(ChatModel.GPT_4_1)
+        assertThat(body.model()).isEqualTo(ChatModel.GPT_5)
         assertThat(body.audio())
             .contains(
                 ChatCompletionAudioParam.builder()
@@ -273,7 +277,7 @@ internal class ChatCompletionCreateParamsTest {
             .contains(ChatCompletionPredictionContent.builder().content("string").build())
         assertThat(body.presencePenalty()).contains(-2.0)
         assertThat(body.promptCacheKey()).contains("prompt-cache-key-1234")
-        assertThat(body.reasoningEffort()).contains(ReasoningEffort.LOW)
+        assertThat(body.reasoningEffort()).contains(ReasoningEffort.MINIMAL)
         assertThat(body.responseFormat())
             .contains(
                 ChatCompletionCreateParams.ResponseFormat.ofText(
@@ -286,7 +290,12 @@ internal class ChatCompletionCreateParamsTest {
         assertThat(body.stop()).contains(ChatCompletionCreateParams.Stop.ofString("\n"))
         assertThat(body.store()).contains(true)
         assertThat(body.streamOptions())
-            .contains(ChatCompletionStreamOptions.builder().includeUsage(true).build())
+            .contains(
+                ChatCompletionStreamOptions.builder()
+                    .includeObfuscation(true)
+                    .includeUsage(true)
+                    .build()
+            )
         assertThat(body.temperature()).contains(1.0)
         assertThat(body.toolChoice())
             .contains(
@@ -294,24 +303,27 @@ internal class ChatCompletionCreateParamsTest {
             )
         assertThat(body.tools().getOrNull())
             .containsExactly(
-                ChatCompletionTool.builder()
-                    .function(
-                        FunctionDefinition.builder()
-                            .name("name")
-                            .description("description")
-                            .parameters(
-                                FunctionParameters.builder()
-                                    .putAdditionalProperty("foo", JsonValue.from("bar"))
-                                    .build()
-                            )
-                            .strict(true)
-                            .build()
-                    )
-                    .build()
+                ChatCompletionTool.ofFunction(
+                    ChatCompletionFunctionTool.builder()
+                        .function(
+                            FunctionDefinition.builder()
+                                .name("name")
+                                .description("description")
+                                .parameters(
+                                    FunctionParameters.builder()
+                                        .putAdditionalProperty("foo", JsonValue.from("bar"))
+                                        .build()
+                                )
+                                .strict(true)
+                                .build()
+                        )
+                        .build()
+                )
             )
         assertThat(body.topLogprobs()).contains(0L)
         assertThat(body.topP()).contains(1.0)
         assertThat(body.user()).contains("user-1234")
+        assertThat(body.verbosity()).contains(ChatCompletionCreateParams.Verbosity.LOW)
         assertThat(body.webSearchOptions())
             .contains(
                 ChatCompletionCreateParams.WebSearchOptions.builder()
@@ -340,7 +352,7 @@ internal class ChatCompletionCreateParamsTest {
         val params =
             ChatCompletionCreateParams.builder()
                 .addDeveloperMessage("string")
-                .model(ChatModel.GPT_4_1)
+                .model(ChatModel.GPT_5)
                 .build()
 
         val body = params._body()
@@ -351,6 +363,6 @@ internal class ChatCompletionCreateParamsTest {
                     ChatCompletionDeveloperMessageParam.builder().content("string").build()
                 )
             )
-        assertThat(body.model()).isEqualTo(ChatModel.GPT_4_1)
+        assertThat(body.model()).isEqualTo(ChatModel.GPT_5)
     }
 }

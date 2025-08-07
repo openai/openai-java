@@ -35,7 +35,9 @@ import java.util.Optional
 class ChatCompletionToolChoiceOption
 private constructor(
     private val auto: Auto? = null,
+    private val allowedToolChoice: ChatCompletionAllowedToolChoice? = null,
     private val namedToolChoice: ChatCompletionNamedToolChoice? = null,
+    private val namedToolChoiceCustom: ChatCompletionNamedToolChoiceCustom? = null,
     private val _json: JsonValue? = null,
 ) {
 
@@ -46,15 +48,29 @@ private constructor(
      */
     fun auto(): Optional<Auto> = Optional.ofNullable(auto)
 
+    /** Constrains the tools available to the model to a pre-defined set. */
+    fun allowedToolChoice(): Optional<ChatCompletionAllowedToolChoice> =
+        Optional.ofNullable(allowedToolChoice)
+
     /**
      * Specifies a tool the model should use. Use to force the model to call a specific function.
      */
     fun namedToolChoice(): Optional<ChatCompletionNamedToolChoice> =
         Optional.ofNullable(namedToolChoice)
 
+    /**
+     * Specifies a tool the model should use. Use to force the model to call a specific custom tool.
+     */
+    fun namedToolChoiceCustom(): Optional<ChatCompletionNamedToolChoiceCustom> =
+        Optional.ofNullable(namedToolChoiceCustom)
+
     fun isAuto(): Boolean = auto != null
 
+    fun isAllowedToolChoice(): Boolean = allowedToolChoice != null
+
     fun isNamedToolChoice(): Boolean = namedToolChoice != null
+
+    fun isNamedToolChoiceCustom(): Boolean = namedToolChoiceCustom != null
 
     /**
      * `none` means the model will not call any tool and instead generates a message. `auto` means
@@ -63,18 +79,31 @@ private constructor(
      */
     fun asAuto(): Auto = auto.getOrThrow("auto")
 
+    /** Constrains the tools available to the model to a pre-defined set. */
+    fun asAllowedToolChoice(): ChatCompletionAllowedToolChoice =
+        allowedToolChoice.getOrThrow("allowedToolChoice")
+
     /**
      * Specifies a tool the model should use. Use to force the model to call a specific function.
      */
     fun asNamedToolChoice(): ChatCompletionNamedToolChoice =
         namedToolChoice.getOrThrow("namedToolChoice")
 
+    /**
+     * Specifies a tool the model should use. Use to force the model to call a specific custom tool.
+     */
+    fun asNamedToolChoiceCustom(): ChatCompletionNamedToolChoiceCustom =
+        namedToolChoiceCustom.getOrThrow("namedToolChoiceCustom")
+
     fun _json(): Optional<JsonValue> = Optional.ofNullable(_json)
 
     fun <T> accept(visitor: Visitor<T>): T =
         when {
             auto != null -> visitor.visitAuto(auto)
+            allowedToolChoice != null -> visitor.visitAllowedToolChoice(allowedToolChoice)
             namedToolChoice != null -> visitor.visitNamedToolChoice(namedToolChoice)
+            namedToolChoiceCustom != null ->
+                visitor.visitNamedToolChoiceCustom(namedToolChoiceCustom)
             else -> visitor.unknown(_json)
         }
 
@@ -91,8 +120,20 @@ private constructor(
                     auto.validate()
                 }
 
+                override fun visitAllowedToolChoice(
+                    allowedToolChoice: ChatCompletionAllowedToolChoice
+                ) {
+                    allowedToolChoice.validate()
+                }
+
                 override fun visitNamedToolChoice(namedToolChoice: ChatCompletionNamedToolChoice) {
                     namedToolChoice.validate()
+                }
+
+                override fun visitNamedToolChoiceCustom(
+                    namedToolChoiceCustom: ChatCompletionNamedToolChoiceCustom
+                ) {
+                    namedToolChoiceCustom.validate()
                 }
             }
         )
@@ -118,8 +159,16 @@ private constructor(
             object : Visitor<Int> {
                 override fun visitAuto(auto: Auto) = auto.validity()
 
+                override fun visitAllowedToolChoice(
+                    allowedToolChoice: ChatCompletionAllowedToolChoice
+                ) = allowedToolChoice.validity()
+
                 override fun visitNamedToolChoice(namedToolChoice: ChatCompletionNamedToolChoice) =
                     namedToolChoice.validity()
+
+                override fun visitNamedToolChoiceCustom(
+                    namedToolChoiceCustom: ChatCompletionNamedToolChoiceCustom
+                ) = namedToolChoiceCustom.validity()
 
                 override fun unknown(json: JsonValue?) = 0
             }
@@ -130,16 +179,20 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is ChatCompletionToolChoiceOption && auto == other.auto && namedToolChoice == other.namedToolChoice /* spotless:on */
+        return /* spotless:off */ other is ChatCompletionToolChoiceOption && auto == other.auto && allowedToolChoice == other.allowedToolChoice && namedToolChoice == other.namedToolChoice && namedToolChoiceCustom == other.namedToolChoiceCustom /* spotless:on */
     }
 
-    override fun hashCode(): Int = /* spotless:off */ Objects.hash(auto, namedToolChoice) /* spotless:on */
+    override fun hashCode(): Int = /* spotless:off */ Objects.hash(auto, allowedToolChoice, namedToolChoice, namedToolChoiceCustom) /* spotless:on */
 
     override fun toString(): String =
         when {
             auto != null -> "ChatCompletionToolChoiceOption{auto=$auto}"
+            allowedToolChoice != null ->
+                "ChatCompletionToolChoiceOption{allowedToolChoice=$allowedToolChoice}"
             namedToolChoice != null ->
                 "ChatCompletionToolChoiceOption{namedToolChoice=$namedToolChoice}"
+            namedToolChoiceCustom != null ->
+                "ChatCompletionToolChoiceOption{namedToolChoiceCustom=$namedToolChoiceCustom}"
             _json != null -> "ChatCompletionToolChoiceOption{_unknown=$_json}"
             else -> throw IllegalStateException("Invalid ChatCompletionToolChoiceOption")
         }
@@ -153,6 +206,11 @@ private constructor(
          */
         @JvmStatic fun ofAuto(auto: Auto) = ChatCompletionToolChoiceOption(auto = auto)
 
+        /** Constrains the tools available to the model to a pre-defined set. */
+        @JvmStatic
+        fun ofAllowedToolChoice(allowedToolChoice: ChatCompletionAllowedToolChoice) =
+            ChatCompletionToolChoiceOption(allowedToolChoice = allowedToolChoice)
+
         /**
          * Specifies a tool the model should use. Use to force the model to call a specific
          * function.
@@ -160,6 +218,14 @@ private constructor(
         @JvmStatic
         fun ofNamedToolChoice(namedToolChoice: ChatCompletionNamedToolChoice) =
             ChatCompletionToolChoiceOption(namedToolChoice = namedToolChoice)
+
+        /**
+         * Specifies a tool the model should use. Use to force the model to call a specific custom
+         * tool.
+         */
+        @JvmStatic
+        fun ofNamedToolChoiceCustom(namedToolChoiceCustom: ChatCompletionNamedToolChoiceCustom) =
+            ChatCompletionToolChoiceOption(namedToolChoiceCustom = namedToolChoiceCustom)
     }
 
     /**
@@ -175,11 +241,22 @@ private constructor(
          */
         fun visitAuto(auto: Auto): T
 
+        /** Constrains the tools available to the model to a pre-defined set. */
+        fun visitAllowedToolChoice(allowedToolChoice: ChatCompletionAllowedToolChoice): T
+
         /**
          * Specifies a tool the model should use. Use to force the model to call a specific
          * function.
          */
         fun visitNamedToolChoice(namedToolChoice: ChatCompletionNamedToolChoice): T
+
+        /**
+         * Specifies a tool the model should use. Use to force the model to call a specific custom
+         * tool.
+         */
+        fun visitNamedToolChoiceCustom(
+            namedToolChoiceCustom: ChatCompletionNamedToolChoiceCustom
+        ): T
 
         /**
          * Maps an unknown variant of [ChatCompletionToolChoiceOption] to a value of type [T].
@@ -207,9 +284,20 @@ private constructor(
                         tryDeserialize(node, jacksonTypeRef<Auto>())?.let {
                             ChatCompletionToolChoiceOption(auto = it, _json = json)
                         },
+                        tryDeserialize(node, jacksonTypeRef<ChatCompletionAllowedToolChoice>())
+                            ?.let {
+                                ChatCompletionToolChoiceOption(allowedToolChoice = it, _json = json)
+                            },
                         tryDeserialize(node, jacksonTypeRef<ChatCompletionNamedToolChoice>())?.let {
                             ChatCompletionToolChoiceOption(namedToolChoice = it, _json = json)
                         },
+                        tryDeserialize(node, jacksonTypeRef<ChatCompletionNamedToolChoiceCustom>())
+                            ?.let {
+                                ChatCompletionToolChoiceOption(
+                                    namedToolChoiceCustom = it,
+                                    _json = json,
+                                )
+                            },
                     )
                     .filterNotNull()
                     .allMaxBy { it.validity() }
@@ -236,7 +324,10 @@ private constructor(
         ) {
             when {
                 value.auto != null -> generator.writeObject(value.auto)
+                value.allowedToolChoice != null -> generator.writeObject(value.allowedToolChoice)
                 value.namedToolChoice != null -> generator.writeObject(value.namedToolChoice)
+                value.namedToolChoiceCustom != null ->
+                    generator.writeObject(value.namedToolChoiceCustom)
                 value._json != null -> generator.writeObject(value._json)
                 else -> throw IllegalStateException("Invalid ChatCompletionToolChoiceOption")
             }

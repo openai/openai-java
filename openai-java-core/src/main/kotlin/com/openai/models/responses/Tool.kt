@@ -44,6 +44,7 @@ private constructor(
     private val codeInterpreter: CodeInterpreter? = null,
     private val imageGeneration: ImageGeneration? = null,
     private val localShell: JsonValue? = null,
+    private val custom: CustomTool? = null,
     private val _json: JsonValue? = null,
 ) {
 
@@ -86,6 +87,12 @@ private constructor(
     /** A tool that allows the model to execute shell commands in a local environment. */
     fun localShell(): Optional<JsonValue> = Optional.ofNullable(localShell)
 
+    /**
+     * A custom tool that processes input using a specified format. Learn more about
+     * [custom tools](https://platform.openai.com/docs/guides/function-calling#custom-tools).
+     */
+    fun custom(): Optional<CustomTool> = Optional.ofNullable(custom)
+
     fun isFunction(): Boolean = function != null
 
     fun isFileSearch(): Boolean = fileSearch != null
@@ -101,6 +108,8 @@ private constructor(
     fun isImageGeneration(): Boolean = imageGeneration != null
 
     fun isLocalShell(): Boolean = localShell != null
+
+    fun isCustom(): Boolean = custom != null
 
     /**
      * Defines a function in your own code the model can choose to call. Learn more about
@@ -141,6 +150,12 @@ private constructor(
     /** A tool that allows the model to execute shell commands in a local environment. */
     fun asLocalShell(): JsonValue = localShell.getOrThrow("localShell")
 
+    /**
+     * A custom tool that processes input using a specified format. Learn more about
+     * [custom tools](https://platform.openai.com/docs/guides/function-calling#custom-tools).
+     */
+    fun asCustom(): CustomTool = custom.getOrThrow("custom")
+
     fun _json(): Optional<JsonValue> = Optional.ofNullable(_json)
 
     fun <T> accept(visitor: Visitor<T>): T =
@@ -153,6 +168,7 @@ private constructor(
             codeInterpreter != null -> visitor.visitCodeInterpreter(codeInterpreter)
             imageGeneration != null -> visitor.visitImageGeneration(imageGeneration)
             localShell != null -> visitor.visitLocalShell(localShell)
+            custom != null -> visitor.visitCustom(custom)
             else -> visitor.unknown(_json)
         }
 
@@ -202,6 +218,10 @@ private constructor(
                         }
                     }
                 }
+
+                override fun visitCustom(custom: CustomTool) {
+                    custom.validate()
+                }
             }
         )
         validated = true
@@ -246,6 +266,8 @@ private constructor(
                         if (it == JsonValue.from(mapOf("type" to "local_shell"))) 1 else 0
                     }
 
+                override fun visitCustom(custom: CustomTool) = custom.validity()
+
                 override fun unknown(json: JsonValue?) = 0
             }
         )
@@ -255,10 +277,10 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is Tool && function == other.function && fileSearch == other.fileSearch && webSearch == other.webSearch && computerUsePreview == other.computerUsePreview && mcp == other.mcp && codeInterpreter == other.codeInterpreter && imageGeneration == other.imageGeneration && localShell == other.localShell /* spotless:on */
+        return /* spotless:off */ other is Tool && function == other.function && fileSearch == other.fileSearch && webSearch == other.webSearch && computerUsePreview == other.computerUsePreview && mcp == other.mcp && codeInterpreter == other.codeInterpreter && imageGeneration == other.imageGeneration && localShell == other.localShell && custom == other.custom /* spotless:on */
     }
 
-    override fun hashCode(): Int = /* spotless:off */ Objects.hash(function, fileSearch, webSearch, computerUsePreview, mcp, codeInterpreter, imageGeneration, localShell) /* spotless:on */
+    override fun hashCode(): Int = /* spotless:off */ Objects.hash(function, fileSearch, webSearch, computerUsePreview, mcp, codeInterpreter, imageGeneration, localShell, custom) /* spotless:on */
 
     override fun toString(): String =
         when {
@@ -270,6 +292,7 @@ private constructor(
             codeInterpreter != null -> "Tool{codeInterpreter=$codeInterpreter}"
             imageGeneration != null -> "Tool{imageGeneration=$imageGeneration}"
             localShell != null -> "Tool{localShell=$localShell}"
+            custom != null -> "Tool{custom=$custom}"
             _json != null -> "Tool{_unknown=$_json}"
             else -> throw IllegalStateException("Invalid Tool")
         }
@@ -322,6 +345,12 @@ private constructor(
         /** A tool that allows the model to execute shell commands in a local environment. */
         @JvmStatic
         fun ofLocalShell() = Tool(localShell = JsonValue.from(mapOf("type" to "local_shell")))
+
+        /**
+         * A custom tool that processes input using a specified format. Learn more about
+         * [custom tools](https://platform.openai.com/docs/guides/function-calling#custom-tools).
+         */
+        @JvmStatic fun ofCustom(custom: CustomTool) = Tool(custom = custom)
     }
 
     /** An interface that defines how to map each variant of [Tool] to a value of type [T]. */
@@ -366,6 +395,12 @@ private constructor(
 
         /** A tool that allows the model to execute shell commands in a local environment. */
         fun visitLocalShell(localShell: JsonValue): T
+
+        /**
+         * A custom tool that processes input using a specified format. Learn more about
+         * [custom tools](https://platform.openai.com/docs/guides/function-calling#custom-tools).
+         */
+        fun visitCustom(custom: CustomTool): T
 
         /**
          * Maps an unknown variant of [Tool] to a value of type [T].
@@ -423,6 +458,11 @@ private constructor(
                         ?.let { Tool(localShell = it, _json = json) }
                         ?.takeIf { it.isValid() } ?: Tool(_json = json)
                 }
+                "custom" -> {
+                    return tryDeserialize(node, jacksonTypeRef<CustomTool>())?.let {
+                        Tool(custom = it, _json = json)
+                    } ?: Tool(_json = json)
+                }
             }
 
             return tryDeserialize(node, jacksonTypeRef<WebSearchTool>())?.let {
@@ -447,6 +487,7 @@ private constructor(
                 value.codeInterpreter != null -> generator.writeObject(value.codeInterpreter)
                 value.imageGeneration != null -> generator.writeObject(value.imageGeneration)
                 value.localShell != null -> generator.writeObject(value.localShell)
+                value.custom != null -> generator.writeObject(value.custom)
                 value._json != null -> generator.writeObject(value._json)
                 else -> throw IllegalStateException("Invalid Tool")
             }
