@@ -209,8 +209,6 @@ internal class StructuredResponseCreateParamsTest {
                 DelegationWriteTestCase("truncation", JSON_FIELD),
                 DelegationWriteTestCase("user", STRING),
                 DelegationWriteTestCase("user", JSON_FIELD),
-                DelegationWriteTestCase("verbosity", NULLABLE),
-                DelegationWriteTestCase("verbosity", OPTIONAL),
                 DelegationWriteTestCase("additionalBodyProperties", MAP),
                 DelegationWriteTestCase("putAdditionalBodyProperty", STRING, JSON_VALUE),
                 DelegationWriteTestCase("putAllAdditionalBodyProperties", MAP),
