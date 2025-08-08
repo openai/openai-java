@@ -79,6 +79,7 @@ internal class ResponseServiceTest {
                     .text(
                         ResponseTextConfig.builder()
                             .format(ResponseFormatText.builder().build())
+                            .verbosity(ResponseTextConfig.Verbosity.LOW)
                             .build()
                     )
                     .toolChoice(ToolChoiceOptions.NONE)
@@ -98,7 +99,6 @@ internal class ResponseServiceTest {
                     .topP(1.0)
                     .truncation(ResponseCreateParams.Truncation.AUTO)
                     .user("user-1234")
-                    .verbosity(ResponseCreateParams.Verbosity.LOW)
                     .build()
             )
 
@@ -162,6 +162,7 @@ internal class ResponseServiceTest {
                     .text(
                         ResponseTextConfig.builder()
                             .format(ResponseFormatText.builder().build())
+                            .verbosity(ResponseTextConfig.Verbosity.LOW)
                             .build()
                     )
                     .toolChoice(ToolChoiceOptions.NONE)
@@ -181,7 +182,6 @@ internal class ResponseServiceTest {
                     .topP(1.0)
                     .truncation(ResponseCreateParams.Truncation.AUTO)
                     .user("user-1234")
-                    .verbosity(ResponseCreateParams.Verbosity.LOW)
                     .build()
             )
 

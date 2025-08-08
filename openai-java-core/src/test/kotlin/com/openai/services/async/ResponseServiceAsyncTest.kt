@@ -79,6 +79,7 @@ internal class ResponseServiceAsyncTest {
                     .text(
                         ResponseTextConfig.builder()
                             .format(ResponseFormatText.builder().build())
+                            .verbosity(ResponseTextConfig.Verbosity.LOW)
                             .build()
                     )
                     .toolChoice(ToolChoiceOptions.NONE)
@@ -98,7 +99,6 @@ internal class ResponseServiceAsyncTest {
                     .topP(1.0)
                     .truncation(ResponseCreateParams.Truncation.AUTO)
                     .user("user-1234")
-                    .verbosity(ResponseCreateParams.Verbosity.LOW)
                     .build()
             )
 
@@ -163,6 +163,7 @@ internal class ResponseServiceAsyncTest {
                     .text(
                         ResponseTextConfig.builder()
                             .format(ResponseFormatText.builder().build())
+                            .verbosity(ResponseTextConfig.Verbosity.LOW)
                             .build()
                     )
                     .toolChoice(ToolChoiceOptions.NONE)
@@ -182,7 +183,6 @@ internal class ResponseServiceAsyncTest {
                     .topP(1.0)
                     .truncation(ResponseCreateParams.Truncation.AUTO)
                     .user("user-1234")
-                    .verbosity(ResponseCreateParams.Verbosity.LOW)
                     .build()
             )
 

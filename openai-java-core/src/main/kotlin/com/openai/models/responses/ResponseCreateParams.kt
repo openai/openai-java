@@ -347,16 +347,6 @@ private constructor(
     @Deprecated("deprecated") fun user(): Optional<String> = body.user()
 
     /**
-     * Constrains the verbosity of the model's response. Lower values will result in more concise
-     * responses, while higher values will result in more verbose responses. Currently supported
-     * values are `low`, `medium`, and `high`.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
-     */
-    fun verbosity(): Optional<Verbosity> = body.verbosity()
-
-    /**
      * Returns the raw JSON value of [background].
      *
      * Unlike [background], this method doesn't throw if the JSON field has an unexpected type.
@@ -533,13 +523,6 @@ private constructor(
      * Unlike [user], this method doesn't throw if the JSON field has an unexpected type.
      */
     @Deprecated("deprecated") fun _user(): JsonField<String> = body._user()
-
-    /**
-     * Returns the raw JSON value of [verbosity].
-     *
-     * Unlike [verbosity], this method doesn't throw if the JSON field has an unexpected type.
-     */
-    fun _verbosity(): JsonField<Verbosity> = body._verbosity()
 
     fun _additionalBodyProperties(): Map<String, JsonValue> = body._additionalProperties()
 
@@ -1324,25 +1307,6 @@ private constructor(
          */
         @Deprecated("deprecated") fun user(user: JsonField<String>) = apply { body.user(user) }
 
-        /**
-         * Constrains the verbosity of the model's response. Lower values will result in more
-         * concise responses, while higher values will result in more verbose responses. Currently
-         * supported values are `low`, `medium`, and `high`.
-         */
-        fun verbosity(verbosity: Verbosity?) = apply { body.verbosity(verbosity) }
-
-        /** Alias for calling [Builder.verbosity] with `verbosity.orElse(null)`. */
-        fun verbosity(verbosity: Optional<Verbosity>) = verbosity(verbosity.getOrNull())
-
-        /**
-         * Sets [Builder.verbosity] to an arbitrary JSON value.
-         *
-         * You should usually call [Builder.verbosity] with a well-typed [Verbosity] value instead.
-         * This method is primarily for setting the field to an undocumented or not yet supported
-         * value.
-         */
-        fun verbosity(verbosity: JsonField<Verbosity>) = apply { body.verbosity(verbosity) }
-
         fun additionalBodyProperties(additionalBodyProperties: Map<String, JsonValue>) = apply {
             body.additionalProperties(additionalBodyProperties)
         }
@@ -1506,7 +1470,6 @@ private constructor(
         private val topP: JsonField<Double>,
         private val truncation: JsonField<Truncation>,
         private val user: JsonField<String>,
-        private val verbosity: JsonField<Verbosity>,
         private val additionalProperties: MutableMap<String, JsonValue>,
     ) {
 
@@ -1577,9 +1540,6 @@ private constructor(
             @ExcludeMissing
             truncation: JsonField<Truncation> = JsonMissing.of(),
             @JsonProperty("user") @ExcludeMissing user: JsonField<String> = JsonMissing.of(),
-            @JsonProperty("verbosity")
-            @ExcludeMissing
-            verbosity: JsonField<Verbosity> = JsonMissing.of(),
         ) : this(
             background,
             include,
@@ -1606,7 +1566,6 @@ private constructor(
             topP,
             truncation,
             user,
-            verbosity,
             mutableMapOf(),
         )
 
@@ -1907,16 +1866,6 @@ private constructor(
         @Deprecated("deprecated") fun user(): Optional<String> = user.getOptional("user")
 
         /**
-         * Constrains the verbosity of the model's response. Lower values will result in more
-         * concise responses, while higher values will result in more verbose responses. Currently
-         * supported values are `low`, `medium`, and `high`.
-         *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
-         */
-        fun verbosity(): Optional<Verbosity> = verbosity.getOptional("verbosity")
-
-        /**
          * Returns the raw JSON value of [background].
          *
          * Unlike [background], this method doesn't throw if the JSON field has an unexpected type.
@@ -2134,15 +2083,6 @@ private constructor(
         @ExcludeMissing
         fun _user(): JsonField<String> = user
 
-        /**
-         * Returns the raw JSON value of [verbosity].
-         *
-         * Unlike [verbosity], this method doesn't throw if the JSON field has an unexpected type.
-         */
-        @JsonProperty("verbosity")
-        @ExcludeMissing
-        fun _verbosity(): JsonField<Verbosity> = verbosity
-
         @JsonAnySetter
         private fun putAdditionalProperty(key: String, value: JsonValue) {
             additionalProperties.put(key, value)
@@ -2189,7 +2129,6 @@ private constructor(
             private var topP: JsonField<Double> = JsonMissing.of()
             private var truncation: JsonField<Truncation> = JsonMissing.of()
             private var user: JsonField<String> = JsonMissing.of()
-            private var verbosity: JsonField<Verbosity> = JsonMissing.of()
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
             @JvmSynthetic
@@ -2219,7 +2158,6 @@ private constructor(
                 topP = body.topP
                 truncation = body.truncation
                 user = body.user
-                verbosity = body.verbosity
                 additionalProperties = body.additionalProperties.toMutableMap()
             }
 
@@ -2959,25 +2897,6 @@ private constructor(
              */
             @Deprecated("deprecated") fun user(user: JsonField<String>) = apply { this.user = user }
 
-            /**
-             * Constrains the verbosity of the model's response. Lower values will result in more
-             * concise responses, while higher values will result in more verbose responses.
-             * Currently supported values are `low`, `medium`, and `high`.
-             */
-            fun verbosity(verbosity: Verbosity?) = verbosity(JsonField.ofNullable(verbosity))
-
-            /** Alias for calling [Builder.verbosity] with `verbosity.orElse(null)`. */
-            fun verbosity(verbosity: Optional<Verbosity>) = verbosity(verbosity.getOrNull())
-
-            /**
-             * Sets [Builder.verbosity] to an arbitrary JSON value.
-             *
-             * You should usually call [Builder.verbosity] with a well-typed [Verbosity] value
-             * instead. This method is primarily for setting the field to an undocumented or not yet
-             * supported value.
-             */
-            fun verbosity(verbosity: JsonField<Verbosity>) = apply { this.verbosity = verbosity }
-
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.clear()
                 putAllAdditionalProperties(additionalProperties)
@@ -3029,7 +2948,6 @@ private constructor(
                     topP,
                     truncation,
                     user,
-                    verbosity,
                     additionalProperties.toMutableMap(),
                 )
         }
@@ -3066,7 +2984,6 @@ private constructor(
             topP()
             truncation().ifPresent { it.validate() }
             user()
-            verbosity().ifPresent { it.validate() }
             validated = true
         }
 
@@ -3110,25 +3027,24 @@ private constructor(
                 (if (topLogprobs.asKnown().isPresent) 1 else 0) +
                 (if (topP.asKnown().isPresent) 1 else 0) +
                 (truncation.asKnown().getOrNull()?.validity() ?: 0) +
-                (if (user.asKnown().isPresent) 1 else 0) +
-                (verbosity.asKnown().getOrNull()?.validity() ?: 0)
+                (if (user.asKnown().isPresent) 1 else 0)
 
         override fun equals(other: Any?): Boolean {
             if (this === other) {
                 return true
             }
 
-            return /* spotless:off */ other is Body && background == other.background && include == other.include && input == other.input && instructions == other.instructions && maxOutputTokens == other.maxOutputTokens && maxToolCalls == other.maxToolCalls && metadata == other.metadata && model == other.model && parallelToolCalls == other.parallelToolCalls && previousResponseId == other.previousResponseId && prompt == other.prompt && promptCacheKey == other.promptCacheKey && reasoning == other.reasoning && safetyIdentifier == other.safetyIdentifier && serviceTier == other.serviceTier && store == other.store && streamOptions == other.streamOptions && temperature == other.temperature && text == other.text && toolChoice == other.toolChoice && tools == other.tools && topLogprobs == other.topLogprobs && topP == other.topP && truncation == other.truncation && user == other.user && verbosity == other.verbosity && additionalProperties == other.additionalProperties /* spotless:on */
+            return /* spotless:off */ other is Body && background == other.background && include == other.include && input == other.input && instructions == other.instructions && maxOutputTokens == other.maxOutputTokens && maxToolCalls == other.maxToolCalls && metadata == other.metadata && model == other.model && parallelToolCalls == other.parallelToolCalls && previousResponseId == other.previousResponseId && prompt == other.prompt && promptCacheKey == other.promptCacheKey && reasoning == other.reasoning && safetyIdentifier == other.safetyIdentifier && serviceTier == other.serviceTier && store == other.store && streamOptions == other.streamOptions && temperature == other.temperature && text == other.text && toolChoice == other.toolChoice && tools == other.tools && topLogprobs == other.topLogprobs && topP == other.topP && truncation == other.truncation && user == other.user && additionalProperties == other.additionalProperties /* spotless:on */
         }
 
         /* spotless:off */
-        private val hashCode: Int by lazy { Objects.hash(background, include, input, instructions, maxOutputTokens, maxToolCalls, metadata, model, parallelToolCalls, previousResponseId, prompt, promptCacheKey, reasoning, safetyIdentifier, serviceTier, store, streamOptions, temperature, text, toolChoice, tools, topLogprobs, topP, truncation, user, verbosity, additionalProperties) }
+        private val hashCode: Int by lazy { Objects.hash(background, include, input, instructions, maxOutputTokens, maxToolCalls, metadata, model, parallelToolCalls, previousResponseId, prompt, promptCacheKey, reasoning, safetyIdentifier, serviceTier, store, streamOptions, temperature, text, toolChoice, tools, topLogprobs, topP, truncation, user, additionalProperties) }
         /* spotless:on */
 
         override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "Body{background=$background, include=$include, input=$input, instructions=$instructions, maxOutputTokens=$maxOutputTokens, maxToolCalls=$maxToolCalls, metadata=$metadata, model=$model, parallelToolCalls=$parallelToolCalls, previousResponseId=$previousResponseId, prompt=$prompt, promptCacheKey=$promptCacheKey, reasoning=$reasoning, safetyIdentifier=$safetyIdentifier, serviceTier=$serviceTier, store=$store, streamOptions=$streamOptions, temperature=$temperature, text=$text, toolChoice=$toolChoice, tools=$tools, topLogprobs=$topLogprobs, topP=$topP, truncation=$truncation, user=$user, verbosity=$verbosity, additionalProperties=$additionalProperties}"
+            "Body{background=$background, include=$include, input=$input, instructions=$instructions, maxOutputTokens=$maxOutputTokens, maxToolCalls=$maxToolCalls, metadata=$metadata, model=$model, parallelToolCalls=$parallelToolCalls, previousResponseId=$previousResponseId, prompt=$prompt, promptCacheKey=$promptCacheKey, reasoning=$reasoning, safetyIdentifier=$safetyIdentifier, serviceTier=$serviceTier, store=$store, streamOptions=$streamOptions, temperature=$temperature, text=$text, toolChoice=$toolChoice, tools=$tools, topLogprobs=$topLogprobs, topP=$topP, truncation=$truncation, user=$user, additionalProperties=$additionalProperties}"
     }
 
     /**
@@ -4233,144 +4149,6 @@ private constructor(
             }
 
             return /* spotless:off */ other is Truncation && value == other.value /* spotless:on */
-        }
-
-        override fun hashCode() = value.hashCode()
-
-        override fun toString() = value.toString()
-    }
-
-    /**
-     * Constrains the verbosity of the model's response. Lower values will result in more concise
-     * responses, while higher values will result in more verbose responses. Currently supported
-     * values are `low`, `medium`, and `high`.
-     */
-    class Verbosity @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
-
-        /**
-         * Returns this class instance's raw value.
-         *
-         * This is usually only useful if this instance was deserialized from data that doesn't
-         * match any known member, and you want to know that value. For example, if the SDK is on an
-         * older version than the API, then the API may respond with new members that the SDK is
-         * unaware of.
-         */
-        @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
-
-        companion object {
-
-            @JvmField val LOW = of("low")
-
-            @JvmField val MEDIUM = of("medium")
-
-            @JvmField val HIGH = of("high")
-
-            @JvmStatic fun of(value: String) = Verbosity(JsonField.of(value))
-        }
-
-        /** An enum containing [Verbosity]'s known values. */
-        enum class Known {
-            LOW,
-            MEDIUM,
-            HIGH,
-        }
-
-        /**
-         * An enum containing [Verbosity]'s known values, as well as an [_UNKNOWN] member.
-         *
-         * An instance of [Verbosity] can contain an unknown value in a couple of cases:
-         * - It was deserialized from data that doesn't match any known member. For example, if the
-         *   SDK is on an older version than the API, then the API may respond with new members that
-         *   the SDK is unaware of.
-         * - It was constructed with an arbitrary value using the [of] method.
-         */
-        enum class Value {
-            LOW,
-            MEDIUM,
-            HIGH,
-            /**
-             * An enum member indicating that [Verbosity] was instantiated with an unknown value.
-             */
-            _UNKNOWN,
-        }
-
-        /**
-         * Returns an enum member corresponding to this class instance's value, or [Value._UNKNOWN]
-         * if the class was instantiated with an unknown value.
-         *
-         * Use the [known] method instead if you're certain the value is always known or if you want
-         * to throw for the unknown case.
-         */
-        fun value(): Value =
-            when (this) {
-                LOW -> Value.LOW
-                MEDIUM -> Value.MEDIUM
-                HIGH -> Value.HIGH
-                else -> Value._UNKNOWN
-            }
-
-        /**
-         * Returns an enum member corresponding to this class instance's value.
-         *
-         * Use the [value] method instead if you're uncertain the value is always known and don't
-         * want to throw for the unknown case.
-         *
-         * @throws OpenAIInvalidDataException if this class instance's value is a not a known
-         *   member.
-         */
-        fun known(): Known =
-            when (this) {
-                LOW -> Known.LOW
-                MEDIUM -> Known.MEDIUM
-                HIGH -> Known.HIGH
-                else -> throw OpenAIInvalidDataException("Unknown Verbosity: $value")
-            }
-
-        /**
-         * Returns this class instance's primitive wire representation.
-         *
-         * This differs from the [toString] method because that method is primarily for debugging
-         * and generally doesn't throw.
-         *
-         * @throws OpenAIInvalidDataException if this class instance's value does not have the
-         *   expected primitive type.
-         */
-        fun asString(): String =
-            _value().asString().orElseThrow { OpenAIInvalidDataException("Value is not a String") }
-
-        private var validated: Boolean = false
-
-        fun validate(): Verbosity = apply {
-            if (validated) {
-                return@apply
-            }
-
-            known()
-            validated = true
-        }
-
-        fun isValid(): Boolean =
-            try {
-                validate()
-                true
-            } catch (e: OpenAIInvalidDataException) {
-                false
-            }
-
-        /**
-         * Returns a score indicating how many valid values are contained in this object
-         * recursively.
-         *
-         * Used for best match union deserialization.
-         */
-        @JvmSynthetic internal fun validity(): Int = if (value() == Value._UNKNOWN) 0 else 1
-
-        override fun equals(other: Any?): Boolean {
-            if (this === other) {
-                return true
-            }
-
-            return /* spotless:off */ other is Verbosity && value == other.value /* spotless:on */
         }
 
         override fun hashCode() = value.hashCode()
