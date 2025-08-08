@@ -13,17 +13,24 @@ internal class ResponseTextConfigTest {
     @Test
     fun create() {
         val responseTextConfig =
-            ResponseTextConfig.builder().format(ResponseFormatText.builder().build()).build()
+            ResponseTextConfig.builder()
+                .format(ResponseFormatText.builder().build())
+                .verbosity(ResponseTextConfig.Verbosity.LOW)
+                .build()
 
         assertThat(responseTextConfig.format())
             .contains(ResponseFormatTextConfig.ofText(ResponseFormatText.builder().build()))
+        assertThat(responseTextConfig.verbosity()).contains(ResponseTextConfig.Verbosity.LOW)
     }
 
     @Test
     fun roundtrip() {
         val jsonMapper = jsonMapper()
         val responseTextConfig =
-            ResponseTextConfig.builder().format(ResponseFormatText.builder().build()).build()
+            ResponseTextConfig.builder()
+                .format(ResponseFormatText.builder().build())
+                .verbosity(ResponseTextConfig.Verbosity.LOW)
+                .build()
 
         val roundtrippedResponseTextConfig =
             jsonMapper.readValue(

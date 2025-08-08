@@ -109,9 +109,6 @@ class StructuredResponse<T : Any>(
     /** @see Response.user */
     fun user(): Optional<String> = rawResponse.user()
 
-    /** @see Response.verbosity */
-    fun verbosity(): Optional<Response.Verbosity> = rawResponse.verbosity()
-
     /** @see Response.background */
     fun background(): Optional<Boolean> = rawResponse.background()
 
@@ -196,9 +193,6 @@ class StructuredResponse<T : Any>(
 
     /** @see Response._user */
     fun _user(): JsonField<String> = rawResponse._user()
-
-    /** @see Response._verbosity */
-    fun _verbosity(): JsonField<Response.Verbosity> = rawResponse._verbosity()
 
     /** @see Response._background */
     fun _background(): JsonField<Boolean> = rawResponse._background()

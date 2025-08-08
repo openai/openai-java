@@ -479,21 +479,6 @@ class StructuredResponseCreateParams<T : Any>(
             paramsBuilder.streamOptions(streamOptions)
         }
 
-        /** @see ResponseCreateParams.Builder.verbosity */
-        fun verbosity(verbosity: ResponseCreateParams.Verbosity?) = apply {
-            paramsBuilder.verbosity(verbosity)
-        }
-
-        /** @see ResponseCreateParams.Builder.verbosity */
-        fun verbosity(verbosity: Optional<ResponseCreateParams.Verbosity>) = apply {
-            paramsBuilder.verbosity(verbosity)
-        }
-
-        /** @see ResponseCreateParams.Builder.verbosity */
-        fun verbosity(verbosity: JsonField<ResponseCreateParams.Verbosity>) = apply {
-            paramsBuilder.verbosity(verbosity)
-        }
-
         /** @see ResponseCreateParams.Builder.user */
         fun user(user: String) = apply { paramsBuilder.user(user) }
 

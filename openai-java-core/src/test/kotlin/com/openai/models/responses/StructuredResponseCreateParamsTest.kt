@@ -95,7 +95,6 @@ internal class StructuredResponseCreateParamsTest {
         private val TOOL_CHOICE_ALLOWED =
             ToolChoiceAllowed.builder().mode(ToolChoiceAllowed.Mode.AUTO).tools(listOf()).build()
         private val TOOL_CHOICE_CUSTOM = ToolChoiceCustom.builder().name(STRING).build()
-        private val RESPONSE_VERBOSITY = ResponseCreateParams.Verbosity.HIGH
 
         private val HEADERS = Headers.builder().build()
         private val QUERY_PARAMS = QueryParams.builder().build()
@@ -210,9 +209,6 @@ internal class StructuredResponseCreateParamsTest {
                 DelegationWriteTestCase("truncation", JSON_FIELD),
                 DelegationWriteTestCase("user", STRING),
                 DelegationWriteTestCase("user", JSON_FIELD),
-                DelegationWriteTestCase("verbosity", NULLABLE),
-                DelegationWriteTestCase("verbosity", RESPONSE_VERBOSITY),
-                DelegationWriteTestCase("verbosity", OPTIONAL),
                 DelegationWriteTestCase("additionalBodyProperties", MAP),
                 DelegationWriteTestCase("putAdditionalBodyProperty", STRING, JSON_VALUE),
                 DelegationWriteTestCase("putAllAdditionalBodyProperties", MAP),

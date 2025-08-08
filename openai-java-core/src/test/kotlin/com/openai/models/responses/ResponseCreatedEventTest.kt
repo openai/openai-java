@@ -117,6 +117,7 @@ internal class ResponseCreatedEventTest {
                         .text(
                             ResponseTextConfig.builder()
                                 .format(ResponseFormatText.builder().build())
+                                .verbosity(ResponseTextConfig.Verbosity.LOW)
                                 .build()
                         )
                         .topLogprobs(0L)
@@ -139,7 +140,6 @@ internal class ResponseCreatedEventTest {
                                 .build()
                         )
                         .user("user-1234")
-                        .verbosity(Response.Verbosity.LOW)
                         .build()
                 )
                 .sequenceNumber(0L)
@@ -245,6 +245,7 @@ internal class ResponseCreatedEventTest {
                     .text(
                         ResponseTextConfig.builder()
                             .format(ResponseFormatText.builder().build())
+                            .verbosity(ResponseTextConfig.Verbosity.LOW)
                             .build()
                     )
                     .topLogprobs(0L)
@@ -265,7 +266,6 @@ internal class ResponseCreatedEventTest {
                             .build()
                     )
                     .user("user-1234")
-                    .verbosity(Response.Verbosity.LOW)
                     .build()
             )
         assertThat(responseCreatedEvent.sequenceNumber()).isEqualTo(0L)
@@ -375,6 +375,7 @@ internal class ResponseCreatedEventTest {
                         .text(
                             ResponseTextConfig.builder()
                                 .format(ResponseFormatText.builder().build())
+                                .verbosity(ResponseTextConfig.Verbosity.LOW)
                                 .build()
                         )
                         .topLogprobs(0L)
@@ -397,7 +398,6 @@ internal class ResponseCreatedEventTest {
                                 .build()
                         )
                         .user("user-1234")
-                        .verbosity(Response.Verbosity.LOW)
                         .build()
                 )
                 .sequenceNumber(0L)

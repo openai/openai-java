@@ -57,7 +57,12 @@ internal class ResponseCreateParamsTest {
                 ResponseCreateParams.StreamOptions.builder().includeObfuscation(true).build()
             )
             .temperature(1.0)
-            .text(ResponseTextConfig.builder().format(ResponseFormatText.builder().build()).build())
+            .text(
+                ResponseTextConfig.builder()
+                    .format(ResponseFormatText.builder().build())
+                    .verbosity(ResponseTextConfig.Verbosity.LOW)
+                    .build()
+            )
             .toolChoice(ToolChoiceOptions.NONE)
             .addTool(
                 FunctionTool.builder()
@@ -75,7 +80,6 @@ internal class ResponseCreateParamsTest {
             .topP(1.0)
             .truncation(ResponseCreateParams.Truncation.AUTO)
             .user("user-1234")
-            .verbosity(ResponseCreateParams.Verbosity.LOW)
             .build()
     }
 
@@ -126,6 +130,7 @@ internal class ResponseCreateParamsTest {
                 .text(
                     ResponseTextConfig.builder()
                         .format(ResponseFormatText.builder().build())
+                        .verbosity(ResponseTextConfig.Verbosity.LOW)
                         .build()
                 )
                 .toolChoice(ToolChoiceOptions.NONE)
@@ -145,7 +150,6 @@ internal class ResponseCreateParamsTest {
                 .topP(1.0)
                 .truncation(ResponseCreateParams.Truncation.AUTO)
                 .user("user-1234")
-                .verbosity(ResponseCreateParams.Verbosity.LOW)
                 .build()
 
         val body = params._body()
@@ -195,7 +199,10 @@ internal class ResponseCreateParamsTest {
         assertThat(body.temperature()).contains(1.0)
         assertThat(body.text())
             .contains(
-                ResponseTextConfig.builder().format(ResponseFormatText.builder().build()).build()
+                ResponseTextConfig.builder()
+                    .format(ResponseFormatText.builder().build())
+                    .verbosity(ResponseTextConfig.Verbosity.LOW)
+                    .build()
             )
         assertThat(body.toolChoice())
             .contains(ResponseCreateParams.ToolChoice.ofOptions(ToolChoiceOptions.NONE))
@@ -218,7 +225,6 @@ internal class ResponseCreateParamsTest {
         assertThat(body.topP()).contains(1.0)
         assertThat(body.truncation()).contains(ResponseCreateParams.Truncation.AUTO)
         assertThat(body.user()).contains("user-1234")
-        assertThat(body.verbosity()).contains(ResponseCreateParams.Verbosity.LOW)
     }
 
     @Test
