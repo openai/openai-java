@@ -116,6 +116,7 @@ internal class ResponseTest {
                 .text(
                     ResponseTextConfig.builder()
                         .format(ResponseFormatText.builder().build())
+                        .verbosity(ResponseTextConfig.Verbosity.LOW)
                         .build()
                 )
                 .topLogprobs(0L)
@@ -134,7 +135,6 @@ internal class ResponseTest {
                         .build()
                 )
                 .user("user-1234")
-                .verbosity(Response.Verbosity.LOW)
                 .build()
 
         assertThat(response.id()).isEqualTo("id")
@@ -245,7 +245,10 @@ internal class ResponseTest {
         assertThat(response.status()).contains(ResponseStatus.COMPLETED)
         assertThat(response.text())
             .contains(
-                ResponseTextConfig.builder().format(ResponseFormatText.builder().build()).build()
+                ResponseTextConfig.builder()
+                    .format(ResponseFormatText.builder().build())
+                    .verbosity(ResponseTextConfig.Verbosity.LOW)
+                    .build()
             )
         assertThat(response.topLogprobs()).contains(0L)
         assertThat(response.truncation()).contains(Response.Truncation.AUTO)
@@ -264,7 +267,6 @@ internal class ResponseTest {
                     .build()
             )
         assertThat(response.user()).contains("user-1234")
-        assertThat(response.verbosity()).contains(Response.Verbosity.LOW)
     }
 
     @Test
@@ -369,6 +371,7 @@ internal class ResponseTest {
                 .text(
                     ResponseTextConfig.builder()
                         .format(ResponseFormatText.builder().build())
+                        .verbosity(ResponseTextConfig.Verbosity.LOW)
                         .build()
                 )
                 .topLogprobs(0L)
@@ -387,7 +390,6 @@ internal class ResponseTest {
                         .build()
                 )
                 .user("user-1234")
-                .verbosity(Response.Verbosity.LOW)
                 .build()
 
         val roundtrippedResponse =
