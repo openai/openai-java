@@ -1,5 +1,33 @@
 # Changelog
 
+## 3.0.0 (2025-08-08)
+
+Full Changelog: [v2.20.1...v3.0.0](https://github.com/openai/openai-java/compare/v2.20.1...v3.0.0)
+
+### Features
+
+* **api:** adds GPT-5 and new API features: platform.openai.com/docs/guides/gpt-5 ([fa34d24](https://github.com/openai/openai-java/commit/fa34d242f44d2329c16cd0862c13f17a5764cace))
+* **api:** manual updates ([089a075](https://github.com/openai/openai-java/commit/089a075c2cc10469c8eb6714004e65e292b07267))
+* **client:** support new unified Azure URL scheme ([#554](https://github.com/openai/openai-java/issues/554)) ([9aacff0](https://github.com/openai/openai-java/commit/9aacff0ee4030250941b749cbffab683323b0e33))
+
+
+### Bug Fixes
+
+* **functions:** add accidentally removed arguments method ([696dfb1](https://github.com/openai/openai-java/commit/696dfb1da6a9ae7b962f5beeafd35c1cd74a6f11))
+
+
+### Chores
+
+* **example:** fix run example comment ([42fe3d9](https://github.com/openai/openai-java/commit/42fe3d965e6e6f0724c1a0d93101cac04902a547))
+* increase max gradle JVM heap to 8GB ([87afac0](https://github.com/openai/openai-java/commit/87afac0530148f22194721cc0a285bd41f817a57))
+* **internal:** add async lock helper ([1a75cea](https://github.com/openai/openai-java/commit/1a75ceaf7f526ddd7f1f14ff551939fec4242926))
+
+
+### Documentation
+
+* more prominently call out examples ([d601c1a](https://github.com/openai/openai-java/commit/d601c1a1942182fe6fa9ea052b0028654356e738))
+* multiple image editing ([a64f375](https://github.com/openai/openai-java/commit/a64f375dbfe11adf0119f55a70efd238693ffcdf))
+
 ## 2.20.1 (2025-07-31)
 
 Full Changelog: [v2.20.0...v2.20.1](https://github.com/openai/openai-java/compare/v2.20.0...v2.20.1)
