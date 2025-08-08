@@ -1,5 +1,21 @@
 # Changelog
 
+## 3.0.1 (2025-08-08)
+
+Full Changelog: [v3.0.0...v3.0.1](https://github.com/openai/openai-java/compare/v3.0.0...v3.0.1)
+
+### Bug Fixes
+
+* **client:** fix verbosity parameter location in Responses ([c4200c3](https://github.com/openai/openai-java/commit/c4200c3406be7a5726c0b66d077f8994bad1ab66))
+* **responses:** remove incorrect verbosity builder method ([76286de](https://github.com/openai/openai-java/commit/76286dea43fdde63aa2f25e14f0f65f362ae121c))
+* **responses:** remove more references to incorrect verbosity location ([1f56089](https://github.com/openai/openai-java/commit/1f56089d28ca7ef88c3ea632dc3757ccb596cae0))
+
+
+### Chores
+
+* update @stainless-api/prism-cli to v5.15.0 ([61263de](https://github.com/openai/openai-java/commit/61263de7d22b9b385be2bf3194a17767d64e1641))
+* update delegation tests ([060ec4c](https://github.com/openai/openai-java/commit/060ec4c77f9f9470ca13074815ba186ee47daeef))
+
 ## 3.0.0 (2025-08-08)
 
 Full Changelog: [v2.20.1...v3.0.0](https://github.com/openai/openai-java/compare/v2.20.1...v3.0.0)
