@@ -87,16 +87,10 @@ JAR files will be available in each module's `build/libs/` directory.
 
 Most tests require [our mock server](https://github.com/stoplightio/prism) to be running against the OpenAPI spec to work.
 
-The test script will automatically start the mock server for you (if it's not already running) and run the tests against it:
+The test script will automatically start the mock server for you and run the tests against it:
 
 ```sh
 $ ./scripts/test
-```
-
-You can also manually start the mock server if you want to run tests repeatedly:
-
-```sh
-$ ./scripts/mock
 ```
 
 Then run the tests:
