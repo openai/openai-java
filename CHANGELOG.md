@@ -1,5 +1,13 @@
 # Changelog
 
+## 3.0.2 (2025-08-09)
+
+Full Changelog: [v3.0.1...v3.0.2](https://github.com/openai/openai-java/compare/v3.0.1...v3.0.2)
+
+### Chores
+
+* **internal:** update comment in script ([925656f](https://github.com/openai/openai-java/commit/925656f5693d7a50ca58e56468b9858a7c757db6))
+
 ## 3.0.1 (2025-08-08)
 
 Full Changelog: [v3.0.0...v3.0.1](https://github.com/openai/openai-java/compare/v3.0.0...v3.0.1)
