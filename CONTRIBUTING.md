@@ -2,7 +2,7 @@
 
 ## Setting up the environment
 
-This repository uses [Gradle](https://gradle.org/) with Kotlin DSL for building and dependency management. The SDK requires Java 8, but development requires JDK 21 for the Kotlin toolchain.
+This repository uses [Gradle](https://gradle.org/) with Kotlin DSL for building and dependency management. The SDK requires Java 8 for runtime, but development requires JDK 21 for the Kotlin toolchain.
 
 ## Project structure
 
@@ -103,7 +103,6 @@ Then run the tests:
 
 ```sh
 $ ./scripts/test
-
 ```
 
 ### Test configuration
@@ -184,7 +183,7 @@ the changes aren't made through the automated pipeline, you may want to make rel
 
 ### Publish with a GitHub workflow
 
-You can release to package managers by using [the `Publish Sonatype` GitHub action](https://www.github.com/openai/openai-java/actions/workflows/publish-sonatype.yml). This requires setup organization or repository secrets to be configured.
+You can release to package managers by using [the `Publish Sonatype` GitHub Action](https://www.github.com/openai/openai-java/actions/workflows/publish-sonatype.yml). This requires setup organization or repository secrets to be configured.
 
 ### Publish manually
 
@@ -203,7 +202,7 @@ This requires the following environment variables to be set:
 
 ## Development tools
 
-### Available gradle tasks
+### Available Gradle tasks
 
 Some useful Gradle tasks:
 
