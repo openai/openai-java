@@ -125,7 +125,9 @@ The project uses:
 
 ## Linting and formatting
 
-This repository uses [Spotless](https://github.com/diffplug/spotless) with Palantir Java Format for code formatting and various linting tools.
+This repository uses [Ktfmt](https://github.com/facebook/ktfmt) and
+[Palantir Java Format](https://github.com/facebook/ktfmt) for code formatting and various linting
+tools.
 
 To check formatting and run lints:
 
@@ -141,10 +143,14 @@ To fix all formatting issues automatically:
 $ ./scripts/format
 ```
 
-You can also check formatting directly with Gradle:
+You can also check and fix all formatting directly with Gradle:
 
 ```sh
-$ ./gradlew spotlessCheck  # Check formatting
+$ ./gradlew lint
+```
+
+```sh
+$ ./gradlew format
 ```
 
 ## Building
@@ -211,7 +217,8 @@ Some useful Gradle tasks:
 $ ./gradlew tasks               # List all available tasks
 $ ./gradlew build               # Build all modules
 $ ./gradlew test                # Run all tests
-$ ./gradlew spotlessApply       # Format code
+$ ./gradlew lint                # Check all code formatting
+$ ./gradlew format              # Format all code
 $ ./gradlew publishToMavenLocal # Publish to local Maven repository
 $ ./gradlew dependencies        # Show dependency tree
 ```
