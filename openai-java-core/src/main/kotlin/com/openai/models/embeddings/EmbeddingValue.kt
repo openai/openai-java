@@ -115,10 +115,10 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is EmbeddingValue && floats == other.floats && base64 == other.base64 /* spotless:on */
+        return other is EmbeddingValue && floats == other.floats && base64 == other.base64
     }
 
-    override fun hashCode(): Int = /* spotless:off */  Objects.hash(floats, base64) /* spotless:on */
+    override fun hashCode(): Int = Objects.hash(floats, base64)
 
     override fun toString(): String =
         when {
