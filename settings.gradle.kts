@@ -1,8 +1,14 @@
 rootProject.name = "openai-java-root"
 
-include("openai-java")
-include("openai-java-client-okhttp")
-include("openai-java-core")
-include("openai-java-spring-boot-starter")
-include("openai-java-proguard-test")
-include("openai-java-example")
+val projectNames = rootDir.listFiles()
+    ?.asSequence()
+    .orEmpty()
+    .filter { file ->
+        file.isDirectory &&
+        file.name.startsWith("openai-java") &&
+        file.listFiles()?.asSequence().orEmpty().any { it.name == "build.gradle.kts" }
+    }
+    .map { it.name }
+    .toList()
+println("projects: $projectNames")
+projectNames.forEach { include(it) }
