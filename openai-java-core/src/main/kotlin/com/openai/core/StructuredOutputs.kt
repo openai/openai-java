@@ -2,6 +2,7 @@ package com.openai.core
 
 import com.fasterxml.jackson.annotation.JsonTypeName
 import com.fasterxml.jackson.databind.JsonNode
+import com.fasterxml.jackson.databind.SerializationFeature
 import com.fasterxml.jackson.databind.json.JsonMapper
 import com.fasterxml.jackson.databind.node.ObjectNode
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module
@@ -30,6 +31,7 @@ private val MAPPER =
         .addModule(kotlinModule())
         .addModule(Jdk8Module())
         .addModule(JavaTimeModule())
+        .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
         .build()
 
 /**
