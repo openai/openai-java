@@ -1518,12 +1518,41 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is Body && prompt == other.prompt && background == other.background && model == other.model && moderation == other.moderation && n == other.n && outputCompression == other.outputCompression && outputFormat == other.outputFormat && partialImages == other.partialImages && quality == other.quality && responseFormat == other.responseFormat && size == other.size && style == other.style && user == other.user && additionalProperties == other.additionalProperties /* spotless:on */
+            return other is Body &&
+                prompt == other.prompt &&
+                background == other.background &&
+                model == other.model &&
+                moderation == other.moderation &&
+                n == other.n &&
+                outputCompression == other.outputCompression &&
+                outputFormat == other.outputFormat &&
+                partialImages == other.partialImages &&
+                quality == other.quality &&
+                responseFormat == other.responseFormat &&
+                size == other.size &&
+                style == other.style &&
+                user == other.user &&
+                additionalProperties == other.additionalProperties
         }
 
-        /* spotless:off */
-        private val hashCode: Int by lazy { Objects.hash(prompt, background, model, moderation, n, outputCompression, outputFormat, partialImages, quality, responseFormat, size, style, user, additionalProperties) }
-        /* spotless:on */
+        private val hashCode: Int by lazy {
+            Objects.hash(
+                prompt,
+                background,
+                model,
+                moderation,
+                n,
+                outputCompression,
+                outputFormat,
+                partialImages,
+                quality,
+                responseFormat,
+                size,
+                style,
+                user,
+                additionalProperties,
+            )
+        }
 
         override fun hashCode(): Int = hashCode
 
@@ -1665,7 +1694,7 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is Background && value == other.value /* spotless:on */
+            return other is Background && value == other.value
         }
 
         override fun hashCode() = value.hashCode()
@@ -1796,7 +1825,7 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is Moderation && value == other.value /* spotless:on */
+            return other is Moderation && value == other.value
         }
 
         override fun hashCode() = value.hashCode()
@@ -1934,7 +1963,7 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is OutputFormat && value == other.value /* spotless:on */
+            return other is OutputFormat && value == other.value
         }
 
         override fun hashCode() = value.hashCode()
@@ -2090,7 +2119,7 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is Quality && value == other.value /* spotless:on */
+            return other is Quality && value == other.value
         }
 
         override fun hashCode() = value.hashCode()
@@ -2225,7 +2254,7 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is ResponseFormat && value == other.value /* spotless:on */
+            return other is ResponseFormat && value == other.value
         }
 
         override fun hashCode() = value.hashCode()
@@ -2392,7 +2421,7 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is Size && value == other.value /* spotless:on */
+            return other is Size && value == other.value
         }
 
         override fun hashCode() = value.hashCode()
@@ -2523,7 +2552,7 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is Style && value == other.value /* spotless:on */
+            return other is Style && value == other.value
         }
 
         override fun hashCode() = value.hashCode()
@@ -2536,10 +2565,13 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is ImageGenerateParams && body == other.body && additionalHeaders == other.additionalHeaders && additionalQueryParams == other.additionalQueryParams /* spotless:on */
+        return other is ImageGenerateParams &&
+            body == other.body &&
+            additionalHeaders == other.additionalHeaders &&
+            additionalQueryParams == other.additionalQueryParams
     }
 
-    override fun hashCode(): Int = /* spotless:off */ Objects.hash(body, additionalHeaders, additionalQueryParams) /* spotless:on */
+    override fun hashCode(): Int = Objects.hash(body, additionalHeaders, additionalQueryParams)
 
     override fun toString() =
         "ImageGenerateParams{body=$body, additionalHeaders=$additionalHeaders, additionalQueryParams=$additionalQueryParams}"

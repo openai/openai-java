@@ -531,12 +531,13 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is Body && input == other.input && model == other.model && additionalProperties == other.additionalProperties /* spotless:on */
+            return other is Body &&
+                input == other.input &&
+                model == other.model &&
+                additionalProperties == other.additionalProperties
         }
 
-        /* spotless:off */
         private val hashCode: Int by lazy { Objects.hash(input, model, additionalProperties) }
-        /* spotless:on */
 
         override fun hashCode(): Int = hashCode
 
@@ -653,10 +654,13 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is Input && string == other.string && strings == other.strings && moderationMultiModalArray == other.moderationMultiModalArray /* spotless:on */
+            return other is Input &&
+                string == other.string &&
+                strings == other.strings &&
+                moderationMultiModalArray == other.moderationMultiModalArray
         }
 
-        override fun hashCode(): Int = /* spotless:off */ Objects.hash(string, strings, moderationMultiModalArray) /* spotless:on */
+        override fun hashCode(): Int = Objects.hash(string, strings, moderationMultiModalArray)
 
         override fun toString(): String =
             when {
@@ -768,10 +772,13 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is ModerationCreateParams && body == other.body && additionalHeaders == other.additionalHeaders && additionalQueryParams == other.additionalQueryParams /* spotless:on */
+        return other is ModerationCreateParams &&
+            body == other.body &&
+            additionalHeaders == other.additionalHeaders &&
+            additionalQueryParams == other.additionalQueryParams
     }
 
-    override fun hashCode(): Int = /* spotless:off */ Objects.hash(body, additionalHeaders, additionalQueryParams) /* spotless:on */
+    override fun hashCode(): Int = Objects.hash(body, additionalHeaders, additionalQueryParams)
 
     override fun toString() =
         "ModerationCreateParams{body=$body, additionalHeaders=$additionalHeaders, additionalQueryParams=$additionalQueryParams}"

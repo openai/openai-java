@@ -358,7 +358,7 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is Order && value == other.value /* spotless:on */
+            return other is Order && value == other.value
         }
 
         override fun hashCode() = value.hashCode()
@@ -371,10 +371,16 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is ContainerListParams && after == other.after && limit == other.limit && order == other.order && additionalHeaders == other.additionalHeaders && additionalQueryParams == other.additionalQueryParams /* spotless:on */
+        return other is ContainerListParams &&
+            after == other.after &&
+            limit == other.limit &&
+            order == other.order &&
+            additionalHeaders == other.additionalHeaders &&
+            additionalQueryParams == other.additionalQueryParams
     }
 
-    override fun hashCode(): Int = /* spotless:off */ Objects.hash(after, limit, order, additionalHeaders, additionalQueryParams) /* spotless:on */
+    override fun hashCode(): Int =
+        Objects.hash(after, limit, order, additionalHeaders, additionalQueryParams)
 
     override fun toString() =
         "ContainerListParams{after=$after, limit=$limit, order=$order, additionalHeaders=$additionalHeaders, additionalQueryParams=$additionalQueryParams}"

@@ -126,7 +126,7 @@ private constructor(private val value: JsonField<String>) : Enum {
             return true
         }
 
-        return /* spotless:off */ other is ChatCompletionModality && value == other.value /* spotless:on */
+        return other is ChatCompletionModality && value == other.value
     }
 
     override fun hashCode() = value.hashCode()

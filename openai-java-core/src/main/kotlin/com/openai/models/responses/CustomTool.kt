@@ -284,12 +284,17 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is CustomTool && name == other.name && type == other.type && description == other.description && format == other.format && additionalProperties == other.additionalProperties /* spotless:on */
+        return other is CustomTool &&
+            name == other.name &&
+            type == other.type &&
+            description == other.description &&
+            format == other.format &&
+            additionalProperties == other.additionalProperties
     }
 
-    /* spotless:off */
-    private val hashCode: Int by lazy { Objects.hash(name, type, description, format, additionalProperties) }
-    /* spotless:on */
+    private val hashCode: Int by lazy {
+        Objects.hash(name, type, description, format, additionalProperties)
+    }
 
     override fun hashCode(): Int = hashCode
 

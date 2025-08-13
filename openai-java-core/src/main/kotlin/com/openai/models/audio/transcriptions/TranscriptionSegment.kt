@@ -538,12 +538,35 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is TranscriptionSegment && id == other.id && avgLogprob == other.avgLogprob && compressionRatio == other.compressionRatio && end == other.end && noSpeechProb == other.noSpeechProb && seek == other.seek && start == other.start && temperature == other.temperature && text == other.text && tokens == other.tokens && additionalProperties == other.additionalProperties /* spotless:on */
+        return other is TranscriptionSegment &&
+            id == other.id &&
+            avgLogprob == other.avgLogprob &&
+            compressionRatio == other.compressionRatio &&
+            end == other.end &&
+            noSpeechProb == other.noSpeechProb &&
+            seek == other.seek &&
+            start == other.start &&
+            temperature == other.temperature &&
+            text == other.text &&
+            tokens == other.tokens &&
+            additionalProperties == other.additionalProperties
     }
 
-    /* spotless:off */
-    private val hashCode: Int by lazy { Objects.hash(id, avgLogprob, compressionRatio, end, noSpeechProb, seek, start, temperature, text, tokens, additionalProperties) }
-    /* spotless:on */
+    private val hashCode: Int by lazy {
+        Objects.hash(
+            id,
+            avgLogprob,
+            compressionRatio,
+            end,
+            noSpeechProb,
+            seek,
+            start,
+            temperature,
+            text,
+            tokens,
+            additionalProperties,
+        )
+    }
 
     override fun hashCode(): Int = hashCode
 

@@ -705,10 +705,13 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is ContentPart && chatCompletionContentPartText == other.chatCompletionContentPartText && chatCompletionContentPartImage == other.chatCompletionContentPartImage /* spotless:on */
+            return other is ContentPart &&
+                chatCompletionContentPartText == other.chatCompletionContentPartText &&
+                chatCompletionContentPartImage == other.chatCompletionContentPartImage
         }
 
-        override fun hashCode(): Int = /* spotless:off */ Objects.hash(chatCompletionContentPartText, chatCompletionContentPartImage) /* spotless:on */
+        override fun hashCode(): Int =
+            Objects.hash(chatCompletionContentPartText, chatCompletionContentPartImage)
 
         override fun toString(): String =
             when {
@@ -826,12 +829,33 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is ChatCompletionStoreMessage && content == other.content && refusal == other.refusal && role == other.role && annotations == other.annotations && audio == other.audio && functionCall == other.functionCall && toolCalls == other.toolCalls && id == other.id && contentParts == other.contentParts && additionalProperties == other.additionalProperties /* spotless:on */
+        return other is ChatCompletionStoreMessage &&
+            content == other.content &&
+            refusal == other.refusal &&
+            role == other.role &&
+            annotations == other.annotations &&
+            audio == other.audio &&
+            functionCall == other.functionCall &&
+            toolCalls == other.toolCalls &&
+            id == other.id &&
+            contentParts == other.contentParts &&
+            additionalProperties == other.additionalProperties
     }
 
-    /* spotless:off */
-    private val hashCode: Int by lazy { Objects.hash(content, refusal, role, annotations, audio, functionCall, toolCalls, id, contentParts, additionalProperties) }
-    /* spotless:on */
+    private val hashCode: Int by lazy {
+        Objects.hash(
+            content,
+            refusal,
+            role,
+            annotations,
+            audio,
+            functionCall,
+            toolCalls,
+            id,
+            contentParts,
+            additionalProperties,
+        )
+    }
 
     override fun hashCode(): Int = hashCode
 

@@ -420,10 +420,13 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is Action && search == other.search && openPage == other.openPage && find == other.find /* spotless:on */
+            return other is Action &&
+                search == other.search &&
+                openPage == other.openPage &&
+                find == other.find
         }
 
-        override fun hashCode(): Int = /* spotless:off */ Objects.hash(search, openPage, find) /* spotless:on */
+        override fun hashCode(): Int = Objects.hash(search, openPage, find)
 
         override fun toString(): String =
             when {
@@ -704,12 +707,13 @@ private constructor(
                     return true
                 }
 
-                return /* spotless:off */ other is Search && query == other.query && type == other.type && additionalProperties == other.additionalProperties /* spotless:on */
+                return other is Search &&
+                    query == other.query &&
+                    type == other.type &&
+                    additionalProperties == other.additionalProperties
             }
 
-            /* spotless:off */
             private val hashCode: Int by lazy { Objects.hash(query, type, additionalProperties) }
-            /* spotless:on */
 
             override fun hashCode(): Int = hashCode
 
@@ -903,12 +907,13 @@ private constructor(
                     return true
                 }
 
-                return /* spotless:off */ other is OpenPage && type == other.type && url == other.url && additionalProperties == other.additionalProperties /* spotless:on */
+                return other is OpenPage &&
+                    type == other.type &&
+                    url == other.url &&
+                    additionalProperties == other.additionalProperties
             }
 
-            /* spotless:off */
             private val hashCode: Int by lazy { Objects.hash(type, url, additionalProperties) }
-            /* spotless:on */
 
             override fun hashCode(): Int = hashCode
 
@@ -1145,12 +1150,16 @@ private constructor(
                     return true
                 }
 
-                return /* spotless:off */ other is Find && pattern == other.pattern && type == other.type && url == other.url && additionalProperties == other.additionalProperties /* spotless:on */
+                return other is Find &&
+                    pattern == other.pattern &&
+                    type == other.type &&
+                    url == other.url &&
+                    additionalProperties == other.additionalProperties
             }
 
-            /* spotless:off */
-            private val hashCode: Int by lazy { Objects.hash(pattern, type, url, additionalProperties) }
-            /* spotless:on */
+            private val hashCode: Int by lazy {
+                Objects.hash(pattern, type, url, additionalProperties)
+            }
 
             override fun hashCode(): Int = hashCode
 
@@ -1289,7 +1298,7 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is Status && value == other.value /* spotless:on */
+            return other is Status && value == other.value
         }
 
         override fun hashCode() = value.hashCode()
@@ -1302,12 +1311,17 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is ResponseFunctionWebSearch && id == other.id && action == other.action && status == other.status && type == other.type && additionalProperties == other.additionalProperties /* spotless:on */
+        return other is ResponseFunctionWebSearch &&
+            id == other.id &&
+            action == other.action &&
+            status == other.status &&
+            type == other.type &&
+            additionalProperties == other.additionalProperties
     }
 
-    /* spotless:off */
-    private val hashCode: Int by lazy { Objects.hash(id, action, status, type, additionalProperties) }
-    /* spotless:on */
+    private val hashCode: Int by lazy {
+        Objects.hash(id, action, status, type, additionalProperties)
+    }
 
     override fun hashCode(): Int = hashCode
 

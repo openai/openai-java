@@ -476,12 +476,15 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is Usage && promptTokens == other.promptTokens && totalTokens == other.totalTokens && additionalProperties == other.additionalProperties /* spotless:on */
+            return other is Usage &&
+                promptTokens == other.promptTokens &&
+                totalTokens == other.totalTokens &&
+                additionalProperties == other.additionalProperties
         }
 
-        /* spotless:off */
-        private val hashCode: Int by lazy { Objects.hash(promptTokens, totalTokens, additionalProperties) }
-        /* spotless:on */
+        private val hashCode: Int by lazy {
+            Objects.hash(promptTokens, totalTokens, additionalProperties)
+        }
 
         override fun hashCode(): Int = hashCode
 
@@ -494,12 +497,17 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is CreateEmbeddingResponse && data == other.data && model == other.model && object_ == other.object_ && usage == other.usage && additionalProperties == other.additionalProperties /* spotless:on */
+        return other is CreateEmbeddingResponse &&
+            data == other.data &&
+            model == other.model &&
+            object_ == other.object_ &&
+            usage == other.usage &&
+            additionalProperties == other.additionalProperties
     }
 
-    /* spotless:off */
-    private val hashCode: Int by lazy { Objects.hash(data, model, object_, usage, additionalProperties) }
-    /* spotless:on */
+    private val hashCode: Int by lazy {
+        Objects.hash(data, model, object_, usage, additionalProperties)
+    }
 
     override fun hashCode(): Int = hashCode
 

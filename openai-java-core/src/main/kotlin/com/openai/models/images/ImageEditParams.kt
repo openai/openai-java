@@ -1669,12 +1669,43 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is Body && image == other.image && prompt == other.prompt && background == other.background && inputFidelity == other.inputFidelity && mask == other.mask && model == other.model && n == other.n && outputCompression == other.outputCompression && outputFormat == other.outputFormat && partialImages == other.partialImages && quality == other.quality && responseFormat == other.responseFormat && size == other.size && user == other.user && additionalProperties == other.additionalProperties /* spotless:on */
+            return other is Body &&
+                image == other.image &&
+                prompt == other.prompt &&
+                background == other.background &&
+                inputFidelity == other.inputFidelity &&
+                mask == other.mask &&
+                model == other.model &&
+                n == other.n &&
+                outputCompression == other.outputCompression &&
+                outputFormat == other.outputFormat &&
+                partialImages == other.partialImages &&
+                quality == other.quality &&
+                responseFormat == other.responseFormat &&
+                size == other.size &&
+                user == other.user &&
+                additionalProperties == other.additionalProperties
         }
 
-        /* spotless:off */
-        private val hashCode: Int by lazy { Objects.hash(image, prompt, background, inputFidelity, mask, model, n, outputCompression, outputFormat, partialImages, quality, responseFormat, size, user, additionalProperties) }
-        /* spotless:on */
+        private val hashCode: Int by lazy {
+            Objects.hash(
+                image,
+                prompt,
+                background,
+                inputFidelity,
+                mask,
+                model,
+                n,
+                outputCompression,
+                outputFormat,
+                partialImages,
+                quality,
+                responseFormat,
+                size,
+                user,
+                additionalProperties,
+            )
+        }
 
         override fun hashCode(): Int = hashCode
 
@@ -1770,10 +1801,12 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is Image && inputStream == other.inputStream && inputStreams == other.inputStreams /* spotless:on */
+            return other is Image &&
+                inputStream == other.inputStream &&
+                inputStreams == other.inputStreams
         }
 
-        override fun hashCode(): Int = /* spotless:off */ Objects.hash(inputStream, inputStreams) /* spotless:on */
+        override fun hashCode(): Int = Objects.hash(inputStream, inputStreams)
 
         override fun toString(): String =
             when {
@@ -1996,7 +2029,7 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is Background && value == other.value /* spotless:on */
+            return other is Background && value == other.value
         }
 
         override fun hashCode() = value.hashCode()
@@ -2130,7 +2163,7 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is InputFidelity && value == other.value /* spotless:on */
+            return other is InputFidelity && value == other.value
         }
 
         override fun hashCode() = value.hashCode()
@@ -2268,7 +2301,7 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is OutputFormat && value == other.value /* spotless:on */
+            return other is OutputFormat && value == other.value
         }
 
         override fun hashCode() = value.hashCode()
@@ -2415,7 +2448,7 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is Quality && value == other.value /* spotless:on */
+            return other is Quality && value == other.value
         }
 
         override fun hashCode() = value.hashCode()
@@ -2549,7 +2582,7 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is ResponseFormat && value == other.value /* spotless:on */
+            return other is ResponseFormat && value == other.value
         }
 
         override fun hashCode() = value.hashCode()
@@ -2703,7 +2736,7 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is Size && value == other.value /* spotless:on */
+            return other is Size && value == other.value
         }
 
         override fun hashCode() = value.hashCode()
@@ -2716,10 +2749,13 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is ImageEditParams && body == other.body && additionalHeaders == other.additionalHeaders && additionalQueryParams == other.additionalQueryParams /* spotless:on */
+        return other is ImageEditParams &&
+            body == other.body &&
+            additionalHeaders == other.additionalHeaders &&
+            additionalQueryParams == other.additionalQueryParams
     }
 
-    override fun hashCode(): Int = /* spotless:off */ Objects.hash(body, additionalHeaders, additionalQueryParams) /* spotless:on */
+    override fun hashCode(): Int = Objects.hash(body, additionalHeaders, additionalQueryParams)
 
     override fun toString() =
         "ImageEditParams{body=$body, additionalHeaders=$additionalHeaders, additionalQueryParams=$additionalQueryParams}"

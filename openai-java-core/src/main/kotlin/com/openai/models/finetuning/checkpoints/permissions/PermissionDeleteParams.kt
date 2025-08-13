@@ -244,10 +244,22 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is PermissionDeleteParams && fineTunedModelCheckpoint == other.fineTunedModelCheckpoint && permissionId == other.permissionId && additionalHeaders == other.additionalHeaders && additionalQueryParams == other.additionalQueryParams && additionalBodyProperties == other.additionalBodyProperties /* spotless:on */
+        return other is PermissionDeleteParams &&
+            fineTunedModelCheckpoint == other.fineTunedModelCheckpoint &&
+            permissionId == other.permissionId &&
+            additionalHeaders == other.additionalHeaders &&
+            additionalQueryParams == other.additionalQueryParams &&
+            additionalBodyProperties == other.additionalBodyProperties
     }
 
-    override fun hashCode(): Int = /* spotless:off */ Objects.hash(fineTunedModelCheckpoint, permissionId, additionalHeaders, additionalQueryParams, additionalBodyProperties) /* spotless:on */
+    override fun hashCode(): Int =
+        Objects.hash(
+            fineTunedModelCheckpoint,
+            permissionId,
+            additionalHeaders,
+            additionalQueryParams,
+            additionalBodyProperties,
+        )
 
     override fun toString() =
         "PermissionDeleteParams{fineTunedModelCheckpoint=$fineTunedModelCheckpoint, permissionId=$permissionId, additionalHeaders=$additionalHeaders, additionalQueryParams=$additionalQueryParams, additionalBodyProperties=$additionalBodyProperties}"

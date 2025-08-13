@@ -261,10 +261,17 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is StepRetrieveParams && threadId == other.threadId && runId == other.runId && stepId == other.stepId && include == other.include && additionalHeaders == other.additionalHeaders && additionalQueryParams == other.additionalQueryParams /* spotless:on */
+        return other is StepRetrieveParams &&
+            threadId == other.threadId &&
+            runId == other.runId &&
+            stepId == other.stepId &&
+            include == other.include &&
+            additionalHeaders == other.additionalHeaders &&
+            additionalQueryParams == other.additionalQueryParams
     }
 
-    override fun hashCode(): Int = /* spotless:off */ Objects.hash(threadId, runId, stepId, include, additionalHeaders, additionalQueryParams) /* spotless:on */
+    override fun hashCode(): Int =
+        Objects.hash(threadId, runId, stepId, include, additionalHeaders, additionalQueryParams)
 
     override fun toString() =
         "StepRetrieveParams{threadId=$threadId, runId=$runId, stepId=$stepId, include=$include, additionalHeaders=$additionalHeaders, additionalQueryParams=$additionalQueryParams}"

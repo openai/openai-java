@@ -127,7 +127,7 @@ class ImageModel @JsonCreator private constructor(private val value: JsonField<S
             return true
         }
 
-        return /* spotless:off */ other is ImageModel && value == other.value /* spotless:on */
+        return other is ImageModel && value == other.value
     }
 
     override fun hashCode() = value.hashCode()

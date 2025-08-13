@@ -225,12 +225,14 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is MessageDeleted && id == other.id && deleted == other.deleted && object_ == other.object_ && additionalProperties == other.additionalProperties /* spotless:on */
+        return other is MessageDeleted &&
+            id == other.id &&
+            deleted == other.deleted &&
+            object_ == other.object_ &&
+            additionalProperties == other.additionalProperties
     }
 
-    /* spotless:off */
     private val hashCode: Int by lazy { Objects.hash(id, deleted, object_, additionalProperties) }
-    /* spotless:on */
 
     override fun hashCode(): Int = hashCode
 

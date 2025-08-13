@@ -256,10 +256,12 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is StepDetails && messageCreation == other.messageCreation && toolCalls == other.toolCalls /* spotless:on */
+            return other is StepDetails &&
+                messageCreation == other.messageCreation &&
+                toolCalls == other.toolCalls
         }
 
-        override fun hashCode(): Int = /* spotless:off */ Objects.hash(messageCreation, toolCalls) /* spotless:on */
+        override fun hashCode(): Int = Objects.hash(messageCreation, toolCalls)
 
         override fun toString(): String =
             when {
@@ -353,12 +355,12 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is RunStepDelta && stepDetails == other.stepDetails && additionalProperties == other.additionalProperties /* spotless:on */
+        return other is RunStepDelta &&
+            stepDetails == other.stepDetails &&
+            additionalProperties == other.additionalProperties
     }
 
-    /* spotless:off */
     private val hashCode: Int by lazy { Objects.hash(stepDetails, additionalProperties) }
-    /* spotless:on */
 
     override fun hashCode(): Int = hashCode
 

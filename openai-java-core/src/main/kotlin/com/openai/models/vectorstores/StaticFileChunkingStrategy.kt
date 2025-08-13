@@ -223,12 +223,15 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is StaticFileChunkingStrategy && chunkOverlapTokens == other.chunkOverlapTokens && maxChunkSizeTokens == other.maxChunkSizeTokens && additionalProperties == other.additionalProperties /* spotless:on */
+        return other is StaticFileChunkingStrategy &&
+            chunkOverlapTokens == other.chunkOverlapTokens &&
+            maxChunkSizeTokens == other.maxChunkSizeTokens &&
+            additionalProperties == other.additionalProperties
     }
 
-    /* spotless:off */
-    private val hashCode: Int by lazy { Objects.hash(chunkOverlapTokens, maxChunkSizeTokens, additionalProperties) }
-    /* spotless:on */
+    private val hashCode: Int by lazy {
+        Objects.hash(chunkOverlapTokens, maxChunkSizeTokens, additionalProperties)
+    }
 
     override fun hashCode(): Int = hashCode
 

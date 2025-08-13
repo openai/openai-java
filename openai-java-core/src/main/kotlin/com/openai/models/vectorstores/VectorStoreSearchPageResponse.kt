@@ -346,12 +346,18 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is VectorStoreSearchPageResponse && data == other.data && hasMore == other.hasMore && nextPage == other.nextPage && object_ == other.object_ && searchQuery == other.searchQuery && additionalProperties == other.additionalProperties /* spotless:on */
+        return other is VectorStoreSearchPageResponse &&
+            data == other.data &&
+            hasMore == other.hasMore &&
+            nextPage == other.nextPage &&
+            object_ == other.object_ &&
+            searchQuery == other.searchQuery &&
+            additionalProperties == other.additionalProperties
     }
 
-    /* spotless:off */
-    private val hashCode: Int by lazy { Objects.hash(data, hasMore, nextPage, object_, searchQuery, additionalProperties) }
-    /* spotless:on */
+    private val hashCode: Int by lazy {
+        Objects.hash(data, hasMore, nextPage, object_, searchQuery, additionalProperties)
+    }
 
     override fun hashCode(): Int = hashCode
 

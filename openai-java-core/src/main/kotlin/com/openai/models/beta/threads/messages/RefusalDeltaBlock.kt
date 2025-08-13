@@ -230,12 +230,14 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is RefusalDeltaBlock && index == other.index && type == other.type && refusal == other.refusal && additionalProperties == other.additionalProperties /* spotless:on */
+        return other is RefusalDeltaBlock &&
+            index == other.index &&
+            type == other.type &&
+            refusal == other.refusal &&
+            additionalProperties == other.additionalProperties
     }
 
-    /* spotless:off */
     private val hashCode: Int by lazy { Objects.hash(index, type, refusal, additionalProperties) }
-    /* spotless:on */
 
     override fun hashCode(): Int = hashCode
 

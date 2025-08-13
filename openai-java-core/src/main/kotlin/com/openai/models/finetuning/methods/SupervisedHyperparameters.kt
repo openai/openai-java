@@ -359,10 +359,10 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is BatchSize && auto == other.auto && integer == other.integer /* spotless:on */
+            return other is BatchSize && auto == other.auto && integer == other.integer
         }
 
-        override fun hashCode(): Int = /* spotless:off */ Objects.hash(auto, integer) /* spotless:on */
+        override fun hashCode(): Int = Objects.hash(auto, integer)
 
         override fun toString(): String =
             when {
@@ -539,10 +539,10 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is LearningRateMultiplier && auto == other.auto && number == other.number /* spotless:on */
+            return other is LearningRateMultiplier && auto == other.auto && number == other.number
         }
 
-        override fun hashCode(): Int = /* spotless:off */ Objects.hash(auto, number) /* spotless:on */
+        override fun hashCode(): Int = Objects.hash(auto, number)
 
         override fun toString(): String =
             when {
@@ -722,10 +722,10 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is NEpochs && auto == other.auto && integer == other.integer /* spotless:on */
+            return other is NEpochs && auto == other.auto && integer == other.integer
         }
 
-        override fun hashCode(): Int = /* spotless:off */ Objects.hash(auto, integer) /* spotless:on */
+        override fun hashCode(): Int = Objects.hash(auto, integer)
 
         override fun toString(): String =
             when {
@@ -818,12 +818,16 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is SupervisedHyperparameters && batchSize == other.batchSize && learningRateMultiplier == other.learningRateMultiplier && nEpochs == other.nEpochs && additionalProperties == other.additionalProperties /* spotless:on */
+        return other is SupervisedHyperparameters &&
+            batchSize == other.batchSize &&
+            learningRateMultiplier == other.learningRateMultiplier &&
+            nEpochs == other.nEpochs &&
+            additionalProperties == other.additionalProperties
     }
 
-    /* spotless:off */
-    private val hashCode: Int by lazy { Objects.hash(batchSize, learningRateMultiplier, nEpochs, additionalProperties) }
-    /* spotless:on */
+    private val hashCode: Int by lazy {
+        Objects.hash(batchSize, learningRateMultiplier, nEpochs, additionalProperties)
+    }
 
     override fun hashCode(): Int = hashCode
 

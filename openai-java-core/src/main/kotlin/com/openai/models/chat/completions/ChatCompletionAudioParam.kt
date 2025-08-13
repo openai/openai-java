@@ -354,7 +354,7 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is Format && value == other.value /* spotless:on */
+            return other is Format && value == other.value
         }
 
         override fun hashCode() = value.hashCode()
@@ -519,7 +519,7 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is Voice && value == other.value /* spotless:on */
+            return other is Voice && value == other.value
         }
 
         override fun hashCode() = value.hashCode()
@@ -532,12 +532,13 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is ChatCompletionAudioParam && format == other.format && voice == other.voice && additionalProperties == other.additionalProperties /* spotless:on */
+        return other is ChatCompletionAudioParam &&
+            format == other.format &&
+            voice == other.voice &&
+            additionalProperties == other.additionalProperties
     }
 
-    /* spotless:off */
     private val hashCode: Int by lazy { Objects.hash(format, voice, additionalProperties) }
-    /* spotless:on */
 
     override fun hashCode(): Int = hashCode
 

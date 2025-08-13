@@ -187,10 +187,14 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is JobRetrieveParams && fineTuningJobId == other.fineTuningJobId && additionalHeaders == other.additionalHeaders && additionalQueryParams == other.additionalQueryParams /* spotless:on */
+        return other is JobRetrieveParams &&
+            fineTuningJobId == other.fineTuningJobId &&
+            additionalHeaders == other.additionalHeaders &&
+            additionalQueryParams == other.additionalQueryParams
     }
 
-    override fun hashCode(): Int = /* spotless:off */ Objects.hash(fineTuningJobId, additionalHeaders, additionalQueryParams) /* spotless:on */
+    override fun hashCode(): Int =
+        Objects.hash(fineTuningJobId, additionalHeaders, additionalQueryParams)
 
     override fun toString() =
         "JobRetrieveParams{fineTuningJobId=$fineTuningJobId, additionalHeaders=$additionalHeaders, additionalQueryParams=$additionalQueryParams}"

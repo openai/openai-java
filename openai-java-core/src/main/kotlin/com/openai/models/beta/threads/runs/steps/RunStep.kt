@@ -1157,7 +1157,7 @@ private constructor(
                     return true
                 }
 
-                return /* spotless:off */ other is Code && value == other.value /* spotless:on */
+                return other is Code && value == other.value
             }
 
             override fun hashCode() = value.hashCode()
@@ -1170,12 +1170,13 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is LastError && code == other.code && message == other.message && additionalProperties == other.additionalProperties /* spotless:on */
+            return other is LastError &&
+                code == other.code &&
+                message == other.message &&
+                additionalProperties == other.additionalProperties
         }
 
-        /* spotless:off */
         private val hashCode: Int by lazy { Objects.hash(code, message, additionalProperties) }
-        /* spotless:on */
 
         override fun hashCode(): Int = hashCode
 
@@ -1280,12 +1281,10 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is Metadata && additionalProperties == other.additionalProperties /* spotless:on */
+            return other is Metadata && additionalProperties == other.additionalProperties
         }
 
-        /* spotless:off */
         private val hashCode: Int by lazy { Objects.hash(additionalProperties) }
-        /* spotless:on */
 
         override fun hashCode(): Int = hashCode
 
@@ -1431,7 +1430,7 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is Status && value == other.value /* spotless:on */
+            return other is Status && value == other.value
         }
 
         override fun hashCode() = value.hashCode()
@@ -1530,10 +1529,12 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is StepDetails && messageCreation == other.messageCreation && toolCalls == other.toolCalls /* spotless:on */
+            return other is StepDetails &&
+                messageCreation == other.messageCreation &&
+                toolCalls == other.toolCalls
         }
 
-        override fun hashCode(): Int = /* spotless:off */ Objects.hash(messageCreation, toolCalls) /* spotless:on */
+        override fun hashCode(): Int = Objects.hash(messageCreation, toolCalls)
 
         override fun toString(): String =
             when {
@@ -1740,7 +1741,7 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is Type && value == other.value /* spotless:on */
+            return other is Type && value == other.value
         }
 
         override fun hashCode() = value.hashCode()
@@ -1990,12 +1991,16 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is Usage && completionTokens == other.completionTokens && promptTokens == other.promptTokens && totalTokens == other.totalTokens && additionalProperties == other.additionalProperties /* spotless:on */
+            return other is Usage &&
+                completionTokens == other.completionTokens &&
+                promptTokens == other.promptTokens &&
+                totalTokens == other.totalTokens &&
+                additionalProperties == other.additionalProperties
         }
 
-        /* spotless:off */
-        private val hashCode: Int by lazy { Objects.hash(completionTokens, promptTokens, totalTokens, additionalProperties) }
-        /* spotless:on */
+        private val hashCode: Int by lazy {
+            Objects.hash(completionTokens, promptTokens, totalTokens, additionalProperties)
+        }
 
         override fun hashCode(): Int = hashCode
 
@@ -2008,12 +2013,47 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is RunStep && id == other.id && assistantId == other.assistantId && cancelledAt == other.cancelledAt && completedAt == other.completedAt && createdAt == other.createdAt && expiredAt == other.expiredAt && failedAt == other.failedAt && lastError == other.lastError && metadata == other.metadata && object_ == other.object_ && runId == other.runId && status == other.status && stepDetails == other.stepDetails && threadId == other.threadId && type == other.type && usage == other.usage && additionalProperties == other.additionalProperties /* spotless:on */
+        return other is RunStep &&
+            id == other.id &&
+            assistantId == other.assistantId &&
+            cancelledAt == other.cancelledAt &&
+            completedAt == other.completedAt &&
+            createdAt == other.createdAt &&
+            expiredAt == other.expiredAt &&
+            failedAt == other.failedAt &&
+            lastError == other.lastError &&
+            metadata == other.metadata &&
+            object_ == other.object_ &&
+            runId == other.runId &&
+            status == other.status &&
+            stepDetails == other.stepDetails &&
+            threadId == other.threadId &&
+            type == other.type &&
+            usage == other.usage &&
+            additionalProperties == other.additionalProperties
     }
 
-    /* spotless:off */
-    private val hashCode: Int by lazy { Objects.hash(id, assistantId, cancelledAt, completedAt, createdAt, expiredAt, failedAt, lastError, metadata, object_, runId, status, stepDetails, threadId, type, usage, additionalProperties) }
-    /* spotless:on */
+    private val hashCode: Int by lazy {
+        Objects.hash(
+            id,
+            assistantId,
+            cancelledAt,
+            completedAt,
+            createdAt,
+            expiredAt,
+            failedAt,
+            lastError,
+            metadata,
+            object_,
+            runId,
+            status,
+            stepDetails,
+            threadId,
+            type,
+            usage,
+            additionalProperties,
+        )
+    }
 
     override fun hashCode(): Int = hashCode
 

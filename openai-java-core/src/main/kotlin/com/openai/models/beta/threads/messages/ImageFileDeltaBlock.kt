@@ -239,12 +239,14 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is ImageFileDeltaBlock && index == other.index && type == other.type && imageFile == other.imageFile && additionalProperties == other.additionalProperties /* spotless:on */
+        return other is ImageFileDeltaBlock &&
+            index == other.index &&
+            type == other.type &&
+            imageFile == other.imageFile &&
+            additionalProperties == other.additionalProperties
     }
 
-    /* spotless:off */
     private val hashCode: Int by lazy { Objects.hash(index, type, imageFile, additionalProperties) }
-    /* spotless:on */
 
     override fun hashCode(): Int = hashCode
 

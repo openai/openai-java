@@ -553,10 +553,10 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is BatchSize && auto == other.auto && integer == other.integer /* spotless:on */
+            return other is BatchSize && auto == other.auto && integer == other.integer
         }
 
-        override fun hashCode(): Int = /* spotless:off */ Objects.hash(auto, integer) /* spotless:on */
+        override fun hashCode(): Int = Objects.hash(auto, integer)
 
         override fun toString(): String =
             when {
@@ -730,10 +730,10 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is ComputeMultiplier && auto == other.auto && number == other.number /* spotless:on */
+            return other is ComputeMultiplier && auto == other.auto && number == other.number
         }
 
-        override fun hashCode(): Int = /* spotless:off */ Objects.hash(auto, number) /* spotless:on */
+        override fun hashCode(): Int = Objects.hash(auto, number)
 
         override fun toString(): String =
             when {
@@ -909,10 +909,10 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is EvalInterval && auto == other.auto && integer == other.integer /* spotless:on */
+            return other is EvalInterval && auto == other.auto && integer == other.integer
         }
 
-        override fun hashCode(): Int = /* spotless:off */ Objects.hash(auto, integer) /* spotless:on */
+        override fun hashCode(): Int = Objects.hash(auto, integer)
 
         override fun toString(): String =
             when {
@@ -1087,10 +1087,10 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is EvalSamples && auto == other.auto && integer == other.integer /* spotless:on */
+            return other is EvalSamples && auto == other.auto && integer == other.integer
         }
 
-        override fun hashCode(): Int = /* spotless:off */ Objects.hash(auto, integer) /* spotless:on */
+        override fun hashCode(): Int = Objects.hash(auto, integer)
 
         override fun toString(): String =
             when {
@@ -1268,10 +1268,10 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is LearningRateMultiplier && auto == other.auto && number == other.number /* spotless:on */
+            return other is LearningRateMultiplier && auto == other.auto && number == other.number
         }
 
-        override fun hashCode(): Int = /* spotless:off */ Objects.hash(auto, number) /* spotless:on */
+        override fun hashCode(): Int = Objects.hash(auto, number)
 
         override fun toString(): String =
             when {
@@ -1451,10 +1451,10 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is NEpochs && auto == other.auto && integer == other.integer /* spotless:on */
+            return other is NEpochs && auto == other.auto && integer == other.integer
         }
 
-        override fun hashCode(): Int = /* spotless:off */ Objects.hash(auto, integer) /* spotless:on */
+        override fun hashCode(): Int = Objects.hash(auto, integer)
 
         override fun toString(): String =
             when {
@@ -1676,7 +1676,7 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is ReasoningEffort && value == other.value /* spotless:on */
+            return other is ReasoningEffort && value == other.value
         }
 
         override fun hashCode() = value.hashCode()
@@ -1689,12 +1689,29 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is ReinforcementHyperparameters && batchSize == other.batchSize && computeMultiplier == other.computeMultiplier && evalInterval == other.evalInterval && evalSamples == other.evalSamples && learningRateMultiplier == other.learningRateMultiplier && nEpochs == other.nEpochs && reasoningEffort == other.reasoningEffort && additionalProperties == other.additionalProperties /* spotless:on */
+        return other is ReinforcementHyperparameters &&
+            batchSize == other.batchSize &&
+            computeMultiplier == other.computeMultiplier &&
+            evalInterval == other.evalInterval &&
+            evalSamples == other.evalSamples &&
+            learningRateMultiplier == other.learningRateMultiplier &&
+            nEpochs == other.nEpochs &&
+            reasoningEffort == other.reasoningEffort &&
+            additionalProperties == other.additionalProperties
     }
 
-    /* spotless:off */
-    private val hashCode: Int by lazy { Objects.hash(batchSize, computeMultiplier, evalInterval, evalSamples, learningRateMultiplier, nEpochs, reasoningEffort, additionalProperties) }
-    /* spotless:on */
+    private val hashCode: Int by lazy {
+        Objects.hash(
+            batchSize,
+            computeMultiplier,
+            evalInterval,
+            evalSamples,
+            learningRateMultiplier,
+            nEpochs,
+            reasoningEffort,
+            additionalProperties,
+        )
+    }
 
     override fun hashCode(): Int = hashCode
 

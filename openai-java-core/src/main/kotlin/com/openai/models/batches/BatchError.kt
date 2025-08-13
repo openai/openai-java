@@ -253,12 +253,17 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is BatchError && code == other.code && line == other.line && message == other.message && param == other.param && additionalProperties == other.additionalProperties /* spotless:on */
+        return other is BatchError &&
+            code == other.code &&
+            line == other.line &&
+            message == other.message &&
+            param == other.param &&
+            additionalProperties == other.additionalProperties
     }
 
-    /* spotless:off */
-    private val hashCode: Int by lazy { Objects.hash(code, line, message, param, additionalProperties) }
-    /* spotless:on */
+    private val hashCode: Int by lazy {
+        Objects.hash(code, line, message, param, additionalProperties)
+    }
 
     override fun hashCode(): Int = hashCode
 

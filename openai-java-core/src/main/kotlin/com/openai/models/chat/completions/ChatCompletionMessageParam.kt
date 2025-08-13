@@ -187,10 +187,16 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is ChatCompletionMessageParam && developer == other.developer && system == other.system && user == other.user && assistant == other.assistant && tool == other.tool && function == other.function /* spotless:on */
+        return other is ChatCompletionMessageParam &&
+            developer == other.developer &&
+            system == other.system &&
+            user == other.user &&
+            assistant == other.assistant &&
+            tool == other.tool &&
+            function == other.function
     }
 
-    override fun hashCode(): Int = /* spotless:off */ Objects.hash(developer, system, user, assistant, tool, function) /* spotless:on */
+    override fun hashCode(): Int = Objects.hash(developer, system, user, assistant, tool, function)
 
     override fun toString(): String =
         when {

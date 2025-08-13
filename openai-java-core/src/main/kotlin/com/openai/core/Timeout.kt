@@ -157,10 +157,14 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is Timeout && connect == other.connect && read == other.read && write == other.write && request == other.request /* spotless:on */
+        return other is Timeout &&
+            connect == other.connect &&
+            read == other.read &&
+            write == other.write &&
+            request == other.request
     }
 
-    override fun hashCode(): Int = /* spotless:off */ Objects.hash(connect, read, write, request) /* spotless:on */
+    override fun hashCode(): Int = Objects.hash(connect, read, write, request)
 
     override fun toString() =
         "Timeout{connect=$connect, read=$read, write=$write, request=$request}"

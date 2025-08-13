@@ -379,7 +379,7 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is Order && value == other.value /* spotless:on */
+            return other is Order && value == other.value
         }
 
         override fun hashCode() = value.hashCode()
@@ -525,7 +525,7 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is Status && value == other.value /* spotless:on */
+            return other is Status && value == other.value
         }
 
         override fun hashCode() = value.hashCode()
@@ -538,10 +538,18 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is RunListParams && evalId == other.evalId && after == other.after && limit == other.limit && order == other.order && status == other.status && additionalHeaders == other.additionalHeaders && additionalQueryParams == other.additionalQueryParams /* spotless:on */
+        return other is RunListParams &&
+            evalId == other.evalId &&
+            after == other.after &&
+            limit == other.limit &&
+            order == other.order &&
+            status == other.status &&
+            additionalHeaders == other.additionalHeaders &&
+            additionalQueryParams == other.additionalQueryParams
     }
 
-    override fun hashCode(): Int = /* spotless:off */ Objects.hash(evalId, after, limit, order, status, additionalHeaders, additionalQueryParams) /* spotless:on */
+    override fun hashCode(): Int =
+        Objects.hash(evalId, after, limit, order, status, additionalHeaders, additionalQueryParams)
 
     override fun toString() =
         "RunListParams{evalId=$evalId, after=$after, limit=$limit, order=$order, status=$status, additionalHeaders=$additionalHeaders, additionalQueryParams=$additionalQueryParams}"

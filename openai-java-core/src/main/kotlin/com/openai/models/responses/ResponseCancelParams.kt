@@ -218,10 +218,15 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is ResponseCancelParams && responseId == other.responseId && additionalHeaders == other.additionalHeaders && additionalQueryParams == other.additionalQueryParams && additionalBodyProperties == other.additionalBodyProperties /* spotless:on */
+        return other is ResponseCancelParams &&
+            responseId == other.responseId &&
+            additionalHeaders == other.additionalHeaders &&
+            additionalQueryParams == other.additionalQueryParams &&
+            additionalBodyProperties == other.additionalBodyProperties
     }
 
-    override fun hashCode(): Int = /* spotless:off */ Objects.hash(responseId, additionalHeaders, additionalQueryParams, additionalBodyProperties) /* spotless:on */
+    override fun hashCode(): Int =
+        Objects.hash(responseId, additionalHeaders, additionalQueryParams, additionalBodyProperties)
 
     override fun toString() =
         "ResponseCancelParams{responseId=$responseId, additionalHeaders=$additionalHeaders, additionalQueryParams=$additionalQueryParams, additionalBodyProperties=$additionalBodyProperties}"

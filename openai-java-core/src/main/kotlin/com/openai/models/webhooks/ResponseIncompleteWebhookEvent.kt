@@ -444,12 +444,12 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is Data && id == other.id && additionalProperties == other.additionalProperties /* spotless:on */
+            return other is Data &&
+                id == other.id &&
+                additionalProperties == other.additionalProperties
         }
 
-        /* spotless:off */
         private val hashCode: Int by lazy { Objects.hash(id, additionalProperties) }
-        /* spotless:on */
 
         override fun hashCode(): Int = hashCode
 
@@ -568,7 +568,7 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is Object && value == other.value /* spotless:on */
+            return other is Object && value == other.value
         }
 
         override fun hashCode() = value.hashCode()
@@ -581,12 +581,18 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is ResponseIncompleteWebhookEvent && id == other.id && createdAt == other.createdAt && data == other.data && type == other.type && object_ == other.object_ && additionalProperties == other.additionalProperties /* spotless:on */
+        return other is ResponseIncompleteWebhookEvent &&
+            id == other.id &&
+            createdAt == other.createdAt &&
+            data == other.data &&
+            type == other.type &&
+            object_ == other.object_ &&
+            additionalProperties == other.additionalProperties
     }
 
-    /* spotless:off */
-    private val hashCode: Int by lazy { Objects.hash(id, createdAt, data, type, object_, additionalProperties) }
-    /* spotless:on */
+    private val hashCode: Int by lazy {
+        Objects.hash(id, createdAt, data, type, object_, additionalProperties)
+    }
 
     override fun hashCode(): Int = hashCode
 

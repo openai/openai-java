@@ -440,7 +440,7 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is Operation && value == other.value /* spotless:on */
+            return other is Operation && value == other.value
         }
 
         override fun hashCode() = value.hashCode()
@@ -453,12 +453,18 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is StringCheckGrader && input == other.input && name == other.name && operation == other.operation && reference == other.reference && type == other.type && additionalProperties == other.additionalProperties /* spotless:on */
+        return other is StringCheckGrader &&
+            input == other.input &&
+            name == other.name &&
+            operation == other.operation &&
+            reference == other.reference &&
+            type == other.type &&
+            additionalProperties == other.additionalProperties
     }
 
-    /* spotless:off */
-    private val hashCode: Int by lazy { Objects.hash(input, name, operation, reference, type, additionalProperties) }
-    /* spotless:on */
+    private val hashCode: Int by lazy {
+        Objects.hash(input, name, operation, reference, type, additionalProperties)
+    }
 
     override fun hashCode(): Int = hashCode
 

@@ -463,7 +463,7 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is Order && value == other.value /* spotless:on */
+            return other is Order && value == other.value
         }
 
         override fun hashCode() = value.hashCode()
@@ -476,10 +476,30 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is StepListParams && threadId == other.threadId && runId == other.runId && after == other.after && before == other.before && include == other.include && limit == other.limit && order == other.order && additionalHeaders == other.additionalHeaders && additionalQueryParams == other.additionalQueryParams /* spotless:on */
+        return other is StepListParams &&
+            threadId == other.threadId &&
+            runId == other.runId &&
+            after == other.after &&
+            before == other.before &&
+            include == other.include &&
+            limit == other.limit &&
+            order == other.order &&
+            additionalHeaders == other.additionalHeaders &&
+            additionalQueryParams == other.additionalQueryParams
     }
 
-    override fun hashCode(): Int = /* spotless:off */ Objects.hash(threadId, runId, after, before, include, limit, order, additionalHeaders, additionalQueryParams) /* spotless:on */
+    override fun hashCode(): Int =
+        Objects.hash(
+            threadId,
+            runId,
+            after,
+            before,
+            include,
+            limit,
+            order,
+            additionalHeaders,
+            additionalQueryParams,
+        )
 
     override fun toString() =
         "StepListParams{threadId=$threadId, runId=$runId, after=$after, before=$before, include=$include, limit=$limit, order=$order, additionalHeaders=$additionalHeaders, additionalQueryParams=$additionalQueryParams}"

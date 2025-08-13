@@ -114,10 +114,12 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is ImageGenStreamEvent && generationPartialImage == other.generationPartialImage && generationCompleted == other.generationCompleted /* spotless:on */
+        return other is ImageGenStreamEvent &&
+            generationPartialImage == other.generationPartialImage &&
+            generationCompleted == other.generationCompleted
     }
 
-    override fun hashCode(): Int = /* spotless:off */ Objects.hash(generationPartialImage, generationCompleted) /* spotless:on */
+    override fun hashCode(): Int = Objects.hash(generationPartialImage, generationCompleted)
 
     override fun toString(): String =
         when {

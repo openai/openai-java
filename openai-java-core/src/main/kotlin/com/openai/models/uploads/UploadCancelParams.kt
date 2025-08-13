@@ -214,10 +214,15 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is UploadCancelParams && uploadId == other.uploadId && additionalHeaders == other.additionalHeaders && additionalQueryParams == other.additionalQueryParams && additionalBodyProperties == other.additionalBodyProperties /* spotless:on */
+        return other is UploadCancelParams &&
+            uploadId == other.uploadId &&
+            additionalHeaders == other.additionalHeaders &&
+            additionalQueryParams == other.additionalQueryParams &&
+            additionalBodyProperties == other.additionalBodyProperties
     }
 
-    override fun hashCode(): Int = /* spotless:off */ Objects.hash(uploadId, additionalHeaders, additionalQueryParams, additionalBodyProperties) /* spotless:on */
+    override fun hashCode(): Int =
+        Objects.hash(uploadId, additionalHeaders, additionalQueryParams, additionalBodyProperties)
 
     override fun toString() =
         "UploadCancelParams{uploadId=$uploadId, additionalHeaders=$additionalHeaders, additionalQueryParams=$additionalQueryParams, additionalBodyProperties=$additionalBodyProperties}"

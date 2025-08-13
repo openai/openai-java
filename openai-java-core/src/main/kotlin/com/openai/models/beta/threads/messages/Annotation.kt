@@ -123,10 +123,12 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is Annotation && fileCitation == other.fileCitation && filePath == other.filePath /* spotless:on */
+        return other is Annotation &&
+            fileCitation == other.fileCitation &&
+            filePath == other.filePath
     }
 
-    override fun hashCode(): Int = /* spotless:off */ Objects.hash(fileCitation, filePath) /* spotless:on */
+    override fun hashCode(): Int = Objects.hash(fileCitation, filePath)
 
     override fun toString(): String =
         when {

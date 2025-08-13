@@ -230,12 +230,14 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is TranscriptionWord && end == other.end && start == other.start && word == other.word && additionalProperties == other.additionalProperties /* spotless:on */
+        return other is TranscriptionWord &&
+            end == other.end &&
+            start == other.start &&
+            word == other.word &&
+            additionalProperties == other.additionalProperties
     }
 
-    /* spotless:off */
     private val hashCode: Int by lazy { Objects.hash(end, start, word, additionalProperties) }
-    /* spotless:on */
 
     override fun hashCode(): Int = hashCode
 

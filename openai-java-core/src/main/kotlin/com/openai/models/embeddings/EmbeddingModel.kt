@@ -129,7 +129,7 @@ class EmbeddingModel @JsonCreator private constructor(private val value: JsonFie
             return true
         }
 
-        return /* spotless:off */ other is EmbeddingModel && value == other.value /* spotless:on */
+        return other is EmbeddingModel && value == other.value
     }
 
     override fun hashCode() = value.hashCode()

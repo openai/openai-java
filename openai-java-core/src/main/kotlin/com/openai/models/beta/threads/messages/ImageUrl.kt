@@ -320,7 +320,7 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is Detail && value == other.value /* spotless:on */
+            return other is Detail && value == other.value
         }
 
         override fun hashCode() = value.hashCode()
@@ -333,12 +333,13 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is ImageUrl && url == other.url && detail == other.detail && additionalProperties == other.additionalProperties /* spotless:on */
+        return other is ImageUrl &&
+            url == other.url &&
+            detail == other.detail &&
+            additionalProperties == other.additionalProperties
     }
 
-    /* spotless:off */
     private val hashCode: Int by lazy { Objects.hash(url, detail, additionalProperties) }
-    /* spotless:on */
 
     override fun hashCode(): Int = hashCode
 

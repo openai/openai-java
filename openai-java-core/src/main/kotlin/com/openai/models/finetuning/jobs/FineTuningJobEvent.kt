@@ -470,7 +470,7 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is Level && value == other.value /* spotless:on */
+            return other is Level && value == other.value
         }
 
         override fun hashCode() = value.hashCode()
@@ -596,7 +596,7 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is Type && value == other.value /* spotless:on */
+            return other is Type && value == other.value
         }
 
         override fun hashCode() = value.hashCode()
@@ -609,12 +609,20 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is FineTuningJobEvent && id == other.id && createdAt == other.createdAt && level == other.level && message == other.message && object_ == other.object_ && data == other.data && type == other.type && additionalProperties == other.additionalProperties /* spotless:on */
+        return other is FineTuningJobEvent &&
+            id == other.id &&
+            createdAt == other.createdAt &&
+            level == other.level &&
+            message == other.message &&
+            object_ == other.object_ &&
+            data == other.data &&
+            type == other.type &&
+            additionalProperties == other.additionalProperties
     }
 
-    /* spotless:off */
-    private val hashCode: Int by lazy { Objects.hash(id, createdAt, level, message, object_, data, type, additionalProperties) }
-    /* spotless:on */
+    private val hashCode: Int by lazy {
+        Objects.hash(id, createdAt, level, message, object_, data, type, additionalProperties)
+    }
 
     override fun hashCode(): Int = hashCode
 

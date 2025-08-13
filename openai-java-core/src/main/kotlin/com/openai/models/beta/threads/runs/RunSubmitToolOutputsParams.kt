@@ -453,12 +453,12 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is Body && toolOutputs == other.toolOutputs && additionalProperties == other.additionalProperties /* spotless:on */
+            return other is Body &&
+                toolOutputs == other.toolOutputs &&
+                additionalProperties == other.additionalProperties
         }
 
-        /* spotless:off */
         private val hashCode: Int by lazy { Objects.hash(toolOutputs, additionalProperties) }
-        /* spotless:on */
 
         override fun hashCode(): Int = hashCode
 
@@ -637,12 +637,13 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is ToolOutput && output == other.output && toolCallId == other.toolCallId && additionalProperties == other.additionalProperties /* spotless:on */
+            return other is ToolOutput &&
+                output == other.output &&
+                toolCallId == other.toolCallId &&
+                additionalProperties == other.additionalProperties
         }
 
-        /* spotless:off */
         private val hashCode: Int by lazy { Objects.hash(output, toolCallId, additionalProperties) }
-        /* spotless:on */
 
         override fun hashCode(): Int = hashCode
 
@@ -655,10 +656,16 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is RunSubmitToolOutputsParams && threadId == other.threadId && runId == other.runId && body == other.body && additionalHeaders == other.additionalHeaders && additionalQueryParams == other.additionalQueryParams /* spotless:on */
+        return other is RunSubmitToolOutputsParams &&
+            threadId == other.threadId &&
+            runId == other.runId &&
+            body == other.body &&
+            additionalHeaders == other.additionalHeaders &&
+            additionalQueryParams == other.additionalQueryParams
     }
 
-    override fun hashCode(): Int = /* spotless:off */ Objects.hash(threadId, runId, body, additionalHeaders, additionalQueryParams) /* spotless:on */
+    override fun hashCode(): Int =
+        Objects.hash(threadId, runId, body, additionalHeaders, additionalQueryParams)
 
     override fun toString() =
         "RunSubmitToolOutputsParams{threadId=$threadId, runId=$runId, body=$body, additionalHeaders=$additionalHeaders, additionalQueryParams=$additionalQueryParams}"

@@ -151,10 +151,13 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is ResponseFormatTextConfig && text == other.text && jsonSchema == other.jsonSchema && jsonObject == other.jsonObject /* spotless:on */
+        return other is ResponseFormatTextConfig &&
+            text == other.text &&
+            jsonSchema == other.jsonSchema &&
+            jsonObject == other.jsonObject
     }
 
-    override fun hashCode(): Int = /* spotless:off */ Objects.hash(text, jsonSchema, jsonObject) /* spotless:on */
+    override fun hashCode(): Int = Objects.hash(text, jsonSchema, jsonObject)
 
     override fun toString(): String =
         when {

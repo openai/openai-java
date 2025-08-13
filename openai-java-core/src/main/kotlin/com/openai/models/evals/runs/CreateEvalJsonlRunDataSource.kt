@@ -318,10 +318,10 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is Source && fileContent == other.fileContent && fileId == other.fileId /* spotless:on */
+            return other is Source && fileContent == other.fileContent && fileId == other.fileId
         }
 
-        override fun hashCode(): Int = /* spotless:off */ Objects.hash(fileContent, fileId) /* spotless:on */
+        override fun hashCode(): Int = Objects.hash(fileContent, fileId)
 
         override fun toString(): String =
             when {
@@ -875,12 +875,10 @@ private constructor(
                             return true
                         }
 
-                        return /* spotless:off */ other is Item && additionalProperties == other.additionalProperties /* spotless:on */
+                        return other is Item && additionalProperties == other.additionalProperties
                     }
 
-                    /* spotless:off */
                     private val hashCode: Int by lazy { Objects.hash(additionalProperties) }
-                    /* spotless:on */
 
                     override fun hashCode(): Int = hashCode
 
@@ -982,12 +980,10 @@ private constructor(
                             return true
                         }
 
-                        return /* spotless:off */ other is Sample && additionalProperties == other.additionalProperties /* spotless:on */
+                        return other is Sample && additionalProperties == other.additionalProperties
                     }
 
-                    /* spotless:off */
                     private val hashCode: Int by lazy { Objects.hash(additionalProperties) }
-                    /* spotless:on */
 
                     override fun hashCode(): Int = hashCode
 
@@ -999,12 +995,15 @@ private constructor(
                         return true
                     }
 
-                    return /* spotless:off */ other is Content && item == other.item && sample == other.sample && additionalProperties == other.additionalProperties /* spotless:on */
+                    return other is Content &&
+                        item == other.item &&
+                        sample == other.sample &&
+                        additionalProperties == other.additionalProperties
                 }
 
-                /* spotless:off */
-                private val hashCode: Int by lazy { Objects.hash(item, sample, additionalProperties) }
-                /* spotless:on */
+                private val hashCode: Int by lazy {
+                    Objects.hash(item, sample, additionalProperties)
+                }
 
                 override fun hashCode(): Int = hashCode
 
@@ -1017,12 +1016,13 @@ private constructor(
                     return true
                 }
 
-                return /* spotless:off */ other is FileContent && content == other.content && type == other.type && additionalProperties == other.additionalProperties /* spotless:on */
+                return other is FileContent &&
+                    content == other.content &&
+                    type == other.type &&
+                    additionalProperties == other.additionalProperties
             }
 
-            /* spotless:off */
             private val hashCode: Int by lazy { Objects.hash(content, type, additionalProperties) }
-            /* spotless:on */
 
             override fun hashCode(): Int = hashCode
 
@@ -1215,12 +1215,13 @@ private constructor(
                     return true
                 }
 
-                return /* spotless:off */ other is FileId && id == other.id && type == other.type && additionalProperties == other.additionalProperties /* spotless:on */
+                return other is FileId &&
+                    id == other.id &&
+                    type == other.type &&
+                    additionalProperties == other.additionalProperties
             }
 
-            /* spotless:off */
             private val hashCode: Int by lazy { Objects.hash(id, type, additionalProperties) }
-            /* spotless:on */
 
             override fun hashCode(): Int = hashCode
 
@@ -1234,12 +1235,13 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is CreateEvalJsonlRunDataSource && source == other.source && type == other.type && additionalProperties == other.additionalProperties /* spotless:on */
+        return other is CreateEvalJsonlRunDataSource &&
+            source == other.source &&
+            type == other.type &&
+            additionalProperties == other.additionalProperties
     }
 
-    /* spotless:off */
     private val hashCode: Int by lazy { Objects.hash(source, type, additionalProperties) }
-    /* spotless:on */
 
     override fun hashCode(): Int = hashCode
 

@@ -354,10 +354,12 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is Content && textInput == other.textInput && responseInputMessageContentList == other.responseInputMessageContentList /* spotless:on */
+            return other is Content &&
+                textInput == other.textInput &&
+                responseInputMessageContentList == other.responseInputMessageContentList
         }
 
-        override fun hashCode(): Int = /* spotless:off */ Objects.hash(textInput, responseInputMessageContentList) /* spotless:on */
+        override fun hashCode(): Int = Objects.hash(textInput, responseInputMessageContentList)
 
         override fun toString(): String =
             when {
@@ -594,7 +596,7 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is Role && value == other.value /* spotless:on */
+            return other is Role && value == other.value
         }
 
         override fun hashCode() = value.hashCode()
@@ -714,7 +716,7 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is Type && value == other.value /* spotless:on */
+            return other is Type && value == other.value
         }
 
         override fun hashCode() = value.hashCode()
@@ -727,12 +729,14 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is EasyInputMessage && content == other.content && role == other.role && type == other.type && additionalProperties == other.additionalProperties /* spotless:on */
+        return other is EasyInputMessage &&
+            content == other.content &&
+            role == other.role &&
+            type == other.type &&
+            additionalProperties == other.additionalProperties
     }
 
-    /* spotless:off */
     private val hashCode: Int by lazy { Objects.hash(content, role, type, additionalProperties) }
-    /* spotless:on */
 
     override fun hashCode(): Int = hashCode
 

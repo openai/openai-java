@@ -293,12 +293,17 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is ConversationItemCreateEvent && item == other.item && type == other.type && eventId == other.eventId && previousItemId == other.previousItemId && additionalProperties == other.additionalProperties /* spotless:on */
+        return other is ConversationItemCreateEvent &&
+            item == other.item &&
+            type == other.type &&
+            eventId == other.eventId &&
+            previousItemId == other.previousItemId &&
+            additionalProperties == other.additionalProperties
     }
 
-    /* spotless:off */
-    private val hashCode: Int by lazy { Objects.hash(item, type, eventId, previousItemId, additionalProperties) }
-    /* spotless:on */
+    private val hashCode: Int by lazy {
+        Objects.hash(item, type, eventId, previousItemId, additionalProperties)
+    }
 
     override fun hashCode(): Int = hashCode
 

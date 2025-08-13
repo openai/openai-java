@@ -390,7 +390,7 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is GenerateSummary && value == other.value /* spotless:on */
+            return other is GenerateSummary && value == other.value
         }
 
         override fun hashCode() = value.hashCode()
@@ -525,7 +525,7 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is Summary && value == other.value /* spotless:on */
+            return other is Summary && value == other.value
         }
 
         override fun hashCode() = value.hashCode()
@@ -538,12 +538,16 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is Reasoning && effort == other.effort && generateSummary == other.generateSummary && summary == other.summary && additionalProperties == other.additionalProperties /* spotless:on */
+        return other is Reasoning &&
+            effort == other.effort &&
+            generateSummary == other.generateSummary &&
+            summary == other.summary &&
+            additionalProperties == other.additionalProperties
     }
 
-    /* spotless:off */
-    private val hashCode: Int by lazy { Objects.hash(effort, generateSummary, summary, additionalProperties) }
-    /* spotless:on */
+    private val hashCode: Int by lazy {
+        Objects.hash(effort, generateSummary, summary, additionalProperties)
+    }
 
     override fun hashCode(): Int = hashCode
 

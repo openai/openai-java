@@ -432,12 +432,12 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is Body && grader == other.grader && additionalProperties == other.additionalProperties /* spotless:on */
+            return other is Body &&
+                grader == other.grader &&
+                additionalProperties == other.additionalProperties
         }
 
-        /* spotless:off */
         private val hashCode: Int by lazy { Objects.hash(grader, additionalProperties) }
-        /* spotless:on */
 
         override fun hashCode(): Int = hashCode
 
@@ -592,10 +592,16 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is Grader && stringCheck == other.stringCheck && textSimilarity == other.textSimilarity && python == other.python && scoreModel == other.scoreModel && multi == other.multi /* spotless:on */
+            return other is Grader &&
+                stringCheck == other.stringCheck &&
+                textSimilarity == other.textSimilarity &&
+                python == other.python &&
+                scoreModel == other.scoreModel &&
+                multi == other.multi
         }
 
-        override fun hashCode(): Int = /* spotless:off */ Objects.hash(stringCheck, textSimilarity, python, scoreModel, multi) /* spotless:on */
+        override fun hashCode(): Int =
+            Objects.hash(stringCheck, textSimilarity, python, scoreModel, multi)
 
         override fun toString(): String =
             when {
@@ -739,10 +745,13 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is GraderValidateParams && body == other.body && additionalHeaders == other.additionalHeaders && additionalQueryParams == other.additionalQueryParams /* spotless:on */
+        return other is GraderValidateParams &&
+            body == other.body &&
+            additionalHeaders == other.additionalHeaders &&
+            additionalQueryParams == other.additionalQueryParams
     }
 
-    override fun hashCode(): Int = /* spotless:off */ Objects.hash(body, additionalHeaders, additionalQueryParams) /* spotless:on */
+    override fun hashCode(): Int = Objects.hash(body, additionalHeaders, additionalQueryParams)
 
     override fun toString() =
         "GraderValidateParams{body=$body, additionalHeaders=$additionalHeaders, additionalQueryParams=$additionalQueryParams}"

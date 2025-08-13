@@ -376,7 +376,7 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is Order && value == other.value /* spotless:on */
+            return other is Order && value == other.value
         }
 
         override fun hashCode() = value.hashCode()
@@ -389,10 +389,26 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is PermissionRetrieveParams && fineTunedModelCheckpoint == other.fineTunedModelCheckpoint && after == other.after && limit == other.limit && order == other.order && projectId == other.projectId && additionalHeaders == other.additionalHeaders && additionalQueryParams == other.additionalQueryParams /* spotless:on */
+        return other is PermissionRetrieveParams &&
+            fineTunedModelCheckpoint == other.fineTunedModelCheckpoint &&
+            after == other.after &&
+            limit == other.limit &&
+            order == other.order &&
+            projectId == other.projectId &&
+            additionalHeaders == other.additionalHeaders &&
+            additionalQueryParams == other.additionalQueryParams
     }
 
-    override fun hashCode(): Int = /* spotless:off */ Objects.hash(fineTunedModelCheckpoint, after, limit, order, projectId, additionalHeaders, additionalQueryParams) /* spotless:on */
+    override fun hashCode(): Int =
+        Objects.hash(
+            fineTunedModelCheckpoint,
+            after,
+            limit,
+            order,
+            projectId,
+            additionalHeaders,
+            additionalQueryParams,
+        )
 
     override fun toString() =
         "PermissionRetrieveParams{fineTunedModelCheckpoint=$fineTunedModelCheckpoint, after=$after, limit=$limit, order=$order, projectId=$projectId, additionalHeaders=$additionalHeaders, additionalQueryParams=$additionalQueryParams}"

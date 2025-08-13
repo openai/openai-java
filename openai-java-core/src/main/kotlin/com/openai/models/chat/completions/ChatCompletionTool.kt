@@ -105,10 +105,10 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is ChatCompletionTool && function == other.function && custom == other.custom /* spotless:on */
+        return other is ChatCompletionTool && function == other.function && custom == other.custom
     }
 
-    override fun hashCode(): Int = /* spotless:off */ Objects.hash(function, custom) /* spotless:on */
+    override fun hashCode(): Int = Objects.hash(function, custom)
 
     override fun toString(): String =
         when {

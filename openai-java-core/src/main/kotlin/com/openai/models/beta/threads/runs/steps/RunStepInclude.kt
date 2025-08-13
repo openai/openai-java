@@ -121,7 +121,7 @@ class RunStepInclude @JsonCreator private constructor(private val value: JsonFie
             return true
         }
 
-        return /* spotless:off */ other is RunStepInclude && value == other.value /* spotless:on */
+        return other is RunStepInclude && value == other.value
     }
 
     override fun hashCode() = value.hashCode()

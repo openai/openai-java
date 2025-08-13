@@ -142,7 +142,7 @@ class ReasoningEffort @JsonCreator private constructor(private val value: JsonFi
             return true
         }
 
-        return /* spotless:off */ other is ReasoningEffort && value == other.value /* spotless:on */
+        return other is ReasoningEffort && value == other.value
     }
 
     override fun hashCode() = value.hashCode()

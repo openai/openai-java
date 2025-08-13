@@ -111,10 +111,12 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is TranscriptionCreateResponse && transcription == other.transcription && verbose == other.verbose /* spotless:on */
+        return other is TranscriptionCreateResponse &&
+            transcription == other.transcription &&
+            verbose == other.verbose
     }
 
-    override fun hashCode(): Int = /* spotless:off */ Objects.hash(transcription, verbose) /* spotless:on */
+    override fun hashCode(): Int = Objects.hash(transcription, verbose)
 
     override fun toString(): String =
         when {

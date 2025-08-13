@@ -378,12 +378,20 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is FileCreateResponse && id == other.id && bytes == other.bytes && containerId == other.containerId && createdAt == other.createdAt && object_ == other.object_ && path == other.path && source == other.source && additionalProperties == other.additionalProperties /* spotless:on */
+        return other is FileCreateResponse &&
+            id == other.id &&
+            bytes == other.bytes &&
+            containerId == other.containerId &&
+            createdAt == other.createdAt &&
+            object_ == other.object_ &&
+            path == other.path &&
+            source == other.source &&
+            additionalProperties == other.additionalProperties
     }
 
-    /* spotless:off */
-    private val hashCode: Int by lazy { Objects.hash(id, bytes, containerId, createdAt, object_, path, source, additionalProperties) }
-    /* spotless:on */
+    private val hashCode: Int by lazy {
+        Objects.hash(id, bytes, containerId, createdAt, object_, path, source, additionalProperties)
+    }
 
     override fun hashCode(): Int = hashCode
 

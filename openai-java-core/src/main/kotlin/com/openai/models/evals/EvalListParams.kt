@@ -363,7 +363,7 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is Order && value == other.value /* spotless:on */
+            return other is Order && value == other.value
         }
 
         override fun hashCode() = value.hashCode()
@@ -492,7 +492,7 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is OrderBy && value == other.value /* spotless:on */
+            return other is OrderBy && value == other.value
         }
 
         override fun hashCode() = value.hashCode()
@@ -505,10 +505,17 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is EvalListParams && after == other.after && limit == other.limit && order == other.order && orderBy == other.orderBy && additionalHeaders == other.additionalHeaders && additionalQueryParams == other.additionalQueryParams /* spotless:on */
+        return other is EvalListParams &&
+            after == other.after &&
+            limit == other.limit &&
+            order == other.order &&
+            orderBy == other.orderBy &&
+            additionalHeaders == other.additionalHeaders &&
+            additionalQueryParams == other.additionalQueryParams
     }
 
-    override fun hashCode(): Int = /* spotless:off */ Objects.hash(after, limit, order, orderBy, additionalHeaders, additionalQueryParams) /* spotless:on */
+    override fun hashCode(): Int =
+        Objects.hash(after, limit, order, orderBy, additionalHeaders, additionalQueryParams)
 
     override fun toString() =
         "EvalListParams{after=$after, limit=$limit, order=$order, orderBy=$orderBy, additionalHeaders=$additionalHeaders, additionalQueryParams=$additionalQueryParams}"

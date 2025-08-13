@@ -2086,12 +2086,49 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is Body && model == other.model && prompt == other.prompt && bestOf == other.bestOf && echo == other.echo && frequencyPenalty == other.frequencyPenalty && logitBias == other.logitBias && logprobs == other.logprobs && maxTokens == other.maxTokens && n == other.n && presencePenalty == other.presencePenalty && seed == other.seed && stop == other.stop && streamOptions == other.streamOptions && suffix == other.suffix && temperature == other.temperature && topP == other.topP && user == other.user && additionalProperties == other.additionalProperties /* spotless:on */
+            return other is Body &&
+                model == other.model &&
+                prompt == other.prompt &&
+                bestOf == other.bestOf &&
+                echo == other.echo &&
+                frequencyPenalty == other.frequencyPenalty &&
+                logitBias == other.logitBias &&
+                logprobs == other.logprobs &&
+                maxTokens == other.maxTokens &&
+                n == other.n &&
+                presencePenalty == other.presencePenalty &&
+                seed == other.seed &&
+                stop == other.stop &&
+                streamOptions == other.streamOptions &&
+                suffix == other.suffix &&
+                temperature == other.temperature &&
+                topP == other.topP &&
+                user == other.user &&
+                additionalProperties == other.additionalProperties
         }
 
-        /* spotless:off */
-        private val hashCode: Int by lazy { Objects.hash(model, prompt, bestOf, echo, frequencyPenalty, logitBias, logprobs, maxTokens, n, presencePenalty, seed, stop, streamOptions, suffix, temperature, topP, user, additionalProperties) }
-        /* spotless:on */
+        private val hashCode: Int by lazy {
+            Objects.hash(
+                model,
+                prompt,
+                bestOf,
+                echo,
+                frequencyPenalty,
+                logitBias,
+                logprobs,
+                maxTokens,
+                n,
+                presencePenalty,
+                seed,
+                stop,
+                streamOptions,
+                suffix,
+                temperature,
+                topP,
+                user,
+                additionalProperties,
+            )
+        }
 
         override fun hashCode(): Int = hashCode
 
@@ -2228,7 +2265,7 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is Model && value == other.value /* spotless:on */
+            return other is Model && value == other.value
         }
 
         override fun hashCode() = value.hashCode()
@@ -2349,10 +2386,15 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is Prompt && string == other.string && arrayOfStrings == other.arrayOfStrings && arrayOfTokens == other.arrayOfTokens && arrayOfTokenArrays == other.arrayOfTokenArrays /* spotless:on */
+            return other is Prompt &&
+                string == other.string &&
+                arrayOfStrings == other.arrayOfStrings &&
+                arrayOfTokens == other.arrayOfTokens &&
+                arrayOfTokenArrays == other.arrayOfTokenArrays
         }
 
-        override fun hashCode(): Int = /* spotless:off */ Objects.hash(string, arrayOfStrings, arrayOfTokens, arrayOfTokenArrays) /* spotless:on */
+        override fun hashCode(): Int =
+            Objects.hash(string, arrayOfStrings, arrayOfTokens, arrayOfTokenArrays)
 
         override fun toString(): String =
             when {
@@ -2565,12 +2607,10 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is LogitBias && additionalProperties == other.additionalProperties /* spotless:on */
+            return other is LogitBias && additionalProperties == other.additionalProperties
         }
 
-        /* spotless:off */
         private val hashCode: Int by lazy { Objects.hash(additionalProperties) }
-        /* spotless:on */
 
         override fun hashCode(): Int = hashCode
 
@@ -2661,10 +2701,10 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is Stop && string == other.string && strings == other.strings /* spotless:on */
+            return other is Stop && string == other.string && strings == other.strings
         }
 
-        override fun hashCode(): Int = /* spotless:off */ Objects.hash(string, strings) /* spotless:on */
+        override fun hashCode(): Int = Objects.hash(string, strings)
 
         override fun toString(): String =
             when {
@@ -2754,10 +2794,13 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is CompletionCreateParams && body == other.body && additionalHeaders == other.additionalHeaders && additionalQueryParams == other.additionalQueryParams /* spotless:on */
+        return other is CompletionCreateParams &&
+            body == other.body &&
+            additionalHeaders == other.additionalHeaders &&
+            additionalQueryParams == other.additionalQueryParams
     }
 
-    override fun hashCode(): Int = /* spotless:off */ Objects.hash(body, additionalHeaders, additionalQueryParams) /* spotless:on */
+    override fun hashCode(): Int = Objects.hash(body, additionalHeaders, additionalQueryParams)
 
     override fun toString() =
         "CompletionCreateParams{body=$body, additionalHeaders=$additionalHeaders, additionalQueryParams=$additionalQueryParams}"

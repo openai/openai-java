@@ -794,12 +794,18 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is Body && input == other.input && model == other.model && dimensions == other.dimensions && encodingFormat == other.encodingFormat && user == other.user && additionalProperties == other.additionalProperties /* spotless:on */
+            return other is Body &&
+                input == other.input &&
+                model == other.model &&
+                dimensions == other.dimensions &&
+                encodingFormat == other.encodingFormat &&
+                user == other.user &&
+                additionalProperties == other.additionalProperties
         }
 
-        /* spotless:off */
-        private val hashCode: Int by lazy { Objects.hash(input, model, dimensions, encodingFormat, user, additionalProperties) }
-        /* spotless:on */
+        private val hashCode: Int by lazy {
+            Objects.hash(input, model, dimensions, encodingFormat, user, additionalProperties)
+        }
 
         override fun hashCode(): Int = hashCode
 
@@ -930,10 +936,15 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is Input && string == other.string && arrayOfStrings == other.arrayOfStrings && arrayOfTokens == other.arrayOfTokens && arrayOfTokenArrays == other.arrayOfTokenArrays /* spotless:on */
+            return other is Input &&
+                string == other.string &&
+                arrayOfStrings == other.arrayOfStrings &&
+                arrayOfTokens == other.arrayOfTokens &&
+                arrayOfTokenArrays == other.arrayOfTokenArrays
         }
 
-        override fun hashCode(): Int = /* spotless:off */ Objects.hash(string, arrayOfStrings, arrayOfTokens, arrayOfTokenArrays) /* spotless:on */
+        override fun hashCode(): Int =
+            Objects.hash(string, arrayOfStrings, arrayOfTokens, arrayOfTokenArrays)
 
         override fun toString(): String =
             when {
@@ -1177,7 +1188,7 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is EncodingFormat && value == other.value /* spotless:on */
+            return other is EncodingFormat && value == other.value
         }
 
         override fun hashCode() = value.hashCode()
@@ -1190,10 +1201,13 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is EmbeddingCreateParams && body == other.body && additionalHeaders == other.additionalHeaders && additionalQueryParams == other.additionalQueryParams /* spotless:on */
+        return other is EmbeddingCreateParams &&
+            body == other.body &&
+            additionalHeaders == other.additionalHeaders &&
+            additionalQueryParams == other.additionalQueryParams
     }
 
-    override fun hashCode(): Int = /* spotless:off */ Objects.hash(body, additionalHeaders, additionalQueryParams) /* spotless:on */
+    override fun hashCode(): Int = Objects.hash(body, additionalHeaders, additionalQueryParams)
 
     override fun toString() =
         "EmbeddingCreateParams{body=$body, additionalHeaders=$additionalHeaders, additionalQueryParams=$additionalQueryParams}"

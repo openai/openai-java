@@ -140,7 +140,7 @@ class ToolChoiceOptions @JsonCreator private constructor(private val value: Json
             return true
         }
 
-        return /* spotless:off */ other is ToolChoiceOptions && value == other.value /* spotless:on */
+        return other is ToolChoiceOptions && value == other.value
     }
 
     override fun hashCode() = value.hashCode()

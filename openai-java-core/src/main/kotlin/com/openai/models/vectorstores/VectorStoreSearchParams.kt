@@ -735,12 +735,25 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is Body && query == other.query && filters == other.filters && maxNumResults == other.maxNumResults && rankingOptions == other.rankingOptions && rewriteQuery == other.rewriteQuery && additionalProperties == other.additionalProperties /* spotless:on */
+            return other is Body &&
+                query == other.query &&
+                filters == other.filters &&
+                maxNumResults == other.maxNumResults &&
+                rankingOptions == other.rankingOptions &&
+                rewriteQuery == other.rewriteQuery &&
+                additionalProperties == other.additionalProperties
         }
 
-        /* spotless:off */
-        private val hashCode: Int by lazy { Objects.hash(query, filters, maxNumResults, rankingOptions, rewriteQuery, additionalProperties) }
-        /* spotless:on */
+        private val hashCode: Int by lazy {
+            Objects.hash(
+                query,
+                filters,
+                maxNumResults,
+                rankingOptions,
+                rewriteQuery,
+                additionalProperties,
+            )
+        }
 
         override fun hashCode(): Int = hashCode
 
@@ -827,10 +840,10 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is Query && string == other.string && strings == other.strings /* spotless:on */
+            return other is Query && string == other.string && strings == other.strings
         }
 
-        override fun hashCode(): Int = /* spotless:off */ Objects.hash(string, strings) /* spotless:on */
+        override fun hashCode(): Int = Objects.hash(string, strings)
 
         override fun toString(): String =
             when {
@@ -1011,10 +1024,12 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is Filters && comparisonFilter == other.comparisonFilter && compoundFilter == other.compoundFilter /* spotless:on */
+            return other is Filters &&
+                comparisonFilter == other.comparisonFilter &&
+                compoundFilter == other.compoundFilter
         }
 
-        override fun hashCode(): Int = /* spotless:off */ Objects.hash(comparisonFilter, compoundFilter) /* spotless:on */
+        override fun hashCode(): Int = Objects.hash(comparisonFilter, compoundFilter)
 
         override fun toString(): String =
             when {
@@ -1408,7 +1423,7 @@ private constructor(
                     return true
                 }
 
-                return /* spotless:off */ other is Ranker && value == other.value /* spotless:on */
+                return other is Ranker && value == other.value
             }
 
             override fun hashCode() = value.hashCode()
@@ -1421,12 +1436,15 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is RankingOptions && ranker == other.ranker && scoreThreshold == other.scoreThreshold && additionalProperties == other.additionalProperties /* spotless:on */
+            return other is RankingOptions &&
+                ranker == other.ranker &&
+                scoreThreshold == other.scoreThreshold &&
+                additionalProperties == other.additionalProperties
         }
 
-        /* spotless:off */
-        private val hashCode: Int by lazy { Objects.hash(ranker, scoreThreshold, additionalProperties) }
-        /* spotless:on */
+        private val hashCode: Int by lazy {
+            Objects.hash(ranker, scoreThreshold, additionalProperties)
+        }
 
         override fun hashCode(): Int = hashCode
 
@@ -1439,10 +1457,15 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is VectorStoreSearchParams && vectorStoreId == other.vectorStoreId && body == other.body && additionalHeaders == other.additionalHeaders && additionalQueryParams == other.additionalQueryParams /* spotless:on */
+        return other is VectorStoreSearchParams &&
+            vectorStoreId == other.vectorStoreId &&
+            body == other.body &&
+            additionalHeaders == other.additionalHeaders &&
+            additionalQueryParams == other.additionalQueryParams
     }
 
-    override fun hashCode(): Int = /* spotless:off */ Objects.hash(vectorStoreId, body, additionalHeaders, additionalQueryParams) /* spotless:on */
+    override fun hashCode(): Int =
+        Objects.hash(vectorStoreId, body, additionalHeaders, additionalQueryParams)
 
     override fun toString() =
         "VectorStoreSearchParams{vectorStoreId=$vectorStoreId, body=$body, additionalHeaders=$additionalHeaders, additionalQueryParams=$additionalQueryParams}"

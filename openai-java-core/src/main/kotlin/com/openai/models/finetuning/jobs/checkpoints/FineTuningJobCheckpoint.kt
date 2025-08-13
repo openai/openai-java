@@ -765,12 +765,29 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is Metrics && fullValidLoss == other.fullValidLoss && fullValidMeanTokenAccuracy == other.fullValidMeanTokenAccuracy && step == other.step && trainLoss == other.trainLoss && trainMeanTokenAccuracy == other.trainMeanTokenAccuracy && validLoss == other.validLoss && validMeanTokenAccuracy == other.validMeanTokenAccuracy && additionalProperties == other.additionalProperties /* spotless:on */
+            return other is Metrics &&
+                fullValidLoss == other.fullValidLoss &&
+                fullValidMeanTokenAccuracy == other.fullValidMeanTokenAccuracy &&
+                step == other.step &&
+                trainLoss == other.trainLoss &&
+                trainMeanTokenAccuracy == other.trainMeanTokenAccuracy &&
+                validLoss == other.validLoss &&
+                validMeanTokenAccuracy == other.validMeanTokenAccuracy &&
+                additionalProperties == other.additionalProperties
         }
 
-        /* spotless:off */
-        private val hashCode: Int by lazy { Objects.hash(fullValidLoss, fullValidMeanTokenAccuracy, step, trainLoss, trainMeanTokenAccuracy, validLoss, validMeanTokenAccuracy, additionalProperties) }
-        /* spotless:on */
+        private val hashCode: Int by lazy {
+            Objects.hash(
+                fullValidLoss,
+                fullValidMeanTokenAccuracy,
+                step,
+                trainLoss,
+                trainMeanTokenAccuracy,
+                validLoss,
+                validMeanTokenAccuracy,
+                additionalProperties,
+            )
+        }
 
         override fun hashCode(): Int = hashCode
 
@@ -783,12 +800,29 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is FineTuningJobCheckpoint && id == other.id && createdAt == other.createdAt && fineTunedModelCheckpoint == other.fineTunedModelCheckpoint && fineTuningJobId == other.fineTuningJobId && metrics == other.metrics && object_ == other.object_ && stepNumber == other.stepNumber && additionalProperties == other.additionalProperties /* spotless:on */
+        return other is FineTuningJobCheckpoint &&
+            id == other.id &&
+            createdAt == other.createdAt &&
+            fineTunedModelCheckpoint == other.fineTunedModelCheckpoint &&
+            fineTuningJobId == other.fineTuningJobId &&
+            metrics == other.metrics &&
+            object_ == other.object_ &&
+            stepNumber == other.stepNumber &&
+            additionalProperties == other.additionalProperties
     }
 
-    /* spotless:off */
-    private val hashCode: Int by lazy { Objects.hash(id, createdAt, fineTunedModelCheckpoint, fineTuningJobId, metrics, object_, stepNumber, additionalProperties) }
-    /* spotless:on */
+    private val hashCode: Int by lazy {
+        Objects.hash(
+            id,
+            createdAt,
+            fineTunedModelCheckpoint,
+            fineTuningJobId,
+            metrics,
+            object_,
+            stepNumber,
+            additionalProperties,
+        )
+    }
 
     override fun hashCode(): Int = hashCode
 

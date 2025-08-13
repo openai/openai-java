@@ -1262,12 +1262,16 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is Error && code == other.code && message == other.message && param == other.param && additionalProperties == other.additionalProperties /* spotless:on */
+            return other is Error &&
+                code == other.code &&
+                message == other.message &&
+                param == other.param &&
+                additionalProperties == other.additionalProperties
         }
 
-        /* spotless:off */
-        private val hashCode: Int by lazy { Objects.hash(code, message, param, additionalProperties) }
-        /* spotless:on */
+        private val hashCode: Int by lazy {
+            Objects.hash(code, message, param, additionalProperties)
+        }
 
         override fun hashCode(): Int = hashCode
 
@@ -1620,10 +1624,10 @@ private constructor(
                     return true
                 }
 
-                return /* spotless:off */ other is BatchSize && auto == other.auto && manual == other.manual /* spotless:on */
+                return other is BatchSize && auto == other.auto && manual == other.manual
             }
 
-            override fun hashCode(): Int = /* spotless:off */ Objects.hash(auto, manual) /* spotless:on */
+            override fun hashCode(): Int = Objects.hash(auto, manual)
 
             override fun toString(): String =
                 when {
@@ -1803,10 +1807,12 @@ private constructor(
                     return true
                 }
 
-                return /* spotless:off */ other is LearningRateMultiplier && auto == other.auto && number == other.number /* spotless:on */
+                return other is LearningRateMultiplier &&
+                    auto == other.auto &&
+                    number == other.number
             }
 
-            override fun hashCode(): Int = /* spotless:off */ Objects.hash(auto, number) /* spotless:on */
+            override fun hashCode(): Int = Objects.hash(auto, number)
 
             override fun toString(): String =
                 when {
@@ -1988,10 +1994,10 @@ private constructor(
                     return true
                 }
 
-                return /* spotless:off */ other is NEpochs && auto == other.auto && integer == other.integer /* spotless:on */
+                return other is NEpochs && auto == other.auto && integer == other.integer
             }
 
-            override fun hashCode(): Int = /* spotless:off */ Objects.hash(auto, integer) /* spotless:on */
+            override fun hashCode(): Int = Objects.hash(auto, integer)
 
             override fun toString(): String =
                 when {
@@ -2085,12 +2091,16 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is Hyperparameters && batchSize == other.batchSize && learningRateMultiplier == other.learningRateMultiplier && nEpochs == other.nEpochs && additionalProperties == other.additionalProperties /* spotless:on */
+            return other is Hyperparameters &&
+                batchSize == other.batchSize &&
+                learningRateMultiplier == other.learningRateMultiplier &&
+                nEpochs == other.nEpochs &&
+                additionalProperties == other.additionalProperties
         }
 
-        /* spotless:off */
-        private val hashCode: Int by lazy { Objects.hash(batchSize, learningRateMultiplier, nEpochs, additionalProperties) }
-        /* spotless:on */
+        private val hashCode: Int by lazy {
+            Objects.hash(batchSize, learningRateMultiplier, nEpochs, additionalProperties)
+        }
 
         override fun hashCode(): Int = hashCode
 
@@ -2243,7 +2253,7 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is Status && value == other.value /* spotless:on */
+            return other is Status && value == other.value
         }
 
         override fun hashCode() = value.hashCode()
@@ -2348,12 +2358,10 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is Metadata && additionalProperties == other.additionalProperties /* spotless:on */
+            return other is Metadata && additionalProperties == other.additionalProperties
         }
 
-        /* spotless:off */
         private val hashCode: Int by lazy { Objects.hash(additionalProperties) }
-        /* spotless:on */
 
         override fun hashCode(): Int = hashCode
 
@@ -2746,7 +2754,7 @@ private constructor(
                     return true
                 }
 
-                return /* spotless:off */ other is Type && value == other.value /* spotless:on */
+                return other is Type && value == other.value
             }
 
             override fun hashCode() = value.hashCode()
@@ -2759,12 +2767,17 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is Method && type == other.type && dpo == other.dpo && reinforcement == other.reinforcement && supervised == other.supervised && additionalProperties == other.additionalProperties /* spotless:on */
+            return other is Method &&
+                type == other.type &&
+                dpo == other.dpo &&
+                reinforcement == other.reinforcement &&
+                supervised == other.supervised &&
+                additionalProperties == other.additionalProperties
         }
 
-        /* spotless:off */
-        private val hashCode: Int by lazy { Objects.hash(type, dpo, reinforcement, supervised, additionalProperties) }
-        /* spotless:on */
+        private val hashCode: Int by lazy {
+            Objects.hash(type, dpo, reinforcement, supervised, additionalProperties)
+        }
 
         override fun hashCode(): Int = hashCode
 
@@ -2777,12 +2790,53 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is FineTuningJob && id == other.id && createdAt == other.createdAt && error == other.error && fineTunedModel == other.fineTunedModel && finishedAt == other.finishedAt && hyperparameters == other.hyperparameters && model == other.model && object_ == other.object_ && organizationId == other.organizationId && resultFiles == other.resultFiles && seed == other.seed && status == other.status && trainedTokens == other.trainedTokens && trainingFile == other.trainingFile && validationFile == other.validationFile && estimatedFinish == other.estimatedFinish && integrations == other.integrations && metadata == other.metadata && method == other.method && additionalProperties == other.additionalProperties /* spotless:on */
+        return other is FineTuningJob &&
+            id == other.id &&
+            createdAt == other.createdAt &&
+            error == other.error &&
+            fineTunedModel == other.fineTunedModel &&
+            finishedAt == other.finishedAt &&
+            hyperparameters == other.hyperparameters &&
+            model == other.model &&
+            object_ == other.object_ &&
+            organizationId == other.organizationId &&
+            resultFiles == other.resultFiles &&
+            seed == other.seed &&
+            status == other.status &&
+            trainedTokens == other.trainedTokens &&
+            trainingFile == other.trainingFile &&
+            validationFile == other.validationFile &&
+            estimatedFinish == other.estimatedFinish &&
+            integrations == other.integrations &&
+            metadata == other.metadata &&
+            method == other.method &&
+            additionalProperties == other.additionalProperties
     }
 
-    /* spotless:off */
-    private val hashCode: Int by lazy { Objects.hash(id, createdAt, error, fineTunedModel, finishedAt, hyperparameters, model, object_, organizationId, resultFiles, seed, status, trainedTokens, trainingFile, validationFile, estimatedFinish, integrations, metadata, method, additionalProperties) }
-    /* spotless:on */
+    private val hashCode: Int by lazy {
+        Objects.hash(
+            id,
+            createdAt,
+            error,
+            fineTunedModel,
+            finishedAt,
+            hyperparameters,
+            model,
+            object_,
+            organizationId,
+            resultFiles,
+            seed,
+            status,
+            trainedTokens,
+            trainingFile,
+            validationFile,
+            estimatedFinish,
+            integrations,
+            metadata,
+            method,
+            additionalProperties,
+        )
+    }
 
     override fun hashCode(): Int = hashCode
 

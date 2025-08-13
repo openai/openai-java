@@ -126,10 +126,13 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is ResponseInputContent && inputText == other.inputText && inputImage == other.inputImage && inputFile == other.inputFile /* spotless:on */
+        return other is ResponseInputContent &&
+            inputText == other.inputText &&
+            inputImage == other.inputImage &&
+            inputFile == other.inputFile
     }
 
-    override fun hashCode(): Int = /* spotless:off */ Objects.hash(inputText, inputImage, inputFile) /* spotless:on */
+    override fun hashCode(): Int = Objects.hash(inputText, inputImage, inputFile)
 
     override fun toString(): String =
         when {

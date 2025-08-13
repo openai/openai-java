@@ -574,12 +574,13 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is Summary && text == other.text && type == other.type && additionalProperties == other.additionalProperties /* spotless:on */
+            return other is Summary &&
+                text == other.text &&
+                type == other.type &&
+                additionalProperties == other.additionalProperties
         }
 
-        /* spotless:off */
         private val hashCode: Int by lazy { Objects.hash(text, type, additionalProperties) }
-        /* spotless:on */
 
         override fun hashCode(): Int = hashCode
 
@@ -768,12 +769,13 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is Content && text == other.text && type == other.type && additionalProperties == other.additionalProperties /* spotless:on */
+            return other is Content &&
+                text == other.text &&
+                type == other.type &&
+                additionalProperties == other.additionalProperties
         }
 
-        /* spotless:off */
         private val hashCode: Int by lazy { Objects.hash(text, type, additionalProperties) }
-        /* spotless:on */
 
         override fun hashCode(): Int = hashCode
 
@@ -908,7 +910,7 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is Status && value == other.value /* spotless:on */
+            return other is Status && value == other.value
         }
 
         override fun hashCode() = value.hashCode()
@@ -921,12 +923,19 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is ResponseReasoningItem && id == other.id && summary == other.summary && type == other.type && content == other.content && encryptedContent == other.encryptedContent && status == other.status && additionalProperties == other.additionalProperties /* spotless:on */
+        return other is ResponseReasoningItem &&
+            id == other.id &&
+            summary == other.summary &&
+            type == other.type &&
+            content == other.content &&
+            encryptedContent == other.encryptedContent &&
+            status == other.status &&
+            additionalProperties == other.additionalProperties
     }
 
-    /* spotless:off */
-    private val hashCode: Int by lazy { Objects.hash(id, summary, type, content, encryptedContent, status, additionalProperties) }
-    /* spotless:on */
+    private val hashCode: Int by lazy {
+        Objects.hash(id, summary, type, content, encryptedContent, status, additionalProperties)
+    }
 
     override fun hashCode(): Int = hashCode
 
