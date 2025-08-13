@@ -53,4 +53,4 @@ else
 fi
 
 echo "==> Running tests"
-./gradlew test
+./gradlew test "$@"
