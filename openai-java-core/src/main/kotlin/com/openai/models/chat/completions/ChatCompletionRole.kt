@@ -150,7 +150,7 @@ class ChatCompletionRole @JsonCreator private constructor(private val value: Jso
             return true
         }
 
-        return /* spotless:off */ other is ChatCompletionRole && value == other.value /* spotless:on */
+        return other is ChatCompletionRole && value == other.value
     }
 
     override fun hashCode() = value.hashCode()

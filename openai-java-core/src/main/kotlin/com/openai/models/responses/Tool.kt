@@ -277,10 +277,30 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is Tool && function == other.function && fileSearch == other.fileSearch && webSearch == other.webSearch && computerUsePreview == other.computerUsePreview && mcp == other.mcp && codeInterpreter == other.codeInterpreter && imageGeneration == other.imageGeneration && localShell == other.localShell && custom == other.custom /* spotless:on */
+        return other is Tool &&
+            function == other.function &&
+            fileSearch == other.fileSearch &&
+            webSearch == other.webSearch &&
+            computerUsePreview == other.computerUsePreview &&
+            mcp == other.mcp &&
+            codeInterpreter == other.codeInterpreter &&
+            imageGeneration == other.imageGeneration &&
+            localShell == other.localShell &&
+            custom == other.custom
     }
 
-    override fun hashCode(): Int = /* spotless:off */ Objects.hash(function, fileSearch, webSearch, computerUsePreview, mcp, codeInterpreter, imageGeneration, localShell, custom) /* spotless:on */
+    override fun hashCode(): Int =
+        Objects.hash(
+            function,
+            fileSearch,
+            webSearch,
+            computerUsePreview,
+            mcp,
+            codeInterpreter,
+            imageGeneration,
+            localShell,
+            custom,
+        )
 
     override fun toString(): String =
         when {
@@ -1024,10 +1044,12 @@ private constructor(
                     return true
                 }
 
-                return /* spotless:off */ other is AllowedTools && mcp == other.mcp && mcpAllowedToolsFilter == other.mcpAllowedToolsFilter /* spotless:on */
+                return other is AllowedTools &&
+                    mcp == other.mcp &&
+                    mcpAllowedToolsFilter == other.mcpAllowedToolsFilter
             }
 
-            override fun hashCode(): Int = /* spotless:off */ Objects.hash(mcp, mcpAllowedToolsFilter) /* spotless:on */
+            override fun hashCode(): Int = Objects.hash(mcp, mcpAllowedToolsFilter)
 
             override fun toString(): String =
                 when {
@@ -1282,12 +1304,12 @@ private constructor(
                         return true
                     }
 
-                    return /* spotless:off */ other is McpAllowedToolsFilter && toolNames == other.toolNames && additionalProperties == other.additionalProperties /* spotless:on */
+                    return other is McpAllowedToolsFilter &&
+                        toolNames == other.toolNames &&
+                        additionalProperties == other.additionalProperties
                 }
 
-                /* spotless:off */
                 private val hashCode: Int by lazy { Objects.hash(toolNames, additionalProperties) }
-                /* spotless:on */
 
                 override fun hashCode(): Int = hashCode
 
@@ -1392,12 +1414,10 @@ private constructor(
                     return true
                 }
 
-                return /* spotless:off */ other is Headers && additionalProperties == other.additionalProperties /* spotless:on */
+                return other is Headers && additionalProperties == other.additionalProperties
             }
 
-            /* spotless:off */
             private val hashCode: Int by lazy { Objects.hash(additionalProperties) }
-            /* spotless:on */
 
             override fun hashCode(): Int = hashCode
 
@@ -1511,10 +1531,13 @@ private constructor(
                     return true
                 }
 
-                return /* spotless:off */ other is RequireApproval && mcpToolApprovalFilter == other.mcpToolApprovalFilter && mcpToolApprovalSetting == other.mcpToolApprovalSetting /* spotless:on */
+                return other is RequireApproval &&
+                    mcpToolApprovalFilter == other.mcpToolApprovalFilter &&
+                    mcpToolApprovalSetting == other.mcpToolApprovalSetting
             }
 
-            override fun hashCode(): Int = /* spotless:off */ Objects.hash(mcpToolApprovalFilter, mcpToolApprovalSetting) /* spotless:on */
+            override fun hashCode(): Int =
+                Objects.hash(mcpToolApprovalFilter, mcpToolApprovalSetting)
 
             override fun toString(): String =
                 when {
@@ -1950,12 +1973,14 @@ private constructor(
                             return true
                         }
 
-                        return /* spotless:off */ other is Always && toolNames == other.toolNames && additionalProperties == other.additionalProperties /* spotless:on */
+                        return other is Always &&
+                            toolNames == other.toolNames &&
+                            additionalProperties == other.additionalProperties
                     }
 
-                    /* spotless:off */
-                    private val hashCode: Int by lazy { Objects.hash(toolNames, additionalProperties) }
-                    /* spotless:on */
+                    private val hashCode: Int by lazy {
+                        Objects.hash(toolNames, additionalProperties)
+                    }
 
                     override fun hashCode(): Int = hashCode
 
@@ -2120,12 +2145,14 @@ private constructor(
                             return true
                         }
 
-                        return /* spotless:off */ other is Never && toolNames == other.toolNames && additionalProperties == other.additionalProperties /* spotless:on */
+                        return other is Never &&
+                            toolNames == other.toolNames &&
+                            additionalProperties == other.additionalProperties
                     }
 
-                    /* spotless:off */
-                    private val hashCode: Int by lazy { Objects.hash(toolNames, additionalProperties) }
-                    /* spotless:on */
+                    private val hashCode: Int by lazy {
+                        Objects.hash(toolNames, additionalProperties)
+                    }
 
                     override fun hashCode(): Int = hashCode
 
@@ -2138,12 +2165,15 @@ private constructor(
                         return true
                     }
 
-                    return /* spotless:off */ other is McpToolApprovalFilter && always == other.always && never == other.never && additionalProperties == other.additionalProperties /* spotless:on */
+                    return other is McpToolApprovalFilter &&
+                        always == other.always &&
+                        never == other.never &&
+                        additionalProperties == other.additionalProperties
                 }
 
-                /* spotless:off */
-                private val hashCode: Int by lazy { Objects.hash(always, never, additionalProperties) }
-                /* spotless:on */
+                private val hashCode: Int by lazy {
+                    Objects.hash(always, never, additionalProperties)
+                }
 
                 override fun hashCode(): Int = hashCode
 
@@ -2285,7 +2315,7 @@ private constructor(
                         return true
                     }
 
-                    return /* spotless:off */ other is McpToolApprovalSetting && value == other.value /* spotless:on */
+                    return other is McpToolApprovalSetting && value == other.value
                 }
 
                 override fun hashCode() = value.hashCode()
@@ -2299,12 +2329,29 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is Mcp && serverLabel == other.serverLabel && serverUrl == other.serverUrl && type == other.type && allowedTools == other.allowedTools && headers == other.headers && requireApproval == other.requireApproval && serverDescription == other.serverDescription && additionalProperties == other.additionalProperties /* spotless:on */
+            return other is Mcp &&
+                serverLabel == other.serverLabel &&
+                serverUrl == other.serverUrl &&
+                type == other.type &&
+                allowedTools == other.allowedTools &&
+                headers == other.headers &&
+                requireApproval == other.requireApproval &&
+                serverDescription == other.serverDescription &&
+                additionalProperties == other.additionalProperties
         }
 
-        /* spotless:off */
-        private val hashCode: Int by lazy { Objects.hash(serverLabel, serverUrl, type, allowedTools, headers, requireApproval, serverDescription, additionalProperties) }
-        /* spotless:on */
+        private val hashCode: Int by lazy {
+            Objects.hash(
+                serverLabel,
+                serverUrl,
+                type,
+                allowedTools,
+                headers,
+                requireApproval,
+                serverDescription,
+                additionalProperties,
+            )
+        }
 
         override fun hashCode(): Int = hashCode
 
@@ -2612,10 +2659,12 @@ private constructor(
                     return true
                 }
 
-                return /* spotless:off */ other is Container && string == other.string && codeInterpreterToolAuto == other.codeInterpreterToolAuto /* spotless:on */
+                return other is Container &&
+                    string == other.string &&
+                    codeInterpreterToolAuto == other.codeInterpreterToolAuto
             }
 
-            override fun hashCode(): Int = /* spotless:off */ Objects.hash(string, codeInterpreterToolAuto) /* spotless:on */
+            override fun hashCode(): Int = Objects.hash(string, codeInterpreterToolAuto)
 
             override fun toString(): String =
                 when {
@@ -2919,12 +2968,15 @@ private constructor(
                         return true
                     }
 
-                    return /* spotless:off */ other is CodeInterpreterToolAuto && type == other.type && fileIds == other.fileIds && additionalProperties == other.additionalProperties /* spotless:on */
+                    return other is CodeInterpreterToolAuto &&
+                        type == other.type &&
+                        fileIds == other.fileIds &&
+                        additionalProperties == other.additionalProperties
                 }
 
-                /* spotless:off */
-                private val hashCode: Int by lazy { Objects.hash(type, fileIds, additionalProperties) }
-                /* spotless:on */
+                private val hashCode: Int by lazy {
+                    Objects.hash(type, fileIds, additionalProperties)
+                }
 
                 override fun hashCode(): Int = hashCode
 
@@ -2938,12 +2990,13 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is CodeInterpreter && container == other.container && type == other.type && additionalProperties == other.additionalProperties /* spotless:on */
+            return other is CodeInterpreter &&
+                container == other.container &&
+                type == other.type &&
+                additionalProperties == other.additionalProperties
         }
 
-        /* spotless:off */
         private val hashCode: Int by lazy { Objects.hash(container, type, additionalProperties) }
-        /* spotless:on */
 
         override fun hashCode(): Int = hashCode
 
@@ -3654,7 +3707,7 @@ private constructor(
                     return true
                 }
 
-                return /* spotless:off */ other is Background && value == other.value /* spotless:on */
+                return other is Background && value == other.value
             }
 
             override fun hashCode() = value.hashCode()
@@ -3790,7 +3843,7 @@ private constructor(
                     return true
                 }
 
-                return /* spotless:off */ other is InputFidelity && value == other.value /* spotless:on */
+                return other is InputFidelity && value == other.value
             }
 
             override fun hashCode() = value.hashCode()
@@ -3973,12 +4026,15 @@ private constructor(
                     return true
                 }
 
-                return /* spotless:off */ other is InputImageMask && fileId == other.fileId && imageUrl == other.imageUrl && additionalProperties == other.additionalProperties /* spotless:on */
+                return other is InputImageMask &&
+                    fileId == other.fileId &&
+                    imageUrl == other.imageUrl &&
+                    additionalProperties == other.additionalProperties
             }
 
-            /* spotless:off */
-            private val hashCode: Int by lazy { Objects.hash(fileId, imageUrl, additionalProperties) }
-            /* spotless:on */
+            private val hashCode: Int by lazy {
+                Objects.hash(fileId, imageUrl, additionalProperties)
+            }
 
             override fun hashCode(): Int = hashCode
 
@@ -4102,7 +4158,7 @@ private constructor(
                     return true
                 }
 
-                return /* spotless:off */ other is Model && value == other.value /* spotless:on */
+                return other is Model && value == other.value
             }
 
             override fun hashCode() = value.hashCode()
@@ -4234,7 +4290,7 @@ private constructor(
                     return true
                 }
 
-                return /* spotless:off */ other is Moderation && value == other.value /* spotless:on */
+                return other is Moderation && value == other.value
             }
 
             override fun hashCode() = value.hashCode()
@@ -4375,7 +4431,7 @@ private constructor(
                     return true
                 }
 
-                return /* spotless:off */ other is OutputFormat && value == other.value /* spotless:on */
+                return other is OutputFormat && value == other.value
             }
 
             override fun hashCode() = value.hashCode()
@@ -4521,7 +4577,7 @@ private constructor(
                     return true
                 }
 
-                return /* spotless:off */ other is Quality && value == other.value /* spotless:on */
+                return other is Quality && value == other.value
             }
 
             override fun hashCode() = value.hashCode()
@@ -4664,7 +4720,7 @@ private constructor(
                     return true
                 }
 
-                return /* spotless:off */ other is Size && value == other.value /* spotless:on */
+                return other is Size && value == other.value
             }
 
             override fun hashCode() = value.hashCode()
@@ -4677,12 +4733,37 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is ImageGeneration && type == other.type && background == other.background && inputFidelity == other.inputFidelity && inputImageMask == other.inputImageMask && model == other.model && moderation == other.moderation && outputCompression == other.outputCompression && outputFormat == other.outputFormat && partialImages == other.partialImages && quality == other.quality && size == other.size && additionalProperties == other.additionalProperties /* spotless:on */
+            return other is ImageGeneration &&
+                type == other.type &&
+                background == other.background &&
+                inputFidelity == other.inputFidelity &&
+                inputImageMask == other.inputImageMask &&
+                model == other.model &&
+                moderation == other.moderation &&
+                outputCompression == other.outputCompression &&
+                outputFormat == other.outputFormat &&
+                partialImages == other.partialImages &&
+                quality == other.quality &&
+                size == other.size &&
+                additionalProperties == other.additionalProperties
         }
 
-        /* spotless:off */
-        private val hashCode: Int by lazy { Objects.hash(type, background, inputFidelity, inputImageMask, model, moderation, outputCompression, outputFormat, partialImages, quality, size, additionalProperties) }
-        /* spotless:on */
+        private val hashCode: Int by lazy {
+            Objects.hash(
+                type,
+                background,
+                inputFidelity,
+                inputImageMask,
+                model,
+                moderation,
+                outputCompression,
+                outputFormat,
+                partialImages,
+                quality,
+                size,
+                additionalProperties,
+            )
+        }
 
         override fun hashCode(): Int = hashCode
 

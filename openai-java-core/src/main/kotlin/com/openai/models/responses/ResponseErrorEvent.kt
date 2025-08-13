@@ -319,12 +319,18 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is ResponseErrorEvent && code == other.code && message == other.message && param == other.param && sequenceNumber == other.sequenceNumber && type == other.type && additionalProperties == other.additionalProperties /* spotless:on */
+        return other is ResponseErrorEvent &&
+            code == other.code &&
+            message == other.message &&
+            param == other.param &&
+            sequenceNumber == other.sequenceNumber &&
+            type == other.type &&
+            additionalProperties == other.additionalProperties
     }
 
-    /* spotless:off */
-    private val hashCode: Int by lazy { Objects.hash(code, message, param, sequenceNumber, type, additionalProperties) }
-    /* spotless:on */
+    private val hashCode: Int by lazy {
+        Objects.hash(code, message, param, sequenceNumber, type, additionalProperties)
+    }
 
     override fun hashCode(): Int = hashCode
 

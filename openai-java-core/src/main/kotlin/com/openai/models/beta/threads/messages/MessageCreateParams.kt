@@ -721,12 +721,17 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is Body && content == other.content && role == other.role && attachments == other.attachments && metadata == other.metadata && additionalProperties == other.additionalProperties /* spotless:on */
+            return other is Body &&
+                content == other.content &&
+                role == other.role &&
+                attachments == other.attachments &&
+                metadata == other.metadata &&
+                additionalProperties == other.additionalProperties
         }
 
-        /* spotless:off */
-        private val hashCode: Int by lazy { Objects.hash(content, role, attachments, metadata, additionalProperties) }
-        /* spotless:on */
+        private val hashCode: Int by lazy {
+            Objects.hash(content, role, attachments, metadata, additionalProperties)
+        }
 
         override fun hashCode(): Int = hashCode
 
@@ -833,10 +838,12 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is Content && text == other.text && arrayOfContentParts == other.arrayOfContentParts /* spotless:on */
+            return other is Content &&
+                text == other.text &&
+                arrayOfContentParts == other.arrayOfContentParts
         }
 
-        override fun hashCode(): Int = /* spotless:off */ Objects.hash(text, arrayOfContentParts) /* spotless:on */
+        override fun hashCode(): Int = Objects.hash(text, arrayOfContentParts)
 
         override fun toString(): String =
             when {
@@ -1062,7 +1069,7 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is Role && value == other.value /* spotless:on */
+            return other is Role && value == other.value
         }
 
         override fun hashCode() = value.hashCode()
@@ -1347,10 +1354,12 @@ private constructor(
                     return true
                 }
 
-                return /* spotless:off */ other is Tool && codeInterpreter == other.codeInterpreter && fileSearch == other.fileSearch /* spotless:on */
+                return other is Tool &&
+                    codeInterpreter == other.codeInterpreter &&
+                    fileSearch == other.fileSearch
             }
 
-            override fun hashCode(): Int = /* spotless:off */ Objects.hash(codeInterpreter, fileSearch) /* spotless:on */
+            override fun hashCode(): Int = Objects.hash(codeInterpreter, fileSearch)
 
             override fun toString(): String =
                 when {
@@ -1441,12 +1450,13 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is Attachment && fileId == other.fileId && tools == other.tools && additionalProperties == other.additionalProperties /* spotless:on */
+            return other is Attachment &&
+                fileId == other.fileId &&
+                tools == other.tools &&
+                additionalProperties == other.additionalProperties
         }
 
-        /* spotless:off */
         private val hashCode: Int by lazy { Objects.hash(fileId, tools, additionalProperties) }
-        /* spotless:on */
 
         override fun hashCode(): Int = hashCode
 
@@ -1551,12 +1561,10 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is Metadata && additionalProperties == other.additionalProperties /* spotless:on */
+            return other is Metadata && additionalProperties == other.additionalProperties
         }
 
-        /* spotless:off */
         private val hashCode: Int by lazy { Objects.hash(additionalProperties) }
-        /* spotless:on */
 
         override fun hashCode(): Int = hashCode
 
@@ -1568,10 +1576,15 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is MessageCreateParams && threadId == other.threadId && body == other.body && additionalHeaders == other.additionalHeaders && additionalQueryParams == other.additionalQueryParams /* spotless:on */
+        return other is MessageCreateParams &&
+            threadId == other.threadId &&
+            body == other.body &&
+            additionalHeaders == other.additionalHeaders &&
+            additionalQueryParams == other.additionalQueryParams
     }
 
-    override fun hashCode(): Int = /* spotless:off */ Objects.hash(threadId, body, additionalHeaders, additionalQueryParams) /* spotless:on */
+    override fun hashCode(): Int =
+        Objects.hash(threadId, body, additionalHeaders, additionalQueryParams)
 
     override fun toString() =
         "MessageCreateParams{threadId=$threadId, body=$body, additionalHeaders=$additionalHeaders, additionalQueryParams=$additionalQueryParams}"

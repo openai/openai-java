@@ -209,12 +209,13 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is ResponseAudioTranscriptDoneEvent && sequenceNumber == other.sequenceNumber && type == other.type && additionalProperties == other.additionalProperties /* spotless:on */
+        return other is ResponseAudioTranscriptDoneEvent &&
+            sequenceNumber == other.sequenceNumber &&
+            type == other.type &&
+            additionalProperties == other.additionalProperties
     }
 
-    /* spotless:off */
     private val hashCode: Int by lazy { Objects.hash(sequenceNumber, type, additionalProperties) }
-    /* spotless:on */
 
     override fun hashCode(): Int = hashCode
 

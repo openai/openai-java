@@ -125,10 +125,12 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is AssistantToolChoiceOption && auto == other.auto && assistantToolChoice == other.assistantToolChoice /* spotless:on */
+        return other is AssistantToolChoiceOption &&
+            auto == other.auto &&
+            assistantToolChoice == other.assistantToolChoice
     }
 
-    override fun hashCode(): Int = /* spotless:off */ Objects.hash(auto, assistantToolChoice) /* spotless:on */
+    override fun hashCode(): Int = Objects.hash(auto, assistantToolChoice)
 
     override fun toString(): String =
         when {
@@ -365,7 +367,7 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is Auto && value == other.value /* spotless:on */
+            return other is Auto && value == other.value
         }
 
         override fun hashCode() = value.hashCode()

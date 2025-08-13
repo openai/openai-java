@@ -279,10 +279,24 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is ResponseRetrieveParams && responseId == other.responseId && include == other.include && includeObfuscation == other.includeObfuscation && startingAfter == other.startingAfter && additionalHeaders == other.additionalHeaders && additionalQueryParams == other.additionalQueryParams /* spotless:on */
+        return other is ResponseRetrieveParams &&
+            responseId == other.responseId &&
+            include == other.include &&
+            includeObfuscation == other.includeObfuscation &&
+            startingAfter == other.startingAfter &&
+            additionalHeaders == other.additionalHeaders &&
+            additionalQueryParams == other.additionalQueryParams
     }
 
-    override fun hashCode(): Int = /* spotless:off */ Objects.hash(responseId, include, includeObfuscation, startingAfter, additionalHeaders, additionalQueryParams) /* spotless:on */
+    override fun hashCode(): Int =
+        Objects.hash(
+            responseId,
+            include,
+            includeObfuscation,
+            startingAfter,
+            additionalHeaders,
+            additionalQueryParams,
+        )
 
     override fun toString() =
         "ResponseRetrieveParams{responseId=$responseId, include=$include, includeObfuscation=$includeObfuscation, startingAfter=$startingAfter, additionalHeaders=$additionalHeaders, additionalQueryParams=$additionalQueryParams}"

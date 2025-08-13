@@ -147,7 +147,7 @@ class AudioResponseFormat @JsonCreator private constructor(private val value: Js
             return true
         }
 
-        return /* spotless:off */ other is AudioResponseFormat && value == other.value /* spotless:on */
+        return other is AudioResponseFormat && value == other.value
     }
 
     override fun hashCode() = value.hashCode()

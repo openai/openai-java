@@ -106,10 +106,12 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is ImageEditStreamEvent && partialImage == other.partialImage && completed == other.completed /* spotless:on */
+        return other is ImageEditStreamEvent &&
+            partialImage == other.partialImage &&
+            completed == other.completed
     }
 
-    override fun hashCode(): Int = /* spotless:off */ Objects.hash(partialImage, completed) /* spotless:on */
+    override fun hashCode(): Int = Objects.hash(partialImage, completed)
 
     override fun toString(): String =
         when {

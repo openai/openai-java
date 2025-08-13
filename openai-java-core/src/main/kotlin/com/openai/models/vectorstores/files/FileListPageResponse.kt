@@ -305,12 +305,18 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is FileListPageResponse && data == other.data && firstId == other.firstId && hasMore == other.hasMore && lastId == other.lastId && object_ == other.object_ && additionalProperties == other.additionalProperties /* spotless:on */
+        return other is FileListPageResponse &&
+            data == other.data &&
+            firstId == other.firstId &&
+            hasMore == other.hasMore &&
+            lastId == other.lastId &&
+            object_ == other.object_ &&
+            additionalProperties == other.additionalProperties
     }
 
-    /* spotless:off */
-    private val hashCode: Int by lazy { Objects.hash(data, firstId, hasMore, lastId, object_, additionalProperties) }
-    /* spotless:on */
+    private val hashCode: Int by lazy {
+        Objects.hash(data, firstId, hasMore, lastId, object_, additionalProperties)
+    }
 
     override fun hashCode(): Int = hashCode
 

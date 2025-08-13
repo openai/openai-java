@@ -312,10 +312,32 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is RunStreamEvent && threadRunCreated == other.threadRunCreated && threadRunQueued == other.threadRunQueued && threadRunInProgress == other.threadRunInProgress && threadRunRequiresAction == other.threadRunRequiresAction && threadRunCompleted == other.threadRunCompleted && threadRunIncomplete == other.threadRunIncomplete && threadRunFailed == other.threadRunFailed && threadRunCancelling == other.threadRunCancelling && threadRunCancelled == other.threadRunCancelled && threadRunExpired == other.threadRunExpired /* spotless:on */
+        return other is RunStreamEvent &&
+            threadRunCreated == other.threadRunCreated &&
+            threadRunQueued == other.threadRunQueued &&
+            threadRunInProgress == other.threadRunInProgress &&
+            threadRunRequiresAction == other.threadRunRequiresAction &&
+            threadRunCompleted == other.threadRunCompleted &&
+            threadRunIncomplete == other.threadRunIncomplete &&
+            threadRunFailed == other.threadRunFailed &&
+            threadRunCancelling == other.threadRunCancelling &&
+            threadRunCancelled == other.threadRunCancelled &&
+            threadRunExpired == other.threadRunExpired
     }
 
-    override fun hashCode(): Int = /* spotless:off */ Objects.hash(threadRunCreated, threadRunQueued, threadRunInProgress, threadRunRequiresAction, threadRunCompleted, threadRunIncomplete, threadRunFailed, threadRunCancelling, threadRunCancelled, threadRunExpired) /* spotless:on */
+    override fun hashCode(): Int =
+        Objects.hash(
+            threadRunCreated,
+            threadRunQueued,
+            threadRunInProgress,
+            threadRunRequiresAction,
+            threadRunCompleted,
+            threadRunIncomplete,
+            threadRunFailed,
+            threadRunCancelling,
+            threadRunCancelled,
+            threadRunExpired,
+        )
 
     override fun toString(): String =
         when {
@@ -778,12 +800,13 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is ThreadRunCreated && data == other.data && event == other.event && additionalProperties == other.additionalProperties /* spotless:on */
+            return other is ThreadRunCreated &&
+                data == other.data &&
+                event == other.event &&
+                additionalProperties == other.additionalProperties
         }
 
-        /* spotless:off */
         private val hashCode: Int by lazy { Objects.hash(data, event, additionalProperties) }
-        /* spotless:on */
 
         override fun hashCode(): Int = hashCode
 
@@ -982,12 +1005,13 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is ThreadRunQueued && data == other.data && event == other.event && additionalProperties == other.additionalProperties /* spotless:on */
+            return other is ThreadRunQueued &&
+                data == other.data &&
+                event == other.event &&
+                additionalProperties == other.additionalProperties
         }
 
-        /* spotless:off */
         private val hashCode: Int by lazy { Objects.hash(data, event, additionalProperties) }
-        /* spotless:on */
 
         override fun hashCode(): Int = hashCode
 
@@ -1186,12 +1210,13 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is ThreadRunInProgress && data == other.data && event == other.event && additionalProperties == other.additionalProperties /* spotless:on */
+            return other is ThreadRunInProgress &&
+                data == other.data &&
+                event == other.event &&
+                additionalProperties == other.additionalProperties
         }
 
-        /* spotless:off */
         private val hashCode: Int by lazy { Objects.hash(data, event, additionalProperties) }
-        /* spotless:on */
 
         override fun hashCode(): Int = hashCode
 
@@ -1390,12 +1415,13 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is ThreadRunRequiresAction && data == other.data && event == other.event && additionalProperties == other.additionalProperties /* spotless:on */
+            return other is ThreadRunRequiresAction &&
+                data == other.data &&
+                event == other.event &&
+                additionalProperties == other.additionalProperties
         }
 
-        /* spotless:off */
         private val hashCode: Int by lazy { Objects.hash(data, event, additionalProperties) }
-        /* spotless:on */
 
         override fun hashCode(): Int = hashCode
 
@@ -1593,12 +1619,13 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is ThreadRunCompleted && data == other.data && event == other.event && additionalProperties == other.additionalProperties /* spotless:on */
+            return other is ThreadRunCompleted &&
+                data == other.data &&
+                event == other.event &&
+                additionalProperties == other.additionalProperties
         }
 
-        /* spotless:off */
         private val hashCode: Int by lazy { Objects.hash(data, event, additionalProperties) }
-        /* spotless:on */
 
         override fun hashCode(): Int = hashCode
 
@@ -1797,12 +1824,13 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is ThreadRunIncomplete && data == other.data && event == other.event && additionalProperties == other.additionalProperties /* spotless:on */
+            return other is ThreadRunIncomplete &&
+                data == other.data &&
+                event == other.event &&
+                additionalProperties == other.additionalProperties
         }
 
-        /* spotless:off */
         private val hashCode: Int by lazy { Objects.hash(data, event, additionalProperties) }
-        /* spotless:on */
 
         override fun hashCode(): Int = hashCode
 
@@ -1998,12 +2026,13 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is ThreadRunFailed && data == other.data && event == other.event && additionalProperties == other.additionalProperties /* spotless:on */
+            return other is ThreadRunFailed &&
+                data == other.data &&
+                event == other.event &&
+                additionalProperties == other.additionalProperties
         }
 
-        /* spotless:off */
         private val hashCode: Int by lazy { Objects.hash(data, event, additionalProperties) }
-        /* spotless:on */
 
         override fun hashCode(): Int = hashCode
 
@@ -2202,12 +2231,13 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is ThreadRunCancelling && data == other.data && event == other.event && additionalProperties == other.additionalProperties /* spotless:on */
+            return other is ThreadRunCancelling &&
+                data == other.data &&
+                event == other.event &&
+                additionalProperties == other.additionalProperties
         }
 
-        /* spotless:off */
         private val hashCode: Int by lazy { Objects.hash(data, event, additionalProperties) }
-        /* spotless:on */
 
         override fun hashCode(): Int = hashCode
 
@@ -2405,12 +2435,13 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is ThreadRunCancelled && data == other.data && event == other.event && additionalProperties == other.additionalProperties /* spotless:on */
+            return other is ThreadRunCancelled &&
+                data == other.data &&
+                event == other.event &&
+                additionalProperties == other.additionalProperties
         }
 
-        /* spotless:off */
         private val hashCode: Int by lazy { Objects.hash(data, event, additionalProperties) }
-        /* spotless:on */
 
         override fun hashCode(): Int = hashCode
 
@@ -2606,12 +2637,13 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is ThreadRunExpired && data == other.data && event == other.event && additionalProperties == other.additionalProperties /* spotless:on */
+            return other is ThreadRunExpired &&
+                data == other.data &&
+                event == other.event &&
+                additionalProperties == other.additionalProperties
         }
 
-        /* spotless:off */
         private val hashCode: Int by lazy { Objects.hash(data, event, additionalProperties) }
-        /* spotless:on */
 
         override fun hashCode(): Int = hashCode
 

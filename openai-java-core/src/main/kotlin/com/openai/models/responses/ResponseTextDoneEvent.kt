@@ -817,12 +817,13 @@ private constructor(
                     return true
                 }
 
-                return /* spotless:off */ other is TopLogprob && token == other.token && logprob == other.logprob && additionalProperties == other.additionalProperties /* spotless:on */
+                return other is TopLogprob &&
+                    token == other.token &&
+                    logprob == other.logprob &&
+                    additionalProperties == other.additionalProperties
             }
 
-            /* spotless:off */
             private val hashCode: Int by lazy { Objects.hash(token, logprob, additionalProperties) }
-            /* spotless:on */
 
             override fun hashCode(): Int = hashCode
 
@@ -835,12 +836,16 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is Logprob && token == other.token && logprob == other.logprob && topLogprobs == other.topLogprobs && additionalProperties == other.additionalProperties /* spotless:on */
+            return other is Logprob &&
+                token == other.token &&
+                logprob == other.logprob &&
+                topLogprobs == other.topLogprobs &&
+                additionalProperties == other.additionalProperties
         }
 
-        /* spotless:off */
-        private val hashCode: Int by lazy { Objects.hash(token, logprob, topLogprobs, additionalProperties) }
-        /* spotless:on */
+        private val hashCode: Int by lazy {
+            Objects.hash(token, logprob, topLogprobs, additionalProperties)
+        }
 
         override fun hashCode(): Int = hashCode
 
@@ -853,12 +858,29 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is ResponseTextDoneEvent && contentIndex == other.contentIndex && itemId == other.itemId && logprobs == other.logprobs && outputIndex == other.outputIndex && sequenceNumber == other.sequenceNumber && text == other.text && type == other.type && additionalProperties == other.additionalProperties /* spotless:on */
+        return other is ResponseTextDoneEvent &&
+            contentIndex == other.contentIndex &&
+            itemId == other.itemId &&
+            logprobs == other.logprobs &&
+            outputIndex == other.outputIndex &&
+            sequenceNumber == other.sequenceNumber &&
+            text == other.text &&
+            type == other.type &&
+            additionalProperties == other.additionalProperties
     }
 
-    /* spotless:off */
-    private val hashCode: Int by lazy { Objects.hash(contentIndex, itemId, logprobs, outputIndex, sequenceNumber, text, type, additionalProperties) }
-    /* spotless:on */
+    private val hashCode: Int by lazy {
+        Objects.hash(
+            contentIndex,
+            itemId,
+            logprobs,
+            outputIndex,
+            sequenceNumber,
+            text,
+            type,
+            additionalProperties,
+        )
+    }
 
     override fun hashCode(): Int = hashCode
 

@@ -202,10 +202,15 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is FileBatchRetrieveParams && vectorStoreId == other.vectorStoreId && batchId == other.batchId && additionalHeaders == other.additionalHeaders && additionalQueryParams == other.additionalQueryParams /* spotless:on */
+        return other is FileBatchRetrieveParams &&
+            vectorStoreId == other.vectorStoreId &&
+            batchId == other.batchId &&
+            additionalHeaders == other.additionalHeaders &&
+            additionalQueryParams == other.additionalQueryParams
     }
 
-    override fun hashCode(): Int = /* spotless:off */ Objects.hash(vectorStoreId, batchId, additionalHeaders, additionalQueryParams) /* spotless:on */
+    override fun hashCode(): Int =
+        Objects.hash(vectorStoreId, batchId, additionalHeaders, additionalQueryParams)
 
     override fun toString() =
         "FileBatchRetrieveParams{vectorStoreId=$vectorStoreId, batchId=$batchId, additionalHeaders=$additionalHeaders, additionalQueryParams=$additionalQueryParams}"

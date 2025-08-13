@@ -1043,7 +1043,7 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is Status && value == other.value /* spotless:on */
+            return other is Status && value == other.value
         }
 
         override fun hashCode() = value.hashCode()
@@ -1231,12 +1231,13 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is Errors && data == other.data && object_ == other.object_ && additionalProperties == other.additionalProperties /* spotless:on */
+            return other is Errors &&
+                data == other.data &&
+                object_ == other.object_ &&
+                additionalProperties == other.additionalProperties
         }
 
-        /* spotless:off */
         private val hashCode: Int by lazy { Objects.hash(data, object_, additionalProperties) }
-        /* spotless:on */
 
         override fun hashCode(): Int = hashCode
 
@@ -1341,12 +1342,10 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is Metadata && additionalProperties == other.additionalProperties /* spotless:on */
+            return other is Metadata && additionalProperties == other.additionalProperties
         }
 
-        /* spotless:off */
         private val hashCode: Int by lazy { Objects.hash(additionalProperties) }
-        /* spotless:on */
 
         override fun hashCode(): Int = hashCode
 
@@ -1358,12 +1357,55 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is Batch && id == other.id && completionWindow == other.completionWindow && createdAt == other.createdAt && endpoint == other.endpoint && inputFileId == other.inputFileId && object_ == other.object_ && status == other.status && cancelledAt == other.cancelledAt && cancellingAt == other.cancellingAt && completedAt == other.completedAt && errorFileId == other.errorFileId && errors == other.errors && expiredAt == other.expiredAt && expiresAt == other.expiresAt && failedAt == other.failedAt && finalizingAt == other.finalizingAt && inProgressAt == other.inProgressAt && metadata == other.metadata && outputFileId == other.outputFileId && requestCounts == other.requestCounts && additionalProperties == other.additionalProperties /* spotless:on */
+        return other is Batch &&
+            id == other.id &&
+            completionWindow == other.completionWindow &&
+            createdAt == other.createdAt &&
+            endpoint == other.endpoint &&
+            inputFileId == other.inputFileId &&
+            object_ == other.object_ &&
+            status == other.status &&
+            cancelledAt == other.cancelledAt &&
+            cancellingAt == other.cancellingAt &&
+            completedAt == other.completedAt &&
+            errorFileId == other.errorFileId &&
+            errors == other.errors &&
+            expiredAt == other.expiredAt &&
+            expiresAt == other.expiresAt &&
+            failedAt == other.failedAt &&
+            finalizingAt == other.finalizingAt &&
+            inProgressAt == other.inProgressAt &&
+            metadata == other.metadata &&
+            outputFileId == other.outputFileId &&
+            requestCounts == other.requestCounts &&
+            additionalProperties == other.additionalProperties
     }
 
-    /* spotless:off */
-    private val hashCode: Int by lazy { Objects.hash(id, completionWindow, createdAt, endpoint, inputFileId, object_, status, cancelledAt, cancellingAt, completedAt, errorFileId, errors, expiredAt, expiresAt, failedAt, finalizingAt, inProgressAt, metadata, outputFileId, requestCounts, additionalProperties) }
-    /* spotless:on */
+    private val hashCode: Int by lazy {
+        Objects.hash(
+            id,
+            completionWindow,
+            createdAt,
+            endpoint,
+            inputFileId,
+            object_,
+            status,
+            cancelledAt,
+            cancellingAt,
+            completedAt,
+            errorFileId,
+            errors,
+            expiredAt,
+            expiresAt,
+            failedAt,
+            finalizingAt,
+            inProgressAt,
+            metadata,
+            outputFileId,
+            requestCounts,
+            additionalProperties,
+        )
+    }
 
     override fun hashCode(): Int = hashCode
 

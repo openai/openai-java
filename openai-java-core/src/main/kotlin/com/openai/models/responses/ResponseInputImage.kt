@@ -407,7 +407,7 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is Detail && value == other.value /* spotless:on */
+            return other is Detail && value == other.value
         }
 
         override fun hashCode() = value.hashCode()
@@ -420,12 +420,17 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is ResponseInputImage && detail == other.detail && type == other.type && fileId == other.fileId && imageUrl == other.imageUrl && additionalProperties == other.additionalProperties /* spotless:on */
+        return other is ResponseInputImage &&
+            detail == other.detail &&
+            type == other.type &&
+            fileId == other.fileId &&
+            imageUrl == other.imageUrl &&
+            additionalProperties == other.additionalProperties
     }
 
-    /* spotless:off */
-    private val hashCode: Int by lazy { Objects.hash(detail, type, fileId, imageUrl, additionalProperties) }
-    /* spotless:on */
+    private val hashCode: Int by lazy {
+        Objects.hash(detail, type, fileId, imageUrl, additionalProperties)
+    }
 
     override fun hashCode(): Int = hashCode
 

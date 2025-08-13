@@ -421,12 +421,10 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is Parameters && additionalProperties == other.additionalProperties /* spotless:on */
+            return other is Parameters && additionalProperties == other.additionalProperties
         }
 
-        /* spotless:off */
         private val hashCode: Int by lazy { Objects.hash(additionalProperties) }
-        /* spotless:on */
 
         override fun hashCode(): Int = hashCode
 
@@ -438,12 +436,18 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is FunctionTool && name == other.name && parameters == other.parameters && strict == other.strict && type == other.type && description == other.description && additionalProperties == other.additionalProperties /* spotless:on */
+        return other is FunctionTool &&
+            name == other.name &&
+            parameters == other.parameters &&
+            strict == other.strict &&
+            type == other.type &&
+            description == other.description &&
+            additionalProperties == other.additionalProperties
     }
 
-    /* spotless:off */
-    private val hashCode: Int by lazy { Objects.hash(name, parameters, strict, type, description, additionalProperties) }
-    /* spotless:on */
+    private val hashCode: Int by lazy {
+        Objects.hash(name, parameters, strict, type, description, additionalProperties)
+    }
 
     override fun hashCode(): Int = hashCode
 

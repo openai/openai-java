@@ -127,7 +127,7 @@ class AudioModel @JsonCreator private constructor(private val value: JsonField<S
             return true
         }
 
-        return /* spotless:off */ other is AudioModel && value == other.value /* spotless:on */
+        return other is AudioModel && value == other.value
     }
 
     override fun hashCode() = value.hashCode()

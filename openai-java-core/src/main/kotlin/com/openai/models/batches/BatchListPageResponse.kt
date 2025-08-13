@@ -304,12 +304,18 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is BatchListPageResponse && data == other.data && hasMore == other.hasMore && object_ == other.object_ && firstId == other.firstId && lastId == other.lastId && additionalProperties == other.additionalProperties /* spotless:on */
+        return other is BatchListPageResponse &&
+            data == other.data &&
+            hasMore == other.hasMore &&
+            object_ == other.object_ &&
+            firstId == other.firstId &&
+            lastId == other.lastId &&
+            additionalProperties == other.additionalProperties
     }
 
-    /* spotless:off */
-    private val hashCode: Int by lazy { Objects.hash(data, hasMore, object_, firstId, lastId, additionalProperties) }
-    /* spotless:on */
+    private val hashCode: Int by lazy {
+        Objects.hash(data, hasMore, object_, firstId, lastId, additionalProperties)
+    }
 
     override fun hashCode(): Int = hashCode
 

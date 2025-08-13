@@ -208,12 +208,13 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is StaticFileChunkingStrategyObjectParam && static_ == other.static_ && type == other.type && additionalProperties == other.additionalProperties /* spotless:on */
+        return other is StaticFileChunkingStrategyObjectParam &&
+            static_ == other.static_ &&
+            type == other.type &&
+            additionalProperties == other.additionalProperties
     }
 
-    /* spotless:off */
     private val hashCode: Int by lazy { Objects.hash(static_, type, additionalProperties) }
-    /* spotless:on */
 
     override fun hashCode(): Int = hashCode
 

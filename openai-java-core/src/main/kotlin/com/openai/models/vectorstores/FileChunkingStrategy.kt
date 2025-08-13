@@ -109,10 +109,12 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is FileChunkingStrategy && static_ == other.static_ && this.other == other.other /* spotless:on */
+        return other is FileChunkingStrategy &&
+            static_ == other.static_ &&
+            this.other == other.other
     }
 
-    override fun hashCode(): Int = /* spotless:off */ Objects.hash(static_, other) /* spotless:on */
+    override fun hashCode(): Int = Objects.hash(static_, other)
 
     override fun toString(): String =
         when {

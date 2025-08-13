@@ -277,12 +277,17 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is ChatCompletionAudio && id == other.id && data == other.data && expiresAt == other.expiresAt && transcript == other.transcript && additionalProperties == other.additionalProperties /* spotless:on */
+        return other is ChatCompletionAudio &&
+            id == other.id &&
+            data == other.data &&
+            expiresAt == other.expiresAt &&
+            transcript == other.transcript &&
+            additionalProperties == other.additionalProperties
     }
 
-    /* spotless:off */
-    private val hashCode: Int by lazy { Objects.hash(id, data, expiresAt, transcript, additionalProperties) }
-    /* spotless:on */
+    private val hashCode: Int by lazy {
+        Objects.hash(id, data, expiresAt, transcript, additionalProperties)
+    }
 
     override fun hashCode(): Int = hashCode
 

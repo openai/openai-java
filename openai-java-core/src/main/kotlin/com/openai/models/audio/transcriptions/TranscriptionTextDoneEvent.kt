@@ -507,12 +507,16 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is Logprob && token == other.token && bytes == other.bytes && logprob == other.logprob && additionalProperties == other.additionalProperties /* spotless:on */
+            return other is Logprob &&
+                token == other.token &&
+                bytes == other.bytes &&
+                logprob == other.logprob &&
+                additionalProperties == other.additionalProperties
         }
 
-        /* spotless:off */
-        private val hashCode: Int by lazy { Objects.hash(token, bytes, logprob, additionalProperties) }
-        /* spotless:on */
+        private val hashCode: Int by lazy {
+            Objects.hash(token, bytes, logprob, additionalProperties)
+        }
 
         override fun hashCode(): Int = hashCode
 
@@ -1012,12 +1016,15 @@ private constructor(
                     return true
                 }
 
-                return /* spotless:off */ other is InputTokenDetails && audioTokens == other.audioTokens && textTokens == other.textTokens && additionalProperties == other.additionalProperties /* spotless:on */
+                return other is InputTokenDetails &&
+                    audioTokens == other.audioTokens &&
+                    textTokens == other.textTokens &&
+                    additionalProperties == other.additionalProperties
             }
 
-            /* spotless:off */
-            private val hashCode: Int by lazy { Objects.hash(audioTokens, textTokens, additionalProperties) }
-            /* spotless:on */
+            private val hashCode: Int by lazy {
+                Objects.hash(audioTokens, textTokens, additionalProperties)
+            }
 
             override fun hashCode(): Int = hashCode
 
@@ -1030,12 +1037,25 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is Usage && inputTokens == other.inputTokens && outputTokens == other.outputTokens && totalTokens == other.totalTokens && type == other.type && inputTokenDetails == other.inputTokenDetails && additionalProperties == other.additionalProperties /* spotless:on */
+            return other is Usage &&
+                inputTokens == other.inputTokens &&
+                outputTokens == other.outputTokens &&
+                totalTokens == other.totalTokens &&
+                type == other.type &&
+                inputTokenDetails == other.inputTokenDetails &&
+                additionalProperties == other.additionalProperties
         }
 
-        /* spotless:off */
-        private val hashCode: Int by lazy { Objects.hash(inputTokens, outputTokens, totalTokens, type, inputTokenDetails, additionalProperties) }
-        /* spotless:on */
+        private val hashCode: Int by lazy {
+            Objects.hash(
+                inputTokens,
+                outputTokens,
+                totalTokens,
+                type,
+                inputTokenDetails,
+                additionalProperties,
+            )
+        }
 
         override fun hashCode(): Int = hashCode
 
@@ -1048,12 +1068,17 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is TranscriptionTextDoneEvent && text == other.text && type == other.type && logprobs == other.logprobs && usage == other.usage && additionalProperties == other.additionalProperties /* spotless:on */
+        return other is TranscriptionTextDoneEvent &&
+            text == other.text &&
+            type == other.type &&
+            logprobs == other.logprobs &&
+            usage == other.usage &&
+            additionalProperties == other.additionalProperties
     }
 
-    /* spotless:off */
-    private val hashCode: Int by lazy { Objects.hash(text, type, logprobs, usage, additionalProperties) }
-    /* spotless:on */
+    private val hashCode: Int by lazy {
+        Objects.hash(text, type, logprobs, usage, additionalProperties)
+    }
 
     override fun hashCode(): Int = hashCode
 

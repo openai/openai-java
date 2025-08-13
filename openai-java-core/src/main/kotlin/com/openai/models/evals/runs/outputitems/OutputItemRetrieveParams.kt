@@ -213,10 +213,16 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is OutputItemRetrieveParams && evalId == other.evalId && runId == other.runId && outputItemId == other.outputItemId && additionalHeaders == other.additionalHeaders && additionalQueryParams == other.additionalQueryParams /* spotless:on */
+        return other is OutputItemRetrieveParams &&
+            evalId == other.evalId &&
+            runId == other.runId &&
+            outputItemId == other.outputItemId &&
+            additionalHeaders == other.additionalHeaders &&
+            additionalQueryParams == other.additionalQueryParams
     }
 
-    override fun hashCode(): Int = /* spotless:off */ Objects.hash(evalId, runId, outputItemId, additionalHeaders, additionalQueryParams) /* spotless:on */
+    override fun hashCode(): Int =
+        Objects.hash(evalId, runId, outputItemId, additionalHeaders, additionalQueryParams)
 
     override fun toString() =
         "OutputItemRetrieveParams{evalId=$evalId, runId=$runId, outputItemId=$outputItemId, additionalHeaders=$additionalHeaders, additionalQueryParams=$additionalQueryParams}"

@@ -563,12 +563,16 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is TopLogprob && token == other.token && bytes == other.bytes && logprob == other.logprob && additionalProperties == other.additionalProperties /* spotless:on */
+            return other is TopLogprob &&
+                token == other.token &&
+                bytes == other.bytes &&
+                logprob == other.logprob &&
+                additionalProperties == other.additionalProperties
         }
 
-        /* spotless:off */
-        private val hashCode: Int by lazy { Objects.hash(token, bytes, logprob, additionalProperties) }
-        /* spotless:on */
+        private val hashCode: Int by lazy {
+            Objects.hash(token, bytes, logprob, additionalProperties)
+        }
 
         override fun hashCode(): Int = hashCode
 
@@ -581,12 +585,17 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is ChatCompletionTokenLogprob && token == other.token && bytes == other.bytes && logprob == other.logprob && topLogprobs == other.topLogprobs && additionalProperties == other.additionalProperties /* spotless:on */
+        return other is ChatCompletionTokenLogprob &&
+            token == other.token &&
+            bytes == other.bytes &&
+            logprob == other.logprob &&
+            topLogprobs == other.topLogprobs &&
+            additionalProperties == other.additionalProperties
     }
 
-    /* spotless:off */
-    private val hashCode: Int by lazy { Objects.hash(token, bytes, logprob, topLogprobs, additionalProperties) }
-    /* spotless:on */
+    private val hashCode: Int by lazy {
+        Objects.hash(token, bytes, logprob, topLogprobs, additionalProperties)
+    }
 
     override fun hashCode(): Int = hashCode
 

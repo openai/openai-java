@@ -145,10 +145,14 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is MessageContent && imageFile == other.imageFile && imageUrl == other.imageUrl && text == other.text && refusal == other.refusal /* spotless:on */
+        return other is MessageContent &&
+            imageFile == other.imageFile &&
+            imageUrl == other.imageUrl &&
+            text == other.text &&
+            refusal == other.refusal
     }
 
-    override fun hashCode(): Int = /* spotless:off */ Objects.hash(imageFile, imageUrl, text, refusal) /* spotless:on */
+    override fun hashCode(): Int = Objects.hash(imageFile, imageUrl, text, refusal)
 
     override fun toString(): String =
         when {

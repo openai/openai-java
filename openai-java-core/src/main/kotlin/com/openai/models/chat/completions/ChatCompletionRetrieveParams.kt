@@ -185,10 +185,14 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is ChatCompletionRetrieveParams && completionId == other.completionId && additionalHeaders == other.additionalHeaders && additionalQueryParams == other.additionalQueryParams /* spotless:on */
+        return other is ChatCompletionRetrieveParams &&
+            completionId == other.completionId &&
+            additionalHeaders == other.additionalHeaders &&
+            additionalQueryParams == other.additionalQueryParams
     }
 
-    override fun hashCode(): Int = /* spotless:off */ Objects.hash(completionId, additionalHeaders, additionalQueryParams) /* spotless:on */
+    override fun hashCode(): Int =
+        Objects.hash(completionId, additionalHeaders, additionalQueryParams)
 
     override fun toString() =
         "ChatCompletionRetrieveParams{completionId=$completionId, additionalHeaders=$additionalHeaders, additionalQueryParams=$additionalQueryParams}"

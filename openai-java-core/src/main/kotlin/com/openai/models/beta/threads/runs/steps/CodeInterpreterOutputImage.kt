@@ -352,12 +352,12 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is Image && fileId == other.fileId && additionalProperties == other.additionalProperties /* spotless:on */
+            return other is Image &&
+                fileId == other.fileId &&
+                additionalProperties == other.additionalProperties
         }
 
-        /* spotless:off */
         private val hashCode: Int by lazy { Objects.hash(fileId, additionalProperties) }
-        /* spotless:on */
 
         override fun hashCode(): Int = hashCode
 
@@ -370,12 +370,14 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is CodeInterpreterOutputImage && index == other.index && type == other.type && image == other.image && additionalProperties == other.additionalProperties /* spotless:on */
+        return other is CodeInterpreterOutputImage &&
+            index == other.index &&
+            type == other.type &&
+            image == other.image &&
+            additionalProperties == other.additionalProperties
     }
 
-    /* spotless:off */
     private val hashCode: Int by lazy { Objects.hash(index, type, image, additionalProperties) }
-    /* spotless:on */
 
     override fun hashCode(): Int = hashCode
 

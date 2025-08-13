@@ -334,12 +334,10 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is Variables && additionalProperties == other.additionalProperties /* spotless:on */
+            return other is Variables && additionalProperties == other.additionalProperties
         }
 
-        /* spotless:off */
         private val hashCode: Int by lazy { Objects.hash(additionalProperties) }
-        /* spotless:on */
 
         override fun hashCode(): Int = hashCode
 
@@ -351,12 +349,14 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is ResponsePrompt && id == other.id && variables == other.variables && version == other.version && additionalProperties == other.additionalProperties /* spotless:on */
+        return other is ResponsePrompt &&
+            id == other.id &&
+            variables == other.variables &&
+            version == other.version &&
+            additionalProperties == other.additionalProperties
     }
 
-    /* spotless:off */
     private val hashCode: Int by lazy { Objects.hash(id, variables, version, additionalProperties) }
-    /* spotless:on */
 
     override fun hashCode(): Int = hashCode
 

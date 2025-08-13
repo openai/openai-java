@@ -203,10 +203,15 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is MessageRetrieveParams && threadId == other.threadId && messageId == other.messageId && additionalHeaders == other.additionalHeaders && additionalQueryParams == other.additionalQueryParams /* spotless:on */
+        return other is MessageRetrieveParams &&
+            threadId == other.threadId &&
+            messageId == other.messageId &&
+            additionalHeaders == other.additionalHeaders &&
+            additionalQueryParams == other.additionalQueryParams
     }
 
-    override fun hashCode(): Int = /* spotless:off */ Objects.hash(threadId, messageId, additionalHeaders, additionalQueryParams) /* spotless:on */
+    override fun hashCode(): Int =
+        Objects.hash(threadId, messageId, additionalHeaders, additionalQueryParams)
 
     override fun toString() =
         "MessageRetrieveParams{threadId=$threadId, messageId=$messageId, additionalHeaders=$additionalHeaders, additionalQueryParams=$additionalQueryParams}"

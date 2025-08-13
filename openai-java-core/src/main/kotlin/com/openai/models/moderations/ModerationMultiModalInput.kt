@@ -104,10 +104,12 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is ModerationMultiModalInput && imageUrl == other.imageUrl && text == other.text /* spotless:on */
+        return other is ModerationMultiModalInput &&
+            imageUrl == other.imageUrl &&
+            text == other.text
     }
 
-    override fun hashCode(): Int = /* spotless:off */ Objects.hash(imageUrl, text) /* spotless:on */
+    override fun hashCode(): Int = Objects.hash(imageUrl, text)
 
     override fun toString(): String =
         when {

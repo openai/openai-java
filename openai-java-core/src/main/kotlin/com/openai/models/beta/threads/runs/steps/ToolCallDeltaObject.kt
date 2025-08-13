@@ -247,12 +247,13 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is ToolCallDeltaObject && type == other.type && toolCalls == other.toolCalls && additionalProperties == other.additionalProperties /* spotless:on */
+        return other is ToolCallDeltaObject &&
+            type == other.type &&
+            toolCalls == other.toolCalls &&
+            additionalProperties == other.additionalProperties
     }
 
-    /* spotless:off */
     private val hashCode: Int by lazy { Objects.hash(type, toolCalls, additionalProperties) }
-    /* spotless:on */
 
     override fun hashCode(): Int = hashCode
 

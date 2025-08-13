@@ -99,10 +99,12 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is TranslationCreateResponse && translation == other.translation && verbose == other.verbose /* spotless:on */
+        return other is TranslationCreateResponse &&
+            translation == other.translation &&
+            verbose == other.verbose
     }
 
-    override fun hashCode(): Int = /* spotless:off */ Objects.hash(translation, verbose) /* spotless:on */
+    override fun hashCode(): Int = Objects.hash(translation, verbose)
 
     override fun toString(): String =
         when {

@@ -251,12 +251,14 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is ModerationCreateResponse && id == other.id && model == other.model && results == other.results && additionalProperties == other.additionalProperties /* spotless:on */
+        return other is ModerationCreateResponse &&
+            id == other.id &&
+            model == other.model &&
+            results == other.results &&
+            additionalProperties == other.additionalProperties
     }
 
-    /* spotless:off */
     private val hashCode: Int by lazy { Objects.hash(id, model, results, additionalProperties) }
-    /* spotless:on */
 
     override fun hashCode(): Int = hashCode
 

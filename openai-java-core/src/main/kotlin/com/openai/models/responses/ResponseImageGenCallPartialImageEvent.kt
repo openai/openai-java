@@ -383,12 +383,27 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is ResponseImageGenCallPartialImageEvent && itemId == other.itemId && outputIndex == other.outputIndex && partialImageB64 == other.partialImageB64 && partialImageIndex == other.partialImageIndex && sequenceNumber == other.sequenceNumber && type == other.type && additionalProperties == other.additionalProperties /* spotless:on */
+        return other is ResponseImageGenCallPartialImageEvent &&
+            itemId == other.itemId &&
+            outputIndex == other.outputIndex &&
+            partialImageB64 == other.partialImageB64 &&
+            partialImageIndex == other.partialImageIndex &&
+            sequenceNumber == other.sequenceNumber &&
+            type == other.type &&
+            additionalProperties == other.additionalProperties
     }
 
-    /* spotless:off */
-    private val hashCode: Int by lazy { Objects.hash(itemId, outputIndex, partialImageB64, partialImageIndex, sequenceNumber, type, additionalProperties) }
-    /* spotless:on */
+    private val hashCode: Int by lazy {
+        Objects.hash(
+            itemId,
+            outputIndex,
+            partialImageB64,
+            partialImageIndex,
+            sequenceNumber,
+            type,
+            additionalProperties,
+        )
+    }
 
     override fun hashCode(): Int = hashCode
 

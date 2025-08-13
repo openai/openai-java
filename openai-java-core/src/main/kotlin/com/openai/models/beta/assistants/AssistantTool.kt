@@ -114,10 +114,13 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is AssistantTool && codeInterpreter == other.codeInterpreter && fileSearch == other.fileSearch && function == other.function /* spotless:on */
+        return other is AssistantTool &&
+            codeInterpreter == other.codeInterpreter &&
+            fileSearch == other.fileSearch &&
+            function == other.function
     }
 
-    override fun hashCode(): Int = /* spotless:off */ Objects.hash(codeInterpreter, fileSearch, function) /* spotless:on */
+    override fun hashCode(): Int = Objects.hash(codeInterpreter, fileSearch, function)
 
     override fun toString(): String =
         when {

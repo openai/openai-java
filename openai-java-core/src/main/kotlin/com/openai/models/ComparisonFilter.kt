@@ -419,7 +419,7 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is Type && value == other.value /* spotless:on */
+            return other is Type && value == other.value
         }
 
         override fun hashCode() = value.hashCode()
@@ -520,10 +520,13 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is Value && string == other.string && number == other.number && bool == other.bool /* spotless:on */
+            return other is Value &&
+                string == other.string &&
+                number == other.number &&
+                bool == other.bool
         }
 
-        override fun hashCode(): Int = /* spotless:off */ Objects.hash(string, number, bool) /* spotless:on */
+        override fun hashCode(): Int = Objects.hash(string, number, bool)
 
         override fun toString(): String =
             when {
@@ -623,12 +626,14 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is ComparisonFilter && key == other.key && type == other.type && value == other.value && additionalProperties == other.additionalProperties /* spotless:on */
+        return other is ComparisonFilter &&
+            key == other.key &&
+            type == other.type &&
+            value == other.value &&
+            additionalProperties == other.additionalProperties
     }
 
-    /* spotless:off */
     private val hashCode: Int by lazy { Objects.hash(key, type, value, additionalProperties) }
-    /* spotless:on */
 
     override fun hashCode(): Int = hashCode
 

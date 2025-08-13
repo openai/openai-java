@@ -2029,7 +2029,7 @@ private constructor(
                     return true
                 }
 
-                return /* spotless:off */ other is Reason && value == other.value /* spotless:on */
+                return other is Reason && value == other.value
             }
 
             override fun hashCode() = value.hashCode()
@@ -2042,12 +2042,12 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is IncompleteDetails && reason == other.reason && additionalProperties == other.additionalProperties /* spotless:on */
+            return other is IncompleteDetails &&
+                reason == other.reason &&
+                additionalProperties == other.additionalProperties
         }
 
-        /* spotless:off */
         private val hashCode: Int by lazy { Objects.hash(reason, additionalProperties) }
-        /* spotless:on */
 
         override fun hashCode(): Int = hashCode
 
@@ -2147,10 +2147,12 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is Instructions && string == other.string && inputItemList == other.inputItemList /* spotless:on */
+            return other is Instructions &&
+                string == other.string &&
+                inputItemList == other.inputItemList
         }
 
-        override fun hashCode(): Int = /* spotless:off */ Objects.hash(string, inputItemList) /* spotless:on */
+        override fun hashCode(): Int = Objects.hash(string, inputItemList)
 
         override fun toString(): String =
             when {
@@ -2346,12 +2348,10 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is Metadata && additionalProperties == other.additionalProperties /* spotless:on */
+            return other is Metadata && additionalProperties == other.additionalProperties
         }
 
-        /* spotless:off */
         private val hashCode: Int by lazy { Objects.hash(additionalProperties) }
-        /* spotless:on */
 
         override fun hashCode(): Int = hashCode
 
@@ -2536,10 +2536,16 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is ToolChoice && options == other.options && allowed == other.allowed && types == other.types && function == other.function && mcp == other.mcp && custom == other.custom /* spotless:on */
+            return other is ToolChoice &&
+                options == other.options &&
+                allowed == other.allowed &&
+                types == other.types &&
+                function == other.function &&
+                mcp == other.mcp &&
+                custom == other.custom
         }
 
-        override fun hashCode(): Int = /* spotless:off */ Objects.hash(options, allowed, types, function, mcp, custom) /* spotless:on */
+        override fun hashCode(): Int = Objects.hash(options, allowed, types, function, mcp, custom)
 
         override fun toString(): String =
             when {
@@ -2857,7 +2863,7 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is ServiceTier && value == other.value /* spotless:on */
+            return other is ServiceTier && value == other.value
         }
 
         override fun hashCode() = value.hashCode()
@@ -2992,7 +2998,7 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is Truncation && value == other.value /* spotless:on */
+            return other is Truncation && value == other.value
         }
 
         override fun hashCode() = value.hashCode()
@@ -3005,12 +3011,73 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is Response && id == other.id && createdAt == other.createdAt && error == other.error && incompleteDetails == other.incompleteDetails && instructions == other.instructions && metadata == other.metadata && model == other.model && object_ == other.object_ && output == other.output && parallelToolCalls == other.parallelToolCalls && temperature == other.temperature && toolChoice == other.toolChoice && tools == other.tools && topP == other.topP && background == other.background && maxOutputTokens == other.maxOutputTokens && maxToolCalls == other.maxToolCalls && previousResponseId == other.previousResponseId && prompt == other.prompt && promptCacheKey == other.promptCacheKey && reasoning == other.reasoning && safetyIdentifier == other.safetyIdentifier && serviceTier == other.serviceTier && status == other.status && text == other.text && topLogprobs == other.topLogprobs && truncation == other.truncation && usage == other.usage && user == other.user && additionalProperties == other.additionalProperties /* spotless:on */
+        return other is Response &&
+            id == other.id &&
+            createdAt == other.createdAt &&
+            error == other.error &&
+            incompleteDetails == other.incompleteDetails &&
+            instructions == other.instructions &&
+            metadata == other.metadata &&
+            model == other.model &&
+            object_ == other.object_ &&
+            output == other.output &&
+            parallelToolCalls == other.parallelToolCalls &&
+            temperature == other.temperature &&
+            toolChoice == other.toolChoice &&
+            tools == other.tools &&
+            topP == other.topP &&
+            background == other.background &&
+            maxOutputTokens == other.maxOutputTokens &&
+            maxToolCalls == other.maxToolCalls &&
+            previousResponseId == other.previousResponseId &&
+            prompt == other.prompt &&
+            promptCacheKey == other.promptCacheKey &&
+            reasoning == other.reasoning &&
+            safetyIdentifier == other.safetyIdentifier &&
+            serviceTier == other.serviceTier &&
+            status == other.status &&
+            text == other.text &&
+            topLogprobs == other.topLogprobs &&
+            truncation == other.truncation &&
+            usage == other.usage &&
+            user == other.user &&
+            additionalProperties == other.additionalProperties
     }
 
-    /* spotless:off */
-    private val hashCode: Int by lazy { Objects.hash(id, createdAt, error, incompleteDetails, instructions, metadata, model, object_, output, parallelToolCalls, temperature, toolChoice, tools, topP, background, maxOutputTokens, maxToolCalls, previousResponseId, prompt, promptCacheKey, reasoning, safetyIdentifier, serviceTier, status, text, topLogprobs, truncation, usage, user, additionalProperties) }
-    /* spotless:on */
+    private val hashCode: Int by lazy {
+        Objects.hash(
+            id,
+            createdAt,
+            error,
+            incompleteDetails,
+            instructions,
+            metadata,
+            model,
+            object_,
+            output,
+            parallelToolCalls,
+            temperature,
+            toolChoice,
+            tools,
+            topP,
+            background,
+            maxOutputTokens,
+            maxToolCalls,
+            previousResponseId,
+            prompt,
+            promptCacheKey,
+            reasoning,
+            safetyIdentifier,
+            serviceTier,
+            status,
+            text,
+            topLogprobs,
+            truncation,
+            usage,
+            user,
+            additionalProperties,
+        )
+    }
 
     override fun hashCode(): Int = hashCode
 

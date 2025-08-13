@@ -528,10 +528,54 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is ResponseInputItem && easyInputMessage == other.easyInputMessage && message == other.message && responseOutputMessage == other.responseOutputMessage && fileSearchCall == other.fileSearchCall && computerCall == other.computerCall && computerCallOutput == other.computerCallOutput && webSearchCall == other.webSearchCall && functionCall == other.functionCall && functionCallOutput == other.functionCallOutput && reasoning == other.reasoning && imageGenerationCall == other.imageGenerationCall && codeInterpreterCall == other.codeInterpreterCall && localShellCall == other.localShellCall && localShellCallOutput == other.localShellCallOutput && mcpListTools == other.mcpListTools && mcpApprovalRequest == other.mcpApprovalRequest && mcpApprovalResponse == other.mcpApprovalResponse && mcpCall == other.mcpCall && customToolCallOutput == other.customToolCallOutput && customToolCall == other.customToolCall && itemReference == other.itemReference /* spotless:on */
+        return other is ResponseInputItem &&
+            easyInputMessage == other.easyInputMessage &&
+            message == other.message &&
+            responseOutputMessage == other.responseOutputMessage &&
+            fileSearchCall == other.fileSearchCall &&
+            computerCall == other.computerCall &&
+            computerCallOutput == other.computerCallOutput &&
+            webSearchCall == other.webSearchCall &&
+            functionCall == other.functionCall &&
+            functionCallOutput == other.functionCallOutput &&
+            reasoning == other.reasoning &&
+            imageGenerationCall == other.imageGenerationCall &&
+            codeInterpreterCall == other.codeInterpreterCall &&
+            localShellCall == other.localShellCall &&
+            localShellCallOutput == other.localShellCallOutput &&
+            mcpListTools == other.mcpListTools &&
+            mcpApprovalRequest == other.mcpApprovalRequest &&
+            mcpApprovalResponse == other.mcpApprovalResponse &&
+            mcpCall == other.mcpCall &&
+            customToolCallOutput == other.customToolCallOutput &&
+            customToolCall == other.customToolCall &&
+            itemReference == other.itemReference
     }
 
-    override fun hashCode(): Int = /* spotless:off */ Objects.hash(easyInputMessage, message, responseOutputMessage, fileSearchCall, computerCall, computerCallOutput, webSearchCall, functionCall, functionCallOutput, reasoning, imageGenerationCall, codeInterpreterCall, localShellCall, localShellCallOutput, mcpListTools, mcpApprovalRequest, mcpApprovalResponse, mcpCall, customToolCallOutput, customToolCall, itemReference) /* spotless:on */
+    override fun hashCode(): Int =
+        Objects.hash(
+            easyInputMessage,
+            message,
+            responseOutputMessage,
+            fileSearchCall,
+            computerCall,
+            computerCallOutput,
+            webSearchCall,
+            functionCall,
+            functionCallOutput,
+            reasoning,
+            imageGenerationCall,
+            codeInterpreterCall,
+            localShellCall,
+            localShellCallOutput,
+            mcpListTools,
+            mcpApprovalRequest,
+            mcpApprovalResponse,
+            mcpCall,
+            customToolCallOutput,
+            customToolCall,
+            itemReference,
+        )
 
     override fun toString(): String =
         when {
@@ -1428,7 +1472,7 @@ private constructor(
                     return true
                 }
 
-                return /* spotless:off */ other is Role && value == other.value /* spotless:on */
+                return other is Role && value == other.value
             }
 
             override fun hashCode() = value.hashCode()
@@ -1567,7 +1611,7 @@ private constructor(
                     return true
                 }
 
-                return /* spotless:off */ other is Status && value == other.value /* spotless:on */
+                return other is Status && value == other.value
             }
 
             override fun hashCode() = value.hashCode()
@@ -1689,7 +1733,7 @@ private constructor(
                     return true
                 }
 
-                return /* spotless:off */ other is Type && value == other.value /* spotless:on */
+                return other is Type && value == other.value
             }
 
             override fun hashCode() = value.hashCode()
@@ -1702,12 +1746,17 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is Message && content == other.content && role == other.role && status == other.status && type == other.type && additionalProperties == other.additionalProperties /* spotless:on */
+            return other is Message &&
+                content == other.content &&
+                role == other.role &&
+                status == other.status &&
+                type == other.type &&
+                additionalProperties == other.additionalProperties
         }
 
-        /* spotless:off */
-        private val hashCode: Int by lazy { Objects.hash(content, role, status, type, additionalProperties) }
-        /* spotless:on */
+        private val hashCode: Int by lazy {
+            Objects.hash(content, role, status, type, additionalProperties)
+        }
 
         override fun hashCode(): Int = hashCode
 
@@ -2319,12 +2368,16 @@ private constructor(
                     return true
                 }
 
-                return /* spotless:off */ other is AcknowledgedSafetyCheck && id == other.id && code == other.code && message == other.message && additionalProperties == other.additionalProperties /* spotless:on */
+                return other is AcknowledgedSafetyCheck &&
+                    id == other.id &&
+                    code == other.code &&
+                    message == other.message &&
+                    additionalProperties == other.additionalProperties
             }
 
-            /* spotless:off */
-            private val hashCode: Int by lazy { Objects.hash(id, code, message, additionalProperties) }
-            /* spotless:on */
+            private val hashCode: Int by lazy {
+                Objects.hash(id, code, message, additionalProperties)
+            }
 
             override fun hashCode(): Int = hashCode
 
@@ -2463,7 +2516,7 @@ private constructor(
                     return true
                 }
 
-                return /* spotless:off */ other is Status && value == other.value /* spotless:on */
+                return other is Status && value == other.value
             }
 
             override fun hashCode() = value.hashCode()
@@ -2476,12 +2529,27 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is ComputerCallOutput && callId == other.callId && output == other.output && type == other.type && id == other.id && acknowledgedSafetyChecks == other.acknowledgedSafetyChecks && status == other.status && additionalProperties == other.additionalProperties /* spotless:on */
+            return other is ComputerCallOutput &&
+                callId == other.callId &&
+                output == other.output &&
+                type == other.type &&
+                id == other.id &&
+                acknowledgedSafetyChecks == other.acknowledgedSafetyChecks &&
+                status == other.status &&
+                additionalProperties == other.additionalProperties
         }
 
-        /* spotless:off */
-        private val hashCode: Int by lazy { Objects.hash(callId, output, type, id, acknowledgedSafetyChecks, status, additionalProperties) }
-        /* spotless:on */
+        private val hashCode: Int by lazy {
+            Objects.hash(
+                callId,
+                output,
+                type,
+                id,
+                acknowledgedSafetyChecks,
+                status,
+                additionalProperties,
+            )
+        }
 
         override fun hashCode(): Int = hashCode
 
@@ -2919,7 +2987,7 @@ private constructor(
                     return true
                 }
 
-                return /* spotless:off */ other is Status && value == other.value /* spotless:on */
+                return other is Status && value == other.value
             }
 
             override fun hashCode() = value.hashCode()
@@ -2932,12 +3000,18 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is FunctionCallOutput && callId == other.callId && output == other.output && type == other.type && id == other.id && status == other.status && additionalProperties == other.additionalProperties /* spotless:on */
+            return other is FunctionCallOutput &&
+                callId == other.callId &&
+                output == other.output &&
+                type == other.type &&
+                id == other.id &&
+                status == other.status &&
+                additionalProperties == other.additionalProperties
         }
 
-        /* spotless:off */
-        private val hashCode: Int by lazy { Objects.hash(callId, output, type, id, status, additionalProperties) }
-        /* spotless:on */
+        private val hashCode: Int by lazy {
+            Objects.hash(callId, output, type, id, status, additionalProperties)
+        }
 
         override fun hashCode(): Int = hashCode
 
@@ -3335,7 +3409,7 @@ private constructor(
                     return true
                 }
 
-                return /* spotless:off */ other is Status && value == other.value /* spotless:on */
+                return other is Status && value == other.value
             }
 
             override fun hashCode() = value.hashCode()
@@ -3348,12 +3422,17 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is ImageGenerationCall && id == other.id && result == other.result && status == other.status && type == other.type && additionalProperties == other.additionalProperties /* spotless:on */
+            return other is ImageGenerationCall &&
+                id == other.id &&
+                result == other.result &&
+                status == other.status &&
+                type == other.type &&
+                additionalProperties == other.additionalProperties
         }
 
-        /* spotless:off */
-        private val hashCode: Int by lazy { Objects.hash(id, result, status, type, additionalProperties) }
-        /* spotless:on */
+        private val hashCode: Int by lazy {
+            Objects.hash(id, result, status, type, additionalProperties)
+        }
 
         override fun hashCode(): Int = hashCode
 
@@ -4121,12 +4200,10 @@ private constructor(
                         return true
                     }
 
-                    return /* spotless:off */ other is Env && additionalProperties == other.additionalProperties /* spotless:on */
+                    return other is Env && additionalProperties == other.additionalProperties
                 }
 
-                /* spotless:off */
                 private val hashCode: Int by lazy { Objects.hash(additionalProperties) }
-                /* spotless:on */
 
                 override fun hashCode(): Int = hashCode
 
@@ -4138,12 +4215,27 @@ private constructor(
                     return true
                 }
 
-                return /* spotless:off */ other is Action && command == other.command && env == other.env && type == other.type && timeoutMs == other.timeoutMs && user == other.user && workingDirectory == other.workingDirectory && additionalProperties == other.additionalProperties /* spotless:on */
+                return other is Action &&
+                    command == other.command &&
+                    env == other.env &&
+                    type == other.type &&
+                    timeoutMs == other.timeoutMs &&
+                    user == other.user &&
+                    workingDirectory == other.workingDirectory &&
+                    additionalProperties == other.additionalProperties
             }
 
-            /* spotless:off */
-            private val hashCode: Int by lazy { Objects.hash(command, env, type, timeoutMs, user, workingDirectory, additionalProperties) }
-            /* spotless:on */
+            private val hashCode: Int by lazy {
+                Objects.hash(
+                    command,
+                    env,
+                    type,
+                    timeoutMs,
+                    user,
+                    workingDirectory,
+                    additionalProperties,
+                )
+            }
 
             override fun hashCode(): Int = hashCode
 
@@ -4279,7 +4371,7 @@ private constructor(
                     return true
                 }
 
-                return /* spotless:off */ other is Status && value == other.value /* spotless:on */
+                return other is Status && value == other.value
             }
 
             override fun hashCode() = value.hashCode()
@@ -4292,12 +4384,18 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is LocalShellCall && id == other.id && action == other.action && callId == other.callId && status == other.status && type == other.type && additionalProperties == other.additionalProperties /* spotless:on */
+            return other is LocalShellCall &&
+                id == other.id &&
+                action == other.action &&
+                callId == other.callId &&
+                status == other.status &&
+                type == other.type &&
+                additionalProperties == other.additionalProperties
         }
 
-        /* spotless:off */
-        private val hashCode: Int by lazy { Objects.hash(id, action, callId, status, type, additionalProperties) }
-        /* spotless:on */
+        private val hashCode: Int by lazy {
+            Objects.hash(id, action, callId, status, type, additionalProperties)
+        }
 
         override fun hashCode(): Int = hashCode
 
@@ -4687,7 +4785,7 @@ private constructor(
                     return true
                 }
 
-                return /* spotless:off */ other is Status && value == other.value /* spotless:on */
+                return other is Status && value == other.value
             }
 
             override fun hashCode() = value.hashCode()
@@ -4700,12 +4798,17 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is LocalShellCallOutput && id == other.id && output == other.output && type == other.type && status == other.status && additionalProperties == other.additionalProperties /* spotless:on */
+            return other is LocalShellCallOutput &&
+                id == other.id &&
+                output == other.output &&
+                type == other.type &&
+                status == other.status &&
+                additionalProperties == other.additionalProperties
         }
 
-        /* spotless:off */
-        private val hashCode: Int by lazy { Objects.hash(id, output, type, status, additionalProperties) }
-        /* spotless:on */
+        private val hashCode: Int by lazy {
+            Objects.hash(id, output, type, status, additionalProperties)
+        }
 
         override fun hashCode(): Int = hashCode
 
@@ -5251,12 +5354,17 @@ private constructor(
                     return true
                 }
 
-                return /* spotless:off */ other is Tool && inputSchema == other.inputSchema && name == other.name && annotations == other.annotations && description == other.description && additionalProperties == other.additionalProperties /* spotless:on */
+                return other is Tool &&
+                    inputSchema == other.inputSchema &&
+                    name == other.name &&
+                    annotations == other.annotations &&
+                    description == other.description &&
+                    additionalProperties == other.additionalProperties
             }
 
-            /* spotless:off */
-            private val hashCode: Int by lazy { Objects.hash(inputSchema, name, annotations, description, additionalProperties) }
-            /* spotless:on */
+            private val hashCode: Int by lazy {
+                Objects.hash(inputSchema, name, annotations, description, additionalProperties)
+            }
 
             override fun hashCode(): Int = hashCode
 
@@ -5269,12 +5377,18 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is McpListTools && id == other.id && serverLabel == other.serverLabel && tools == other.tools && type == other.type && error == other.error && additionalProperties == other.additionalProperties /* spotless:on */
+            return other is McpListTools &&
+                id == other.id &&
+                serverLabel == other.serverLabel &&
+                tools == other.tools &&
+                type == other.type &&
+                error == other.error &&
+                additionalProperties == other.additionalProperties
         }
 
-        /* spotless:off */
-        private val hashCode: Int by lazy { Objects.hash(id, serverLabel, tools, type, error, additionalProperties) }
-        /* spotless:on */
+        private val hashCode: Int by lazy {
+            Objects.hash(id, serverLabel, tools, type, error, additionalProperties)
+        }
 
         override fun hashCode(): Int = hashCode
 
@@ -5584,12 +5698,18 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is McpApprovalRequest && id == other.id && arguments == other.arguments && name == other.name && serverLabel == other.serverLabel && type == other.type && additionalProperties == other.additionalProperties /* spotless:on */
+            return other is McpApprovalRequest &&
+                id == other.id &&
+                arguments == other.arguments &&
+                name == other.name &&
+                serverLabel == other.serverLabel &&
+                type == other.type &&
+                additionalProperties == other.additionalProperties
         }
 
-        /* spotless:off */
-        private val hashCode: Int by lazy { Objects.hash(id, arguments, name, serverLabel, type, additionalProperties) }
-        /* spotless:on */
+        private val hashCode: Int by lazy {
+            Objects.hash(id, arguments, name, serverLabel, type, additionalProperties)
+        }
 
         override fun hashCode(): Int = hashCode
 
@@ -5901,12 +6021,18 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is McpApprovalResponse && approvalRequestId == other.approvalRequestId && approve == other.approve && type == other.type && id == other.id && reason == other.reason && additionalProperties == other.additionalProperties /* spotless:on */
+            return other is McpApprovalResponse &&
+                approvalRequestId == other.approvalRequestId &&
+                approve == other.approve &&
+                type == other.type &&
+                id == other.id &&
+                reason == other.reason &&
+                additionalProperties == other.additionalProperties
         }
 
-        /* spotless:off */
-        private val hashCode: Int by lazy { Objects.hash(approvalRequestId, approve, type, id, reason, additionalProperties) }
-        /* spotless:on */
+        private val hashCode: Int by lazy {
+            Objects.hash(approvalRequestId, approve, type, id, reason, additionalProperties)
+        }
 
         override fun hashCode(): Int = hashCode
 
@@ -6290,12 +6416,29 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is McpCall && id == other.id && arguments == other.arguments && name == other.name && serverLabel == other.serverLabel && type == other.type && error == other.error && output == other.output && additionalProperties == other.additionalProperties /* spotless:on */
+            return other is McpCall &&
+                id == other.id &&
+                arguments == other.arguments &&
+                name == other.name &&
+                serverLabel == other.serverLabel &&
+                type == other.type &&
+                error == other.error &&
+                output == other.output &&
+                additionalProperties == other.additionalProperties
         }
 
-        /* spotless:off */
-        private val hashCode: Int by lazy { Objects.hash(id, arguments, name, serverLabel, type, error, output, additionalProperties) }
-        /* spotless:on */
+        private val hashCode: Int by lazy {
+            Objects.hash(
+                id,
+                arguments,
+                name,
+                serverLabel,
+                type,
+                error,
+                output,
+                additionalProperties,
+            )
+        }
 
         override fun hashCode(): Int = hashCode
 
@@ -6592,7 +6735,7 @@ private constructor(
                     return true
                 }
 
-                return /* spotless:off */ other is Type && value == other.value /* spotless:on */
+                return other is Type && value == other.value
             }
 
             override fun hashCode() = value.hashCode()
@@ -6605,12 +6748,13 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is ItemReference && id == other.id && type == other.type && additionalProperties == other.additionalProperties /* spotless:on */
+            return other is ItemReference &&
+                id == other.id &&
+                type == other.type &&
+                additionalProperties == other.additionalProperties
         }
 
-        /* spotless:off */
         private val hashCode: Int by lazy { Objects.hash(id, type, additionalProperties) }
-        /* spotless:on */
 
         override fun hashCode(): Int = hashCode
 

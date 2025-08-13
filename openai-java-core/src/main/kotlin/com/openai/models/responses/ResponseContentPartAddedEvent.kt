@@ -467,10 +467,10 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is Part && outputText == other.outputText && refusal == other.refusal /* spotless:on */
+            return other is Part && outputText == other.outputText && refusal == other.refusal
         }
 
-        override fun hashCode(): Int = /* spotless:off */ Objects.hash(outputText, refusal) /* spotless:on */
+        override fun hashCode(): Int = Objects.hash(outputText, refusal)
 
         override fun toString(): String =
             when {
@@ -558,12 +558,27 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is ResponseContentPartAddedEvent && contentIndex == other.contentIndex && itemId == other.itemId && outputIndex == other.outputIndex && part == other.part && sequenceNumber == other.sequenceNumber && type == other.type && additionalProperties == other.additionalProperties /* spotless:on */
+        return other is ResponseContentPartAddedEvent &&
+            contentIndex == other.contentIndex &&
+            itemId == other.itemId &&
+            outputIndex == other.outputIndex &&
+            part == other.part &&
+            sequenceNumber == other.sequenceNumber &&
+            type == other.type &&
+            additionalProperties == other.additionalProperties
     }
 
-    /* spotless:off */
-    private val hashCode: Int by lazy { Objects.hash(contentIndex, itemId, outputIndex, part, sequenceNumber, type, additionalProperties) }
-    /* spotless:on */
+    private val hashCode: Int by lazy {
+        Objects.hash(
+            contentIndex,
+            itemId,
+            outputIndex,
+            part,
+            sequenceNumber,
+            type,
+            additionalProperties,
+        )
+    }
 
     override fun hashCode(): Int = hashCode
 

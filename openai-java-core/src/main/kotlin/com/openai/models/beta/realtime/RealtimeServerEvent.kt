@@ -1075,10 +1075,83 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is RealtimeServerEvent && conversationCreated == other.conversationCreated && conversationItemCreated == other.conversationItemCreated && conversationItemDeleted == other.conversationItemDeleted && conversationItemInputAudioTranscriptionCompleted == other.conversationItemInputAudioTranscriptionCompleted && conversationItemInputAudioTranscriptionDelta == other.conversationItemInputAudioTranscriptionDelta && conversationItemInputAudioTranscriptionFailed == other.conversationItemInputAudioTranscriptionFailed && conversationItemRetrieved == other.conversationItemRetrieved && conversationItemTruncated == other.conversationItemTruncated && error == other.error && inputAudioBufferCleared == other.inputAudioBufferCleared && inputAudioBufferCommitted == other.inputAudioBufferCommitted && inputAudioBufferSpeechStarted == other.inputAudioBufferSpeechStarted && inputAudioBufferSpeechStopped == other.inputAudioBufferSpeechStopped && rateLimitsUpdated == other.rateLimitsUpdated && responseAudioDelta == other.responseAudioDelta && responseAudioDone == other.responseAudioDone && responseAudioTranscriptDelta == other.responseAudioTranscriptDelta && responseAudioTranscriptDone == other.responseAudioTranscriptDone && responseContentPartAdded == other.responseContentPartAdded && responseContentPartDone == other.responseContentPartDone && responseCreated == other.responseCreated && responseDone == other.responseDone && responseFunctionCallArgumentsDelta == other.responseFunctionCallArgumentsDelta && responseFunctionCallArgumentsDone == other.responseFunctionCallArgumentsDone && responseOutputItemAdded == other.responseOutputItemAdded && responseOutputItemDone == other.responseOutputItemDone && responseTextDelta == other.responseTextDelta && responseTextDone == other.responseTextDone && sessionCreated == other.sessionCreated && sessionUpdated == other.sessionUpdated && transcriptionSessionUpdated == other.transcriptionSessionUpdated && outputAudioBufferStarted == other.outputAudioBufferStarted && outputAudioBufferStopped == other.outputAudioBufferStopped && outputAudioBufferCleared == other.outputAudioBufferCleared /* spotless:on */
+        return other is RealtimeServerEvent &&
+            conversationCreated == other.conversationCreated &&
+            conversationItemCreated == other.conversationItemCreated &&
+            conversationItemDeleted == other.conversationItemDeleted &&
+            conversationItemInputAudioTranscriptionCompleted ==
+                other.conversationItemInputAudioTranscriptionCompleted &&
+            conversationItemInputAudioTranscriptionDelta ==
+                other.conversationItemInputAudioTranscriptionDelta &&
+            conversationItemInputAudioTranscriptionFailed ==
+                other.conversationItemInputAudioTranscriptionFailed &&
+            conversationItemRetrieved == other.conversationItemRetrieved &&
+            conversationItemTruncated == other.conversationItemTruncated &&
+            error == other.error &&
+            inputAudioBufferCleared == other.inputAudioBufferCleared &&
+            inputAudioBufferCommitted == other.inputAudioBufferCommitted &&
+            inputAudioBufferSpeechStarted == other.inputAudioBufferSpeechStarted &&
+            inputAudioBufferSpeechStopped == other.inputAudioBufferSpeechStopped &&
+            rateLimitsUpdated == other.rateLimitsUpdated &&
+            responseAudioDelta == other.responseAudioDelta &&
+            responseAudioDone == other.responseAudioDone &&
+            responseAudioTranscriptDelta == other.responseAudioTranscriptDelta &&
+            responseAudioTranscriptDone == other.responseAudioTranscriptDone &&
+            responseContentPartAdded == other.responseContentPartAdded &&
+            responseContentPartDone == other.responseContentPartDone &&
+            responseCreated == other.responseCreated &&
+            responseDone == other.responseDone &&
+            responseFunctionCallArgumentsDelta == other.responseFunctionCallArgumentsDelta &&
+            responseFunctionCallArgumentsDone == other.responseFunctionCallArgumentsDone &&
+            responseOutputItemAdded == other.responseOutputItemAdded &&
+            responseOutputItemDone == other.responseOutputItemDone &&
+            responseTextDelta == other.responseTextDelta &&
+            responseTextDone == other.responseTextDone &&
+            sessionCreated == other.sessionCreated &&
+            sessionUpdated == other.sessionUpdated &&
+            transcriptionSessionUpdated == other.transcriptionSessionUpdated &&
+            outputAudioBufferStarted == other.outputAudioBufferStarted &&
+            outputAudioBufferStopped == other.outputAudioBufferStopped &&
+            outputAudioBufferCleared == other.outputAudioBufferCleared
     }
 
-    override fun hashCode(): Int = /* spotless:off */ Objects.hash(conversationCreated, conversationItemCreated, conversationItemDeleted, conversationItemInputAudioTranscriptionCompleted, conversationItemInputAudioTranscriptionDelta, conversationItemInputAudioTranscriptionFailed, conversationItemRetrieved, conversationItemTruncated, error, inputAudioBufferCleared, inputAudioBufferCommitted, inputAudioBufferSpeechStarted, inputAudioBufferSpeechStopped, rateLimitsUpdated, responseAudioDelta, responseAudioDone, responseAudioTranscriptDelta, responseAudioTranscriptDone, responseContentPartAdded, responseContentPartDone, responseCreated, responseDone, responseFunctionCallArgumentsDelta, responseFunctionCallArgumentsDone, responseOutputItemAdded, responseOutputItemDone, responseTextDelta, responseTextDone, sessionCreated, sessionUpdated, transcriptionSessionUpdated, outputAudioBufferStarted, outputAudioBufferStopped, outputAudioBufferCleared) /* spotless:on */
+    override fun hashCode(): Int =
+        Objects.hash(
+            conversationCreated,
+            conversationItemCreated,
+            conversationItemDeleted,
+            conversationItemInputAudioTranscriptionCompleted,
+            conversationItemInputAudioTranscriptionDelta,
+            conversationItemInputAudioTranscriptionFailed,
+            conversationItemRetrieved,
+            conversationItemTruncated,
+            error,
+            inputAudioBufferCleared,
+            inputAudioBufferCommitted,
+            inputAudioBufferSpeechStarted,
+            inputAudioBufferSpeechStopped,
+            rateLimitsUpdated,
+            responseAudioDelta,
+            responseAudioDone,
+            responseAudioTranscriptDelta,
+            responseAudioTranscriptDone,
+            responseContentPartAdded,
+            responseContentPartDone,
+            responseCreated,
+            responseDone,
+            responseFunctionCallArgumentsDelta,
+            responseFunctionCallArgumentsDone,
+            responseOutputItemAdded,
+            responseOutputItemDone,
+            responseTextDelta,
+            responseTextDone,
+            sessionCreated,
+            sessionUpdated,
+            transcriptionSessionUpdated,
+            outputAudioBufferStarted,
+            outputAudioBufferStopped,
+            outputAudioBufferCleared,
+        )
 
     override fun toString(): String =
         when {
@@ -2264,12 +2337,16 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is ConversationItemRetrieved && eventId == other.eventId && item == other.item && type == other.type && additionalProperties == other.additionalProperties /* spotless:on */
+            return other is ConversationItemRetrieved &&
+                eventId == other.eventId &&
+                item == other.item &&
+                type == other.type &&
+                additionalProperties == other.additionalProperties
         }
 
-        /* spotless:off */
-        private val hashCode: Int by lazy { Objects.hash(eventId, item, type, additionalProperties) }
-        /* spotless:on */
+        private val hashCode: Int by lazy {
+            Objects.hash(eventId, item, type, additionalProperties)
+        }
 
         override fun hashCode(): Int = hashCode
 
@@ -2508,12 +2585,16 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is OutputAudioBufferStarted && eventId == other.eventId && responseId == other.responseId && type == other.type && additionalProperties == other.additionalProperties /* spotless:on */
+            return other is OutputAudioBufferStarted &&
+                eventId == other.eventId &&
+                responseId == other.responseId &&
+                type == other.type &&
+                additionalProperties == other.additionalProperties
         }
 
-        /* spotless:off */
-        private val hashCode: Int by lazy { Objects.hash(eventId, responseId, type, additionalProperties) }
-        /* spotless:on */
+        private val hashCode: Int by lazy {
+            Objects.hash(eventId, responseId, type, additionalProperties)
+        }
 
         override fun hashCode(): Int = hashCode
 
@@ -2752,12 +2833,16 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is OutputAudioBufferStopped && eventId == other.eventId && responseId == other.responseId && type == other.type && additionalProperties == other.additionalProperties /* spotless:on */
+            return other is OutputAudioBufferStopped &&
+                eventId == other.eventId &&
+                responseId == other.responseId &&
+                type == other.type &&
+                additionalProperties == other.additionalProperties
         }
 
-        /* spotless:off */
-        private val hashCode: Int by lazy { Objects.hash(eventId, responseId, type, additionalProperties) }
-        /* spotless:on */
+        private val hashCode: Int by lazy {
+            Objects.hash(eventId, responseId, type, additionalProperties)
+        }
 
         override fun hashCode(): Int = hashCode
 
@@ -2997,12 +3082,16 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is OutputAudioBufferCleared && eventId == other.eventId && responseId == other.responseId && type == other.type && additionalProperties == other.additionalProperties /* spotless:on */
+            return other is OutputAudioBufferCleared &&
+                eventId == other.eventId &&
+                responseId == other.responseId &&
+                type == other.type &&
+                additionalProperties == other.additionalProperties
         }
 
-        /* spotless:off */
-        private val hashCode: Int by lazy { Objects.hash(eventId, responseId, type, additionalProperties) }
-        /* spotless:on */
+        private val hashCode: Int by lazy {
+            Objects.hash(eventId, responseId, type, additionalProperties)
+        }
 
         override fun hashCode(): Int = hashCode
 

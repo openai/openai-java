@@ -180,10 +180,14 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is ContainerRetrieveParams && containerId == other.containerId && additionalHeaders == other.additionalHeaders && additionalQueryParams == other.additionalQueryParams /* spotless:on */
+        return other is ContainerRetrieveParams &&
+            containerId == other.containerId &&
+            additionalHeaders == other.additionalHeaders &&
+            additionalQueryParams == other.additionalQueryParams
     }
 
-    override fun hashCode(): Int = /* spotless:off */ Objects.hash(containerId, additionalHeaders, additionalQueryParams) /* spotless:on */
+    override fun hashCode(): Int =
+        Objects.hash(containerId, additionalHeaders, additionalQueryParams)
 
     override fun toString() =
         "ContainerRetrieveParams{containerId=$containerId, additionalHeaders=$additionalHeaders, additionalQueryParams=$additionalQueryParams}"

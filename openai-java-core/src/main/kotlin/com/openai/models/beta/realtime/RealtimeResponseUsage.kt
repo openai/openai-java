@@ -535,12 +535,16 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is InputTokenDetails && audioTokens == other.audioTokens && cachedTokens == other.cachedTokens && textTokens == other.textTokens && additionalProperties == other.additionalProperties /* spotless:on */
+            return other is InputTokenDetails &&
+                audioTokens == other.audioTokens &&
+                cachedTokens == other.cachedTokens &&
+                textTokens == other.textTokens &&
+                additionalProperties == other.additionalProperties
         }
 
-        /* spotless:off */
-        private val hashCode: Int by lazy { Objects.hash(audioTokens, cachedTokens, textTokens, additionalProperties) }
-        /* spotless:on */
+        private val hashCode: Int by lazy {
+            Objects.hash(audioTokens, cachedTokens, textTokens, additionalProperties)
+        }
 
         override fun hashCode(): Int = hashCode
 
@@ -718,12 +722,15 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is OutputTokenDetails && audioTokens == other.audioTokens && textTokens == other.textTokens && additionalProperties == other.additionalProperties /* spotless:on */
+            return other is OutputTokenDetails &&
+                audioTokens == other.audioTokens &&
+                textTokens == other.textTokens &&
+                additionalProperties == other.additionalProperties
         }
 
-        /* spotless:off */
-        private val hashCode: Int by lazy { Objects.hash(audioTokens, textTokens, additionalProperties) }
-        /* spotless:on */
+        private val hashCode: Int by lazy {
+            Objects.hash(audioTokens, textTokens, additionalProperties)
+        }
 
         override fun hashCode(): Int = hashCode
 
@@ -736,12 +743,25 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is RealtimeResponseUsage && inputTokenDetails == other.inputTokenDetails && inputTokens == other.inputTokens && outputTokenDetails == other.outputTokenDetails && outputTokens == other.outputTokens && totalTokens == other.totalTokens && additionalProperties == other.additionalProperties /* spotless:on */
+        return other is RealtimeResponseUsage &&
+            inputTokenDetails == other.inputTokenDetails &&
+            inputTokens == other.inputTokens &&
+            outputTokenDetails == other.outputTokenDetails &&
+            outputTokens == other.outputTokens &&
+            totalTokens == other.totalTokens &&
+            additionalProperties == other.additionalProperties
     }
 
-    /* spotless:off */
-    private val hashCode: Int by lazy { Objects.hash(inputTokenDetails, inputTokens, outputTokenDetails, outputTokens, totalTokens, additionalProperties) }
-    /* spotless:on */
+    private val hashCode: Int by lazy {
+        Objects.hash(
+            inputTokenDetails,
+            inputTokens,
+            outputTokenDetails,
+            outputTokens,
+            totalTokens,
+            additionalProperties,
+        )
+    }
 
     override fun hashCode(): Int = hashCode
 

@@ -4195,12 +4195,81 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is Body && messages == other.messages && model == other.model && audio == other.audio && frequencyPenalty == other.frequencyPenalty && functionCall == other.functionCall && functions == other.functions && logitBias == other.logitBias && logprobs == other.logprobs && maxCompletionTokens == other.maxCompletionTokens && maxTokens == other.maxTokens && metadata == other.metadata && modalities == other.modalities && n == other.n && parallelToolCalls == other.parallelToolCalls && prediction == other.prediction && presencePenalty == other.presencePenalty && promptCacheKey == other.promptCacheKey && reasoningEffort == other.reasoningEffort && responseFormat == other.responseFormat && safetyIdentifier == other.safetyIdentifier && seed == other.seed && serviceTier == other.serviceTier && stop == other.stop && store == other.store && streamOptions == other.streamOptions && temperature == other.temperature && toolChoice == other.toolChoice && tools == other.tools && topLogprobs == other.topLogprobs && topP == other.topP && user == other.user && verbosity == other.verbosity && webSearchOptions == other.webSearchOptions && additionalProperties == other.additionalProperties /* spotless:on */
+            return other is Body &&
+                messages == other.messages &&
+                model == other.model &&
+                audio == other.audio &&
+                frequencyPenalty == other.frequencyPenalty &&
+                functionCall == other.functionCall &&
+                functions == other.functions &&
+                logitBias == other.logitBias &&
+                logprobs == other.logprobs &&
+                maxCompletionTokens == other.maxCompletionTokens &&
+                maxTokens == other.maxTokens &&
+                metadata == other.metadata &&
+                modalities == other.modalities &&
+                n == other.n &&
+                parallelToolCalls == other.parallelToolCalls &&
+                prediction == other.prediction &&
+                presencePenalty == other.presencePenalty &&
+                promptCacheKey == other.promptCacheKey &&
+                reasoningEffort == other.reasoningEffort &&
+                responseFormat == other.responseFormat &&
+                safetyIdentifier == other.safetyIdentifier &&
+                seed == other.seed &&
+                serviceTier == other.serviceTier &&
+                stop == other.stop &&
+                store == other.store &&
+                streamOptions == other.streamOptions &&
+                temperature == other.temperature &&
+                toolChoice == other.toolChoice &&
+                tools == other.tools &&
+                topLogprobs == other.topLogprobs &&
+                topP == other.topP &&
+                user == other.user &&
+                verbosity == other.verbosity &&
+                webSearchOptions == other.webSearchOptions &&
+                additionalProperties == other.additionalProperties
         }
 
-        /* spotless:off */
-        private val hashCode: Int by lazy { Objects.hash(messages, model, audio, frequencyPenalty, functionCall, functions, logitBias, logprobs, maxCompletionTokens, maxTokens, metadata, modalities, n, parallelToolCalls, prediction, presencePenalty, promptCacheKey, reasoningEffort, responseFormat, safetyIdentifier, seed, serviceTier, stop, store, streamOptions, temperature, toolChoice, tools, topLogprobs, topP, user, verbosity, webSearchOptions, additionalProperties) }
-        /* spotless:on */
+        private val hashCode: Int by lazy {
+            Objects.hash(
+                messages,
+                model,
+                audio,
+                frequencyPenalty,
+                functionCall,
+                functions,
+                logitBias,
+                logprobs,
+                maxCompletionTokens,
+                maxTokens,
+                metadata,
+                modalities,
+                n,
+                parallelToolCalls,
+                prediction,
+                presencePenalty,
+                promptCacheKey,
+                reasoningEffort,
+                responseFormat,
+                safetyIdentifier,
+                seed,
+                serviceTier,
+                stop,
+                store,
+                streamOptions,
+                temperature,
+                toolChoice,
+                tools,
+                topLogprobs,
+                topP,
+                user,
+                verbosity,
+                webSearchOptions,
+                additionalProperties,
+            )
+        }
 
         override fun hashCode(): Int = hashCode
 
@@ -4328,10 +4397,12 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is FunctionCall && mode == other.mode && functionCallOption == other.functionCallOption /* spotless:on */
+            return other is FunctionCall &&
+                mode == other.mode &&
+                functionCallOption == other.functionCallOption
         }
 
-        override fun hashCode(): Int = /* spotless:off */ Objects.hash(mode, functionCallOption) /* spotless:on */
+        override fun hashCode(): Int = Objects.hash(mode, functionCallOption)
 
         override fun toString(): String =
             when {
@@ -4566,7 +4637,7 @@ private constructor(
                     return true
                 }
 
-                return /* spotless:off */ other is FunctionCallMode && value == other.value /* spotless:on */
+                return other is FunctionCallMode && value == other.value
             }
 
             override fun hashCode() = value.hashCode()
@@ -4823,12 +4894,16 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is Function && name == other.name && description == other.description && parameters == other.parameters && additionalProperties == other.additionalProperties /* spotless:on */
+            return other is Function &&
+                name == other.name &&
+                description == other.description &&
+                parameters == other.parameters &&
+                additionalProperties == other.additionalProperties
         }
 
-        /* spotless:off */
-        private val hashCode: Int by lazy { Objects.hash(name, description, parameters, additionalProperties) }
-        /* spotless:on */
+        private val hashCode: Int by lazy {
+            Objects.hash(name, description, parameters, additionalProperties)
+        }
 
         override fun hashCode(): Int = hashCode
 
@@ -4934,12 +5009,10 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is LogitBias && additionalProperties == other.additionalProperties /* spotless:on */
+            return other is LogitBias && additionalProperties == other.additionalProperties
         }
 
-        /* spotless:off */
         private val hashCode: Int by lazy { Objects.hash(additionalProperties) }
-        /* spotless:on */
 
         override fun hashCode(): Int = hashCode
 
@@ -5043,12 +5116,10 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is Metadata && additionalProperties == other.additionalProperties /* spotless:on */
+            return other is Metadata && additionalProperties == other.additionalProperties
         }
 
-        /* spotless:off */
         private val hashCode: Int by lazy { Objects.hash(additionalProperties) }
-        /* spotless:on */
 
         override fun hashCode(): Int = hashCode
 
@@ -5172,7 +5243,7 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is Modality && value == other.value /* spotless:on */
+            return other is Modality && value == other.value
         }
 
         override fun hashCode() = value.hashCode()
@@ -5309,10 +5380,13 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is ResponseFormat && text == other.text && jsonSchema == other.jsonSchema && jsonObject == other.jsonObject /* spotless:on */
+            return other is ResponseFormat &&
+                text == other.text &&
+                jsonSchema == other.jsonSchema &&
+                jsonObject == other.jsonObject
         }
 
-        override fun hashCode(): Int = /* spotless:off */ Objects.hash(text, jsonSchema, jsonObject) /* spotless:on */
+        override fun hashCode(): Int = Objects.hash(text, jsonSchema, jsonObject)
 
         override fun toString(): String =
             when {
@@ -5589,7 +5663,7 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is ServiceTier && value == other.value /* spotless:on */
+            return other is ServiceTier && value == other.value
         }
 
         override fun hashCode() = value.hashCode()
@@ -5681,10 +5755,10 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is Stop && string == other.string && strings == other.strings /* spotless:on */
+            return other is Stop && string == other.string && strings == other.strings
         }
 
-        override fun hashCode(): Int = /* spotless:off */ Objects.hash(string, strings) /* spotless:on */
+        override fun hashCode(): Int = Objects.hash(string, strings)
 
         override fun toString(): String =
             when {
@@ -5899,7 +5973,7 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is Verbosity && value == other.value /* spotless:on */
+            return other is Verbosity && value == other.value
         }
 
         override fun hashCode() = value.hashCode()
@@ -6233,7 +6307,7 @@ private constructor(
                     return true
                 }
 
-                return /* spotless:off */ other is SearchContextSize && value == other.value /* spotless:on */
+                return other is SearchContextSize && value == other.value
             }
 
             override fun hashCode() = value.hashCode()
@@ -6694,12 +6768,17 @@ private constructor(
                         return true
                     }
 
-                    return /* spotless:off */ other is Approximate && city == other.city && country == other.country && region == other.region && timezone == other.timezone && additionalProperties == other.additionalProperties /* spotless:on */
+                    return other is Approximate &&
+                        city == other.city &&
+                        country == other.country &&
+                        region == other.region &&
+                        timezone == other.timezone &&
+                        additionalProperties == other.additionalProperties
                 }
 
-                /* spotless:off */
-                private val hashCode: Int by lazy { Objects.hash(city, country, region, timezone, additionalProperties) }
-                /* spotless:on */
+                private val hashCode: Int by lazy {
+                    Objects.hash(city, country, region, timezone, additionalProperties)
+                }
 
                 override fun hashCode(): Int = hashCode
 
@@ -6712,12 +6791,15 @@ private constructor(
                     return true
                 }
 
-                return /* spotless:off */ other is UserLocation && approximate == other.approximate && type == other.type && additionalProperties == other.additionalProperties /* spotless:on */
+                return other is UserLocation &&
+                    approximate == other.approximate &&
+                    type == other.type &&
+                    additionalProperties == other.additionalProperties
             }
 
-            /* spotless:off */
-            private val hashCode: Int by lazy { Objects.hash(approximate, type, additionalProperties) }
-            /* spotless:on */
+            private val hashCode: Int by lazy {
+                Objects.hash(approximate, type, additionalProperties)
+            }
 
             override fun hashCode(): Int = hashCode
 
@@ -6730,12 +6812,15 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is WebSearchOptions && searchContextSize == other.searchContextSize && userLocation == other.userLocation && additionalProperties == other.additionalProperties /* spotless:on */
+            return other is WebSearchOptions &&
+                searchContextSize == other.searchContextSize &&
+                userLocation == other.userLocation &&
+                additionalProperties == other.additionalProperties
         }
 
-        /* spotless:off */
-        private val hashCode: Int by lazy { Objects.hash(searchContextSize, userLocation, additionalProperties) }
-        /* spotless:on */
+        private val hashCode: Int by lazy {
+            Objects.hash(searchContextSize, userLocation, additionalProperties)
+        }
 
         override fun hashCode(): Int = hashCode
 
@@ -6748,10 +6833,13 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is ChatCompletionCreateParams && body == other.body && additionalHeaders == other.additionalHeaders && additionalQueryParams == other.additionalQueryParams /* spotless:on */
+        return other is ChatCompletionCreateParams &&
+            body == other.body &&
+            additionalHeaders == other.additionalHeaders &&
+            additionalQueryParams == other.additionalQueryParams
     }
 
-    override fun hashCode(): Int = /* spotless:off */ Objects.hash(body, additionalHeaders, additionalQueryParams) /* spotless:on */
+    override fun hashCode(): Int = Objects.hash(body, additionalHeaders, additionalQueryParams)
 
     override fun toString() =
         "ChatCompletionCreateParams{body=$body, additionalHeaders=$additionalHeaders, additionalQueryParams=$additionalQueryParams}"

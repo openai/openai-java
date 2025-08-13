@@ -568,12 +568,13 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is ClientSecret && expiresAt == other.expiresAt && value == other.value && additionalProperties == other.additionalProperties /* spotless:on */
+            return other is ClientSecret &&
+                expiresAt == other.expiresAt &&
+                value == other.value &&
+                additionalProperties == other.additionalProperties
         }
 
-        /* spotless:off */
         private val hashCode: Int by lazy { Objects.hash(expiresAt, value, additionalProperties) }
-        /* spotless:on */
 
         override fun hashCode(): Int = hashCode
 
@@ -929,7 +930,7 @@ private constructor(
                     return true
                 }
 
-                return /* spotless:off */ other is Model && value == other.value /* spotless:on */
+                return other is Model && value == other.value
             }
 
             override fun hashCode() = value.hashCode()
@@ -942,12 +943,16 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is InputAudioTranscription && language == other.language && model == other.model && prompt == other.prompt && additionalProperties == other.additionalProperties /* spotless:on */
+            return other is InputAudioTranscription &&
+                language == other.language &&
+                model == other.model &&
+                prompt == other.prompt &&
+                additionalProperties == other.additionalProperties
         }
 
-        /* spotless:off */
-        private val hashCode: Int by lazy { Objects.hash(language, model, prompt, additionalProperties) }
-        /* spotless:on */
+        private val hashCode: Int by lazy {
+            Objects.hash(language, model, prompt, additionalProperties)
+        }
 
         override fun hashCode(): Int = hashCode
 
@@ -1072,7 +1077,7 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is Modality && value == other.value /* spotless:on */
+            return other is Modality && value == other.value
         }
 
         override fun hashCode() = value.hashCode()
@@ -1355,12 +1360,17 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is TurnDetection && prefixPaddingMs == other.prefixPaddingMs && silenceDurationMs == other.silenceDurationMs && threshold == other.threshold && type == other.type && additionalProperties == other.additionalProperties /* spotless:on */
+            return other is TurnDetection &&
+                prefixPaddingMs == other.prefixPaddingMs &&
+                silenceDurationMs == other.silenceDurationMs &&
+                threshold == other.threshold &&
+                type == other.type &&
+                additionalProperties == other.additionalProperties
         }
 
-        /* spotless:off */
-        private val hashCode: Int by lazy { Objects.hash(prefixPaddingMs, silenceDurationMs, threshold, type, additionalProperties) }
-        /* spotless:on */
+        private val hashCode: Int by lazy {
+            Objects.hash(prefixPaddingMs, silenceDurationMs, threshold, type, additionalProperties)
+        }
 
         override fun hashCode(): Int = hashCode
 
@@ -1373,12 +1383,25 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is TranscriptionSession && clientSecret == other.clientSecret && inputAudioFormat == other.inputAudioFormat && inputAudioTranscription == other.inputAudioTranscription && modalities == other.modalities && turnDetection == other.turnDetection && additionalProperties == other.additionalProperties /* spotless:on */
+        return other is TranscriptionSession &&
+            clientSecret == other.clientSecret &&
+            inputAudioFormat == other.inputAudioFormat &&
+            inputAudioTranscription == other.inputAudioTranscription &&
+            modalities == other.modalities &&
+            turnDetection == other.turnDetection &&
+            additionalProperties == other.additionalProperties
     }
 
-    /* spotless:off */
-    private val hashCode: Int by lazy { Objects.hash(clientSecret, inputAudioFormat, inputAudioTranscription, modalities, turnDetection, additionalProperties) }
-    /* spotless:on */
+    private val hashCode: Int by lazy {
+        Objects.hash(
+            clientSecret,
+            inputAudioFormat,
+            inputAudioTranscription,
+            modalities,
+            turnDetection,
+            additionalProperties,
+        )
+    }
 
     override fun hashCode(): Int = hashCode
 

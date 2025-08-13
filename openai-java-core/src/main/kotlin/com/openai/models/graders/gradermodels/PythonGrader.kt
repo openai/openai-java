@@ -268,12 +268,17 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is PythonGrader && name == other.name && source == other.source && type == other.type && imageTag == other.imageTag && additionalProperties == other.additionalProperties /* spotless:on */
+        return other is PythonGrader &&
+            name == other.name &&
+            source == other.source &&
+            type == other.type &&
+            imageTag == other.imageTag &&
+            additionalProperties == other.additionalProperties
     }
 
-    /* spotless:off */
-    private val hashCode: Int by lazy { Objects.hash(name, source, type, imageTag, additionalProperties) }
-    /* spotless:on */
+    private val hashCode: Int by lazy {
+        Objects.hash(name, source, type, imageTag, additionalProperties)
+    }
 
     override fun hashCode(): Int = hashCode
 

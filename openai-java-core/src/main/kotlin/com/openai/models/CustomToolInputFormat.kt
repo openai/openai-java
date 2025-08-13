@@ -119,10 +119,10 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is CustomToolInputFormat && text == other.text && grammar == other.grammar /* spotless:on */
+        return other is CustomToolInputFormat && text == other.text && grammar == other.grammar
     }
 
-    override fun hashCode(): Int = /* spotless:off */ Objects.hash(text, grammar) /* spotless:on */
+    override fun hashCode(): Int = Objects.hash(text, grammar)
 
     override fun toString(): String =
         when {
@@ -553,7 +553,7 @@ private constructor(
                     return true
                 }
 
-                return /* spotless:off */ other is Syntax && value == other.value /* spotless:on */
+                return other is Syntax && value == other.value
             }
 
             override fun hashCode() = value.hashCode()
@@ -566,12 +566,16 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is Grammar && definition == other.definition && syntax == other.syntax && type == other.type && additionalProperties == other.additionalProperties /* spotless:on */
+            return other is Grammar &&
+                definition == other.definition &&
+                syntax == other.syntax &&
+                type == other.type &&
+                additionalProperties == other.additionalProperties
         }
 
-        /* spotless:off */
-        private val hashCode: Int by lazy { Objects.hash(definition, syntax, type, additionalProperties) }
-        /* spotless:on */
+        private val hashCode: Int by lazy {
+            Objects.hash(definition, syntax, type, additionalProperties)
+        }
 
         override fun hashCode(): Int = hashCode
 

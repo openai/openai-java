@@ -163,7 +163,7 @@ class ResponseIncludable @JsonCreator private constructor(private val value: Jso
             return true
         }
 
-        return /* spotless:off */ other is ResponseIncludable && value == other.value /* spotless:on */
+        return other is ResponseIncludable && value == other.value
     }
 
     override fun hashCode() = value.hashCode()

@@ -433,7 +433,7 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is Status && value == other.value /* spotless:on */
+            return other is Status && value == other.value
         }
 
         override fun hashCode() = value.hashCode()
@@ -446,12 +446,18 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is ResponseFunctionToolCallOutputItem && id == other.id && callId == other.callId && output == other.output && type == other.type && status == other.status && additionalProperties == other.additionalProperties /* spotless:on */
+        return other is ResponseFunctionToolCallOutputItem &&
+            id == other.id &&
+            callId == other.callId &&
+            output == other.output &&
+            type == other.type &&
+            status == other.status &&
+            additionalProperties == other.additionalProperties
     }
 
-    /* spotless:off */
-    private val hashCode: Int by lazy { Objects.hash(id, callId, output, type, status, additionalProperties) }
-    /* spotless:on */
+    private val hashCode: Int by lazy {
+        Objects.hash(id, callId, output, type, status, additionalProperties)
+    }
 
     override fun hashCode(): Int = hashCode
 

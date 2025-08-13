@@ -913,7 +913,7 @@ private constructor(
                     return true
                 }
 
-                return /* spotless:off */ other is Type && value == other.value /* spotless:on */
+                return other is Type && value == other.value
             }
 
             override fun hashCode() = value.hashCode()
@@ -926,12 +926,18 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is Content && id == other.id && audio == other.audio && text == other.text && transcript == other.transcript && type == other.type && additionalProperties == other.additionalProperties /* spotless:on */
+            return other is Content &&
+                id == other.id &&
+                audio == other.audio &&
+                text == other.text &&
+                transcript == other.transcript &&
+                type == other.type &&
+                additionalProperties == other.additionalProperties
         }
 
-        /* spotless:off */
-        private val hashCode: Int by lazy { Objects.hash(id, audio, text, transcript, type, additionalProperties) }
-        /* spotless:on */
+        private val hashCode: Int by lazy {
+            Objects.hash(id, audio, text, transcript, type, additionalProperties)
+        }
 
         override fun hashCode(): Int = hashCode
 
@@ -1051,7 +1057,7 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is Object && value == other.value /* spotless:on */
+            return other is Object && value == other.value
         }
 
         override fun hashCode() = value.hashCode()
@@ -1186,7 +1192,7 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is Role && value == other.value /* spotless:on */
+            return other is Role && value == other.value
         }
 
         override fun hashCode() = value.hashCode()
@@ -1322,7 +1328,7 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is Status && value == other.value /* spotless:on */
+            return other is Status && value == other.value
         }
 
         override fun hashCode() = value.hashCode()
@@ -1462,7 +1468,7 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is Type && value == other.value /* spotless:on */
+            return other is Type && value == other.value
         }
 
         override fun hashCode() = value.hashCode()
@@ -1475,12 +1481,35 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is ConversationItemWithReference && id == other.id && arguments == other.arguments && callId == other.callId && content == other.content && name == other.name && object_ == other.object_ && output == other.output && role == other.role && status == other.status && type == other.type && additionalProperties == other.additionalProperties /* spotless:on */
+        return other is ConversationItemWithReference &&
+            id == other.id &&
+            arguments == other.arguments &&
+            callId == other.callId &&
+            content == other.content &&
+            name == other.name &&
+            object_ == other.object_ &&
+            output == other.output &&
+            role == other.role &&
+            status == other.status &&
+            type == other.type &&
+            additionalProperties == other.additionalProperties
     }
 
-    /* spotless:off */
-    private val hashCode: Int by lazy { Objects.hash(id, arguments, callId, content, name, object_, output, role, status, type, additionalProperties) }
-    /* spotless:on */
+    private val hashCode: Int by lazy {
+        Objects.hash(
+            id,
+            arguments,
+            callId,
+            content,
+            name,
+            object_,
+            output,
+            role,
+            status,
+            type,
+            additionalProperties,
+        )
+    }
 
     override fun hashCode(): Int = hashCode
 

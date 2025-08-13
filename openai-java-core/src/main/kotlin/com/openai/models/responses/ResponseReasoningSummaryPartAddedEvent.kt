@@ -536,12 +536,13 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is Part && text == other.text && type == other.type && additionalProperties == other.additionalProperties /* spotless:on */
+            return other is Part &&
+                text == other.text &&
+                type == other.type &&
+                additionalProperties == other.additionalProperties
         }
 
-        /* spotless:off */
         private val hashCode: Int by lazy { Objects.hash(text, type, additionalProperties) }
-        /* spotless:on */
 
         override fun hashCode(): Int = hashCode
 
@@ -554,12 +555,27 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is ResponseReasoningSummaryPartAddedEvent && itemId == other.itemId && outputIndex == other.outputIndex && part == other.part && sequenceNumber == other.sequenceNumber && summaryIndex == other.summaryIndex && type == other.type && additionalProperties == other.additionalProperties /* spotless:on */
+        return other is ResponseReasoningSummaryPartAddedEvent &&
+            itemId == other.itemId &&
+            outputIndex == other.outputIndex &&
+            part == other.part &&
+            sequenceNumber == other.sequenceNumber &&
+            summaryIndex == other.summaryIndex &&
+            type == other.type &&
+            additionalProperties == other.additionalProperties
     }
 
-    /* spotless:off */
-    private val hashCode: Int by lazy { Objects.hash(itemId, outputIndex, part, sequenceNumber, summaryIndex, type, additionalProperties) }
-    /* spotless:on */
+    private val hashCode: Int by lazy {
+        Objects.hash(
+            itemId,
+            outputIndex,
+            part,
+            sequenceNumber,
+            summaryIndex,
+            type,
+            additionalProperties,
+        )
+    }
 
     override fun hashCode(): Int = hashCode
 

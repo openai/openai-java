@@ -159,10 +159,16 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is ResponseContent && inputText == other.inputText && inputImage == other.inputImage && inputFile == other.inputFile && outputText == other.outputText && outputRefusal == other.outputRefusal /* spotless:on */
+        return other is ResponseContent &&
+            inputText == other.inputText &&
+            inputImage == other.inputImage &&
+            inputFile == other.inputFile &&
+            outputText == other.outputText &&
+            outputRefusal == other.outputRefusal
     }
 
-    override fun hashCode(): Int = /* spotless:off */ Objects.hash(inputText, inputImage, inputFile, outputText, outputRefusal) /* spotless:on */
+    override fun hashCode(): Int =
+        Objects.hash(inputText, inputImage, inputFile, outputText, outputRefusal)
 
     override fun toString(): String =
         when {

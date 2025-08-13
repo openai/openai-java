@@ -873,12 +873,18 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is FileCounts && cancelled == other.cancelled && completed == other.completed && failed == other.failed && inProgress == other.inProgress && total == other.total && additionalProperties == other.additionalProperties /* spotless:on */
+            return other is FileCounts &&
+                cancelled == other.cancelled &&
+                completed == other.completed &&
+                failed == other.failed &&
+                inProgress == other.inProgress &&
+                total == other.total &&
+                additionalProperties == other.additionalProperties
         }
 
-        /* spotless:off */
-        private val hashCode: Int by lazy { Objects.hash(cancelled, completed, failed, inProgress, total, additionalProperties) }
-        /* spotless:on */
+        private val hashCode: Int by lazy {
+            Objects.hash(cancelled, completed, failed, inProgress, total, additionalProperties)
+        }
 
         override fun hashCode(): Int = hashCode
 
@@ -983,12 +989,10 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is Metadata && additionalProperties == other.additionalProperties /* spotless:on */
+            return other is Metadata && additionalProperties == other.additionalProperties
         }
 
-        /* spotless:off */
         private val hashCode: Int by lazy { Objects.hash(additionalProperties) }
-        /* spotless:on */
 
         override fun hashCode(): Int = hashCode
 
@@ -1122,7 +1126,7 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is Status && value == other.value /* spotless:on */
+            return other is Status && value == other.value
         }
 
         override fun hashCode() = value.hashCode()
@@ -1317,12 +1321,13 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is ExpiresAfter && anchor == other.anchor && days == other.days && additionalProperties == other.additionalProperties /* spotless:on */
+            return other is ExpiresAfter &&
+                anchor == other.anchor &&
+                days == other.days &&
+                additionalProperties == other.additionalProperties
         }
 
-        /* spotless:off */
         private val hashCode: Int by lazy { Objects.hash(anchor, days, additionalProperties) }
-        /* spotless:on */
 
         override fun hashCode(): Int = hashCode
 
@@ -1335,12 +1340,37 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is VectorStore && id == other.id && createdAt == other.createdAt && fileCounts == other.fileCounts && lastActiveAt == other.lastActiveAt && metadata == other.metadata && name == other.name && object_ == other.object_ && status == other.status && usageBytes == other.usageBytes && expiresAfter == other.expiresAfter && expiresAt == other.expiresAt && additionalProperties == other.additionalProperties /* spotless:on */
+        return other is VectorStore &&
+            id == other.id &&
+            createdAt == other.createdAt &&
+            fileCounts == other.fileCounts &&
+            lastActiveAt == other.lastActiveAt &&
+            metadata == other.metadata &&
+            name == other.name &&
+            object_ == other.object_ &&
+            status == other.status &&
+            usageBytes == other.usageBytes &&
+            expiresAfter == other.expiresAfter &&
+            expiresAt == other.expiresAt &&
+            additionalProperties == other.additionalProperties
     }
 
-    /* spotless:off */
-    private val hashCode: Int by lazy { Objects.hash(id, createdAt, fileCounts, lastActiveAt, metadata, name, object_, status, usageBytes, expiresAfter, expiresAt, additionalProperties) }
-    /* spotless:on */
+    private val hashCode: Int by lazy {
+        Objects.hash(
+            id,
+            createdAt,
+            fileCounts,
+            lastActiveAt,
+            metadata,
+            name,
+            object_,
+            status,
+            usageBytes,
+            expiresAfter,
+            expiresAt,
+            additionalProperties,
+        )
+    }
 
     override fun hashCode(): Int = hashCode
 

@@ -339,12 +339,12 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is ImageUrl && url == other.url && additionalProperties == other.additionalProperties /* spotless:on */
+            return other is ImageUrl &&
+                url == other.url &&
+                additionalProperties == other.additionalProperties
         }
 
-        /* spotless:off */
         private val hashCode: Int by lazy { Objects.hash(url, additionalProperties) }
-        /* spotless:on */
 
         override fun hashCode(): Int = hashCode
 
@@ -356,12 +356,13 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is ModerationImageUrlInput && imageUrl == other.imageUrl && type == other.type && additionalProperties == other.additionalProperties /* spotless:on */
+        return other is ModerationImageUrlInput &&
+            imageUrl == other.imageUrl &&
+            type == other.type &&
+            additionalProperties == other.additionalProperties
     }
 
-    /* spotless:off */
     private val hashCode: Int by lazy { Objects.hash(imageUrl, type, additionalProperties) }
-    /* spotless:on */
 
     override fun hashCode(): Int = hashCode
 

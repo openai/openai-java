@@ -1409,12 +1409,43 @@ private constructor(
                     return true
                 }
 
-                return /* spotless:off */ other is Errors && formulaParseError == other.formulaParseError && invalidVariableError == other.invalidVariableError && modelGraderParseError == other.modelGraderParseError && modelGraderRefusalError == other.modelGraderRefusalError && modelGraderServerError == other.modelGraderServerError && modelGraderServerErrorDetails == other.modelGraderServerErrorDetails && otherError == other.otherError && pythonGraderRuntimeError == other.pythonGraderRuntimeError && pythonGraderRuntimeErrorDetails == other.pythonGraderRuntimeErrorDetails && pythonGraderServerError == other.pythonGraderServerError && pythonGraderServerErrorType == other.pythonGraderServerErrorType && sampleParseError == other.sampleParseError && truncatedObservationError == other.truncatedObservationError && unresponsiveRewardError == other.unresponsiveRewardError && additionalProperties == other.additionalProperties /* spotless:on */
+                return other is Errors &&
+                    formulaParseError == other.formulaParseError &&
+                    invalidVariableError == other.invalidVariableError &&
+                    modelGraderParseError == other.modelGraderParseError &&
+                    modelGraderRefusalError == other.modelGraderRefusalError &&
+                    modelGraderServerError == other.modelGraderServerError &&
+                    modelGraderServerErrorDetails == other.modelGraderServerErrorDetails &&
+                    otherError == other.otherError &&
+                    pythonGraderRuntimeError == other.pythonGraderRuntimeError &&
+                    pythonGraderRuntimeErrorDetails == other.pythonGraderRuntimeErrorDetails &&
+                    pythonGraderServerError == other.pythonGraderServerError &&
+                    pythonGraderServerErrorType == other.pythonGraderServerErrorType &&
+                    sampleParseError == other.sampleParseError &&
+                    truncatedObservationError == other.truncatedObservationError &&
+                    unresponsiveRewardError == other.unresponsiveRewardError &&
+                    additionalProperties == other.additionalProperties
             }
 
-            /* spotless:off */
-            private val hashCode: Int by lazy { Objects.hash(formulaParseError, invalidVariableError, modelGraderParseError, modelGraderRefusalError, modelGraderServerError, modelGraderServerErrorDetails, otherError, pythonGraderRuntimeError, pythonGraderRuntimeErrorDetails, pythonGraderServerError, pythonGraderServerErrorType, sampleParseError, truncatedObservationError, unresponsiveRewardError, additionalProperties) }
-            /* spotless:on */
+            private val hashCode: Int by lazy {
+                Objects.hash(
+                    formulaParseError,
+                    invalidVariableError,
+                    modelGraderParseError,
+                    modelGraderRefusalError,
+                    modelGraderServerError,
+                    modelGraderServerErrorDetails,
+                    otherError,
+                    pythonGraderRuntimeError,
+                    pythonGraderRuntimeErrorDetails,
+                    pythonGraderServerError,
+                    pythonGraderServerErrorType,
+                    sampleParseError,
+                    truncatedObservationError,
+                    unresponsiveRewardError,
+                    additionalProperties,
+                )
+            }
 
             override fun hashCode(): Int = hashCode
 
@@ -1514,12 +1545,10 @@ private constructor(
                     return true
                 }
 
-                return /* spotless:off */ other is Scores && additionalProperties == other.additionalProperties /* spotless:on */
+                return other is Scores && additionalProperties == other.additionalProperties
             }
 
-            /* spotless:off */
             private val hashCode: Int by lazy { Objects.hash(additionalProperties) }
-            /* spotless:on */
 
             override fun hashCode(): Int = hashCode
 
@@ -1531,12 +1560,29 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is Metadata && errors == other.errors && executionTime == other.executionTime && name == other.name && sampledModelName == other.sampledModelName && scores == other.scores && tokenUsage == other.tokenUsage && type == other.type && additionalProperties == other.additionalProperties /* spotless:on */
+            return other is Metadata &&
+                errors == other.errors &&
+                executionTime == other.executionTime &&
+                name == other.name &&
+                sampledModelName == other.sampledModelName &&
+                scores == other.scores &&
+                tokenUsage == other.tokenUsage &&
+                type == other.type &&
+                additionalProperties == other.additionalProperties
         }
 
-        /* spotless:off */
-        private val hashCode: Int by lazy { Objects.hash(errors, executionTime, name, sampledModelName, scores, tokenUsage, type, additionalProperties) }
-        /* spotless:on */
+        private val hashCode: Int by lazy {
+            Objects.hash(
+                errors,
+                executionTime,
+                name,
+                sampledModelName,
+                scores,
+                tokenUsage,
+                type,
+                additionalProperties,
+            )
+        }
 
         override fun hashCode(): Int = hashCode
 
@@ -1639,12 +1685,11 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is ModelGraderTokenUsagePerModel && additionalProperties == other.additionalProperties /* spotless:on */
+            return other is ModelGraderTokenUsagePerModel &&
+                additionalProperties == other.additionalProperties
         }
 
-        /* spotless:off */
         private val hashCode: Int by lazy { Objects.hash(additionalProperties) }
-        /* spotless:on */
 
         override fun hashCode(): Int = hashCode
 
@@ -1741,12 +1786,10 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is SubRewards && additionalProperties == other.additionalProperties /* spotless:on */
+            return other is SubRewards && additionalProperties == other.additionalProperties
         }
 
-        /* spotless:off */
         private val hashCode: Int by lazy { Objects.hash(additionalProperties) }
-        /* spotless:on */
 
         override fun hashCode(): Int = hashCode
 
@@ -1758,12 +1801,23 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is GraderRunResponse && metadata == other.metadata && modelGraderTokenUsagePerModel == other.modelGraderTokenUsagePerModel && reward == other.reward && subRewards == other.subRewards && additionalProperties == other.additionalProperties /* spotless:on */
+        return other is GraderRunResponse &&
+            metadata == other.metadata &&
+            modelGraderTokenUsagePerModel == other.modelGraderTokenUsagePerModel &&
+            reward == other.reward &&
+            subRewards == other.subRewards &&
+            additionalProperties == other.additionalProperties
     }
 
-    /* spotless:off */
-    private val hashCode: Int by lazy { Objects.hash(metadata, modelGraderTokenUsagePerModel, reward, subRewards, additionalProperties) }
-    /* spotless:on */
+    private val hashCode: Int by lazy {
+        Objects.hash(
+            metadata,
+            modelGraderTokenUsagePerModel,
+            reward,
+            subRewards,
+            additionalProperties,
+        )
+    }
 
     override fun hashCode(): Int = hashCode
 

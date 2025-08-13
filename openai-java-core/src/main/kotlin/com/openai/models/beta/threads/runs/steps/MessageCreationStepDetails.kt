@@ -347,12 +347,12 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is MessageCreation && messageId == other.messageId && additionalProperties == other.additionalProperties /* spotless:on */
+            return other is MessageCreation &&
+                messageId == other.messageId &&
+                additionalProperties == other.additionalProperties
         }
 
-        /* spotless:off */
         private val hashCode: Int by lazy { Objects.hash(messageId, additionalProperties) }
-        /* spotless:on */
 
         override fun hashCode(): Int = hashCode
 
@@ -365,12 +365,13 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is MessageCreationStepDetails && messageCreation == other.messageCreation && type == other.type && additionalProperties == other.additionalProperties /* spotless:on */
+        return other is MessageCreationStepDetails &&
+            messageCreation == other.messageCreation &&
+            type == other.type &&
+            additionalProperties == other.additionalProperties
     }
 
-    /* spotless:off */
     private val hashCode: Int by lazy { Objects.hash(messageCreation, type, additionalProperties) }
-    /* spotless:on */
 
     override fun hashCode(): Int = hashCode
 

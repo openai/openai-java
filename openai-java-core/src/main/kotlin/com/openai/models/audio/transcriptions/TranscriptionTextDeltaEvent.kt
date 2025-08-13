@@ -474,12 +474,16 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is Logprob && token == other.token && bytes == other.bytes && logprob == other.logprob && additionalProperties == other.additionalProperties /* spotless:on */
+            return other is Logprob &&
+                token == other.token &&
+                bytes == other.bytes &&
+                logprob == other.logprob &&
+                additionalProperties == other.additionalProperties
         }
 
-        /* spotless:off */
-        private val hashCode: Int by lazy { Objects.hash(token, bytes, logprob, additionalProperties) }
-        /* spotless:on */
+        private val hashCode: Int by lazy {
+            Objects.hash(token, bytes, logprob, additionalProperties)
+        }
 
         override fun hashCode(): Int = hashCode
 
@@ -492,12 +496,14 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is TranscriptionTextDeltaEvent && delta == other.delta && type == other.type && logprobs == other.logprobs && additionalProperties == other.additionalProperties /* spotless:on */
+        return other is TranscriptionTextDeltaEvent &&
+            delta == other.delta &&
+            type == other.type &&
+            logprobs == other.logprobs &&
+            additionalProperties == other.additionalProperties
     }
 
-    /* spotless:off */
     private val hashCode: Int by lazy { Objects.hash(delta, type, logprobs, additionalProperties) }
-    /* spotless:on */
 
     override fun hashCode(): Int = hashCode
 

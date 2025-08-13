@@ -151,7 +151,7 @@ class ResponseStatus @JsonCreator private constructor(private val value: JsonFie
             return true
         }
 
-        return /* spotless:off */ other is ResponseStatus && value == other.value /* spotless:on */
+        return other is ResponseStatus && value == other.value
     }
 
     override fun hashCode() = value.hashCode()

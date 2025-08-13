@@ -269,12 +269,17 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is UploadPart && id == other.id && createdAt == other.createdAt && object_ == other.object_ && uploadId == other.uploadId && additionalProperties == other.additionalProperties /* spotless:on */
+        return other is UploadPart &&
+            id == other.id &&
+            createdAt == other.createdAt &&
+            object_ == other.object_ &&
+            uploadId == other.uploadId &&
+            additionalProperties == other.additionalProperties
     }
 
-    /* spotless:off */
-    private val hashCode: Int by lazy { Objects.hash(id, createdAt, object_, uploadId, additionalProperties) }
-    /* spotless:on */
+    private val hashCode: Int by lazy {
+        Objects.hash(id, createdAt, object_, uploadId, additionalProperties)
+    }
 
     override fun hashCode(): Int = hashCode
 

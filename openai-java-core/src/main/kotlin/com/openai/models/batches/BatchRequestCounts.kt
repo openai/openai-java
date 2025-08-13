@@ -231,12 +231,16 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is BatchRequestCounts && completed == other.completed && failed == other.failed && total == other.total && additionalProperties == other.additionalProperties /* spotless:on */
+        return other is BatchRequestCounts &&
+            completed == other.completed &&
+            failed == other.failed &&
+            total == other.total &&
+            additionalProperties == other.additionalProperties
     }
 
-    /* spotless:off */
-    private val hashCode: Int by lazy { Objects.hash(completed, failed, total, additionalProperties) }
-    /* spotless:on */
+    private val hashCode: Int by lazy {
+        Objects.hash(completed, failed, total, additionalProperties)
+    }
 
     override fun hashCode(): Int = hashCode
 

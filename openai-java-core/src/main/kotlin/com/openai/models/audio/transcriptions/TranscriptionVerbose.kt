@@ -547,12 +547,13 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is Usage && seconds == other.seconds && type == other.type && additionalProperties == other.additionalProperties /* spotless:on */
+            return other is Usage &&
+                seconds == other.seconds &&
+                type == other.type &&
+                additionalProperties == other.additionalProperties
         }
 
-        /* spotless:off */
         private val hashCode: Int by lazy { Objects.hash(seconds, type, additionalProperties) }
-        /* spotless:on */
 
         override fun hashCode(): Int = hashCode
 
@@ -565,12 +566,19 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is TranscriptionVerbose && duration == other.duration && language == other.language && text == other.text && segments == other.segments && usage == other.usage && words == other.words && additionalProperties == other.additionalProperties /* spotless:on */
+        return other is TranscriptionVerbose &&
+            duration == other.duration &&
+            language == other.language &&
+            text == other.text &&
+            segments == other.segments &&
+            usage == other.usage &&
+            words == other.words &&
+            additionalProperties == other.additionalProperties
     }
 
-    /* spotless:off */
-    private val hashCode: Int by lazy { Objects.hash(duration, language, text, segments, usage, words, additionalProperties) }
-    /* spotless:on */
+    private val hashCode: Int by lazy {
+        Objects.hash(duration, language, text, segments, usage, words, additionalProperties)
+    }
 
     override fun hashCode(): Int = hashCode
 
