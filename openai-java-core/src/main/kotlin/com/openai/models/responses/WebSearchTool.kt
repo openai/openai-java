@@ -379,7 +379,7 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is Type && value == other.value /* spotless:on */
+            return other is Type && value == other.value
         }
 
         override fun hashCode() = value.hashCode()
@@ -518,7 +518,7 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is SearchContextSize && value == other.value /* spotless:on */
+            return other is SearchContextSize && value == other.value
         }
 
         override fun hashCode() = value.hashCode()
@@ -820,12 +820,18 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is UserLocation && type == other.type && city == other.city && country == other.country && region == other.region && timezone == other.timezone && additionalProperties == other.additionalProperties /* spotless:on */
+            return other is UserLocation &&
+                type == other.type &&
+                city == other.city &&
+                country == other.country &&
+                region == other.region &&
+                timezone == other.timezone &&
+                additionalProperties == other.additionalProperties
         }
 
-        /* spotless:off */
-        private val hashCode: Int by lazy { Objects.hash(type, city, country, region, timezone, additionalProperties) }
-        /* spotless:on */
+        private val hashCode: Int by lazy {
+            Objects.hash(type, city, country, region, timezone, additionalProperties)
+        }
 
         override fun hashCode(): Int = hashCode
 
@@ -838,12 +844,16 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is WebSearchTool && type == other.type && searchContextSize == other.searchContextSize && userLocation == other.userLocation && additionalProperties == other.additionalProperties /* spotless:on */
+        return other is WebSearchTool &&
+            type == other.type &&
+            searchContextSize == other.searchContextSize &&
+            userLocation == other.userLocation &&
+            additionalProperties == other.additionalProperties
     }
 
-    /* spotless:off */
-    private val hashCode: Int by lazy { Objects.hash(type, searchContextSize, userLocation, additionalProperties) }
-    /* spotless:on */
+    private val hashCode: Int by lazy {
+        Objects.hash(type, searchContextSize, userLocation, additionalProperties)
+    }
 
     override fun hashCode(): Int = hashCode
 

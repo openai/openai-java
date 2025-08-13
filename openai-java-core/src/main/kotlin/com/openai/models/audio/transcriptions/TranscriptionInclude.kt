@@ -119,7 +119,7 @@ class TranscriptionInclude @JsonCreator private constructor(private val value: J
             return true
         }
 
-        return /* spotless:off */ other is TranscriptionInclude && value == other.value /* spotless:on */
+        return other is TranscriptionInclude && value == other.value
     }
 
     override fun hashCode() = value.hashCode()

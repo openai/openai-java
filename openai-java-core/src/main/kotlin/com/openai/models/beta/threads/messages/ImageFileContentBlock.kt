@@ -203,12 +203,13 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is ImageFileContentBlock && imageFile == other.imageFile && type == other.type && additionalProperties == other.additionalProperties /* spotless:on */
+        return other is ImageFileContentBlock &&
+            imageFile == other.imageFile &&
+            type == other.type &&
+            additionalProperties == other.additionalProperties
     }
 
-    /* spotless:off */
     private val hashCode: Int by lazy { Objects.hash(imageFile, type, additionalProperties) }
-    /* spotless:on */
 
     override fun hashCode(): Int = hashCode
 

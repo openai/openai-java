@@ -610,7 +610,7 @@ private constructor(
                     return true
                 }
 
-                return /* spotless:off */ other is Name && value == other.value /* spotless:on */
+                return other is Name && value == other.value
             }
 
             override fun hashCode() = value.hashCode()
@@ -623,12 +623,17 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is RateLimit && limit == other.limit && name == other.name && remaining == other.remaining && resetSeconds == other.resetSeconds && additionalProperties == other.additionalProperties /* spotless:on */
+            return other is RateLimit &&
+                limit == other.limit &&
+                name == other.name &&
+                remaining == other.remaining &&
+                resetSeconds == other.resetSeconds &&
+                additionalProperties == other.additionalProperties
         }
 
-        /* spotless:off */
-        private val hashCode: Int by lazy { Objects.hash(limit, name, remaining, resetSeconds, additionalProperties) }
-        /* spotless:on */
+        private val hashCode: Int by lazy {
+            Objects.hash(limit, name, remaining, resetSeconds, additionalProperties)
+        }
 
         override fun hashCode(): Int = hashCode
 
@@ -641,12 +646,16 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is RateLimitsUpdatedEvent && eventId == other.eventId && rateLimits == other.rateLimits && type == other.type && additionalProperties == other.additionalProperties /* spotless:on */
+        return other is RateLimitsUpdatedEvent &&
+            eventId == other.eventId &&
+            rateLimits == other.rateLimits &&
+            type == other.type &&
+            additionalProperties == other.additionalProperties
     }
 
-    /* spotless:off */
-    private val hashCode: Int by lazy { Objects.hash(eventId, rateLimits, type, additionalProperties) }
-    /* spotless:on */
+    private val hashCode: Int by lazy {
+        Objects.hash(eventId, rateLimits, type, additionalProperties)
+    }
 
     override fun hashCode(): Int = hashCode
 

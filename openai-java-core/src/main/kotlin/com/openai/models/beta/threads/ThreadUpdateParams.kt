@@ -508,12 +508,15 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is Body && metadata == other.metadata && toolResources == other.toolResources && additionalProperties == other.additionalProperties /* spotless:on */
+            return other is Body &&
+                metadata == other.metadata &&
+                toolResources == other.toolResources &&
+                additionalProperties == other.additionalProperties
         }
 
-        /* spotless:off */
-        private val hashCode: Int by lazy { Objects.hash(metadata, toolResources, additionalProperties) }
-        /* spotless:on */
+        private val hashCode: Int by lazy {
+            Objects.hash(metadata, toolResources, additionalProperties)
+        }
 
         override fun hashCode(): Int = hashCode
 
@@ -618,12 +621,10 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is Metadata && additionalProperties == other.additionalProperties /* spotless:on */
+            return other is Metadata && additionalProperties == other.additionalProperties
         }
 
-        /* spotless:off */
         private val hashCode: Int by lazy { Objects.hash(additionalProperties) }
-        /* spotless:on */
 
         override fun hashCode(): Int = hashCode
 
@@ -960,12 +961,12 @@ private constructor(
                     return true
                 }
 
-                return /* spotless:off */ other is CodeInterpreter && fileIds == other.fileIds && additionalProperties == other.additionalProperties /* spotless:on */
+                return other is CodeInterpreter &&
+                    fileIds == other.fileIds &&
+                    additionalProperties == other.additionalProperties
             }
 
-            /* spotless:off */
             private val hashCode: Int by lazy { Objects.hash(fileIds, additionalProperties) }
-            /* spotless:on */
 
             override fun hashCode(): Int = hashCode
 
@@ -1137,12 +1138,12 @@ private constructor(
                     return true
                 }
 
-                return /* spotless:off */ other is FileSearch && vectorStoreIds == other.vectorStoreIds && additionalProperties == other.additionalProperties /* spotless:on */
+                return other is FileSearch &&
+                    vectorStoreIds == other.vectorStoreIds &&
+                    additionalProperties == other.additionalProperties
             }
 
-            /* spotless:off */
             private val hashCode: Int by lazy { Objects.hash(vectorStoreIds, additionalProperties) }
-            /* spotless:on */
 
             override fun hashCode(): Int = hashCode
 
@@ -1155,12 +1156,15 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is ToolResources && codeInterpreter == other.codeInterpreter && fileSearch == other.fileSearch && additionalProperties == other.additionalProperties /* spotless:on */
+            return other is ToolResources &&
+                codeInterpreter == other.codeInterpreter &&
+                fileSearch == other.fileSearch &&
+                additionalProperties == other.additionalProperties
         }
 
-        /* spotless:off */
-        private val hashCode: Int by lazy { Objects.hash(codeInterpreter, fileSearch, additionalProperties) }
-        /* spotless:on */
+        private val hashCode: Int by lazy {
+            Objects.hash(codeInterpreter, fileSearch, additionalProperties)
+        }
 
         override fun hashCode(): Int = hashCode
 
@@ -1173,10 +1177,15 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is ThreadUpdateParams && threadId == other.threadId && body == other.body && additionalHeaders == other.additionalHeaders && additionalQueryParams == other.additionalQueryParams /* spotless:on */
+        return other is ThreadUpdateParams &&
+            threadId == other.threadId &&
+            body == other.body &&
+            additionalHeaders == other.additionalHeaders &&
+            additionalQueryParams == other.additionalQueryParams
     }
 
-    override fun hashCode(): Int = /* spotless:off */ Objects.hash(threadId, body, additionalHeaders, additionalQueryParams) /* spotless:on */
+    override fun hashCode(): Int =
+        Objects.hash(threadId, body, additionalHeaders, additionalQueryParams)
 
     override fun toString() =
         "ThreadUpdateParams{threadId=$threadId, body=$body, additionalHeaders=$additionalHeaders, additionalQueryParams=$additionalQueryParams}"

@@ -152,10 +152,14 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is ChatCompletionContentPart && text == other.text && imageUrl == other.imageUrl && inputAudio == other.inputAudio && file == other.file /* spotless:on */
+        return other is ChatCompletionContentPart &&
+            text == other.text &&
+            imageUrl == other.imageUrl &&
+            inputAudio == other.inputAudio &&
+            file == other.file
     }
 
-    override fun hashCode(): Int = /* spotless:off */ Objects.hash(text, imageUrl, inputAudio, file) /* spotless:on */
+    override fun hashCode(): Int = Objects.hash(text, imageUrl, inputAudio, file)
 
     override fun toString(): String =
         when {
@@ -668,12 +672,16 @@ private constructor(
                     return true
                 }
 
-                return /* spotless:off */ other is FileObject && fileData == other.fileData && fileId == other.fileId && filename == other.filename && additionalProperties == other.additionalProperties /* spotless:on */
+                return other is FileObject &&
+                    fileData == other.fileData &&
+                    fileId == other.fileId &&
+                    filename == other.filename &&
+                    additionalProperties == other.additionalProperties
             }
 
-            /* spotless:off */
-            private val hashCode: Int by lazy { Objects.hash(fileData, fileId, filename, additionalProperties) }
-            /* spotless:on */
+            private val hashCode: Int by lazy {
+                Objects.hash(fileData, fileId, filename, additionalProperties)
+            }
 
             override fun hashCode(): Int = hashCode
 
@@ -686,12 +694,13 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is File && file == other.file && type == other.type && additionalProperties == other.additionalProperties /* spotless:on */
+            return other is File &&
+                file == other.file &&
+                type == other.type &&
+                additionalProperties == other.additionalProperties
         }
 
-        /* spotless:off */
         private val hashCode: Int by lazy { Objects.hash(file, type, additionalProperties) }
-        /* spotless:on */
 
         override fun hashCode(): Int = hashCode
 

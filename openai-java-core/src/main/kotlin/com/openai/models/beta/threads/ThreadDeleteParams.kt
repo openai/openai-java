@@ -215,10 +215,15 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is ThreadDeleteParams && threadId == other.threadId && additionalHeaders == other.additionalHeaders && additionalQueryParams == other.additionalQueryParams && additionalBodyProperties == other.additionalBodyProperties /* spotless:on */
+        return other is ThreadDeleteParams &&
+            threadId == other.threadId &&
+            additionalHeaders == other.additionalHeaders &&
+            additionalQueryParams == other.additionalQueryParams &&
+            additionalBodyProperties == other.additionalBodyProperties
     }
 
-    override fun hashCode(): Int = /* spotless:off */ Objects.hash(threadId, additionalHeaders, additionalQueryParams, additionalBodyProperties) /* spotless:on */
+    override fun hashCode(): Int =
+        Objects.hash(threadId, additionalHeaders, additionalQueryParams, additionalBodyProperties)
 
     override fun toString() =
         "ThreadDeleteParams{threadId=$threadId, additionalHeaders=$additionalHeaders, additionalQueryParams=$additionalQueryParams, additionalBodyProperties=$additionalBodyProperties}"

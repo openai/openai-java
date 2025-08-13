@@ -535,10 +535,10 @@ private constructor(
                     return true
                 }
 
-                return /* spotless:off */ other is Format && text == other.text && grammar == other.grammar /* spotless:on */
+                return other is Format && text == other.text && grammar == other.grammar
             }
 
-            override fun hashCode(): Int = /* spotless:off */ Objects.hash(text, grammar) /* spotless:on */
+            override fun hashCode(): Int = Objects.hash(text, grammar)
 
             override fun toString(): String =
                 when {
@@ -1138,7 +1138,7 @@ private constructor(
                                 return true
                             }
 
-                            return /* spotless:off */ other is Syntax && value == other.value /* spotless:on */
+                            return other is Syntax && value == other.value
                         }
 
                         override fun hashCode() = value.hashCode()
@@ -1151,12 +1151,15 @@ private constructor(
                             return true
                         }
 
-                        return /* spotless:off */ other is InnerGrammar && definition == other.definition && syntax == other.syntax && additionalProperties == other.additionalProperties /* spotless:on */
+                        return other is InnerGrammar &&
+                            definition == other.definition &&
+                            syntax == other.syntax &&
+                            additionalProperties == other.additionalProperties
                     }
 
-                    /* spotless:off */
-                    private val hashCode: Int by lazy { Objects.hash(definition, syntax, additionalProperties) }
-                    /* spotless:on */
+                    private val hashCode: Int by lazy {
+                        Objects.hash(definition, syntax, additionalProperties)
+                    }
 
                     override fun hashCode(): Int = hashCode
 
@@ -1169,12 +1172,15 @@ private constructor(
                         return true
                     }
 
-                    return /* spotless:off */ other is Grammar && grammar == other.grammar && type == other.type && additionalProperties == other.additionalProperties /* spotless:on */
+                    return other is Grammar &&
+                        grammar == other.grammar &&
+                        type == other.type &&
+                        additionalProperties == other.additionalProperties
                 }
 
-                /* spotless:off */
-                private val hashCode: Int by lazy { Objects.hash(grammar, type, additionalProperties) }
-                /* spotless:on */
+                private val hashCode: Int by lazy {
+                    Objects.hash(grammar, type, additionalProperties)
+                }
 
                 override fun hashCode(): Int = hashCode
 
@@ -1188,12 +1194,16 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is Custom && name == other.name && description == other.description && format == other.format && additionalProperties == other.additionalProperties /* spotless:on */
+            return other is Custom &&
+                name == other.name &&
+                description == other.description &&
+                format == other.format &&
+                additionalProperties == other.additionalProperties
         }
 
-        /* spotless:off */
-        private val hashCode: Int by lazy { Objects.hash(name, description, format, additionalProperties) }
-        /* spotless:on */
+        private val hashCode: Int by lazy {
+            Objects.hash(name, description, format, additionalProperties)
+        }
 
         override fun hashCode(): Int = hashCode
 
@@ -1206,12 +1216,13 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is ChatCompletionCustomTool && custom == other.custom && type == other.type && additionalProperties == other.additionalProperties /* spotless:on */
+        return other is ChatCompletionCustomTool &&
+            custom == other.custom &&
+            type == other.type &&
+            additionalProperties == other.additionalProperties
     }
 
-    /* spotless:off */
     private val hashCode: Int by lazy { Objects.hash(custom, type, additionalProperties) }
-    /* spotless:on */
 
     override fun hashCode(): Int = hashCode
 

@@ -443,7 +443,7 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is Filter && value == other.value /* spotless:on */
+            return other is Filter && value == other.value
         }
 
         override fun hashCode() = value.hashCode()
@@ -572,7 +572,7 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is Order && value == other.value /* spotless:on */
+            return other is Order && value == other.value
         }
 
         override fun hashCode() = value.hashCode()
@@ -585,10 +585,30 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is FileBatchListFilesParams && vectorStoreId == other.vectorStoreId && batchId == other.batchId && after == other.after && before == other.before && filter == other.filter && limit == other.limit && order == other.order && additionalHeaders == other.additionalHeaders && additionalQueryParams == other.additionalQueryParams /* spotless:on */
+        return other is FileBatchListFilesParams &&
+            vectorStoreId == other.vectorStoreId &&
+            batchId == other.batchId &&
+            after == other.after &&
+            before == other.before &&
+            filter == other.filter &&
+            limit == other.limit &&
+            order == other.order &&
+            additionalHeaders == other.additionalHeaders &&
+            additionalQueryParams == other.additionalQueryParams
     }
 
-    override fun hashCode(): Int = /* spotless:off */ Objects.hash(vectorStoreId, batchId, after, before, filter, limit, order, additionalHeaders, additionalQueryParams) /* spotless:on */
+    override fun hashCode(): Int =
+        Objects.hash(
+            vectorStoreId,
+            batchId,
+            after,
+            before,
+            filter,
+            limit,
+            order,
+            additionalHeaders,
+            additionalQueryParams,
+        )
 
     override fun toString() =
         "FileBatchListFilesParams{vectorStoreId=$vectorStoreId, batchId=$batchId, after=$after, before=$before, filter=$filter, limit=$limit, order=$order, additionalHeaders=$additionalHeaders, additionalQueryParams=$additionalQueryParams}"

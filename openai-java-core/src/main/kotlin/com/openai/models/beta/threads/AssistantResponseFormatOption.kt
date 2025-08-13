@@ -193,10 +193,15 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is AssistantResponseFormatOption && auto == other.auto && responseFormatText == other.responseFormatText && responseFormatJsonObject == other.responseFormatJsonObject && responseFormatJsonSchema == other.responseFormatJsonSchema /* spotless:on */
+        return other is AssistantResponseFormatOption &&
+            auto == other.auto &&
+            responseFormatText == other.responseFormatText &&
+            responseFormatJsonObject == other.responseFormatJsonObject &&
+            responseFormatJsonSchema == other.responseFormatJsonSchema
     }
 
-    override fun hashCode(): Int = /* spotless:off */ Objects.hash(auto, responseFormatText, responseFormatJsonObject, responseFormatJsonSchema) /* spotless:on */
+    override fun hashCode(): Int =
+        Objects.hash(auto, responseFormatText, responseFormatJsonObject, responseFormatJsonSchema)
 
     override fun toString(): String =
         when {

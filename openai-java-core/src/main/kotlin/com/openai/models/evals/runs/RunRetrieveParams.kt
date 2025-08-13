@@ -202,10 +202,15 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is RunRetrieveParams && evalId == other.evalId && runId == other.runId && additionalHeaders == other.additionalHeaders && additionalQueryParams == other.additionalQueryParams /* spotless:on */
+        return other is RunRetrieveParams &&
+            evalId == other.evalId &&
+            runId == other.runId &&
+            additionalHeaders == other.additionalHeaders &&
+            additionalQueryParams == other.additionalQueryParams
     }
 
-    override fun hashCode(): Int = /* spotless:off */ Objects.hash(evalId, runId, additionalHeaders, additionalQueryParams) /* spotless:on */
+    override fun hashCode(): Int =
+        Objects.hash(evalId, runId, additionalHeaders, additionalQueryParams)
 
     override fun toString() =
         "RunRetrieveParams{evalId=$evalId, runId=$runId, additionalHeaders=$additionalHeaders, additionalQueryParams=$additionalQueryParams}"

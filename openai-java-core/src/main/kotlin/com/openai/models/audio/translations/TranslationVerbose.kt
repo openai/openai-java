@@ -287,12 +287,17 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is TranslationVerbose && duration == other.duration && language == other.language && text == other.text && segments == other.segments && additionalProperties == other.additionalProperties /* spotless:on */
+        return other is TranslationVerbose &&
+            duration == other.duration &&
+            language == other.language &&
+            text == other.text &&
+            segments == other.segments &&
+            additionalProperties == other.additionalProperties
     }
 
-    /* spotless:off */
-    private val hashCode: Int by lazy { Objects.hash(duration, language, text, segments, additionalProperties) }
-    /* spotless:on */
+    private val hashCode: Int by lazy {
+        Objects.hash(duration, language, text, segments, additionalProperties)
+    }
 
     override fun hashCode(): Int = hashCode
 

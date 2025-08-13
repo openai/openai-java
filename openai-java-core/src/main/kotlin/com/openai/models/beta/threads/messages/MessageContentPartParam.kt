@@ -129,10 +129,13 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is MessageContentPartParam && imageFile == other.imageFile && imageUrl == other.imageUrl && text == other.text /* spotless:on */
+        return other is MessageContentPartParam &&
+            imageFile == other.imageFile &&
+            imageUrl == other.imageUrl &&
+            text == other.text
     }
 
-    override fun hashCode(): Int = /* spotless:off */ Objects.hash(imageFile, imageUrl, text) /* spotless:on */
+    override fun hashCode(): Int = Objects.hash(imageFile, imageUrl, text)
 
     override fun toString(): String =
         when {

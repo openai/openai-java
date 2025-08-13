@@ -152,12 +152,12 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is DpoMethod && hyperparameters == other.hyperparameters && additionalProperties == other.additionalProperties /* spotless:on */
+        return other is DpoMethod &&
+            hyperparameters == other.hyperparameters &&
+            additionalProperties == other.additionalProperties
     }
 
-    /* spotless:off */
     private val hashCode: Int by lazy { Objects.hash(hyperparameters, additionalProperties) }
-    /* spotless:on */
 
     override fun hashCode(): Int = hashCode
 

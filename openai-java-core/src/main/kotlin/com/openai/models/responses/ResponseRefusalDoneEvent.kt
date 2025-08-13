@@ -354,12 +354,27 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is ResponseRefusalDoneEvent && contentIndex == other.contentIndex && itemId == other.itemId && outputIndex == other.outputIndex && refusal == other.refusal && sequenceNumber == other.sequenceNumber && type == other.type && additionalProperties == other.additionalProperties /* spotless:on */
+        return other is ResponseRefusalDoneEvent &&
+            contentIndex == other.contentIndex &&
+            itemId == other.itemId &&
+            outputIndex == other.outputIndex &&
+            refusal == other.refusal &&
+            sequenceNumber == other.sequenceNumber &&
+            type == other.type &&
+            additionalProperties == other.additionalProperties
     }
 
-    /* spotless:off */
-    private val hashCode: Int by lazy { Objects.hash(contentIndex, itemId, outputIndex, refusal, sequenceNumber, type, additionalProperties) }
-    /* spotless:on */
+    private val hashCode: Int by lazy {
+        Objects.hash(
+            contentIndex,
+            itemId,
+            outputIndex,
+            refusal,
+            sequenceNumber,
+            type,
+            additionalProperties,
+        )
+    }
 
     override fun hashCode(): Int = hashCode
 

@@ -1193,10 +1193,118 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is ResponseStreamEvent && audioDelta == other.audioDelta && audioDone == other.audioDone && audioTranscriptDelta == other.audioTranscriptDelta && audioTranscriptDone == other.audioTranscriptDone && codeInterpreterCallCodeDelta == other.codeInterpreterCallCodeDelta && codeInterpreterCallCodeDone == other.codeInterpreterCallCodeDone && codeInterpreterCallCompleted == other.codeInterpreterCallCompleted && codeInterpreterCallInProgress == other.codeInterpreterCallInProgress && codeInterpreterCallInterpreting == other.codeInterpreterCallInterpreting && completed == other.completed && contentPartAdded == other.contentPartAdded && contentPartDone == other.contentPartDone && created == other.created && error == other.error && fileSearchCallCompleted == other.fileSearchCallCompleted && fileSearchCallInProgress == other.fileSearchCallInProgress && fileSearchCallSearching == other.fileSearchCallSearching && functionCallArgumentsDelta == other.functionCallArgumentsDelta && functionCallArgumentsDone == other.functionCallArgumentsDone && inProgress == other.inProgress && failed == other.failed && incomplete == other.incomplete && outputItemAdded == other.outputItemAdded && outputItemDone == other.outputItemDone && reasoningSummaryPartAdded == other.reasoningSummaryPartAdded && reasoningSummaryPartDone == other.reasoningSummaryPartDone && reasoningSummaryTextDelta == other.reasoningSummaryTextDelta && reasoningSummaryTextDone == other.reasoningSummaryTextDone && reasoningTextDelta == other.reasoningTextDelta && reasoningTextDone == other.reasoningTextDone && refusalDelta == other.refusalDelta && refusalDone == other.refusalDone && outputTextDelta == other.outputTextDelta && outputTextDone == other.outputTextDone && webSearchCallCompleted == other.webSearchCallCompleted && webSearchCallInProgress == other.webSearchCallInProgress && webSearchCallSearching == other.webSearchCallSearching && imageGenerationCallCompleted == other.imageGenerationCallCompleted && imageGenerationCallGenerating == other.imageGenerationCallGenerating && imageGenerationCallInProgress == other.imageGenerationCallInProgress && imageGenerationCallPartialImage == other.imageGenerationCallPartialImage && mcpCallArgumentsDelta == other.mcpCallArgumentsDelta && mcpCallArgumentsDone == other.mcpCallArgumentsDone && mcpCallCompleted == other.mcpCallCompleted && mcpCallFailed == other.mcpCallFailed && mcpCallInProgress == other.mcpCallInProgress && mcpListToolsCompleted == other.mcpListToolsCompleted && mcpListToolsFailed == other.mcpListToolsFailed && mcpListToolsInProgress == other.mcpListToolsInProgress && outputTextAnnotationAdded == other.outputTextAnnotationAdded && queued == other.queued && customToolCallInputDelta == other.customToolCallInputDelta && customToolCallInputDone == other.customToolCallInputDone /* spotless:on */
+        return other is ResponseStreamEvent &&
+            audioDelta == other.audioDelta &&
+            audioDone == other.audioDone &&
+            audioTranscriptDelta == other.audioTranscriptDelta &&
+            audioTranscriptDone == other.audioTranscriptDone &&
+            codeInterpreterCallCodeDelta == other.codeInterpreterCallCodeDelta &&
+            codeInterpreterCallCodeDone == other.codeInterpreterCallCodeDone &&
+            codeInterpreterCallCompleted == other.codeInterpreterCallCompleted &&
+            codeInterpreterCallInProgress == other.codeInterpreterCallInProgress &&
+            codeInterpreterCallInterpreting == other.codeInterpreterCallInterpreting &&
+            completed == other.completed &&
+            contentPartAdded == other.contentPartAdded &&
+            contentPartDone == other.contentPartDone &&
+            created == other.created &&
+            error == other.error &&
+            fileSearchCallCompleted == other.fileSearchCallCompleted &&
+            fileSearchCallInProgress == other.fileSearchCallInProgress &&
+            fileSearchCallSearching == other.fileSearchCallSearching &&
+            functionCallArgumentsDelta == other.functionCallArgumentsDelta &&
+            functionCallArgumentsDone == other.functionCallArgumentsDone &&
+            inProgress == other.inProgress &&
+            failed == other.failed &&
+            incomplete == other.incomplete &&
+            outputItemAdded == other.outputItemAdded &&
+            outputItemDone == other.outputItemDone &&
+            reasoningSummaryPartAdded == other.reasoningSummaryPartAdded &&
+            reasoningSummaryPartDone == other.reasoningSummaryPartDone &&
+            reasoningSummaryTextDelta == other.reasoningSummaryTextDelta &&
+            reasoningSummaryTextDone == other.reasoningSummaryTextDone &&
+            reasoningTextDelta == other.reasoningTextDelta &&
+            reasoningTextDone == other.reasoningTextDone &&
+            refusalDelta == other.refusalDelta &&
+            refusalDone == other.refusalDone &&
+            outputTextDelta == other.outputTextDelta &&
+            outputTextDone == other.outputTextDone &&
+            webSearchCallCompleted == other.webSearchCallCompleted &&
+            webSearchCallInProgress == other.webSearchCallInProgress &&
+            webSearchCallSearching == other.webSearchCallSearching &&
+            imageGenerationCallCompleted == other.imageGenerationCallCompleted &&
+            imageGenerationCallGenerating == other.imageGenerationCallGenerating &&
+            imageGenerationCallInProgress == other.imageGenerationCallInProgress &&
+            imageGenerationCallPartialImage == other.imageGenerationCallPartialImage &&
+            mcpCallArgumentsDelta == other.mcpCallArgumentsDelta &&
+            mcpCallArgumentsDone == other.mcpCallArgumentsDone &&
+            mcpCallCompleted == other.mcpCallCompleted &&
+            mcpCallFailed == other.mcpCallFailed &&
+            mcpCallInProgress == other.mcpCallInProgress &&
+            mcpListToolsCompleted == other.mcpListToolsCompleted &&
+            mcpListToolsFailed == other.mcpListToolsFailed &&
+            mcpListToolsInProgress == other.mcpListToolsInProgress &&
+            outputTextAnnotationAdded == other.outputTextAnnotationAdded &&
+            queued == other.queued &&
+            customToolCallInputDelta == other.customToolCallInputDelta &&
+            customToolCallInputDone == other.customToolCallInputDone
     }
 
-    override fun hashCode(): Int = /* spotless:off */ Objects.hash(audioDelta, audioDone, audioTranscriptDelta, audioTranscriptDone, codeInterpreterCallCodeDelta, codeInterpreterCallCodeDone, codeInterpreterCallCompleted, codeInterpreterCallInProgress, codeInterpreterCallInterpreting, completed, contentPartAdded, contentPartDone, created, error, fileSearchCallCompleted, fileSearchCallInProgress, fileSearchCallSearching, functionCallArgumentsDelta, functionCallArgumentsDone, inProgress, failed, incomplete, outputItemAdded, outputItemDone, reasoningSummaryPartAdded, reasoningSummaryPartDone, reasoningSummaryTextDelta, reasoningSummaryTextDone, reasoningTextDelta, reasoningTextDone, refusalDelta, refusalDone, outputTextDelta, outputTextDone, webSearchCallCompleted, webSearchCallInProgress, webSearchCallSearching, imageGenerationCallCompleted, imageGenerationCallGenerating, imageGenerationCallInProgress, imageGenerationCallPartialImage, mcpCallArgumentsDelta, mcpCallArgumentsDone, mcpCallCompleted, mcpCallFailed, mcpCallInProgress, mcpListToolsCompleted, mcpListToolsFailed, mcpListToolsInProgress, outputTextAnnotationAdded, queued, customToolCallInputDelta, customToolCallInputDone) /* spotless:on */
+    override fun hashCode(): Int =
+        Objects.hash(
+            audioDelta,
+            audioDone,
+            audioTranscriptDelta,
+            audioTranscriptDone,
+            codeInterpreterCallCodeDelta,
+            codeInterpreterCallCodeDone,
+            codeInterpreterCallCompleted,
+            codeInterpreterCallInProgress,
+            codeInterpreterCallInterpreting,
+            completed,
+            contentPartAdded,
+            contentPartDone,
+            created,
+            error,
+            fileSearchCallCompleted,
+            fileSearchCallInProgress,
+            fileSearchCallSearching,
+            functionCallArgumentsDelta,
+            functionCallArgumentsDone,
+            inProgress,
+            failed,
+            incomplete,
+            outputItemAdded,
+            outputItemDone,
+            reasoningSummaryPartAdded,
+            reasoningSummaryPartDone,
+            reasoningSummaryTextDelta,
+            reasoningSummaryTextDone,
+            reasoningTextDelta,
+            reasoningTextDone,
+            refusalDelta,
+            refusalDone,
+            outputTextDelta,
+            outputTextDone,
+            webSearchCallCompleted,
+            webSearchCallInProgress,
+            webSearchCallSearching,
+            imageGenerationCallCompleted,
+            imageGenerationCallGenerating,
+            imageGenerationCallInProgress,
+            imageGenerationCallPartialImage,
+            mcpCallArgumentsDelta,
+            mcpCallArgumentsDone,
+            mcpCallCompleted,
+            mcpCallFailed,
+            mcpCallInProgress,
+            mcpListToolsCompleted,
+            mcpListToolsFailed,
+            mcpListToolsInProgress,
+            outputTextAnnotationAdded,
+            queued,
+            customToolCallInputDelta,
+            customToolCallInputDone,
+        )
 
     override fun toString(): String =
         when {

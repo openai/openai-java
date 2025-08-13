@@ -335,10 +335,12 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is Content && text == other.text && arrayOfContentParts == other.arrayOfContentParts /* spotless:on */
+            return other is Content &&
+                text == other.text &&
+                arrayOfContentParts == other.arrayOfContentParts
         }
 
-        override fun hashCode(): Int = /* spotless:off */ Objects.hash(text, arrayOfContentParts) /* spotless:on */
+        override fun hashCode(): Int = Objects.hash(text, arrayOfContentParts)
 
         override fun toString(): String =
             when {
@@ -456,12 +458,13 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is ChatCompletionPredictionContent && content == other.content && type == other.type && additionalProperties == other.additionalProperties /* spotless:on */
+        return other is ChatCompletionPredictionContent &&
+            content == other.content &&
+            type == other.type &&
+            additionalProperties == other.additionalProperties
     }
 
-    /* spotless:off */
     private val hashCode: Int by lazy { Objects.hash(content, type, additionalProperties) }
-    /* spotless:on */
 
     override fun hashCode(): Int = hashCode
 

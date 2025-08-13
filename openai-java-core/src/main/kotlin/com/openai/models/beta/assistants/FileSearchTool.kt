@@ -714,7 +714,7 @@ private constructor(
                         return true
                     }
 
-                    return /* spotless:off */ other is Ranker && value == other.value /* spotless:on */
+                    return other is Ranker && value == other.value
                 }
 
                 override fun hashCode() = value.hashCode()
@@ -727,12 +727,15 @@ private constructor(
                     return true
                 }
 
-                return /* spotless:off */ other is RankingOptions && scoreThreshold == other.scoreThreshold && ranker == other.ranker && additionalProperties == other.additionalProperties /* spotless:on */
+                return other is RankingOptions &&
+                    scoreThreshold == other.scoreThreshold &&
+                    ranker == other.ranker &&
+                    additionalProperties == other.additionalProperties
             }
 
-            /* spotless:off */
-            private val hashCode: Int by lazy { Objects.hash(scoreThreshold, ranker, additionalProperties) }
-            /* spotless:on */
+            private val hashCode: Int by lazy {
+                Objects.hash(scoreThreshold, ranker, additionalProperties)
+            }
 
             override fun hashCode(): Int = hashCode
 
@@ -745,12 +748,15 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is FileSearch && maxNumResults == other.maxNumResults && rankingOptions == other.rankingOptions && additionalProperties == other.additionalProperties /* spotless:on */
+            return other is FileSearch &&
+                maxNumResults == other.maxNumResults &&
+                rankingOptions == other.rankingOptions &&
+                additionalProperties == other.additionalProperties
         }
 
-        /* spotless:off */
-        private val hashCode: Int by lazy { Objects.hash(maxNumResults, rankingOptions, additionalProperties) }
-        /* spotless:on */
+        private val hashCode: Int by lazy {
+            Objects.hash(maxNumResults, rankingOptions, additionalProperties)
+        }
 
         override fun hashCode(): Int = hashCode
 
@@ -763,12 +769,13 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is FileSearchTool && type == other.type && fileSearch == other.fileSearch && additionalProperties == other.additionalProperties /* spotless:on */
+        return other is FileSearchTool &&
+            type == other.type &&
+            fileSearch == other.fileSearch &&
+            additionalProperties == other.additionalProperties
     }
 
-    /* spotless:off */
     private val hashCode: Int by lazy { Objects.hash(type, fileSearch, additionalProperties) }
-    /* spotless:on */
 
     override fun hashCode(): Int = hashCode
 

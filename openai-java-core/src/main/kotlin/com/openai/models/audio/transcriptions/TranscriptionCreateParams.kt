@@ -1180,12 +1180,33 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is Body && file == other.file && model == other.model && chunkingStrategy == other.chunkingStrategy && include == other.include && language == other.language && prompt == other.prompt && responseFormat == other.responseFormat && temperature == other.temperature && timestampGranularities == other.timestampGranularities && additionalProperties == other.additionalProperties /* spotless:on */
+            return other is Body &&
+                file == other.file &&
+                model == other.model &&
+                chunkingStrategy == other.chunkingStrategy &&
+                include == other.include &&
+                language == other.language &&
+                prompt == other.prompt &&
+                responseFormat == other.responseFormat &&
+                temperature == other.temperature &&
+                timestampGranularities == other.timestampGranularities &&
+                additionalProperties == other.additionalProperties
         }
 
-        /* spotless:off */
-        private val hashCode: Int by lazy { Objects.hash(file, model, chunkingStrategy, include, language, prompt, responseFormat, temperature, timestampGranularities, additionalProperties) }
-        /* spotless:on */
+        private val hashCode: Int by lazy {
+            Objects.hash(
+                file,
+                model,
+                chunkingStrategy,
+                include,
+                language,
+                prompt,
+                responseFormat,
+                temperature,
+                timestampGranularities,
+                additionalProperties,
+            )
+        }
 
         override fun hashCode(): Int = hashCode
 
@@ -1288,10 +1309,10 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is ChunkingStrategy && auto == other.auto && vadConfig == other.vadConfig /* spotless:on */
+            return other is ChunkingStrategy && auto == other.auto && vadConfig == other.vadConfig
         }
 
-        override fun hashCode(): Int = /* spotless:off */ Objects.hash(auto, vadConfig) /* spotless:on */
+        override fun hashCode(): Int = Objects.hash(auto, vadConfig)
 
         override fun toString(): String =
             when {
@@ -1761,7 +1782,7 @@ private constructor(
                         return true
                     }
 
-                    return /* spotless:off */ other is Type && value == other.value /* spotless:on */
+                    return other is Type && value == other.value
                 }
 
                 override fun hashCode() = value.hashCode()
@@ -1774,12 +1795,23 @@ private constructor(
                     return true
                 }
 
-                return /* spotless:off */ other is VadConfig && type == other.type && prefixPaddingMs == other.prefixPaddingMs && silenceDurationMs == other.silenceDurationMs && threshold == other.threshold && additionalProperties == other.additionalProperties /* spotless:on */
+                return other is VadConfig &&
+                    type == other.type &&
+                    prefixPaddingMs == other.prefixPaddingMs &&
+                    silenceDurationMs == other.silenceDurationMs &&
+                    threshold == other.threshold &&
+                    additionalProperties == other.additionalProperties
             }
 
-            /* spotless:off */
-            private val hashCode: Int by lazy { Objects.hash(type, prefixPaddingMs, silenceDurationMs, threshold, additionalProperties) }
-            /* spotless:on */
+            private val hashCode: Int by lazy {
+                Objects.hash(
+                    type,
+                    prefixPaddingMs,
+                    silenceDurationMs,
+                    threshold,
+                    additionalProperties,
+                )
+            }
 
             override fun hashCode(): Int = hashCode
 
@@ -1911,7 +1943,7 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is TimestampGranularity && value == other.value /* spotless:on */
+            return other is TimestampGranularity && value == other.value
         }
 
         override fun hashCode() = value.hashCode()
@@ -1924,10 +1956,13 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is TranscriptionCreateParams && body == other.body && additionalHeaders == other.additionalHeaders && additionalQueryParams == other.additionalQueryParams /* spotless:on */
+        return other is TranscriptionCreateParams &&
+            body == other.body &&
+            additionalHeaders == other.additionalHeaders &&
+            additionalQueryParams == other.additionalQueryParams
     }
 
-    override fun hashCode(): Int = /* spotless:off */ Objects.hash(body, additionalHeaders, additionalQueryParams) /* spotless:on */
+    override fun hashCode(): Int = Objects.hash(body, additionalHeaders, additionalQueryParams)
 
     override fun toString() =
         "TranscriptionCreateParams{body=$body, additionalHeaders=$additionalHeaders, additionalQueryParams=$additionalQueryParams}"

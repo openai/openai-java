@@ -141,10 +141,12 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is TranscriptionStreamEvent && transcriptTextDelta == other.transcriptTextDelta && transcriptTextDone == other.transcriptTextDone /* spotless:on */
+        return other is TranscriptionStreamEvent &&
+            transcriptTextDelta == other.transcriptTextDelta &&
+            transcriptTextDone == other.transcriptTextDone
     }
 
-    override fun hashCode(): Int = /* spotless:off */ Objects.hash(transcriptTextDelta, transcriptTextDone) /* spotless:on */
+    override fun hashCode(): Int = Objects.hash(transcriptTextDelta, transcriptTextDone)
 
     override fun toString(): String =
         when {

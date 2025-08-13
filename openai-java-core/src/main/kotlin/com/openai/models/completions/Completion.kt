@@ -414,12 +414,29 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is Completion && id == other.id && choices == other.choices && created == other.created && model == other.model && object_ == other.object_ && systemFingerprint == other.systemFingerprint && usage == other.usage && additionalProperties == other.additionalProperties /* spotless:on */
+        return other is Completion &&
+            id == other.id &&
+            choices == other.choices &&
+            created == other.created &&
+            model == other.model &&
+            object_ == other.object_ &&
+            systemFingerprint == other.systemFingerprint &&
+            usage == other.usage &&
+            additionalProperties == other.additionalProperties
     }
 
-    /* spotless:off */
-    private val hashCode: Int by lazy { Objects.hash(id, choices, created, model, object_, systemFingerprint, usage, additionalProperties) }
-    /* spotless:on */
+    private val hashCode: Int by lazy {
+        Objects.hash(
+            id,
+            choices,
+            created,
+            model,
+            object_,
+            systemFingerprint,
+            usage,
+            additionalProperties,
+        )
+    }
 
     override fun hashCode(): Int = hashCode
 

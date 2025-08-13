@@ -473,10 +473,22 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is Graders && stringCheckGrader == other.stringCheckGrader && textSimilarityGrader == other.textSimilarityGrader && pythonGrader == other.pythonGrader && scoreModelGrader == other.scoreModelGrader && labelModelGrader == other.labelModelGrader /* spotless:on */
+            return other is Graders &&
+                stringCheckGrader == other.stringCheckGrader &&
+                textSimilarityGrader == other.textSimilarityGrader &&
+                pythonGrader == other.pythonGrader &&
+                scoreModelGrader == other.scoreModelGrader &&
+                labelModelGrader == other.labelModelGrader
         }
 
-        override fun hashCode(): Int = /* spotless:off */ Objects.hash(stringCheckGrader, textSimilarityGrader, pythonGrader, scoreModelGrader, labelModelGrader) /* spotless:on */
+        override fun hashCode(): Int =
+            Objects.hash(
+                stringCheckGrader,
+                textSimilarityGrader,
+                pythonGrader,
+                scoreModelGrader,
+                labelModelGrader,
+            )
 
         override fun toString(): String =
             when {
@@ -630,12 +642,17 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is MultiGrader && calculateOutput == other.calculateOutput && graders == other.graders && name == other.name && type == other.type && additionalProperties == other.additionalProperties /* spotless:on */
+        return other is MultiGrader &&
+            calculateOutput == other.calculateOutput &&
+            graders == other.graders &&
+            name == other.name &&
+            type == other.type &&
+            additionalProperties == other.additionalProperties
     }
 
-    /* spotless:off */
-    private val hashCode: Int by lazy { Objects.hash(calculateOutput, graders, name, type, additionalProperties) }
-    /* spotless:on */
+    private val hashCode: Int by lazy {
+        Objects.hash(calculateOutput, graders, name, type, additionalProperties)
+    }
 
     override fun hashCode(): Int = hashCode
 

@@ -244,12 +244,16 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is ResponseAudioTranscriptDeltaEvent && delta == other.delta && sequenceNumber == other.sequenceNumber && type == other.type && additionalProperties == other.additionalProperties /* spotless:on */
+        return other is ResponseAudioTranscriptDeltaEvent &&
+            delta == other.delta &&
+            sequenceNumber == other.sequenceNumber &&
+            type == other.type &&
+            additionalProperties == other.additionalProperties
     }
 
-    /* spotless:off */
-    private val hashCode: Int by lazy { Objects.hash(delta, sequenceNumber, type, additionalProperties) }
-    /* spotless:on */
+    private val hashCode: Int by lazy {
+        Objects.hash(delta, sequenceNumber, type, additionalProperties)
+    }
 
     override fun hashCode(): Int = hashCode
 

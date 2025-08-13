@@ -2205,12 +2205,47 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is Body && assistantId == other.assistantId && additionalInstructions == other.additionalInstructions && additionalMessages == other.additionalMessages && instructions == other.instructions && maxCompletionTokens == other.maxCompletionTokens && maxPromptTokens == other.maxPromptTokens && metadata == other.metadata && model == other.model && parallelToolCalls == other.parallelToolCalls && reasoningEffort == other.reasoningEffort && responseFormat == other.responseFormat && temperature == other.temperature && toolChoice == other.toolChoice && tools == other.tools && topP == other.topP && truncationStrategy == other.truncationStrategy && additionalProperties == other.additionalProperties /* spotless:on */
+            return other is Body &&
+                assistantId == other.assistantId &&
+                additionalInstructions == other.additionalInstructions &&
+                additionalMessages == other.additionalMessages &&
+                instructions == other.instructions &&
+                maxCompletionTokens == other.maxCompletionTokens &&
+                maxPromptTokens == other.maxPromptTokens &&
+                metadata == other.metadata &&
+                model == other.model &&
+                parallelToolCalls == other.parallelToolCalls &&
+                reasoningEffort == other.reasoningEffort &&
+                responseFormat == other.responseFormat &&
+                temperature == other.temperature &&
+                toolChoice == other.toolChoice &&
+                tools == other.tools &&
+                topP == other.topP &&
+                truncationStrategy == other.truncationStrategy &&
+                additionalProperties == other.additionalProperties
         }
 
-        /* spotless:off */
-        private val hashCode: Int by lazy { Objects.hash(assistantId, additionalInstructions, additionalMessages, instructions, maxCompletionTokens, maxPromptTokens, metadata, model, parallelToolCalls, reasoningEffort, responseFormat, temperature, toolChoice, tools, topP, truncationStrategy, additionalProperties) }
-        /* spotless:on */
+        private val hashCode: Int by lazy {
+            Objects.hash(
+                assistantId,
+                additionalInstructions,
+                additionalMessages,
+                instructions,
+                maxCompletionTokens,
+                maxPromptTokens,
+                metadata,
+                model,
+                parallelToolCalls,
+                reasoningEffort,
+                responseFormat,
+                temperature,
+                toolChoice,
+                tools,
+                topP,
+                truncationStrategy,
+                additionalProperties,
+            )
+        }
 
         override fun hashCode(): Int = hashCode
 
@@ -2624,10 +2659,12 @@ private constructor(
                     return true
                 }
 
-                return /* spotless:off */ other is Content && text == other.text && arrayOfContentParts == other.arrayOfContentParts /* spotless:on */
+                return other is Content &&
+                    text == other.text &&
+                    arrayOfContentParts == other.arrayOfContentParts
             }
 
-            override fun hashCode(): Int = /* spotless:off */ Objects.hash(text, arrayOfContentParts) /* spotless:on */
+            override fun hashCode(): Int = Objects.hash(text, arrayOfContentParts)
 
             override fun toString(): String =
                 when {
@@ -2860,7 +2897,7 @@ private constructor(
                     return true
                 }
 
-                return /* spotless:off */ other is Role && value == other.value /* spotless:on */
+                return other is Role && value == other.value
             }
 
             override fun hashCode() = value.hashCode()
@@ -3156,10 +3193,12 @@ private constructor(
                         return true
                     }
 
-                    return /* spotless:off */ other is Tool && codeInterpreter == other.codeInterpreter && fileSearch == other.fileSearch /* spotless:on */
+                    return other is Tool &&
+                        codeInterpreter == other.codeInterpreter &&
+                        fileSearch == other.fileSearch
                 }
 
-                override fun hashCode(): Int = /* spotless:off */ Objects.hash(codeInterpreter, fileSearch) /* spotless:on */
+                override fun hashCode(): Int = Objects.hash(codeInterpreter, fileSearch)
 
                 override fun toString(): String =
                     when {
@@ -3251,12 +3290,13 @@ private constructor(
                     return true
                 }
 
-                return /* spotless:off */ other is Attachment && fileId == other.fileId && tools == other.tools && additionalProperties == other.additionalProperties /* spotless:on */
+                return other is Attachment &&
+                    fileId == other.fileId &&
+                    tools == other.tools &&
+                    additionalProperties == other.additionalProperties
             }
 
-            /* spotless:off */
             private val hashCode: Int by lazy { Objects.hash(fileId, tools, additionalProperties) }
-            /* spotless:on */
 
             override fun hashCode(): Int = hashCode
 
@@ -3364,12 +3404,10 @@ private constructor(
                     return true
                 }
 
-                return /* spotless:off */ other is Metadata && additionalProperties == other.additionalProperties /* spotless:on */
+                return other is Metadata && additionalProperties == other.additionalProperties
             }
 
-            /* spotless:off */
             private val hashCode: Int by lazy { Objects.hash(additionalProperties) }
-            /* spotless:on */
 
             override fun hashCode(): Int = hashCode
 
@@ -3381,12 +3419,17 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is AdditionalMessage && content == other.content && role == other.role && attachments == other.attachments && metadata == other.metadata && additionalProperties == other.additionalProperties /* spotless:on */
+            return other is AdditionalMessage &&
+                content == other.content &&
+                role == other.role &&
+                attachments == other.attachments &&
+                metadata == other.metadata &&
+                additionalProperties == other.additionalProperties
         }
 
-        /* spotless:off */
-        private val hashCode: Int by lazy { Objects.hash(content, role, attachments, metadata, additionalProperties) }
-        /* spotless:on */
+        private val hashCode: Int by lazy {
+            Objects.hash(content, role, attachments, metadata, additionalProperties)
+        }
 
         override fun hashCode(): Int = hashCode
 
@@ -3491,12 +3534,10 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is Metadata && additionalProperties == other.additionalProperties /* spotless:on */
+            return other is Metadata && additionalProperties == other.additionalProperties
         }
 
-        /* spotless:off */
         private val hashCode: Int by lazy { Objects.hash(additionalProperties) }
-        /* spotless:on */
 
         override fun hashCode(): Int = hashCode
 
@@ -3837,7 +3878,7 @@ private constructor(
                     return true
                 }
 
-                return /* spotless:off */ other is Type && value == other.value /* spotless:on */
+                return other is Type && value == other.value
             }
 
             override fun hashCode() = value.hashCode()
@@ -3850,12 +3891,13 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is TruncationStrategy && type == other.type && lastMessages == other.lastMessages && additionalProperties == other.additionalProperties /* spotless:on */
+            return other is TruncationStrategy &&
+                type == other.type &&
+                lastMessages == other.lastMessages &&
+                additionalProperties == other.additionalProperties
         }
 
-        /* spotless:off */
         private val hashCode: Int by lazy { Objects.hash(type, lastMessages, additionalProperties) }
-        /* spotless:on */
 
         override fun hashCode(): Int = hashCode
 
@@ -3868,10 +3910,16 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is RunCreateParams && threadId == other.threadId && include == other.include && body == other.body && additionalHeaders == other.additionalHeaders && additionalQueryParams == other.additionalQueryParams /* spotless:on */
+        return other is RunCreateParams &&
+            threadId == other.threadId &&
+            include == other.include &&
+            body == other.body &&
+            additionalHeaders == other.additionalHeaders &&
+            additionalQueryParams == other.additionalQueryParams
     }
 
-    override fun hashCode(): Int = /* spotless:off */ Objects.hash(threadId, include, body, additionalHeaders, additionalQueryParams) /* spotless:on */
+    override fun hashCode(): Int =
+        Objects.hash(threadId, include, body, additionalHeaders, additionalQueryParams)
 
     override fun toString() =
         "RunCreateParams{threadId=$threadId, include=$include, body=$body, additionalHeaders=$additionalHeaders, additionalQueryParams=$additionalQueryParams}"

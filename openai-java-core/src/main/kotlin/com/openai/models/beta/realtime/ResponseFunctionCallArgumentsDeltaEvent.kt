@@ -386,12 +386,29 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is ResponseFunctionCallArgumentsDeltaEvent && callId == other.callId && delta == other.delta && eventId == other.eventId && itemId == other.itemId && outputIndex == other.outputIndex && responseId == other.responseId && type == other.type && additionalProperties == other.additionalProperties /* spotless:on */
+        return other is ResponseFunctionCallArgumentsDeltaEvent &&
+            callId == other.callId &&
+            delta == other.delta &&
+            eventId == other.eventId &&
+            itemId == other.itemId &&
+            outputIndex == other.outputIndex &&
+            responseId == other.responseId &&
+            type == other.type &&
+            additionalProperties == other.additionalProperties
     }
 
-    /* spotless:off */
-    private val hashCode: Int by lazy { Objects.hash(callId, delta, eventId, itemId, outputIndex, responseId, type, additionalProperties) }
-    /* spotless:on */
+    private val hashCode: Int by lazy {
+        Objects.hash(
+            callId,
+            delta,
+            eventId,
+            itemId,
+            outputIndex,
+            responseId,
+            type,
+            additionalProperties,
+        )
+    }
 
     override fun hashCode(): Int = hashCode
 

@@ -202,10 +202,15 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is FileRetrieveParams && containerId == other.containerId && fileId == other.fileId && additionalHeaders == other.additionalHeaders && additionalQueryParams == other.additionalQueryParams /* spotless:on */
+        return other is FileRetrieveParams &&
+            containerId == other.containerId &&
+            fileId == other.fileId &&
+            additionalHeaders == other.additionalHeaders &&
+            additionalQueryParams == other.additionalQueryParams
     }
 
-    override fun hashCode(): Int = /* spotless:off */ Objects.hash(containerId, fileId, additionalHeaders, additionalQueryParams) /* spotless:on */
+    override fun hashCode(): Int =
+        Objects.hash(containerId, fileId, additionalHeaders, additionalQueryParams)
 
     override fun toString() =
         "FileRetrieveParams{containerId=$containerId, fileId=$fileId, additionalHeaders=$additionalHeaders, additionalQueryParams=$additionalQueryParams}"

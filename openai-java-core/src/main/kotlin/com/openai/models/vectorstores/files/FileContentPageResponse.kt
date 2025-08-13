@@ -293,12 +293,17 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is FileContentPageResponse && data == other.data && hasMore == other.hasMore && nextPage == other.nextPage && object_ == other.object_ && additionalProperties == other.additionalProperties /* spotless:on */
+        return other is FileContentPageResponse &&
+            data == other.data &&
+            hasMore == other.hasMore &&
+            nextPage == other.nextPage &&
+            object_ == other.object_ &&
+            additionalProperties == other.additionalProperties
     }
 
-    /* spotless:off */
-    private val hashCode: Int by lazy { Objects.hash(data, hasMore, nextPage, object_, additionalProperties) }
-    /* spotless:on */
+    private val hashCode: Int by lazy {
+        Objects.hash(data, hasMore, nextPage, object_, additionalProperties)
+    }
 
     override fun hashCode(): Int = hashCode
 

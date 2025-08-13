@@ -198,12 +198,16 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is RunDeleteResponse && deleted == other.deleted && object_ == other.object_ && runId == other.runId && additionalProperties == other.additionalProperties /* spotless:on */
+        return other is RunDeleteResponse &&
+            deleted == other.deleted &&
+            object_ == other.object_ &&
+            runId == other.runId &&
+            additionalProperties == other.additionalProperties
     }
 
-    /* spotless:off */
-    private val hashCode: Int by lazy { Objects.hash(deleted, object_, runId, additionalProperties) }
-    /* spotless:on */
+    private val hashCode: Int by lazy {
+        Objects.hash(deleted, object_, runId, additionalProperties)
+    }
 
     override fun hashCode(): Int = hashCode
 

@@ -360,7 +360,7 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is Mode && value == other.value /* spotless:on */
+            return other is Mode && value == other.value
         }
 
         override fun hashCode() = value.hashCode()
@@ -458,12 +458,10 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is Tool && additionalProperties == other.additionalProperties /* spotless:on */
+            return other is Tool && additionalProperties == other.additionalProperties
         }
 
-        /* spotless:off */
         private val hashCode: Int by lazy { Objects.hash(additionalProperties) }
-        /* spotless:on */
 
         override fun hashCode(): Int = hashCode
 
@@ -475,12 +473,13 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is ChatCompletionAllowedTools && mode == other.mode && tools == other.tools && additionalProperties == other.additionalProperties /* spotless:on */
+        return other is ChatCompletionAllowedTools &&
+            mode == other.mode &&
+            tools == other.tools &&
+            additionalProperties == other.additionalProperties
     }
 
-    /* spotless:off */
     private val hashCode: Int by lazy { Objects.hash(mode, tools, additionalProperties) }
-    /* spotless:on */
 
     override fun hashCode(): Int = hashCode
 

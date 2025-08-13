@@ -374,7 +374,7 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is Role && value == other.value /* spotless:on */
+            return other is Role && value == other.value
         }
 
         override fun hashCode() = value.hashCode()
@@ -387,12 +387,13 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is MessageDelta && content == other.content && role == other.role && additionalProperties == other.additionalProperties /* spotless:on */
+        return other is MessageDelta &&
+            content == other.content &&
+            role == other.role &&
+            additionalProperties == other.additionalProperties
     }
 
-    /* spotless:off */
     private val hashCode: Int by lazy { Objects.hash(content, role, additionalProperties) }
-    /* spotless:on */
 
     override fun hashCode(): Int = hashCode
 

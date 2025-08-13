@@ -180,10 +180,14 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is AssistantRetrieveParams && assistantId == other.assistantId && additionalHeaders == other.additionalHeaders && additionalQueryParams == other.additionalQueryParams /* spotless:on */
+        return other is AssistantRetrieveParams &&
+            assistantId == other.assistantId &&
+            additionalHeaders == other.additionalHeaders &&
+            additionalQueryParams == other.additionalQueryParams
     }
 
-    override fun hashCode(): Int = /* spotless:off */ Objects.hash(assistantId, additionalHeaders, additionalQueryParams) /* spotless:on */
+    override fun hashCode(): Int =
+        Objects.hash(assistantId, additionalHeaders, additionalQueryParams)
 
     override fun toString() =
         "AssistantRetrieveParams{assistantId=$assistantId, additionalHeaders=$additionalHeaders, additionalQueryParams=$additionalQueryParams}"

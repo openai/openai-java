@@ -512,12 +512,13 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is Body && partIds == other.partIds && md5 == other.md5 && additionalProperties == other.additionalProperties /* spotless:on */
+            return other is Body &&
+                partIds == other.partIds &&
+                md5 == other.md5 &&
+                additionalProperties == other.additionalProperties
         }
 
-        /* spotless:off */
         private val hashCode: Int by lazy { Objects.hash(partIds, md5, additionalProperties) }
-        /* spotless:on */
 
         override fun hashCode(): Int = hashCode
 
@@ -530,10 +531,15 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is UploadCompleteParams && uploadId == other.uploadId && body == other.body && additionalHeaders == other.additionalHeaders && additionalQueryParams == other.additionalQueryParams /* spotless:on */
+        return other is UploadCompleteParams &&
+            uploadId == other.uploadId &&
+            body == other.body &&
+            additionalHeaders == other.additionalHeaders &&
+            additionalQueryParams == other.additionalQueryParams
     }
 
-    override fun hashCode(): Int = /* spotless:off */ Objects.hash(uploadId, body, additionalHeaders, additionalQueryParams) /* spotless:on */
+    override fun hashCode(): Int =
+        Objects.hash(uploadId, body, additionalHeaders, additionalQueryParams)
 
     override fun toString() =
         "UploadCompleteParams{uploadId=$uploadId, body=$body, additionalHeaders=$additionalHeaders, additionalQueryParams=$additionalQueryParams}"

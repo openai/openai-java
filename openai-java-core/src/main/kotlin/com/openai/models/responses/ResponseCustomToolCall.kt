@@ -303,12 +303,18 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is ResponseCustomToolCall && callId == other.callId && input == other.input && name == other.name && type == other.type && id == other.id && additionalProperties == other.additionalProperties /* spotless:on */
+        return other is ResponseCustomToolCall &&
+            callId == other.callId &&
+            input == other.input &&
+            name == other.name &&
+            type == other.type &&
+            id == other.id &&
+            additionalProperties == other.additionalProperties
     }
 
-    /* spotless:off */
-    private val hashCode: Int by lazy { Objects.hash(callId, input, name, type, id, additionalProperties) }
-    /* spotless:on */
+    private val hashCode: Int by lazy {
+        Objects.hash(callId, input, name, type, id, additionalProperties)
+    }
 
     override fun hashCode(): Int = hashCode
 

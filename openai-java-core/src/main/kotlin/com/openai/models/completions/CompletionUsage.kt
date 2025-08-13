@@ -624,12 +624,23 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is CompletionTokensDetails && acceptedPredictionTokens == other.acceptedPredictionTokens && audioTokens == other.audioTokens && reasoningTokens == other.reasoningTokens && rejectedPredictionTokens == other.rejectedPredictionTokens && additionalProperties == other.additionalProperties /* spotless:on */
+            return other is CompletionTokensDetails &&
+                acceptedPredictionTokens == other.acceptedPredictionTokens &&
+                audioTokens == other.audioTokens &&
+                reasoningTokens == other.reasoningTokens &&
+                rejectedPredictionTokens == other.rejectedPredictionTokens &&
+                additionalProperties == other.additionalProperties
         }
 
-        /* spotless:off */
-        private val hashCode: Int by lazy { Objects.hash(acceptedPredictionTokens, audioTokens, reasoningTokens, rejectedPredictionTokens, additionalProperties) }
-        /* spotless:on */
+        private val hashCode: Int by lazy {
+            Objects.hash(
+                acceptedPredictionTokens,
+                audioTokens,
+                reasoningTokens,
+                rejectedPredictionTokens,
+                additionalProperties,
+            )
+        }
 
         override fun hashCode(): Int = hashCode
 
@@ -812,12 +823,15 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is PromptTokensDetails && audioTokens == other.audioTokens && cachedTokens == other.cachedTokens && additionalProperties == other.additionalProperties /* spotless:on */
+            return other is PromptTokensDetails &&
+                audioTokens == other.audioTokens &&
+                cachedTokens == other.cachedTokens &&
+                additionalProperties == other.additionalProperties
         }
 
-        /* spotless:off */
-        private val hashCode: Int by lazy { Objects.hash(audioTokens, cachedTokens, additionalProperties) }
-        /* spotless:on */
+        private val hashCode: Int by lazy {
+            Objects.hash(audioTokens, cachedTokens, additionalProperties)
+        }
 
         override fun hashCode(): Int = hashCode
 
@@ -830,12 +844,25 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is CompletionUsage && completionTokens == other.completionTokens && promptTokens == other.promptTokens && totalTokens == other.totalTokens && completionTokensDetails == other.completionTokensDetails && promptTokensDetails == other.promptTokensDetails && additionalProperties == other.additionalProperties /* spotless:on */
+        return other is CompletionUsage &&
+            completionTokens == other.completionTokens &&
+            promptTokens == other.promptTokens &&
+            totalTokens == other.totalTokens &&
+            completionTokensDetails == other.completionTokensDetails &&
+            promptTokensDetails == other.promptTokensDetails &&
+            additionalProperties == other.additionalProperties
     }
 
-    /* spotless:off */
-    private val hashCode: Int by lazy { Objects.hash(completionTokens, promptTokens, totalTokens, completionTokensDetails, promptTokensDetails, additionalProperties) }
-    /* spotless:on */
+    private val hashCode: Int by lazy {
+        Objects.hash(
+            completionTokens,
+            promptTokens,
+            totalTokens,
+            completionTokensDetails,
+            promptTokensDetails,
+            additionalProperties,
+        )
+    }
 
     override fun hashCode(): Int = hashCode
 

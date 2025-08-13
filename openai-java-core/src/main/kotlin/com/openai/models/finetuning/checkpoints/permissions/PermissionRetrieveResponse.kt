@@ -568,12 +568,17 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is Data && id == other.id && createdAt == other.createdAt && object_ == other.object_ && projectId == other.projectId && additionalProperties == other.additionalProperties /* spotless:on */
+            return other is Data &&
+                id == other.id &&
+                createdAt == other.createdAt &&
+                object_ == other.object_ &&
+                projectId == other.projectId &&
+                additionalProperties == other.additionalProperties
         }
 
-        /* spotless:off */
-        private val hashCode: Int by lazy { Objects.hash(id, createdAt, object_, projectId, additionalProperties) }
-        /* spotless:on */
+        private val hashCode: Int by lazy {
+            Objects.hash(id, createdAt, object_, projectId, additionalProperties)
+        }
 
         override fun hashCode(): Int = hashCode
 
@@ -586,12 +591,18 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is PermissionRetrieveResponse && data == other.data && hasMore == other.hasMore && object_ == other.object_ && firstId == other.firstId && lastId == other.lastId && additionalProperties == other.additionalProperties /* spotless:on */
+        return other is PermissionRetrieveResponse &&
+            data == other.data &&
+            hasMore == other.hasMore &&
+            object_ == other.object_ &&
+            firstId == other.firstId &&
+            lastId == other.lastId &&
+            additionalProperties == other.additionalProperties
     }
 
-    /* spotless:off */
-    private val hashCode: Int by lazy { Objects.hash(data, hasMore, object_, firstId, lastId, additionalProperties) }
-    /* spotless:on */
+    private val hashCode: Int by lazy {
+        Objects.hash(data, hasMore, object_, firstId, lastId, additionalProperties)
+    }
 
     override fun hashCode(): Int = hashCode
 

@@ -338,12 +338,12 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is Custom && name == other.name && additionalProperties == other.additionalProperties /* spotless:on */
+            return other is Custom &&
+                name == other.name &&
+                additionalProperties == other.additionalProperties
         }
 
-        /* spotless:off */
         private val hashCode: Int by lazy { Objects.hash(name, additionalProperties) }
-        /* spotless:on */
 
         override fun hashCode(): Int = hashCode
 
@@ -355,12 +355,13 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is ChatCompletionNamedToolChoiceCustom && custom == other.custom && type == other.type && additionalProperties == other.additionalProperties /* spotless:on */
+        return other is ChatCompletionNamedToolChoiceCustom &&
+            custom == other.custom &&
+            type == other.type &&
+            additionalProperties == other.additionalProperties
     }
 
-    /* spotless:off */
     private val hashCode: Int by lazy { Objects.hash(custom, type, additionalProperties) }
-    /* spotless:on */
 
     override fun hashCode(): Int = hashCode
 

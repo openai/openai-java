@@ -670,10 +670,13 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is DataSourceConfig && custom == other.custom && logs == other.logs && storedCompletions == other.storedCompletions /* spotless:on */
+            return other is DataSourceConfig &&
+                custom == other.custom &&
+                logs == other.logs &&
+                storedCompletions == other.storedCompletions
         }
 
-        override fun hashCode(): Int = /* spotless:off */ Objects.hash(custom, logs, storedCompletions) /* spotless:on */
+        override fun hashCode(): Int = Objects.hash(custom, logs, storedCompletions)
 
         override fun toString(): String =
             when {
@@ -1151,12 +1154,10 @@ private constructor(
                         return true
                     }
 
-                    return /* spotless:off */ other is Schema && additionalProperties == other.additionalProperties /* spotless:on */
+                    return other is Schema && additionalProperties == other.additionalProperties
                 }
 
-                /* spotless:off */
                 private val hashCode: Int by lazy { Objects.hash(additionalProperties) }
-                /* spotless:on */
 
                 override fun hashCode(): Int = hashCode
 
@@ -1265,12 +1266,10 @@ private constructor(
                         return true
                     }
 
-                    return /* spotless:off */ other is Metadata && additionalProperties == other.additionalProperties /* spotless:on */
+                    return other is Metadata && additionalProperties == other.additionalProperties
                 }
 
-                /* spotless:off */
                 private val hashCode: Int by lazy { Objects.hash(additionalProperties) }
-                /* spotless:on */
 
                 override fun hashCode(): Int = hashCode
 
@@ -1282,12 +1281,16 @@ private constructor(
                     return true
                 }
 
-                return /* spotless:off */ other is Logs && schema == other.schema && type == other.type && metadata == other.metadata && additionalProperties == other.additionalProperties /* spotless:on */
+                return other is Logs &&
+                    schema == other.schema &&
+                    type == other.type &&
+                    metadata == other.metadata &&
+                    additionalProperties == other.additionalProperties
             }
 
-            /* spotless:off */
-            private val hashCode: Int by lazy { Objects.hash(schema, type, metadata, additionalProperties) }
-            /* spotless:on */
+            private val hashCode: Int by lazy {
+                Objects.hash(schema, type, metadata, additionalProperties)
+            }
 
             override fun hashCode(): Int = hashCode
 
@@ -1393,12 +1396,10 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is Metadata && additionalProperties == other.additionalProperties /* spotless:on */
+            return other is Metadata && additionalProperties == other.additionalProperties
         }
 
-        /* spotless:off */
         private val hashCode: Int by lazy { Objects.hash(additionalProperties) }
-        /* spotless:on */
 
         override fun hashCode(): Int = hashCode
 
@@ -1573,10 +1574,22 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is TestingCriterion && labelModelGrader == other.labelModelGrader && stringCheckGrader == other.stringCheckGrader && evalGraderTextSimilarity == other.evalGraderTextSimilarity && evalGraderPython == other.evalGraderPython && evalGraderScoreModel == other.evalGraderScoreModel /* spotless:on */
+            return other is TestingCriterion &&
+                labelModelGrader == other.labelModelGrader &&
+                stringCheckGrader == other.stringCheckGrader &&
+                evalGraderTextSimilarity == other.evalGraderTextSimilarity &&
+                evalGraderPython == other.evalGraderPython &&
+                evalGraderScoreModel == other.evalGraderScoreModel
         }
 
-        override fun hashCode(): Int = /* spotless:off */ Objects.hash(labelModelGrader, stringCheckGrader, evalGraderTextSimilarity, evalGraderPython, evalGraderScoreModel) /* spotless:on */
+        override fun hashCode(): Int =
+            Objects.hash(
+                labelModelGrader,
+                stringCheckGrader,
+                evalGraderTextSimilarity,
+                evalGraderPython,
+                evalGraderScoreModel,
+            )
 
         override fun toString(): String =
             when {
@@ -2107,12 +2120,27 @@ private constructor(
                     return true
                 }
 
-                return /* spotless:off */ other is EvalGraderTextSimilarity && evaluationMetric == other.evaluationMetric && input == other.input && name == other.name && reference == other.reference && type == other.type && passThreshold == other.passThreshold && additionalProperties == other.additionalProperties /* spotless:on */
+                return other is EvalGraderTextSimilarity &&
+                    evaluationMetric == other.evaluationMetric &&
+                    input == other.input &&
+                    name == other.name &&
+                    reference == other.reference &&
+                    type == other.type &&
+                    passThreshold == other.passThreshold &&
+                    additionalProperties == other.additionalProperties
             }
 
-            /* spotless:off */
-            private val hashCode: Int by lazy { Objects.hash(evaluationMetric, input, name, reference, type, passThreshold, additionalProperties) }
-            /* spotless:on */
+            private val hashCode: Int by lazy {
+                Objects.hash(
+                    evaluationMetric,
+                    input,
+                    name,
+                    reference,
+                    type,
+                    passThreshold,
+                    additionalProperties,
+                )
+            }
 
             override fun hashCode(): Int = hashCode
 
@@ -2436,12 +2464,18 @@ private constructor(
                     return true
                 }
 
-                return /* spotless:off */ other is EvalGraderPython && name == other.name && source == other.source && type == other.type && imageTag == other.imageTag && passThreshold == other.passThreshold && additionalProperties == other.additionalProperties /* spotless:on */
+                return other is EvalGraderPython &&
+                    name == other.name &&
+                    source == other.source &&
+                    type == other.type &&
+                    imageTag == other.imageTag &&
+                    passThreshold == other.passThreshold &&
+                    additionalProperties == other.additionalProperties
             }
 
-            /* spotless:off */
-            private val hashCode: Int by lazy { Objects.hash(name, source, type, imageTag, passThreshold, additionalProperties) }
-            /* spotless:on */
+            private val hashCode: Int by lazy {
+                Objects.hash(name, source, type, imageTag, passThreshold, additionalProperties)
+            }
 
             override fun hashCode(): Int = hashCode
 
@@ -2850,12 +2884,29 @@ private constructor(
                     return true
                 }
 
-                return /* spotless:off */ other is EvalGraderScoreModel && input == other.input && model == other.model && name == other.name && type == other.type && range == other.range && samplingParams == other.samplingParams && passThreshold == other.passThreshold && additionalProperties == other.additionalProperties /* spotless:on */
+                return other is EvalGraderScoreModel &&
+                    input == other.input &&
+                    model == other.model &&
+                    name == other.name &&
+                    type == other.type &&
+                    range == other.range &&
+                    samplingParams == other.samplingParams &&
+                    passThreshold == other.passThreshold &&
+                    additionalProperties == other.additionalProperties
             }
 
-            /* spotless:off */
-            private val hashCode: Int by lazy { Objects.hash(input, model, name, type, range, samplingParams, passThreshold, additionalProperties) }
-            /* spotless:on */
+            private val hashCode: Int by lazy {
+                Objects.hash(
+                    input,
+                    model,
+                    name,
+                    type,
+                    range,
+                    samplingParams,
+                    passThreshold,
+                    additionalProperties,
+                )
+            }
 
             override fun hashCode(): Int = hashCode
 
@@ -2869,12 +2920,29 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is EvalRetrieveResponse && id == other.id && createdAt == other.createdAt && dataSourceConfig == other.dataSourceConfig && metadata == other.metadata && name == other.name && object_ == other.object_ && testingCriteria == other.testingCriteria && additionalProperties == other.additionalProperties /* spotless:on */
+        return other is EvalRetrieveResponse &&
+            id == other.id &&
+            createdAt == other.createdAt &&
+            dataSourceConfig == other.dataSourceConfig &&
+            metadata == other.metadata &&
+            name == other.name &&
+            object_ == other.object_ &&
+            testingCriteria == other.testingCriteria &&
+            additionalProperties == other.additionalProperties
     }
 
-    /* spotless:off */
-    private val hashCode: Int by lazy { Objects.hash(id, createdAt, dataSourceConfig, metadata, name, object_, testingCriteria, additionalProperties) }
-    /* spotless:on */
+    private val hashCode: Int by lazy {
+        Objects.hash(
+            id,
+            createdAt,
+            dataSourceConfig,
+            metadata,
+            name,
+            object_,
+            testingCriteria,
+            additionalProperties,
+        )
+    }
 
     override fun hashCode(): Int = hashCode
 

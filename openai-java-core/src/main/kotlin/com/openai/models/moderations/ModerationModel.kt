@@ -136,7 +136,7 @@ class ModerationModel @JsonCreator private constructor(private val value: JsonFi
             return true
         }
 
-        return /* spotless:off */ other is ModerationModel && value == other.value /* spotless:on */
+        return other is ModerationModel && value == other.value
     }
 
     override fun hashCode() = value.hashCode()

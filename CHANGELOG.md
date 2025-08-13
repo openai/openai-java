@@ -1,5 +1,23 @@
 # Changelog
 
+## 3.0.3 (2025-08-13)
+
+Full Changelog: [v3.0.2...v3.0.3](https://github.com/openai/openai-java/compare/v3.0.2...v3.0.3)
+
+### Bug Fixes
+
+* serialize dates correctly in structured outputs ([8cd3639](https://github.com/openai/openai-java/commit/8cd3639fb8027fbb4945ab0d984b0ef82fc9ea5c))
+
+
+### Chores
+
+* **internal:** format identity methods ([fd2661b](https://github.com/openai/openai-java/commit/fd2661b3ef67229394c80adeeba2377403d89d44))
+
+
+### Documentation
+
+* add response raw structured outputs ([e68d31e](https://github.com/openai/openai-java/commit/e68d31e6828fe9139e4720e12a12e028b11bb2fb))
+
 ## 3.0.2 (2025-08-09)
 
 Full Changelog: [v3.0.1...v3.0.2](https://github.com/openai/openai-java/compare/v3.0.1...v3.0.2)

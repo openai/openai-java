@@ -299,12 +299,17 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is FineTuningJobWandbIntegration && project == other.project && entity == other.entity && name == other.name && tags == other.tags && additionalProperties == other.additionalProperties /* spotless:on */
+        return other is FineTuningJobWandbIntegration &&
+            project == other.project &&
+            entity == other.entity &&
+            name == other.name &&
+            tags == other.tags &&
+            additionalProperties == other.additionalProperties
     }
 
-    /* spotless:off */
-    private val hashCode: Int by lazy { Objects.hash(project, entity, name, tags, additionalProperties) }
-    /* spotless:on */
+    private val hashCode: Int by lazy {
+        Objects.hash(project, entity, name, tags, additionalProperties)
+    }
 
     override fun hashCode(): Int = hashCode
 

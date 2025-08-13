@@ -1014,12 +1014,41 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is Categories && harassment == other.harassment && harassmentThreatening == other.harassmentThreatening && hate == other.hate && hateThreatening == other.hateThreatening && illicit == other.illicit && illicitViolent == other.illicitViolent && selfHarm == other.selfHarm && selfHarmInstructions == other.selfHarmInstructions && selfHarmIntent == other.selfHarmIntent && sexual == other.sexual && sexualMinors == other.sexualMinors && violence == other.violence && violenceGraphic == other.violenceGraphic && additionalProperties == other.additionalProperties /* spotless:on */
+            return other is Categories &&
+                harassment == other.harassment &&
+                harassmentThreatening == other.harassmentThreatening &&
+                hate == other.hate &&
+                hateThreatening == other.hateThreatening &&
+                illicit == other.illicit &&
+                illicitViolent == other.illicitViolent &&
+                selfHarm == other.selfHarm &&
+                selfHarmInstructions == other.selfHarmInstructions &&
+                selfHarmIntent == other.selfHarmIntent &&
+                sexual == other.sexual &&
+                sexualMinors == other.sexualMinors &&
+                violence == other.violence &&
+                violenceGraphic == other.violenceGraphic &&
+                additionalProperties == other.additionalProperties
         }
 
-        /* spotless:off */
-        private val hashCode: Int by lazy { Objects.hash(harassment, harassmentThreatening, hate, hateThreatening, illicit, illicitViolent, selfHarm, selfHarmInstructions, selfHarmIntent, sexual, sexualMinors, violence, violenceGraphic, additionalProperties) }
-        /* spotless:on */
+        private val hashCode: Int by lazy {
+            Objects.hash(
+                harassment,
+                harassmentThreatening,
+                hate,
+                hateThreatening,
+                illicit,
+                illicitViolent,
+                selfHarm,
+                selfHarmInstructions,
+                selfHarmIntent,
+                sexual,
+                sexualMinors,
+                violence,
+                violenceGraphic,
+                additionalProperties,
+            )
+        }
 
         override fun hashCode(): Int = hashCode
 
@@ -1991,7 +2020,7 @@ private constructor(
                     return true
                 }
 
-                return /* spotless:off */ other is Harassment && value == other.value /* spotless:on */
+                return other is Harassment && value == other.value
             }
 
             override fun hashCode() = value.hashCode()
@@ -2120,7 +2149,7 @@ private constructor(
                     return true
                 }
 
-                return /* spotless:off */ other is HarassmentThreatening && value == other.value /* spotless:on */
+                return other is HarassmentThreatening && value == other.value
             }
 
             override fun hashCode() = value.hashCode()
@@ -2241,7 +2270,7 @@ private constructor(
                     return true
                 }
 
-                return /* spotless:off */ other is Hate && value == other.value /* spotless:on */
+                return other is Hate && value == other.value
             }
 
             override fun hashCode() = value.hashCode()
@@ -2367,7 +2396,7 @@ private constructor(
                     return true
                 }
 
-                return /* spotless:off */ other is HateThreatening && value == other.value /* spotless:on */
+                return other is HateThreatening && value == other.value
             }
 
             override fun hashCode() = value.hashCode()
@@ -2491,7 +2520,7 @@ private constructor(
                     return true
                 }
 
-                return /* spotless:off */ other is Illicit && value == other.value /* spotless:on */
+                return other is Illicit && value == other.value
             }
 
             override fun hashCode() = value.hashCode()
@@ -2617,7 +2646,7 @@ private constructor(
                     return true
                 }
 
-                return /* spotless:off */ other is IllicitViolent && value == other.value /* spotless:on */
+                return other is IllicitViolent && value == other.value
             }
 
             override fun hashCode() = value.hashCode()
@@ -2747,7 +2776,7 @@ private constructor(
                     return true
                 }
 
-                return /* spotless:off */ other is SelfHarm && value == other.value /* spotless:on */
+                return other is SelfHarm && value == other.value
             }
 
             override fun hashCode() = value.hashCode()
@@ -2881,7 +2910,7 @@ private constructor(
                     return true
                 }
 
-                return /* spotless:off */ other is SelfHarmInstruction && value == other.value /* spotless:on */
+                return other is SelfHarmInstruction && value == other.value
             }
 
             override fun hashCode() = value.hashCode()
@@ -3013,7 +3042,7 @@ private constructor(
                     return true
                 }
 
-                return /* spotless:off */ other is SelfHarmIntent && value == other.value /* spotless:on */
+                return other is SelfHarmIntent && value == other.value
             }
 
             override fun hashCode() = value.hashCode()
@@ -3142,7 +3171,7 @@ private constructor(
                     return true
                 }
 
-                return /* spotless:off */ other is Sexual && value == other.value /* spotless:on */
+                return other is Sexual && value == other.value
             }
 
             override fun hashCode() = value.hashCode()
@@ -3267,7 +3296,7 @@ private constructor(
                     return true
                 }
 
-                return /* spotless:off */ other is SexualMinor && value == other.value /* spotless:on */
+                return other is SexualMinor && value == other.value
             }
 
             override fun hashCode() = value.hashCode()
@@ -3397,7 +3426,7 @@ private constructor(
                     return true
                 }
 
-                return /* spotless:off */ other is Violence && value == other.value /* spotless:on */
+                return other is Violence && value == other.value
             }
 
             override fun hashCode() = value.hashCode()
@@ -3529,7 +3558,7 @@ private constructor(
                     return true
                 }
 
-                return /* spotless:off */ other is ViolenceGraphic && value == other.value /* spotless:on */
+                return other is ViolenceGraphic && value == other.value
             }
 
             override fun hashCode() = value.hashCode()
@@ -3542,12 +3571,41 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is CategoryAppliedInputTypes && harassment == other.harassment && harassmentThreatening == other.harassmentThreatening && hate == other.hate && hateThreatening == other.hateThreatening && illicit == other.illicit && illicitViolent == other.illicitViolent && selfHarm == other.selfHarm && selfHarmInstructions == other.selfHarmInstructions && selfHarmIntent == other.selfHarmIntent && sexual == other.sexual && sexualMinors == other.sexualMinors && violence == other.violence && violenceGraphic == other.violenceGraphic && additionalProperties == other.additionalProperties /* spotless:on */
+            return other is CategoryAppliedInputTypes &&
+                harassment == other.harassment &&
+                harassmentThreatening == other.harassmentThreatening &&
+                hate == other.hate &&
+                hateThreatening == other.hateThreatening &&
+                illicit == other.illicit &&
+                illicitViolent == other.illicitViolent &&
+                selfHarm == other.selfHarm &&
+                selfHarmInstructions == other.selfHarmInstructions &&
+                selfHarmIntent == other.selfHarmIntent &&
+                sexual == other.sexual &&
+                sexualMinors == other.sexualMinors &&
+                violence == other.violence &&
+                violenceGraphic == other.violenceGraphic &&
+                additionalProperties == other.additionalProperties
         }
 
-        /* spotless:off */
-        private val hashCode: Int by lazy { Objects.hash(harassment, harassmentThreatening, hate, hateThreatening, illicit, illicitViolent, selfHarm, selfHarmInstructions, selfHarmIntent, sexual, sexualMinors, violence, violenceGraphic, additionalProperties) }
-        /* spotless:on */
+        private val hashCode: Int by lazy {
+            Objects.hash(
+                harassment,
+                harassmentThreatening,
+                hate,
+                hateThreatening,
+                illicit,
+                illicitViolent,
+                selfHarm,
+                selfHarmInstructions,
+                selfHarmIntent,
+                sexual,
+                sexualMinors,
+                violence,
+                violenceGraphic,
+                additionalProperties,
+            )
+        }
 
         override fun hashCode(): Int = hashCode
 
@@ -4215,12 +4273,41 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is CategoryScores && harassment == other.harassment && harassmentThreatening == other.harassmentThreatening && hate == other.hate && hateThreatening == other.hateThreatening && illicit == other.illicit && illicitViolent == other.illicitViolent && selfHarm == other.selfHarm && selfHarmInstructions == other.selfHarmInstructions && selfHarmIntent == other.selfHarmIntent && sexual == other.sexual && sexualMinors == other.sexualMinors && violence == other.violence && violenceGraphic == other.violenceGraphic && additionalProperties == other.additionalProperties /* spotless:on */
+            return other is CategoryScores &&
+                harassment == other.harassment &&
+                harassmentThreatening == other.harassmentThreatening &&
+                hate == other.hate &&
+                hateThreatening == other.hateThreatening &&
+                illicit == other.illicit &&
+                illicitViolent == other.illicitViolent &&
+                selfHarm == other.selfHarm &&
+                selfHarmInstructions == other.selfHarmInstructions &&
+                selfHarmIntent == other.selfHarmIntent &&
+                sexual == other.sexual &&
+                sexualMinors == other.sexualMinors &&
+                violence == other.violence &&
+                violenceGraphic == other.violenceGraphic &&
+                additionalProperties == other.additionalProperties
         }
 
-        /* spotless:off */
-        private val hashCode: Int by lazy { Objects.hash(harassment, harassmentThreatening, hate, hateThreatening, illicit, illicitViolent, selfHarm, selfHarmInstructions, selfHarmIntent, sexual, sexualMinors, violence, violenceGraphic, additionalProperties) }
-        /* spotless:on */
+        private val hashCode: Int by lazy {
+            Objects.hash(
+                harassment,
+                harassmentThreatening,
+                hate,
+                hateThreatening,
+                illicit,
+                illicitViolent,
+                selfHarm,
+                selfHarmInstructions,
+                selfHarmIntent,
+                sexual,
+                sexualMinors,
+                violence,
+                violenceGraphic,
+                additionalProperties,
+            )
+        }
 
         override fun hashCode(): Int = hashCode
 
@@ -4233,12 +4320,23 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is Moderation && categories == other.categories && categoryAppliedInputTypes == other.categoryAppliedInputTypes && categoryScores == other.categoryScores && flagged == other.flagged && additionalProperties == other.additionalProperties /* spotless:on */
+        return other is Moderation &&
+            categories == other.categories &&
+            categoryAppliedInputTypes == other.categoryAppliedInputTypes &&
+            categoryScores == other.categoryScores &&
+            flagged == other.flagged &&
+            additionalProperties == other.additionalProperties
     }
 
-    /* spotless:off */
-    private val hashCode: Int by lazy { Objects.hash(categories, categoryAppliedInputTypes, categoryScores, flagged, additionalProperties) }
-    /* spotless:on */
+    private val hashCode: Int by lazy {
+        Objects.hash(
+            categories,
+            categoryAppliedInputTypes,
+            categoryScores,
+            flagged,
+            additionalProperties,
+        )
+    }
 
     override fun hashCode(): Int = hashCode
 

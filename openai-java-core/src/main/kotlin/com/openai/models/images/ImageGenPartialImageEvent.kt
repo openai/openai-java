@@ -563,7 +563,7 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is Background && value == other.value /* spotless:on */
+            return other is Background && value == other.value
         }
 
         override fun hashCode() = value.hashCode()
@@ -698,7 +698,7 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is OutputFormat && value == other.value /* spotless:on */
+            return other is OutputFormat && value == other.value
         }
 
         override fun hashCode() = value.hashCode()
@@ -836,7 +836,7 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is Quality && value == other.value /* spotless:on */
+            return other is Quality && value == other.value
         }
 
         override fun hashCode() = value.hashCode()
@@ -974,7 +974,7 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is Size && value == other.value /* spotless:on */
+            return other is Size && value == other.value
         }
 
         override fun hashCode() = value.hashCode()
@@ -987,12 +987,31 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is ImageGenPartialImageEvent && b64Json == other.b64Json && background == other.background && createdAt == other.createdAt && outputFormat == other.outputFormat && partialImageIndex == other.partialImageIndex && quality == other.quality && size == other.size && type == other.type && additionalProperties == other.additionalProperties /* spotless:on */
+        return other is ImageGenPartialImageEvent &&
+            b64Json == other.b64Json &&
+            background == other.background &&
+            createdAt == other.createdAt &&
+            outputFormat == other.outputFormat &&
+            partialImageIndex == other.partialImageIndex &&
+            quality == other.quality &&
+            size == other.size &&
+            type == other.type &&
+            additionalProperties == other.additionalProperties
     }
 
-    /* spotless:off */
-    private val hashCode: Int by lazy { Objects.hash(b64Json, background, createdAt, outputFormat, partialImageIndex, quality, size, type, additionalProperties) }
-    /* spotless:on */
+    private val hashCode: Int by lazy {
+        Objects.hash(
+            b64Json,
+            background,
+            createdAt,
+            outputFormat,
+            partialImageIndex,
+            quality,
+            size,
+            type,
+            additionalProperties,
+        )
+    }
 
     override fun hashCode(): Int = hashCode
 

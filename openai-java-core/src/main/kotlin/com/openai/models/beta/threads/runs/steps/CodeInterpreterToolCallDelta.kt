@@ -583,10 +583,10 @@ private constructor(
                     return true
                 }
 
-                return /* spotless:off */ other is Output && logs == other.logs && image == other.image /* spotless:on */
+                return other is Output && logs == other.logs && image == other.image
             }
 
-            override fun hashCode(): Int = /* spotless:off */ Objects.hash(logs, image) /* spotless:on */
+            override fun hashCode(): Int = Objects.hash(logs, image)
 
             override fun toString(): String =
                 when {
@@ -675,12 +675,13 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is CodeInterpreter && input == other.input && outputs == other.outputs && additionalProperties == other.additionalProperties /* spotless:on */
+            return other is CodeInterpreter &&
+                input == other.input &&
+                outputs == other.outputs &&
+                additionalProperties == other.additionalProperties
         }
 
-        /* spotless:off */
         private val hashCode: Int by lazy { Objects.hash(input, outputs, additionalProperties) }
-        /* spotless:on */
 
         override fun hashCode(): Int = hashCode
 
@@ -693,12 +694,17 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is CodeInterpreterToolCallDelta && index == other.index && type == other.type && id == other.id && codeInterpreter == other.codeInterpreter && additionalProperties == other.additionalProperties /* spotless:on */
+        return other is CodeInterpreterToolCallDelta &&
+            index == other.index &&
+            type == other.type &&
+            id == other.id &&
+            codeInterpreter == other.codeInterpreter &&
+            additionalProperties == other.additionalProperties
     }
 
-    /* spotless:off */
-    private val hashCode: Int by lazy { Objects.hash(index, type, id, codeInterpreter, additionalProperties) }
-    /* spotless:on */
+    private val hashCode: Int by lazy {
+        Objects.hash(index, type, id, codeInterpreter, additionalProperties)
+    }
 
     override fun hashCode(): Int = hashCode
 

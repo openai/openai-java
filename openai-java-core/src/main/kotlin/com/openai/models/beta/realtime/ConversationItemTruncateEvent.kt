@@ -329,12 +329,18 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is ConversationItemTruncateEvent && audioEndMs == other.audioEndMs && contentIndex == other.contentIndex && itemId == other.itemId && type == other.type && eventId == other.eventId && additionalProperties == other.additionalProperties /* spotless:on */
+        return other is ConversationItemTruncateEvent &&
+            audioEndMs == other.audioEndMs &&
+            contentIndex == other.contentIndex &&
+            itemId == other.itemId &&
+            type == other.type &&
+            eventId == other.eventId &&
+            additionalProperties == other.additionalProperties
     }
 
-    /* spotless:off */
-    private val hashCode: Int by lazy { Objects.hash(audioEndMs, contentIndex, itemId, type, eventId, additionalProperties) }
-    /* spotless:on */
+    private val hashCode: Int by lazy {
+        Objects.hash(audioEndMs, contentIndex, itemId, type, eventId, additionalProperties)
+    }
 
     override fun hashCode(): Int = hashCode
 

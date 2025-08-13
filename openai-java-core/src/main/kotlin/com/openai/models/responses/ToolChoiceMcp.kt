@@ -242,12 +242,16 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is ToolChoiceMcp && serverLabel == other.serverLabel && type == other.type && name == other.name && additionalProperties == other.additionalProperties /* spotless:on */
+        return other is ToolChoiceMcp &&
+            serverLabel == other.serverLabel &&
+            type == other.type &&
+            name == other.name &&
+            additionalProperties == other.additionalProperties
     }
 
-    /* spotless:off */
-    private val hashCode: Int by lazy { Objects.hash(serverLabel, type, name, additionalProperties) }
-    /* spotless:on */
+    private val hashCode: Int by lazy {
+        Objects.hash(serverLabel, type, name, additionalProperties)
+    }
 
     override fun hashCode(): Int = hashCode
 

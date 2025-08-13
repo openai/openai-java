@@ -216,12 +216,13 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is FineTuningJobWandbIntegrationObject && type == other.type && wandb == other.wandb && additionalProperties == other.additionalProperties /* spotless:on */
+        return other is FineTuningJobWandbIntegrationObject &&
+            type == other.type &&
+            wandb == other.wandb &&
+            additionalProperties == other.additionalProperties
     }
 
-    /* spotless:off */
     private val hashCode: Int by lazy { Objects.hash(type, wandb, additionalProperties) }
-    /* spotless:on */
 
     override fun hashCode(): Int = hashCode
 

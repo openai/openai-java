@@ -582,12 +582,10 @@ private constructor(
                     return true
                 }
 
-                return /* spotless:off */ other is Schema && additionalProperties == other.additionalProperties /* spotless:on */
+                return other is Schema && additionalProperties == other.additionalProperties
             }
 
-            /* spotless:off */
             private val hashCode: Int by lazy { Objects.hash(additionalProperties) }
-            /* spotless:on */
 
             override fun hashCode(): Int = hashCode
 
@@ -599,12 +597,17 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is JsonSchema && name == other.name && description == other.description && schema == other.schema && strict == other.strict && additionalProperties == other.additionalProperties /* spotless:on */
+            return other is JsonSchema &&
+                name == other.name &&
+                description == other.description &&
+                schema == other.schema &&
+                strict == other.strict &&
+                additionalProperties == other.additionalProperties
         }
 
-        /* spotless:off */
-        private val hashCode: Int by lazy { Objects.hash(name, description, schema, strict, additionalProperties) }
-        /* spotless:on */
+        private val hashCode: Int by lazy {
+            Objects.hash(name, description, schema, strict, additionalProperties)
+        }
 
         override fun hashCode(): Int = hashCode
 
@@ -617,12 +620,13 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is ResponseFormatJsonSchema && jsonSchema == other.jsonSchema && type == other.type && additionalProperties == other.additionalProperties /* spotless:on */
+        return other is ResponseFormatJsonSchema &&
+            jsonSchema == other.jsonSchema &&
+            type == other.type &&
+            additionalProperties == other.additionalProperties
     }
 
-    /* spotless:off */
     private val hashCode: Int by lazy { Objects.hash(jsonSchema, type, additionalProperties) }
-    /* spotless:on */
 
     override fun hashCode(): Int = hashCode
 

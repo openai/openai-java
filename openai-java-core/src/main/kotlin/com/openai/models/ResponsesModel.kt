@@ -114,10 +114,13 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is ResponsesModel && string == other.string && chat == other.chat && only == other.only /* spotless:on */
+        return other is ResponsesModel &&
+            string == other.string &&
+            chat == other.chat &&
+            only == other.only
     }
 
-    override fun hashCode(): Int = /* spotless:off */ Objects.hash(string, chat, only) /* spotless:on */
+    override fun hashCode(): Int = Objects.hash(string, chat, only)
 
     override fun toString(): String =
         when {
@@ -382,7 +385,7 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is ResponsesOnlyModel && value == other.value /* spotless:on */
+            return other is ResponsesOnlyModel && value == other.value
         }
 
         override fun hashCode() = value.hashCode()

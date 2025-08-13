@@ -245,12 +245,17 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is FileSearchToolCallDelta && fileSearch == other.fileSearch && index == other.index && type == other.type && id == other.id && additionalProperties == other.additionalProperties /* spotless:on */
+        return other is FileSearchToolCallDelta &&
+            fileSearch == other.fileSearch &&
+            index == other.index &&
+            type == other.type &&
+            id == other.id &&
+            additionalProperties == other.additionalProperties
     }
 
-    /* spotless:off */
-    private val hashCode: Int by lazy { Objects.hash(fileSearch, index, type, id, additionalProperties) }
-    /* spotless:on */
+    private val hashCode: Int by lazy {
+        Objects.hash(fileSearch, index, type, id, additionalProperties)
+    }
 
     override fun hashCode(): Int = hashCode
 

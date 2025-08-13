@@ -458,10 +458,12 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is Filters && comparisonFilter == other.comparisonFilter && compoundFilter == other.compoundFilter /* spotless:on */
+            return other is Filters &&
+                comparisonFilter == other.comparisonFilter &&
+                compoundFilter == other.compoundFilter
         }
 
-        override fun hashCode(): Int = /* spotless:off */ Objects.hash(comparisonFilter, compoundFilter) /* spotless:on */
+        override fun hashCode(): Int = Objects.hash(comparisonFilter, compoundFilter)
 
         override fun toString(): String =
             when {
@@ -857,7 +859,7 @@ private constructor(
                     return true
                 }
 
-                return /* spotless:off */ other is Ranker && value == other.value /* spotless:on */
+                return other is Ranker && value == other.value
             }
 
             override fun hashCode() = value.hashCode()
@@ -870,12 +872,15 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is RankingOptions && ranker == other.ranker && scoreThreshold == other.scoreThreshold && additionalProperties == other.additionalProperties /* spotless:on */
+            return other is RankingOptions &&
+                ranker == other.ranker &&
+                scoreThreshold == other.scoreThreshold &&
+                additionalProperties == other.additionalProperties
         }
 
-        /* spotless:off */
-        private val hashCode: Int by lazy { Objects.hash(ranker, scoreThreshold, additionalProperties) }
-        /* spotless:on */
+        private val hashCode: Int by lazy {
+            Objects.hash(ranker, scoreThreshold, additionalProperties)
+        }
 
         override fun hashCode(): Int = hashCode
 
@@ -888,12 +893,25 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is FileSearchTool && type == other.type && vectorStoreIds == other.vectorStoreIds && filters == other.filters && maxNumResults == other.maxNumResults && rankingOptions == other.rankingOptions && additionalProperties == other.additionalProperties /* spotless:on */
+        return other is FileSearchTool &&
+            type == other.type &&
+            vectorStoreIds == other.vectorStoreIds &&
+            filters == other.filters &&
+            maxNumResults == other.maxNumResults &&
+            rankingOptions == other.rankingOptions &&
+            additionalProperties == other.additionalProperties
     }
 
-    /* spotless:off */
-    private val hashCode: Int by lazy { Objects.hash(type, vectorStoreIds, filters, maxNumResults, rankingOptions, additionalProperties) }
-    /* spotless:on */
+    private val hashCode: Int by lazy {
+        Objects.hash(
+            type,
+            vectorStoreIds,
+            filters,
+            maxNumResults,
+            rankingOptions,
+            additionalProperties,
+        )
+    }
 
     override fun hashCode(): Int = hashCode
 

@@ -430,12 +430,10 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is Schema && additionalProperties == other.additionalProperties /* spotless:on */
+            return other is Schema && additionalProperties == other.additionalProperties
         }
 
-        /* spotless:off */
         private val hashCode: Int by lazy { Objects.hash(additionalProperties) }
-        /* spotless:on */
 
         override fun hashCode(): Int = hashCode
 
@@ -447,12 +445,18 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is ResponseFormatTextJsonSchemaConfig && name == other.name && schema == other.schema && type == other.type && description == other.description && strict == other.strict && additionalProperties == other.additionalProperties /* spotless:on */
+        return other is ResponseFormatTextJsonSchemaConfig &&
+            name == other.name &&
+            schema == other.schema &&
+            type == other.type &&
+            description == other.description &&
+            strict == other.strict &&
+            additionalProperties == other.additionalProperties
     }
 
-    /* spotless:off */
-    private val hashCode: Int by lazy { Objects.hash(name, schema, type, description, strict, additionalProperties) }
-    /* spotless:on */
+    private val hashCode: Int by lazy {
+        Objects.hash(name, schema, type, description, strict, additionalProperties)
+    }
 
     override fun hashCode(): Int = hashCode
 

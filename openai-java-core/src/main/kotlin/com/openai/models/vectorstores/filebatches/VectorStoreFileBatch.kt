@@ -652,12 +652,18 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is FileCounts && cancelled == other.cancelled && completed == other.completed && failed == other.failed && inProgress == other.inProgress && total == other.total && additionalProperties == other.additionalProperties /* spotless:on */
+            return other is FileCounts &&
+                cancelled == other.cancelled &&
+                completed == other.completed &&
+                failed == other.failed &&
+                inProgress == other.inProgress &&
+                total == other.total &&
+                additionalProperties == other.additionalProperties
         }
 
-        /* spotless:off */
-        private val hashCode: Int by lazy { Objects.hash(cancelled, completed, failed, inProgress, total, additionalProperties) }
-        /* spotless:on */
+        private val hashCode: Int by lazy {
+            Objects.hash(cancelled, completed, failed, inProgress, total, additionalProperties)
+        }
 
         override fun hashCode(): Int = hashCode
 
@@ -798,7 +804,7 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is Status && value == other.value /* spotless:on */
+            return other is Status && value == other.value
         }
 
         override fun hashCode() = value.hashCode()
@@ -811,12 +817,27 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is VectorStoreFileBatch && id == other.id && createdAt == other.createdAt && fileCounts == other.fileCounts && object_ == other.object_ && status == other.status && vectorStoreId == other.vectorStoreId && additionalProperties == other.additionalProperties /* spotless:on */
+        return other is VectorStoreFileBatch &&
+            id == other.id &&
+            createdAt == other.createdAt &&
+            fileCounts == other.fileCounts &&
+            object_ == other.object_ &&
+            status == other.status &&
+            vectorStoreId == other.vectorStoreId &&
+            additionalProperties == other.additionalProperties
     }
 
-    /* spotless:off */
-    private val hashCode: Int by lazy { Objects.hash(id, createdAt, fileCounts, object_, status, vectorStoreId, additionalProperties) }
-    /* spotless:on */
+    private val hashCode: Int by lazy {
+        Objects.hash(
+            id,
+            createdAt,
+            fileCounts,
+            object_,
+            status,
+            vectorStoreId,
+            additionalProperties,
+        )
+    }
 
     override fun hashCode(): Int = hashCode
 

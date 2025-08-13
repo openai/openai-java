@@ -288,12 +288,18 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is ResponseInputFile && type == other.type && fileData == other.fileData && fileId == other.fileId && fileUrl == other.fileUrl && filename == other.filename && additionalProperties == other.additionalProperties /* spotless:on */
+        return other is ResponseInputFile &&
+            type == other.type &&
+            fileData == other.fileData &&
+            fileId == other.fileId &&
+            fileUrl == other.fileUrl &&
+            filename == other.filename &&
+            additionalProperties == other.additionalProperties
     }
 
-    /* spotless:off */
-    private val hashCode: Int by lazy { Objects.hash(type, fileData, fileId, fileUrl, filename, additionalProperties) }
-    /* spotless:on */
+    private val hashCode: Int by lazy {
+        Objects.hash(type, fileData, fileId, fileUrl, filename, additionalProperties)
+    }
 
     override fun hashCode(): Int = hashCode
 

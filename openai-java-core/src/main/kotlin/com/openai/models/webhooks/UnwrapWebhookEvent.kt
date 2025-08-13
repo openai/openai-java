@@ -346,10 +346,40 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is UnwrapWebhookEvent && batchCancelled == other.batchCancelled && batchCompleted == other.batchCompleted && batchExpired == other.batchExpired && batchFailed == other.batchFailed && evalRunCanceled == other.evalRunCanceled && evalRunFailed == other.evalRunFailed && evalRunSucceeded == other.evalRunSucceeded && fineTuningJobCancelled == other.fineTuningJobCancelled && fineTuningJobFailed == other.fineTuningJobFailed && fineTuningJobSucceeded == other.fineTuningJobSucceeded && responseCancelled == other.responseCancelled && responseCompleted == other.responseCompleted && responseFailed == other.responseFailed && responseIncomplete == other.responseIncomplete /* spotless:on */
+        return other is UnwrapWebhookEvent &&
+            batchCancelled == other.batchCancelled &&
+            batchCompleted == other.batchCompleted &&
+            batchExpired == other.batchExpired &&
+            batchFailed == other.batchFailed &&
+            evalRunCanceled == other.evalRunCanceled &&
+            evalRunFailed == other.evalRunFailed &&
+            evalRunSucceeded == other.evalRunSucceeded &&
+            fineTuningJobCancelled == other.fineTuningJobCancelled &&
+            fineTuningJobFailed == other.fineTuningJobFailed &&
+            fineTuningJobSucceeded == other.fineTuningJobSucceeded &&
+            responseCancelled == other.responseCancelled &&
+            responseCompleted == other.responseCompleted &&
+            responseFailed == other.responseFailed &&
+            responseIncomplete == other.responseIncomplete
     }
 
-    override fun hashCode(): Int = /* spotless:off */ Objects.hash(batchCancelled, batchCompleted, batchExpired, batchFailed, evalRunCanceled, evalRunFailed, evalRunSucceeded, fineTuningJobCancelled, fineTuningJobFailed, fineTuningJobSucceeded, responseCancelled, responseCompleted, responseFailed, responseIncomplete) /* spotless:on */
+    override fun hashCode(): Int =
+        Objects.hash(
+            batchCancelled,
+            batchCompleted,
+            batchExpired,
+            batchFailed,
+            evalRunCanceled,
+            evalRunFailed,
+            evalRunSucceeded,
+            fineTuningJobCancelled,
+            fineTuningJobFailed,
+            fineTuningJobSucceeded,
+            responseCancelled,
+            responseCompleted,
+            responseFailed,
+            responseIncomplete,
+        )
 
     override fun toString(): String =
         when {

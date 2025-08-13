@@ -623,7 +623,7 @@ private constructor(
                     return true
                 }
 
-                return /* spotless:off */ other is Anchor && value == other.value /* spotless:on */
+                return other is Anchor && value == other.value
             }
 
             override fun hashCode() = value.hashCode()
@@ -636,12 +636,13 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is ExpiresAfter && anchor == other.anchor && minutes == other.minutes && additionalProperties == other.additionalProperties /* spotless:on */
+            return other is ExpiresAfter &&
+                anchor == other.anchor &&
+                minutes == other.minutes &&
+                additionalProperties == other.additionalProperties
         }
 
-        /* spotless:off */
         private val hashCode: Int by lazy { Objects.hash(anchor, minutes, additionalProperties) }
-        /* spotless:on */
 
         override fun hashCode(): Int = hashCode
 
@@ -654,12 +655,19 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is ContainerRetrieveResponse && id == other.id && createdAt == other.createdAt && name == other.name && object_ == other.object_ && status == other.status && expiresAfter == other.expiresAfter && additionalProperties == other.additionalProperties /* spotless:on */
+        return other is ContainerRetrieveResponse &&
+            id == other.id &&
+            createdAt == other.createdAt &&
+            name == other.name &&
+            object_ == other.object_ &&
+            status == other.status &&
+            expiresAfter == other.expiresAfter &&
+            additionalProperties == other.additionalProperties
     }
 
-    /* spotless:off */
-    private val hashCode: Int by lazy { Objects.hash(id, createdAt, name, object_, status, expiresAfter, additionalProperties) }
-    /* spotless:on */
+    private val hashCode: Int by lazy {
+        Objects.hash(id, createdAt, name, object_, status, expiresAfter, additionalProperties)
+    }
 
     override fun hashCode(): Int = hashCode
 

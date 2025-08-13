@@ -597,12 +597,12 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is Audio && id == other.id && additionalProperties == other.additionalProperties /* spotless:on */
+            return other is Audio &&
+                id == other.id &&
+                additionalProperties == other.additionalProperties
         }
 
-        /* spotless:off */
         private val hashCode: Int by lazy { Objects.hash(id, additionalProperties) }
-        /* spotless:on */
 
         override fun hashCode(): Int = hashCode
 
@@ -711,10 +711,12 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is Content && text == other.text && arrayOfContentParts == other.arrayOfContentParts /* spotless:on */
+            return other is Content &&
+                text == other.text &&
+                arrayOfContentParts == other.arrayOfContentParts
         }
 
-        override fun hashCode(): Int = /* spotless:off */ Objects.hash(text, arrayOfContentParts) /* spotless:on */
+        override fun hashCode(): Int = Objects.hash(text, arrayOfContentParts)
 
         override fun toString(): String =
             when {
@@ -914,10 +916,12 @@ private constructor(
                     return true
                 }
 
-                return /* spotless:off */ other is ChatCompletionRequestAssistantMessageContentPart && text == other.text && refusal == other.refusal /* spotless:on */
+                return other is ChatCompletionRequestAssistantMessageContentPart &&
+                    text == other.text &&
+                    refusal == other.refusal
             }
 
-            override fun hashCode(): Int = /* spotless:off */ Objects.hash(text, refusal) /* spotless:on */
+            override fun hashCode(): Int = Objects.hash(text, refusal)
 
             override fun toString(): String =
                 when {
@@ -1242,12 +1246,13 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is FunctionCall && arguments == other.arguments && name == other.name && additionalProperties == other.additionalProperties /* spotless:on */
+            return other is FunctionCall &&
+                arguments == other.arguments &&
+                name == other.name &&
+                additionalProperties == other.additionalProperties
         }
 
-        /* spotless:off */
         private val hashCode: Int by lazy { Objects.hash(arguments, name, additionalProperties) }
-        /* spotless:on */
 
         override fun hashCode(): Int = hashCode
 
@@ -1260,12 +1265,29 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is ChatCompletionAssistantMessageParam && role == other.role && audio == other.audio && content == other.content && functionCall == other.functionCall && name == other.name && refusal == other.refusal && toolCalls == other.toolCalls && additionalProperties == other.additionalProperties /* spotless:on */
+        return other is ChatCompletionAssistantMessageParam &&
+            role == other.role &&
+            audio == other.audio &&
+            content == other.content &&
+            functionCall == other.functionCall &&
+            name == other.name &&
+            refusal == other.refusal &&
+            toolCalls == other.toolCalls &&
+            additionalProperties == other.additionalProperties
     }
 
-    /* spotless:off */
-    private val hashCode: Int by lazy { Objects.hash(role, audio, content, functionCall, name, refusal, toolCalls, additionalProperties) }
-    /* spotless:on */
+    private val hashCode: Int by lazy {
+        Objects.hash(
+            role,
+            audio,
+            content,
+            functionCall,
+            name,
+            refusal,
+            toolCalls,
+            additionalProperties,
+        )
+    }
 
     override fun hashCode(): Int = hashCode
 

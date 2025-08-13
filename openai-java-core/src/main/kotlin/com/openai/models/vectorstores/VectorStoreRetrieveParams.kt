@@ -183,10 +183,14 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is VectorStoreRetrieveParams && vectorStoreId == other.vectorStoreId && additionalHeaders == other.additionalHeaders && additionalQueryParams == other.additionalQueryParams /* spotless:on */
+        return other is VectorStoreRetrieveParams &&
+            vectorStoreId == other.vectorStoreId &&
+            additionalHeaders == other.additionalHeaders &&
+            additionalQueryParams == other.additionalQueryParams
     }
 
-    override fun hashCode(): Int = /* spotless:off */ Objects.hash(vectorStoreId, additionalHeaders, additionalQueryParams) /* spotless:on */
+    override fun hashCode(): Int =
+        Objects.hash(vectorStoreId, additionalHeaders, additionalQueryParams)
 
     override fun toString() =
         "VectorStoreRetrieveParams{vectorStoreId=$vectorStoreId, additionalHeaders=$additionalHeaders, additionalQueryParams=$additionalQueryParams}"

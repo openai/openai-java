@@ -291,12 +291,17 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is InputAudioBufferCommittedEvent && eventId == other.eventId && itemId == other.itemId && type == other.type && previousItemId == other.previousItemId && additionalProperties == other.additionalProperties /* spotless:on */
+        return other is InputAudioBufferCommittedEvent &&
+            eventId == other.eventId &&
+            itemId == other.itemId &&
+            type == other.type &&
+            previousItemId == other.previousItemId &&
+            additionalProperties == other.additionalProperties
     }
 
-    /* spotless:off */
-    private val hashCode: Int by lazy { Objects.hash(eventId, itemId, type, previousItemId, additionalProperties) }
-    /* spotless:on */
+    private val hashCode: Int by lazy {
+        Objects.hash(eventId, itemId, type, previousItemId, additionalProperties)
+    }
 
     override fun hashCode(): Int = hashCode
 

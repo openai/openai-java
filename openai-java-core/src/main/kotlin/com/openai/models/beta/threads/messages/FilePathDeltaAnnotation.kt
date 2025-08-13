@@ -450,12 +450,12 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is FilePath && fileId == other.fileId && additionalProperties == other.additionalProperties /* spotless:on */
+            return other is FilePath &&
+                fileId == other.fileId &&
+                additionalProperties == other.additionalProperties
         }
 
-        /* spotless:off */
         private val hashCode: Int by lazy { Objects.hash(fileId, additionalProperties) }
-        /* spotless:on */
 
         override fun hashCode(): Int = hashCode
 
@@ -468,12 +468,19 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is FilePathDeltaAnnotation && index == other.index && type == other.type && endIndex == other.endIndex && filePath == other.filePath && startIndex == other.startIndex && text == other.text && additionalProperties == other.additionalProperties /* spotless:on */
+        return other is FilePathDeltaAnnotation &&
+            index == other.index &&
+            type == other.type &&
+            endIndex == other.endIndex &&
+            filePath == other.filePath &&
+            startIndex == other.startIndex &&
+            text == other.text &&
+            additionalProperties == other.additionalProperties
     }
 
-    /* spotless:off */
-    private val hashCode: Int by lazy { Objects.hash(index, type, endIndex, filePath, startIndex, text, additionalProperties) }
-    /* spotless:on */
+    private val hashCode: Int by lazy {
+        Objects.hash(index, type, endIndex, filePath, startIndex, text, additionalProperties)
+    }
 
     override fun hashCode(): Int = hashCode
 

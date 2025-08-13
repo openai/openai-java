@@ -496,10 +496,36 @@ private constructor(
             return true
         }
 
-        return /* spotless:off */ other is RealtimeClientEvent && conversationItemCreate == other.conversationItemCreate && conversationItemDelete == other.conversationItemDelete && conversationItemRetrieve == other.conversationItemRetrieve && conversationItemTruncate == other.conversationItemTruncate && inputAudioBufferAppend == other.inputAudioBufferAppend && inputAudioBufferClear == other.inputAudioBufferClear && outputAudioBufferClear == other.outputAudioBufferClear && inputAudioBufferCommit == other.inputAudioBufferCommit && responseCancel == other.responseCancel && responseCreate == other.responseCreate && sessionUpdate == other.sessionUpdate && transcriptionSessionUpdate == other.transcriptionSessionUpdate /* spotless:on */
+        return other is RealtimeClientEvent &&
+            conversationItemCreate == other.conversationItemCreate &&
+            conversationItemDelete == other.conversationItemDelete &&
+            conversationItemRetrieve == other.conversationItemRetrieve &&
+            conversationItemTruncate == other.conversationItemTruncate &&
+            inputAudioBufferAppend == other.inputAudioBufferAppend &&
+            inputAudioBufferClear == other.inputAudioBufferClear &&
+            outputAudioBufferClear == other.outputAudioBufferClear &&
+            inputAudioBufferCommit == other.inputAudioBufferCommit &&
+            responseCancel == other.responseCancel &&
+            responseCreate == other.responseCreate &&
+            sessionUpdate == other.sessionUpdate &&
+            transcriptionSessionUpdate == other.transcriptionSessionUpdate
     }
 
-    override fun hashCode(): Int = /* spotless:off */ Objects.hash(conversationItemCreate, conversationItemDelete, conversationItemRetrieve, conversationItemTruncate, inputAudioBufferAppend, inputAudioBufferClear, outputAudioBufferClear, inputAudioBufferCommit, responseCancel, responseCreate, sessionUpdate, transcriptionSessionUpdate) /* spotless:on */
+    override fun hashCode(): Int =
+        Objects.hash(
+            conversationItemCreate,
+            conversationItemDelete,
+            conversationItemRetrieve,
+            conversationItemTruncate,
+            inputAudioBufferAppend,
+            inputAudioBufferClear,
+            outputAudioBufferClear,
+            inputAudioBufferCommit,
+            responseCancel,
+            responseCreate,
+            sessionUpdate,
+            transcriptionSessionUpdate,
+        )
 
     override fun toString(): String =
         when {
@@ -1100,12 +1126,13 @@ private constructor(
                 return true
             }
 
-            return /* spotless:off */ other is OutputAudioBufferClear && type == other.type && eventId == other.eventId && additionalProperties == other.additionalProperties /* spotless:on */
+            return other is OutputAudioBufferClear &&
+                type == other.type &&
+                eventId == other.eventId &&
+                additionalProperties == other.additionalProperties
         }
 
-        /* spotless:off */
         private val hashCode: Int by lazy { Objects.hash(type, eventId, additionalProperties) }
-        /* spotless:on */
 
         override fun hashCode(): Int = hashCode
 
