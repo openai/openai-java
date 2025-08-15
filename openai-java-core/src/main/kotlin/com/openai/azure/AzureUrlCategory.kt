@@ -32,11 +32,12 @@ internal enum class AzureUrlCategory {
                         host.endsWith(".openai.azure.com", ignoreCase = true) ||
                             // Azure OpenAI resource URL with the OpenAI unified schema.
                             host.endsWith(".services.ai.azure.com", ignoreCase = true) ||
-                            // Azure OpenAI resource URL, but with a schema different to the known ones.
+                            // Azure OpenAI resource URL, but with a schema different to the known
+                            // ones.
                             host.endsWith(".azure-api.net", ignoreCase = true) ||
                             host.endsWith(".cognitiveservices.azure.com", ignoreCase = true) ->
-                                if (trimmedBaseUrl.endsWith("/openai/v1")) AZURE_UNIFIED
-                                else AZURE_LEGACY
+                            if (trimmedBaseUrl.endsWith("/openai/v1")) AZURE_UNIFIED
+                            else AZURE_LEGACY
 
                         else -> NON_AZURE
                     }
