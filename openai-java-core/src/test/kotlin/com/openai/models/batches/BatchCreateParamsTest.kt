@@ -19,6 +19,9 @@ internal class BatchCreateParamsTest {
                     .putAdditionalProperty("foo", JsonValue.from("string"))
                     .build()
             )
+            .outputExpiresAfter(
+                BatchCreateParams.OutputExpiresAfter.builder().seconds(3600L).build()
+            )
             .build()
     }
 
@@ -34,6 +37,9 @@ internal class BatchCreateParamsTest {
                         .putAdditionalProperty("foo", JsonValue.from("string"))
                         .build()
                 )
+                .outputExpiresAfter(
+                    BatchCreateParams.OutputExpiresAfter.builder().seconds(3600L).build()
+                )
                 .build()
 
         val body = params._body()
@@ -47,6 +53,8 @@ internal class BatchCreateParamsTest {
                     .putAdditionalProperty("foo", JsonValue.from("string"))
                     .build()
             )
+        assertThat(body.outputExpiresAfter())
+            .contains(BatchCreateParams.OutputExpiresAfter.builder().seconds(3600L).build())
     }
 
     @Test

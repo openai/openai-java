@@ -28,6 +28,8 @@ import com.openai.core.toImmutable
 import com.openai.errors.OpenAIInvalidDataException
 import com.openai.models.ChatModel
 import com.openai.models.Reasoning
+import com.openai.models.ResponseFormatJsonObject
+import com.openai.models.ResponseFormatText
 import com.openai.models.ResponsesModel
 import java.util.Collections
 import java.util.Objects
@@ -60,7 +62,7 @@ private constructor(
     private val safetyIdentifier: JsonField<String>,
     private val serviceTier: JsonField<ServiceTier>,
     private val status: JsonField<ResponseStatus>,
-    private val text: JsonField<ResponseTextConfig>,
+    private val text: JsonField<Text>,
     private val topLogprobs: JsonField<Long>,
     private val truncation: JsonField<Truncation>,
     private val usage: JsonField<ResponseUsage>,
@@ -126,9 +128,7 @@ private constructor(
         @JsonProperty("status")
         @ExcludeMissing
         status: JsonField<ResponseStatus> = JsonMissing.of(),
-        @JsonProperty("text")
-        @ExcludeMissing
-        text: JsonField<ResponseTextConfig> = JsonMissing.of(),
+        @JsonProperty("text") @ExcludeMissing text: JsonField<Text> = JsonMissing.of(),
         @JsonProperty("top_logprobs")
         @ExcludeMissing
         topLogprobs: JsonField<Long> = JsonMissing.of(),
@@ -382,7 +382,7 @@ private constructor(
     fun promptCacheKey(): Optional<String> = promptCacheKey.getOptional("prompt_cache_key")
 
     /**
-     * **o-series models only**
+     * **gpt-5 and o-series models only**
      *
      * Configuration options for
      * [reasoning models](https://platform.openai.com/docs/guides/reasoning).
@@ -410,9 +410,9 @@ private constructor(
      *   the Project settings. Unless otherwise configured, the Project will use 'default'.
      * - If set to 'default', then the request will be processed with the standard pricing and
      *   performance for the selected model.
-     * - If set to '[flex](https://platform.openai.com/docs/guides/flex-processing)' or 'priority',
-     *   then the request will be processed with the corresponding service tier.
-     *   [Contact sales](https://openai.com/contact-sales) to learn more about Priority processing.
+     * - If set to '[flex](https://platform.openai.com/docs/guides/flex-processing)' or
+     *   '[priority](https://openai.com/api-priority-processing/)', then the request will be
+     *   processed with the corresponding service tier.
      * - When not set, the default behavior is 'auto'.
      *
      * When the `service_tier` parameter is set, the response body will include the `service_tier`
@@ -434,15 +434,10 @@ private constructor(
     fun status(): Optional<ResponseStatus> = status.getOptional("status")
 
     /**
-     * Configuration options for a text response from the model. Can be plain text or structured
-     * JSON data. Learn more:
-     * - [Text inputs and outputs](https://platform.openai.com/docs/guides/text)
-     * - [Structured Outputs](https://platform.openai.com/docs/guides/structured-outputs)
-     *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
      */
-    fun text(): Optional<ResponseTextConfig> = text.getOptional("text")
+    fun text(): Optional<Text> = text.getOptional("text")
 
     /**
      * An integer between 0 and 20 specifying the number of most likely tokens to return at each
@@ -679,7 +674,7 @@ private constructor(
      *
      * Unlike [text], this method doesn't throw if the JSON field has an unexpected type.
      */
-    @JsonProperty("text") @ExcludeMissing fun _text(): JsonField<ResponseTextConfig> = text
+    @JsonProperty("text") @ExcludeMissing fun _text(): JsonField<Text> = text
 
     /**
      * Returns the raw JSON value of [topLogprobs].
@@ -778,7 +773,7 @@ private constructor(
         private var safetyIdentifier: JsonField<String> = JsonMissing.of()
         private var serviceTier: JsonField<ServiceTier> = JsonMissing.of()
         private var status: JsonField<ResponseStatus> = JsonMissing.of()
-        private var text: JsonField<ResponseTextConfig> = JsonMissing.of()
+        private var text: JsonField<Text> = JsonMissing.of()
         private var topLogprobs: JsonField<Long> = JsonMissing.of()
         private var truncation: JsonField<Truncation> = JsonMissing.of()
         private var usage: JsonField<ResponseUsage> = JsonMissing.of()
@@ -1434,7 +1429,7 @@ private constructor(
         }
 
         /**
-         * **o-series models only**
+         * **gpt-5 and o-series models only**
          *
          * Configuration options for
          * [reasoning models](https://platform.openai.com/docs/guides/reasoning).
@@ -1481,9 +1476,8 @@ private constructor(
          * - If set to 'default', then the request will be processed with the standard pricing and
          *   performance for the selected model.
          * - If set to '[flex](https://platform.openai.com/docs/guides/flex-processing)' or
-         *   'priority', then the request will be processed with the corresponding service tier.
-         *   [Contact sales](https://openai.com/contact-sales) to learn more about Priority
-         *   processing.
+         *   '[priority](https://openai.com/api-priority-processing/)', then the request will be
+         *   processed with the corresponding service tier.
          * - When not set, the default behavior is 'auto'.
          *
          * When the `service_tier` parameter is set, the response body will include the
@@ -1521,22 +1515,15 @@ private constructor(
          */
         fun status(status: JsonField<ResponseStatus>) = apply { this.status = status }
 
-        /**
-         * Configuration options for a text response from the model. Can be plain text or structured
-         * JSON data. Learn more:
-         * - [Text inputs and outputs](https://platform.openai.com/docs/guides/text)
-         * - [Structured Outputs](https://platform.openai.com/docs/guides/structured-outputs)
-         */
-        fun text(text: ResponseTextConfig) = text(JsonField.of(text))
+        fun text(text: Text) = text(JsonField.of(text))
 
         /**
          * Sets [Builder.text] to an arbitrary JSON value.
          *
-         * You should usually call [Builder.text] with a well-typed [ResponseTextConfig] value
-         * instead. This method is primarily for setting the field to an undocumented or not yet
-         * supported value.
+         * You should usually call [Builder.text] with a well-typed [Text] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
          */
-        fun text(text: JsonField<ResponseTextConfig>) = apply { this.text = text }
+        fun text(text: JsonField<Text>) = apply { this.text = text }
 
         /**
          * An integer between 0 and 20 specifying the number of most likely tokens to return at each
@@ -2716,9 +2703,9 @@ private constructor(
      *   the Project settings. Unless otherwise configured, the Project will use 'default'.
      * - If set to 'default', then the request will be processed with the standard pricing and
      *   performance for the selected model.
-     * - If set to '[flex](https://platform.openai.com/docs/guides/flex-processing)' or 'priority',
-     *   then the request will be processed with the corresponding service tier.
-     *   [Contact sales](https://openai.com/contact-sales) to learn more about Priority processing.
+     * - If set to '[flex](https://platform.openai.com/docs/guides/flex-processing)' or
+     *   '[priority](https://openai.com/api-priority-processing/)', then the request will be
+     *   processed with the corresponding service tier.
      * - When not set, the default behavior is 'auto'.
      *
      * When the `service_tier` parameter is set, the response body will include the `service_tier`
@@ -2869,6 +2856,382 @@ private constructor(
         override fun hashCode() = value.hashCode()
 
         override fun toString() = value.toString()
+    }
+
+    class Text
+    private constructor(
+        private val format: JsonField<ResponseFormatTextConfig>,
+        private val verbosity: JsonField<Verbosity>,
+        private val additionalProperties: MutableMap<String, JsonValue>,
+    ) {
+
+        @JsonCreator
+        private constructor(
+            @JsonProperty("format")
+            @ExcludeMissing
+            format: JsonField<ResponseFormatTextConfig> = JsonMissing.of(),
+            @JsonProperty("verbosity")
+            @ExcludeMissing
+            verbosity: JsonField<Verbosity> = JsonMissing.of(),
+        ) : this(format, verbosity, mutableMapOf())
+
+        /**
+         * An object specifying the format that the model must output.
+         *
+         * Configuring `{ "type": "json_schema" }` enables Structured Outputs, which ensures the
+         * model will match your supplied JSON schema. Learn more in the
+         * [Structured Outputs guide](https://platform.openai.com/docs/guides/structured-outputs).
+         *
+         * The default format is `{ "type": "text" }` with no additional options.
+         *
+         * **Not recommended for gpt-4o and newer models:**
+         *
+         * Setting to `{ "type": "json_object" }` enables the older JSON mode, which ensures the
+         * message the model generates is valid JSON. Using `json_schema` is preferred for models
+         * that support it.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun format(): Optional<ResponseFormatTextConfig> = format.getOptional("format")
+
+        /**
+         * Constrains the verbosity of the model's response. Lower values will result in more
+         * concise responses, while higher values will result in more verbose responses. Currently
+         * supported values are `low`, `medium`, and `high`.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun verbosity(): Optional<Verbosity> = verbosity.getOptional("verbosity")
+
+        /**
+         * Returns the raw JSON value of [format].
+         *
+         * Unlike [format], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("format")
+        @ExcludeMissing
+        fun _format(): JsonField<ResponseFormatTextConfig> = format
+
+        /**
+         * Returns the raw JSON value of [verbosity].
+         *
+         * Unlike [verbosity], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("verbosity")
+        @ExcludeMissing
+        fun _verbosity(): JsonField<Verbosity> = verbosity
+
+        @JsonAnySetter
+        private fun putAdditionalProperty(key: String, value: JsonValue) {
+            additionalProperties.put(key, value)
+        }
+
+        @JsonAnyGetter
+        @ExcludeMissing
+        fun _additionalProperties(): Map<String, JsonValue> =
+            Collections.unmodifiableMap(additionalProperties)
+
+        fun toBuilder() = Builder().from(this)
+
+        companion object {
+
+            /** Returns a mutable builder for constructing an instance of [Text]. */
+            @JvmStatic fun builder() = Builder()
+        }
+
+        /** A builder for [Text]. */
+        class Builder internal constructor() {
+
+            private var format: JsonField<ResponseFormatTextConfig> = JsonMissing.of()
+            private var verbosity: JsonField<Verbosity> = JsonMissing.of()
+            private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
+
+            @JvmSynthetic
+            internal fun from(text: Text) = apply {
+                format = text.format
+                verbosity = text.verbosity
+                additionalProperties = text.additionalProperties.toMutableMap()
+            }
+
+            /**
+             * An object specifying the format that the model must output.
+             *
+             * Configuring `{ "type": "json_schema" }` enables Structured Outputs, which ensures the
+             * model will match your supplied JSON schema. Learn more in the
+             * [Structured Outputs guide](https://platform.openai.com/docs/guides/structured-outputs).
+             *
+             * The default format is `{ "type": "text" }` with no additional options.
+             *
+             * **Not recommended for gpt-4o and newer models:**
+             *
+             * Setting to `{ "type": "json_object" }` enables the older JSON mode, which ensures the
+             * message the model generates is valid JSON. Using `json_schema` is preferred for
+             * models that support it.
+             */
+            fun format(format: ResponseFormatTextConfig) = format(JsonField.of(format))
+
+            /**
+             * Sets [Builder.format] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.format] with a well-typed [ResponseFormatTextConfig]
+             * value instead. This method is primarily for setting the field to an undocumented or
+             * not yet supported value.
+             */
+            fun format(format: JsonField<ResponseFormatTextConfig>) = apply { this.format = format }
+
+            /** Alias for calling [format] with `ResponseFormatTextConfig.ofText(text)`. */
+            fun format(text: ResponseFormatText) = format(ResponseFormatTextConfig.ofText(text))
+
+            /**
+             * Alias for calling [format] with `ResponseFormatTextConfig.ofJsonSchema(jsonSchema)`.
+             */
+            fun format(jsonSchema: ResponseFormatTextJsonSchemaConfig) =
+                format(ResponseFormatTextConfig.ofJsonSchema(jsonSchema))
+
+            /**
+             * Alias for calling [format] with `ResponseFormatTextConfig.ofJsonObject(jsonObject)`.
+             */
+            fun format(jsonObject: ResponseFormatJsonObject) =
+                format(ResponseFormatTextConfig.ofJsonObject(jsonObject))
+
+            /**
+             * Constrains the verbosity of the model's response. Lower values will result in more
+             * concise responses, while higher values will result in more verbose responses.
+             * Currently supported values are `low`, `medium`, and `high`.
+             */
+            fun verbosity(verbosity: Verbosity?) = verbosity(JsonField.ofNullable(verbosity))
+
+            /** Alias for calling [Builder.verbosity] with `verbosity.orElse(null)`. */
+            fun verbosity(verbosity: Optional<Verbosity>) = verbosity(verbosity.getOrNull())
+
+            /**
+             * Sets [Builder.verbosity] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.verbosity] with a well-typed [Verbosity] value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun verbosity(verbosity: JsonField<Verbosity>) = apply { this.verbosity = verbosity }
+
+            fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                this.additionalProperties.clear()
+                putAllAdditionalProperties(additionalProperties)
+            }
+
+            fun putAdditionalProperty(key: String, value: JsonValue) = apply {
+                additionalProperties.put(key, value)
+            }
+
+            fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                this.additionalProperties.putAll(additionalProperties)
+            }
+
+            fun removeAdditionalProperty(key: String) = apply { additionalProperties.remove(key) }
+
+            fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                keys.forEach(::removeAdditionalProperty)
+            }
+
+            /**
+             * Returns an immutable instance of [Text].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             */
+            fun build(): Text = Text(format, verbosity, additionalProperties.toMutableMap())
+        }
+
+        private var validated: Boolean = false
+
+        fun validate(): Text = apply {
+            if (validated) {
+                return@apply
+            }
+
+            format().ifPresent { it.validate() }
+            verbosity().ifPresent { it.validate() }
+            validated = true
+        }
+
+        fun isValid(): Boolean =
+            try {
+                validate()
+                true
+            } catch (e: OpenAIInvalidDataException) {
+                false
+            }
+
+        /**
+         * Returns a score indicating how many valid values are contained in this object
+         * recursively.
+         *
+         * Used for best match union deserialization.
+         */
+        @JvmSynthetic
+        internal fun validity(): Int =
+            (format.asKnown().getOrNull()?.validity() ?: 0) +
+                (verbosity.asKnown().getOrNull()?.validity() ?: 0)
+
+        /**
+         * Constrains the verbosity of the model's response. Lower values will result in more
+         * concise responses, while higher values will result in more verbose responses. Currently
+         * supported values are `low`, `medium`, and `high`.
+         */
+        class Verbosity @JsonCreator private constructor(private val value: JsonField<String>) :
+            Enum {
+
+            /**
+             * Returns this class instance's raw value.
+             *
+             * This is usually only useful if this instance was deserialized from data that doesn't
+             * match any known member, and you want to know that value. For example, if the SDK is
+             * on an older version than the API, then the API may respond with new members that the
+             * SDK is unaware of.
+             */
+            @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
+
+            companion object {
+
+                @JvmField val LOW = of("low")
+
+                @JvmField val MEDIUM = of("medium")
+
+                @JvmField val HIGH = of("high")
+
+                @JvmStatic fun of(value: String) = Verbosity(JsonField.of(value))
+            }
+
+            /** An enum containing [Verbosity]'s known values. */
+            enum class Known {
+                LOW,
+                MEDIUM,
+                HIGH,
+            }
+
+            /**
+             * An enum containing [Verbosity]'s known values, as well as an [_UNKNOWN] member.
+             *
+             * An instance of [Verbosity] can contain an unknown value in a couple of cases:
+             * - It was deserialized from data that doesn't match any known member. For example, if
+             *   the SDK is on an older version than the API, then the API may respond with new
+             *   members that the SDK is unaware of.
+             * - It was constructed with an arbitrary value using the [of] method.
+             */
+            enum class Value {
+                LOW,
+                MEDIUM,
+                HIGH,
+                /**
+                 * An enum member indicating that [Verbosity] was instantiated with an unknown
+                 * value.
+                 */
+                _UNKNOWN,
+            }
+
+            /**
+             * Returns an enum member corresponding to this class instance's value, or
+             * [Value._UNKNOWN] if the class was instantiated with an unknown value.
+             *
+             * Use the [known] method instead if you're certain the value is always known or if you
+             * want to throw for the unknown case.
+             */
+            fun value(): Value =
+                when (this) {
+                    LOW -> Value.LOW
+                    MEDIUM -> Value.MEDIUM
+                    HIGH -> Value.HIGH
+                    else -> Value._UNKNOWN
+                }
+
+            /**
+             * Returns an enum member corresponding to this class instance's value.
+             *
+             * Use the [value] method instead if you're uncertain the value is always known and
+             * don't want to throw for the unknown case.
+             *
+             * @throws OpenAIInvalidDataException if this class instance's value is a not a known
+             *   member.
+             */
+            fun known(): Known =
+                when (this) {
+                    LOW -> Known.LOW
+                    MEDIUM -> Known.MEDIUM
+                    HIGH -> Known.HIGH
+                    else -> throw OpenAIInvalidDataException("Unknown Verbosity: $value")
+                }
+
+            /**
+             * Returns this class instance's primitive wire representation.
+             *
+             * This differs from the [toString] method because that method is primarily for
+             * debugging and generally doesn't throw.
+             *
+             * @throws OpenAIInvalidDataException if this class instance's value does not have the
+             *   expected primitive type.
+             */
+            fun asString(): String =
+                _value().asString().orElseThrow {
+                    OpenAIInvalidDataException("Value is not a String")
+                }
+
+            private var validated: Boolean = false
+
+            fun validate(): Verbosity = apply {
+                if (validated) {
+                    return@apply
+                }
+
+                known()
+                validated = true
+            }
+
+            fun isValid(): Boolean =
+                try {
+                    validate()
+                    true
+                } catch (e: OpenAIInvalidDataException) {
+                    false
+                }
+
+            /**
+             * Returns a score indicating how many valid values are contained in this object
+             * recursively.
+             *
+             * Used for best match union deserialization.
+             */
+            @JvmSynthetic internal fun validity(): Int = if (value() == Value._UNKNOWN) 0 else 1
+
+            override fun equals(other: Any?): Boolean {
+                if (this === other) {
+                    return true
+                }
+
+                return other is Verbosity && value == other.value
+            }
+
+            override fun hashCode() = value.hashCode()
+
+            override fun toString() = value.toString()
+        }
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) {
+                return true
+            }
+
+            return other is Text &&
+                format == other.format &&
+                verbosity == other.verbosity &&
+                additionalProperties == other.additionalProperties
+        }
+
+        private val hashCode: Int by lazy { Objects.hash(format, verbosity, additionalProperties) }
+
+        override fun hashCode(): Int = hashCode
+
+        override fun toString() =
+            "Text{format=$format, verbosity=$verbosity, additionalProperties=$additionalProperties}"
     }
 
     /**

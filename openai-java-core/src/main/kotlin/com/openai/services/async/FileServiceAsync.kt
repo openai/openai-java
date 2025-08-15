@@ -33,7 +33,7 @@ interface FileServiceAsync {
 
     /**
      * Upload a file that can be used across various endpoints. Individual files can be up to 512
-     * MB, and the size of all files uploaded by one organization can be up to 100 GB.
+     * MB, and the size of all files uploaded by one organization can be up to 1 TB.
      *
      * The Assistants API supports files up to 2 million tokens and of specific file types. See the
      * [Assistants Tools guide](https://platform.openai.com/docs/assistants/tools) for details.
