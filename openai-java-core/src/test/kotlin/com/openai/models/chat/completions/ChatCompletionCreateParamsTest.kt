@@ -73,6 +73,11 @@ internal class ChatCompletionCreateParamsTest {
                     .build()
             )
             .temperature(1.0)
+            .text(
+                ChatCompletionCreateParams.Text.builder()
+                    .verbosity(ChatCompletionCreateParams.Text.Verbosity.LOW)
+                    .build()
+            )
             .toolChoice(ChatCompletionToolChoiceOption.Auto.NONE)
             .addFunctionTool(
                 FunctionDefinition.builder()
@@ -176,6 +181,11 @@ internal class ChatCompletionCreateParamsTest {
                         .build()
                 )
                 .temperature(1.0)
+                .text(
+                    ChatCompletionCreateParams.Text.builder()
+                        .verbosity(ChatCompletionCreateParams.Text.Verbosity.LOW)
+                        .build()
+                )
                 .toolChoice(ChatCompletionToolChoiceOption.Auto.NONE)
                 .addFunctionTool(
                     FunctionDefinition.builder()
@@ -297,6 +307,12 @@ internal class ChatCompletionCreateParamsTest {
                     .build()
             )
         assertThat(body.temperature()).contains(1.0)
+        assertThat(body.text())
+            .contains(
+                ChatCompletionCreateParams.Text.builder()
+                    .verbosity(ChatCompletionCreateParams.Text.Verbosity.LOW)
+                    .build()
+            )
         assertThat(body.toolChoice())
             .contains(
                 ChatCompletionToolChoiceOption.ofAuto(ChatCompletionToolChoiceOption.Auto.NONE)
