@@ -14,11 +14,46 @@ internal class FileCreateParamsTest {
         FileCreateParams.builder()
             .file("some content".byteInputStream())
             .purpose(FilePurpose.ASSISTANTS)
+            .expiresAfter(FileCreateParams.ExpiresAfter.builder().seconds(3600L).build())
             .build()
     }
 
     @Test
     fun body() {
+        val params =
+            FileCreateParams.builder()
+                .file("some content".byteInputStream())
+                .purpose(FilePurpose.ASSISTANTS)
+                .expiresAfter(FileCreateParams.ExpiresAfter.builder().seconds(3600L).build())
+                .build()
+
+        val body = params._body()
+
+        assertThat(body.filterValues { !it.value.isNull() })
+            .usingRecursiveComparison()
+            // TODO(AssertJ): Replace this and the `mapValues` below with:
+            // https://github.com/assertj/assertj/issues/3165
+            .withEqualsForType(
+                { a, b -> a.readBytes() contentEquals b.readBytes() },
+                InputStream::class.java,
+            )
+            .isEqualTo(
+                mapOf(
+                        "file" to MultipartField.of("some content".byteInputStream()),
+                        "purpose" to MultipartField.of(FilePurpose.ASSISTANTS),
+                        "expires_after" to
+                            MultipartField.of(
+                                FileCreateParams.ExpiresAfter.builder().seconds(3600L).build()
+                            ),
+                    )
+                    .mapValues { (_, field) ->
+                        field.map { (it as? ByteArray)?.inputStream() ?: it }
+                    }
+            )
+    }
+
+    @Test
+    fun bodyWithoutOptionalFields() {
         val params =
             FileCreateParams.builder()
                 .file("some content".byteInputStream())

@@ -29,6 +29,7 @@ internal class UploadServiceTest {
                     .filename("filename")
                     .mimeType("mime_type")
                     .purpose(FilePurpose.ASSISTANTS)
+                    .expiresAfter(UploadCreateParams.ExpiresAfter.builder().seconds(3600L).build())
                     .build()
             )
 
