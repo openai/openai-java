@@ -80,13 +80,25 @@ internal class ClientOptionsTest {
     }
 
     @Test
-    fun azureUrlPathMode_defaultsToUnified() {
+    fun azureUrlPathMode_setToUnified() {
+        val clientOptions =
+            ClientOptions.builder()
+                .httpClient(createOkHttpClient())
+                .credential(BearerTokenCredential.create(FAKE_API_KEY))
+                .azureUrlPathMode(AzureUrlPathMode.UNIFIED)
+                .build()
+
+        assertThat(clientOptions.azureUrlPathMode).isEqualTo(AzureUrlPathMode.UNIFIED)
+    }
+
+    @Test
+    fun azureUrlPathMode_defaultsToAuto() {
         val clientOptions =
             ClientOptions.builder()
                 .httpClient(createOkHttpClient())
                 .credential(BearerTokenCredential.create(FAKE_API_KEY))
                 .build()
 
-        assertThat(clientOptions.azureUrlPathMode).isEqualTo(AzureUrlPathMode.UNIFIED)
+        assertThat(clientOptions.azureUrlPathMode).isEqualTo(AzureUrlPathMode.AUTO)
     }
 }
