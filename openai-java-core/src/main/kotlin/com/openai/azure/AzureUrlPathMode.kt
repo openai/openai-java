@@ -7,4 +7,5 @@ package com.openai.azure
 enum class AzureUrlPathMode {
     LEGACY,
     UNIFIED,
+    AUTO
 }

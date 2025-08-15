@@ -23,22 +23,23 @@ internal enum class AzureUrlCategory {
         fun categorizeBaseUrl(baseUrl: String, pathMode: AzureUrlPathMode): AzureUrlCategory {
             val trimmedBaseUrl = baseUrl.trim().trimEnd('/')
             val host = URI.create(trimmedBaseUrl).host
-            return when {
-                // Azure OpenAI resource URL with the old schema.
-                host.endsWith(".openai.azure.com", ignoreCase = true) ||
-                    // Azure OpenAI resource URL with the OpenAI unified schema.
-                    host.endsWith(".services.ai.azure.com", ignoreCase = true) ||
-                    // Azure OpenAI resource URL, but with a schema different to the known ones.
-                    host.endsWith(".azure-api.net", ignoreCase = true) ||
-                    host.endsWith(".cognitiveservices.azure.com", ignoreCase = true) ->
-                    when (pathMode) {
-                        AzureUrlPathMode.LEGACY -> AZURE_LEGACY
-                        AzureUrlPathMode.UNIFIED ->
-                            if (trimmedBaseUrl.endsWith("/openai/v1")) AZURE_UNIFIED
-                            else AZURE_LEGACY
-                    }
 
-                else -> NON_AZURE
+            return when (pathMode) {
+                AzureUrlPathMode.LEGACY -> AZURE_LEGACY
+                AzureUrlPathMode.UNIFIED -> AZURE_UNIFIED
+                AzureUrlPathMode.AUTO ->
+                    when {
+                        host.endsWith(".openai.azure.com", ignoreCase = true) ||
+                            // Azure OpenAI resource URL with the OpenAI unified schema.
+                            host.endsWith(".services.ai.azure.com", ignoreCase = true) ||
+                            // Azure OpenAI resource URL, but with a schema different to the known ones.
+                            host.endsWith(".azure-api.net", ignoreCase = true) ||
+                            host.endsWith(".cognitiveservices.azure.com", ignoreCase = true) ->
+                                if (trimmedBaseUrl.endsWith("/openai/v1")) AZURE_UNIFIED
+                                else AZURE_LEGACY
+
+                        else -> NON_AZURE
+                    }
             }
         }
     }
