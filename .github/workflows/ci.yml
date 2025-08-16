@@ -36,6 +36,31 @@ jobs:
 
       - name: Run lints
         run: ./scripts/lint
+
+  build:
+    timeout-minutes: 15
+    name: build
+    runs-on: ${{ github.repository == 'stainless-sdks/openai-java' && 'depot-ubuntu-24.04' || 'ubuntu-latest' }}
+    if: github.event_name == 'push' || github.event.pull_request.head.repo.fork
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: |
+            8
+            21
+          cache: gradle
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: Build SDK
+        run: ./scripts/build
+
   test:
     timeout-minutes: 15
     name: test

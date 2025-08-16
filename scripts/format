@@ -4,5 +4,5 @@ set -e
 
 cd "$(dirname "$0")/.."
 
-echo "==> Running spotlessApply"
-./gradlew spotlessApply
+echo "==> Running formatters"
+./gradlew format

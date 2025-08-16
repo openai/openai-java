@@ -111,6 +111,11 @@ internal class ServiceParamsTest {
                         .build()
                 )
                 .temperature(1.0)
+                .text(
+                    ChatCompletionCreateParams.Text.builder()
+                        .verbosity(ChatCompletionCreateParams.Text.Verbosity.LOW)
+                        .build()
+                )
                 .toolChoice(ChatCompletionToolChoiceOption.Auto.NONE)
                 .addFunctionTool(
                     FunctionDefinition.builder()

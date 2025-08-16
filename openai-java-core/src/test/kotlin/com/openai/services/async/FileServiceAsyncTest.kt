@@ -36,6 +36,7 @@ internal class FileServiceAsyncTest {
                 FileCreateParams.builder()
                     .file("some content".byteInputStream())
                     .purpose(FilePurpose.ASSISTANTS)
+                    .expiresAfter(FileCreateParams.ExpiresAfter.builder().seconds(3600L).build())
                     .build()
             )
 

@@ -114,9 +114,9 @@ private constructor(
      *   the Project settings. Unless otherwise configured, the Project will use 'default'.
      * - If set to 'default', then the request will be processed with the standard pricing and
      *   performance for the selected model.
-     * - If set to '[flex](https://platform.openai.com/docs/guides/flex-processing)' or 'priority',
-     *   then the request will be processed with the corresponding service tier.
-     *   [Contact sales](https://openai.com/contact-sales) to learn more about Priority processing.
+     * - If set to '[flex](https://platform.openai.com/docs/guides/flex-processing)' or
+     *   '[priority](https://openai.com/api-priority-processing/)', then the request will be
+     *   processed with the corresponding service tier.
      * - When not set, the default behavior is 'auto'.
      *
      * When the `service_tier` parameter is set, the response body will include the `service_tier`
@@ -137,6 +137,7 @@ private constructor(
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
      */
+    @Deprecated("deprecated")
     fun systemFingerprint(): Optional<String> = systemFingerprint.getOptional("system_fingerprint")
 
     /**
@@ -190,6 +191,7 @@ private constructor(
      * Unlike [systemFingerprint], this method doesn't throw if the JSON field has an unexpected
      * type.
      */
+    @Deprecated("deprecated")
     @JsonProperty("system_fingerprint")
     @ExcludeMissing
     fun _systemFingerprint(): JsonField<String> = systemFingerprint
@@ -335,9 +337,8 @@ private constructor(
          * - If set to 'default', then the request will be processed with the standard pricing and
          *   performance for the selected model.
          * - If set to '[flex](https://platform.openai.com/docs/guides/flex-processing)' or
-         *   'priority', then the request will be processed with the corresponding service tier.
-         *   [Contact sales](https://openai.com/contact-sales) to learn more about Priority
-         *   processing.
+         *   '[priority](https://openai.com/api-priority-processing/)', then the request will be
+         *   processed with the corresponding service tier.
          * - When not set, the default behavior is 'auto'.
          *
          * When the `service_tier` parameter is set, the response body will include the
@@ -366,6 +367,7 @@ private constructor(
          * Can be used in conjunction with the `seed` request parameter to understand when backend
          * changes have been made that might impact determinism.
          */
+        @Deprecated("deprecated")
         fun systemFingerprint(systemFingerprint: String) =
             systemFingerprint(JsonField.of(systemFingerprint))
 
@@ -376,6 +378,7 @@ private constructor(
          * instead. This method is primarily for setting the field to an undocumented or not yet
          * supported value.
          */
+        @Deprecated("deprecated")
         fun systemFingerprint(systemFingerprint: JsonField<String>) = apply {
             this.systemFingerprint = systemFingerprint
         }
@@ -1200,9 +1203,9 @@ private constructor(
      *   the Project settings. Unless otherwise configured, the Project will use 'default'.
      * - If set to 'default', then the request will be processed with the standard pricing and
      *   performance for the selected model.
-     * - If set to '[flex](https://platform.openai.com/docs/guides/flex-processing)' or 'priority',
-     *   then the request will be processed with the corresponding service tier.
-     *   [Contact sales](https://openai.com/contact-sales) to learn more about Priority processing.
+     * - If set to '[flex](https://platform.openai.com/docs/guides/flex-processing)' or
+     *   '[priority](https://openai.com/api-priority-processing/)', then the request will be
+     *   processed with the corresponding service tier.
      * - When not set, the default behavior is 'auto'.
      *
      * When the `service_tier` parameter is set, the response body will include the `service_tier`

@@ -18,6 +18,7 @@ import com.openai.errors.OpenAIInvalidDataException
 import com.openai.models.files.FilePurpose
 import java.util.Collections
 import java.util.Objects
+import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
 /**
@@ -83,6 +84,15 @@ private constructor(
     fun purpose(): FilePurpose = body.purpose()
 
     /**
+     * The expiration policy for a file. By default, files with `purpose=batch` expire after 30 days
+     * and all other files are persisted until they are manually deleted.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun expiresAfter(): Optional<ExpiresAfter> = body.expiresAfter()
+
+    /**
      * Returns the raw JSON value of [bytes].
      *
      * Unlike [bytes], this method doesn't throw if the JSON field has an unexpected type.
@@ -109,6 +119,13 @@ private constructor(
      * Unlike [purpose], this method doesn't throw if the JSON field has an unexpected type.
      */
     fun _purpose(): JsonField<FilePurpose> = body._purpose()
+
+    /**
+     * Returns the raw JSON value of [expiresAfter].
+     *
+     * Unlike [expiresAfter], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    fun _expiresAfter(): JsonField<ExpiresAfter> = body._expiresAfter()
 
     fun _additionalBodyProperties(): Map<String, JsonValue> = body._additionalProperties()
 
@@ -159,6 +176,8 @@ private constructor(
          * - [filename]
          * - [mimeType]
          * - [purpose]
+         * - [expiresAfter]
+         * - etc.
          */
         fun body(body: Body) = apply { this.body = body.toBuilder() }
 
@@ -216,6 +235,23 @@ private constructor(
          * value.
          */
         fun purpose(purpose: JsonField<FilePurpose>) = apply { body.purpose(purpose) }
+
+        /**
+         * The expiration policy for a file. By default, files with `purpose=batch` expire after 30
+         * days and all other files are persisted until they are manually deleted.
+         */
+        fun expiresAfter(expiresAfter: ExpiresAfter) = apply { body.expiresAfter(expiresAfter) }
+
+        /**
+         * Sets [Builder.expiresAfter] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.expiresAfter] with a well-typed [ExpiresAfter] value
+         * instead. This method is primarily for setting the field to an undocumented or not yet
+         * supported value.
+         */
+        fun expiresAfter(expiresAfter: JsonField<ExpiresAfter>) = apply {
+            body.expiresAfter(expiresAfter)
+        }
 
         fun additionalBodyProperties(additionalBodyProperties: Map<String, JsonValue>) = apply {
             body.additionalProperties(additionalBodyProperties)
@@ -369,6 +405,7 @@ private constructor(
         private val filename: JsonField<String>,
         private val mimeType: JsonField<String>,
         private val purpose: JsonField<FilePurpose>,
+        private val expiresAfter: JsonField<ExpiresAfter>,
         private val additionalProperties: MutableMap<String, JsonValue>,
     ) {
 
@@ -384,7 +421,10 @@ private constructor(
             @JsonProperty("purpose")
             @ExcludeMissing
             purpose: JsonField<FilePurpose> = JsonMissing.of(),
-        ) : this(bytes, filename, mimeType, purpose, mutableMapOf())
+            @JsonProperty("expires_after")
+            @ExcludeMissing
+            expiresAfter: JsonField<ExpiresAfter> = JsonMissing.of(),
+        ) : this(bytes, filename, mimeType, purpose, expiresAfter, mutableMapOf())
 
         /**
          * The number of bytes in the file you are uploading.
@@ -425,6 +465,15 @@ private constructor(
         fun purpose(): FilePurpose = purpose.getRequired("purpose")
 
         /**
+         * The expiration policy for a file. By default, files with `purpose=batch` expire after 30
+         * days and all other files are persisted until they are manually deleted.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun expiresAfter(): Optional<ExpiresAfter> = expiresAfter.getOptional("expires_after")
+
+        /**
          * Returns the raw JSON value of [bytes].
          *
          * Unlike [bytes], this method doesn't throw if the JSON field has an unexpected type.
@@ -451,6 +500,16 @@ private constructor(
          * Unlike [purpose], this method doesn't throw if the JSON field has an unexpected type.
          */
         @JsonProperty("purpose") @ExcludeMissing fun _purpose(): JsonField<FilePurpose> = purpose
+
+        /**
+         * Returns the raw JSON value of [expiresAfter].
+         *
+         * Unlike [expiresAfter], this method doesn't throw if the JSON field has an unexpected
+         * type.
+         */
+        @JsonProperty("expires_after")
+        @ExcludeMissing
+        fun _expiresAfter(): JsonField<ExpiresAfter> = expiresAfter
 
         @JsonAnySetter
         private fun putAdditionalProperty(key: String, value: JsonValue) {
@@ -487,6 +546,7 @@ private constructor(
             private var filename: JsonField<String>? = null
             private var mimeType: JsonField<String>? = null
             private var purpose: JsonField<FilePurpose>? = null
+            private var expiresAfter: JsonField<ExpiresAfter> = JsonMissing.of()
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
             @JvmSynthetic
@@ -495,6 +555,7 @@ private constructor(
                 filename = body.filename
                 mimeType = body.mimeType
                 purpose = body.purpose
+                expiresAfter = body.expiresAfter
                 additionalProperties = body.additionalProperties.toMutableMap()
             }
 
@@ -556,6 +617,23 @@ private constructor(
              */
             fun purpose(purpose: JsonField<FilePurpose>) = apply { this.purpose = purpose }
 
+            /**
+             * The expiration policy for a file. By default, files with `purpose=batch` expire after
+             * 30 days and all other files are persisted until they are manually deleted.
+             */
+            fun expiresAfter(expiresAfter: ExpiresAfter) = expiresAfter(JsonField.of(expiresAfter))
+
+            /**
+             * Sets [Builder.expiresAfter] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.expiresAfter] with a well-typed [ExpiresAfter] value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun expiresAfter(expiresAfter: JsonField<ExpiresAfter>) = apply {
+                this.expiresAfter = expiresAfter
+            }
+
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.clear()
                 putAllAdditionalProperties(additionalProperties)
@@ -596,6 +674,7 @@ private constructor(
                     checkRequired("filename", filename),
                     checkRequired("mimeType", mimeType),
                     checkRequired("purpose", purpose),
+                    expiresAfter,
                     additionalProperties.toMutableMap(),
                 )
         }
@@ -611,6 +690,7 @@ private constructor(
             filename()
             mimeType()
             purpose().validate()
+            expiresAfter().ifPresent { it.validate() }
             validated = true
         }
 
@@ -633,7 +713,8 @@ private constructor(
             (if (bytes.asKnown().isPresent) 1 else 0) +
                 (if (filename.asKnown().isPresent) 1 else 0) +
                 (if (mimeType.asKnown().isPresent) 1 else 0) +
-                (purpose.asKnown().getOrNull()?.validity() ?: 0)
+                (purpose.asKnown().getOrNull()?.validity() ?: 0) +
+                (expiresAfter.asKnown().getOrNull()?.validity() ?: 0)
 
         override fun equals(other: Any?): Boolean {
             if (this === other) {
@@ -645,17 +726,226 @@ private constructor(
                 filename == other.filename &&
                 mimeType == other.mimeType &&
                 purpose == other.purpose &&
+                expiresAfter == other.expiresAfter &&
                 additionalProperties == other.additionalProperties
         }
 
         private val hashCode: Int by lazy {
-            Objects.hash(bytes, filename, mimeType, purpose, additionalProperties)
+            Objects.hash(bytes, filename, mimeType, purpose, expiresAfter, additionalProperties)
         }
 
         override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "Body{bytes=$bytes, filename=$filename, mimeType=$mimeType, purpose=$purpose, additionalProperties=$additionalProperties}"
+            "Body{bytes=$bytes, filename=$filename, mimeType=$mimeType, purpose=$purpose, expiresAfter=$expiresAfter, additionalProperties=$additionalProperties}"
+    }
+
+    /**
+     * The expiration policy for a file. By default, files with `purpose=batch` expire after 30 days
+     * and all other files are persisted until they are manually deleted.
+     */
+    class ExpiresAfter
+    private constructor(
+        private val anchor: JsonValue,
+        private val seconds: JsonField<Long>,
+        private val additionalProperties: MutableMap<String, JsonValue>,
+    ) {
+
+        @JsonCreator
+        private constructor(
+            @JsonProperty("anchor") @ExcludeMissing anchor: JsonValue = JsonMissing.of(),
+            @JsonProperty("seconds") @ExcludeMissing seconds: JsonField<Long> = JsonMissing.of(),
+        ) : this(anchor, seconds, mutableMapOf())
+
+        /**
+         * Anchor timestamp after which the expiration policy applies. Supported anchors:
+         * `created_at`.
+         *
+         * Expected to always return the following:
+         * ```java
+         * JsonValue.from("created_at")
+         * ```
+         *
+         * However, this method can be useful for debugging and logging (e.g. if the server
+         * responded with an unexpected value).
+         */
+        @JsonProperty("anchor") @ExcludeMissing fun _anchor(): JsonValue = anchor
+
+        /**
+         * The number of seconds after the anchor time that the file will expire. Must be between
+         * 3600 (1 hour) and 2592000 (30 days).
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         */
+        fun seconds(): Long = seconds.getRequired("seconds")
+
+        /**
+         * Returns the raw JSON value of [seconds].
+         *
+         * Unlike [seconds], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("seconds") @ExcludeMissing fun _seconds(): JsonField<Long> = seconds
+
+        @JsonAnySetter
+        private fun putAdditionalProperty(key: String, value: JsonValue) {
+            additionalProperties.put(key, value)
+        }
+
+        @JsonAnyGetter
+        @ExcludeMissing
+        fun _additionalProperties(): Map<String, JsonValue> =
+            Collections.unmodifiableMap(additionalProperties)
+
+        fun toBuilder() = Builder().from(this)
+
+        companion object {
+
+            /**
+             * Returns a mutable builder for constructing an instance of [ExpiresAfter].
+             *
+             * The following fields are required:
+             * ```java
+             * .seconds()
+             * ```
+             */
+            @JvmStatic fun builder() = Builder()
+        }
+
+        /** A builder for [ExpiresAfter]. */
+        class Builder internal constructor() {
+
+            private var anchor: JsonValue = JsonValue.from("created_at")
+            private var seconds: JsonField<Long>? = null
+            private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
+
+            @JvmSynthetic
+            internal fun from(expiresAfter: ExpiresAfter) = apply {
+                anchor = expiresAfter.anchor
+                seconds = expiresAfter.seconds
+                additionalProperties = expiresAfter.additionalProperties.toMutableMap()
+            }
+
+            /**
+             * Sets the field to an arbitrary JSON value.
+             *
+             * It is usually unnecessary to call this method because the field defaults to the
+             * following:
+             * ```java
+             * JsonValue.from("created_at")
+             * ```
+             *
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun anchor(anchor: JsonValue) = apply { this.anchor = anchor }
+
+            /**
+             * The number of seconds after the anchor time that the file will expire. Must be
+             * between 3600 (1 hour) and 2592000 (30 days).
+             */
+            fun seconds(seconds: Long) = seconds(JsonField.of(seconds))
+
+            /**
+             * Sets [Builder.seconds] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.seconds] with a well-typed [Long] value instead.
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun seconds(seconds: JsonField<Long>) = apply { this.seconds = seconds }
+
+            fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                this.additionalProperties.clear()
+                putAllAdditionalProperties(additionalProperties)
+            }
+
+            fun putAdditionalProperty(key: String, value: JsonValue) = apply {
+                additionalProperties.put(key, value)
+            }
+
+            fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                this.additionalProperties.putAll(additionalProperties)
+            }
+
+            fun removeAdditionalProperty(key: String) = apply { additionalProperties.remove(key) }
+
+            fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                keys.forEach(::removeAdditionalProperty)
+            }
+
+            /**
+             * Returns an immutable instance of [ExpiresAfter].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             *
+             * The following fields are required:
+             * ```java
+             * .seconds()
+             * ```
+             *
+             * @throws IllegalStateException if any required field is unset.
+             */
+            fun build(): ExpiresAfter =
+                ExpiresAfter(
+                    anchor,
+                    checkRequired("seconds", seconds),
+                    additionalProperties.toMutableMap(),
+                )
+        }
+
+        private var validated: Boolean = false
+
+        fun validate(): ExpiresAfter = apply {
+            if (validated) {
+                return@apply
+            }
+
+            _anchor().let {
+                if (it != JsonValue.from("created_at")) {
+                    throw OpenAIInvalidDataException("'anchor' is invalid, received $it")
+                }
+            }
+            seconds()
+            validated = true
+        }
+
+        fun isValid(): Boolean =
+            try {
+                validate()
+                true
+            } catch (e: OpenAIInvalidDataException) {
+                false
+            }
+
+        /**
+         * Returns a score indicating how many valid values are contained in this object
+         * recursively.
+         *
+         * Used for best match union deserialization.
+         */
+        @JvmSynthetic
+        internal fun validity(): Int =
+            anchor.let { if (it == JsonValue.from("created_at")) 1 else 0 } +
+                (if (seconds.asKnown().isPresent) 1 else 0)
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) {
+                return true
+            }
+
+            return other is ExpiresAfter &&
+                anchor == other.anchor &&
+                seconds == other.seconds &&
+                additionalProperties == other.additionalProperties
+        }
+
+        private val hashCode: Int by lazy { Objects.hash(anchor, seconds, additionalProperties) }
+
+        override fun hashCode(): Int = hashCode
+
+        override fun toString() =
+            "ExpiresAfter{anchor=$anchor, seconds=$seconds, additionalProperties=$additionalProperties}"
     }
 
     override fun equals(other: Any?): Boolean {

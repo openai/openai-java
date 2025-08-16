@@ -32,7 +32,7 @@ import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
 /**
- * A new Realtime session configuration, with an ephermeral key. Default TTL for keys is one minute.
+ * A new Realtime session configuration, with an ephemeral key. Default TTL for keys is one minute.
  */
 class SessionCreateResponse
 private constructor(

@@ -386,7 +386,7 @@ private constructor(
     fun tools(): List<AssistantTool> = tools.getRequired("tools")
 
     /**
-     * Controls for how a thread will be truncated prior to the run. Use this to control the intial
+     * Controls for how a thread will be truncated prior to the run. Use this to control the initial
      * context window of the run.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
@@ -1267,7 +1267,7 @@ private constructor(
 
         /**
          * Controls for how a thread will be truncated prior to the run. Use this to control the
-         * intial context window of the run.
+         * initial context window of the run.
          */
         fun truncationStrategy(truncationStrategy: TruncationStrategy?) =
             truncationStrategy(JsonField.ofNullable(truncationStrategy))
@@ -2639,7 +2639,7 @@ private constructor(
     }
 
     /**
-     * Controls for how a thread will be truncated prior to the run. Use this to control the intial
+     * Controls for how a thread will be truncated prior to the run. Use this to control the initial
      * context window of the run.
      */
     class TruncationStrategy

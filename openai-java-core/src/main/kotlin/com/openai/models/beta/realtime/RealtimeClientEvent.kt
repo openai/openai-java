@@ -135,7 +135,8 @@ private constructor(
 
     /**
      * Send this event to cancel an in-progress response. The server will respond with a
-     * `response.cancelled` event or an error if there is no response to cancel.
+     * `response.done` event with a status of `response.status=cancelled`. If there is no response
+     * to cancel, the server will respond with an error.
      */
     fun responseCancel(): Optional<ResponseCancelEvent> = Optional.ofNullable(responseCancel)
 
@@ -283,7 +284,8 @@ private constructor(
 
     /**
      * Send this event to cancel an in-progress response. The server will respond with a
-     * `response.cancelled` event or an error if there is no response to cancel.
+     * `response.done` event with a status of `response.status=cancelled`. If there is no response
+     * to cancel, the server will respond with an error.
      */
     fun asResponseCancel(): ResponseCancelEvent = responseCancel.getOrThrow("responseCancel")
 
@@ -654,7 +656,8 @@ private constructor(
 
         /**
          * Send this event to cancel an in-progress response. The server will respond with a
-         * `response.cancelled` event or an error if there is no response to cancel.
+         * `response.done` event with a status of `response.status=cancelled`. If there is no
+         * response to cancel, the server will respond with an error.
          */
         @JvmStatic
         fun ofResponseCancel(responseCancel: ResponseCancelEvent) =
@@ -790,7 +793,8 @@ private constructor(
 
         /**
          * Send this event to cancel an in-progress response. The server will respond with a
-         * `response.cancelled` event or an error if there is no response to cancel.
+         * `response.done` event with a status of `response.status=cancelled`. If there is no
+         * response to cancel, the server will respond with an error.
          */
         fun visitResponseCancel(responseCancel: ResponseCancelEvent): T
 

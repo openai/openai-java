@@ -32,6 +32,9 @@ internal class BatchServiceAsyncTest {
                             .putAdditionalProperty("foo", JsonValue.from("string"))
                             .build()
                     )
+                    .outputExpiresAfter(
+                        BatchCreateParams.OutputExpiresAfter.builder().seconds(3600L).build()
+                    )
                     .build()
             )
 
