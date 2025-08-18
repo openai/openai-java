@@ -1,15 +1,13 @@
 package com.openai.azure
 
 /**
- * For Azure OpenAI endpoints, this enum configures the client to:
- * - [AzureUrlPathMode.LEGACY]: forces the deployment or model name into the path.
- * - [AzureUrlPathMode.UNIFIED]: matches the behaviour of OpenAI, meaning the
- *   [AzureOpenAIServiceVersion] is optional and the model is passed in the request object).
- * - [AzureUrlPathMode.AUTO]: automatically detects the path mode based on the base URL. This is the
- *   default value.
+ * Configures how the baseURL of [com.openai.core.ClientOptions] is treated for Azure OpenAI endpoints.
  */
 enum class AzureUrlPathMode {
+    /** Forces the deployment or model name into the path.*/
     LEGACY,
+    /** [AzureOpenAIServiceVersion] is optional and the model is part of the request. */
     UNIFIED,
+    /** Automatically detects the path mode based on the base URL. This is the default value. */
     AUTO,
 }
