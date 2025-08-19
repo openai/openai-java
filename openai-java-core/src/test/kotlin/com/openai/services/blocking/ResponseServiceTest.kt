@@ -14,6 +14,7 @@ import com.openai.models.responses.ResponseCreateParams
 import com.openai.models.responses.ResponseIncludable
 import com.openai.models.responses.ResponsePrompt
 import com.openai.models.responses.ResponseRetrieveParams
+import com.openai.models.responses.ResponseTextConfig
 import com.openai.models.responses.ToolChoiceOptions
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
@@ -76,9 +77,9 @@ internal class ResponseServiceTest {
                     )
                     .temperature(1.0)
                     .text(
-                        ResponseCreateParams.Text.builder()
+                        ResponseTextConfig.builder()
                             .format(ResponseFormatText.builder().build())
-                            .verbosity(ResponseCreateParams.Text.Verbosity.LOW)
+                            .verbosity(ResponseTextConfig.Verbosity.LOW)
                             .build()
                     )
                     .toolChoice(ToolChoiceOptions.NONE)
@@ -159,9 +160,9 @@ internal class ResponseServiceTest {
                     )
                     .temperature(1.0)
                     .text(
-                        ResponseCreateParams.Text.builder()
+                        ResponseTextConfig.builder()
                             .format(ResponseFormatText.builder().build())
-                            .verbosity(ResponseCreateParams.Text.Verbosity.LOW)
+                            .verbosity(ResponseTextConfig.Verbosity.LOW)
                             .build()
                     )
                     .toolChoice(ToolChoiceOptions.NONE)
