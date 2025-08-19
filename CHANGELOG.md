@@ -1,5 +1,26 @@
 # Changelog
 
+## 3.1.0 (2025-08-19)
+
+Full Changelog: [v3.0.3...v3.1.0](https://github.com/openai/openai-java/compare/v3.0.3...v3.1.0)
+
+### Features
+
+* **api:** add new text parameters, expiration options ([658f053](https://github.com/openai/openai-java/commit/658f053bc5a50f100459377b225fd7059e037c02))
+
+
+### Performance Improvements
+
+* **internal:** make formatting faster ([d7909d9](https://github.com/openai/openai-java/commit/d7909d936ede0d49b0ea62eb6e13dfb559a3dd0c))
+
+
+### Chores
+
+* **api:** accurately represent shape for verbosity on Chat Completions ([d01f37f](https://github.com/openai/openai-java/commit/d01f37f4012c7f3135c65218eb4326ba2ee27f12))
+* **ci:** add build job ([7699c4f](https://github.com/openai/openai-java/commit/7699c4f97f0d6a9fb26381c9d60570d1f07d8359))
+* **internal:** dynamically determine included projects ([1342647](https://github.com/openai/openai-java/commit/13426472f96739de27f9e7baae3e7cde7e6bd7ac))
+* **internal:** support passing arguments to test script ([ac596c6](https://github.com/openai/openai-java/commit/ac596c66026d35e3a5a1094303c8ed15a7a96166))
+
 ## 3.0.3 (2025-08-13)
 
 Full Changelog: [v3.0.2...v3.0.3](https://github.com/openai/openai-java/compare/v3.0.2...v3.0.3)
