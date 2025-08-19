@@ -349,7 +349,7 @@ private constructor(
      * [model distillation](https://platform.openai.com/docs/guides/distillation) or
      * [evals](https://platform.openai.com/docs/guides/evals) products.
      *
-     * Supports text and image inputs. Note: image inputs over 10MB will be dropped.
+     * Supports text and image inputs. Note: image inputs over 8MB will be dropped.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -373,12 +373,6 @@ private constructor(
      *   server responded with an unexpected value).
      */
     fun temperature(): Optional<Double> = body.temperature()
-
-    /**
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
-     */
-    fun text(): Optional<Text> = body.text()
 
     /**
      * Controls which (if any) tool is called by the model. `none` means the model will not call any
@@ -642,13 +636,6 @@ private constructor(
      * Unlike [temperature], this method doesn't throw if the JSON field has an unexpected type.
      */
     fun _temperature(): JsonField<Double> = body._temperature()
-
-    /**
-     * Returns the raw JSON value of [text].
-     *
-     * Unlike [text], this method doesn't throw if the JSON field has an unexpected type.
-     */
-    fun _text(): JsonField<Text> = body._text()
 
     /**
      * Returns the raw JSON value of [toolChoice].
@@ -1527,7 +1514,7 @@ private constructor(
          * [model distillation](https://platform.openai.com/docs/guides/distillation) or
          * [evals](https://platform.openai.com/docs/guides/evals) products.
          *
-         * Supports text and image inputs. Note: image inputs over 10MB will be dropped.
+         * Supports text and image inputs. Note: image inputs over 8MB will be dropped.
          */
         fun store(store: Boolean?) = apply { body.store(store) }
 
@@ -1594,16 +1581,6 @@ private constructor(
          * value.
          */
         fun temperature(temperature: JsonField<Double>) = apply { body.temperature(temperature) }
-
-        fun text(text: Text) = apply { body.text(text) }
-
-        /**
-         * Sets [Builder.text] to an arbitrary JSON value.
-         *
-         * You should usually call [Builder.text] with a well-typed [Text] value instead. This
-         * method is primarily for setting the field to an undocumented or not yet supported value.
-         */
-        fun text(text: JsonField<Text>) = apply { body.text(text) }
 
         /**
          * Controls which (if any) tool is called by the model. `none` means the model will not call
@@ -1989,7 +1966,6 @@ private constructor(
         private val store: JsonField<Boolean>,
         private val streamOptions: JsonField<ChatCompletionStreamOptions>,
         private val temperature: JsonField<Double>,
-        private val text: JsonField<Text>,
         private val toolChoice: JsonField<ChatCompletionToolChoiceOption>,
         private val tools: JsonField<List<ChatCompletionTool>>,
         private val topLogprobs: JsonField<Long>,
@@ -2070,7 +2046,6 @@ private constructor(
             @JsonProperty("temperature")
             @ExcludeMissing
             temperature: JsonField<Double> = JsonMissing.of(),
-            @JsonProperty("text") @ExcludeMissing text: JsonField<Text> = JsonMissing.of(),
             @JsonProperty("tool_choice")
             @ExcludeMissing
             toolChoice: JsonField<ChatCompletionToolChoiceOption> = JsonMissing.of(),
@@ -2115,7 +2090,6 @@ private constructor(
             store,
             streamOptions,
             temperature,
-            text,
             toolChoice,
             tools,
             topLogprobs,
@@ -2417,7 +2391,7 @@ private constructor(
          * [model distillation](https://platform.openai.com/docs/guides/distillation) or
          * [evals](https://platform.openai.com/docs/guides/evals) products.
          *
-         * Supports text and image inputs. Note: image inputs over 10MB will be dropped.
+         * Supports text and image inputs. Note: image inputs over 8MB will be dropped.
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
@@ -2442,12 +2416,6 @@ private constructor(
          *   server responded with an unexpected value).
          */
         fun temperature(): Optional<Double> = temperature.getOptional("temperature")
-
-        /**
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
-         */
-        fun text(): Optional<Text> = text.getOptional("text")
 
         /**
          * Controls which (if any) tool is called by the model. `none` means the model will not call
@@ -2767,13 +2735,6 @@ private constructor(
         fun _temperature(): JsonField<Double> = temperature
 
         /**
-         * Returns the raw JSON value of [text].
-         *
-         * Unlike [text], this method doesn't throw if the JSON field has an unexpected type.
-         */
-        @JsonProperty("text") @ExcludeMissing fun _text(): JsonField<Text> = text
-
-        /**
          * Returns the raw JSON value of [toolChoice].
          *
          * Unlike [toolChoice], this method doesn't throw if the JSON field has an unexpected type.
@@ -2891,7 +2852,6 @@ private constructor(
             private var store: JsonField<Boolean> = JsonMissing.of()
             private var streamOptions: JsonField<ChatCompletionStreamOptions> = JsonMissing.of()
             private var temperature: JsonField<Double> = JsonMissing.of()
-            private var text: JsonField<Text> = JsonMissing.of()
             private var toolChoice: JsonField<ChatCompletionToolChoiceOption> = JsonMissing.of()
             private var tools: JsonField<MutableList<ChatCompletionTool>>? = null
             private var topLogprobs: JsonField<Long> = JsonMissing.of()
@@ -2929,7 +2889,6 @@ private constructor(
                 store = body.store
                 streamOptions = body.streamOptions
                 temperature = body.temperature
-                text = body.text
                 toolChoice = body.toolChoice
                 tools = body.tools.map { it.toMutableList() }
                 topLogprobs = body.topLogprobs
@@ -3774,7 +3733,7 @@ private constructor(
              * [model distillation](https://platform.openai.com/docs/guides/distillation) or
              * [evals](https://platform.openai.com/docs/guides/evals) products.
              *
-             * Supports text and image inputs. Note: image inputs over 10MB will be dropped.
+             * Supports text and image inputs. Note: image inputs over 8MB will be dropped.
              */
             fun store(store: Boolean?) = store(JsonField.ofNullable(store))
 
@@ -3843,17 +3802,6 @@ private constructor(
             fun temperature(temperature: JsonField<Double>) = apply {
                 this.temperature = temperature
             }
-
-            fun text(text: Text) = text(JsonField.of(text))
-
-            /**
-             * Sets [Builder.text] to an arbitrary JSON value.
-             *
-             * You should usually call [Builder.text] with a well-typed [Text] value instead. This
-             * method is primarily for setting the field to an undocumented or not yet supported
-             * value.
-             */
-            fun text(text: JsonField<Text>) = apply { this.text = text }
 
             /**
              * Controls which (if any) tool is called by the model. `none` means the model will not
@@ -4138,7 +4086,6 @@ private constructor(
                     store,
                     streamOptions,
                     temperature,
-                    text,
                     toolChoice,
                     (tools ?: JsonMissing.of()).map { it.toImmutable() },
                     topLogprobs,
@@ -4183,7 +4130,6 @@ private constructor(
             store()
             streamOptions().ifPresent { it.validate() }
             temperature()
-            text().ifPresent { it.validate() }
             toolChoice().ifPresent { it.validate() }
             tools().ifPresent { it.forEach { it.validate() } }
             topLogprobs()
@@ -4236,7 +4182,6 @@ private constructor(
                 (if (store.asKnown().isPresent) 1 else 0) +
                 (streamOptions.asKnown().getOrNull()?.validity() ?: 0) +
                 (if (temperature.asKnown().isPresent) 1 else 0) +
-                (text.asKnown().getOrNull()?.validity() ?: 0) +
                 (toolChoice.asKnown().getOrNull()?.validity() ?: 0) +
                 (tools.asKnown().getOrNull()?.sumOf { it.validity().toInt() } ?: 0) +
                 (if (topLogprobs.asKnown().isPresent) 1 else 0) +
@@ -4277,7 +4222,6 @@ private constructor(
                 store == other.store &&
                 streamOptions == other.streamOptions &&
                 temperature == other.temperature &&
-                text == other.text &&
                 toolChoice == other.toolChoice &&
                 tools == other.tools &&
                 topLogprobs == other.topLogprobs &&
@@ -4316,7 +4260,6 @@ private constructor(
                 store,
                 streamOptions,
                 temperature,
-                text,
                 toolChoice,
                 tools,
                 topLogprobs,
@@ -4331,7 +4274,7 @@ private constructor(
         override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "Body{messages=$messages, model=$model, audio=$audio, frequencyPenalty=$frequencyPenalty, functionCall=$functionCall, functions=$functions, logitBias=$logitBias, logprobs=$logprobs, maxCompletionTokens=$maxCompletionTokens, maxTokens=$maxTokens, metadata=$metadata, modalities=$modalities, n=$n, parallelToolCalls=$parallelToolCalls, prediction=$prediction, presencePenalty=$presencePenalty, promptCacheKey=$promptCacheKey, reasoningEffort=$reasoningEffort, responseFormat=$responseFormat, safetyIdentifier=$safetyIdentifier, seed=$seed, serviceTier=$serviceTier, stop=$stop, store=$store, streamOptions=$streamOptions, temperature=$temperature, text=$text, toolChoice=$toolChoice, tools=$tools, topLogprobs=$topLogprobs, topP=$topP, user=$user, verbosity=$verbosity, webSearchOptions=$webSearchOptions, additionalProperties=$additionalProperties}"
+            "Body{messages=$messages, model=$model, audio=$audio, frequencyPenalty=$frequencyPenalty, functionCall=$functionCall, functions=$functions, logitBias=$logitBias, logprobs=$logprobs, maxCompletionTokens=$maxCompletionTokens, maxTokens=$maxTokens, metadata=$metadata, modalities=$modalities, n=$n, parallelToolCalls=$parallelToolCalls, prediction=$prediction, presencePenalty=$presencePenalty, promptCacheKey=$promptCacheKey, reasoningEffort=$reasoningEffort, responseFormat=$responseFormat, safetyIdentifier=$safetyIdentifier, seed=$seed, serviceTier=$serviceTier, stop=$stop, store=$store, streamOptions=$streamOptions, temperature=$temperature, toolChoice=$toolChoice, tools=$tools, topLogprobs=$topLogprobs, topP=$topP, user=$user, verbosity=$verbosity, webSearchOptions=$webSearchOptions, additionalProperties=$additionalProperties}"
     }
 
     /**
@@ -5898,302 +5841,6 @@ private constructor(
                 }
             }
         }
-    }
-
-    class Text
-    private constructor(
-        private val verbosity: JsonField<Verbosity>,
-        private val additionalProperties: MutableMap<String, JsonValue>,
-    ) {
-
-        @JsonCreator
-        private constructor(
-            @JsonProperty("verbosity")
-            @ExcludeMissing
-            verbosity: JsonField<Verbosity> = JsonMissing.of()
-        ) : this(verbosity, mutableMapOf())
-
-        /**
-         * Constrains the verbosity of the model's response. Lower values will result in more
-         * concise responses, while higher values will result in more verbose responses. Currently
-         * supported values are `low`, `medium`, and `high`.
-         *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
-         */
-        fun verbosity(): Optional<Verbosity> = verbosity.getOptional("verbosity")
-
-        /**
-         * Returns the raw JSON value of [verbosity].
-         *
-         * Unlike [verbosity], this method doesn't throw if the JSON field has an unexpected type.
-         */
-        @JsonProperty("verbosity")
-        @ExcludeMissing
-        fun _verbosity(): JsonField<Verbosity> = verbosity
-
-        @JsonAnySetter
-        private fun putAdditionalProperty(key: String, value: JsonValue) {
-            additionalProperties.put(key, value)
-        }
-
-        @JsonAnyGetter
-        @ExcludeMissing
-        fun _additionalProperties(): Map<String, JsonValue> =
-            Collections.unmodifiableMap(additionalProperties)
-
-        fun toBuilder() = Builder().from(this)
-
-        companion object {
-
-            /** Returns a mutable builder for constructing an instance of [Text]. */
-            @JvmStatic fun builder() = Builder()
-        }
-
-        /** A builder for [Text]. */
-        class Builder internal constructor() {
-
-            private var verbosity: JsonField<Verbosity> = JsonMissing.of()
-            private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
-
-            @JvmSynthetic
-            internal fun from(text: Text) = apply {
-                verbosity = text.verbosity
-                additionalProperties = text.additionalProperties.toMutableMap()
-            }
-
-            /**
-             * Constrains the verbosity of the model's response. Lower values will result in more
-             * concise responses, while higher values will result in more verbose responses.
-             * Currently supported values are `low`, `medium`, and `high`.
-             */
-            fun verbosity(verbosity: Verbosity?) = verbosity(JsonField.ofNullable(verbosity))
-
-            /** Alias for calling [Builder.verbosity] with `verbosity.orElse(null)`. */
-            fun verbosity(verbosity: Optional<Verbosity>) = verbosity(verbosity.getOrNull())
-
-            /**
-             * Sets [Builder.verbosity] to an arbitrary JSON value.
-             *
-             * You should usually call [Builder.verbosity] with a well-typed [Verbosity] value
-             * instead. This method is primarily for setting the field to an undocumented or not yet
-             * supported value.
-             */
-            fun verbosity(verbosity: JsonField<Verbosity>) = apply { this.verbosity = verbosity }
-
-            fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
-                this.additionalProperties.clear()
-                putAllAdditionalProperties(additionalProperties)
-            }
-
-            fun putAdditionalProperty(key: String, value: JsonValue) = apply {
-                additionalProperties.put(key, value)
-            }
-
-            fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
-                this.additionalProperties.putAll(additionalProperties)
-            }
-
-            fun removeAdditionalProperty(key: String) = apply { additionalProperties.remove(key) }
-
-            fun removeAllAdditionalProperties(keys: Set<String>) = apply {
-                keys.forEach(::removeAdditionalProperty)
-            }
-
-            /**
-             * Returns an immutable instance of [Text].
-             *
-             * Further updates to this [Builder] will not mutate the returned instance.
-             */
-            fun build(): Text = Text(verbosity, additionalProperties.toMutableMap())
-        }
-
-        private var validated: Boolean = false
-
-        fun validate(): Text = apply {
-            if (validated) {
-                return@apply
-            }
-
-            verbosity().ifPresent { it.validate() }
-            validated = true
-        }
-
-        fun isValid(): Boolean =
-            try {
-                validate()
-                true
-            } catch (e: OpenAIInvalidDataException) {
-                false
-            }
-
-        /**
-         * Returns a score indicating how many valid values are contained in this object
-         * recursively.
-         *
-         * Used for best match union deserialization.
-         */
-        @JvmSynthetic
-        internal fun validity(): Int = (verbosity.asKnown().getOrNull()?.validity() ?: 0)
-
-        /**
-         * Constrains the verbosity of the model's response. Lower values will result in more
-         * concise responses, while higher values will result in more verbose responses. Currently
-         * supported values are `low`, `medium`, and `high`.
-         */
-        class Verbosity @JsonCreator private constructor(private val value: JsonField<String>) :
-            Enum {
-
-            /**
-             * Returns this class instance's raw value.
-             *
-             * This is usually only useful if this instance was deserialized from data that doesn't
-             * match any known member, and you want to know that value. For example, if the SDK is
-             * on an older version than the API, then the API may respond with new members that the
-             * SDK is unaware of.
-             */
-            @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
-
-            companion object {
-
-                @JvmField val LOW = of("low")
-
-                @JvmField val MEDIUM = of("medium")
-
-                @JvmField val HIGH = of("high")
-
-                @JvmStatic fun of(value: String) = Verbosity(JsonField.of(value))
-            }
-
-            /** An enum containing [Verbosity]'s known values. */
-            enum class Known {
-                LOW,
-                MEDIUM,
-                HIGH,
-            }
-
-            /**
-             * An enum containing [Verbosity]'s known values, as well as an [_UNKNOWN] member.
-             *
-             * An instance of [Verbosity] can contain an unknown value in a couple of cases:
-             * - It was deserialized from data that doesn't match any known member. For example, if
-             *   the SDK is on an older version than the API, then the API may respond with new
-             *   members that the SDK is unaware of.
-             * - It was constructed with an arbitrary value using the [of] method.
-             */
-            enum class Value {
-                LOW,
-                MEDIUM,
-                HIGH,
-                /**
-                 * An enum member indicating that [Verbosity] was instantiated with an unknown
-                 * value.
-                 */
-                _UNKNOWN,
-            }
-
-            /**
-             * Returns an enum member corresponding to this class instance's value, or
-             * [Value._UNKNOWN] if the class was instantiated with an unknown value.
-             *
-             * Use the [known] method instead if you're certain the value is always known or if you
-             * want to throw for the unknown case.
-             */
-            fun value(): Value =
-                when (this) {
-                    LOW -> Value.LOW
-                    MEDIUM -> Value.MEDIUM
-                    HIGH -> Value.HIGH
-                    else -> Value._UNKNOWN
-                }
-
-            /**
-             * Returns an enum member corresponding to this class instance's value.
-             *
-             * Use the [value] method instead if you're uncertain the value is always known and
-             * don't want to throw for the unknown case.
-             *
-             * @throws OpenAIInvalidDataException if this class instance's value is a not a known
-             *   member.
-             */
-            fun known(): Known =
-                when (this) {
-                    LOW -> Known.LOW
-                    MEDIUM -> Known.MEDIUM
-                    HIGH -> Known.HIGH
-                    else -> throw OpenAIInvalidDataException("Unknown Verbosity: $value")
-                }
-
-            /**
-             * Returns this class instance's primitive wire representation.
-             *
-             * This differs from the [toString] method because that method is primarily for
-             * debugging and generally doesn't throw.
-             *
-             * @throws OpenAIInvalidDataException if this class instance's value does not have the
-             *   expected primitive type.
-             */
-            fun asString(): String =
-                _value().asString().orElseThrow {
-                    OpenAIInvalidDataException("Value is not a String")
-                }
-
-            private var validated: Boolean = false
-
-            fun validate(): Verbosity = apply {
-                if (validated) {
-                    return@apply
-                }
-
-                known()
-                validated = true
-            }
-
-            fun isValid(): Boolean =
-                try {
-                    validate()
-                    true
-                } catch (e: OpenAIInvalidDataException) {
-                    false
-                }
-
-            /**
-             * Returns a score indicating how many valid values are contained in this object
-             * recursively.
-             *
-             * Used for best match union deserialization.
-             */
-            @JvmSynthetic internal fun validity(): Int = if (value() == Value._UNKNOWN) 0 else 1
-
-            override fun equals(other: Any?): Boolean {
-                if (this === other) {
-                    return true
-                }
-
-                return other is Verbosity && value == other.value
-            }
-
-            override fun hashCode() = value.hashCode()
-
-            override fun toString() = value.toString()
-        }
-
-        override fun equals(other: Any?): Boolean {
-            if (this === other) {
-                return true
-            }
-
-            return other is Text &&
-                verbosity == other.verbosity &&
-                additionalProperties == other.additionalProperties
-        }
-
-        private val hashCode: Int by lazy { Objects.hash(verbosity, additionalProperties) }
-
-        override fun hashCode(): Int = hashCode
-
-        override fun toString() =
-            "Text{verbosity=$verbosity, additionalProperties=$additionalProperties}"
     }
 
     /**

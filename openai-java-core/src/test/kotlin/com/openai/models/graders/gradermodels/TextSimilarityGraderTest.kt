@@ -13,14 +13,14 @@ internal class TextSimilarityGraderTest {
     fun create() {
         val textSimilarityGrader =
             TextSimilarityGrader.builder()
-                .evaluationMetric(TextSimilarityGrader.EvaluationMetric.FUZZY_MATCH)
+                .evaluationMetric(TextSimilarityGrader.EvaluationMetric.COSINE)
                 .input("input")
                 .name("name")
                 .reference("reference")
                 .build()
 
         assertThat(textSimilarityGrader.evaluationMetric())
-            .isEqualTo(TextSimilarityGrader.EvaluationMetric.FUZZY_MATCH)
+            .isEqualTo(TextSimilarityGrader.EvaluationMetric.COSINE)
         assertThat(textSimilarityGrader.input()).isEqualTo("input")
         assertThat(textSimilarityGrader.name()).isEqualTo("name")
         assertThat(textSimilarityGrader.reference()).isEqualTo("reference")
@@ -31,7 +31,7 @@ internal class TextSimilarityGraderTest {
         val jsonMapper = jsonMapper()
         val textSimilarityGrader =
             TextSimilarityGrader.builder()
-                .evaluationMetric(TextSimilarityGrader.EvaluationMetric.FUZZY_MATCH)
+                .evaluationMetric(TextSimilarityGrader.EvaluationMetric.COSINE)
                 .input("input")
                 .name("name")
                 .reference("reference")

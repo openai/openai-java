@@ -40,8 +40,8 @@ private constructor(
     ) : this(evaluationMetric, input, name, reference, type, mutableMapOf())
 
     /**
-     * The evaluation metric to use. One of `fuzzy_match`, `bleu`, `gleu`, `meteor`, `rouge_1`,
-     * `rouge_2`, `rouge_3`, `rouge_4`, `rouge_5`, or `rouge_l`.
+     * The evaluation metric to use. One of `cosine`, `fuzzy_match`, `bleu`, `gleu`, `meteor`,
+     * `rouge_1`, `rouge_2`, `rouge_3`, `rouge_4`, `rouge_5`, or `rouge_l`.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
      *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
@@ -165,8 +165,8 @@ private constructor(
         }
 
         /**
-         * The evaluation metric to use. One of `fuzzy_match`, `bleu`, `gleu`, `meteor`, `rouge_1`,
-         * `rouge_2`, `rouge_3`, `rouge_4`, `rouge_5`, or `rouge_l`.
+         * The evaluation metric to use. One of `cosine`, `fuzzy_match`, `bleu`, `gleu`, `meteor`,
+         * `rouge_1`, `rouge_2`, `rouge_3`, `rouge_4`, `rouge_5`, or `rouge_l`.
          */
         fun evaluationMetric(evaluationMetric: EvaluationMetric) =
             evaluationMetric(JsonField.of(evaluationMetric))
@@ -316,8 +316,8 @@ private constructor(
             type.let { if (it == JsonValue.from("text_similarity")) 1 else 0 }
 
     /**
-     * The evaluation metric to use. One of `fuzzy_match`, `bleu`, `gleu`, `meteor`, `rouge_1`,
-     * `rouge_2`, `rouge_3`, `rouge_4`, `rouge_5`, or `rouge_l`.
+     * The evaluation metric to use. One of `cosine`, `fuzzy_match`, `bleu`, `gleu`, `meteor`,
+     * `rouge_1`, `rouge_2`, `rouge_3`, `rouge_4`, `rouge_5`, or `rouge_l`.
      */
     class EvaluationMetric @JsonCreator private constructor(private val value: JsonField<String>) :
         Enum {
@@ -333,6 +333,8 @@ private constructor(
         @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
 
         companion object {
+
+            @JvmField val COSINE = of("cosine")
 
             @JvmField val FUZZY_MATCH = of("fuzzy_match")
 
@@ -359,6 +361,7 @@ private constructor(
 
         /** An enum containing [EvaluationMetric]'s known values. */
         enum class Known {
+            COSINE,
             FUZZY_MATCH,
             BLEU,
             GLEU,
@@ -381,6 +384,7 @@ private constructor(
          * - It was constructed with an arbitrary value using the [of] method.
          */
         enum class Value {
+            COSINE,
             FUZZY_MATCH,
             BLEU,
             GLEU,
@@ -407,6 +411,7 @@ private constructor(
          */
         fun value(): Value =
             when (this) {
+                COSINE -> Value.COSINE
                 FUZZY_MATCH -> Value.FUZZY_MATCH
                 BLEU -> Value.BLEU
                 GLEU -> Value.GLEU
@@ -431,6 +436,7 @@ private constructor(
          */
         fun known(): Known =
             when (this) {
+                COSINE -> Known.COSINE
                 FUZZY_MATCH -> Known.FUZZY_MATCH
                 BLEU -> Known.BLEU
                 GLEU -> Known.GLEU

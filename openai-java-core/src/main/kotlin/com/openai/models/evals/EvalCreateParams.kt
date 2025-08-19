@@ -4667,8 +4667,8 @@ private constructor(
                     .build()
 
             /**
-             * The evaluation metric to use. One of `fuzzy_match`, `bleu`, `gleu`, `meteor`,
-             * `rouge_1`, `rouge_2`, `rouge_3`, `rouge_4`, `rouge_5`, or `rouge_l`.
+             * The evaluation metric to use. One of `cosine`, `fuzzy_match`, `bleu`, `gleu`,
+             * `meteor`, `rouge_1`, `rouge_2`, `rouge_3`, `rouge_4`, `rouge_5`, or `rouge_l`.
              *
              * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
              *   unexpectedly missing or null (e.g. if the server responded with an unexpected
@@ -4824,8 +4824,8 @@ private constructor(
                 }
 
                 /**
-                 * The evaluation metric to use. One of `fuzzy_match`, `bleu`, `gleu`, `meteor`,
-                 * `rouge_1`, `rouge_2`, `rouge_3`, `rouge_4`, `rouge_5`, or `rouge_l`.
+                 * The evaluation metric to use. One of `cosine`, `fuzzy_match`, `bleu`, `gleu`,
+                 * `meteor`, `rouge_1`, `rouge_2`, `rouge_3`, `rouge_4`, `rouge_5`, or `rouge_l`.
                  */
                 fun evaluationMetric(evaluationMetric: TextSimilarityGrader.EvaluationMetric) =
                     evaluationMetric(JsonField.of(evaluationMetric))
