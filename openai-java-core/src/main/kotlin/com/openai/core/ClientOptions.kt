@@ -166,7 +166,7 @@ private constructor(
         private var maxRetries: Int = 2
         private var credential: Credential? = null
         private var azureServiceVersion: AzureOpenAIServiceVersion? = null
-        private var azureUrlPathMode: AzureUrlPathMode = AzureUrlPathMode.UNIFIED
+        private var azureUrlPathMode: AzureUrlPathMode = AzureUrlPathMode.AUTO
         private var organization: String? = null
         private var project: String? = null
         private var webhookSecret: String? = null

@@ -13,7 +13,8 @@ internal class AzureUrlCategoryTest {
     }
 
     @Test
-    fun categorizeBaseUrl() {
+    fun categorizeBaseUrl_knownHosts() {
+        // known legacy endpoint - no trailing slash - force configuration
         assertThat(
                 AzureUrlCategory.categorizeBaseUrl(
                     "https://region.openai.azure.com",
@@ -21,13 +22,24 @@ internal class AzureUrlCategoryTest {
                 )
             )
             .isEqualTo(AzureUrlCategory.AZURE_LEGACY)
+
         assertThat(
                 AzureUrlCategory.categorizeBaseUrl(
                     "https://region.openai.azure.com",
                     AzureUrlPathMode.UNIFIED,
                 )
             )
+            .isEqualTo(AzureUrlCategory.AZURE_UNIFIED)
+
+        assertThat(
+                AzureUrlCategory.categorizeBaseUrl(
+                    "https://region.openai.azure.com",
+                    AzureUrlPathMode.AUTO,
+                )
+            )
             .isEqualTo(AzureUrlCategory.AZURE_LEGACY)
+
+        // known legacy endpoint - trailing slash - force configuration
         assertThat(
                 AzureUrlCategory.categorizeBaseUrl(
                     "https://region.openai.azure.com/",
@@ -41,7 +53,16 @@ internal class AzureUrlCategoryTest {
                     AzureUrlPathMode.UNIFIED,
                 )
             )
+            .isEqualTo(AzureUrlCategory.AZURE_UNIFIED)
+        assertThat(
+                AzureUrlCategory.categorizeBaseUrl(
+                    "https://region.openai.azure.com/",
+                    AzureUrlPathMode.AUTO,
+                )
+            )
             .isEqualTo(AzureUrlCategory.AZURE_LEGACY)
+
+        // known unified endpoint -  forced into legacy - no trailing slash
         assertThat(
                 AzureUrlCategory.categorizeBaseUrl(
                     "https://region.openai.azure.com/openai/v1",
@@ -56,7 +77,15 @@ internal class AzureUrlCategoryTest {
                 )
             )
             .isEqualTo(AzureUrlCategory.AZURE_UNIFIED)
+        assertThat(
+                AzureUrlCategory.categorizeBaseUrl(
+                    "https://region.openai.azure.com/openai/v1",
+                    AzureUrlPathMode.AUTO,
+                )
+            )
+            .isEqualTo(AzureUrlCategory.AZURE_UNIFIED)
 
+        // known legacy endpoint - forced into unified - no trailing slash
         assertThat(
                 AzureUrlCategory.categorizeBaseUrl(
                     "https://region.services.ai.azure.com",
@@ -70,7 +99,16 @@ internal class AzureUrlCategoryTest {
                     AzureUrlPathMode.UNIFIED,
                 )
             )
+            .isEqualTo(AzureUrlCategory.AZURE_UNIFIED)
+        assertThat(
+                AzureUrlCategory.categorizeBaseUrl(
+                    "https://region.services.ai.azure.com",
+                    AzureUrlPathMode.AUTO,
+                )
+            )
             .isEqualTo(AzureUrlCategory.AZURE_LEGACY)
+
+        // known legacy endpoint - forced into unified - trailing slash
         assertThat(
                 AzureUrlCategory.categorizeBaseUrl(
                     "https://region.services.ai.azure.com/",
@@ -84,7 +122,16 @@ internal class AzureUrlCategoryTest {
                     AzureUrlPathMode.UNIFIED,
                 )
             )
+            .isEqualTo(AzureUrlCategory.AZURE_UNIFIED)
+        assertThat(
+                AzureUrlCategory.categorizeBaseUrl(
+                    "https://region.services.ai.azure.com/",
+                    AzureUrlPathMode.AUTO,
+                )
+            )
             .isEqualTo(AzureUrlCategory.AZURE_LEGACY)
+
+        // known unified endpoint - forced into legacy - no trailing slash
         assertThat(
                 AzureUrlCategory.categorizeBaseUrl(
                     "https://region.services.ai.azure.com/openai/v1",
@@ -99,7 +146,15 @@ internal class AzureUrlCategoryTest {
                 )
             )
             .isEqualTo(AzureUrlCategory.AZURE_UNIFIED)
+        assertThat(
+                AzureUrlCategory.categorizeBaseUrl(
+                    "https://region.services.ai.azure.com/openai/v1",
+                    AzureUrlPathMode.AUTO,
+                )
+            )
+            .isEqualTo(AzureUrlCategory.AZURE_UNIFIED)
 
+        // known legacy endpoint - no trailing slash
         assertThat(
                 AzureUrlCategory.categorizeBaseUrl(
                     "https://region.azure-api.net",
@@ -113,7 +168,16 @@ internal class AzureUrlCategoryTest {
                     AzureUrlPathMode.UNIFIED,
                 )
             )
+            .isEqualTo(AzureUrlCategory.AZURE_UNIFIED)
+        assertThat(
+                AzureUrlCategory.categorizeBaseUrl(
+                    "https://region.azure-api.net",
+                    AzureUrlPathMode.AUTO,
+                )
+            )
             .isEqualTo(AzureUrlCategory.AZURE_LEGACY)
+
+        // known legacy endpoint - trailing slash
         assertThat(
                 AzureUrlCategory.categorizeBaseUrl(
                     "https://region.azure-api.net/",
@@ -127,7 +191,16 @@ internal class AzureUrlCategoryTest {
                     AzureUrlPathMode.UNIFIED,
                 )
             )
+            .isEqualTo(AzureUrlCategory.AZURE_UNIFIED)
+        assertThat(
+                AzureUrlCategory.categorizeBaseUrl(
+                    "https://region.azure-api.net/",
+                    AzureUrlPathMode.AUTO,
+                )
+            )
             .isEqualTo(AzureUrlCategory.AZURE_LEGACY)
+
+        // known unified endpoint - no trailing slash
         assertThat(
                 AzureUrlCategory.categorizeBaseUrl(
                     "https://region.azure-api.net/openai/v1",
@@ -142,7 +215,15 @@ internal class AzureUrlCategoryTest {
                 )
             )
             .isEqualTo(AzureUrlCategory.AZURE_UNIFIED)
+        assertThat(
+                AzureUrlCategory.categorizeBaseUrl(
+                    "https://region.azure-api.net/openai/v1",
+                    AzureUrlPathMode.AUTO,
+                )
+            )
+            .isEqualTo(AzureUrlCategory.AZURE_UNIFIED)
 
+        // known legacy endpoint - no trailing slash
         assertThat(
                 AzureUrlCategory.categorizeBaseUrl(
                     "https://region.cognitiveservices.azure.com",
@@ -156,7 +237,16 @@ internal class AzureUrlCategoryTest {
                     AzureUrlPathMode.UNIFIED,
                 )
             )
+            .isEqualTo(AzureUrlCategory.AZURE_UNIFIED)
+        assertThat(
+                AzureUrlCategory.categorizeBaseUrl(
+                    "https://region.cognitiveservices.azure.com",
+                    AzureUrlPathMode.AUTO,
+                )
+            )
             .isEqualTo(AzureUrlCategory.AZURE_LEGACY)
+
+        // known unified endpoint - trailing slash
         assertThat(
                 AzureUrlCategory.categorizeBaseUrl(
                     "https://region.cognitiveservices.azure.com/",
@@ -170,7 +260,16 @@ internal class AzureUrlCategoryTest {
                     AzureUrlPathMode.UNIFIED,
                 )
             )
+            .isEqualTo(AzureUrlCategory.AZURE_UNIFIED)
+        assertThat(
+                AzureUrlCategory.categorizeBaseUrl(
+                    "https://region.cognitiveservices.azure.com/",
+                    AzureUrlPathMode.AUTO,
+                )
+            )
             .isEqualTo(AzureUrlCategory.AZURE_LEGACY)
+
+        // known unified endpoint - no trailing slash
         assertThat(
                 AzureUrlCategory.categorizeBaseUrl(
                     "https://region.cognitiveservices.azure.com/openai/v1",
@@ -185,34 +284,59 @@ internal class AzureUrlCategoryTest {
                 )
             )
             .isEqualTo(AzureUrlCategory.AZURE_UNIFIED)
+        assertThat(
+                AzureUrlCategory.categorizeBaseUrl(
+                    "https://region.cognitiveservices.azure.com/openai/v1",
+                    AzureUrlPathMode.AUTO,
+                )
+            )
+            .isEqualTo(AzureUrlCategory.AZURE_UNIFIED)
+    }
 
+    @Test
+    fun categorizeBaseUrl_otherUrls() {
         assertThat(
                 AzureUrlCategory.categorizeBaseUrl("https://example.com", AzureUrlPathMode.LEGACY)
             )
-            .isEqualTo(AzureUrlCategory.NON_AZURE)
+            .isEqualTo(AzureUrlCategory.AZURE_LEGACY)
         assertThat(
                 AzureUrlCategory.categorizeBaseUrl("https://example.com", AzureUrlPathMode.UNIFIED)
             )
+            .isEqualTo(AzureUrlCategory.AZURE_UNIFIED)
+        assertThat(AzureUrlCategory.categorizeBaseUrl("https://example.com", AzureUrlPathMode.AUTO))
             .isEqualTo(AzureUrlCategory.NON_AZURE)
+
         assertThat(
                 AzureUrlCategory.categorizeBaseUrl("https://example.com/", AzureUrlPathMode.LEGACY)
             )
-            .isEqualTo(AzureUrlCategory.NON_AZURE)
+            .isEqualTo(AzureUrlCategory.AZURE_LEGACY)
         assertThat(
                 AzureUrlCategory.categorizeBaseUrl("https://example.com/", AzureUrlPathMode.UNIFIED)
             )
+            .isEqualTo(AzureUrlCategory.AZURE_UNIFIED)
+        assertThat(
+                AzureUrlCategory.categorizeBaseUrl("https://example.com/", AzureUrlPathMode.AUTO)
+            )
             .isEqualTo(AzureUrlCategory.NON_AZURE)
+
         assertThat(
                 AzureUrlCategory.categorizeBaseUrl(
                     "https://example.com/openai/v1",
                     AzureUrlPathMode.LEGACY,
                 )
             )
-            .isEqualTo(AzureUrlCategory.NON_AZURE)
+            .isEqualTo(AzureUrlCategory.AZURE_LEGACY)
         assertThat(
                 AzureUrlCategory.categorizeBaseUrl(
                     "https://example.com/openai/v1",
                     AzureUrlPathMode.UNIFIED,
+                )
+            )
+            .isEqualTo(AzureUrlCategory.AZURE_UNIFIED)
+        assertThat(
+                AzureUrlCategory.categorizeBaseUrl(
+                    "https://example.com/openai/v1",
+                    AzureUrlPathMode.AUTO,
                 )
             )
             .isEqualTo(AzureUrlCategory.NON_AZURE)
