@@ -63,18 +63,6 @@ internal class FileCreateParamsTest {
 
         val body = params._body()
 
-        assertThat(body.filterValues { !it.value.isNull() })
-            .usingRecursiveComparison()
-            // TODO(AssertJ): Replace this and the `mapValues` below with:
-            // https://github.com/assertj/assertj/issues/3165
-            .withEqualsForType(
-                { a, b -> a.readBytes() contentEquals b.readBytes() },
-                InputStream::class.java,
-            )
-            .isEqualTo(
-                mapOf().mapValues { (_, field) ->
-                    field.map { (it as? ByteArray)?.inputStream() ?: it }
-                }
-            )
+        assertThat(body.filterValues { !it.value.isNull() }).isEmpty()
     }
 }
