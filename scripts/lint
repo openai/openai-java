@@ -5,4 +5,19 @@ set -e
 cd "$(dirname "$0")/.."
 
 echo "==> Running lints"
-./gradlew lint
+
+if command -v ktfmt &> /dev/null; then
+    echo "==> Checking ktfmt"
+    ./scripts/kotlin-format --dry-run --set-exit-if-changed
+else
+    echo "==> Running gradlew lintKotlin"
+    ./gradlew lintKotlin
+fi
+
+if command -v palantir-java-format &> /dev/null; then
+    echo "==> Checking palantir-java-format"
+    ./scripts/java-format --dry-run --set-exit-if-changed
+else
+    echo "==> Running gradlew lintJava"
+    ./gradlew lintJava
+fi
