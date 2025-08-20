@@ -1,5 +1,19 @@
 # Changelog
 
+## 3.1.2 (2025-08-20)
+
+Full Changelog: [v3.1.1...v3.1.2](https://github.com/openai/openai-java/compare/v3.1.1...v3.1.2)
+
+### Bug Fixes
+
+* **client:** ensure correct binary content type ([86386c9](https://github.com/openai/openai-java/commit/86386c923fe1856c56ca501795857d1ab150f908))
+
+
+### Chores
+
+* **client:** rename parameter ([86386c9](https://github.com/openai/openai-java/commit/86386c923fe1856c56ca501795857d1ab150f908))
+* **internal:** fix multipart tests ([ea67d5d](https://github.com/openai/openai-java/commit/ea67d5df786add1c3d6549bcc94e835b795d3fca))
+
 ## 3.1.1 (2025-08-20)
 
 Full Changelog: [v3.1.0...v3.1.1](https://github.com/openai/openai-java/compare/v3.1.0...v3.1.1)
