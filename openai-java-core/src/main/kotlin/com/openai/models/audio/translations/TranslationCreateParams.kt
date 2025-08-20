@@ -196,7 +196,7 @@ private constructor(
          * The audio file object (not file name) translate, in one of these formats: flac, mp3, mp4,
          * mpeg, mpga, m4a, ogg, wav, or webm.
          */
-        fun file(file: Path) = apply { body.file(file) }
+        fun file(path: Path) = apply { body.file(path) }
 
         /**
          * ID of the model to use. Only `whisper-1` (which is powered by our open source Whisper V2
@@ -599,11 +599,11 @@ private constructor(
              * The audio file object (not file name) translate, in one of these formats: flac, mp3,
              * mp4, mpeg, mpga, m4a, ogg, wav, or webm.
              */
-            fun file(file: Path) =
+            fun file(path: Path) =
                 file(
                     MultipartField.builder<InputStream>()
-                        .value(file.inputStream())
-                        .filename(file.name)
+                        .value(path.inputStream())
+                        .filename(path.name)
                         .build()
                 )
 
