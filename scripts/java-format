@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+
+set -e
+
+cd "$(dirname "$0")/.."
+
+find . -name "*.java" -not -path "./buildSrc/build/*" -print0 | xargs -0 -r palantir-java-format --palantir --replace "$@"
