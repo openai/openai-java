@@ -1,5 +1,13 @@
 # Changelog
 
+## 3.1.1 (2025-08-20)
+
+Full Changelog: [v3.1.0...v3.1.1](https://github.com/openai/openai-java/compare/v3.1.0...v3.1.1)
+
+### Chores
+
+* **internal/ci:** setup breaking change detection ([2a18622](https://github.com/openai/openai-java/commit/2a1862218ccafea3a37801367aee303564b48ca3))
+
 ## 3.1.0 (2025-08-19)
 
 Full Changelog: [v3.0.3...v3.1.0](https://github.com/openai/openai-java/compare/v3.0.3...v3.1.0)
