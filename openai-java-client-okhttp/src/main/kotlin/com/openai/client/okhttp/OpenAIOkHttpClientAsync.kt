@@ -126,6 +126,8 @@ class OpenAIOkHttpClientAsync private constructor() {
          * The executor to use for running [AsyncStreamResponse.Handler] callbacks.
          *
          * Defaults to a dedicated cached thread pool.
+         *
+         * This class takes ownership of the executor and shuts it down, if possible, when closed.
          */
         fun streamHandlerExecutor(streamHandlerExecutor: Executor) = apply {
             clientOptions.streamHandlerExecutor(streamHandlerExecutor)
