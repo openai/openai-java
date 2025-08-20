@@ -286,7 +286,7 @@ private constructor(
          * The audio file object (not file name) to transcribe, in one of these formats: flac, mp3,
          * mp4, mpeg, mpga, m4a, ogg, wav, or webm.
          */
-        fun file(file: Path) = apply { body.file(file) }
+        fun file(path: Path) = apply { body.file(path) }
 
         /**
          * ID of the model to use. The options are `gpt-4o-transcribe`, `gpt-4o-mini-transcribe`,
@@ -897,11 +897,11 @@ private constructor(
              * The audio file object (not file name) to transcribe, in one of these formats: flac,
              * mp3, mp4, mpeg, mpga, m4a, ogg, wav, or webm.
              */
-            fun file(file: Path) =
+            fun file(path: Path) =
                 file(
                     MultipartField.builder<InputStream>()
-                        .value(file.inputStream())
-                        .filename(file.name)
+                        .value(path.inputStream())
+                        .filename(path.name)
                         .build()
                 )
 

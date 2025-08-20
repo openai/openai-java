@@ -133,7 +133,7 @@ private constructor(
         fun file(file: ByteArray) = apply { body.file(file) }
 
         /** The File object (not file name) to be uploaded. */
-        fun file(file: Path) = apply { body.file(file) }
+        fun file(path: Path) = apply { body.file(path) }
 
         /** Name of the file to create. */
         fun fileId(fileId: String) = apply { body.fileId(fileId) }
@@ -377,11 +377,11 @@ private constructor(
             fun file(file: ByteArray) = file(file.inputStream())
 
             /** The File object (not file name) to be uploaded. */
-            fun file(file: Path) =
+            fun file(path: Path) =
                 file(
                     MultipartField.builder<InputStream>()
-                        .value(file.inputStream())
-                        .filename(file.name)
+                        .value(path.inputStream())
+                        .filename(path.name)
                         .build()
                 )
 

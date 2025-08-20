@@ -205,7 +205,7 @@ private constructor(
          * The image to use as the basis for the variation(s). Must be a valid PNG file, less than
          * 4MB, and square.
          */
-        fun image(image: Path) = apply { body.image(image) }
+        fun image(path: Path) = apply { body.image(path) }
 
         /** The model to use for image generation. Only `dall-e-2` is supported at this time. */
         fun model(model: ImageModel?) = apply { body.model(model) }
@@ -638,11 +638,11 @@ private constructor(
              * The image to use as the basis for the variation(s). Must be a valid PNG file, less
              * than 4MB, and square.
              */
-            fun image(image: Path) =
+            fun image(path: Path) =
                 image(
                     MultipartField.builder<InputStream>()
-                        .value(image.inputStream())
-                        .filename(image.name)
+                        .value(path.inputStream())
+                        .filename(path.name)
                         .build()
                 )
 

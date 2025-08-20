@@ -127,7 +127,7 @@ private constructor(
         fun data(data: ByteArray) = apply { body.data(data) }
 
         /** The chunk of bytes for this Part. */
-        fun data(data: Path) = apply { body.data(data) }
+        fun data(path: Path) = apply { body.data(path) }
 
         fun additionalBodyProperties(additionalBodyProperties: Map<String, JsonValue>) = apply {
             body.additionalProperties(additionalBodyProperties)
@@ -356,11 +356,11 @@ private constructor(
             fun data(data: ByteArray) = data(data.inputStream())
 
             /** The chunk of bytes for this Part. */
-            fun data(data: Path) =
+            fun data(path: Path) =
                 data(
                     MultipartField.builder<InputStream>()
-                        .value(data.inputStream())
-                        .filename(data.name)
+                        .value(path.inputStream())
+                        .filename(path.name)
                         .build()
                 )
 
