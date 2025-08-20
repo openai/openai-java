@@ -62,11 +62,14 @@ internal class ImageEditParamsTest {
             .isEqualTo(
                 mapOf(
                         "image" to
-                            MultipartField.of(
-                                ImageEditParams.Image.ofInputStream(
-                                    "some content".byteInputStream()
+                            MultipartField.builder<ImageEditParams.Image>()
+                                .value(
+                                    ImageEditParams.Image.ofInputStream(
+                                        "some content".byteInputStream()
+                                    )
                                 )
-                            ),
+                                .contentType("application/octet-stream")
+                                .build(),
                         "prompt" to MultipartField.of("A cute baby sea otter wearing a beret"),
                         "background" to MultipartField.of(ImageEditParams.Background.TRANSPARENT),
                         "input_fidelity" to MultipartField.of(ImageEditParams.InputFidelity.HIGH),
@@ -108,11 +111,14 @@ internal class ImageEditParamsTest {
             .isEqualTo(
                 mapOf(
                         "image" to
-                            MultipartField.of(
-                                ImageEditParams.Image.ofInputStream(
-                                    "some content".byteInputStream()
+                            MultipartField.builder<ImageEditParams.Image>()
+                                .value(
+                                    ImageEditParams.Image.ofInputStream(
+                                        "some content".byteInputStream()
+                                    )
                                 )
-                            ),
+                                .contentType("application/octet-stream")
+                                .build(),
                         "prompt" to MultipartField.of("A cute baby sea otter wearing a beret"),
                     )
                     .mapValues { (_, field) ->
