@@ -390,7 +390,7 @@ private constructor(
          * For `dall-e-2`, you can only provide one image, and it should be a square `png` file less
          * than 4MB.
          */
-        fun image(inputStream: Path) = apply { body.image(inputStream) }
+        fun image(path: Path) = apply { body.image(path) }
 
         /** Alias for calling [image] with `Image.ofInputStreams(inputStreams)`. */
         fun imageOfInputStreams(inputStreams: List<InputStream>) = apply {
@@ -491,7 +491,7 @@ private constructor(
          * applied on the first image. Must be a valid PNG file, less than 4MB, and have the same
          * dimensions as `image`.
          */
-        fun mask(mask: Path) = apply { body.mask(mask) }
+        fun mask(path: Path) = apply { body.mask(path) }
 
         /**
          * The model to use for image generation. Only `dall-e-2` and `gpt-image-1` are supported.
@@ -1215,7 +1215,13 @@ private constructor(
              * For `dall-e-2`, you can only provide one image, and it should be a square `png` file
              * less than 4MB.
              */
-            fun image(image: Image) = image(MultipartField.of(image))
+            fun image(image: Image) =
+                image(
+                    MultipartField.builder<Image>()
+                        .value(image)
+                        .contentType("application/octet-stream")
+                        .build()
+                )
 
             /**
              * Sets [Builder.image] to an arbitrary multipart value.
@@ -1249,11 +1255,12 @@ private constructor(
              * For `dall-e-2`, you can only provide one image, and it should be a square `png` file
              * less than 4MB.
              */
-            fun image(inputStream: Path) =
+            fun image(path: Path) =
                 image(
                     MultipartField.builder<Image>()
-                        .value(Image.ofInputStream(inputStream.inputStream()))
-                        .filename(inputStream.name)
+                        .value(Image.ofInputStream(path.inputStream()))
+                        .contentType("application/octet-stream")
+                        .filename(path.name)
                         .build()
                 )
 
@@ -1355,11 +1362,11 @@ private constructor(
              * be applied on the first image. Must be a valid PNG file, less than 4MB, and have the
              * same dimensions as `image`.
              */
-            fun mask(mask: Path) =
+            fun mask(path: Path) =
                 mask(
                     MultipartField.builder<InputStream>()
-                        .value(mask.inputStream())
-                        .filename(mask.name)
+                        .value(path.inputStream())
+                        .filename(path.name)
                         .build()
                 )
 
