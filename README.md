@@ -2,8 +2,8 @@
 
 <!-- x-release-please-start-version -->
 
-[![Maven Central](https://img.shields.io/maven-central/v/com.openai/openai-java)](https://central.sonatype.com/artifact/com.openai/openai-java/3.1.0)
-[![javadoc](https://javadoc.io/badge2/com.openai/openai-java/3.1.0/javadoc.svg)](https://javadoc.io/doc/com.openai/openai-java/3.1.0)
+[![Maven Central](https://img.shields.io/maven-central/v/com.openai/openai-java)](https://central.sonatype.com/artifact/com.openai/openai-java/3.1.1)
+[![javadoc](https://javadoc.io/badge2/com.openai/openai-java/3.1.1/javadoc.svg)](https://javadoc.io/doc/com.openai/openai-java/3.1.1)
 
 <!-- x-release-please-end -->
 
@@ -11,7 +11,7 @@ The OpenAI Java SDK provides convenient access to the [OpenAI REST API](https://
 
 <!-- x-release-please-start-version -->
 
-The REST API documentation can be found on [platform.openai.com](https://platform.openai.com/docs). Javadocs are available on [javadoc.io](https://javadoc.io/doc/com.openai/openai-java/3.1.0).
+The REST API documentation can be found on [platform.openai.com](https://platform.openai.com/docs). Javadocs are available on [javadoc.io](https://javadoc.io/doc/com.openai/openai-java/3.1.1).
 
 <!-- x-release-please-end -->
 
@@ -24,7 +24,7 @@ The REST API documentation can be found on [platform.openai.com](https://platfor
 ### Gradle
 
 ```kotlin
-implementation("com.openai:openai-java:3.1.0")
+implementation("com.openai:openai-java:3.1.1")
 ```
 
 ### Maven
@@ -33,7 +33,7 @@ implementation("com.openai:openai-java:3.1.0")
 <dependency>
   <groupId>com.openai</groupId>
   <artifactId>openai-java</artifactId>
-  <version>3.1.0</version>
+  <version>3.1.1</version>
 </dependency>
 ```
 
@@ -1330,7 +1330,7 @@ If you're using Spring Boot, then you can use the SDK's [Spring Boot starter](ht
 #### Gradle
 
 ```kotlin
-implementation("com.openai:openai-java-spring-boot-starter:3.1.0")
+implementation("com.openai:openai-java-spring-boot-starter:3.1.1")
 ```
 
 #### Maven
@@ -1339,7 +1339,7 @@ implementation("com.openai:openai-java-spring-boot-starter:3.1.0")
 <dependency>
   <groupId>com.openai</groupId>
   <artifactId>openai-java-spring-boot-starter</artifactId>
-  <version>3.1.0</version>
+  <version>3.1.1</version>
 </dependency>
 ```
 
@@ -1419,6 +1419,13 @@ OpenAIClient client = OpenAIOkHttpClient.builder()
 ```
 
 See the complete Azure OpenAI example in the [`openai-java-example`](openai-java-example/src/main/java/com/openai/example/AzureEntraIdExample.java) directory. The other examples in the directory also work with Azure as long as the client is configured to use it.
+
+### Optional: URL path mode configuration
+
+The [`ClientOptions`](openai-java-core/src/main/kotlin/com/openai/core/ClientOptions.kt) can be configured to treat Azure OpenAI endpoint URLs differently, depending on your service setup. The default value is [`AzureUrlPathMode.AUTO`](openai-java-core/src/main/kotlin/com/openai/azure/AzureUrlPathMode.kt). To customize the SDK behavior, each value does the following:
+- `AzureUrlPathMode.LEGACY`: forces the deployment or model name into the path.
+- `AzureUrlPathMode.UNIFIED`: for newer endpoints ending in `/openai/v1` the service behaviour matches OpenAI's, therefore [`AzureOpenAIServiceVersion`](openai-java-core/src/main/kotlin/com/openai/azure/AzureOpenAIServiceVersion.kt) becomes optional and the model is passed in the request object.
+- `AzureUrlPathMode.AUTO`: automatically detects the path mode based on the base URL. Default value.
 
 ## Network options
 
