@@ -51,7 +51,7 @@ internal fun sseHandler(jsonMapper: JsonMapper): Handler<StreamResponse<SseMessa
                                 .readerFor(jacksonTypeRef<ErrorObject?>())
                                 .readValue<ErrorObject?>(it)
                         } catch (e: Exception) {
-                            null
+                            it
                         }
                     )
                     .build()
