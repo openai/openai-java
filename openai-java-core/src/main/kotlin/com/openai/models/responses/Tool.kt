@@ -521,12 +521,14 @@ private constructor(
     class Mcp
     private constructor(
         private val serverLabel: JsonField<String>,
-        private val serverUrl: JsonField<String>,
         private val type: JsonValue,
         private val allowedTools: JsonField<AllowedTools>,
+        private val authorization: JsonField<String>,
+        private val connectorId: JsonField<ConnectorId>,
         private val headers: JsonField<Headers>,
         private val requireApproval: JsonField<RequireApproval>,
         private val serverDescription: JsonField<String>,
+        private val serverUrl: JsonField<String>,
         private val additionalProperties: MutableMap<String, JsonValue>,
     ) {
 
@@ -535,13 +537,16 @@ private constructor(
             @JsonProperty("server_label")
             @ExcludeMissing
             serverLabel: JsonField<String> = JsonMissing.of(),
-            @JsonProperty("server_url")
-            @ExcludeMissing
-            serverUrl: JsonField<String> = JsonMissing.of(),
             @JsonProperty("type") @ExcludeMissing type: JsonValue = JsonMissing.of(),
             @JsonProperty("allowed_tools")
             @ExcludeMissing
             allowedTools: JsonField<AllowedTools> = JsonMissing.of(),
+            @JsonProperty("authorization")
+            @ExcludeMissing
+            authorization: JsonField<String> = JsonMissing.of(),
+            @JsonProperty("connector_id")
+            @ExcludeMissing
+            connectorId: JsonField<ConnectorId> = JsonMissing.of(),
             @JsonProperty("headers") @ExcludeMissing headers: JsonField<Headers> = JsonMissing.of(),
             @JsonProperty("require_approval")
             @ExcludeMissing
@@ -549,14 +554,19 @@ private constructor(
             @JsonProperty("server_description")
             @ExcludeMissing
             serverDescription: JsonField<String> = JsonMissing.of(),
+            @JsonProperty("server_url")
+            @ExcludeMissing
+            serverUrl: JsonField<String> = JsonMissing.of(),
         ) : this(
             serverLabel,
-            serverUrl,
             type,
             allowedTools,
+            authorization,
+            connectorId,
             headers,
             requireApproval,
             serverDescription,
+            serverUrl,
             mutableMapOf(),
         )
 
@@ -567,14 +577,6 @@ private constructor(
          *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
          */
         fun serverLabel(): String = serverLabel.getRequired("server_label")
-
-        /**
-         * The URL for the MCP server.
-         *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
-         */
-        fun serverUrl(): String = serverUrl.getRequired("server_url")
 
         /**
          * The type of the MCP tool. Always `mcp`.
@@ -596,6 +598,36 @@ private constructor(
          *   server responded with an unexpected value).
          */
         fun allowedTools(): Optional<AllowedTools> = allowedTools.getOptional("allowed_tools")
+
+        /**
+         * An OAuth access token that can be used with a remote MCP server, either with a custom MCP
+         * server URL or a service connector. Your application must handle the OAuth authorization
+         * flow and provide the token here.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun authorization(): Optional<String> = authorization.getOptional("authorization")
+
+        /**
+         * Identifier for service connectors, like those available in ChatGPT. One of `server_url`
+         * or `connector_id` must be provided. Learn more about service connectors
+         * [here](https://platform.openai.com/docs/guides/tools-remote-mcp#connectors).
+         *
+         * Currently supported `connector_id` values are:
+         * - Dropbox: `connector_dropbox`
+         * - Gmail: `connector_gmail`
+         * - Google Calendar: `connector_googlecalendar`
+         * - Google Drive: `connector_googledrive`
+         * - Microsoft Teams: `connector_microsoftteams`
+         * - Outlook Calendar: `connector_outlookcalendar`
+         * - Outlook Email: `connector_outlookemail`
+         * - SharePoint: `connector_sharepoint`
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun connectorId(): Optional<ConnectorId> = connectorId.getOptional("connector_id")
 
         /**
          * Optional HTTP headers to send to the MCP server. Use for authentication or other
@@ -625,6 +657,14 @@ private constructor(
             serverDescription.getOptional("server_description")
 
         /**
+         * The URL for the MCP server. One of `server_url` or `connector_id` must be provided.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun serverUrl(): Optional<String> = serverUrl.getOptional("server_url")
+
+        /**
          * Returns the raw JSON value of [serverLabel].
          *
          * Unlike [serverLabel], this method doesn't throw if the JSON field has an unexpected type.
@@ -632,13 +672,6 @@ private constructor(
         @JsonProperty("server_label")
         @ExcludeMissing
         fun _serverLabel(): JsonField<String> = serverLabel
-
-        /**
-         * Returns the raw JSON value of [serverUrl].
-         *
-         * Unlike [serverUrl], this method doesn't throw if the JSON field has an unexpected type.
-         */
-        @JsonProperty("server_url") @ExcludeMissing fun _serverUrl(): JsonField<String> = serverUrl
 
         /**
          * Returns the raw JSON value of [allowedTools].
@@ -649,6 +682,25 @@ private constructor(
         @JsonProperty("allowed_tools")
         @ExcludeMissing
         fun _allowedTools(): JsonField<AllowedTools> = allowedTools
+
+        /**
+         * Returns the raw JSON value of [authorization].
+         *
+         * Unlike [authorization], this method doesn't throw if the JSON field has an unexpected
+         * type.
+         */
+        @JsonProperty("authorization")
+        @ExcludeMissing
+        fun _authorization(): JsonField<String> = authorization
+
+        /**
+         * Returns the raw JSON value of [connectorId].
+         *
+         * Unlike [connectorId], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("connector_id")
+        @ExcludeMissing
+        fun _connectorId(): JsonField<ConnectorId> = connectorId
 
         /**
          * Returns the raw JSON value of [headers].
@@ -677,6 +729,13 @@ private constructor(
         @ExcludeMissing
         fun _serverDescription(): JsonField<String> = serverDescription
 
+        /**
+         * Returns the raw JSON value of [serverUrl].
+         *
+         * Unlike [serverUrl], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("server_url") @ExcludeMissing fun _serverUrl(): JsonField<String> = serverUrl
+
         @JsonAnySetter
         private fun putAdditionalProperty(key: String, value: JsonValue) {
             additionalProperties.put(key, value)
@@ -697,7 +756,6 @@ private constructor(
              * The following fields are required:
              * ```java
              * .serverLabel()
-             * .serverUrl()
              * ```
              */
             @JvmStatic fun builder() = Builder()
@@ -707,23 +765,27 @@ private constructor(
         class Builder internal constructor() {
 
             private var serverLabel: JsonField<String>? = null
-            private var serverUrl: JsonField<String>? = null
             private var type: JsonValue = JsonValue.from("mcp")
             private var allowedTools: JsonField<AllowedTools> = JsonMissing.of()
+            private var authorization: JsonField<String> = JsonMissing.of()
+            private var connectorId: JsonField<ConnectorId> = JsonMissing.of()
             private var headers: JsonField<Headers> = JsonMissing.of()
             private var requireApproval: JsonField<RequireApproval> = JsonMissing.of()
             private var serverDescription: JsonField<String> = JsonMissing.of()
+            private var serverUrl: JsonField<String> = JsonMissing.of()
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
             @JvmSynthetic
             internal fun from(mcp: Mcp) = apply {
                 serverLabel = mcp.serverLabel
-                serverUrl = mcp.serverUrl
                 type = mcp.type
                 allowedTools = mcp.allowedTools
+                authorization = mcp.authorization
+                connectorId = mcp.connectorId
                 headers = mcp.headers
                 requireApproval = mcp.requireApproval
                 serverDescription = mcp.serverDescription
+                serverUrl = mcp.serverUrl
                 additionalProperties = mcp.additionalProperties.toMutableMap()
             }
 
@@ -740,18 +802,6 @@ private constructor(
             fun serverLabel(serverLabel: JsonField<String>) = apply {
                 this.serverLabel = serverLabel
             }
-
-            /** The URL for the MCP server. */
-            fun serverUrl(serverUrl: String) = serverUrl(JsonField.of(serverUrl))
-
-            /**
-             * Sets [Builder.serverUrl] to an arbitrary JSON value.
-             *
-             * You should usually call [Builder.serverUrl] with a well-typed [String] value instead.
-             * This method is primarily for setting the field to an undocumented or not yet
-             * supported value.
-             */
-            fun serverUrl(serverUrl: JsonField<String>) = apply { this.serverUrl = serverUrl }
 
             /**
              * Sets the field to an arbitrary JSON value.
@@ -790,11 +840,56 @@ private constructor(
             fun allowedToolsOfMcp(mcp: List<String>) = allowedTools(AllowedTools.ofMcp(mcp))
 
             /**
-             * Alias for calling [allowedTools] with
-             * `AllowedTools.ofMcpAllowedToolsFilter(mcpAllowedToolsFilter)`.
+             * Alias for calling [allowedTools] with `AllowedTools.ofMcpToolFilter(mcpToolFilter)`.
              */
-            fun allowedTools(mcpAllowedToolsFilter: AllowedTools.McpAllowedToolsFilter) =
-                allowedTools(AllowedTools.ofMcpAllowedToolsFilter(mcpAllowedToolsFilter))
+            fun allowedTools(mcpToolFilter: AllowedTools.McpToolFilter) =
+                allowedTools(AllowedTools.ofMcpToolFilter(mcpToolFilter))
+
+            /**
+             * An OAuth access token that can be used with a remote MCP server, either with a custom
+             * MCP server URL or a service connector. Your application must handle the OAuth
+             * authorization flow and provide the token here.
+             */
+            fun authorization(authorization: String) = authorization(JsonField.of(authorization))
+
+            /**
+             * Sets [Builder.authorization] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.authorization] with a well-typed [String] value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun authorization(authorization: JsonField<String>) = apply {
+                this.authorization = authorization
+            }
+
+            /**
+             * Identifier for service connectors, like those available in ChatGPT. One of
+             * `server_url` or `connector_id` must be provided. Learn more about service connectors
+             * [here](https://platform.openai.com/docs/guides/tools-remote-mcp#connectors).
+             *
+             * Currently supported `connector_id` values are:
+             * - Dropbox: `connector_dropbox`
+             * - Gmail: `connector_gmail`
+             * - Google Calendar: `connector_googlecalendar`
+             * - Google Drive: `connector_googledrive`
+             * - Microsoft Teams: `connector_microsoftteams`
+             * - Outlook Calendar: `connector_outlookcalendar`
+             * - Outlook Email: `connector_outlookemail`
+             * - SharePoint: `connector_sharepoint`
+             */
+            fun connectorId(connectorId: ConnectorId) = connectorId(JsonField.of(connectorId))
+
+            /**
+             * Sets [Builder.connectorId] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.connectorId] with a well-typed [ConnectorId] value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun connectorId(connectorId: JsonField<ConnectorId>) = apply {
+                this.connectorId = connectorId
+            }
 
             /**
              * Optional HTTP headers to send to the MCP server. Use for authentication or other
@@ -862,6 +957,20 @@ private constructor(
                 this.serverDescription = serverDescription
             }
 
+            /**
+             * The URL for the MCP server. One of `server_url` or `connector_id` must be provided.
+             */
+            fun serverUrl(serverUrl: String) = serverUrl(JsonField.of(serverUrl))
+
+            /**
+             * Sets [Builder.serverUrl] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.serverUrl] with a well-typed [String] value instead.
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun serverUrl(serverUrl: JsonField<String>) = apply { this.serverUrl = serverUrl }
+
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.clear()
                 putAllAdditionalProperties(additionalProperties)
@@ -889,7 +998,6 @@ private constructor(
              * The following fields are required:
              * ```java
              * .serverLabel()
-             * .serverUrl()
              * ```
              *
              * @throws IllegalStateException if any required field is unset.
@@ -897,12 +1005,14 @@ private constructor(
             fun build(): Mcp =
                 Mcp(
                     checkRequired("serverLabel", serverLabel),
-                    checkRequired("serverUrl", serverUrl),
                     type,
                     allowedTools,
+                    authorization,
+                    connectorId,
                     headers,
                     requireApproval,
                     serverDescription,
+                    serverUrl,
                     additionalProperties.toMutableMap(),
                 )
         }
@@ -915,16 +1025,18 @@ private constructor(
             }
 
             serverLabel()
-            serverUrl()
             _type().let {
                 if (it != JsonValue.from("mcp")) {
                     throw OpenAIInvalidDataException("'type' is invalid, received $it")
                 }
             }
             allowedTools().ifPresent { it.validate() }
+            authorization()
+            connectorId().ifPresent { it.validate() }
             headers().ifPresent { it.validate() }
             requireApproval().ifPresent { it.validate() }
             serverDescription()
+            serverUrl()
             validated = true
         }
 
@@ -945,12 +1057,14 @@ private constructor(
         @JvmSynthetic
         internal fun validity(): Int =
             (if (serverLabel.asKnown().isPresent) 1 else 0) +
-                (if (serverUrl.asKnown().isPresent) 1 else 0) +
                 type.let { if (it == JsonValue.from("mcp")) 1 else 0 } +
                 (allowedTools.asKnown().getOrNull()?.validity() ?: 0) +
+                (if (authorization.asKnown().isPresent) 1 else 0) +
+                (connectorId.asKnown().getOrNull()?.validity() ?: 0) +
                 (headers.asKnown().getOrNull()?.validity() ?: 0) +
                 (requireApproval.asKnown().getOrNull()?.validity() ?: 0) +
-                (if (serverDescription.asKnown().isPresent) 1 else 0)
+                (if (serverDescription.asKnown().isPresent) 1 else 0) +
+                (if (serverUrl.asKnown().isPresent) 1 else 0)
 
         /** List of allowed tool names or a filter object. */
         @JsonDeserialize(using = AllowedTools.Deserializer::class)
@@ -958,7 +1072,7 @@ private constructor(
         class AllowedTools
         private constructor(
             private val mcp: List<String>? = null,
-            private val mcpAllowedToolsFilter: McpAllowedToolsFilter? = null,
+            private val mcpToolFilter: McpToolFilter? = null,
             private val _json: JsonValue? = null,
         ) {
 
@@ -966,27 +1080,24 @@ private constructor(
             fun mcp(): Optional<List<String>> = Optional.ofNullable(mcp)
 
             /** A filter object to specify which tools are allowed. */
-            fun mcpAllowedToolsFilter(): Optional<McpAllowedToolsFilter> =
-                Optional.ofNullable(mcpAllowedToolsFilter)
+            fun mcpToolFilter(): Optional<McpToolFilter> = Optional.ofNullable(mcpToolFilter)
 
             fun isMcp(): Boolean = mcp != null
 
-            fun isMcpAllowedToolsFilter(): Boolean = mcpAllowedToolsFilter != null
+            fun isMcpToolFilter(): Boolean = mcpToolFilter != null
 
             /** A string array of allowed tool names */
             fun asMcp(): List<String> = mcp.getOrThrow("mcp")
 
             /** A filter object to specify which tools are allowed. */
-            fun asMcpAllowedToolsFilter(): McpAllowedToolsFilter =
-                mcpAllowedToolsFilter.getOrThrow("mcpAllowedToolsFilter")
+            fun asMcpToolFilter(): McpToolFilter = mcpToolFilter.getOrThrow("mcpToolFilter")
 
             fun _json(): Optional<JsonValue> = Optional.ofNullable(_json)
 
             fun <T> accept(visitor: Visitor<T>): T =
                 when {
                     mcp != null -> visitor.visitMcp(mcp)
-                    mcpAllowedToolsFilter != null ->
-                        visitor.visitMcpAllowedToolsFilter(mcpAllowedToolsFilter)
+                    mcpToolFilter != null -> visitor.visitMcpToolFilter(mcpToolFilter)
                     else -> visitor.unknown(_json)
                 }
 
@@ -1001,10 +1112,8 @@ private constructor(
                     object : Visitor<Unit> {
                         override fun visitMcp(mcp: List<String>) {}
 
-                        override fun visitMcpAllowedToolsFilter(
-                            mcpAllowedToolsFilter: McpAllowedToolsFilter
-                        ) {
-                            mcpAllowedToolsFilter.validate()
+                        override fun visitMcpToolFilter(mcpToolFilter: McpToolFilter) {
+                            mcpToolFilter.validate()
                         }
                     }
                 )
@@ -1031,9 +1140,8 @@ private constructor(
                     object : Visitor<Int> {
                         override fun visitMcp(mcp: List<String>) = mcp.size
 
-                        override fun visitMcpAllowedToolsFilter(
-                            mcpAllowedToolsFilter: McpAllowedToolsFilter
-                        ) = mcpAllowedToolsFilter.validity()
+                        override fun visitMcpToolFilter(mcpToolFilter: McpToolFilter) =
+                            mcpToolFilter.validity()
 
                         override fun unknown(json: JsonValue?) = 0
                     }
@@ -1046,16 +1154,15 @@ private constructor(
 
                 return other is AllowedTools &&
                     mcp == other.mcp &&
-                    mcpAllowedToolsFilter == other.mcpAllowedToolsFilter
+                    mcpToolFilter == other.mcpToolFilter
             }
 
-            override fun hashCode(): Int = Objects.hash(mcp, mcpAllowedToolsFilter)
+            override fun hashCode(): Int = Objects.hash(mcp, mcpToolFilter)
 
             override fun toString(): String =
                 when {
                     mcp != null -> "AllowedTools{mcp=$mcp}"
-                    mcpAllowedToolsFilter != null ->
-                        "AllowedTools{mcpAllowedToolsFilter=$mcpAllowedToolsFilter}"
+                    mcpToolFilter != null -> "AllowedTools{mcpToolFilter=$mcpToolFilter}"
                     _json != null -> "AllowedTools{_unknown=$_json}"
                     else -> throw IllegalStateException("Invalid AllowedTools")
                 }
@@ -1067,8 +1174,8 @@ private constructor(
 
                 /** A filter object to specify which tools are allowed. */
                 @JvmStatic
-                fun ofMcpAllowedToolsFilter(mcpAllowedToolsFilter: McpAllowedToolsFilter) =
-                    AllowedTools(mcpAllowedToolsFilter = mcpAllowedToolsFilter)
+                fun ofMcpToolFilter(mcpToolFilter: McpToolFilter) =
+                    AllowedTools(mcpToolFilter = mcpToolFilter)
             }
 
             /**
@@ -1081,7 +1188,7 @@ private constructor(
                 fun visitMcp(mcp: List<String>): T
 
                 /** A filter object to specify which tools are allowed. */
-                fun visitMcpAllowedToolsFilter(mcpAllowedToolsFilter: McpAllowedToolsFilter): T
+                fun visitMcpToolFilter(mcpToolFilter: McpToolFilter): T
 
                 /**
                  * Maps an unknown variant of [AllowedTools] to a value of type [T].
@@ -1105,8 +1212,8 @@ private constructor(
 
                     val bestMatches =
                         sequenceOf(
-                                tryDeserialize(node, jacksonTypeRef<McpAllowedToolsFilter>())?.let {
-                                    AllowedTools(mcpAllowedToolsFilter = it, _json = json)
+                                tryDeserialize(node, jacksonTypeRef<McpToolFilter>())?.let {
+                                    AllowedTools(mcpToolFilter = it, _json = json)
                                 },
                                 tryDeserialize(node, jacksonTypeRef<List<String>>())?.let {
                                     AllowedTools(mcp = it, _json = json)
@@ -1137,8 +1244,7 @@ private constructor(
                 ) {
                     when {
                         value.mcp != null -> generator.writeObject(value.mcp)
-                        value.mcpAllowedToolsFilter != null ->
-                            generator.writeObject(value.mcpAllowedToolsFilter)
+                        value.mcpToolFilter != null -> generator.writeObject(value.mcpToolFilter)
                         value._json != null -> generator.writeObject(value._json)
                         else -> throw IllegalStateException("Invalid AllowedTools")
                     }
@@ -1146,18 +1252,33 @@ private constructor(
             }
 
             /** A filter object to specify which tools are allowed. */
-            class McpAllowedToolsFilter
+            class McpToolFilter
             private constructor(
+                private val readOnly: JsonField<Boolean>,
                 private val toolNames: JsonField<List<String>>,
                 private val additionalProperties: MutableMap<String, JsonValue>,
             ) {
 
                 @JsonCreator
                 private constructor(
+                    @JsonProperty("read_only")
+                    @ExcludeMissing
+                    readOnly: JsonField<Boolean> = JsonMissing.of(),
                     @JsonProperty("tool_names")
                     @ExcludeMissing
-                    toolNames: JsonField<List<String>> = JsonMissing.of()
-                ) : this(toolNames, mutableMapOf())
+                    toolNames: JsonField<List<String>> = JsonMissing.of(),
+                ) : this(readOnly, toolNames, mutableMapOf())
+
+                /**
+                 * Indicates whether or not a tool modifies data or is read-only. If an MCP server
+                 * is
+                 * [annotated with `readOnlyHint`](https://modelcontextprotocol.io/specification/2025-06-18/schema#toolannotations-readonlyhint),
+                 * it will match this filter.
+                 *
+                 * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g.
+                 *   if the server responded with an unexpected value).
+                 */
+                fun readOnly(): Optional<Boolean> = readOnly.getOptional("read_only")
 
                 /**
                  * List of allowed tool names.
@@ -1166,6 +1287,16 @@ private constructor(
                  *   if the server responded with an unexpected value).
                  */
                 fun toolNames(): Optional<List<String>> = toolNames.getOptional("tool_names")
+
+                /**
+                 * Returns the raw JSON value of [readOnly].
+                 *
+                 * Unlike [readOnly], this method doesn't throw if the JSON field has an unexpected
+                 * type.
+                 */
+                @JsonProperty("read_only")
+                @ExcludeMissing
+                fun _readOnly(): JsonField<Boolean> = readOnly
 
                 /**
                  * Returns the raw JSON value of [toolNames].
@@ -1192,24 +1323,41 @@ private constructor(
                 companion object {
 
                     /**
-                     * Returns a mutable builder for constructing an instance of
-                     * [McpAllowedToolsFilter].
+                     * Returns a mutable builder for constructing an instance of [McpToolFilter].
                      */
                     @JvmStatic fun builder() = Builder()
                 }
 
-                /** A builder for [McpAllowedToolsFilter]. */
+                /** A builder for [McpToolFilter]. */
                 class Builder internal constructor() {
 
+                    private var readOnly: JsonField<Boolean> = JsonMissing.of()
                     private var toolNames: JsonField<MutableList<String>>? = null
                     private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
                     @JvmSynthetic
-                    internal fun from(mcpAllowedToolsFilter: McpAllowedToolsFilter) = apply {
-                        toolNames = mcpAllowedToolsFilter.toolNames.map { it.toMutableList() }
-                        additionalProperties =
-                            mcpAllowedToolsFilter.additionalProperties.toMutableMap()
+                    internal fun from(mcpToolFilter: McpToolFilter) = apply {
+                        readOnly = mcpToolFilter.readOnly
+                        toolNames = mcpToolFilter.toolNames.map { it.toMutableList() }
+                        additionalProperties = mcpToolFilter.additionalProperties.toMutableMap()
                     }
+
+                    /**
+                     * Indicates whether or not a tool modifies data or is read-only. If an MCP
+                     * server is
+                     * [annotated with `readOnlyHint`](https://modelcontextprotocol.io/specification/2025-06-18/schema#toolannotations-readonlyhint),
+                     * it will match this filter.
+                     */
+                    fun readOnly(readOnly: Boolean) = readOnly(JsonField.of(readOnly))
+
+                    /**
+                     * Sets [Builder.readOnly] to an arbitrary JSON value.
+                     *
+                     * You should usually call [Builder.readOnly] with a well-typed [Boolean] value
+                     * instead. This method is primarily for setting the field to an undocumented or
+                     * not yet supported value.
+                     */
+                    fun readOnly(readOnly: JsonField<Boolean>) = apply { this.readOnly = readOnly }
 
                     /** List of allowed tool names. */
                     fun toolNames(toolNames: List<String>) = toolNames(JsonField.of(toolNames))
@@ -1260,12 +1408,13 @@ private constructor(
                     }
 
                     /**
-                     * Returns an immutable instance of [McpAllowedToolsFilter].
+                     * Returns an immutable instance of [McpToolFilter].
                      *
                      * Further updates to this [Builder] will not mutate the returned instance.
                      */
-                    fun build(): McpAllowedToolsFilter =
-                        McpAllowedToolsFilter(
+                    fun build(): McpToolFilter =
+                        McpToolFilter(
+                            readOnly,
                             (toolNames ?: JsonMissing.of()).map { it.toImmutable() },
                             additionalProperties.toMutableMap(),
                         )
@@ -1273,11 +1422,12 @@ private constructor(
 
                 private var validated: Boolean = false
 
-                fun validate(): McpAllowedToolsFilter = apply {
+                fun validate(): McpToolFilter = apply {
                     if (validated) {
                         return@apply
                     }
 
+                    readOnly()
                     toolNames()
                     validated = true
                 }
@@ -1297,25 +1447,212 @@ private constructor(
                  * Used for best match union deserialization.
                  */
                 @JvmSynthetic
-                internal fun validity(): Int = (toolNames.asKnown().getOrNull()?.size ?: 0)
+                internal fun validity(): Int =
+                    (if (readOnly.asKnown().isPresent) 1 else 0) +
+                        (toolNames.asKnown().getOrNull()?.size ?: 0)
 
                 override fun equals(other: Any?): Boolean {
                     if (this === other) {
                         return true
                     }
 
-                    return other is McpAllowedToolsFilter &&
+                    return other is McpToolFilter &&
+                        readOnly == other.readOnly &&
                         toolNames == other.toolNames &&
                         additionalProperties == other.additionalProperties
                 }
 
-                private val hashCode: Int by lazy { Objects.hash(toolNames, additionalProperties) }
+                private val hashCode: Int by lazy {
+                    Objects.hash(readOnly, toolNames, additionalProperties)
+                }
 
                 override fun hashCode(): Int = hashCode
 
                 override fun toString() =
-                    "McpAllowedToolsFilter{toolNames=$toolNames, additionalProperties=$additionalProperties}"
+                    "McpToolFilter{readOnly=$readOnly, toolNames=$toolNames, additionalProperties=$additionalProperties}"
             }
+        }
+
+        /**
+         * Identifier for service connectors, like those available in ChatGPT. One of `server_url`
+         * or `connector_id` must be provided. Learn more about service connectors
+         * [here](https://platform.openai.com/docs/guides/tools-remote-mcp#connectors).
+         *
+         * Currently supported `connector_id` values are:
+         * - Dropbox: `connector_dropbox`
+         * - Gmail: `connector_gmail`
+         * - Google Calendar: `connector_googlecalendar`
+         * - Google Drive: `connector_googledrive`
+         * - Microsoft Teams: `connector_microsoftteams`
+         * - Outlook Calendar: `connector_outlookcalendar`
+         * - Outlook Email: `connector_outlookemail`
+         * - SharePoint: `connector_sharepoint`
+         */
+        class ConnectorId @JsonCreator private constructor(private val value: JsonField<String>) :
+            Enum {
+
+            /**
+             * Returns this class instance's raw value.
+             *
+             * This is usually only useful if this instance was deserialized from data that doesn't
+             * match any known member, and you want to know that value. For example, if the SDK is
+             * on an older version than the API, then the API may respond with new members that the
+             * SDK is unaware of.
+             */
+            @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
+
+            companion object {
+
+                @JvmField val CONNECTOR_DROPBOX = of("connector_dropbox")
+
+                @JvmField val CONNECTOR_GMAIL = of("connector_gmail")
+
+                @JvmField val CONNECTOR_GOOGLECALENDAR = of("connector_googlecalendar")
+
+                @JvmField val CONNECTOR_GOOGLEDRIVE = of("connector_googledrive")
+
+                @JvmField val CONNECTOR_MICROSOFTTEAMS = of("connector_microsoftteams")
+
+                @JvmField val CONNECTOR_OUTLOOKCALENDAR = of("connector_outlookcalendar")
+
+                @JvmField val CONNECTOR_OUTLOOKEMAIL = of("connector_outlookemail")
+
+                @JvmField val CONNECTOR_SHAREPOINT = of("connector_sharepoint")
+
+                @JvmStatic fun of(value: String) = ConnectorId(JsonField.of(value))
+            }
+
+            /** An enum containing [ConnectorId]'s known values. */
+            enum class Known {
+                CONNECTOR_DROPBOX,
+                CONNECTOR_GMAIL,
+                CONNECTOR_GOOGLECALENDAR,
+                CONNECTOR_GOOGLEDRIVE,
+                CONNECTOR_MICROSOFTTEAMS,
+                CONNECTOR_OUTLOOKCALENDAR,
+                CONNECTOR_OUTLOOKEMAIL,
+                CONNECTOR_SHAREPOINT,
+            }
+
+            /**
+             * An enum containing [ConnectorId]'s known values, as well as an [_UNKNOWN] member.
+             *
+             * An instance of [ConnectorId] can contain an unknown value in a couple of cases:
+             * - It was deserialized from data that doesn't match any known member. For example, if
+             *   the SDK is on an older version than the API, then the API may respond with new
+             *   members that the SDK is unaware of.
+             * - It was constructed with an arbitrary value using the [of] method.
+             */
+            enum class Value {
+                CONNECTOR_DROPBOX,
+                CONNECTOR_GMAIL,
+                CONNECTOR_GOOGLECALENDAR,
+                CONNECTOR_GOOGLEDRIVE,
+                CONNECTOR_MICROSOFTTEAMS,
+                CONNECTOR_OUTLOOKCALENDAR,
+                CONNECTOR_OUTLOOKEMAIL,
+                CONNECTOR_SHAREPOINT,
+                /**
+                 * An enum member indicating that [ConnectorId] was instantiated with an unknown
+                 * value.
+                 */
+                _UNKNOWN,
+            }
+
+            /**
+             * Returns an enum member corresponding to this class instance's value, or
+             * [Value._UNKNOWN] if the class was instantiated with an unknown value.
+             *
+             * Use the [known] method instead if you're certain the value is always known or if you
+             * want to throw for the unknown case.
+             */
+            fun value(): Value =
+                when (this) {
+                    CONNECTOR_DROPBOX -> Value.CONNECTOR_DROPBOX
+                    CONNECTOR_GMAIL -> Value.CONNECTOR_GMAIL
+                    CONNECTOR_GOOGLECALENDAR -> Value.CONNECTOR_GOOGLECALENDAR
+                    CONNECTOR_GOOGLEDRIVE -> Value.CONNECTOR_GOOGLEDRIVE
+                    CONNECTOR_MICROSOFTTEAMS -> Value.CONNECTOR_MICROSOFTTEAMS
+                    CONNECTOR_OUTLOOKCALENDAR -> Value.CONNECTOR_OUTLOOKCALENDAR
+                    CONNECTOR_OUTLOOKEMAIL -> Value.CONNECTOR_OUTLOOKEMAIL
+                    CONNECTOR_SHAREPOINT -> Value.CONNECTOR_SHAREPOINT
+                    else -> Value._UNKNOWN
+                }
+
+            /**
+             * Returns an enum member corresponding to this class instance's value.
+             *
+             * Use the [value] method instead if you're uncertain the value is always known and
+             * don't want to throw for the unknown case.
+             *
+             * @throws OpenAIInvalidDataException if this class instance's value is a not a known
+             *   member.
+             */
+            fun known(): Known =
+                when (this) {
+                    CONNECTOR_DROPBOX -> Known.CONNECTOR_DROPBOX
+                    CONNECTOR_GMAIL -> Known.CONNECTOR_GMAIL
+                    CONNECTOR_GOOGLECALENDAR -> Known.CONNECTOR_GOOGLECALENDAR
+                    CONNECTOR_GOOGLEDRIVE -> Known.CONNECTOR_GOOGLEDRIVE
+                    CONNECTOR_MICROSOFTTEAMS -> Known.CONNECTOR_MICROSOFTTEAMS
+                    CONNECTOR_OUTLOOKCALENDAR -> Known.CONNECTOR_OUTLOOKCALENDAR
+                    CONNECTOR_OUTLOOKEMAIL -> Known.CONNECTOR_OUTLOOKEMAIL
+                    CONNECTOR_SHAREPOINT -> Known.CONNECTOR_SHAREPOINT
+                    else -> throw OpenAIInvalidDataException("Unknown ConnectorId: $value")
+                }
+
+            /**
+             * Returns this class instance's primitive wire representation.
+             *
+             * This differs from the [toString] method because that method is primarily for
+             * debugging and generally doesn't throw.
+             *
+             * @throws OpenAIInvalidDataException if this class instance's value does not have the
+             *   expected primitive type.
+             */
+            fun asString(): String =
+                _value().asString().orElseThrow {
+                    OpenAIInvalidDataException("Value is not a String")
+                }
+
+            private var validated: Boolean = false
+
+            fun validate(): ConnectorId = apply {
+                if (validated) {
+                    return@apply
+                }
+
+                known()
+                validated = true
+            }
+
+            fun isValid(): Boolean =
+                try {
+                    validate()
+                    true
+                } catch (e: OpenAIInvalidDataException) {
+                    false
+                }
+
+            /**
+             * Returns a score indicating how many valid values are contained in this object
+             * recursively.
+             *
+             * Used for best match union deserialization.
+             */
+            @JvmSynthetic internal fun validity(): Int = if (value() == Value._UNKNOWN) 0 else 1
+
+            override fun equals(other: Any?): Boolean {
+                if (this === other) {
+                    return true
+                }
+
+                return other is ConnectorId && value == other.value
+            }
+
+            override fun hashCode() = value.hashCode()
+
+            override fun toString() = value.toString()
         }
 
         /**
@@ -1434,6 +1771,10 @@ private constructor(
             private val _json: JsonValue? = null,
         ) {
 
+            /**
+             * Specify which of the MCP server's tools require approval. Can be `always`, `never`,
+             * or a filter object associated with tools that require approval.
+             */
             fun mcpToolApprovalFilter(): Optional<McpToolApprovalFilter> =
                 Optional.ofNullable(mcpToolApprovalFilter)
 
@@ -1449,6 +1790,10 @@ private constructor(
 
             fun isMcpToolApprovalSetting(): Boolean = mcpToolApprovalSetting != null
 
+            /**
+             * Specify which of the MCP server's tools require approval. Can be `always`, `never`,
+             * or a filter object associated with tools that require approval.
+             */
             fun asMcpToolApprovalFilter(): McpToolApprovalFilter =
                 mcpToolApprovalFilter.getOrThrow("mcpToolApprovalFilter")
 
@@ -1551,6 +1896,10 @@ private constructor(
 
             companion object {
 
+                /**
+                 * Specify which of the MCP server's tools require approval. Can be `always`,
+                 * `never`, or a filter object associated with tools that require approval.
+                 */
                 @JvmStatic
                 fun ofMcpToolApprovalFilter(mcpToolApprovalFilter: McpToolApprovalFilter) =
                     RequireApproval(mcpToolApprovalFilter = mcpToolApprovalFilter)
@@ -1571,6 +1920,10 @@ private constructor(
              */
             interface Visitor<out T> {
 
+                /**
+                 * Specify which of the MCP server's tools require approval. Can be `always`,
+                 * `never`, or a filter object associated with tools that require approval.
+                 */
                 fun visitMcpToolApprovalFilter(mcpToolApprovalFilter: McpToolApprovalFilter): T
 
                 /**
@@ -1645,6 +1998,10 @@ private constructor(
                 }
             }
 
+            /**
+             * Specify which of the MCP server's tools require approval. Can be `always`, `never`,
+             * or a filter object associated with tools that require approval.
+             */
             class McpToolApprovalFilter
             private constructor(
                 private val always: JsonField<Always>,
@@ -1663,7 +2020,7 @@ private constructor(
                 ) : this(always, never, mutableMapOf())
 
                 /**
-                 * A list of tools that always require approval.
+                 * A filter object to specify which tools are allowed.
                  *
                  * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g.
                  *   if the server responded with an unexpected value).
@@ -1671,7 +2028,7 @@ private constructor(
                 fun always(): Optional<Always> = always.getOptional("always")
 
                 /**
-                 * A list of tools that never require approval.
+                 * A filter object to specify which tools are allowed.
                  *
                  * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g.
                  *   if the server responded with an unexpected value).
@@ -1730,7 +2087,7 @@ private constructor(
                             mcpToolApprovalFilter.additionalProperties.toMutableMap()
                     }
 
-                    /** A list of tools that always require approval. */
+                    /** A filter object to specify which tools are allowed. */
                     fun always(always: Always) = always(JsonField.of(always))
 
                     /**
@@ -1742,7 +2099,7 @@ private constructor(
                      */
                     fun always(always: JsonField<Always>) = apply { this.always = always }
 
-                    /** A list of tools that never require approval. */
+                    /** A filter object to specify which tools are allowed. */
                     fun never(never: Never) = never(JsonField.of(never))
 
                     /**
@@ -1816,27 +2173,52 @@ private constructor(
                     (always.asKnown().getOrNull()?.validity() ?: 0) +
                         (never.asKnown().getOrNull()?.validity() ?: 0)
 
-                /** A list of tools that always require approval. */
+                /** A filter object to specify which tools are allowed. */
                 class Always
                 private constructor(
+                    private val readOnly: JsonField<Boolean>,
                     private val toolNames: JsonField<List<String>>,
                     private val additionalProperties: MutableMap<String, JsonValue>,
                 ) {
 
                     @JsonCreator
                     private constructor(
+                        @JsonProperty("read_only")
+                        @ExcludeMissing
+                        readOnly: JsonField<Boolean> = JsonMissing.of(),
                         @JsonProperty("tool_names")
                         @ExcludeMissing
-                        toolNames: JsonField<List<String>> = JsonMissing.of()
-                    ) : this(toolNames, mutableMapOf())
+                        toolNames: JsonField<List<String>> = JsonMissing.of(),
+                    ) : this(readOnly, toolNames, mutableMapOf())
 
                     /**
-                     * List of tools that require approval.
+                     * Indicates whether or not a tool modifies data or is read-only. If an MCP
+                     * server is
+                     * [annotated with `readOnlyHint`](https://modelcontextprotocol.io/specification/2025-06-18/schema#toolannotations-readonlyhint),
+                     * it will match this filter.
+                     *
+                     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type
+                     *   (e.g. if the server responded with an unexpected value).
+                     */
+                    fun readOnly(): Optional<Boolean> = readOnly.getOptional("read_only")
+
+                    /**
+                     * List of allowed tool names.
                      *
                      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type
                      *   (e.g. if the server responded with an unexpected value).
                      */
                     fun toolNames(): Optional<List<String>> = toolNames.getOptional("tool_names")
+
+                    /**
+                     * Returns the raw JSON value of [readOnly].
+                     *
+                     * Unlike [readOnly], this method doesn't throw if the JSON field has an
+                     * unexpected type.
+                     */
+                    @JsonProperty("read_only")
+                    @ExcludeMissing
+                    fun _readOnly(): JsonField<Boolean> = readOnly
 
                     /**
                      * Returns the raw JSON value of [toolNames].
@@ -1869,17 +2251,38 @@ private constructor(
                     /** A builder for [Always]. */
                     class Builder internal constructor() {
 
+                        private var readOnly: JsonField<Boolean> = JsonMissing.of()
                         private var toolNames: JsonField<MutableList<String>>? = null
                         private var additionalProperties: MutableMap<String, JsonValue> =
                             mutableMapOf()
 
                         @JvmSynthetic
                         internal fun from(always: Always) = apply {
+                            readOnly = always.readOnly
                             toolNames = always.toolNames.map { it.toMutableList() }
                             additionalProperties = always.additionalProperties.toMutableMap()
                         }
 
-                        /** List of tools that require approval. */
+                        /**
+                         * Indicates whether or not a tool modifies data or is read-only. If an MCP
+                         * server is
+                         * [annotated with `readOnlyHint`](https://modelcontextprotocol.io/specification/2025-06-18/schema#toolannotations-readonlyhint),
+                         * it will match this filter.
+                         */
+                        fun readOnly(readOnly: Boolean) = readOnly(JsonField.of(readOnly))
+
+                        /**
+                         * Sets [Builder.readOnly] to an arbitrary JSON value.
+                         *
+                         * You should usually call [Builder.readOnly] with a well-typed [Boolean]
+                         * value instead. This method is primarily for setting the field to an
+                         * undocumented or not yet supported value.
+                         */
+                        fun readOnly(readOnly: JsonField<Boolean>) = apply {
+                            this.readOnly = readOnly
+                        }
+
+                        /** List of allowed tool names. */
                         fun toolNames(toolNames: List<String>) = toolNames(JsonField.of(toolNames))
 
                         /**
@@ -1935,6 +2338,7 @@ private constructor(
                          */
                         fun build(): Always =
                             Always(
+                                readOnly,
                                 (toolNames ?: JsonMissing.of()).map { it.toImmutable() },
                                 additionalProperties.toMutableMap(),
                             )
@@ -1947,6 +2351,7 @@ private constructor(
                             return@apply
                         }
 
+                        readOnly()
                         toolNames()
                         validated = true
                     }
@@ -1966,7 +2371,9 @@ private constructor(
                      * Used for best match union deserialization.
                      */
                     @JvmSynthetic
-                    internal fun validity(): Int = (toolNames.asKnown().getOrNull()?.size ?: 0)
+                    internal fun validity(): Int =
+                        (if (readOnly.asKnown().isPresent) 1 else 0) +
+                            (toolNames.asKnown().getOrNull()?.size ?: 0)
 
                     override fun equals(other: Any?): Boolean {
                         if (this === other) {
@@ -1974,41 +2381,67 @@ private constructor(
                         }
 
                         return other is Always &&
+                            readOnly == other.readOnly &&
                             toolNames == other.toolNames &&
                             additionalProperties == other.additionalProperties
                     }
 
                     private val hashCode: Int by lazy {
-                        Objects.hash(toolNames, additionalProperties)
+                        Objects.hash(readOnly, toolNames, additionalProperties)
                     }
 
                     override fun hashCode(): Int = hashCode
 
                     override fun toString() =
-                        "Always{toolNames=$toolNames, additionalProperties=$additionalProperties}"
+                        "Always{readOnly=$readOnly, toolNames=$toolNames, additionalProperties=$additionalProperties}"
                 }
 
-                /** A list of tools that never require approval. */
+                /** A filter object to specify which tools are allowed. */
                 class Never
                 private constructor(
+                    private val readOnly: JsonField<Boolean>,
                     private val toolNames: JsonField<List<String>>,
                     private val additionalProperties: MutableMap<String, JsonValue>,
                 ) {
 
                     @JsonCreator
                     private constructor(
+                        @JsonProperty("read_only")
+                        @ExcludeMissing
+                        readOnly: JsonField<Boolean> = JsonMissing.of(),
                         @JsonProperty("tool_names")
                         @ExcludeMissing
-                        toolNames: JsonField<List<String>> = JsonMissing.of()
-                    ) : this(toolNames, mutableMapOf())
+                        toolNames: JsonField<List<String>> = JsonMissing.of(),
+                    ) : this(readOnly, toolNames, mutableMapOf())
 
                     /**
-                     * List of tools that do not require approval.
+                     * Indicates whether or not a tool modifies data or is read-only. If an MCP
+                     * server is
+                     * [annotated with `readOnlyHint`](https://modelcontextprotocol.io/specification/2025-06-18/schema#toolannotations-readonlyhint),
+                     * it will match this filter.
+                     *
+                     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type
+                     *   (e.g. if the server responded with an unexpected value).
+                     */
+                    fun readOnly(): Optional<Boolean> = readOnly.getOptional("read_only")
+
+                    /**
+                     * List of allowed tool names.
                      *
                      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type
                      *   (e.g. if the server responded with an unexpected value).
                      */
                     fun toolNames(): Optional<List<String>> = toolNames.getOptional("tool_names")
+
+                    /**
+                     * Returns the raw JSON value of [readOnly].
+                     *
+                     * Unlike [readOnly], this method doesn't throw if the JSON field has an
+                     * unexpected type.
+                     */
+                    @JsonProperty("read_only")
+                    @ExcludeMissing
+                    fun _readOnly(): JsonField<Boolean> = readOnly
 
                     /**
                      * Returns the raw JSON value of [toolNames].
@@ -2041,17 +2474,38 @@ private constructor(
                     /** A builder for [Never]. */
                     class Builder internal constructor() {
 
+                        private var readOnly: JsonField<Boolean> = JsonMissing.of()
                         private var toolNames: JsonField<MutableList<String>>? = null
                         private var additionalProperties: MutableMap<String, JsonValue> =
                             mutableMapOf()
 
                         @JvmSynthetic
                         internal fun from(never: Never) = apply {
+                            readOnly = never.readOnly
                             toolNames = never.toolNames.map { it.toMutableList() }
                             additionalProperties = never.additionalProperties.toMutableMap()
                         }
 
-                        /** List of tools that do not require approval. */
+                        /**
+                         * Indicates whether or not a tool modifies data or is read-only. If an MCP
+                         * server is
+                         * [annotated with `readOnlyHint`](https://modelcontextprotocol.io/specification/2025-06-18/schema#toolannotations-readonlyhint),
+                         * it will match this filter.
+                         */
+                        fun readOnly(readOnly: Boolean) = readOnly(JsonField.of(readOnly))
+
+                        /**
+                         * Sets [Builder.readOnly] to an arbitrary JSON value.
+                         *
+                         * You should usually call [Builder.readOnly] with a well-typed [Boolean]
+                         * value instead. This method is primarily for setting the field to an
+                         * undocumented or not yet supported value.
+                         */
+                        fun readOnly(readOnly: JsonField<Boolean>) = apply {
+                            this.readOnly = readOnly
+                        }
+
+                        /** List of allowed tool names. */
                         fun toolNames(toolNames: List<String>) = toolNames(JsonField.of(toolNames))
 
                         /**
@@ -2107,6 +2561,7 @@ private constructor(
                          */
                         fun build(): Never =
                             Never(
+                                readOnly,
                                 (toolNames ?: JsonMissing.of()).map { it.toImmutable() },
                                 additionalProperties.toMutableMap(),
                             )
@@ -2119,6 +2574,7 @@ private constructor(
                             return@apply
                         }
 
+                        readOnly()
                         toolNames()
                         validated = true
                     }
@@ -2138,7 +2594,9 @@ private constructor(
                      * Used for best match union deserialization.
                      */
                     @JvmSynthetic
-                    internal fun validity(): Int = (toolNames.asKnown().getOrNull()?.size ?: 0)
+                    internal fun validity(): Int =
+                        (if (readOnly.asKnown().isPresent) 1 else 0) +
+                            (toolNames.asKnown().getOrNull()?.size ?: 0)
 
                     override fun equals(other: Any?): Boolean {
                         if (this === other) {
@@ -2146,18 +2604,19 @@ private constructor(
                         }
 
                         return other is Never &&
+                            readOnly == other.readOnly &&
                             toolNames == other.toolNames &&
                             additionalProperties == other.additionalProperties
                     }
 
                     private val hashCode: Int by lazy {
-                        Objects.hash(toolNames, additionalProperties)
+                        Objects.hash(readOnly, toolNames, additionalProperties)
                     }
 
                     override fun hashCode(): Int = hashCode
 
                     override fun toString() =
-                        "Never{toolNames=$toolNames, additionalProperties=$additionalProperties}"
+                        "Never{readOnly=$readOnly, toolNames=$toolNames, additionalProperties=$additionalProperties}"
                 }
 
                 override fun equals(other: Any?): Boolean {
@@ -2331,24 +2790,28 @@ private constructor(
 
             return other is Mcp &&
                 serverLabel == other.serverLabel &&
-                serverUrl == other.serverUrl &&
                 type == other.type &&
                 allowedTools == other.allowedTools &&
+                authorization == other.authorization &&
+                connectorId == other.connectorId &&
                 headers == other.headers &&
                 requireApproval == other.requireApproval &&
                 serverDescription == other.serverDescription &&
+                serverUrl == other.serverUrl &&
                 additionalProperties == other.additionalProperties
         }
 
         private val hashCode: Int by lazy {
             Objects.hash(
                 serverLabel,
-                serverUrl,
                 type,
                 allowedTools,
+                authorization,
+                connectorId,
                 headers,
                 requireApproval,
                 serverDescription,
+                serverUrl,
                 additionalProperties,
             )
         }
@@ -2356,7 +2819,7 @@ private constructor(
         override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "Mcp{serverLabel=$serverLabel, serverUrl=$serverUrl, type=$type, allowedTools=$allowedTools, headers=$headers, requireApproval=$requireApproval, serverDescription=$serverDescription, additionalProperties=$additionalProperties}"
+            "Mcp{serverLabel=$serverLabel, type=$type, allowedTools=$allowedTools, authorization=$authorization, connectorId=$connectorId, headers=$headers, requireApproval=$requireApproval, serverDescription=$serverDescription, serverUrl=$serverUrl, additionalProperties=$additionalProperties}"
     }
 
     /** A tool that runs Python code to help generate a response to a prompt. */
