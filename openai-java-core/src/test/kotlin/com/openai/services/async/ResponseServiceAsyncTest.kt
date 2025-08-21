@@ -35,6 +35,7 @@ internal class ResponseServiceAsyncTest {
             responseServiceAsync.create(
                 ResponseCreateParams.builder()
                     .background(true)
+                    .conversation("string")
                     .addInclude(ResponseIncludable.CODE_INTERPRETER_CALL_OUTPUTS)
                     .input("string")
                     .instructions("instructions")
@@ -119,6 +120,7 @@ internal class ResponseServiceAsyncTest {
             responseServiceAsync.createStreaming(
                 ResponseCreateParams.builder()
                     .background(true)
+                    .conversation("string")
                     .addInclude(ResponseIncludable.CODE_INTERPRETER_CALL_OUTPUTS)
                     .input("string")
                     .instructions("instructions")

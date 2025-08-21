@@ -16,6 +16,8 @@ import com.openai.services.blocking.CompletionService
 import com.openai.services.blocking.CompletionServiceImpl
 import com.openai.services.blocking.ContainerService
 import com.openai.services.blocking.ContainerServiceImpl
+import com.openai.services.blocking.ConversationService
+import com.openai.services.blocking.ConversationServiceImpl
 import com.openai.services.blocking.EmbeddingService
 import com.openai.services.blocking.EmbeddingServiceImpl
 import com.openai.services.blocking.EvalService
@@ -103,6 +105,10 @@ class OpenAIClientImpl(private val clientOptions: ClientOptions) : OpenAIClient 
         ResponseServiceImpl(clientOptionsWithUserAgent)
     }
 
+    private val conversations: ConversationService by lazy {
+        ConversationServiceImpl(clientOptionsWithUserAgent)
+    }
+
     private val evals: EvalService by lazy { EvalServiceImpl(clientOptionsWithUserAgent) }
 
     private val containers: ContainerService by lazy {
@@ -147,6 +153,8 @@ class OpenAIClientImpl(private val clientOptions: ClientOptions) : OpenAIClient 
     override fun uploads(): UploadService = uploads
 
     override fun responses(): ResponseService = responses
+
+    override fun conversations(): ConversationService = conversations
 
     override fun evals(): EvalService = evals
 
@@ -221,6 +229,10 @@ class OpenAIClientImpl(private val clientOptions: ClientOptions) : OpenAIClient 
             ResponseServiceImpl.WithRawResponseImpl(clientOptions)
         }
 
+        private val conversations: ConversationService.WithRawResponse by lazy {
+            ConversationServiceImpl.WithRawResponseImpl(clientOptions)
+        }
+
         private val evals: EvalService.WithRawResponse by lazy {
             EvalServiceImpl.WithRawResponseImpl(clientOptions)
         }
@@ -267,6 +279,8 @@ class OpenAIClientImpl(private val clientOptions: ClientOptions) : OpenAIClient 
         override fun uploads(): UploadService.WithRawResponse = uploads
 
         override fun responses(): ResponseService.WithRawResponse = responses
+
+        override fun conversations(): ConversationService.WithRawResponse = conversations
 
         override fun evals(): EvalService.WithRawResponse = evals
 

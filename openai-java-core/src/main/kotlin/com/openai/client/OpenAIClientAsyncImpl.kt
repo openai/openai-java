@@ -16,6 +16,8 @@ import com.openai.services.async.CompletionServiceAsync
 import com.openai.services.async.CompletionServiceAsyncImpl
 import com.openai.services.async.ContainerServiceAsync
 import com.openai.services.async.ContainerServiceAsyncImpl
+import com.openai.services.async.ConversationServiceAsync
+import com.openai.services.async.ConversationServiceAsyncImpl
 import com.openai.services.async.EmbeddingServiceAsync
 import com.openai.services.async.EmbeddingServiceAsyncImpl
 import com.openai.services.async.EvalServiceAsync
@@ -117,6 +119,10 @@ class OpenAIClientAsyncImpl(private val clientOptions: ClientOptions) : OpenAICl
         ResponseServiceAsyncImpl(clientOptionsWithUserAgent)
     }
 
+    private val conversations: ConversationServiceAsync by lazy {
+        ConversationServiceAsyncImpl(clientOptionsWithUserAgent)
+    }
+
     private val evals: EvalServiceAsync by lazy { EvalServiceAsyncImpl(clientOptionsWithUserAgent) }
 
     private val containers: ContainerServiceAsync by lazy {
@@ -161,6 +167,8 @@ class OpenAIClientAsyncImpl(private val clientOptions: ClientOptions) : OpenAICl
     override fun uploads(): UploadServiceAsync = uploads
 
     override fun responses(): ResponseServiceAsync = responses
+
+    override fun conversations(): ConversationServiceAsync = conversations
 
     override fun evals(): EvalServiceAsync = evals
 
@@ -235,6 +243,10 @@ class OpenAIClientAsyncImpl(private val clientOptions: ClientOptions) : OpenAICl
             ResponseServiceAsyncImpl.WithRawResponseImpl(clientOptions)
         }
 
+        private val conversations: ConversationServiceAsync.WithRawResponse by lazy {
+            ConversationServiceAsyncImpl.WithRawResponseImpl(clientOptions)
+        }
+
         private val evals: EvalServiceAsync.WithRawResponse by lazy {
             EvalServiceAsyncImpl.WithRawResponseImpl(clientOptions)
         }
@@ -281,6 +293,8 @@ class OpenAIClientAsyncImpl(private val clientOptions: ClientOptions) : OpenAICl
         override fun uploads(): UploadServiceAsync.WithRawResponse = uploads
 
         override fun responses(): ResponseServiceAsync.WithRawResponse = responses
+
+        override fun conversations(): ConversationServiceAsync.WithRawResponse = conversations
 
         override fun evals(): EvalServiceAsync.WithRawResponse = evals
 
