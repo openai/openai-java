@@ -106,6 +106,29 @@ class StructuredResponseCreateParams<T : Any>(
             paramsBuilder.background(background)
         }
 
+        /** @see ResponseCreateParams.Builder.conversation */
+        fun conversation(conversation: ResponseCreateParams.Conversation?) = apply {
+            paramsBuilder.conversation(conversation)
+        }
+
+        /** @see ResponseCreateParams.Builder.conversation */
+        fun conversation(conversation: Optional<ResponseCreateParams.Conversation>) = apply {
+            paramsBuilder.conversation(conversation)
+        }
+
+        /** @see ResponseCreateParams.Builder.conversation */
+        fun conversation(conversation: JsonField<ResponseCreateParams.Conversation>) = apply {
+            paramsBuilder.conversation(conversation)
+        }
+
+        /** @see ResponseCreateParams.Builder.conversation */
+        fun conversation(id: String) = apply { paramsBuilder.conversation(id) }
+
+        /** @see ResponseCreateParams.Builder.conversation */
+        fun conversation(responseConversationParam: ResponseConversationParam) = apply {
+            paramsBuilder.conversation(responseConversationParam)
+        }
+
         /** @see ResponseCreateParams.Builder.include */
         fun include(include: List<ResponseIncludable>?) = apply { paramsBuilder.include(include) }
 

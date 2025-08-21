@@ -60,6 +60,9 @@ internal class StructuredResponseCreateParamsTest {
         private val SERVICE_TIER = ResponseCreateParams.ServiceTier.AUTO
         private val REASONING = Reasoning.builder().build()
         private val PROMPT = ResponsePrompt.builder().id("test-prompt-id").build()
+        private val RESPONSE_CONVERSATION_PARAM =
+            ResponseConversationParam.builder().id(STRING).build()
+        private val CONVERSATION = ResponseCreateParams.Conversation.ofId(STRING)
 
         private val TOOL_CHOICE_TYPE = ToolChoiceTypes.Type.FILE_SEARCH
         private val TOOL_CHOICE_TYPES = ToolChoiceTypes.builder().type(TOOL_CHOICE_TYPE).build()
@@ -120,6 +123,11 @@ internal class StructuredResponseCreateParamsTest {
                 DelegationWriteTestCase("background", BOOLEAN),
                 DelegationWriteTestCase("background", OPTIONAL),
                 DelegationWriteTestCase("background", JSON_FIELD),
+                DelegationWriteTestCase("conversation", CONVERSATION),
+                DelegationWriteTestCase("conversation", OPTIONAL),
+                DelegationWriteTestCase("conversation", JSON_FIELD),
+                DelegationWriteTestCase("conversation", STRING),
+                DelegationWriteTestCase("conversation", RESPONSE_CONVERSATION_PARAM),
                 DelegationWriteTestCase("include", LIST),
                 DelegationWriteTestCase("include", OPTIONAL),
                 DelegationWriteTestCase("include", JSON_FIELD),
