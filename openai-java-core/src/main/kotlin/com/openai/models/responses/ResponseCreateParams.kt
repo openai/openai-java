@@ -1219,6 +1219,16 @@ private constructor(
         /** Alias for calling [addTool] with `Tool.ofMcp(mcp)`. */
         fun addTool(mcp: Tool.Mcp) = apply { body.addTool(mcp) }
 
+        /**
+         * Alias for calling [addTool] with the following:
+         * ```java
+         * Tool.Mcp.builder()
+         *     .serverLabel(serverLabel)
+         *     .build()
+         * ```
+         */
+        fun addMcpTool(serverLabel: String) = apply { body.addMcpTool(serverLabel) }
+
         /** Alias for calling [addTool] with `Tool.ofCodeInterpreter(codeInterpreter)`. */
         fun addTool(codeInterpreter: Tool.CodeInterpreter) = apply { body.addTool(codeInterpreter) }
 
@@ -2858,6 +2868,17 @@ private constructor(
 
             /** Alias for calling [addTool] with `Tool.ofMcp(mcp)`. */
             fun addTool(mcp: Tool.Mcp) = addTool(Tool.ofMcp(mcp))
+
+            /**
+             * Alias for calling [addTool] with the following:
+             * ```java
+             * Tool.Mcp.builder()
+             *     .serverLabel(serverLabel)
+             *     .build()
+             * ```
+             */
+            fun addMcpTool(serverLabel: String) =
+                addTool(Tool.Mcp.builder().serverLabel(serverLabel).build())
 
             /** Alias for calling [addTool] with `Tool.ofCodeInterpreter(codeInterpreter)`. */
             fun addTool(codeInterpreter: Tool.CodeInterpreter) =
