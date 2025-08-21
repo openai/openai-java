@@ -64,6 +64,16 @@ private constructor(
     fun background(): Optional<Boolean> = body.background()
 
     /**
+     * The conversation that this response belongs to. Items from this conversation are prepended to
+     * `input_items` for this response request. Input items and output items from this response are
+     * automatically added to this conversation after this response completes.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun conversation(): Optional<Conversation> = body.conversation()
+
+    /**
      * Specify additional output data to include in the model response. Currently supported values
      * are:
      * - `code_interpreter_call.outputs`: Includes the outputs of python code execution in code
@@ -164,7 +174,8 @@ private constructor(
     /**
      * The unique ID of the previous response to the model. Use this to create multi-turn
      * conversations. Learn more about
-     * [conversation state](https://platform.openai.com/docs/guides/conversation-state).
+     * [conversation state](https://platform.openai.com/docs/guides/conversation-state). Cannot be
+     * used in conjunction with `conversation`.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -350,6 +361,13 @@ private constructor(
      * Unlike [background], this method doesn't throw if the JSON field has an unexpected type.
      */
     fun _background(): JsonField<Boolean> = body._background()
+
+    /**
+     * Returns the raw JSON value of [conversation].
+     *
+     * Unlike [conversation], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    fun _conversation(): JsonField<Conversation> = body._conversation()
 
     /**
      * Returns the raw JSON value of [include].
@@ -560,10 +578,10 @@ private constructor(
          * This is generally only useful if you are already constructing the body separately.
          * Otherwise, it's more convenient to use the top-level setters instead:
          * - [background]
+         * - [conversation]
          * - [include]
          * - [input]
          * - [instructions]
-         * - [maxOutputTokens]
          * - etc.
          */
         fun body(body: Body) = apply { this.body = body.toBuilder() }
@@ -592,6 +610,39 @@ private constructor(
          * value.
          */
         fun background(background: JsonField<Boolean>) = apply { body.background(background) }
+
+        /**
+         * The conversation that this response belongs to. Items from this conversation are
+         * prepended to `input_items` for this response request. Input items and output items from
+         * this response are automatically added to this conversation after this response completes.
+         */
+        fun conversation(conversation: Conversation?) = apply { body.conversation(conversation) }
+
+        /** Alias for calling [Builder.conversation] with `conversation.orElse(null)`. */
+        fun conversation(conversation: Optional<Conversation>) =
+            conversation(conversation.getOrNull())
+
+        /**
+         * Sets [Builder.conversation] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.conversation] with a well-typed [Conversation] value
+         * instead. This method is primarily for setting the field to an undocumented or not yet
+         * supported value.
+         */
+        fun conversation(conversation: JsonField<Conversation>) = apply {
+            body.conversation(conversation)
+        }
+
+        /** Alias for calling [conversation] with `Conversation.ofId(id)`. */
+        fun conversation(id: String) = apply { body.conversation(id) }
+
+        /**
+         * Alias for calling [conversation] with
+         * `Conversation.ofResponseConversationParam(responseConversationParam)`.
+         */
+        fun conversation(responseConversationParam: ResponseConversationParam) = apply {
+            body.conversation(responseConversationParam)
+        }
 
         /**
          * Specify additional output data to include in the model response. Currently supported
@@ -817,7 +868,8 @@ private constructor(
         /**
          * The unique ID of the previous response to the model. Use this to create multi-turn
          * conversations. Learn more about
-         * [conversation state](https://platform.openai.com/docs/guides/conversation-state).
+         * [conversation state](https://platform.openai.com/docs/guides/conversation-state). Cannot
+         * be used in conjunction with `conversation`.
          */
         fun previousResponseId(previousResponseId: String?) = apply {
             body.previousResponseId(previousResponseId)
@@ -1404,6 +1456,7 @@ private constructor(
     class Body
     private constructor(
         private val background: JsonField<Boolean>,
+        private val conversation: JsonField<Conversation>,
         private val include: JsonField<List<ResponseIncludable>>,
         private val input: JsonField<Input>,
         private val instructions: JsonField<String>,
@@ -1436,6 +1489,9 @@ private constructor(
             @JsonProperty("background")
             @ExcludeMissing
             background: JsonField<Boolean> = JsonMissing.of(),
+            @JsonProperty("conversation")
+            @ExcludeMissing
+            conversation: JsonField<Conversation> = JsonMissing.of(),
             @JsonProperty("include")
             @ExcludeMissing
             include: JsonField<List<ResponseIncludable>> = JsonMissing.of(),
@@ -1500,6 +1556,7 @@ private constructor(
             @JsonProperty("user") @ExcludeMissing user: JsonField<String> = JsonMissing.of(),
         ) : this(
             background,
+            conversation,
             include,
             input,
             instructions,
@@ -1535,6 +1592,16 @@ private constructor(
          *   server responded with an unexpected value).
          */
         fun background(): Optional<Boolean> = background.getOptional("background")
+
+        /**
+         * The conversation that this response belongs to. Items from this conversation are
+         * prepended to `input_items` for this response request. Input items and output items from
+         * this response are automatically added to this conversation after this response completes.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun conversation(): Optional<Conversation> = conversation.getOptional("conversation")
 
         /**
          * Specify additional output data to include in the model response. Currently supported
@@ -1640,7 +1707,8 @@ private constructor(
         /**
          * The unique ID of the previous response to the model. Use this to create multi-turn
          * conversations. Learn more about
-         * [conversation state](https://platform.openai.com/docs/guides/conversation-state).
+         * [conversation state](https://platform.openai.com/docs/guides/conversation-state). Cannot
+         * be used in conjunction with `conversation`.
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
@@ -1830,6 +1898,16 @@ private constructor(
         @JsonProperty("background")
         @ExcludeMissing
         fun _background(): JsonField<Boolean> = background
+
+        /**
+         * Returns the raw JSON value of [conversation].
+         *
+         * Unlike [conversation], this method doesn't throw if the JSON field has an unexpected
+         * type.
+         */
+        @JsonProperty("conversation")
+        @ExcludeMissing
+        fun _conversation(): JsonField<Conversation> = conversation
 
         /**
          * Returns the raw JSON value of [include].
@@ -2062,6 +2140,7 @@ private constructor(
         class Builder internal constructor() {
 
             private var background: JsonField<Boolean> = JsonMissing.of()
+            private var conversation: JsonField<Conversation> = JsonMissing.of()
             private var include: JsonField<MutableList<ResponseIncludable>>? = null
             private var input: JsonField<Input> = JsonMissing.of()
             private var instructions: JsonField<String> = JsonMissing.of()
@@ -2091,6 +2170,7 @@ private constructor(
             @JvmSynthetic
             internal fun from(body: Body) = apply {
                 background = body.background
+                conversation = body.conversation
                 include = body.include.map { it.toMutableList() }
                 input = body.input
                 instructions = body.instructions
@@ -2142,6 +2222,40 @@ private constructor(
              * supported value.
              */
             fun background(background: JsonField<Boolean>) = apply { this.background = background }
+
+            /**
+             * The conversation that this response belongs to. Items from this conversation are
+             * prepended to `input_items` for this response request. Input items and output items
+             * from this response are automatically added to this conversation after this response
+             * completes.
+             */
+            fun conversation(conversation: Conversation?) =
+                conversation(JsonField.ofNullable(conversation))
+
+            /** Alias for calling [Builder.conversation] with `conversation.orElse(null)`. */
+            fun conversation(conversation: Optional<Conversation>) =
+                conversation(conversation.getOrNull())
+
+            /**
+             * Sets [Builder.conversation] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.conversation] with a well-typed [Conversation] value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun conversation(conversation: JsonField<Conversation>) = apply {
+                this.conversation = conversation
+            }
+
+            /** Alias for calling [conversation] with `Conversation.ofId(id)`. */
+            fun conversation(id: String) = conversation(Conversation.ofId(id))
+
+            /**
+             * Alias for calling [conversation] with
+             * `Conversation.ofResponseConversationParam(responseConversationParam)`.
+             */
+            fun conversation(responseConversationParam: ResponseConversationParam) =
+                conversation(Conversation.ofResponseConversationParam(responseConversationParam))
 
             /**
              * Specify additional output data to include in the model response. Currently supported
@@ -2380,6 +2494,7 @@ private constructor(
              * The unique ID of the previous response to the model. Use this to create multi-turn
              * conversations. Learn more about
              * [conversation state](https://platform.openai.com/docs/guides/conversation-state).
+             * Cannot be used in conjunction with `conversation`.
              */
             fun previousResponseId(previousResponseId: String?) =
                 previousResponseId(JsonField.ofNullable(previousResponseId))
@@ -2880,6 +2995,7 @@ private constructor(
             fun build(): Body =
                 Body(
                     background,
+                    conversation,
                     (include ?: JsonMissing.of()).map { it.toImmutable() },
                     input,
                     instructions,
@@ -2916,6 +3032,7 @@ private constructor(
             }
 
             background()
+            conversation().ifPresent { it.validate() }
             include().ifPresent { it.forEach { it.validate() } }
             input().ifPresent { it.validate() }
             instructions()
@@ -2960,6 +3077,7 @@ private constructor(
         @JvmSynthetic
         internal fun validity(): Int =
             (if (background.asKnown().isPresent) 1 else 0) +
+                (conversation.asKnown().getOrNull()?.validity() ?: 0) +
                 (include.asKnown().getOrNull()?.sumOf { it.validity().toInt() } ?: 0) +
                 (input.asKnown().getOrNull()?.validity() ?: 0) +
                 (if (instructions.asKnown().isPresent) 1 else 0) +
@@ -2992,6 +3110,7 @@ private constructor(
 
             return other is Body &&
                 background == other.background &&
+                conversation == other.conversation &&
                 include == other.include &&
                 input == other.input &&
                 instructions == other.instructions &&
@@ -3022,6 +3141,7 @@ private constructor(
         private val hashCode: Int by lazy {
             Objects.hash(
                 background,
+                conversation,
                 include,
                 input,
                 instructions,
@@ -3053,7 +3173,207 @@ private constructor(
         override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "Body{background=$background, include=$include, input=$input, instructions=$instructions, maxOutputTokens=$maxOutputTokens, maxToolCalls=$maxToolCalls, metadata=$metadata, model=$model, parallelToolCalls=$parallelToolCalls, previousResponseId=$previousResponseId, prompt=$prompt, promptCacheKey=$promptCacheKey, reasoning=$reasoning, safetyIdentifier=$safetyIdentifier, serviceTier=$serviceTier, store=$store, streamOptions=$streamOptions, temperature=$temperature, text=$text, toolChoice=$toolChoice, tools=$tools, topLogprobs=$topLogprobs, topP=$topP, truncation=$truncation, user=$user, additionalProperties=$additionalProperties}"
+            "Body{background=$background, conversation=$conversation, include=$include, input=$input, instructions=$instructions, maxOutputTokens=$maxOutputTokens, maxToolCalls=$maxToolCalls, metadata=$metadata, model=$model, parallelToolCalls=$parallelToolCalls, previousResponseId=$previousResponseId, prompt=$prompt, promptCacheKey=$promptCacheKey, reasoning=$reasoning, safetyIdentifier=$safetyIdentifier, serviceTier=$serviceTier, store=$store, streamOptions=$streamOptions, temperature=$temperature, text=$text, toolChoice=$toolChoice, tools=$tools, topLogprobs=$topLogprobs, topP=$topP, truncation=$truncation, user=$user, additionalProperties=$additionalProperties}"
+    }
+
+    /**
+     * The conversation that this response belongs to. Items from this conversation are prepended to
+     * `input_items` for this response request. Input items and output items from this response are
+     * automatically added to this conversation after this response completes.
+     */
+    @JsonDeserialize(using = Conversation.Deserializer::class)
+    @JsonSerialize(using = Conversation.Serializer::class)
+    class Conversation
+    private constructor(
+        private val id: String? = null,
+        private val responseConversationParam: ResponseConversationParam? = null,
+        private val _json: JsonValue? = null,
+    ) {
+
+        /** The unique ID of the conversation. */
+        fun id(): Optional<String> = Optional.ofNullable(id)
+
+        /** The conversation that this response belongs to. */
+        fun responseConversationParam(): Optional<ResponseConversationParam> =
+            Optional.ofNullable(responseConversationParam)
+
+        fun isId(): Boolean = id != null
+
+        fun isResponseConversationParam(): Boolean = responseConversationParam != null
+
+        /** The unique ID of the conversation. */
+        fun asId(): String = id.getOrThrow("id")
+
+        /** The conversation that this response belongs to. */
+        fun asResponseConversationParam(): ResponseConversationParam =
+            responseConversationParam.getOrThrow("responseConversationParam")
+
+        fun _json(): Optional<JsonValue> = Optional.ofNullable(_json)
+
+        fun <T> accept(visitor: Visitor<T>): T =
+            when {
+                id != null -> visitor.visitId(id)
+                responseConversationParam != null ->
+                    visitor.visitResponseConversationParam(responseConversationParam)
+                else -> visitor.unknown(_json)
+            }
+
+        private var validated: Boolean = false
+
+        fun validate(): Conversation = apply {
+            if (validated) {
+                return@apply
+            }
+
+            accept(
+                object : Visitor<Unit> {
+                    override fun visitId(id: String) {}
+
+                    override fun visitResponseConversationParam(
+                        responseConversationParam: ResponseConversationParam
+                    ) {
+                        responseConversationParam.validate()
+                    }
+                }
+            )
+            validated = true
+        }
+
+        fun isValid(): Boolean =
+            try {
+                validate()
+                true
+            } catch (e: OpenAIInvalidDataException) {
+                false
+            }
+
+        /**
+         * Returns a score indicating how many valid values are contained in this object
+         * recursively.
+         *
+         * Used for best match union deserialization.
+         */
+        @JvmSynthetic
+        internal fun validity(): Int =
+            accept(
+                object : Visitor<Int> {
+                    override fun visitId(id: String) = 1
+
+                    override fun visitResponseConversationParam(
+                        responseConversationParam: ResponseConversationParam
+                    ) = responseConversationParam.validity()
+
+                    override fun unknown(json: JsonValue?) = 0
+                }
+            )
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) {
+                return true
+            }
+
+            return other is Conversation &&
+                id == other.id &&
+                responseConversationParam == other.responseConversationParam
+        }
+
+        override fun hashCode(): Int = Objects.hash(id, responseConversationParam)
+
+        override fun toString(): String =
+            when {
+                id != null -> "Conversation{id=$id}"
+                responseConversationParam != null ->
+                    "Conversation{responseConversationParam=$responseConversationParam}"
+                _json != null -> "Conversation{_unknown=$_json}"
+                else -> throw IllegalStateException("Invalid Conversation")
+            }
+
+        companion object {
+
+            /** The unique ID of the conversation. */
+            @JvmStatic fun ofId(id: String) = Conversation(id = id)
+
+            /** The conversation that this response belongs to. */
+            @JvmStatic
+            fun ofResponseConversationParam(responseConversationParam: ResponseConversationParam) =
+                Conversation(responseConversationParam = responseConversationParam)
+        }
+
+        /**
+         * An interface that defines how to map each variant of [Conversation] to a value of type
+         * [T].
+         */
+        interface Visitor<out T> {
+
+            /** The unique ID of the conversation. */
+            fun visitId(id: String): T
+
+            /** The conversation that this response belongs to. */
+            fun visitResponseConversationParam(
+                responseConversationParam: ResponseConversationParam
+            ): T
+
+            /**
+             * Maps an unknown variant of [Conversation] to a value of type [T].
+             *
+             * An instance of [Conversation] can contain an unknown variant if it was deserialized
+             * from data that doesn't match any known variant. For example, if the SDK is on an
+             * older version than the API, then the API may respond with new variants that the SDK
+             * is unaware of.
+             *
+             * @throws OpenAIInvalidDataException in the default implementation.
+             */
+            fun unknown(json: JsonValue?): T {
+                throw OpenAIInvalidDataException("Unknown Conversation: $json")
+            }
+        }
+
+        internal class Deserializer : BaseDeserializer<Conversation>(Conversation::class) {
+
+            override fun ObjectCodec.deserialize(node: JsonNode): Conversation {
+                val json = JsonValue.fromJsonNode(node)
+
+                val bestMatches =
+                    sequenceOf(
+                            tryDeserialize(node, jacksonTypeRef<ResponseConversationParam>())?.let {
+                                Conversation(responseConversationParam = it, _json = json)
+                            },
+                            tryDeserialize(node, jacksonTypeRef<String>())?.let {
+                                Conversation(id = it, _json = json)
+                            },
+                        )
+                        .filterNotNull()
+                        .allMaxBy { it.validity() }
+                        .toList()
+                return when (bestMatches.size) {
+                    // This can happen if what we're deserializing is completely incompatible with
+                    // all the possible variants (e.g. deserializing from array).
+                    0 -> Conversation(_json = json)
+                    1 -> bestMatches.single()
+                    // If there's more than one match with the highest validity, then use the first
+                    // completely valid match, or simply the first match if none are completely
+                    // valid.
+                    else -> bestMatches.firstOrNull { it.isValid() } ?: bestMatches.first()
+                }
+            }
+        }
+
+        internal class Serializer : BaseSerializer<Conversation>(Conversation::class) {
+
+            override fun serialize(
+                value: Conversation,
+                generator: JsonGenerator,
+                provider: SerializerProvider,
+            ) {
+                when {
+                    value.id != null -> generator.writeObject(value.id)
+                    value.responseConversationParam != null ->
+                        generator.writeObject(value.responseConversationParam)
+                    value._json != null -> generator.writeObject(value._json)
+                    else -> throw IllegalStateException("Invalid Conversation")
+                }
+            }
+        }
     }
 
     /**

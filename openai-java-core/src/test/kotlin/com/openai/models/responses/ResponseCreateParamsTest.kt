@@ -18,6 +18,7 @@ internal class ResponseCreateParamsTest {
     fun create() {
         ResponseCreateParams.builder()
             .background(true)
+            .conversation("string")
             .addInclude(ResponseIncludable.CODE_INTERPRETER_CALL_OUTPUTS)
             .input("string")
             .instructions("instructions")
@@ -88,6 +89,7 @@ internal class ResponseCreateParamsTest {
         val params =
             ResponseCreateParams.builder()
                 .background(true)
+                .conversation("string")
                 .addInclude(ResponseIncludable.CODE_INTERPRETER_CALL_OUTPUTS)
                 .input("string")
                 .instructions("instructions")
@@ -155,6 +157,7 @@ internal class ResponseCreateParamsTest {
         val body = params._body()
 
         assertThat(body.background()).contains(true)
+        assertThat(body.conversation()).contains(ResponseCreateParams.Conversation.ofId("string"))
         assertThat(body.include().getOrNull())
             .containsExactly(ResponseIncludable.CODE_INTERPRETER_CALL_OUTPUTS)
         assertThat(body.input()).contains(ResponseCreateParams.Input.ofText("string"))

@@ -51,6 +51,7 @@ private constructor(
     private val tools: JsonField<List<Tool>>,
     private val topP: JsonField<Double>,
     private val background: JsonField<Boolean>,
+    private val conversation: JsonField<Conversation>,
     private val maxOutputTokens: JsonField<Long>,
     private val maxToolCalls: JsonField<Long>,
     private val previousResponseId: JsonField<String>,
@@ -99,6 +100,9 @@ private constructor(
         @JsonProperty("background")
         @ExcludeMissing
         background: JsonField<Boolean> = JsonMissing.of(),
+        @JsonProperty("conversation")
+        @ExcludeMissing
+        conversation: JsonField<Conversation> = JsonMissing.of(),
         @JsonProperty("max_output_tokens")
         @ExcludeMissing
         maxOutputTokens: JsonField<Long> = JsonMissing.of(),
@@ -153,6 +157,7 @@ private constructor(
         tools,
         topP,
         background,
+        conversation,
         maxOutputTokens,
         maxToolCalls,
         previousResponseId,
@@ -332,6 +337,15 @@ private constructor(
     fun background(): Optional<Boolean> = background.getOptional("background")
 
     /**
+     * The conversation that this response belongs to. Input items and output items from this
+     * response are automatically added to this conversation.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun conversation(): Optional<Conversation> = conversation.getOptional("conversation")
+
+    /**
      * An upper bound for the number of tokens that can be generated for a response, including
      * visible output tokens and
      * [reasoning tokens](https://platform.openai.com/docs/guides/reasoning).
@@ -354,7 +368,8 @@ private constructor(
     /**
      * The unique ID of the previous response to the model. Use this to create multi-turn
      * conversations. Learn more about
-     * [conversation state](https://platform.openai.com/docs/guides/conversation-state).
+     * [conversation state](https://platform.openai.com/docs/guides/conversation-state). Cannot be
+     * used in conjunction with `conversation`.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -598,6 +613,15 @@ private constructor(
     @JsonProperty("background") @ExcludeMissing fun _background(): JsonField<Boolean> = background
 
     /**
+     * Returns the raw JSON value of [conversation].
+     *
+     * Unlike [conversation], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    @JsonProperty("conversation")
+    @ExcludeMissing
+    fun _conversation(): JsonField<Conversation> = conversation
+
+    /**
      * Returns the raw JSON value of [maxOutputTokens].
      *
      * Unlike [maxOutputTokens], this method doesn't throw if the JSON field has an unexpected type.
@@ -769,6 +793,7 @@ private constructor(
         private var tools: JsonField<MutableList<Tool>>? = null
         private var topP: JsonField<Double>? = null
         private var background: JsonField<Boolean> = JsonMissing.of()
+        private var conversation: JsonField<Conversation> = JsonMissing.of()
         private var maxOutputTokens: JsonField<Long> = JsonMissing.of()
         private var maxToolCalls: JsonField<Long> = JsonMissing.of()
         private var previousResponseId: JsonField<String> = JsonMissing.of()
@@ -802,6 +827,7 @@ private constructor(
             tools = response.tools.map { it.toMutableList() }
             topP = response.topP
             background = response.background
+            conversation = response.conversation
             maxOutputTokens = response.maxOutputTokens
             maxToolCalls = response.maxToolCalls
             previousResponseId = response.previousResponseId
@@ -1317,6 +1343,28 @@ private constructor(
         fun background(background: JsonField<Boolean>) = apply { this.background = background }
 
         /**
+         * The conversation that this response belongs to. Input items and output items from this
+         * response are automatically added to this conversation.
+         */
+        fun conversation(conversation: Conversation?) =
+            conversation(JsonField.ofNullable(conversation))
+
+        /** Alias for calling [Builder.conversation] with `conversation.orElse(null)`. */
+        fun conversation(conversation: Optional<Conversation>) =
+            conversation(conversation.getOrNull())
+
+        /**
+         * Sets [Builder.conversation] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.conversation] with a well-typed [Conversation] value
+         * instead. This method is primarily for setting the field to an undocumented or not yet
+         * supported value.
+         */
+        fun conversation(conversation: JsonField<Conversation>) = apply {
+            this.conversation = conversation
+        }
+
+        /**
          * An upper bound for the number of tokens that can be generated for a response, including
          * visible output tokens and
          * [reasoning tokens](https://platform.openai.com/docs/guides/reasoning).
@@ -1375,7 +1423,8 @@ private constructor(
         /**
          * The unique ID of the previous response to the model. Use this to create multi-turn
          * conversations. Learn more about
-         * [conversation state](https://platform.openai.com/docs/guides/conversation-state).
+         * [conversation state](https://platform.openai.com/docs/guides/conversation-state). Cannot
+         * be used in conjunction with `conversation`.
          */
         fun previousResponseId(previousResponseId: String?) =
             previousResponseId(JsonField.ofNullable(previousResponseId))
@@ -1676,6 +1725,7 @@ private constructor(
                 checkRequired("tools", tools).map { it.toImmutable() },
                 checkRequired("topP", topP),
                 background,
+                conversation,
                 maxOutputTokens,
                 maxToolCalls,
                 previousResponseId,
@@ -1720,6 +1770,7 @@ private constructor(
         tools().forEach { it.validate() }
         topP()
         background()
+        conversation().ifPresent { it.validate() }
         maxOutputTokens()
         maxToolCalls()
         previousResponseId()
@@ -1767,6 +1818,7 @@ private constructor(
             (tools.asKnown().getOrNull()?.sumOf { it.validity().toInt() } ?: 0) +
             (if (topP.asKnown().isPresent) 1 else 0) +
             (if (background.asKnown().isPresent) 1 else 0) +
+            (conversation.asKnown().getOrNull()?.validity() ?: 0) +
             (if (maxOutputTokens.asKnown().isPresent) 1 else 0) +
             (if (maxToolCalls.asKnown().isPresent) 1 else 0) +
             (if (previousResponseId.asKnown().isPresent) 1 else 0) +
@@ -2710,6 +2762,164 @@ private constructor(
     }
 
     /**
+     * The conversation that this response belongs to. Input items and output items from this
+     * response are automatically added to this conversation.
+     */
+    class Conversation
+    private constructor(
+        private val id: JsonField<String>,
+        private val additionalProperties: MutableMap<String, JsonValue>,
+    ) {
+
+        @JsonCreator
+        private constructor(
+            @JsonProperty("id") @ExcludeMissing id: JsonField<String> = JsonMissing.of()
+        ) : this(id, mutableMapOf())
+
+        /**
+         * The unique ID of the conversation.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         */
+        fun id(): String = id.getRequired("id")
+
+        /**
+         * Returns the raw JSON value of [id].
+         *
+         * Unlike [id], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("id") @ExcludeMissing fun _id(): JsonField<String> = id
+
+        @JsonAnySetter
+        private fun putAdditionalProperty(key: String, value: JsonValue) {
+            additionalProperties.put(key, value)
+        }
+
+        @JsonAnyGetter
+        @ExcludeMissing
+        fun _additionalProperties(): Map<String, JsonValue> =
+            Collections.unmodifiableMap(additionalProperties)
+
+        fun toBuilder() = Builder().from(this)
+
+        companion object {
+
+            /**
+             * Returns a mutable builder for constructing an instance of [Conversation].
+             *
+             * The following fields are required:
+             * ```java
+             * .id()
+             * ```
+             */
+            @JvmStatic fun builder() = Builder()
+        }
+
+        /** A builder for [Conversation]. */
+        class Builder internal constructor() {
+
+            private var id: JsonField<String>? = null
+            private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
+
+            @JvmSynthetic
+            internal fun from(conversation: Conversation) = apply {
+                id = conversation.id
+                additionalProperties = conversation.additionalProperties.toMutableMap()
+            }
+
+            /** The unique ID of the conversation. */
+            fun id(id: String) = id(JsonField.of(id))
+
+            /**
+             * Sets [Builder.id] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.id] with a well-typed [String] value instead. This
+             * method is primarily for setting the field to an undocumented or not yet supported
+             * value.
+             */
+            fun id(id: JsonField<String>) = apply { this.id = id }
+
+            fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                this.additionalProperties.clear()
+                putAllAdditionalProperties(additionalProperties)
+            }
+
+            fun putAdditionalProperty(key: String, value: JsonValue) = apply {
+                additionalProperties.put(key, value)
+            }
+
+            fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                this.additionalProperties.putAll(additionalProperties)
+            }
+
+            fun removeAdditionalProperty(key: String) = apply { additionalProperties.remove(key) }
+
+            fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                keys.forEach(::removeAdditionalProperty)
+            }
+
+            /**
+             * Returns an immutable instance of [Conversation].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             *
+             * The following fields are required:
+             * ```java
+             * .id()
+             * ```
+             *
+             * @throws IllegalStateException if any required field is unset.
+             */
+            fun build(): Conversation =
+                Conversation(checkRequired("id", id), additionalProperties.toMutableMap())
+        }
+
+        private var validated: Boolean = false
+
+        fun validate(): Conversation = apply {
+            if (validated) {
+                return@apply
+            }
+
+            id()
+            validated = true
+        }
+
+        fun isValid(): Boolean =
+            try {
+                validate()
+                true
+            } catch (e: OpenAIInvalidDataException) {
+                false
+            }
+
+        /**
+         * Returns a score indicating how many valid values are contained in this object
+         * recursively.
+         *
+         * Used for best match union deserialization.
+         */
+        @JvmSynthetic internal fun validity(): Int = (if (id.asKnown().isPresent) 1 else 0)
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) {
+                return true
+            }
+
+            return other is Conversation &&
+                id == other.id &&
+                additionalProperties == other.additionalProperties
+        }
+
+        private val hashCode: Int by lazy { Objects.hash(id, additionalProperties) }
+
+        override fun hashCode(): Int = hashCode
+
+        override fun toString() = "Conversation{id=$id, additionalProperties=$additionalProperties}"
+    }
+
+    /**
      * Specifies the processing type used for serving the request.
      * - If set to 'auto', then the request will be processed with the service tier configured in
      *   the Project settings. Unless otherwise configured, the Project will use 'default'.
@@ -3026,6 +3236,7 @@ private constructor(
             tools == other.tools &&
             topP == other.topP &&
             background == other.background &&
+            conversation == other.conversation &&
             maxOutputTokens == other.maxOutputTokens &&
             maxToolCalls == other.maxToolCalls &&
             previousResponseId == other.previousResponseId &&
@@ -3060,6 +3271,7 @@ private constructor(
             tools,
             topP,
             background,
+            conversation,
             maxOutputTokens,
             maxToolCalls,
             previousResponseId,
@@ -3081,5 +3293,5 @@ private constructor(
     override fun hashCode(): Int = hashCode
 
     override fun toString() =
-        "Response{id=$id, createdAt=$createdAt, error=$error, incompleteDetails=$incompleteDetails, instructions=$instructions, metadata=$metadata, model=$model, object_=$object_, output=$output, parallelToolCalls=$parallelToolCalls, temperature=$temperature, toolChoice=$toolChoice, tools=$tools, topP=$topP, background=$background, maxOutputTokens=$maxOutputTokens, maxToolCalls=$maxToolCalls, previousResponseId=$previousResponseId, prompt=$prompt, promptCacheKey=$promptCacheKey, reasoning=$reasoning, safetyIdentifier=$safetyIdentifier, serviceTier=$serviceTier, status=$status, text=$text, topLogprobs=$topLogprobs, truncation=$truncation, usage=$usage, user=$user, additionalProperties=$additionalProperties}"
+        "Response{id=$id, createdAt=$createdAt, error=$error, incompleteDetails=$incompleteDetails, instructions=$instructions, metadata=$metadata, model=$model, object_=$object_, output=$output, parallelToolCalls=$parallelToolCalls, temperature=$temperature, toolChoice=$toolChoice, tools=$tools, topP=$topP, background=$background, conversation=$conversation, maxOutputTokens=$maxOutputTokens, maxToolCalls=$maxToolCalls, previousResponseId=$previousResponseId, prompt=$prompt, promptCacheKey=$promptCacheKey, reasoning=$reasoning, safetyIdentifier=$safetyIdentifier, serviceTier=$serviceTier, status=$status, text=$text, topLogprobs=$topLogprobs, truncation=$truncation, usage=$usage, user=$user, additionalProperties=$additionalProperties}"
 }
