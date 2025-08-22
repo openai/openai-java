@@ -224,33 +224,33 @@ class OpenAIOkHttpClient private constructor() {
 
         fun putHeader(name: String, value: String) = apply { clientOptions.putHeader(name, value) }
 
-        fun putHeaders(name: String, values: Iterable<String>) = apply {
-            clientOptions.putHeaders(name, values)
+        fun putheaders(name: String, values: Iterable<String>) = apply {
+            clientOptions.putheaders(name, values)
         }
 
-        fun putAllHeaders(headers: Headers) = apply { clientOptions.putAllHeaders(headers) }
+        fun putAllheaders(headers: Headers) = apply { clientOptions.putAllheaders(headers) }
 
-        fun putAllHeaders(headers: Map<String, Iterable<String>>) = apply {
-            clientOptions.putAllHeaders(headers)
+        fun putAllheaders(headers: Map<String, Iterable<String>>) = apply {
+            clientOptions.putAllheaders(headers)
         }
 
-        fun replaceHeaders(name: String, value: String) = apply {
-            clientOptions.replaceHeaders(name, value)
+        fun replaceheaders(name: String, value: String) = apply {
+            clientOptions.replaceheaders(name, value)
         }
 
-        fun replaceHeaders(name: String, values: Iterable<String>) = apply {
-            clientOptions.replaceHeaders(name, values)
+        fun replaceheaders(name: String, values: Iterable<String>) = apply {
+            clientOptions.replaceheaders(name, values)
         }
 
-        fun replaceAllHeaders(headers: Headers) = apply { clientOptions.replaceAllHeaders(headers) }
+        fun replaceAllheaders(headers: Headers) = apply { clientOptions.replaceAllheaders(headers) }
 
-        fun replaceAllHeaders(headers: Map<String, Iterable<String>>) = apply {
-            clientOptions.replaceAllHeaders(headers)
+        fun replaceAllheaders(headers: Map<String, Iterable<String>>) = apply {
+            clientOptions.replaceAllheaders(headers)
         }
 
-        fun removeHeaders(name: String) = apply { clientOptions.removeHeaders(name) }
+        fun removeheaders(name: String) = apply { clientOptions.removeheaders(name) }
 
-        fun removeAllHeaders(names: Set<String>) = apply { clientOptions.removeAllHeaders(names) }
+        fun removeAllheaders(names: Set<String>) = apply { clientOptions.removeAllheaders(names) }
 
         fun queryParams(queryParams: QueryParams) = apply { clientOptions.queryParams(queryParams) }
 
@@ -262,38 +262,38 @@ class OpenAIOkHttpClient private constructor() {
             clientOptions.putQueryParam(key, value)
         }
 
-        fun putQueryParams(key: String, values: Iterable<String>) = apply {
-            clientOptions.putQueryParams(key, values)
+        fun putquery_params(key: String, values: Iterable<String>) = apply {
+            clientOptions.putquery_params(key, values)
         }
 
-        fun putAllQueryParams(queryParams: QueryParams) = apply {
-            clientOptions.putAllQueryParams(queryParams)
+        fun putAllquery_params(queryParams: QueryParams) = apply {
+            clientOptions.putAllquery_params(queryParams)
         }
 
-        fun putAllQueryParams(queryParams: Map<String, Iterable<String>>) = apply {
-            clientOptions.putAllQueryParams(queryParams)
+        fun putAllquery_params(queryParams: Map<String, Iterable<String>>) = apply {
+            clientOptions.putAllquery_params(queryParams)
         }
 
-        fun replaceQueryParams(key: String, value: String) = apply {
-            clientOptions.replaceQueryParams(key, value)
+        fun replacequery_params(key: String, value: String) = apply {
+            clientOptions.replacequery_params(key, value)
         }
 
-        fun replaceQueryParams(key: String, values: Iterable<String>) = apply {
-            clientOptions.replaceQueryParams(key, values)
+        fun replacequery_params(key: String, values: Iterable<String>) = apply {
+            clientOptions.replacequery_params(key, values)
         }
 
-        fun replaceAllQueryParams(queryParams: QueryParams) = apply {
-            clientOptions.replaceAllQueryParams(queryParams)
+        fun replaceAllquery_params(queryParams: QueryParams) = apply {
+            clientOptions.replaceAllquery_params(queryParams)
         }
 
-        fun replaceAllQueryParams(queryParams: Map<String, Iterable<String>>) = apply {
-            clientOptions.replaceAllQueryParams(queryParams)
+        fun replaceAllquery_params(queryParams: Map<String, Iterable<String>>) = apply {
+            clientOptions.replaceAllquery_params(queryParams)
         }
 
-        fun removeQueryParams(key: String) = apply { clientOptions.removeQueryParams(key) }
+        fun removequery_params(key: String) = apply { clientOptions.removequery_params(key) }
 
-        fun removeAllQueryParams(keys: Set<String>) = apply {
-            clientOptions.removeAllQueryParams(keys)
+        fun removeAllquery_params(keys: Set<String>) = apply {
+            clientOptions.removeAllquery_params(keys)
         }
 
         /**
