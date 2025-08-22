@@ -1,5 +1,23 @@
 # Changelog
 
+## 3.2.0 (2025-08-22)
+
+Full Changelog: [v3.1.2...v3.2.0](https://github.com/openai/openai-java/compare/v3.1.2...v3.2.0)
+
+### Features
+
+* **api:** Add connectors support for MCP tool ([ee175a9](https://github.com/openai/openai-java/commit/ee175a98a1ed4f1e939c301dd5bf62f10e367c6c))
+* **api:** adding support for /v1/conversations to the API ([9d088c5](https://github.com/openai/openai-java/commit/9d088c5d77c450a2e1371a8293e9c05ebf102937))
+
+
+### Chores
+
+* add missing delegate methods ([557e9ee](https://github.com/openai/openai-java/commit/557e9ee897e11c95788300922e8094383eb1dd97))
+* **ci:** reduce log noise ([9e91952](https://github.com/openai/openai-java/commit/9e9195269a225cdbaba81e2dd6ee26caba407d00))
+* **client:** refactor closing / shutdown ([94cdfcd](https://github.com/openai/openai-java/commit/94cdfcdf57225ee606acf51ffe3e0b6a4321f7e6))
+* **internal:** support running formatters directly ([6242da5](https://github.com/openai/openai-java/commit/6242da594134e736470c006bc1af6b38ce757705))
+* remove memory upper bound from publishing step ([fdc5fdd](https://github.com/openai/openai-java/commit/fdc5fdd3969d2ecc3d6df1546b34167b63074991))
+
 ## 3.1.2 (2025-08-20)
 
 Full Changelog: [v3.1.1...v3.1.2](https://github.com/openai/openai-java/compare/v3.1.1...v3.1.2)
