@@ -196,6 +196,7 @@ internal class StructuredResponseCreateParamsTest {
                 DelegationWriteTestCase("addTool", WEB_SEARCH_TOOL),
                 DelegationWriteTestCase("addTool", COMPUTER_TOOL),
                 DelegationWriteTestCase("addTool", MCP_TOOL),
+                DelegationWriteTestCase("addMcpTool", STRING),
                 DelegationWriteTestCase("addTool", CODE_INTERPRETER_TOOL),
                 DelegationWriteTestCase("addCodeInterpreterTool", CODE_INTERPRETER_CONTAINER),
                 DelegationWriteTestCase("addCodeInterpreterTool", STRING),

@@ -410,6 +410,9 @@ class StructuredResponseCreateParams<T : Any>(
         /** @see ResponseCreateParams.Builder.addTool */
         fun addTool(mcp: Tool.Mcp) = apply { paramsBuilder.addTool(mcp) }
 
+        /** @see ResponseCreateParams.Builder.addMcpTool */
+        fun addMcpTool(serverLabel: String) = apply { paramsBuilder.addMcpTool(serverLabel) }
+
         /** @see ResponseCreateParams.Builder.addTool */
         fun addTool(codeInterpreter: Tool.CodeInterpreter) = apply {
             paramsBuilder.addTool(codeInterpreter)
