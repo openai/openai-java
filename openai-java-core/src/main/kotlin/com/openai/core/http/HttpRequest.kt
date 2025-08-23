@@ -53,83 +53,83 @@ private constructor(
 
         fun headers(headers: Headers) = apply {
             this.headers.clear()
-            putAllheaders(headers)
+            putAllHeaders(headers)
         }
 
         fun headers(headers: Map<String, Iterable<String>>) = apply {
             this.headers.clear()
-            putAllheaders(headers)
+            putAllHeaders(headers)
         }
 
         fun putHeader(name: String, value: String) = apply { headers.put(name, value) }
 
-        fun putheaders(name: String, values: Iterable<String>) = apply { headers.put(name, values) }
+        fun putHeaders(name: String, values: Iterable<String>) = apply { headers.put(name, values) }
 
-        fun putAllheaders(headers: Headers) = apply { this.headers.putAll(headers) }
+        fun putAllHeaders(headers: Headers) = apply { this.headers.putAll(headers) }
 
-        fun putAllheaders(headers: Map<String, Iterable<String>>) = apply {
+        fun putAllHeaders(headers: Map<String, Iterable<String>>) = apply {
             this.headers.putAll(headers)
         }
 
-        fun replaceheaders(name: String, value: String) = apply { headers.replace(name, value) }
+        fun replaceHeaders(name: String, value: String) = apply { headers.replace(name, value) }
 
-        fun replaceheaders(name: String, values: Iterable<String>) = apply {
+        fun replaceHeaders(name: String, values: Iterable<String>) = apply {
             headers.replace(name, values)
         }
 
-        fun replaceAllheaders(headers: Headers) = apply { this.headers.replaceAll(headers) }
+        fun replaceAllHeaders(headers: Headers) = apply { this.headers.replaceAll(headers) }
 
-        fun replaceAllheaders(headers: Map<String, Iterable<String>>) = apply {
+        fun replaceAllHeaders(headers: Map<String, Iterable<String>>) = apply {
             this.headers.replaceAll(headers)
         }
 
-        fun removeheaders(name: String) = apply { headers.remove(name) }
+        fun removeHeaders(name: String) = apply { headers.remove(name) }
 
-        fun removeAllheaders(names: Set<String>) = apply { headers.removeAll(names) }
+        fun removeAllHeaders(names: Set<String>) = apply { headers.removeAll(names) }
 
         fun queryParams(queryParams: QueryParams) = apply {
             this.queryParams.clear()
-            putAllquery_params(queryParams)
+            putAllQueryParams(queryParams)
         }
 
         fun queryParams(queryParams: Map<String, Iterable<String>>) = apply {
             this.queryParams.clear()
-            putAllquery_params(queryParams)
+            putAllQueryParams(queryParams)
         }
 
         fun putQueryParam(key: String, value: String) = apply { queryParams.put(key, value) }
 
-        fun putquery_params(key: String, values: Iterable<String>) = apply {
+        fun putQueryParams(key: String, values: Iterable<String>) = apply {
             queryParams.put(key, values)
         }
 
-        fun putAllquery_params(queryParams: QueryParams) = apply {
+        fun putAllQueryParams(queryParams: QueryParams) = apply {
             this.queryParams.putAll(queryParams)
         }
 
-        fun putAllquery_params(queryParams: Map<String, Iterable<String>>) = apply {
+        fun putAllQueryParams(queryParams: Map<String, Iterable<String>>) = apply {
             this.queryParams.putAll(queryParams)
         }
 
-        fun replacequery_params(key: String, value: String) = apply {
+        fun replaceQueryParams(key: String, value: String) = apply {
             queryParams.replace(key, value)
         }
 
-        fun replacequery_params(key: String, values: Iterable<String>) = apply {
+        fun replaceQueryParams(key: String, values: Iterable<String>) = apply {
             queryParams.replace(key, values)
         }
 
-        fun replaceAllquery_params(queryParams: QueryParams) = apply {
+        fun replaceAllQueryParams(queryParams: QueryParams) = apply {
             this.queryParams.replaceAll(queryParams)
         }
 
-        fun replaceAllquery_params(queryParams: Map<String, Iterable<String>>) = apply {
+        fun replaceAllQueryParams(queryParams: Map<String, Iterable<String>>) = apply {
             this.queryParams.replaceAll(queryParams)
         }
 
-        fun removequery_params(key: String) = apply { queryParams.remove(key) }
+        fun removeQueryParams(key: String) = apply { queryParams.remove(key) }
 
-        fun removeAllquery_params(keys: Set<String>) = apply { queryParams.removeAll(keys) }
+        fun removeAllQueryParams(keys: Set<String>) = apply { queryParams.removeAll(keys) }
 
         fun body(body: HttpRequestBody) = apply { this.body = body }
 
