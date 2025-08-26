@@ -14,7 +14,16 @@ internal class ResponseFunctionWebSearchTest {
         val responseFunctionWebSearch =
             ResponseFunctionWebSearch.builder()
                 .id("id")
-                .searchAction("query")
+                .action(
+                    ResponseFunctionWebSearch.Action.Search.builder()
+                        .query("query")
+                        .addSource(
+                            ResponseFunctionWebSearch.Action.Search.Source.builder()
+                                .url("url")
+                                .build()
+                        )
+                        .build()
+                )
                 .status(ResponseFunctionWebSearch.Status.IN_PROGRESS)
                 .build()
 
@@ -22,7 +31,14 @@ internal class ResponseFunctionWebSearchTest {
         assertThat(responseFunctionWebSearch.action())
             .isEqualTo(
                 ResponseFunctionWebSearch.Action.ofSearch(
-                    ResponseFunctionWebSearch.Action.Search.builder().query("query").build()
+                    ResponseFunctionWebSearch.Action.Search.builder()
+                        .query("query")
+                        .addSource(
+                            ResponseFunctionWebSearch.Action.Search.Source.builder()
+                                .url("url")
+                                .build()
+                        )
+                        .build()
                 )
             )
         assertThat(responseFunctionWebSearch.status())
@@ -35,7 +51,16 @@ internal class ResponseFunctionWebSearchTest {
         val responseFunctionWebSearch =
             ResponseFunctionWebSearch.builder()
                 .id("id")
-                .searchAction("query")
+                .action(
+                    ResponseFunctionWebSearch.Action.Search.builder()
+                        .query("query")
+                        .addSource(
+                            ResponseFunctionWebSearch.Action.Search.Source.builder()
+                                .url("url")
+                                .build()
+                        )
+                        .build()
+                )
                 .status(ResponseFunctionWebSearch.Status.IN_PROGRESS)
                 .build()
 

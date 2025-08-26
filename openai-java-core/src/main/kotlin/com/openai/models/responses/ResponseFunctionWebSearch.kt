@@ -20,8 +20,10 @@ import com.openai.core.ExcludeMissing
 import com.openai.core.JsonField
 import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
+import com.openai.core.checkKnown
 import com.openai.core.checkRequired
 import com.openai.core.getOrThrow
+import com.openai.core.toImmutable
 import com.openai.errors.OpenAIInvalidDataException
 import java.util.Collections
 import java.util.Objects
@@ -526,6 +528,7 @@ private constructor(
         private constructor(
             private val query: JsonField<String>,
             private val type: JsonValue,
+            private val sources: JsonField<List<Source>>,
             private val additionalProperties: MutableMap<String, JsonValue>,
         ) {
 
@@ -533,7 +536,10 @@ private constructor(
             private constructor(
                 @JsonProperty("query") @ExcludeMissing query: JsonField<String> = JsonMissing.of(),
                 @JsonProperty("type") @ExcludeMissing type: JsonValue = JsonMissing.of(),
-            ) : this(query, type, mutableMapOf())
+                @JsonProperty("sources")
+                @ExcludeMissing
+                sources: JsonField<List<Source>> = JsonMissing.of(),
+            ) : this(query, type, sources, mutableMapOf())
 
             /**
              * The search query.
@@ -558,11 +564,28 @@ private constructor(
             @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
 
             /**
+             * The sources used in the search.
+             *
+             * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if
+             *   the server responded with an unexpected value).
+             */
+            fun sources(): Optional<List<Source>> = sources.getOptional("sources")
+
+            /**
              * Returns the raw JSON value of [query].
              *
              * Unlike [query], this method doesn't throw if the JSON field has an unexpected type.
              */
             @JsonProperty("query") @ExcludeMissing fun _query(): JsonField<String> = query
+
+            /**
+             * Returns the raw JSON value of [sources].
+             *
+             * Unlike [sources], this method doesn't throw if the JSON field has an unexpected type.
+             */
+            @JsonProperty("sources")
+            @ExcludeMissing
+            fun _sources(): JsonField<List<Source>> = sources
 
             @JsonAnySetter
             private fun putAdditionalProperty(key: String, value: JsonValue) {
@@ -594,12 +617,14 @@ private constructor(
 
                 private var query: JsonField<String>? = null
                 private var type: JsonValue = JsonValue.from("search")
+                private var sources: JsonField<MutableList<Source>>? = null
                 private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
                 @JvmSynthetic
                 internal fun from(search: Search) = apply {
                     query = search.query
                     type = search.type
+                    sources = search.sources.map { it.toMutableList() }
                     additionalProperties = search.additionalProperties.toMutableMap()
                 }
 
@@ -628,6 +653,32 @@ private constructor(
                  * supported value.
                  */
                 fun type(type: JsonValue) = apply { this.type = type }
+
+                /** The sources used in the search. */
+                fun sources(sources: List<Source>) = sources(JsonField.of(sources))
+
+                /**
+                 * Sets [Builder.sources] to an arbitrary JSON value.
+                 *
+                 * You should usually call [Builder.sources] with a well-typed `List<Source>` value
+                 * instead. This method is primarily for setting the field to an undocumented or not
+                 * yet supported value.
+                 */
+                fun sources(sources: JsonField<List<Source>>) = apply {
+                    this.sources = sources.map { it.toMutableList() }
+                }
+
+                /**
+                 * Adds a single [Source] to [sources].
+                 *
+                 * @throws IllegalStateException if the field was previously set to a non-list.
+                 */
+                fun addSource(source: Source) = apply {
+                    sources =
+                        (sources ?: JsonField.of(mutableListOf())).also {
+                            checkKnown("sources", it).add(source)
+                        }
+                }
 
                 fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                     this.additionalProperties.clear()
@@ -664,7 +715,12 @@ private constructor(
                  * @throws IllegalStateException if any required field is unset.
                  */
                 fun build(): Search =
-                    Search(checkRequired("query", query), type, additionalProperties.toMutableMap())
+                    Search(
+                        checkRequired("query", query),
+                        type,
+                        (sources ?: JsonMissing.of()).map { it.toImmutable() },
+                        additionalProperties.toMutableMap(),
+                    )
             }
 
             private var validated: Boolean = false
@@ -680,6 +736,7 @@ private constructor(
                         throw OpenAIInvalidDataException("'type' is invalid, received $it")
                     }
                 }
+                sources().ifPresent { it.forEach { it.validate() } }
                 validated = true
             }
 
@@ -700,7 +757,208 @@ private constructor(
             @JvmSynthetic
             internal fun validity(): Int =
                 (if (query.asKnown().isPresent) 1 else 0) +
-                    type.let { if (it == JsonValue.from("search")) 1 else 0 }
+                    type.let { if (it == JsonValue.from("search")) 1 else 0 } +
+                    (sources.asKnown().getOrNull()?.sumOf { it.validity().toInt() } ?: 0)
+
+            /** A source used in the search. */
+            class Source
+            private constructor(
+                private val type: JsonValue,
+                private val url: JsonField<String>,
+                private val additionalProperties: MutableMap<String, JsonValue>,
+            ) {
+
+                @JsonCreator
+                private constructor(
+                    @JsonProperty("type") @ExcludeMissing type: JsonValue = JsonMissing.of(),
+                    @JsonProperty("url") @ExcludeMissing url: JsonField<String> = JsonMissing.of(),
+                ) : this(type, url, mutableMapOf())
+
+                /**
+                 * The type of source. Always `url`.
+                 *
+                 * Expected to always return the following:
+                 * ```java
+                 * JsonValue.from("url")
+                 * ```
+                 *
+                 * However, this method can be useful for debugging and logging (e.g. if the server
+                 * responded with an unexpected value).
+                 */
+                @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
+
+                /**
+                 * The URL of the source.
+                 *
+                 * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+                 *   unexpectedly missing or null (e.g. if the server responded with an unexpected
+                 *   value).
+                 */
+                fun url(): String = url.getRequired("url")
+
+                /**
+                 * Returns the raw JSON value of [url].
+                 *
+                 * Unlike [url], this method doesn't throw if the JSON field has an unexpected type.
+                 */
+                @JsonProperty("url") @ExcludeMissing fun _url(): JsonField<String> = url
+
+                @JsonAnySetter
+                private fun putAdditionalProperty(key: String, value: JsonValue) {
+                    additionalProperties.put(key, value)
+                }
+
+                @JsonAnyGetter
+                @ExcludeMissing
+                fun _additionalProperties(): Map<String, JsonValue> =
+                    Collections.unmodifiableMap(additionalProperties)
+
+                fun toBuilder() = Builder().from(this)
+
+                companion object {
+
+                    /**
+                     * Returns a mutable builder for constructing an instance of [Source].
+                     *
+                     * The following fields are required:
+                     * ```java
+                     * .url()
+                     * ```
+                     */
+                    @JvmStatic fun builder() = Builder()
+                }
+
+                /** A builder for [Source]. */
+                class Builder internal constructor() {
+
+                    private var type: JsonValue = JsonValue.from("url")
+                    private var url: JsonField<String>? = null
+                    private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
+
+                    @JvmSynthetic
+                    internal fun from(source: Source) = apply {
+                        type = source.type
+                        url = source.url
+                        additionalProperties = source.additionalProperties.toMutableMap()
+                    }
+
+                    /**
+                     * Sets the field to an arbitrary JSON value.
+                     *
+                     * It is usually unnecessary to call this method because the field defaults to
+                     * the following:
+                     * ```java
+                     * JsonValue.from("url")
+                     * ```
+                     *
+                     * This method is primarily for setting the field to an undocumented or not yet
+                     * supported value.
+                     */
+                    fun type(type: JsonValue) = apply { this.type = type }
+
+                    /** The URL of the source. */
+                    fun url(url: String) = url(JsonField.of(url))
+
+                    /**
+                     * Sets [Builder.url] to an arbitrary JSON value.
+                     *
+                     * You should usually call [Builder.url] with a well-typed [String] value
+                     * instead. This method is primarily for setting the field to an undocumented or
+                     * not yet supported value.
+                     */
+                    fun url(url: JsonField<String>) = apply { this.url = url }
+
+                    fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                        this.additionalProperties.clear()
+                        putAllAdditionalProperties(additionalProperties)
+                    }
+
+                    fun putAdditionalProperty(key: String, value: JsonValue) = apply {
+                        additionalProperties.put(key, value)
+                    }
+
+                    fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) =
+                        apply {
+                            this.additionalProperties.putAll(additionalProperties)
+                        }
+
+                    fun removeAdditionalProperty(key: String) = apply {
+                        additionalProperties.remove(key)
+                    }
+
+                    fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                        keys.forEach(::removeAdditionalProperty)
+                    }
+
+                    /**
+                     * Returns an immutable instance of [Source].
+                     *
+                     * Further updates to this [Builder] will not mutate the returned instance.
+                     *
+                     * The following fields are required:
+                     * ```java
+                     * .url()
+                     * ```
+                     *
+                     * @throws IllegalStateException if any required field is unset.
+                     */
+                    fun build(): Source =
+                        Source(type, checkRequired("url", url), additionalProperties.toMutableMap())
+                }
+
+                private var validated: Boolean = false
+
+                fun validate(): Source = apply {
+                    if (validated) {
+                        return@apply
+                    }
+
+                    _type().let {
+                        if (it != JsonValue.from("url")) {
+                            throw OpenAIInvalidDataException("'type' is invalid, received $it")
+                        }
+                    }
+                    url()
+                    validated = true
+                }
+
+                fun isValid(): Boolean =
+                    try {
+                        validate()
+                        true
+                    } catch (e: OpenAIInvalidDataException) {
+                        false
+                    }
+
+                /**
+                 * Returns a score indicating how many valid values are contained in this object
+                 * recursively.
+                 *
+                 * Used for best match union deserialization.
+                 */
+                @JvmSynthetic
+                internal fun validity(): Int =
+                    type.let { if (it == JsonValue.from("url")) 1 else 0 } +
+                        (if (url.asKnown().isPresent) 1 else 0)
+
+                override fun equals(other: Any?): Boolean {
+                    if (this === other) {
+                        return true
+                    }
+
+                    return other is Source &&
+                        type == other.type &&
+                        url == other.url &&
+                        additionalProperties == other.additionalProperties
+                }
+
+                private val hashCode: Int by lazy { Objects.hash(type, url, additionalProperties) }
+
+                override fun hashCode(): Int = hashCode
+
+                override fun toString() =
+                    "Source{type=$type, url=$url, additionalProperties=$additionalProperties}"
+            }
 
             override fun equals(other: Any?): Boolean {
                 if (this === other) {
@@ -710,15 +968,18 @@ private constructor(
                 return other is Search &&
                     query == other.query &&
                     type == other.type &&
+                    sources == other.sources &&
                     additionalProperties == other.additionalProperties
             }
 
-            private val hashCode: Int by lazy { Objects.hash(query, type, additionalProperties) }
+            private val hashCode: Int by lazy {
+                Objects.hash(query, type, sources, additionalProperties)
+            }
 
             override fun hashCode(): Int = hashCode
 
             override fun toString() =
-                "Search{query=$query, type=$type, additionalProperties=$additionalProperties}"
+                "Search{query=$query, type=$type, sources=$sources, additionalProperties=$additionalProperties}"
         }
 
         /** Action type "open_page" - Opens a specific URL from search results. */

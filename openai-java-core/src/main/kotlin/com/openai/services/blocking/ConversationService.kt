@@ -31,7 +31,7 @@ interface ConversationService {
 
     fun items(): ItemService
 
-    /** Create a conversation with the given ID. */
+    /** Create a conversation. */
     fun create(): Conversation = create(ConversationCreateParams.none())
 
     /** @see create */
