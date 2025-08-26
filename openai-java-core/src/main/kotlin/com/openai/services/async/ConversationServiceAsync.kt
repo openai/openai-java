@@ -31,7 +31,7 @@ interface ConversationServiceAsync {
 
     fun items(): ItemServiceAsync
 
-    /** Create a conversation with the given ID. */
+    /** Create a conversation. */
     fun create(): CompletableFuture<Conversation> = create(ConversationCreateParams.none())
 
     /** @see create */

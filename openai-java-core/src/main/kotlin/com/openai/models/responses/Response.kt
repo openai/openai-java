@@ -1227,12 +1227,13 @@ private constructor(
         fun addFileSearchTool(vectorStoreIds: List<String>) =
             addTool(FileSearchTool.builder().vectorStoreIds(vectorStoreIds).build())
 
-        /** Alias for calling [addTool] with `Tool.ofWebSearch(webSearch)`. */
-        fun addTool(webSearch: WebSearchTool) = addTool(Tool.ofWebSearch(webSearch))
-
         /** Alias for calling [addTool] with `Tool.ofComputerUsePreview(computerUsePreview)`. */
         fun addTool(computerUsePreview: ComputerTool) =
             addTool(Tool.ofComputerUsePreview(computerUsePreview))
+
+        /** Alias for calling [addTool] with `Tool.ofWebSearchTool(webSearchTool)`. */
+        fun addTool(webSearchTool: Tool.WebSearchTool) =
+            addTool(Tool.ofWebSearchTool(webSearchTool))
 
         /** Alias for calling [addTool] with `Tool.ofMcp(mcp)`. */
         fun addTool(mcp: Tool.Mcp) = addTool(Tool.ofMcp(mcp))
@@ -1300,6 +1301,9 @@ private constructor(
          * ```
          */
         fun addCustomTool(name: String) = addTool(CustomTool.builder().name(name).build())
+
+        /** Alias for calling [addTool] with `Tool.ofWebSearchTool(webSearchTool)`. */
+        fun addTool(webSearchTool: WebSearchTool) = addTool(Tool.ofWebSearchTool(webSearchTool))
 
         /**
          * An alternative to sampling with temperature, called nucleus sampling, where the model
