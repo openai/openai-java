@@ -228,8 +228,9 @@ internal class ToolTest {
         val mcp =
             Tool.Mcp.builder()
                 .serverLabel("server_label")
-                .serverUrl("server_url")
                 .allowedToolsOfMcp(listOf("string"))
+                .authorization("authorization")
+                .connectorId(Tool.Mcp.ConnectorId.CONNECTOR_DROPBOX)
                 .headers(
                     Tool.Mcp.Headers.builder()
                         .putAdditionalProperty("foo", JsonValue.from("string"))
@@ -239,17 +240,20 @@ internal class ToolTest {
                     Tool.Mcp.RequireApproval.McpToolApprovalFilter.builder()
                         .always(
                             Tool.Mcp.RequireApproval.McpToolApprovalFilter.Always.builder()
+                                .readOnly(true)
                                 .addToolName("string")
                                 .build()
                         )
                         .never(
                             Tool.Mcp.RequireApproval.McpToolApprovalFilter.Never.builder()
+                                .readOnly(true)
                                 .addToolName("string")
                                 .build()
                         )
                         .build()
                 )
                 .serverDescription("server_description")
+                .serverUrl("server_url")
                 .build()
 
         val tool = Tool.ofMcp(mcp)
@@ -272,8 +276,9 @@ internal class ToolTest {
             Tool.ofMcp(
                 Tool.Mcp.builder()
                     .serverLabel("server_label")
-                    .serverUrl("server_url")
                     .allowedToolsOfMcp(listOf("string"))
+                    .authorization("authorization")
+                    .connectorId(Tool.Mcp.ConnectorId.CONNECTOR_DROPBOX)
                     .headers(
                         Tool.Mcp.Headers.builder()
                             .putAdditionalProperty("foo", JsonValue.from("string"))
@@ -283,17 +288,20 @@ internal class ToolTest {
                         Tool.Mcp.RequireApproval.McpToolApprovalFilter.builder()
                             .always(
                                 Tool.Mcp.RequireApproval.McpToolApprovalFilter.Always.builder()
+                                    .readOnly(true)
                                     .addToolName("string")
                                     .build()
                             )
                             .never(
                                 Tool.Mcp.RequireApproval.McpToolApprovalFilter.Never.builder()
+                                    .readOnly(true)
                                     .addToolName("string")
                                     .build()
                             )
                             .build()
                     )
                     .serverDescription("server_description")
+                    .serverUrl("server_url")
                     .build()
             )
 

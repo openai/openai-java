@@ -9,6 +9,7 @@ import com.openai.services.async.BetaServiceAsync
 import com.openai.services.async.ChatServiceAsync
 import com.openai.services.async.CompletionServiceAsync
 import com.openai.services.async.ContainerServiceAsync
+import com.openai.services.async.ConversationServiceAsync
 import com.openai.services.async.EmbeddingServiceAsync
 import com.openai.services.async.EvalServiceAsync
 import com.openai.services.async.FileServiceAsync
@@ -91,6 +92,8 @@ interface OpenAIClientAsync {
 
     fun responses(): ResponseServiceAsync
 
+    fun conversations(): ConversationServiceAsync
+
     fun evals(): EvalServiceAsync
 
     fun containers(): ContainerServiceAsync
@@ -151,6 +154,8 @@ interface OpenAIClientAsync {
         fun uploads(): UploadServiceAsync.WithRawResponse
 
         fun responses(): ResponseServiceAsync.WithRawResponse
+
+        fun conversations(): ConversationServiceAsync.WithRawResponse
 
         fun evals(): EvalServiceAsync.WithRawResponse
 

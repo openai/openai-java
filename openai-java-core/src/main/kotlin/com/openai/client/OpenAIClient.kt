@@ -9,6 +9,7 @@ import com.openai.services.blocking.BetaService
 import com.openai.services.blocking.ChatService
 import com.openai.services.blocking.CompletionService
 import com.openai.services.blocking.ContainerService
+import com.openai.services.blocking.ConversationService
 import com.openai.services.blocking.EmbeddingService
 import com.openai.services.blocking.EvalService
 import com.openai.services.blocking.FileService
@@ -91,6 +92,8 @@ interface OpenAIClient {
 
     fun responses(): ResponseService
 
+    fun conversations(): ConversationService
+
     fun evals(): EvalService
 
     fun containers(): ContainerService
@@ -149,6 +152,8 @@ interface OpenAIClient {
         fun uploads(): UploadService.WithRawResponse
 
         fun responses(): ResponseService.WithRawResponse
+
+        fun conversations(): ConversationService.WithRawResponse
 
         fun evals(): EvalService.WithRawResponse
 

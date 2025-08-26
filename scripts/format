@@ -4,5 +4,18 @@ set -e
 
 cd "$(dirname "$0")/.."
 
-echo "==> Running formatters"
-./gradlew format
+if command -v ktfmt &> /dev/null; then
+    echo "==> Running ktfmt"
+    ./scripts/kotlin-format
+else
+    echo "==> Running gradlew formatKotlin"
+    ./gradlew formatKotlin
+fi
+
+if command -v palantir-java-format &> /dev/null; then
+    echo "==> Running palantir-java-format"
+    ./scripts/java-format
+else
+    echo "==> Running gradlew formatJava"
+    ./gradlew formatJava
+fi

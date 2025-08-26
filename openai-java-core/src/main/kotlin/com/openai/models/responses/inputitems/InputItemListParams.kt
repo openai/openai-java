@@ -20,7 +20,6 @@ class InputItemListParams
 private constructor(
     private val responseId: String?,
     private val after: String?,
-    private val before: String?,
     private val include: List<ResponseIncludable>?,
     private val limit: Long?,
     private val order: Order?,
@@ -32,9 +31,6 @@ private constructor(
 
     /** An item ID to list items after, used in pagination. */
     fun after(): Optional<String> = Optional.ofNullable(after)
-
-    /** An item ID to list items before, used in pagination. */
-    fun before(): Optional<String> = Optional.ofNullable(before)
 
     /**
      * Additional fields to include in the response. See the `include` parameter for Response
@@ -76,7 +72,6 @@ private constructor(
 
         private var responseId: String? = null
         private var after: String? = null
-        private var before: String? = null
         private var include: MutableList<ResponseIncludable>? = null
         private var limit: Long? = null
         private var order: Order? = null
@@ -87,7 +82,6 @@ private constructor(
         internal fun from(inputItemListParams: InputItemListParams) = apply {
             responseId = inputItemListParams.responseId
             after = inputItemListParams.after
-            before = inputItemListParams.before
             include = inputItemListParams.include?.toMutableList()
             limit = inputItemListParams.limit
             order = inputItemListParams.order
@@ -105,12 +99,6 @@ private constructor(
 
         /** Alias for calling [Builder.after] with `after.orElse(null)`. */
         fun after(after: Optional<String>) = after(after.getOrNull())
-
-        /** An item ID to list items before, used in pagination. */
-        fun before(before: String?) = apply { this.before = before }
-
-        /** Alias for calling [Builder.before] with `before.orElse(null)`. */
-        fun before(before: Optional<String>) = before(before.getOrNull())
 
         /**
          * Additional fields to include in the response. See the `include` parameter for Response
@@ -265,7 +253,6 @@ private constructor(
             InputItemListParams(
                 responseId,
                 after,
-                before,
                 include?.toImmutable(),
                 limit,
                 order,
@@ -286,7 +273,6 @@ private constructor(
         QueryParams.builder()
             .apply {
                 after?.let { put("after", it) }
-                before?.let { put("before", it) }
                 include?.forEach { put("include[]", it.toString()) }
                 limit?.let { put("limit", it.toString()) }
                 order?.let { put("order", it.toString()) }
@@ -432,7 +418,6 @@ private constructor(
         return other is InputItemListParams &&
             responseId == other.responseId &&
             after == other.after &&
-            before == other.before &&
             include == other.include &&
             limit == other.limit &&
             order == other.order &&
@@ -444,7 +429,6 @@ private constructor(
         Objects.hash(
             responseId,
             after,
-            before,
             include,
             limit,
             order,
@@ -453,5 +437,5 @@ private constructor(
         )
 
     override fun toString() =
-        "InputItemListParams{responseId=$responseId, after=$after, before=$before, include=$include, limit=$limit, order=$order, additionalHeaders=$additionalHeaders, additionalQueryParams=$additionalQueryParams}"
+        "InputItemListParams{responseId=$responseId, after=$after, include=$include, limit=$limit, order=$order, additionalHeaders=$additionalHeaders, additionalQueryParams=$additionalQueryParams}"
 }

@@ -106,6 +106,29 @@ class StructuredResponseCreateParams<T : Any>(
             paramsBuilder.background(background)
         }
 
+        /** @see ResponseCreateParams.Builder.conversation */
+        fun conversation(conversation: ResponseCreateParams.Conversation?) = apply {
+            paramsBuilder.conversation(conversation)
+        }
+
+        /** @see ResponseCreateParams.Builder.conversation */
+        fun conversation(conversation: Optional<ResponseCreateParams.Conversation>) = apply {
+            paramsBuilder.conversation(conversation)
+        }
+
+        /** @see ResponseCreateParams.Builder.conversation */
+        fun conversation(conversation: JsonField<ResponseCreateParams.Conversation>) = apply {
+            paramsBuilder.conversation(conversation)
+        }
+
+        /** @see ResponseCreateParams.Builder.conversation */
+        fun conversation(id: String) = apply { paramsBuilder.conversation(id) }
+
+        /** @see ResponseCreateParams.Builder.conversation */
+        fun conversation(responseConversationParam: ResponseConversationParam) = apply {
+            paramsBuilder.conversation(responseConversationParam)
+        }
+
         /** @see ResponseCreateParams.Builder.include */
         fun include(include: List<ResponseIncludable>?) = apply { paramsBuilder.include(include) }
 
@@ -386,6 +409,9 @@ class StructuredResponseCreateParams<T : Any>(
 
         /** @see ResponseCreateParams.Builder.addTool */
         fun addTool(mcp: Tool.Mcp) = apply { paramsBuilder.addTool(mcp) }
+
+        /** @see ResponseCreateParams.Builder.addMcpTool */
+        fun addMcpTool(serverLabel: String) = apply { paramsBuilder.addMcpTool(serverLabel) }
 
         /** @see ResponseCreateParams.Builder.addTool */
         fun addTool(codeInterpreter: Tool.CodeInterpreter) = apply {

@@ -14,7 +14,6 @@ internal class InputItemListParamsTest {
         InputItemListParams.builder()
             .responseId("response_id")
             .after("after")
-            .before("before")
             .addInclude(ResponseIncludable.CODE_INTERPRETER_CALL_OUTPUTS)
             .limit(0L)
             .order(InputItemListParams.Order.ASC)
@@ -36,7 +35,6 @@ internal class InputItemListParamsTest {
             InputItemListParams.builder()
                 .responseId("response_id")
                 .after("after")
-                .before("before")
                 .addInclude(ResponseIncludable.CODE_INTERPRETER_CALL_OUTPUTS)
                 .limit(0L)
                 .order(InputItemListParams.Order.ASC)
@@ -48,7 +46,6 @@ internal class InputItemListParamsTest {
             .isEqualTo(
                 QueryParams.builder()
                     .put("after", "after")
-                    .put("before", "before")
                     .put("include[]", "code_interpreter_call.outputs")
                     .put("limit", "0")
                     .put("order", "asc")

@@ -5,4 +5,5 @@
 -keep class org.junit.** { *; }
 
 # Many warnings don't apply for our testing purposes.
+-dontnote
 -dontwarn
