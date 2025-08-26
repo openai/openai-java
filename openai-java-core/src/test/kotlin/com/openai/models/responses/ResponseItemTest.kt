@@ -405,7 +405,16 @@ internal class ResponseItemTest {
         val webSearchCall =
             ResponseFunctionWebSearch.builder()
                 .id("id")
-                .searchAction("query")
+                .action(
+                    ResponseFunctionWebSearch.Action.Search.builder()
+                        .query("query")
+                        .addSource(
+                            ResponseFunctionWebSearch.Action.Search.Source.builder()
+                                .url("url")
+                                .build()
+                        )
+                        .build()
+                )
                 .status(ResponseFunctionWebSearch.Status.IN_PROGRESS)
                 .build()
 
@@ -436,7 +445,16 @@ internal class ResponseItemTest {
             ResponseItem.ofWebSearchCall(
                 ResponseFunctionWebSearch.builder()
                     .id("id")
-                    .searchAction("query")
+                    .action(
+                        ResponseFunctionWebSearch.Action.Search.builder()
+                            .query("query")
+                            .addSource(
+                                ResponseFunctionWebSearch.Action.Search.Source.builder()
+                                    .url("url")
+                                    .build()
+                            )
+                            .build()
+                    )
                     .status(ResponseFunctionWebSearch.Status.IN_PROGRESS)
                     .build()
             )

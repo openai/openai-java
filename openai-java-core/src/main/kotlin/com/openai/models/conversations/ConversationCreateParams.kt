@@ -32,7 +32,7 @@ import java.util.Objects
 import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
-/** Create a conversation with the given ID. */
+/** Create a conversation. */
 class ConversationCreateParams
 private constructor(
     private val body: Body,
