@@ -76,7 +76,11 @@ internal class StructuredResponseCreateParamsTest {
             FunctionTool.builder().name(STRING).parameters(NULLABLE).strict(BOOLEAN).build()
         private val FILE_SEARCH_TOOL = FileSearchTool.builder().vectorStoreIds(LIST).build()
         private val WEB_SEARCH_TOOL =
-            WebSearchTool.builder().type(WebSearchTool.Type.WEB_SEARCH_PREVIEW).build()
+            WebSearchTool.builder().type(WebSearchTool.Type.WEB_SEARCH).build()
+        private val WEB_SEARCH_PREVIEW_TOOL =
+            WebSearchPreviewTool.builder()
+                .type(WebSearchPreviewTool.Type.WEB_SEARCH_PREVIEW)
+                .build()
         private val COMPUTER_TOOL =
             ComputerTool.builder()
                 .displayWidth(LONG)
@@ -194,6 +198,7 @@ internal class StructuredResponseCreateParamsTest {
                 DelegationWriteTestCase("addTool", FILE_SEARCH_TOOL),
                 DelegationWriteTestCase("addFileSearchTool", LIST),
                 DelegationWriteTestCase("addTool", WEB_SEARCH_TOOL),
+                DelegationWriteTestCase("addTool", WEB_SEARCH_PREVIEW_TOOL),
                 DelegationWriteTestCase("addTool", COMPUTER_TOOL),
                 DelegationWriteTestCase("addTool", MCP_TOOL),
                 DelegationWriteTestCase("addMcpTool", STRING),

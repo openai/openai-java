@@ -28,6 +28,9 @@ class BetaServiceImpl internal constructor(private val clientOptions: ClientOpti
     override fun withOptions(modifier: Consumer<ClientOptions.Builder>): BetaService =
         BetaServiceImpl(clientOptions.toBuilder().apply(modifier::accept).build())
 
+    @Deprecated(
+        "Realtime has now launched and is generally available. The old beta API is now deprecated."
+    )
     override fun realtime(): RealtimeService = realtime
 
     override fun assistants(): AssistantService = assistants
@@ -57,6 +60,9 @@ class BetaServiceImpl internal constructor(private val clientOptions: ClientOpti
                 clientOptions.toBuilder().apply(modifier::accept).build()
             )
 
+        @Deprecated(
+            "Realtime has now launched and is generally available. The old beta API is now deprecated."
+        )
         override fun realtime(): RealtimeService.WithRawResponse = realtime
 
         override fun assistants(): AssistantService.WithRawResponse = assistants

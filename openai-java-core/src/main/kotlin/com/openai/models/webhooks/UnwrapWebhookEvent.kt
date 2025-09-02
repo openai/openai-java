@@ -33,6 +33,7 @@ private constructor(
     private val fineTuningJobCancelled: FineTuningJobCancelledWebhookEvent? = null,
     private val fineTuningJobFailed: FineTuningJobFailedWebhookEvent? = null,
     private val fineTuningJobSucceeded: FineTuningJobSucceededWebhookEvent? = null,
+    private val realtimeCallIncoming: RealtimeCallIncomingWebhookEvent? = null,
     private val responseCancelled: ResponseCancelledWebhookEvent? = null,
     private val responseCompleted: ResponseCompletedWebhookEvent? = null,
     private val responseFailed: ResponseFailedWebhookEvent? = null,
@@ -75,6 +76,10 @@ private constructor(
     fun fineTuningJobSucceeded(): Optional<FineTuningJobSucceededWebhookEvent> =
         Optional.ofNullable(fineTuningJobSucceeded)
 
+    /** Sent when Realtime API Receives a incoming SIP call. */
+    fun realtimeCallIncoming(): Optional<RealtimeCallIncomingWebhookEvent> =
+        Optional.ofNullable(realtimeCallIncoming)
+
     /** Sent when a background response has been cancelled. */
     fun responseCancelled(): Optional<ResponseCancelledWebhookEvent> =
         Optional.ofNullable(responseCancelled)
@@ -109,6 +114,8 @@ private constructor(
     fun isFineTuningJobFailed(): Boolean = fineTuningJobFailed != null
 
     fun isFineTuningJobSucceeded(): Boolean = fineTuningJobSucceeded != null
+
+    fun isRealtimeCallIncoming(): Boolean = realtimeCallIncoming != null
 
     fun isResponseCancelled(): Boolean = responseCancelled != null
 
@@ -153,6 +160,10 @@ private constructor(
     fun asFineTuningJobSucceeded(): FineTuningJobSucceededWebhookEvent =
         fineTuningJobSucceeded.getOrThrow("fineTuningJobSucceeded")
 
+    /** Sent when Realtime API Receives a incoming SIP call. */
+    fun asRealtimeCallIncoming(): RealtimeCallIncomingWebhookEvent =
+        realtimeCallIncoming.getOrThrow("realtimeCallIncoming")
+
     /** Sent when a background response has been cancelled. */
     fun asResponseCancelled(): ResponseCancelledWebhookEvent =
         responseCancelled.getOrThrow("responseCancelled")
@@ -184,6 +195,7 @@ private constructor(
             fineTuningJobFailed != null -> visitor.visitFineTuningJobFailed(fineTuningJobFailed)
             fineTuningJobSucceeded != null ->
                 visitor.visitFineTuningJobSucceeded(fineTuningJobSucceeded)
+            realtimeCallIncoming != null -> visitor.visitRealtimeCallIncoming(realtimeCallIncoming)
             responseCancelled != null -> visitor.visitResponseCancelled(responseCancelled)
             responseCompleted != null -> visitor.visitResponseCompleted(responseCompleted)
             responseFailed != null -> visitor.visitResponseFailed(responseFailed)
@@ -244,6 +256,12 @@ private constructor(
                     fineTuningJobSucceeded: FineTuningJobSucceededWebhookEvent
                 ) {
                     fineTuningJobSucceeded.validate()
+                }
+
+                override fun visitRealtimeCallIncoming(
+                    realtimeCallIncoming: RealtimeCallIncomingWebhookEvent
+                ) {
+                    realtimeCallIncoming.validate()
                 }
 
                 override fun visitResponseCancelled(
@@ -322,6 +340,10 @@ private constructor(
                     fineTuningJobSucceeded: FineTuningJobSucceededWebhookEvent
                 ) = fineTuningJobSucceeded.validity()
 
+                override fun visitRealtimeCallIncoming(
+                    realtimeCallIncoming: RealtimeCallIncomingWebhookEvent
+                ) = realtimeCallIncoming.validity()
+
                 override fun visitResponseCancelled(
                     responseCancelled: ResponseCancelledWebhookEvent
                 ) = responseCancelled.validity()
@@ -357,6 +379,7 @@ private constructor(
             fineTuningJobCancelled == other.fineTuningJobCancelled &&
             fineTuningJobFailed == other.fineTuningJobFailed &&
             fineTuningJobSucceeded == other.fineTuningJobSucceeded &&
+            realtimeCallIncoming == other.realtimeCallIncoming &&
             responseCancelled == other.responseCancelled &&
             responseCompleted == other.responseCompleted &&
             responseFailed == other.responseFailed &&
@@ -375,6 +398,7 @@ private constructor(
             fineTuningJobCancelled,
             fineTuningJobFailed,
             fineTuningJobSucceeded,
+            realtimeCallIncoming,
             responseCancelled,
             responseCompleted,
             responseFailed,
@@ -396,6 +420,8 @@ private constructor(
                 "UnwrapWebhookEvent{fineTuningJobFailed=$fineTuningJobFailed}"
             fineTuningJobSucceeded != null ->
                 "UnwrapWebhookEvent{fineTuningJobSucceeded=$fineTuningJobSucceeded}"
+            realtimeCallIncoming != null ->
+                "UnwrapWebhookEvent{realtimeCallIncoming=$realtimeCallIncoming}"
             responseCancelled != null -> "UnwrapWebhookEvent{responseCancelled=$responseCancelled}"
             responseCompleted != null -> "UnwrapWebhookEvent{responseCompleted=$responseCompleted}"
             responseFailed != null -> "UnwrapWebhookEvent{responseFailed=$responseFailed}"
@@ -457,6 +483,11 @@ private constructor(
         fun ofFineTuningJobSucceeded(fineTuningJobSucceeded: FineTuningJobSucceededWebhookEvent) =
             UnwrapWebhookEvent(fineTuningJobSucceeded = fineTuningJobSucceeded)
 
+        /** Sent when Realtime API Receives a incoming SIP call. */
+        @JvmStatic
+        fun ofRealtimeCallIncoming(realtimeCallIncoming: RealtimeCallIncomingWebhookEvent) =
+            UnwrapWebhookEvent(realtimeCallIncoming = realtimeCallIncoming)
+
         /** Sent when a background response has been cancelled. */
         @JvmStatic
         fun ofResponseCancelled(responseCancelled: ResponseCancelledWebhookEvent) =
@@ -517,6 +548,9 @@ private constructor(
         fun visitFineTuningJobSucceeded(
             fineTuningJobSucceeded: FineTuningJobSucceededWebhookEvent
         ): T
+
+        /** Sent when Realtime API Receives a incoming SIP call. */
+        fun visitRealtimeCallIncoming(realtimeCallIncoming: RealtimeCallIncomingWebhookEvent): T
 
         /** Sent when a background response has been cancelled. */
         fun visitResponseCancelled(responseCancelled: ResponseCancelledWebhookEvent): T
@@ -608,6 +642,11 @@ private constructor(
                         ?.let { UnwrapWebhookEvent(fineTuningJobSucceeded = it, _json = json) }
                         ?: UnwrapWebhookEvent(_json = json)
                 }
+                "realtime.call.incoming" -> {
+                    return tryDeserialize(node, jacksonTypeRef<RealtimeCallIncomingWebhookEvent>())
+                        ?.let { UnwrapWebhookEvent(realtimeCallIncoming = it, _json = json) }
+                        ?: UnwrapWebhookEvent(_json = json)
+                }
                 "response.cancelled" -> {
                     return tryDeserialize(node, jacksonTypeRef<ResponseCancelledWebhookEvent>())
                         ?.let { UnwrapWebhookEvent(responseCancelled = it, _json = json) }
@@ -655,6 +694,8 @@ private constructor(
                     generator.writeObject(value.fineTuningJobFailed)
                 value.fineTuningJobSucceeded != null ->
                     generator.writeObject(value.fineTuningJobSucceeded)
+                value.realtimeCallIncoming != null ->
+                    generator.writeObject(value.realtimeCallIncoming)
                 value.responseCancelled != null -> generator.writeObject(value.responseCancelled)
                 value.responseCompleted != null -> generator.writeObject(value.responseCompleted)
                 value.responseFailed != null -> generator.writeObject(value.responseFailed)

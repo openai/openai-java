@@ -403,6 +403,11 @@ class StructuredResponseCreateParams<T : Any>(
         fun addTool(webSearch: WebSearchTool) = apply { paramsBuilder.addTool(webSearch) }
 
         /** @see ResponseCreateParams.Builder.addTool */
+        fun addTool(webSearchPreview: WebSearchPreviewTool) = apply {
+            paramsBuilder.addTool(webSearchPreview)
+        }
+
+        /** @see ResponseCreateParams.Builder.addTool */
         fun addTool(computerUsePreview: ComputerTool) = apply {
             paramsBuilder.addTool(computerUsePreview)
         }

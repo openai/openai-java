@@ -11,7 +11,9 @@ import com.openai.core.ExcludeMissing
 import com.openai.core.JsonField
 import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
+import com.openai.core.checkKnown
 import com.openai.core.checkRequired
+import com.openai.core.toImmutable
 import com.openai.errors.OpenAIInvalidDataException
 import java.util.Collections
 import java.util.Objects
@@ -19,12 +21,13 @@ import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
 /**
- * This tool searches the web for relevant results to use in a response. Learn more about the
+ * Search the Internet for sources related to the prompt. Learn more about the
  * [web search tool](https://platform.openai.com/docs/guides/tools-web-search).
  */
 class WebSearchTool
 private constructor(
     private val type: JsonField<Type>,
+    private val filters: JsonField<Filters>,
     private val searchContextSize: JsonField<SearchContextSize>,
     private val userLocation: JsonField<UserLocation>,
     private val additionalProperties: MutableMap<String, JsonValue>,
@@ -33,22 +36,30 @@ private constructor(
     @JsonCreator
     private constructor(
         @JsonProperty("type") @ExcludeMissing type: JsonField<Type> = JsonMissing.of(),
+        @JsonProperty("filters") @ExcludeMissing filters: JsonField<Filters> = JsonMissing.of(),
         @JsonProperty("search_context_size")
         @ExcludeMissing
         searchContextSize: JsonField<SearchContextSize> = JsonMissing.of(),
         @JsonProperty("user_location")
         @ExcludeMissing
         userLocation: JsonField<UserLocation> = JsonMissing.of(),
-    ) : this(type, searchContextSize, userLocation, mutableMapOf())
+    ) : this(type, filters, searchContextSize, userLocation, mutableMapOf())
 
     /**
-     * The type of the web search tool. One of `web_search_preview` or
-     * `web_search_preview_2025_03_11`.
+     * The type of the web search tool. One of `web_search` or `web_search_2025_08_26`.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
      *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
      */
     fun type(): Type = type.getRequired("type")
+
+    /**
+     * Filters for the search.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun filters(): Optional<Filters> = filters.getOptional("filters")
 
     /**
      * High level guidance for the amount of context window space to use for the search. One of
@@ -61,7 +72,7 @@ private constructor(
         searchContextSize.getOptional("search_context_size")
 
     /**
-     * The user's location.
+     * The approximate location of the user.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -74,6 +85,13 @@ private constructor(
      * Unlike [type], this method doesn't throw if the JSON field has an unexpected type.
      */
     @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<Type> = type
+
+    /**
+     * Returns the raw JSON value of [filters].
+     *
+     * Unlike [filters], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    @JsonProperty("filters") @ExcludeMissing fun _filters(): JsonField<Filters> = filters
 
     /**
      * Returns the raw JSON value of [searchContextSize].
@@ -123,6 +141,7 @@ private constructor(
     class Builder internal constructor() {
 
         private var type: JsonField<Type>? = null
+        private var filters: JsonField<Filters> = JsonMissing.of()
         private var searchContextSize: JsonField<SearchContextSize> = JsonMissing.of()
         private var userLocation: JsonField<UserLocation> = JsonMissing.of()
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
@@ -130,15 +149,13 @@ private constructor(
         @JvmSynthetic
         internal fun from(webSearchTool: WebSearchTool) = apply {
             type = webSearchTool.type
+            filters = webSearchTool.filters
             searchContextSize = webSearchTool.searchContextSize
             userLocation = webSearchTool.userLocation
             additionalProperties = webSearchTool.additionalProperties.toMutableMap()
         }
 
-        /**
-         * The type of the web search tool. One of `web_search_preview` or
-         * `web_search_preview_2025_03_11`.
-         */
+        /** The type of the web search tool. One of `web_search` or `web_search_2025_08_26`. */
         fun type(type: Type) = type(JsonField.of(type))
 
         /**
@@ -148,6 +165,20 @@ private constructor(
          * method is primarily for setting the field to an undocumented or not yet supported value.
          */
         fun type(type: JsonField<Type>) = apply { this.type = type }
+
+        /** Filters for the search. */
+        fun filters(filters: Filters?) = filters(JsonField.ofNullable(filters))
+
+        /** Alias for calling [Builder.filters] with `filters.orElse(null)`. */
+        fun filters(filters: Optional<Filters>) = filters(filters.getOrNull())
+
+        /**
+         * Sets [Builder.filters] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.filters] with a well-typed [Filters] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
+        fun filters(filters: JsonField<Filters>) = apply { this.filters = filters }
 
         /**
          * High level guidance for the amount of context window space to use for the search. One of
@@ -167,7 +198,7 @@ private constructor(
             this.searchContextSize = searchContextSize
         }
 
-        /** The user's location. */
+        /** The approximate location of the user. */
         fun userLocation(userLocation: UserLocation?) =
             userLocation(JsonField.ofNullable(userLocation))
 
@@ -220,6 +251,7 @@ private constructor(
         fun build(): WebSearchTool =
             WebSearchTool(
                 checkRequired("type", type),
+                filters,
                 searchContextSize,
                 userLocation,
                 additionalProperties.toMutableMap(),
@@ -234,6 +266,7 @@ private constructor(
         }
 
         type().validate()
+        filters().ifPresent { it.validate() }
         searchContextSize().ifPresent { it.validate() }
         userLocation().ifPresent { it.validate() }
         validated = true
@@ -255,13 +288,11 @@ private constructor(
     @JvmSynthetic
     internal fun validity(): Int =
         (type.asKnown().getOrNull()?.validity() ?: 0) +
+            (filters.asKnown().getOrNull()?.validity() ?: 0) +
             (searchContextSize.asKnown().getOrNull()?.validity() ?: 0) +
             (userLocation.asKnown().getOrNull()?.validity() ?: 0)
 
-    /**
-     * The type of the web search tool. One of `web_search_preview` or
-     * `web_search_preview_2025_03_11`.
-     */
+    /** The type of the web search tool. One of `web_search` or `web_search_2025_08_26`. */
     class Type @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
 
         /**
@@ -276,17 +307,17 @@ private constructor(
 
         companion object {
 
-            @JvmField val WEB_SEARCH_PREVIEW = of("web_search_preview")
+            @JvmField val WEB_SEARCH = of("web_search")
 
-            @JvmField val WEB_SEARCH_PREVIEW_2025_03_11 = of("web_search_preview_2025_03_11")
+            @JvmField val WEB_SEARCH_2025_08_26 = of("web_search_2025_08_26")
 
             @JvmStatic fun of(value: String) = Type(JsonField.of(value))
         }
 
         /** An enum containing [Type]'s known values. */
         enum class Known {
-            WEB_SEARCH_PREVIEW,
-            WEB_SEARCH_PREVIEW_2025_03_11,
+            WEB_SEARCH,
+            WEB_SEARCH_2025_08_26,
         }
 
         /**
@@ -299,8 +330,8 @@ private constructor(
          * - It was constructed with an arbitrary value using the [of] method.
          */
         enum class Value {
-            WEB_SEARCH_PREVIEW,
-            WEB_SEARCH_PREVIEW_2025_03_11,
+            WEB_SEARCH,
+            WEB_SEARCH_2025_08_26,
             /** An enum member indicating that [Type] was instantiated with an unknown value. */
             _UNKNOWN,
         }
@@ -314,8 +345,8 @@ private constructor(
          */
         fun value(): Value =
             when (this) {
-                WEB_SEARCH_PREVIEW -> Value.WEB_SEARCH_PREVIEW
-                WEB_SEARCH_PREVIEW_2025_03_11 -> Value.WEB_SEARCH_PREVIEW_2025_03_11
+                WEB_SEARCH -> Value.WEB_SEARCH
+                WEB_SEARCH_2025_08_26 -> Value.WEB_SEARCH_2025_08_26
                 else -> Value._UNKNOWN
             }
 
@@ -330,8 +361,8 @@ private constructor(
          */
         fun known(): Known =
             when (this) {
-                WEB_SEARCH_PREVIEW -> Known.WEB_SEARCH_PREVIEW
-                WEB_SEARCH_PREVIEW_2025_03_11 -> Known.WEB_SEARCH_PREVIEW_2025_03_11
+                WEB_SEARCH -> Known.WEB_SEARCH
+                WEB_SEARCH_2025_08_26 -> Known.WEB_SEARCH_2025_08_26
                 else -> throw OpenAIInvalidDataException("Unknown Type: $value")
             }
 
@@ -385,6 +416,184 @@ private constructor(
         override fun hashCode() = value.hashCode()
 
         override fun toString() = value.toString()
+    }
+
+    /** Filters for the search. */
+    class Filters
+    private constructor(
+        private val allowedDomains: JsonField<List<String>>,
+        private val additionalProperties: MutableMap<String, JsonValue>,
+    ) {
+
+        @JsonCreator
+        private constructor(
+            @JsonProperty("allowed_domains")
+            @ExcludeMissing
+            allowedDomains: JsonField<List<String>> = JsonMissing.of()
+        ) : this(allowedDomains, mutableMapOf())
+
+        /**
+         * Allowed domains for the search. If not provided, all domains are allowed. Subdomains of
+         * the provided domains are allowed as well.
+         *
+         * Example: `["pubmed.ncbi.nlm.nih.gov"]`
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun allowedDomains(): Optional<List<String>> = allowedDomains.getOptional("allowed_domains")
+
+        /**
+         * Returns the raw JSON value of [allowedDomains].
+         *
+         * Unlike [allowedDomains], this method doesn't throw if the JSON field has an unexpected
+         * type.
+         */
+        @JsonProperty("allowed_domains")
+        @ExcludeMissing
+        fun _allowedDomains(): JsonField<List<String>> = allowedDomains
+
+        @JsonAnySetter
+        private fun putAdditionalProperty(key: String, value: JsonValue) {
+            additionalProperties.put(key, value)
+        }
+
+        @JsonAnyGetter
+        @ExcludeMissing
+        fun _additionalProperties(): Map<String, JsonValue> =
+            Collections.unmodifiableMap(additionalProperties)
+
+        fun toBuilder() = Builder().from(this)
+
+        companion object {
+
+            /** Returns a mutable builder for constructing an instance of [Filters]. */
+            @JvmStatic fun builder() = Builder()
+        }
+
+        /** A builder for [Filters]. */
+        class Builder internal constructor() {
+
+            private var allowedDomains: JsonField<MutableList<String>>? = null
+            private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
+
+            @JvmSynthetic
+            internal fun from(filters: Filters) = apply {
+                allowedDomains = filters.allowedDomains.map { it.toMutableList() }
+                additionalProperties = filters.additionalProperties.toMutableMap()
+            }
+
+            /**
+             * Allowed domains for the search. If not provided, all domains are allowed. Subdomains
+             * of the provided domains are allowed as well.
+             *
+             * Example: `["pubmed.ncbi.nlm.nih.gov"]`
+             */
+            fun allowedDomains(allowedDomains: List<String>?) =
+                allowedDomains(JsonField.ofNullable(allowedDomains))
+
+            /** Alias for calling [Builder.allowedDomains] with `allowedDomains.orElse(null)`. */
+            fun allowedDomains(allowedDomains: Optional<List<String>>) =
+                allowedDomains(allowedDomains.getOrNull())
+
+            /**
+             * Sets [Builder.allowedDomains] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.allowedDomains] with a well-typed `List<String>`
+             * value instead. This method is primarily for setting the field to an undocumented or
+             * not yet supported value.
+             */
+            fun allowedDomains(allowedDomains: JsonField<List<String>>) = apply {
+                this.allowedDomains = allowedDomains.map { it.toMutableList() }
+            }
+
+            /**
+             * Adds a single [String] to [allowedDomains].
+             *
+             * @throws IllegalStateException if the field was previously set to a non-list.
+             */
+            fun addAllowedDomain(allowedDomain: String) = apply {
+                allowedDomains =
+                    (allowedDomains ?: JsonField.of(mutableListOf())).also {
+                        checkKnown("allowedDomains", it).add(allowedDomain)
+                    }
+            }
+
+            fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                this.additionalProperties.clear()
+                putAllAdditionalProperties(additionalProperties)
+            }
+
+            fun putAdditionalProperty(key: String, value: JsonValue) = apply {
+                additionalProperties.put(key, value)
+            }
+
+            fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                this.additionalProperties.putAll(additionalProperties)
+            }
+
+            fun removeAdditionalProperty(key: String) = apply { additionalProperties.remove(key) }
+
+            fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                keys.forEach(::removeAdditionalProperty)
+            }
+
+            /**
+             * Returns an immutable instance of [Filters].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             */
+            fun build(): Filters =
+                Filters(
+                    (allowedDomains ?: JsonMissing.of()).map { it.toImmutable() },
+                    additionalProperties.toMutableMap(),
+                )
+        }
+
+        private var validated: Boolean = false
+
+        fun validate(): Filters = apply {
+            if (validated) {
+                return@apply
+            }
+
+            allowedDomains()
+            validated = true
+        }
+
+        fun isValid(): Boolean =
+            try {
+                validate()
+                true
+            } catch (e: OpenAIInvalidDataException) {
+                false
+            }
+
+        /**
+         * Returns a score indicating how many valid values are contained in this object
+         * recursively.
+         *
+         * Used for best match union deserialization.
+         */
+        @JvmSynthetic
+        internal fun validity(): Int = (allowedDomains.asKnown().getOrNull()?.size ?: 0)
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) {
+                return true
+            }
+
+            return other is Filters &&
+                allowedDomains == other.allowedDomains &&
+                additionalProperties == other.additionalProperties
+        }
+
+        private val hashCode: Int by lazy { Objects.hash(allowedDomains, additionalProperties) }
+
+        override fun hashCode(): Int = hashCode
+
+        override fun toString() =
+            "Filters{allowedDomains=$allowedDomains, additionalProperties=$additionalProperties}"
     }
 
     /**
@@ -526,38 +735,27 @@ private constructor(
         override fun toString() = value.toString()
     }
 
-    /** The user's location. */
+    /** The approximate location of the user. */
     class UserLocation
     private constructor(
-        private val type: JsonValue,
         private val city: JsonField<String>,
         private val country: JsonField<String>,
         private val region: JsonField<String>,
         private val timezone: JsonField<String>,
+        private val type: JsonField<Type>,
         private val additionalProperties: MutableMap<String, JsonValue>,
     ) {
 
         @JsonCreator
         private constructor(
-            @JsonProperty("type") @ExcludeMissing type: JsonValue = JsonMissing.of(),
             @JsonProperty("city") @ExcludeMissing city: JsonField<String> = JsonMissing.of(),
             @JsonProperty("country") @ExcludeMissing country: JsonField<String> = JsonMissing.of(),
             @JsonProperty("region") @ExcludeMissing region: JsonField<String> = JsonMissing.of(),
-            @JsonProperty("timezone") @ExcludeMissing timezone: JsonField<String> = JsonMissing.of(),
-        ) : this(type, city, country, region, timezone, mutableMapOf())
-
-        /**
-         * The type of location approximation. Always `approximate`.
-         *
-         * Expected to always return the following:
-         * ```java
-         * JsonValue.from("approximate")
-         * ```
-         *
-         * However, this method can be useful for debugging and logging (e.g. if the server
-         * responded with an unexpected value).
-         */
-        @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
+            @JsonProperty("timezone")
+            @ExcludeMissing
+            timezone: JsonField<String> = JsonMissing.of(),
+            @JsonProperty("type") @ExcludeMissing type: JsonField<Type> = JsonMissing.of(),
+        ) : this(city, country, region, timezone, type, mutableMapOf())
 
         /**
          * Free text input for the city of the user, e.g. `San Francisco`.
@@ -594,6 +792,14 @@ private constructor(
         fun timezone(): Optional<String> = timezone.getOptional("timezone")
 
         /**
+         * The type of location approximation. Always `approximate`.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun type(): Optional<Type> = type.getOptional("type")
+
+        /**
          * Returns the raw JSON value of [city].
          *
          * Unlike [city], this method doesn't throw if the JSON field has an unexpected type.
@@ -621,6 +827,13 @@ private constructor(
          */
         @JsonProperty("timezone") @ExcludeMissing fun _timezone(): JsonField<String> = timezone
 
+        /**
+         * Returns the raw JSON value of [type].
+         *
+         * Unlike [type], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<Type> = type
+
         @JsonAnySetter
         private fun putAdditionalProperty(key: String, value: JsonValue) {
             additionalProperties.put(key, value)
@@ -642,36 +855,22 @@ private constructor(
         /** A builder for [UserLocation]. */
         class Builder internal constructor() {
 
-            private var type: JsonValue = JsonValue.from("approximate")
             private var city: JsonField<String> = JsonMissing.of()
             private var country: JsonField<String> = JsonMissing.of()
             private var region: JsonField<String> = JsonMissing.of()
             private var timezone: JsonField<String> = JsonMissing.of()
+            private var type: JsonField<Type> = JsonMissing.of()
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
             @JvmSynthetic
             internal fun from(userLocation: UserLocation) = apply {
-                type = userLocation.type
                 city = userLocation.city
                 country = userLocation.country
                 region = userLocation.region
                 timezone = userLocation.timezone
+                type = userLocation.type
                 additionalProperties = userLocation.additionalProperties.toMutableMap()
             }
-
-            /**
-             * Sets the field to an arbitrary JSON value.
-             *
-             * It is usually unnecessary to call this method because the field defaults to the
-             * following:
-             * ```java
-             * JsonValue.from("approximate")
-             * ```
-             *
-             * This method is primarily for setting the field to an undocumented or not yet
-             * supported value.
-             */
-            fun type(type: JsonValue) = apply { this.type = type }
 
             /** Free text input for the city of the user, e.g. `San Francisco`. */
             fun city(city: String?) = city(JsonField.ofNullable(city))
@@ -739,6 +938,18 @@ private constructor(
              */
             fun timezone(timezone: JsonField<String>) = apply { this.timezone = timezone }
 
+            /** The type of location approximation. Always `approximate`. */
+            fun type(type: Type) = type(JsonField.of(type))
+
+            /**
+             * Sets [Builder.type] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.type] with a well-typed [Type] value instead. This
+             * method is primarily for setting the field to an undocumented or not yet supported
+             * value.
+             */
+            fun type(type: JsonField<Type>) = apply { this.type = type }
+
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.clear()
                 putAllAdditionalProperties(additionalProperties)
@@ -765,11 +976,11 @@ private constructor(
              */
             fun build(): UserLocation =
                 UserLocation(
-                    type,
                     city,
                     country,
                     region,
                     timezone,
+                    type,
                     additionalProperties.toMutableMap(),
                 )
         }
@@ -781,15 +992,11 @@ private constructor(
                 return@apply
             }
 
-            _type().let {
-                if (it != JsonValue.from("approximate")) {
-                    throw OpenAIInvalidDataException("'type' is invalid, received $it")
-                }
-            }
             city()
             country()
             region()
             timezone()
+            type().ifPresent { it.validate() }
             validated = true
         }
 
@@ -809,11 +1016,133 @@ private constructor(
          */
         @JvmSynthetic
         internal fun validity(): Int =
-            type.let { if (it == JsonValue.from("approximate")) 1 else 0 } +
-                (if (city.asKnown().isPresent) 1 else 0) +
+            (if (city.asKnown().isPresent) 1 else 0) +
                 (if (country.asKnown().isPresent) 1 else 0) +
                 (if (region.asKnown().isPresent) 1 else 0) +
-                (if (timezone.asKnown().isPresent) 1 else 0)
+                (if (timezone.asKnown().isPresent) 1 else 0) +
+                (type.asKnown().getOrNull()?.validity() ?: 0)
+
+        /** The type of location approximation. Always `approximate`. */
+        class Type @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
+
+            /**
+             * Returns this class instance's raw value.
+             *
+             * This is usually only useful if this instance was deserialized from data that doesn't
+             * match any known member, and you want to know that value. For example, if the SDK is
+             * on an older version than the API, then the API may respond with new members that the
+             * SDK is unaware of.
+             */
+            @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
+
+            companion object {
+
+                @JvmField val APPROXIMATE = of("approximate")
+
+                @JvmStatic fun of(value: String) = Type(JsonField.of(value))
+            }
+
+            /** An enum containing [Type]'s known values. */
+            enum class Known {
+                APPROXIMATE
+            }
+
+            /**
+             * An enum containing [Type]'s known values, as well as an [_UNKNOWN] member.
+             *
+             * An instance of [Type] can contain an unknown value in a couple of cases:
+             * - It was deserialized from data that doesn't match any known member. For example, if
+             *   the SDK is on an older version than the API, then the API may respond with new
+             *   members that the SDK is unaware of.
+             * - It was constructed with an arbitrary value using the [of] method.
+             */
+            enum class Value {
+                APPROXIMATE,
+                /** An enum member indicating that [Type] was instantiated with an unknown value. */
+                _UNKNOWN,
+            }
+
+            /**
+             * Returns an enum member corresponding to this class instance's value, or
+             * [Value._UNKNOWN] if the class was instantiated with an unknown value.
+             *
+             * Use the [known] method instead if you're certain the value is always known or if you
+             * want to throw for the unknown case.
+             */
+            fun value(): Value =
+                when (this) {
+                    APPROXIMATE -> Value.APPROXIMATE
+                    else -> Value._UNKNOWN
+                }
+
+            /**
+             * Returns an enum member corresponding to this class instance's value.
+             *
+             * Use the [value] method instead if you're uncertain the value is always known and
+             * don't want to throw for the unknown case.
+             *
+             * @throws OpenAIInvalidDataException if this class instance's value is a not a known
+             *   member.
+             */
+            fun known(): Known =
+                when (this) {
+                    APPROXIMATE -> Known.APPROXIMATE
+                    else -> throw OpenAIInvalidDataException("Unknown Type: $value")
+                }
+
+            /**
+             * Returns this class instance's primitive wire representation.
+             *
+             * This differs from the [toString] method because that method is primarily for
+             * debugging and generally doesn't throw.
+             *
+             * @throws OpenAIInvalidDataException if this class instance's value does not have the
+             *   expected primitive type.
+             */
+            fun asString(): String =
+                _value().asString().orElseThrow {
+                    OpenAIInvalidDataException("Value is not a String")
+                }
+
+            private var validated: Boolean = false
+
+            fun validate(): Type = apply {
+                if (validated) {
+                    return@apply
+                }
+
+                known()
+                validated = true
+            }
+
+            fun isValid(): Boolean =
+                try {
+                    validate()
+                    true
+                } catch (e: OpenAIInvalidDataException) {
+                    false
+                }
+
+            /**
+             * Returns a score indicating how many valid values are contained in this object
+             * recursively.
+             *
+             * Used for best match union deserialization.
+             */
+            @JvmSynthetic internal fun validity(): Int = if (value() == Value._UNKNOWN) 0 else 1
+
+            override fun equals(other: Any?): Boolean {
+                if (this === other) {
+                    return true
+                }
+
+                return other is Type && value == other.value
+            }
+
+            override fun hashCode() = value.hashCode()
+
+            override fun toString() = value.toString()
+        }
 
         override fun equals(other: Any?): Boolean {
             if (this === other) {
@@ -821,22 +1150,22 @@ private constructor(
             }
 
             return other is UserLocation &&
-                type == other.type &&
                 city == other.city &&
                 country == other.country &&
                 region == other.region &&
                 timezone == other.timezone &&
+                type == other.type &&
                 additionalProperties == other.additionalProperties
         }
 
         private val hashCode: Int by lazy {
-            Objects.hash(type, city, country, region, timezone, additionalProperties)
+            Objects.hash(city, country, region, timezone, type, additionalProperties)
         }
 
         override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "UserLocation{type=$type, city=$city, country=$country, region=$region, timezone=$timezone, additionalProperties=$additionalProperties}"
+            "UserLocation{city=$city, country=$country, region=$region, timezone=$timezone, type=$type, additionalProperties=$additionalProperties}"
     }
 
     override fun equals(other: Any?): Boolean {
@@ -846,17 +1175,18 @@ private constructor(
 
         return other is WebSearchTool &&
             type == other.type &&
+            filters == other.filters &&
             searchContextSize == other.searchContextSize &&
             userLocation == other.userLocation &&
             additionalProperties == other.additionalProperties
     }
 
     private val hashCode: Int by lazy {
-        Objects.hash(type, searchContextSize, userLocation, additionalProperties)
+        Objects.hash(type, filters, searchContextSize, userLocation, additionalProperties)
     }
 
     override fun hashCode(): Int = hashCode
 
     override fun toString() =
-        "WebSearchTool{type=$type, searchContextSize=$searchContextSize, userLocation=$userLocation, additionalProperties=$additionalProperties}"
+        "WebSearchTool{type=$type, filters=$filters, searchContextSize=$searchContextSize, userLocation=$userLocation, additionalProperties=$additionalProperties}"
 }

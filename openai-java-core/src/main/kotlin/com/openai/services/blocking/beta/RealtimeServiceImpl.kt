@@ -9,6 +9,9 @@ import com.openai.services.blocking.beta.realtime.TranscriptionSessionService
 import com.openai.services.blocking.beta.realtime.TranscriptionSessionServiceImpl
 import java.util.function.Consumer
 
+@Deprecated(
+    "Realtime has now launched and is generally available. The old beta API is now deprecated."
+)
 class RealtimeServiceImpl internal constructor(private val clientOptions: ClientOptions) :
     RealtimeService {
 
@@ -31,6 +34,9 @@ class RealtimeServiceImpl internal constructor(private val clientOptions: Client
 
     override fun transcriptionSessions(): TranscriptionSessionService = transcriptionSessions
 
+    @Deprecated(
+        "Realtime has now launched and is generally available. The old beta API is now deprecated."
+    )
     class WithRawResponseImpl internal constructor(private val clientOptions: ClientOptions) :
         RealtimeService.WithRawResponse {
 
