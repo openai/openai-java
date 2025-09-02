@@ -20,34 +20,24 @@ import kotlin.jvm.optionals.getOrNull
 /** An audio input to the model. */
 class ResponseInputAudio
 private constructor(
-    private val data: JsonField<String>,
-    private val format: JsonField<Format>,
+    private val inputAudio: JsonField<InputAudio>,
     private val type: JsonValue,
     private val additionalProperties: MutableMap<String, JsonValue>,
 ) {
 
     @JsonCreator
     private constructor(
-        @JsonProperty("data") @ExcludeMissing data: JsonField<String> = JsonMissing.of(),
-        @JsonProperty("format") @ExcludeMissing format: JsonField<Format> = JsonMissing.of(),
+        @JsonProperty("input_audio")
+        @ExcludeMissing
+        inputAudio: JsonField<InputAudio> = JsonMissing.of(),
         @JsonProperty("type") @ExcludeMissing type: JsonValue = JsonMissing.of(),
-    ) : this(data, format, type, mutableMapOf())
+    ) : this(inputAudio, type, mutableMapOf())
 
     /**
-     * Base64-encoded audio data.
-     *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
      *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
      */
-    fun data(): String = data.getRequired("data")
-
-    /**
-     * The format of the audio data. Currently supported formats are `mp3` and `wav`.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
-     */
-    fun format(): Format = format.getRequired("format")
+    fun inputAudio(): InputAudio = inputAudio.getRequired("input_audio")
 
     /**
      * The type of the input item. Always `input_audio`.
@@ -63,18 +53,13 @@ private constructor(
     @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
 
     /**
-     * Returns the raw JSON value of [data].
+     * Returns the raw JSON value of [inputAudio].
      *
-     * Unlike [data], this method doesn't throw if the JSON field has an unexpected type.
+     * Unlike [inputAudio], this method doesn't throw if the JSON field has an unexpected type.
      */
-    @JsonProperty("data") @ExcludeMissing fun _data(): JsonField<String> = data
-
-    /**
-     * Returns the raw JSON value of [format].
-     *
-     * Unlike [format], this method doesn't throw if the JSON field has an unexpected type.
-     */
-    @JsonProperty("format") @ExcludeMissing fun _format(): JsonField<Format> = format
+    @JsonProperty("input_audio")
+    @ExcludeMissing
+    fun _inputAudio(): JsonField<InputAudio> = inputAudio
 
     @JsonAnySetter
     private fun putAdditionalProperty(key: String, value: JsonValue) {
@@ -95,8 +80,7 @@ private constructor(
          *
          * The following fields are required:
          * ```java
-         * .data()
-         * .format()
+         * .inputAudio()
          * ```
          */
         @JvmStatic fun builder() = Builder()
@@ -105,40 +89,27 @@ private constructor(
     /** A builder for [ResponseInputAudio]. */
     class Builder internal constructor() {
 
-        private var data: JsonField<String>? = null
-        private var format: JsonField<Format>? = null
+        private var inputAudio: JsonField<InputAudio>? = null
         private var type: JsonValue = JsonValue.from("input_audio")
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
         @JvmSynthetic
         internal fun from(responseInputAudio: ResponseInputAudio) = apply {
-            data = responseInputAudio.data
-            format = responseInputAudio.format
+            inputAudio = responseInputAudio.inputAudio
             type = responseInputAudio.type
             additionalProperties = responseInputAudio.additionalProperties.toMutableMap()
         }
 
-        /** Base64-encoded audio data. */
-        fun data(data: String) = data(JsonField.of(data))
+        fun inputAudio(inputAudio: InputAudio) = inputAudio(JsonField.of(inputAudio))
 
         /**
-         * Sets [Builder.data] to an arbitrary JSON value.
+         * Sets [Builder.inputAudio] to an arbitrary JSON value.
          *
-         * You should usually call [Builder.data] with a well-typed [String] value instead. This
-         * method is primarily for setting the field to an undocumented or not yet supported value.
+         * You should usually call [Builder.inputAudio] with a well-typed [InputAudio] value
+         * instead. This method is primarily for setting the field to an undocumented or not yet
+         * supported value.
          */
-        fun data(data: JsonField<String>) = apply { this.data = data }
-
-        /** The format of the audio data. Currently supported formats are `mp3` and `wav`. */
-        fun format(format: Format) = format(JsonField.of(format))
-
-        /**
-         * Sets [Builder.format] to an arbitrary JSON value.
-         *
-         * You should usually call [Builder.format] with a well-typed [Format] value instead. This
-         * method is primarily for setting the field to an undocumented or not yet supported value.
-         */
-        fun format(format: JsonField<Format>) = apply { this.format = format }
+        fun inputAudio(inputAudio: JsonField<InputAudio>) = apply { this.inputAudio = inputAudio }
 
         /**
          * Sets the field to an arbitrary JSON value.
@@ -180,16 +151,14 @@ private constructor(
          *
          * The following fields are required:
          * ```java
-         * .data()
-         * .format()
+         * .inputAudio()
          * ```
          *
          * @throws IllegalStateException if any required field is unset.
          */
         fun build(): ResponseInputAudio =
             ResponseInputAudio(
-                checkRequired("data", data),
-                checkRequired("format", format),
+                checkRequired("inputAudio", inputAudio),
                 type,
                 additionalProperties.toMutableMap(),
             )
@@ -202,8 +171,7 @@ private constructor(
             return@apply
         }
 
-        data()
-        format().validate()
+        inputAudio().validate()
         _type().let {
             if (it != JsonValue.from("input_audio")) {
                 throw OpenAIInvalidDataException("'type' is invalid, received $it")
@@ -227,104 +195,165 @@ private constructor(
      */
     @JvmSynthetic
     internal fun validity(): Int =
-        (if (data.asKnown().isPresent) 1 else 0) +
-            (format.asKnown().getOrNull()?.validity() ?: 0) +
+        (inputAudio.asKnown().getOrNull()?.validity() ?: 0) +
             type.let { if (it == JsonValue.from("input_audio")) 1 else 0 }
 
-    /** The format of the audio data. Currently supported formats are `mp3` and `wav`. */
-    class Format @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
+    class InputAudio
+    private constructor(
+        private val data: JsonField<String>,
+        private val format: JsonField<Format>,
+        private val additionalProperties: MutableMap<String, JsonValue>,
+    ) {
+
+        @JsonCreator
+        private constructor(
+            @JsonProperty("data") @ExcludeMissing data: JsonField<String> = JsonMissing.of(),
+            @JsonProperty("format") @ExcludeMissing format: JsonField<Format> = JsonMissing.of(),
+        ) : this(data, format, mutableMapOf())
 
         /**
-         * Returns this class instance's raw value.
+         * Base64-encoded audio data.
          *
-         * This is usually only useful if this instance was deserialized from data that doesn't
-         * match any known member, and you want to know that value. For example, if the SDK is on an
-         * older version than the API, then the API may respond with new members that the SDK is
-         * unaware of.
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
          */
-        @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
+        fun data(): String = data.getRequired("data")
+
+        /**
+         * The format of the audio data. Currently supported formats are `mp3` and `wav`.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         */
+        fun format(): Format = format.getRequired("format")
+
+        /**
+         * Returns the raw JSON value of [data].
+         *
+         * Unlike [data], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("data") @ExcludeMissing fun _data(): JsonField<String> = data
+
+        /**
+         * Returns the raw JSON value of [format].
+         *
+         * Unlike [format], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("format") @ExcludeMissing fun _format(): JsonField<Format> = format
+
+        @JsonAnySetter
+        private fun putAdditionalProperty(key: String, value: JsonValue) {
+            additionalProperties.put(key, value)
+        }
+
+        @JsonAnyGetter
+        @ExcludeMissing
+        fun _additionalProperties(): Map<String, JsonValue> =
+            Collections.unmodifiableMap(additionalProperties)
+
+        fun toBuilder() = Builder().from(this)
 
         companion object {
 
-            @JvmField val MP3 = of("mp3")
-
-            @JvmField val WAV = of("wav")
-
-            @JvmStatic fun of(value: String) = Format(JsonField.of(value))
+            /**
+             * Returns a mutable builder for constructing an instance of [InputAudio].
+             *
+             * The following fields are required:
+             * ```java
+             * .data()
+             * .format()
+             * ```
+             */
+            @JvmStatic fun builder() = Builder()
         }
 
-        /** An enum containing [Format]'s known values. */
-        enum class Known {
-            MP3,
-            WAV,
-        }
+        /** A builder for [InputAudio]. */
+        class Builder internal constructor() {
 
-        /**
-         * An enum containing [Format]'s known values, as well as an [_UNKNOWN] member.
-         *
-         * An instance of [Format] can contain an unknown value in a couple of cases:
-         * - It was deserialized from data that doesn't match any known member. For example, if the
-         *   SDK is on an older version than the API, then the API may respond with new members that
-         *   the SDK is unaware of.
-         * - It was constructed with an arbitrary value using the [of] method.
-         */
-        enum class Value {
-            MP3,
-            WAV,
-            /** An enum member indicating that [Format] was instantiated with an unknown value. */
-            _UNKNOWN,
-        }
+            private var data: JsonField<String>? = null
+            private var format: JsonField<Format>? = null
+            private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
-        /**
-         * Returns an enum member corresponding to this class instance's value, or [Value._UNKNOWN]
-         * if the class was instantiated with an unknown value.
-         *
-         * Use the [known] method instead if you're certain the value is always known or if you want
-         * to throw for the unknown case.
-         */
-        fun value(): Value =
-            when (this) {
-                MP3 -> Value.MP3
-                WAV -> Value.WAV
-                else -> Value._UNKNOWN
+            @JvmSynthetic
+            internal fun from(inputAudio: InputAudio) = apply {
+                data = inputAudio.data
+                format = inputAudio.format
+                additionalProperties = inputAudio.additionalProperties.toMutableMap()
             }
 
-        /**
-         * Returns an enum member corresponding to this class instance's value.
-         *
-         * Use the [value] method instead if you're uncertain the value is always known and don't
-         * want to throw for the unknown case.
-         *
-         * @throws OpenAIInvalidDataException if this class instance's value is a not a known
-         *   member.
-         */
-        fun known(): Known =
-            when (this) {
-                MP3 -> Known.MP3
-                WAV -> Known.WAV
-                else -> throw OpenAIInvalidDataException("Unknown Format: $value")
+            /** Base64-encoded audio data. */
+            fun data(data: String) = data(JsonField.of(data))
+
+            /**
+             * Sets [Builder.data] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.data] with a well-typed [String] value instead. This
+             * method is primarily for setting the field to an undocumented or not yet supported
+             * value.
+             */
+            fun data(data: JsonField<String>) = apply { this.data = data }
+
+            /** The format of the audio data. Currently supported formats are `mp3` and `wav`. */
+            fun format(format: Format) = format(JsonField.of(format))
+
+            /**
+             * Sets [Builder.format] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.format] with a well-typed [Format] value instead.
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun format(format: JsonField<Format>) = apply { this.format = format }
+
+            fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                this.additionalProperties.clear()
+                putAllAdditionalProperties(additionalProperties)
             }
 
-        /**
-         * Returns this class instance's primitive wire representation.
-         *
-         * This differs from the [toString] method because that method is primarily for debugging
-         * and generally doesn't throw.
-         *
-         * @throws OpenAIInvalidDataException if this class instance's value does not have the
-         *   expected primitive type.
-         */
-        fun asString(): String =
-            _value().asString().orElseThrow { OpenAIInvalidDataException("Value is not a String") }
+            fun putAdditionalProperty(key: String, value: JsonValue) = apply {
+                additionalProperties.put(key, value)
+            }
+
+            fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                this.additionalProperties.putAll(additionalProperties)
+            }
+
+            fun removeAdditionalProperty(key: String) = apply { additionalProperties.remove(key) }
+
+            fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                keys.forEach(::removeAdditionalProperty)
+            }
+
+            /**
+             * Returns an immutable instance of [InputAudio].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             *
+             * The following fields are required:
+             * ```java
+             * .data()
+             * .format()
+             * ```
+             *
+             * @throws IllegalStateException if any required field is unset.
+             */
+            fun build(): InputAudio =
+                InputAudio(
+                    checkRequired("data", data),
+                    checkRequired("format", format),
+                    additionalProperties.toMutableMap(),
+                )
+        }
 
         private var validated: Boolean = false
 
-        fun validate(): Format = apply {
+        fun validate(): InputAudio = apply {
             if (validated) {
                 return@apply
             }
 
-            known()
+            data()
+            format().validate()
             validated = true
         }
 
@@ -342,19 +371,158 @@ private constructor(
          *
          * Used for best match union deserialization.
          */
-        @JvmSynthetic internal fun validity(): Int = if (value() == Value._UNKNOWN) 0 else 1
+        @JvmSynthetic
+        internal fun validity(): Int =
+            (if (data.asKnown().isPresent) 1 else 0) +
+                (format.asKnown().getOrNull()?.validity() ?: 0)
+
+        /** The format of the audio data. Currently supported formats are `mp3` and `wav`. */
+        class Format @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
+
+            /**
+             * Returns this class instance's raw value.
+             *
+             * This is usually only useful if this instance was deserialized from data that doesn't
+             * match any known member, and you want to know that value. For example, if the SDK is
+             * on an older version than the API, then the API may respond with new members that the
+             * SDK is unaware of.
+             */
+            @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
+
+            companion object {
+
+                @JvmField val MP3 = of("mp3")
+
+                @JvmField val WAV = of("wav")
+
+                @JvmStatic fun of(value: String) = Format(JsonField.of(value))
+            }
+
+            /** An enum containing [Format]'s known values. */
+            enum class Known {
+                MP3,
+                WAV,
+            }
+
+            /**
+             * An enum containing [Format]'s known values, as well as an [_UNKNOWN] member.
+             *
+             * An instance of [Format] can contain an unknown value in a couple of cases:
+             * - It was deserialized from data that doesn't match any known member. For example, if
+             *   the SDK is on an older version than the API, then the API may respond with new
+             *   members that the SDK is unaware of.
+             * - It was constructed with an arbitrary value using the [of] method.
+             */
+            enum class Value {
+                MP3,
+                WAV,
+                /**
+                 * An enum member indicating that [Format] was instantiated with an unknown value.
+                 */
+                _UNKNOWN,
+            }
+
+            /**
+             * Returns an enum member corresponding to this class instance's value, or
+             * [Value._UNKNOWN] if the class was instantiated with an unknown value.
+             *
+             * Use the [known] method instead if you're certain the value is always known or if you
+             * want to throw for the unknown case.
+             */
+            fun value(): Value =
+                when (this) {
+                    MP3 -> Value.MP3
+                    WAV -> Value.WAV
+                    else -> Value._UNKNOWN
+                }
+
+            /**
+             * Returns an enum member corresponding to this class instance's value.
+             *
+             * Use the [value] method instead if you're uncertain the value is always known and
+             * don't want to throw for the unknown case.
+             *
+             * @throws OpenAIInvalidDataException if this class instance's value is a not a known
+             *   member.
+             */
+            fun known(): Known =
+                when (this) {
+                    MP3 -> Known.MP3
+                    WAV -> Known.WAV
+                    else -> throw OpenAIInvalidDataException("Unknown Format: $value")
+                }
+
+            /**
+             * Returns this class instance's primitive wire representation.
+             *
+             * This differs from the [toString] method because that method is primarily for
+             * debugging and generally doesn't throw.
+             *
+             * @throws OpenAIInvalidDataException if this class instance's value does not have the
+             *   expected primitive type.
+             */
+            fun asString(): String =
+                _value().asString().orElseThrow {
+                    OpenAIInvalidDataException("Value is not a String")
+                }
+
+            private var validated: Boolean = false
+
+            fun validate(): Format = apply {
+                if (validated) {
+                    return@apply
+                }
+
+                known()
+                validated = true
+            }
+
+            fun isValid(): Boolean =
+                try {
+                    validate()
+                    true
+                } catch (e: OpenAIInvalidDataException) {
+                    false
+                }
+
+            /**
+             * Returns a score indicating how many valid values are contained in this object
+             * recursively.
+             *
+             * Used for best match union deserialization.
+             */
+            @JvmSynthetic internal fun validity(): Int = if (value() == Value._UNKNOWN) 0 else 1
+
+            override fun equals(other: Any?): Boolean {
+                if (this === other) {
+                    return true
+                }
+
+                return other is Format && value == other.value
+            }
+
+            override fun hashCode() = value.hashCode()
+
+            override fun toString() = value.toString()
+        }
 
         override fun equals(other: Any?): Boolean {
             if (this === other) {
                 return true
             }
 
-            return other is Format && value == other.value
+            return other is InputAudio &&
+                data == other.data &&
+                format == other.format &&
+                additionalProperties == other.additionalProperties
         }
 
-        override fun hashCode() = value.hashCode()
+        private val hashCode: Int by lazy { Objects.hash(data, format, additionalProperties) }
 
-        override fun toString() = value.toString()
+        override fun hashCode(): Int = hashCode
+
+        override fun toString() =
+            "InputAudio{data=$data, format=$format, additionalProperties=$additionalProperties}"
     }
 
     override fun equals(other: Any?): Boolean {
@@ -363,16 +531,15 @@ private constructor(
         }
 
         return other is ResponseInputAudio &&
-            data == other.data &&
-            format == other.format &&
+            inputAudio == other.inputAudio &&
             type == other.type &&
             additionalProperties == other.additionalProperties
     }
 
-    private val hashCode: Int by lazy { Objects.hash(data, format, type, additionalProperties) }
+    private val hashCode: Int by lazy { Objects.hash(inputAudio, type, additionalProperties) }
 
     override fun hashCode(): Int = hashCode
 
     override fun toString() =
-        "ResponseInputAudio{data=$data, format=$format, type=$type, additionalProperties=$additionalProperties}"
+        "ResponseInputAudio{inputAudio=$inputAudio, type=$type, additionalProperties=$additionalProperties}"
 }

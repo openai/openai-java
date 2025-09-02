@@ -26,6 +26,7 @@ private constructor(
     private val inputText: ResponseInputText? = null,
     private val inputImage: ResponseInputImage? = null,
     private val inputFile: ResponseInputFile? = null,
+    private val inputAudio: ResponseInputAudio? = null,
     private val _json: JsonValue? = null,
 ) {
 
@@ -41,11 +42,16 @@ private constructor(
     /** A file input to the model. */
     fun inputFile(): Optional<ResponseInputFile> = Optional.ofNullable(inputFile)
 
+    /** An audio input to the model. */
+    fun inputAudio(): Optional<ResponseInputAudio> = Optional.ofNullable(inputAudio)
+
     fun isInputText(): Boolean = inputText != null
 
     fun isInputImage(): Boolean = inputImage != null
 
     fun isInputFile(): Boolean = inputFile != null
+
+    fun isInputAudio(): Boolean = inputAudio != null
 
     /** A text input to the model. */
     fun asInputText(): ResponseInputText = inputText.getOrThrow("inputText")
@@ -59,6 +65,9 @@ private constructor(
     /** A file input to the model. */
     fun asInputFile(): ResponseInputFile = inputFile.getOrThrow("inputFile")
 
+    /** An audio input to the model. */
+    fun asInputAudio(): ResponseInputAudio = inputAudio.getOrThrow("inputAudio")
+
     fun _json(): Optional<JsonValue> = Optional.ofNullable(_json)
 
     fun <T> accept(visitor: Visitor<T>): T =
@@ -66,6 +75,7 @@ private constructor(
             inputText != null -> visitor.visitInputText(inputText)
             inputImage != null -> visitor.visitInputImage(inputImage)
             inputFile != null -> visitor.visitInputFile(inputFile)
+            inputAudio != null -> visitor.visitInputAudio(inputAudio)
             else -> visitor.unknown(_json)
         }
 
@@ -88,6 +98,10 @@ private constructor(
 
                 override fun visitInputFile(inputFile: ResponseInputFile) {
                     inputFile.validate()
+                }
+
+                override fun visitInputAudio(inputAudio: ResponseInputAudio) {
+                    inputAudio.validate()
                 }
             }
         )
@@ -117,6 +131,8 @@ private constructor(
 
                 override fun visitInputFile(inputFile: ResponseInputFile) = inputFile.validity()
 
+                override fun visitInputAudio(inputAudio: ResponseInputAudio) = inputAudio.validity()
+
                 override fun unknown(json: JsonValue?) = 0
             }
         )
@@ -129,16 +145,18 @@ private constructor(
         return other is ResponseInputContent &&
             inputText == other.inputText &&
             inputImage == other.inputImage &&
-            inputFile == other.inputFile
+            inputFile == other.inputFile &&
+            inputAudio == other.inputAudio
     }
 
-    override fun hashCode(): Int = Objects.hash(inputText, inputImage, inputFile)
+    override fun hashCode(): Int = Objects.hash(inputText, inputImage, inputFile, inputAudio)
 
     override fun toString(): String =
         when {
             inputText != null -> "ResponseInputContent{inputText=$inputText}"
             inputImage != null -> "ResponseInputContent{inputImage=$inputImage}"
             inputFile != null -> "ResponseInputContent{inputFile=$inputFile}"
+            inputAudio != null -> "ResponseInputContent{inputAudio=$inputAudio}"
             _json != null -> "ResponseInputContent{_unknown=$_json}"
             else -> throw IllegalStateException("Invalid ResponseInputContent")
         }
@@ -160,6 +178,11 @@ private constructor(
         /** A file input to the model. */
         @JvmStatic
         fun ofInputFile(inputFile: ResponseInputFile) = ResponseInputContent(inputFile = inputFile)
+
+        /** An audio input to the model. */
+        @JvmStatic
+        fun ofInputAudio(inputAudio: ResponseInputAudio) =
+            ResponseInputContent(inputAudio = inputAudio)
     }
 
     /**
@@ -179,6 +202,9 @@ private constructor(
 
         /** A file input to the model. */
         fun visitInputFile(inputFile: ResponseInputFile): T
+
+        /** An audio input to the model. */
+        fun visitInputAudio(inputAudio: ResponseInputAudio): T
 
         /**
          * Maps an unknown variant of [ResponseInputContent] to a value of type [T].
@@ -218,6 +244,11 @@ private constructor(
                         ResponseInputContent(inputFile = it, _json = json)
                     } ?: ResponseInputContent(_json = json)
                 }
+                "input_audio" -> {
+                    return tryDeserialize(node, jacksonTypeRef<ResponseInputAudio>())?.let {
+                        ResponseInputContent(inputAudio = it, _json = json)
+                    } ?: ResponseInputContent(_json = json)
+                }
             }
 
             return ResponseInputContent(_json = json)
@@ -235,6 +266,7 @@ private constructor(
                 value.inputText != null -> generator.writeObject(value.inputText)
                 value.inputImage != null -> generator.writeObject(value.inputImage)
                 value.inputFile != null -> generator.writeObject(value.inputFile)
+                value.inputAudio != null -> generator.writeObject(value.inputAudio)
                 value._json != null -> generator.writeObject(value._json)
                 else -> throw IllegalStateException("Invalid ResponseInputContent")
             }

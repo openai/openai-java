@@ -12,17 +12,36 @@ internal class ResponseInputAudioTest {
     @Test
     fun create() {
         val responseInputAudio =
-            ResponseInputAudio.builder().data("data").format(ResponseInputAudio.Format.MP3).build()
+            ResponseInputAudio.builder()
+                .inputAudio(
+                    ResponseInputAudio.InputAudio.builder()
+                        .data("data")
+                        .format(ResponseInputAudio.InputAudio.Format.MP3)
+                        .build()
+                )
+                .build()
 
-        assertThat(responseInputAudio.data()).isEqualTo("data")
-        assertThat(responseInputAudio.format()).isEqualTo(ResponseInputAudio.Format.MP3)
+        assertThat(responseInputAudio.inputAudio())
+            .isEqualTo(
+                ResponseInputAudio.InputAudio.builder()
+                    .data("data")
+                    .format(ResponseInputAudio.InputAudio.Format.MP3)
+                    .build()
+            )
     }
 
     @Test
     fun roundtrip() {
         val jsonMapper = jsonMapper()
         val responseInputAudio =
-            ResponseInputAudio.builder().data("data").format(ResponseInputAudio.Format.MP3).build()
+            ResponseInputAudio.builder()
+                .inputAudio(
+                    ResponseInputAudio.InputAudio.builder()
+                        .data("data")
+                        .format(ResponseInputAudio.InputAudio.Format.MP3)
+                        .build()
+                )
+                .build()
 
         val roundtrippedResponseInputAudio =
             jsonMapper.readValue(

@@ -301,7 +301,7 @@ private constructor(
      *   [file search](https://platform.openai.com/docs/guides/tools-file-search). Learn more about
      *   [built-in tools](https://platform.openai.com/docs/guides/tools).
      * - **MCP Tools**: Integrations with third-party systems via custom MCP servers or predefined
-     *   connectors such as Google Drive and Notion. Learn more about
+     *   connectors such as Google Drive and SharePoint. Learn more about
      *   [MCP Tools](https://platform.openai.com/docs/guides/tools-connectors-mcp).
      * - **Function calls (custom tools)**: Functions that are defined by you, enabling the model to
      *   call your own code with strongly typed arguments and outputs. Learn more about
@@ -1134,7 +1134,7 @@ private constructor(
          *   [file search](https://platform.openai.com/docs/guides/tools-file-search). Learn more
          *   about [built-in tools](https://platform.openai.com/docs/guides/tools).
          * - **MCP Tools**: Integrations with third-party systems via custom MCP servers or
-         *   predefined connectors such as Google Drive and Notion. Learn more about
+         *   predefined connectors such as Google Drive and SharePoint. Learn more about
          *   [MCP Tools](https://platform.openai.com/docs/guides/tools-connectors-mcp).
          * - **Function calls (custom tools)**: Functions that are defined by you, enabling the
          *   model to call your own code with strongly typed arguments and outputs. Learn more about
@@ -1859,7 +1859,7 @@ private constructor(
          *   [file search](https://platform.openai.com/docs/guides/tools-file-search). Learn more
          *   about [built-in tools](https://platform.openai.com/docs/guides/tools).
          * - **MCP Tools**: Integrations with third-party systems via custom MCP servers or
-         *   predefined connectors such as Google Drive and Notion. Learn more about
+         *   predefined connectors such as Google Drive and SharePoint. Learn more about
          *   [MCP Tools](https://platform.openai.com/docs/guides/tools-connectors-mcp).
          * - **Function calls (custom tools)**: Functions that are defined by you, enabling the
          *   model to call your own code with strongly typed arguments and outputs. Learn more about
@@ -2790,7 +2790,7 @@ private constructor(
              *   [file search](https://platform.openai.com/docs/guides/tools-file-search). Learn
              *   more about [built-in tools](https://platform.openai.com/docs/guides/tools).
              * - **MCP Tools**: Integrations with third-party systems via custom MCP servers or
-             *   predefined connectors such as Google Drive and Notion. Learn more about
+             *   predefined connectors such as Google Drive and SharePoint. Learn more about
              *   [MCP Tools](https://platform.openai.com/docs/guides/tools-connectors-mcp).
              * - **Function calls (custom tools)**: Functions that are defined by you, enabling the
              *   model to call your own code with strongly typed arguments and outputs. Learn more

@@ -38,6 +38,7 @@ import com.openai.models.responses.FileSearchTool
 import com.openai.models.responses.FunctionTool
 import com.openai.models.responses.ResponseFormatTextConfig
 import com.openai.models.responses.ResponseFormatTextJsonSchemaConfig
+import com.openai.models.responses.ResponseInputAudio
 import com.openai.models.responses.ResponseInputText
 import com.openai.models.responses.Tool
 import com.openai.models.responses.WebSearchPreviewTool
@@ -4226,14 +4227,21 @@ private constructor(
 
                                 /**
                                  * Alias for calling [content] with
-                                 * `Content.ofAnArrayOfInputTextAndInputImage(anArrayOfInputTextAndInputImage)`.
+                                 * `Content.ofResponseInputAudio(responseInputAudio)`.
                                  */
-                                fun contentOfAnArrayOfInputTextAndInputImage(
-                                    anArrayOfInputTextAndInputImage: List<JsonValue>
+                                fun content(responseInputAudio: ResponseInputAudio) =
+                                    content(Content.ofResponseInputAudio(responseInputAudio))
+
+                                /**
+                                 * Alias for calling [content] with
+                                 * `Content.ofAnArrayOfInputTextInputImageAndInputAudio(anArrayOfInputTextInputImageAndInputAudio)`.
+                                 */
+                                fun contentOfAnArrayOfInputTextInputImageAndInputAudio(
+                                    anArrayOfInputTextInputImageAndInputAudio: List<JsonValue>
                                 ) =
                                     content(
-                                        Content.ofAnArrayOfInputTextAndInputImage(
-                                            anArrayOfInputTextAndInputImage
+                                        Content.ofAnArrayOfInputTextInputImageAndInputAudio(
+                                            anArrayOfInputTextInputImageAndInputAudio
                                         )
                                     )
 
@@ -4352,7 +4360,9 @@ private constructor(
                                 private val responseInputText: ResponseInputText? = null,
                                 private val outputText: OutputText? = null,
                                 private val inputImage: InputImage? = null,
-                                private val anArrayOfInputTextAndInputImage: List<JsonValue>? =
+                                private val responseInputAudio: ResponseInputAudio? = null,
+                                private val anArrayOfInputTextInputImageAndInputAudio:
+                                    List<JsonValue>? =
                                     null,
                                 private val _json: JsonValue? = null,
                             ) {
@@ -4372,12 +4382,17 @@ private constructor(
                                 fun inputImage(): Optional<InputImage> =
                                     Optional.ofNullable(inputImage)
 
+                                /** An audio input to the model. */
+                                fun responseInputAudio(): Optional<ResponseInputAudio> =
+                                    Optional.ofNullable(responseInputAudio)
+
                                 /**
-                                 * A list of inputs, each of which may be either an input text or
-                                 * input image object.
+                                 * A list of inputs, each of which may be either an input text,
+                                 * input image, or input audio object.
                                  */
-                                fun anArrayOfInputTextAndInputImage(): Optional<List<JsonValue>> =
-                                    Optional.ofNullable(anArrayOfInputTextAndInputImage)
+                                fun anArrayOfInputTextInputImageAndInputAudio():
+                                    Optional<List<JsonValue>> =
+                                    Optional.ofNullable(anArrayOfInputTextInputImageAndInputAudio)
 
                                 fun isTextInput(): Boolean = textInput != null
 
@@ -4387,8 +4402,10 @@ private constructor(
 
                                 fun isInputImage(): Boolean = inputImage != null
 
-                                fun isAnArrayOfInputTextAndInputImage(): Boolean =
-                                    anArrayOfInputTextAndInputImage != null
+                                fun isResponseInputAudio(): Boolean = responseInputAudio != null
+
+                                fun isAnArrayOfInputTextInputImageAndInputAudio(): Boolean =
+                                    anArrayOfInputTextInputImageAndInputAudio != null
 
                                 /** A text input to the model. */
                                 fun asTextInput(): String = textInput.getOrThrow("textInput")
@@ -4403,13 +4420,17 @@ private constructor(
                                 /** An image input to the model. */
                                 fun asInputImage(): InputImage = inputImage.getOrThrow("inputImage")
 
+                                /** An audio input to the model. */
+                                fun asResponseInputAudio(): ResponseInputAudio =
+                                    responseInputAudio.getOrThrow("responseInputAudio")
+
                                 /**
-                                 * A list of inputs, each of which may be either an input text or
-                                 * input image object.
+                                 * A list of inputs, each of which may be either an input text,
+                                 * input image, or input audio object.
                                  */
-                                fun asAnArrayOfInputTextAndInputImage(): List<JsonValue> =
-                                    anArrayOfInputTextAndInputImage.getOrThrow(
-                                        "anArrayOfInputTextAndInputImage"
+                                fun asAnArrayOfInputTextInputImageAndInputAudio(): List<JsonValue> =
+                                    anArrayOfInputTextInputImageAndInputAudio.getOrThrow(
+                                        "anArrayOfInputTextInputImageAndInputAudio"
                                     )
 
                                 fun _json(): Optional<JsonValue> = Optional.ofNullable(_json)
@@ -4421,9 +4442,11 @@ private constructor(
                                             visitor.visitResponseInputText(responseInputText)
                                         outputText != null -> visitor.visitOutputText(outputText)
                                         inputImage != null -> visitor.visitInputImage(inputImage)
-                                        anArrayOfInputTextAndInputImage != null ->
-                                            visitor.visitAnArrayOfInputTextAndInputImage(
-                                                anArrayOfInputTextAndInputImage
+                                        responseInputAudio != null ->
+                                            visitor.visitResponseInputAudio(responseInputAudio)
+                                        anArrayOfInputTextInputImageAndInputAudio != null ->
+                                            visitor.visitAnArrayOfInputTextInputImageAndInputAudio(
+                                                anArrayOfInputTextInputImageAndInputAudio
                                             )
                                         else -> visitor.unknown(_json)
                                     }
@@ -4453,8 +4476,15 @@ private constructor(
                                                 inputImage.validate()
                                             }
 
-                                            override fun visitAnArrayOfInputTextAndInputImage(
-                                                anArrayOfInputTextAndInputImage: List<JsonValue>
+                                            override fun visitResponseInputAudio(
+                                                responseInputAudio: ResponseInputAudio
+                                            ) {
+                                                responseInputAudio.validate()
+                                            }
+
+                                            override fun visitAnArrayOfInputTextInputImageAndInputAudio(
+                                                anArrayOfInputTextInputImageAndInputAudio:
+                                                    List<JsonValue>
                                             ) {}
                                         }
                                     )
@@ -4491,9 +4521,14 @@ private constructor(
                                             override fun visitInputImage(inputImage: InputImage) =
                                                 inputImage.validity()
 
-                                            override fun visitAnArrayOfInputTextAndInputImage(
-                                                anArrayOfInputTextAndInputImage: List<JsonValue>
-                                            ) = anArrayOfInputTextAndInputImage.size
+                                            override fun visitResponseInputAudio(
+                                                responseInputAudio: ResponseInputAudio
+                                            ) = responseInputAudio.validity()
+
+                                            override fun visitAnArrayOfInputTextInputImageAndInputAudio(
+                                                anArrayOfInputTextInputImageAndInputAudio:
+                                                    List<JsonValue>
+                                            ) = anArrayOfInputTextInputImageAndInputAudio.size
 
                                             override fun unknown(json: JsonValue?) = 0
                                         }
@@ -4509,8 +4544,9 @@ private constructor(
                                         responseInputText == other.responseInputText &&
                                         outputText == other.outputText &&
                                         inputImage == other.inputImage &&
-                                        anArrayOfInputTextAndInputImage ==
-                                            other.anArrayOfInputTextAndInputImage
+                                        responseInputAudio == other.responseInputAudio &&
+                                        anArrayOfInputTextInputImageAndInputAudio ==
+                                            other.anArrayOfInputTextInputImageAndInputAudio
                                 }
 
                                 override fun hashCode(): Int =
@@ -4519,7 +4555,8 @@ private constructor(
                                         responseInputText,
                                         outputText,
                                         inputImage,
-                                        anArrayOfInputTextAndInputImage,
+                                        responseInputAudio,
+                                        anArrayOfInputTextInputImageAndInputAudio,
                                     )
 
                                 override fun toString(): String =
@@ -4529,8 +4566,10 @@ private constructor(
                                             "Content{responseInputText=$responseInputText}"
                                         outputText != null -> "Content{outputText=$outputText}"
                                         inputImage != null -> "Content{inputImage=$inputImage}"
-                                        anArrayOfInputTextAndInputImage != null ->
-                                            "Content{anArrayOfInputTextAndInputImage=$anArrayOfInputTextAndInputImage}"
+                                        responseInputAudio != null ->
+                                            "Content{responseInputAudio=$responseInputAudio}"
+                                        anArrayOfInputTextInputImageAndInputAudio != null ->
+                                            "Content{anArrayOfInputTextInputImageAndInputAudio=$anArrayOfInputTextInputImageAndInputAudio}"
                                         _json != null -> "Content{_unknown=$_json}"
                                         else -> throw IllegalStateException("Invalid Content")
                                     }
@@ -4557,17 +4596,24 @@ private constructor(
                                     fun ofInputImage(inputImage: InputImage) =
                                         Content(inputImage = inputImage)
 
+                                    /** An audio input to the model. */
+                                    @JvmStatic
+                                    fun ofResponseInputAudio(
+                                        responseInputAudio: ResponseInputAudio
+                                    ) = Content(responseInputAudio = responseInputAudio)
+
                                     /**
-                                     * A list of inputs, each of which may be either an input text
-                                     * or input image object.
+                                     * A list of inputs, each of which may be either an input text,
+                                     * input image, or input audio object.
                                      */
                                     @JvmStatic
-                                    fun ofAnArrayOfInputTextAndInputImage(
-                                        anArrayOfInputTextAndInputImage: List<JsonValue>
+                                    fun ofAnArrayOfInputTextInputImageAndInputAudio(
+                                        anArrayOfInputTextInputImageAndInputAudio: List<JsonValue>
                                     ) =
                                         Content(
-                                            anArrayOfInputTextAndInputImage =
-                                                anArrayOfInputTextAndInputImage.toImmutable()
+                                            anArrayOfInputTextInputImageAndInputAudio =
+                                                anArrayOfInputTextInputImageAndInputAudio
+                                                    .toImmutable()
                                         )
                                 }
 
@@ -4591,12 +4637,17 @@ private constructor(
                                     /** An image input to the model. */
                                     fun visitInputImage(inputImage: InputImage): T
 
+                                    /** An audio input to the model. */
+                                    fun visitResponseInputAudio(
+                                        responseInputAudio: ResponseInputAudio
+                                    ): T
+
                                     /**
-                                     * A list of inputs, each of which may be either an input text
-                                     * or input image object.
+                                     * A list of inputs, each of which may be either an input text,
+                                     * input image, or input audio object.
                                      */
-                                    fun visitAnArrayOfInputTextAndInputImage(
-                                        anArrayOfInputTextAndInputImage: List<JsonValue>
+                                    fun visitAnArrayOfInputTextInputImageAndInputAudio(
+                                        anArrayOfInputTextInputImageAndInputAudio: List<JsonValue>
                                     ): T
 
                                     /**
@@ -4648,6 +4699,16 @@ private constructor(
                                                         ?.let {
                                                             Content(inputImage = it, _json = json)
                                                         },
+                                                    tryDeserialize(
+                                                            node,
+                                                            jacksonTypeRef<ResponseInputAudio>(),
+                                                        )
+                                                        ?.let {
+                                                            Content(
+                                                                responseInputAudio = it,
+                                                                _json = json,
+                                                            )
+                                                        },
                                                     tryDeserialize(node, jacksonTypeRef<String>())
                                                         ?.let {
                                                             Content(textInput = it, _json = json)
@@ -4658,7 +4719,7 @@ private constructor(
                                                         )
                                                         ?.let {
                                                             Content(
-                                                                anArrayOfInputTextAndInputImage =
+                                                                anArrayOfInputTextInputImageAndInputAudio =
                                                                     it,
                                                                 _json = json,
                                                             )
@@ -4701,9 +4762,12 @@ private constructor(
                                                 generator.writeObject(value.outputText)
                                             value.inputImage != null ->
                                                 generator.writeObject(value.inputImage)
-                                            value.anArrayOfInputTextAndInputImage != null ->
+                                            value.responseInputAudio != null ->
+                                                generator.writeObject(value.responseInputAudio)
+                                            value.anArrayOfInputTextInputImageAndInputAudio !=
+                                                null ->
                                                 generator.writeObject(
-                                                    value.anArrayOfInputTextAndInputImage
+                                                    value.anArrayOfInputTextInputImageAndInputAudio
                                                 )
                                             value._json != null ->
                                                 generator.writeObject(value._json)
