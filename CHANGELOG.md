@@ -1,5 +1,13 @@
 # Changelog
 
+## 3.2.1 (2025-09-02)
+
+Full Changelog: [v3.2.0...v3.2.1](https://github.com/openai/openai-java/compare/v3.2.0...v3.2.1)
+
+### Chores
+
+* **api:** manual updates for ResponseInputAudio ([d070eb7](https://github.com/openai/openai-java/commit/d070eb72346cfc57d3bf952ddb1f89c9a7b2d5c8))
+
 ## 3.2.0 (2025-09-02)
 
 Full Changelog: [v3.1.2...v3.2.0](https://github.com/openai/openai-java/compare/v3.1.2...v3.2.0)
