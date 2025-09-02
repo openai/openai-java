@@ -1,0 +1,613 @@
+// File generated from our OpenAPI spec by Stainless.
+
+package com.openai.models.realtime
+
+import com.fasterxml.jackson.annotation.JsonAnyGetter
+import com.fasterxml.jackson.annotation.JsonAnySetter
+import com.fasterxml.jackson.annotation.JsonCreator
+import com.fasterxml.jackson.annotation.JsonProperty
+import com.openai.core.Enum
+import com.openai.core.ExcludeMissing
+import com.openai.core.JsonField
+import com.openai.core.JsonMissing
+import com.openai.core.JsonValue
+import com.openai.core.checkRequired
+import com.openai.errors.OpenAIInvalidDataException
+import java.util.Collections
+import java.util.Objects
+import java.util.Optional
+import kotlin.jvm.optionals.getOrNull
+
+/** A function call output item in a Realtime conversation. */
+class RealtimeConversationItemFunctionCallOutput
+private constructor(
+    private val callId: JsonField<String>,
+    private val output: JsonField<String>,
+    private val type: JsonValue,
+    private val id: JsonField<String>,
+    private val object_: JsonField<Object>,
+    private val status: JsonField<Status>,
+    private val additionalProperties: MutableMap<String, JsonValue>,
+) {
+
+    @JsonCreator
+    private constructor(
+        @JsonProperty("call_id") @ExcludeMissing callId: JsonField<String> = JsonMissing.of(),
+        @JsonProperty("output") @ExcludeMissing output: JsonField<String> = JsonMissing.of(),
+        @JsonProperty("type") @ExcludeMissing type: JsonValue = JsonMissing.of(),
+        @JsonProperty("id") @ExcludeMissing id: JsonField<String> = JsonMissing.of(),
+        @JsonProperty("object") @ExcludeMissing object_: JsonField<Object> = JsonMissing.of(),
+        @JsonProperty("status") @ExcludeMissing status: JsonField<Status> = JsonMissing.of(),
+    ) : this(callId, output, type, id, object_, status, mutableMapOf())
+
+    /**
+     * The ID of the function call this output is for.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     */
+    fun callId(): String = callId.getRequired("call_id")
+
+    /**
+     * The output of the function call.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     */
+    fun output(): String = output.getRequired("output")
+
+    /**
+     * The type of the item. Always `function_call_output`.
+     *
+     * Expected to always return the following:
+     * ```java
+     * JsonValue.from("function_call_output")
+     * ```
+     *
+     * However, this method can be useful for debugging and logging (e.g. if the server responded
+     * with an unexpected value).
+     */
+    @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
+
+    /**
+     * The unique ID of the item.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun id(): Optional<String> = id.getOptional("id")
+
+    /**
+     * Identifier for the API object being returned - always `realtime.item`.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun object_(): Optional<Object> = object_.getOptional("object")
+
+    /**
+     * The status of the item. Has no effect on the conversation.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun status(): Optional<Status> = status.getOptional("status")
+
+    /**
+     * Returns the raw JSON value of [callId].
+     *
+     * Unlike [callId], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    @JsonProperty("call_id") @ExcludeMissing fun _callId(): JsonField<String> = callId
+
+    /**
+     * Returns the raw JSON value of [output].
+     *
+     * Unlike [output], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    @JsonProperty("output") @ExcludeMissing fun _output(): JsonField<String> = output
+
+    /**
+     * Returns the raw JSON value of [id].
+     *
+     * Unlike [id], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    @JsonProperty("id") @ExcludeMissing fun _id(): JsonField<String> = id
+
+    /**
+     * Returns the raw JSON value of [object_].
+     *
+     * Unlike [object_], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    @JsonProperty("object") @ExcludeMissing fun _object_(): JsonField<Object> = object_
+
+    /**
+     * Returns the raw JSON value of [status].
+     *
+     * Unlike [status], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    @JsonProperty("status") @ExcludeMissing fun _status(): JsonField<Status> = status
+
+    @JsonAnySetter
+    private fun putAdditionalProperty(key: String, value: JsonValue) {
+        additionalProperties.put(key, value)
+    }
+
+    @JsonAnyGetter
+    @ExcludeMissing
+    fun _additionalProperties(): Map<String, JsonValue> =
+        Collections.unmodifiableMap(additionalProperties)
+
+    fun toBuilder() = Builder().from(this)
+
+    companion object {
+
+        /**
+         * Returns a mutable builder for constructing an instance of
+         * [RealtimeConversationItemFunctionCallOutput].
+         *
+         * The following fields are required:
+         * ```java
+         * .callId()
+         * .output()
+         * ```
+         */
+        @JvmStatic fun builder() = Builder()
+    }
+
+    /** A builder for [RealtimeConversationItemFunctionCallOutput]. */
+    class Builder internal constructor() {
+
+        private var callId: JsonField<String>? = null
+        private var output: JsonField<String>? = null
+        private var type: JsonValue = JsonValue.from("function_call_output")
+        private var id: JsonField<String> = JsonMissing.of()
+        private var object_: JsonField<Object> = JsonMissing.of()
+        private var status: JsonField<Status> = JsonMissing.of()
+        private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
+
+        @JvmSynthetic
+        internal fun from(
+            realtimeConversationItemFunctionCallOutput: RealtimeConversationItemFunctionCallOutput
+        ) = apply {
+            callId = realtimeConversationItemFunctionCallOutput.callId
+            output = realtimeConversationItemFunctionCallOutput.output
+            type = realtimeConversationItemFunctionCallOutput.type
+            id = realtimeConversationItemFunctionCallOutput.id
+            object_ = realtimeConversationItemFunctionCallOutput.object_
+            status = realtimeConversationItemFunctionCallOutput.status
+            additionalProperties =
+                realtimeConversationItemFunctionCallOutput.additionalProperties.toMutableMap()
+        }
+
+        /** The ID of the function call this output is for. */
+        fun callId(callId: String) = callId(JsonField.of(callId))
+
+        /**
+         * Sets [Builder.callId] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.callId] with a well-typed [String] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
+        fun callId(callId: JsonField<String>) = apply { this.callId = callId }
+
+        /** The output of the function call. */
+        fun output(output: String) = output(JsonField.of(output))
+
+        /**
+         * Sets [Builder.output] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.output] with a well-typed [String] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
+        fun output(output: JsonField<String>) = apply { this.output = output }
+
+        /**
+         * Sets the field to an arbitrary JSON value.
+         *
+         * It is usually unnecessary to call this method because the field defaults to the
+         * following:
+         * ```java
+         * JsonValue.from("function_call_output")
+         * ```
+         *
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
+         */
+        fun type(type: JsonValue) = apply { this.type = type }
+
+        /** The unique ID of the item. */
+        fun id(id: String) = id(JsonField.of(id))
+
+        /**
+         * Sets [Builder.id] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.id] with a well-typed [String] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
+        fun id(id: JsonField<String>) = apply { this.id = id }
+
+        /** Identifier for the API object being returned - always `realtime.item`. */
+        fun object_(object_: Object) = object_(JsonField.of(object_))
+
+        /**
+         * Sets [Builder.object_] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.object_] with a well-typed [Object] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
+        fun object_(object_: JsonField<Object>) = apply { this.object_ = object_ }
+
+        /** The status of the item. Has no effect on the conversation. */
+        fun status(status: Status) = status(JsonField.of(status))
+
+        /**
+         * Sets [Builder.status] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.status] with a well-typed [Status] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
+        fun status(status: JsonField<Status>) = apply { this.status = status }
+
+        fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+            this.additionalProperties.clear()
+            putAllAdditionalProperties(additionalProperties)
+        }
+
+        fun putAdditionalProperty(key: String, value: JsonValue) = apply {
+            additionalProperties.put(key, value)
+        }
+
+        fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+            this.additionalProperties.putAll(additionalProperties)
+        }
+
+        fun removeAdditionalProperty(key: String) = apply { additionalProperties.remove(key) }
+
+        fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+            keys.forEach(::removeAdditionalProperty)
+        }
+
+        /**
+         * Returns an immutable instance of [RealtimeConversationItemFunctionCallOutput].
+         *
+         * Further updates to this [Builder] will not mutate the returned instance.
+         *
+         * The following fields are required:
+         * ```java
+         * .callId()
+         * .output()
+         * ```
+         *
+         * @throws IllegalStateException if any required field is unset.
+         */
+        fun build(): RealtimeConversationItemFunctionCallOutput =
+            RealtimeConversationItemFunctionCallOutput(
+                checkRequired("callId", callId),
+                checkRequired("output", output),
+                type,
+                id,
+                object_,
+                status,
+                additionalProperties.toMutableMap(),
+            )
+    }
+
+    private var validated: Boolean = false
+
+    fun validate(): RealtimeConversationItemFunctionCallOutput = apply {
+        if (validated) {
+            return@apply
+        }
+
+        callId()
+        output()
+        _type().let {
+            if (it != JsonValue.from("function_call_output")) {
+                throw OpenAIInvalidDataException("'type' is invalid, received $it")
+            }
+        }
+        id()
+        object_().ifPresent { it.validate() }
+        status().ifPresent { it.validate() }
+        validated = true
+    }
+
+    fun isValid(): Boolean =
+        try {
+            validate()
+            true
+        } catch (e: OpenAIInvalidDataException) {
+            false
+        }
+
+    /**
+     * Returns a score indicating how many valid values are contained in this object recursively.
+     *
+     * Used for best match union deserialization.
+     */
+    @JvmSynthetic
+    internal fun validity(): Int =
+        (if (callId.asKnown().isPresent) 1 else 0) +
+            (if (output.asKnown().isPresent) 1 else 0) +
+            type.let { if (it == JsonValue.from("function_call_output")) 1 else 0 } +
+            (if (id.asKnown().isPresent) 1 else 0) +
+            (object_.asKnown().getOrNull()?.validity() ?: 0) +
+            (status.asKnown().getOrNull()?.validity() ?: 0)
+
+    /** Identifier for the API object being returned - always `realtime.item`. */
+    class Object @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
+
+        /**
+         * Returns this class instance's raw value.
+         *
+         * This is usually only useful if this instance was deserialized from data that doesn't
+         * match any known member, and you want to know that value. For example, if the SDK is on an
+         * older version than the API, then the API may respond with new members that the SDK is
+         * unaware of.
+         */
+        @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
+
+        companion object {
+
+            @JvmField val REALTIME_ITEM = of("realtime.item")
+
+            @JvmStatic fun of(value: String) = Object(JsonField.of(value))
+        }
+
+        /** An enum containing [Object]'s known values. */
+        enum class Known {
+            REALTIME_ITEM
+        }
+
+        /**
+         * An enum containing [Object]'s known values, as well as an [_UNKNOWN] member.
+         *
+         * An instance of [Object] can contain an unknown value in a couple of cases:
+         * - It was deserialized from data that doesn't match any known member. For example, if the
+         *   SDK is on an older version than the API, then the API may respond with new members that
+         *   the SDK is unaware of.
+         * - It was constructed with an arbitrary value using the [of] method.
+         */
+        enum class Value {
+            REALTIME_ITEM,
+            /** An enum member indicating that [Object] was instantiated with an unknown value. */
+            _UNKNOWN,
+        }
+
+        /**
+         * Returns an enum member corresponding to this class instance's value, or [Value._UNKNOWN]
+         * if the class was instantiated with an unknown value.
+         *
+         * Use the [known] method instead if you're certain the value is always known or if you want
+         * to throw for the unknown case.
+         */
+        fun value(): Value =
+            when (this) {
+                REALTIME_ITEM -> Value.REALTIME_ITEM
+                else -> Value._UNKNOWN
+            }
+
+        /**
+         * Returns an enum member corresponding to this class instance's value.
+         *
+         * Use the [value] method instead if you're uncertain the value is always known and don't
+         * want to throw for the unknown case.
+         *
+         * @throws OpenAIInvalidDataException if this class instance's value is a not a known
+         *   member.
+         */
+        fun known(): Known =
+            when (this) {
+                REALTIME_ITEM -> Known.REALTIME_ITEM
+                else -> throw OpenAIInvalidDataException("Unknown Object: $value")
+            }
+
+        /**
+         * Returns this class instance's primitive wire representation.
+         *
+         * This differs from the [toString] method because that method is primarily for debugging
+         * and generally doesn't throw.
+         *
+         * @throws OpenAIInvalidDataException if this class instance's value does not have the
+         *   expected primitive type.
+         */
+        fun asString(): String =
+            _value().asString().orElseThrow { OpenAIInvalidDataException("Value is not a String") }
+
+        private var validated: Boolean = false
+
+        fun validate(): Object = apply {
+            if (validated) {
+                return@apply
+            }
+
+            known()
+            validated = true
+        }
+
+        fun isValid(): Boolean =
+            try {
+                validate()
+                true
+            } catch (e: OpenAIInvalidDataException) {
+                false
+            }
+
+        /**
+         * Returns a score indicating how many valid values are contained in this object
+         * recursively.
+         *
+         * Used for best match union deserialization.
+         */
+        @JvmSynthetic internal fun validity(): Int = if (value() == Value._UNKNOWN) 0 else 1
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) {
+                return true
+            }
+
+            return other is Object && value == other.value
+        }
+
+        override fun hashCode() = value.hashCode()
+
+        override fun toString() = value.toString()
+    }
+
+    /** The status of the item. Has no effect on the conversation. */
+    class Status @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
+
+        /**
+         * Returns this class instance's raw value.
+         *
+         * This is usually only useful if this instance was deserialized from data that doesn't
+         * match any known member, and you want to know that value. For example, if the SDK is on an
+         * older version than the API, then the API may respond with new members that the SDK is
+         * unaware of.
+         */
+        @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
+
+        companion object {
+
+            @JvmField val COMPLETED = of("completed")
+
+            @JvmField val INCOMPLETE = of("incomplete")
+
+            @JvmField val IN_PROGRESS = of("in_progress")
+
+            @JvmStatic fun of(value: String) = Status(JsonField.of(value))
+        }
+
+        /** An enum containing [Status]'s known values. */
+        enum class Known {
+            COMPLETED,
+            INCOMPLETE,
+            IN_PROGRESS,
+        }
+
+        /**
+         * An enum containing [Status]'s known values, as well as an [_UNKNOWN] member.
+         *
+         * An instance of [Status] can contain an unknown value in a couple of cases:
+         * - It was deserialized from data that doesn't match any known member. For example, if the
+         *   SDK is on an older version than the API, then the API may respond with new members that
+         *   the SDK is unaware of.
+         * - It was constructed with an arbitrary value using the [of] method.
+         */
+        enum class Value {
+            COMPLETED,
+            INCOMPLETE,
+            IN_PROGRESS,
+            /** An enum member indicating that [Status] was instantiated with an unknown value. */
+            _UNKNOWN,
+        }
+
+        /**
+         * Returns an enum member corresponding to this class instance's value, or [Value._UNKNOWN]
+         * if the class was instantiated with an unknown value.
+         *
+         * Use the [known] method instead if you're certain the value is always known or if you want
+         * to throw for the unknown case.
+         */
+        fun value(): Value =
+            when (this) {
+                COMPLETED -> Value.COMPLETED
+                INCOMPLETE -> Value.INCOMPLETE
+                IN_PROGRESS -> Value.IN_PROGRESS
+                else -> Value._UNKNOWN
+            }
+
+        /**
+         * Returns an enum member corresponding to this class instance's value.
+         *
+         * Use the [value] method instead if you're uncertain the value is always known and don't
+         * want to throw for the unknown case.
+         *
+         * @throws OpenAIInvalidDataException if this class instance's value is a not a known
+         *   member.
+         */
+        fun known(): Known =
+            when (this) {
+                COMPLETED -> Known.COMPLETED
+                INCOMPLETE -> Known.INCOMPLETE
+                IN_PROGRESS -> Known.IN_PROGRESS
+                else -> throw OpenAIInvalidDataException("Unknown Status: $value")
+            }
+
+        /**
+         * Returns this class instance's primitive wire representation.
+         *
+         * This differs from the [toString] method because that method is primarily for debugging
+         * and generally doesn't throw.
+         *
+         * @throws OpenAIInvalidDataException if this class instance's value does not have the
+         *   expected primitive type.
+         */
+        fun asString(): String =
+            _value().asString().orElseThrow { OpenAIInvalidDataException("Value is not a String") }
+
+        private var validated: Boolean = false
+
+        fun validate(): Status = apply {
+            if (validated) {
+                return@apply
+            }
+
+            known()
+            validated = true
+        }
+
+        fun isValid(): Boolean =
+            try {
+                validate()
+                true
+            } catch (e: OpenAIInvalidDataException) {
+                false
+            }
+
+        /**
+         * Returns a score indicating how many valid values are contained in this object
+         * recursively.
+         *
+         * Used for best match union deserialization.
+         */
+        @JvmSynthetic internal fun validity(): Int = if (value() == Value._UNKNOWN) 0 else 1
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) {
+                return true
+            }
+
+            return other is Status && value == other.value
+        }
+
+        override fun hashCode() = value.hashCode()
+
+        override fun toString() = value.toString()
+    }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) {
+            return true
+        }
+
+        return other is RealtimeConversationItemFunctionCallOutput &&
+            callId == other.callId &&
+            output == other.output &&
+            type == other.type &&
+            id == other.id &&
+            object_ == other.object_ &&
+            status == other.status &&
+            additionalProperties == other.additionalProperties
+    }
+
+    private val hashCode: Int by lazy {
+        Objects.hash(callId, output, type, id, object_, status, additionalProperties)
+    }
+
+    override fun hashCode(): Int = hashCode
+
+    override fun toString() =
+        "RealtimeConversationItemFunctionCallOutput{callId=$callId, output=$output, type=$type, id=$id, object_=$object_, status=$status, additionalProperties=$additionalProperties}"
+}

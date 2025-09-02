@@ -18,6 +18,7 @@ import com.openai.services.async.GraderServiceAsync
 import com.openai.services.async.ImageServiceAsync
 import com.openai.services.async.ModelServiceAsync
 import com.openai.services.async.ModerationServiceAsync
+import com.openai.services.async.RealtimeServiceAsync
 import com.openai.services.async.ResponseServiceAsync
 import com.openai.services.async.UploadServiceAsync
 import com.openai.services.async.VectorStoreServiceAsync
@@ -92,6 +93,8 @@ interface OpenAIClientAsync {
 
     fun responses(): ResponseServiceAsync
 
+    fun realtime(): RealtimeServiceAsync
+
     fun conversations(): ConversationServiceAsync
 
     fun evals(): EvalServiceAsync
@@ -154,6 +157,8 @@ interface OpenAIClientAsync {
         fun uploads(): UploadServiceAsync.WithRawResponse
 
         fun responses(): ResponseServiceAsync.WithRawResponse
+
+        fun realtime(): RealtimeServiceAsync.WithRawResponse
 
         fun conversations(): ConversationServiceAsync.WithRawResponse
 

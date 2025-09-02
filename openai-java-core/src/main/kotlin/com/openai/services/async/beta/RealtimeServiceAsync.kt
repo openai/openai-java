@@ -7,6 +7,9 @@ import com.openai.services.async.beta.realtime.SessionServiceAsync
 import com.openai.services.async.beta.realtime.TranscriptionSessionServiceAsync
 import java.util.function.Consumer
 
+@Deprecated(
+    "Realtime has now launched and is generally available. The old beta API is now deprecated."
+)
 interface RealtimeServiceAsync {
 
     /**
@@ -28,6 +31,9 @@ interface RealtimeServiceAsync {
     /**
      * A view of [RealtimeServiceAsync] that provides access to raw HTTP responses for each method.
      */
+    @Deprecated(
+        "Realtime has now launched and is generally available. The old beta API is now deprecated."
+    )
     interface WithRawResponse {
 
         /**

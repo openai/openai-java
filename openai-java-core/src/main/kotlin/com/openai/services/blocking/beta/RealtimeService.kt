@@ -7,6 +7,9 @@ import com.openai.services.blocking.beta.realtime.SessionService
 import com.openai.services.blocking.beta.realtime.TranscriptionSessionService
 import java.util.function.Consumer
 
+@Deprecated(
+    "Realtime has now launched and is generally available. The old beta API is now deprecated."
+)
 interface RealtimeService {
 
     /**
@@ -26,6 +29,9 @@ interface RealtimeService {
     fun transcriptionSessions(): TranscriptionSessionService
 
     /** A view of [RealtimeService] that provides access to raw HTTP responses for each method. */
+    @Deprecated(
+        "Realtime has now launched and is generally available. The old beta API is now deprecated."
+    )
     interface WithRawResponse {
 
         /**

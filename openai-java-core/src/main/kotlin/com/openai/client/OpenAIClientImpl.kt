@@ -34,6 +34,8 @@ import com.openai.services.blocking.ModelService
 import com.openai.services.blocking.ModelServiceImpl
 import com.openai.services.blocking.ModerationService
 import com.openai.services.blocking.ModerationServiceImpl
+import com.openai.services.blocking.RealtimeService
+import com.openai.services.blocking.RealtimeServiceImpl
 import com.openai.services.blocking.ResponseService
 import com.openai.services.blocking.ResponseServiceImpl
 import com.openai.services.blocking.UploadService
@@ -105,6 +107,10 @@ class OpenAIClientImpl(private val clientOptions: ClientOptions) : OpenAIClient 
         ResponseServiceImpl(clientOptionsWithUserAgent)
     }
 
+    private val realtime: RealtimeService by lazy {
+        RealtimeServiceImpl(clientOptionsWithUserAgent)
+    }
+
     private val conversations: ConversationService by lazy {
         ConversationServiceImpl(clientOptionsWithUserAgent)
     }
@@ -153,6 +159,8 @@ class OpenAIClientImpl(private val clientOptions: ClientOptions) : OpenAIClient 
     override fun uploads(): UploadService = uploads
 
     override fun responses(): ResponseService = responses
+
+    override fun realtime(): RealtimeService = realtime
 
     override fun conversations(): ConversationService = conversations
 
@@ -229,6 +237,10 @@ class OpenAIClientImpl(private val clientOptions: ClientOptions) : OpenAIClient 
             ResponseServiceImpl.WithRawResponseImpl(clientOptions)
         }
 
+        private val realtime: RealtimeService.WithRawResponse by lazy {
+            RealtimeServiceImpl.WithRawResponseImpl(clientOptions)
+        }
+
         private val conversations: ConversationService.WithRawResponse by lazy {
             ConversationServiceImpl.WithRawResponseImpl(clientOptions)
         }
@@ -279,6 +291,8 @@ class OpenAIClientImpl(private val clientOptions: ClientOptions) : OpenAIClient 
         override fun uploads(): UploadService.WithRawResponse = uploads
 
         override fun responses(): ResponseService.WithRawResponse = responses
+
+        override fun realtime(): RealtimeService.WithRawResponse = realtime
 
         override fun conversations(): ConversationService.WithRawResponse = conversations
 
