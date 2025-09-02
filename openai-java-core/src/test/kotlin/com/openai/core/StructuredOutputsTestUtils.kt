@@ -321,14 +321,15 @@ internal fun checkAllDelegatorReadFunctionsAreTested(
  * @param delegationTestCases The tests cases that identify the names of delegating functions for
  *   which parameterized unit tests have been defined.
  * @param exceptionalTestedFns The names of delegating functions that are tested separately, not as
- *   parameterized unit tests. This is usually because they require special handling in the test.
+ *   parameterized unit tests. This is usually because they require special handling in the test. If
+ *   functions are overloaded, repeat the name for of the function for each overload.
  * @param nonDelegatingFns The names of functions that do not perform any delegation and for which
  *   delegation tests are not required.
  */
 internal fun checkAllDelegatorWriteFunctionsAreTested(
     delegatorClass: KClass<*>,
     delegationTestCases: List<DelegationWriteTestCase>,
-    exceptionalTestedFns: Set<String>,
+    exceptionalTestedFns: List<String>,
     nonDelegatingFns: Set<String>,
 ) {
     // There are exceptional test cases for some functions. Most other functions are part of the

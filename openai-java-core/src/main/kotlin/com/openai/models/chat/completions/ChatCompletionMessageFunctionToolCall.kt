@@ -267,7 +267,7 @@ private constructor(
          * Gets the arguments to the function call, converting the values from the model in JSON
          * format to an instance of a class that holds those values. The class must previously have
          * been used to define the JSON schema for the function definition's parameters, so that the
-         * JSON corresponds to structure of the given class.
+         * JSON corresponds to the structure of the given class.
          *
          * @throws OpenAIInvalidDataException If the JSON data is missing, `null`, or cannot be
          *   parsed to an instance of the [functionParametersType] class. This might occur if the

@@ -16,7 +16,7 @@ import java.util.Optional
 /**
  * A wrapper for [ResponseCreateParams] that provides a type-safe [Builder] that can record the
  * [responseType] used to derive a JSON schema from an arbitrary class when using the _Structured
- * Outputs_ feature. When a JSON response is received, it is deserialized to am instance of that
+ * Outputs_ feature. When a JSON response is received, it is deserialized to an instance of that
  * type. See the SDK documentation for more details on _Structured Outputs_.
  *
  * @param T The type of the class that will be used to derive the JSON schema in the request and to
@@ -49,6 +49,16 @@ class StructuredResponseCreateParams<T : Any>(
             this.responseType = responseType
             this.paramsBuilder = paramsBuilder
             text(responseType, localValidation)
+        }
+
+        @JvmSynthetic
+        internal fun wrap(
+            textConfig: StructuredResponseTextConfig<T>,
+            paramsBuilder: ResponseCreateParams.Builder,
+        ) = apply {
+            this.responseType = textConfig.responseType
+            this.paramsBuilder = paramsBuilder
+            text(textConfig)
         }
 
         /** Injects a given `ResponseCreateParams.Builder`. For use only when testing. */
@@ -340,6 +350,17 @@ class StructuredResponseCreateParams<T : Any>(
         ) = apply {
             this.responseType = responseType
             paramsBuilder.text(textConfigFromClass(responseType, localValidation))
+        }
+
+        /**
+         * Sets the text configuration to a [StructuredResponseTextConfig] where the format was set
+         * to a JSON schema derived from the structure of a class.
+         *
+         * @see ResponseCreateParams.Builder.text
+         */
+        fun text(text: StructuredResponseTextConfig<T>) = apply {
+            this.responseType = text.responseType
+            paramsBuilder.text(text.rawConfig)
         }
 
         /** @see ResponseCreateParams.Builder.toolChoice */
@@ -665,7 +686,7 @@ class StructuredResponseCreateParams<T : Any>(
         }
 
         /**
-         * Returns an immutable instance of [ResponseCreateParams].
+         * Returns an immutable instance of [StructuredResponseCreateParams].
          *
          * Further updates to this [Builder] will not mutate the returned instance.
          *

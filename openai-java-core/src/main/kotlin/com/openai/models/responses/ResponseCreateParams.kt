@@ -1098,6 +1098,8 @@ private constructor(
          * [StructuredResponseCreateParams.Builder] that will build a
          * [StructuredResponseCreateParams] instance when `build()` is called.
          *
+         * Use this method or the `text(StructuredResponseTextConfig<T>)` method, but not both.
+         *
          * @param responseType A class from which a JSON schema will be derived to define the text
          *   configuration's format.
          * @param localValidation [JsonSchemaLocalValidation.YES] (the default) to validate the JSON
@@ -1113,6 +1115,21 @@ private constructor(
             responseType: Class<T>,
             localValidation: JsonSchemaLocalValidation = JsonSchemaLocalValidation.YES,
         ) = StructuredResponseCreateParams.builder<T>().wrap(responseType, this, localValidation)
+
+        /**
+         * Sets the text configuration to a [StructuredResponseTextConfig] where the format was set
+         * to a JSON schema derived from the structure of a class. This changes the builder to a
+         * type-safe [StructuredResponseCreateParams.Builder] that will build a
+         * [StructuredResponseCreateParams] instance when `build()` is called.
+         *
+         * Use this method or the `text(Class<T>)` method, but not both.
+         *
+         * @param text A text configuration in which the JSON schema defining the format was derived
+         *   from the structure of a class. The `verbosity` parameter can also be set on the text
+         *   configuration, if required.
+         */
+        fun <T : Any> text(text: StructuredResponseTextConfig<T>) =
+            StructuredResponseCreateParams.builder<T>().wrap(text, this)
 
         /**
          * How the model should select which tool (or tools) to use when generating a response. See

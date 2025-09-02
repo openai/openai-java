@@ -337,7 +337,7 @@ internal class StructuredChatCompletionCreateParamsTest {
         checkAllDelegatorWriteFunctionsAreTested(
             builderDelegator::class,
             builderDelegationTestCases(),
-            exceptionalTestedFns = setOf("responseFormat"),
+            exceptionalTestedFns = listOf("responseFormat"),
             nonDelegatingFns = setOf("build", "wrap", "inject"),
         )
     }
