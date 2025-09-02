@@ -300,11 +300,14 @@ private constructor(
      * An array of tools the model may call while generating a response. You can specify which tool
      * to use by setting the `tool_choice` parameter.
      *
-     * The two categories of tools you can provide the model are:
+     * We support the following categories of tools:
      * - **Built-in tools**: Tools that are provided by OpenAI that extend the model's capabilities,
      *   like [web search](https://platform.openai.com/docs/guides/tools-web-search) or
      *   [file search](https://platform.openai.com/docs/guides/tools-file-search). Learn more about
      *   [built-in tools](https://platform.openai.com/docs/guides/tools).
+     * - **MCP Tools**: Integrations with third-party systems via custom MCP servers or predefined
+     *   connectors such as Google Drive and Notion. Learn more about
+     *   [MCP Tools](https://platform.openai.com/docs/guides/tools-connectors-mcp).
      * - **Function calls (custom tools)**: Functions that are defined by you, enabling the model to
      *   call your own code with strongly typed arguments and outputs. Learn more about
      *   [function calling](https://platform.openai.com/docs/guides/function-calling). You can also
@@ -1176,12 +1179,15 @@ private constructor(
          * An array of tools the model may call while generating a response. You can specify which
          * tool to use by setting the `tool_choice` parameter.
          *
-         * The two categories of tools you can provide the model are:
+         * We support the following categories of tools:
          * - **Built-in tools**: Tools that are provided by OpenAI that extend the model's
          *   capabilities, like
          *   [web search](https://platform.openai.com/docs/guides/tools-web-search) or
          *   [file search](https://platform.openai.com/docs/guides/tools-file-search). Learn more
          *   about [built-in tools](https://platform.openai.com/docs/guides/tools).
+         * - **MCP Tools**: Integrations with third-party systems via custom MCP servers or
+         *   predefined connectors such as Google Drive and Notion. Learn more about
+         *   [MCP Tools](https://platform.openai.com/docs/guides/tools-connectors-mcp).
          * - **Function calls (custom tools)**: Functions that are defined by you, enabling the
          *   model to call your own code with strongly typed arguments and outputs. Learn more about
          *   [function calling](https://platform.openai.com/docs/guides/function-calling). You can
@@ -1231,9 +1237,8 @@ private constructor(
         fun addTool(computerUsePreview: ComputerTool) =
             addTool(Tool.ofComputerUsePreview(computerUsePreview))
 
-        /** Alias for calling [addTool] with `Tool.ofWebSearchTool(webSearchTool)`. */
-        fun addTool(webSearchTool: Tool.WebSearchTool) =
-            addTool(Tool.ofWebSearchTool(webSearchTool))
+        /** Alias for calling [addTool] with `Tool.ofWebSearch(webSearch)`. */
+        fun addTool(webSearch: WebSearchTool) = addTool(Tool.ofWebSearch(webSearch))
 
         /** Alias for calling [addTool] with `Tool.ofMcp(mcp)`. */
         fun addTool(mcp: Tool.Mcp) = addTool(Tool.ofMcp(mcp))
@@ -1302,8 +1307,9 @@ private constructor(
          */
         fun addCustomTool(name: String) = addTool(CustomTool.builder().name(name).build())
 
-        /** Alias for calling [addTool] with `Tool.ofWebSearchTool(webSearchTool)`. */
-        fun addTool(webSearchTool: WebSearchTool) = addTool(Tool.ofWebSearchTool(webSearchTool))
+        /** Alias for calling [addTool] with `Tool.ofWebSearchPreview(webSearchPreview)`. */
+        fun addTool(webSearchPreview: WebSearchPreviewTool) =
+            addTool(Tool.ofWebSearchPreview(webSearchPreview))
 
         /**
          * An alternative to sampling with temperature, called nucleus sampling, where the model

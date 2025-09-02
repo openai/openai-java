@@ -396,6 +396,10 @@ private constructor(
 
             @JvmField val VERSE = of("verse")
 
+            @JvmField val MARIN = of("marin")
+
+            @JvmField val CEDAR = of("cedar")
+
             @JvmStatic fun of(value: String) = Voice(JsonField.of(value))
         }
 
@@ -409,6 +413,8 @@ private constructor(
             SAGE,
             SHIMMER,
             VERSE,
+            MARIN,
+            CEDAR,
         }
 
         /**
@@ -429,6 +435,8 @@ private constructor(
             SAGE,
             SHIMMER,
             VERSE,
+            MARIN,
+            CEDAR,
             /** An enum member indicating that [Voice] was instantiated with an unknown value. */
             _UNKNOWN,
         }
@@ -450,6 +458,8 @@ private constructor(
                 SAGE -> Value.SAGE
                 SHIMMER -> Value.SHIMMER
                 VERSE -> Value.VERSE
+                MARIN -> Value.MARIN
+                CEDAR -> Value.CEDAR
                 else -> Value._UNKNOWN
             }
 
@@ -472,6 +482,8 @@ private constructor(
                 SAGE -> Known.SAGE
                 SHIMMER -> Known.SHIMMER
                 VERSE -> Known.VERSE
+                MARIN -> Known.MARIN
+                CEDAR -> Known.CEDAR
                 else -> throw OpenAIInvalidDataException("Unknown Voice: $value")
             }
 

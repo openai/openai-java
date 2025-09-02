@@ -34,13 +34,13 @@ internal class ToolTest {
         assertThat(tool.function()).contains(function)
         assertThat(tool.fileSearch()).isEmpty
         assertThat(tool.computerUsePreview()).isEmpty
-        assertThat(tool.webSearchTool()).isEmpty
+        assertThat(tool.webSearch()).isEmpty
         assertThat(tool.mcp()).isEmpty
         assertThat(tool.codeInterpreter()).isEmpty
         assertThat(tool.imageGeneration()).isEmpty
         assertThat(tool.localShell()).isEmpty
         assertThat(tool.custom()).isEmpty
-        assertThat(tool.webSearchTool()).isEmpty
+        assertThat(tool.webSearchPreview()).isEmpty
     }
 
     @Test
@@ -92,13 +92,13 @@ internal class ToolTest {
         assertThat(tool.function()).isEmpty
         assertThat(tool.fileSearch()).contains(fileSearch)
         assertThat(tool.computerUsePreview()).isEmpty
-        assertThat(tool.webSearchTool()).isEmpty
+        assertThat(tool.webSearch()).isEmpty
         assertThat(tool.mcp()).isEmpty
         assertThat(tool.codeInterpreter()).isEmpty
         assertThat(tool.imageGeneration()).isEmpty
         assertThat(tool.localShell()).isEmpty
         assertThat(tool.custom()).isEmpty
-        assertThat(tool.webSearchTool()).isEmpty
+        assertThat(tool.webSearchPreview()).isEmpty
     }
 
     @Test
@@ -145,13 +145,13 @@ internal class ToolTest {
         assertThat(tool.function()).isEmpty
         assertThat(tool.fileSearch()).isEmpty
         assertThat(tool.computerUsePreview()).contains(computerUsePreview)
-        assertThat(tool.webSearchTool()).isEmpty
+        assertThat(tool.webSearch()).isEmpty
         assertThat(tool.mcp()).isEmpty
         assertThat(tool.codeInterpreter()).isEmpty
         assertThat(tool.imageGeneration()).isEmpty
         assertThat(tool.localShell()).isEmpty
         assertThat(tool.custom()).isEmpty
-        assertThat(tool.webSearchTool()).isEmpty
+        assertThat(tool.webSearchPreview()).isEmpty
     }
 
     @Test
@@ -173,55 +173,53 @@ internal class ToolTest {
     }
 
     @Test
-    fun ofWebSearchTool() {
-        val webSearchTool =
-            Tool.WebSearchTool.builder()
-                .type(Tool.WebSearchTool.Type.WEB_SEARCH)
-                .filters(Tool.WebSearchTool.Filters.builder().addAllowedDomain("string").build())
-                .searchContextSize(Tool.WebSearchTool.SearchContextSize.LOW)
+    fun ofWebSearch() {
+        val webSearch =
+            WebSearchTool.builder()
+                .type(WebSearchTool.Type.WEB_SEARCH)
+                .filters(WebSearchTool.Filters.builder().addAllowedDomain("string").build())
+                .searchContextSize(WebSearchTool.SearchContextSize.LOW)
                 .userLocation(
-                    Tool.WebSearchTool.UserLocation.builder()
+                    WebSearchTool.UserLocation.builder()
                         .city("city")
                         .country("country")
                         .region("region")
                         .timezone("timezone")
-                        .type(Tool.WebSearchTool.UserLocation.Type.APPROXIMATE)
+                        .type(WebSearchTool.UserLocation.Type.APPROXIMATE)
                         .build()
                 )
                 .build()
 
-        val tool = Tool.ofWebSearchTool(webSearchTool)
+        val tool = Tool.ofWebSearch(webSearch)
 
         assertThat(tool.function()).isEmpty
         assertThat(tool.fileSearch()).isEmpty
         assertThat(tool.computerUsePreview()).isEmpty
-        assertThat(tool.webSearchTool()).contains(webSearchTool)
+        assertThat(tool.webSearch()).contains(webSearch)
         assertThat(tool.mcp()).isEmpty
         assertThat(tool.codeInterpreter()).isEmpty
         assertThat(tool.imageGeneration()).isEmpty
         assertThat(tool.localShell()).isEmpty
         assertThat(tool.custom()).isEmpty
-        assertThat(tool.webSearchTool()).isEmpty
+        assertThat(tool.webSearchPreview()).isEmpty
     }
 
     @Test
-    fun ofWebSearchToolRoundtrip() {
+    fun ofWebSearchRoundtrip() {
         val jsonMapper = jsonMapper()
         val tool =
-            Tool.ofWebSearchTool(
-                Tool.WebSearchTool.builder()
-                    .type(Tool.WebSearchTool.Type.WEB_SEARCH)
-                    .filters(
-                        Tool.WebSearchTool.Filters.builder().addAllowedDomain("string").build()
-                    )
-                    .searchContextSize(Tool.WebSearchTool.SearchContextSize.LOW)
+            Tool.ofWebSearch(
+                WebSearchTool.builder()
+                    .type(WebSearchTool.Type.WEB_SEARCH)
+                    .filters(WebSearchTool.Filters.builder().addAllowedDomain("string").build())
+                    .searchContextSize(WebSearchTool.SearchContextSize.LOW)
                     .userLocation(
-                        Tool.WebSearchTool.UserLocation.builder()
+                        WebSearchTool.UserLocation.builder()
                             .city("city")
                             .country("country")
                             .region("region")
                             .timezone("timezone")
-                            .type(Tool.WebSearchTool.UserLocation.Type.APPROXIMATE)
+                            .type(WebSearchTool.UserLocation.Type.APPROXIMATE)
                             .build()
                     )
                     .build()
@@ -271,13 +269,13 @@ internal class ToolTest {
         assertThat(tool.function()).isEmpty
         assertThat(tool.fileSearch()).isEmpty
         assertThat(tool.computerUsePreview()).isEmpty
-        assertThat(tool.webSearchTool()).isEmpty
+        assertThat(tool.webSearch()).isEmpty
         assertThat(tool.mcp()).contains(mcp)
         assertThat(tool.codeInterpreter()).isEmpty
         assertThat(tool.imageGeneration()).isEmpty
         assertThat(tool.localShell()).isEmpty
         assertThat(tool.custom()).isEmpty
-        assertThat(tool.webSearchTool()).isEmpty
+        assertThat(tool.webSearchPreview()).isEmpty
     }
 
     @Test
@@ -331,13 +329,13 @@ internal class ToolTest {
         assertThat(tool.function()).isEmpty
         assertThat(tool.fileSearch()).isEmpty
         assertThat(tool.computerUsePreview()).isEmpty
-        assertThat(tool.webSearchTool()).isEmpty
+        assertThat(tool.webSearch()).isEmpty
         assertThat(tool.mcp()).isEmpty
         assertThat(tool.codeInterpreter()).contains(codeInterpreter)
         assertThat(tool.imageGeneration()).isEmpty
         assertThat(tool.localShell()).isEmpty
         assertThat(tool.custom()).isEmpty
-        assertThat(tool.webSearchTool()).isEmpty
+        assertThat(tool.webSearchPreview()).isEmpty
     }
 
     @Test
@@ -378,13 +376,13 @@ internal class ToolTest {
         assertThat(tool.function()).isEmpty
         assertThat(tool.fileSearch()).isEmpty
         assertThat(tool.computerUsePreview()).isEmpty
-        assertThat(tool.webSearchTool()).isEmpty
+        assertThat(tool.webSearch()).isEmpty
         assertThat(tool.mcp()).isEmpty
         assertThat(tool.codeInterpreter()).isEmpty
         assertThat(tool.imageGeneration()).contains(imageGeneration)
         assertThat(tool.localShell()).isEmpty
         assertThat(tool.custom()).isEmpty
-        assertThat(tool.webSearchTool()).isEmpty
+        assertThat(tool.webSearchPreview()).isEmpty
     }
 
     @Test
@@ -424,13 +422,13 @@ internal class ToolTest {
         assertThat(tool.function()).isEmpty
         assertThat(tool.fileSearch()).isEmpty
         assertThat(tool.computerUsePreview()).isEmpty
-        assertThat(tool.webSearchTool()).isEmpty
+        assertThat(tool.webSearch()).isEmpty
         assertThat(tool.mcp()).isEmpty
         assertThat(tool.codeInterpreter()).isEmpty
         assertThat(tool.imageGeneration()).isEmpty
         assertThat(tool.localShell()).contains(JsonValue.from(mapOf("type" to "local_shell")))
         assertThat(tool.custom()).isEmpty
-        assertThat(tool.webSearchTool()).isEmpty
+        assertThat(tool.webSearchPreview()).isEmpty
     }
 
     @Test
@@ -454,13 +452,13 @@ internal class ToolTest {
         assertThat(tool.function()).isEmpty
         assertThat(tool.fileSearch()).isEmpty
         assertThat(tool.computerUsePreview()).isEmpty
-        assertThat(tool.webSearchTool()).isEmpty
+        assertThat(tool.webSearch()).isEmpty
         assertThat(tool.mcp()).isEmpty
         assertThat(tool.codeInterpreter()).isEmpty
         assertThat(tool.imageGeneration()).isEmpty
         assertThat(tool.localShell()).isEmpty
         assertThat(tool.custom()).contains(custom)
-        assertThat(tool.webSearchTool()).isEmpty
+        assertThat(tool.webSearchPreview()).isEmpty
     }
 
     @Test
@@ -478,13 +476,13 @@ internal class ToolTest {
     }
 
     @Test
-    fun ofWebSearchTool() {
-        val webSearchTool =
-            WebSearchTool.builder()
-                .type(WebSearchTool.Type.WEB_SEARCH_PREVIEW)
-                .searchContextSize(WebSearchTool.SearchContextSize.LOW)
+    fun ofWebSearchPreview() {
+        val webSearchPreview =
+            WebSearchPreviewTool.builder()
+                .type(WebSearchPreviewTool.Type.WEB_SEARCH_PREVIEW)
+                .searchContextSize(WebSearchPreviewTool.SearchContextSize.LOW)
                 .userLocation(
-                    WebSearchTool.UserLocation.builder()
+                    WebSearchPreviewTool.UserLocation.builder()
                         .city("city")
                         .country("country")
                         .region("region")
@@ -493,30 +491,30 @@ internal class ToolTest {
                 )
                 .build()
 
-        val tool = Tool.ofWebSearchTool(webSearchTool)
+        val tool = Tool.ofWebSearchPreview(webSearchPreview)
 
         assertThat(tool.function()).isEmpty
         assertThat(tool.fileSearch()).isEmpty
         assertThat(tool.computerUsePreview()).isEmpty
-        assertThat(tool.webSearchTool()).isEmpty
+        assertThat(tool.webSearch()).isEmpty
         assertThat(tool.mcp()).isEmpty
         assertThat(tool.codeInterpreter()).isEmpty
         assertThat(tool.imageGeneration()).isEmpty
         assertThat(tool.localShell()).isEmpty
         assertThat(tool.custom()).isEmpty
-        assertThat(tool.webSearchTool()).contains(webSearchTool)
+        assertThat(tool.webSearchPreview()).contains(webSearchPreview)
     }
 
     @Test
-    fun ofWebSearchToolRoundtrip() {
+    fun ofWebSearchPreviewRoundtrip() {
         val jsonMapper = jsonMapper()
         val tool =
-            Tool.ofWebSearchTool(
-                WebSearchTool.builder()
-                    .type(WebSearchTool.Type.WEB_SEARCH_PREVIEW)
-                    .searchContextSize(WebSearchTool.SearchContextSize.LOW)
+            Tool.ofWebSearchPreview(
+                WebSearchPreviewTool.builder()
+                    .type(WebSearchPreviewTool.Type.WEB_SEARCH_PREVIEW)
+                    .searchContextSize(WebSearchPreviewTool.SearchContextSize.LOW)
                     .userLocation(
-                        WebSearchTool.UserLocation.builder()
+                        WebSearchPreviewTool.UserLocation.builder()
                             .city("city")
                             .country("country")
                             .region("region")

@@ -4,7 +4,6 @@ package com.openai.services.blocking
 
 import com.openai.core.ClientOptions
 import com.openai.services.blocking.beta.AssistantService
-import com.openai.services.blocking.beta.RealtimeService
 import com.openai.services.blocking.beta.ThreadService
 import java.util.function.Consumer
 
@@ -22,8 +21,6 @@ interface BetaService {
      */
     fun withOptions(modifier: Consumer<ClientOptions.Builder>): BetaService
 
-    fun realtime(): RealtimeService
-
     fun assistants(): AssistantService
 
     @Deprecated("The Assistants API is deprecated in favor of the Responses API")
@@ -38,8 +35,6 @@ interface BetaService {
          * The original service is not modified.
          */
         fun withOptions(modifier: Consumer<ClientOptions.Builder>): BetaService.WithRawResponse
-
-        fun realtime(): RealtimeService.WithRawResponse
 
         fun assistants(): AssistantService.WithRawResponse
 

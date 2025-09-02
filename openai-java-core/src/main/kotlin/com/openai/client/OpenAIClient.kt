@@ -18,6 +18,7 @@ import com.openai.services.blocking.GraderService
 import com.openai.services.blocking.ImageService
 import com.openai.services.blocking.ModelService
 import com.openai.services.blocking.ModerationService
+import com.openai.services.blocking.RealtimeService
 import com.openai.services.blocking.ResponseService
 import com.openai.services.blocking.UploadService
 import com.openai.services.blocking.VectorStoreService
@@ -92,6 +93,8 @@ interface OpenAIClient {
 
     fun responses(): ResponseService
 
+    fun realtime(): RealtimeService
+
     fun conversations(): ConversationService
 
     fun evals(): EvalService
@@ -152,6 +155,8 @@ interface OpenAIClient {
         fun uploads(): UploadService.WithRawResponse
 
         fun responses(): ResponseService.WithRawResponse
+
+        fun realtime(): RealtimeService.WithRawResponse
 
         fun conversations(): ConversationService.WithRawResponse
 

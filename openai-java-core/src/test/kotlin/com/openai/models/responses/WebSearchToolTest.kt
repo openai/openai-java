@@ -13,7 +13,8 @@ internal class WebSearchToolTest {
     fun create() {
         val webSearchTool =
             WebSearchTool.builder()
-                .type(WebSearchTool.Type.WEB_SEARCH_PREVIEW)
+                .type(WebSearchTool.Type.WEB_SEARCH)
+                .filters(WebSearchTool.Filters.builder().addAllowedDomain("string").build())
                 .searchContextSize(WebSearchTool.SearchContextSize.LOW)
                 .userLocation(
                     WebSearchTool.UserLocation.builder()
@@ -21,11 +22,14 @@ internal class WebSearchToolTest {
                         .country("country")
                         .region("region")
                         .timezone("timezone")
+                        .type(WebSearchTool.UserLocation.Type.APPROXIMATE)
                         .build()
                 )
                 .build()
 
-        assertThat(webSearchTool.type()).isEqualTo(WebSearchTool.Type.WEB_SEARCH_PREVIEW)
+        assertThat(webSearchTool.type()).isEqualTo(WebSearchTool.Type.WEB_SEARCH)
+        assertThat(webSearchTool.filters())
+            .contains(WebSearchTool.Filters.builder().addAllowedDomain("string").build())
         assertThat(webSearchTool.searchContextSize()).contains(WebSearchTool.SearchContextSize.LOW)
         assertThat(webSearchTool.userLocation())
             .contains(
@@ -34,6 +38,7 @@ internal class WebSearchToolTest {
                     .country("country")
                     .region("region")
                     .timezone("timezone")
+                    .type(WebSearchTool.UserLocation.Type.APPROXIMATE)
                     .build()
             )
     }
@@ -43,7 +48,8 @@ internal class WebSearchToolTest {
         val jsonMapper = jsonMapper()
         val webSearchTool =
             WebSearchTool.builder()
-                .type(WebSearchTool.Type.WEB_SEARCH_PREVIEW)
+                .type(WebSearchTool.Type.WEB_SEARCH)
+                .filters(WebSearchTool.Filters.builder().addAllowedDomain("string").build())
                 .searchContextSize(WebSearchTool.SearchContextSize.LOW)
                 .userLocation(
                     WebSearchTool.UserLocation.builder()
@@ -51,6 +57,7 @@ internal class WebSearchToolTest {
                         .country("country")
                         .region("region")
                         .timezone("timezone")
+                        .type(WebSearchTool.UserLocation.Type.APPROXIMATE)
                         .build()
                 )
                 .build()
