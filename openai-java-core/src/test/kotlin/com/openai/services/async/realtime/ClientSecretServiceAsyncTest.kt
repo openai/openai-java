@@ -39,7 +39,7 @@ internal class ClientSecretServiceAsyncTest {
                     )
                     .session(
                         RealtimeSessionCreateRequest.builder()
-                            .model(RealtimeSessionCreateRequest.Model.GPT_4O_REALTIME)
+                            .model(RealtimeSessionCreateRequest.Model.GPT_REALTIME)
                             .audio(
                                 RealtimeAudioConfig.builder()
                                     .input(

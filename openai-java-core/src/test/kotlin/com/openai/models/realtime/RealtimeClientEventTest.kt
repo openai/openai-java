@@ -568,7 +568,7 @@ internal class RealtimeClientEventTest {
             SessionUpdateEvent.builder()
                 .session(
                     RealtimeSessionCreateRequest.builder()
-                        .model(RealtimeSessionCreateRequest.Model.GPT_4O_REALTIME)
+                        .model(RealtimeSessionCreateRequest.Model.GPT_REALTIME)
                         .audio(
                             RealtimeAudioConfig.builder()
                                 .input(
@@ -694,7 +694,7 @@ internal class RealtimeClientEventTest {
                 SessionUpdateEvent.builder()
                     .session(
                         RealtimeSessionCreateRequest.builder()
-                            .model(RealtimeSessionCreateRequest.Model.GPT_4O_REALTIME)
+                            .model(RealtimeSessionCreateRequest.Model.GPT_REALTIME)
                             .audio(
                                 RealtimeAudioConfig.builder()
                                     .input(

@@ -17,7 +17,7 @@ internal class RealtimeSessionCreateRequestTest {
     fun create() {
         val realtimeSessionCreateRequest =
             RealtimeSessionCreateRequest.builder()
-                .model(RealtimeSessionCreateRequest.Model.GPT_4O_REALTIME)
+                .model(RealtimeSessionCreateRequest.Model.GPT_REALTIME)
                 .audio(
                     RealtimeAudioConfig.builder()
                         .input(
@@ -108,7 +108,7 @@ internal class RealtimeSessionCreateRequestTest {
                 .build()
 
         assertThat(realtimeSessionCreateRequest.model())
-            .isEqualTo(RealtimeSessionCreateRequest.Model.GPT_4O_REALTIME)
+            .isEqualTo(RealtimeSessionCreateRequest.Model.GPT_REALTIME)
         assertThat(realtimeSessionCreateRequest.audio())
             .contains(
                 RealtimeAudioConfig.builder()
@@ -210,7 +210,7 @@ internal class RealtimeSessionCreateRequestTest {
         val jsonMapper = jsonMapper()
         val realtimeSessionCreateRequest =
             RealtimeSessionCreateRequest.builder()
-                .model(RealtimeSessionCreateRequest.Model.GPT_4O_REALTIME)
+                .model(RealtimeSessionCreateRequest.Model.GPT_REALTIME)
                 .audio(
                     RealtimeAudioConfig.builder()
                         .input(
