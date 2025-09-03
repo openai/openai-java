@@ -1,5 +1,13 @@
 # Changelog
 
+## 3.4.1 (2025-09-03)
+
+Full Changelog: [v3.4.0...v3.4.1](https://github.com/openai/openai-java/compare/v3.4.0...v3.4.1)
+
+### Bug Fixes
+
+* **ci:** use java-version 21 for publish step ([db861bd](https://github.com/openai/openai-java/commit/db861bd0cd1b6c109b4bff081e89209eef2257e4))
+
 ## 3.4.0 (2025-09-03)
 
 Full Changelog: [v3.3.0...v3.4.0](https://github.com/openai/openai-java/compare/v3.3.0...v3.4.0)
