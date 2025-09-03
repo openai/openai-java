@@ -1,5 +1,13 @@
 # Changelog
 
+## 3.4.0 (2025-09-03)
+
+Full Changelog: [v3.3.0...v3.4.0](https://github.com/openai/openai-java/compare/v3.3.0...v3.4.0)
+
+### Features
+
+* **api:** Add gpt-realtime models ([37b8b69](https://github.com/openai/openai-java/commit/37b8b69cb027e9c9e3abd7d9d9ce211a2c6e165c))
+
 ## 3.3.0 (2025-09-03)
 
 Full Changelog: [v3.2.1...v3.3.0](https://github.com/openai/openai-java/compare/v3.2.1...v3.3.0)
