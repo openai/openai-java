@@ -85,6 +85,20 @@ internal fun validateSchema(
     return schema
 }
 
+/** Builds a text configuration's JSON schema, deriving it from the structure of a class. */
+@JvmSynthetic
+internal fun jsonSchemaFromClass(
+    type: Class<*>,
+    localValidation: JsonSchemaLocalValidation = JsonSchemaLocalValidation.YES,
+): ResponseFormatTextJsonSchemaConfig =
+    ResponseFormatTextJsonSchemaConfig.builder()
+        .name("json-schema-from-${type.simpleName}")
+        .schema(JsonValue.fromJsonNode(validateSchema(extractSchema(type), type, localValidation)))
+        // Ensure the model's output strictly adheres to this JSON schema. This is the essential
+        // "ON switch" for Structured Outputs.
+        .strict(true)
+        .build()
+
 /**
  * Builds a text configuration with its format set to a JSON schema derived from the structure of an
  * arbitrary Java class.
@@ -94,21 +108,7 @@ internal fun textConfigFromClass(
     type: Class<*>,
     localValidation: JsonSchemaLocalValidation = JsonSchemaLocalValidation.YES,
 ): ResponseTextConfig =
-    ResponseTextConfig.builder()
-        .format(
-            ResponseFormatTextJsonSchemaConfig.builder()
-                .name("json-schema-from-${type.simpleName}")
-                .schema(
-                    JsonValue.fromJsonNode(
-                        validateSchema(extractSchema(type), type, localValidation)
-                    )
-                )
-                // Ensure the model's output strictly adheres to this JSON schema. This is the
-                // essential "ON switch" for Structured Outputs.
-                .strict(true)
-                .build()
-        )
-        .build()
+    ResponseTextConfig.builder().format(jsonSchemaFromClass(type, localValidation)).build()
 
 // "internal" instead of "private" for testing purposes.
 internal data class FunctionInfo(

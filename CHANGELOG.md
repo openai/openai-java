@@ -1,5 +1,13 @@
 # Changelog
 
+## 3.3.0 (2025-09-03)
+
+Full Changelog: [v3.2.1...v3.3.0](https://github.com/openai/openai-java/compare/v3.2.1...v3.3.0)
+
+### Features
+
+* **client:** support verbosity with structured outputs ([#603](https://github.com/openai/openai-java/issues/603)) ([2496464](https://github.com/openai/openai-java/commit/24964646ab02a3ff61efb9802facac66b204bdaf))
+
 ## 3.2.1 (2025-09-02)
 
 Full Changelog: [v3.2.0...v3.2.1](https://github.com/openai/openai-java/compare/v3.2.0...v3.2.1)

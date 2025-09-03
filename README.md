@@ -2,8 +2,8 @@
 
 <!-- x-release-please-start-version -->
 
-[![Maven Central](https://img.shields.io/maven-central/v/com.openai/openai-java)](https://central.sonatype.com/artifact/com.openai/openai-java/3.2.1)
-[![javadoc](https://javadoc.io/badge2/com.openai/openai-java/3.2.1/javadoc.svg)](https://javadoc.io/doc/com.openai/openai-java/3.2.1)
+[![Maven Central](https://img.shields.io/maven-central/v/com.openai/openai-java)](https://central.sonatype.com/artifact/com.openai/openai-java/3.3.0)
+[![javadoc](https://javadoc.io/badge2/com.openai/openai-java/3.3.0/javadoc.svg)](https://javadoc.io/doc/com.openai/openai-java/3.3.0)
 
 <!-- x-release-please-end -->
 
@@ -11,7 +11,7 @@ The OpenAI Java SDK provides convenient access to the [OpenAI REST API](https://
 
 <!-- x-release-please-start-version -->
 
-The REST API documentation can be found on [platform.openai.com](https://platform.openai.com/docs). Javadocs are available on [javadoc.io](https://javadoc.io/doc/com.openai/openai-java/3.2.1).
+The REST API documentation can be found on [platform.openai.com](https://platform.openai.com/docs). Javadocs are available on [javadoc.io](https://javadoc.io/doc/com.openai/openai-java/3.3.0).
 
 <!-- x-release-please-end -->
 
@@ -24,7 +24,7 @@ The REST API documentation can be found on [platform.openai.com](https://platfor
 ### Gradle
 
 ```kotlin
-implementation("com.openai:openai-java:3.2.1")
+implementation("com.openai:openai-java:3.3.0")
 ```
 
 ### Maven
@@ -33,7 +33,7 @@ implementation("com.openai:openai-java:3.2.1")
 <dependency>
   <groupId>com.openai</groupId>
   <artifactId>openai-java</artifactId>
-  <version>3.2.1</version>
+  <version>3.3.0</version>
 </dependency>
 ```
 
@@ -564,6 +564,18 @@ the latter when `ResponseCreateParams.Builder.text(Class<T>)` is called.
 
 For a full example of the usage of _Structured Outputs_ with the Responses API, see
 [`ResponsesStructuredOutputsExample`](openai-java-example/src/main/java/com/openai/example/ResponsesStructuredOutputsExample.java).
+
+Instead of using `ResponseCreateParams.text(Class<T>)`, you can build a
+[`StructuredResponseTextConfig`](openai-java-core/src/main/kotlin/com/openai/models/responses/StructuredResponseTextConfig.kt)
+and set it on the `ResponseCreateParams` using the `text(StructuredResponseTextConfig)` method.
+Similar to using `ResponseCreateParams`, you can start with a `ResponseTextConfig.Builder` and its
+`format(Class<T>)` method will change it to a `StructuredResponseTextConfig.Builder`. This also
+allows you to set the `verbosity` configuration parameter on the text configuration before adding it
+to the `ResponseCreateParams`.
+
+For a full example of the usage of _Structured Outputs_ with the `ResponseTextConfig` and its
+`verbosity` parameter, see
+[`ResponsesStructuredOutputsVerbosityExample`](openai-java-example/src/main/java/com/openai/example/ResponsesStructuredOutputsVerbosityExample.java).
 
 ### Usage with streaming
 
@@ -1330,7 +1342,7 @@ If you're using Spring Boot, then you can use the SDK's [Spring Boot starter](ht
 #### Gradle
 
 ```kotlin
-implementation("com.openai:openai-java-spring-boot-starter:3.2.1")
+implementation("com.openai:openai-java-spring-boot-starter:3.3.0")
 ```
 
 #### Maven
@@ -1339,7 +1351,7 @@ implementation("com.openai:openai-java-spring-boot-starter:3.2.1")
 <dependency>
   <groupId>com.openai</groupId>
   <artifactId>openai-java-spring-boot-starter</artifactId>
-  <version>3.2.1</version>
+  <version>3.3.0</version>
 </dependency>
 ```
 
