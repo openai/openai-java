@@ -18,7 +18,7 @@ jobs:
           distribution: temurin
           java-version: |
             8
-            17
+            21
           cache: gradle
 
       - name: Set up Gradle
