@@ -284,8 +284,8 @@ internal class StructuredResponseCreateParamsTest {
             // For Structured Outputs, setting `body` would overwrite the previously set `text`
             // property, which would break the Structured Outputs behavior.
             "body",
-            // For Structured Outputs, a new type-safe generic`text` function replaces all existing
-            // text functions, as they are mutually incompatible. This function has its own
+            // For Structured Outputs, new type-safe generic `text` functions replace all existing
+            // `text` functions, as they are mutually incompatible. These functions have their own
             // dedicated unit tests.
             "text",
         )
@@ -303,7 +303,7 @@ internal class StructuredResponseCreateParamsTest {
         checkAllDelegatorWriteFunctionsAreTested(
             builderDelegator::class,
             builderDelegationTestCases(),
-            exceptionalTestedFns = setOf("text"),
+            exceptionalTestedFns = listOf("text", "text"), // Two overloads. Two custom tests below.
             nonDelegatingFns = setOf("build", "wrap", "inject"),
         )
     }
@@ -315,13 +315,32 @@ internal class StructuredResponseCreateParamsTest {
     }
 
     @Test
-    fun `delegation of text`() {
+    fun `delegation of text with class`() {
         // Special unit test case as the delegator method signature does not match that of the
         // delegate method.
         val delegatorTestCase = DelegationWriteTestCase("text", X::class.java)
         val delegatorMethod = findDelegationMethod(builderDelegator, delegatorTestCase)
         val mockDelegateTestCase =
             DelegationWriteTestCase("text", textConfigFromClass(X::class.java))
+        val mockDelegateMethod = findDelegationMethod(mockBuilderDelegate, mockDelegateTestCase)
+
+        delegatorMethod.invoke(builderDelegator, delegatorTestCase.inputValues[0])
+
+        // Verify that the corresponding method on the mock delegate was called exactly once.
+        verify(mockBuilderDelegate, times(1)).apply {
+            mockDelegateMethod.invoke(mockBuilderDelegate, mockDelegateTestCase.inputValues[0])
+        }
+        verifyNoMoreInteractions(mockBuilderDelegate)
+    }
+
+    @Test
+    fun `delegation of text with text config`() {
+        // Special unit test case as the delegator method signature does not match that of the
+        // delegate method.
+        val textConfig = StructuredResponseTextConfig.builder<X>().format(X::class.java).build()
+        val delegatorTestCase = DelegationWriteTestCase("text", textConfig)
+        val delegatorMethod = findDelegationMethod(builderDelegator, delegatorTestCase)
+        val mockDelegateTestCase = DelegationWriteTestCase("text", textConfig.rawConfig)
         val mockDelegateMethod = findDelegationMethod(mockBuilderDelegate, mockDelegateTestCase)
 
         delegatorMethod.invoke(builderDelegator, delegatorTestCase.inputValues[0])

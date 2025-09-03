@@ -312,7 +312,7 @@ internal class JsonSchemaValidator private constructor() {
 
     /**
      * Validates a schema if it has an `"anyOf"` field. OpenAI does not support the use of `"anyOf"`
-     * at the root of a JSON schema. The value is the field is expected to be an array of valid
+     * at the root of a JSON schema. The value of the field is expected to be an array of valid
      * sub-schemas. If the schema has no `"anyOf"` field, no action is taken.
      */
     private fun validateAnyOfSchema(schema: JsonNode, path: String, depth: Int) {

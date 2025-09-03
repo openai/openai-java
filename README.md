@@ -565,6 +565,18 @@ the latter when `ResponseCreateParams.Builder.text(Class<T>)` is called.
 For a full example of the usage of _Structured Outputs_ with the Responses API, see
 [`ResponsesStructuredOutputsExample`](openai-java-example/src/main/java/com/openai/example/ResponsesStructuredOutputsExample.java).
 
+Instead of using `ResponseCreateParams.text(Class<T>)`, you can build a
+[`StructuredResponseTextConfig`](openai-java-core/src/main/kotlin/com/openai/models/responses/StructuredResponseTextConfig.kt)
+and set it on the `ResponseCreateParams` using the `text(StructuredResponseTextConfig)` method.
+Similar to using `ResponseCreateParams`, you can start with a `ResponseTextConfig.Builder` and its
+`format(Class<T>)` method will change it to a `StructuredResponseTextConfig.Builder`. This also
+allows you to set the `verbosity` configuration parameter on the text configuration before adding it
+to the `ResponseCreateParams`.
+
+For a full example of the usage of _Structured Outputs_ with the `ResponseTextConfig` and its
+`verbosity` parameter, see
+[`ResponsesStructuredOutputsVerbosityExample`](openai-java-example/src/main/java/com/openai/example/ResponsesStructuredOutputsVerbosityExample.java).
+
 ### Usage with streaming
 
 _Structured Outputs_ can also be used with [Streaming](#streaming) and the Chat Completions API. As

@@ -15,7 +15,7 @@ import java.util.Optional
 /**
  * A wrapper for [ChatCompletionCreateParams] that provides a type-safe [Builder] that can record
  * the [responseType] used to derive a JSON schema from an arbitrary class when using the
- * _Structured Outputs_ feature. When a JSON response is received, it is deserialized to am instance
+ * _Structured Outputs_ feature. When a JSON response is received, it is deserialized to an instance
  * of that type. See the SDK documentation for more details on _Structured Outputs_.
  *
  * @param T The type of the class that will be used to derive the JSON schema in the request and to
