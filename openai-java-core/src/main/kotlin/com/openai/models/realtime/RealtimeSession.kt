@@ -2217,6 +2217,10 @@ private constructor(
 
         companion object {
 
+            @JvmField val GPT_REALTIME = of("gpt-realtime")
+
+            @JvmField val GPT_REALTIME_2025_08_28 = of("gpt-realtime-2025-08-28")
+
             @JvmField val GPT_4O_REALTIME_PREVIEW = of("gpt-4o-realtime-preview")
 
             @JvmField
@@ -2239,6 +2243,8 @@ private constructor(
 
         /** An enum containing [Model]'s known values. */
         enum class Known {
+            GPT_REALTIME,
+            GPT_REALTIME_2025_08_28,
             GPT_4O_REALTIME_PREVIEW,
             GPT_4O_REALTIME_PREVIEW_2024_10_01,
             GPT_4O_REALTIME_PREVIEW_2024_12_17,
@@ -2257,6 +2263,8 @@ private constructor(
          * - It was constructed with an arbitrary value using the [of] method.
          */
         enum class Value {
+            GPT_REALTIME,
+            GPT_REALTIME_2025_08_28,
             GPT_4O_REALTIME_PREVIEW,
             GPT_4O_REALTIME_PREVIEW_2024_10_01,
             GPT_4O_REALTIME_PREVIEW_2024_12_17,
@@ -2276,6 +2284,8 @@ private constructor(
          */
         fun value(): Value =
             when (this) {
+                GPT_REALTIME -> Value.GPT_REALTIME
+                GPT_REALTIME_2025_08_28 -> Value.GPT_REALTIME_2025_08_28
                 GPT_4O_REALTIME_PREVIEW -> Value.GPT_4O_REALTIME_PREVIEW
                 GPT_4O_REALTIME_PREVIEW_2024_10_01 -> Value.GPT_4O_REALTIME_PREVIEW_2024_10_01
                 GPT_4O_REALTIME_PREVIEW_2024_12_17 -> Value.GPT_4O_REALTIME_PREVIEW_2024_12_17
@@ -2297,6 +2307,8 @@ private constructor(
          */
         fun known(): Known =
             when (this) {
+                GPT_REALTIME -> Known.GPT_REALTIME
+                GPT_REALTIME_2025_08_28 -> Known.GPT_REALTIME_2025_08_28
                 GPT_4O_REALTIME_PREVIEW -> Known.GPT_4O_REALTIME_PREVIEW
                 GPT_4O_REALTIME_PREVIEW_2024_10_01 -> Known.GPT_4O_REALTIME_PREVIEW_2024_10_01
                 GPT_4O_REALTIME_PREVIEW_2024_12_17 -> Known.GPT_4O_REALTIME_PREVIEW_2024_12_17

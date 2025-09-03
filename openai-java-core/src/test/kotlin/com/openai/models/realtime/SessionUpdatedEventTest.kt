@@ -37,7 +37,7 @@ internal class SessionUpdatedEventTest {
                         .instructions("instructions")
                         .maxResponseOutputTokens(0L)
                         .addModality(RealtimeSession.Modality.TEXT)
-                        .model(RealtimeSession.Model.GPT_4O_REALTIME_PREVIEW)
+                        .model(RealtimeSession.Model.GPT_REALTIME)
                         .object_(RealtimeSession.Object.REALTIME_SESSION)
                         .outputAudioFormat(RealtimeSession.OutputAudioFormat.PCM16)
                         .prompt(
@@ -103,7 +103,7 @@ internal class SessionUpdatedEventTest {
                     .instructions("instructions")
                     .maxResponseOutputTokens(0L)
                     .addModality(RealtimeSession.Modality.TEXT)
-                    .model(RealtimeSession.Model.GPT_4O_REALTIME_PREVIEW)
+                    .model(RealtimeSession.Model.GPT_REALTIME)
                     .object_(RealtimeSession.Object.REALTIME_SESSION)
                     .outputAudioFormat(RealtimeSession.OutputAudioFormat.PCM16)
                     .prompt(
@@ -173,7 +173,7 @@ internal class SessionUpdatedEventTest {
                         .instructions("instructions")
                         .maxResponseOutputTokens(0L)
                         .addModality(RealtimeSession.Modality.TEXT)
-                        .model(RealtimeSession.Model.GPT_4O_REALTIME_PREVIEW)
+                        .model(RealtimeSession.Model.GPT_REALTIME)
                         .object_(RealtimeSession.Object.REALTIME_SESSION)
                         .outputAudioFormat(RealtimeSession.OutputAudioFormat.PCM16)
                         .prompt(
