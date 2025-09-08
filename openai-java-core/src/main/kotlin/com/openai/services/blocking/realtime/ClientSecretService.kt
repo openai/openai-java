@@ -24,7 +24,7 @@ interface ClientSecretService {
      */
     fun withOptions(modifier: Consumer<ClientOptions.Builder>): ClientSecretService
 
-    /** Create a Realtime session and client secret for either realtime or transcription. */
+    /** Create a Realtime client secret with an associated session configuration. */
     fun create(): ClientSecretCreateResponse = create(ClientSecretCreateParams.none())
 
     /** @see create */

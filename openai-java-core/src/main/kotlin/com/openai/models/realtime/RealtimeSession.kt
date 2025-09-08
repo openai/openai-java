@@ -39,7 +39,7 @@ private constructor(
     private val include: JsonField<List<Include>>,
     private val inputAudioFormat: JsonField<InputAudioFormat>,
     private val inputAudioNoiseReduction: JsonField<InputAudioNoiseReduction>,
-    private val inputAudioTranscription: JsonField<InputAudioTranscription>,
+    private val inputAudioTranscription: JsonField<AudioTranscription>,
     private val instructions: JsonField<String>,
     private val maxResponseOutputTokens: JsonField<MaxResponseOutputTokens>,
     private val modalities: JsonField<List<Modality>>,
@@ -50,7 +50,7 @@ private constructor(
     private val speed: JsonField<Double>,
     private val temperature: JsonField<Double>,
     private val toolChoice: JsonField<String>,
-    private val tools: JsonField<List<Tool>>,
+    private val tools: JsonField<List<Models>>,
     private val tracing: JsonField<Tracing>,
     private val turnDetection: JsonField<TurnDetection>,
     private val voice: JsonField<Voice>,
@@ -72,7 +72,7 @@ private constructor(
         inputAudioNoiseReduction: JsonField<InputAudioNoiseReduction> = JsonMissing.of(),
         @JsonProperty("input_audio_transcription")
         @ExcludeMissing
-        inputAudioTranscription: JsonField<InputAudioTranscription> = JsonMissing.of(),
+        inputAudioTranscription: JsonField<AudioTranscription> = JsonMissing.of(),
         @JsonProperty("instructions")
         @ExcludeMissing
         instructions: JsonField<String> = JsonMissing.of(),
@@ -97,7 +97,7 @@ private constructor(
         @JsonProperty("tool_choice")
         @ExcludeMissing
         toolChoice: JsonField<String> = JsonMissing.of(),
-        @JsonProperty("tools") @ExcludeMissing tools: JsonField<List<Tool>> = JsonMissing.of(),
+        @JsonProperty("tools") @ExcludeMissing tools: JsonField<List<Models>> = JsonMissing.of(),
         @JsonProperty("tracing") @ExcludeMissing tracing: JsonField<Tracing> = JsonMissing.of(),
         @JsonProperty("turn_detection")
         @ExcludeMissing
@@ -187,7 +187,7 @@ private constructor(
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
      */
-    fun inputAudioTranscription(): Optional<InputAudioTranscription> =
+    fun inputAudioTranscription(): Optional<AudioTranscription> =
         inputAudioTranscription.getOptional("input_audio_transcription")
 
     /**
@@ -293,7 +293,7 @@ private constructor(
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
      */
-    fun tools(): Optional<List<Tool>> = tools.getOptional("tools")
+    fun tools(): Optional<List<Models>> = tools.getOptional("tools")
 
     /**
      * Configuration options for tracing. Set to null to disable tracing. Once tracing is enabled
@@ -382,7 +382,7 @@ private constructor(
      */
     @JsonProperty("input_audio_transcription")
     @ExcludeMissing
-    fun _inputAudioTranscription(): JsonField<InputAudioTranscription> = inputAudioTranscription
+    fun _inputAudioTranscription(): JsonField<AudioTranscription> = inputAudioTranscription
 
     /**
      * Returns the raw JSON value of [instructions].
@@ -469,7 +469,7 @@ private constructor(
      *
      * Unlike [tools], this method doesn't throw if the JSON field has an unexpected type.
      */
-    @JsonProperty("tools") @ExcludeMissing fun _tools(): JsonField<List<Tool>> = tools
+    @JsonProperty("tools") @ExcludeMissing fun _tools(): JsonField<List<Models>> = tools
 
     /**
      * Returns the raw JSON value of [tracing].
@@ -520,7 +520,7 @@ private constructor(
         private var include: JsonField<MutableList<Include>>? = null
         private var inputAudioFormat: JsonField<InputAudioFormat> = JsonMissing.of()
         private var inputAudioNoiseReduction: JsonField<InputAudioNoiseReduction> = JsonMissing.of()
-        private var inputAudioTranscription: JsonField<InputAudioTranscription> = JsonMissing.of()
+        private var inputAudioTranscription: JsonField<AudioTranscription> = JsonMissing.of()
         private var instructions: JsonField<String> = JsonMissing.of()
         private var maxResponseOutputTokens: JsonField<MaxResponseOutputTokens> = JsonMissing.of()
         private var modalities: JsonField<MutableList<Modality>>? = null
@@ -531,7 +531,7 @@ private constructor(
         private var speed: JsonField<Double> = JsonMissing.of()
         private var temperature: JsonField<Double> = JsonMissing.of()
         private var toolChoice: JsonField<String> = JsonMissing.of()
-        private var tools: JsonField<MutableList<Tool>>? = null
+        private var tools: JsonField<MutableList<Models>>? = null
         private var tracing: JsonField<Tracing> = JsonMissing.of()
         private var turnDetection: JsonField<TurnDetection> = JsonMissing.of()
         private var voice: JsonField<Voice> = JsonMissing.of()
@@ -665,24 +665,24 @@ private constructor(
          * model heard. The client can optionally set the language and prompt for transcription,
          * these offer additional guidance to the transcription service.
          */
-        fun inputAudioTranscription(inputAudioTranscription: InputAudioTranscription?) =
+        fun inputAudioTranscription(inputAudioTranscription: AudioTranscription?) =
             inputAudioTranscription(JsonField.ofNullable(inputAudioTranscription))
 
         /**
          * Alias for calling [Builder.inputAudioTranscription] with
          * `inputAudioTranscription.orElse(null)`.
          */
-        fun inputAudioTranscription(inputAudioTranscription: Optional<InputAudioTranscription>) =
+        fun inputAudioTranscription(inputAudioTranscription: Optional<AudioTranscription>) =
             inputAudioTranscription(inputAudioTranscription.getOrNull())
 
         /**
          * Sets [Builder.inputAudioTranscription] to an arbitrary JSON value.
          *
          * You should usually call [Builder.inputAudioTranscription] with a well-typed
-         * [InputAudioTranscription] value instead. This method is primarily for setting the field
-         * to an undocumented or not yet supported value.
+         * [AudioTranscription] value instead. This method is primarily for setting the field to an
+         * undocumented or not yet supported value.
          */
-        fun inputAudioTranscription(inputAudioTranscription: JsonField<InputAudioTranscription>) =
+        fun inputAudioTranscription(inputAudioTranscription: JsonField<AudioTranscription>) =
             apply {
                 this.inputAudioTranscription = inputAudioTranscription
             }
@@ -874,25 +874,25 @@ private constructor(
         fun toolChoice(toolChoice: JsonField<String>) = apply { this.toolChoice = toolChoice }
 
         /** Tools (functions) available to the model. */
-        fun tools(tools: List<Tool>) = tools(JsonField.of(tools))
+        fun tools(tools: List<Models>) = tools(JsonField.of(tools))
 
         /**
          * Sets [Builder.tools] to an arbitrary JSON value.
          *
-         * You should usually call [Builder.tools] with a well-typed `List<Tool>` value instead.
+         * You should usually call [Builder.tools] with a well-typed `List<Models>` value instead.
          * This method is primarily for setting the field to an undocumented or not yet supported
          * value.
          */
-        fun tools(tools: JsonField<List<Tool>>) = apply {
+        fun tools(tools: JsonField<List<Models>>) = apply {
             this.tools = tools.map { it.toMutableList() }
         }
 
         /**
-         * Adds a single [Tool] to [tools].
+         * Adds a single [Models] to [tools].
          *
          * @throws IllegalStateException if the field was previously set to a non-list.
          */
-        fun addTool(tool: Tool) = apply {
+        fun addTool(tool: Models) = apply {
             tools =
                 (tools ?: JsonField.of(mutableListOf())).also { checkKnown("tools", it).add(tool) }
         }
@@ -1363,13 +1363,15 @@ private constructor(
      */
     class InputAudioNoiseReduction
     private constructor(
-        private val type: JsonField<Type>,
+        private val type: JsonField<NoiseReductionType>,
         private val additionalProperties: MutableMap<String, JsonValue>,
     ) {
 
         @JsonCreator
         private constructor(
-            @JsonProperty("type") @ExcludeMissing type: JsonField<Type> = JsonMissing.of()
+            @JsonProperty("type")
+            @ExcludeMissing
+            type: JsonField<NoiseReductionType> = JsonMissing.of()
         ) : this(type, mutableMapOf())
 
         /**
@@ -1380,14 +1382,14 @@ private constructor(
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
          */
-        fun type(): Optional<Type> = type.getOptional("type")
+        fun type(): Optional<NoiseReductionType> = type.getOptional("type")
 
         /**
          * Returns the raw JSON value of [type].
          *
          * Unlike [type], this method doesn't throw if the JSON field has an unexpected type.
          */
-        @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<Type> = type
+        @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<NoiseReductionType> = type
 
         @JsonAnySetter
         private fun putAdditionalProperty(key: String, value: JsonValue) {
@@ -1412,7 +1414,7 @@ private constructor(
         /** A builder for [InputAudioNoiseReduction]. */
         class Builder internal constructor() {
 
-            private var type: JsonField<Type> = JsonMissing.of()
+            private var type: JsonField<NoiseReductionType> = JsonMissing.of()
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
             @JvmSynthetic
@@ -1426,16 +1428,16 @@ private constructor(
              * headphones, `far_field` is for far-field microphones such as laptop or conference
              * room microphones.
              */
-            fun type(type: Type) = type(JsonField.of(type))
+            fun type(type: NoiseReductionType) = type(JsonField.of(type))
 
             /**
              * Sets [Builder.type] to an arbitrary JSON value.
              *
-             * You should usually call [Builder.type] with a well-typed [Type] value instead. This
-             * method is primarily for setting the field to an undocumented or not yet supported
-             * value.
+             * You should usually call [Builder.type] with a well-typed [NoiseReductionType] value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
              */
-            fun type(type: JsonField<Type>) = apply { this.type = type }
+            fun type(type: JsonField<NoiseReductionType>) = apply { this.type = type }
 
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.clear()
@@ -1492,138 +1494,6 @@ private constructor(
          */
         @JvmSynthetic internal fun validity(): Int = (type.asKnown().getOrNull()?.validity() ?: 0)
 
-        /**
-         * Type of noise reduction. `near_field` is for close-talking microphones such as
-         * headphones, `far_field` is for far-field microphones such as laptop or conference room
-         * microphones.
-         */
-        class Type @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
-
-            /**
-             * Returns this class instance's raw value.
-             *
-             * This is usually only useful if this instance was deserialized from data that doesn't
-             * match any known member, and you want to know that value. For example, if the SDK is
-             * on an older version than the API, then the API may respond with new members that the
-             * SDK is unaware of.
-             */
-            @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
-
-            companion object {
-
-                @JvmField val NEAR_FIELD = of("near_field")
-
-                @JvmField val FAR_FIELD = of("far_field")
-
-                @JvmStatic fun of(value: String) = Type(JsonField.of(value))
-            }
-
-            /** An enum containing [Type]'s known values. */
-            enum class Known {
-                NEAR_FIELD,
-                FAR_FIELD,
-            }
-
-            /**
-             * An enum containing [Type]'s known values, as well as an [_UNKNOWN] member.
-             *
-             * An instance of [Type] can contain an unknown value in a couple of cases:
-             * - It was deserialized from data that doesn't match any known member. For example, if
-             *   the SDK is on an older version than the API, then the API may respond with new
-             *   members that the SDK is unaware of.
-             * - It was constructed with an arbitrary value using the [of] method.
-             */
-            enum class Value {
-                NEAR_FIELD,
-                FAR_FIELD,
-                /** An enum member indicating that [Type] was instantiated with an unknown value. */
-                _UNKNOWN,
-            }
-
-            /**
-             * Returns an enum member corresponding to this class instance's value, or
-             * [Value._UNKNOWN] if the class was instantiated with an unknown value.
-             *
-             * Use the [known] method instead if you're certain the value is always known or if you
-             * want to throw for the unknown case.
-             */
-            fun value(): Value =
-                when (this) {
-                    NEAR_FIELD -> Value.NEAR_FIELD
-                    FAR_FIELD -> Value.FAR_FIELD
-                    else -> Value._UNKNOWN
-                }
-
-            /**
-             * Returns an enum member corresponding to this class instance's value.
-             *
-             * Use the [value] method instead if you're uncertain the value is always known and
-             * don't want to throw for the unknown case.
-             *
-             * @throws OpenAIInvalidDataException if this class instance's value is a not a known
-             *   member.
-             */
-            fun known(): Known =
-                when (this) {
-                    NEAR_FIELD -> Known.NEAR_FIELD
-                    FAR_FIELD -> Known.FAR_FIELD
-                    else -> throw OpenAIInvalidDataException("Unknown Type: $value")
-                }
-
-            /**
-             * Returns this class instance's primitive wire representation.
-             *
-             * This differs from the [toString] method because that method is primarily for
-             * debugging and generally doesn't throw.
-             *
-             * @throws OpenAIInvalidDataException if this class instance's value does not have the
-             *   expected primitive type.
-             */
-            fun asString(): String =
-                _value().asString().orElseThrow {
-                    OpenAIInvalidDataException("Value is not a String")
-                }
-
-            private var validated: Boolean = false
-
-            fun validate(): Type = apply {
-                if (validated) {
-                    return@apply
-                }
-
-                known()
-                validated = true
-            }
-
-            fun isValid(): Boolean =
-                try {
-                    validate()
-                    true
-                } catch (e: OpenAIInvalidDataException) {
-                    false
-                }
-
-            /**
-             * Returns a score indicating how many valid values are contained in this object
-             * recursively.
-             *
-             * Used for best match union deserialization.
-             */
-            @JvmSynthetic internal fun validity(): Int = if (value() == Value._UNKNOWN) 0 else 1
-
-            override fun equals(other: Any?): Boolean {
-                if (this === other) {
-                    return true
-                }
-
-                return other is Type && value == other.value
-            }
-
-            override fun hashCode() = value.hashCode()
-
-            override fun toString() = value.toString()
-        }
-
         override fun equals(other: Any?): Boolean {
             if (this === other) {
                 return true
@@ -1640,257 +1510,6 @@ private constructor(
 
         override fun toString() =
             "InputAudioNoiseReduction{type=$type, additionalProperties=$additionalProperties}"
-    }
-
-    /**
-     * Configuration for input audio transcription, defaults to off and can be set to `null` to turn
-     * off once on. Input audio transcription is not native to the model, since the model consumes
-     * audio directly. Transcription runs asynchronously through
-     * [the /audio/transcriptions endpoint](https://platform.openai.com/docs/api-reference/audio/createTranscription)
-     * and should be treated as guidance of input audio content rather than precisely what the model
-     * heard. The client can optionally set the language and prompt for transcription, these offer
-     * additional guidance to the transcription service.
-     */
-    class InputAudioTranscription
-    private constructor(
-        private val language: JsonField<String>,
-        private val model: JsonField<String>,
-        private val prompt: JsonField<String>,
-        private val additionalProperties: MutableMap<String, JsonValue>,
-    ) {
-
-        @JsonCreator
-        private constructor(
-            @JsonProperty("language")
-            @ExcludeMissing
-            language: JsonField<String> = JsonMissing.of(),
-            @JsonProperty("model") @ExcludeMissing model: JsonField<String> = JsonMissing.of(),
-            @JsonProperty("prompt") @ExcludeMissing prompt: JsonField<String> = JsonMissing.of(),
-        ) : this(language, model, prompt, mutableMapOf())
-
-        /**
-         * The language of the input audio. Supplying the input language in
-         * [ISO-639-1](https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes) (e.g. `en`) format
-         * will improve accuracy and latency.
-         *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
-         */
-        fun language(): Optional<String> = language.getOptional("language")
-
-        /**
-         * The model to use for transcription, current options are `gpt-4o-transcribe`,
-         * `gpt-4o-mini-transcribe`, and `whisper-1`.
-         *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
-         */
-        fun model(): Optional<String> = model.getOptional("model")
-
-        /**
-         * An optional text to guide the model's style or continue a previous audio segment. For
-         * `whisper-1`, the
-         * [prompt is a list of keywords](https://platform.openai.com/docs/guides/speech-to-text#prompting).
-         * For `gpt-4o-transcribe` models, the prompt is a free text string, for example "expect
-         * words related to technology".
-         *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
-         */
-        fun prompt(): Optional<String> = prompt.getOptional("prompt")
-
-        /**
-         * Returns the raw JSON value of [language].
-         *
-         * Unlike [language], this method doesn't throw if the JSON field has an unexpected type.
-         */
-        @JsonProperty("language") @ExcludeMissing fun _language(): JsonField<String> = language
-
-        /**
-         * Returns the raw JSON value of [model].
-         *
-         * Unlike [model], this method doesn't throw if the JSON field has an unexpected type.
-         */
-        @JsonProperty("model") @ExcludeMissing fun _model(): JsonField<String> = model
-
-        /**
-         * Returns the raw JSON value of [prompt].
-         *
-         * Unlike [prompt], this method doesn't throw if the JSON field has an unexpected type.
-         */
-        @JsonProperty("prompt") @ExcludeMissing fun _prompt(): JsonField<String> = prompt
-
-        @JsonAnySetter
-        private fun putAdditionalProperty(key: String, value: JsonValue) {
-            additionalProperties.put(key, value)
-        }
-
-        @JsonAnyGetter
-        @ExcludeMissing
-        fun _additionalProperties(): Map<String, JsonValue> =
-            Collections.unmodifiableMap(additionalProperties)
-
-        fun toBuilder() = Builder().from(this)
-
-        companion object {
-
-            /**
-             * Returns a mutable builder for constructing an instance of [InputAudioTranscription].
-             */
-            @JvmStatic fun builder() = Builder()
-        }
-
-        /** A builder for [InputAudioTranscription]. */
-        class Builder internal constructor() {
-
-            private var language: JsonField<String> = JsonMissing.of()
-            private var model: JsonField<String> = JsonMissing.of()
-            private var prompt: JsonField<String> = JsonMissing.of()
-            private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
-
-            @JvmSynthetic
-            internal fun from(inputAudioTranscription: InputAudioTranscription) = apply {
-                language = inputAudioTranscription.language
-                model = inputAudioTranscription.model
-                prompt = inputAudioTranscription.prompt
-                additionalProperties = inputAudioTranscription.additionalProperties.toMutableMap()
-            }
-
-            /**
-             * The language of the input audio. Supplying the input language in
-             * [ISO-639-1](https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes) (e.g. `en`) format
-             * will improve accuracy and latency.
-             */
-            fun language(language: String) = language(JsonField.of(language))
-
-            /**
-             * Sets [Builder.language] to an arbitrary JSON value.
-             *
-             * You should usually call [Builder.language] with a well-typed [String] value instead.
-             * This method is primarily for setting the field to an undocumented or not yet
-             * supported value.
-             */
-            fun language(language: JsonField<String>) = apply { this.language = language }
-
-            /**
-             * The model to use for transcription, current options are `gpt-4o-transcribe`,
-             * `gpt-4o-mini-transcribe`, and `whisper-1`.
-             */
-            fun model(model: String) = model(JsonField.of(model))
-
-            /**
-             * Sets [Builder.model] to an arbitrary JSON value.
-             *
-             * You should usually call [Builder.model] with a well-typed [String] value instead.
-             * This method is primarily for setting the field to an undocumented or not yet
-             * supported value.
-             */
-            fun model(model: JsonField<String>) = apply { this.model = model }
-
-            /**
-             * An optional text to guide the model's style or continue a previous audio segment. For
-             * `whisper-1`, the
-             * [prompt is a list of keywords](https://platform.openai.com/docs/guides/speech-to-text#prompting).
-             * For `gpt-4o-transcribe` models, the prompt is a free text string, for example "expect
-             * words related to technology".
-             */
-            fun prompt(prompt: String) = prompt(JsonField.of(prompt))
-
-            /**
-             * Sets [Builder.prompt] to an arbitrary JSON value.
-             *
-             * You should usually call [Builder.prompt] with a well-typed [String] value instead.
-             * This method is primarily for setting the field to an undocumented or not yet
-             * supported value.
-             */
-            fun prompt(prompt: JsonField<String>) = apply { this.prompt = prompt }
-
-            fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
-                this.additionalProperties.clear()
-                putAllAdditionalProperties(additionalProperties)
-            }
-
-            fun putAdditionalProperty(key: String, value: JsonValue) = apply {
-                additionalProperties.put(key, value)
-            }
-
-            fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
-                this.additionalProperties.putAll(additionalProperties)
-            }
-
-            fun removeAdditionalProperty(key: String) = apply { additionalProperties.remove(key) }
-
-            fun removeAllAdditionalProperties(keys: Set<String>) = apply {
-                keys.forEach(::removeAdditionalProperty)
-            }
-
-            /**
-             * Returns an immutable instance of [InputAudioTranscription].
-             *
-             * Further updates to this [Builder] will not mutate the returned instance.
-             */
-            fun build(): InputAudioTranscription =
-                InputAudioTranscription(
-                    language,
-                    model,
-                    prompt,
-                    additionalProperties.toMutableMap(),
-                )
-        }
-
-        private var validated: Boolean = false
-
-        fun validate(): InputAudioTranscription = apply {
-            if (validated) {
-                return@apply
-            }
-
-            language()
-            model()
-            prompt()
-            validated = true
-        }
-
-        fun isValid(): Boolean =
-            try {
-                validate()
-                true
-            } catch (e: OpenAIInvalidDataException) {
-                false
-            }
-
-        /**
-         * Returns a score indicating how many valid values are contained in this object
-         * recursively.
-         *
-         * Used for best match union deserialization.
-         */
-        @JvmSynthetic
-        internal fun validity(): Int =
-            (if (language.asKnown().isPresent) 1 else 0) +
-                (if (model.asKnown().isPresent) 1 else 0) +
-                (if (prompt.asKnown().isPresent) 1 else 0)
-
-        override fun equals(other: Any?): Boolean {
-            if (this === other) {
-                return true
-            }
-
-            return other is InputAudioTranscription &&
-                language == other.language &&
-                model == other.model &&
-                prompt == other.prompt &&
-                additionalProperties == other.additionalProperties
-        }
-
-        private val hashCode: Int by lazy {
-            Objects.hash(language, model, prompt, additionalProperties)
-        }
-
-        override fun hashCode(): Int = hashCode
-
-        override fun toString() =
-            "InputAudioTranscription{language=$language, model=$model, prompt=$prompt, additionalProperties=$additionalProperties}"
     }
 
     /**
@@ -2628,362 +2247,6 @@ private constructor(
         override fun hashCode() = value.hashCode()
 
         override fun toString() = value.toString()
-    }
-
-    class Tool
-    private constructor(
-        private val description: JsonField<String>,
-        private val name: JsonField<String>,
-        private val parameters: JsonValue,
-        private val type: JsonField<Type>,
-        private val additionalProperties: MutableMap<String, JsonValue>,
-    ) {
-
-        @JsonCreator
-        private constructor(
-            @JsonProperty("description")
-            @ExcludeMissing
-            description: JsonField<String> = JsonMissing.of(),
-            @JsonProperty("name") @ExcludeMissing name: JsonField<String> = JsonMissing.of(),
-            @JsonProperty("parameters") @ExcludeMissing parameters: JsonValue = JsonMissing.of(),
-            @JsonProperty("type") @ExcludeMissing type: JsonField<Type> = JsonMissing.of(),
-        ) : this(description, name, parameters, type, mutableMapOf())
-
-        /**
-         * The description of the function, including guidance on when and how to call it, and
-         * guidance about what to tell the user when calling (if anything).
-         *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
-         */
-        fun description(): Optional<String> = description.getOptional("description")
-
-        /**
-         * The name of the function.
-         *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
-         */
-        fun name(): Optional<String> = name.getOptional("name")
-
-        /** Parameters of the function in JSON Schema. */
-        @JsonProperty("parameters") @ExcludeMissing fun _parameters(): JsonValue = parameters
-
-        /**
-         * The type of the tool, i.e. `function`.
-         *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
-         */
-        fun type(): Optional<Type> = type.getOptional("type")
-
-        /**
-         * Returns the raw JSON value of [description].
-         *
-         * Unlike [description], this method doesn't throw if the JSON field has an unexpected type.
-         */
-        @JsonProperty("description")
-        @ExcludeMissing
-        fun _description(): JsonField<String> = description
-
-        /**
-         * Returns the raw JSON value of [name].
-         *
-         * Unlike [name], this method doesn't throw if the JSON field has an unexpected type.
-         */
-        @JsonProperty("name") @ExcludeMissing fun _name(): JsonField<String> = name
-
-        /**
-         * Returns the raw JSON value of [type].
-         *
-         * Unlike [type], this method doesn't throw if the JSON field has an unexpected type.
-         */
-        @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<Type> = type
-
-        @JsonAnySetter
-        private fun putAdditionalProperty(key: String, value: JsonValue) {
-            additionalProperties.put(key, value)
-        }
-
-        @JsonAnyGetter
-        @ExcludeMissing
-        fun _additionalProperties(): Map<String, JsonValue> =
-            Collections.unmodifiableMap(additionalProperties)
-
-        fun toBuilder() = Builder().from(this)
-
-        companion object {
-
-            /** Returns a mutable builder for constructing an instance of [Tool]. */
-            @JvmStatic fun builder() = Builder()
-        }
-
-        /** A builder for [Tool]. */
-        class Builder internal constructor() {
-
-            private var description: JsonField<String> = JsonMissing.of()
-            private var name: JsonField<String> = JsonMissing.of()
-            private var parameters: JsonValue = JsonMissing.of()
-            private var type: JsonField<Type> = JsonMissing.of()
-            private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
-
-            @JvmSynthetic
-            internal fun from(tool: Tool) = apply {
-                description = tool.description
-                name = tool.name
-                parameters = tool.parameters
-                type = tool.type
-                additionalProperties = tool.additionalProperties.toMutableMap()
-            }
-
-            /**
-             * The description of the function, including guidance on when and how to call it, and
-             * guidance about what to tell the user when calling (if anything).
-             */
-            fun description(description: String) = description(JsonField.of(description))
-
-            /**
-             * Sets [Builder.description] to an arbitrary JSON value.
-             *
-             * You should usually call [Builder.description] with a well-typed [String] value
-             * instead. This method is primarily for setting the field to an undocumented or not yet
-             * supported value.
-             */
-            fun description(description: JsonField<String>) = apply {
-                this.description = description
-            }
-
-            /** The name of the function. */
-            fun name(name: String) = name(JsonField.of(name))
-
-            /**
-             * Sets [Builder.name] to an arbitrary JSON value.
-             *
-             * You should usually call [Builder.name] with a well-typed [String] value instead. This
-             * method is primarily for setting the field to an undocumented or not yet supported
-             * value.
-             */
-            fun name(name: JsonField<String>) = apply { this.name = name }
-
-            /** Parameters of the function in JSON Schema. */
-            fun parameters(parameters: JsonValue) = apply { this.parameters = parameters }
-
-            /** The type of the tool, i.e. `function`. */
-            fun type(type: Type) = type(JsonField.of(type))
-
-            /**
-             * Sets [Builder.type] to an arbitrary JSON value.
-             *
-             * You should usually call [Builder.type] with a well-typed [Type] value instead. This
-             * method is primarily for setting the field to an undocumented or not yet supported
-             * value.
-             */
-            fun type(type: JsonField<Type>) = apply { this.type = type }
-
-            fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
-                this.additionalProperties.clear()
-                putAllAdditionalProperties(additionalProperties)
-            }
-
-            fun putAdditionalProperty(key: String, value: JsonValue) = apply {
-                additionalProperties.put(key, value)
-            }
-
-            fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
-                this.additionalProperties.putAll(additionalProperties)
-            }
-
-            fun removeAdditionalProperty(key: String) = apply { additionalProperties.remove(key) }
-
-            fun removeAllAdditionalProperties(keys: Set<String>) = apply {
-                keys.forEach(::removeAdditionalProperty)
-            }
-
-            /**
-             * Returns an immutable instance of [Tool].
-             *
-             * Further updates to this [Builder] will not mutate the returned instance.
-             */
-            fun build(): Tool =
-                Tool(description, name, parameters, type, additionalProperties.toMutableMap())
-        }
-
-        private var validated: Boolean = false
-
-        fun validate(): Tool = apply {
-            if (validated) {
-                return@apply
-            }
-
-            description()
-            name()
-            type().ifPresent { it.validate() }
-            validated = true
-        }
-
-        fun isValid(): Boolean =
-            try {
-                validate()
-                true
-            } catch (e: OpenAIInvalidDataException) {
-                false
-            }
-
-        /**
-         * Returns a score indicating how many valid values are contained in this object
-         * recursively.
-         *
-         * Used for best match union deserialization.
-         */
-        @JvmSynthetic
-        internal fun validity(): Int =
-            (if (description.asKnown().isPresent) 1 else 0) +
-                (if (name.asKnown().isPresent) 1 else 0) +
-                (type.asKnown().getOrNull()?.validity() ?: 0)
-
-        /** The type of the tool, i.e. `function`. */
-        class Type @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
-
-            /**
-             * Returns this class instance's raw value.
-             *
-             * This is usually only useful if this instance was deserialized from data that doesn't
-             * match any known member, and you want to know that value. For example, if the SDK is
-             * on an older version than the API, then the API may respond with new members that the
-             * SDK is unaware of.
-             */
-            @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
-
-            companion object {
-
-                @JvmField val FUNCTION = of("function")
-
-                @JvmStatic fun of(value: String) = Type(JsonField.of(value))
-            }
-
-            /** An enum containing [Type]'s known values. */
-            enum class Known {
-                FUNCTION
-            }
-
-            /**
-             * An enum containing [Type]'s known values, as well as an [_UNKNOWN] member.
-             *
-             * An instance of [Type] can contain an unknown value in a couple of cases:
-             * - It was deserialized from data that doesn't match any known member. For example, if
-             *   the SDK is on an older version than the API, then the API may respond with new
-             *   members that the SDK is unaware of.
-             * - It was constructed with an arbitrary value using the [of] method.
-             */
-            enum class Value {
-                FUNCTION,
-                /** An enum member indicating that [Type] was instantiated with an unknown value. */
-                _UNKNOWN,
-            }
-
-            /**
-             * Returns an enum member corresponding to this class instance's value, or
-             * [Value._UNKNOWN] if the class was instantiated with an unknown value.
-             *
-             * Use the [known] method instead if you're certain the value is always known or if you
-             * want to throw for the unknown case.
-             */
-            fun value(): Value =
-                when (this) {
-                    FUNCTION -> Value.FUNCTION
-                    else -> Value._UNKNOWN
-                }
-
-            /**
-             * Returns an enum member corresponding to this class instance's value.
-             *
-             * Use the [value] method instead if you're uncertain the value is always known and
-             * don't want to throw for the unknown case.
-             *
-             * @throws OpenAIInvalidDataException if this class instance's value is a not a known
-             *   member.
-             */
-            fun known(): Known =
-                when (this) {
-                    FUNCTION -> Known.FUNCTION
-                    else -> throw OpenAIInvalidDataException("Unknown Type: $value")
-                }
-
-            /**
-             * Returns this class instance's primitive wire representation.
-             *
-             * This differs from the [toString] method because that method is primarily for
-             * debugging and generally doesn't throw.
-             *
-             * @throws OpenAIInvalidDataException if this class instance's value does not have the
-             *   expected primitive type.
-             */
-            fun asString(): String =
-                _value().asString().orElseThrow {
-                    OpenAIInvalidDataException("Value is not a String")
-                }
-
-            private var validated: Boolean = false
-
-            fun validate(): Type = apply {
-                if (validated) {
-                    return@apply
-                }
-
-                known()
-                validated = true
-            }
-
-            fun isValid(): Boolean =
-                try {
-                    validate()
-                    true
-                } catch (e: OpenAIInvalidDataException) {
-                    false
-                }
-
-            /**
-             * Returns a score indicating how many valid values are contained in this object
-             * recursively.
-             *
-             * Used for best match union deserialization.
-             */
-            @JvmSynthetic internal fun validity(): Int = if (value() == Value._UNKNOWN) 0 else 1
-
-            override fun equals(other: Any?): Boolean {
-                if (this === other) {
-                    return true
-                }
-
-                return other is Type && value == other.value
-            }
-
-            override fun hashCode() = value.hashCode()
-
-            override fun toString() = value.toString()
-        }
-
-        override fun equals(other: Any?): Boolean {
-            if (this === other) {
-                return true
-            }
-
-            return other is Tool &&
-                description == other.description &&
-                name == other.name &&
-                parameters == other.parameters &&
-                type == other.type &&
-                additionalProperties == other.additionalProperties
-        }
-
-        private val hashCode: Int by lazy {
-            Objects.hash(description, name, parameters, type, additionalProperties)
-        }
-
-        override fun hashCode(): Int = hashCode
-
-        override fun toString() =
-            "Tool{description=$description, name=$name, parameters=$parameters, type=$type, additionalProperties=$additionalProperties}"
     }
 
     /**

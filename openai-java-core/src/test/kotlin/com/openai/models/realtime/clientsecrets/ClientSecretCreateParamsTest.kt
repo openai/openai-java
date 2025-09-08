@@ -3,10 +3,15 @@
 package com.openai.models.realtime.clientsecrets
 
 import com.openai.core.JsonValue
+import com.openai.models.realtime.AudioTranscription
+import com.openai.models.realtime.Models
+import com.openai.models.realtime.NoiseReductionType
 import com.openai.models.realtime.RealtimeAudioConfig
-import com.openai.models.realtime.RealtimeClientSecretConfig
+import com.openai.models.realtime.RealtimeAudioConfigInput
+import com.openai.models.realtime.RealtimeAudioConfigOutput
+import com.openai.models.realtime.RealtimeAudioFormats
+import com.openai.models.realtime.RealtimeAudioInputTurnDetection
 import com.openai.models.realtime.RealtimeSessionCreateRequest
-import com.openai.models.realtime.RealtimeToolsConfigUnion
 import com.openai.models.realtime.RealtimeTruncation
 import com.openai.models.responses.ResponsePrompt
 import com.openai.models.responses.ToolChoiceOptions
@@ -26,67 +31,54 @@ internal class ClientSecretCreateParamsTest {
             )
             .session(
                 RealtimeSessionCreateRequest.builder()
-                    .model(RealtimeSessionCreateRequest.Model.GPT_REALTIME)
                     .audio(
                         RealtimeAudioConfig.builder()
                             .input(
-                                RealtimeAudioConfig.Input.builder()
-                                    .format(RealtimeAudioConfig.Input.Format.PCM16)
+                                RealtimeAudioConfigInput.builder()
+                                    .format(
+                                        RealtimeAudioFormats.AudioPcm.builder()
+                                            .rate(RealtimeAudioFormats.AudioPcm.Rate._24000)
+                                            .type(RealtimeAudioFormats.AudioPcm.Type.AUDIO_PCM)
+                                            .build()
+                                    )
                                     .noiseReduction(
-                                        RealtimeAudioConfig.Input.NoiseReduction.builder()
-                                            .type(
-                                                RealtimeAudioConfig.Input.NoiseReduction.Type
-                                                    .NEAR_FIELD
-                                            )
+                                        RealtimeAudioConfigInput.NoiseReduction.builder()
+                                            .type(NoiseReductionType.NEAR_FIELD)
                                             .build()
                                     )
                                     .transcription(
-                                        RealtimeAudioConfig.Input.Transcription.builder()
+                                        AudioTranscription.builder()
                                             .language("language")
-                                            .model(
-                                                RealtimeAudioConfig.Input.Transcription.Model
-                                                    .WHISPER_1
-                                            )
+                                            .model(AudioTranscription.Model.WHISPER_1)
                                             .prompt("prompt")
                                             .build()
                                     )
                                     .turnDetection(
-                                        RealtimeAudioConfig.Input.TurnDetection.builder()
+                                        RealtimeAudioInputTurnDetection.builder()
                                             .createResponse(true)
                                             .eagerness(
-                                                RealtimeAudioConfig.Input.TurnDetection.Eagerness
-                                                    .LOW
+                                                RealtimeAudioInputTurnDetection.Eagerness.LOW
                                             )
                                             .idleTimeoutMs(0L)
                                             .interruptResponse(true)
                                             .prefixPaddingMs(0L)
                                             .silenceDurationMs(0L)
                                             .threshold(0.0)
-                                            .type(
-                                                RealtimeAudioConfig.Input.TurnDetection.Type
-                                                    .SERVER_VAD
-                                            )
+                                            .type(RealtimeAudioInputTurnDetection.Type.SERVER_VAD)
                                             .build()
                                     )
                                     .build()
                             )
                             .output(
-                                RealtimeAudioConfig.Output.builder()
-                                    .format(RealtimeAudioConfig.Output.Format.PCM16)
-                                    .speed(0.25)
-                                    .voice(RealtimeAudioConfig.Output.Voice.ALLOY)
-                                    .build()
-                            )
-                            .build()
-                    )
-                    .clientSecret(
-                        RealtimeClientSecretConfig.builder()
-                            .expiresAfter(
-                                RealtimeClientSecretConfig.ExpiresAfter.builder()
-                                    .anchor(
-                                        RealtimeClientSecretConfig.ExpiresAfter.Anchor.CREATED_AT
+                                RealtimeAudioConfigOutput.builder()
+                                    .format(
+                                        RealtimeAudioFormats.AudioPcm.builder()
+                                            .rate(RealtimeAudioFormats.AudioPcm.Rate._24000)
+                                            .type(RealtimeAudioFormats.AudioPcm.Type.AUDIO_PCM)
+                                            .build()
                                     )
-                                    .seconds(0L)
+                                    .speed(0.25)
+                                    .voice(RealtimeAudioConfigOutput.Voice.ALLOY)
                                     .build()
                             )
                             .build()
@@ -96,6 +88,7 @@ internal class ClientSecretCreateParamsTest {
                     )
                     .instructions("instructions")
                     .maxOutputTokens(0L)
+                    .model(RealtimeSessionCreateRequest.Model.GPT_REALTIME)
                     .addOutputModality(RealtimeSessionCreateRequest.OutputModality.TEXT)
                     .prompt(
                         ResponsePrompt.builder()
@@ -108,14 +101,13 @@ internal class ClientSecretCreateParamsTest {
                             .version("version")
                             .build()
                     )
-                    .temperature(0.0)
                     .toolChoice(ToolChoiceOptions.NONE)
                     .addTool(
-                        RealtimeToolsConfigUnion.Function.builder()
+                        Models.builder()
                             .description("description")
                             .name("name")
                             .parameters(JsonValue.from(mapOf<String, Any>()))
-                            .type(RealtimeToolsConfigUnion.Function.Type.FUNCTION)
+                            .type(Models.Type.FUNCTION)
                             .build()
                     )
                     .tracingAuto()
@@ -137,37 +129,33 @@ internal class ClientSecretCreateParamsTest {
                 )
                 .session(
                     RealtimeSessionCreateRequest.builder()
-                        .model(RealtimeSessionCreateRequest.Model.GPT_REALTIME)
                         .audio(
                             RealtimeAudioConfig.builder()
                                 .input(
-                                    RealtimeAudioConfig.Input.builder()
-                                        .format(RealtimeAudioConfig.Input.Format.PCM16)
+                                    RealtimeAudioConfigInput.builder()
+                                        .format(
+                                            RealtimeAudioFormats.AudioPcm.builder()
+                                                .rate(RealtimeAudioFormats.AudioPcm.Rate._24000)
+                                                .type(RealtimeAudioFormats.AudioPcm.Type.AUDIO_PCM)
+                                                .build()
+                                        )
                                         .noiseReduction(
-                                            RealtimeAudioConfig.Input.NoiseReduction.builder()
-                                                .type(
-                                                    RealtimeAudioConfig.Input.NoiseReduction.Type
-                                                        .NEAR_FIELD
-                                                )
+                                            RealtimeAudioConfigInput.NoiseReduction.builder()
+                                                .type(NoiseReductionType.NEAR_FIELD)
                                                 .build()
                                         )
                                         .transcription(
-                                            RealtimeAudioConfig.Input.Transcription.builder()
+                                            AudioTranscription.builder()
                                                 .language("language")
-                                                .model(
-                                                    RealtimeAudioConfig.Input.Transcription.Model
-                                                        .WHISPER_1
-                                                )
+                                                .model(AudioTranscription.Model.WHISPER_1)
                                                 .prompt("prompt")
                                                 .build()
                                         )
                                         .turnDetection(
-                                            RealtimeAudioConfig.Input.TurnDetection.builder()
+                                            RealtimeAudioInputTurnDetection.builder()
                                                 .createResponse(true)
                                                 .eagerness(
-                                                    RealtimeAudioConfig.Input.TurnDetection
-                                                        .Eagerness
-                                                        .LOW
+                                                    RealtimeAudioInputTurnDetection.Eagerness.LOW
                                                 )
                                                 .idleTimeoutMs(0L)
                                                 .interruptResponse(true)
@@ -175,31 +163,22 @@ internal class ClientSecretCreateParamsTest {
                                                 .silenceDurationMs(0L)
                                                 .threshold(0.0)
                                                 .type(
-                                                    RealtimeAudioConfig.Input.TurnDetection.Type
-                                                        .SERVER_VAD
+                                                    RealtimeAudioInputTurnDetection.Type.SERVER_VAD
                                                 )
                                                 .build()
                                         )
                                         .build()
                                 )
                                 .output(
-                                    RealtimeAudioConfig.Output.builder()
-                                        .format(RealtimeAudioConfig.Output.Format.PCM16)
-                                        .speed(0.25)
-                                        .voice(RealtimeAudioConfig.Output.Voice.ALLOY)
-                                        .build()
-                                )
-                                .build()
-                        )
-                        .clientSecret(
-                            RealtimeClientSecretConfig.builder()
-                                .expiresAfter(
-                                    RealtimeClientSecretConfig.ExpiresAfter.builder()
-                                        .anchor(
-                                            RealtimeClientSecretConfig.ExpiresAfter.Anchor
-                                                .CREATED_AT
+                                    RealtimeAudioConfigOutput.builder()
+                                        .format(
+                                            RealtimeAudioFormats.AudioPcm.builder()
+                                                .rate(RealtimeAudioFormats.AudioPcm.Rate._24000)
+                                                .type(RealtimeAudioFormats.AudioPcm.Type.AUDIO_PCM)
+                                                .build()
                                         )
-                                        .seconds(0L)
+                                        .speed(0.25)
+                                        .voice(RealtimeAudioConfigOutput.Voice.ALLOY)
                                         .build()
                                 )
                                 .build()
@@ -210,6 +189,7 @@ internal class ClientSecretCreateParamsTest {
                         )
                         .instructions("instructions")
                         .maxOutputTokens(0L)
+                        .model(RealtimeSessionCreateRequest.Model.GPT_REALTIME)
                         .addOutputModality(RealtimeSessionCreateRequest.OutputModality.TEXT)
                         .prompt(
                             ResponsePrompt.builder()
@@ -222,14 +202,13 @@ internal class ClientSecretCreateParamsTest {
                                 .version("version")
                                 .build()
                         )
-                        .temperature(0.0)
                         .toolChoice(ToolChoiceOptions.NONE)
                         .addTool(
-                            RealtimeToolsConfigUnion.Function.builder()
+                            Models.builder()
                                 .description("description")
                                 .name("name")
                                 .parameters(JsonValue.from(mapOf<String, Any>()))
-                                .type(RealtimeToolsConfigUnion.Function.Type.FUNCTION)
+                                .type(Models.Type.FUNCTION)
                                 .build()
                         )
                         .tracingAuto()
@@ -251,37 +230,33 @@ internal class ClientSecretCreateParamsTest {
             .contains(
                 ClientSecretCreateParams.Session.ofRealtime(
                     RealtimeSessionCreateRequest.builder()
-                        .model(RealtimeSessionCreateRequest.Model.GPT_REALTIME)
                         .audio(
                             RealtimeAudioConfig.builder()
                                 .input(
-                                    RealtimeAudioConfig.Input.builder()
-                                        .format(RealtimeAudioConfig.Input.Format.PCM16)
+                                    RealtimeAudioConfigInput.builder()
+                                        .format(
+                                            RealtimeAudioFormats.AudioPcm.builder()
+                                                .rate(RealtimeAudioFormats.AudioPcm.Rate._24000)
+                                                .type(RealtimeAudioFormats.AudioPcm.Type.AUDIO_PCM)
+                                                .build()
+                                        )
                                         .noiseReduction(
-                                            RealtimeAudioConfig.Input.NoiseReduction.builder()
-                                                .type(
-                                                    RealtimeAudioConfig.Input.NoiseReduction.Type
-                                                        .NEAR_FIELD
-                                                )
+                                            RealtimeAudioConfigInput.NoiseReduction.builder()
+                                                .type(NoiseReductionType.NEAR_FIELD)
                                                 .build()
                                         )
                                         .transcription(
-                                            RealtimeAudioConfig.Input.Transcription.builder()
+                                            AudioTranscription.builder()
                                                 .language("language")
-                                                .model(
-                                                    RealtimeAudioConfig.Input.Transcription.Model
-                                                        .WHISPER_1
-                                                )
+                                                .model(AudioTranscription.Model.WHISPER_1)
                                                 .prompt("prompt")
                                                 .build()
                                         )
                                         .turnDetection(
-                                            RealtimeAudioConfig.Input.TurnDetection.builder()
+                                            RealtimeAudioInputTurnDetection.builder()
                                                 .createResponse(true)
                                                 .eagerness(
-                                                    RealtimeAudioConfig.Input.TurnDetection
-                                                        .Eagerness
-                                                        .LOW
+                                                    RealtimeAudioInputTurnDetection.Eagerness.LOW
                                                 )
                                                 .idleTimeoutMs(0L)
                                                 .interruptResponse(true)
@@ -289,31 +264,22 @@ internal class ClientSecretCreateParamsTest {
                                                 .silenceDurationMs(0L)
                                                 .threshold(0.0)
                                                 .type(
-                                                    RealtimeAudioConfig.Input.TurnDetection.Type
-                                                        .SERVER_VAD
+                                                    RealtimeAudioInputTurnDetection.Type.SERVER_VAD
                                                 )
                                                 .build()
                                         )
                                         .build()
                                 )
                                 .output(
-                                    RealtimeAudioConfig.Output.builder()
-                                        .format(RealtimeAudioConfig.Output.Format.PCM16)
-                                        .speed(0.25)
-                                        .voice(RealtimeAudioConfig.Output.Voice.ALLOY)
-                                        .build()
-                                )
-                                .build()
-                        )
-                        .clientSecret(
-                            RealtimeClientSecretConfig.builder()
-                                .expiresAfter(
-                                    RealtimeClientSecretConfig.ExpiresAfter.builder()
-                                        .anchor(
-                                            RealtimeClientSecretConfig.ExpiresAfter.Anchor
-                                                .CREATED_AT
+                                    RealtimeAudioConfigOutput.builder()
+                                        .format(
+                                            RealtimeAudioFormats.AudioPcm.builder()
+                                                .rate(RealtimeAudioFormats.AudioPcm.Rate._24000)
+                                                .type(RealtimeAudioFormats.AudioPcm.Type.AUDIO_PCM)
+                                                .build()
                                         )
-                                        .seconds(0L)
+                                        .speed(0.25)
+                                        .voice(RealtimeAudioConfigOutput.Voice.ALLOY)
                                         .build()
                                 )
                                 .build()
@@ -324,6 +290,7 @@ internal class ClientSecretCreateParamsTest {
                         )
                         .instructions("instructions")
                         .maxOutputTokens(0L)
+                        .model(RealtimeSessionCreateRequest.Model.GPT_REALTIME)
                         .addOutputModality(RealtimeSessionCreateRequest.OutputModality.TEXT)
                         .prompt(
                             ResponsePrompt.builder()
@@ -336,14 +303,13 @@ internal class ClientSecretCreateParamsTest {
                                 .version("version")
                                 .build()
                         )
-                        .temperature(0.0)
                         .toolChoice(ToolChoiceOptions.NONE)
                         .addTool(
-                            RealtimeToolsConfigUnion.Function.builder()
+                            Models.builder()
                                 .description("description")
                                 .name("name")
                                 .parameters(JsonValue.from(mapOf<String, Any>()))
-                                .type(RealtimeToolsConfigUnion.Function.Type.FUNCTION)
+                                .type(Models.Type.FUNCTION)
                                 .build()
                         )
                         .tracingAuto()

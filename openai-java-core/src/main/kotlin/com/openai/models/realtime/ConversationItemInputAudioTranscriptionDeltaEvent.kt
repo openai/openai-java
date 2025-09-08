@@ -19,7 +19,10 @@ import java.util.Objects
 import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
-/** Returned when the text value of an input audio transcription content part is updated. */
+/**
+ * Returned when the text value of an input audio transcription content part is updated with
+ * incremental transcription results.
+ */
 class ConversationItemInputAudioTranscriptionDeltaEvent
 private constructor(
     private val eventId: JsonField<String>,
@@ -54,7 +57,7 @@ private constructor(
     fun eventId(): String = eventId.getRequired("event_id")
 
     /**
-     * The ID of the item.
+     * The ID of the item containing the audio that is being transcribed.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
      *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
@@ -91,7 +94,11 @@ private constructor(
     fun delta(): Optional<String> = delta.getOptional("delta")
 
     /**
-     * The log probabilities of the transcription.
+     * The log probabilities of the transcription. These can be enabled by configurating the session
+     * with `"include": ["item.input_audio_transcription.logprobs"]`. Each entry in the array
+     * corresponds a log probability of which token would be selected for this chunk of
+     * transcription. This can help to identify if it was possible there were multiple valid options
+     * for a given chunk of transcription.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -206,7 +213,7 @@ private constructor(
          */
         fun eventId(eventId: JsonField<String>) = apply { this.eventId = eventId }
 
-        /** The ID of the item. */
+        /** The ID of the item containing the audio that is being transcribed. */
         fun itemId(itemId: String) = itemId(JsonField.of(itemId))
 
         /**
@@ -254,7 +261,13 @@ private constructor(
          */
         fun delta(delta: JsonField<String>) = apply { this.delta = delta }
 
-        /** The log probabilities of the transcription. */
+        /**
+         * The log probabilities of the transcription. These can be enabled by configurating the
+         * session with `"include": ["item.input_audio_transcription.logprobs"]`. Each entry in the
+         * array corresponds a log probability of which token would be selected for this chunk of
+         * transcription. This can help to identify if it was possible there were multiple valid
+         * options for a given chunk of transcription.
+         */
         fun logprobs(logprobs: List<LogProbProperties>?) = logprobs(JsonField.ofNullable(logprobs))
 
         /** Alias for calling [Builder.logprobs] with `logprobs.orElse(null)`. */

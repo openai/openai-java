@@ -18,8 +18,23 @@ internal class ResponseCreateEventTest {
             ResponseCreateEvent.builder()
                 .eventId("event_id")
                 .response(
-                    ResponseCreateEvent.Response.builder()
-                        .conversation(ResponseCreateEvent.Response.Conversation.AUTO)
+                    RealtimeResponseCreateParams.builder()
+                        .audio(
+                            RealtimeResponseCreateAudioOutput.builder()
+                                .output(
+                                    RealtimeResponseCreateAudioOutput.Output.builder()
+                                        .format(
+                                            RealtimeAudioFormats.AudioPcm.builder()
+                                                .rate(RealtimeAudioFormats.AudioPcm.Rate._24000)
+                                                .type(RealtimeAudioFormats.AudioPcm.Type.AUDIO_PCM)
+                                                .build()
+                                        )
+                                        .voice(RealtimeResponseCreateAudioOutput.Output.Voice.ALLOY)
+                                        .build()
+                                )
+                                .build()
+                        )
+                        .conversation(RealtimeResponseCreateParams.Conversation.AUTO)
                         .addInput(
                             RealtimeConversationItemSystemMessage.builder()
                                 .addContent(
@@ -39,12 +54,11 @@ internal class ResponseCreateEventTest {
                         .instructions("instructions")
                         .maxOutputTokens(0L)
                         .metadata(
-                            ResponseCreateEvent.Response.Metadata.builder()
+                            RealtimeResponseCreateParams.Metadata.builder()
                                 .putAdditionalProperty("foo", JsonValue.from("string"))
                                 .build()
                         )
-                        .addModality(ResponseCreateEvent.Response.Modality.TEXT)
-                        .outputAudioFormat(ResponseCreateEvent.Response.OutputAudioFormat.PCM16)
+                        .addOutputModality(RealtimeResponseCreateParams.OutputModality.TEXT)
                         .prompt(
                             ResponsePrompt.builder()
                                 .id("id")
@@ -56,17 +70,15 @@ internal class ResponseCreateEventTest {
                                 .version("version")
                                 .build()
                         )
-                        .temperature(0.0)
                         .toolChoice(ToolChoiceOptions.NONE)
                         .addTool(
-                            ResponseCreateEvent.Response.Tool.builder()
+                            Models.builder()
                                 .description("description")
                                 .name("name")
                                 .parameters(JsonValue.from(mapOf<String, Any>()))
-                                .type(ResponseCreateEvent.Response.Tool.Type.FUNCTION)
+                                .type(Models.Type.FUNCTION)
                                 .build()
                         )
-                        .voice(ResponseCreateEvent.Response.Voice.ALLOY)
                         .build()
                 )
                 .build()
@@ -74,8 +86,23 @@ internal class ResponseCreateEventTest {
         assertThat(responseCreateEvent.eventId()).contains("event_id")
         assertThat(responseCreateEvent.response())
             .contains(
-                ResponseCreateEvent.Response.builder()
-                    .conversation(ResponseCreateEvent.Response.Conversation.AUTO)
+                RealtimeResponseCreateParams.builder()
+                    .audio(
+                        RealtimeResponseCreateAudioOutput.builder()
+                            .output(
+                                RealtimeResponseCreateAudioOutput.Output.builder()
+                                    .format(
+                                        RealtimeAudioFormats.AudioPcm.builder()
+                                            .rate(RealtimeAudioFormats.AudioPcm.Rate._24000)
+                                            .type(RealtimeAudioFormats.AudioPcm.Type.AUDIO_PCM)
+                                            .build()
+                                    )
+                                    .voice(RealtimeResponseCreateAudioOutput.Output.Voice.ALLOY)
+                                    .build()
+                            )
+                            .build()
+                    )
+                    .conversation(RealtimeResponseCreateParams.Conversation.AUTO)
                     .addInput(
                         RealtimeConversationItemSystemMessage.builder()
                             .addContent(
@@ -95,12 +122,11 @@ internal class ResponseCreateEventTest {
                     .instructions("instructions")
                     .maxOutputTokens(0L)
                     .metadata(
-                        ResponseCreateEvent.Response.Metadata.builder()
+                        RealtimeResponseCreateParams.Metadata.builder()
                             .putAdditionalProperty("foo", JsonValue.from("string"))
                             .build()
                     )
-                    .addModality(ResponseCreateEvent.Response.Modality.TEXT)
-                    .outputAudioFormat(ResponseCreateEvent.Response.OutputAudioFormat.PCM16)
+                    .addOutputModality(RealtimeResponseCreateParams.OutputModality.TEXT)
                     .prompt(
                         ResponsePrompt.builder()
                             .id("id")
@@ -112,17 +138,15 @@ internal class ResponseCreateEventTest {
                             .version("version")
                             .build()
                     )
-                    .temperature(0.0)
                     .toolChoice(ToolChoiceOptions.NONE)
                     .addTool(
-                        ResponseCreateEvent.Response.Tool.builder()
+                        Models.builder()
                             .description("description")
                             .name("name")
                             .parameters(JsonValue.from(mapOf<String, Any>()))
-                            .type(ResponseCreateEvent.Response.Tool.Type.FUNCTION)
+                            .type(Models.Type.FUNCTION)
                             .build()
                     )
-                    .voice(ResponseCreateEvent.Response.Voice.ALLOY)
                     .build()
             )
     }
@@ -134,8 +158,23 @@ internal class ResponseCreateEventTest {
             ResponseCreateEvent.builder()
                 .eventId("event_id")
                 .response(
-                    ResponseCreateEvent.Response.builder()
-                        .conversation(ResponseCreateEvent.Response.Conversation.AUTO)
+                    RealtimeResponseCreateParams.builder()
+                        .audio(
+                            RealtimeResponseCreateAudioOutput.builder()
+                                .output(
+                                    RealtimeResponseCreateAudioOutput.Output.builder()
+                                        .format(
+                                            RealtimeAudioFormats.AudioPcm.builder()
+                                                .rate(RealtimeAudioFormats.AudioPcm.Rate._24000)
+                                                .type(RealtimeAudioFormats.AudioPcm.Type.AUDIO_PCM)
+                                                .build()
+                                        )
+                                        .voice(RealtimeResponseCreateAudioOutput.Output.Voice.ALLOY)
+                                        .build()
+                                )
+                                .build()
+                        )
+                        .conversation(RealtimeResponseCreateParams.Conversation.AUTO)
                         .addInput(
                             RealtimeConversationItemSystemMessage.builder()
                                 .addContent(
@@ -155,12 +194,11 @@ internal class ResponseCreateEventTest {
                         .instructions("instructions")
                         .maxOutputTokens(0L)
                         .metadata(
-                            ResponseCreateEvent.Response.Metadata.builder()
+                            RealtimeResponseCreateParams.Metadata.builder()
                                 .putAdditionalProperty("foo", JsonValue.from("string"))
                                 .build()
                         )
-                        .addModality(ResponseCreateEvent.Response.Modality.TEXT)
-                        .outputAudioFormat(ResponseCreateEvent.Response.OutputAudioFormat.PCM16)
+                        .addOutputModality(RealtimeResponseCreateParams.OutputModality.TEXT)
                         .prompt(
                             ResponsePrompt.builder()
                                 .id("id")
@@ -172,17 +210,15 @@ internal class ResponseCreateEventTest {
                                 .version("version")
                                 .build()
                         )
-                        .temperature(0.0)
                         .toolChoice(ToolChoiceOptions.NONE)
                         .addTool(
-                            ResponseCreateEvent.Response.Tool.builder()
+                            Models.builder()
                                 .description("description")
                                 .name("name")
                                 .parameters(JsonValue.from(mapOf<String, Any>()))
-                                .type(ResponseCreateEvent.Response.Tool.Type.FUNCTION)
+                                .type(Models.Type.FUNCTION)
                                 .build()
                         )
-                        .voice(ResponseCreateEvent.Response.Voice.ALLOY)
                         .build()
                 )
                 .build()

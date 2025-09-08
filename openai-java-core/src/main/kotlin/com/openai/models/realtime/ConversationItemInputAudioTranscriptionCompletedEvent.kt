@@ -32,9 +32,9 @@ import kotlin.jvm.optionals.getOrNull
 
 /**
  * This event is the output of audio transcription for user audio written to the user audio buffer.
- * Transcription begins when the input audio buffer is committed by the client or server (in
- * `server_vad` mode). Transcription runs asynchronously with Response creation, so this event may
- * come before or after the Response events.
+ * Transcription begins when the input audio buffer is committed by the client or server (when VAD
+ * is enabled). Transcription runs asynchronously with Response creation, so this event may come
+ * before or after the Response events.
  *
  * Realtime API models accept audio natively, and thus input transcription is a separate process run
  * on a separate ASR (Automatic Speech Recognition) model. The transcript may diverge somewhat from
@@ -86,7 +86,7 @@ private constructor(
     fun eventId(): String = eventId.getRequired("event_id")
 
     /**
-     * The ID of the user message item containing the audio.
+     * The ID of the item containing the audio that is being transcribed.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
      *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
@@ -115,7 +115,8 @@ private constructor(
     @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
 
     /**
-     * Usage statistics for the transcription.
+     * Usage statistics for the transcription, this is billed according to the ASR model's pricing
+     * rather than the realtime model's pricing.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
      *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
@@ -262,7 +263,7 @@ private constructor(
          */
         fun eventId(eventId: JsonField<String>) = apply { this.eventId = eventId }
 
-        /** The ID of the user message item containing the audio. */
+        /** The ID of the item containing the audio that is being transcribed. */
         fun itemId(itemId: String) = itemId(JsonField.of(itemId))
 
         /**
@@ -299,7 +300,10 @@ private constructor(
          */
         fun type(type: JsonValue) = apply { this.type = type }
 
-        /** Usage statistics for the transcription. */
+        /**
+         * Usage statistics for the transcription, this is billed according to the ASR model's
+         * pricing rather than the realtime model's pricing.
+         */
         fun usage(usage: Usage) = usage(JsonField.of(usage))
 
         /**
@@ -448,7 +452,10 @@ private constructor(
             (usage.asKnown().getOrNull()?.validity() ?: 0) +
             (logprobs.asKnown().getOrNull()?.sumOf { it.validity().toInt() } ?: 0)
 
-    /** Usage statistics for the transcription. */
+    /**
+     * Usage statistics for the transcription, this is billed according to the ASR model's pricing
+     * rather than the realtime model's pricing.
+     */
     @JsonDeserialize(using = Usage.Deserializer::class)
     @JsonSerialize(using = Usage.Serializer::class)
     class Usage

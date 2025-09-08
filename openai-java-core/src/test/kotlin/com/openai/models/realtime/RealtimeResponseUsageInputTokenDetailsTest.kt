@@ -15,11 +15,28 @@ internal class RealtimeResponseUsageInputTokenDetailsTest {
             RealtimeResponseUsageInputTokenDetails.builder()
                 .audioTokens(0L)
                 .cachedTokens(0L)
+                .cachedTokensDetails(
+                    RealtimeResponseUsageInputTokenDetails.CachedTokensDetails.builder()
+                        .audioTokens(0L)
+                        .imageTokens(0L)
+                        .textTokens(0L)
+                        .build()
+                )
+                .imageTokens(0L)
                 .textTokens(0L)
                 .build()
 
         assertThat(realtimeResponseUsageInputTokenDetails.audioTokens()).contains(0L)
         assertThat(realtimeResponseUsageInputTokenDetails.cachedTokens()).contains(0L)
+        assertThat(realtimeResponseUsageInputTokenDetails.cachedTokensDetails())
+            .contains(
+                RealtimeResponseUsageInputTokenDetails.CachedTokensDetails.builder()
+                    .audioTokens(0L)
+                    .imageTokens(0L)
+                    .textTokens(0L)
+                    .build()
+            )
+        assertThat(realtimeResponseUsageInputTokenDetails.imageTokens()).contains(0L)
         assertThat(realtimeResponseUsageInputTokenDetails.textTokens()).contains(0L)
     }
 
@@ -30,6 +47,14 @@ internal class RealtimeResponseUsageInputTokenDetailsTest {
             RealtimeResponseUsageInputTokenDetails.builder()
                 .audioTokens(0L)
                 .cachedTokens(0L)
+                .cachedTokensDetails(
+                    RealtimeResponseUsageInputTokenDetails.CachedTokensDetails.builder()
+                        .audioTokens(0L)
+                        .imageTokens(0L)
+                        .textTokens(0L)
+                        .build()
+                )
+                .imageTokens(0L)
                 .textTokens(0L)
                 .build()
 

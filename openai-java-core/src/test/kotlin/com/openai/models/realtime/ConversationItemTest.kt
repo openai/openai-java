@@ -80,6 +80,8 @@ internal class ConversationItemTest {
                 .addContent(
                     RealtimeConversationItemUserMessage.Content.builder()
                         .audio("audio")
+                        .detail(RealtimeConversationItemUserMessage.Content.Detail.AUTO)
+                        .imageUrl("image_url")
                         .text("text")
                         .transcript("transcript")
                         .type(RealtimeConversationItemUserMessage.Content.Type.INPUT_TEXT)
@@ -116,6 +118,8 @@ internal class ConversationItemTest {
                     .addContent(
                         RealtimeConversationItemUserMessage.Content.builder()
                             .audio("audio")
+                            .detail(RealtimeConversationItemUserMessage.Content.Detail.AUTO)
+                            .imageUrl("image_url")
                             .text("text")
                             .transcript("transcript")
                             .type(RealtimeConversationItemUserMessage.Content.Type.INPUT_TEXT)
@@ -142,8 +146,10 @@ internal class ConversationItemTest {
             RealtimeConversationItemAssistantMessage.builder()
                 .addContent(
                     RealtimeConversationItemAssistantMessage.Content.builder()
+                        .audio("audio")
                         .text("text")
-                        .type(RealtimeConversationItemAssistantMessage.Content.Type.TEXT)
+                        .transcript("transcript")
+                        .type(RealtimeConversationItemAssistantMessage.Content.Type.OUTPUT_TEXT)
                         .build()
                 )
                 .id("id")
@@ -176,8 +182,10 @@ internal class ConversationItemTest {
                 RealtimeConversationItemAssistantMessage.builder()
                     .addContent(
                         RealtimeConversationItemAssistantMessage.Content.builder()
+                            .audio("audio")
                             .text("text")
-                            .type(RealtimeConversationItemAssistantMessage.Content.Type.TEXT)
+                            .transcript("transcript")
+                            .type(RealtimeConversationItemAssistantMessage.Content.Type.OUTPUT_TEXT)
                             .build()
                     )
                     .id("id")
