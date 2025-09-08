@@ -152,46 +152,10 @@ private constructor(
         /** Alias for calling [session] with `Session.ofRealtime(realtime)`. */
         fun session(realtime: RealtimeSessionCreateRequest) = apply { body.session(realtime) }
 
-        /**
-         * Alias for calling [session] with the following:
-         * ```java
-         * RealtimeSessionCreateRequest.builder()
-         *     .model(model)
-         *     .build()
-         * ```
-         */
-        fun realtimeSession(model: RealtimeSessionCreateRequest.Model) = apply {
-            body.realtimeSession(model)
-        }
-
-        /**
-         * Alias for calling [realtimeSession] with
-         * `RealtimeSessionCreateRequest.Model.ofString(string)`.
-         */
-        fun realtimeSession(string: String) = apply { body.realtimeSession(string) }
-
         /** Alias for calling [session] with `Session.ofTranscription(transcription)`. */
         fun session(transcription: RealtimeTranscriptionSessionCreateRequest) = apply {
             body.session(transcription)
         }
-
-        /**
-         * Alias for calling [session] with the following:
-         * ```java
-         * RealtimeTranscriptionSessionCreateRequest.builder()
-         *     .model(model)
-         *     .build()
-         * ```
-         */
-        fun transcriptionSession(model: RealtimeTranscriptionSessionCreateRequest.Model) = apply {
-            body.transcriptionSession(model)
-        }
-
-        /**
-         * Alias for calling [transcriptionSession] with
-         * `RealtimeTranscriptionSessionCreateRequest.Model.ofString(string)`.
-         */
-        fun transcriptionSession(string: String) = apply { body.transcriptionSession(string) }
 
         fun additionalBodyProperties(additionalBodyProperties: Map<String, JsonValue>) = apply {
             body.additionalProperties(additionalBodyProperties)
@@ -456,28 +420,9 @@ private constructor(
             fun session(realtime: RealtimeSessionCreateRequest) =
                 session(Session.ofRealtime(realtime))
 
-            /**
-             * Alias for calling [session] with the following:
-             * ```java
-             * RealtimeSessionCreateRequest.builder()
-             *     .model(model)
-             *     .build()
-             * ```
-             */
-            fun realtimeSession(model: RealtimeSessionCreateRequest.Model) =
-                session(RealtimeSessionCreateRequest.builder().model(model).build())
-
-            /**
-             * Alias for calling [realtimeSession] with
-             * `RealtimeSessionCreateRequest.Model.ofString(string)`.
-             */
-            fun realtimeSession(string: String) =
-                realtimeSession(RealtimeSessionCreateRequest.Model.of(string))
-
             /** Alias for calling [session] with `Session.ofTranscription(transcription)`. */
             fun session(transcription: RealtimeTranscriptionSessionCreateRequest) =
                 session(Session.ofTranscription(transcription))
-
 
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.clear()
