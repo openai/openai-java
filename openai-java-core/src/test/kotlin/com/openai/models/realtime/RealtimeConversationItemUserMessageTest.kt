@@ -16,6 +16,8 @@ internal class RealtimeConversationItemUserMessageTest {
                 .addContent(
                     RealtimeConversationItemUserMessage.Content.builder()
                         .audio("audio")
+                        .detail(RealtimeConversationItemUserMessage.Content.Detail.AUTO)
+                        .imageUrl("image_url")
                         .text("text")
                         .transcript("transcript")
                         .type(RealtimeConversationItemUserMessage.Content.Type.INPUT_TEXT)
@@ -30,6 +32,8 @@ internal class RealtimeConversationItemUserMessageTest {
             .containsExactly(
                 RealtimeConversationItemUserMessage.Content.builder()
                     .audio("audio")
+                    .detail(RealtimeConversationItemUserMessage.Content.Detail.AUTO)
+                    .imageUrl("image_url")
                     .text("text")
                     .transcript("transcript")
                     .type(RealtimeConversationItemUserMessage.Content.Type.INPUT_TEXT)
@@ -50,6 +54,8 @@ internal class RealtimeConversationItemUserMessageTest {
                 .addContent(
                     RealtimeConversationItemUserMessage.Content.builder()
                         .audio("audio")
+                        .detail(RealtimeConversationItemUserMessage.Content.Detail.AUTO)
+                        .imageUrl("image_url")
                         .text("text")
                         .transcript("transcript")
                         .type(RealtimeConversationItemUserMessage.Content.Type.INPUT_TEXT)

@@ -6,11 +6,22 @@ import com.fasterxml.jackson.annotation.JsonAnyGetter
 import com.fasterxml.jackson.annotation.JsonAnySetter
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonProperty
+import com.fasterxml.jackson.core.JsonGenerator
+import com.fasterxml.jackson.core.ObjectCodec
+import com.fasterxml.jackson.databind.JsonNode
+import com.fasterxml.jackson.databind.SerializerProvider
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize
+import com.fasterxml.jackson.databind.annotation.JsonSerialize
+import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
+import com.openai.core.BaseDeserializer
+import com.openai.core.BaseSerializer
 import com.openai.core.ExcludeMissing
 import com.openai.core.JsonField
 import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
+import com.openai.core.allMaxBy
 import com.openai.core.checkRequired
+import com.openai.core.getOrThrow
 import com.openai.errors.OpenAIInvalidDataException
 import java.util.Collections
 import java.util.Objects
@@ -18,18 +29,19 @@ import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
 /**
- * Send this event to update the session’s default configuration. The client may send this event at
- * any time to update any field, except for `voice`. However, note that once a session has been
- * initialized with a particular `model`, it can’t be changed to another model using
- * `session.update`.
+ * Send this event to update the session’s configuration. The client may send this event at any time
+ * to update any field except for `voice` and `model`. `voice` can be updated only if there have
+ * been no other audio outputs yet.
  *
  * When the server receives a `session.update`, it will respond with a `session.updated` event
- * showing the full, effective configuration. Only the fields that are present are updated. To clear
- * a field like `instructions`, pass an empty string.
+ * showing the full, effective configuration. Only the fields that are present in the
+ * `session.update` are updated. To clear a field like `instructions`, pass an empty string. To
+ * clear a field like `tools`, pass an empty array. To clear a field like `turn_detection`, pass
+ * `null`.
  */
 class SessionUpdateEvent
 private constructor(
-    private val session: JsonField<RealtimeSessionCreateRequest>,
+    private val session: JsonField<Session>,
     private val type: JsonValue,
     private val eventId: JsonField<String>,
     private val additionalProperties: MutableMap<String, JsonValue>,
@@ -37,20 +49,18 @@ private constructor(
 
     @JsonCreator
     private constructor(
-        @JsonProperty("session")
-        @ExcludeMissing
-        session: JsonField<RealtimeSessionCreateRequest> = JsonMissing.of(),
+        @JsonProperty("session") @ExcludeMissing session: JsonField<Session> = JsonMissing.of(),
         @JsonProperty("type") @ExcludeMissing type: JsonValue = JsonMissing.of(),
         @JsonProperty("event_id") @ExcludeMissing eventId: JsonField<String> = JsonMissing.of(),
     ) : this(session, type, eventId, mutableMapOf())
 
     /**
-     * Realtime session object configuration.
+     * Update the Realtime session. Choose either a realtime session or a transcription session.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
      *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
      */
-    fun session(): RealtimeSessionCreateRequest = session.getRequired("session")
+    fun session(): Session = session.getRequired("session")
 
     /**
      * The event type, must be `session.update`.
@@ -66,7 +76,9 @@ private constructor(
     @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
 
     /**
-     * Optional client-generated ID used to identify this event.
+     * Optional client-generated ID used to identify this event. This is an arbitrary string that a
+     * client may assign. It will be passed back if there is an error with the event, but the
+     * corresponding `session.updated` event will not include it.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -78,9 +90,7 @@ private constructor(
      *
      * Unlike [session], this method doesn't throw if the JSON field has an unexpected type.
      */
-    @JsonProperty("session")
-    @ExcludeMissing
-    fun _session(): JsonField<RealtimeSessionCreateRequest> = session
+    @JsonProperty("session") @ExcludeMissing fun _session(): JsonField<Session> = session
 
     /**
      * Returns the raw JSON value of [eventId].
@@ -117,7 +127,7 @@ private constructor(
     /** A builder for [SessionUpdateEvent]. */
     class Builder internal constructor() {
 
-        private var session: JsonField<RealtimeSessionCreateRequest>? = null
+        private var session: JsonField<Session>? = null
         private var type: JsonValue = JsonValue.from("session.update")
         private var eventId: JsonField<String> = JsonMissing.of()
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
@@ -130,19 +140,38 @@ private constructor(
             additionalProperties = sessionUpdateEvent.additionalProperties.toMutableMap()
         }
 
-        /** Realtime session object configuration. */
-        fun session(session: RealtimeSessionCreateRequest) = session(JsonField.of(session))
+        /**
+         * Update the Realtime session. Choose either a realtime session or a transcription session.
+         */
+        fun session(session: Session) = session(JsonField.of(session))
 
         /**
          * Sets [Builder.session] to an arbitrary JSON value.
          *
-         * You should usually call [Builder.session] with a well-typed
-         * [RealtimeSessionCreateRequest] value instead. This method is primarily for setting the
-         * field to an undocumented or not yet supported value.
+         * You should usually call [Builder.session] with a well-typed [Session] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
          */
-        fun session(session: JsonField<RealtimeSessionCreateRequest>) = apply {
-            this.session = session
-        }
+        fun session(session: JsonField<Session>) = apply { this.session = session }
+
+        /**
+         * Alias for calling [session] with
+         * `Session.ofRealtimeSessionCreateRequest(realtimeSessionCreateRequest)`.
+         */
+        fun session(realtimeSessionCreateRequest: RealtimeSessionCreateRequest) =
+            session(Session.ofRealtimeSessionCreateRequest(realtimeSessionCreateRequest))
+
+        /**
+         * Alias for calling [session] with
+         * `Session.ofRealtimeTranscriptionSessionCreateRequest(realtimeTranscriptionSessionCreateRequest)`.
+         */
+        fun session(
+            realtimeTranscriptionSessionCreateRequest: RealtimeTranscriptionSessionCreateRequest
+        ) =
+            session(
+                Session.ofRealtimeTranscriptionSessionCreateRequest(
+                    realtimeTranscriptionSessionCreateRequest
+                )
+            )
 
         /**
          * Sets the field to an arbitrary JSON value.
@@ -158,7 +187,11 @@ private constructor(
          */
         fun type(type: JsonValue) = apply { this.type = type }
 
-        /** Optional client-generated ID used to identify this event. */
+        /**
+         * Optional client-generated ID used to identify this event. This is an arbitrary string
+         * that a client may assign. It will be passed back if there is an error with the event, but
+         * the corresponding `session.updated` event will not include it.
+         */
         fun eventId(eventId: String) = eventId(JsonField.of(eventId))
 
         /**
@@ -244,6 +277,241 @@ private constructor(
         (session.asKnown().getOrNull()?.validity() ?: 0) +
             type.let { if (it == JsonValue.from("session.update")) 1 else 0 } +
             (if (eventId.asKnown().isPresent) 1 else 0)
+
+    /** Update the Realtime session. Choose either a realtime session or a transcription session. */
+    @JsonDeserialize(using = Session.Deserializer::class)
+    @JsonSerialize(using = Session.Serializer::class)
+    class Session
+    private constructor(
+        private val realtimeSessionCreateRequest: RealtimeSessionCreateRequest? = null,
+        private val realtimeTranscriptionSessionCreateRequest:
+            RealtimeTranscriptionSessionCreateRequest? =
+            null,
+        private val _json: JsonValue? = null,
+    ) {
+
+        /** Realtime session object configuration. */
+        fun realtimeSessionCreateRequest(): Optional<RealtimeSessionCreateRequest> =
+            Optional.ofNullable(realtimeSessionCreateRequest)
+
+        /** Realtime transcription session object configuration. */
+        fun realtimeTranscriptionSessionCreateRequest():
+            Optional<RealtimeTranscriptionSessionCreateRequest> =
+            Optional.ofNullable(realtimeTranscriptionSessionCreateRequest)
+
+        fun isRealtimeSessionCreateRequest(): Boolean = realtimeSessionCreateRequest != null
+
+        fun isRealtimeTranscriptionSessionCreateRequest(): Boolean =
+            realtimeTranscriptionSessionCreateRequest != null
+
+        /** Realtime session object configuration. */
+        fun asRealtimeSessionCreateRequest(): RealtimeSessionCreateRequest =
+            realtimeSessionCreateRequest.getOrThrow("realtimeSessionCreateRequest")
+
+        /** Realtime transcription session object configuration. */
+        fun asRealtimeTranscriptionSessionCreateRequest():
+            RealtimeTranscriptionSessionCreateRequest =
+            realtimeTranscriptionSessionCreateRequest.getOrThrow(
+                "realtimeTranscriptionSessionCreateRequest"
+            )
+
+        fun _json(): Optional<JsonValue> = Optional.ofNullable(_json)
+
+        fun <T> accept(visitor: Visitor<T>): T =
+            when {
+                realtimeSessionCreateRequest != null ->
+                    visitor.visitRealtimeSessionCreateRequest(realtimeSessionCreateRequest)
+                realtimeTranscriptionSessionCreateRequest != null ->
+                    visitor.visitRealtimeTranscriptionSessionCreateRequest(
+                        realtimeTranscriptionSessionCreateRequest
+                    )
+                else -> visitor.unknown(_json)
+            }
+
+        private var validated: Boolean = false
+
+        fun validate(): Session = apply {
+            if (validated) {
+                return@apply
+            }
+
+            accept(
+                object : Visitor<Unit> {
+                    override fun visitRealtimeSessionCreateRequest(
+                        realtimeSessionCreateRequest: RealtimeSessionCreateRequest
+                    ) {
+                        realtimeSessionCreateRequest.validate()
+                    }
+
+                    override fun visitRealtimeTranscriptionSessionCreateRequest(
+                        realtimeTranscriptionSessionCreateRequest:
+                            RealtimeTranscriptionSessionCreateRequest
+                    ) {
+                        realtimeTranscriptionSessionCreateRequest.validate()
+                    }
+                }
+            )
+            validated = true
+        }
+
+        fun isValid(): Boolean =
+            try {
+                validate()
+                true
+            } catch (e: OpenAIInvalidDataException) {
+                false
+            }
+
+        /**
+         * Returns a score indicating how many valid values are contained in this object
+         * recursively.
+         *
+         * Used for best match union deserialization.
+         */
+        @JvmSynthetic
+        internal fun validity(): Int =
+            accept(
+                object : Visitor<Int> {
+                    override fun visitRealtimeSessionCreateRequest(
+                        realtimeSessionCreateRequest: RealtimeSessionCreateRequest
+                    ) = realtimeSessionCreateRequest.validity()
+
+                    override fun visitRealtimeTranscriptionSessionCreateRequest(
+                        realtimeTranscriptionSessionCreateRequest:
+                            RealtimeTranscriptionSessionCreateRequest
+                    ) = realtimeTranscriptionSessionCreateRequest.validity()
+
+                    override fun unknown(json: JsonValue?) = 0
+                }
+            )
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) {
+                return true
+            }
+
+            return other is Session &&
+                realtimeSessionCreateRequest == other.realtimeSessionCreateRequest &&
+                realtimeTranscriptionSessionCreateRequest ==
+                    other.realtimeTranscriptionSessionCreateRequest
+        }
+
+        override fun hashCode(): Int =
+            Objects.hash(realtimeSessionCreateRequest, realtimeTranscriptionSessionCreateRequest)
+
+        override fun toString(): String =
+            when {
+                realtimeSessionCreateRequest != null ->
+                    "Session{realtimeSessionCreateRequest=$realtimeSessionCreateRequest}"
+                realtimeTranscriptionSessionCreateRequest != null ->
+                    "Session{realtimeTranscriptionSessionCreateRequest=$realtimeTranscriptionSessionCreateRequest}"
+                _json != null -> "Session{_unknown=$_json}"
+                else -> throw IllegalStateException("Invalid Session")
+            }
+
+        companion object {
+
+            /** Realtime session object configuration. */
+            @JvmStatic
+            fun ofRealtimeSessionCreateRequest(
+                realtimeSessionCreateRequest: RealtimeSessionCreateRequest
+            ) = Session(realtimeSessionCreateRequest = realtimeSessionCreateRequest)
+
+            /** Realtime transcription session object configuration. */
+            @JvmStatic
+            fun ofRealtimeTranscriptionSessionCreateRequest(
+                realtimeTranscriptionSessionCreateRequest: RealtimeTranscriptionSessionCreateRequest
+            ) =
+                Session(
+                    realtimeTranscriptionSessionCreateRequest =
+                        realtimeTranscriptionSessionCreateRequest
+                )
+        }
+
+        /**
+         * An interface that defines how to map each variant of [Session] to a value of type [T].
+         */
+        interface Visitor<out T> {
+
+            /** Realtime session object configuration. */
+            fun visitRealtimeSessionCreateRequest(
+                realtimeSessionCreateRequest: RealtimeSessionCreateRequest
+            ): T
+
+            /** Realtime transcription session object configuration. */
+            fun visitRealtimeTranscriptionSessionCreateRequest(
+                realtimeTranscriptionSessionCreateRequest: RealtimeTranscriptionSessionCreateRequest
+            ): T
+
+            /**
+             * Maps an unknown variant of [Session] to a value of type [T].
+             *
+             * An instance of [Session] can contain an unknown variant if it was deserialized from
+             * data that doesn't match any known variant. For example, if the SDK is on an older
+             * version than the API, then the API may respond with new variants that the SDK is
+             * unaware of.
+             *
+             * @throws OpenAIInvalidDataException in the default implementation.
+             */
+            fun unknown(json: JsonValue?): T {
+                throw OpenAIInvalidDataException("Unknown Session: $json")
+            }
+        }
+
+        internal class Deserializer : BaseDeserializer<Session>(Session::class) {
+
+            override fun ObjectCodec.deserialize(node: JsonNode): Session {
+                val json = JsonValue.fromJsonNode(node)
+
+                val bestMatches =
+                    sequenceOf(
+                            tryDeserialize(node, jacksonTypeRef<RealtimeSessionCreateRequest>())
+                                ?.let { Session(realtimeSessionCreateRequest = it, _json = json) },
+                            tryDeserialize(
+                                    node,
+                                    jacksonTypeRef<RealtimeTranscriptionSessionCreateRequest>(),
+                                )
+                                ?.let {
+                                    Session(
+                                        realtimeTranscriptionSessionCreateRequest = it,
+                                        _json = json,
+                                    )
+                                },
+                        )
+                        .filterNotNull()
+                        .allMaxBy { it.validity() }
+                        .toList()
+                return when (bestMatches.size) {
+                    // This can happen if what we're deserializing is completely incompatible with
+                    // all the possible variants (e.g. deserializing from boolean).
+                    0 -> Session(_json = json)
+                    1 -> bestMatches.single()
+                    // If there's more than one match with the highest validity, then use the first
+                    // completely valid match, or simply the first match if none are completely
+                    // valid.
+                    else -> bestMatches.firstOrNull { it.isValid() } ?: bestMatches.first()
+                }
+            }
+        }
+
+        internal class Serializer : BaseSerializer<Session>(Session::class) {
+
+            override fun serialize(
+                value: Session,
+                generator: JsonGenerator,
+                provider: SerializerProvider,
+            ) {
+                when {
+                    value.realtimeSessionCreateRequest != null ->
+                        generator.writeObject(value.realtimeSessionCreateRequest)
+                    value.realtimeTranscriptionSessionCreateRequest != null ->
+                        generator.writeObject(value.realtimeTranscriptionSessionCreateRequest)
+                    value._json != null -> generator.writeObject(value._json)
+                    else -> throw IllegalStateException("Invalid Session")
+                }
+            }
+        }
+    }
 
     override fun equals(other: Any?): Boolean {
         if (this === other) {

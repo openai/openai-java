@@ -16,6 +16,21 @@ internal class RealtimeResponseTest {
         val realtimeResponse =
             RealtimeResponse.builder()
                 .id("id")
+                .audio(
+                    RealtimeResponse.Audio.builder()
+                        .output(
+                            RealtimeResponse.Audio.Output.builder()
+                                .format(
+                                    RealtimeAudioFormats.AudioPcm.builder()
+                                        .rate(RealtimeAudioFormats.AudioPcm.Rate._24000)
+                                        .type(RealtimeAudioFormats.AudioPcm.Type.AUDIO_PCM)
+                                        .build()
+                                )
+                                .voice(RealtimeResponse.Audio.Output.Voice.ALLOY)
+                                .build()
+                        )
+                        .build()
+                )
                 .conversationId("conversation_id")
                 .maxOutputTokens(0L)
                 .metadata(
@@ -23,7 +38,6 @@ internal class RealtimeResponseTest {
                         .putAdditionalProperty("foo", JsonValue.from("string"))
                         .build()
                 )
-                .addModality(RealtimeResponse.Modality.TEXT)
                 .object_(RealtimeResponse.Object.REALTIME_RESPONSE)
                 .addOutput(
                     RealtimeConversationItemSystemMessage.builder()
@@ -38,7 +52,7 @@ internal class RealtimeResponseTest {
                         .status(RealtimeConversationItemSystemMessage.Status.COMPLETED)
                         .build()
                 )
-                .outputAudioFormat(RealtimeResponse.OutputAudioFormat.PCM16)
+                .addOutputModality(RealtimeResponse.OutputModality.TEXT)
                 .status(RealtimeResponse.Status.COMPLETED)
                 .statusDetails(
                     RealtimeResponseStatus.builder()
@@ -49,13 +63,21 @@ internal class RealtimeResponseTest {
                         .type(RealtimeResponseStatus.Type.COMPLETED)
                         .build()
                 )
-                .temperature(0.0)
                 .usage(
                     RealtimeResponseUsage.builder()
                         .inputTokenDetails(
                             RealtimeResponseUsageInputTokenDetails.builder()
                                 .audioTokens(0L)
                                 .cachedTokens(0L)
+                                .cachedTokensDetails(
+                                    RealtimeResponseUsageInputTokenDetails.CachedTokensDetails
+                                        .builder()
+                                        .audioTokens(0L)
+                                        .imageTokens(0L)
+                                        .textTokens(0L)
+                                        .build()
+                                )
+                                .imageTokens(0L)
                                 .textTokens(0L)
                                 .build()
                         )
@@ -70,10 +92,25 @@ internal class RealtimeResponseTest {
                         .totalTokens(0L)
                         .build()
                 )
-                .voice(RealtimeResponse.Voice.ALLOY)
                 .build()
 
         assertThat(realtimeResponse.id()).contains("id")
+        assertThat(realtimeResponse.audio())
+            .contains(
+                RealtimeResponse.Audio.builder()
+                    .output(
+                        RealtimeResponse.Audio.Output.builder()
+                            .format(
+                                RealtimeAudioFormats.AudioPcm.builder()
+                                    .rate(RealtimeAudioFormats.AudioPcm.Rate._24000)
+                                    .type(RealtimeAudioFormats.AudioPcm.Type.AUDIO_PCM)
+                                    .build()
+                            )
+                            .voice(RealtimeResponse.Audio.Output.Voice.ALLOY)
+                            .build()
+                    )
+                    .build()
+            )
         assertThat(realtimeResponse.conversationId()).contains("conversation_id")
         assertThat(realtimeResponse.maxOutputTokens())
             .contains(RealtimeResponse.MaxOutputTokens.ofInteger(0L))
@@ -83,8 +120,6 @@ internal class RealtimeResponseTest {
                     .putAdditionalProperty("foo", JsonValue.from("string"))
                     .build()
             )
-        assertThat(realtimeResponse.modalities().getOrNull())
-            .containsExactly(RealtimeResponse.Modality.TEXT)
         assertThat(realtimeResponse.object_()).contains(RealtimeResponse.Object.REALTIME_RESPONSE)
         assertThat(realtimeResponse.output().getOrNull())
             .containsExactly(
@@ -102,8 +137,8 @@ internal class RealtimeResponseTest {
                         .build()
                 )
             )
-        assertThat(realtimeResponse.outputAudioFormat())
-            .contains(RealtimeResponse.OutputAudioFormat.PCM16)
+        assertThat(realtimeResponse.outputModalities().getOrNull())
+            .containsExactly(RealtimeResponse.OutputModality.TEXT)
         assertThat(realtimeResponse.status()).contains(RealtimeResponse.Status.COMPLETED)
         assertThat(realtimeResponse.statusDetails())
             .contains(
@@ -113,7 +148,6 @@ internal class RealtimeResponseTest {
                     .type(RealtimeResponseStatus.Type.COMPLETED)
                     .build()
             )
-        assertThat(realtimeResponse.temperature()).contains(0.0)
         assertThat(realtimeResponse.usage())
             .contains(
                 RealtimeResponseUsage.builder()
@@ -121,6 +155,14 @@ internal class RealtimeResponseTest {
                         RealtimeResponseUsageInputTokenDetails.builder()
                             .audioTokens(0L)
                             .cachedTokens(0L)
+                            .cachedTokensDetails(
+                                RealtimeResponseUsageInputTokenDetails.CachedTokensDetails.builder()
+                                    .audioTokens(0L)
+                                    .imageTokens(0L)
+                                    .textTokens(0L)
+                                    .build()
+                            )
+                            .imageTokens(0L)
                             .textTokens(0L)
                             .build()
                     )
@@ -135,7 +177,6 @@ internal class RealtimeResponseTest {
                     .totalTokens(0L)
                     .build()
             )
-        assertThat(realtimeResponse.voice()).contains(RealtimeResponse.Voice.ALLOY)
     }
 
     @Test
@@ -144,6 +185,21 @@ internal class RealtimeResponseTest {
         val realtimeResponse =
             RealtimeResponse.builder()
                 .id("id")
+                .audio(
+                    RealtimeResponse.Audio.builder()
+                        .output(
+                            RealtimeResponse.Audio.Output.builder()
+                                .format(
+                                    RealtimeAudioFormats.AudioPcm.builder()
+                                        .rate(RealtimeAudioFormats.AudioPcm.Rate._24000)
+                                        .type(RealtimeAudioFormats.AudioPcm.Type.AUDIO_PCM)
+                                        .build()
+                                )
+                                .voice(RealtimeResponse.Audio.Output.Voice.ALLOY)
+                                .build()
+                        )
+                        .build()
+                )
                 .conversationId("conversation_id")
                 .maxOutputTokens(0L)
                 .metadata(
@@ -151,7 +207,6 @@ internal class RealtimeResponseTest {
                         .putAdditionalProperty("foo", JsonValue.from("string"))
                         .build()
                 )
-                .addModality(RealtimeResponse.Modality.TEXT)
                 .object_(RealtimeResponse.Object.REALTIME_RESPONSE)
                 .addOutput(
                     RealtimeConversationItemSystemMessage.builder()
@@ -166,7 +221,7 @@ internal class RealtimeResponseTest {
                         .status(RealtimeConversationItemSystemMessage.Status.COMPLETED)
                         .build()
                 )
-                .outputAudioFormat(RealtimeResponse.OutputAudioFormat.PCM16)
+                .addOutputModality(RealtimeResponse.OutputModality.TEXT)
                 .status(RealtimeResponse.Status.COMPLETED)
                 .statusDetails(
                     RealtimeResponseStatus.builder()
@@ -177,13 +232,21 @@ internal class RealtimeResponseTest {
                         .type(RealtimeResponseStatus.Type.COMPLETED)
                         .build()
                 )
-                .temperature(0.0)
                 .usage(
                     RealtimeResponseUsage.builder()
                         .inputTokenDetails(
                             RealtimeResponseUsageInputTokenDetails.builder()
                                 .audioTokens(0L)
                                 .cachedTokens(0L)
+                                .cachedTokensDetails(
+                                    RealtimeResponseUsageInputTokenDetails.CachedTokensDetails
+                                        .builder()
+                                        .audioTokens(0L)
+                                        .imageTokens(0L)
+                                        .textTokens(0L)
+                                        .build()
+                                )
+                                .imageTokens(0L)
                                 .textTokens(0L)
                                 .build()
                         )
@@ -198,7 +261,6 @@ internal class RealtimeResponseTest {
                         .totalTokens(0L)
                         .build()
                 )
-                .voice(RealtimeResponse.Voice.ALLOY)
                 .build()
 
         val roundtrippedRealtimeResponse =

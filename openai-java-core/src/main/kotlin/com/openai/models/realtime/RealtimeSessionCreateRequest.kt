@@ -22,7 +22,6 @@ import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
 import com.openai.core.allMaxBy
 import com.openai.core.checkKnown
-import com.openai.core.checkRequired
 import com.openai.core.getOrThrow
 import com.openai.core.toImmutable
 import com.openai.errors.OpenAIInvalidDataException
@@ -38,16 +37,14 @@ import kotlin.jvm.optionals.getOrNull
 /** Realtime session object configuration. */
 class RealtimeSessionCreateRequest
 private constructor(
-    private val model: JsonField<Model>,
     private val type: JsonValue,
     private val audio: JsonField<RealtimeAudioConfig>,
-    private val clientSecret: JsonField<RealtimeClientSecretConfig>,
     private val include: JsonField<List<Include>>,
     private val instructions: JsonField<String>,
     private val maxOutputTokens: JsonField<MaxOutputTokens>,
+    private val model: JsonField<Model>,
     private val outputModalities: JsonField<List<OutputModality>>,
     private val prompt: JsonField<ResponsePrompt>,
-    private val temperature: JsonField<Double>,
     private val toolChoice: JsonField<RealtimeToolChoiceConfig>,
     private val tools: JsonField<List<RealtimeToolsConfigUnion>>,
     private val tracing: JsonField<RealtimeTracingConfig>,
@@ -57,14 +54,10 @@ private constructor(
 
     @JsonCreator
     private constructor(
-        @JsonProperty("model") @ExcludeMissing model: JsonField<Model> = JsonMissing.of(),
         @JsonProperty("type") @ExcludeMissing type: JsonValue = JsonMissing.of(),
         @JsonProperty("audio")
         @ExcludeMissing
         audio: JsonField<RealtimeAudioConfig> = JsonMissing.of(),
-        @JsonProperty("client_secret")
-        @ExcludeMissing
-        clientSecret: JsonField<RealtimeClientSecretConfig> = JsonMissing.of(),
         @JsonProperty("include")
         @ExcludeMissing
         include: JsonField<List<Include>> = JsonMissing.of(),
@@ -74,15 +67,13 @@ private constructor(
         @JsonProperty("max_output_tokens")
         @ExcludeMissing
         maxOutputTokens: JsonField<MaxOutputTokens> = JsonMissing.of(),
+        @JsonProperty("model") @ExcludeMissing model: JsonField<Model> = JsonMissing.of(),
         @JsonProperty("output_modalities")
         @ExcludeMissing
         outputModalities: JsonField<List<OutputModality>> = JsonMissing.of(),
         @JsonProperty("prompt")
         @ExcludeMissing
         prompt: JsonField<ResponsePrompt> = JsonMissing.of(),
-        @JsonProperty("temperature")
-        @ExcludeMissing
-        temperature: JsonField<Double> = JsonMissing.of(),
         @JsonProperty("tool_choice")
         @ExcludeMissing
         toolChoice: JsonField<RealtimeToolChoiceConfig> = JsonMissing.of(),
@@ -96,30 +87,20 @@ private constructor(
         @ExcludeMissing
         truncation: JsonField<RealtimeTruncation> = JsonMissing.of(),
     ) : this(
-        model,
         type,
         audio,
-        clientSecret,
         include,
         instructions,
         maxOutputTokens,
+        model,
         outputModalities,
         prompt,
-        temperature,
         toolChoice,
         tools,
         tracing,
         truncation,
         mutableMapOf(),
     )
-
-    /**
-     * The Realtime model used for this session.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
-     */
-    fun model(): Model = model.getRequired("model")
 
     /**
      * The type of session to create. Always `realtime` for the Realtime API.
@@ -143,17 +124,9 @@ private constructor(
     fun audio(): Optional<RealtimeAudioConfig> = audio.getOptional("audio")
 
     /**
-     * Configuration options for the generated client secret.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
-     */
-    fun clientSecret(): Optional<RealtimeClientSecretConfig> =
-        clientSecret.getOptional("client_secret")
-
-    /**
      * Additional fields to include in server outputs.
-     * - `item.input_audio_transcription.logprobs`: Include logprobs for input audio transcription.
+     *
+     * `item.input_audio_transcription.logprobs`: Include logprobs for input audio transcription.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -188,7 +161,18 @@ private constructor(
         maxOutputTokens.getOptional("max_output_tokens")
 
     /**
-     * The set of modalities the model can respond with. To disable audio, set this to ["text"].
+     * The Realtime model used for this session.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun model(): Optional<Model> = model.getOptional("model")
+
+    /**
+     * The set of modalities the model can respond with. It defaults to `["audio"]`, indicating that
+     * the model will respond with audio plus a transcript. `["text"]` can be used to make the model
+     * respond with text only. It is not possible to request both `text` and `audio` at the same
+     * time.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -204,15 +188,6 @@ private constructor(
      *   server responded with an unexpected value).
      */
     fun prompt(): Optional<ResponsePrompt> = prompt.getOptional("prompt")
-
-    /**
-     * Sampling temperature for the model, limited to [0.6, 1.2]. For audio models a temperature of
-     * 0.8 is highly recommended for best performance.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
-     */
-    fun temperature(): Optional<Double> = temperature.getOptional("temperature")
 
     /**
      * How the model chooses tools. Provide one of the string modes or force a specific function/MCP
@@ -232,8 +207,9 @@ private constructor(
     fun tools(): Optional<List<RealtimeToolsConfigUnion>> = tools.getOptional("tools")
 
     /**
-     * Configuration options for tracing. Set to null to disable tracing. Once tracing is enabled
-     * for a session, the configuration cannot be modified.
+     * Realtime API can write session traces to the [Traces Dashboard](/logs?api=traces). Set to
+     * null to disable tracing. Once tracing is enabled for a session, the configuration cannot be
+     * modified.
      *
      * `auto` will create a trace for the session with default values for the workflow name, group
      * id, and metadata.
@@ -245,8 +221,7 @@ private constructor(
 
     /**
      * Controls how the realtime conversation is truncated prior to model inference. The default is
-     * `auto`. When set to `retention_ratio`, the server retains a fraction of the conversation
-     * tokens prior to the instructions.
+     * `auto`.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -254,27 +229,11 @@ private constructor(
     fun truncation(): Optional<RealtimeTruncation> = truncation.getOptional("truncation")
 
     /**
-     * Returns the raw JSON value of [model].
-     *
-     * Unlike [model], this method doesn't throw if the JSON field has an unexpected type.
-     */
-    @JsonProperty("model") @ExcludeMissing fun _model(): JsonField<Model> = model
-
-    /**
      * Returns the raw JSON value of [audio].
      *
      * Unlike [audio], this method doesn't throw if the JSON field has an unexpected type.
      */
     @JsonProperty("audio") @ExcludeMissing fun _audio(): JsonField<RealtimeAudioConfig> = audio
-
-    /**
-     * Returns the raw JSON value of [clientSecret].
-     *
-     * Unlike [clientSecret], this method doesn't throw if the JSON field has an unexpected type.
-     */
-    @JsonProperty("client_secret")
-    @ExcludeMissing
-    fun _clientSecret(): JsonField<RealtimeClientSecretConfig> = clientSecret
 
     /**
      * Returns the raw JSON value of [include].
@@ -302,6 +261,13 @@ private constructor(
     fun _maxOutputTokens(): JsonField<MaxOutputTokens> = maxOutputTokens
 
     /**
+     * Returns the raw JSON value of [model].
+     *
+     * Unlike [model], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    @JsonProperty("model") @ExcludeMissing fun _model(): JsonField<Model> = model
+
+    /**
      * Returns the raw JSON value of [outputModalities].
      *
      * Unlike [outputModalities], this method doesn't throw if the JSON field has an unexpected
@@ -317,13 +283,6 @@ private constructor(
      * Unlike [prompt], this method doesn't throw if the JSON field has an unexpected type.
      */
     @JsonProperty("prompt") @ExcludeMissing fun _prompt(): JsonField<ResponsePrompt> = prompt
-
-    /**
-     * Returns the raw JSON value of [temperature].
-     *
-     * Unlike [temperature], this method doesn't throw if the JSON field has an unexpected type.
-     */
-    @JsonProperty("temperature") @ExcludeMissing fun _temperature(): JsonField<Double> = temperature
 
     /**
      * Returns the raw JSON value of [toolChoice].
@@ -377,11 +336,6 @@ private constructor(
 
         /**
          * Returns a mutable builder for constructing an instance of [RealtimeSessionCreateRequest].
-         *
-         * The following fields are required:
-         * ```java
-         * .model()
-         * ```
          */
         @JvmStatic fun builder() = Builder()
     }
@@ -389,16 +343,14 @@ private constructor(
     /** A builder for [RealtimeSessionCreateRequest]. */
     class Builder internal constructor() {
 
-        private var model: JsonField<Model>? = null
         private var type: JsonValue = JsonValue.from("realtime")
         private var audio: JsonField<RealtimeAudioConfig> = JsonMissing.of()
-        private var clientSecret: JsonField<RealtimeClientSecretConfig> = JsonMissing.of()
         private var include: JsonField<MutableList<Include>>? = null
         private var instructions: JsonField<String> = JsonMissing.of()
         private var maxOutputTokens: JsonField<MaxOutputTokens> = JsonMissing.of()
+        private var model: JsonField<Model> = JsonMissing.of()
         private var outputModalities: JsonField<MutableList<OutputModality>>? = null
         private var prompt: JsonField<ResponsePrompt> = JsonMissing.of()
-        private var temperature: JsonField<Double> = JsonMissing.of()
         private var toolChoice: JsonField<RealtimeToolChoiceConfig> = JsonMissing.of()
         private var tools: JsonField<MutableList<RealtimeToolsConfigUnion>>? = null
         private var tracing: JsonField<RealtimeTracingConfig> = JsonMissing.of()
@@ -407,42 +359,21 @@ private constructor(
 
         @JvmSynthetic
         internal fun from(realtimeSessionCreateRequest: RealtimeSessionCreateRequest) = apply {
-            model = realtimeSessionCreateRequest.model
             type = realtimeSessionCreateRequest.type
             audio = realtimeSessionCreateRequest.audio
-            clientSecret = realtimeSessionCreateRequest.clientSecret
             include = realtimeSessionCreateRequest.include.map { it.toMutableList() }
             instructions = realtimeSessionCreateRequest.instructions
             maxOutputTokens = realtimeSessionCreateRequest.maxOutputTokens
+            model = realtimeSessionCreateRequest.model
             outputModalities =
                 realtimeSessionCreateRequest.outputModalities.map { it.toMutableList() }
             prompt = realtimeSessionCreateRequest.prompt
-            temperature = realtimeSessionCreateRequest.temperature
             toolChoice = realtimeSessionCreateRequest.toolChoice
             tools = realtimeSessionCreateRequest.tools.map { it.toMutableList() }
             tracing = realtimeSessionCreateRequest.tracing
             truncation = realtimeSessionCreateRequest.truncation
             additionalProperties = realtimeSessionCreateRequest.additionalProperties.toMutableMap()
         }
-
-        /** The Realtime model used for this session. */
-        fun model(model: Model) = model(JsonField.of(model))
-
-        /**
-         * Sets [Builder.model] to an arbitrary JSON value.
-         *
-         * You should usually call [Builder.model] with a well-typed [Model] value instead. This
-         * method is primarily for setting the field to an undocumented or not yet supported value.
-         */
-        fun model(model: JsonField<Model>) = apply { this.model = model }
-
-        /**
-         * Sets [model] to an arbitrary [String].
-         *
-         * You should usually call [model] with a well-typed [Model] constant instead. This method
-         * is primarily for setting the field to an undocumented or not yet supported value.
-         */
-        fun model(value: String) = model(Model.of(value))
 
         /**
          * Sets the field to an arbitrary JSON value.
@@ -470,25 +401,11 @@ private constructor(
          */
         fun audio(audio: JsonField<RealtimeAudioConfig>) = apply { this.audio = audio }
 
-        /** Configuration options for the generated client secret. */
-        fun clientSecret(clientSecret: RealtimeClientSecretConfig) =
-            clientSecret(JsonField.of(clientSecret))
-
-        /**
-         * Sets [Builder.clientSecret] to an arbitrary JSON value.
-         *
-         * You should usually call [Builder.clientSecret] with a well-typed
-         * [RealtimeClientSecretConfig] value instead. This method is primarily for setting the
-         * field to an undocumented or not yet supported value.
-         */
-        fun clientSecret(clientSecret: JsonField<RealtimeClientSecretConfig>) = apply {
-            this.clientSecret = clientSecret
-        }
-
         /**
          * Additional fields to include in server outputs.
-         * - `item.input_audio_transcription.logprobs`: Include logprobs for input audio
-         *   transcription.
+         *
+         * `item.input_audio_transcription.logprobs`: Include logprobs for input audio
+         * transcription.
          */
         fun include(include: List<Include>) = include(JsonField.of(include))
 
@@ -565,8 +482,30 @@ private constructor(
         /** Alias for calling [maxOutputTokens] with `MaxOutputTokens.ofInf()`. */
         fun maxOutputTokensInf() = maxOutputTokens(MaxOutputTokens.ofInf())
 
+        /** The Realtime model used for this session. */
+        fun model(model: Model) = model(JsonField.of(model))
+
         /**
-         * The set of modalities the model can respond with. To disable audio, set this to ["text"].
+         * Sets [Builder.model] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.model] with a well-typed [Model] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
+        fun model(model: JsonField<Model>) = apply { this.model = model }
+
+        /**
+         * Sets [model] to an arbitrary [String].
+         *
+         * You should usually call [model] with a well-typed [Model] constant instead. This method
+         * is primarily for setting the field to an undocumented or not yet supported value.
+         */
+        fun model(value: String) = model(Model.of(value))
+
+        /**
+         * The set of modalities the model can respond with. It defaults to `["audio"]`, indicating
+         * that the model will respond with audio plus a transcript. `["text"]` can be used to make
+         * the model respond with text only. It is not possible to request both `text` and `audio`
+         * at the same time.
          */
         fun outputModalities(outputModalities: List<OutputModality>) =
             outputModalities(JsonField.of(outputModalities))
@@ -611,21 +550,6 @@ private constructor(
          * supported value.
          */
         fun prompt(prompt: JsonField<ResponsePrompt>) = apply { this.prompt = prompt }
-
-        /**
-         * Sampling temperature for the model, limited to [0.6, 1.2]. For audio models a temperature
-         * of 0.8 is highly recommended for best performance.
-         */
-        fun temperature(temperature: Double) = temperature(JsonField.of(temperature))
-
-        /**
-         * Sets [Builder.temperature] to an arbitrary JSON value.
-         *
-         * You should usually call [Builder.temperature] with a well-typed [Double] value instead.
-         * This method is primarily for setting the field to an undocumented or not yet supported
-         * value.
-         */
-        fun temperature(temperature: JsonField<Double>) = apply { this.temperature = temperature }
 
         /**
          * How the model chooses tools. Provide one of the string modes or force a specific
@@ -690,8 +614,7 @@ private constructor(
         }
 
         /** Alias for calling [addTool] with `RealtimeToolsConfigUnion.ofFunction(function)`. */
-        fun addTool(function: RealtimeToolsConfigUnion.Function) =
-            addTool(RealtimeToolsConfigUnion.ofFunction(function))
+        fun addTool(function: Models) = addTool(RealtimeToolsConfigUnion.ofFunction(function))
 
         /** Alias for calling [addTool] with `RealtimeToolsConfigUnion.ofMcp(mcp)`. */
         fun addTool(mcp: RealtimeToolsConfigUnion.Mcp) =
@@ -709,8 +632,9 @@ private constructor(
             addTool(RealtimeToolsConfigUnion.Mcp.builder().serverLabel(serverLabel).build())
 
         /**
-         * Configuration options for tracing. Set to null to disable tracing. Once tracing is
-         * enabled for a session, the configuration cannot be modified.
+         * Realtime API can write session traces to the [Traces Dashboard](/logs?api=traces). Set to
+         * null to disable tracing. Once tracing is enabled for a session, the configuration cannot
+         * be modified.
          *
          * `auto` will create a trace for the session with default values for the workflow name,
          * group id, and metadata.
@@ -741,8 +665,7 @@ private constructor(
 
         /**
          * Controls how the realtime conversation is truncated prior to model inference. The default
-         * is `auto`. When set to `retention_ratio`, the server retains a fraction of the
-         * conversation tokens prior to the instructions.
+         * is `auto`.
          */
         fun truncation(truncation: RealtimeTruncation) = truncation(JsonField.of(truncation))
 
@@ -765,7 +688,7 @@ private constructor(
          * Alias for calling [truncation] with
          * `RealtimeTruncation.ofRetentionRatio(retentionRatio)`.
          */
-        fun truncation(retentionRatio: RealtimeTruncation.RetentionRatioTruncation) =
+        fun truncation(retentionRatio: RealtimeTruncationRetentionRatio) =
             truncation(RealtimeTruncation.ofRetentionRatio(retentionRatio))
 
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
@@ -791,26 +714,17 @@ private constructor(
          * Returns an immutable instance of [RealtimeSessionCreateRequest].
          *
          * Further updates to this [Builder] will not mutate the returned instance.
-         *
-         * The following fields are required:
-         * ```java
-         * .model()
-         * ```
-         *
-         * @throws IllegalStateException if any required field is unset.
          */
         fun build(): RealtimeSessionCreateRequest =
             RealtimeSessionCreateRequest(
-                checkRequired("model", model),
                 type,
                 audio,
-                clientSecret,
                 (include ?: JsonMissing.of()).map { it.toImmutable() },
                 instructions,
                 maxOutputTokens,
+                model,
                 (outputModalities ?: JsonMissing.of()).map { it.toImmutable() },
                 prompt,
-                temperature,
                 toolChoice,
                 (tools ?: JsonMissing.of()).map { it.toImmutable() },
                 tracing,
@@ -826,20 +740,18 @@ private constructor(
             return@apply
         }
 
-        model()
         _type().let {
             if (it != JsonValue.from("realtime")) {
                 throw OpenAIInvalidDataException("'type' is invalid, received $it")
             }
         }
         audio().ifPresent { it.validate() }
-        clientSecret().ifPresent { it.validate() }
         include().ifPresent { it.forEach { it.validate() } }
         instructions()
         maxOutputTokens().ifPresent { it.validate() }
+        model()
         outputModalities().ifPresent { it.forEach { it.validate() } }
         prompt().ifPresent { it.validate() }
-        temperature()
         toolChoice().ifPresent { it.validate() }
         tools().ifPresent { it.forEach { it.validate() } }
         tracing().ifPresent { it.validate() }
@@ -862,201 +774,18 @@ private constructor(
      */
     @JvmSynthetic
     internal fun validity(): Int =
-        (if (model.asKnown().isPresent) 1 else 0) +
-            type.let { if (it == JsonValue.from("realtime")) 1 else 0 } +
+        type.let { if (it == JsonValue.from("realtime")) 1 else 0 } +
             (audio.asKnown().getOrNull()?.validity() ?: 0) +
-            (clientSecret.asKnown().getOrNull()?.validity() ?: 0) +
             (include.asKnown().getOrNull()?.sumOf { it.validity().toInt() } ?: 0) +
             (if (instructions.asKnown().isPresent) 1 else 0) +
             (maxOutputTokens.asKnown().getOrNull()?.validity() ?: 0) +
+            (if (model.asKnown().isPresent) 1 else 0) +
             (outputModalities.asKnown().getOrNull()?.sumOf { it.validity().toInt() } ?: 0) +
             (prompt.asKnown().getOrNull()?.validity() ?: 0) +
-            (if (temperature.asKnown().isPresent) 1 else 0) +
             (toolChoice.asKnown().getOrNull()?.validity() ?: 0) +
             (tools.asKnown().getOrNull()?.sumOf { it.validity().toInt() } ?: 0) +
             (tracing.asKnown().getOrNull()?.validity() ?: 0) +
             (truncation.asKnown().getOrNull()?.validity() ?: 0)
-
-    /** The Realtime model used for this session. */
-    class Model @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
-
-        /**
-         * Returns this class instance's raw value.
-         *
-         * This is usually only useful if this instance was deserialized from data that doesn't
-         * match any known member, and you want to know that value. For example, if the SDK is on an
-         * older version than the API, then the API may respond with new members that the SDK is
-         * unaware of.
-         */
-        @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
-
-        companion object {
-
-            @JvmField val GPT_REALTIME = of("gpt-realtime")
-
-            @JvmField val GPT_REALTIME_2025_08_28 = of("gpt-realtime-2025-08-28")
-
-            @JvmField val GPT_4O_REALTIME = of("gpt-4o-realtime")
-
-            @JvmField val GPT_4O_MINI_REALTIME = of("gpt-4o-mini-realtime")
-
-            @JvmField val GPT_4O_REALTIME_PREVIEW = of("gpt-4o-realtime-preview")
-
-            @JvmField
-            val GPT_4O_REALTIME_PREVIEW_2024_10_01 = of("gpt-4o-realtime-preview-2024-10-01")
-
-            @JvmField
-            val GPT_4O_REALTIME_PREVIEW_2024_12_17 = of("gpt-4o-realtime-preview-2024-12-17")
-
-            @JvmField
-            val GPT_4O_REALTIME_PREVIEW_2025_06_03 = of("gpt-4o-realtime-preview-2025-06-03")
-
-            @JvmField val GPT_4O_MINI_REALTIME_PREVIEW = of("gpt-4o-mini-realtime-preview")
-
-            @JvmField
-            val GPT_4O_MINI_REALTIME_PREVIEW_2024_12_17 =
-                of("gpt-4o-mini-realtime-preview-2024-12-17")
-
-            @JvmStatic fun of(value: String) = Model(JsonField.of(value))
-        }
-
-        /** An enum containing [Model]'s known values. */
-        enum class Known {
-            GPT_REALTIME,
-            GPT_REALTIME_2025_08_28,
-            GPT_4O_REALTIME,
-            GPT_4O_MINI_REALTIME,
-            GPT_4O_REALTIME_PREVIEW,
-            GPT_4O_REALTIME_PREVIEW_2024_10_01,
-            GPT_4O_REALTIME_PREVIEW_2024_12_17,
-            GPT_4O_REALTIME_PREVIEW_2025_06_03,
-            GPT_4O_MINI_REALTIME_PREVIEW,
-            GPT_4O_MINI_REALTIME_PREVIEW_2024_12_17,
-        }
-
-        /**
-         * An enum containing [Model]'s known values, as well as an [_UNKNOWN] member.
-         *
-         * An instance of [Model] can contain an unknown value in a couple of cases:
-         * - It was deserialized from data that doesn't match any known member. For example, if the
-         *   SDK is on an older version than the API, then the API may respond with new members that
-         *   the SDK is unaware of.
-         * - It was constructed with an arbitrary value using the [of] method.
-         */
-        enum class Value {
-            GPT_REALTIME,
-            GPT_REALTIME_2025_08_28,
-            GPT_4O_REALTIME,
-            GPT_4O_MINI_REALTIME,
-            GPT_4O_REALTIME_PREVIEW,
-            GPT_4O_REALTIME_PREVIEW_2024_10_01,
-            GPT_4O_REALTIME_PREVIEW_2024_12_17,
-            GPT_4O_REALTIME_PREVIEW_2025_06_03,
-            GPT_4O_MINI_REALTIME_PREVIEW,
-            GPT_4O_MINI_REALTIME_PREVIEW_2024_12_17,
-            /** An enum member indicating that [Model] was instantiated with an unknown value. */
-            _UNKNOWN,
-        }
-
-        /**
-         * Returns an enum member corresponding to this class instance's value, or [Value._UNKNOWN]
-         * if the class was instantiated with an unknown value.
-         *
-         * Use the [known] method instead if you're certain the value is always known or if you want
-         * to throw for the unknown case.
-         */
-        fun value(): Value =
-            when (this) {
-                GPT_REALTIME -> Value.GPT_REALTIME
-                GPT_REALTIME_2025_08_28 -> Value.GPT_REALTIME_2025_08_28
-                GPT_4O_REALTIME -> Value.GPT_4O_REALTIME
-                GPT_4O_MINI_REALTIME -> Value.GPT_4O_MINI_REALTIME
-                GPT_4O_REALTIME_PREVIEW -> Value.GPT_4O_REALTIME_PREVIEW
-                GPT_4O_REALTIME_PREVIEW_2024_10_01 -> Value.GPT_4O_REALTIME_PREVIEW_2024_10_01
-                GPT_4O_REALTIME_PREVIEW_2024_12_17 -> Value.GPT_4O_REALTIME_PREVIEW_2024_12_17
-                GPT_4O_REALTIME_PREVIEW_2025_06_03 -> Value.GPT_4O_REALTIME_PREVIEW_2025_06_03
-                GPT_4O_MINI_REALTIME_PREVIEW -> Value.GPT_4O_MINI_REALTIME_PREVIEW
-                GPT_4O_MINI_REALTIME_PREVIEW_2024_12_17 ->
-                    Value.GPT_4O_MINI_REALTIME_PREVIEW_2024_12_17
-                else -> Value._UNKNOWN
-            }
-
-        /**
-         * Returns an enum member corresponding to this class instance's value.
-         *
-         * Use the [value] method instead if you're uncertain the value is always known and don't
-         * want to throw for the unknown case.
-         *
-         * @throws OpenAIInvalidDataException if this class instance's value is a not a known
-         *   member.
-         */
-        fun known(): Known =
-            when (this) {
-                GPT_REALTIME -> Known.GPT_REALTIME
-                GPT_REALTIME_2025_08_28 -> Known.GPT_REALTIME_2025_08_28
-                GPT_4O_REALTIME -> Known.GPT_4O_REALTIME
-                GPT_4O_MINI_REALTIME -> Known.GPT_4O_MINI_REALTIME
-                GPT_4O_REALTIME_PREVIEW -> Known.GPT_4O_REALTIME_PREVIEW
-                GPT_4O_REALTIME_PREVIEW_2024_10_01 -> Known.GPT_4O_REALTIME_PREVIEW_2024_10_01
-                GPT_4O_REALTIME_PREVIEW_2024_12_17 -> Known.GPT_4O_REALTIME_PREVIEW_2024_12_17
-                GPT_4O_REALTIME_PREVIEW_2025_06_03 -> Known.GPT_4O_REALTIME_PREVIEW_2025_06_03
-                GPT_4O_MINI_REALTIME_PREVIEW -> Known.GPT_4O_MINI_REALTIME_PREVIEW
-                GPT_4O_MINI_REALTIME_PREVIEW_2024_12_17 ->
-                    Known.GPT_4O_MINI_REALTIME_PREVIEW_2024_12_17
-                else -> throw OpenAIInvalidDataException("Unknown Model: $value")
-            }
-
-        /**
-         * Returns this class instance's primitive wire representation.
-         *
-         * This differs from the [toString] method because that method is primarily for debugging
-         * and generally doesn't throw.
-         *
-         * @throws OpenAIInvalidDataException if this class instance's value does not have the
-         *   expected primitive type.
-         */
-        fun asString(): String =
-            _value().asString().orElseThrow { OpenAIInvalidDataException("Value is not a String") }
-
-        private var validated: Boolean = false
-
-        fun validate(): Model = apply {
-            if (validated) {
-                return@apply
-            }
-
-            known()
-            validated = true
-        }
-
-        fun isValid(): Boolean =
-            try {
-                validate()
-                true
-            } catch (e: OpenAIInvalidDataException) {
-                false
-            }
-
-        /**
-         * Returns a score indicating how many valid values are contained in this object
-         * recursively.
-         *
-         * Used for best match union deserialization.
-         */
-        @JvmSynthetic internal fun validity(): Int = if (value() == Value._UNKNOWN) 0 else 1
-
-        override fun equals(other: Any?): Boolean {
-            if (this === other) {
-                return true
-            }
-
-            return other is Model && value == other.value
-        }
-
-        override fun hashCode() = value.hashCode()
-
-        override fun toString() = value.toString()
-    }
 
     class Include @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
 
@@ -1363,6 +1092,175 @@ private constructor(
         }
     }
 
+    /** The Realtime model used for this session. */
+    class Model @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
+
+        /**
+         * Returns this class instance's raw value.
+         *
+         * This is usually only useful if this instance was deserialized from data that doesn't
+         * match any known member, and you want to know that value. For example, if the SDK is on an
+         * older version than the API, then the API may respond with new members that the SDK is
+         * unaware of.
+         */
+        @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
+
+        companion object {
+
+            @JvmField val GPT_REALTIME = of("gpt-realtime")
+
+            @JvmField val GPT_REALTIME_2025_08_28 = of("gpt-realtime-2025-08-28")
+
+            @JvmField val GPT_4O_REALTIME_PREVIEW = of("gpt-4o-realtime-preview")
+
+            @JvmField
+            val GPT_4O_REALTIME_PREVIEW_2024_10_01 = of("gpt-4o-realtime-preview-2024-10-01")
+
+            @JvmField
+            val GPT_4O_REALTIME_PREVIEW_2024_12_17 = of("gpt-4o-realtime-preview-2024-12-17")
+
+            @JvmField
+            val GPT_4O_REALTIME_PREVIEW_2025_06_03 = of("gpt-4o-realtime-preview-2025-06-03")
+
+            @JvmField val GPT_4O_MINI_REALTIME_PREVIEW = of("gpt-4o-mini-realtime-preview")
+
+            @JvmField
+            val GPT_4O_MINI_REALTIME_PREVIEW_2024_12_17 =
+                of("gpt-4o-mini-realtime-preview-2024-12-17")
+
+            @JvmStatic fun of(value: String) = Model(JsonField.of(value))
+        }
+
+        /** An enum containing [Model]'s known values. */
+        enum class Known {
+            GPT_REALTIME,
+            GPT_REALTIME_2025_08_28,
+            GPT_4O_REALTIME_PREVIEW,
+            GPT_4O_REALTIME_PREVIEW_2024_10_01,
+            GPT_4O_REALTIME_PREVIEW_2024_12_17,
+            GPT_4O_REALTIME_PREVIEW_2025_06_03,
+            GPT_4O_MINI_REALTIME_PREVIEW,
+            GPT_4O_MINI_REALTIME_PREVIEW_2024_12_17,
+        }
+
+        /**
+         * An enum containing [Model]'s known values, as well as an [_UNKNOWN] member.
+         *
+         * An instance of [Model] can contain an unknown value in a couple of cases:
+         * - It was deserialized from data that doesn't match any known member. For example, if the
+         *   SDK is on an older version than the API, then the API may respond with new members that
+         *   the SDK is unaware of.
+         * - It was constructed with an arbitrary value using the [of] method.
+         */
+        enum class Value {
+            GPT_REALTIME,
+            GPT_REALTIME_2025_08_28,
+            GPT_4O_REALTIME_PREVIEW,
+            GPT_4O_REALTIME_PREVIEW_2024_10_01,
+            GPT_4O_REALTIME_PREVIEW_2024_12_17,
+            GPT_4O_REALTIME_PREVIEW_2025_06_03,
+            GPT_4O_MINI_REALTIME_PREVIEW,
+            GPT_4O_MINI_REALTIME_PREVIEW_2024_12_17,
+            /** An enum member indicating that [Model] was instantiated with an unknown value. */
+            _UNKNOWN,
+        }
+
+        /**
+         * Returns an enum member corresponding to this class instance's value, or [Value._UNKNOWN]
+         * if the class was instantiated with an unknown value.
+         *
+         * Use the [known] method instead if you're certain the value is always known or if you want
+         * to throw for the unknown case.
+         */
+        fun value(): Value =
+            when (this) {
+                GPT_REALTIME -> Value.GPT_REALTIME
+                GPT_REALTIME_2025_08_28 -> Value.GPT_REALTIME_2025_08_28
+                GPT_4O_REALTIME_PREVIEW -> Value.GPT_4O_REALTIME_PREVIEW
+                GPT_4O_REALTIME_PREVIEW_2024_10_01 -> Value.GPT_4O_REALTIME_PREVIEW_2024_10_01
+                GPT_4O_REALTIME_PREVIEW_2024_12_17 -> Value.GPT_4O_REALTIME_PREVIEW_2024_12_17
+                GPT_4O_REALTIME_PREVIEW_2025_06_03 -> Value.GPT_4O_REALTIME_PREVIEW_2025_06_03
+                GPT_4O_MINI_REALTIME_PREVIEW -> Value.GPT_4O_MINI_REALTIME_PREVIEW
+                GPT_4O_MINI_REALTIME_PREVIEW_2024_12_17 ->
+                    Value.GPT_4O_MINI_REALTIME_PREVIEW_2024_12_17
+                else -> Value._UNKNOWN
+            }
+
+        /**
+         * Returns an enum member corresponding to this class instance's value.
+         *
+         * Use the [value] method instead if you're uncertain the value is always known and don't
+         * want to throw for the unknown case.
+         *
+         * @throws OpenAIInvalidDataException if this class instance's value is a not a known
+         *   member.
+         */
+        fun known(): Known =
+            when (this) {
+                GPT_REALTIME -> Known.GPT_REALTIME
+                GPT_REALTIME_2025_08_28 -> Known.GPT_REALTIME_2025_08_28
+                GPT_4O_REALTIME_PREVIEW -> Known.GPT_4O_REALTIME_PREVIEW
+                GPT_4O_REALTIME_PREVIEW_2024_10_01 -> Known.GPT_4O_REALTIME_PREVIEW_2024_10_01
+                GPT_4O_REALTIME_PREVIEW_2024_12_17 -> Known.GPT_4O_REALTIME_PREVIEW_2024_12_17
+                GPT_4O_REALTIME_PREVIEW_2025_06_03 -> Known.GPT_4O_REALTIME_PREVIEW_2025_06_03
+                GPT_4O_MINI_REALTIME_PREVIEW -> Known.GPT_4O_MINI_REALTIME_PREVIEW
+                GPT_4O_MINI_REALTIME_PREVIEW_2024_12_17 ->
+                    Known.GPT_4O_MINI_REALTIME_PREVIEW_2024_12_17
+                else -> throw OpenAIInvalidDataException("Unknown Model: $value")
+            }
+
+        /**
+         * Returns this class instance's primitive wire representation.
+         *
+         * This differs from the [toString] method because that method is primarily for debugging
+         * and generally doesn't throw.
+         *
+         * @throws OpenAIInvalidDataException if this class instance's value does not have the
+         *   expected primitive type.
+         */
+        fun asString(): String =
+            _value().asString().orElseThrow { OpenAIInvalidDataException("Value is not a String") }
+
+        private var validated: Boolean = false
+
+        fun validate(): Model = apply {
+            if (validated) {
+                return@apply
+            }
+
+            known()
+            validated = true
+        }
+
+        fun isValid(): Boolean =
+            try {
+                validate()
+                true
+            } catch (e: OpenAIInvalidDataException) {
+                false
+            }
+
+        /**
+         * Returns a score indicating how many valid values are contained in this object
+         * recursively.
+         *
+         * Used for best match union deserialization.
+         */
+        @JvmSynthetic internal fun validity(): Int = if (value() == Value._UNKNOWN) 0 else 1
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) {
+                return true
+            }
+
+            return other is Model && value == other.value
+        }
+
+        override fun hashCode() = value.hashCode()
+
+        override fun toString() = value.toString()
+    }
+
     class OutputModality @JsonCreator private constructor(private val value: JsonField<String>) :
         Enum {
 
@@ -1498,16 +1396,14 @@ private constructor(
         }
 
         return other is RealtimeSessionCreateRequest &&
-            model == other.model &&
             type == other.type &&
             audio == other.audio &&
-            clientSecret == other.clientSecret &&
             include == other.include &&
             instructions == other.instructions &&
             maxOutputTokens == other.maxOutputTokens &&
+            model == other.model &&
             outputModalities == other.outputModalities &&
             prompt == other.prompt &&
-            temperature == other.temperature &&
             toolChoice == other.toolChoice &&
             tools == other.tools &&
             tracing == other.tracing &&
@@ -1517,16 +1413,14 @@ private constructor(
 
     private val hashCode: Int by lazy {
         Objects.hash(
-            model,
             type,
             audio,
-            clientSecret,
             include,
             instructions,
             maxOutputTokens,
+            model,
             outputModalities,
             prompt,
-            temperature,
             toolChoice,
             tools,
             tracing,
@@ -1538,5 +1432,5 @@ private constructor(
     override fun hashCode(): Int = hashCode
 
     override fun toString() =
-        "RealtimeSessionCreateRequest{model=$model, type=$type, audio=$audio, clientSecret=$clientSecret, include=$include, instructions=$instructions, maxOutputTokens=$maxOutputTokens, outputModalities=$outputModalities, prompt=$prompt, temperature=$temperature, toolChoice=$toolChoice, tools=$tools, tracing=$tracing, truncation=$truncation, additionalProperties=$additionalProperties}"
+        "RealtimeSessionCreateRequest{type=$type, audio=$audio, include=$include, instructions=$instructions, maxOutputTokens=$maxOutputTokens, model=$model, outputModalities=$outputModalities, prompt=$prompt, toolChoice=$toolChoice, tools=$tools, tracing=$tracing, truncation=$truncation, additionalProperties=$additionalProperties}"
 }

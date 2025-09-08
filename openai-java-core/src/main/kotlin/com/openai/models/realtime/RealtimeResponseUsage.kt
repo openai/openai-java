@@ -58,7 +58,10 @@ private constructor(
     )
 
     /**
-     * Details about the input tokens used in the Response.
+     * Details about the input tokens used in the Response. Cached tokens are tokens from previous
+     * turns in the conversation that are included as context for the current response. Cached
+     * tokens here are counted as a subset of input tokens, meaning input tokens will include cached
+     * and uncached tokens.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -183,7 +186,12 @@ private constructor(
             additionalProperties = realtimeResponseUsage.additionalProperties.toMutableMap()
         }
 
-        /** Details about the input tokens used in the Response. */
+        /**
+         * Details about the input tokens used in the Response. Cached tokens are tokens from
+         * previous turns in the conversation that are included as context for the current response.
+         * Cached tokens here are counted as a subset of input tokens, meaning input tokens will
+         * include cached and uncached tokens.
+         */
         fun inputTokenDetails(inputTokenDetails: RealtimeResponseUsageInputTokenDetails) =
             inputTokenDetails(JsonField.of(inputTokenDetails))
 

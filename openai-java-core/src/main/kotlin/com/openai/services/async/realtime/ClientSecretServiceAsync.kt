@@ -24,7 +24,7 @@ interface ClientSecretServiceAsync {
      */
     fun withOptions(modifier: Consumer<ClientOptions.Builder>): ClientSecretServiceAsync
 
-    /** Create a Realtime session and client secret for either realtime or transcription. */
+    /** Create a Realtime client secret with an associated session configuration. */
     fun create(): CompletableFuture<ClientSecretCreateResponse> =
         create(ClientSecretCreateParams.none())
 

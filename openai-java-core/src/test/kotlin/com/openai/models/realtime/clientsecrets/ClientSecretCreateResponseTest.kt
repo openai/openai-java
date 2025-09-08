@@ -5,6 +5,13 @@ package com.openai.models.realtime.clientsecrets
 import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
 import com.openai.core.JsonValue
 import com.openai.core.jsonMapper
+import com.openai.models.realtime.AudioTranscription
+import com.openai.models.realtime.Models
+import com.openai.models.realtime.NoiseReductionType
+import com.openai.models.realtime.RealtimeAudioFormats
+import com.openai.models.realtime.RealtimeTruncation
+import com.openai.models.responses.ResponsePrompt
+import com.openai.models.responses.ToolChoiceOptions
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
@@ -17,46 +24,63 @@ internal class ClientSecretCreateResponseTest {
                 .expiresAt(0L)
                 .session(
                     RealtimeSessionCreateResponse.builder()
-                        .id("id")
                         .audio(
                             RealtimeSessionCreateResponse.Audio.builder()
                                 .input(
                                     RealtimeSessionCreateResponse.Audio.Input.builder()
-                                        .format("format")
+                                        .format(
+                                            RealtimeAudioFormats.AudioPcm.builder()
+                                                .rate(RealtimeAudioFormats.AudioPcm.Rate._24000)
+                                                .type(RealtimeAudioFormats.AudioPcm.Type.AUDIO_PCM)
+                                                .build()
+                                        )
                                         .noiseReduction(
                                             RealtimeSessionCreateResponse.Audio.Input.NoiseReduction
                                                 .builder()
-                                                .type(
-                                                    RealtimeSessionCreateResponse.Audio.Input
-                                                        .NoiseReduction
-                                                        .Type
-                                                        .NEAR_FIELD
-                                                )
+                                                .type(NoiseReductionType.NEAR_FIELD)
                                                 .build()
                                         )
                                         .transcription(
-                                            RealtimeSessionCreateResponse.Audio.Input.Transcription
-                                                .builder()
+                                            AudioTranscription.builder()
                                                 .language("language")
-                                                .model("model")
+                                                .model(AudioTranscription.Model.WHISPER_1)
                                                 .prompt("prompt")
                                                 .build()
                                         )
                                         .turnDetection(
                                             RealtimeSessionCreateResponse.Audio.Input.TurnDetection
                                                 .builder()
+                                                .createResponse(true)
+                                                .eagerness(
+                                                    RealtimeSessionCreateResponse.Audio.Input
+                                                        .TurnDetection
+                                                        .Eagerness
+                                                        .LOW
+                                                )
+                                                .idleTimeoutMs(0L)
+                                                .interruptResponse(true)
                                                 .prefixPaddingMs(0L)
                                                 .silenceDurationMs(0L)
                                                 .threshold(0.0)
-                                                .type("type")
+                                                .type(
+                                                    RealtimeSessionCreateResponse.Audio.Input
+                                                        .TurnDetection
+                                                        .Type
+                                                        .SERVER_VAD
+                                                )
                                                 .build()
                                         )
                                         .build()
                                 )
                                 .output(
                                     RealtimeSessionCreateResponse.Audio.Output.builder()
-                                        .format("format")
-                                        .speed(0.0)
+                                        .format(
+                                            RealtimeAudioFormats.AudioPcm.builder()
+                                                .rate(RealtimeAudioFormats.AudioPcm.Rate._24000)
+                                                .type(RealtimeAudioFormats.AudioPcm.Type.AUDIO_PCM)
+                                                .build()
+                                        )
+                                        .speed(0.25)
                                         .voice(
                                             RealtimeSessionCreateResponse.Audio.Output.Voice.ALLOY
                                         )
@@ -64,34 +88,43 @@ internal class ClientSecretCreateResponseTest {
                                 )
                                 .build()
                         )
-                        .expiresAt(0L)
+                        .clientSecret(
+                            RealtimeSessionClientSecret.builder()
+                                .expiresAt(0L)
+                                .value("value")
+                                .build()
+                        )
                         .addInclude(
                             RealtimeSessionCreateResponse.Include
                                 .ITEM_INPUT_AUDIO_TRANSCRIPTION_LOGPROBS
                         )
                         .instructions("instructions")
                         .maxOutputTokens(0L)
-                        .model("model")
-                        .object_("object")
+                        .model(RealtimeSessionCreateResponse.Model.GPT_REALTIME)
                         .addOutputModality(RealtimeSessionCreateResponse.OutputModality.TEXT)
-                        .toolChoice("tool_choice")
+                        .prompt(
+                            ResponsePrompt.builder()
+                                .id("id")
+                                .variables(
+                                    ResponsePrompt.Variables.builder()
+                                        .putAdditionalProperty("foo", JsonValue.from("string"))
+                                        .build()
+                                )
+                                .version("version")
+                                .build()
+                        )
+                        .toolChoice(ToolChoiceOptions.NONE)
                         .addTool(
-                            RealtimeSessionCreateResponse.Tool.builder()
+                            Models.builder()
                                 .description("description")
                                 .name("name")
                                 .parameters(JsonValue.from(mapOf<String, Any>()))
-                                .type(RealtimeSessionCreateResponse.Tool.Type.FUNCTION)
+                                .type(Models.Type.FUNCTION)
                                 .build()
                         )
                         .tracingAuto()
-                        .turnDetection(
-                            RealtimeSessionCreateResponse.TurnDetection.builder()
-                                .prefixPaddingMs(0L)
-                                .silenceDurationMs(0L)
-                                .threshold(0.0)
-                                .type("type")
-                                .build()
-                        )
+                        .truncation(RealtimeTruncation.RealtimeTruncationStrategy.AUTO)
+                        .type(RealtimeSessionCreateResponse.Type.REALTIME)
                         .build()
                 )
                 .value("value")
@@ -102,46 +135,63 @@ internal class ClientSecretCreateResponseTest {
             .isEqualTo(
                 ClientSecretCreateResponse.Session.ofRealtimeSessionCreateResponse(
                     RealtimeSessionCreateResponse.builder()
-                        .id("id")
                         .audio(
                             RealtimeSessionCreateResponse.Audio.builder()
                                 .input(
                                     RealtimeSessionCreateResponse.Audio.Input.builder()
-                                        .format("format")
+                                        .format(
+                                            RealtimeAudioFormats.AudioPcm.builder()
+                                                .rate(RealtimeAudioFormats.AudioPcm.Rate._24000)
+                                                .type(RealtimeAudioFormats.AudioPcm.Type.AUDIO_PCM)
+                                                .build()
+                                        )
                                         .noiseReduction(
                                             RealtimeSessionCreateResponse.Audio.Input.NoiseReduction
                                                 .builder()
-                                                .type(
-                                                    RealtimeSessionCreateResponse.Audio.Input
-                                                        .NoiseReduction
-                                                        .Type
-                                                        .NEAR_FIELD
-                                                )
+                                                .type(NoiseReductionType.NEAR_FIELD)
                                                 .build()
                                         )
                                         .transcription(
-                                            RealtimeSessionCreateResponse.Audio.Input.Transcription
-                                                .builder()
+                                            AudioTranscription.builder()
                                                 .language("language")
-                                                .model("model")
+                                                .model(AudioTranscription.Model.WHISPER_1)
                                                 .prompt("prompt")
                                                 .build()
                                         )
                                         .turnDetection(
                                             RealtimeSessionCreateResponse.Audio.Input.TurnDetection
                                                 .builder()
+                                                .createResponse(true)
+                                                .eagerness(
+                                                    RealtimeSessionCreateResponse.Audio.Input
+                                                        .TurnDetection
+                                                        .Eagerness
+                                                        .LOW
+                                                )
+                                                .idleTimeoutMs(0L)
+                                                .interruptResponse(true)
                                                 .prefixPaddingMs(0L)
                                                 .silenceDurationMs(0L)
                                                 .threshold(0.0)
-                                                .type("type")
+                                                .type(
+                                                    RealtimeSessionCreateResponse.Audio.Input
+                                                        .TurnDetection
+                                                        .Type
+                                                        .SERVER_VAD
+                                                )
                                                 .build()
                                         )
                                         .build()
                                 )
                                 .output(
                                     RealtimeSessionCreateResponse.Audio.Output.builder()
-                                        .format("format")
-                                        .speed(0.0)
+                                        .format(
+                                            RealtimeAudioFormats.AudioPcm.builder()
+                                                .rate(RealtimeAudioFormats.AudioPcm.Rate._24000)
+                                                .type(RealtimeAudioFormats.AudioPcm.Type.AUDIO_PCM)
+                                                .build()
+                                        )
+                                        .speed(0.25)
                                         .voice(
                                             RealtimeSessionCreateResponse.Audio.Output.Voice.ALLOY
                                         )
@@ -149,34 +199,43 @@ internal class ClientSecretCreateResponseTest {
                                 )
                                 .build()
                         )
-                        .expiresAt(0L)
+                        .clientSecret(
+                            RealtimeSessionClientSecret.builder()
+                                .expiresAt(0L)
+                                .value("value")
+                                .build()
+                        )
                         .addInclude(
                             RealtimeSessionCreateResponse.Include
                                 .ITEM_INPUT_AUDIO_TRANSCRIPTION_LOGPROBS
                         )
                         .instructions("instructions")
                         .maxOutputTokens(0L)
-                        .model("model")
-                        .object_("object")
+                        .model(RealtimeSessionCreateResponse.Model.GPT_REALTIME)
                         .addOutputModality(RealtimeSessionCreateResponse.OutputModality.TEXT)
-                        .toolChoice("tool_choice")
+                        .prompt(
+                            ResponsePrompt.builder()
+                                .id("id")
+                                .variables(
+                                    ResponsePrompt.Variables.builder()
+                                        .putAdditionalProperty("foo", JsonValue.from("string"))
+                                        .build()
+                                )
+                                .version("version")
+                                .build()
+                        )
+                        .toolChoice(ToolChoiceOptions.NONE)
                         .addTool(
-                            RealtimeSessionCreateResponse.Tool.builder()
+                            Models.builder()
                                 .description("description")
                                 .name("name")
                                 .parameters(JsonValue.from(mapOf<String, Any>()))
-                                .type(RealtimeSessionCreateResponse.Tool.Type.FUNCTION)
+                                .type(Models.Type.FUNCTION)
                                 .build()
                         )
                         .tracingAuto()
-                        .turnDetection(
-                            RealtimeSessionCreateResponse.TurnDetection.builder()
-                                .prefixPaddingMs(0L)
-                                .silenceDurationMs(0L)
-                                .threshold(0.0)
-                                .type("type")
-                                .build()
-                        )
+                        .truncation(RealtimeTruncation.RealtimeTruncationStrategy.AUTO)
+                        .type(RealtimeSessionCreateResponse.Type.REALTIME)
                         .build()
                 )
             )
@@ -191,46 +250,63 @@ internal class ClientSecretCreateResponseTest {
                 .expiresAt(0L)
                 .session(
                     RealtimeSessionCreateResponse.builder()
-                        .id("id")
                         .audio(
                             RealtimeSessionCreateResponse.Audio.builder()
                                 .input(
                                     RealtimeSessionCreateResponse.Audio.Input.builder()
-                                        .format("format")
+                                        .format(
+                                            RealtimeAudioFormats.AudioPcm.builder()
+                                                .rate(RealtimeAudioFormats.AudioPcm.Rate._24000)
+                                                .type(RealtimeAudioFormats.AudioPcm.Type.AUDIO_PCM)
+                                                .build()
+                                        )
                                         .noiseReduction(
                                             RealtimeSessionCreateResponse.Audio.Input.NoiseReduction
                                                 .builder()
-                                                .type(
-                                                    RealtimeSessionCreateResponse.Audio.Input
-                                                        .NoiseReduction
-                                                        .Type
-                                                        .NEAR_FIELD
-                                                )
+                                                .type(NoiseReductionType.NEAR_FIELD)
                                                 .build()
                                         )
                                         .transcription(
-                                            RealtimeSessionCreateResponse.Audio.Input.Transcription
-                                                .builder()
+                                            AudioTranscription.builder()
                                                 .language("language")
-                                                .model("model")
+                                                .model(AudioTranscription.Model.WHISPER_1)
                                                 .prompt("prompt")
                                                 .build()
                                         )
                                         .turnDetection(
                                             RealtimeSessionCreateResponse.Audio.Input.TurnDetection
                                                 .builder()
+                                                .createResponse(true)
+                                                .eagerness(
+                                                    RealtimeSessionCreateResponse.Audio.Input
+                                                        .TurnDetection
+                                                        .Eagerness
+                                                        .LOW
+                                                )
+                                                .idleTimeoutMs(0L)
+                                                .interruptResponse(true)
                                                 .prefixPaddingMs(0L)
                                                 .silenceDurationMs(0L)
                                                 .threshold(0.0)
-                                                .type("type")
+                                                .type(
+                                                    RealtimeSessionCreateResponse.Audio.Input
+                                                        .TurnDetection
+                                                        .Type
+                                                        .SERVER_VAD
+                                                )
                                                 .build()
                                         )
                                         .build()
                                 )
                                 .output(
                                     RealtimeSessionCreateResponse.Audio.Output.builder()
-                                        .format("format")
-                                        .speed(0.0)
+                                        .format(
+                                            RealtimeAudioFormats.AudioPcm.builder()
+                                                .rate(RealtimeAudioFormats.AudioPcm.Rate._24000)
+                                                .type(RealtimeAudioFormats.AudioPcm.Type.AUDIO_PCM)
+                                                .build()
+                                        )
+                                        .speed(0.25)
                                         .voice(
                                             RealtimeSessionCreateResponse.Audio.Output.Voice.ALLOY
                                         )
@@ -238,34 +314,43 @@ internal class ClientSecretCreateResponseTest {
                                 )
                                 .build()
                         )
-                        .expiresAt(0L)
+                        .clientSecret(
+                            RealtimeSessionClientSecret.builder()
+                                .expiresAt(0L)
+                                .value("value")
+                                .build()
+                        )
                         .addInclude(
                             RealtimeSessionCreateResponse.Include
                                 .ITEM_INPUT_AUDIO_TRANSCRIPTION_LOGPROBS
                         )
                         .instructions("instructions")
                         .maxOutputTokens(0L)
-                        .model("model")
-                        .object_("object")
+                        .model(RealtimeSessionCreateResponse.Model.GPT_REALTIME)
                         .addOutputModality(RealtimeSessionCreateResponse.OutputModality.TEXT)
-                        .toolChoice("tool_choice")
+                        .prompt(
+                            ResponsePrompt.builder()
+                                .id("id")
+                                .variables(
+                                    ResponsePrompt.Variables.builder()
+                                        .putAdditionalProperty("foo", JsonValue.from("string"))
+                                        .build()
+                                )
+                                .version("version")
+                                .build()
+                        )
+                        .toolChoice(ToolChoiceOptions.NONE)
                         .addTool(
-                            RealtimeSessionCreateResponse.Tool.builder()
+                            Models.builder()
                                 .description("description")
                                 .name("name")
                                 .parameters(JsonValue.from(mapOf<String, Any>()))
-                                .type(RealtimeSessionCreateResponse.Tool.Type.FUNCTION)
+                                .type(Models.Type.FUNCTION)
                                 .build()
                         )
                         .tracingAuto()
-                        .turnDetection(
-                            RealtimeSessionCreateResponse.TurnDetection.builder()
-                                .prefixPaddingMs(0L)
-                                .silenceDurationMs(0L)
-                                .threshold(0.0)
-                                .type("type")
-                                .build()
-                        )
+                        .truncation(RealtimeTruncation.RealtimeTruncationStrategy.AUTO)
+                        .type(RealtimeSessionCreateResponse.Type.REALTIME)
                         .build()
                 )
                 .value("value")

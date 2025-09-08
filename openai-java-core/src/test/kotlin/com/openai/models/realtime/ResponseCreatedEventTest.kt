@@ -18,6 +18,21 @@ internal class ResponseCreatedEventTest {
                 .response(
                     RealtimeResponse.builder()
                         .id("id")
+                        .audio(
+                            RealtimeResponse.Audio.builder()
+                                .output(
+                                    RealtimeResponse.Audio.Output.builder()
+                                        .format(
+                                            RealtimeAudioFormats.AudioPcm.builder()
+                                                .rate(RealtimeAudioFormats.AudioPcm.Rate._24000)
+                                                .type(RealtimeAudioFormats.AudioPcm.Type.AUDIO_PCM)
+                                                .build()
+                                        )
+                                        .voice(RealtimeResponse.Audio.Output.Voice.ALLOY)
+                                        .build()
+                                )
+                                .build()
+                        )
                         .conversationId("conversation_id")
                         .maxOutputTokens(0L)
                         .metadata(
@@ -25,7 +40,6 @@ internal class ResponseCreatedEventTest {
                                 .putAdditionalProperty("foo", JsonValue.from("string"))
                                 .build()
                         )
-                        .addModality(RealtimeResponse.Modality.TEXT)
                         .object_(RealtimeResponse.Object.REALTIME_RESPONSE)
                         .addOutput(
                             RealtimeConversationItemSystemMessage.builder()
@@ -43,7 +57,7 @@ internal class ResponseCreatedEventTest {
                                 .status(RealtimeConversationItemSystemMessage.Status.COMPLETED)
                                 .build()
                         )
-                        .outputAudioFormat(RealtimeResponse.OutputAudioFormat.PCM16)
+                        .addOutputModality(RealtimeResponse.OutputModality.TEXT)
                         .status(RealtimeResponse.Status.COMPLETED)
                         .statusDetails(
                             RealtimeResponseStatus.builder()
@@ -57,13 +71,22 @@ internal class ResponseCreatedEventTest {
                                 .type(RealtimeResponseStatus.Type.COMPLETED)
                                 .build()
                         )
-                        .temperature(0.0)
                         .usage(
                             RealtimeResponseUsage.builder()
                                 .inputTokenDetails(
                                     RealtimeResponseUsageInputTokenDetails.builder()
                                         .audioTokens(0L)
                                         .cachedTokens(0L)
+                                        .cachedTokensDetails(
+                                            RealtimeResponseUsageInputTokenDetails
+                                                .CachedTokensDetails
+                                                .builder()
+                                                .audioTokens(0L)
+                                                .imageTokens(0L)
+                                                .textTokens(0L)
+                                                .build()
+                                        )
+                                        .imageTokens(0L)
                                         .textTokens(0L)
                                         .build()
                                 )
@@ -78,7 +101,6 @@ internal class ResponseCreatedEventTest {
                                 .totalTokens(0L)
                                 .build()
                         )
-                        .voice(RealtimeResponse.Voice.ALLOY)
                         .build()
                 )
                 .build()
@@ -88,6 +110,21 @@ internal class ResponseCreatedEventTest {
             .isEqualTo(
                 RealtimeResponse.builder()
                     .id("id")
+                    .audio(
+                        RealtimeResponse.Audio.builder()
+                            .output(
+                                RealtimeResponse.Audio.Output.builder()
+                                    .format(
+                                        RealtimeAudioFormats.AudioPcm.builder()
+                                            .rate(RealtimeAudioFormats.AudioPcm.Rate._24000)
+                                            .type(RealtimeAudioFormats.AudioPcm.Type.AUDIO_PCM)
+                                            .build()
+                                    )
+                                    .voice(RealtimeResponse.Audio.Output.Voice.ALLOY)
+                                    .build()
+                            )
+                            .build()
+                    )
                     .conversationId("conversation_id")
                     .maxOutputTokens(0L)
                     .metadata(
@@ -95,7 +132,6 @@ internal class ResponseCreatedEventTest {
                             .putAdditionalProperty("foo", JsonValue.from("string"))
                             .build()
                     )
-                    .addModality(RealtimeResponse.Modality.TEXT)
                     .object_(RealtimeResponse.Object.REALTIME_RESPONSE)
                     .addOutput(
                         RealtimeConversationItemSystemMessage.builder()
@@ -113,7 +149,7 @@ internal class ResponseCreatedEventTest {
                             .status(RealtimeConversationItemSystemMessage.Status.COMPLETED)
                             .build()
                     )
-                    .outputAudioFormat(RealtimeResponse.OutputAudioFormat.PCM16)
+                    .addOutputModality(RealtimeResponse.OutputModality.TEXT)
                     .status(RealtimeResponse.Status.COMPLETED)
                     .statusDetails(
                         RealtimeResponseStatus.builder()
@@ -127,13 +163,21 @@ internal class ResponseCreatedEventTest {
                             .type(RealtimeResponseStatus.Type.COMPLETED)
                             .build()
                     )
-                    .temperature(0.0)
                     .usage(
                         RealtimeResponseUsage.builder()
                             .inputTokenDetails(
                                 RealtimeResponseUsageInputTokenDetails.builder()
                                     .audioTokens(0L)
                                     .cachedTokens(0L)
+                                    .cachedTokensDetails(
+                                        RealtimeResponseUsageInputTokenDetails.CachedTokensDetails
+                                            .builder()
+                                            .audioTokens(0L)
+                                            .imageTokens(0L)
+                                            .textTokens(0L)
+                                            .build()
+                                    )
+                                    .imageTokens(0L)
                                     .textTokens(0L)
                                     .build()
                             )
@@ -148,7 +192,6 @@ internal class ResponseCreatedEventTest {
                             .totalTokens(0L)
                             .build()
                     )
-                    .voice(RealtimeResponse.Voice.ALLOY)
                     .build()
             )
     }
@@ -162,6 +205,21 @@ internal class ResponseCreatedEventTest {
                 .response(
                     RealtimeResponse.builder()
                         .id("id")
+                        .audio(
+                            RealtimeResponse.Audio.builder()
+                                .output(
+                                    RealtimeResponse.Audio.Output.builder()
+                                        .format(
+                                            RealtimeAudioFormats.AudioPcm.builder()
+                                                .rate(RealtimeAudioFormats.AudioPcm.Rate._24000)
+                                                .type(RealtimeAudioFormats.AudioPcm.Type.AUDIO_PCM)
+                                                .build()
+                                        )
+                                        .voice(RealtimeResponse.Audio.Output.Voice.ALLOY)
+                                        .build()
+                                )
+                                .build()
+                        )
                         .conversationId("conversation_id")
                         .maxOutputTokens(0L)
                         .metadata(
@@ -169,7 +227,6 @@ internal class ResponseCreatedEventTest {
                                 .putAdditionalProperty("foo", JsonValue.from("string"))
                                 .build()
                         )
-                        .addModality(RealtimeResponse.Modality.TEXT)
                         .object_(RealtimeResponse.Object.REALTIME_RESPONSE)
                         .addOutput(
                             RealtimeConversationItemSystemMessage.builder()
@@ -187,7 +244,7 @@ internal class ResponseCreatedEventTest {
                                 .status(RealtimeConversationItemSystemMessage.Status.COMPLETED)
                                 .build()
                         )
-                        .outputAudioFormat(RealtimeResponse.OutputAudioFormat.PCM16)
+                        .addOutputModality(RealtimeResponse.OutputModality.TEXT)
                         .status(RealtimeResponse.Status.COMPLETED)
                         .statusDetails(
                             RealtimeResponseStatus.builder()
@@ -201,13 +258,22 @@ internal class ResponseCreatedEventTest {
                                 .type(RealtimeResponseStatus.Type.COMPLETED)
                                 .build()
                         )
-                        .temperature(0.0)
                         .usage(
                             RealtimeResponseUsage.builder()
                                 .inputTokenDetails(
                                     RealtimeResponseUsageInputTokenDetails.builder()
                                         .audioTokens(0L)
                                         .cachedTokens(0L)
+                                        .cachedTokensDetails(
+                                            RealtimeResponseUsageInputTokenDetails
+                                                .CachedTokensDetails
+                                                .builder()
+                                                .audioTokens(0L)
+                                                .imageTokens(0L)
+                                                .textTokens(0L)
+                                                .build()
+                                        )
+                                        .imageTokens(0L)
                                         .textTokens(0L)
                                         .build()
                                 )
@@ -222,7 +288,6 @@ internal class ResponseCreatedEventTest {
                                 .totalTokens(0L)
                                 .build()
                         )
-                        .voice(RealtimeResponse.Voice.ALLOY)
                         .build()
                 )
                 .build()

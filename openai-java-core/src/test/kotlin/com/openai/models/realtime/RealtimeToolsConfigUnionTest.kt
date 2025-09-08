@@ -17,11 +17,11 @@ internal class RealtimeToolsConfigUnionTest {
     @Test
     fun ofFunction() {
         val function =
-            RealtimeToolsConfigUnion.Function.builder()
+            Models.builder()
                 .description("description")
                 .name("name")
                 .parameters(JsonValue.from(mapOf<String, Any>()))
-                .type(RealtimeToolsConfigUnion.Function.Type.FUNCTION)
+                .type(Models.Type.FUNCTION)
                 .build()
 
         val realtimeToolsConfigUnion = RealtimeToolsConfigUnion.ofFunction(function)
@@ -35,11 +35,11 @@ internal class RealtimeToolsConfigUnionTest {
         val jsonMapper = jsonMapper()
         val realtimeToolsConfigUnion =
             RealtimeToolsConfigUnion.ofFunction(
-                RealtimeToolsConfigUnion.Function.builder()
+                Models.builder()
                     .description("description")
                     .name("name")
                     .parameters(JsonValue.from(mapOf<String, Any>()))
-                    .type(RealtimeToolsConfigUnion.Function.Type.FUNCTION)
+                    .type(Models.Type.FUNCTION)
                     .build()
             )
 

@@ -14,79 +14,107 @@ internal class RealtimeTranscriptionSessionCreateRequestTest {
     fun create() {
         val realtimeTranscriptionSessionCreateRequest =
             RealtimeTranscriptionSessionCreateRequest.builder()
-                .model(RealtimeTranscriptionSessionCreateRequest.Model.WHISPER_1)
+                .audio(
+                    RealtimeTranscriptionSessionAudio.builder()
+                        .input(
+                            RealtimeTranscriptionSessionAudioInput.builder()
+                                .format(
+                                    RealtimeAudioFormats.AudioPcm.builder()
+                                        .rate(RealtimeAudioFormats.AudioPcm.Rate._24000)
+                                        .type(RealtimeAudioFormats.AudioPcm.Type.AUDIO_PCM)
+                                        .build()
+                                )
+                                .noiseReduction(
+                                    RealtimeTranscriptionSessionAudioInput.NoiseReduction.builder()
+                                        .type(NoiseReductionType.NEAR_FIELD)
+                                        .build()
+                                )
+                                .transcription(
+                                    AudioTranscription.builder()
+                                        .language("language")
+                                        .model(AudioTranscription.Model.WHISPER_1)
+                                        .prompt("prompt")
+                                        .build()
+                                )
+                                .turnDetection(
+                                    RealtimeTranscriptionSessionAudioInputTurnDetection.builder()
+                                        .createResponse(true)
+                                        .eagerness(
+                                            RealtimeTranscriptionSessionAudioInputTurnDetection
+                                                .Eagerness
+                                                .LOW
+                                        )
+                                        .idleTimeoutMs(0L)
+                                        .interruptResponse(true)
+                                        .prefixPaddingMs(0L)
+                                        .silenceDurationMs(0L)
+                                        .threshold(0.0)
+                                        .type(
+                                            RealtimeTranscriptionSessionAudioInputTurnDetection.Type
+                                                .SERVER_VAD
+                                        )
+                                        .build()
+                                )
+                                .build()
+                        )
+                        .build()
+                )
                 .addInclude(
                     RealtimeTranscriptionSessionCreateRequest.Include
                         .ITEM_INPUT_AUDIO_TRANSCRIPTION_LOGPROBS
                 )
-                .inputAudioFormat(RealtimeTranscriptionSessionCreateRequest.InputAudioFormat.PCM16)
-                .inputAudioNoiseReduction(
-                    RealtimeTranscriptionSessionCreateRequest.InputAudioNoiseReduction.builder()
-                        .type(
-                            RealtimeTranscriptionSessionCreateRequest.InputAudioNoiseReduction.Type
-                                .NEAR_FIELD
-                        )
-                        .build()
-                )
-                .inputAudioTranscription(
-                    RealtimeTranscriptionSessionCreateRequest.InputAudioTranscription.builder()
-                        .language("language")
-                        .model(
-                            RealtimeTranscriptionSessionCreateRequest.InputAudioTranscription.Model
-                                .GPT_4O_TRANSCRIBE
-                        )
-                        .prompt("prompt")
-                        .build()
-                )
-                .turnDetection(
-                    RealtimeTranscriptionSessionCreateRequest.TurnDetection.builder()
-                        .prefixPaddingMs(0L)
-                        .silenceDurationMs(0L)
-                        .threshold(0.0)
-                        .type(
-                            RealtimeTranscriptionSessionCreateRequest.TurnDetection.Type.SERVER_VAD
-                        )
-                        .build()
-                )
                 .build()
 
-        assertThat(realtimeTranscriptionSessionCreateRequest.model())
-            .isEqualTo(RealtimeTranscriptionSessionCreateRequest.Model.WHISPER_1)
+        assertThat(realtimeTranscriptionSessionCreateRequest.audio())
+            .contains(
+                RealtimeTranscriptionSessionAudio.builder()
+                    .input(
+                        RealtimeTranscriptionSessionAudioInput.builder()
+                            .format(
+                                RealtimeAudioFormats.AudioPcm.builder()
+                                    .rate(RealtimeAudioFormats.AudioPcm.Rate._24000)
+                                    .type(RealtimeAudioFormats.AudioPcm.Type.AUDIO_PCM)
+                                    .build()
+                            )
+                            .noiseReduction(
+                                RealtimeTranscriptionSessionAudioInput.NoiseReduction.builder()
+                                    .type(NoiseReductionType.NEAR_FIELD)
+                                    .build()
+                            )
+                            .transcription(
+                                AudioTranscription.builder()
+                                    .language("language")
+                                    .model(AudioTranscription.Model.WHISPER_1)
+                                    .prompt("prompt")
+                                    .build()
+                            )
+                            .turnDetection(
+                                RealtimeTranscriptionSessionAudioInputTurnDetection.builder()
+                                    .createResponse(true)
+                                    .eagerness(
+                                        RealtimeTranscriptionSessionAudioInputTurnDetection
+                                            .Eagerness
+                                            .LOW
+                                    )
+                                    .idleTimeoutMs(0L)
+                                    .interruptResponse(true)
+                                    .prefixPaddingMs(0L)
+                                    .silenceDurationMs(0L)
+                                    .threshold(0.0)
+                                    .type(
+                                        RealtimeTranscriptionSessionAudioInputTurnDetection.Type
+                                            .SERVER_VAD
+                                    )
+                                    .build()
+                            )
+                            .build()
+                    )
+                    .build()
+            )
         assertThat(realtimeTranscriptionSessionCreateRequest.include().getOrNull())
             .containsExactly(
                 RealtimeTranscriptionSessionCreateRequest.Include
                     .ITEM_INPUT_AUDIO_TRANSCRIPTION_LOGPROBS
-            )
-        assertThat(realtimeTranscriptionSessionCreateRequest.inputAudioFormat())
-            .contains(RealtimeTranscriptionSessionCreateRequest.InputAudioFormat.PCM16)
-        assertThat(realtimeTranscriptionSessionCreateRequest.inputAudioNoiseReduction())
-            .contains(
-                RealtimeTranscriptionSessionCreateRequest.InputAudioNoiseReduction.builder()
-                    .type(
-                        RealtimeTranscriptionSessionCreateRequest.InputAudioNoiseReduction.Type
-                            .NEAR_FIELD
-                    )
-                    .build()
-            )
-        assertThat(realtimeTranscriptionSessionCreateRequest.inputAudioTranscription())
-            .contains(
-                RealtimeTranscriptionSessionCreateRequest.InputAudioTranscription.builder()
-                    .language("language")
-                    .model(
-                        RealtimeTranscriptionSessionCreateRequest.InputAudioTranscription.Model
-                            .GPT_4O_TRANSCRIBE
-                    )
-                    .prompt("prompt")
-                    .build()
-            )
-        assertThat(realtimeTranscriptionSessionCreateRequest.turnDetection())
-            .contains(
-                RealtimeTranscriptionSessionCreateRequest.TurnDetection.builder()
-                    .prefixPaddingMs(0L)
-                    .silenceDurationMs(0L)
-                    .threshold(0.0)
-                    .type(RealtimeTranscriptionSessionCreateRequest.TurnDetection.Type.SERVER_VAD)
-                    .build()
             )
     }
 
@@ -95,39 +123,54 @@ internal class RealtimeTranscriptionSessionCreateRequestTest {
         val jsonMapper = jsonMapper()
         val realtimeTranscriptionSessionCreateRequest =
             RealtimeTranscriptionSessionCreateRequest.builder()
-                .model(RealtimeTranscriptionSessionCreateRequest.Model.WHISPER_1)
+                .audio(
+                    RealtimeTranscriptionSessionAudio.builder()
+                        .input(
+                            RealtimeTranscriptionSessionAudioInput.builder()
+                                .format(
+                                    RealtimeAudioFormats.AudioPcm.builder()
+                                        .rate(RealtimeAudioFormats.AudioPcm.Rate._24000)
+                                        .type(RealtimeAudioFormats.AudioPcm.Type.AUDIO_PCM)
+                                        .build()
+                                )
+                                .noiseReduction(
+                                    RealtimeTranscriptionSessionAudioInput.NoiseReduction.builder()
+                                        .type(NoiseReductionType.NEAR_FIELD)
+                                        .build()
+                                )
+                                .transcription(
+                                    AudioTranscription.builder()
+                                        .language("language")
+                                        .model(AudioTranscription.Model.WHISPER_1)
+                                        .prompt("prompt")
+                                        .build()
+                                )
+                                .turnDetection(
+                                    RealtimeTranscriptionSessionAudioInputTurnDetection.builder()
+                                        .createResponse(true)
+                                        .eagerness(
+                                            RealtimeTranscriptionSessionAudioInputTurnDetection
+                                                .Eagerness
+                                                .LOW
+                                        )
+                                        .idleTimeoutMs(0L)
+                                        .interruptResponse(true)
+                                        .prefixPaddingMs(0L)
+                                        .silenceDurationMs(0L)
+                                        .threshold(0.0)
+                                        .type(
+                                            RealtimeTranscriptionSessionAudioInputTurnDetection.Type
+                                                .SERVER_VAD
+                                        )
+                                        .build()
+                                )
+                                .build()
+                        )
+                        .build()
+                )
                 .addInclude(
                     RealtimeTranscriptionSessionCreateRequest.Include
                         .ITEM_INPUT_AUDIO_TRANSCRIPTION_LOGPROBS
-                )
-                .inputAudioFormat(RealtimeTranscriptionSessionCreateRequest.InputAudioFormat.PCM16)
-                .inputAudioNoiseReduction(
-                    RealtimeTranscriptionSessionCreateRequest.InputAudioNoiseReduction.builder()
-                        .type(
-                            RealtimeTranscriptionSessionCreateRequest.InputAudioNoiseReduction.Type
-                                .NEAR_FIELD
-                        )
-                        .build()
-                )
-                .inputAudioTranscription(
-                    RealtimeTranscriptionSessionCreateRequest.InputAudioTranscription.builder()
-                        .language("language")
-                        .model(
-                            RealtimeTranscriptionSessionCreateRequest.InputAudioTranscription.Model
-                                .GPT_4O_TRANSCRIBE
-                        )
-                        .prompt("prompt")
-                        .build()
-                )
-                .turnDetection(
-                    RealtimeTranscriptionSessionCreateRequest.TurnDetection.builder()
-                        .prefixPaddingMs(0L)
-                        .silenceDurationMs(0L)
-                        .threshold(0.0)
-                        .type(
-                            RealtimeTranscriptionSessionCreateRequest.TurnDetection.Type.SERVER_VAD
-                        )
-                        .build()
                 )
                 .build()
 

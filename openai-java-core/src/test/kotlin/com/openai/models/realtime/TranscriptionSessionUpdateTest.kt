@@ -14,47 +14,31 @@ internal class TranscriptionSessionUpdateTest {
         val transcriptionSessionUpdate =
             TranscriptionSessionUpdate.builder()
                 .session(
-                    RealtimeTranscriptionSessionCreateRequest.builder()
-                        .model(RealtimeTranscriptionSessionCreateRequest.Model.WHISPER_1)
+                    TranscriptionSessionUpdate.Session.builder()
                         .addInclude(
-                            RealtimeTranscriptionSessionCreateRequest.Include
+                            TranscriptionSessionUpdate.Session.Include
                                 .ITEM_INPUT_AUDIO_TRANSCRIPTION_LOGPROBS
                         )
-                        .inputAudioFormat(
-                            RealtimeTranscriptionSessionCreateRequest.InputAudioFormat.PCM16
-                        )
+                        .inputAudioFormat(TranscriptionSessionUpdate.Session.InputAudioFormat.PCM16)
                         .inputAudioNoiseReduction(
-                            RealtimeTranscriptionSessionCreateRequest.InputAudioNoiseReduction
-                                .builder()
-                                .type(
-                                    RealtimeTranscriptionSessionCreateRequest
-                                        .InputAudioNoiseReduction
-                                        .Type
-                                        .NEAR_FIELD
-                                )
+                            TranscriptionSessionUpdate.Session.InputAudioNoiseReduction.builder()
+                                .type(NoiseReductionType.NEAR_FIELD)
                                 .build()
                         )
                         .inputAudioTranscription(
-                            RealtimeTranscriptionSessionCreateRequest.InputAudioTranscription
-                                .builder()
+                            AudioTranscription.builder()
                                 .language("language")
-                                .model(
-                                    RealtimeTranscriptionSessionCreateRequest
-                                        .InputAudioTranscription
-                                        .Model
-                                        .GPT_4O_TRANSCRIBE
-                                )
+                                .model(AudioTranscription.Model.WHISPER_1)
                                 .prompt("prompt")
                                 .build()
                         )
                         .turnDetection(
-                            RealtimeTranscriptionSessionCreateRequest.TurnDetection.builder()
+                            TranscriptionSessionUpdate.Session.TurnDetection.builder()
                                 .prefixPaddingMs(0L)
                                 .silenceDurationMs(0L)
                                 .threshold(0.0)
                                 .type(
-                                    RealtimeTranscriptionSessionCreateRequest.TurnDetection.Type
-                                        .SERVER_VAD
+                                    TranscriptionSessionUpdate.Session.TurnDetection.Type.SERVER_VAD
                                 )
                                 .build()
                         )
@@ -65,44 +49,30 @@ internal class TranscriptionSessionUpdateTest {
 
         assertThat(transcriptionSessionUpdate.session())
             .isEqualTo(
-                RealtimeTranscriptionSessionCreateRequest.builder()
-                    .model(RealtimeTranscriptionSessionCreateRequest.Model.WHISPER_1)
+                TranscriptionSessionUpdate.Session.builder()
                     .addInclude(
-                        RealtimeTranscriptionSessionCreateRequest.Include
+                        TranscriptionSessionUpdate.Session.Include
                             .ITEM_INPUT_AUDIO_TRANSCRIPTION_LOGPROBS
                     )
-                    .inputAudioFormat(
-                        RealtimeTranscriptionSessionCreateRequest.InputAudioFormat.PCM16
-                    )
+                    .inputAudioFormat(TranscriptionSessionUpdate.Session.InputAudioFormat.PCM16)
                     .inputAudioNoiseReduction(
-                        RealtimeTranscriptionSessionCreateRequest.InputAudioNoiseReduction.builder()
-                            .type(
-                                RealtimeTranscriptionSessionCreateRequest.InputAudioNoiseReduction
-                                    .Type
-                                    .NEAR_FIELD
-                            )
+                        TranscriptionSessionUpdate.Session.InputAudioNoiseReduction.builder()
+                            .type(NoiseReductionType.NEAR_FIELD)
                             .build()
                     )
                     .inputAudioTranscription(
-                        RealtimeTranscriptionSessionCreateRequest.InputAudioTranscription.builder()
+                        AudioTranscription.builder()
                             .language("language")
-                            .model(
-                                RealtimeTranscriptionSessionCreateRequest.InputAudioTranscription
-                                    .Model
-                                    .GPT_4O_TRANSCRIBE
-                            )
+                            .model(AudioTranscription.Model.WHISPER_1)
                             .prompt("prompt")
                             .build()
                     )
                     .turnDetection(
-                        RealtimeTranscriptionSessionCreateRequest.TurnDetection.builder()
+                        TranscriptionSessionUpdate.Session.TurnDetection.builder()
                             .prefixPaddingMs(0L)
                             .silenceDurationMs(0L)
                             .threshold(0.0)
-                            .type(
-                                RealtimeTranscriptionSessionCreateRequest.TurnDetection.Type
-                                    .SERVER_VAD
-                            )
+                            .type(TranscriptionSessionUpdate.Session.TurnDetection.Type.SERVER_VAD)
                             .build()
                     )
                     .build()
@@ -116,47 +86,31 @@ internal class TranscriptionSessionUpdateTest {
         val transcriptionSessionUpdate =
             TranscriptionSessionUpdate.builder()
                 .session(
-                    RealtimeTranscriptionSessionCreateRequest.builder()
-                        .model(RealtimeTranscriptionSessionCreateRequest.Model.WHISPER_1)
+                    TranscriptionSessionUpdate.Session.builder()
                         .addInclude(
-                            RealtimeTranscriptionSessionCreateRequest.Include
+                            TranscriptionSessionUpdate.Session.Include
                                 .ITEM_INPUT_AUDIO_TRANSCRIPTION_LOGPROBS
                         )
-                        .inputAudioFormat(
-                            RealtimeTranscriptionSessionCreateRequest.InputAudioFormat.PCM16
-                        )
+                        .inputAudioFormat(TranscriptionSessionUpdate.Session.InputAudioFormat.PCM16)
                         .inputAudioNoiseReduction(
-                            RealtimeTranscriptionSessionCreateRequest.InputAudioNoiseReduction
-                                .builder()
-                                .type(
-                                    RealtimeTranscriptionSessionCreateRequest
-                                        .InputAudioNoiseReduction
-                                        .Type
-                                        .NEAR_FIELD
-                                )
+                            TranscriptionSessionUpdate.Session.InputAudioNoiseReduction.builder()
+                                .type(NoiseReductionType.NEAR_FIELD)
                                 .build()
                         )
                         .inputAudioTranscription(
-                            RealtimeTranscriptionSessionCreateRequest.InputAudioTranscription
-                                .builder()
+                            AudioTranscription.builder()
                                 .language("language")
-                                .model(
-                                    RealtimeTranscriptionSessionCreateRequest
-                                        .InputAudioTranscription
-                                        .Model
-                                        .GPT_4O_TRANSCRIBE
-                                )
+                                .model(AudioTranscription.Model.WHISPER_1)
                                 .prompt("prompt")
                                 .build()
                         )
                         .turnDetection(
-                            RealtimeTranscriptionSessionCreateRequest.TurnDetection.builder()
+                            TranscriptionSessionUpdate.Session.TurnDetection.builder()
                                 .prefixPaddingMs(0L)
                                 .silenceDurationMs(0L)
                                 .threshold(0.0)
                                 .type(
-                                    RealtimeTranscriptionSessionCreateRequest.TurnDetection.Type
-                                        .SERVER_VAD
+                                    TranscriptionSessionUpdate.Session.TurnDetection.Type.SERVER_VAD
                                 )
                                 .build()
                         )

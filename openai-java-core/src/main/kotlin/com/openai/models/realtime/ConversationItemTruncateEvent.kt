@@ -60,7 +60,7 @@ private constructor(
     fun audioEndMs(): Long = audioEndMs.getRequired("audio_end_ms")
 
     /**
-     * The index of the content part to truncate. Set this to 0.
+     * The index of the content part to truncate. Set this to `0`.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
      *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
@@ -189,7 +189,7 @@ private constructor(
          */
         fun audioEndMs(audioEndMs: JsonField<Long>) = apply { this.audioEndMs = audioEndMs }
 
-        /** The index of the content part to truncate. Set this to 0. */
+        /** The index of the content part to truncate. Set this to `0`. */
         fun contentIndex(contentIndex: Long) = contentIndex(JsonField.of(contentIndex))
 
         /**

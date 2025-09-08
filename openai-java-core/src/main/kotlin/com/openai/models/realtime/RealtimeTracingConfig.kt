@@ -27,8 +27,8 @@ import java.util.Objects
 import java.util.Optional
 
 /**
- * Configuration options for tracing. Set to null to disable tracing. Once tracing is enabled for a
- * session, the configuration cannot be modified.
+ * Realtime API can write session traces to the [Traces Dashboard](/logs?api=traces). Set to null to
+ * disable tracing. Once tracing is enabled for a session, the configuration cannot be modified.
  *
  * `auto` will create a trace for the session with default values for the workflow name, group id,
  * and metadata.
@@ -247,8 +247,8 @@ private constructor(
         ) : this(groupId, metadata, workflowName, mutableMapOf())
 
         /**
-         * The group id to attach to this trace to enable filtering and grouping in the traces
-         * dashboard.
+         * The group id to attach to this trace to enable filtering and grouping in the Traces
+         * Dashboard.
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
@@ -256,14 +256,14 @@ private constructor(
         fun groupId(): Optional<String> = groupId.getOptional("group_id")
 
         /**
-         * The arbitrary metadata to attach to this trace to enable filtering in the traces
-         * dashboard.
+         * The arbitrary metadata to attach to this trace to enable filtering in the Traces
+         * Dashboard.
          */
         @JsonProperty("metadata") @ExcludeMissing fun _metadata(): JsonValue = metadata
 
         /**
          * The name of the workflow to attach to this trace. This is used to name the trace in the
-         * traces dashboard.
+         * Traces Dashboard.
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
@@ -322,8 +322,8 @@ private constructor(
             }
 
             /**
-             * The group id to attach to this trace to enable filtering and grouping in the traces
-             * dashboard.
+             * The group id to attach to this trace to enable filtering and grouping in the Traces
+             * Dashboard.
              */
             fun groupId(groupId: String) = groupId(JsonField.of(groupId))
 
@@ -337,14 +337,14 @@ private constructor(
             fun groupId(groupId: JsonField<String>) = apply { this.groupId = groupId }
 
             /**
-             * The arbitrary metadata to attach to this trace to enable filtering in the traces
-             * dashboard.
+             * The arbitrary metadata to attach to this trace to enable filtering in the Traces
+             * Dashboard.
              */
             fun metadata(metadata: JsonValue) = apply { this.metadata = metadata }
 
             /**
              * The name of the workflow to attach to this trace. This is used to name the trace in
-             * the traces dashboard.
+             * the Traces Dashboard.
              */
             fun workflowName(workflowName: String) = workflowName(JsonField.of(workflowName))
 

@@ -34,24 +34,23 @@ import kotlin.jvm.optionals.getOrNull
 class RealtimeResponse
 private constructor(
     private val id: JsonField<String>,
+    private val audio: JsonField<Audio>,
     private val conversationId: JsonField<String>,
     private val maxOutputTokens: JsonField<MaxOutputTokens>,
     private val metadata: JsonField<Metadata>,
-    private val modalities: JsonField<List<Modality>>,
     private val object_: JsonField<Object>,
     private val output: JsonField<List<ConversationItem>>,
-    private val outputAudioFormat: JsonField<OutputAudioFormat>,
+    private val outputModalities: JsonField<List<OutputModality>>,
     private val status: JsonField<Status>,
     private val statusDetails: JsonField<RealtimeResponseStatus>,
-    private val temperature: JsonField<Double>,
     private val usage: JsonField<RealtimeResponseUsage>,
-    private val voice: JsonField<Voice>,
     private val additionalProperties: MutableMap<String, JsonValue>,
 ) {
 
     @JsonCreator
     private constructor(
         @JsonProperty("id") @ExcludeMissing id: JsonField<String> = JsonMissing.of(),
+        @JsonProperty("audio") @ExcludeMissing audio: JsonField<Audio> = JsonMissing.of(),
         @JsonProperty("conversation_id")
         @ExcludeMissing
         conversationId: JsonField<String> = JsonMissing.of(),
@@ -59,46 +58,37 @@ private constructor(
         @ExcludeMissing
         maxOutputTokens: JsonField<MaxOutputTokens> = JsonMissing.of(),
         @JsonProperty("metadata") @ExcludeMissing metadata: JsonField<Metadata> = JsonMissing.of(),
-        @JsonProperty("modalities")
-        @ExcludeMissing
-        modalities: JsonField<List<Modality>> = JsonMissing.of(),
         @JsonProperty("object") @ExcludeMissing object_: JsonField<Object> = JsonMissing.of(),
         @JsonProperty("output")
         @ExcludeMissing
         output: JsonField<List<ConversationItem>> = JsonMissing.of(),
-        @JsonProperty("output_audio_format")
+        @JsonProperty("output_modalities")
         @ExcludeMissing
-        outputAudioFormat: JsonField<OutputAudioFormat> = JsonMissing.of(),
+        outputModalities: JsonField<List<OutputModality>> = JsonMissing.of(),
         @JsonProperty("status") @ExcludeMissing status: JsonField<Status> = JsonMissing.of(),
         @JsonProperty("status_details")
         @ExcludeMissing
         statusDetails: JsonField<RealtimeResponseStatus> = JsonMissing.of(),
-        @JsonProperty("temperature")
-        @ExcludeMissing
-        temperature: JsonField<Double> = JsonMissing.of(),
         @JsonProperty("usage")
         @ExcludeMissing
         usage: JsonField<RealtimeResponseUsage> = JsonMissing.of(),
-        @JsonProperty("voice") @ExcludeMissing voice: JsonField<Voice> = JsonMissing.of(),
     ) : this(
         id,
+        audio,
         conversationId,
         maxOutputTokens,
         metadata,
-        modalities,
         object_,
         output,
-        outputAudioFormat,
+        outputModalities,
         status,
         statusDetails,
-        temperature,
         usage,
-        voice,
         mutableMapOf(),
     )
 
     /**
-     * The unique ID of the response.
+     * The unique ID of the response, will look like `resp_1234`.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -106,12 +96,20 @@ private constructor(
     fun id(): Optional<String> = id.getOptional("id")
 
     /**
+     * Configuration for audio output.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun audio(): Optional<Audio> = audio.getOptional("audio")
+
+    /**
      * Which conversation the response is added to, determined by the `conversation` field in the
      * `response.create` event. If `auto`, the response will be added to the default conversation
      * and the value of `conversation_id` will be an id like `conv_1234`. If `none`, the response
      * will not be added to any conversation and the value of `conversation_id` will be `null`. If
-     * responses are being triggered by server VAD, the response will be added to the default
-     * conversation, thus the `conversation_id` will be an id like `conv_1234`.
+     * responses are being triggered automatically by VAD the response will be added to the default
+     * conversation
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -142,16 +140,6 @@ private constructor(
     fun metadata(): Optional<Metadata> = metadata.getOptional("metadata")
 
     /**
-     * The set of modalities the model used to respond. If there are multiple modalities, the model
-     * will pick one, for example if `modalities` is `["text", "audio"]`, the model could be
-     * responding in either text or audio.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
-     */
-    fun modalities(): Optional<List<Modality>> = modalities.getOptional("modalities")
-
-    /**
      * The object type, must be `realtime.response`.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
@@ -168,13 +156,15 @@ private constructor(
     fun output(): Optional<List<ConversationItem>> = output.getOptional("output")
 
     /**
-     * The format of output audio. Options are `pcm16`, `g711_ulaw`, or `g711_alaw`.
+     * The set of modalities the model used to respond, currently the only possible values are
+     * `[\"audio\"]`, `[\"text\"]`. Audio output always include a text transcript. Setting the
+     * output to mode `text` will disable audio output from the model.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
      */
-    fun outputAudioFormat(): Optional<OutputAudioFormat> =
-        outputAudioFormat.getOptional("output_audio_format")
+    fun outputModalities(): Optional<List<OutputModality>> =
+        outputModalities.getOptional("output_modalities")
 
     /**
      * The final status of the response (`completed`, `cancelled`, `failed`, or `incomplete`,
@@ -195,14 +185,6 @@ private constructor(
         statusDetails.getOptional("status_details")
 
     /**
-     * Sampling temperature for the model, limited to [0.6, 1.2]. Defaults to 0.8.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
-     */
-    fun temperature(): Optional<Double> = temperature.getOptional("temperature")
-
-    /**
      * Usage statistics for the Response, this will correspond to billing. A Realtime API session
      * will maintain a conversation context and append new Items to the Conversation, thus output
      * from previous turns (text and audio tokens) will become the input for later turns.
@@ -213,20 +195,18 @@ private constructor(
     fun usage(): Optional<RealtimeResponseUsage> = usage.getOptional("usage")
 
     /**
-     * The voice the model used to respond. Current voice options are `alloy`, `ash`, `ballad`,
-     * `coral`, `echo`, `sage`, `shimmer`, and `verse`.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
-     */
-    fun voice(): Optional<Voice> = voice.getOptional("voice")
-
-    /**
      * Returns the raw JSON value of [id].
      *
      * Unlike [id], this method doesn't throw if the JSON field has an unexpected type.
      */
     @JsonProperty("id") @ExcludeMissing fun _id(): JsonField<String> = id
+
+    /**
+     * Returns the raw JSON value of [audio].
+     *
+     * Unlike [audio], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    @JsonProperty("audio") @ExcludeMissing fun _audio(): JsonField<Audio> = audio
 
     /**
      * Returns the raw JSON value of [conversationId].
@@ -254,15 +234,6 @@ private constructor(
     @JsonProperty("metadata") @ExcludeMissing fun _metadata(): JsonField<Metadata> = metadata
 
     /**
-     * Returns the raw JSON value of [modalities].
-     *
-     * Unlike [modalities], this method doesn't throw if the JSON field has an unexpected type.
-     */
-    @JsonProperty("modalities")
-    @ExcludeMissing
-    fun _modalities(): JsonField<List<Modality>> = modalities
-
-    /**
      * Returns the raw JSON value of [object_].
      *
      * Unlike [object_], this method doesn't throw if the JSON field has an unexpected type.
@@ -279,14 +250,14 @@ private constructor(
     fun _output(): JsonField<List<ConversationItem>> = output
 
     /**
-     * Returns the raw JSON value of [outputAudioFormat].
+     * Returns the raw JSON value of [outputModalities].
      *
-     * Unlike [outputAudioFormat], this method doesn't throw if the JSON field has an unexpected
+     * Unlike [outputModalities], this method doesn't throw if the JSON field has an unexpected
      * type.
      */
-    @JsonProperty("output_audio_format")
+    @JsonProperty("output_modalities")
     @ExcludeMissing
-    fun _outputAudioFormat(): JsonField<OutputAudioFormat> = outputAudioFormat
+    fun _outputModalities(): JsonField<List<OutputModality>> = outputModalities
 
     /**
      * Returns the raw JSON value of [status].
@@ -305,25 +276,11 @@ private constructor(
     fun _statusDetails(): JsonField<RealtimeResponseStatus> = statusDetails
 
     /**
-     * Returns the raw JSON value of [temperature].
-     *
-     * Unlike [temperature], this method doesn't throw if the JSON field has an unexpected type.
-     */
-    @JsonProperty("temperature") @ExcludeMissing fun _temperature(): JsonField<Double> = temperature
-
-    /**
      * Returns the raw JSON value of [usage].
      *
      * Unlike [usage], this method doesn't throw if the JSON field has an unexpected type.
      */
     @JsonProperty("usage") @ExcludeMissing fun _usage(): JsonField<RealtimeResponseUsage> = usage
-
-    /**
-     * Returns the raw JSON value of [voice].
-     *
-     * Unlike [voice], this method doesn't throw if the JSON field has an unexpected type.
-     */
-    @JsonProperty("voice") @ExcludeMissing fun _voice(): JsonField<Voice> = voice
 
     @JsonAnySetter
     private fun putAdditionalProperty(key: String, value: JsonValue) {
@@ -347,39 +304,35 @@ private constructor(
     class Builder internal constructor() {
 
         private var id: JsonField<String> = JsonMissing.of()
+        private var audio: JsonField<Audio> = JsonMissing.of()
         private var conversationId: JsonField<String> = JsonMissing.of()
         private var maxOutputTokens: JsonField<MaxOutputTokens> = JsonMissing.of()
         private var metadata: JsonField<Metadata> = JsonMissing.of()
-        private var modalities: JsonField<MutableList<Modality>>? = null
         private var object_: JsonField<Object> = JsonMissing.of()
         private var output: JsonField<MutableList<ConversationItem>>? = null
-        private var outputAudioFormat: JsonField<OutputAudioFormat> = JsonMissing.of()
+        private var outputModalities: JsonField<MutableList<OutputModality>>? = null
         private var status: JsonField<Status> = JsonMissing.of()
         private var statusDetails: JsonField<RealtimeResponseStatus> = JsonMissing.of()
-        private var temperature: JsonField<Double> = JsonMissing.of()
         private var usage: JsonField<RealtimeResponseUsage> = JsonMissing.of()
-        private var voice: JsonField<Voice> = JsonMissing.of()
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
         @JvmSynthetic
         internal fun from(realtimeResponse: RealtimeResponse) = apply {
             id = realtimeResponse.id
+            audio = realtimeResponse.audio
             conversationId = realtimeResponse.conversationId
             maxOutputTokens = realtimeResponse.maxOutputTokens
             metadata = realtimeResponse.metadata
-            modalities = realtimeResponse.modalities.map { it.toMutableList() }
             object_ = realtimeResponse.object_
             output = realtimeResponse.output.map { it.toMutableList() }
-            outputAudioFormat = realtimeResponse.outputAudioFormat
+            outputModalities = realtimeResponse.outputModalities.map { it.toMutableList() }
             status = realtimeResponse.status
             statusDetails = realtimeResponse.statusDetails
-            temperature = realtimeResponse.temperature
             usage = realtimeResponse.usage
-            voice = realtimeResponse.voice
             additionalProperties = realtimeResponse.additionalProperties.toMutableMap()
         }
 
-        /** The unique ID of the response. */
+        /** The unique ID of the response, will look like `resp_1234`. */
         fun id(id: String) = id(JsonField.of(id))
 
         /**
@@ -390,14 +343,24 @@ private constructor(
          */
         fun id(id: JsonField<String>) = apply { this.id = id }
 
+        /** Configuration for audio output. */
+        fun audio(audio: Audio) = audio(JsonField.of(audio))
+
+        /**
+         * Sets [Builder.audio] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.audio] with a well-typed [Audio] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
+        fun audio(audio: JsonField<Audio>) = apply { this.audio = audio }
+
         /**
          * Which conversation the response is added to, determined by the `conversation` field in
          * the `response.create` event. If `auto`, the response will be added to the default
          * conversation and the value of `conversation_id` will be an id like `conv_1234`. If
          * `none`, the response will not be added to any conversation and the value of
-         * `conversation_id` will be `null`. If responses are being triggered by server VAD, the
-         * response will be added to the default conversation, thus the `conversation_id` will be an
-         * id like `conv_1234`.
+         * `conversation_id` will be `null`. If responses are being triggered automatically by VAD
+         * the response will be added to the default conversation
          */
         fun conversationId(conversationId: String) = conversationId(JsonField.of(conversationId))
 
@@ -457,36 +420,6 @@ private constructor(
          * value.
          */
         fun metadata(metadata: JsonField<Metadata>) = apply { this.metadata = metadata }
-
-        /**
-         * The set of modalities the model used to respond. If there are multiple modalities, the
-         * model will pick one, for example if `modalities` is `["text", "audio"]`, the model could
-         * be responding in either text or audio.
-         */
-        fun modalities(modalities: List<Modality>) = modalities(JsonField.of(modalities))
-
-        /**
-         * Sets [Builder.modalities] to an arbitrary JSON value.
-         *
-         * You should usually call [Builder.modalities] with a well-typed `List<Modality>` value
-         * instead. This method is primarily for setting the field to an undocumented or not yet
-         * supported value.
-         */
-        fun modalities(modalities: JsonField<List<Modality>>) = apply {
-            this.modalities = modalities.map { it.toMutableList() }
-        }
-
-        /**
-         * Adds a single [Modality] to [modalities].
-         *
-         * @throws IllegalStateException if the field was previously set to a non-list.
-         */
-        fun addModality(modality: Modality) = apply {
-            modalities =
-                (modalities ?: JsonField.of(mutableListOf())).also {
-                    checkKnown("modalities", it).add(modality)
-                }
-        }
 
         /** The object type, must be `realtime.response`. */
         fun object_(object_: Object) = object_(JsonField.of(object_))
@@ -631,19 +564,35 @@ private constructor(
         fun addOutput(mcpApprovalRequest: RealtimeMcpApprovalRequest) =
             addOutput(ConversationItem.ofMcpApprovalRequest(mcpApprovalRequest))
 
-        /** The format of output audio. Options are `pcm16`, `g711_ulaw`, or `g711_alaw`. */
-        fun outputAudioFormat(outputAudioFormat: OutputAudioFormat) =
-            outputAudioFormat(JsonField.of(outputAudioFormat))
+        /**
+         * The set of modalities the model used to respond, currently the only possible values are
+         * `[\"audio\"]`, `[\"text\"]`. Audio output always include a text transcript. Setting the
+         * output to mode `text` will disable audio output from the model.
+         */
+        fun outputModalities(outputModalities: List<OutputModality>) =
+            outputModalities(JsonField.of(outputModalities))
 
         /**
-         * Sets [Builder.outputAudioFormat] to an arbitrary JSON value.
+         * Sets [Builder.outputModalities] to an arbitrary JSON value.
          *
-         * You should usually call [Builder.outputAudioFormat] with a well-typed [OutputAudioFormat]
-         * value instead. This method is primarily for setting the field to an undocumented or not
-         * yet supported value.
+         * You should usually call [Builder.outputModalities] with a well-typed
+         * `List<OutputModality>` value instead. This method is primarily for setting the field to
+         * an undocumented or not yet supported value.
          */
-        fun outputAudioFormat(outputAudioFormat: JsonField<OutputAudioFormat>) = apply {
-            this.outputAudioFormat = outputAudioFormat
+        fun outputModalities(outputModalities: JsonField<List<OutputModality>>) = apply {
+            this.outputModalities = outputModalities.map { it.toMutableList() }
+        }
+
+        /**
+         * Adds a single [OutputModality] to [outputModalities].
+         *
+         * @throws IllegalStateException if the field was previously set to a non-list.
+         */
+        fun addOutputModality(outputModality: OutputModality) = apply {
+            outputModalities =
+                (outputModalities ?: JsonField.of(mutableListOf())).also {
+                    checkKnown("outputModalities", it).add(outputModality)
+                }
         }
 
         /**
@@ -675,18 +624,6 @@ private constructor(
             this.statusDetails = statusDetails
         }
 
-        /** Sampling temperature for the model, limited to [0.6, 1.2]. Defaults to 0.8. */
-        fun temperature(temperature: Double) = temperature(JsonField.of(temperature))
-
-        /**
-         * Sets [Builder.temperature] to an arbitrary JSON value.
-         *
-         * You should usually call [Builder.temperature] with a well-typed [Double] value instead.
-         * This method is primarily for setting the field to an undocumented or not yet supported
-         * value.
-         */
-        fun temperature(temperature: JsonField<Double>) = apply { this.temperature = temperature }
-
         /**
          * Usage statistics for the Response, this will correspond to billing. A Realtime API
          * session will maintain a conversation context and append new Items to the Conversation,
@@ -703,28 +640,6 @@ private constructor(
          * supported value.
          */
         fun usage(usage: JsonField<RealtimeResponseUsage>) = apply { this.usage = usage }
-
-        /**
-         * The voice the model used to respond. Current voice options are `alloy`, `ash`, `ballad`,
-         * `coral`, `echo`, `sage`, `shimmer`, and `verse`.
-         */
-        fun voice(voice: Voice) = voice(JsonField.of(voice))
-
-        /**
-         * Sets [Builder.voice] to an arbitrary JSON value.
-         *
-         * You should usually call [Builder.voice] with a well-typed [Voice] value instead. This
-         * method is primarily for setting the field to an undocumented or not yet supported value.
-         */
-        fun voice(voice: JsonField<Voice>) = apply { this.voice = voice }
-
-        /**
-         * Sets [voice] to an arbitrary [String].
-         *
-         * You should usually call [voice] with a well-typed [Voice] constant instead. This method
-         * is primarily for setting the field to an undocumented or not yet supported value.
-         */
-        fun voice(value: String) = voice(Voice.of(value))
 
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
             this.additionalProperties.clear()
@@ -753,18 +668,16 @@ private constructor(
         fun build(): RealtimeResponse =
             RealtimeResponse(
                 id,
+                audio,
                 conversationId,
                 maxOutputTokens,
                 metadata,
-                (modalities ?: JsonMissing.of()).map { it.toImmutable() },
                 object_,
                 (output ?: JsonMissing.of()).map { it.toImmutable() },
-                outputAudioFormat,
+                (outputModalities ?: JsonMissing.of()).map { it.toImmutable() },
                 status,
                 statusDetails,
-                temperature,
                 usage,
-                voice,
                 additionalProperties.toMutableMap(),
             )
     }
@@ -777,18 +690,16 @@ private constructor(
         }
 
         id()
+        audio().ifPresent { it.validate() }
         conversationId()
         maxOutputTokens().ifPresent { it.validate() }
         metadata().ifPresent { it.validate() }
-        modalities().ifPresent { it.forEach { it.validate() } }
         object_().ifPresent { it.validate() }
         output().ifPresent { it.forEach { it.validate() } }
-        outputAudioFormat().ifPresent { it.validate() }
+        outputModalities().ifPresent { it.forEach { it.validate() } }
         status().ifPresent { it.validate() }
         statusDetails().ifPresent { it.validate() }
-        temperature()
         usage().ifPresent { it.validate() }
-        voice()
         validated = true
     }
 
@@ -808,18 +719,555 @@ private constructor(
     @JvmSynthetic
     internal fun validity(): Int =
         (if (id.asKnown().isPresent) 1 else 0) +
+            (audio.asKnown().getOrNull()?.validity() ?: 0) +
             (if (conversationId.asKnown().isPresent) 1 else 0) +
             (maxOutputTokens.asKnown().getOrNull()?.validity() ?: 0) +
             (metadata.asKnown().getOrNull()?.validity() ?: 0) +
-            (modalities.asKnown().getOrNull()?.sumOf { it.validity().toInt() } ?: 0) +
             (object_.asKnown().getOrNull()?.validity() ?: 0) +
             (output.asKnown().getOrNull()?.sumOf { it.validity().toInt() } ?: 0) +
-            (outputAudioFormat.asKnown().getOrNull()?.validity() ?: 0) +
+            (outputModalities.asKnown().getOrNull()?.sumOf { it.validity().toInt() } ?: 0) +
             (status.asKnown().getOrNull()?.validity() ?: 0) +
             (statusDetails.asKnown().getOrNull()?.validity() ?: 0) +
-            (if (temperature.asKnown().isPresent) 1 else 0) +
-            (usage.asKnown().getOrNull()?.validity() ?: 0) +
-            (if (voice.asKnown().isPresent) 1 else 0)
+            (usage.asKnown().getOrNull()?.validity() ?: 0)
+
+    /** Configuration for audio output. */
+    class Audio
+    private constructor(
+        private val output: JsonField<Output>,
+        private val additionalProperties: MutableMap<String, JsonValue>,
+    ) {
+
+        @JsonCreator
+        private constructor(
+            @JsonProperty("output") @ExcludeMissing output: JsonField<Output> = JsonMissing.of()
+        ) : this(output, mutableMapOf())
+
+        /**
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun output(): Optional<Output> = output.getOptional("output")
+
+        /**
+         * Returns the raw JSON value of [output].
+         *
+         * Unlike [output], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("output") @ExcludeMissing fun _output(): JsonField<Output> = output
+
+        @JsonAnySetter
+        private fun putAdditionalProperty(key: String, value: JsonValue) {
+            additionalProperties.put(key, value)
+        }
+
+        @JsonAnyGetter
+        @ExcludeMissing
+        fun _additionalProperties(): Map<String, JsonValue> =
+            Collections.unmodifiableMap(additionalProperties)
+
+        fun toBuilder() = Builder().from(this)
+
+        companion object {
+
+            /** Returns a mutable builder for constructing an instance of [Audio]. */
+            @JvmStatic fun builder() = Builder()
+        }
+
+        /** A builder for [Audio]. */
+        class Builder internal constructor() {
+
+            private var output: JsonField<Output> = JsonMissing.of()
+            private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
+
+            @JvmSynthetic
+            internal fun from(audio: Audio) = apply {
+                output = audio.output
+                additionalProperties = audio.additionalProperties.toMutableMap()
+            }
+
+            fun output(output: Output) = output(JsonField.of(output))
+
+            /**
+             * Sets [Builder.output] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.output] with a well-typed [Output] value instead.
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun output(output: JsonField<Output>) = apply { this.output = output }
+
+            fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                this.additionalProperties.clear()
+                putAllAdditionalProperties(additionalProperties)
+            }
+
+            fun putAdditionalProperty(key: String, value: JsonValue) = apply {
+                additionalProperties.put(key, value)
+            }
+
+            fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                this.additionalProperties.putAll(additionalProperties)
+            }
+
+            fun removeAdditionalProperty(key: String) = apply { additionalProperties.remove(key) }
+
+            fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                keys.forEach(::removeAdditionalProperty)
+            }
+
+            /**
+             * Returns an immutable instance of [Audio].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             */
+            fun build(): Audio = Audio(output, additionalProperties.toMutableMap())
+        }
+
+        private var validated: Boolean = false
+
+        fun validate(): Audio = apply {
+            if (validated) {
+                return@apply
+            }
+
+            output().ifPresent { it.validate() }
+            validated = true
+        }
+
+        fun isValid(): Boolean =
+            try {
+                validate()
+                true
+            } catch (e: OpenAIInvalidDataException) {
+                false
+            }
+
+        /**
+         * Returns a score indicating how many valid values are contained in this object
+         * recursively.
+         *
+         * Used for best match union deserialization.
+         */
+        @JvmSynthetic internal fun validity(): Int = (output.asKnown().getOrNull()?.validity() ?: 0)
+
+        class Output
+        private constructor(
+            private val format: JsonField<RealtimeAudioFormats>,
+            private val voice: JsonField<Voice>,
+            private val additionalProperties: MutableMap<String, JsonValue>,
+        ) {
+
+            @JsonCreator
+            private constructor(
+                @JsonProperty("format")
+                @ExcludeMissing
+                format: JsonField<RealtimeAudioFormats> = JsonMissing.of(),
+                @JsonProperty("voice") @ExcludeMissing voice: JsonField<Voice> = JsonMissing.of(),
+            ) : this(format, voice, mutableMapOf())
+
+            /**
+             * The format of the output audio.
+             *
+             * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if
+             *   the server responded with an unexpected value).
+             */
+            fun format(): Optional<RealtimeAudioFormats> = format.getOptional("format")
+
+            /**
+             * The voice the model uses to respond. Voice cannot be changed during the session once
+             * the model has responded with audio at least once. Current voice options are `alloy`,
+             * `ash`, `ballad`, `coral`, `echo`, `sage`, `shimmer`, `verse`, `marin`, and `cedar`.
+             * We recommend `marin` and `cedar` for best quality.
+             *
+             * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if
+             *   the server responded with an unexpected value).
+             */
+            fun voice(): Optional<Voice> = voice.getOptional("voice")
+
+            /**
+             * Returns the raw JSON value of [format].
+             *
+             * Unlike [format], this method doesn't throw if the JSON field has an unexpected type.
+             */
+            @JsonProperty("format")
+            @ExcludeMissing
+            fun _format(): JsonField<RealtimeAudioFormats> = format
+
+            /**
+             * Returns the raw JSON value of [voice].
+             *
+             * Unlike [voice], this method doesn't throw if the JSON field has an unexpected type.
+             */
+            @JsonProperty("voice") @ExcludeMissing fun _voice(): JsonField<Voice> = voice
+
+            @JsonAnySetter
+            private fun putAdditionalProperty(key: String, value: JsonValue) {
+                additionalProperties.put(key, value)
+            }
+
+            @JsonAnyGetter
+            @ExcludeMissing
+            fun _additionalProperties(): Map<String, JsonValue> =
+                Collections.unmodifiableMap(additionalProperties)
+
+            fun toBuilder() = Builder().from(this)
+
+            companion object {
+
+                /** Returns a mutable builder for constructing an instance of [Output]. */
+                @JvmStatic fun builder() = Builder()
+            }
+
+            /** A builder for [Output]. */
+            class Builder internal constructor() {
+
+                private var format: JsonField<RealtimeAudioFormats> = JsonMissing.of()
+                private var voice: JsonField<Voice> = JsonMissing.of()
+                private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
+
+                @JvmSynthetic
+                internal fun from(output: Output) = apply {
+                    format = output.format
+                    voice = output.voice
+                    additionalProperties = output.additionalProperties.toMutableMap()
+                }
+
+                /** The format of the output audio. */
+                fun format(format: RealtimeAudioFormats) = format(JsonField.of(format))
+
+                /**
+                 * Sets [Builder.format] to an arbitrary JSON value.
+                 *
+                 * You should usually call [Builder.format] with a well-typed [RealtimeAudioFormats]
+                 * value instead. This method is primarily for setting the field to an undocumented
+                 * or not yet supported value.
+                 */
+                fun format(format: JsonField<RealtimeAudioFormats>) = apply { this.format = format }
+
+                /** Alias for calling [format] with `RealtimeAudioFormats.ofAudioPcm(audioPcm)`. */
+                fun format(audioPcm: RealtimeAudioFormats.AudioPcm) =
+                    format(RealtimeAudioFormats.ofAudioPcm(audioPcm))
+
+                /**
+                 * Alias for calling [format] with `RealtimeAudioFormats.ofAudioPcmu(audioPcmu)`.
+                 */
+                fun format(audioPcmu: RealtimeAudioFormats.AudioPcmu) =
+                    format(RealtimeAudioFormats.ofAudioPcmu(audioPcmu))
+
+                /**
+                 * Alias for calling [format] with `RealtimeAudioFormats.ofAudioPcma(audioPcma)`.
+                 */
+                fun format(audioPcma: RealtimeAudioFormats.AudioPcma) =
+                    format(RealtimeAudioFormats.ofAudioPcma(audioPcma))
+
+                /**
+                 * The voice the model uses to respond. Voice cannot be changed during the session
+                 * once the model has responded with audio at least once. Current voice options are
+                 * `alloy`, `ash`, `ballad`, `coral`, `echo`, `sage`, `shimmer`, `verse`, `marin`,
+                 * and `cedar`. We recommend `marin` and `cedar` for best quality.
+                 */
+                fun voice(voice: Voice) = voice(JsonField.of(voice))
+
+                /**
+                 * Sets [Builder.voice] to an arbitrary JSON value.
+                 *
+                 * You should usually call [Builder.voice] with a well-typed [Voice] value instead.
+                 * This method is primarily for setting the field to an undocumented or not yet
+                 * supported value.
+                 */
+                fun voice(voice: JsonField<Voice>) = apply { this.voice = voice }
+
+                /**
+                 * Sets [voice] to an arbitrary [String].
+                 *
+                 * You should usually call [voice] with a well-typed [Voice] constant instead. This
+                 * method is primarily for setting the field to an undocumented or not yet supported
+                 * value.
+                 */
+                fun voice(value: String) = voice(Voice.of(value))
+
+                fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                    this.additionalProperties.clear()
+                    putAllAdditionalProperties(additionalProperties)
+                }
+
+                fun putAdditionalProperty(key: String, value: JsonValue) = apply {
+                    additionalProperties.put(key, value)
+                }
+
+                fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) =
+                    apply {
+                        this.additionalProperties.putAll(additionalProperties)
+                    }
+
+                fun removeAdditionalProperty(key: String) = apply {
+                    additionalProperties.remove(key)
+                }
+
+                fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                    keys.forEach(::removeAdditionalProperty)
+                }
+
+                /**
+                 * Returns an immutable instance of [Output].
+                 *
+                 * Further updates to this [Builder] will not mutate the returned instance.
+                 */
+                fun build(): Output = Output(format, voice, additionalProperties.toMutableMap())
+            }
+
+            private var validated: Boolean = false
+
+            fun validate(): Output = apply {
+                if (validated) {
+                    return@apply
+                }
+
+                format().ifPresent { it.validate() }
+                voice()
+                validated = true
+            }
+
+            fun isValid(): Boolean =
+                try {
+                    validate()
+                    true
+                } catch (e: OpenAIInvalidDataException) {
+                    false
+                }
+
+            /**
+             * Returns a score indicating how many valid values are contained in this object
+             * recursively.
+             *
+             * Used for best match union deserialization.
+             */
+            @JvmSynthetic
+            internal fun validity(): Int =
+                (format.asKnown().getOrNull()?.validity() ?: 0) +
+                    (if (voice.asKnown().isPresent) 1 else 0)
+
+            /**
+             * The voice the model uses to respond. Voice cannot be changed during the session once
+             * the model has responded with audio at least once. Current voice options are `alloy`,
+             * `ash`, `ballad`, `coral`, `echo`, `sage`, `shimmer`, `verse`, `marin`, and `cedar`.
+             * We recommend `marin` and `cedar` for best quality.
+             */
+            class Voice @JsonCreator private constructor(private val value: JsonField<String>) :
+                Enum {
+
+                /**
+                 * Returns this class instance's raw value.
+                 *
+                 * This is usually only useful if this instance was deserialized from data that
+                 * doesn't match any known member, and you want to know that value. For example, if
+                 * the SDK is on an older version than the API, then the API may respond with new
+                 * members that the SDK is unaware of.
+                 */
+                @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
+
+                companion object {
+
+                    @JvmField val ALLOY = of("alloy")
+
+                    @JvmField val ASH = of("ash")
+
+                    @JvmField val BALLAD = of("ballad")
+
+                    @JvmField val CORAL = of("coral")
+
+                    @JvmField val ECHO = of("echo")
+
+                    @JvmField val SAGE = of("sage")
+
+                    @JvmField val SHIMMER = of("shimmer")
+
+                    @JvmField val VERSE = of("verse")
+
+                    @JvmField val MARIN = of("marin")
+
+                    @JvmField val CEDAR = of("cedar")
+
+                    @JvmStatic fun of(value: String) = Voice(JsonField.of(value))
+                }
+
+                /** An enum containing [Voice]'s known values. */
+                enum class Known {
+                    ALLOY,
+                    ASH,
+                    BALLAD,
+                    CORAL,
+                    ECHO,
+                    SAGE,
+                    SHIMMER,
+                    VERSE,
+                    MARIN,
+                    CEDAR,
+                }
+
+                /**
+                 * An enum containing [Voice]'s known values, as well as an [_UNKNOWN] member.
+                 *
+                 * An instance of [Voice] can contain an unknown value in a couple of cases:
+                 * - It was deserialized from data that doesn't match any known member. For example,
+                 *   if the SDK is on an older version than the API, then the API may respond with
+                 *   new members that the SDK is unaware of.
+                 * - It was constructed with an arbitrary value using the [of] method.
+                 */
+                enum class Value {
+                    ALLOY,
+                    ASH,
+                    BALLAD,
+                    CORAL,
+                    ECHO,
+                    SAGE,
+                    SHIMMER,
+                    VERSE,
+                    MARIN,
+                    CEDAR,
+                    /**
+                     * An enum member indicating that [Voice] was instantiated with an unknown
+                     * value.
+                     */
+                    _UNKNOWN,
+                }
+
+                /**
+                 * Returns an enum member corresponding to this class instance's value, or
+                 * [Value._UNKNOWN] if the class was instantiated with an unknown value.
+                 *
+                 * Use the [known] method instead if you're certain the value is always known or if
+                 * you want to throw for the unknown case.
+                 */
+                fun value(): Value =
+                    when (this) {
+                        ALLOY -> Value.ALLOY
+                        ASH -> Value.ASH
+                        BALLAD -> Value.BALLAD
+                        CORAL -> Value.CORAL
+                        ECHO -> Value.ECHO
+                        SAGE -> Value.SAGE
+                        SHIMMER -> Value.SHIMMER
+                        VERSE -> Value.VERSE
+                        MARIN -> Value.MARIN
+                        CEDAR -> Value.CEDAR
+                        else -> Value._UNKNOWN
+                    }
+
+                /**
+                 * Returns an enum member corresponding to this class instance's value.
+                 *
+                 * Use the [value] method instead if you're uncertain the value is always known and
+                 * don't want to throw for the unknown case.
+                 *
+                 * @throws OpenAIInvalidDataException if this class instance's value is a not a
+                 *   known member.
+                 */
+                fun known(): Known =
+                    when (this) {
+                        ALLOY -> Known.ALLOY
+                        ASH -> Known.ASH
+                        BALLAD -> Known.BALLAD
+                        CORAL -> Known.CORAL
+                        ECHO -> Known.ECHO
+                        SAGE -> Known.SAGE
+                        SHIMMER -> Known.SHIMMER
+                        VERSE -> Known.VERSE
+                        MARIN -> Known.MARIN
+                        CEDAR -> Known.CEDAR
+                        else -> throw OpenAIInvalidDataException("Unknown Voice: $value")
+                    }
+
+                /**
+                 * Returns this class instance's primitive wire representation.
+                 *
+                 * This differs from the [toString] method because that method is primarily for
+                 * debugging and generally doesn't throw.
+                 *
+                 * @throws OpenAIInvalidDataException if this class instance's value does not have
+                 *   the expected primitive type.
+                 */
+                fun asString(): String =
+                    _value().asString().orElseThrow {
+                        OpenAIInvalidDataException("Value is not a String")
+                    }
+
+                private var validated: Boolean = false
+
+                fun validate(): Voice = apply {
+                    if (validated) {
+                        return@apply
+                    }
+
+                    known()
+                    validated = true
+                }
+
+                fun isValid(): Boolean =
+                    try {
+                        validate()
+                        true
+                    } catch (e: OpenAIInvalidDataException) {
+                        false
+                    }
+
+                /**
+                 * Returns a score indicating how many valid values are contained in this object
+                 * recursively.
+                 *
+                 * Used for best match union deserialization.
+                 */
+                @JvmSynthetic internal fun validity(): Int = if (value() == Value._UNKNOWN) 0 else 1
+
+                override fun equals(other: Any?): Boolean {
+                    if (this === other) {
+                        return true
+                    }
+
+                    return other is Voice && value == other.value
+                }
+
+                override fun hashCode() = value.hashCode()
+
+                override fun toString() = value.toString()
+            }
+
+            override fun equals(other: Any?): Boolean {
+                if (this === other) {
+                    return true
+                }
+
+                return other is Output &&
+                    format == other.format &&
+                    voice == other.voice &&
+                    additionalProperties == other.additionalProperties
+            }
+
+            private val hashCode: Int by lazy { Objects.hash(format, voice, additionalProperties) }
+
+            override fun hashCode(): Int = hashCode
+
+            override fun toString() =
+                "Output{format=$format, voice=$voice, additionalProperties=$additionalProperties}"
+        }
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) {
+                return true
+            }
+
+            return other is Audio &&
+                output == other.output &&
+                additionalProperties == other.additionalProperties
+        }
+
+        private val hashCode: Int by lazy { Objects.hash(output, additionalProperties) }
+
+        override fun hashCode(): Int = hashCode
+
+        override fun toString() =
+            "Audio{output=$output, additionalProperties=$additionalProperties}"
+    }
 
     /**
      * Maximum number of output tokens for a single assistant response, inclusive of tool calls,
@@ -1109,131 +1557,6 @@ private constructor(
         override fun toString() = "Metadata{additionalProperties=$additionalProperties}"
     }
 
-    class Modality @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
-
-        /**
-         * Returns this class instance's raw value.
-         *
-         * This is usually only useful if this instance was deserialized from data that doesn't
-         * match any known member, and you want to know that value. For example, if the SDK is on an
-         * older version than the API, then the API may respond with new members that the SDK is
-         * unaware of.
-         */
-        @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
-
-        companion object {
-
-            @JvmField val TEXT = of("text")
-
-            @JvmField val AUDIO = of("audio")
-
-            @JvmStatic fun of(value: String) = Modality(JsonField.of(value))
-        }
-
-        /** An enum containing [Modality]'s known values. */
-        enum class Known {
-            TEXT,
-            AUDIO,
-        }
-
-        /**
-         * An enum containing [Modality]'s known values, as well as an [_UNKNOWN] member.
-         *
-         * An instance of [Modality] can contain an unknown value in a couple of cases:
-         * - It was deserialized from data that doesn't match any known member. For example, if the
-         *   SDK is on an older version than the API, then the API may respond with new members that
-         *   the SDK is unaware of.
-         * - It was constructed with an arbitrary value using the [of] method.
-         */
-        enum class Value {
-            TEXT,
-            AUDIO,
-            /** An enum member indicating that [Modality] was instantiated with an unknown value. */
-            _UNKNOWN,
-        }
-
-        /**
-         * Returns an enum member corresponding to this class instance's value, or [Value._UNKNOWN]
-         * if the class was instantiated with an unknown value.
-         *
-         * Use the [known] method instead if you're certain the value is always known or if you want
-         * to throw for the unknown case.
-         */
-        fun value(): Value =
-            when (this) {
-                TEXT -> Value.TEXT
-                AUDIO -> Value.AUDIO
-                else -> Value._UNKNOWN
-            }
-
-        /**
-         * Returns an enum member corresponding to this class instance's value.
-         *
-         * Use the [value] method instead if you're uncertain the value is always known and don't
-         * want to throw for the unknown case.
-         *
-         * @throws OpenAIInvalidDataException if this class instance's value is a not a known
-         *   member.
-         */
-        fun known(): Known =
-            when (this) {
-                TEXT -> Known.TEXT
-                AUDIO -> Known.AUDIO
-                else -> throw OpenAIInvalidDataException("Unknown Modality: $value")
-            }
-
-        /**
-         * Returns this class instance's primitive wire representation.
-         *
-         * This differs from the [toString] method because that method is primarily for debugging
-         * and generally doesn't throw.
-         *
-         * @throws OpenAIInvalidDataException if this class instance's value does not have the
-         *   expected primitive type.
-         */
-        fun asString(): String =
-            _value().asString().orElseThrow { OpenAIInvalidDataException("Value is not a String") }
-
-        private var validated: Boolean = false
-
-        fun validate(): Modality = apply {
-            if (validated) {
-                return@apply
-            }
-
-            known()
-            validated = true
-        }
-
-        fun isValid(): Boolean =
-            try {
-                validate()
-                true
-            } catch (e: OpenAIInvalidDataException) {
-                false
-            }
-
-        /**
-         * Returns a score indicating how many valid values are contained in this object
-         * recursively.
-         *
-         * Used for best match union deserialization.
-         */
-        @JvmSynthetic internal fun validity(): Int = if (value() == Value._UNKNOWN) 0 else 1
-
-        override fun equals(other: Any?): Boolean {
-            if (this === other) {
-                return true
-            }
-
-            return other is Modality && value == other.value
-        }
-
-        override fun hashCode() = value.hashCode()
-
-        override fun toString() = value.toString()
-    }
-
     /** The object type, must be `realtime.response`. */
     class Object @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
 
@@ -1354,8 +1677,7 @@ private constructor(
         override fun toString() = value.toString()
     }
 
-    /** The format of output audio. Options are `pcm16`, `g711_ulaw`, or `g711_alaw`. */
-    class OutputAudioFormat @JsonCreator private constructor(private val value: JsonField<String>) :
+    class OutputModality @JsonCreator private constructor(private val value: JsonField<String>) :
         Enum {
 
         /**
@@ -1370,37 +1692,33 @@ private constructor(
 
         companion object {
 
-            @JvmField val PCM16 = of("pcm16")
+            @JvmField val TEXT = of("text")
 
-            @JvmField val G711_ULAW = of("g711_ulaw")
+            @JvmField val AUDIO = of("audio")
 
-            @JvmField val G711_ALAW = of("g711_alaw")
-
-            @JvmStatic fun of(value: String) = OutputAudioFormat(JsonField.of(value))
+            @JvmStatic fun of(value: String) = OutputModality(JsonField.of(value))
         }
 
-        /** An enum containing [OutputAudioFormat]'s known values. */
+        /** An enum containing [OutputModality]'s known values. */
         enum class Known {
-            PCM16,
-            G711_ULAW,
-            G711_ALAW,
+            TEXT,
+            AUDIO,
         }
 
         /**
-         * An enum containing [OutputAudioFormat]'s known values, as well as an [_UNKNOWN] member.
+         * An enum containing [OutputModality]'s known values, as well as an [_UNKNOWN] member.
          *
-         * An instance of [OutputAudioFormat] can contain an unknown value in a couple of cases:
+         * An instance of [OutputModality] can contain an unknown value in a couple of cases:
          * - It was deserialized from data that doesn't match any known member. For example, if the
          *   SDK is on an older version than the API, then the API may respond with new members that
          *   the SDK is unaware of.
          * - It was constructed with an arbitrary value using the [of] method.
          */
         enum class Value {
-            PCM16,
-            G711_ULAW,
-            G711_ALAW,
+            TEXT,
+            AUDIO,
             /**
-             * An enum member indicating that [OutputAudioFormat] was instantiated with an unknown
+             * An enum member indicating that [OutputModality] was instantiated with an unknown
              * value.
              */
             _UNKNOWN,
@@ -1415,9 +1733,8 @@ private constructor(
          */
         fun value(): Value =
             when (this) {
-                PCM16 -> Value.PCM16
-                G711_ULAW -> Value.G711_ULAW
-                G711_ALAW -> Value.G711_ALAW
+                TEXT -> Value.TEXT
+                AUDIO -> Value.AUDIO
                 else -> Value._UNKNOWN
             }
 
@@ -1432,10 +1749,9 @@ private constructor(
          */
         fun known(): Known =
             when (this) {
-                PCM16 -> Known.PCM16
-                G711_ULAW -> Known.G711_ULAW
-                G711_ALAW -> Known.G711_ALAW
-                else -> throw OpenAIInvalidDataException("Unknown OutputAudioFormat: $value")
+                TEXT -> Known.TEXT
+                AUDIO -> Known.AUDIO
+                else -> throw OpenAIInvalidDataException("Unknown OutputModality: $value")
             }
 
         /**
@@ -1452,7 +1768,7 @@ private constructor(
 
         private var validated: Boolean = false
 
-        fun validate(): OutputAudioFormat = apply {
+        fun validate(): OutputModality = apply {
             if (validated) {
                 return@apply
             }
@@ -1482,7 +1798,7 @@ private constructor(
                 return true
             }
 
-            return other is OutputAudioFormat && value == other.value
+            return other is OutputModality && value == other.value
         }
 
         override fun hashCode() = value.hashCode()
@@ -1637,183 +1953,6 @@ private constructor(
         override fun toString() = value.toString()
     }
 
-    /**
-     * The voice the model used to respond. Current voice options are `alloy`, `ash`, `ballad`,
-     * `coral`, `echo`, `sage`, `shimmer`, and `verse`.
-     */
-    class Voice @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
-
-        /**
-         * Returns this class instance's raw value.
-         *
-         * This is usually only useful if this instance was deserialized from data that doesn't
-         * match any known member, and you want to know that value. For example, if the SDK is on an
-         * older version than the API, then the API may respond with new members that the SDK is
-         * unaware of.
-         */
-        @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
-
-        companion object {
-
-            @JvmField val ALLOY = of("alloy")
-
-            @JvmField val ASH = of("ash")
-
-            @JvmField val BALLAD = of("ballad")
-
-            @JvmField val CORAL = of("coral")
-
-            @JvmField val ECHO = of("echo")
-
-            @JvmField val SAGE = of("sage")
-
-            @JvmField val SHIMMER = of("shimmer")
-
-            @JvmField val VERSE = of("verse")
-
-            @JvmField val MARIN = of("marin")
-
-            @JvmField val CEDAR = of("cedar")
-
-            @JvmStatic fun of(value: String) = Voice(JsonField.of(value))
-        }
-
-        /** An enum containing [Voice]'s known values. */
-        enum class Known {
-            ALLOY,
-            ASH,
-            BALLAD,
-            CORAL,
-            ECHO,
-            SAGE,
-            SHIMMER,
-            VERSE,
-            MARIN,
-            CEDAR,
-        }
-
-        /**
-         * An enum containing [Voice]'s known values, as well as an [_UNKNOWN] member.
-         *
-         * An instance of [Voice] can contain an unknown value in a couple of cases:
-         * - It was deserialized from data that doesn't match any known member. For example, if the
-         *   SDK is on an older version than the API, then the API may respond with new members that
-         *   the SDK is unaware of.
-         * - It was constructed with an arbitrary value using the [of] method.
-         */
-        enum class Value {
-            ALLOY,
-            ASH,
-            BALLAD,
-            CORAL,
-            ECHO,
-            SAGE,
-            SHIMMER,
-            VERSE,
-            MARIN,
-            CEDAR,
-            /** An enum member indicating that [Voice] was instantiated with an unknown value. */
-            _UNKNOWN,
-        }
-
-        /**
-         * Returns an enum member corresponding to this class instance's value, or [Value._UNKNOWN]
-         * if the class was instantiated with an unknown value.
-         *
-         * Use the [known] method instead if you're certain the value is always known or if you want
-         * to throw for the unknown case.
-         */
-        fun value(): Value =
-            when (this) {
-                ALLOY -> Value.ALLOY
-                ASH -> Value.ASH
-                BALLAD -> Value.BALLAD
-                CORAL -> Value.CORAL
-                ECHO -> Value.ECHO
-                SAGE -> Value.SAGE
-                SHIMMER -> Value.SHIMMER
-                VERSE -> Value.VERSE
-                MARIN -> Value.MARIN
-                CEDAR -> Value.CEDAR
-                else -> Value._UNKNOWN
-            }
-
-        /**
-         * Returns an enum member corresponding to this class instance's value.
-         *
-         * Use the [value] method instead if you're uncertain the value is always known and don't
-         * want to throw for the unknown case.
-         *
-         * @throws OpenAIInvalidDataException if this class instance's value is a not a known
-         *   member.
-         */
-        fun known(): Known =
-            when (this) {
-                ALLOY -> Known.ALLOY
-                ASH -> Known.ASH
-                BALLAD -> Known.BALLAD
-                CORAL -> Known.CORAL
-                ECHO -> Known.ECHO
-                SAGE -> Known.SAGE
-                SHIMMER -> Known.SHIMMER
-                VERSE -> Known.VERSE
-                MARIN -> Known.MARIN
-                CEDAR -> Known.CEDAR
-                else -> throw OpenAIInvalidDataException("Unknown Voice: $value")
-            }
-
-        /**
-         * Returns this class instance's primitive wire representation.
-         *
-         * This differs from the [toString] method because that method is primarily for debugging
-         * and generally doesn't throw.
-         *
-         * @throws OpenAIInvalidDataException if this class instance's value does not have the
-         *   expected primitive type.
-         */
-        fun asString(): String =
-            _value().asString().orElseThrow { OpenAIInvalidDataException("Value is not a String") }
-
-        private var validated: Boolean = false
-
-        fun validate(): Voice = apply {
-            if (validated) {
-                return@apply
-            }
-
-            known()
-            validated = true
-        }
-
-        fun isValid(): Boolean =
-            try {
-                validate()
-                true
-            } catch (e: OpenAIInvalidDataException) {
-                false
-            }
-
-        /**
-         * Returns a score indicating how many valid values are contained in this object
-         * recursively.
-         *
-         * Used for best match union deserialization.
-         */
-        @JvmSynthetic internal fun validity(): Int = if (value() == Value._UNKNOWN) 0 else 1
-
-        override fun equals(other: Any?): Boolean {
-            if (this === other) {
-                return true
-            }
-
-            return other is Voice && value == other.value
-        }
-
-        override fun hashCode() = value.hashCode()
-
-        override fun toString() = value.toString()
-    }
-
     override fun equals(other: Any?): Boolean {
         if (this === other) {
             return true
@@ -1821,36 +1960,32 @@ private constructor(
 
         return other is RealtimeResponse &&
             id == other.id &&
+            audio == other.audio &&
             conversationId == other.conversationId &&
             maxOutputTokens == other.maxOutputTokens &&
             metadata == other.metadata &&
-            modalities == other.modalities &&
             object_ == other.object_ &&
             output == other.output &&
-            outputAudioFormat == other.outputAudioFormat &&
+            outputModalities == other.outputModalities &&
             status == other.status &&
             statusDetails == other.statusDetails &&
-            temperature == other.temperature &&
             usage == other.usage &&
-            voice == other.voice &&
             additionalProperties == other.additionalProperties
     }
 
     private val hashCode: Int by lazy {
         Objects.hash(
             id,
+            audio,
             conversationId,
             maxOutputTokens,
             metadata,
-            modalities,
             object_,
             output,
-            outputAudioFormat,
+            outputModalities,
             status,
             statusDetails,
-            temperature,
             usage,
-            voice,
             additionalProperties,
         )
     }
@@ -1858,5 +1993,5 @@ private constructor(
     override fun hashCode(): Int = hashCode
 
     override fun toString() =
-        "RealtimeResponse{id=$id, conversationId=$conversationId, maxOutputTokens=$maxOutputTokens, metadata=$metadata, modalities=$modalities, object_=$object_, output=$output, outputAudioFormat=$outputAudioFormat, status=$status, statusDetails=$statusDetails, temperature=$temperature, usage=$usage, voice=$voice, additionalProperties=$additionalProperties}"
+        "RealtimeResponse{id=$id, audio=$audio, conversationId=$conversationId, maxOutputTokens=$maxOutputTokens, metadata=$metadata, object_=$object_, output=$output, outputModalities=$outputModalities, status=$status, statusDetails=$statusDetails, usage=$usage, additionalProperties=$additionalProperties}"
 }
