@@ -84,13 +84,17 @@ private constructor(
 
     /**
      * Send this event to append audio bytes to the input audio buffer. The audio buffer is
-     * temporary storage you can write to and later commit. In Server VAD mode, the audio buffer is
-     * used to detect speech and the server will decide when to commit. When Server VAD is disabled,
-     * you must commit the audio buffer manually.
+     * temporary storage you can write to and later commit. A "commit" will create a new user
+     * message item in the conversation history from the buffer content and clear the buffer. Input
+     * audio transcription (if enabled) will be generated when the buffer is committed.
+     *
+     * If VAD is enabled the audio buffer is used to detect speech and the server will decide when
+     * to commit. When Server VAD is disabled, you must commit the audio buffer manually. Input
+     * audio noise reduction operates on writes to the audio buffer.
      *
      * The client may choose how much audio to place in each event up to a maximum of 15 MiB, for
      * example streaming smaller chunks from the client may allow the VAD to be more responsive.
-     * Unlike made other client events, the server will not send a confirmation response to this
+     * Unlike most other client events, the server will not send a confirmation response to this
      * event.
      */
     fun inputAudioBufferAppend(): Optional<InputAudioBufferAppendEvent> =
@@ -128,7 +132,8 @@ private constructor(
     /**
      * Send this event to cancel an in-progress response. The server will respond with a
      * `response.done` event with a status of `response.status=cancelled`. If there is no response
-     * to cancel, the server will respond with an error.
+     * to cancel, the server will respond with an error. It's safe to call `response.cancel` even if
+     * no response is in progress, an error will be returned the session will remain unaffected.
      */
     fun responseCancel(): Optional<ResponseCancelEvent> = Optional.ofNullable(responseCancel)
 
@@ -137,25 +142,36 @@ private constructor(
      * When in Server VAD mode, the server will create Responses automatically.
      *
      * A Response will include at least one Item, and may have two, in which case the second will be
-     * a function call. These Items will be appended to the conversation history.
+     * a function call. These Items will be appended to the conversation history by default.
      *
      * The server will respond with a `response.created` event, events for Items and content
      * created, and finally a `response.done` event to indicate the Response is complete.
      *
-     * The `response.create` event includes inference configuration like `instructions`, and
-     * `temperature`. These fields will override the Session's configuration for this Response only.
+     * The `response.create` event includes inference configuration like `instructions` and `tools`.
+     * If these are set, they will override the Session's configuration for this Response only.
+     *
+     * Responses can be created out-of-band of the default Conversation, meaning that they can have
+     * arbitrary input, and it's possible to disable writing the output to the Conversation. Only
+     * one Response can write to the default Conversation at a time, but otherwise multiple
+     * Responses can be created in parallel. The `metadata` field is a good way to disambiguate
+     * multiple simultaneous Responses.
+     *
+     * Clients can set `conversation` to `none` to create a Response that does not write to the
+     * default Conversation. Arbitrary input can be provided with the `input` field, which is an
+     * array accepting raw Items and references to existing Items.
      */
     fun responseCreate(): Optional<ResponseCreateEvent> = Optional.ofNullable(responseCreate)
 
     /**
-     * Send this event to update the session’s default configuration. The client may send this event
-     * at any time to update any field, except for `voice`. However, note that once a session has
-     * been initialized with a particular `model`, it can’t be changed to another model using
-     * `session.update`.
+     * Send this event to update the session’s configuration. The client may send this event at any
+     * time to update any field except for `voice` and `model`. `voice` can be updated only if there
+     * have been no other audio outputs yet.
      *
      * When the server receives a `session.update`, it will respond with a `session.updated` event
-     * showing the full, effective configuration. Only the fields that are present are updated. To
-     * clear a field like `instructions`, pass an empty string.
+     * showing the full, effective configuration. Only the fields that are present in the
+     * `session.update` are updated. To clear a field like `instructions`, pass an empty string. To
+     * clear a field like `tools`, pass an empty array. To clear a field like `turn_detection`, pass
+     * `null`.
      */
     fun sessionUpdate(): Optional<SessionUpdateEvent> = Optional.ofNullable(sessionUpdate)
 
@@ -233,13 +249,17 @@ private constructor(
 
     /**
      * Send this event to append audio bytes to the input audio buffer. The audio buffer is
-     * temporary storage you can write to and later commit. In Server VAD mode, the audio buffer is
-     * used to detect speech and the server will decide when to commit. When Server VAD is disabled,
-     * you must commit the audio buffer manually.
+     * temporary storage you can write to and later commit. A "commit" will create a new user
+     * message item in the conversation history from the buffer content and clear the buffer. Input
+     * audio transcription (if enabled) will be generated when the buffer is committed.
+     *
+     * If VAD is enabled the audio buffer is used to detect speech and the server will decide when
+     * to commit. When Server VAD is disabled, you must commit the audio buffer manually. Input
+     * audio noise reduction operates on writes to the audio buffer.
      *
      * The client may choose how much audio to place in each event up to a maximum of 15 MiB, for
      * example streaming smaller chunks from the client may allow the VAD to be more responsive.
-     * Unlike made other client events, the server will not send a confirmation response to this
+     * Unlike most other client events, the server will not send a confirmation response to this
      * event.
      */
     fun asInputAudioBufferAppend(): InputAudioBufferAppendEvent =
@@ -277,7 +297,8 @@ private constructor(
     /**
      * Send this event to cancel an in-progress response. The server will respond with a
      * `response.done` event with a status of `response.status=cancelled`. If there is no response
-     * to cancel, the server will respond with an error.
+     * to cancel, the server will respond with an error. It's safe to call `response.cancel` even if
+     * no response is in progress, an error will be returned the session will remain unaffected.
      */
     fun asResponseCancel(): ResponseCancelEvent = responseCancel.getOrThrow("responseCancel")
 
@@ -286,25 +307,36 @@ private constructor(
      * When in Server VAD mode, the server will create Responses automatically.
      *
      * A Response will include at least one Item, and may have two, in which case the second will be
-     * a function call. These Items will be appended to the conversation history.
+     * a function call. These Items will be appended to the conversation history by default.
      *
      * The server will respond with a `response.created` event, events for Items and content
      * created, and finally a `response.done` event to indicate the Response is complete.
      *
-     * The `response.create` event includes inference configuration like `instructions`, and
-     * `temperature`. These fields will override the Session's configuration for this Response only.
+     * The `response.create` event includes inference configuration like `instructions` and `tools`.
+     * If these are set, they will override the Session's configuration for this Response only.
+     *
+     * Responses can be created out-of-band of the default Conversation, meaning that they can have
+     * arbitrary input, and it's possible to disable writing the output to the Conversation. Only
+     * one Response can write to the default Conversation at a time, but otherwise multiple
+     * Responses can be created in parallel. The `metadata` field is a good way to disambiguate
+     * multiple simultaneous Responses.
+     *
+     * Clients can set `conversation` to `none` to create a Response that does not write to the
+     * default Conversation. Arbitrary input can be provided with the `input` field, which is an
+     * array accepting raw Items and references to existing Items.
      */
     fun asResponseCreate(): ResponseCreateEvent = responseCreate.getOrThrow("responseCreate")
 
     /**
-     * Send this event to update the session’s default configuration. The client may send this event
-     * at any time to update any field, except for `voice`. However, note that once a session has
-     * been initialized with a particular `model`, it can’t be changed to another model using
-     * `session.update`.
+     * Send this event to update the session’s configuration. The client may send this event at any
+     * time to update any field except for `voice` and `model`. `voice` can be updated only if there
+     * have been no other audio outputs yet.
      *
      * When the server receives a `session.update`, it will respond with a `session.updated` event
-     * showing the full, effective configuration. Only the fields that are present are updated. To
-     * clear a field like `instructions`, pass an empty string.
+     * showing the full, effective configuration. Only the fields that are present in the
+     * `session.update` are updated. To clear a field like `instructions`, pass an empty string. To
+     * clear a field like `tools`, pass an empty array. To clear a field like `turn_detection`, pass
+     * `null`.
      */
     fun asSessionUpdate(): SessionUpdateEvent = sessionUpdate.getOrThrow("sessionUpdate")
 
@@ -600,13 +632,17 @@ private constructor(
 
         /**
          * Send this event to append audio bytes to the input audio buffer. The audio buffer is
-         * temporary storage you can write to and later commit. In Server VAD mode, the audio buffer
-         * is used to detect speech and the server will decide when to commit. When Server VAD is
-         * disabled, you must commit the audio buffer manually.
+         * temporary storage you can write to and later commit. A "commit" will create a new user
+         * message item in the conversation history from the buffer content and clear the buffer.
+         * Input audio transcription (if enabled) will be generated when the buffer is committed.
+         *
+         * If VAD is enabled the audio buffer is used to detect speech and the server will decide
+         * when to commit. When Server VAD is disabled, you must commit the audio buffer manually.
+         * Input audio noise reduction operates on writes to the audio buffer.
          *
          * The client may choose how much audio to place in each event up to a maximum of 15 MiB,
          * for example streaming smaller chunks from the client may allow the VAD to be more
-         * responsive. Unlike made other client events, the server will not send a confirmation
+         * responsive. Unlike most other client events, the server will not send a confirmation
          * response to this event.
          */
         @JvmStatic
@@ -649,7 +685,9 @@ private constructor(
         /**
          * Send this event to cancel an in-progress response. The server will respond with a
          * `response.done` event with a status of `response.status=cancelled`. If there is no
-         * response to cancel, the server will respond with an error.
+         * response to cancel, the server will respond with an error. It's safe to call
+         * `response.cancel` even if no response is in progress, an error will be returned the
+         * session will remain unaffected.
          */
         @JvmStatic
         fun ofResponseCancel(responseCancel: ResponseCancelEvent) =
@@ -660,28 +698,40 @@ private constructor(
          * inference. When in Server VAD mode, the server will create Responses automatically.
          *
          * A Response will include at least one Item, and may have two, in which case the second
-         * will be a function call. These Items will be appended to the conversation history.
+         * will be a function call. These Items will be appended to the conversation history by
+         * default.
          *
          * The server will respond with a `response.created` event, events for Items and content
          * created, and finally a `response.done` event to indicate the Response is complete.
          *
-         * The `response.create` event includes inference configuration like `instructions`, and
-         * `temperature`. These fields will override the Session's configuration for this Response
-         * only.
+         * The `response.create` event includes inference configuration like `instructions` and
+         * `tools`. If these are set, they will override the Session's configuration for this
+         * Response only.
+         *
+         * Responses can be created out-of-band of the default Conversation, meaning that they can
+         * have arbitrary input, and it's possible to disable writing the output to the
+         * Conversation. Only one Response can write to the default Conversation at a time, but
+         * otherwise multiple Responses can be created in parallel. The `metadata` field is a good
+         * way to disambiguate multiple simultaneous Responses.
+         *
+         * Clients can set `conversation` to `none` to create a Response that does not write to the
+         * default Conversation. Arbitrary input can be provided with the `input` field, which is an
+         * array accepting raw Items and references to existing Items.
          */
         @JvmStatic
         fun ofResponseCreate(responseCreate: ResponseCreateEvent) =
             RealtimeClientEvent(responseCreate = responseCreate)
 
         /**
-         * Send this event to update the session’s default configuration. The client may send this
-         * event at any time to update any field, except for `voice`. However, note that once a
-         * session has been initialized with a particular `model`, it can’t be changed to another
-         * model using `session.update`.
+         * Send this event to update the session’s configuration. The client may send this event at
+         * any time to update any field except for `voice` and `model`. `voice` can be updated only
+         * if there have been no other audio outputs yet.
          *
          * When the server receives a `session.update`, it will respond with a `session.updated`
-         * event showing the full, effective configuration. Only the fields that are present are
-         * updated. To clear a field like `instructions`, pass an empty string.
+         * event showing the full, effective configuration. Only the fields that are present in the
+         * `session.update` are updated. To clear a field like `instructions`, pass an empty string.
+         * To clear a field like `tools`, pass an empty array. To clear a field like
+         * `turn_detection`, pass `null`.
          */
         @JvmStatic
         fun ofSessionUpdate(sessionUpdate: SessionUpdateEvent) =
@@ -745,13 +795,17 @@ private constructor(
 
         /**
          * Send this event to append audio bytes to the input audio buffer. The audio buffer is
-         * temporary storage you can write to and later commit. In Server VAD mode, the audio buffer
-         * is used to detect speech and the server will decide when to commit. When Server VAD is
-         * disabled, you must commit the audio buffer manually.
+         * temporary storage you can write to and later commit. A "commit" will create a new user
+         * message item in the conversation history from the buffer content and clear the buffer.
+         * Input audio transcription (if enabled) will be generated when the buffer is committed.
+         *
+         * If VAD is enabled the audio buffer is used to detect speech and the server will decide
+         * when to commit. When Server VAD is disabled, you must commit the audio buffer manually.
+         * Input audio noise reduction operates on writes to the audio buffer.
          *
          * The client may choose how much audio to place in each event up to a maximum of 15 MiB,
          * for example streaming smaller chunks from the client may allow the VAD to be more
-         * responsive. Unlike made other client events, the server will not send a confirmation
+         * responsive. Unlike most other client events, the server will not send a confirmation
          * response to this event.
          */
         fun visitInputAudioBufferAppend(inputAudioBufferAppend: InputAudioBufferAppendEvent): T
@@ -786,7 +840,9 @@ private constructor(
         /**
          * Send this event to cancel an in-progress response. The server will respond with a
          * `response.done` event with a status of `response.status=cancelled`. If there is no
-         * response to cancel, the server will respond with an error.
+         * response to cancel, the server will respond with an error. It's safe to call
+         * `response.cancel` even if no response is in progress, an error will be returned the
+         * session will remain unaffected.
          */
         fun visitResponseCancel(responseCancel: ResponseCancelEvent): T
 
@@ -795,26 +851,38 @@ private constructor(
          * inference. When in Server VAD mode, the server will create Responses automatically.
          *
          * A Response will include at least one Item, and may have two, in which case the second
-         * will be a function call. These Items will be appended to the conversation history.
+         * will be a function call. These Items will be appended to the conversation history by
+         * default.
          *
          * The server will respond with a `response.created` event, events for Items and content
          * created, and finally a `response.done` event to indicate the Response is complete.
          *
-         * The `response.create` event includes inference configuration like `instructions`, and
-         * `temperature`. These fields will override the Session's configuration for this Response
-         * only.
+         * The `response.create` event includes inference configuration like `instructions` and
+         * `tools`. If these are set, they will override the Session's configuration for this
+         * Response only.
+         *
+         * Responses can be created out-of-band of the default Conversation, meaning that they can
+         * have arbitrary input, and it's possible to disable writing the output to the
+         * Conversation. Only one Response can write to the default Conversation at a time, but
+         * otherwise multiple Responses can be created in parallel. The `metadata` field is a good
+         * way to disambiguate multiple simultaneous Responses.
+         *
+         * Clients can set `conversation` to `none` to create a Response that does not write to the
+         * default Conversation. Arbitrary input can be provided with the `input` field, which is an
+         * array accepting raw Items and references to existing Items.
          */
         fun visitResponseCreate(responseCreate: ResponseCreateEvent): T
 
         /**
-         * Send this event to update the session’s default configuration. The client may send this
-         * event at any time to update any field, except for `voice`. However, note that once a
-         * session has been initialized with a particular `model`, it can’t be changed to another
-         * model using `session.update`.
+         * Send this event to update the session’s configuration. The client may send this event at
+         * any time to update any field except for `voice` and `model`. `voice` can be updated only
+         * if there have been no other audio outputs yet.
          *
          * When the server receives a `session.update`, it will respond with a `session.updated`
-         * event showing the full, effective configuration. Only the fields that are present are
-         * updated. To clear a field like `instructions`, pass an empty string.
+         * event showing the full, effective configuration. Only the fields that are present in the
+         * `session.update` are updated. To clear a field like `instructions`, pass an empty string.
+         * To clear a field like `tools`, pass an empty array. To clear a field like
+         * `turn_detection`, pass `null`.
          */
         fun visitSessionUpdate(sessionUpdate: SessionUpdateEvent): T
 

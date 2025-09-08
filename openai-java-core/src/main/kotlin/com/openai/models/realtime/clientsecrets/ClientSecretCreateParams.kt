@@ -32,7 +32,7 @@ import java.util.Objects
 import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
-/** Create a Realtime session and client secret for either realtime or transcription. */
+/** Create a Realtime client secret with an associated session configuration. */
 class ClientSecretCreateParams
 private constructor(
     private val body: Body,
@@ -41,7 +41,10 @@ private constructor(
 ) : Params {
 
     /**
-     * Configuration for the ephemeral token expiration.
+     * Configuration for the client secret expiration. Expiration refers to the time after which a
+     * client secret will no longer be valid for creating sessions. The session itself may continue
+     * after that time once started. A secret can be used to create multiple sessions until it
+     * expires.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -113,7 +116,12 @@ private constructor(
          */
         fun body(body: Body) = apply { this.body = body.toBuilder() }
 
-        /** Configuration for the ephemeral token expiration. */
+        /**
+         * Configuration for the client secret expiration. Expiration refers to the time after which
+         * a client secret will no longer be valid for creating sessions. The session itself may
+         * continue after that time once started. A secret can be used to create multiple sessions
+         * until it expires.
+         */
         fun expiresAfter(expiresAfter: ExpiresAfter) = apply { body.expiresAfter(expiresAfter) }
 
         /**
@@ -144,61 +152,9 @@ private constructor(
         /** Alias for calling [session] with `Session.ofRealtime(realtime)`. */
         fun session(realtime: RealtimeSessionCreateRequest) = apply { body.session(realtime) }
 
-        /**
-         * Alias for calling [session] with the following:
-         * ```java
-         * RealtimeSessionCreateRequest.builder()
-         *     .model(model)
-         *     .build()
-         * ```
-         */
-        fun realtimeSession(model: RealtimeSessionCreateRequest.Model) = apply {
-            body.realtimeSession(model)
-        }
-
-        /**
-         * Alias for calling [realtimeSession] with
-         * `RealtimeSessionCreateRequest.Model.ofString(string)`.
-         */
-        fun realtimeSession(string: String) = apply { body.realtimeSession(string) }
-
-        /**
-         * Alias for calling [realtimeSession] with
-         * `RealtimeSessionCreateRequest.Model.ofModel(model)`.
-         */
-        fun realtimeSession(model: RealtimeSessionCreateRequest.Model) = apply {
-            body.realtimeSession(model)
-        }
-
         /** Alias for calling [session] with `Session.ofTranscription(transcription)`. */
         fun session(transcription: RealtimeTranscriptionSessionCreateRequest) = apply {
             body.session(transcription)
-        }
-
-        /**
-         * Alias for calling [session] with the following:
-         * ```java
-         * RealtimeTranscriptionSessionCreateRequest.builder()
-         *     .model(model)
-         *     .build()
-         * ```
-         */
-        fun transcriptionSession(model: RealtimeTranscriptionSessionCreateRequest.Model) = apply {
-            body.transcriptionSession(model)
-        }
-
-        /**
-         * Alias for calling [transcriptionSession] with
-         * `RealtimeTranscriptionSessionCreateRequest.Model.ofString(string)`.
-         */
-        fun transcriptionSession(string: String) = apply { body.transcriptionSession(string) }
-
-        /**
-         * Alias for calling [transcriptionSession] with
-         * `RealtimeTranscriptionSessionCreateRequest.Model.ofModel(model)`.
-         */
-        fun transcriptionSession(model: RealtimeTranscriptionSessionCreateRequest.Model) = apply {
-            body.transcriptionSession(model)
         }
 
         fun additionalBodyProperties(additionalBodyProperties: Map<String, JsonValue>) = apply {
@@ -358,7 +314,10 @@ private constructor(
         ) : this(expiresAfter, session, mutableMapOf())
 
         /**
-         * Configuration for the ephemeral token expiration.
+         * Configuration for the client secret expiration. Expiration refers to the time after which
+         * a client secret will no longer be valid for creating sessions. The session itself may
+         * continue after that time once started. A secret can be used to create multiple sessions
+         * until it expires.
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
@@ -423,7 +382,12 @@ private constructor(
                 additionalProperties = body.additionalProperties.toMutableMap()
             }
 
-            /** Configuration for the ephemeral token expiration. */
+            /**
+             * Configuration for the client secret expiration. Expiration refers to the time after
+             * which a client secret will no longer be valid for creating sessions. The session
+             * itself may continue after that time once started. A secret can be used to create
+             * multiple sessions until it expires.
+             */
             fun expiresAfter(expiresAfter: ExpiresAfter) = expiresAfter(JsonField.of(expiresAfter))
 
             /**
@@ -456,61 +420,9 @@ private constructor(
             fun session(realtime: RealtimeSessionCreateRequest) =
                 session(Session.ofRealtime(realtime))
 
-            /**
-             * Alias for calling [session] with the following:
-             * ```java
-             * RealtimeSessionCreateRequest.builder()
-             *     .model(model)
-             *     .build()
-             * ```
-             */
-            fun realtimeSession(model: RealtimeSessionCreateRequest.Model) =
-                session(RealtimeSessionCreateRequest.builder().model(model).build())
-
-            /**
-             * Alias for calling [realtimeSession] with
-             * `RealtimeSessionCreateRequest.Model.ofString(string)`.
-             */
-            fun realtimeSession(string: String) =
-                realtimeSession(RealtimeSessionCreateRequest.Model.ofString(string))
-
-            /**
-             * Alias for calling [realtimeSession] with
-             * `RealtimeSessionCreateRequest.Model.ofModel(model)`.
-             */
-            fun realtimeSession(model: RealtimeSessionCreateRequest.Model) =
-                realtimeSession(RealtimeSessionCreateRequest.Model.ofModel(model))
-
             /** Alias for calling [session] with `Session.ofTranscription(transcription)`. */
             fun session(transcription: RealtimeTranscriptionSessionCreateRequest) =
                 session(Session.ofTranscription(transcription))
-
-            /**
-             * Alias for calling [session] with the following:
-             * ```java
-             * RealtimeTranscriptionSessionCreateRequest.builder()
-             *     .model(model)
-             *     .build()
-             * ```
-             */
-            fun transcriptionSession(model: RealtimeTranscriptionSessionCreateRequest.Model) =
-                session(RealtimeTranscriptionSessionCreateRequest.builder().model(model).build())
-
-            /**
-             * Alias for calling [transcriptionSession] with
-             * `RealtimeTranscriptionSessionCreateRequest.Model.ofString(string)`.
-             */
-            fun transcriptionSession(string: String) =
-                transcriptionSession(
-                    RealtimeTranscriptionSessionCreateRequest.Model.ofString(string)
-                )
-
-            /**
-             * Alias for calling [transcriptionSession] with
-             * `RealtimeTranscriptionSessionCreateRequest.Model.ofModel(model)`.
-             */
-            fun transcriptionSession(model: RealtimeTranscriptionSessionCreateRequest.Model) =
-                transcriptionSession(RealtimeTranscriptionSessionCreateRequest.Model.ofModel(model))
 
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.clear()
@@ -591,7 +503,12 @@ private constructor(
             "Body{expiresAfter=$expiresAfter, session=$session, additionalProperties=$additionalProperties}"
     }
 
-    /** Configuration for the ephemeral token expiration. */
+    /**
+     * Configuration for the client secret expiration. Expiration refers to the time after which a
+     * client secret will no longer be valid for creating sessions. The session itself may continue
+     * after that time once started. A secret can be used to create multiple sessions until it
+     * expires.
+     */
     class ExpiresAfter
     private constructor(
         private val anchor: JsonField<Anchor>,
@@ -606,8 +523,9 @@ private constructor(
         ) : this(anchor, seconds, mutableMapOf())
 
         /**
-         * The anchor point for the ephemeral token expiration. Only `created_at` is currently
-         * supported.
+         * The anchor point for the client secret expiration, meaning that `seconds` will be added
+         * to the `created_at` time of the client secret to produce an expiration timestamp. Only
+         * `created_at` is currently supported.
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
@@ -616,7 +534,7 @@ private constructor(
 
         /**
          * The number of seconds from the anchor point to the expiration. Select a value between
-         * `10` and `7200`.
+         * `10` and `7200` (2 hours). This default to 600 seconds (10 minutes) if not specified.
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
@@ -670,8 +588,9 @@ private constructor(
             }
 
             /**
-             * The anchor point for the ephemeral token expiration. Only `created_at` is currently
-             * supported.
+             * The anchor point for the client secret expiration, meaning that `seconds` will be
+             * added to the `created_at` time of the client secret to produce an expiration
+             * timestamp. Only `created_at` is currently supported.
              */
             fun anchor(anchor: Anchor) = anchor(JsonField.of(anchor))
 
@@ -686,7 +605,7 @@ private constructor(
 
             /**
              * The number of seconds from the anchor point to the expiration. Select a value between
-             * `10` and `7200`.
+             * `10` and `7200` (2 hours). This default to 600 seconds (10 minutes) if not specified.
              */
             fun seconds(seconds: Long) = seconds(JsonField.of(seconds))
 
@@ -759,8 +678,9 @@ private constructor(
                 (if (seconds.asKnown().isPresent) 1 else 0)
 
         /**
-         * The anchor point for the ephemeral token expiration. Only `created_at` is currently
-         * supported.
+         * The anchor point for the client secret expiration, meaning that `seconds` will be added
+         * to the `created_at` time of the client secret to produce an expiration timestamp. Only
+         * `created_at` is currently supported.
          */
         class Anchor @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
 

@@ -17,7 +17,12 @@ import java.util.Objects
 import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
-/** Returned when a conversation item is finalized. */
+/**
+ * Returned when a conversation item is finalized.
+ *
+ * The event will include the full content of the Item except for audio data, which can be retrieved
+ * separately with a `conversation.item.retrieve` event if needed.
+ */
 class ConversationItemDone
 private constructor(
     private val eventId: JsonField<String>,

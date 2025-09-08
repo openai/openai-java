@@ -39,7 +39,13 @@ private constructor(
     private val _json: JsonValue? = null,
 ) {
 
-    /** A system message item in a Realtime conversation. */
+    /**
+     * A system message in a Realtime conversation can be used to provide additional context or
+     * instructions to the model. This is similar but distinct from the instruction prompt provided
+     * at the start of a conversation, as system messages can be added at any point in the
+     * conversation. For major changes to the conversation's behavior, use instructions, but for
+     * smaller updates (e.g. "the user is now asking about a different topic"), use system messages.
+     */
     fun realtimeConversationItemSystemMessage(): Optional<RealtimeConversationItemSystemMessage> =
         Optional.ofNullable(realtimeConversationItemSystemMessage)
 
@@ -95,7 +101,13 @@ private constructor(
 
     fun isMcpApprovalRequest(): Boolean = mcpApprovalRequest != null
 
-    /** A system message item in a Realtime conversation. */
+    /**
+     * A system message in a Realtime conversation can be used to provide additional context or
+     * instructions to the model. This is similar but distinct from the instruction prompt provided
+     * at the start of a conversation, as system messages can be added at any point in the
+     * conversation. For major changes to the conversation's behavior, use instructions, but for
+     * smaller updates (e.g. "the user is now asking about a different topic"), use system messages.
+     */
     fun asRealtimeConversationItemSystemMessage(): RealtimeConversationItemSystemMessage =
         realtimeConversationItemSystemMessage.getOrThrow("realtimeConversationItemSystemMessage")
 
@@ -325,7 +337,14 @@ private constructor(
 
     companion object {
 
-        /** A system message item in a Realtime conversation. */
+        /**
+         * A system message in a Realtime conversation can be used to provide additional context or
+         * instructions to the model. This is similar but distinct from the instruction prompt
+         * provided at the start of a conversation, as system messages can be added at any point in
+         * the conversation. For major changes to the conversation's behavior, use instructions, but
+         * for smaller updates (e.g. "the user is now asking about a different topic"), use system
+         * messages.
+         */
         @JvmStatic
         fun ofRealtimeConversationItemSystemMessage(
             realtimeConversationItemSystemMessage: RealtimeConversationItemSystemMessage
@@ -389,7 +408,14 @@ private constructor(
      */
     interface Visitor<out T> {
 
-        /** A system message item in a Realtime conversation. */
+        /**
+         * A system message in a Realtime conversation can be used to provide additional context or
+         * instructions to the model. This is similar but distinct from the instruction prompt
+         * provided at the start of a conversation, as system messages can be added at any point in
+         * the conversation. For major changes to the conversation's behavior, use instructions, but
+         * for smaller updates (e.g. "the user is now asking about a different topic"), use system
+         * messages.
+         */
         fun visitRealtimeConversationItemSystemMessage(
             realtimeConversationItemSystemMessage: RealtimeConversationItemSystemMessage
         ): T

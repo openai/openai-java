@@ -4,6 +4,10 @@ package com.openai.models.realtime
 
 import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
 import com.openai.core.jsonMapper
+import com.openai.models.realtime.clientsecrets.RealtimeTranscriptionSessionClientSecret
+import com.openai.models.realtime.clientsecrets.RealtimeTranscriptionSessionCreateResponse
+import com.openai.models.realtime.clientsecrets.RealtimeTranscriptionSessionInputAudioTranscription
+import com.openai.models.realtime.clientsecrets.RealtimeTranscriptionSessionTurnDetection
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
@@ -15,61 +19,33 @@ internal class TranscriptionSessionUpdatedEventTest {
             TranscriptionSessionUpdatedEvent.builder()
                 .eventId("event_id")
                 .session(
-                    TranscriptionSessionUpdatedEvent.Session.builder()
-                        .id("id")
-                        .audio(
-                            TranscriptionSessionUpdatedEvent.Session.Audio.builder()
-                                .input(
-                                    TranscriptionSessionUpdatedEvent.Session.Audio.Input.builder()
-                                        .format("format")
-                                        .noiseReduction(
-                                            TranscriptionSessionUpdatedEvent.Session.Audio.Input
-                                                .NoiseReduction
-                                                .builder()
-                                                .type(
-                                                    TranscriptionSessionUpdatedEvent.Session.Audio
-                                                        .Input
-                                                        .NoiseReduction
-                                                        .Type
-                                                        .NEAR_FIELD
-                                                )
-                                                .build()
-                                        )
-                                        .transcription(
-                                            TranscriptionSessionUpdatedEvent.Session.Audio.Input
-                                                .Transcription
-                                                .builder()
-                                                .language("language")
-                                                .model(
-                                                    TranscriptionSessionUpdatedEvent.Session.Audio
-                                                        .Input
-                                                        .Transcription
-                                                        .Model
-                                                        .GPT_4O_TRANSCRIBE
-                                                )
-                                                .prompt("prompt")
-                                                .build()
-                                        )
-                                        .turnDetection(
-                                            TranscriptionSessionUpdatedEvent.Session.Audio.Input
-                                                .TurnDetection
-                                                .builder()
-                                                .prefixPaddingMs(0L)
-                                                .silenceDurationMs(0L)
-                                                .threshold(0.0)
-                                                .type("type")
-                                                .build()
-                                        )
-                                        .build()
-                                )
+                    RealtimeTranscriptionSessionCreateResponse.builder()
+                        .clientSecret(
+                            RealtimeTranscriptionSessionClientSecret.builder()
+                                .expiresAt(0L)
+                                .value("value")
                                 .build()
                         )
-                        .expiresAt(0L)
-                        .addInclude(
-                            TranscriptionSessionUpdatedEvent.Session.Include
-                                .ITEM_INPUT_AUDIO_TRANSCRIPTION_LOGPROBS
+                        .inputAudioFormat("input_audio_format")
+                        .inputAudioTranscription(
+                            RealtimeTranscriptionSessionInputAudioTranscription.builder()
+                                .language("language")
+                                .model(
+                                    RealtimeTranscriptionSessionInputAudioTranscription.Model
+                                        .WHISPER_1
+                                )
+                                .prompt("prompt")
+                                .build()
                         )
-                        .object_("object")
+                        .addModality(RealtimeTranscriptionSessionCreateResponse.Modality.TEXT)
+                        .turnDetection(
+                            RealtimeTranscriptionSessionTurnDetection.builder()
+                                .prefixPaddingMs(0L)
+                                .silenceDurationMs(0L)
+                                .threshold(0.0)
+                                .type("type")
+                                .build()
+                        )
                         .build()
                 )
                 .build()
@@ -77,59 +53,32 @@ internal class TranscriptionSessionUpdatedEventTest {
         assertThat(transcriptionSessionUpdatedEvent.eventId()).isEqualTo("event_id")
         assertThat(transcriptionSessionUpdatedEvent.session())
             .isEqualTo(
-                TranscriptionSessionUpdatedEvent.Session.builder()
-                    .id("id")
-                    .audio(
-                        TranscriptionSessionUpdatedEvent.Session.Audio.builder()
-                            .input(
-                                TranscriptionSessionUpdatedEvent.Session.Audio.Input.builder()
-                                    .format("format")
-                                    .noiseReduction(
-                                        TranscriptionSessionUpdatedEvent.Session.Audio.Input
-                                            .NoiseReduction
-                                            .builder()
-                                            .type(
-                                                TranscriptionSessionUpdatedEvent.Session.Audio.Input
-                                                    .NoiseReduction
-                                                    .Type
-                                                    .NEAR_FIELD
-                                            )
-                                            .build()
-                                    )
-                                    .transcription(
-                                        TranscriptionSessionUpdatedEvent.Session.Audio.Input
-                                            .Transcription
-                                            .builder()
-                                            .language("language")
-                                            .model(
-                                                TranscriptionSessionUpdatedEvent.Session.Audio.Input
-                                                    .Transcription
-                                                    .Model
-                                                    .GPT_4O_TRANSCRIBE
-                                            )
-                                            .prompt("prompt")
-                                            .build()
-                                    )
-                                    .turnDetection(
-                                        TranscriptionSessionUpdatedEvent.Session.Audio.Input
-                                            .TurnDetection
-                                            .builder()
-                                            .prefixPaddingMs(0L)
-                                            .silenceDurationMs(0L)
-                                            .threshold(0.0)
-                                            .type("type")
-                                            .build()
-                                    )
-                                    .build()
-                            )
+                RealtimeTranscriptionSessionCreateResponse.builder()
+                    .clientSecret(
+                        RealtimeTranscriptionSessionClientSecret.builder()
+                            .expiresAt(0L)
+                            .value("value")
                             .build()
                     )
-                    .expiresAt(0L)
-                    .addInclude(
-                        TranscriptionSessionUpdatedEvent.Session.Include
-                            .ITEM_INPUT_AUDIO_TRANSCRIPTION_LOGPROBS
+                    .inputAudioFormat("input_audio_format")
+                    .inputAudioTranscription(
+                        RealtimeTranscriptionSessionInputAudioTranscription.builder()
+                            .language("language")
+                            .model(
+                                RealtimeTranscriptionSessionInputAudioTranscription.Model.WHISPER_1
+                            )
+                            .prompt("prompt")
+                            .build()
                     )
-                    .object_("object")
+                    .addModality(RealtimeTranscriptionSessionCreateResponse.Modality.TEXT)
+                    .turnDetection(
+                        RealtimeTranscriptionSessionTurnDetection.builder()
+                            .prefixPaddingMs(0L)
+                            .silenceDurationMs(0L)
+                            .threshold(0.0)
+                            .type("type")
+                            .build()
+                    )
                     .build()
             )
     }
@@ -141,61 +90,33 @@ internal class TranscriptionSessionUpdatedEventTest {
             TranscriptionSessionUpdatedEvent.builder()
                 .eventId("event_id")
                 .session(
-                    TranscriptionSessionUpdatedEvent.Session.builder()
-                        .id("id")
-                        .audio(
-                            TranscriptionSessionUpdatedEvent.Session.Audio.builder()
-                                .input(
-                                    TranscriptionSessionUpdatedEvent.Session.Audio.Input.builder()
-                                        .format("format")
-                                        .noiseReduction(
-                                            TranscriptionSessionUpdatedEvent.Session.Audio.Input
-                                                .NoiseReduction
-                                                .builder()
-                                                .type(
-                                                    TranscriptionSessionUpdatedEvent.Session.Audio
-                                                        .Input
-                                                        .NoiseReduction
-                                                        .Type
-                                                        .NEAR_FIELD
-                                                )
-                                                .build()
-                                        )
-                                        .transcription(
-                                            TranscriptionSessionUpdatedEvent.Session.Audio.Input
-                                                .Transcription
-                                                .builder()
-                                                .language("language")
-                                                .model(
-                                                    TranscriptionSessionUpdatedEvent.Session.Audio
-                                                        .Input
-                                                        .Transcription
-                                                        .Model
-                                                        .GPT_4O_TRANSCRIBE
-                                                )
-                                                .prompt("prompt")
-                                                .build()
-                                        )
-                                        .turnDetection(
-                                            TranscriptionSessionUpdatedEvent.Session.Audio.Input
-                                                .TurnDetection
-                                                .builder()
-                                                .prefixPaddingMs(0L)
-                                                .silenceDurationMs(0L)
-                                                .threshold(0.0)
-                                                .type("type")
-                                                .build()
-                                        )
-                                        .build()
-                                )
+                    RealtimeTranscriptionSessionCreateResponse.builder()
+                        .clientSecret(
+                            RealtimeTranscriptionSessionClientSecret.builder()
+                                .expiresAt(0L)
+                                .value("value")
                                 .build()
                         )
-                        .expiresAt(0L)
-                        .addInclude(
-                            TranscriptionSessionUpdatedEvent.Session.Include
-                                .ITEM_INPUT_AUDIO_TRANSCRIPTION_LOGPROBS
+                        .inputAudioFormat("input_audio_format")
+                        .inputAudioTranscription(
+                            RealtimeTranscriptionSessionInputAudioTranscription.builder()
+                                .language("language")
+                                .model(
+                                    RealtimeTranscriptionSessionInputAudioTranscription.Model
+                                        .WHISPER_1
+                                )
+                                .prompt("prompt")
+                                .build()
                         )
-                        .object_("object")
+                        .addModality(RealtimeTranscriptionSessionCreateResponse.Modality.TEXT)
+                        .turnDetection(
+                            RealtimeTranscriptionSessionTurnDetection.builder()
+                                .prefixPaddingMs(0L)
+                                .silenceDurationMs(0L)
+                                .threshold(0.0)
+                                .type("type")
+                                .build()
+                        )
                         .build()
                 )
                 .build()

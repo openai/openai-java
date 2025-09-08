@@ -22,38 +22,52 @@ import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
 import com.openai.core.allMaxBy
 import com.openai.core.checkKnown
+import com.openai.core.checkRequired
 import com.openai.core.getOrThrow
 import com.openai.core.toImmutable
 import com.openai.errors.OpenAIInvalidDataException
+import com.openai.models.realtime.AudioTranscription
+import com.openai.models.realtime.Models
+import com.openai.models.realtime.NoiseReductionType
+import com.openai.models.realtime.RealtimeAudioFormats
+import com.openai.models.realtime.RealtimeTruncation
+import com.openai.models.realtime.RealtimeTruncationRetentionRatio
+import com.openai.models.responses.ResponsePrompt
+import com.openai.models.responses.ToolChoiceFunction
+import com.openai.models.responses.ToolChoiceMcp
+import com.openai.models.responses.ToolChoiceOptions
 import java.util.Collections
 import java.util.Objects
 import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
-/** A Realtime session configuration object. */
+/**
+ * A new Realtime session configuration, with an ephemeral key. Default TTL for keys is one minute.
+ */
 class RealtimeSessionCreateResponse
 private constructor(
-    private val id: JsonField<String>,
     private val audio: JsonField<Audio>,
-    private val expiresAt: JsonField<Long>,
+    private val clientSecret: JsonField<RealtimeSessionClientSecret>,
     private val include: JsonField<List<Include>>,
     private val instructions: JsonField<String>,
     private val maxOutputTokens: JsonField<MaxOutputTokens>,
-    private val model: JsonField<String>,
-    private val object_: JsonField<String>,
+    private val model: JsonField<Model>,
     private val outputModalities: JsonField<List<OutputModality>>,
-    private val toolChoice: JsonField<String>,
+    private val prompt: JsonField<ResponsePrompt>,
+    private val toolChoice: JsonField<ToolChoice>,
     private val tools: JsonField<List<Tool>>,
     private val tracing: JsonField<Tracing>,
-    private val turnDetection: JsonField<TurnDetection>,
+    private val truncation: JsonField<RealtimeTruncation>,
+    private val type: JsonField<Type>,
     private val additionalProperties: MutableMap<String, JsonValue>,
 ) {
 
     @JsonCreator
     private constructor(
-        @JsonProperty("id") @ExcludeMissing id: JsonField<String> = JsonMissing.of(),
         @JsonProperty("audio") @ExcludeMissing audio: JsonField<Audio> = JsonMissing.of(),
-        @JsonProperty("expires_at") @ExcludeMissing expiresAt: JsonField<Long> = JsonMissing.of(),
+        @JsonProperty("client_secret")
+        @ExcludeMissing
+        clientSecret: JsonField<RealtimeSessionClientSecret> = JsonMissing.of(),
         @JsonProperty("include")
         @ExcludeMissing
         include: JsonField<List<Include>> = JsonMissing.of(),
@@ -63,46 +77,41 @@ private constructor(
         @JsonProperty("max_output_tokens")
         @ExcludeMissing
         maxOutputTokens: JsonField<MaxOutputTokens> = JsonMissing.of(),
-        @JsonProperty("model") @ExcludeMissing model: JsonField<String> = JsonMissing.of(),
-        @JsonProperty("object") @ExcludeMissing object_: JsonField<String> = JsonMissing.of(),
+        @JsonProperty("model") @ExcludeMissing model: JsonField<Model> = JsonMissing.of(),
         @JsonProperty("output_modalities")
         @ExcludeMissing
         outputModalities: JsonField<List<OutputModality>> = JsonMissing.of(),
+        @JsonProperty("prompt")
+        @ExcludeMissing
+        prompt: JsonField<ResponsePrompt> = JsonMissing.of(),
         @JsonProperty("tool_choice")
         @ExcludeMissing
-        toolChoice: JsonField<String> = JsonMissing.of(),
+        toolChoice: JsonField<ToolChoice> = JsonMissing.of(),
         @JsonProperty("tools") @ExcludeMissing tools: JsonField<List<Tool>> = JsonMissing.of(),
         @JsonProperty("tracing") @ExcludeMissing tracing: JsonField<Tracing> = JsonMissing.of(),
-        @JsonProperty("turn_detection")
+        @JsonProperty("truncation")
         @ExcludeMissing
-        turnDetection: JsonField<TurnDetection> = JsonMissing.of(),
+        truncation: JsonField<RealtimeTruncation> = JsonMissing.of(),
+        @JsonProperty("type") @ExcludeMissing type: JsonField<Type> = JsonMissing.of(),
     ) : this(
-        id,
         audio,
-        expiresAt,
+        clientSecret,
         include,
         instructions,
         maxOutputTokens,
         model,
-        object_,
         outputModalities,
+        prompt,
         toolChoice,
         tools,
         tracing,
-        turnDetection,
+        truncation,
+        type,
         mutableMapOf(),
     )
 
     /**
-     * Unique identifier for the session that looks like `sess_1234567890abcdef`.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
-     */
-    fun id(): Optional<String> = id.getOptional("id")
-
-    /**
-     * Configuration for input and output audio for the session.
+     * Configuration for input and output audio.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -110,16 +119,18 @@ private constructor(
     fun audio(): Optional<Audio> = audio.getOptional("audio")
 
     /**
-     * Expiration timestamp for the session, in seconds since epoch.
+     * Ephemeral key returned by the API.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
      */
-    fun expiresAt(): Optional<Long> = expiresAt.getOptional("expires_at")
+    fun clientSecret(): Optional<RealtimeSessionClientSecret> =
+        clientSecret.getOptional("client_secret")
 
     /**
      * Additional fields to include in server outputs.
-     * - `item.input_audio_transcription.logprobs`: Include logprobs for input audio transcription.
+     *
+     * `item.input_audio_transcription.logprobs`: Include logprobs for input audio transcription.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -159,18 +170,13 @@ private constructor(
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
      */
-    fun model(): Optional<String> = model.getOptional("model")
+    fun model(): Optional<Model> = model.getOptional("model")
 
     /**
-     * The object type. Always `realtime.session`.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
-     */
-    fun object_(): Optional<String> = object_.getOptional("object")
-
-    /**
-     * The set of modalities the model can respond with. To disable audio, set this to ["text"].
+     * The set of modalities the model can respond with. It defaults to `["audio"]`, indicating that
+     * the model will respond with audio plus a transcript. `["text"]` can be used to make the model
+     * respond with text only. It is not possible to request both `text` and `audio` at the same
+     * time.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -179,15 +185,25 @@ private constructor(
         outputModalities.getOptional("output_modalities")
 
     /**
-     * How the model chooses tools. Options are `auto`, `none`, `required`, or specify a function.
+     * Reference to a prompt template and its variables.
+     * [Learn more](https://platform.openai.com/docs/guides/text?api-mode=responses#reusable-prompts).
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
      */
-    fun toolChoice(): Optional<String> = toolChoice.getOptional("tool_choice")
+    fun prompt(): Optional<ResponsePrompt> = prompt.getOptional("prompt")
 
     /**
-     * Tools (functions) available to the model.
+     * How the model chooses tools. Provide one of the string modes or force a specific function/MCP
+     * tool.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun toolChoice(): Optional<ToolChoice> = toolChoice.getOptional("tool_choice")
+
+    /**
+     * Tools available to the model.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -195,8 +211,9 @@ private constructor(
     fun tools(): Optional<List<Tool>> = tools.getOptional("tools")
 
     /**
-     * Configuration options for tracing. Set to null to disable tracing. Once tracing is enabled
-     * for a session, the configuration cannot be modified.
+     * Realtime API can write session traces to the [Traces Dashboard](/logs?api=traces). Set to
+     * null to disable tracing. Once tracing is enabled for a session, the configuration cannot be
+     * modified.
      *
      * `auto` will create a trace for the session with default values for the workflow name, group
      * id, and metadata.
@@ -207,21 +224,21 @@ private constructor(
     fun tracing(): Optional<Tracing> = tracing.getOptional("tracing")
 
     /**
-     * Configuration for turn detection. Can be set to `null` to turn off. Server VAD means that the
-     * model will detect the start and end of speech based on audio volume and respond at the end of
-     * user speech.
+     * Controls how the realtime conversation is truncated prior to model inference. The default is
+     * `auto`.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
      */
-    fun turnDetection(): Optional<TurnDetection> = turnDetection.getOptional("turn_detection")
+    fun truncation(): Optional<RealtimeTruncation> = truncation.getOptional("truncation")
 
     /**
-     * Returns the raw JSON value of [id].
+     * The type of session to create. Always `realtime` for the Realtime API.
      *
-     * Unlike [id], this method doesn't throw if the JSON field has an unexpected type.
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
      */
-    @JsonProperty("id") @ExcludeMissing fun _id(): JsonField<String> = id
+    fun type(): Optional<Type> = type.getOptional("type")
 
     /**
      * Returns the raw JSON value of [audio].
@@ -231,11 +248,13 @@ private constructor(
     @JsonProperty("audio") @ExcludeMissing fun _audio(): JsonField<Audio> = audio
 
     /**
-     * Returns the raw JSON value of [expiresAt].
+     * Returns the raw JSON value of [clientSecret].
      *
-     * Unlike [expiresAt], this method doesn't throw if the JSON field has an unexpected type.
+     * Unlike [clientSecret], this method doesn't throw if the JSON field has an unexpected type.
      */
-    @JsonProperty("expires_at") @ExcludeMissing fun _expiresAt(): JsonField<Long> = expiresAt
+    @JsonProperty("client_secret")
+    @ExcludeMissing
+    fun _clientSecret(): JsonField<RealtimeSessionClientSecret> = clientSecret
 
     /**
      * Returns the raw JSON value of [include].
@@ -267,14 +286,7 @@ private constructor(
      *
      * Unlike [model], this method doesn't throw if the JSON field has an unexpected type.
      */
-    @JsonProperty("model") @ExcludeMissing fun _model(): JsonField<String> = model
-
-    /**
-     * Returns the raw JSON value of [object_].
-     *
-     * Unlike [object_], this method doesn't throw if the JSON field has an unexpected type.
-     */
-    @JsonProperty("object") @ExcludeMissing fun _object_(): JsonField<String> = object_
+    @JsonProperty("model") @ExcludeMissing fun _model(): JsonField<Model> = model
 
     /**
      * Returns the raw JSON value of [outputModalities].
@@ -287,11 +299,20 @@ private constructor(
     fun _outputModalities(): JsonField<List<OutputModality>> = outputModalities
 
     /**
+     * Returns the raw JSON value of [prompt].
+     *
+     * Unlike [prompt], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    @JsonProperty("prompt") @ExcludeMissing fun _prompt(): JsonField<ResponsePrompt> = prompt
+
+    /**
      * Returns the raw JSON value of [toolChoice].
      *
      * Unlike [toolChoice], this method doesn't throw if the JSON field has an unexpected type.
      */
-    @JsonProperty("tool_choice") @ExcludeMissing fun _toolChoice(): JsonField<String> = toolChoice
+    @JsonProperty("tool_choice")
+    @ExcludeMissing
+    fun _toolChoice(): JsonField<ToolChoice> = toolChoice
 
     /**
      * Returns the raw JSON value of [tools].
@@ -308,13 +329,20 @@ private constructor(
     @JsonProperty("tracing") @ExcludeMissing fun _tracing(): JsonField<Tracing> = tracing
 
     /**
-     * Returns the raw JSON value of [turnDetection].
+     * Returns the raw JSON value of [truncation].
      *
-     * Unlike [turnDetection], this method doesn't throw if the JSON field has an unexpected type.
+     * Unlike [truncation], this method doesn't throw if the JSON field has an unexpected type.
      */
-    @JsonProperty("turn_detection")
+    @JsonProperty("truncation")
     @ExcludeMissing
-    fun _turnDetection(): JsonField<TurnDetection> = turnDetection
+    fun _truncation(): JsonField<RealtimeTruncation> = truncation
+
+    /**
+     * Returns the raw JSON value of [type].
+     *
+     * Unlike [type], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<Type> = type
 
     @JsonAnySetter
     private fun putAdditionalProperty(key: String, value: JsonValue) {
@@ -340,52 +368,41 @@ private constructor(
     /** A builder for [RealtimeSessionCreateResponse]. */
     class Builder internal constructor() {
 
-        private var id: JsonField<String> = JsonMissing.of()
         private var audio: JsonField<Audio> = JsonMissing.of()
-        private var expiresAt: JsonField<Long> = JsonMissing.of()
+        private var clientSecret: JsonField<RealtimeSessionClientSecret> = JsonMissing.of()
         private var include: JsonField<MutableList<Include>>? = null
         private var instructions: JsonField<String> = JsonMissing.of()
         private var maxOutputTokens: JsonField<MaxOutputTokens> = JsonMissing.of()
-        private var model: JsonField<String> = JsonMissing.of()
-        private var object_: JsonField<String> = JsonMissing.of()
+        private var model: JsonField<Model> = JsonMissing.of()
         private var outputModalities: JsonField<MutableList<OutputModality>>? = null
-        private var toolChoice: JsonField<String> = JsonMissing.of()
+        private var prompt: JsonField<ResponsePrompt> = JsonMissing.of()
+        private var toolChoice: JsonField<ToolChoice> = JsonMissing.of()
         private var tools: JsonField<MutableList<Tool>>? = null
         private var tracing: JsonField<Tracing> = JsonMissing.of()
-        private var turnDetection: JsonField<TurnDetection> = JsonMissing.of()
+        private var truncation: JsonField<RealtimeTruncation> = JsonMissing.of()
+        private var type: JsonField<Type> = JsonMissing.of()
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
         @JvmSynthetic
         internal fun from(realtimeSessionCreateResponse: RealtimeSessionCreateResponse) = apply {
-            id = realtimeSessionCreateResponse.id
             audio = realtimeSessionCreateResponse.audio
-            expiresAt = realtimeSessionCreateResponse.expiresAt
+            clientSecret = realtimeSessionCreateResponse.clientSecret
             include = realtimeSessionCreateResponse.include.map { it.toMutableList() }
             instructions = realtimeSessionCreateResponse.instructions
             maxOutputTokens = realtimeSessionCreateResponse.maxOutputTokens
             model = realtimeSessionCreateResponse.model
-            object_ = realtimeSessionCreateResponse.object_
             outputModalities =
                 realtimeSessionCreateResponse.outputModalities.map { it.toMutableList() }
+            prompt = realtimeSessionCreateResponse.prompt
             toolChoice = realtimeSessionCreateResponse.toolChoice
             tools = realtimeSessionCreateResponse.tools.map { it.toMutableList() }
             tracing = realtimeSessionCreateResponse.tracing
-            turnDetection = realtimeSessionCreateResponse.turnDetection
+            truncation = realtimeSessionCreateResponse.truncation
+            type = realtimeSessionCreateResponse.type
             additionalProperties = realtimeSessionCreateResponse.additionalProperties.toMutableMap()
         }
 
-        /** Unique identifier for the session that looks like `sess_1234567890abcdef`. */
-        fun id(id: String) = id(JsonField.of(id))
-
-        /**
-         * Sets [Builder.id] to an arbitrary JSON value.
-         *
-         * You should usually call [Builder.id] with a well-typed [String] value instead. This
-         * method is primarily for setting the field to an undocumented or not yet supported value.
-         */
-        fun id(id: JsonField<String>) = apply { this.id = id }
-
-        /** Configuration for input and output audio for the session. */
+        /** Configuration for input and output audio. */
         fun audio(audio: Audio) = audio(JsonField.of(audio))
 
         /**
@@ -396,21 +413,26 @@ private constructor(
          */
         fun audio(audio: JsonField<Audio>) = apply { this.audio = audio }
 
-        /** Expiration timestamp for the session, in seconds since epoch. */
-        fun expiresAt(expiresAt: Long) = expiresAt(JsonField.of(expiresAt))
+        /** Ephemeral key returned by the API. */
+        fun clientSecret(clientSecret: RealtimeSessionClientSecret) =
+            clientSecret(JsonField.of(clientSecret))
 
         /**
-         * Sets [Builder.expiresAt] to an arbitrary JSON value.
+         * Sets [Builder.clientSecret] to an arbitrary JSON value.
          *
-         * You should usually call [Builder.expiresAt] with a well-typed [Long] value instead. This
-         * method is primarily for setting the field to an undocumented or not yet supported value.
+         * You should usually call [Builder.clientSecret] with a well-typed
+         * [RealtimeSessionClientSecret] value instead. This method is primarily for setting the
+         * field to an undocumented or not yet supported value.
          */
-        fun expiresAt(expiresAt: JsonField<Long>) = apply { this.expiresAt = expiresAt }
+        fun clientSecret(clientSecret: JsonField<RealtimeSessionClientSecret>) = apply {
+            this.clientSecret = clientSecret
+        }
 
         /**
          * Additional fields to include in server outputs.
-         * - `item.input_audio_transcription.logprobs`: Include logprobs for input audio
-         *   transcription.
+         *
+         * `item.input_audio_transcription.logprobs`: Include logprobs for input audio
+         * transcription.
          */
         fun include(include: List<Include>) = include(JsonField.of(include))
 
@@ -488,29 +510,29 @@ private constructor(
         fun maxOutputTokensInf() = maxOutputTokens(MaxOutputTokens.ofInf())
 
         /** The Realtime model used for this session. */
-        fun model(model: String) = model(JsonField.of(model))
+        fun model(model: Model) = model(JsonField.of(model))
 
         /**
          * Sets [Builder.model] to an arbitrary JSON value.
          *
-         * You should usually call [Builder.model] with a well-typed [String] value instead. This
+         * You should usually call [Builder.model] with a well-typed [Model] value instead. This
          * method is primarily for setting the field to an undocumented or not yet supported value.
          */
-        fun model(model: JsonField<String>) = apply { this.model = model }
-
-        /** The object type. Always `realtime.session`. */
-        fun object_(object_: String) = object_(JsonField.of(object_))
+        fun model(model: JsonField<Model>) = apply { this.model = model }
 
         /**
-         * Sets [Builder.object_] to an arbitrary JSON value.
+         * Sets [model] to an arbitrary [String].
          *
-         * You should usually call [Builder.object_] with a well-typed [String] value instead. This
-         * method is primarily for setting the field to an undocumented or not yet supported value.
+         * You should usually call [model] with a well-typed [Model] constant instead. This method
+         * is primarily for setting the field to an undocumented or not yet supported value.
          */
-        fun object_(object_: JsonField<String>) = apply { this.object_ = object_ }
+        fun model(value: String) = model(Model.of(value))
 
         /**
-         * The set of modalities the model can respond with. To disable audio, set this to ["text"].
+         * The set of modalities the model can respond with. It defaults to `["audio"]`, indicating
+         * that the model will respond with audio plus a transcript. `["text"]` can be used to make
+         * the model respond with text only. It is not possible to request both `text` and `audio`
+         * at the same time.
          */
         fun outputModalities(outputModalities: List<OutputModality>) =
             outputModalities(JsonField.of(outputModalities))
@@ -539,21 +561,48 @@ private constructor(
         }
 
         /**
-         * How the model chooses tools. Options are `auto`, `none`, `required`, or specify a
-         * function.
+         * Reference to a prompt template and its variables.
+         * [Learn more](https://platform.openai.com/docs/guides/text?api-mode=responses#reusable-prompts).
          */
-        fun toolChoice(toolChoice: String) = toolChoice(JsonField.of(toolChoice))
+        fun prompt(prompt: ResponsePrompt?) = prompt(JsonField.ofNullable(prompt))
+
+        /** Alias for calling [Builder.prompt] with `prompt.orElse(null)`. */
+        fun prompt(prompt: Optional<ResponsePrompt>) = prompt(prompt.getOrNull())
+
+        /**
+         * Sets [Builder.prompt] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.prompt] with a well-typed [ResponsePrompt] value
+         * instead. This method is primarily for setting the field to an undocumented or not yet
+         * supported value.
+         */
+        fun prompt(prompt: JsonField<ResponsePrompt>) = apply { this.prompt = prompt }
+
+        /**
+         * How the model chooses tools. Provide one of the string modes or force a specific
+         * function/MCP tool.
+         */
+        fun toolChoice(toolChoice: ToolChoice) = toolChoice(JsonField.of(toolChoice))
 
         /**
          * Sets [Builder.toolChoice] to an arbitrary JSON value.
          *
-         * You should usually call [Builder.toolChoice] with a well-typed [String] value instead.
-         * This method is primarily for setting the field to an undocumented or not yet supported
-         * value.
+         * You should usually call [Builder.toolChoice] with a well-typed [ToolChoice] value
+         * instead. This method is primarily for setting the field to an undocumented or not yet
+         * supported value.
          */
-        fun toolChoice(toolChoice: JsonField<String>) = apply { this.toolChoice = toolChoice }
+        fun toolChoice(toolChoice: JsonField<ToolChoice>) = apply { this.toolChoice = toolChoice }
 
-        /** Tools (functions) available to the model. */
+        /** Alias for calling [toolChoice] with `ToolChoice.ofOptions(options)`. */
+        fun toolChoice(options: ToolChoiceOptions) = toolChoice(ToolChoice.ofOptions(options))
+
+        /** Alias for calling [toolChoice] with `ToolChoice.ofFunction(function)`. */
+        fun toolChoice(function: ToolChoiceFunction) = toolChoice(ToolChoice.ofFunction(function))
+
+        /** Alias for calling [toolChoice] with `ToolChoice.ofMcp(mcp)`. */
+        fun toolChoice(mcp: ToolChoiceMcp) = toolChoice(ToolChoice.ofMcp(mcp))
+
+        /** Tools available to the model. */
         fun tools(tools: List<Tool>) = tools(JsonField.of(tools))
 
         /**
@@ -577,14 +626,24 @@ private constructor(
                 (tools ?: JsonField.of(mutableListOf())).also { checkKnown("tools", it).add(tool) }
         }
 
+        /** Alias for calling [addTool] with `Tool.ofModels(models)`. */
+        fun addTool(models: Models) = addTool(Tool.ofModels(models))
+
+        /** Alias for calling [addTool] with `Tool.ofMcp(mcp)`. */
+        fun addTool(mcp: Tool.McpTool) = addTool(Tool.ofMcp(mcp))
+
         /**
-         * Configuration options for tracing. Set to null to disable tracing. Once tracing is
-         * enabled for a session, the configuration cannot be modified.
+         * Realtime API can write session traces to the [Traces Dashboard](/logs?api=traces). Set to
+         * null to disable tracing. Once tracing is enabled for a session, the configuration cannot
+         * be modified.
          *
          * `auto` will create a trace for the session with default values for the workflow name,
          * group id, and metadata.
          */
-        fun tracing(tracing: Tracing) = tracing(JsonField.of(tracing))
+        fun tracing(tracing: Tracing?) = tracing(JsonField.ofNullable(tracing))
+
+        /** Alias for calling [Builder.tracing] with `tracing.orElse(null)`. */
+        fun tracing(tracing: Optional<Tracing>) = tracing(tracing.getOrNull())
 
         /**
          * Sets [Builder.tracing] to an arbitrary JSON value.
@@ -602,22 +661,43 @@ private constructor(
             tracing(Tracing.ofConfiguration(configuration))
 
         /**
-         * Configuration for turn detection. Can be set to `null` to turn off. Server VAD means that
-         * the model will detect the start and end of speech based on audio volume and respond at
-         * the end of user speech.
+         * Controls how the realtime conversation is truncated prior to model inference. The default
+         * is `auto`.
          */
-        fun turnDetection(turnDetection: TurnDetection) = turnDetection(JsonField.of(turnDetection))
+        fun truncation(truncation: RealtimeTruncation) = truncation(JsonField.of(truncation))
 
         /**
-         * Sets [Builder.turnDetection] to an arbitrary JSON value.
+         * Sets [Builder.truncation] to an arbitrary JSON value.
          *
-         * You should usually call [Builder.turnDetection] with a well-typed [TurnDetection] value
+         * You should usually call [Builder.truncation] with a well-typed [RealtimeTruncation] value
          * instead. This method is primarily for setting the field to an undocumented or not yet
          * supported value.
          */
-        fun turnDetection(turnDetection: JsonField<TurnDetection>) = apply {
-            this.turnDetection = turnDetection
+        fun truncation(truncation: JsonField<RealtimeTruncation>) = apply {
+            this.truncation = truncation
         }
+
+        /** Alias for calling [truncation] with `RealtimeTruncation.ofStrategy(strategy)`. */
+        fun truncation(strategy: RealtimeTruncation.RealtimeTruncationStrategy) =
+            truncation(RealtimeTruncation.ofStrategy(strategy))
+
+        /**
+         * Alias for calling [truncation] with
+         * `RealtimeTruncation.ofRetentionRatio(retentionRatio)`.
+         */
+        fun truncation(retentionRatio: RealtimeTruncationRetentionRatio) =
+            truncation(RealtimeTruncation.ofRetentionRatio(retentionRatio))
+
+        /** The type of session to create. Always `realtime` for the Realtime API. */
+        fun type(type: Type) = type(JsonField.of(type))
+
+        /**
+         * Sets [Builder.type] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.type] with a well-typed [Type] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
+        fun type(type: JsonField<Type>) = apply { this.type = type }
 
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
             this.additionalProperties.clear()
@@ -645,19 +725,19 @@ private constructor(
          */
         fun build(): RealtimeSessionCreateResponse =
             RealtimeSessionCreateResponse(
-                id,
                 audio,
-                expiresAt,
+                clientSecret,
                 (include ?: JsonMissing.of()).map { it.toImmutable() },
                 instructions,
                 maxOutputTokens,
                 model,
-                object_,
                 (outputModalities ?: JsonMissing.of()).map { it.toImmutable() },
+                prompt,
                 toolChoice,
                 (tools ?: JsonMissing.of()).map { it.toImmutable() },
                 tracing,
-                turnDetection,
+                truncation,
+                type,
                 additionalProperties.toMutableMap(),
             )
     }
@@ -669,19 +749,19 @@ private constructor(
             return@apply
         }
 
-        id()
         audio().ifPresent { it.validate() }
-        expiresAt()
+        clientSecret().ifPresent { it.validate() }
         include().ifPresent { it.forEach { it.validate() } }
         instructions()
         maxOutputTokens().ifPresent { it.validate() }
         model()
-        object_()
         outputModalities().ifPresent { it.forEach { it.validate() } }
-        toolChoice()
+        prompt().ifPresent { it.validate() }
+        toolChoice().ifPresent { it.validate() }
         tools().ifPresent { it.forEach { it.validate() } }
         tracing().ifPresent { it.validate() }
-        turnDetection().ifPresent { it.validate() }
+        truncation().ifPresent { it.validate() }
+        type().ifPresent { it.validate() }
         validated = true
     }
 
@@ -700,21 +780,21 @@ private constructor(
      */
     @JvmSynthetic
     internal fun validity(): Int =
-        (if (id.asKnown().isPresent) 1 else 0) +
-            (audio.asKnown().getOrNull()?.validity() ?: 0) +
-            (if (expiresAt.asKnown().isPresent) 1 else 0) +
+        (audio.asKnown().getOrNull()?.validity() ?: 0) +
+            (clientSecret.asKnown().getOrNull()?.validity() ?: 0) +
             (include.asKnown().getOrNull()?.sumOf { it.validity().toInt() } ?: 0) +
             (if (instructions.asKnown().isPresent) 1 else 0) +
             (maxOutputTokens.asKnown().getOrNull()?.validity() ?: 0) +
             (if (model.asKnown().isPresent) 1 else 0) +
-            (if (object_.asKnown().isPresent) 1 else 0) +
             (outputModalities.asKnown().getOrNull()?.sumOf { it.validity().toInt() } ?: 0) +
-            (if (toolChoice.asKnown().isPresent) 1 else 0) +
+            (prompt.asKnown().getOrNull()?.validity() ?: 0) +
+            (toolChoice.asKnown().getOrNull()?.validity() ?: 0) +
             (tools.asKnown().getOrNull()?.sumOf { it.validity().toInt() } ?: 0) +
             (tracing.asKnown().getOrNull()?.validity() ?: 0) +
-            (turnDetection.asKnown().getOrNull()?.validity() ?: 0)
+            (truncation.asKnown().getOrNull()?.validity() ?: 0) +
+            (type.asKnown().getOrNull()?.validity() ?: 0)
 
-    /** Configuration for input and output audio for the session. */
+    /** Configuration for input and output audio. */
     class Audio
     private constructor(
         private val input: JsonField<Input>,
@@ -868,9 +948,9 @@ private constructor(
 
         class Input
         private constructor(
-            private val format: JsonField<String>,
+            private val format: JsonField<RealtimeAudioFormats>,
             private val noiseReduction: JsonField<NoiseReduction>,
-            private val transcription: JsonField<Transcription>,
+            private val transcription: JsonField<AudioTranscription>,
             private val turnDetection: JsonField<TurnDetection>,
             private val additionalProperties: MutableMap<String, JsonValue>,
         ) {
@@ -879,28 +959,32 @@ private constructor(
             private constructor(
                 @JsonProperty("format")
                 @ExcludeMissing
-                format: JsonField<String> = JsonMissing.of(),
+                format: JsonField<RealtimeAudioFormats> = JsonMissing.of(),
                 @JsonProperty("noise_reduction")
                 @ExcludeMissing
                 noiseReduction: JsonField<NoiseReduction> = JsonMissing.of(),
                 @JsonProperty("transcription")
                 @ExcludeMissing
-                transcription: JsonField<Transcription> = JsonMissing.of(),
+                transcription: JsonField<AudioTranscription> = JsonMissing.of(),
                 @JsonProperty("turn_detection")
                 @ExcludeMissing
                 turnDetection: JsonField<TurnDetection> = JsonMissing.of(),
             ) : this(format, noiseReduction, transcription, turnDetection, mutableMapOf())
 
             /**
-             * The format of input audio. Options are `pcm16`, `g711_ulaw`, or `g711_alaw`.
+             * The format of the input audio.
              *
              * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if
              *   the server responded with an unexpected value).
              */
-            fun format(): Optional<String> = format.getOptional("format")
+            fun format(): Optional<RealtimeAudioFormats> = format.getOptional("format")
 
             /**
-             * Configuration for input audio noise reduction.
+             * Configuration for input audio noise reduction. This can be set to `null` to turn off.
+             * Noise reduction filters audio added to the input audio buffer before it is sent to
+             * VAD and the model. Filtering the audio can improve VAD and turn detection accuracy
+             * (reducing false positives) and model performance by improving perception of the input
+             * audio.
              *
              * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if
              *   the server responded with an unexpected value).
@@ -909,16 +993,30 @@ private constructor(
                 noiseReduction.getOptional("noise_reduction")
 
             /**
-             * Configuration for input audio transcription.
+             * Configuration for input audio transcription, defaults to off and can be set to `null`
+             * to turn off once on. Input audio transcription is not native to the model, since the
+             * model consumes audio directly. Transcription runs asynchronously through
+             * [the /audio/transcriptions endpoint](https://platform.openai.com/docs/api-reference/audio/createTranscription)
+             * and should be treated as guidance of input audio content rather than precisely what
+             * the model heard. The client can optionally set the language and prompt for
+             * transcription, these offer additional guidance to the transcription service.
              *
              * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if
              *   the server responded with an unexpected value).
              */
-            fun transcription(): Optional<Transcription> =
+            fun transcription(): Optional<AudioTranscription> =
                 transcription.getOptional("transcription")
 
             /**
-             * Configuration for turn detection.
+             * Configuration for turn detection, ether Server VAD or Semantic VAD. This can be set
+             * to `null` to turn off, in which case the client must manually trigger model response.
+             * Server VAD means that the model will detect the start and end of speech based on
+             * audio volume and respond at the end of user speech. Semantic VAD is more advanced and
+             * uses a turn detection model (in conjunction with VAD) to semantically estimate
+             * whether the user has finished speaking, then dynamically sets a timeout based on this
+             * probability. For example, if user audio trails off with "uhhm", the model will score
+             * a low probability of turn end and wait longer for the user to continue speaking. This
+             * can be useful for more natural conversations, but may have a higher latency.
              *
              * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if
              *   the server responded with an unexpected value).
@@ -931,7 +1029,9 @@ private constructor(
              *
              * Unlike [format], this method doesn't throw if the JSON field has an unexpected type.
              */
-            @JsonProperty("format") @ExcludeMissing fun _format(): JsonField<String> = format
+            @JsonProperty("format")
+            @ExcludeMissing
+            fun _format(): JsonField<RealtimeAudioFormats> = format
 
             /**
              * Returns the raw JSON value of [noiseReduction].
@@ -951,7 +1051,7 @@ private constructor(
              */
             @JsonProperty("transcription")
             @ExcludeMissing
-            fun _transcription(): JsonField<Transcription> = transcription
+            fun _transcription(): JsonField<AudioTranscription> = transcription
 
             /**
              * Returns the raw JSON value of [turnDetection].
@@ -984,9 +1084,9 @@ private constructor(
             /** A builder for [Input]. */
             class Builder internal constructor() {
 
-                private var format: JsonField<String> = JsonMissing.of()
+                private var format: JsonField<RealtimeAudioFormats> = JsonMissing.of()
                 private var noiseReduction: JsonField<NoiseReduction> = JsonMissing.of()
-                private var transcription: JsonField<Transcription> = JsonMissing.of()
+                private var transcription: JsonField<AudioTranscription> = JsonMissing.of()
                 private var turnDetection: JsonField<TurnDetection> = JsonMissing.of()
                 private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
@@ -999,19 +1099,41 @@ private constructor(
                     additionalProperties = input.additionalProperties.toMutableMap()
                 }
 
-                /** The format of input audio. Options are `pcm16`, `g711_ulaw`, or `g711_alaw`. */
-                fun format(format: String) = format(JsonField.of(format))
+                /** The format of the input audio. */
+                fun format(format: RealtimeAudioFormats) = format(JsonField.of(format))
 
                 /**
                  * Sets [Builder.format] to an arbitrary JSON value.
                  *
-                 * You should usually call [Builder.format] with a well-typed [String] value
-                 * instead. This method is primarily for setting the field to an undocumented or not
-                 * yet supported value.
+                 * You should usually call [Builder.format] with a well-typed [RealtimeAudioFormats]
+                 * value instead. This method is primarily for setting the field to an undocumented
+                 * or not yet supported value.
                  */
-                fun format(format: JsonField<String>) = apply { this.format = format }
+                fun format(format: JsonField<RealtimeAudioFormats>) = apply { this.format = format }
 
-                /** Configuration for input audio noise reduction. */
+                /** Alias for calling [format] with `RealtimeAudioFormats.ofAudioPcm(audioPcm)`. */
+                fun format(audioPcm: RealtimeAudioFormats.AudioPcm) =
+                    format(RealtimeAudioFormats.ofAudioPcm(audioPcm))
+
+                /**
+                 * Alias for calling [format] with `RealtimeAudioFormats.ofAudioPcmu(audioPcmu)`.
+                 */
+                fun format(audioPcmu: RealtimeAudioFormats.AudioPcmu) =
+                    format(RealtimeAudioFormats.ofAudioPcmu(audioPcmu))
+
+                /**
+                 * Alias for calling [format] with `RealtimeAudioFormats.ofAudioPcma(audioPcma)`.
+                 */
+                fun format(audioPcma: RealtimeAudioFormats.AudioPcma) =
+                    format(RealtimeAudioFormats.ofAudioPcma(audioPcma))
+
+                /**
+                 * Configuration for input audio noise reduction. This can be set to `null` to turn
+                 * off. Noise reduction filters audio added to the input audio buffer before it is
+                 * sent to VAD and the model. Filtering the audio can improve VAD and turn detection
+                 * accuracy (reducing false positives) and model performance by improving perception
+                 * of the input audio.
+                 */
                 fun noiseReduction(noiseReduction: NoiseReduction) =
                     noiseReduction(JsonField.of(noiseReduction))
 
@@ -1026,22 +1148,42 @@ private constructor(
                     this.noiseReduction = noiseReduction
                 }
 
-                /** Configuration for input audio transcription. */
-                fun transcription(transcription: Transcription) =
+                /**
+                 * Configuration for input audio transcription, defaults to off and can be set to
+                 * `null` to turn off once on. Input audio transcription is not native to the model,
+                 * since the model consumes audio directly. Transcription runs asynchronously
+                 * through
+                 * [the /audio/transcriptions endpoint](https://platform.openai.com/docs/api-reference/audio/createTranscription)
+                 * and should be treated as guidance of input audio content rather than precisely
+                 * what the model heard. The client can optionally set the language and prompt for
+                 * transcription, these offer additional guidance to the transcription service.
+                 */
+                fun transcription(transcription: AudioTranscription) =
                     transcription(JsonField.of(transcription))
 
                 /**
                  * Sets [Builder.transcription] to an arbitrary JSON value.
                  *
-                 * You should usually call [Builder.transcription] with a well-typed [Transcription]
-                 * value instead. This method is primarily for setting the field to an undocumented
-                 * or not yet supported value.
+                 * You should usually call [Builder.transcription] with a well-typed
+                 * [AudioTranscription] value instead. This method is primarily for setting the
+                 * field to an undocumented or not yet supported value.
                  */
-                fun transcription(transcription: JsonField<Transcription>) = apply {
+                fun transcription(transcription: JsonField<AudioTranscription>) = apply {
                     this.transcription = transcription
                 }
 
-                /** Configuration for turn detection. */
+                /**
+                 * Configuration for turn detection, ether Server VAD or Semantic VAD. This can be
+                 * set to `null` to turn off, in which case the client must manually trigger model
+                 * response. Server VAD means that the model will detect the start and end of speech
+                 * based on audio volume and respond at the end of user speech. Semantic VAD is more
+                 * advanced and uses a turn detection model (in conjunction with VAD) to
+                 * semantically estimate whether the user has finished speaking, then dynamically
+                 * sets a timeout based on this probability. For example, if user audio trails off
+                 * with "uhhm", the model will score a low probability of turn end and wait longer
+                 * for the user to continue speaking. This can be useful for more natural
+                 * conversations, but may have a higher latency.
+                 */
                 fun turnDetection(turnDetection: TurnDetection) =
                     turnDetection(JsonField.of(turnDetection))
 
@@ -1100,7 +1242,7 @@ private constructor(
                     return@apply
                 }
 
-                format()
+                format().ifPresent { it.validate() }
                 noiseReduction().ifPresent { it.validate() }
                 transcription().ifPresent { it.validate() }
                 turnDetection().ifPresent { it.validate() }
@@ -1123,28 +1265,40 @@ private constructor(
              */
             @JvmSynthetic
             internal fun validity(): Int =
-                (if (format.asKnown().isPresent) 1 else 0) +
+                (format.asKnown().getOrNull()?.validity() ?: 0) +
                     (noiseReduction.asKnown().getOrNull()?.validity() ?: 0) +
                     (transcription.asKnown().getOrNull()?.validity() ?: 0) +
                     (turnDetection.asKnown().getOrNull()?.validity() ?: 0)
 
-            /** Configuration for input audio noise reduction. */
+            /**
+             * Configuration for input audio noise reduction. This can be set to `null` to turn off.
+             * Noise reduction filters audio added to the input audio buffer before it is sent to
+             * VAD and the model. Filtering the audio can improve VAD and turn detection accuracy
+             * (reducing false positives) and model performance by improving perception of the input
+             * audio.
+             */
             class NoiseReduction
             private constructor(
-                private val type: JsonField<Type>,
+                private val type: JsonField<NoiseReductionType>,
                 private val additionalProperties: MutableMap<String, JsonValue>,
             ) {
 
                 @JsonCreator
                 private constructor(
-                    @JsonProperty("type") @ExcludeMissing type: JsonField<Type> = JsonMissing.of()
+                    @JsonProperty("type")
+                    @ExcludeMissing
+                    type: JsonField<NoiseReductionType> = JsonMissing.of()
                 ) : this(type, mutableMapOf())
 
                 /**
+                 * Type of noise reduction. `near_field` is for close-talking microphones such as
+                 * headphones, `far_field` is for far-field microphones such as laptop or conference
+                 * room microphones.
+                 *
                  * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g.
                  *   if the server responded with an unexpected value).
                  */
-                fun type(): Optional<Type> = type.getOptional("type")
+                fun type(): Optional<NoiseReductionType> = type.getOptional("type")
 
                 /**
                  * Returns the raw JSON value of [type].
@@ -1152,7 +1306,9 @@ private constructor(
                  * Unlike [type], this method doesn't throw if the JSON field has an unexpected
                  * type.
                  */
-                @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<Type> = type
+                @JsonProperty("type")
+                @ExcludeMissing
+                fun _type(): JsonField<NoiseReductionType> = type
 
                 @JsonAnySetter
                 private fun putAdditionalProperty(key: String, value: JsonValue) {
@@ -1177,7 +1333,7 @@ private constructor(
                 /** A builder for [NoiseReduction]. */
                 class Builder internal constructor() {
 
-                    private var type: JsonField<Type> = JsonMissing.of()
+                    private var type: JsonField<NoiseReductionType> = JsonMissing.of()
                     private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
                     @JvmSynthetic
@@ -1186,16 +1342,21 @@ private constructor(
                         additionalProperties = noiseReduction.additionalProperties.toMutableMap()
                     }
 
-                    fun type(type: Type) = type(JsonField.of(type))
+                    /**
+                     * Type of noise reduction. `near_field` is for close-talking microphones such
+                     * as headphones, `far_field` is for far-field microphones such as laptop or
+                     * conference room microphones.
+                     */
+                    fun type(type: NoiseReductionType) = type(JsonField.of(type))
 
                     /**
                      * Sets [Builder.type] to an arbitrary JSON value.
                      *
-                     * You should usually call [Builder.type] with a well-typed [Type] value
-                     * instead. This method is primarily for setting the field to an undocumented or
-                     * not yet supported value.
+                     * You should usually call [Builder.type] with a well-typed [NoiseReductionType]
+                     * value instead. This method is primarily for setting the field to an
+                     * undocumented or not yet supported value.
                      */
-                    fun type(type: JsonField<Type>) = apply { this.type = type }
+                    fun type(type: JsonField<NoiseReductionType>) = apply { this.type = type }
 
                     fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                         this.additionalProperties.clear()
@@ -1256,6 +1417,679 @@ private constructor(
                 @JvmSynthetic
                 internal fun validity(): Int = (type.asKnown().getOrNull()?.validity() ?: 0)
 
+                override fun equals(other: Any?): Boolean {
+                    if (this === other) {
+                        return true
+                    }
+
+                    return other is NoiseReduction &&
+                        type == other.type &&
+                        additionalProperties == other.additionalProperties
+                }
+
+                private val hashCode: Int by lazy { Objects.hash(type, additionalProperties) }
+
+                override fun hashCode(): Int = hashCode
+
+                override fun toString() =
+                    "NoiseReduction{type=$type, additionalProperties=$additionalProperties}"
+            }
+
+            /**
+             * Configuration for turn detection, ether Server VAD or Semantic VAD. This can be set
+             * to `null` to turn off, in which case the client must manually trigger model response.
+             * Server VAD means that the model will detect the start and end of speech based on
+             * audio volume and respond at the end of user speech. Semantic VAD is more advanced and
+             * uses a turn detection model (in conjunction with VAD) to semantically estimate
+             * whether the user has finished speaking, then dynamically sets a timeout based on this
+             * probability. For example, if user audio trails off with "uhhm", the model will score
+             * a low probability of turn end and wait longer for the user to continue speaking. This
+             * can be useful for more natural conversations, but may have a higher latency.
+             */
+            class TurnDetection
+            private constructor(
+                private val createResponse: JsonField<Boolean>,
+                private val eagerness: JsonField<Eagerness>,
+                private val idleTimeoutMs: JsonField<Long>,
+                private val interruptResponse: JsonField<Boolean>,
+                private val prefixPaddingMs: JsonField<Long>,
+                private val silenceDurationMs: JsonField<Long>,
+                private val threshold: JsonField<Double>,
+                private val type: JsonField<Type>,
+                private val additionalProperties: MutableMap<String, JsonValue>,
+            ) {
+
+                @JsonCreator
+                private constructor(
+                    @JsonProperty("create_response")
+                    @ExcludeMissing
+                    createResponse: JsonField<Boolean> = JsonMissing.of(),
+                    @JsonProperty("eagerness")
+                    @ExcludeMissing
+                    eagerness: JsonField<Eagerness> = JsonMissing.of(),
+                    @JsonProperty("idle_timeout_ms")
+                    @ExcludeMissing
+                    idleTimeoutMs: JsonField<Long> = JsonMissing.of(),
+                    @JsonProperty("interrupt_response")
+                    @ExcludeMissing
+                    interruptResponse: JsonField<Boolean> = JsonMissing.of(),
+                    @JsonProperty("prefix_padding_ms")
+                    @ExcludeMissing
+                    prefixPaddingMs: JsonField<Long> = JsonMissing.of(),
+                    @JsonProperty("silence_duration_ms")
+                    @ExcludeMissing
+                    silenceDurationMs: JsonField<Long> = JsonMissing.of(),
+                    @JsonProperty("threshold")
+                    @ExcludeMissing
+                    threshold: JsonField<Double> = JsonMissing.of(),
+                    @JsonProperty("type") @ExcludeMissing type: JsonField<Type> = JsonMissing.of(),
+                ) : this(
+                    createResponse,
+                    eagerness,
+                    idleTimeoutMs,
+                    interruptResponse,
+                    prefixPaddingMs,
+                    silenceDurationMs,
+                    threshold,
+                    type,
+                    mutableMapOf(),
+                )
+
+                /**
+                 * Whether or not to automatically generate a response when a VAD stop event occurs.
+                 *
+                 * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g.
+                 *   if the server responded with an unexpected value).
+                 */
+                fun createResponse(): Optional<Boolean> =
+                    createResponse.getOptional("create_response")
+
+                /**
+                 * Used only for `semantic_vad` mode. The eagerness of the model to respond. `low`
+                 * will wait longer for the user to continue speaking, `high` will respond more
+                 * quickly. `auto` is the default and is equivalent to `medium`. `low`, `medium`,
+                 * and `high` have max timeouts of 8s, 4s, and 2s respectively.
+                 *
+                 * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g.
+                 *   if the server responded with an unexpected value).
+                 */
+                fun eagerness(): Optional<Eagerness> = eagerness.getOptional("eagerness")
+
+                /**
+                 * Optional idle timeout after which turn detection will auto-timeout when no
+                 * additional audio is received.
+                 *
+                 * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g.
+                 *   if the server responded with an unexpected value).
+                 */
+                fun idleTimeoutMs(): Optional<Long> = idleTimeoutMs.getOptional("idle_timeout_ms")
+
+                /**
+                 * Whether or not to automatically interrupt any ongoing response with output to the
+                 * default conversation (i.e. `conversation` of `auto`) when a VAD start event
+                 * occurs.
+                 *
+                 * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g.
+                 *   if the server responded with an unexpected value).
+                 */
+                fun interruptResponse(): Optional<Boolean> =
+                    interruptResponse.getOptional("interrupt_response")
+
+                /**
+                 * Used only for `server_vad` mode. Amount of audio to include before the VAD
+                 * detected speech (in milliseconds). Defaults to 300ms.
+                 *
+                 * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g.
+                 *   if the server responded with an unexpected value).
+                 */
+                fun prefixPaddingMs(): Optional<Long> =
+                    prefixPaddingMs.getOptional("prefix_padding_ms")
+
+                /**
+                 * Used only for `server_vad` mode. Duration of silence to detect speech stop (in
+                 * milliseconds). Defaults to 500ms. With shorter values the model will respond more
+                 * quickly, but may jump in on short pauses from the user.
+                 *
+                 * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g.
+                 *   if the server responded with an unexpected value).
+                 */
+                fun silenceDurationMs(): Optional<Long> =
+                    silenceDurationMs.getOptional("silence_duration_ms")
+
+                /**
+                 * Used only for `server_vad` mode. Activation threshold for VAD (0.0 to 1.0), this
+                 * defaults to 0.5. A higher threshold will require louder audio to activate the
+                 * model, and thus might perform better in noisy environments.
+                 *
+                 * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g.
+                 *   if the server responded with an unexpected value).
+                 */
+                fun threshold(): Optional<Double> = threshold.getOptional("threshold")
+
+                /**
+                 * Type of turn detection.
+                 *
+                 * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g.
+                 *   if the server responded with an unexpected value).
+                 */
+                fun type(): Optional<Type> = type.getOptional("type")
+
+                /**
+                 * Returns the raw JSON value of [createResponse].
+                 *
+                 * Unlike [createResponse], this method doesn't throw if the JSON field has an
+                 * unexpected type.
+                 */
+                @JsonProperty("create_response")
+                @ExcludeMissing
+                fun _createResponse(): JsonField<Boolean> = createResponse
+
+                /**
+                 * Returns the raw JSON value of [eagerness].
+                 *
+                 * Unlike [eagerness], this method doesn't throw if the JSON field has an unexpected
+                 * type.
+                 */
+                @JsonProperty("eagerness")
+                @ExcludeMissing
+                fun _eagerness(): JsonField<Eagerness> = eagerness
+
+                /**
+                 * Returns the raw JSON value of [idleTimeoutMs].
+                 *
+                 * Unlike [idleTimeoutMs], this method doesn't throw if the JSON field has an
+                 * unexpected type.
+                 */
+                @JsonProperty("idle_timeout_ms")
+                @ExcludeMissing
+                fun _idleTimeoutMs(): JsonField<Long> = idleTimeoutMs
+
+                /**
+                 * Returns the raw JSON value of [interruptResponse].
+                 *
+                 * Unlike [interruptResponse], this method doesn't throw if the JSON field has an
+                 * unexpected type.
+                 */
+                @JsonProperty("interrupt_response")
+                @ExcludeMissing
+                fun _interruptResponse(): JsonField<Boolean> = interruptResponse
+
+                /**
+                 * Returns the raw JSON value of [prefixPaddingMs].
+                 *
+                 * Unlike [prefixPaddingMs], this method doesn't throw if the JSON field has an
+                 * unexpected type.
+                 */
+                @JsonProperty("prefix_padding_ms")
+                @ExcludeMissing
+                fun _prefixPaddingMs(): JsonField<Long> = prefixPaddingMs
+
+                /**
+                 * Returns the raw JSON value of [silenceDurationMs].
+                 *
+                 * Unlike [silenceDurationMs], this method doesn't throw if the JSON field has an
+                 * unexpected type.
+                 */
+                @JsonProperty("silence_duration_ms")
+                @ExcludeMissing
+                fun _silenceDurationMs(): JsonField<Long> = silenceDurationMs
+
+                /**
+                 * Returns the raw JSON value of [threshold].
+                 *
+                 * Unlike [threshold], this method doesn't throw if the JSON field has an unexpected
+                 * type.
+                 */
+                @JsonProperty("threshold")
+                @ExcludeMissing
+                fun _threshold(): JsonField<Double> = threshold
+
+                /**
+                 * Returns the raw JSON value of [type].
+                 *
+                 * Unlike [type], this method doesn't throw if the JSON field has an unexpected
+                 * type.
+                 */
+                @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<Type> = type
+
+                @JsonAnySetter
+                private fun putAdditionalProperty(key: String, value: JsonValue) {
+                    additionalProperties.put(key, value)
+                }
+
+                @JsonAnyGetter
+                @ExcludeMissing
+                fun _additionalProperties(): Map<String, JsonValue> =
+                    Collections.unmodifiableMap(additionalProperties)
+
+                fun toBuilder() = Builder().from(this)
+
+                companion object {
+
+                    /**
+                     * Returns a mutable builder for constructing an instance of [TurnDetection].
+                     */
+                    @JvmStatic fun builder() = Builder()
+                }
+
+                /** A builder for [TurnDetection]. */
+                class Builder internal constructor() {
+
+                    private var createResponse: JsonField<Boolean> = JsonMissing.of()
+                    private var eagerness: JsonField<Eagerness> = JsonMissing.of()
+                    private var idleTimeoutMs: JsonField<Long> = JsonMissing.of()
+                    private var interruptResponse: JsonField<Boolean> = JsonMissing.of()
+                    private var prefixPaddingMs: JsonField<Long> = JsonMissing.of()
+                    private var silenceDurationMs: JsonField<Long> = JsonMissing.of()
+                    private var threshold: JsonField<Double> = JsonMissing.of()
+                    private var type: JsonField<Type> = JsonMissing.of()
+                    private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
+
+                    @JvmSynthetic
+                    internal fun from(turnDetection: TurnDetection) = apply {
+                        createResponse = turnDetection.createResponse
+                        eagerness = turnDetection.eagerness
+                        idleTimeoutMs = turnDetection.idleTimeoutMs
+                        interruptResponse = turnDetection.interruptResponse
+                        prefixPaddingMs = turnDetection.prefixPaddingMs
+                        silenceDurationMs = turnDetection.silenceDurationMs
+                        threshold = turnDetection.threshold
+                        type = turnDetection.type
+                        additionalProperties = turnDetection.additionalProperties.toMutableMap()
+                    }
+
+                    /**
+                     * Whether or not to automatically generate a response when a VAD stop event
+                     * occurs.
+                     */
+                    fun createResponse(createResponse: Boolean) =
+                        createResponse(JsonField.of(createResponse))
+
+                    /**
+                     * Sets [Builder.createResponse] to an arbitrary JSON value.
+                     *
+                     * You should usually call [Builder.createResponse] with a well-typed [Boolean]
+                     * value instead. This method is primarily for setting the field to an
+                     * undocumented or not yet supported value.
+                     */
+                    fun createResponse(createResponse: JsonField<Boolean>) = apply {
+                        this.createResponse = createResponse
+                    }
+
+                    /**
+                     * Used only for `semantic_vad` mode. The eagerness of the model to respond.
+                     * `low` will wait longer for the user to continue speaking, `high` will respond
+                     * more quickly. `auto` is the default and is equivalent to `medium`. `low`,
+                     * `medium`, and `high` have max timeouts of 8s, 4s, and 2s respectively.
+                     */
+                    fun eagerness(eagerness: Eagerness) = eagerness(JsonField.of(eagerness))
+
+                    /**
+                     * Sets [Builder.eagerness] to an arbitrary JSON value.
+                     *
+                     * You should usually call [Builder.eagerness] with a well-typed [Eagerness]
+                     * value instead. This method is primarily for setting the field to an
+                     * undocumented or not yet supported value.
+                     */
+                    fun eagerness(eagerness: JsonField<Eagerness>) = apply {
+                        this.eagerness = eagerness
+                    }
+
+                    /**
+                     * Optional idle timeout after which turn detection will auto-timeout when no
+                     * additional audio is received.
+                     */
+                    fun idleTimeoutMs(idleTimeoutMs: Long?) =
+                        idleTimeoutMs(JsonField.ofNullable(idleTimeoutMs))
+
+                    /**
+                     * Alias for [Builder.idleTimeoutMs].
+                     *
+                     * This unboxed primitive overload exists for backwards compatibility.
+                     */
+                    fun idleTimeoutMs(idleTimeoutMs: Long) = idleTimeoutMs(idleTimeoutMs as Long?)
+
+                    /**
+                     * Alias for calling [Builder.idleTimeoutMs] with `idleTimeoutMs.orElse(null)`.
+                     */
+                    fun idleTimeoutMs(idleTimeoutMs: Optional<Long>) =
+                        idleTimeoutMs(idleTimeoutMs.getOrNull())
+
+                    /**
+                     * Sets [Builder.idleTimeoutMs] to an arbitrary JSON value.
+                     *
+                     * You should usually call [Builder.idleTimeoutMs] with a well-typed [Long]
+                     * value instead. This method is primarily for setting the field to an
+                     * undocumented or not yet supported value.
+                     */
+                    fun idleTimeoutMs(idleTimeoutMs: JsonField<Long>) = apply {
+                        this.idleTimeoutMs = idleTimeoutMs
+                    }
+
+                    /**
+                     * Whether or not to automatically interrupt any ongoing response with output to
+                     * the default conversation (i.e. `conversation` of `auto`) when a VAD start
+                     * event occurs.
+                     */
+                    fun interruptResponse(interruptResponse: Boolean) =
+                        interruptResponse(JsonField.of(interruptResponse))
+
+                    /**
+                     * Sets [Builder.interruptResponse] to an arbitrary JSON value.
+                     *
+                     * You should usually call [Builder.interruptResponse] with a well-typed
+                     * [Boolean] value instead. This method is primarily for setting the field to an
+                     * undocumented or not yet supported value.
+                     */
+                    fun interruptResponse(interruptResponse: JsonField<Boolean>) = apply {
+                        this.interruptResponse = interruptResponse
+                    }
+
+                    /**
+                     * Used only for `server_vad` mode. Amount of audio to include before the VAD
+                     * detected speech (in milliseconds). Defaults to 300ms.
+                     */
+                    fun prefixPaddingMs(prefixPaddingMs: Long) =
+                        prefixPaddingMs(JsonField.of(prefixPaddingMs))
+
+                    /**
+                     * Sets [Builder.prefixPaddingMs] to an arbitrary JSON value.
+                     *
+                     * You should usually call [Builder.prefixPaddingMs] with a well-typed [Long]
+                     * value instead. This method is primarily for setting the field to an
+                     * undocumented or not yet supported value.
+                     */
+                    fun prefixPaddingMs(prefixPaddingMs: JsonField<Long>) = apply {
+                        this.prefixPaddingMs = prefixPaddingMs
+                    }
+
+                    /**
+                     * Used only for `server_vad` mode. Duration of silence to detect speech stop
+                     * (in milliseconds). Defaults to 500ms. With shorter values the model will
+                     * respond more quickly, but may jump in on short pauses from the user.
+                     */
+                    fun silenceDurationMs(silenceDurationMs: Long) =
+                        silenceDurationMs(JsonField.of(silenceDurationMs))
+
+                    /**
+                     * Sets [Builder.silenceDurationMs] to an arbitrary JSON value.
+                     *
+                     * You should usually call [Builder.silenceDurationMs] with a well-typed [Long]
+                     * value instead. This method is primarily for setting the field to an
+                     * undocumented or not yet supported value.
+                     */
+                    fun silenceDurationMs(silenceDurationMs: JsonField<Long>) = apply {
+                        this.silenceDurationMs = silenceDurationMs
+                    }
+
+                    /**
+                     * Used only for `server_vad` mode. Activation threshold for VAD (0.0 to 1.0),
+                     * this defaults to 0.5. A higher threshold will require louder audio to
+                     * activate the model, and thus might perform better in noisy environments.
+                     */
+                    fun threshold(threshold: Double) = threshold(JsonField.of(threshold))
+
+                    /**
+                     * Sets [Builder.threshold] to an arbitrary JSON value.
+                     *
+                     * You should usually call [Builder.threshold] with a well-typed [Double] value
+                     * instead. This method is primarily for setting the field to an undocumented or
+                     * not yet supported value.
+                     */
+                    fun threshold(threshold: JsonField<Double>) = apply {
+                        this.threshold = threshold
+                    }
+
+                    /** Type of turn detection. */
+                    fun type(type: Type) = type(JsonField.of(type))
+
+                    /**
+                     * Sets [Builder.type] to an arbitrary JSON value.
+                     *
+                     * You should usually call [Builder.type] with a well-typed [Type] value
+                     * instead. This method is primarily for setting the field to an undocumented or
+                     * not yet supported value.
+                     */
+                    fun type(type: JsonField<Type>) = apply { this.type = type }
+
+                    fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                        this.additionalProperties.clear()
+                        putAllAdditionalProperties(additionalProperties)
+                    }
+
+                    fun putAdditionalProperty(key: String, value: JsonValue) = apply {
+                        additionalProperties.put(key, value)
+                    }
+
+                    fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) =
+                        apply {
+                            this.additionalProperties.putAll(additionalProperties)
+                        }
+
+                    fun removeAdditionalProperty(key: String) = apply {
+                        additionalProperties.remove(key)
+                    }
+
+                    fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                        keys.forEach(::removeAdditionalProperty)
+                    }
+
+                    /**
+                     * Returns an immutable instance of [TurnDetection].
+                     *
+                     * Further updates to this [Builder] will not mutate the returned instance.
+                     */
+                    fun build(): TurnDetection =
+                        TurnDetection(
+                            createResponse,
+                            eagerness,
+                            idleTimeoutMs,
+                            interruptResponse,
+                            prefixPaddingMs,
+                            silenceDurationMs,
+                            threshold,
+                            type,
+                            additionalProperties.toMutableMap(),
+                        )
+                }
+
+                private var validated: Boolean = false
+
+                fun validate(): TurnDetection = apply {
+                    if (validated) {
+                        return@apply
+                    }
+
+                    createResponse()
+                    eagerness().ifPresent { it.validate() }
+                    idleTimeoutMs()
+                    interruptResponse()
+                    prefixPaddingMs()
+                    silenceDurationMs()
+                    threshold()
+                    type().ifPresent { it.validate() }
+                    validated = true
+                }
+
+                fun isValid(): Boolean =
+                    try {
+                        validate()
+                        true
+                    } catch (e: OpenAIInvalidDataException) {
+                        false
+                    }
+
+                /**
+                 * Returns a score indicating how many valid values are contained in this object
+                 * recursively.
+                 *
+                 * Used for best match union deserialization.
+                 */
+                @JvmSynthetic
+                internal fun validity(): Int =
+                    (if (createResponse.asKnown().isPresent) 1 else 0) +
+                        (eagerness.asKnown().getOrNull()?.validity() ?: 0) +
+                        (if (idleTimeoutMs.asKnown().isPresent) 1 else 0) +
+                        (if (interruptResponse.asKnown().isPresent) 1 else 0) +
+                        (if (prefixPaddingMs.asKnown().isPresent) 1 else 0) +
+                        (if (silenceDurationMs.asKnown().isPresent) 1 else 0) +
+                        (if (threshold.asKnown().isPresent) 1 else 0) +
+                        (type.asKnown().getOrNull()?.validity() ?: 0)
+
+                /**
+                 * Used only for `semantic_vad` mode. The eagerness of the model to respond. `low`
+                 * will wait longer for the user to continue speaking, `high` will respond more
+                 * quickly. `auto` is the default and is equivalent to `medium`. `low`, `medium`,
+                 * and `high` have max timeouts of 8s, 4s, and 2s respectively.
+                 */
+                class Eagerness
+                @JsonCreator
+                private constructor(private val value: JsonField<String>) : Enum {
+
+                    /**
+                     * Returns this class instance's raw value.
+                     *
+                     * This is usually only useful if this instance was deserialized from data that
+                     * doesn't match any known member, and you want to know that value. For example,
+                     * if the SDK is on an older version than the API, then the API may respond with
+                     * new members that the SDK is unaware of.
+                     */
+                    @com.fasterxml.jackson.annotation.JsonValue
+                    fun _value(): JsonField<String> = value
+
+                    companion object {
+
+                        @JvmField val LOW = of("low")
+
+                        @JvmField val MEDIUM = of("medium")
+
+                        @JvmField val HIGH = of("high")
+
+                        @JvmField val AUTO = of("auto")
+
+                        @JvmStatic fun of(value: String) = Eagerness(JsonField.of(value))
+                    }
+
+                    /** An enum containing [Eagerness]'s known values. */
+                    enum class Known {
+                        LOW,
+                        MEDIUM,
+                        HIGH,
+                        AUTO,
+                    }
+
+                    /**
+                     * An enum containing [Eagerness]'s known values, as well as an [_UNKNOWN]
+                     * member.
+                     *
+                     * An instance of [Eagerness] can contain an unknown value in a couple of cases:
+                     * - It was deserialized from data that doesn't match any known member. For
+                     *   example, if the SDK is on an older version than the API, then the API may
+                     *   respond with new members that the SDK is unaware of.
+                     * - It was constructed with an arbitrary value using the [of] method.
+                     */
+                    enum class Value {
+                        LOW,
+                        MEDIUM,
+                        HIGH,
+                        AUTO,
+                        /**
+                         * An enum member indicating that [Eagerness] was instantiated with an
+                         * unknown value.
+                         */
+                        _UNKNOWN,
+                    }
+
+                    /**
+                     * Returns an enum member corresponding to this class instance's value, or
+                     * [Value._UNKNOWN] if the class was instantiated with an unknown value.
+                     *
+                     * Use the [known] method instead if you're certain the value is always known or
+                     * if you want to throw for the unknown case.
+                     */
+                    fun value(): Value =
+                        when (this) {
+                            LOW -> Value.LOW
+                            MEDIUM -> Value.MEDIUM
+                            HIGH -> Value.HIGH
+                            AUTO -> Value.AUTO
+                            else -> Value._UNKNOWN
+                        }
+
+                    /**
+                     * Returns an enum member corresponding to this class instance's value.
+                     *
+                     * Use the [value] method instead if you're uncertain the value is always known
+                     * and don't want to throw for the unknown case.
+                     *
+                     * @throws OpenAIInvalidDataException if this class instance's value is a not a
+                     *   known member.
+                     */
+                    fun known(): Known =
+                        when (this) {
+                            LOW -> Known.LOW
+                            MEDIUM -> Known.MEDIUM
+                            HIGH -> Known.HIGH
+                            AUTO -> Known.AUTO
+                            else -> throw OpenAIInvalidDataException("Unknown Eagerness: $value")
+                        }
+
+                    /**
+                     * Returns this class instance's primitive wire representation.
+                     *
+                     * This differs from the [toString] method because that method is primarily for
+                     * debugging and generally doesn't throw.
+                     *
+                     * @throws OpenAIInvalidDataException if this class instance's value does not
+                     *   have the expected primitive type.
+                     */
+                    fun asString(): String =
+                        _value().asString().orElseThrow {
+                            OpenAIInvalidDataException("Value is not a String")
+                        }
+
+                    private var validated: Boolean = false
+
+                    fun validate(): Eagerness = apply {
+                        if (validated) {
+                            return@apply
+                        }
+
+                        known()
+                        validated = true
+                    }
+
+                    fun isValid(): Boolean =
+                        try {
+                            validate()
+                            true
+                        } catch (e: OpenAIInvalidDataException) {
+                            false
+                        }
+
+                    /**
+                     * Returns a score indicating how many valid values are contained in this object
+                     * recursively.
+                     *
+                     * Used for best match union deserialization.
+                     */
+                    @JvmSynthetic
+                    internal fun validity(): Int = if (value() == Value._UNKNOWN) 0 else 1
+
+                    override fun equals(other: Any?): Boolean {
+                        if (this === other) {
+                            return true
+                        }
+
+                        return other is Eagerness && value == other.value
+                    }
+
+                    override fun hashCode() = value.hashCode()
+
+                    override fun toString() = value.toString()
+                }
+
+                /** Type of turn detection. */
                 class Type @JsonCreator private constructor(private val value: JsonField<String>) :
                     Enum {
 
@@ -1272,17 +2106,17 @@ private constructor(
 
                     companion object {
 
-                        @JvmField val NEAR_FIELD = of("near_field")
+                        @JvmField val SERVER_VAD = of("server_vad")
 
-                        @JvmField val FAR_FIELD = of("far_field")
+                        @JvmField val SEMANTIC_VAD = of("semantic_vad")
 
                         @JvmStatic fun of(value: String) = Type(JsonField.of(value))
                     }
 
                     /** An enum containing [Type]'s known values. */
                     enum class Known {
-                        NEAR_FIELD,
-                        FAR_FIELD,
+                        SERVER_VAD,
+                        SEMANTIC_VAD,
                     }
 
                     /**
@@ -1295,8 +2129,8 @@ private constructor(
                      * - It was constructed with an arbitrary value using the [of] method.
                      */
                     enum class Value {
-                        NEAR_FIELD,
-                        FAR_FIELD,
+                        SERVER_VAD,
+                        SEMANTIC_VAD,
                         /**
                          * An enum member indicating that [Type] was instantiated with an unknown
                          * value.
@@ -1313,8 +2147,8 @@ private constructor(
                      */
                     fun value(): Value =
                         when (this) {
-                            NEAR_FIELD -> Value.NEAR_FIELD
-                            FAR_FIELD -> Value.FAR_FIELD
+                            SERVER_VAD -> Value.SERVER_VAD
+                            SEMANTIC_VAD -> Value.SEMANTIC_VAD
                             else -> Value._UNKNOWN
                         }
 
@@ -1329,8 +2163,8 @@ private constructor(
                      */
                     fun known(): Known =
                         when (this) {
-                            NEAR_FIELD -> Known.NEAR_FIELD
-                            FAR_FIELD -> Known.FAR_FIELD
+                            SERVER_VAD -> Known.SERVER_VAD
+                            SEMANTIC_VAD -> Known.SEMANTIC_VAD
                             else -> throw OpenAIInvalidDataException("Unknown Type: $value")
                         }
 
@@ -1394,511 +2228,11 @@ private constructor(
                         return true
                     }
 
-                    return other is NoiseReduction &&
-                        type == other.type &&
-                        additionalProperties == other.additionalProperties
-                }
-
-                private val hashCode: Int by lazy { Objects.hash(type, additionalProperties) }
-
-                override fun hashCode(): Int = hashCode
-
-                override fun toString() =
-                    "NoiseReduction{type=$type, additionalProperties=$additionalProperties}"
-            }
-
-            /** Configuration for input audio transcription. */
-            class Transcription
-            private constructor(
-                private val language: JsonField<String>,
-                private val model: JsonField<String>,
-                private val prompt: JsonField<String>,
-                private val additionalProperties: MutableMap<String, JsonValue>,
-            ) {
-
-                @JsonCreator
-                private constructor(
-                    @JsonProperty("language")
-                    @ExcludeMissing
-                    language: JsonField<String> = JsonMissing.of(),
-                    @JsonProperty("model")
-                    @ExcludeMissing
-                    model: JsonField<String> = JsonMissing.of(),
-                    @JsonProperty("prompt")
-                    @ExcludeMissing
-                    prompt: JsonField<String> = JsonMissing.of(),
-                ) : this(language, model, prompt, mutableMapOf())
-
-                /**
-                 * The language of the input audio.
-                 *
-                 * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g.
-                 *   if the server responded with an unexpected value).
-                 */
-                fun language(): Optional<String> = language.getOptional("language")
-
-                /**
-                 * The model to use for transcription.
-                 *
-                 * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g.
-                 *   if the server responded with an unexpected value).
-                 */
-                fun model(): Optional<String> = model.getOptional("model")
-
-                /**
-                 * Optional text to guide the model's style or continue a previous audio segment.
-                 *
-                 * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g.
-                 *   if the server responded with an unexpected value).
-                 */
-                fun prompt(): Optional<String> = prompt.getOptional("prompt")
-
-                /**
-                 * Returns the raw JSON value of [language].
-                 *
-                 * Unlike [language], this method doesn't throw if the JSON field has an unexpected
-                 * type.
-                 */
-                @JsonProperty("language")
-                @ExcludeMissing
-                fun _language(): JsonField<String> = language
-
-                /**
-                 * Returns the raw JSON value of [model].
-                 *
-                 * Unlike [model], this method doesn't throw if the JSON field has an unexpected
-                 * type.
-                 */
-                @JsonProperty("model") @ExcludeMissing fun _model(): JsonField<String> = model
-
-                /**
-                 * Returns the raw JSON value of [prompt].
-                 *
-                 * Unlike [prompt], this method doesn't throw if the JSON field has an unexpected
-                 * type.
-                 */
-                @JsonProperty("prompt") @ExcludeMissing fun _prompt(): JsonField<String> = prompt
-
-                @JsonAnySetter
-                private fun putAdditionalProperty(key: String, value: JsonValue) {
-                    additionalProperties.put(key, value)
-                }
-
-                @JsonAnyGetter
-                @ExcludeMissing
-                fun _additionalProperties(): Map<String, JsonValue> =
-                    Collections.unmodifiableMap(additionalProperties)
-
-                fun toBuilder() = Builder().from(this)
-
-                companion object {
-
-                    /**
-                     * Returns a mutable builder for constructing an instance of [Transcription].
-                     */
-                    @JvmStatic fun builder() = Builder()
-                }
-
-                /** A builder for [Transcription]. */
-                class Builder internal constructor() {
-
-                    private var language: JsonField<String> = JsonMissing.of()
-                    private var model: JsonField<String> = JsonMissing.of()
-                    private var prompt: JsonField<String> = JsonMissing.of()
-                    private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
-
-                    @JvmSynthetic
-                    internal fun from(transcription: Transcription) = apply {
-                        language = transcription.language
-                        model = transcription.model
-                        prompt = transcription.prompt
-                        additionalProperties = transcription.additionalProperties.toMutableMap()
-                    }
-
-                    /** The language of the input audio. */
-                    fun language(language: String) = language(JsonField.of(language))
-
-                    /**
-                     * Sets [Builder.language] to an arbitrary JSON value.
-                     *
-                     * You should usually call [Builder.language] with a well-typed [String] value
-                     * instead. This method is primarily for setting the field to an undocumented or
-                     * not yet supported value.
-                     */
-                    fun language(language: JsonField<String>) = apply { this.language = language }
-
-                    /** The model to use for transcription. */
-                    fun model(model: String) = model(JsonField.of(model))
-
-                    /**
-                     * Sets [Builder.model] to an arbitrary JSON value.
-                     *
-                     * You should usually call [Builder.model] with a well-typed [String] value
-                     * instead. This method is primarily for setting the field to an undocumented or
-                     * not yet supported value.
-                     */
-                    fun model(model: JsonField<String>) = apply { this.model = model }
-
-                    /**
-                     * Optional text to guide the model's style or continue a previous audio
-                     * segment.
-                     */
-                    fun prompt(prompt: String) = prompt(JsonField.of(prompt))
-
-                    /**
-                     * Sets [Builder.prompt] to an arbitrary JSON value.
-                     *
-                     * You should usually call [Builder.prompt] with a well-typed [String] value
-                     * instead. This method is primarily for setting the field to an undocumented or
-                     * not yet supported value.
-                     */
-                    fun prompt(prompt: JsonField<String>) = apply { this.prompt = prompt }
-
-                    fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
-                        this.additionalProperties.clear()
-                        putAllAdditionalProperties(additionalProperties)
-                    }
-
-                    fun putAdditionalProperty(key: String, value: JsonValue) = apply {
-                        additionalProperties.put(key, value)
-                    }
-
-                    fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) =
-                        apply {
-                            this.additionalProperties.putAll(additionalProperties)
-                        }
-
-                    fun removeAdditionalProperty(key: String) = apply {
-                        additionalProperties.remove(key)
-                    }
-
-                    fun removeAllAdditionalProperties(keys: Set<String>) = apply {
-                        keys.forEach(::removeAdditionalProperty)
-                    }
-
-                    /**
-                     * Returns an immutable instance of [Transcription].
-                     *
-                     * Further updates to this [Builder] will not mutate the returned instance.
-                     */
-                    fun build(): Transcription =
-                        Transcription(language, model, prompt, additionalProperties.toMutableMap())
-                }
-
-                private var validated: Boolean = false
-
-                fun validate(): Transcription = apply {
-                    if (validated) {
-                        return@apply
-                    }
-
-                    language()
-                    model()
-                    prompt()
-                    validated = true
-                }
-
-                fun isValid(): Boolean =
-                    try {
-                        validate()
-                        true
-                    } catch (e: OpenAIInvalidDataException) {
-                        false
-                    }
-
-                /**
-                 * Returns a score indicating how many valid values are contained in this object
-                 * recursively.
-                 *
-                 * Used for best match union deserialization.
-                 */
-                @JvmSynthetic
-                internal fun validity(): Int =
-                    (if (language.asKnown().isPresent) 1 else 0) +
-                        (if (model.asKnown().isPresent) 1 else 0) +
-                        (if (prompt.asKnown().isPresent) 1 else 0)
-
-                override fun equals(other: Any?): Boolean {
-                    if (this === other) {
-                        return true
-                    }
-
-                    return other is Transcription &&
-                        language == other.language &&
-                        model == other.model &&
-                        prompt == other.prompt &&
-                        additionalProperties == other.additionalProperties
-                }
-
-                private val hashCode: Int by lazy {
-                    Objects.hash(language, model, prompt, additionalProperties)
-                }
-
-                override fun hashCode(): Int = hashCode
-
-                override fun toString() =
-                    "Transcription{language=$language, model=$model, prompt=$prompt, additionalProperties=$additionalProperties}"
-            }
-
-            /** Configuration for turn detection. */
-            class TurnDetection
-            private constructor(
-                private val prefixPaddingMs: JsonField<Long>,
-                private val silenceDurationMs: JsonField<Long>,
-                private val threshold: JsonField<Double>,
-                private val type: JsonField<String>,
-                private val additionalProperties: MutableMap<String, JsonValue>,
-            ) {
-
-                @JsonCreator
-                private constructor(
-                    @JsonProperty("prefix_padding_ms")
-                    @ExcludeMissing
-                    prefixPaddingMs: JsonField<Long> = JsonMissing.of(),
-                    @JsonProperty("silence_duration_ms")
-                    @ExcludeMissing
-                    silenceDurationMs: JsonField<Long> = JsonMissing.of(),
-                    @JsonProperty("threshold")
-                    @ExcludeMissing
-                    threshold: JsonField<Double> = JsonMissing.of(),
-                    @JsonProperty("type") @ExcludeMissing type: JsonField<String> = JsonMissing.of(),
-                ) : this(prefixPaddingMs, silenceDurationMs, threshold, type, mutableMapOf())
-
-                /**
-                 * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g.
-                 *   if the server responded with an unexpected value).
-                 */
-                fun prefixPaddingMs(): Optional<Long> =
-                    prefixPaddingMs.getOptional("prefix_padding_ms")
-
-                /**
-                 * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g.
-                 *   if the server responded with an unexpected value).
-                 */
-                fun silenceDurationMs(): Optional<Long> =
-                    silenceDurationMs.getOptional("silence_duration_ms")
-
-                /**
-                 * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g.
-                 *   if the server responded with an unexpected value).
-                 */
-                fun threshold(): Optional<Double> = threshold.getOptional("threshold")
-
-                /**
-                 * Type of turn detection, only `server_vad` is currently supported.
-                 *
-                 * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g.
-                 *   if the server responded with an unexpected value).
-                 */
-                fun type(): Optional<String> = type.getOptional("type")
-
-                /**
-                 * Returns the raw JSON value of [prefixPaddingMs].
-                 *
-                 * Unlike [prefixPaddingMs], this method doesn't throw if the JSON field has an
-                 * unexpected type.
-                 */
-                @JsonProperty("prefix_padding_ms")
-                @ExcludeMissing
-                fun _prefixPaddingMs(): JsonField<Long> = prefixPaddingMs
-
-                /**
-                 * Returns the raw JSON value of [silenceDurationMs].
-                 *
-                 * Unlike [silenceDurationMs], this method doesn't throw if the JSON field has an
-                 * unexpected type.
-                 */
-                @JsonProperty("silence_duration_ms")
-                @ExcludeMissing
-                fun _silenceDurationMs(): JsonField<Long> = silenceDurationMs
-
-                /**
-                 * Returns the raw JSON value of [threshold].
-                 *
-                 * Unlike [threshold], this method doesn't throw if the JSON field has an unexpected
-                 * type.
-                 */
-                @JsonProperty("threshold")
-                @ExcludeMissing
-                fun _threshold(): JsonField<Double> = threshold
-
-                /**
-                 * Returns the raw JSON value of [type].
-                 *
-                 * Unlike [type], this method doesn't throw if the JSON field has an unexpected
-                 * type.
-                 */
-                @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<String> = type
-
-                @JsonAnySetter
-                private fun putAdditionalProperty(key: String, value: JsonValue) {
-                    additionalProperties.put(key, value)
-                }
-
-                @JsonAnyGetter
-                @ExcludeMissing
-                fun _additionalProperties(): Map<String, JsonValue> =
-                    Collections.unmodifiableMap(additionalProperties)
-
-                fun toBuilder() = Builder().from(this)
-
-                companion object {
-
-                    /**
-                     * Returns a mutable builder for constructing an instance of [TurnDetection].
-                     */
-                    @JvmStatic fun builder() = Builder()
-                }
-
-                /** A builder for [TurnDetection]. */
-                class Builder internal constructor() {
-
-                    private var prefixPaddingMs: JsonField<Long> = JsonMissing.of()
-                    private var silenceDurationMs: JsonField<Long> = JsonMissing.of()
-                    private var threshold: JsonField<Double> = JsonMissing.of()
-                    private var type: JsonField<String> = JsonMissing.of()
-                    private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
-
-                    @JvmSynthetic
-                    internal fun from(turnDetection: TurnDetection) = apply {
-                        prefixPaddingMs = turnDetection.prefixPaddingMs
-                        silenceDurationMs = turnDetection.silenceDurationMs
-                        threshold = turnDetection.threshold
-                        type = turnDetection.type
-                        additionalProperties = turnDetection.additionalProperties.toMutableMap()
-                    }
-
-                    fun prefixPaddingMs(prefixPaddingMs: Long) =
-                        prefixPaddingMs(JsonField.of(prefixPaddingMs))
-
-                    /**
-                     * Sets [Builder.prefixPaddingMs] to an arbitrary JSON value.
-                     *
-                     * You should usually call [Builder.prefixPaddingMs] with a well-typed [Long]
-                     * value instead. This method is primarily for setting the field to an
-                     * undocumented or not yet supported value.
-                     */
-                    fun prefixPaddingMs(prefixPaddingMs: JsonField<Long>) = apply {
-                        this.prefixPaddingMs = prefixPaddingMs
-                    }
-
-                    fun silenceDurationMs(silenceDurationMs: Long) =
-                        silenceDurationMs(JsonField.of(silenceDurationMs))
-
-                    /**
-                     * Sets [Builder.silenceDurationMs] to an arbitrary JSON value.
-                     *
-                     * You should usually call [Builder.silenceDurationMs] with a well-typed [Long]
-                     * value instead. This method is primarily for setting the field to an
-                     * undocumented or not yet supported value.
-                     */
-                    fun silenceDurationMs(silenceDurationMs: JsonField<Long>) = apply {
-                        this.silenceDurationMs = silenceDurationMs
-                    }
-
-                    fun threshold(threshold: Double) = threshold(JsonField.of(threshold))
-
-                    /**
-                     * Sets [Builder.threshold] to an arbitrary JSON value.
-                     *
-                     * You should usually call [Builder.threshold] with a well-typed [Double] value
-                     * instead. This method is primarily for setting the field to an undocumented or
-                     * not yet supported value.
-                     */
-                    fun threshold(threshold: JsonField<Double>) = apply {
-                        this.threshold = threshold
-                    }
-
-                    /** Type of turn detection, only `server_vad` is currently supported. */
-                    fun type(type: String) = type(JsonField.of(type))
-
-                    /**
-                     * Sets [Builder.type] to an arbitrary JSON value.
-                     *
-                     * You should usually call [Builder.type] with a well-typed [String] value
-                     * instead. This method is primarily for setting the field to an undocumented or
-                     * not yet supported value.
-                     */
-                    fun type(type: JsonField<String>) = apply { this.type = type }
-
-                    fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
-                        this.additionalProperties.clear()
-                        putAllAdditionalProperties(additionalProperties)
-                    }
-
-                    fun putAdditionalProperty(key: String, value: JsonValue) = apply {
-                        additionalProperties.put(key, value)
-                    }
-
-                    fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) =
-                        apply {
-                            this.additionalProperties.putAll(additionalProperties)
-                        }
-
-                    fun removeAdditionalProperty(key: String) = apply {
-                        additionalProperties.remove(key)
-                    }
-
-                    fun removeAllAdditionalProperties(keys: Set<String>) = apply {
-                        keys.forEach(::removeAdditionalProperty)
-                    }
-
-                    /**
-                     * Returns an immutable instance of [TurnDetection].
-                     *
-                     * Further updates to this [Builder] will not mutate the returned instance.
-                     */
-                    fun build(): TurnDetection =
-                        TurnDetection(
-                            prefixPaddingMs,
-                            silenceDurationMs,
-                            threshold,
-                            type,
-                            additionalProperties.toMutableMap(),
-                        )
-                }
-
-                private var validated: Boolean = false
-
-                fun validate(): TurnDetection = apply {
-                    if (validated) {
-                        return@apply
-                    }
-
-                    prefixPaddingMs()
-                    silenceDurationMs()
-                    threshold()
-                    type()
-                    validated = true
-                }
-
-                fun isValid(): Boolean =
-                    try {
-                        validate()
-                        true
-                    } catch (e: OpenAIInvalidDataException) {
-                        false
-                    }
-
-                /**
-                 * Returns a score indicating how many valid values are contained in this object
-                 * recursively.
-                 *
-                 * Used for best match union deserialization.
-                 */
-                @JvmSynthetic
-                internal fun validity(): Int =
-                    (if (prefixPaddingMs.asKnown().isPresent) 1 else 0) +
-                        (if (silenceDurationMs.asKnown().isPresent) 1 else 0) +
-                        (if (threshold.asKnown().isPresent) 1 else 0) +
-                        (if (type.asKnown().isPresent) 1 else 0)
-
-                override fun equals(other: Any?): Boolean {
-                    if (this === other) {
-                        return true
-                    }
-
                     return other is TurnDetection &&
+                        createResponse == other.createResponse &&
+                        eagerness == other.eagerness &&
+                        idleTimeoutMs == other.idleTimeoutMs &&
+                        interruptResponse == other.interruptResponse &&
                         prefixPaddingMs == other.prefixPaddingMs &&
                         silenceDurationMs == other.silenceDurationMs &&
                         threshold == other.threshold &&
@@ -1908,6 +2242,10 @@ private constructor(
 
                 private val hashCode: Int by lazy {
                     Objects.hash(
+                        createResponse,
+                        eagerness,
+                        idleTimeoutMs,
+                        interruptResponse,
                         prefixPaddingMs,
                         silenceDurationMs,
                         threshold,
@@ -1919,7 +2257,7 @@ private constructor(
                 override fun hashCode(): Int = hashCode
 
                 override fun toString() =
-                    "TurnDetection{prefixPaddingMs=$prefixPaddingMs, silenceDurationMs=$silenceDurationMs, threshold=$threshold, type=$type, additionalProperties=$additionalProperties}"
+                    "TurnDetection{createResponse=$createResponse, eagerness=$eagerness, idleTimeoutMs=$idleTimeoutMs, interruptResponse=$interruptResponse, prefixPaddingMs=$prefixPaddingMs, silenceDurationMs=$silenceDurationMs, threshold=$threshold, type=$type, additionalProperties=$additionalProperties}"
             }
 
             override fun equals(other: Any?): Boolean {
@@ -1953,7 +2291,7 @@ private constructor(
 
         class Output
         private constructor(
-            private val format: JsonField<String>,
+            private val format: JsonField<RealtimeAudioFormats>,
             private val speed: JsonField<Double>,
             private val voice: JsonField<Voice>,
             private val additionalProperties: MutableMap<String, JsonValue>,
@@ -1963,26 +2301,38 @@ private constructor(
             private constructor(
                 @JsonProperty("format")
                 @ExcludeMissing
-                format: JsonField<String> = JsonMissing.of(),
+                format: JsonField<RealtimeAudioFormats> = JsonMissing.of(),
                 @JsonProperty("speed") @ExcludeMissing speed: JsonField<Double> = JsonMissing.of(),
                 @JsonProperty("voice") @ExcludeMissing voice: JsonField<Voice> = JsonMissing.of(),
             ) : this(format, speed, voice, mutableMapOf())
 
             /**
-             * The format of output audio. Options are `pcm16`, `g711_ulaw`, or `g711_alaw`.
+             * The format of the output audio.
              *
              * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if
              *   the server responded with an unexpected value).
              */
-            fun format(): Optional<String> = format.getOptional("format")
+            fun format(): Optional<RealtimeAudioFormats> = format.getOptional("format")
 
             /**
+             * The speed of the model's spoken response as a multiple of the original speed. 1.0 is
+             * the default speed. 0.25 is the minimum speed. 1.5 is the maximum speed. This value
+             * can only be changed in between model turns, not while a response is in progress.
+             *
+             * This parameter is a post-processing adjustment to the audio after it is generated,
+             * it's also possible to prompt the model to speak faster or slower.
+             *
              * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if
              *   the server responded with an unexpected value).
              */
             fun speed(): Optional<Double> = speed.getOptional("speed")
 
             /**
+             * The voice the model uses to respond. Voice cannot be changed during the session once
+             * the model has responded with audio at least once. Current voice options are `alloy`,
+             * `ash`, `ballad`, `coral`, `echo`, `sage`, `shimmer`, `verse`, `marin`, and `cedar`.
+             * We recommend `marin` and `cedar` for best quality.
+             *
              * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if
              *   the server responded with an unexpected value).
              */
@@ -1993,7 +2343,9 @@ private constructor(
              *
              * Unlike [format], this method doesn't throw if the JSON field has an unexpected type.
              */
-            @JsonProperty("format") @ExcludeMissing fun _format(): JsonField<String> = format
+            @JsonProperty("format")
+            @ExcludeMissing
+            fun _format(): JsonField<RealtimeAudioFormats> = format
 
             /**
              * Returns the raw JSON value of [speed].
@@ -2030,7 +2382,7 @@ private constructor(
             /** A builder for [Output]. */
             class Builder internal constructor() {
 
-                private var format: JsonField<String> = JsonMissing.of()
+                private var format: JsonField<RealtimeAudioFormats> = JsonMissing.of()
                 private var speed: JsonField<Double> = JsonMissing.of()
                 private var voice: JsonField<Voice> = JsonMissing.of()
                 private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
@@ -2043,18 +2395,43 @@ private constructor(
                     additionalProperties = output.additionalProperties.toMutableMap()
                 }
 
-                /** The format of output audio. Options are `pcm16`, `g711_ulaw`, or `g711_alaw`. */
-                fun format(format: String) = format(JsonField.of(format))
+                /** The format of the output audio. */
+                fun format(format: RealtimeAudioFormats) = format(JsonField.of(format))
 
                 /**
                  * Sets [Builder.format] to an arbitrary JSON value.
                  *
-                 * You should usually call [Builder.format] with a well-typed [String] value
-                 * instead. This method is primarily for setting the field to an undocumented or not
-                 * yet supported value.
+                 * You should usually call [Builder.format] with a well-typed [RealtimeAudioFormats]
+                 * value instead. This method is primarily for setting the field to an undocumented
+                 * or not yet supported value.
                  */
-                fun format(format: JsonField<String>) = apply { this.format = format }
+                fun format(format: JsonField<RealtimeAudioFormats>) = apply { this.format = format }
 
+                /** Alias for calling [format] with `RealtimeAudioFormats.ofAudioPcm(audioPcm)`. */
+                fun format(audioPcm: RealtimeAudioFormats.AudioPcm) =
+                    format(RealtimeAudioFormats.ofAudioPcm(audioPcm))
+
+                /**
+                 * Alias for calling [format] with `RealtimeAudioFormats.ofAudioPcmu(audioPcmu)`.
+                 */
+                fun format(audioPcmu: RealtimeAudioFormats.AudioPcmu) =
+                    format(RealtimeAudioFormats.ofAudioPcmu(audioPcmu))
+
+                /**
+                 * Alias for calling [format] with `RealtimeAudioFormats.ofAudioPcma(audioPcma)`.
+                 */
+                fun format(audioPcma: RealtimeAudioFormats.AudioPcma) =
+                    format(RealtimeAudioFormats.ofAudioPcma(audioPcma))
+
+                /**
+                 * The speed of the model's spoken response as a multiple of the original speed. 1.0
+                 * is the default speed. 0.25 is the minimum speed. 1.5 is the maximum speed. This
+                 * value can only be changed in between model turns, not while a response is in
+                 * progress.
+                 *
+                 * This parameter is a post-processing adjustment to the audio after it is
+                 * generated, it's also possible to prompt the model to speak faster or slower.
+                 */
                 fun speed(speed: Double) = speed(JsonField.of(speed))
 
                 /**
@@ -2066,6 +2443,12 @@ private constructor(
                  */
                 fun speed(speed: JsonField<Double>) = apply { this.speed = speed }
 
+                /**
+                 * The voice the model uses to respond. Voice cannot be changed during the session
+                 * once the model has responded with audio at least once. Current voice options are
+                 * `alloy`, `ash`, `ballad`, `coral`, `echo`, `sage`, `shimmer`, `verse`, `marin`,
+                 * and `cedar`. We recommend `marin` and `cedar` for best quality.
+                 */
                 fun voice(voice: Voice) = voice(JsonField.of(voice))
 
                 /**
@@ -2124,7 +2507,7 @@ private constructor(
                     return@apply
                 }
 
-                format()
+                format().ifPresent { it.validate() }
                 speed()
                 voice()
                 validated = true
@@ -2146,10 +2529,16 @@ private constructor(
              */
             @JvmSynthetic
             internal fun validity(): Int =
-                (if (format.asKnown().isPresent) 1 else 0) +
+                (format.asKnown().getOrNull()?.validity() ?: 0) +
                     (if (speed.asKnown().isPresent) 1 else 0) +
                     (if (voice.asKnown().isPresent) 1 else 0)
 
+            /**
+             * The voice the model uses to respond. Voice cannot be changed during the session once
+             * the model has responded with audio at least once. Current voice options are `alloy`,
+             * `ash`, `ballad`, `coral`, `echo`, `sage`, `shimmer`, `verse`, `marin`, and `cedar`.
+             * We recommend `marin` and `cedar` for best quality.
+             */
             class Voice @JsonCreator private constructor(private val value: JsonField<String>) :
                 Enum {
 
@@ -2675,6 +3064,175 @@ private constructor(
         }
     }
 
+    /** The Realtime model used for this session. */
+    class Model @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
+
+        /**
+         * Returns this class instance's raw value.
+         *
+         * This is usually only useful if this instance was deserialized from data that doesn't
+         * match any known member, and you want to know that value. For example, if the SDK is on an
+         * older version than the API, then the API may respond with new members that the SDK is
+         * unaware of.
+         */
+        @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
+
+        companion object {
+
+            @JvmField val GPT_REALTIME = of("gpt-realtime")
+
+            @JvmField val GPT_REALTIME_2025_08_28 = of("gpt-realtime-2025-08-28")
+
+            @JvmField val GPT_4O_REALTIME_PREVIEW = of("gpt-4o-realtime-preview")
+
+            @JvmField
+            val GPT_4O_REALTIME_PREVIEW_2024_10_01 = of("gpt-4o-realtime-preview-2024-10-01")
+
+            @JvmField
+            val GPT_4O_REALTIME_PREVIEW_2024_12_17 = of("gpt-4o-realtime-preview-2024-12-17")
+
+            @JvmField
+            val GPT_4O_REALTIME_PREVIEW_2025_06_03 = of("gpt-4o-realtime-preview-2025-06-03")
+
+            @JvmField val GPT_4O_MINI_REALTIME_PREVIEW = of("gpt-4o-mini-realtime-preview")
+
+            @JvmField
+            val GPT_4O_MINI_REALTIME_PREVIEW_2024_12_17 =
+                of("gpt-4o-mini-realtime-preview-2024-12-17")
+
+            @JvmStatic fun of(value: String) = Model(JsonField.of(value))
+        }
+
+        /** An enum containing [Model]'s known values. */
+        enum class Known {
+            GPT_REALTIME,
+            GPT_REALTIME_2025_08_28,
+            GPT_4O_REALTIME_PREVIEW,
+            GPT_4O_REALTIME_PREVIEW_2024_10_01,
+            GPT_4O_REALTIME_PREVIEW_2024_12_17,
+            GPT_4O_REALTIME_PREVIEW_2025_06_03,
+            GPT_4O_MINI_REALTIME_PREVIEW,
+            GPT_4O_MINI_REALTIME_PREVIEW_2024_12_17,
+        }
+
+        /**
+         * An enum containing [Model]'s known values, as well as an [_UNKNOWN] member.
+         *
+         * An instance of [Model] can contain an unknown value in a couple of cases:
+         * - It was deserialized from data that doesn't match any known member. For example, if the
+         *   SDK is on an older version than the API, then the API may respond with new members that
+         *   the SDK is unaware of.
+         * - It was constructed with an arbitrary value using the [of] method.
+         */
+        enum class Value {
+            GPT_REALTIME,
+            GPT_REALTIME_2025_08_28,
+            GPT_4O_REALTIME_PREVIEW,
+            GPT_4O_REALTIME_PREVIEW_2024_10_01,
+            GPT_4O_REALTIME_PREVIEW_2024_12_17,
+            GPT_4O_REALTIME_PREVIEW_2025_06_03,
+            GPT_4O_MINI_REALTIME_PREVIEW,
+            GPT_4O_MINI_REALTIME_PREVIEW_2024_12_17,
+            /** An enum member indicating that [Model] was instantiated with an unknown value. */
+            _UNKNOWN,
+        }
+
+        /**
+         * Returns an enum member corresponding to this class instance's value, or [Value._UNKNOWN]
+         * if the class was instantiated with an unknown value.
+         *
+         * Use the [known] method instead if you're certain the value is always known or if you want
+         * to throw for the unknown case.
+         */
+        fun value(): Value =
+            when (this) {
+                GPT_REALTIME -> Value.GPT_REALTIME
+                GPT_REALTIME_2025_08_28 -> Value.GPT_REALTIME_2025_08_28
+                GPT_4O_REALTIME_PREVIEW -> Value.GPT_4O_REALTIME_PREVIEW
+                GPT_4O_REALTIME_PREVIEW_2024_10_01 -> Value.GPT_4O_REALTIME_PREVIEW_2024_10_01
+                GPT_4O_REALTIME_PREVIEW_2024_12_17 -> Value.GPT_4O_REALTIME_PREVIEW_2024_12_17
+                GPT_4O_REALTIME_PREVIEW_2025_06_03 -> Value.GPT_4O_REALTIME_PREVIEW_2025_06_03
+                GPT_4O_MINI_REALTIME_PREVIEW -> Value.GPT_4O_MINI_REALTIME_PREVIEW
+                GPT_4O_MINI_REALTIME_PREVIEW_2024_12_17 ->
+                    Value.GPT_4O_MINI_REALTIME_PREVIEW_2024_12_17
+                else -> Value._UNKNOWN
+            }
+
+        /**
+         * Returns an enum member corresponding to this class instance's value.
+         *
+         * Use the [value] method instead if you're uncertain the value is always known and don't
+         * want to throw for the unknown case.
+         *
+         * @throws OpenAIInvalidDataException if this class instance's value is a not a known
+         *   member.
+         */
+        fun known(): Known =
+            when (this) {
+                GPT_REALTIME -> Known.GPT_REALTIME
+                GPT_REALTIME_2025_08_28 -> Known.GPT_REALTIME_2025_08_28
+                GPT_4O_REALTIME_PREVIEW -> Known.GPT_4O_REALTIME_PREVIEW
+                GPT_4O_REALTIME_PREVIEW_2024_10_01 -> Known.GPT_4O_REALTIME_PREVIEW_2024_10_01
+                GPT_4O_REALTIME_PREVIEW_2024_12_17 -> Known.GPT_4O_REALTIME_PREVIEW_2024_12_17
+                GPT_4O_REALTIME_PREVIEW_2025_06_03 -> Known.GPT_4O_REALTIME_PREVIEW_2025_06_03
+                GPT_4O_MINI_REALTIME_PREVIEW -> Known.GPT_4O_MINI_REALTIME_PREVIEW
+                GPT_4O_MINI_REALTIME_PREVIEW_2024_12_17 ->
+                    Known.GPT_4O_MINI_REALTIME_PREVIEW_2024_12_17
+                else -> throw OpenAIInvalidDataException("Unknown Model: $value")
+            }
+
+        /**
+         * Returns this class instance's primitive wire representation.
+         *
+         * This differs from the [toString] method because that method is primarily for debugging
+         * and generally doesn't throw.
+         *
+         * @throws OpenAIInvalidDataException if this class instance's value does not have the
+         *   expected primitive type.
+         */
+        fun asString(): String =
+            _value().asString().orElseThrow { OpenAIInvalidDataException("Value is not a String") }
+
+        private var validated: Boolean = false
+
+        fun validate(): Model = apply {
+            if (validated) {
+                return@apply
+            }
+
+            known()
+            validated = true
+        }
+
+        fun isValid(): Boolean =
+            try {
+                validate()
+                true
+            } catch (e: OpenAIInvalidDataException) {
+                false
+            }
+
+        /**
+         * Returns a score indicating how many valid values are contained in this object
+         * recursively.
+         *
+         * Used for best match union deserialization.
+         */
+        @JvmSynthetic internal fun validity(): Int = if (value() == Value._UNKNOWN) 0 else 1
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) {
+                return true
+            }
+
+            return other is Model && value == other.value
+        }
+
+        override fun hashCode() = value.hashCode()
+
+        override fun toString() = value.toString()
+    }
+
     class OutputModality @JsonCreator private constructor(private val value: JsonField<String>) :
         Enum {
 
@@ -2804,194 +3362,94 @@ private constructor(
         override fun toString() = value.toString()
     }
 
-    class Tool
+    /**
+     * How the model chooses tools. Provide one of the string modes or force a specific function/MCP
+     * tool.
+     */
+    @JsonDeserialize(using = ToolChoice.Deserializer::class)
+    @JsonSerialize(using = ToolChoice.Serializer::class)
+    class ToolChoice
     private constructor(
-        private val description: JsonField<String>,
-        private val name: JsonField<String>,
-        private val parameters: JsonValue,
-        private val type: JsonField<Type>,
-        private val additionalProperties: MutableMap<String, JsonValue>,
+        private val options: ToolChoiceOptions? = null,
+        private val function: ToolChoiceFunction? = null,
+        private val mcp: ToolChoiceMcp? = null,
+        private val _json: JsonValue? = null,
     ) {
 
-        @JsonCreator
-        private constructor(
-            @JsonProperty("description")
-            @ExcludeMissing
-            description: JsonField<String> = JsonMissing.of(),
-            @JsonProperty("name") @ExcludeMissing name: JsonField<String> = JsonMissing.of(),
-            @JsonProperty("parameters") @ExcludeMissing parameters: JsonValue = JsonMissing.of(),
-            @JsonProperty("type") @ExcludeMissing type: JsonField<Type> = JsonMissing.of(),
-        ) : this(description, name, parameters, type, mutableMapOf())
+        /**
+         * Controls which (if any) tool is called by the model.
+         *
+         * `none` means the model will not call any tool and instead generates a message.
+         *
+         * `auto` means the model can pick between generating a message or calling one or more
+         * tools.
+         *
+         * `required` means the model must call one or more tools.
+         */
+        fun options(): Optional<ToolChoiceOptions> = Optional.ofNullable(options)
+
+        /** Use this option to force the model to call a specific function. */
+        fun function(): Optional<ToolChoiceFunction> = Optional.ofNullable(function)
+
+        /** Use this option to force the model to call a specific tool on a remote MCP server. */
+        fun mcp(): Optional<ToolChoiceMcp> = Optional.ofNullable(mcp)
+
+        fun isOptions(): Boolean = options != null
+
+        fun isFunction(): Boolean = function != null
+
+        fun isMcp(): Boolean = mcp != null
 
         /**
-         * The description of the function, including guidance on when and how to call it, and
-         * guidance about what to tell the user when calling (if anything).
+         * Controls which (if any) tool is called by the model.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
-         */
-        fun description(): Optional<String> = description.getOptional("description")
-
-        /**
-         * The name of the function.
+         * `none` means the model will not call any tool and instead generates a message.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
-         */
-        fun name(): Optional<String> = name.getOptional("name")
-
-        /** Parameters of the function in JSON Schema. */
-        @JsonProperty("parameters") @ExcludeMissing fun _parameters(): JsonValue = parameters
-
-        /**
-         * The type of the tool, i.e. `function`.
+         * `auto` means the model can pick between generating a message or calling one or more
+         * tools.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * `required` means the model must call one or more tools.
          */
-        fun type(): Optional<Type> = type.getOptional("type")
+        fun asOptions(): ToolChoiceOptions = options.getOrThrow("options")
 
-        /**
-         * Returns the raw JSON value of [description].
-         *
-         * Unlike [description], this method doesn't throw if the JSON field has an unexpected type.
-         */
-        @JsonProperty("description")
-        @ExcludeMissing
-        fun _description(): JsonField<String> = description
+        /** Use this option to force the model to call a specific function. */
+        fun asFunction(): ToolChoiceFunction = function.getOrThrow("function")
 
-        /**
-         * Returns the raw JSON value of [name].
-         *
-         * Unlike [name], this method doesn't throw if the JSON field has an unexpected type.
-         */
-        @JsonProperty("name") @ExcludeMissing fun _name(): JsonField<String> = name
+        /** Use this option to force the model to call a specific tool on a remote MCP server. */
+        fun asMcp(): ToolChoiceMcp = mcp.getOrThrow("mcp")
 
-        /**
-         * Returns the raw JSON value of [type].
-         *
-         * Unlike [type], this method doesn't throw if the JSON field has an unexpected type.
-         */
-        @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<Type> = type
+        fun _json(): Optional<JsonValue> = Optional.ofNullable(_json)
 
-        @JsonAnySetter
-        private fun putAdditionalProperty(key: String, value: JsonValue) {
-            additionalProperties.put(key, value)
-        }
-
-        @JsonAnyGetter
-        @ExcludeMissing
-        fun _additionalProperties(): Map<String, JsonValue> =
-            Collections.unmodifiableMap(additionalProperties)
-
-        fun toBuilder() = Builder().from(this)
-
-        companion object {
-
-            /** Returns a mutable builder for constructing an instance of [Tool]. */
-            @JvmStatic fun builder() = Builder()
-        }
-
-        /** A builder for [Tool]. */
-        class Builder internal constructor() {
-
-            private var description: JsonField<String> = JsonMissing.of()
-            private var name: JsonField<String> = JsonMissing.of()
-            private var parameters: JsonValue = JsonMissing.of()
-            private var type: JsonField<Type> = JsonMissing.of()
-            private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
-
-            @JvmSynthetic
-            internal fun from(tool: Tool) = apply {
-                description = tool.description
-                name = tool.name
-                parameters = tool.parameters
-                type = tool.type
-                additionalProperties = tool.additionalProperties.toMutableMap()
+        fun <T> accept(visitor: Visitor<T>): T =
+            when {
+                options != null -> visitor.visitOptions(options)
+                function != null -> visitor.visitFunction(function)
+                mcp != null -> visitor.visitMcp(mcp)
+                else -> visitor.unknown(_json)
             }
-
-            /**
-             * The description of the function, including guidance on when and how to call it, and
-             * guidance about what to tell the user when calling (if anything).
-             */
-            fun description(description: String) = description(JsonField.of(description))
-
-            /**
-             * Sets [Builder.description] to an arbitrary JSON value.
-             *
-             * You should usually call [Builder.description] with a well-typed [String] value
-             * instead. This method is primarily for setting the field to an undocumented or not yet
-             * supported value.
-             */
-            fun description(description: JsonField<String>) = apply {
-                this.description = description
-            }
-
-            /** The name of the function. */
-            fun name(name: String) = name(JsonField.of(name))
-
-            /**
-             * Sets [Builder.name] to an arbitrary JSON value.
-             *
-             * You should usually call [Builder.name] with a well-typed [String] value instead. This
-             * method is primarily for setting the field to an undocumented or not yet supported
-             * value.
-             */
-            fun name(name: JsonField<String>) = apply { this.name = name }
-
-            /** Parameters of the function in JSON Schema. */
-            fun parameters(parameters: JsonValue) = apply { this.parameters = parameters }
-
-            /** The type of the tool, i.e. `function`. */
-            fun type(type: Type) = type(JsonField.of(type))
-
-            /**
-             * Sets [Builder.type] to an arbitrary JSON value.
-             *
-             * You should usually call [Builder.type] with a well-typed [Type] value instead. This
-             * method is primarily for setting the field to an undocumented or not yet supported
-             * value.
-             */
-            fun type(type: JsonField<Type>) = apply { this.type = type }
-
-            fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
-                this.additionalProperties.clear()
-                putAllAdditionalProperties(additionalProperties)
-            }
-
-            fun putAdditionalProperty(key: String, value: JsonValue) = apply {
-                additionalProperties.put(key, value)
-            }
-
-            fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
-                this.additionalProperties.putAll(additionalProperties)
-            }
-
-            fun removeAdditionalProperty(key: String) = apply { additionalProperties.remove(key) }
-
-            fun removeAllAdditionalProperties(keys: Set<String>) = apply {
-                keys.forEach(::removeAdditionalProperty)
-            }
-
-            /**
-             * Returns an immutable instance of [Tool].
-             *
-             * Further updates to this [Builder] will not mutate the returned instance.
-             */
-            fun build(): Tool =
-                Tool(description, name, parameters, type, additionalProperties.toMutableMap())
-        }
 
         private var validated: Boolean = false
 
-        fun validate(): Tool = apply {
+        fun validate(): ToolChoice = apply {
             if (validated) {
                 return@apply
             }
 
-            description()
-            name()
-            type().ifPresent { it.validate() }
+            accept(
+                object : Visitor<Unit> {
+                    override fun visitOptions(options: ToolChoiceOptions) {
+                        options.validate()
+                    }
+
+                    override fun visitFunction(function: ToolChoiceFunction) {
+                        function.validate()
+                    }
+
+                    override fun visitMcp(mcp: ToolChoiceMcp) {
+                        mcp.validate()
+                    }
+                }
+            )
             validated = true
         }
 
@@ -3011,100 +3469,893 @@ private constructor(
          */
         @JvmSynthetic
         internal fun validity(): Int =
-            (if (description.asKnown().isPresent) 1 else 0) +
-                (if (name.asKnown().isPresent) 1 else 0) +
-                (type.asKnown().getOrNull()?.validity() ?: 0)
+            accept(
+                object : Visitor<Int> {
+                    override fun visitOptions(options: ToolChoiceOptions) = options.validity()
 
-        /** The type of the tool, i.e. `function`. */
-        class Type @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
+                    override fun visitFunction(function: ToolChoiceFunction) = function.validity()
+
+                    override fun visitMcp(mcp: ToolChoiceMcp) = mcp.validity()
+
+                    override fun unknown(json: JsonValue?) = 0
+                }
+            )
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) {
+                return true
+            }
+
+            return other is ToolChoice &&
+                options == other.options &&
+                function == other.function &&
+                mcp == other.mcp
+        }
+
+        override fun hashCode(): Int = Objects.hash(options, function, mcp)
+
+        override fun toString(): String =
+            when {
+                options != null -> "ToolChoice{options=$options}"
+                function != null -> "ToolChoice{function=$function}"
+                mcp != null -> "ToolChoice{mcp=$mcp}"
+                _json != null -> "ToolChoice{_unknown=$_json}"
+                else -> throw IllegalStateException("Invalid ToolChoice")
+            }
+
+        companion object {
 
             /**
-             * Returns this class instance's raw value.
+             * Controls which (if any) tool is called by the model.
              *
-             * This is usually only useful if this instance was deserialized from data that doesn't
-             * match any known member, and you want to know that value. For example, if the SDK is
-             * on an older version than the API, then the API may respond with new members that the
-             * SDK is unaware of.
+             * `none` means the model will not call any tool and instead generates a message.
+             *
+             * `auto` means the model can pick between generating a message or calling one or more
+             * tools.
+             *
+             * `required` means the model must call one or more tools.
              */
-            @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
+            @JvmStatic fun ofOptions(options: ToolChoiceOptions) = ToolChoice(options = options)
+
+            /** Use this option to force the model to call a specific function. */
+            @JvmStatic
+            fun ofFunction(function: ToolChoiceFunction) = ToolChoice(function = function)
+
+            /**
+             * Use this option to force the model to call a specific tool on a remote MCP server.
+             */
+            @JvmStatic fun ofMcp(mcp: ToolChoiceMcp) = ToolChoice(mcp = mcp)
+        }
+
+        /**
+         * An interface that defines how to map each variant of [ToolChoice] to a value of type [T].
+         */
+        interface Visitor<out T> {
+
+            /**
+             * Controls which (if any) tool is called by the model.
+             *
+             * `none` means the model will not call any tool and instead generates a message.
+             *
+             * `auto` means the model can pick between generating a message or calling one or more
+             * tools.
+             *
+             * `required` means the model must call one or more tools.
+             */
+            fun visitOptions(options: ToolChoiceOptions): T
+
+            /** Use this option to force the model to call a specific function. */
+            fun visitFunction(function: ToolChoiceFunction): T
+
+            /**
+             * Use this option to force the model to call a specific tool on a remote MCP server.
+             */
+            fun visitMcp(mcp: ToolChoiceMcp): T
+
+            /**
+             * Maps an unknown variant of [ToolChoice] to a value of type [T].
+             *
+             * An instance of [ToolChoice] can contain an unknown variant if it was deserialized
+             * from data that doesn't match any known variant. For example, if the SDK is on an
+             * older version than the API, then the API may respond with new variants that the SDK
+             * is unaware of.
+             *
+             * @throws OpenAIInvalidDataException in the default implementation.
+             */
+            fun unknown(json: JsonValue?): T {
+                throw OpenAIInvalidDataException("Unknown ToolChoice: $json")
+            }
+        }
+
+        internal class Deserializer : BaseDeserializer<ToolChoice>(ToolChoice::class) {
+
+            override fun ObjectCodec.deserialize(node: JsonNode): ToolChoice {
+                val json = JsonValue.fromJsonNode(node)
+
+                val bestMatches =
+                    sequenceOf(
+                            tryDeserialize(node, jacksonTypeRef<ToolChoiceOptions>())?.let {
+                                ToolChoice(options = it, _json = json)
+                            },
+                            tryDeserialize(node, jacksonTypeRef<ToolChoiceFunction>())?.let {
+                                ToolChoice(function = it, _json = json)
+                            },
+                            tryDeserialize(node, jacksonTypeRef<ToolChoiceMcp>())?.let {
+                                ToolChoice(mcp = it, _json = json)
+                            },
+                        )
+                        .filterNotNull()
+                        .allMaxBy { it.validity() }
+                        .toList()
+                return when (bestMatches.size) {
+                    // This can happen if what we're deserializing is completely incompatible with
+                    // all the possible variants (e.g. deserializing from array).
+                    0 -> ToolChoice(_json = json)
+                    1 -> bestMatches.single()
+                    // If there's more than one match with the highest validity, then use the first
+                    // completely valid match, or simply the first match if none are completely
+                    // valid.
+                    else -> bestMatches.firstOrNull { it.isValid() } ?: bestMatches.first()
+                }
+            }
+        }
+
+        internal class Serializer : BaseSerializer<ToolChoice>(ToolChoice::class) {
+
+            override fun serialize(
+                value: ToolChoice,
+                generator: JsonGenerator,
+                provider: SerializerProvider,
+            ) {
+                when {
+                    value.options != null -> generator.writeObject(value.options)
+                    value.function != null -> generator.writeObject(value.function)
+                    value.mcp != null -> generator.writeObject(value.mcp)
+                    value._json != null -> generator.writeObject(value._json)
+                    else -> throw IllegalStateException("Invalid ToolChoice")
+                }
+            }
+        }
+    }
+
+    /**
+     * Give the model access to additional tools via remote Model Context Protocol (MCP) servers.
+     * [Learn more about MCP](https://platform.openai.com/docs/guides/tools-remote-mcp).
+     */
+    @JsonDeserialize(using = Tool.Deserializer::class)
+    @JsonSerialize(using = Tool.Serializer::class)
+    class Tool
+    private constructor(
+        private val models: Models? = null,
+        private val mcp: McpTool? = null,
+        private val _json: JsonValue? = null,
+    ) {
+
+        fun models(): Optional<Models> = Optional.ofNullable(models)
+
+        /**
+         * Give the model access to additional tools via remote Model Context Protocol (MCP)
+         * servers.
+         * [Learn more about MCP](https://platform.openai.com/docs/guides/tools-remote-mcp).
+         */
+        fun mcp(): Optional<McpTool> = Optional.ofNullable(mcp)
+
+        fun isModels(): Boolean = models != null
+
+        fun isMcp(): Boolean = mcp != null
+
+        fun asModels(): Models = models.getOrThrow("models")
+
+        /**
+         * Give the model access to additional tools via remote Model Context Protocol (MCP)
+         * servers.
+         * [Learn more about MCP](https://platform.openai.com/docs/guides/tools-remote-mcp).
+         */
+        fun asMcp(): McpTool = mcp.getOrThrow("mcp")
+
+        fun _json(): Optional<JsonValue> = Optional.ofNullable(_json)
+
+        fun <T> accept(visitor: Visitor<T>): T =
+            when {
+                models != null -> visitor.visitModels(models)
+                mcp != null -> visitor.visitMcp(mcp)
+                else -> visitor.unknown(_json)
+            }
+
+        private var validated: Boolean = false
+
+        fun validate(): Tool = apply {
+            if (validated) {
+                return@apply
+            }
+
+            accept(
+                object : Visitor<Unit> {
+                    override fun visitModels(models: Models) {
+                        models.validate()
+                    }
+
+                    override fun visitMcp(mcp: McpTool) {
+                        mcp.validate()
+                    }
+                }
+            )
+            validated = true
+        }
+
+        fun isValid(): Boolean =
+            try {
+                validate()
+                true
+            } catch (e: OpenAIInvalidDataException) {
+                false
+            }
+
+        /**
+         * Returns a score indicating how many valid values are contained in this object
+         * recursively.
+         *
+         * Used for best match union deserialization.
+         */
+        @JvmSynthetic
+        internal fun validity(): Int =
+            accept(
+                object : Visitor<Int> {
+                    override fun visitModels(models: Models) = models.validity()
+
+                    override fun visitMcp(mcp: McpTool) = mcp.validity()
+
+                    override fun unknown(json: JsonValue?) = 0
+                }
+            )
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) {
+                return true
+            }
+
+            return other is Tool && models == other.models && mcp == other.mcp
+        }
+
+        override fun hashCode(): Int = Objects.hash(models, mcp)
+
+        override fun toString(): String =
+            when {
+                models != null -> "Tool{models=$models}"
+                mcp != null -> "Tool{mcp=$mcp}"
+                _json != null -> "Tool{_unknown=$_json}"
+                else -> throw IllegalStateException("Invalid Tool")
+            }
+
+        companion object {
+
+            @JvmStatic fun ofModels(models: Models) = Tool(models = models)
+
+            /**
+             * Give the model access to additional tools via remote Model Context Protocol (MCP)
+             * servers.
+             * [Learn more about MCP](https://platform.openai.com/docs/guides/tools-remote-mcp).
+             */
+            @JvmStatic fun ofMcp(mcp: McpTool) = Tool(mcp = mcp)
+        }
+
+        /** An interface that defines how to map each variant of [Tool] to a value of type [T]. */
+        interface Visitor<out T> {
+
+            fun visitModels(models: Models): T
+
+            /**
+             * Give the model access to additional tools via remote Model Context Protocol (MCP)
+             * servers.
+             * [Learn more about MCP](https://platform.openai.com/docs/guides/tools-remote-mcp).
+             */
+            fun visitMcp(mcp: McpTool): T
+
+            /**
+             * Maps an unknown variant of [Tool] to a value of type [T].
+             *
+             * An instance of [Tool] can contain an unknown variant if it was deserialized from data
+             * that doesn't match any known variant. For example, if the SDK is on an older version
+             * than the API, then the API may respond with new variants that the SDK is unaware of.
+             *
+             * @throws OpenAIInvalidDataException in the default implementation.
+             */
+            fun unknown(json: JsonValue?): T {
+                throw OpenAIInvalidDataException("Unknown Tool: $json")
+            }
+        }
+
+        internal class Deserializer : BaseDeserializer<Tool>(Tool::class) {
+
+            override fun ObjectCodec.deserialize(node: JsonNode): Tool {
+                val json = JsonValue.fromJsonNode(node)
+
+                val bestMatches =
+                    sequenceOf(
+                            tryDeserialize(node, jacksonTypeRef<Models>())?.let {
+                                Tool(models = it, _json = json)
+                            },
+                            tryDeserialize(node, jacksonTypeRef<McpTool>())?.let {
+                                Tool(mcp = it, _json = json)
+                            },
+                        )
+                        .filterNotNull()
+                        .allMaxBy { it.validity() }
+                        .toList()
+                return when (bestMatches.size) {
+                    // This can happen if what we're deserializing is completely incompatible with
+                    // all the possible variants (e.g. deserializing from boolean).
+                    0 -> Tool(_json = json)
+                    1 -> bestMatches.single()
+                    // If there's more than one match with the highest validity, then use the first
+                    // completely valid match, or simply the first match if none are completely
+                    // valid.
+                    else -> bestMatches.firstOrNull { it.isValid() } ?: bestMatches.first()
+                }
+            }
+        }
+
+        internal class Serializer : BaseSerializer<Tool>(Tool::class) {
+
+            override fun serialize(
+                value: Tool,
+                generator: JsonGenerator,
+                provider: SerializerProvider,
+            ) {
+                when {
+                    value.models != null -> generator.writeObject(value.models)
+                    value.mcp != null -> generator.writeObject(value.mcp)
+                    value._json != null -> generator.writeObject(value._json)
+                    else -> throw IllegalStateException("Invalid Tool")
+                }
+            }
+        }
+
+        /**
+         * Give the model access to additional tools via remote Model Context Protocol (MCP)
+         * servers.
+         * [Learn more about MCP](https://platform.openai.com/docs/guides/tools-remote-mcp).
+         */
+        class McpTool
+        private constructor(
+            private val serverLabel: JsonField<String>,
+            private val type: JsonValue,
+            private val allowedTools: JsonField<AllowedTools>,
+            private val authorization: JsonField<String>,
+            private val connectorId: JsonField<ConnectorId>,
+            private val headers: JsonField<Headers>,
+            private val requireApproval: JsonField<RequireApproval>,
+            private val serverDescription: JsonField<String>,
+            private val serverUrl: JsonField<String>,
+            private val additionalProperties: MutableMap<String, JsonValue>,
+        ) {
+
+            @JsonCreator
+            private constructor(
+                @JsonProperty("server_label")
+                @ExcludeMissing
+                serverLabel: JsonField<String> = JsonMissing.of(),
+                @JsonProperty("type") @ExcludeMissing type: JsonValue = JsonMissing.of(),
+                @JsonProperty("allowed_tools")
+                @ExcludeMissing
+                allowedTools: JsonField<AllowedTools> = JsonMissing.of(),
+                @JsonProperty("authorization")
+                @ExcludeMissing
+                authorization: JsonField<String> = JsonMissing.of(),
+                @JsonProperty("connector_id")
+                @ExcludeMissing
+                connectorId: JsonField<ConnectorId> = JsonMissing.of(),
+                @JsonProperty("headers")
+                @ExcludeMissing
+                headers: JsonField<Headers> = JsonMissing.of(),
+                @JsonProperty("require_approval")
+                @ExcludeMissing
+                requireApproval: JsonField<RequireApproval> = JsonMissing.of(),
+                @JsonProperty("server_description")
+                @ExcludeMissing
+                serverDescription: JsonField<String> = JsonMissing.of(),
+                @JsonProperty("server_url")
+                @ExcludeMissing
+                serverUrl: JsonField<String> = JsonMissing.of(),
+            ) : this(
+                serverLabel,
+                type,
+                allowedTools,
+                authorization,
+                connectorId,
+                headers,
+                requireApproval,
+                serverDescription,
+                serverUrl,
+                mutableMapOf(),
+            )
+
+            /**
+             * A label for this MCP server, used to identify it in tool calls.
+             *
+             * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+             *   unexpectedly missing or null (e.g. if the server responded with an unexpected
+             *   value).
+             */
+            fun serverLabel(): String = serverLabel.getRequired("server_label")
+
+            /**
+             * The type of the MCP tool. Always `mcp`.
+             *
+             * Expected to always return the following:
+             * ```java
+             * JsonValue.from("mcp")
+             * ```
+             *
+             * However, this method can be useful for debugging and logging (e.g. if the server
+             * responded with an unexpected value).
+             */
+            @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
+
+            /**
+             * List of allowed tool names or a filter object.
+             *
+             * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if
+             *   the server responded with an unexpected value).
+             */
+            fun allowedTools(): Optional<AllowedTools> = allowedTools.getOptional("allowed_tools")
+
+            /**
+             * An OAuth access token that can be used with a remote MCP server, either with a custom
+             * MCP server URL or a service connector. Your application must handle the OAuth
+             * authorization flow and provide the token here.
+             *
+             * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if
+             *   the server responded with an unexpected value).
+             */
+            fun authorization(): Optional<String> = authorization.getOptional("authorization")
+
+            /**
+             * Identifier for service connectors, like those available in ChatGPT. One of
+             * `server_url` or `connector_id` must be provided. Learn more about service connectors
+             * [here](https://platform.openai.com/docs/guides/tools-remote-mcp#connectors).
+             *
+             * Currently supported `connector_id` values are:
+             * - Dropbox: `connector_dropbox`
+             * - Gmail: `connector_gmail`
+             * - Google Calendar: `connector_googlecalendar`
+             * - Google Drive: `connector_googledrive`
+             * - Microsoft Teams: `connector_microsoftteams`
+             * - Outlook Calendar: `connector_outlookcalendar`
+             * - Outlook Email: `connector_outlookemail`
+             * - SharePoint: `connector_sharepoint`
+             *
+             * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if
+             *   the server responded with an unexpected value).
+             */
+            fun connectorId(): Optional<ConnectorId> = connectorId.getOptional("connector_id")
+
+            /**
+             * Optional HTTP headers to send to the MCP server. Use for authentication or other
+             * purposes.
+             *
+             * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if
+             *   the server responded with an unexpected value).
+             */
+            fun headers(): Optional<Headers> = headers.getOptional("headers")
+
+            /**
+             * Specify which of the MCP server's tools require approval.
+             *
+             * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if
+             *   the server responded with an unexpected value).
+             */
+            fun requireApproval(): Optional<RequireApproval> =
+                requireApproval.getOptional("require_approval")
+
+            /**
+             * Optional description of the MCP server, used to provide more context.
+             *
+             * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if
+             *   the server responded with an unexpected value).
+             */
+            fun serverDescription(): Optional<String> =
+                serverDescription.getOptional("server_description")
+
+            /**
+             * The URL for the MCP server. One of `server_url` or `connector_id` must be provided.
+             *
+             * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if
+             *   the server responded with an unexpected value).
+             */
+            fun serverUrl(): Optional<String> = serverUrl.getOptional("server_url")
+
+            /**
+             * Returns the raw JSON value of [serverLabel].
+             *
+             * Unlike [serverLabel], this method doesn't throw if the JSON field has an unexpected
+             * type.
+             */
+            @JsonProperty("server_label")
+            @ExcludeMissing
+            fun _serverLabel(): JsonField<String> = serverLabel
+
+            /**
+             * Returns the raw JSON value of [allowedTools].
+             *
+             * Unlike [allowedTools], this method doesn't throw if the JSON field has an unexpected
+             * type.
+             */
+            @JsonProperty("allowed_tools")
+            @ExcludeMissing
+            fun _allowedTools(): JsonField<AllowedTools> = allowedTools
+
+            /**
+             * Returns the raw JSON value of [authorization].
+             *
+             * Unlike [authorization], this method doesn't throw if the JSON field has an unexpected
+             * type.
+             */
+            @JsonProperty("authorization")
+            @ExcludeMissing
+            fun _authorization(): JsonField<String> = authorization
+
+            /**
+             * Returns the raw JSON value of [connectorId].
+             *
+             * Unlike [connectorId], this method doesn't throw if the JSON field has an unexpected
+             * type.
+             */
+            @JsonProperty("connector_id")
+            @ExcludeMissing
+            fun _connectorId(): JsonField<ConnectorId> = connectorId
+
+            /**
+             * Returns the raw JSON value of [headers].
+             *
+             * Unlike [headers], this method doesn't throw if the JSON field has an unexpected type.
+             */
+            @JsonProperty("headers") @ExcludeMissing fun _headers(): JsonField<Headers> = headers
+
+            /**
+             * Returns the raw JSON value of [requireApproval].
+             *
+             * Unlike [requireApproval], this method doesn't throw if the JSON field has an
+             * unexpected type.
+             */
+            @JsonProperty("require_approval")
+            @ExcludeMissing
+            fun _requireApproval(): JsonField<RequireApproval> = requireApproval
+
+            /**
+             * Returns the raw JSON value of [serverDescription].
+             *
+             * Unlike [serverDescription], this method doesn't throw if the JSON field has an
+             * unexpected type.
+             */
+            @JsonProperty("server_description")
+            @ExcludeMissing
+            fun _serverDescription(): JsonField<String> = serverDescription
+
+            /**
+             * Returns the raw JSON value of [serverUrl].
+             *
+             * Unlike [serverUrl], this method doesn't throw if the JSON field has an unexpected
+             * type.
+             */
+            @JsonProperty("server_url")
+            @ExcludeMissing
+            fun _serverUrl(): JsonField<String> = serverUrl
+
+            @JsonAnySetter
+            private fun putAdditionalProperty(key: String, value: JsonValue) {
+                additionalProperties.put(key, value)
+            }
+
+            @JsonAnyGetter
+            @ExcludeMissing
+            fun _additionalProperties(): Map<String, JsonValue> =
+                Collections.unmodifiableMap(additionalProperties)
+
+            fun toBuilder() = Builder().from(this)
 
             companion object {
 
-                @JvmField val FUNCTION = of("function")
-
-                @JvmStatic fun of(value: String) = Type(JsonField.of(value))
+                /**
+                 * Returns a mutable builder for constructing an instance of [McpTool].
+                 *
+                 * The following fields are required:
+                 * ```java
+                 * .serverLabel()
+                 * ```
+                 */
+                @JvmStatic fun builder() = Builder()
             }
 
-            /** An enum containing [Type]'s known values. */
-            enum class Known {
-                FUNCTION
+            /** A builder for [McpTool]. */
+            class Builder internal constructor() {
+
+                private var serverLabel: JsonField<String>? = null
+                private var type: JsonValue = JsonValue.from("mcp")
+                private var allowedTools: JsonField<AllowedTools> = JsonMissing.of()
+                private var authorization: JsonField<String> = JsonMissing.of()
+                private var connectorId: JsonField<ConnectorId> = JsonMissing.of()
+                private var headers: JsonField<Headers> = JsonMissing.of()
+                private var requireApproval: JsonField<RequireApproval> = JsonMissing.of()
+                private var serverDescription: JsonField<String> = JsonMissing.of()
+                private var serverUrl: JsonField<String> = JsonMissing.of()
+                private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
+
+                @JvmSynthetic
+                internal fun from(mcpTool: McpTool) = apply {
+                    serverLabel = mcpTool.serverLabel
+                    type = mcpTool.type
+                    allowedTools = mcpTool.allowedTools
+                    authorization = mcpTool.authorization
+                    connectorId = mcpTool.connectorId
+                    headers = mcpTool.headers
+                    requireApproval = mcpTool.requireApproval
+                    serverDescription = mcpTool.serverDescription
+                    serverUrl = mcpTool.serverUrl
+                    additionalProperties = mcpTool.additionalProperties.toMutableMap()
+                }
+
+                /** A label for this MCP server, used to identify it in tool calls. */
+                fun serverLabel(serverLabel: String) = serverLabel(JsonField.of(serverLabel))
+
+                /**
+                 * Sets [Builder.serverLabel] to an arbitrary JSON value.
+                 *
+                 * You should usually call [Builder.serverLabel] with a well-typed [String] value
+                 * instead. This method is primarily for setting the field to an undocumented or not
+                 * yet supported value.
+                 */
+                fun serverLabel(serverLabel: JsonField<String>) = apply {
+                    this.serverLabel = serverLabel
+                }
+
+                /**
+                 * Sets the field to an arbitrary JSON value.
+                 *
+                 * It is usually unnecessary to call this method because the field defaults to the
+                 * following:
+                 * ```java
+                 * JsonValue.from("mcp")
+                 * ```
+                 *
+                 * This method is primarily for setting the field to an undocumented or not yet
+                 * supported value.
+                 */
+                fun type(type: JsonValue) = apply { this.type = type }
+
+                /** List of allowed tool names or a filter object. */
+                fun allowedTools(allowedTools: AllowedTools?) =
+                    allowedTools(JsonField.ofNullable(allowedTools))
+
+                /** Alias for calling [Builder.allowedTools] with `allowedTools.orElse(null)`. */
+                fun allowedTools(allowedTools: Optional<AllowedTools>) =
+                    allowedTools(allowedTools.getOrNull())
+
+                /**
+                 * Sets [Builder.allowedTools] to an arbitrary JSON value.
+                 *
+                 * You should usually call [Builder.allowedTools] with a well-typed [AllowedTools]
+                 * value instead. This method is primarily for setting the field to an undocumented
+                 * or not yet supported value.
+                 */
+                fun allowedTools(allowedTools: JsonField<AllowedTools>) = apply {
+                    this.allowedTools = allowedTools
+                }
+
+                /** Alias for calling [allowedTools] with `AllowedTools.ofMcp(mcp)`. */
+                fun allowedToolsOfMcp(mcp: List<String>) = allowedTools(AllowedTools.ofMcp(mcp))
+
+                /**
+                 * Alias for calling [allowedTools] with
+                 * `AllowedTools.ofMcpToolFilter(mcpToolFilter)`.
+                 */
+                fun allowedTools(mcpToolFilter: AllowedTools.McpToolFilter) =
+                    allowedTools(AllowedTools.ofMcpToolFilter(mcpToolFilter))
+
+                /**
+                 * An OAuth access token that can be used with a remote MCP server, either with a
+                 * custom MCP server URL or a service connector. Your application must handle the
+                 * OAuth authorization flow and provide the token here.
+                 */
+                fun authorization(authorization: String) =
+                    authorization(JsonField.of(authorization))
+
+                /**
+                 * Sets [Builder.authorization] to an arbitrary JSON value.
+                 *
+                 * You should usually call [Builder.authorization] with a well-typed [String] value
+                 * instead. This method is primarily for setting the field to an undocumented or not
+                 * yet supported value.
+                 */
+                fun authorization(authorization: JsonField<String>) = apply {
+                    this.authorization = authorization
+                }
+
+                /**
+                 * Identifier for service connectors, like those available in ChatGPT. One of
+                 * `server_url` or `connector_id` must be provided. Learn more about service
+                 * connectors
+                 * [here](https://platform.openai.com/docs/guides/tools-remote-mcp#connectors).
+                 *
+                 * Currently supported `connector_id` values are:
+                 * - Dropbox: `connector_dropbox`
+                 * - Gmail: `connector_gmail`
+                 * - Google Calendar: `connector_googlecalendar`
+                 * - Google Drive: `connector_googledrive`
+                 * - Microsoft Teams: `connector_microsoftteams`
+                 * - Outlook Calendar: `connector_outlookcalendar`
+                 * - Outlook Email: `connector_outlookemail`
+                 * - SharePoint: `connector_sharepoint`
+                 */
+                fun connectorId(connectorId: ConnectorId) = connectorId(JsonField.of(connectorId))
+
+                /**
+                 * Sets [Builder.connectorId] to an arbitrary JSON value.
+                 *
+                 * You should usually call [Builder.connectorId] with a well-typed [ConnectorId]
+                 * value instead. This method is primarily for setting the field to an undocumented
+                 * or not yet supported value.
+                 */
+                fun connectorId(connectorId: JsonField<ConnectorId>) = apply {
+                    this.connectorId = connectorId
+                }
+
+                /**
+                 * Optional HTTP headers to send to the MCP server. Use for authentication or other
+                 * purposes.
+                 */
+                fun headers(headers: Headers?) = headers(JsonField.ofNullable(headers))
+
+                /** Alias for calling [Builder.headers] with `headers.orElse(null)`. */
+                fun headers(headers: Optional<Headers>) = headers(headers.getOrNull())
+
+                /**
+                 * Sets [Builder.headers] to an arbitrary JSON value.
+                 *
+                 * You should usually call [Builder.headers] with a well-typed [Headers] value
+                 * instead. This method is primarily for setting the field to an undocumented or not
+                 * yet supported value.
+                 */
+                fun headers(headers: JsonField<Headers>) = apply { this.headers = headers }
+
+                /** Specify which of the MCP server's tools require approval. */
+                fun requireApproval(requireApproval: RequireApproval?) =
+                    requireApproval(JsonField.ofNullable(requireApproval))
+
+                /**
+                 * Alias for calling [Builder.requireApproval] with `requireApproval.orElse(null)`.
+                 */
+                fun requireApproval(requireApproval: Optional<RequireApproval>) =
+                    requireApproval(requireApproval.getOrNull())
+
+                /**
+                 * Sets [Builder.requireApproval] to an arbitrary JSON value.
+                 *
+                 * You should usually call [Builder.requireApproval] with a well-typed
+                 * [RequireApproval] value instead. This method is primarily for setting the field
+                 * to an undocumented or not yet supported value.
+                 */
+                fun requireApproval(requireApproval: JsonField<RequireApproval>) = apply {
+                    this.requireApproval = requireApproval
+                }
+
+                /**
+                 * Alias for calling [requireApproval] with
+                 * `RequireApproval.ofMcpToolApprovalFilter(mcpToolApprovalFilter)`.
+                 */
+                fun requireApproval(mcpToolApprovalFilter: RequireApproval.McpToolApprovalFilter) =
+                    requireApproval(RequireApproval.ofMcpToolApprovalFilter(mcpToolApprovalFilter))
+
+                /**
+                 * Alias for calling [requireApproval] with
+                 * `RequireApproval.ofMcpToolApprovalSetting(mcpToolApprovalSetting)`.
+                 */
+                fun requireApproval(
+                    mcpToolApprovalSetting: RequireApproval.McpToolApprovalSetting
+                ) =
+                    requireApproval(
+                        RequireApproval.ofMcpToolApprovalSetting(mcpToolApprovalSetting)
+                    )
+
+                /** Optional description of the MCP server, used to provide more context. */
+                fun serverDescription(serverDescription: String) =
+                    serverDescription(JsonField.of(serverDescription))
+
+                /**
+                 * Sets [Builder.serverDescription] to an arbitrary JSON value.
+                 *
+                 * You should usually call [Builder.serverDescription] with a well-typed [String]
+                 * value instead. This method is primarily for setting the field to an undocumented
+                 * or not yet supported value.
+                 */
+                fun serverDescription(serverDescription: JsonField<String>) = apply {
+                    this.serverDescription = serverDescription
+                }
+
+                /**
+                 * The URL for the MCP server. One of `server_url` or `connector_id` must be
+                 * provided.
+                 */
+                fun serverUrl(serverUrl: String) = serverUrl(JsonField.of(serverUrl))
+
+                /**
+                 * Sets [Builder.serverUrl] to an arbitrary JSON value.
+                 *
+                 * You should usually call [Builder.serverUrl] with a well-typed [String] value
+                 * instead. This method is primarily for setting the field to an undocumented or not
+                 * yet supported value.
+                 */
+                fun serverUrl(serverUrl: JsonField<String>) = apply { this.serverUrl = serverUrl }
+
+                fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                    this.additionalProperties.clear()
+                    putAllAdditionalProperties(additionalProperties)
+                }
+
+                fun putAdditionalProperty(key: String, value: JsonValue) = apply {
+                    additionalProperties.put(key, value)
+                }
+
+                fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) =
+                    apply {
+                        this.additionalProperties.putAll(additionalProperties)
+                    }
+
+                fun removeAdditionalProperty(key: String) = apply {
+                    additionalProperties.remove(key)
+                }
+
+                fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                    keys.forEach(::removeAdditionalProperty)
+                }
+
+                /**
+                 * Returns an immutable instance of [McpTool].
+                 *
+                 * Further updates to this [Builder] will not mutate the returned instance.
+                 *
+                 * The following fields are required:
+                 * ```java
+                 * .serverLabel()
+                 * ```
+                 *
+                 * @throws IllegalStateException if any required field is unset.
+                 */
+                fun build(): McpTool =
+                    McpTool(
+                        checkRequired("serverLabel", serverLabel),
+                        type,
+                        allowedTools,
+                        authorization,
+                        connectorId,
+                        headers,
+                        requireApproval,
+                        serverDescription,
+                        serverUrl,
+                        additionalProperties.toMutableMap(),
+                    )
             }
-
-            /**
-             * An enum containing [Type]'s known values, as well as an [_UNKNOWN] member.
-             *
-             * An instance of [Type] can contain an unknown value in a couple of cases:
-             * - It was deserialized from data that doesn't match any known member. For example, if
-             *   the SDK is on an older version than the API, then the API may respond with new
-             *   members that the SDK is unaware of.
-             * - It was constructed with an arbitrary value using the [of] method.
-             */
-            enum class Value {
-                FUNCTION,
-                /** An enum member indicating that [Type] was instantiated with an unknown value. */
-                _UNKNOWN,
-            }
-
-            /**
-             * Returns an enum member corresponding to this class instance's value, or
-             * [Value._UNKNOWN] if the class was instantiated with an unknown value.
-             *
-             * Use the [known] method instead if you're certain the value is always known or if you
-             * want to throw for the unknown case.
-             */
-            fun value(): Value =
-                when (this) {
-                    FUNCTION -> Value.FUNCTION
-                    else -> Value._UNKNOWN
-                }
-
-            /**
-             * Returns an enum member corresponding to this class instance's value.
-             *
-             * Use the [value] method instead if you're uncertain the value is always known and
-             * don't want to throw for the unknown case.
-             *
-             * @throws OpenAIInvalidDataException if this class instance's value is a not a known
-             *   member.
-             */
-            fun known(): Known =
-                when (this) {
-                    FUNCTION -> Known.FUNCTION
-                    else -> throw OpenAIInvalidDataException("Unknown Type: $value")
-                }
-
-            /**
-             * Returns this class instance's primitive wire representation.
-             *
-             * This differs from the [toString] method because that method is primarily for
-             * debugging and generally doesn't throw.
-             *
-             * @throws OpenAIInvalidDataException if this class instance's value does not have the
-             *   expected primitive type.
-             */
-            fun asString(): String =
-                _value().asString().orElseThrow {
-                    OpenAIInvalidDataException("Value is not a String")
-                }
 
             private var validated: Boolean = false
 
-            fun validate(): Type = apply {
+            fun validate(): McpTool = apply {
                 if (validated) {
                     return@apply
                 }
 
-                known()
+                serverLabel()
+                _type().let {
+                    if (it != JsonValue.from("mcp")) {
+                        throw OpenAIInvalidDataException("'type' is invalid, received $it")
+                    }
+                }
+                allowedTools().ifPresent { it.validate() }
+                authorization()
+                connectorId().ifPresent { it.validate() }
+                headers().ifPresent { it.validate() }
+                requireApproval().ifPresent { it.validate() }
+                serverDescription()
+                serverUrl()
                 validated = true
             }
 
@@ -3122,47 +4373,1820 @@ private constructor(
              *
              * Used for best match union deserialization.
              */
-            @JvmSynthetic internal fun validity(): Int = if (value() == Value._UNKNOWN) 0 else 1
+            @JvmSynthetic
+            internal fun validity(): Int =
+                (if (serverLabel.asKnown().isPresent) 1 else 0) +
+                    type.let { if (it == JsonValue.from("mcp")) 1 else 0 } +
+                    (allowedTools.asKnown().getOrNull()?.validity() ?: 0) +
+                    (if (authorization.asKnown().isPresent) 1 else 0) +
+                    (connectorId.asKnown().getOrNull()?.validity() ?: 0) +
+                    (headers.asKnown().getOrNull()?.validity() ?: 0) +
+                    (requireApproval.asKnown().getOrNull()?.validity() ?: 0) +
+                    (if (serverDescription.asKnown().isPresent) 1 else 0) +
+                    (if (serverUrl.asKnown().isPresent) 1 else 0)
+
+            /** List of allowed tool names or a filter object. */
+            @JsonDeserialize(using = AllowedTools.Deserializer::class)
+            @JsonSerialize(using = AllowedTools.Serializer::class)
+            class AllowedTools
+            private constructor(
+                private val mcp: List<String>? = null,
+                private val mcpToolFilter: McpToolFilter? = null,
+                private val _json: JsonValue? = null,
+            ) {
+
+                /** A string array of allowed tool names */
+                fun mcp(): Optional<List<String>> = Optional.ofNullable(mcp)
+
+                /** A filter object to specify which tools are allowed. */
+                fun mcpToolFilter(): Optional<McpToolFilter> = Optional.ofNullable(mcpToolFilter)
+
+                fun isMcp(): Boolean = mcp != null
+
+                fun isMcpToolFilter(): Boolean = mcpToolFilter != null
+
+                /** A string array of allowed tool names */
+                fun asMcp(): List<String> = mcp.getOrThrow("mcp")
+
+                /** A filter object to specify which tools are allowed. */
+                fun asMcpToolFilter(): McpToolFilter = mcpToolFilter.getOrThrow("mcpToolFilter")
+
+                fun _json(): Optional<JsonValue> = Optional.ofNullable(_json)
+
+                fun <T> accept(visitor: Visitor<T>): T =
+                    when {
+                        mcp != null -> visitor.visitMcp(mcp)
+                        mcpToolFilter != null -> visitor.visitMcpToolFilter(mcpToolFilter)
+                        else -> visitor.unknown(_json)
+                    }
+
+                private var validated: Boolean = false
+
+                fun validate(): AllowedTools = apply {
+                    if (validated) {
+                        return@apply
+                    }
+
+                    accept(
+                        object : Visitor<Unit> {
+                            override fun visitMcp(mcp: List<String>) {}
+
+                            override fun visitMcpToolFilter(mcpToolFilter: McpToolFilter) {
+                                mcpToolFilter.validate()
+                            }
+                        }
+                    )
+                    validated = true
+                }
+
+                fun isValid(): Boolean =
+                    try {
+                        validate()
+                        true
+                    } catch (e: OpenAIInvalidDataException) {
+                        false
+                    }
+
+                /**
+                 * Returns a score indicating how many valid values are contained in this object
+                 * recursively.
+                 *
+                 * Used for best match union deserialization.
+                 */
+                @JvmSynthetic
+                internal fun validity(): Int =
+                    accept(
+                        object : Visitor<Int> {
+                            override fun visitMcp(mcp: List<String>) = mcp.size
+
+                            override fun visitMcpToolFilter(mcpToolFilter: McpToolFilter) =
+                                mcpToolFilter.validity()
+
+                            override fun unknown(json: JsonValue?) = 0
+                        }
+                    )
+
+                override fun equals(other: Any?): Boolean {
+                    if (this === other) {
+                        return true
+                    }
+
+                    return other is AllowedTools &&
+                        mcp == other.mcp &&
+                        mcpToolFilter == other.mcpToolFilter
+                }
+
+                override fun hashCode(): Int = Objects.hash(mcp, mcpToolFilter)
+
+                override fun toString(): String =
+                    when {
+                        mcp != null -> "AllowedTools{mcp=$mcp}"
+                        mcpToolFilter != null -> "AllowedTools{mcpToolFilter=$mcpToolFilter}"
+                        _json != null -> "AllowedTools{_unknown=$_json}"
+                        else -> throw IllegalStateException("Invalid AllowedTools")
+                    }
+
+                companion object {
+
+                    /** A string array of allowed tool names */
+                    @JvmStatic fun ofMcp(mcp: List<String>) = AllowedTools(mcp = mcp.toImmutable())
+
+                    /** A filter object to specify which tools are allowed. */
+                    @JvmStatic
+                    fun ofMcpToolFilter(mcpToolFilter: McpToolFilter) =
+                        AllowedTools(mcpToolFilter = mcpToolFilter)
+                }
+
+                /**
+                 * An interface that defines how to map each variant of [AllowedTools] to a value of
+                 * type [T].
+                 */
+                interface Visitor<out T> {
+
+                    /** A string array of allowed tool names */
+                    fun visitMcp(mcp: List<String>): T
+
+                    /** A filter object to specify which tools are allowed. */
+                    fun visitMcpToolFilter(mcpToolFilter: McpToolFilter): T
+
+                    /**
+                     * Maps an unknown variant of [AllowedTools] to a value of type [T].
+                     *
+                     * An instance of [AllowedTools] can contain an unknown variant if it was
+                     * deserialized from data that doesn't match any known variant. For example, if
+                     * the SDK is on an older version than the API, then the API may respond with
+                     * new variants that the SDK is unaware of.
+                     *
+                     * @throws OpenAIInvalidDataException in the default implementation.
+                     */
+                    fun unknown(json: JsonValue?): T {
+                        throw OpenAIInvalidDataException("Unknown AllowedTools: $json")
+                    }
+                }
+
+                internal class Deserializer : BaseDeserializer<AllowedTools>(AllowedTools::class) {
+
+                    override fun ObjectCodec.deserialize(node: JsonNode): AllowedTools {
+                        val json = JsonValue.fromJsonNode(node)
+
+                        val bestMatches =
+                            sequenceOf(
+                                    tryDeserialize(node, jacksonTypeRef<McpToolFilter>())?.let {
+                                        AllowedTools(mcpToolFilter = it, _json = json)
+                                    },
+                                    tryDeserialize(node, jacksonTypeRef<List<String>>())?.let {
+                                        AllowedTools(mcp = it, _json = json)
+                                    },
+                                )
+                                .filterNotNull()
+                                .allMaxBy { it.validity() }
+                                .toList()
+                        return when (bestMatches.size) {
+                            // This can happen if what we're deserializing is completely
+                            // incompatible with all the possible variants (e.g. deserializing from
+                            // boolean).
+                            0 -> AllowedTools(_json = json)
+                            1 -> bestMatches.single()
+                            // If there's more than one match with the highest validity, then use
+                            // the first completely valid match, or simply the first match if none
+                            // are completely valid.
+                            else -> bestMatches.firstOrNull { it.isValid() } ?: bestMatches.first()
+                        }
+                    }
+                }
+
+                internal class Serializer : BaseSerializer<AllowedTools>(AllowedTools::class) {
+
+                    override fun serialize(
+                        value: AllowedTools,
+                        generator: JsonGenerator,
+                        provider: SerializerProvider,
+                    ) {
+                        when {
+                            value.mcp != null -> generator.writeObject(value.mcp)
+                            value.mcpToolFilter != null ->
+                                generator.writeObject(value.mcpToolFilter)
+                            value._json != null -> generator.writeObject(value._json)
+                            else -> throw IllegalStateException("Invalid AllowedTools")
+                        }
+                    }
+                }
+
+                /** A filter object to specify which tools are allowed. */
+                class McpToolFilter
+                private constructor(
+                    private val readOnly: JsonField<Boolean>,
+                    private val toolNames: JsonField<List<String>>,
+                    private val additionalProperties: MutableMap<String, JsonValue>,
+                ) {
+
+                    @JsonCreator
+                    private constructor(
+                        @JsonProperty("read_only")
+                        @ExcludeMissing
+                        readOnly: JsonField<Boolean> = JsonMissing.of(),
+                        @JsonProperty("tool_names")
+                        @ExcludeMissing
+                        toolNames: JsonField<List<String>> = JsonMissing.of(),
+                    ) : this(readOnly, toolNames, mutableMapOf())
+
+                    /**
+                     * Indicates whether or not a tool modifies data or is read-only. If an MCP
+                     * server is
+                     * [annotated with `readOnlyHint`](https://modelcontextprotocol.io/specification/2025-06-18/schema#toolannotations-readonlyhint),
+                     * it will match this filter.
+                     *
+                     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type
+                     *   (e.g. if the server responded with an unexpected value).
+                     */
+                    fun readOnly(): Optional<Boolean> = readOnly.getOptional("read_only")
+
+                    /**
+                     * List of allowed tool names.
+                     *
+                     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type
+                     *   (e.g. if the server responded with an unexpected value).
+                     */
+                    fun toolNames(): Optional<List<String>> = toolNames.getOptional("tool_names")
+
+                    /**
+                     * Returns the raw JSON value of [readOnly].
+                     *
+                     * Unlike [readOnly], this method doesn't throw if the JSON field has an
+                     * unexpected type.
+                     */
+                    @JsonProperty("read_only")
+                    @ExcludeMissing
+                    fun _readOnly(): JsonField<Boolean> = readOnly
+
+                    /**
+                     * Returns the raw JSON value of [toolNames].
+                     *
+                     * Unlike [toolNames], this method doesn't throw if the JSON field has an
+                     * unexpected type.
+                     */
+                    @JsonProperty("tool_names")
+                    @ExcludeMissing
+                    fun _toolNames(): JsonField<List<String>> = toolNames
+
+                    @JsonAnySetter
+                    private fun putAdditionalProperty(key: String, value: JsonValue) {
+                        additionalProperties.put(key, value)
+                    }
+
+                    @JsonAnyGetter
+                    @ExcludeMissing
+                    fun _additionalProperties(): Map<String, JsonValue> =
+                        Collections.unmodifiableMap(additionalProperties)
+
+                    fun toBuilder() = Builder().from(this)
+
+                    companion object {
+
+                        /**
+                         * Returns a mutable builder for constructing an instance of
+                         * [McpToolFilter].
+                         */
+                        @JvmStatic fun builder() = Builder()
+                    }
+
+                    /** A builder for [McpToolFilter]. */
+                    class Builder internal constructor() {
+
+                        private var readOnly: JsonField<Boolean> = JsonMissing.of()
+                        private var toolNames: JsonField<MutableList<String>>? = null
+                        private var additionalProperties: MutableMap<String, JsonValue> =
+                            mutableMapOf()
+
+                        @JvmSynthetic
+                        internal fun from(mcpToolFilter: McpToolFilter) = apply {
+                            readOnly = mcpToolFilter.readOnly
+                            toolNames = mcpToolFilter.toolNames.map { it.toMutableList() }
+                            additionalProperties = mcpToolFilter.additionalProperties.toMutableMap()
+                        }
+
+                        /**
+                         * Indicates whether or not a tool modifies data or is read-only. If an MCP
+                         * server is
+                         * [annotated with `readOnlyHint`](https://modelcontextprotocol.io/specification/2025-06-18/schema#toolannotations-readonlyhint),
+                         * it will match this filter.
+                         */
+                        fun readOnly(readOnly: Boolean) = readOnly(JsonField.of(readOnly))
+
+                        /**
+                         * Sets [Builder.readOnly] to an arbitrary JSON value.
+                         *
+                         * You should usually call [Builder.readOnly] with a well-typed [Boolean]
+                         * value instead. This method is primarily for setting the field to an
+                         * undocumented or not yet supported value.
+                         */
+                        fun readOnly(readOnly: JsonField<Boolean>) = apply {
+                            this.readOnly = readOnly
+                        }
+
+                        /** List of allowed tool names. */
+                        fun toolNames(toolNames: List<String>) = toolNames(JsonField.of(toolNames))
+
+                        /**
+                         * Sets [Builder.toolNames] to an arbitrary JSON value.
+                         *
+                         * You should usually call [Builder.toolNames] with a well-typed
+                         * `List<String>` value instead. This method is primarily for setting the
+                         * field to an undocumented or not yet supported value.
+                         */
+                        fun toolNames(toolNames: JsonField<List<String>>) = apply {
+                            this.toolNames = toolNames.map { it.toMutableList() }
+                        }
+
+                        /**
+                         * Adds a single [String] to [toolNames].
+                         *
+                         * @throws IllegalStateException if the field was previously set to a
+                         *   non-list.
+                         */
+                        fun addToolName(toolName: String) = apply {
+                            toolNames =
+                                (toolNames ?: JsonField.of(mutableListOf())).also {
+                                    checkKnown("toolNames", it).add(toolName)
+                                }
+                        }
+
+                        fun additionalProperties(additionalProperties: Map<String, JsonValue>) =
+                            apply {
+                                this.additionalProperties.clear()
+                                putAllAdditionalProperties(additionalProperties)
+                            }
+
+                        fun putAdditionalProperty(key: String, value: JsonValue) = apply {
+                            additionalProperties.put(key, value)
+                        }
+
+                        fun putAllAdditionalProperties(
+                            additionalProperties: Map<String, JsonValue>
+                        ) = apply { this.additionalProperties.putAll(additionalProperties) }
+
+                        fun removeAdditionalProperty(key: String) = apply {
+                            additionalProperties.remove(key)
+                        }
+
+                        fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                            keys.forEach(::removeAdditionalProperty)
+                        }
+
+                        /**
+                         * Returns an immutable instance of [McpToolFilter].
+                         *
+                         * Further updates to this [Builder] will not mutate the returned instance.
+                         */
+                        fun build(): McpToolFilter =
+                            McpToolFilter(
+                                readOnly,
+                                (toolNames ?: JsonMissing.of()).map { it.toImmutable() },
+                                additionalProperties.toMutableMap(),
+                            )
+                    }
+
+                    private var validated: Boolean = false
+
+                    fun validate(): McpToolFilter = apply {
+                        if (validated) {
+                            return@apply
+                        }
+
+                        readOnly()
+                        toolNames()
+                        validated = true
+                    }
+
+                    fun isValid(): Boolean =
+                        try {
+                            validate()
+                            true
+                        } catch (e: OpenAIInvalidDataException) {
+                            false
+                        }
+
+                    /**
+                     * Returns a score indicating how many valid values are contained in this object
+                     * recursively.
+                     *
+                     * Used for best match union deserialization.
+                     */
+                    @JvmSynthetic
+                    internal fun validity(): Int =
+                        (if (readOnly.asKnown().isPresent) 1 else 0) +
+                            (toolNames.asKnown().getOrNull()?.size ?: 0)
+
+                    override fun equals(other: Any?): Boolean {
+                        if (this === other) {
+                            return true
+                        }
+
+                        return other is McpToolFilter &&
+                            readOnly == other.readOnly &&
+                            toolNames == other.toolNames &&
+                            additionalProperties == other.additionalProperties
+                    }
+
+                    private val hashCode: Int by lazy {
+                        Objects.hash(readOnly, toolNames, additionalProperties)
+                    }
+
+                    override fun hashCode(): Int = hashCode
+
+                    override fun toString() =
+                        "McpToolFilter{readOnly=$readOnly, toolNames=$toolNames, additionalProperties=$additionalProperties}"
+                }
+            }
+
+            /**
+             * Identifier for service connectors, like those available in ChatGPT. One of
+             * `server_url` or `connector_id` must be provided. Learn more about service connectors
+             * [here](https://platform.openai.com/docs/guides/tools-remote-mcp#connectors).
+             *
+             * Currently supported `connector_id` values are:
+             * - Dropbox: `connector_dropbox`
+             * - Gmail: `connector_gmail`
+             * - Google Calendar: `connector_googlecalendar`
+             * - Google Drive: `connector_googledrive`
+             * - Microsoft Teams: `connector_microsoftteams`
+             * - Outlook Calendar: `connector_outlookcalendar`
+             * - Outlook Email: `connector_outlookemail`
+             * - SharePoint: `connector_sharepoint`
+             */
+            class ConnectorId
+            @JsonCreator
+            private constructor(private val value: JsonField<String>) : Enum {
+
+                /**
+                 * Returns this class instance's raw value.
+                 *
+                 * This is usually only useful if this instance was deserialized from data that
+                 * doesn't match any known member, and you want to know that value. For example, if
+                 * the SDK is on an older version than the API, then the API may respond with new
+                 * members that the SDK is unaware of.
+                 */
+                @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
+
+                companion object {
+
+                    @JvmField val CONNECTOR_DROPBOX = of("connector_dropbox")
+
+                    @JvmField val CONNECTOR_GMAIL = of("connector_gmail")
+
+                    @JvmField val CONNECTOR_GOOGLECALENDAR = of("connector_googlecalendar")
+
+                    @JvmField val CONNECTOR_GOOGLEDRIVE = of("connector_googledrive")
+
+                    @JvmField val CONNECTOR_MICROSOFTTEAMS = of("connector_microsoftteams")
+
+                    @JvmField val CONNECTOR_OUTLOOKCALENDAR = of("connector_outlookcalendar")
+
+                    @JvmField val CONNECTOR_OUTLOOKEMAIL = of("connector_outlookemail")
+
+                    @JvmField val CONNECTOR_SHAREPOINT = of("connector_sharepoint")
+
+                    @JvmStatic fun of(value: String) = ConnectorId(JsonField.of(value))
+                }
+
+                /** An enum containing [ConnectorId]'s known values. */
+                enum class Known {
+                    CONNECTOR_DROPBOX,
+                    CONNECTOR_GMAIL,
+                    CONNECTOR_GOOGLECALENDAR,
+                    CONNECTOR_GOOGLEDRIVE,
+                    CONNECTOR_MICROSOFTTEAMS,
+                    CONNECTOR_OUTLOOKCALENDAR,
+                    CONNECTOR_OUTLOOKEMAIL,
+                    CONNECTOR_SHAREPOINT,
+                }
+
+                /**
+                 * An enum containing [ConnectorId]'s known values, as well as an [_UNKNOWN] member.
+                 *
+                 * An instance of [ConnectorId] can contain an unknown value in a couple of cases:
+                 * - It was deserialized from data that doesn't match any known member. For example,
+                 *   if the SDK is on an older version than the API, then the API may respond with
+                 *   new members that the SDK is unaware of.
+                 * - It was constructed with an arbitrary value using the [of] method.
+                 */
+                enum class Value {
+                    CONNECTOR_DROPBOX,
+                    CONNECTOR_GMAIL,
+                    CONNECTOR_GOOGLECALENDAR,
+                    CONNECTOR_GOOGLEDRIVE,
+                    CONNECTOR_MICROSOFTTEAMS,
+                    CONNECTOR_OUTLOOKCALENDAR,
+                    CONNECTOR_OUTLOOKEMAIL,
+                    CONNECTOR_SHAREPOINT,
+                    /**
+                     * An enum member indicating that [ConnectorId] was instantiated with an unknown
+                     * value.
+                     */
+                    _UNKNOWN,
+                }
+
+                /**
+                 * Returns an enum member corresponding to this class instance's value, or
+                 * [Value._UNKNOWN] if the class was instantiated with an unknown value.
+                 *
+                 * Use the [known] method instead if you're certain the value is always known or if
+                 * you want to throw for the unknown case.
+                 */
+                fun value(): Value =
+                    when (this) {
+                        CONNECTOR_DROPBOX -> Value.CONNECTOR_DROPBOX
+                        CONNECTOR_GMAIL -> Value.CONNECTOR_GMAIL
+                        CONNECTOR_GOOGLECALENDAR -> Value.CONNECTOR_GOOGLECALENDAR
+                        CONNECTOR_GOOGLEDRIVE -> Value.CONNECTOR_GOOGLEDRIVE
+                        CONNECTOR_MICROSOFTTEAMS -> Value.CONNECTOR_MICROSOFTTEAMS
+                        CONNECTOR_OUTLOOKCALENDAR -> Value.CONNECTOR_OUTLOOKCALENDAR
+                        CONNECTOR_OUTLOOKEMAIL -> Value.CONNECTOR_OUTLOOKEMAIL
+                        CONNECTOR_SHAREPOINT -> Value.CONNECTOR_SHAREPOINT
+                        else -> Value._UNKNOWN
+                    }
+
+                /**
+                 * Returns an enum member corresponding to this class instance's value.
+                 *
+                 * Use the [value] method instead if you're uncertain the value is always known and
+                 * don't want to throw for the unknown case.
+                 *
+                 * @throws OpenAIInvalidDataException if this class instance's value is a not a
+                 *   known member.
+                 */
+                fun known(): Known =
+                    when (this) {
+                        CONNECTOR_DROPBOX -> Known.CONNECTOR_DROPBOX
+                        CONNECTOR_GMAIL -> Known.CONNECTOR_GMAIL
+                        CONNECTOR_GOOGLECALENDAR -> Known.CONNECTOR_GOOGLECALENDAR
+                        CONNECTOR_GOOGLEDRIVE -> Known.CONNECTOR_GOOGLEDRIVE
+                        CONNECTOR_MICROSOFTTEAMS -> Known.CONNECTOR_MICROSOFTTEAMS
+                        CONNECTOR_OUTLOOKCALENDAR -> Known.CONNECTOR_OUTLOOKCALENDAR
+                        CONNECTOR_OUTLOOKEMAIL -> Known.CONNECTOR_OUTLOOKEMAIL
+                        CONNECTOR_SHAREPOINT -> Known.CONNECTOR_SHAREPOINT
+                        else -> throw OpenAIInvalidDataException("Unknown ConnectorId: $value")
+                    }
+
+                /**
+                 * Returns this class instance's primitive wire representation.
+                 *
+                 * This differs from the [toString] method because that method is primarily for
+                 * debugging and generally doesn't throw.
+                 *
+                 * @throws OpenAIInvalidDataException if this class instance's value does not have
+                 *   the expected primitive type.
+                 */
+                fun asString(): String =
+                    _value().asString().orElseThrow {
+                        OpenAIInvalidDataException("Value is not a String")
+                    }
+
+                private var validated: Boolean = false
+
+                fun validate(): ConnectorId = apply {
+                    if (validated) {
+                        return@apply
+                    }
+
+                    known()
+                    validated = true
+                }
+
+                fun isValid(): Boolean =
+                    try {
+                        validate()
+                        true
+                    } catch (e: OpenAIInvalidDataException) {
+                        false
+                    }
+
+                /**
+                 * Returns a score indicating how many valid values are contained in this object
+                 * recursively.
+                 *
+                 * Used for best match union deserialization.
+                 */
+                @JvmSynthetic internal fun validity(): Int = if (value() == Value._UNKNOWN) 0 else 1
+
+                override fun equals(other: Any?): Boolean {
+                    if (this === other) {
+                        return true
+                    }
+
+                    return other is ConnectorId && value == other.value
+                }
+
+                override fun hashCode() = value.hashCode()
+
+                override fun toString() = value.toString()
+            }
+
+            /**
+             * Optional HTTP headers to send to the MCP server. Use for authentication or other
+             * purposes.
+             */
+            class Headers
+            @JsonCreator
+            private constructor(
+                @com.fasterxml.jackson.annotation.JsonValue
+                private val additionalProperties: Map<String, JsonValue>
+            ) {
+
+                @JsonAnyGetter
+                @ExcludeMissing
+                fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
+
+                fun toBuilder() = Builder().from(this)
+
+                companion object {
+
+                    /** Returns a mutable builder for constructing an instance of [Headers]. */
+                    @JvmStatic fun builder() = Builder()
+                }
+
+                /** A builder for [Headers]. */
+                class Builder internal constructor() {
+
+                    private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
+
+                    @JvmSynthetic
+                    internal fun from(headers: Headers) = apply {
+                        additionalProperties = headers.additionalProperties.toMutableMap()
+                    }
+
+                    fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                        this.additionalProperties.clear()
+                        putAllAdditionalProperties(additionalProperties)
+                    }
+
+                    fun putAdditionalProperty(key: String, value: JsonValue) = apply {
+                        additionalProperties.put(key, value)
+                    }
+
+                    fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) =
+                        apply {
+                            this.additionalProperties.putAll(additionalProperties)
+                        }
+
+                    fun removeAdditionalProperty(key: String) = apply {
+                        additionalProperties.remove(key)
+                    }
+
+                    fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                        keys.forEach(::removeAdditionalProperty)
+                    }
+
+                    /**
+                     * Returns an immutable instance of [Headers].
+                     *
+                     * Further updates to this [Builder] will not mutate the returned instance.
+                     */
+                    fun build(): Headers = Headers(additionalProperties.toImmutable())
+                }
+
+                private var validated: Boolean = false
+
+                fun validate(): Headers = apply {
+                    if (validated) {
+                        return@apply
+                    }
+
+                    validated = true
+                }
+
+                fun isValid(): Boolean =
+                    try {
+                        validate()
+                        true
+                    } catch (e: OpenAIInvalidDataException) {
+                        false
+                    }
+
+                /**
+                 * Returns a score indicating how many valid values are contained in this object
+                 * recursively.
+                 *
+                 * Used for best match union deserialization.
+                 */
+                @JvmSynthetic
+                internal fun validity(): Int =
+                    additionalProperties.count { (_, value) ->
+                        !value.isNull() && !value.isMissing()
+                    }
+
+                override fun equals(other: Any?): Boolean {
+                    if (this === other) {
+                        return true
+                    }
+
+                    return other is Headers && additionalProperties == other.additionalProperties
+                }
+
+                private val hashCode: Int by lazy { Objects.hash(additionalProperties) }
+
+                override fun hashCode(): Int = hashCode
+
+                override fun toString() = "Headers{additionalProperties=$additionalProperties}"
+            }
+
+            /** Specify which of the MCP server's tools require approval. */
+            @JsonDeserialize(using = RequireApproval.Deserializer::class)
+            @JsonSerialize(using = RequireApproval.Serializer::class)
+            class RequireApproval
+            private constructor(
+                private val mcpToolApprovalFilter: McpToolApprovalFilter? = null,
+                private val mcpToolApprovalSetting: McpToolApprovalSetting? = null,
+                private val _json: JsonValue? = null,
+            ) {
+
+                /**
+                 * Specify which of the MCP server's tools require approval. Can be `always`,
+                 * `never`, or a filter object associated with tools that require approval.
+                 */
+                fun mcpToolApprovalFilter(): Optional<McpToolApprovalFilter> =
+                    Optional.ofNullable(mcpToolApprovalFilter)
+
+                /**
+                 * Specify a single approval policy for all tools. One of `always` or `never`. When
+                 * set to `always`, all tools will require approval. When set to `never`, all tools
+                 * will not require approval.
+                 */
+                fun mcpToolApprovalSetting(): Optional<McpToolApprovalSetting> =
+                    Optional.ofNullable(mcpToolApprovalSetting)
+
+                fun isMcpToolApprovalFilter(): Boolean = mcpToolApprovalFilter != null
+
+                fun isMcpToolApprovalSetting(): Boolean = mcpToolApprovalSetting != null
+
+                /**
+                 * Specify which of the MCP server's tools require approval. Can be `always`,
+                 * `never`, or a filter object associated with tools that require approval.
+                 */
+                fun asMcpToolApprovalFilter(): McpToolApprovalFilter =
+                    mcpToolApprovalFilter.getOrThrow("mcpToolApprovalFilter")
+
+                /**
+                 * Specify a single approval policy for all tools. One of `always` or `never`. When
+                 * set to `always`, all tools will require approval. When set to `never`, all tools
+                 * will not require approval.
+                 */
+                fun asMcpToolApprovalSetting(): McpToolApprovalSetting =
+                    mcpToolApprovalSetting.getOrThrow("mcpToolApprovalSetting")
+
+                fun _json(): Optional<JsonValue> = Optional.ofNullable(_json)
+
+                fun <T> accept(visitor: Visitor<T>): T =
+                    when {
+                        mcpToolApprovalFilter != null ->
+                            visitor.visitMcpToolApprovalFilter(mcpToolApprovalFilter)
+                        mcpToolApprovalSetting != null ->
+                            visitor.visitMcpToolApprovalSetting(mcpToolApprovalSetting)
+                        else -> visitor.unknown(_json)
+                    }
+
+                private var validated: Boolean = false
+
+                fun validate(): RequireApproval = apply {
+                    if (validated) {
+                        return@apply
+                    }
+
+                    accept(
+                        object : Visitor<Unit> {
+                            override fun visitMcpToolApprovalFilter(
+                                mcpToolApprovalFilter: McpToolApprovalFilter
+                            ) {
+                                mcpToolApprovalFilter.validate()
+                            }
+
+                            override fun visitMcpToolApprovalSetting(
+                                mcpToolApprovalSetting: McpToolApprovalSetting
+                            ) {
+                                mcpToolApprovalSetting.validate()
+                            }
+                        }
+                    )
+                    validated = true
+                }
+
+                fun isValid(): Boolean =
+                    try {
+                        validate()
+                        true
+                    } catch (e: OpenAIInvalidDataException) {
+                        false
+                    }
+
+                /**
+                 * Returns a score indicating how many valid values are contained in this object
+                 * recursively.
+                 *
+                 * Used for best match union deserialization.
+                 */
+                @JvmSynthetic
+                internal fun validity(): Int =
+                    accept(
+                        object : Visitor<Int> {
+                            override fun visitMcpToolApprovalFilter(
+                                mcpToolApprovalFilter: McpToolApprovalFilter
+                            ) = mcpToolApprovalFilter.validity()
+
+                            override fun visitMcpToolApprovalSetting(
+                                mcpToolApprovalSetting: McpToolApprovalSetting
+                            ) = mcpToolApprovalSetting.validity()
+
+                            override fun unknown(json: JsonValue?) = 0
+                        }
+                    )
+
+                override fun equals(other: Any?): Boolean {
+                    if (this === other) {
+                        return true
+                    }
+
+                    return other is RequireApproval &&
+                        mcpToolApprovalFilter == other.mcpToolApprovalFilter &&
+                        mcpToolApprovalSetting == other.mcpToolApprovalSetting
+                }
+
+                override fun hashCode(): Int =
+                    Objects.hash(mcpToolApprovalFilter, mcpToolApprovalSetting)
+
+                override fun toString(): String =
+                    when {
+                        mcpToolApprovalFilter != null ->
+                            "RequireApproval{mcpToolApprovalFilter=$mcpToolApprovalFilter}"
+                        mcpToolApprovalSetting != null ->
+                            "RequireApproval{mcpToolApprovalSetting=$mcpToolApprovalSetting}"
+                        _json != null -> "RequireApproval{_unknown=$_json}"
+                        else -> throw IllegalStateException("Invalid RequireApproval")
+                    }
+
+                companion object {
+
+                    /**
+                     * Specify which of the MCP server's tools require approval. Can be `always`,
+                     * `never`, or a filter object associated with tools that require approval.
+                     */
+                    @JvmStatic
+                    fun ofMcpToolApprovalFilter(mcpToolApprovalFilter: McpToolApprovalFilter) =
+                        RequireApproval(mcpToolApprovalFilter = mcpToolApprovalFilter)
+
+                    /**
+                     * Specify a single approval policy for all tools. One of `always` or `never`.
+                     * When set to `always`, all tools will require approval. When set to `never`,
+                     * all tools will not require approval.
+                     */
+                    @JvmStatic
+                    fun ofMcpToolApprovalSetting(mcpToolApprovalSetting: McpToolApprovalSetting) =
+                        RequireApproval(mcpToolApprovalSetting = mcpToolApprovalSetting)
+                }
+
+                /**
+                 * An interface that defines how to map each variant of [RequireApproval] to a value
+                 * of type [T].
+                 */
+                interface Visitor<out T> {
+
+                    /**
+                     * Specify which of the MCP server's tools require approval. Can be `always`,
+                     * `never`, or a filter object associated with tools that require approval.
+                     */
+                    fun visitMcpToolApprovalFilter(mcpToolApprovalFilter: McpToolApprovalFilter): T
+
+                    /**
+                     * Specify a single approval policy for all tools. One of `always` or `never`.
+                     * When set to `always`, all tools will require approval. When set to `never`,
+                     * all tools will not require approval.
+                     */
+                    fun visitMcpToolApprovalSetting(
+                        mcpToolApprovalSetting: McpToolApprovalSetting
+                    ): T
+
+                    /**
+                     * Maps an unknown variant of [RequireApproval] to a value of type [T].
+                     *
+                     * An instance of [RequireApproval] can contain an unknown variant if it was
+                     * deserialized from data that doesn't match any known variant. For example, if
+                     * the SDK is on an older version than the API, then the API may respond with
+                     * new variants that the SDK is unaware of.
+                     *
+                     * @throws OpenAIInvalidDataException in the default implementation.
+                     */
+                    fun unknown(json: JsonValue?): T {
+                        throw OpenAIInvalidDataException("Unknown RequireApproval: $json")
+                    }
+                }
+
+                internal class Deserializer :
+                    BaseDeserializer<RequireApproval>(RequireApproval::class) {
+
+                    override fun ObjectCodec.deserialize(node: JsonNode): RequireApproval {
+                        val json = JsonValue.fromJsonNode(node)
+
+                        val bestMatches =
+                            sequenceOf(
+                                    tryDeserialize(node, jacksonTypeRef<McpToolApprovalFilter>())
+                                        ?.let {
+                                            RequireApproval(
+                                                mcpToolApprovalFilter = it,
+                                                _json = json,
+                                            )
+                                        },
+                                    tryDeserialize(node, jacksonTypeRef<McpToolApprovalSetting>())
+                                        ?.let {
+                                            RequireApproval(
+                                                mcpToolApprovalSetting = it,
+                                                _json = json,
+                                            )
+                                        },
+                                )
+                                .filterNotNull()
+                                .allMaxBy { it.validity() }
+                                .toList()
+                        return when (bestMatches.size) {
+                            // This can happen if what we're deserializing is completely
+                            // incompatible with all the possible variants (e.g. deserializing from
+                            // array).
+                            0 -> RequireApproval(_json = json)
+                            1 -> bestMatches.single()
+                            // If there's more than one match with the highest validity, then use
+                            // the first completely valid match, or simply the first match if none
+                            // are completely valid.
+                            else -> bestMatches.firstOrNull { it.isValid() } ?: bestMatches.first()
+                        }
+                    }
+                }
+
+                internal class Serializer :
+                    BaseSerializer<RequireApproval>(RequireApproval::class) {
+
+                    override fun serialize(
+                        value: RequireApproval,
+                        generator: JsonGenerator,
+                        provider: SerializerProvider,
+                    ) {
+                        when {
+                            value.mcpToolApprovalFilter != null ->
+                                generator.writeObject(value.mcpToolApprovalFilter)
+                            value.mcpToolApprovalSetting != null ->
+                                generator.writeObject(value.mcpToolApprovalSetting)
+                            value._json != null -> generator.writeObject(value._json)
+                            else -> throw IllegalStateException("Invalid RequireApproval")
+                        }
+                    }
+                }
+
+                /**
+                 * Specify which of the MCP server's tools require approval. Can be `always`,
+                 * `never`, or a filter object associated with tools that require approval.
+                 */
+                class McpToolApprovalFilter
+                private constructor(
+                    private val always: JsonField<Always>,
+                    private val never: JsonField<Never>,
+                    private val additionalProperties: MutableMap<String, JsonValue>,
+                ) {
+
+                    @JsonCreator
+                    private constructor(
+                        @JsonProperty("always")
+                        @ExcludeMissing
+                        always: JsonField<Always> = JsonMissing.of(),
+                        @JsonProperty("never")
+                        @ExcludeMissing
+                        never: JsonField<Never> = JsonMissing.of(),
+                    ) : this(always, never, mutableMapOf())
+
+                    /**
+                     * A filter object to specify which tools are allowed.
+                     *
+                     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type
+                     *   (e.g. if the server responded with an unexpected value).
+                     */
+                    fun always(): Optional<Always> = always.getOptional("always")
+
+                    /**
+                     * A filter object to specify which tools are allowed.
+                     *
+                     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type
+                     *   (e.g. if the server responded with an unexpected value).
+                     */
+                    fun never(): Optional<Never> = never.getOptional("never")
+
+                    /**
+                     * Returns the raw JSON value of [always].
+                     *
+                     * Unlike [always], this method doesn't throw if the JSON field has an
+                     * unexpected type.
+                     */
+                    @JsonProperty("always")
+                    @ExcludeMissing
+                    fun _always(): JsonField<Always> = always
+
+                    /**
+                     * Returns the raw JSON value of [never].
+                     *
+                     * Unlike [never], this method doesn't throw if the JSON field has an unexpected
+                     * type.
+                     */
+                    @JsonProperty("never") @ExcludeMissing fun _never(): JsonField<Never> = never
+
+                    @JsonAnySetter
+                    private fun putAdditionalProperty(key: String, value: JsonValue) {
+                        additionalProperties.put(key, value)
+                    }
+
+                    @JsonAnyGetter
+                    @ExcludeMissing
+                    fun _additionalProperties(): Map<String, JsonValue> =
+                        Collections.unmodifiableMap(additionalProperties)
+
+                    fun toBuilder() = Builder().from(this)
+
+                    companion object {
+
+                        /**
+                         * Returns a mutable builder for constructing an instance of
+                         * [McpToolApprovalFilter].
+                         */
+                        @JvmStatic fun builder() = Builder()
+                    }
+
+                    /** A builder for [McpToolApprovalFilter]. */
+                    class Builder internal constructor() {
+
+                        private var always: JsonField<Always> = JsonMissing.of()
+                        private var never: JsonField<Never> = JsonMissing.of()
+                        private var additionalProperties: MutableMap<String, JsonValue> =
+                            mutableMapOf()
+
+                        @JvmSynthetic
+                        internal fun from(mcpToolApprovalFilter: McpToolApprovalFilter) = apply {
+                            always = mcpToolApprovalFilter.always
+                            never = mcpToolApprovalFilter.never
+                            additionalProperties =
+                                mcpToolApprovalFilter.additionalProperties.toMutableMap()
+                        }
+
+                        /** A filter object to specify which tools are allowed. */
+                        fun always(always: Always) = always(JsonField.of(always))
+
+                        /**
+                         * Sets [Builder.always] to an arbitrary JSON value.
+                         *
+                         * You should usually call [Builder.always] with a well-typed [Always] value
+                         * instead. This method is primarily for setting the field to an
+                         * undocumented or not yet supported value.
+                         */
+                        fun always(always: JsonField<Always>) = apply { this.always = always }
+
+                        /** A filter object to specify which tools are allowed. */
+                        fun never(never: Never) = never(JsonField.of(never))
+
+                        /**
+                         * Sets [Builder.never] to an arbitrary JSON value.
+                         *
+                         * You should usually call [Builder.never] with a well-typed [Never] value
+                         * instead. This method is primarily for setting the field to an
+                         * undocumented or not yet supported value.
+                         */
+                        fun never(never: JsonField<Never>) = apply { this.never = never }
+
+                        fun additionalProperties(additionalProperties: Map<String, JsonValue>) =
+                            apply {
+                                this.additionalProperties.clear()
+                                putAllAdditionalProperties(additionalProperties)
+                            }
+
+                        fun putAdditionalProperty(key: String, value: JsonValue) = apply {
+                            additionalProperties.put(key, value)
+                        }
+
+                        fun putAllAdditionalProperties(
+                            additionalProperties: Map<String, JsonValue>
+                        ) = apply { this.additionalProperties.putAll(additionalProperties) }
+
+                        fun removeAdditionalProperty(key: String) = apply {
+                            additionalProperties.remove(key)
+                        }
+
+                        fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                            keys.forEach(::removeAdditionalProperty)
+                        }
+
+                        /**
+                         * Returns an immutable instance of [McpToolApprovalFilter].
+                         *
+                         * Further updates to this [Builder] will not mutate the returned instance.
+                         */
+                        fun build(): McpToolApprovalFilter =
+                            McpToolApprovalFilter(
+                                always,
+                                never,
+                                additionalProperties.toMutableMap(),
+                            )
+                    }
+
+                    private var validated: Boolean = false
+
+                    fun validate(): McpToolApprovalFilter = apply {
+                        if (validated) {
+                            return@apply
+                        }
+
+                        always().ifPresent { it.validate() }
+                        never().ifPresent { it.validate() }
+                        validated = true
+                    }
+
+                    fun isValid(): Boolean =
+                        try {
+                            validate()
+                            true
+                        } catch (e: OpenAIInvalidDataException) {
+                            false
+                        }
+
+                    /**
+                     * Returns a score indicating how many valid values are contained in this object
+                     * recursively.
+                     *
+                     * Used for best match union deserialization.
+                     */
+                    @JvmSynthetic
+                    internal fun validity(): Int =
+                        (always.asKnown().getOrNull()?.validity() ?: 0) +
+                            (never.asKnown().getOrNull()?.validity() ?: 0)
+
+                    /** A filter object to specify which tools are allowed. */
+                    class Always
+                    private constructor(
+                        private val readOnly: JsonField<Boolean>,
+                        private val toolNames: JsonField<List<String>>,
+                        private val additionalProperties: MutableMap<String, JsonValue>,
+                    ) {
+
+                        @JsonCreator
+                        private constructor(
+                            @JsonProperty("read_only")
+                            @ExcludeMissing
+                            readOnly: JsonField<Boolean> = JsonMissing.of(),
+                            @JsonProperty("tool_names")
+                            @ExcludeMissing
+                            toolNames: JsonField<List<String>> = JsonMissing.of(),
+                        ) : this(readOnly, toolNames, mutableMapOf())
+
+                        /**
+                         * Indicates whether or not a tool modifies data or is read-only. If an MCP
+                         * server is
+                         * [annotated with `readOnlyHint`](https://modelcontextprotocol.io/specification/2025-06-18/schema#toolannotations-readonlyhint),
+                         * it will match this filter.
+                         *
+                         * @throws OpenAIInvalidDataException if the JSON field has an unexpected
+                         *   type (e.g. if the server responded with an unexpected value).
+                         */
+                        fun readOnly(): Optional<Boolean> = readOnly.getOptional("read_only")
+
+                        /**
+                         * List of allowed tool names.
+                         *
+                         * @throws OpenAIInvalidDataException if the JSON field has an unexpected
+                         *   type (e.g. if the server responded with an unexpected value).
+                         */
+                        fun toolNames(): Optional<List<String>> =
+                            toolNames.getOptional("tool_names")
+
+                        /**
+                         * Returns the raw JSON value of [readOnly].
+                         *
+                         * Unlike [readOnly], this method doesn't throw if the JSON field has an
+                         * unexpected type.
+                         */
+                        @JsonProperty("read_only")
+                        @ExcludeMissing
+                        fun _readOnly(): JsonField<Boolean> = readOnly
+
+                        /**
+                         * Returns the raw JSON value of [toolNames].
+                         *
+                         * Unlike [toolNames], this method doesn't throw if the JSON field has an
+                         * unexpected type.
+                         */
+                        @JsonProperty("tool_names")
+                        @ExcludeMissing
+                        fun _toolNames(): JsonField<List<String>> = toolNames
+
+                        @JsonAnySetter
+                        private fun putAdditionalProperty(key: String, value: JsonValue) {
+                            additionalProperties.put(key, value)
+                        }
+
+                        @JsonAnyGetter
+                        @ExcludeMissing
+                        fun _additionalProperties(): Map<String, JsonValue> =
+                            Collections.unmodifiableMap(additionalProperties)
+
+                        fun toBuilder() = Builder().from(this)
+
+                        companion object {
+
+                            /**
+                             * Returns a mutable builder for constructing an instance of [Always].
+                             */
+                            @JvmStatic fun builder() = Builder()
+                        }
+
+                        /** A builder for [Always]. */
+                        class Builder internal constructor() {
+
+                            private var readOnly: JsonField<Boolean> = JsonMissing.of()
+                            private var toolNames: JsonField<MutableList<String>>? = null
+                            private var additionalProperties: MutableMap<String, JsonValue> =
+                                mutableMapOf()
+
+                            @JvmSynthetic
+                            internal fun from(always: Always) = apply {
+                                readOnly = always.readOnly
+                                toolNames = always.toolNames.map { it.toMutableList() }
+                                additionalProperties = always.additionalProperties.toMutableMap()
+                            }
+
+                            /**
+                             * Indicates whether or not a tool modifies data or is read-only. If an
+                             * MCP server is
+                             * [annotated with `readOnlyHint`](https://modelcontextprotocol.io/specification/2025-06-18/schema#toolannotations-readonlyhint),
+                             * it will match this filter.
+                             */
+                            fun readOnly(readOnly: Boolean) = readOnly(JsonField.of(readOnly))
+
+                            /**
+                             * Sets [Builder.readOnly] to an arbitrary JSON value.
+                             *
+                             * You should usually call [Builder.readOnly] with a well-typed
+                             * [Boolean] value instead. This method is primarily for setting the
+                             * field to an undocumented or not yet supported value.
+                             */
+                            fun readOnly(readOnly: JsonField<Boolean>) = apply {
+                                this.readOnly = readOnly
+                            }
+
+                            /** List of allowed tool names. */
+                            fun toolNames(toolNames: List<String>) =
+                                toolNames(JsonField.of(toolNames))
+
+                            /**
+                             * Sets [Builder.toolNames] to an arbitrary JSON value.
+                             *
+                             * You should usually call [Builder.toolNames] with a well-typed
+                             * `List<String>` value instead. This method is primarily for setting
+                             * the field to an undocumented or not yet supported value.
+                             */
+                            fun toolNames(toolNames: JsonField<List<String>>) = apply {
+                                this.toolNames = toolNames.map { it.toMutableList() }
+                            }
+
+                            /**
+                             * Adds a single [String] to [toolNames].
+                             *
+                             * @throws IllegalStateException if the field was previously set to a
+                             *   non-list.
+                             */
+                            fun addToolName(toolName: String) = apply {
+                                toolNames =
+                                    (toolNames ?: JsonField.of(mutableListOf())).also {
+                                        checkKnown("toolNames", it).add(toolName)
+                                    }
+                            }
+
+                            fun additionalProperties(additionalProperties: Map<String, JsonValue>) =
+                                apply {
+                                    this.additionalProperties.clear()
+                                    putAllAdditionalProperties(additionalProperties)
+                                }
+
+                            fun putAdditionalProperty(key: String, value: JsonValue) = apply {
+                                additionalProperties.put(key, value)
+                            }
+
+                            fun putAllAdditionalProperties(
+                                additionalProperties: Map<String, JsonValue>
+                            ) = apply { this.additionalProperties.putAll(additionalProperties) }
+
+                            fun removeAdditionalProperty(key: String) = apply {
+                                additionalProperties.remove(key)
+                            }
+
+                            fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                                keys.forEach(::removeAdditionalProperty)
+                            }
+
+                            /**
+                             * Returns an immutable instance of [Always].
+                             *
+                             * Further updates to this [Builder] will not mutate the returned
+                             * instance.
+                             */
+                            fun build(): Always =
+                                Always(
+                                    readOnly,
+                                    (toolNames ?: JsonMissing.of()).map { it.toImmutable() },
+                                    additionalProperties.toMutableMap(),
+                                )
+                        }
+
+                        private var validated: Boolean = false
+
+                        fun validate(): Always = apply {
+                            if (validated) {
+                                return@apply
+                            }
+
+                            readOnly()
+                            toolNames()
+                            validated = true
+                        }
+
+                        fun isValid(): Boolean =
+                            try {
+                                validate()
+                                true
+                            } catch (e: OpenAIInvalidDataException) {
+                                false
+                            }
+
+                        /**
+                         * Returns a score indicating how many valid values are contained in this
+                         * object recursively.
+                         *
+                         * Used for best match union deserialization.
+                         */
+                        @JvmSynthetic
+                        internal fun validity(): Int =
+                            (if (readOnly.asKnown().isPresent) 1 else 0) +
+                                (toolNames.asKnown().getOrNull()?.size ?: 0)
+
+                        override fun equals(other: Any?): Boolean {
+                            if (this === other) {
+                                return true
+                            }
+
+                            return other is Always &&
+                                readOnly == other.readOnly &&
+                                toolNames == other.toolNames &&
+                                additionalProperties == other.additionalProperties
+                        }
+
+                        private val hashCode: Int by lazy {
+                            Objects.hash(readOnly, toolNames, additionalProperties)
+                        }
+
+                        override fun hashCode(): Int = hashCode
+
+                        override fun toString() =
+                            "Always{readOnly=$readOnly, toolNames=$toolNames, additionalProperties=$additionalProperties}"
+                    }
+
+                    /** A filter object to specify which tools are allowed. */
+                    class Never
+                    private constructor(
+                        private val readOnly: JsonField<Boolean>,
+                        private val toolNames: JsonField<List<String>>,
+                        private val additionalProperties: MutableMap<String, JsonValue>,
+                    ) {
+
+                        @JsonCreator
+                        private constructor(
+                            @JsonProperty("read_only")
+                            @ExcludeMissing
+                            readOnly: JsonField<Boolean> = JsonMissing.of(),
+                            @JsonProperty("tool_names")
+                            @ExcludeMissing
+                            toolNames: JsonField<List<String>> = JsonMissing.of(),
+                        ) : this(readOnly, toolNames, mutableMapOf())
+
+                        /**
+                         * Indicates whether or not a tool modifies data or is read-only. If an MCP
+                         * server is
+                         * [annotated with `readOnlyHint`](https://modelcontextprotocol.io/specification/2025-06-18/schema#toolannotations-readonlyhint),
+                         * it will match this filter.
+                         *
+                         * @throws OpenAIInvalidDataException if the JSON field has an unexpected
+                         *   type (e.g. if the server responded with an unexpected value).
+                         */
+                        fun readOnly(): Optional<Boolean> = readOnly.getOptional("read_only")
+
+                        /**
+                         * List of allowed tool names.
+                         *
+                         * @throws OpenAIInvalidDataException if the JSON field has an unexpected
+                         *   type (e.g. if the server responded with an unexpected value).
+                         */
+                        fun toolNames(): Optional<List<String>> =
+                            toolNames.getOptional("tool_names")
+
+                        /**
+                         * Returns the raw JSON value of [readOnly].
+                         *
+                         * Unlike [readOnly], this method doesn't throw if the JSON field has an
+                         * unexpected type.
+                         */
+                        @JsonProperty("read_only")
+                        @ExcludeMissing
+                        fun _readOnly(): JsonField<Boolean> = readOnly
+
+                        /**
+                         * Returns the raw JSON value of [toolNames].
+                         *
+                         * Unlike [toolNames], this method doesn't throw if the JSON field has an
+                         * unexpected type.
+                         */
+                        @JsonProperty("tool_names")
+                        @ExcludeMissing
+                        fun _toolNames(): JsonField<List<String>> = toolNames
+
+                        @JsonAnySetter
+                        private fun putAdditionalProperty(key: String, value: JsonValue) {
+                            additionalProperties.put(key, value)
+                        }
+
+                        @JsonAnyGetter
+                        @ExcludeMissing
+                        fun _additionalProperties(): Map<String, JsonValue> =
+                            Collections.unmodifiableMap(additionalProperties)
+
+                        fun toBuilder() = Builder().from(this)
+
+                        companion object {
+
+                            /**
+                             * Returns a mutable builder for constructing an instance of [Never].
+                             */
+                            @JvmStatic fun builder() = Builder()
+                        }
+
+                        /** A builder for [Never]. */
+                        class Builder internal constructor() {
+
+                            private var readOnly: JsonField<Boolean> = JsonMissing.of()
+                            private var toolNames: JsonField<MutableList<String>>? = null
+                            private var additionalProperties: MutableMap<String, JsonValue> =
+                                mutableMapOf()
+
+                            @JvmSynthetic
+                            internal fun from(never: Never) = apply {
+                                readOnly = never.readOnly
+                                toolNames = never.toolNames.map { it.toMutableList() }
+                                additionalProperties = never.additionalProperties.toMutableMap()
+                            }
+
+                            /**
+                             * Indicates whether or not a tool modifies data or is read-only. If an
+                             * MCP server is
+                             * [annotated with `readOnlyHint`](https://modelcontextprotocol.io/specification/2025-06-18/schema#toolannotations-readonlyhint),
+                             * it will match this filter.
+                             */
+                            fun readOnly(readOnly: Boolean) = readOnly(JsonField.of(readOnly))
+
+                            /**
+                             * Sets [Builder.readOnly] to an arbitrary JSON value.
+                             *
+                             * You should usually call [Builder.readOnly] with a well-typed
+                             * [Boolean] value instead. This method is primarily for setting the
+                             * field to an undocumented or not yet supported value.
+                             */
+                            fun readOnly(readOnly: JsonField<Boolean>) = apply {
+                                this.readOnly = readOnly
+                            }
+
+                            /** List of allowed tool names. */
+                            fun toolNames(toolNames: List<String>) =
+                                toolNames(JsonField.of(toolNames))
+
+                            /**
+                             * Sets [Builder.toolNames] to an arbitrary JSON value.
+                             *
+                             * You should usually call [Builder.toolNames] with a well-typed
+                             * `List<String>` value instead. This method is primarily for setting
+                             * the field to an undocumented or not yet supported value.
+                             */
+                            fun toolNames(toolNames: JsonField<List<String>>) = apply {
+                                this.toolNames = toolNames.map { it.toMutableList() }
+                            }
+
+                            /**
+                             * Adds a single [String] to [toolNames].
+                             *
+                             * @throws IllegalStateException if the field was previously set to a
+                             *   non-list.
+                             */
+                            fun addToolName(toolName: String) = apply {
+                                toolNames =
+                                    (toolNames ?: JsonField.of(mutableListOf())).also {
+                                        checkKnown("toolNames", it).add(toolName)
+                                    }
+                            }
+
+                            fun additionalProperties(additionalProperties: Map<String, JsonValue>) =
+                                apply {
+                                    this.additionalProperties.clear()
+                                    putAllAdditionalProperties(additionalProperties)
+                                }
+
+                            fun putAdditionalProperty(key: String, value: JsonValue) = apply {
+                                additionalProperties.put(key, value)
+                            }
+
+                            fun putAllAdditionalProperties(
+                                additionalProperties: Map<String, JsonValue>
+                            ) = apply { this.additionalProperties.putAll(additionalProperties) }
+
+                            fun removeAdditionalProperty(key: String) = apply {
+                                additionalProperties.remove(key)
+                            }
+
+                            fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                                keys.forEach(::removeAdditionalProperty)
+                            }
+
+                            /**
+                             * Returns an immutable instance of [Never].
+                             *
+                             * Further updates to this [Builder] will not mutate the returned
+                             * instance.
+                             */
+                            fun build(): Never =
+                                Never(
+                                    readOnly,
+                                    (toolNames ?: JsonMissing.of()).map { it.toImmutable() },
+                                    additionalProperties.toMutableMap(),
+                                )
+                        }
+
+                        private var validated: Boolean = false
+
+                        fun validate(): Never = apply {
+                            if (validated) {
+                                return@apply
+                            }
+
+                            readOnly()
+                            toolNames()
+                            validated = true
+                        }
+
+                        fun isValid(): Boolean =
+                            try {
+                                validate()
+                                true
+                            } catch (e: OpenAIInvalidDataException) {
+                                false
+                            }
+
+                        /**
+                         * Returns a score indicating how many valid values are contained in this
+                         * object recursively.
+                         *
+                         * Used for best match union deserialization.
+                         */
+                        @JvmSynthetic
+                        internal fun validity(): Int =
+                            (if (readOnly.asKnown().isPresent) 1 else 0) +
+                                (toolNames.asKnown().getOrNull()?.size ?: 0)
+
+                        override fun equals(other: Any?): Boolean {
+                            if (this === other) {
+                                return true
+                            }
+
+                            return other is Never &&
+                                readOnly == other.readOnly &&
+                                toolNames == other.toolNames &&
+                                additionalProperties == other.additionalProperties
+                        }
+
+                        private val hashCode: Int by lazy {
+                            Objects.hash(readOnly, toolNames, additionalProperties)
+                        }
+
+                        override fun hashCode(): Int = hashCode
+
+                        override fun toString() =
+                            "Never{readOnly=$readOnly, toolNames=$toolNames, additionalProperties=$additionalProperties}"
+                    }
+
+                    override fun equals(other: Any?): Boolean {
+                        if (this === other) {
+                            return true
+                        }
+
+                        return other is McpToolApprovalFilter &&
+                            always == other.always &&
+                            never == other.never &&
+                            additionalProperties == other.additionalProperties
+                    }
+
+                    private val hashCode: Int by lazy {
+                        Objects.hash(always, never, additionalProperties)
+                    }
+
+                    override fun hashCode(): Int = hashCode
+
+                    override fun toString() =
+                        "McpToolApprovalFilter{always=$always, never=$never, additionalProperties=$additionalProperties}"
+                }
+
+                /**
+                 * Specify a single approval policy for all tools. One of `always` or `never`. When
+                 * set to `always`, all tools will require approval. When set to `never`, all tools
+                 * will not require approval.
+                 */
+                class McpToolApprovalSetting
+                @JsonCreator
+                private constructor(private val value: JsonField<String>) : Enum {
+
+                    /**
+                     * Returns this class instance's raw value.
+                     *
+                     * This is usually only useful if this instance was deserialized from data that
+                     * doesn't match any known member, and you want to know that value. For example,
+                     * if the SDK is on an older version than the API, then the API may respond with
+                     * new members that the SDK is unaware of.
+                     */
+                    @com.fasterxml.jackson.annotation.JsonValue
+                    fun _value(): JsonField<String> = value
+
+                    companion object {
+
+                        @JvmField val ALWAYS = of("always")
+
+                        @JvmField val NEVER = of("never")
+
+                        @JvmStatic
+                        fun of(value: String) = McpToolApprovalSetting(JsonField.of(value))
+                    }
+
+                    /** An enum containing [McpToolApprovalSetting]'s known values. */
+                    enum class Known {
+                        ALWAYS,
+                        NEVER,
+                    }
+
+                    /**
+                     * An enum containing [McpToolApprovalSetting]'s known values, as well as an
+                     * [_UNKNOWN] member.
+                     *
+                     * An instance of [McpToolApprovalSetting] can contain an unknown value in a
+                     * couple of cases:
+                     * - It was deserialized from data that doesn't match any known member. For
+                     *   example, if the SDK is on an older version than the API, then the API may
+                     *   respond with new members that the SDK is unaware of.
+                     * - It was constructed with an arbitrary value using the [of] method.
+                     */
+                    enum class Value {
+                        ALWAYS,
+                        NEVER,
+                        /**
+                         * An enum member indicating that [McpToolApprovalSetting] was instantiated
+                         * with an unknown value.
+                         */
+                        _UNKNOWN,
+                    }
+
+                    /**
+                     * Returns an enum member corresponding to this class instance's value, or
+                     * [Value._UNKNOWN] if the class was instantiated with an unknown value.
+                     *
+                     * Use the [known] method instead if you're certain the value is always known or
+                     * if you want to throw for the unknown case.
+                     */
+                    fun value(): Value =
+                        when (this) {
+                            ALWAYS -> Value.ALWAYS
+                            NEVER -> Value.NEVER
+                            else -> Value._UNKNOWN
+                        }
+
+                    /**
+                     * Returns an enum member corresponding to this class instance's value.
+                     *
+                     * Use the [value] method instead if you're uncertain the value is always known
+                     * and don't want to throw for the unknown case.
+                     *
+                     * @throws OpenAIInvalidDataException if this class instance's value is a not a
+                     *   known member.
+                     */
+                    fun known(): Known =
+                        when (this) {
+                            ALWAYS -> Known.ALWAYS
+                            NEVER -> Known.NEVER
+                            else ->
+                                throw OpenAIInvalidDataException(
+                                    "Unknown McpToolApprovalSetting: $value"
+                                )
+                        }
+
+                    /**
+                     * Returns this class instance's primitive wire representation.
+                     *
+                     * This differs from the [toString] method because that method is primarily for
+                     * debugging and generally doesn't throw.
+                     *
+                     * @throws OpenAIInvalidDataException if this class instance's value does not
+                     *   have the expected primitive type.
+                     */
+                    fun asString(): String =
+                        _value().asString().orElseThrow {
+                            OpenAIInvalidDataException("Value is not a String")
+                        }
+
+                    private var validated: Boolean = false
+
+                    fun validate(): McpToolApprovalSetting = apply {
+                        if (validated) {
+                            return@apply
+                        }
+
+                        known()
+                        validated = true
+                    }
+
+                    fun isValid(): Boolean =
+                        try {
+                            validate()
+                            true
+                        } catch (e: OpenAIInvalidDataException) {
+                            false
+                        }
+
+                    /**
+                     * Returns a score indicating how many valid values are contained in this object
+                     * recursively.
+                     *
+                     * Used for best match union deserialization.
+                     */
+                    @JvmSynthetic
+                    internal fun validity(): Int = if (value() == Value._UNKNOWN) 0 else 1
+
+                    override fun equals(other: Any?): Boolean {
+                        if (this === other) {
+                            return true
+                        }
+
+                        return other is McpToolApprovalSetting && value == other.value
+                    }
+
+                    override fun hashCode() = value.hashCode()
+
+                    override fun toString() = value.toString()
+                }
+            }
 
             override fun equals(other: Any?): Boolean {
                 if (this === other) {
                     return true
                 }
 
-                return other is Type && value == other.value
+                return other is McpTool &&
+                    serverLabel == other.serverLabel &&
+                    type == other.type &&
+                    allowedTools == other.allowedTools &&
+                    authorization == other.authorization &&
+                    connectorId == other.connectorId &&
+                    headers == other.headers &&
+                    requireApproval == other.requireApproval &&
+                    serverDescription == other.serverDescription &&
+                    serverUrl == other.serverUrl &&
+                    additionalProperties == other.additionalProperties
             }
 
-            override fun hashCode() = value.hashCode()
-
-            override fun toString() = value.toString()
-        }
-
-        override fun equals(other: Any?): Boolean {
-            if (this === other) {
-                return true
+            private val hashCode: Int by lazy {
+                Objects.hash(
+                    serverLabel,
+                    type,
+                    allowedTools,
+                    authorization,
+                    connectorId,
+                    headers,
+                    requireApproval,
+                    serverDescription,
+                    serverUrl,
+                    additionalProperties,
+                )
             }
 
-            return other is Tool &&
-                description == other.description &&
-                name == other.name &&
-                parameters == other.parameters &&
-                type == other.type &&
-                additionalProperties == other.additionalProperties
+            override fun hashCode(): Int = hashCode
+
+            override fun toString() =
+                "McpTool{serverLabel=$serverLabel, type=$type, allowedTools=$allowedTools, authorization=$authorization, connectorId=$connectorId, headers=$headers, requireApproval=$requireApproval, serverDescription=$serverDescription, serverUrl=$serverUrl, additionalProperties=$additionalProperties}"
         }
-
-        private val hashCode: Int by lazy {
-            Objects.hash(description, name, parameters, type, additionalProperties)
-        }
-
-        override fun hashCode(): Int = hashCode
-
-        override fun toString() =
-            "Tool{description=$description, name=$name, parameters=$parameters, type=$type, additionalProperties=$additionalProperties}"
     }
 
     /**
-     * Configuration options for tracing. Set to null to disable tracing. Once tracing is enabled
-     * for a session, the configuration cannot be modified.
+     * Realtime API can write session traces to the [Traces Dashboard](/logs?api=traces). Set to
+     * null to disable tracing. Once tracing is enabled for a session, the configuration cannot be
+     * modified.
      *
      * `auto` will create a trace for the session with default values for the workflow name, group
      * id, and metadata.
@@ -3376,8 +6400,8 @@ private constructor(
             ) : this(groupId, metadata, workflowName, mutableMapOf())
 
             /**
-             * The group id to attach to this trace to enable filtering and grouping in the traces
-             * dashboard.
+             * The group id to attach to this trace to enable filtering and grouping in the Traces
+             * Dashboard.
              *
              * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if
              *   the server responded with an unexpected value).
@@ -3385,14 +6409,14 @@ private constructor(
             fun groupId(): Optional<String> = groupId.getOptional("group_id")
 
             /**
-             * The arbitrary metadata to attach to this trace to enable filtering in the traces
-             * dashboard.
+             * The arbitrary metadata to attach to this trace to enable filtering in the Traces
+             * Dashboard.
              */
             @JsonProperty("metadata") @ExcludeMissing fun _metadata(): JsonValue = metadata
 
             /**
              * The name of the workflow to attach to this trace. This is used to name the trace in
-             * the traces dashboard.
+             * the Traces Dashboard.
              *
              * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if
              *   the server responded with an unexpected value).
@@ -3454,7 +6478,7 @@ private constructor(
 
                 /**
                  * The group id to attach to this trace to enable filtering and grouping in the
-                 * traces dashboard.
+                 * Traces Dashboard.
                  */
                 fun groupId(groupId: String) = groupId(JsonField.of(groupId))
 
@@ -3468,14 +6492,14 @@ private constructor(
                 fun groupId(groupId: JsonField<String>) = apply { this.groupId = groupId }
 
                 /**
-                 * The arbitrary metadata to attach to this trace to enable filtering in the traces
-                 * dashboard.
+                 * The arbitrary metadata to attach to this trace to enable filtering in the Traces
+                 * Dashboard.
                  */
                 fun metadata(metadata: JsonValue) = apply { this.metadata = metadata }
 
                 /**
                  * The name of the workflow to attach to this trace. This is used to name the trace
-                 * in the traces dashboard.
+                 * in the Traces Dashboard.
                  */
                 fun workflowName(workflowName: String) = workflowName(JsonField.of(workflowName))
 
@@ -3580,252 +6604,94 @@ private constructor(
         }
     }
 
-    /**
-     * Configuration for turn detection. Can be set to `null` to turn off. Server VAD means that the
-     * model will detect the start and end of speech based on audio volume and respond at the end of
-     * user speech.
-     */
-    class TurnDetection
-    private constructor(
-        private val prefixPaddingMs: JsonField<Long>,
-        private val silenceDurationMs: JsonField<Long>,
-        private val threshold: JsonField<Double>,
-        private val type: JsonField<String>,
-        private val additionalProperties: MutableMap<String, JsonValue>,
-    ) {
-
-        @JsonCreator
-        private constructor(
-            @JsonProperty("prefix_padding_ms")
-            @ExcludeMissing
-            prefixPaddingMs: JsonField<Long> = JsonMissing.of(),
-            @JsonProperty("silence_duration_ms")
-            @ExcludeMissing
-            silenceDurationMs: JsonField<Long> = JsonMissing.of(),
-            @JsonProperty("threshold")
-            @ExcludeMissing
-            threshold: JsonField<Double> = JsonMissing.of(),
-            @JsonProperty("type") @ExcludeMissing type: JsonField<String> = JsonMissing.of(),
-        ) : this(prefixPaddingMs, silenceDurationMs, threshold, type, mutableMapOf())
+    /** The type of session to create. Always `realtime` for the Realtime API. */
+    class Type @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
 
         /**
-         * Amount of audio to include before the VAD detected speech (in milliseconds). Defaults to
-         * 300ms.
+         * Returns this class instance's raw value.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
+         * This is usually only useful if this instance was deserialized from data that doesn't
+         * match any known member, and you want to know that value. For example, if the SDK is on an
+         * older version than the API, then the API may respond with new members that the SDK is
+         * unaware of.
          */
-        fun prefixPaddingMs(): Optional<Long> = prefixPaddingMs.getOptional("prefix_padding_ms")
-
-        /**
-         * Duration of silence to detect speech stop (in milliseconds). Defaults to 500ms. With
-         * shorter values the model will respond more quickly, but may jump in on short pauses from
-         * the user.
-         *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
-         */
-        fun silenceDurationMs(): Optional<Long> =
-            silenceDurationMs.getOptional("silence_duration_ms")
-
-        /**
-         * Activation threshold for VAD (0.0 to 1.0), this defaults to 0.5. A higher threshold will
-         * require louder audio to activate the model, and thus might perform better in noisy
-         * environments.
-         *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
-         */
-        fun threshold(): Optional<Double> = threshold.getOptional("threshold")
-
-        /**
-         * Type of turn detection, only `server_vad` is currently supported.
-         *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-         *   server responded with an unexpected value).
-         */
-        fun type(): Optional<String> = type.getOptional("type")
-
-        /**
-         * Returns the raw JSON value of [prefixPaddingMs].
-         *
-         * Unlike [prefixPaddingMs], this method doesn't throw if the JSON field has an unexpected
-         * type.
-         */
-        @JsonProperty("prefix_padding_ms")
-        @ExcludeMissing
-        fun _prefixPaddingMs(): JsonField<Long> = prefixPaddingMs
-
-        /**
-         * Returns the raw JSON value of [silenceDurationMs].
-         *
-         * Unlike [silenceDurationMs], this method doesn't throw if the JSON field has an unexpected
-         * type.
-         */
-        @JsonProperty("silence_duration_ms")
-        @ExcludeMissing
-        fun _silenceDurationMs(): JsonField<Long> = silenceDurationMs
-
-        /**
-         * Returns the raw JSON value of [threshold].
-         *
-         * Unlike [threshold], this method doesn't throw if the JSON field has an unexpected type.
-         */
-        @JsonProperty("threshold") @ExcludeMissing fun _threshold(): JsonField<Double> = threshold
-
-        /**
-         * Returns the raw JSON value of [type].
-         *
-         * Unlike [type], this method doesn't throw if the JSON field has an unexpected type.
-         */
-        @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<String> = type
-
-        @JsonAnySetter
-        private fun putAdditionalProperty(key: String, value: JsonValue) {
-            additionalProperties.put(key, value)
-        }
-
-        @JsonAnyGetter
-        @ExcludeMissing
-        fun _additionalProperties(): Map<String, JsonValue> =
-            Collections.unmodifiableMap(additionalProperties)
-
-        fun toBuilder() = Builder().from(this)
+        @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
 
         companion object {
 
-            /** Returns a mutable builder for constructing an instance of [TurnDetection]. */
-            @JvmStatic fun builder() = Builder()
+            @JvmField val REALTIME = of("realtime")
+
+            @JvmStatic fun of(value: String) = Type(JsonField.of(value))
         }
 
-        /** A builder for [TurnDetection]. */
-        class Builder internal constructor() {
-
-            private var prefixPaddingMs: JsonField<Long> = JsonMissing.of()
-            private var silenceDurationMs: JsonField<Long> = JsonMissing.of()
-            private var threshold: JsonField<Double> = JsonMissing.of()
-            private var type: JsonField<String> = JsonMissing.of()
-            private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
-
-            @JvmSynthetic
-            internal fun from(turnDetection: TurnDetection) = apply {
-                prefixPaddingMs = turnDetection.prefixPaddingMs
-                silenceDurationMs = turnDetection.silenceDurationMs
-                threshold = turnDetection.threshold
-                type = turnDetection.type
-                additionalProperties = turnDetection.additionalProperties.toMutableMap()
-            }
-
-            /**
-             * Amount of audio to include before the VAD detected speech (in milliseconds). Defaults
-             * to 300ms.
-             */
-            fun prefixPaddingMs(prefixPaddingMs: Long) =
-                prefixPaddingMs(JsonField.of(prefixPaddingMs))
-
-            /**
-             * Sets [Builder.prefixPaddingMs] to an arbitrary JSON value.
-             *
-             * You should usually call [Builder.prefixPaddingMs] with a well-typed [Long] value
-             * instead. This method is primarily for setting the field to an undocumented or not yet
-             * supported value.
-             */
-            fun prefixPaddingMs(prefixPaddingMs: JsonField<Long>) = apply {
-                this.prefixPaddingMs = prefixPaddingMs
-            }
-
-            /**
-             * Duration of silence to detect speech stop (in milliseconds). Defaults to 500ms. With
-             * shorter values the model will respond more quickly, but may jump in on short pauses
-             * from the user.
-             */
-            fun silenceDurationMs(silenceDurationMs: Long) =
-                silenceDurationMs(JsonField.of(silenceDurationMs))
-
-            /**
-             * Sets [Builder.silenceDurationMs] to an arbitrary JSON value.
-             *
-             * You should usually call [Builder.silenceDurationMs] with a well-typed [Long] value
-             * instead. This method is primarily for setting the field to an undocumented or not yet
-             * supported value.
-             */
-            fun silenceDurationMs(silenceDurationMs: JsonField<Long>) = apply {
-                this.silenceDurationMs = silenceDurationMs
-            }
-
-            /**
-             * Activation threshold for VAD (0.0 to 1.0), this defaults to 0.5. A higher threshold
-             * will require louder audio to activate the model, and thus might perform better in
-             * noisy environments.
-             */
-            fun threshold(threshold: Double) = threshold(JsonField.of(threshold))
-
-            /**
-             * Sets [Builder.threshold] to an arbitrary JSON value.
-             *
-             * You should usually call [Builder.threshold] with a well-typed [Double] value instead.
-             * This method is primarily for setting the field to an undocumented or not yet
-             * supported value.
-             */
-            fun threshold(threshold: JsonField<Double>) = apply { this.threshold = threshold }
-
-            /** Type of turn detection, only `server_vad` is currently supported. */
-            fun type(type: String) = type(JsonField.of(type))
-
-            /**
-             * Sets [Builder.type] to an arbitrary JSON value.
-             *
-             * You should usually call [Builder.type] with a well-typed [String] value instead. This
-             * method is primarily for setting the field to an undocumented or not yet supported
-             * value.
-             */
-            fun type(type: JsonField<String>) = apply { this.type = type }
-
-            fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
-                this.additionalProperties.clear()
-                putAllAdditionalProperties(additionalProperties)
-            }
-
-            fun putAdditionalProperty(key: String, value: JsonValue) = apply {
-                additionalProperties.put(key, value)
-            }
-
-            fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
-                this.additionalProperties.putAll(additionalProperties)
-            }
-
-            fun removeAdditionalProperty(key: String) = apply { additionalProperties.remove(key) }
-
-            fun removeAllAdditionalProperties(keys: Set<String>) = apply {
-                keys.forEach(::removeAdditionalProperty)
-            }
-
-            /**
-             * Returns an immutable instance of [TurnDetection].
-             *
-             * Further updates to this [Builder] will not mutate the returned instance.
-             */
-            fun build(): TurnDetection =
-                TurnDetection(
-                    prefixPaddingMs,
-                    silenceDurationMs,
-                    threshold,
-                    type,
-                    additionalProperties.toMutableMap(),
-                )
+        /** An enum containing [Type]'s known values. */
+        enum class Known {
+            REALTIME
         }
+
+        /**
+         * An enum containing [Type]'s known values, as well as an [_UNKNOWN] member.
+         *
+         * An instance of [Type] can contain an unknown value in a couple of cases:
+         * - It was deserialized from data that doesn't match any known member. For example, if the
+         *   SDK is on an older version than the API, then the API may respond with new members that
+         *   the SDK is unaware of.
+         * - It was constructed with an arbitrary value using the [of] method.
+         */
+        enum class Value {
+            REALTIME,
+            /** An enum member indicating that [Type] was instantiated with an unknown value. */
+            _UNKNOWN,
+        }
+
+        /**
+         * Returns an enum member corresponding to this class instance's value, or [Value._UNKNOWN]
+         * if the class was instantiated with an unknown value.
+         *
+         * Use the [known] method instead if you're certain the value is always known or if you want
+         * to throw for the unknown case.
+         */
+        fun value(): Value =
+            when (this) {
+                REALTIME -> Value.REALTIME
+                else -> Value._UNKNOWN
+            }
+
+        /**
+         * Returns an enum member corresponding to this class instance's value.
+         *
+         * Use the [value] method instead if you're uncertain the value is always known and don't
+         * want to throw for the unknown case.
+         *
+         * @throws OpenAIInvalidDataException if this class instance's value is a not a known
+         *   member.
+         */
+        fun known(): Known =
+            when (this) {
+                REALTIME -> Known.REALTIME
+                else -> throw OpenAIInvalidDataException("Unknown Type: $value")
+            }
+
+        /**
+         * Returns this class instance's primitive wire representation.
+         *
+         * This differs from the [toString] method because that method is primarily for debugging
+         * and generally doesn't throw.
+         *
+         * @throws OpenAIInvalidDataException if this class instance's value does not have the
+         *   expected primitive type.
+         */
+        fun asString(): String =
+            _value().asString().orElseThrow { OpenAIInvalidDataException("Value is not a String") }
 
         private var validated: Boolean = false
 
-        fun validate(): TurnDetection = apply {
+        fun validate(): Type = apply {
             if (validated) {
                 return@apply
             }
 
-            prefixPaddingMs()
-            silenceDurationMs()
-            threshold()
-            type()
+            known()
             validated = true
         }
 
@@ -3843,34 +6709,19 @@ private constructor(
          *
          * Used for best match union deserialization.
          */
-        @JvmSynthetic
-        internal fun validity(): Int =
-            (if (prefixPaddingMs.asKnown().isPresent) 1 else 0) +
-                (if (silenceDurationMs.asKnown().isPresent) 1 else 0) +
-                (if (threshold.asKnown().isPresent) 1 else 0) +
-                (if (type.asKnown().isPresent) 1 else 0)
+        @JvmSynthetic internal fun validity(): Int = if (value() == Value._UNKNOWN) 0 else 1
 
         override fun equals(other: Any?): Boolean {
             if (this === other) {
                 return true
             }
 
-            return other is TurnDetection &&
-                prefixPaddingMs == other.prefixPaddingMs &&
-                silenceDurationMs == other.silenceDurationMs &&
-                threshold == other.threshold &&
-                type == other.type &&
-                additionalProperties == other.additionalProperties
+            return other is Type && value == other.value
         }
 
-        private val hashCode: Int by lazy {
-            Objects.hash(prefixPaddingMs, silenceDurationMs, threshold, type, additionalProperties)
-        }
+        override fun hashCode() = value.hashCode()
 
-        override fun hashCode(): Int = hashCode
-
-        override fun toString() =
-            "TurnDetection{prefixPaddingMs=$prefixPaddingMs, silenceDurationMs=$silenceDurationMs, threshold=$threshold, type=$type, additionalProperties=$additionalProperties}"
+        override fun toString() = value.toString()
     }
 
     override fun equals(other: Any?): Boolean {
@@ -3879,37 +6730,37 @@ private constructor(
         }
 
         return other is RealtimeSessionCreateResponse &&
-            id == other.id &&
             audio == other.audio &&
-            expiresAt == other.expiresAt &&
+            clientSecret == other.clientSecret &&
             include == other.include &&
             instructions == other.instructions &&
             maxOutputTokens == other.maxOutputTokens &&
             model == other.model &&
-            object_ == other.object_ &&
             outputModalities == other.outputModalities &&
+            prompt == other.prompt &&
             toolChoice == other.toolChoice &&
             tools == other.tools &&
             tracing == other.tracing &&
-            turnDetection == other.turnDetection &&
+            truncation == other.truncation &&
+            type == other.type &&
             additionalProperties == other.additionalProperties
     }
 
     private val hashCode: Int by lazy {
         Objects.hash(
-            id,
             audio,
-            expiresAt,
+            clientSecret,
             include,
             instructions,
             maxOutputTokens,
             model,
-            object_,
             outputModalities,
+            prompt,
             toolChoice,
             tools,
             tracing,
-            turnDetection,
+            truncation,
+            type,
             additionalProperties,
         )
     }
@@ -3917,5 +6768,5 @@ private constructor(
     override fun hashCode(): Int = hashCode
 
     override fun toString() =
-        "RealtimeSessionCreateResponse{id=$id, audio=$audio, expiresAt=$expiresAt, include=$include, instructions=$instructions, maxOutputTokens=$maxOutputTokens, model=$model, object_=$object_, outputModalities=$outputModalities, toolChoice=$toolChoice, tools=$tools, tracing=$tracing, turnDetection=$turnDetection, additionalProperties=$additionalProperties}"
+        "RealtimeSessionCreateResponse{audio=$audio, clientSecret=$clientSecret, include=$include, instructions=$instructions, maxOutputTokens=$maxOutputTokens, model=$model, outputModalities=$outputModalities, prompt=$prompt, toolChoice=$toolChoice, tools=$tools, tracing=$tracing, truncation=$truncation, type=$type, additionalProperties=$additionalProperties}"
 }
