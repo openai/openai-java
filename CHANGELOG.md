@@ -1,5 +1,13 @@
 # Changelog
 
+## 3.5.0 (2025-09-08)
+
+Full Changelog: [v3.4.1...v3.5.0](https://github.com/openai/openai-java/compare/v3.4.1...v3.5.0)
+
+### Features
+
+* **api:** ship the RealtimeGA API shape ([4eb0dfa](https://github.com/openai/openai-java/commit/4eb0dfa45278656462c69ea20573745d630b9559))
+
 ## 3.4.1 (2025-09-03)
 
 Full Changelog: [v3.4.0...v3.4.1](https://github.com/openai/openai-java/compare/v3.4.0...v3.4.1)
