@@ -19,7 +19,6 @@ import com.openai.core.ExcludeMissing
 import com.openai.core.JsonField
 import com.openai.core.JsonMissing
 import com.openai.core.JsonValue
-import com.openai.core.allMaxBy
 import com.openai.core.checkRequired
 import com.openai.core.getOrThrow
 import com.openai.errors.OpenAIInvalidDataException
@@ -154,25 +153,23 @@ private constructor(
          */
         fun session(session: JsonField<Session>) = apply { this.session = session }
 
-        /**
-         * Alias for calling [session] with
-         * `Session.ofRealtimeSessionCreateResponse(realtimeSessionCreateResponse)`.
-         */
-        fun session(realtimeSessionCreateResponse: RealtimeSessionCreateResponse) =
-            session(Session.ofRealtimeSessionCreateResponse(realtimeSessionCreateResponse))
+        /** Alias for calling [session] with `Session.ofRealtime(realtime)`. */
+        fun session(realtime: RealtimeSessionCreateResponse) = session(Session.ofRealtime(realtime))
 
         /**
-         * Alias for calling [session] with
-         * `Session.ofRealtimeTranscriptionSessionCreateResponse(realtimeTranscriptionSessionCreateResponse)`.
+         * Alias for calling [session] with the following:
+         * ```java
+         * RealtimeSessionCreateResponse.builder()
+         *     .clientSecret(clientSecret)
+         *     .build()
+         * ```
          */
-        fun session(
-            realtimeTranscriptionSessionCreateResponse: RealtimeTranscriptionSessionCreateResponse
-        ) =
-            session(
-                Session.ofRealtimeTranscriptionSessionCreateResponse(
-                    realtimeTranscriptionSessionCreateResponse
-                )
-            )
+        fun realtimeSession(clientSecret: RealtimeSessionClientSecret) =
+            session(RealtimeSessionCreateResponse.builder().clientSecret(clientSecret).build())
+
+        /** Alias for calling [session] with `Session.ofTranscription(transcription)`. */
+        fun session(transcription: RealtimeTranscriptionSessionCreateResponse) =
+            session(Session.ofTranscription(transcription))
 
         /** The generated client secret value. */
         fun value(value: String) = value(JsonField.of(value))
@@ -264,10 +261,8 @@ private constructor(
     @JsonSerialize(using = Session.Serializer::class)
     class Session
     private constructor(
-        private val realtimeSessionCreateResponse: RealtimeSessionCreateResponse? = null,
-        private val realtimeTranscriptionSessionCreateResponse:
-            RealtimeTranscriptionSessionCreateResponse? =
-            null,
+        private val realtime: RealtimeSessionCreateResponse? = null,
+        private val transcription: RealtimeTranscriptionSessionCreateResponse? = null,
         private val _json: JsonValue? = null,
     ) {
 
@@ -275,55 +270,32 @@ private constructor(
          * A new Realtime session configuration, with an ephemeral key. Default TTL for keys is one
          * minute.
          */
-        fun realtimeSessionCreateResponse(): Optional<RealtimeSessionCreateResponse> =
-            Optional.ofNullable(realtimeSessionCreateResponse)
+        fun realtime(): Optional<RealtimeSessionCreateResponse> = Optional.ofNullable(realtime)
 
-        /**
-         * A new Realtime transcription session configuration.
-         *
-         * When a session is created on the server via REST API, the session object also contains an
-         * ephemeral key. Default TTL for keys is 10 minutes. This property is not present when a
-         * session is updated via the WebSocket API.
-         */
-        fun realtimeTranscriptionSessionCreateResponse():
-            Optional<RealtimeTranscriptionSessionCreateResponse> =
-            Optional.ofNullable(realtimeTranscriptionSessionCreateResponse)
+        /** A Realtime transcription session configuration object. */
+        fun transcription(): Optional<RealtimeTranscriptionSessionCreateResponse> =
+            Optional.ofNullable(transcription)
 
-        fun isRealtimeSessionCreateResponse(): Boolean = realtimeSessionCreateResponse != null
+        fun isRealtime(): Boolean = realtime != null
 
-        fun isRealtimeTranscriptionSessionCreateResponse(): Boolean =
-            realtimeTranscriptionSessionCreateResponse != null
+        fun isTranscription(): Boolean = transcription != null
 
         /**
          * A new Realtime session configuration, with an ephemeral key. Default TTL for keys is one
          * minute.
          */
-        fun asRealtimeSessionCreateResponse(): RealtimeSessionCreateResponse =
-            realtimeSessionCreateResponse.getOrThrow("realtimeSessionCreateResponse")
+        fun asRealtime(): RealtimeSessionCreateResponse = realtime.getOrThrow("realtime")
 
-        /**
-         * A new Realtime transcription session configuration.
-         *
-         * When a session is created on the server via REST API, the session object also contains an
-         * ephemeral key. Default TTL for keys is 10 minutes. This property is not present when a
-         * session is updated via the WebSocket API.
-         */
-        fun asRealtimeTranscriptionSessionCreateResponse():
-            RealtimeTranscriptionSessionCreateResponse =
-            realtimeTranscriptionSessionCreateResponse.getOrThrow(
-                "realtimeTranscriptionSessionCreateResponse"
-            )
+        /** A Realtime transcription session configuration object. */
+        fun asTranscription(): RealtimeTranscriptionSessionCreateResponse =
+            transcription.getOrThrow("transcription")
 
         fun _json(): Optional<JsonValue> = Optional.ofNullable(_json)
 
         fun <T> accept(visitor: Visitor<T>): T =
             when {
-                realtimeSessionCreateResponse != null ->
-                    visitor.visitRealtimeSessionCreateResponse(realtimeSessionCreateResponse)
-                realtimeTranscriptionSessionCreateResponse != null ->
-                    visitor.visitRealtimeTranscriptionSessionCreateResponse(
-                        realtimeTranscriptionSessionCreateResponse
-                    )
+                realtime != null -> visitor.visitRealtime(realtime)
+                transcription != null -> visitor.visitTranscription(transcription)
                 else -> visitor.unknown(_json)
             }
 
@@ -336,17 +308,14 @@ private constructor(
 
             accept(
                 object : Visitor<Unit> {
-                    override fun visitRealtimeSessionCreateResponse(
-                        realtimeSessionCreateResponse: RealtimeSessionCreateResponse
-                    ) {
-                        realtimeSessionCreateResponse.validate()
+                    override fun visitRealtime(realtime: RealtimeSessionCreateResponse) {
+                        realtime.validate()
                     }
 
-                    override fun visitRealtimeTranscriptionSessionCreateResponse(
-                        realtimeTranscriptionSessionCreateResponse:
-                            RealtimeTranscriptionSessionCreateResponse
+                    override fun visitTranscription(
+                        transcription: RealtimeTranscriptionSessionCreateResponse
                     ) {
-                        realtimeTranscriptionSessionCreateResponse.validate()
+                        transcription.validate()
                     }
                 }
             )
@@ -371,14 +340,12 @@ private constructor(
         internal fun validity(): Int =
             accept(
                 object : Visitor<Int> {
-                    override fun visitRealtimeSessionCreateResponse(
-                        realtimeSessionCreateResponse: RealtimeSessionCreateResponse
-                    ) = realtimeSessionCreateResponse.validity()
+                    override fun visitRealtime(realtime: RealtimeSessionCreateResponse) =
+                        realtime.validity()
 
-                    override fun visitRealtimeTranscriptionSessionCreateResponse(
-                        realtimeTranscriptionSessionCreateResponse:
-                            RealtimeTranscriptionSessionCreateResponse
-                    ) = realtimeTranscriptionSessionCreateResponse.validity()
+                    override fun visitTranscription(
+                        transcription: RealtimeTranscriptionSessionCreateResponse
+                    ) = transcription.validity()
 
                     override fun unknown(json: JsonValue?) = 0
                 }
@@ -390,20 +357,16 @@ private constructor(
             }
 
             return other is Session &&
-                realtimeSessionCreateResponse == other.realtimeSessionCreateResponse &&
-                realtimeTranscriptionSessionCreateResponse ==
-                    other.realtimeTranscriptionSessionCreateResponse
+                realtime == other.realtime &&
+                transcription == other.transcription
         }
 
-        override fun hashCode(): Int =
-            Objects.hash(realtimeSessionCreateResponse, realtimeTranscriptionSessionCreateResponse)
+        override fun hashCode(): Int = Objects.hash(realtime, transcription)
 
         override fun toString(): String =
             when {
-                realtimeSessionCreateResponse != null ->
-                    "Session{realtimeSessionCreateResponse=$realtimeSessionCreateResponse}"
-                realtimeTranscriptionSessionCreateResponse != null ->
-                    "Session{realtimeTranscriptionSessionCreateResponse=$realtimeTranscriptionSessionCreateResponse}"
+                realtime != null -> "Session{realtime=$realtime}"
+                transcription != null -> "Session{transcription=$transcription}"
                 _json != null -> "Session{_unknown=$_json}"
                 else -> throw IllegalStateException("Invalid Session")
             }
@@ -415,26 +378,12 @@ private constructor(
              * one minute.
              */
             @JvmStatic
-            fun ofRealtimeSessionCreateResponse(
-                realtimeSessionCreateResponse: RealtimeSessionCreateResponse
-            ) = Session(realtimeSessionCreateResponse = realtimeSessionCreateResponse)
+            fun ofRealtime(realtime: RealtimeSessionCreateResponse) = Session(realtime = realtime)
 
-            /**
-             * A new Realtime transcription session configuration.
-             *
-             * When a session is created on the server via REST API, the session object also
-             * contains an ephemeral key. Default TTL for keys is 10 minutes. This property is not
-             * present when a session is updated via the WebSocket API.
-             */
+            /** A Realtime transcription session configuration object. */
             @JvmStatic
-            fun ofRealtimeTranscriptionSessionCreateResponse(
-                realtimeTranscriptionSessionCreateResponse:
-                    RealtimeTranscriptionSessionCreateResponse
-            ) =
-                Session(
-                    realtimeTranscriptionSessionCreateResponse =
-                        realtimeTranscriptionSessionCreateResponse
-                )
+            fun ofTranscription(transcription: RealtimeTranscriptionSessionCreateResponse) =
+                Session(transcription = transcription)
         }
 
         /**
@@ -446,21 +395,10 @@ private constructor(
              * A new Realtime session configuration, with an ephemeral key. Default TTL for keys is
              * one minute.
              */
-            fun visitRealtimeSessionCreateResponse(
-                realtimeSessionCreateResponse: RealtimeSessionCreateResponse
-            ): T
+            fun visitRealtime(realtime: RealtimeSessionCreateResponse): T
 
-            /**
-             * A new Realtime transcription session configuration.
-             *
-             * When a session is created on the server via REST API, the session object also
-             * contains an ephemeral key. Default TTL for keys is 10 minutes. This property is not
-             * present when a session is updated via the WebSocket API.
-             */
-            fun visitRealtimeTranscriptionSessionCreateResponse(
-                realtimeTranscriptionSessionCreateResponse:
-                    RealtimeTranscriptionSessionCreateResponse
-            ): T
+            /** A Realtime transcription session configuration object. */
+            fun visitTranscription(transcription: RealtimeTranscriptionSessionCreateResponse): T
 
             /**
              * Maps an unknown variant of [Session] to a value of type [T].
@@ -481,35 +419,24 @@ private constructor(
 
             override fun ObjectCodec.deserialize(node: JsonNode): Session {
                 val json = JsonValue.fromJsonNode(node)
+                val type = json.asObject().getOrNull()?.get("type")?.asString()?.getOrNull()
 
-                val bestMatches =
-                    sequenceOf(
-                            tryDeserialize(node, jacksonTypeRef<RealtimeSessionCreateResponse>())
-                                ?.let { Session(realtimeSessionCreateResponse = it, _json = json) },
-                            tryDeserialize(
-                                    node,
-                                    jacksonTypeRef<RealtimeTranscriptionSessionCreateResponse>(),
-                                )
-                                ?.let {
-                                    Session(
-                                        realtimeTranscriptionSessionCreateResponse = it,
-                                        _json = json,
-                                    )
-                                },
-                        )
-                        .filterNotNull()
-                        .allMaxBy { it.validity() }
-                        .toList()
-                return when (bestMatches.size) {
-                    // This can happen if what we're deserializing is completely incompatible with
-                    // all the possible variants (e.g. deserializing from boolean).
-                    0 -> Session(_json = json)
-                    1 -> bestMatches.single()
-                    // If there's more than one match with the highest validity, then use the first
-                    // completely valid match, or simply the first match if none are completely
-                    // valid.
-                    else -> bestMatches.firstOrNull { it.isValid() } ?: bestMatches.first()
+                when (type) {
+                    "realtime" -> {
+                        return tryDeserialize(node, jacksonTypeRef<RealtimeSessionCreateResponse>())
+                            ?.let { Session(realtime = it, _json = json) } ?: Session(_json = json)
+                    }
+                    "transcription" -> {
+                        return tryDeserialize(
+                                node,
+                                jacksonTypeRef<RealtimeTranscriptionSessionCreateResponse>(),
+                            )
+                            ?.let { Session(transcription = it, _json = json) }
+                            ?: Session(_json = json)
+                    }
                 }
+
+                return Session(_json = json)
             }
         }
 
@@ -521,10 +448,8 @@ private constructor(
                 provider: SerializerProvider,
             ) {
                 when {
-                    value.realtimeSessionCreateResponse != null ->
-                        generator.writeObject(value.realtimeSessionCreateResponse)
-                    value.realtimeTranscriptionSessionCreateResponse != null ->
-                        generator.writeObject(value.realtimeTranscriptionSessionCreateResponse)
+                    value.realtime != null -> generator.writeObject(value.realtime)
+                    value.transcription != null -> generator.writeObject(value.transcription)
                     value._json != null -> generator.writeObject(value._json)
                     else -> throw IllegalStateException("Invalid Session")
                 }

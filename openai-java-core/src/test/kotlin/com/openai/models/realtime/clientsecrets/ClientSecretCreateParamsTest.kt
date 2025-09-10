@@ -4,13 +4,13 @@ package com.openai.models.realtime.clientsecrets
 
 import com.openai.core.JsonValue
 import com.openai.models.realtime.AudioTranscription
-import com.openai.models.realtime.Models
 import com.openai.models.realtime.NoiseReductionType
 import com.openai.models.realtime.RealtimeAudioConfig
 import com.openai.models.realtime.RealtimeAudioConfigInput
 import com.openai.models.realtime.RealtimeAudioConfigOutput
 import com.openai.models.realtime.RealtimeAudioFormats
 import com.openai.models.realtime.RealtimeAudioInputTurnDetection
+import com.openai.models.realtime.RealtimeFunctionTool
 import com.openai.models.realtime.RealtimeSessionCreateRequest
 import com.openai.models.realtime.RealtimeTruncation
 import com.openai.models.responses.ResponsePrompt
@@ -103,11 +103,11 @@ internal class ClientSecretCreateParamsTest {
                     )
                     .toolChoice(ToolChoiceOptions.NONE)
                     .addTool(
-                        Models.builder()
+                        RealtimeFunctionTool.builder()
                             .description("description")
                             .name("name")
                             .parameters(JsonValue.from(mapOf<String, Any>()))
-                            .type(Models.Type.FUNCTION)
+                            .type(RealtimeFunctionTool.Type.FUNCTION)
                             .build()
                     )
                     .tracingAuto()
@@ -204,11 +204,11 @@ internal class ClientSecretCreateParamsTest {
                         )
                         .toolChoice(ToolChoiceOptions.NONE)
                         .addTool(
-                            Models.builder()
+                            RealtimeFunctionTool.builder()
                                 .description("description")
                                 .name("name")
                                 .parameters(JsonValue.from(mapOf<String, Any>()))
-                                .type(Models.Type.FUNCTION)
+                                .type(RealtimeFunctionTool.Type.FUNCTION)
                                 .build()
                         )
                         .tracingAuto()
@@ -305,11 +305,11 @@ internal class ClientSecretCreateParamsTest {
                         )
                         .toolChoice(ToolChoiceOptions.NONE)
                         .addTool(
-                            Models.builder()
+                            RealtimeFunctionTool.builder()
                                 .description("description")
                                 .name("name")
                                 .parameters(JsonValue.from(mapOf<String, Any>()))
-                                .type(Models.Type.FUNCTION)
+                                .type(RealtimeFunctionTool.Type.FUNCTION)
                                 .build()
                         )
                         .tracingAuto()

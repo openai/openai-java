@@ -17,7 +17,7 @@ import java.util.Objects
 import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
-class Models
+class RealtimeFunctionTool
 private constructor(
     private val description: JsonField<String>,
     private val name: JsonField<String>,
@@ -99,11 +99,11 @@ private constructor(
 
     companion object {
 
-        /** Returns a mutable builder for constructing an instance of [Models]. */
+        /** Returns a mutable builder for constructing an instance of [RealtimeFunctionTool]. */
         @JvmStatic fun builder() = Builder()
     }
 
-    /** A builder for [Models]. */
+    /** A builder for [RealtimeFunctionTool]. */
     class Builder internal constructor() {
 
         private var description: JsonField<String> = JsonMissing.of()
@@ -113,12 +113,12 @@ private constructor(
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
         @JvmSynthetic
-        internal fun from(models: Models) = apply {
-            description = models.description
-            name = models.name
-            parameters = models.parameters
-            type = models.type
-            additionalProperties = models.additionalProperties.toMutableMap()
+        internal fun from(realtimeFunctionTool: RealtimeFunctionTool) = apply {
+            description = realtimeFunctionTool.description
+            name = realtimeFunctionTool.name
+            parameters = realtimeFunctionTool.parameters
+            type = realtimeFunctionTool.type
+            additionalProperties = realtimeFunctionTool.additionalProperties.toMutableMap()
         }
 
         /**
@@ -181,17 +181,23 @@ private constructor(
         }
 
         /**
-         * Returns an immutable instance of [Models].
+         * Returns an immutable instance of [RealtimeFunctionTool].
          *
          * Further updates to this [Builder] will not mutate the returned instance.
          */
-        fun build(): Models =
-            Models(description, name, parameters, type, additionalProperties.toMutableMap())
+        fun build(): RealtimeFunctionTool =
+            RealtimeFunctionTool(
+                description,
+                name,
+                parameters,
+                type,
+                additionalProperties.toMutableMap(),
+            )
     }
 
     private var validated: Boolean = false
 
-    fun validate(): Models = apply {
+    fun validate(): RealtimeFunctionTool = apply {
         if (validated) {
             return@apply
         }
@@ -346,7 +352,7 @@ private constructor(
             return true
         }
 
-        return other is Models &&
+        return other is RealtimeFunctionTool &&
             description == other.description &&
             name == other.name &&
             parameters == other.parameters &&
@@ -361,5 +367,5 @@ private constructor(
     override fun hashCode(): Int = hashCode
 
     override fun toString() =
-        "Models{description=$description, name=$name, parameters=$parameters, type=$type, additionalProperties=$additionalProperties}"
+        "RealtimeFunctionTool{description=$description, name=$name, parameters=$parameters, type=$type, additionalProperties=$additionalProperties}"
 }

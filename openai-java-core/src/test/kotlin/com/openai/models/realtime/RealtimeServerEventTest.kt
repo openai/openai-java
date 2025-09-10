@@ -6,10 +6,6 @@ import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
 import com.openai.core.JsonValue
 import com.openai.core.jsonMapper
 import com.openai.errors.OpenAIInvalidDataException
-import com.openai.models.realtime.clientsecrets.RealtimeTranscriptionSessionClientSecret
-import com.openai.models.realtime.clientsecrets.RealtimeTranscriptionSessionCreateResponse
-import com.openai.models.realtime.clientsecrets.RealtimeTranscriptionSessionInputAudioTranscription
-import com.openai.models.realtime.clientsecrets.RealtimeTranscriptionSessionTurnDetection
 import com.openai.models.responses.ResponsePrompt
 import com.openai.models.responses.ToolChoiceOptions
 import org.assertj.core.api.Assertions.assertThat
@@ -65,8 +61,6 @@ internal class RealtimeServerEventTest {
         assertThat(realtimeServerEvent.responseOutputTextDone()).isEmpty
         assertThat(realtimeServerEvent.sessionCreated()).isEmpty
         assertThat(realtimeServerEvent.sessionUpdated()).isEmpty
-        assertThat(realtimeServerEvent.transcriptionSessionUpdated()).isEmpty
-        assertThat(realtimeServerEvent.transcriptionSessionCreated()).isEmpty
         assertThat(realtimeServerEvent.outputAudioBufferStarted()).isEmpty
         assertThat(realtimeServerEvent.outputAudioBufferStopped()).isEmpty
         assertThat(realtimeServerEvent.outputAudioBufferCleared()).isEmpty
@@ -165,8 +159,6 @@ internal class RealtimeServerEventTest {
         assertThat(realtimeServerEvent.responseOutputTextDone()).isEmpty
         assertThat(realtimeServerEvent.sessionCreated()).isEmpty
         assertThat(realtimeServerEvent.sessionUpdated()).isEmpty
-        assertThat(realtimeServerEvent.transcriptionSessionUpdated()).isEmpty
-        assertThat(realtimeServerEvent.transcriptionSessionCreated()).isEmpty
         assertThat(realtimeServerEvent.outputAudioBufferStarted()).isEmpty
         assertThat(realtimeServerEvent.outputAudioBufferStopped()).isEmpty
         assertThat(realtimeServerEvent.outputAudioBufferCleared()).isEmpty
@@ -258,8 +250,6 @@ internal class RealtimeServerEventTest {
         assertThat(realtimeServerEvent.responseOutputTextDone()).isEmpty
         assertThat(realtimeServerEvent.sessionCreated()).isEmpty
         assertThat(realtimeServerEvent.sessionUpdated()).isEmpty
-        assertThat(realtimeServerEvent.transcriptionSessionUpdated()).isEmpty
-        assertThat(realtimeServerEvent.transcriptionSessionCreated()).isEmpty
         assertThat(realtimeServerEvent.outputAudioBufferStarted()).isEmpty
         assertThat(realtimeServerEvent.outputAudioBufferStopped()).isEmpty
         assertThat(realtimeServerEvent.outputAudioBufferCleared()).isEmpty
@@ -361,8 +351,6 @@ internal class RealtimeServerEventTest {
         assertThat(realtimeServerEvent.responseOutputTextDone()).isEmpty
         assertThat(realtimeServerEvent.sessionCreated()).isEmpty
         assertThat(realtimeServerEvent.sessionUpdated()).isEmpty
-        assertThat(realtimeServerEvent.transcriptionSessionUpdated()).isEmpty
-        assertThat(realtimeServerEvent.transcriptionSessionCreated()).isEmpty
         assertThat(realtimeServerEvent.outputAudioBufferStarted()).isEmpty
         assertThat(realtimeServerEvent.outputAudioBufferStopped()).isEmpty
         assertThat(realtimeServerEvent.outputAudioBufferCleared()).isEmpty
@@ -472,8 +460,6 @@ internal class RealtimeServerEventTest {
         assertThat(realtimeServerEvent.responseOutputTextDone()).isEmpty
         assertThat(realtimeServerEvent.sessionCreated()).isEmpty
         assertThat(realtimeServerEvent.sessionUpdated()).isEmpty
-        assertThat(realtimeServerEvent.transcriptionSessionUpdated()).isEmpty
-        assertThat(realtimeServerEvent.transcriptionSessionCreated()).isEmpty
         assertThat(realtimeServerEvent.outputAudioBufferStarted()).isEmpty
         assertThat(realtimeServerEvent.outputAudioBufferStopped()).isEmpty
         assertThat(realtimeServerEvent.outputAudioBufferCleared()).isEmpty
@@ -569,8 +555,6 @@ internal class RealtimeServerEventTest {
         assertThat(realtimeServerEvent.responseOutputTextDone()).isEmpty
         assertThat(realtimeServerEvent.sessionCreated()).isEmpty
         assertThat(realtimeServerEvent.sessionUpdated()).isEmpty
-        assertThat(realtimeServerEvent.transcriptionSessionUpdated()).isEmpty
-        assertThat(realtimeServerEvent.transcriptionSessionCreated()).isEmpty
         assertThat(realtimeServerEvent.outputAudioBufferStarted()).isEmpty
         assertThat(realtimeServerEvent.outputAudioBufferStopped()).isEmpty
         assertThat(realtimeServerEvent.outputAudioBufferCleared()).isEmpty
@@ -671,8 +655,6 @@ internal class RealtimeServerEventTest {
         assertThat(realtimeServerEvent.responseOutputTextDone()).isEmpty
         assertThat(realtimeServerEvent.sessionCreated()).isEmpty
         assertThat(realtimeServerEvent.sessionUpdated()).isEmpty
-        assertThat(realtimeServerEvent.transcriptionSessionUpdated()).isEmpty
-        assertThat(realtimeServerEvent.transcriptionSessionCreated()).isEmpty
         assertThat(realtimeServerEvent.outputAudioBufferStarted()).isEmpty
         assertThat(realtimeServerEvent.outputAudioBufferStopped()).isEmpty
         assertThat(realtimeServerEvent.outputAudioBufferCleared()).isEmpty
@@ -769,8 +751,6 @@ internal class RealtimeServerEventTest {
         assertThat(realtimeServerEvent.responseOutputTextDone()).isEmpty
         assertThat(realtimeServerEvent.sessionCreated()).isEmpty
         assertThat(realtimeServerEvent.sessionUpdated()).isEmpty
-        assertThat(realtimeServerEvent.transcriptionSessionUpdated()).isEmpty
-        assertThat(realtimeServerEvent.transcriptionSessionCreated()).isEmpty
         assertThat(realtimeServerEvent.outputAudioBufferStarted()).isEmpty
         assertThat(realtimeServerEvent.outputAudioBufferStopped()).isEmpty
         assertThat(realtimeServerEvent.outputAudioBufferCleared()).isEmpty
@@ -858,8 +838,6 @@ internal class RealtimeServerEventTest {
         assertThat(realtimeServerEvent.responseOutputTextDone()).isEmpty
         assertThat(realtimeServerEvent.sessionCreated()).isEmpty
         assertThat(realtimeServerEvent.sessionUpdated()).isEmpty
-        assertThat(realtimeServerEvent.transcriptionSessionUpdated()).isEmpty
-        assertThat(realtimeServerEvent.transcriptionSessionCreated()).isEmpty
         assertThat(realtimeServerEvent.outputAudioBufferStarted()).isEmpty
         assertThat(realtimeServerEvent.outputAudioBufferStopped()).isEmpty
         assertThat(realtimeServerEvent.outputAudioBufferCleared()).isEmpty
@@ -943,8 +921,6 @@ internal class RealtimeServerEventTest {
         assertThat(realtimeServerEvent.responseOutputTextDone()).isEmpty
         assertThat(realtimeServerEvent.sessionCreated()).isEmpty
         assertThat(realtimeServerEvent.sessionUpdated()).isEmpty
-        assertThat(realtimeServerEvent.transcriptionSessionUpdated()).isEmpty
-        assertThat(realtimeServerEvent.transcriptionSessionCreated()).isEmpty
         assertThat(realtimeServerEvent.outputAudioBufferStarted()).isEmpty
         assertThat(realtimeServerEvent.outputAudioBufferStopped()).isEmpty
         assertThat(realtimeServerEvent.outputAudioBufferCleared()).isEmpty
@@ -1022,8 +998,6 @@ internal class RealtimeServerEventTest {
         assertThat(realtimeServerEvent.responseOutputTextDone()).isEmpty
         assertThat(realtimeServerEvent.sessionCreated()).isEmpty
         assertThat(realtimeServerEvent.sessionUpdated()).isEmpty
-        assertThat(realtimeServerEvent.transcriptionSessionUpdated()).isEmpty
-        assertThat(realtimeServerEvent.transcriptionSessionCreated()).isEmpty
         assertThat(realtimeServerEvent.outputAudioBufferStarted()).isEmpty
         assertThat(realtimeServerEvent.outputAudioBufferStopped()).isEmpty
         assertThat(realtimeServerEvent.outputAudioBufferCleared()).isEmpty
@@ -1105,8 +1079,6 @@ internal class RealtimeServerEventTest {
         assertThat(realtimeServerEvent.responseOutputTextDone()).isEmpty
         assertThat(realtimeServerEvent.sessionCreated()).isEmpty
         assertThat(realtimeServerEvent.sessionUpdated()).isEmpty
-        assertThat(realtimeServerEvent.transcriptionSessionUpdated()).isEmpty
-        assertThat(realtimeServerEvent.transcriptionSessionCreated()).isEmpty
         assertThat(realtimeServerEvent.outputAudioBufferStarted()).isEmpty
         assertThat(realtimeServerEvent.outputAudioBufferStopped()).isEmpty
         assertThat(realtimeServerEvent.outputAudioBufferCleared()).isEmpty
@@ -1188,8 +1160,6 @@ internal class RealtimeServerEventTest {
         assertThat(realtimeServerEvent.responseOutputTextDone()).isEmpty
         assertThat(realtimeServerEvent.sessionCreated()).isEmpty
         assertThat(realtimeServerEvent.sessionUpdated()).isEmpty
-        assertThat(realtimeServerEvent.transcriptionSessionUpdated()).isEmpty
-        assertThat(realtimeServerEvent.transcriptionSessionCreated()).isEmpty
         assertThat(realtimeServerEvent.outputAudioBufferStarted()).isEmpty
         assertThat(realtimeServerEvent.outputAudioBufferStopped()).isEmpty
         assertThat(realtimeServerEvent.outputAudioBufferCleared()).isEmpty
@@ -1275,8 +1245,6 @@ internal class RealtimeServerEventTest {
         assertThat(realtimeServerEvent.responseOutputTextDone()).isEmpty
         assertThat(realtimeServerEvent.sessionCreated()).isEmpty
         assertThat(realtimeServerEvent.sessionUpdated()).isEmpty
-        assertThat(realtimeServerEvent.transcriptionSessionUpdated()).isEmpty
-        assertThat(realtimeServerEvent.transcriptionSessionCreated()).isEmpty
         assertThat(realtimeServerEvent.outputAudioBufferStarted()).isEmpty
         assertThat(realtimeServerEvent.outputAudioBufferStopped()).isEmpty
         assertThat(realtimeServerEvent.outputAudioBufferCleared()).isEmpty
@@ -1367,8 +1335,6 @@ internal class RealtimeServerEventTest {
         assertThat(realtimeServerEvent.responseOutputTextDone()).isEmpty
         assertThat(realtimeServerEvent.sessionCreated()).isEmpty
         assertThat(realtimeServerEvent.sessionUpdated()).isEmpty
-        assertThat(realtimeServerEvent.transcriptionSessionUpdated()).isEmpty
-        assertThat(realtimeServerEvent.transcriptionSessionCreated()).isEmpty
         assertThat(realtimeServerEvent.outputAudioBufferStarted()).isEmpty
         assertThat(realtimeServerEvent.outputAudioBufferStopped()).isEmpty
         assertThat(realtimeServerEvent.outputAudioBufferCleared()).isEmpty
@@ -1454,8 +1420,6 @@ internal class RealtimeServerEventTest {
         assertThat(realtimeServerEvent.responseOutputTextDone()).isEmpty
         assertThat(realtimeServerEvent.sessionCreated()).isEmpty
         assertThat(realtimeServerEvent.sessionUpdated()).isEmpty
-        assertThat(realtimeServerEvent.transcriptionSessionUpdated()).isEmpty
-        assertThat(realtimeServerEvent.transcriptionSessionCreated()).isEmpty
         assertThat(realtimeServerEvent.outputAudioBufferStarted()).isEmpty
         assertThat(realtimeServerEvent.outputAudioBufferStopped()).isEmpty
         assertThat(realtimeServerEvent.outputAudioBufferCleared()).isEmpty
@@ -1544,8 +1508,6 @@ internal class RealtimeServerEventTest {
         assertThat(realtimeServerEvent.responseOutputTextDone()).isEmpty
         assertThat(realtimeServerEvent.sessionCreated()).isEmpty
         assertThat(realtimeServerEvent.sessionUpdated()).isEmpty
-        assertThat(realtimeServerEvent.transcriptionSessionUpdated()).isEmpty
-        assertThat(realtimeServerEvent.transcriptionSessionCreated()).isEmpty
         assertThat(realtimeServerEvent.outputAudioBufferStarted()).isEmpty
         assertThat(realtimeServerEvent.outputAudioBufferStopped()).isEmpty
         assertThat(realtimeServerEvent.outputAudioBufferCleared()).isEmpty
@@ -1635,8 +1597,6 @@ internal class RealtimeServerEventTest {
         assertThat(realtimeServerEvent.responseOutputTextDone()).isEmpty
         assertThat(realtimeServerEvent.sessionCreated()).isEmpty
         assertThat(realtimeServerEvent.sessionUpdated()).isEmpty
-        assertThat(realtimeServerEvent.transcriptionSessionUpdated()).isEmpty
-        assertThat(realtimeServerEvent.transcriptionSessionCreated()).isEmpty
         assertThat(realtimeServerEvent.outputAudioBufferStarted()).isEmpty
         assertThat(realtimeServerEvent.outputAudioBufferStopped()).isEmpty
         assertThat(realtimeServerEvent.outputAudioBufferCleared()).isEmpty
@@ -1731,8 +1691,6 @@ internal class RealtimeServerEventTest {
         assertThat(realtimeServerEvent.responseOutputTextDone()).isEmpty
         assertThat(realtimeServerEvent.sessionCreated()).isEmpty
         assertThat(realtimeServerEvent.sessionUpdated()).isEmpty
-        assertThat(realtimeServerEvent.transcriptionSessionUpdated()).isEmpty
-        assertThat(realtimeServerEvent.transcriptionSessionCreated()).isEmpty
         assertThat(realtimeServerEvent.outputAudioBufferStarted()).isEmpty
         assertThat(realtimeServerEvent.outputAudioBufferStopped()).isEmpty
         assertThat(realtimeServerEvent.outputAudioBufferCleared()).isEmpty
@@ -1833,8 +1791,6 @@ internal class RealtimeServerEventTest {
         assertThat(realtimeServerEvent.responseOutputTextDone()).isEmpty
         assertThat(realtimeServerEvent.sessionCreated()).isEmpty
         assertThat(realtimeServerEvent.sessionUpdated()).isEmpty
-        assertThat(realtimeServerEvent.transcriptionSessionUpdated()).isEmpty
-        assertThat(realtimeServerEvent.transcriptionSessionCreated()).isEmpty
         assertThat(realtimeServerEvent.outputAudioBufferStarted()).isEmpty
         assertThat(realtimeServerEvent.outputAudioBufferStopped()).isEmpty
         assertThat(realtimeServerEvent.outputAudioBufferCleared()).isEmpty
@@ -2010,8 +1966,6 @@ internal class RealtimeServerEventTest {
         assertThat(realtimeServerEvent.responseOutputTextDone()).isEmpty
         assertThat(realtimeServerEvent.sessionCreated()).isEmpty
         assertThat(realtimeServerEvent.sessionUpdated()).isEmpty
-        assertThat(realtimeServerEvent.transcriptionSessionUpdated()).isEmpty
-        assertThat(realtimeServerEvent.transcriptionSessionCreated()).isEmpty
         assertThat(realtimeServerEvent.outputAudioBufferStarted()).isEmpty
         assertThat(realtimeServerEvent.outputAudioBufferStopped()).isEmpty
         assertThat(realtimeServerEvent.outputAudioBufferCleared()).isEmpty
@@ -2267,8 +2221,6 @@ internal class RealtimeServerEventTest {
         assertThat(realtimeServerEvent.responseOutputTextDone()).isEmpty
         assertThat(realtimeServerEvent.sessionCreated()).isEmpty
         assertThat(realtimeServerEvent.sessionUpdated()).isEmpty
-        assertThat(realtimeServerEvent.transcriptionSessionUpdated()).isEmpty
-        assertThat(realtimeServerEvent.transcriptionSessionCreated()).isEmpty
         assertThat(realtimeServerEvent.outputAudioBufferStarted()).isEmpty
         assertThat(realtimeServerEvent.outputAudioBufferStopped()).isEmpty
         assertThat(realtimeServerEvent.outputAudioBufferCleared()).isEmpty
@@ -2445,8 +2397,6 @@ internal class RealtimeServerEventTest {
         assertThat(realtimeServerEvent.responseOutputTextDone()).isEmpty
         assertThat(realtimeServerEvent.sessionCreated()).isEmpty
         assertThat(realtimeServerEvent.sessionUpdated()).isEmpty
-        assertThat(realtimeServerEvent.transcriptionSessionUpdated()).isEmpty
-        assertThat(realtimeServerEvent.transcriptionSessionCreated()).isEmpty
         assertThat(realtimeServerEvent.outputAudioBufferStarted()).isEmpty
         assertThat(realtimeServerEvent.outputAudioBufferStopped()).isEmpty
         assertThat(realtimeServerEvent.outputAudioBufferCleared()).isEmpty
@@ -2536,8 +2486,6 @@ internal class RealtimeServerEventTest {
         assertThat(realtimeServerEvent.responseOutputTextDone()).isEmpty
         assertThat(realtimeServerEvent.sessionCreated()).isEmpty
         assertThat(realtimeServerEvent.sessionUpdated()).isEmpty
-        assertThat(realtimeServerEvent.transcriptionSessionUpdated()).isEmpty
-        assertThat(realtimeServerEvent.transcriptionSessionCreated()).isEmpty
         assertThat(realtimeServerEvent.outputAudioBufferStarted()).isEmpty
         assertThat(realtimeServerEvent.outputAudioBufferStopped()).isEmpty
         assertThat(realtimeServerEvent.outputAudioBufferCleared()).isEmpty
@@ -2634,8 +2582,6 @@ internal class RealtimeServerEventTest {
         assertThat(realtimeServerEvent.responseOutputTextDone()).isEmpty
         assertThat(realtimeServerEvent.sessionCreated()).isEmpty
         assertThat(realtimeServerEvent.sessionUpdated()).isEmpty
-        assertThat(realtimeServerEvent.transcriptionSessionUpdated()).isEmpty
-        assertThat(realtimeServerEvent.transcriptionSessionCreated()).isEmpty
         assertThat(realtimeServerEvent.outputAudioBufferStarted()).isEmpty
         assertThat(realtimeServerEvent.outputAudioBufferStopped()).isEmpty
         assertThat(realtimeServerEvent.outputAudioBufferCleared()).isEmpty
@@ -2745,8 +2691,6 @@ internal class RealtimeServerEventTest {
         assertThat(realtimeServerEvent.responseOutputTextDone()).isEmpty
         assertThat(realtimeServerEvent.sessionCreated()).isEmpty
         assertThat(realtimeServerEvent.sessionUpdated()).isEmpty
-        assertThat(realtimeServerEvent.transcriptionSessionUpdated()).isEmpty
-        assertThat(realtimeServerEvent.transcriptionSessionCreated()).isEmpty
         assertThat(realtimeServerEvent.outputAudioBufferStarted()).isEmpty
         assertThat(realtimeServerEvent.outputAudioBufferStopped()).isEmpty
         assertThat(realtimeServerEvent.outputAudioBufferCleared()).isEmpty
@@ -2846,8 +2790,6 @@ internal class RealtimeServerEventTest {
         assertThat(realtimeServerEvent.responseOutputTextDone()).isEmpty
         assertThat(realtimeServerEvent.sessionCreated()).isEmpty
         assertThat(realtimeServerEvent.sessionUpdated()).isEmpty
-        assertThat(realtimeServerEvent.transcriptionSessionUpdated()).isEmpty
-        assertThat(realtimeServerEvent.transcriptionSessionCreated()).isEmpty
         assertThat(realtimeServerEvent.outputAudioBufferStarted()).isEmpty
         assertThat(realtimeServerEvent.outputAudioBufferStopped()).isEmpty
         assertThat(realtimeServerEvent.outputAudioBufferCleared()).isEmpty
@@ -2934,8 +2876,6 @@ internal class RealtimeServerEventTest {
         assertThat(realtimeServerEvent.responseOutputTextDone()).contains(responseOutputTextDone)
         assertThat(realtimeServerEvent.sessionCreated()).isEmpty
         assertThat(realtimeServerEvent.sessionUpdated()).isEmpty
-        assertThat(realtimeServerEvent.transcriptionSessionUpdated()).isEmpty
-        assertThat(realtimeServerEvent.transcriptionSessionCreated()).isEmpty
         assertThat(realtimeServerEvent.outputAudioBufferStarted()).isEmpty
         assertThat(realtimeServerEvent.outputAudioBufferStopped()).isEmpty
         assertThat(realtimeServerEvent.outputAudioBufferCleared()).isEmpty
@@ -3059,11 +2999,11 @@ internal class RealtimeServerEventTest {
                         )
                         .toolChoice(ToolChoiceOptions.NONE)
                         .addTool(
-                            Models.builder()
+                            RealtimeFunctionTool.builder()
                                 .description("description")
                                 .name("name")
                                 .parameters(JsonValue.from(mapOf<String, Any>()))
-                                .type(Models.Type.FUNCTION)
+                                .type(RealtimeFunctionTool.Type.FUNCTION)
                                 .build()
                         )
                         .tracingAuto()
@@ -3104,8 +3044,6 @@ internal class RealtimeServerEventTest {
         assertThat(realtimeServerEvent.responseOutputTextDone()).isEmpty
         assertThat(realtimeServerEvent.sessionCreated()).contains(sessionCreated)
         assertThat(realtimeServerEvent.sessionUpdated()).isEmpty
-        assertThat(realtimeServerEvent.transcriptionSessionUpdated()).isEmpty
-        assertThat(realtimeServerEvent.transcriptionSessionCreated()).isEmpty
         assertThat(realtimeServerEvent.outputAudioBufferStarted()).isEmpty
         assertThat(realtimeServerEvent.outputAudioBufferStopped()).isEmpty
         assertThat(realtimeServerEvent.outputAudioBufferCleared()).isEmpty
@@ -3213,11 +3151,11 @@ internal class RealtimeServerEventTest {
                             )
                             .toolChoice(ToolChoiceOptions.NONE)
                             .addTool(
-                                Models.builder()
+                                RealtimeFunctionTool.builder()
                                     .description("description")
                                     .name("name")
                                     .parameters(JsonValue.from(mapOf<String, Any>()))
-                                    .type(Models.Type.FUNCTION)
+                                    .type(RealtimeFunctionTool.Type.FUNCTION)
                                     .build()
                             )
                             .tracingAuto()
@@ -3318,11 +3256,11 @@ internal class RealtimeServerEventTest {
                         )
                         .toolChoice(ToolChoiceOptions.NONE)
                         .addTool(
-                            Models.builder()
+                            RealtimeFunctionTool.builder()
                                 .description("description")
                                 .name("name")
                                 .parameters(JsonValue.from(mapOf<String, Any>()))
-                                .type(Models.Type.FUNCTION)
+                                .type(RealtimeFunctionTool.Type.FUNCTION)
                                 .build()
                         )
                         .tracingAuto()
@@ -3363,8 +3301,6 @@ internal class RealtimeServerEventTest {
         assertThat(realtimeServerEvent.responseOutputTextDone()).isEmpty
         assertThat(realtimeServerEvent.sessionCreated()).isEmpty
         assertThat(realtimeServerEvent.sessionUpdated()).contains(sessionUpdated)
-        assertThat(realtimeServerEvent.transcriptionSessionUpdated()).isEmpty
-        assertThat(realtimeServerEvent.transcriptionSessionCreated()).isEmpty
         assertThat(realtimeServerEvent.outputAudioBufferStarted()).isEmpty
         assertThat(realtimeServerEvent.outputAudioBufferStopped()).isEmpty
         assertThat(realtimeServerEvent.outputAudioBufferCleared()).isEmpty
@@ -3472,293 +3408,15 @@ internal class RealtimeServerEventTest {
                             )
                             .toolChoice(ToolChoiceOptions.NONE)
                             .addTool(
-                                Models.builder()
+                                RealtimeFunctionTool.builder()
                                     .description("description")
                                     .name("name")
                                     .parameters(JsonValue.from(mapOf<String, Any>()))
-                                    .type(Models.Type.FUNCTION)
+                                    .type(RealtimeFunctionTool.Type.FUNCTION)
                                     .build()
                             )
                             .tracingAuto()
                             .truncation(RealtimeTruncation.RealtimeTruncationStrategy.AUTO)
-                            .build()
-                    )
-                    .build()
-            )
-
-        val roundtrippedRealtimeServerEvent =
-            jsonMapper.readValue(
-                jsonMapper.writeValueAsString(realtimeServerEvent),
-                jacksonTypeRef<RealtimeServerEvent>(),
-            )
-
-        assertThat(roundtrippedRealtimeServerEvent).isEqualTo(realtimeServerEvent)
-    }
-
-    @Test
-    fun ofTranscriptionSessionUpdated() {
-        val transcriptionSessionUpdated =
-            TranscriptionSessionUpdatedEvent.builder()
-                .eventId("event_id")
-                .session(
-                    RealtimeTranscriptionSessionCreateResponse.builder()
-                        .clientSecret(
-                            RealtimeTranscriptionSessionClientSecret.builder()
-                                .expiresAt(0L)
-                                .value("value")
-                                .build()
-                        )
-                        .inputAudioFormat("input_audio_format")
-                        .inputAudioTranscription(
-                            RealtimeTranscriptionSessionInputAudioTranscription.builder()
-                                .language("language")
-                                .model(
-                                    RealtimeTranscriptionSessionInputAudioTranscription.Model
-                                        .WHISPER_1
-                                )
-                                .prompt("prompt")
-                                .build()
-                        )
-                        .addModality(RealtimeTranscriptionSessionCreateResponse.Modality.TEXT)
-                        .turnDetection(
-                            RealtimeTranscriptionSessionTurnDetection.builder()
-                                .prefixPaddingMs(0L)
-                                .silenceDurationMs(0L)
-                                .threshold(0.0)
-                                .type("type")
-                                .build()
-                        )
-                        .build()
-                )
-                .build()
-
-        val realtimeServerEvent =
-            RealtimeServerEvent.ofTranscriptionSessionUpdated(transcriptionSessionUpdated)
-
-        assertThat(realtimeServerEvent.conversationCreated()).isEmpty
-        assertThat(realtimeServerEvent.conversationItemCreated()).isEmpty
-        assertThat(realtimeServerEvent.conversationItemDeleted()).isEmpty
-        assertThat(realtimeServerEvent.conversationItemInputAudioTranscriptionCompleted()).isEmpty
-        assertThat(realtimeServerEvent.conversationItemInputAudioTranscriptionDelta()).isEmpty
-        assertThat(realtimeServerEvent.conversationItemInputAudioTranscriptionFailed()).isEmpty
-        assertThat(realtimeServerEvent.conversationItemRetrieved()).isEmpty
-        assertThat(realtimeServerEvent.conversationItemTruncated()).isEmpty
-        assertThat(realtimeServerEvent.error()).isEmpty
-        assertThat(realtimeServerEvent.inputAudioBufferCleared()).isEmpty
-        assertThat(realtimeServerEvent.inputAudioBufferCommitted()).isEmpty
-        assertThat(realtimeServerEvent.inputAudioBufferSpeechStarted()).isEmpty
-        assertThat(realtimeServerEvent.inputAudioBufferSpeechStopped()).isEmpty
-        assertThat(realtimeServerEvent.rateLimitsUpdated()).isEmpty
-        assertThat(realtimeServerEvent.responseOutputAudioDelta()).isEmpty
-        assertThat(realtimeServerEvent.responseOutputAudioDone()).isEmpty
-        assertThat(realtimeServerEvent.responseOutputAudioTranscriptDelta()).isEmpty
-        assertThat(realtimeServerEvent.responseOutputAudioTranscriptDone()).isEmpty
-        assertThat(realtimeServerEvent.responseContentPartAdded()).isEmpty
-        assertThat(realtimeServerEvent.responseContentPartDone()).isEmpty
-        assertThat(realtimeServerEvent.responseCreated()).isEmpty
-        assertThat(realtimeServerEvent.responseDone()).isEmpty
-        assertThat(realtimeServerEvent.responseFunctionCallArgumentsDelta()).isEmpty
-        assertThat(realtimeServerEvent.responseFunctionCallArgumentsDone()).isEmpty
-        assertThat(realtimeServerEvent.responseOutputItemAdded()).isEmpty
-        assertThat(realtimeServerEvent.responseOutputItemDone()).isEmpty
-        assertThat(realtimeServerEvent.responseOutputTextDelta()).isEmpty
-        assertThat(realtimeServerEvent.responseOutputTextDone()).isEmpty
-        assertThat(realtimeServerEvent.sessionCreated()).isEmpty
-        assertThat(realtimeServerEvent.sessionUpdated()).isEmpty
-        assertThat(realtimeServerEvent.transcriptionSessionUpdated())
-            .contains(transcriptionSessionUpdated)
-        assertThat(realtimeServerEvent.transcriptionSessionCreated()).isEmpty
-        assertThat(realtimeServerEvent.outputAudioBufferStarted()).isEmpty
-        assertThat(realtimeServerEvent.outputAudioBufferStopped()).isEmpty
-        assertThat(realtimeServerEvent.outputAudioBufferCleared()).isEmpty
-        assertThat(realtimeServerEvent.conversationItemAdded()).isEmpty
-        assertThat(realtimeServerEvent.conversationItemDone()).isEmpty
-        assertThat(realtimeServerEvent.inputAudioBufferTimeoutTriggered()).isEmpty
-        assertThat(realtimeServerEvent.conversationItemInputAudioTranscriptionSegment()).isEmpty
-        assertThat(realtimeServerEvent.mcpListToolsInProgress()).isEmpty
-        assertThat(realtimeServerEvent.mcpListToolsCompleted()).isEmpty
-        assertThat(realtimeServerEvent.mcpListToolsFailed()).isEmpty
-        assertThat(realtimeServerEvent.responseMcpCallArgumentsDelta()).isEmpty
-        assertThat(realtimeServerEvent.responseMcpCallArgumentsDone()).isEmpty
-        assertThat(realtimeServerEvent.responseMcpCallInProgress()).isEmpty
-        assertThat(realtimeServerEvent.responseMcpCallCompleted()).isEmpty
-        assertThat(realtimeServerEvent.responseMcpCallFailed()).isEmpty
-    }
-
-    @Test
-    fun ofTranscriptionSessionUpdatedRoundtrip() {
-        val jsonMapper = jsonMapper()
-        val realtimeServerEvent =
-            RealtimeServerEvent.ofTranscriptionSessionUpdated(
-                TranscriptionSessionUpdatedEvent.builder()
-                    .eventId("event_id")
-                    .session(
-                        RealtimeTranscriptionSessionCreateResponse.builder()
-                            .clientSecret(
-                                RealtimeTranscriptionSessionClientSecret.builder()
-                                    .expiresAt(0L)
-                                    .value("value")
-                                    .build()
-                            )
-                            .inputAudioFormat("input_audio_format")
-                            .inputAudioTranscription(
-                                RealtimeTranscriptionSessionInputAudioTranscription.builder()
-                                    .language("language")
-                                    .model(
-                                        RealtimeTranscriptionSessionInputAudioTranscription.Model
-                                            .WHISPER_1
-                                    )
-                                    .prompt("prompt")
-                                    .build()
-                            )
-                            .addModality(RealtimeTranscriptionSessionCreateResponse.Modality.TEXT)
-                            .turnDetection(
-                                RealtimeTranscriptionSessionTurnDetection.builder()
-                                    .prefixPaddingMs(0L)
-                                    .silenceDurationMs(0L)
-                                    .threshold(0.0)
-                                    .type("type")
-                                    .build()
-                            )
-                            .build()
-                    )
-                    .build()
-            )
-
-        val roundtrippedRealtimeServerEvent =
-            jsonMapper.readValue(
-                jsonMapper.writeValueAsString(realtimeServerEvent),
-                jacksonTypeRef<RealtimeServerEvent>(),
-            )
-
-        assertThat(roundtrippedRealtimeServerEvent).isEqualTo(realtimeServerEvent)
-    }
-
-    @Test
-    fun ofTranscriptionSessionCreated() {
-        val transcriptionSessionCreated =
-            TranscriptionSessionCreated.builder()
-                .eventId("event_id")
-                .session(
-                    RealtimeTranscriptionSessionCreateResponse.builder()
-                        .clientSecret(
-                            RealtimeTranscriptionSessionClientSecret.builder()
-                                .expiresAt(0L)
-                                .value("value")
-                                .build()
-                        )
-                        .inputAudioFormat("input_audio_format")
-                        .inputAudioTranscription(
-                            RealtimeTranscriptionSessionInputAudioTranscription.builder()
-                                .language("language")
-                                .model(
-                                    RealtimeTranscriptionSessionInputAudioTranscription.Model
-                                        .WHISPER_1
-                                )
-                                .prompt("prompt")
-                                .build()
-                        )
-                        .addModality(RealtimeTranscriptionSessionCreateResponse.Modality.TEXT)
-                        .turnDetection(
-                            RealtimeTranscriptionSessionTurnDetection.builder()
-                                .prefixPaddingMs(0L)
-                                .silenceDurationMs(0L)
-                                .threshold(0.0)
-                                .type("type")
-                                .build()
-                        )
-                        .build()
-                )
-                .build()
-
-        val realtimeServerEvent =
-            RealtimeServerEvent.ofTranscriptionSessionCreated(transcriptionSessionCreated)
-
-        assertThat(realtimeServerEvent.conversationCreated()).isEmpty
-        assertThat(realtimeServerEvent.conversationItemCreated()).isEmpty
-        assertThat(realtimeServerEvent.conversationItemDeleted()).isEmpty
-        assertThat(realtimeServerEvent.conversationItemInputAudioTranscriptionCompleted()).isEmpty
-        assertThat(realtimeServerEvent.conversationItemInputAudioTranscriptionDelta()).isEmpty
-        assertThat(realtimeServerEvent.conversationItemInputAudioTranscriptionFailed()).isEmpty
-        assertThat(realtimeServerEvent.conversationItemRetrieved()).isEmpty
-        assertThat(realtimeServerEvent.conversationItemTruncated()).isEmpty
-        assertThat(realtimeServerEvent.error()).isEmpty
-        assertThat(realtimeServerEvent.inputAudioBufferCleared()).isEmpty
-        assertThat(realtimeServerEvent.inputAudioBufferCommitted()).isEmpty
-        assertThat(realtimeServerEvent.inputAudioBufferSpeechStarted()).isEmpty
-        assertThat(realtimeServerEvent.inputAudioBufferSpeechStopped()).isEmpty
-        assertThat(realtimeServerEvent.rateLimitsUpdated()).isEmpty
-        assertThat(realtimeServerEvent.responseOutputAudioDelta()).isEmpty
-        assertThat(realtimeServerEvent.responseOutputAudioDone()).isEmpty
-        assertThat(realtimeServerEvent.responseOutputAudioTranscriptDelta()).isEmpty
-        assertThat(realtimeServerEvent.responseOutputAudioTranscriptDone()).isEmpty
-        assertThat(realtimeServerEvent.responseContentPartAdded()).isEmpty
-        assertThat(realtimeServerEvent.responseContentPartDone()).isEmpty
-        assertThat(realtimeServerEvent.responseCreated()).isEmpty
-        assertThat(realtimeServerEvent.responseDone()).isEmpty
-        assertThat(realtimeServerEvent.responseFunctionCallArgumentsDelta()).isEmpty
-        assertThat(realtimeServerEvent.responseFunctionCallArgumentsDone()).isEmpty
-        assertThat(realtimeServerEvent.responseOutputItemAdded()).isEmpty
-        assertThat(realtimeServerEvent.responseOutputItemDone()).isEmpty
-        assertThat(realtimeServerEvent.responseOutputTextDelta()).isEmpty
-        assertThat(realtimeServerEvent.responseOutputTextDone()).isEmpty
-        assertThat(realtimeServerEvent.sessionCreated()).isEmpty
-        assertThat(realtimeServerEvent.sessionUpdated()).isEmpty
-        assertThat(realtimeServerEvent.transcriptionSessionUpdated()).isEmpty
-        assertThat(realtimeServerEvent.transcriptionSessionCreated())
-            .contains(transcriptionSessionCreated)
-        assertThat(realtimeServerEvent.outputAudioBufferStarted()).isEmpty
-        assertThat(realtimeServerEvent.outputAudioBufferStopped()).isEmpty
-        assertThat(realtimeServerEvent.outputAudioBufferCleared()).isEmpty
-        assertThat(realtimeServerEvent.conversationItemAdded()).isEmpty
-        assertThat(realtimeServerEvent.conversationItemDone()).isEmpty
-        assertThat(realtimeServerEvent.inputAudioBufferTimeoutTriggered()).isEmpty
-        assertThat(realtimeServerEvent.conversationItemInputAudioTranscriptionSegment()).isEmpty
-        assertThat(realtimeServerEvent.mcpListToolsInProgress()).isEmpty
-        assertThat(realtimeServerEvent.mcpListToolsCompleted()).isEmpty
-        assertThat(realtimeServerEvent.mcpListToolsFailed()).isEmpty
-        assertThat(realtimeServerEvent.responseMcpCallArgumentsDelta()).isEmpty
-        assertThat(realtimeServerEvent.responseMcpCallArgumentsDone()).isEmpty
-        assertThat(realtimeServerEvent.responseMcpCallInProgress()).isEmpty
-        assertThat(realtimeServerEvent.responseMcpCallCompleted()).isEmpty
-        assertThat(realtimeServerEvent.responseMcpCallFailed()).isEmpty
-    }
-
-    @Test
-    fun ofTranscriptionSessionCreatedRoundtrip() {
-        val jsonMapper = jsonMapper()
-        val realtimeServerEvent =
-            RealtimeServerEvent.ofTranscriptionSessionCreated(
-                TranscriptionSessionCreated.builder()
-                    .eventId("event_id")
-                    .session(
-                        RealtimeTranscriptionSessionCreateResponse.builder()
-                            .clientSecret(
-                                RealtimeTranscriptionSessionClientSecret.builder()
-                                    .expiresAt(0L)
-                                    .value("value")
-                                    .build()
-                            )
-                            .inputAudioFormat("input_audio_format")
-                            .inputAudioTranscription(
-                                RealtimeTranscriptionSessionInputAudioTranscription.builder()
-                                    .language("language")
-                                    .model(
-                                        RealtimeTranscriptionSessionInputAudioTranscription.Model
-                                            .WHISPER_1
-                                    )
-                                    .prompt("prompt")
-                                    .build()
-                            )
-                            .addModality(RealtimeTranscriptionSessionCreateResponse.Modality.TEXT)
-                            .turnDetection(
-                                RealtimeTranscriptionSessionTurnDetection.builder()
-                                    .prefixPaddingMs(0L)
-                                    .silenceDurationMs(0L)
-                                    .threshold(0.0)
-                                    .type("type")
-                                    .build()
-                            )
                             .build()
                     )
                     .build()
@@ -3814,8 +3472,6 @@ internal class RealtimeServerEventTest {
         assertThat(realtimeServerEvent.responseOutputTextDone()).isEmpty
         assertThat(realtimeServerEvent.sessionCreated()).isEmpty
         assertThat(realtimeServerEvent.sessionUpdated()).isEmpty
-        assertThat(realtimeServerEvent.transcriptionSessionUpdated()).isEmpty
-        assertThat(realtimeServerEvent.transcriptionSessionCreated()).isEmpty
         assertThat(realtimeServerEvent.outputAudioBufferStarted())
             .contains(outputAudioBufferStarted)
         assertThat(realtimeServerEvent.outputAudioBufferStopped()).isEmpty
@@ -3895,8 +3551,6 @@ internal class RealtimeServerEventTest {
         assertThat(realtimeServerEvent.responseOutputTextDone()).isEmpty
         assertThat(realtimeServerEvent.sessionCreated()).isEmpty
         assertThat(realtimeServerEvent.sessionUpdated()).isEmpty
-        assertThat(realtimeServerEvent.transcriptionSessionUpdated()).isEmpty
-        assertThat(realtimeServerEvent.transcriptionSessionCreated()).isEmpty
         assertThat(realtimeServerEvent.outputAudioBufferStarted()).isEmpty
         assertThat(realtimeServerEvent.outputAudioBufferStopped())
             .contains(outputAudioBufferStopped)
@@ -3976,8 +3630,6 @@ internal class RealtimeServerEventTest {
         assertThat(realtimeServerEvent.responseOutputTextDone()).isEmpty
         assertThat(realtimeServerEvent.sessionCreated()).isEmpty
         assertThat(realtimeServerEvent.sessionUpdated()).isEmpty
-        assertThat(realtimeServerEvent.transcriptionSessionUpdated()).isEmpty
-        assertThat(realtimeServerEvent.transcriptionSessionCreated()).isEmpty
         assertThat(realtimeServerEvent.outputAudioBufferStarted()).isEmpty
         assertThat(realtimeServerEvent.outputAudioBufferStopped()).isEmpty
         assertThat(realtimeServerEvent.outputAudioBufferCleared())
@@ -4069,8 +3721,6 @@ internal class RealtimeServerEventTest {
         assertThat(realtimeServerEvent.responseOutputTextDone()).isEmpty
         assertThat(realtimeServerEvent.sessionCreated()).isEmpty
         assertThat(realtimeServerEvent.sessionUpdated()).isEmpty
-        assertThat(realtimeServerEvent.transcriptionSessionUpdated()).isEmpty
-        assertThat(realtimeServerEvent.transcriptionSessionCreated()).isEmpty
         assertThat(realtimeServerEvent.outputAudioBufferStarted()).isEmpty
         assertThat(realtimeServerEvent.outputAudioBufferStopped()).isEmpty
         assertThat(realtimeServerEvent.outputAudioBufferCleared()).isEmpty
@@ -4177,8 +3827,6 @@ internal class RealtimeServerEventTest {
         assertThat(realtimeServerEvent.responseOutputTextDone()).isEmpty
         assertThat(realtimeServerEvent.sessionCreated()).isEmpty
         assertThat(realtimeServerEvent.sessionUpdated()).isEmpty
-        assertThat(realtimeServerEvent.transcriptionSessionUpdated()).isEmpty
-        assertThat(realtimeServerEvent.transcriptionSessionCreated()).isEmpty
         assertThat(realtimeServerEvent.outputAudioBufferStarted()).isEmpty
         assertThat(realtimeServerEvent.outputAudioBufferStopped()).isEmpty
         assertThat(realtimeServerEvent.outputAudioBufferCleared()).isEmpty
@@ -4275,8 +3923,6 @@ internal class RealtimeServerEventTest {
         assertThat(realtimeServerEvent.responseOutputTextDone()).isEmpty
         assertThat(realtimeServerEvent.sessionCreated()).isEmpty
         assertThat(realtimeServerEvent.sessionUpdated()).isEmpty
-        assertThat(realtimeServerEvent.transcriptionSessionUpdated()).isEmpty
-        assertThat(realtimeServerEvent.transcriptionSessionCreated()).isEmpty
         assertThat(realtimeServerEvent.outputAudioBufferStarted()).isEmpty
         assertThat(realtimeServerEvent.outputAudioBufferStopped()).isEmpty
         assertThat(realtimeServerEvent.outputAudioBufferCleared()).isEmpty
@@ -4366,8 +4012,6 @@ internal class RealtimeServerEventTest {
         assertThat(realtimeServerEvent.responseOutputTextDone()).isEmpty
         assertThat(realtimeServerEvent.sessionCreated()).isEmpty
         assertThat(realtimeServerEvent.sessionUpdated()).isEmpty
-        assertThat(realtimeServerEvent.transcriptionSessionUpdated()).isEmpty
-        assertThat(realtimeServerEvent.transcriptionSessionCreated()).isEmpty
         assertThat(realtimeServerEvent.outputAudioBufferStarted()).isEmpty
         assertThat(realtimeServerEvent.outputAudioBufferStopped()).isEmpty
         assertThat(realtimeServerEvent.outputAudioBufferCleared()).isEmpty
@@ -4450,8 +4094,6 @@ internal class RealtimeServerEventTest {
         assertThat(realtimeServerEvent.responseOutputTextDone()).isEmpty
         assertThat(realtimeServerEvent.sessionCreated()).isEmpty
         assertThat(realtimeServerEvent.sessionUpdated()).isEmpty
-        assertThat(realtimeServerEvent.transcriptionSessionUpdated()).isEmpty
-        assertThat(realtimeServerEvent.transcriptionSessionCreated()).isEmpty
         assertThat(realtimeServerEvent.outputAudioBufferStarted()).isEmpty
         assertThat(realtimeServerEvent.outputAudioBufferStopped()).isEmpty
         assertThat(realtimeServerEvent.outputAudioBufferCleared()).isEmpty
@@ -4523,8 +4165,6 @@ internal class RealtimeServerEventTest {
         assertThat(realtimeServerEvent.responseOutputTextDone()).isEmpty
         assertThat(realtimeServerEvent.sessionCreated()).isEmpty
         assertThat(realtimeServerEvent.sessionUpdated()).isEmpty
-        assertThat(realtimeServerEvent.transcriptionSessionUpdated()).isEmpty
-        assertThat(realtimeServerEvent.transcriptionSessionCreated()).isEmpty
         assertThat(realtimeServerEvent.outputAudioBufferStarted()).isEmpty
         assertThat(realtimeServerEvent.outputAudioBufferStopped()).isEmpty
         assertThat(realtimeServerEvent.outputAudioBufferCleared()).isEmpty
@@ -4596,8 +4236,6 @@ internal class RealtimeServerEventTest {
         assertThat(realtimeServerEvent.responseOutputTextDone()).isEmpty
         assertThat(realtimeServerEvent.sessionCreated()).isEmpty
         assertThat(realtimeServerEvent.sessionUpdated()).isEmpty
-        assertThat(realtimeServerEvent.transcriptionSessionUpdated()).isEmpty
-        assertThat(realtimeServerEvent.transcriptionSessionCreated()).isEmpty
         assertThat(realtimeServerEvent.outputAudioBufferStarted()).isEmpty
         assertThat(realtimeServerEvent.outputAudioBufferStopped()).isEmpty
         assertThat(realtimeServerEvent.outputAudioBufferCleared()).isEmpty
@@ -4677,8 +4315,6 @@ internal class RealtimeServerEventTest {
         assertThat(realtimeServerEvent.responseOutputTextDone()).isEmpty
         assertThat(realtimeServerEvent.sessionCreated()).isEmpty
         assertThat(realtimeServerEvent.sessionUpdated()).isEmpty
-        assertThat(realtimeServerEvent.transcriptionSessionUpdated()).isEmpty
-        assertThat(realtimeServerEvent.transcriptionSessionCreated()).isEmpty
         assertThat(realtimeServerEvent.outputAudioBufferStarted()).isEmpty
         assertThat(realtimeServerEvent.outputAudioBufferStopped()).isEmpty
         assertThat(realtimeServerEvent.outputAudioBufferCleared()).isEmpty
@@ -4765,8 +4401,6 @@ internal class RealtimeServerEventTest {
         assertThat(realtimeServerEvent.responseOutputTextDone()).isEmpty
         assertThat(realtimeServerEvent.sessionCreated()).isEmpty
         assertThat(realtimeServerEvent.sessionUpdated()).isEmpty
-        assertThat(realtimeServerEvent.transcriptionSessionUpdated()).isEmpty
-        assertThat(realtimeServerEvent.transcriptionSessionCreated()).isEmpty
         assertThat(realtimeServerEvent.outputAudioBufferStarted()).isEmpty
         assertThat(realtimeServerEvent.outputAudioBufferStopped()).isEmpty
         assertThat(realtimeServerEvent.outputAudioBufferCleared()).isEmpty
@@ -4850,8 +4484,6 @@ internal class RealtimeServerEventTest {
         assertThat(realtimeServerEvent.responseOutputTextDone()).isEmpty
         assertThat(realtimeServerEvent.sessionCreated()).isEmpty
         assertThat(realtimeServerEvent.sessionUpdated()).isEmpty
-        assertThat(realtimeServerEvent.transcriptionSessionUpdated()).isEmpty
-        assertThat(realtimeServerEvent.transcriptionSessionCreated()).isEmpty
         assertThat(realtimeServerEvent.outputAudioBufferStarted()).isEmpty
         assertThat(realtimeServerEvent.outputAudioBufferStopped()).isEmpty
         assertThat(realtimeServerEvent.outputAudioBufferCleared()).isEmpty
@@ -4933,8 +4565,6 @@ internal class RealtimeServerEventTest {
         assertThat(realtimeServerEvent.responseOutputTextDone()).isEmpty
         assertThat(realtimeServerEvent.sessionCreated()).isEmpty
         assertThat(realtimeServerEvent.sessionUpdated()).isEmpty
-        assertThat(realtimeServerEvent.transcriptionSessionUpdated()).isEmpty
-        assertThat(realtimeServerEvent.transcriptionSessionCreated()).isEmpty
         assertThat(realtimeServerEvent.outputAudioBufferStarted()).isEmpty
         assertThat(realtimeServerEvent.outputAudioBufferStopped()).isEmpty
         assertThat(realtimeServerEvent.outputAudioBufferCleared()).isEmpty
@@ -5015,8 +4645,6 @@ internal class RealtimeServerEventTest {
         assertThat(realtimeServerEvent.responseOutputTextDone()).isEmpty
         assertThat(realtimeServerEvent.sessionCreated()).isEmpty
         assertThat(realtimeServerEvent.sessionUpdated()).isEmpty
-        assertThat(realtimeServerEvent.transcriptionSessionUpdated()).isEmpty
-        assertThat(realtimeServerEvent.transcriptionSessionCreated()).isEmpty
         assertThat(realtimeServerEvent.outputAudioBufferStarted()).isEmpty
         assertThat(realtimeServerEvent.outputAudioBufferStopped()).isEmpty
         assertThat(realtimeServerEvent.outputAudioBufferCleared()).isEmpty

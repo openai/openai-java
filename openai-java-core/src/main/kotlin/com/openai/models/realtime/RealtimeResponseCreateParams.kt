@@ -677,8 +677,9 @@ private constructor(
                 (tools ?: JsonField.of(mutableListOf())).also { checkKnown("tools", it).add(tool) }
         }
 
-        /** Alias for calling [addTool] with `Tool.ofModels(models)`. */
-        fun addTool(models: Models) = addTool(Tool.ofModels(models))
+        /** Alias for calling [addTool] with `Tool.ofRealtimeFunction(realtimeFunction)`. */
+        fun addTool(realtimeFunction: RealtimeFunctionTool) =
+            addTool(Tool.ofRealtimeFunction(realtimeFunction))
 
         /**
          * Alias for calling [addTool] with
@@ -1589,12 +1590,13 @@ private constructor(
     @JsonSerialize(using = Tool.Serializer::class)
     class Tool
     private constructor(
-        private val models: Models? = null,
+        private val realtimeFunction: RealtimeFunctionTool? = null,
         private val realtimeResponseCreateMcp: RealtimeResponseCreateMcpTool? = null,
         private val _json: JsonValue? = null,
     ) {
 
-        fun models(): Optional<Models> = Optional.ofNullable(models)
+        fun realtimeFunction(): Optional<RealtimeFunctionTool> =
+            Optional.ofNullable(realtimeFunction)
 
         /**
          * Give the model access to additional tools via remote Model Context Protocol (MCP)
@@ -1604,11 +1606,12 @@ private constructor(
         fun realtimeResponseCreateMcp(): Optional<RealtimeResponseCreateMcpTool> =
             Optional.ofNullable(realtimeResponseCreateMcp)
 
-        fun isModels(): Boolean = models != null
+        fun isRealtimeFunction(): Boolean = realtimeFunction != null
 
         fun isRealtimeResponseCreateMcp(): Boolean = realtimeResponseCreateMcp != null
 
-        fun asModels(): Models = models.getOrThrow("models")
+        fun asRealtimeFunction(): RealtimeFunctionTool =
+            realtimeFunction.getOrThrow("realtimeFunction")
 
         /**
          * Give the model access to additional tools via remote Model Context Protocol (MCP)
@@ -1622,7 +1625,7 @@ private constructor(
 
         fun <T> accept(visitor: Visitor<T>): T =
             when {
-                models != null -> visitor.visitModels(models)
+                realtimeFunction != null -> visitor.visitRealtimeFunction(realtimeFunction)
                 realtimeResponseCreateMcp != null ->
                     visitor.visitRealtimeResponseCreateMcp(realtimeResponseCreateMcp)
                 else -> visitor.unknown(_json)
@@ -1637,8 +1640,8 @@ private constructor(
 
             accept(
                 object : Visitor<Unit> {
-                    override fun visitModels(models: Models) {
-                        models.validate()
+                    override fun visitRealtimeFunction(realtimeFunction: RealtimeFunctionTool) {
+                        realtimeFunction.validate()
                     }
 
                     override fun visitRealtimeResponseCreateMcp(
@@ -1669,7 +1672,8 @@ private constructor(
         internal fun validity(): Int =
             accept(
                 object : Visitor<Int> {
-                    override fun visitModels(models: Models) = models.validity()
+                    override fun visitRealtimeFunction(realtimeFunction: RealtimeFunctionTool) =
+                        realtimeFunction.validity()
 
                     override fun visitRealtimeResponseCreateMcp(
                         realtimeResponseCreateMcp: RealtimeResponseCreateMcpTool
@@ -1685,15 +1689,15 @@ private constructor(
             }
 
             return other is Tool &&
-                models == other.models &&
+                realtimeFunction == other.realtimeFunction &&
                 realtimeResponseCreateMcp == other.realtimeResponseCreateMcp
         }
 
-        override fun hashCode(): Int = Objects.hash(models, realtimeResponseCreateMcp)
+        override fun hashCode(): Int = Objects.hash(realtimeFunction, realtimeResponseCreateMcp)
 
         override fun toString(): String =
             when {
-                models != null -> "Tool{models=$models}"
+                realtimeFunction != null -> "Tool{realtimeFunction=$realtimeFunction}"
                 realtimeResponseCreateMcp != null ->
                     "Tool{realtimeResponseCreateMcp=$realtimeResponseCreateMcp}"
                 _json != null -> "Tool{_unknown=$_json}"
@@ -1702,7 +1706,9 @@ private constructor(
 
         companion object {
 
-            @JvmStatic fun ofModels(models: Models) = Tool(models = models)
+            @JvmStatic
+            fun ofRealtimeFunction(realtimeFunction: RealtimeFunctionTool) =
+                Tool(realtimeFunction = realtimeFunction)
 
             /**
              * Give the model access to additional tools via remote Model Context Protocol (MCP)
@@ -1718,7 +1724,7 @@ private constructor(
         /** An interface that defines how to map each variant of [Tool] to a value of type [T]. */
         interface Visitor<out T> {
 
-            fun visitModels(models: Models): T
+            fun visitRealtimeFunction(realtimeFunction: RealtimeFunctionTool): T
 
             /**
              * Give the model access to additional tools via remote Model Context Protocol (MCP)
@@ -1750,8 +1756,8 @@ private constructor(
 
                 val bestMatches =
                     sequenceOf(
-                            tryDeserialize(node, jacksonTypeRef<Models>())?.let {
-                                Tool(models = it, _json = json)
+                            tryDeserialize(node, jacksonTypeRef<RealtimeFunctionTool>())?.let {
+                                Tool(realtimeFunction = it, _json = json)
                             },
                             tryDeserialize(node, jacksonTypeRef<RealtimeResponseCreateMcpTool>())
                                 ?.let { Tool(realtimeResponseCreateMcp = it, _json = json) },
@@ -1780,7 +1786,7 @@ private constructor(
                 provider: SerializerProvider,
             ) {
                 when {
-                    value.models != null -> generator.writeObject(value.models)
+                    value.realtimeFunction != null -> generator.writeObject(value.realtimeFunction)
                     value.realtimeResponseCreateMcp != null ->
                         generator.writeObject(value.realtimeResponseCreateMcp)
                     value._json != null -> generator.writeObject(value._json)
