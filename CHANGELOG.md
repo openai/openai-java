@@ -1,5 +1,13 @@
 # Changelog
 
+## 3.5.1 (2025-09-10)
+
+Full Changelog: [v3.5.0...v3.5.1](https://github.com/openai/openai-java/compare/v3.5.0...v3.5.1)
+
+### Chores
+
+* **api:** fix realtime GA types ([10cd1c4](https://github.com/openai/openai-java/commit/10cd1c49b63b63aa7d3a357ab5b0e982628cd933))
+
 ## 3.5.0 (2025-09-08)
 
 Full Changelog: [v3.4.1...v3.5.0](https://github.com/openai/openai-java/compare/v3.4.1...v3.5.0)
