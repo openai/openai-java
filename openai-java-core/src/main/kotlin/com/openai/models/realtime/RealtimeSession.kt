@@ -50,7 +50,7 @@ private constructor(
     private val speed: JsonField<Double>,
     private val temperature: JsonField<Double>,
     private val toolChoice: JsonField<String>,
-    private val tools: JsonField<List<Models>>,
+    private val tools: JsonField<List<RealtimeFunctionTool>>,
     private val tracing: JsonField<Tracing>,
     private val turnDetection: JsonField<TurnDetection>,
     private val voice: JsonField<Voice>,
@@ -97,7 +97,9 @@ private constructor(
         @JsonProperty("tool_choice")
         @ExcludeMissing
         toolChoice: JsonField<String> = JsonMissing.of(),
-        @JsonProperty("tools") @ExcludeMissing tools: JsonField<List<Models>> = JsonMissing.of(),
+        @JsonProperty("tools")
+        @ExcludeMissing
+        tools: JsonField<List<RealtimeFunctionTool>> = JsonMissing.of(),
         @JsonProperty("tracing") @ExcludeMissing tracing: JsonField<Tracing> = JsonMissing.of(),
         @JsonProperty("turn_detection")
         @ExcludeMissing
@@ -293,7 +295,7 @@ private constructor(
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
      */
-    fun tools(): Optional<List<Models>> = tools.getOptional("tools")
+    fun tools(): Optional<List<RealtimeFunctionTool>> = tools.getOptional("tools")
 
     /**
      * Configuration options for tracing. Set to null to disable tracing. Once tracing is enabled
@@ -469,7 +471,9 @@ private constructor(
      *
      * Unlike [tools], this method doesn't throw if the JSON field has an unexpected type.
      */
-    @JsonProperty("tools") @ExcludeMissing fun _tools(): JsonField<List<Models>> = tools
+    @JsonProperty("tools")
+    @ExcludeMissing
+    fun _tools(): JsonField<List<RealtimeFunctionTool>> = tools
 
     /**
      * Returns the raw JSON value of [tracing].
@@ -531,7 +535,7 @@ private constructor(
         private var speed: JsonField<Double> = JsonMissing.of()
         private var temperature: JsonField<Double> = JsonMissing.of()
         private var toolChoice: JsonField<String> = JsonMissing.of()
-        private var tools: JsonField<MutableList<Models>>? = null
+        private var tools: JsonField<MutableList<RealtimeFunctionTool>>? = null
         private var tracing: JsonField<Tracing> = JsonMissing.of()
         private var turnDetection: JsonField<TurnDetection> = JsonMissing.of()
         private var voice: JsonField<Voice> = JsonMissing.of()
@@ -874,25 +878,25 @@ private constructor(
         fun toolChoice(toolChoice: JsonField<String>) = apply { this.toolChoice = toolChoice }
 
         /** Tools (functions) available to the model. */
-        fun tools(tools: List<Models>) = tools(JsonField.of(tools))
+        fun tools(tools: List<RealtimeFunctionTool>) = tools(JsonField.of(tools))
 
         /**
          * Sets [Builder.tools] to an arbitrary JSON value.
          *
-         * You should usually call [Builder.tools] with a well-typed `List<Models>` value instead.
-         * This method is primarily for setting the field to an undocumented or not yet supported
-         * value.
+         * You should usually call [Builder.tools] with a well-typed `List<RealtimeFunctionTool>`
+         * value instead. This method is primarily for setting the field to an undocumented or not
+         * yet supported value.
          */
-        fun tools(tools: JsonField<List<Models>>) = apply {
+        fun tools(tools: JsonField<List<RealtimeFunctionTool>>) = apply {
             this.tools = tools.map { it.toMutableList() }
         }
 
         /**
-         * Adds a single [Models] to [tools].
+         * Adds a single [RealtimeFunctionTool] to [tools].
          *
          * @throws IllegalStateException if the field was previously set to a non-list.
          */
-        fun addTool(tool: Models) = apply {
+        fun addTool(tool: RealtimeFunctionTool) = apply {
             tools =
                 (tools ?: JsonField.of(mutableListOf())).also { checkKnown("tools", it).add(tool) }
         }

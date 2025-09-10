@@ -95,7 +95,7 @@ private constructor(
 
     /**
      * Optional idle timeout after which turn detection will auto-timeout when no additional audio
-     * is received.
+     * is received and emits a `timeout_triggered` event.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -298,7 +298,7 @@ private constructor(
 
         /**
          * Optional idle timeout after which turn detection will auto-timeout when no additional
-         * audio is received.
+         * audio is received and emits a `timeout_triggered` event.
          */
         fun idleTimeoutMs(idleTimeoutMs: Long?) = idleTimeoutMs(JsonField.ofNullable(idleTimeoutMs))
 

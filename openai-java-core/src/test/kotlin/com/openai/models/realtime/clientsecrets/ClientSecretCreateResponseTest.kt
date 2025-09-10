@@ -6,9 +6,9 @@ import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
 import com.openai.core.JsonValue
 import com.openai.core.jsonMapper
 import com.openai.models.realtime.AudioTranscription
-import com.openai.models.realtime.Models
 import com.openai.models.realtime.NoiseReductionType
 import com.openai.models.realtime.RealtimeAudioFormats
+import com.openai.models.realtime.RealtimeFunctionTool
 import com.openai.models.realtime.RealtimeTruncation
 import com.openai.models.responses.ResponsePrompt
 import com.openai.models.responses.ToolChoiceOptions
@@ -24,6 +24,12 @@ internal class ClientSecretCreateResponseTest {
                 .expiresAt(0L)
                 .session(
                     RealtimeSessionCreateResponse.builder()
+                        .clientSecret(
+                            RealtimeSessionClientSecret.builder()
+                                .expiresAt(0L)
+                                .value("value")
+                                .build()
+                        )
                         .audio(
                             RealtimeSessionCreateResponse.Audio.builder()
                                 .input(
@@ -88,12 +94,6 @@ internal class ClientSecretCreateResponseTest {
                                 )
                                 .build()
                         )
-                        .clientSecret(
-                            RealtimeSessionClientSecret.builder()
-                                .expiresAt(0L)
-                                .value("value")
-                                .build()
-                        )
                         .addInclude(
                             RealtimeSessionCreateResponse.Include
                                 .ITEM_INPUT_AUDIO_TRANSCRIPTION_LOGPROBS
@@ -115,16 +115,15 @@ internal class ClientSecretCreateResponseTest {
                         )
                         .toolChoice(ToolChoiceOptions.NONE)
                         .addTool(
-                            Models.builder()
+                            RealtimeFunctionTool.builder()
                                 .description("description")
                                 .name("name")
                                 .parameters(JsonValue.from(mapOf<String, Any>()))
-                                .type(Models.Type.FUNCTION)
+                                .type(RealtimeFunctionTool.Type.FUNCTION)
                                 .build()
                         )
                         .tracingAuto()
                         .truncation(RealtimeTruncation.RealtimeTruncationStrategy.AUTO)
-                        .type(RealtimeSessionCreateResponse.Type.REALTIME)
                         .build()
                 )
                 .value("value")
@@ -133,8 +132,14 @@ internal class ClientSecretCreateResponseTest {
         assertThat(clientSecretCreateResponse.expiresAt()).isEqualTo(0L)
         assertThat(clientSecretCreateResponse.session())
             .isEqualTo(
-                ClientSecretCreateResponse.Session.ofRealtimeSessionCreateResponse(
+                ClientSecretCreateResponse.Session.ofRealtime(
                     RealtimeSessionCreateResponse.builder()
+                        .clientSecret(
+                            RealtimeSessionClientSecret.builder()
+                                .expiresAt(0L)
+                                .value("value")
+                                .build()
+                        )
                         .audio(
                             RealtimeSessionCreateResponse.Audio.builder()
                                 .input(
@@ -199,12 +204,6 @@ internal class ClientSecretCreateResponseTest {
                                 )
                                 .build()
                         )
-                        .clientSecret(
-                            RealtimeSessionClientSecret.builder()
-                                .expiresAt(0L)
-                                .value("value")
-                                .build()
-                        )
                         .addInclude(
                             RealtimeSessionCreateResponse.Include
                                 .ITEM_INPUT_AUDIO_TRANSCRIPTION_LOGPROBS
@@ -226,16 +225,15 @@ internal class ClientSecretCreateResponseTest {
                         )
                         .toolChoice(ToolChoiceOptions.NONE)
                         .addTool(
-                            Models.builder()
+                            RealtimeFunctionTool.builder()
                                 .description("description")
                                 .name("name")
                                 .parameters(JsonValue.from(mapOf<String, Any>()))
-                                .type(Models.Type.FUNCTION)
+                                .type(RealtimeFunctionTool.Type.FUNCTION)
                                 .build()
                         )
                         .tracingAuto()
                         .truncation(RealtimeTruncation.RealtimeTruncationStrategy.AUTO)
-                        .type(RealtimeSessionCreateResponse.Type.REALTIME)
                         .build()
                 )
             )
@@ -250,6 +248,12 @@ internal class ClientSecretCreateResponseTest {
                 .expiresAt(0L)
                 .session(
                     RealtimeSessionCreateResponse.builder()
+                        .clientSecret(
+                            RealtimeSessionClientSecret.builder()
+                                .expiresAt(0L)
+                                .value("value")
+                                .build()
+                        )
                         .audio(
                             RealtimeSessionCreateResponse.Audio.builder()
                                 .input(
@@ -314,12 +318,6 @@ internal class ClientSecretCreateResponseTest {
                                 )
                                 .build()
                         )
-                        .clientSecret(
-                            RealtimeSessionClientSecret.builder()
-                                .expiresAt(0L)
-                                .value("value")
-                                .build()
-                        )
                         .addInclude(
                             RealtimeSessionCreateResponse.Include
                                 .ITEM_INPUT_AUDIO_TRANSCRIPTION_LOGPROBS
@@ -341,16 +339,15 @@ internal class ClientSecretCreateResponseTest {
                         )
                         .toolChoice(ToolChoiceOptions.NONE)
                         .addTool(
-                            Models.builder()
+                            RealtimeFunctionTool.builder()
                                 .description("description")
                                 .name("name")
                                 .parameters(JsonValue.from(mapOf<String, Any>()))
-                                .type(Models.Type.FUNCTION)
+                                .type(RealtimeFunctionTool.Type.FUNCTION)
                                 .build()
                         )
                         .tracingAuto()
                         .truncation(RealtimeTruncation.RealtimeTruncationStrategy.AUTO)
-                        .type(RealtimeSessionCreateResponse.Type.REALTIME)
                         .build()
                 )
                 .value("value")

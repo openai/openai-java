@@ -4,10 +4,6 @@ package com.openai.models.realtime
 
 import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
 import com.openai.core.jsonMapper
-import com.openai.models.realtime.clientsecrets.RealtimeTranscriptionSessionClientSecret
-import com.openai.models.realtime.clientsecrets.RealtimeTranscriptionSessionCreateResponse
-import com.openai.models.realtime.clientsecrets.RealtimeTranscriptionSessionInputAudioTranscription
-import com.openai.models.realtime.clientsecrets.RealtimeTranscriptionSessionTurnDetection
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
@@ -19,27 +15,24 @@ internal class TranscriptionSessionUpdatedEventTest {
             TranscriptionSessionUpdatedEvent.builder()
                 .eventId("event_id")
                 .session(
-                    RealtimeTranscriptionSessionCreateResponse.builder()
+                    TranscriptionSessionUpdatedEvent.Session.builder()
                         .clientSecret(
-                            RealtimeTranscriptionSessionClientSecret.builder()
+                            TranscriptionSessionUpdatedEvent.Session.ClientSecret.builder()
                                 .expiresAt(0L)
                                 .value("value")
                                 .build()
                         )
                         .inputAudioFormat("input_audio_format")
                         .inputAudioTranscription(
-                            RealtimeTranscriptionSessionInputAudioTranscription.builder()
+                            AudioTranscription.builder()
                                 .language("language")
-                                .model(
-                                    RealtimeTranscriptionSessionInputAudioTranscription.Model
-                                        .WHISPER_1
-                                )
+                                .model(AudioTranscription.Model.WHISPER_1)
                                 .prompt("prompt")
                                 .build()
                         )
-                        .addModality(RealtimeTranscriptionSessionCreateResponse.Modality.TEXT)
+                        .addModality(TranscriptionSessionUpdatedEvent.Session.Modality.TEXT)
                         .turnDetection(
-                            RealtimeTranscriptionSessionTurnDetection.builder()
+                            TranscriptionSessionUpdatedEvent.Session.TurnDetection.builder()
                                 .prefixPaddingMs(0L)
                                 .silenceDurationMs(0L)
                                 .threshold(0.0)
@@ -53,26 +46,24 @@ internal class TranscriptionSessionUpdatedEventTest {
         assertThat(transcriptionSessionUpdatedEvent.eventId()).isEqualTo("event_id")
         assertThat(transcriptionSessionUpdatedEvent.session())
             .isEqualTo(
-                RealtimeTranscriptionSessionCreateResponse.builder()
+                TranscriptionSessionUpdatedEvent.Session.builder()
                     .clientSecret(
-                        RealtimeTranscriptionSessionClientSecret.builder()
+                        TranscriptionSessionUpdatedEvent.Session.ClientSecret.builder()
                             .expiresAt(0L)
                             .value("value")
                             .build()
                     )
                     .inputAudioFormat("input_audio_format")
                     .inputAudioTranscription(
-                        RealtimeTranscriptionSessionInputAudioTranscription.builder()
+                        AudioTranscription.builder()
                             .language("language")
-                            .model(
-                                RealtimeTranscriptionSessionInputAudioTranscription.Model.WHISPER_1
-                            )
+                            .model(AudioTranscription.Model.WHISPER_1)
                             .prompt("prompt")
                             .build()
                     )
-                    .addModality(RealtimeTranscriptionSessionCreateResponse.Modality.TEXT)
+                    .addModality(TranscriptionSessionUpdatedEvent.Session.Modality.TEXT)
                     .turnDetection(
-                        RealtimeTranscriptionSessionTurnDetection.builder()
+                        TranscriptionSessionUpdatedEvent.Session.TurnDetection.builder()
                             .prefixPaddingMs(0L)
                             .silenceDurationMs(0L)
                             .threshold(0.0)
@@ -90,27 +81,24 @@ internal class TranscriptionSessionUpdatedEventTest {
             TranscriptionSessionUpdatedEvent.builder()
                 .eventId("event_id")
                 .session(
-                    RealtimeTranscriptionSessionCreateResponse.builder()
+                    TranscriptionSessionUpdatedEvent.Session.builder()
                         .clientSecret(
-                            RealtimeTranscriptionSessionClientSecret.builder()
+                            TranscriptionSessionUpdatedEvent.Session.ClientSecret.builder()
                                 .expiresAt(0L)
                                 .value("value")
                                 .build()
                         )
                         .inputAudioFormat("input_audio_format")
                         .inputAudioTranscription(
-                            RealtimeTranscriptionSessionInputAudioTranscription.builder()
+                            AudioTranscription.builder()
                                 .language("language")
-                                .model(
-                                    RealtimeTranscriptionSessionInputAudioTranscription.Model
-                                        .WHISPER_1
-                                )
+                                .model(AudioTranscription.Model.WHISPER_1)
                                 .prompt("prompt")
                                 .build()
                         )
-                        .addModality(RealtimeTranscriptionSessionCreateResponse.Modality.TEXT)
+                        .addModality(TranscriptionSessionUpdatedEvent.Session.Modality.TEXT)
                         .turnDetection(
-                            RealtimeTranscriptionSessionTurnDetection.builder()
+                            TranscriptionSessionUpdatedEvent.Session.TurnDetection.builder()
                                 .prefixPaddingMs(0L)
                                 .silenceDurationMs(0L)
                                 .threshold(0.0)

@@ -6,9 +6,9 @@ import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
 import com.openai.core.JsonValue
 import com.openai.core.jsonMapper
 import com.openai.models.realtime.AudioTranscription
-import com.openai.models.realtime.Models
 import com.openai.models.realtime.NoiseReductionType
 import com.openai.models.realtime.RealtimeAudioFormats
+import com.openai.models.realtime.RealtimeFunctionTool
 import com.openai.models.realtime.RealtimeTruncation
 import com.openai.models.responses.ResponsePrompt
 import com.openai.models.responses.ToolChoiceOptions
@@ -22,6 +22,9 @@ internal class RealtimeSessionCreateResponseTest {
     fun create() {
         val realtimeSessionCreateResponse =
             RealtimeSessionCreateResponse.builder()
+                .clientSecret(
+                    RealtimeSessionClientSecret.builder().expiresAt(0L).value("value").build()
+                )
                 .audio(
                     RealtimeSessionCreateResponse.Audio.builder()
                         .input(
@@ -82,9 +85,6 @@ internal class RealtimeSessionCreateResponseTest {
                         )
                         .build()
                 )
-                .clientSecret(
-                    RealtimeSessionClientSecret.builder().expiresAt(0L).value("value").build()
-                )
                 .addInclude(
                     RealtimeSessionCreateResponse.Include.ITEM_INPUT_AUDIO_TRANSCRIPTION_LOGPROBS
                 )
@@ -105,18 +105,19 @@ internal class RealtimeSessionCreateResponseTest {
                 )
                 .toolChoice(ToolChoiceOptions.NONE)
                 .addTool(
-                    Models.builder()
+                    RealtimeFunctionTool.builder()
                         .description("description")
                         .name("name")
                         .parameters(JsonValue.from(mapOf<String, Any>()))
-                        .type(Models.Type.FUNCTION)
+                        .type(RealtimeFunctionTool.Type.FUNCTION)
                         .build()
                 )
                 .tracingAuto()
                 .truncation(RealtimeTruncation.RealtimeTruncationStrategy.AUTO)
-                .type(RealtimeSessionCreateResponse.Type.REALTIME)
                 .build()
 
+        assertThat(realtimeSessionCreateResponse.clientSecret())
+            .isEqualTo(RealtimeSessionClientSecret.builder().expiresAt(0L).value("value").build())
         assertThat(realtimeSessionCreateResponse.audio())
             .contains(
                 RealtimeSessionCreateResponse.Audio.builder()
@@ -175,8 +176,6 @@ internal class RealtimeSessionCreateResponseTest {
                     )
                     .build()
             )
-        assertThat(realtimeSessionCreateResponse.clientSecret())
-            .contains(RealtimeSessionClientSecret.builder().expiresAt(0L).value("value").build())
         assertThat(realtimeSessionCreateResponse.include().getOrNull())
             .containsExactly(
                 RealtimeSessionCreateResponse.Include.ITEM_INPUT_AUDIO_TRANSCRIPTION_LOGPROBS
@@ -204,12 +203,12 @@ internal class RealtimeSessionCreateResponseTest {
             .contains(RealtimeSessionCreateResponse.ToolChoice.ofOptions(ToolChoiceOptions.NONE))
         assertThat(realtimeSessionCreateResponse.tools().getOrNull())
             .containsExactly(
-                RealtimeSessionCreateResponse.Tool.ofModels(
-                    Models.builder()
+                RealtimeSessionCreateResponse.Tool.ofRealtimeFunction(
+                    RealtimeFunctionTool.builder()
                         .description("description")
                         .name("name")
                         .parameters(JsonValue.from(mapOf<String, Any>()))
-                        .type(Models.Type.FUNCTION)
+                        .type(RealtimeFunctionTool.Type.FUNCTION)
                         .build()
                 )
             )
@@ -219,8 +218,6 @@ internal class RealtimeSessionCreateResponseTest {
             .contains(
                 RealtimeTruncation.ofStrategy(RealtimeTruncation.RealtimeTruncationStrategy.AUTO)
             )
-        assertThat(realtimeSessionCreateResponse.type())
-            .contains(RealtimeSessionCreateResponse.Type.REALTIME)
     }
 
     @Test
@@ -228,6 +225,9 @@ internal class RealtimeSessionCreateResponseTest {
         val jsonMapper = jsonMapper()
         val realtimeSessionCreateResponse =
             RealtimeSessionCreateResponse.builder()
+                .clientSecret(
+                    RealtimeSessionClientSecret.builder().expiresAt(0L).value("value").build()
+                )
                 .audio(
                     RealtimeSessionCreateResponse.Audio.builder()
                         .input(
@@ -288,9 +288,6 @@ internal class RealtimeSessionCreateResponseTest {
                         )
                         .build()
                 )
-                .clientSecret(
-                    RealtimeSessionClientSecret.builder().expiresAt(0L).value("value").build()
-                )
                 .addInclude(
                     RealtimeSessionCreateResponse.Include.ITEM_INPUT_AUDIO_TRANSCRIPTION_LOGPROBS
                 )
@@ -311,16 +308,15 @@ internal class RealtimeSessionCreateResponseTest {
                 )
                 .toolChoice(ToolChoiceOptions.NONE)
                 .addTool(
-                    Models.builder()
+                    RealtimeFunctionTool.builder()
                         .description("description")
                         .name("name")
                         .parameters(JsonValue.from(mapOf<String, Any>()))
-                        .type(Models.Type.FUNCTION)
+                        .type(RealtimeFunctionTool.Type.FUNCTION)
                         .build()
                 )
                 .tracingAuto()
                 .truncation(RealtimeTruncation.RealtimeTruncationStrategy.AUTO)
-                .type(RealtimeSessionCreateResponse.Type.REALTIME)
                 .build()
 
         val roundtrippedRealtimeSessionCreateResponse =

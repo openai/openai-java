@@ -34,7 +34,6 @@ private constructor(
     private val responseCancel: ResponseCancelEvent? = null,
     private val responseCreate: ResponseCreateEvent? = null,
     private val sessionUpdate: SessionUpdateEvent? = null,
-    private val transcriptionSessionUpdate: TranscriptionSessionUpdate? = null,
     private val _json: JsonValue? = null,
 ) {
 
@@ -175,10 +174,6 @@ private constructor(
      */
     fun sessionUpdate(): Optional<SessionUpdateEvent> = Optional.ofNullable(sessionUpdate)
 
-    /** Send this event to update a transcription session. */
-    fun transcriptionSessionUpdate(): Optional<TranscriptionSessionUpdate> =
-        Optional.ofNullable(transcriptionSessionUpdate)
-
     fun isConversationItemCreate(): Boolean = conversationItemCreate != null
 
     fun isConversationItemDelete(): Boolean = conversationItemDelete != null
@@ -200,8 +195,6 @@ private constructor(
     fun isResponseCreate(): Boolean = responseCreate != null
 
     fun isSessionUpdate(): Boolean = sessionUpdate != null
-
-    fun isTranscriptionSessionUpdate(): Boolean = transcriptionSessionUpdate != null
 
     /**
      * Add a new Item to the Conversation's context, including messages, function calls, and
@@ -340,10 +333,6 @@ private constructor(
      */
     fun asSessionUpdate(): SessionUpdateEvent = sessionUpdate.getOrThrow("sessionUpdate")
 
-    /** Send this event to update a transcription session. */
-    fun asTranscriptionSessionUpdate(): TranscriptionSessionUpdate =
-        transcriptionSessionUpdate.getOrThrow("transcriptionSessionUpdate")
-
     fun _json(): Optional<JsonValue> = Optional.ofNullable(_json)
 
     fun <T> accept(visitor: Visitor<T>): T =
@@ -367,8 +356,6 @@ private constructor(
             responseCancel != null -> visitor.visitResponseCancel(responseCancel)
             responseCreate != null -> visitor.visitResponseCreate(responseCreate)
             sessionUpdate != null -> visitor.visitSessionUpdate(sessionUpdate)
-            transcriptionSessionUpdate != null ->
-                visitor.visitTranscriptionSessionUpdate(transcriptionSessionUpdate)
             else -> visitor.unknown(_json)
         }
 
@@ -440,12 +427,6 @@ private constructor(
                 override fun visitSessionUpdate(sessionUpdate: SessionUpdateEvent) {
                     sessionUpdate.validate()
                 }
-
-                override fun visitTranscriptionSessionUpdate(
-                    transcriptionSessionUpdate: TranscriptionSessionUpdate
-                ) {
-                    transcriptionSessionUpdate.validate()
-                }
             }
         )
         validated = true
@@ -509,10 +490,6 @@ private constructor(
                 override fun visitSessionUpdate(sessionUpdate: SessionUpdateEvent) =
                     sessionUpdate.validity()
 
-                override fun visitTranscriptionSessionUpdate(
-                    transcriptionSessionUpdate: TranscriptionSessionUpdate
-                ) = transcriptionSessionUpdate.validity()
-
                 override fun unknown(json: JsonValue?) = 0
             }
         )
@@ -533,8 +510,7 @@ private constructor(
             inputAudioBufferCommit == other.inputAudioBufferCommit &&
             responseCancel == other.responseCancel &&
             responseCreate == other.responseCreate &&
-            sessionUpdate == other.sessionUpdate &&
-            transcriptionSessionUpdate == other.transcriptionSessionUpdate
+            sessionUpdate == other.sessionUpdate
     }
 
     override fun hashCode(): Int =
@@ -550,7 +526,6 @@ private constructor(
             responseCancel,
             responseCreate,
             sessionUpdate,
-            transcriptionSessionUpdate,
         )
 
     override fun toString(): String =
@@ -574,8 +549,6 @@ private constructor(
             responseCancel != null -> "RealtimeClientEvent{responseCancel=$responseCancel}"
             responseCreate != null -> "RealtimeClientEvent{responseCreate=$responseCreate}"
             sessionUpdate != null -> "RealtimeClientEvent{sessionUpdate=$sessionUpdate}"
-            transcriptionSessionUpdate != null ->
-                "RealtimeClientEvent{transcriptionSessionUpdate=$transcriptionSessionUpdate}"
             _json != null -> "RealtimeClientEvent{_unknown=$_json}"
             else -> throw IllegalStateException("Invalid RealtimeClientEvent")
         }
@@ -736,11 +709,6 @@ private constructor(
         @JvmStatic
         fun ofSessionUpdate(sessionUpdate: SessionUpdateEvent) =
             RealtimeClientEvent(sessionUpdate = sessionUpdate)
-
-        /** Send this event to update a transcription session. */
-        @JvmStatic
-        fun ofTranscriptionSessionUpdate(transcriptionSessionUpdate: TranscriptionSessionUpdate) =
-            RealtimeClientEvent(transcriptionSessionUpdate = transcriptionSessionUpdate)
     }
 
     /**
@@ -886,11 +854,6 @@ private constructor(
          */
         fun visitSessionUpdate(sessionUpdate: SessionUpdateEvent): T
 
-        /** Send this event to update a transcription session. */
-        fun visitTranscriptionSessionUpdate(
-            transcriptionSessionUpdate: TranscriptionSessionUpdate
-        ): T
-
         /**
          * Maps an unknown variant of [RealtimeClientEvent] to a value of type [T].
          *
@@ -969,11 +932,6 @@ private constructor(
                         RealtimeClientEvent(sessionUpdate = it, _json = json)
                     } ?: RealtimeClientEvent(_json = json)
                 }
-                "transcription_session.update" -> {
-                    return tryDeserialize(node, jacksonTypeRef<TranscriptionSessionUpdate>())?.let {
-                        RealtimeClientEvent(transcriptionSessionUpdate = it, _json = json)
-                    } ?: RealtimeClientEvent(_json = json)
-                }
             }
 
             return RealtimeClientEvent(_json = json)
@@ -1007,8 +965,6 @@ private constructor(
                 value.responseCancel != null -> generator.writeObject(value.responseCancel)
                 value.responseCreate != null -> generator.writeObject(value.responseCreate)
                 value.sessionUpdate != null -> generator.writeObject(value.sessionUpdate)
-                value.transcriptionSessionUpdate != null ->
-                    generator.writeObject(value.transcriptionSessionUpdate)
                 value._json != null -> generator.writeObject(value._json)
                 else -> throw IllegalStateException("Invalid RealtimeClientEvent")
             }

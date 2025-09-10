@@ -614,7 +614,8 @@ private constructor(
         }
 
         /** Alias for calling [addTool] with `RealtimeToolsConfigUnion.ofFunction(function)`. */
-        fun addTool(function: Models) = addTool(RealtimeToolsConfigUnion.ofFunction(function))
+        fun addTool(function: RealtimeFunctionTool) =
+            addTool(RealtimeToolsConfigUnion.ofFunction(function))
 
         /** Alias for calling [addTool] with `RealtimeToolsConfigUnion.ofMcp(mcp)`. */
         fun addTool(mcp: RealtimeToolsConfigUnion.Mcp) =
