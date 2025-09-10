@@ -51,7 +51,6 @@ internal class RealtimeClientEventTest {
         assertThat(realtimeClientEvent.responseCancel()).isEmpty
         assertThat(realtimeClientEvent.responseCreate()).isEmpty
         assertThat(realtimeClientEvent.sessionUpdate()).isEmpty
-        assertThat(realtimeClientEvent.transcriptionSessionUpdate()).isEmpty
     }
 
     @Test
@@ -109,7 +108,6 @@ internal class RealtimeClientEventTest {
         assertThat(realtimeClientEvent.responseCancel()).isEmpty
         assertThat(realtimeClientEvent.responseCreate()).isEmpty
         assertThat(realtimeClientEvent.sessionUpdate()).isEmpty
-        assertThat(realtimeClientEvent.transcriptionSessionUpdate()).isEmpty
     }
 
     @Test
@@ -149,7 +147,6 @@ internal class RealtimeClientEventTest {
         assertThat(realtimeClientEvent.responseCancel()).isEmpty
         assertThat(realtimeClientEvent.responseCreate()).isEmpty
         assertThat(realtimeClientEvent.sessionUpdate()).isEmpty
-        assertThat(realtimeClientEvent.transcriptionSessionUpdate()).isEmpty
     }
 
     @Test
@@ -197,7 +194,6 @@ internal class RealtimeClientEventTest {
         assertThat(realtimeClientEvent.responseCancel()).isEmpty
         assertThat(realtimeClientEvent.responseCreate()).isEmpty
         assertThat(realtimeClientEvent.sessionUpdate()).isEmpty
-        assertThat(realtimeClientEvent.transcriptionSessionUpdate()).isEmpty
     }
 
     @Test
@@ -241,7 +237,6 @@ internal class RealtimeClientEventTest {
         assertThat(realtimeClientEvent.responseCancel()).isEmpty
         assertThat(realtimeClientEvent.responseCreate()).isEmpty
         assertThat(realtimeClientEvent.sessionUpdate()).isEmpty
-        assertThat(realtimeClientEvent.transcriptionSessionUpdate()).isEmpty
     }
 
     @Test
@@ -278,7 +273,6 @@ internal class RealtimeClientEventTest {
         assertThat(realtimeClientEvent.responseCancel()).isEmpty
         assertThat(realtimeClientEvent.responseCreate()).isEmpty
         assertThat(realtimeClientEvent.sessionUpdate()).isEmpty
-        assertThat(realtimeClientEvent.transcriptionSessionUpdate()).isEmpty
     }
 
     @Test
@@ -317,7 +311,6 @@ internal class RealtimeClientEventTest {
         assertThat(realtimeClientEvent.responseCancel()).isEmpty
         assertThat(realtimeClientEvent.responseCreate()).isEmpty
         assertThat(realtimeClientEvent.sessionUpdate()).isEmpty
-        assertThat(realtimeClientEvent.transcriptionSessionUpdate()).isEmpty
     }
 
     @Test
@@ -356,7 +349,6 @@ internal class RealtimeClientEventTest {
         assertThat(realtimeClientEvent.responseCancel()).isEmpty
         assertThat(realtimeClientEvent.responseCreate()).isEmpty
         assertThat(realtimeClientEvent.sessionUpdate()).isEmpty
-        assertThat(realtimeClientEvent.transcriptionSessionUpdate()).isEmpty
     }
 
     @Test
@@ -394,7 +386,6 @@ internal class RealtimeClientEventTest {
         assertThat(realtimeClientEvent.responseCancel()).contains(responseCancel)
         assertThat(realtimeClientEvent.responseCreate()).isEmpty
         assertThat(realtimeClientEvent.sessionUpdate()).isEmpty
-        assertThat(realtimeClientEvent.transcriptionSessionUpdate()).isEmpty
     }
 
     @Test
@@ -474,11 +465,11 @@ internal class RealtimeClientEventTest {
                         )
                         .toolChoice(ToolChoiceOptions.NONE)
                         .addTool(
-                            Models.builder()
+                            RealtimeFunctionTool.builder()
                                 .description("description")
                                 .name("name")
                                 .parameters(JsonValue.from(mapOf<String, Any>()))
-                                .type(Models.Type.FUNCTION)
+                                .type(RealtimeFunctionTool.Type.FUNCTION)
                                 .build()
                         )
                         .build()
@@ -498,7 +489,6 @@ internal class RealtimeClientEventTest {
         assertThat(realtimeClientEvent.responseCancel()).isEmpty
         assertThat(realtimeClientEvent.responseCreate()).contains(responseCreate)
         assertThat(realtimeClientEvent.sessionUpdate()).isEmpty
-        assertThat(realtimeClientEvent.transcriptionSessionUpdate()).isEmpty
     }
 
     @Test
@@ -569,11 +559,11 @@ internal class RealtimeClientEventTest {
                             )
                             .toolChoice(ToolChoiceOptions.NONE)
                             .addTool(
-                                Models.builder()
+                                RealtimeFunctionTool.builder()
                                     .description("description")
                                     .name("name")
                                     .parameters(JsonValue.from(mapOf<String, Any>()))
-                                    .type(Models.Type.FUNCTION)
+                                    .type(RealtimeFunctionTool.Type.FUNCTION)
                                     .build()
                             )
                             .build()
@@ -671,11 +661,11 @@ internal class RealtimeClientEventTest {
                         )
                         .toolChoice(ToolChoiceOptions.NONE)
                         .addTool(
-                            Models.builder()
+                            RealtimeFunctionTool.builder()
                                 .description("description")
                                 .name("name")
                                 .parameters(JsonValue.from(mapOf<String, Any>()))
-                                .type(Models.Type.FUNCTION)
+                                .type(RealtimeFunctionTool.Type.FUNCTION)
                                 .build()
                         )
                         .tracingAuto()
@@ -698,7 +688,6 @@ internal class RealtimeClientEventTest {
         assertThat(realtimeClientEvent.responseCancel()).isEmpty
         assertThat(realtimeClientEvent.responseCreate()).isEmpty
         assertThat(realtimeClientEvent.sessionUpdate()).contains(sessionUpdate)
-        assertThat(realtimeClientEvent.transcriptionSessionUpdate()).isEmpty
     }
 
     @Test
@@ -790,125 +779,15 @@ internal class RealtimeClientEventTest {
                             )
                             .toolChoice(ToolChoiceOptions.NONE)
                             .addTool(
-                                Models.builder()
+                                RealtimeFunctionTool.builder()
                                     .description("description")
                                     .name("name")
                                     .parameters(JsonValue.from(mapOf<String, Any>()))
-                                    .type(Models.Type.FUNCTION)
+                                    .type(RealtimeFunctionTool.Type.FUNCTION)
                                     .build()
                             )
                             .tracingAuto()
                             .truncation(RealtimeTruncation.RealtimeTruncationStrategy.AUTO)
-                            .build()
-                    )
-                    .eventId("event_id")
-                    .build()
-            )
-
-        val roundtrippedRealtimeClientEvent =
-            jsonMapper.readValue(
-                jsonMapper.writeValueAsString(realtimeClientEvent),
-                jacksonTypeRef<RealtimeClientEvent>(),
-            )
-
-        assertThat(roundtrippedRealtimeClientEvent).isEqualTo(realtimeClientEvent)
-    }
-
-    @Test
-    fun ofTranscriptionSessionUpdate() {
-        val transcriptionSessionUpdate =
-            TranscriptionSessionUpdate.builder()
-                .session(
-                    TranscriptionSessionUpdate.Session.builder()
-                        .addInclude(
-                            TranscriptionSessionUpdate.Session.Include
-                                .ITEM_INPUT_AUDIO_TRANSCRIPTION_LOGPROBS
-                        )
-                        .inputAudioFormat(TranscriptionSessionUpdate.Session.InputAudioFormat.PCM16)
-                        .inputAudioNoiseReduction(
-                            TranscriptionSessionUpdate.Session.InputAudioNoiseReduction.builder()
-                                .type(NoiseReductionType.NEAR_FIELD)
-                                .build()
-                        )
-                        .inputAudioTranscription(
-                            AudioTranscription.builder()
-                                .language("language")
-                                .model(AudioTranscription.Model.WHISPER_1)
-                                .prompt("prompt")
-                                .build()
-                        )
-                        .turnDetection(
-                            TranscriptionSessionUpdate.Session.TurnDetection.builder()
-                                .prefixPaddingMs(0L)
-                                .silenceDurationMs(0L)
-                                .threshold(0.0)
-                                .type(
-                                    TranscriptionSessionUpdate.Session.TurnDetection.Type.SERVER_VAD
-                                )
-                                .build()
-                        )
-                        .build()
-                )
-                .eventId("event_id")
-                .build()
-
-        val realtimeClientEvent =
-            RealtimeClientEvent.ofTranscriptionSessionUpdate(transcriptionSessionUpdate)
-
-        assertThat(realtimeClientEvent.conversationItemCreate()).isEmpty
-        assertThat(realtimeClientEvent.conversationItemDelete()).isEmpty
-        assertThat(realtimeClientEvent.conversationItemRetrieve()).isEmpty
-        assertThat(realtimeClientEvent.conversationItemTruncate()).isEmpty
-        assertThat(realtimeClientEvent.inputAudioBufferAppend()).isEmpty
-        assertThat(realtimeClientEvent.inputAudioBufferClear()).isEmpty
-        assertThat(realtimeClientEvent.outputAudioBufferClear()).isEmpty
-        assertThat(realtimeClientEvent.inputAudioBufferCommit()).isEmpty
-        assertThat(realtimeClientEvent.responseCancel()).isEmpty
-        assertThat(realtimeClientEvent.responseCreate()).isEmpty
-        assertThat(realtimeClientEvent.sessionUpdate()).isEmpty
-        assertThat(realtimeClientEvent.transcriptionSessionUpdate())
-            .contains(transcriptionSessionUpdate)
-    }
-
-    @Test
-    fun ofTranscriptionSessionUpdateRoundtrip() {
-        val jsonMapper = jsonMapper()
-        val realtimeClientEvent =
-            RealtimeClientEvent.ofTranscriptionSessionUpdate(
-                TranscriptionSessionUpdate.builder()
-                    .session(
-                        TranscriptionSessionUpdate.Session.builder()
-                            .addInclude(
-                                TranscriptionSessionUpdate.Session.Include
-                                    .ITEM_INPUT_AUDIO_TRANSCRIPTION_LOGPROBS
-                            )
-                            .inputAudioFormat(
-                                TranscriptionSessionUpdate.Session.InputAudioFormat.PCM16
-                            )
-                            .inputAudioNoiseReduction(
-                                TranscriptionSessionUpdate.Session.InputAudioNoiseReduction
-                                    .builder()
-                                    .type(NoiseReductionType.NEAR_FIELD)
-                                    .build()
-                            )
-                            .inputAudioTranscription(
-                                AudioTranscription.builder()
-                                    .language("language")
-                                    .model(AudioTranscription.Model.WHISPER_1)
-                                    .prompt("prompt")
-                                    .build()
-                            )
-                            .turnDetection(
-                                TranscriptionSessionUpdate.Session.TurnDetection.builder()
-                                    .prefixPaddingMs(0L)
-                                    .silenceDurationMs(0L)
-                                    .threshold(0.0)
-                                    .type(
-                                        TranscriptionSessionUpdate.Session.TurnDetection.Type
-                                            .SERVER_VAD
-                                    )
-                                    .build()
-                            )
                             .build()
                     )
                     .eventId("event_id")

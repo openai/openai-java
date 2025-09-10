@@ -39,12 +39,12 @@ import kotlin.jvm.optionals.getOrNull
 @JsonSerialize(using = RealtimeToolsConfigUnion.Serializer::class)
 class RealtimeToolsConfigUnion
 private constructor(
-    private val function: Models? = null,
+    private val function: RealtimeFunctionTool? = null,
     private val mcp: Mcp? = null,
     private val _json: JsonValue? = null,
 ) {
 
-    fun function(): Optional<Models> = Optional.ofNullable(function)
+    fun function(): Optional<RealtimeFunctionTool> = Optional.ofNullable(function)
 
     /**
      * Give the model access to additional tools via remote Model Context Protocol (MCP) servers.
@@ -56,7 +56,7 @@ private constructor(
 
     fun isMcp(): Boolean = mcp != null
 
-    fun asFunction(): Models = function.getOrThrow("function")
+    fun asFunction(): RealtimeFunctionTool = function.getOrThrow("function")
 
     /**
      * Give the model access to additional tools via remote Model Context Protocol (MCP) servers.
@@ -82,7 +82,7 @@ private constructor(
 
         accept(
             object : Visitor<Unit> {
-                override fun visitFunction(function: Models) {
+                override fun visitFunction(function: RealtimeFunctionTool) {
                     function.validate()
                 }
 
@@ -111,7 +111,7 @@ private constructor(
     internal fun validity(): Int =
         accept(
             object : Visitor<Int> {
-                override fun visitFunction(function: Models) = function.validity()
+                override fun visitFunction(function: RealtimeFunctionTool) = function.validity()
 
                 override fun visitMcp(mcp: Mcp) = mcp.validity()
 
@@ -139,7 +139,9 @@ private constructor(
 
     companion object {
 
-        @JvmStatic fun ofFunction(function: Models) = RealtimeToolsConfigUnion(function = function)
+        @JvmStatic
+        fun ofFunction(function: RealtimeFunctionTool) =
+            RealtimeToolsConfigUnion(function = function)
 
         /**
          * Give the model access to additional tools via remote Model Context Protocol (MCP)
@@ -155,7 +157,7 @@ private constructor(
      */
     interface Visitor<out T> {
 
-        fun visitFunction(function: Models): T
+        fun visitFunction(function: RealtimeFunctionTool): T
 
         /**
          * Give the model access to additional tools via remote Model Context Protocol (MCP)
@@ -188,7 +190,7 @@ private constructor(
 
             when (type) {
                 "function" -> {
-                    return tryDeserialize(node, jacksonTypeRef<Models>())?.let {
+                    return tryDeserialize(node, jacksonTypeRef<RealtimeFunctionTool>())?.let {
                         RealtimeToolsConfigUnion(function = it, _json = json)
                     } ?: RealtimeToolsConfigUnion(_json = json)
                 }

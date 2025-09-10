@@ -67,11 +67,11 @@ internal class RealtimeResponseCreateParamsTest {
                 )
                 .toolChoice(ToolChoiceOptions.NONE)
                 .addTool(
-                    Models.builder()
+                    RealtimeFunctionTool.builder()
                         .description("description")
                         .name("name")
                         .parameters(JsonValue.from(mapOf<String, Any>()))
-                        .type(Models.Type.FUNCTION)
+                        .type(RealtimeFunctionTool.Type.FUNCTION)
                         .build()
                 )
                 .build()
@@ -137,12 +137,12 @@ internal class RealtimeResponseCreateParamsTest {
             .contains(RealtimeResponseCreateParams.ToolChoice.ofOptions(ToolChoiceOptions.NONE))
         assertThat(realtimeResponseCreateParams.tools().getOrNull())
             .containsExactly(
-                RealtimeResponseCreateParams.Tool.ofModels(
-                    Models.builder()
+                RealtimeResponseCreateParams.Tool.ofRealtimeFunction(
+                    RealtimeFunctionTool.builder()
                         .description("description")
                         .name("name")
                         .parameters(JsonValue.from(mapOf<String, Any>()))
-                        .type(Models.Type.FUNCTION)
+                        .type(RealtimeFunctionTool.Type.FUNCTION)
                         .build()
                 )
             )
@@ -203,11 +203,11 @@ internal class RealtimeResponseCreateParamsTest {
                 )
                 .toolChoice(ToolChoiceOptions.NONE)
                 .addTool(
-                    Models.builder()
+                    RealtimeFunctionTool.builder()
                         .description("description")
                         .name("name")
                         .parameters(JsonValue.from(mapOf<String, Any>()))
-                        .type(Models.Type.FUNCTION)
+                        .type(RealtimeFunctionTool.Type.FUNCTION)
                         .build()
                 )
                 .build()

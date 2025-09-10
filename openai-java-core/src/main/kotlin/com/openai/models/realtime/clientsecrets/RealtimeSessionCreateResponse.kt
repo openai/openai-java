@@ -27,9 +27,9 @@ import com.openai.core.getOrThrow
 import com.openai.core.toImmutable
 import com.openai.errors.OpenAIInvalidDataException
 import com.openai.models.realtime.AudioTranscription
-import com.openai.models.realtime.Models
 import com.openai.models.realtime.NoiseReductionType
 import com.openai.models.realtime.RealtimeAudioFormats
+import com.openai.models.realtime.RealtimeFunctionTool
 import com.openai.models.realtime.RealtimeTruncation
 import com.openai.models.realtime.RealtimeTruncationRetentionRatio
 import com.openai.models.responses.ResponsePrompt
@@ -46,8 +46,9 @@ import kotlin.jvm.optionals.getOrNull
  */
 class RealtimeSessionCreateResponse
 private constructor(
-    private val audio: JsonField<Audio>,
     private val clientSecret: JsonField<RealtimeSessionClientSecret>,
+    private val type: JsonValue,
+    private val audio: JsonField<Audio>,
     private val include: JsonField<List<Include>>,
     private val instructions: JsonField<String>,
     private val maxOutputTokens: JsonField<MaxOutputTokens>,
@@ -58,16 +59,16 @@ private constructor(
     private val tools: JsonField<List<Tool>>,
     private val tracing: JsonField<Tracing>,
     private val truncation: JsonField<RealtimeTruncation>,
-    private val type: JsonField<Type>,
     private val additionalProperties: MutableMap<String, JsonValue>,
 ) {
 
     @JsonCreator
     private constructor(
-        @JsonProperty("audio") @ExcludeMissing audio: JsonField<Audio> = JsonMissing.of(),
         @JsonProperty("client_secret")
         @ExcludeMissing
         clientSecret: JsonField<RealtimeSessionClientSecret> = JsonMissing.of(),
+        @JsonProperty("type") @ExcludeMissing type: JsonValue = JsonMissing.of(),
+        @JsonProperty("audio") @ExcludeMissing audio: JsonField<Audio> = JsonMissing.of(),
         @JsonProperty("include")
         @ExcludeMissing
         include: JsonField<List<Include>> = JsonMissing.of(),
@@ -92,10 +93,10 @@ private constructor(
         @JsonProperty("truncation")
         @ExcludeMissing
         truncation: JsonField<RealtimeTruncation> = JsonMissing.of(),
-        @JsonProperty("type") @ExcludeMissing type: JsonField<Type> = JsonMissing.of(),
     ) : this(
-        audio,
         clientSecret,
+        type,
+        audio,
         include,
         instructions,
         maxOutputTokens,
@@ -106,9 +107,29 @@ private constructor(
         tools,
         tracing,
         truncation,
-        type,
         mutableMapOf(),
     )
+
+    /**
+     * Ephemeral key returned by the API.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     */
+    fun clientSecret(): RealtimeSessionClientSecret = clientSecret.getRequired("client_secret")
+
+    /**
+     * The type of session to create. Always `realtime` for the Realtime API.
+     *
+     * Expected to always return the following:
+     * ```java
+     * JsonValue.from("realtime")
+     * ```
+     *
+     * However, this method can be useful for debugging and logging (e.g. if the server responded
+     * with an unexpected value).
+     */
+    @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
 
     /**
      * Configuration for input and output audio.
@@ -117,15 +138,6 @@ private constructor(
      *   server responded with an unexpected value).
      */
     fun audio(): Optional<Audio> = audio.getOptional("audio")
-
-    /**
-     * Ephemeral key returned by the API.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
-     */
-    fun clientSecret(): Optional<RealtimeSessionClientSecret> =
-        clientSecret.getOptional("client_secret")
 
     /**
      * Additional fields to include in server outputs.
@@ -233,21 +245,6 @@ private constructor(
     fun truncation(): Optional<RealtimeTruncation> = truncation.getOptional("truncation")
 
     /**
-     * The type of session to create. Always `realtime` for the Realtime API.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
-     */
-    fun type(): Optional<Type> = type.getOptional("type")
-
-    /**
-     * Returns the raw JSON value of [audio].
-     *
-     * Unlike [audio], this method doesn't throw if the JSON field has an unexpected type.
-     */
-    @JsonProperty("audio") @ExcludeMissing fun _audio(): JsonField<Audio> = audio
-
-    /**
      * Returns the raw JSON value of [clientSecret].
      *
      * Unlike [clientSecret], this method doesn't throw if the JSON field has an unexpected type.
@@ -255,6 +252,13 @@ private constructor(
     @JsonProperty("client_secret")
     @ExcludeMissing
     fun _clientSecret(): JsonField<RealtimeSessionClientSecret> = clientSecret
+
+    /**
+     * Returns the raw JSON value of [audio].
+     *
+     * Unlike [audio], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    @JsonProperty("audio") @ExcludeMissing fun _audio(): JsonField<Audio> = audio
 
     /**
      * Returns the raw JSON value of [include].
@@ -337,13 +341,6 @@ private constructor(
     @ExcludeMissing
     fun _truncation(): JsonField<RealtimeTruncation> = truncation
 
-    /**
-     * Returns the raw JSON value of [type].
-     *
-     * Unlike [type], this method doesn't throw if the JSON field has an unexpected type.
-     */
-    @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<Type> = type
-
     @JsonAnySetter
     private fun putAdditionalProperty(key: String, value: JsonValue) {
         additionalProperties.put(key, value)
@@ -361,6 +358,11 @@ private constructor(
         /**
          * Returns a mutable builder for constructing an instance of
          * [RealtimeSessionCreateResponse].
+         *
+         * The following fields are required:
+         * ```java
+         * .clientSecret()
+         * ```
          */
         @JvmStatic fun builder() = Builder()
     }
@@ -368,8 +370,9 @@ private constructor(
     /** A builder for [RealtimeSessionCreateResponse]. */
     class Builder internal constructor() {
 
+        private var clientSecret: JsonField<RealtimeSessionClientSecret>? = null
+        private var type: JsonValue = JsonValue.from("realtime")
         private var audio: JsonField<Audio> = JsonMissing.of()
-        private var clientSecret: JsonField<RealtimeSessionClientSecret> = JsonMissing.of()
         private var include: JsonField<MutableList<Include>>? = null
         private var instructions: JsonField<String> = JsonMissing.of()
         private var maxOutputTokens: JsonField<MaxOutputTokens> = JsonMissing.of()
@@ -380,13 +383,13 @@ private constructor(
         private var tools: JsonField<MutableList<Tool>>? = null
         private var tracing: JsonField<Tracing> = JsonMissing.of()
         private var truncation: JsonField<RealtimeTruncation> = JsonMissing.of()
-        private var type: JsonField<Type> = JsonMissing.of()
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
         @JvmSynthetic
         internal fun from(realtimeSessionCreateResponse: RealtimeSessionCreateResponse) = apply {
-            audio = realtimeSessionCreateResponse.audio
             clientSecret = realtimeSessionCreateResponse.clientSecret
+            type = realtimeSessionCreateResponse.type
+            audio = realtimeSessionCreateResponse.audio
             include = realtimeSessionCreateResponse.include.map { it.toMutableList() }
             instructions = realtimeSessionCreateResponse.instructions
             maxOutputTokens = realtimeSessionCreateResponse.maxOutputTokens
@@ -398,20 +401,8 @@ private constructor(
             tools = realtimeSessionCreateResponse.tools.map { it.toMutableList() }
             tracing = realtimeSessionCreateResponse.tracing
             truncation = realtimeSessionCreateResponse.truncation
-            type = realtimeSessionCreateResponse.type
             additionalProperties = realtimeSessionCreateResponse.additionalProperties.toMutableMap()
         }
-
-        /** Configuration for input and output audio. */
-        fun audio(audio: Audio) = audio(JsonField.of(audio))
-
-        /**
-         * Sets [Builder.audio] to an arbitrary JSON value.
-         *
-         * You should usually call [Builder.audio] with a well-typed [Audio] value instead. This
-         * method is primarily for setting the field to an undocumented or not yet supported value.
-         */
-        fun audio(audio: JsonField<Audio>) = apply { this.audio = audio }
 
         /** Ephemeral key returned by the API. */
         fun clientSecret(clientSecret: RealtimeSessionClientSecret) =
@@ -427,6 +418,31 @@ private constructor(
         fun clientSecret(clientSecret: JsonField<RealtimeSessionClientSecret>) = apply {
             this.clientSecret = clientSecret
         }
+
+        /**
+         * Sets the field to an arbitrary JSON value.
+         *
+         * It is usually unnecessary to call this method because the field defaults to the
+         * following:
+         * ```java
+         * JsonValue.from("realtime")
+         * ```
+         *
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
+         */
+        fun type(type: JsonValue) = apply { this.type = type }
+
+        /** Configuration for input and output audio. */
+        fun audio(audio: Audio) = audio(JsonField.of(audio))
+
+        /**
+         * Sets [Builder.audio] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.audio] with a well-typed [Audio] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
+        fun audio(audio: JsonField<Audio>) = apply { this.audio = audio }
 
         /**
          * Additional fields to include in server outputs.
@@ -626,8 +642,9 @@ private constructor(
                 (tools ?: JsonField.of(mutableListOf())).also { checkKnown("tools", it).add(tool) }
         }
 
-        /** Alias for calling [addTool] with `Tool.ofModels(models)`. */
-        fun addTool(models: Models) = addTool(Tool.ofModels(models))
+        /** Alias for calling [addTool] with `Tool.ofRealtimeFunction(realtimeFunction)`. */
+        fun addTool(realtimeFunction: RealtimeFunctionTool) =
+            addTool(Tool.ofRealtimeFunction(realtimeFunction))
 
         /** Alias for calling [addTool] with `Tool.ofMcp(mcp)`. */
         fun addTool(mcp: Tool.McpTool) = addTool(Tool.ofMcp(mcp))
@@ -688,17 +705,6 @@ private constructor(
         fun truncation(retentionRatio: RealtimeTruncationRetentionRatio) =
             truncation(RealtimeTruncation.ofRetentionRatio(retentionRatio))
 
-        /** The type of session to create. Always `realtime` for the Realtime API. */
-        fun type(type: Type) = type(JsonField.of(type))
-
-        /**
-         * Sets [Builder.type] to an arbitrary JSON value.
-         *
-         * You should usually call [Builder.type] with a well-typed [Type] value instead. This
-         * method is primarily for setting the field to an undocumented or not yet supported value.
-         */
-        fun type(type: JsonField<Type>) = apply { this.type = type }
-
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
             this.additionalProperties.clear()
             putAllAdditionalProperties(additionalProperties)
@@ -722,11 +728,19 @@ private constructor(
          * Returns an immutable instance of [RealtimeSessionCreateResponse].
          *
          * Further updates to this [Builder] will not mutate the returned instance.
+         *
+         * The following fields are required:
+         * ```java
+         * .clientSecret()
+         * ```
+         *
+         * @throws IllegalStateException if any required field is unset.
          */
         fun build(): RealtimeSessionCreateResponse =
             RealtimeSessionCreateResponse(
+                checkRequired("clientSecret", clientSecret),
+                type,
                 audio,
-                clientSecret,
                 (include ?: JsonMissing.of()).map { it.toImmutable() },
                 instructions,
                 maxOutputTokens,
@@ -737,7 +751,6 @@ private constructor(
                 (tools ?: JsonMissing.of()).map { it.toImmutable() },
                 tracing,
                 truncation,
-                type,
                 additionalProperties.toMutableMap(),
             )
     }
@@ -749,8 +762,13 @@ private constructor(
             return@apply
         }
 
+        clientSecret().validate()
+        _type().let {
+            if (it != JsonValue.from("realtime")) {
+                throw OpenAIInvalidDataException("'type' is invalid, received $it")
+            }
+        }
         audio().ifPresent { it.validate() }
-        clientSecret().ifPresent { it.validate() }
         include().ifPresent { it.forEach { it.validate() } }
         instructions()
         maxOutputTokens().ifPresent { it.validate() }
@@ -761,7 +779,6 @@ private constructor(
         tools().ifPresent { it.forEach { it.validate() } }
         tracing().ifPresent { it.validate() }
         truncation().ifPresent { it.validate() }
-        type().ifPresent { it.validate() }
         validated = true
     }
 
@@ -780,8 +797,9 @@ private constructor(
      */
     @JvmSynthetic
     internal fun validity(): Int =
-        (audio.asKnown().getOrNull()?.validity() ?: 0) +
-            (clientSecret.asKnown().getOrNull()?.validity() ?: 0) +
+        (clientSecret.asKnown().getOrNull()?.validity() ?: 0) +
+            type.let { if (it == JsonValue.from("realtime")) 1 else 0 } +
+            (audio.asKnown().getOrNull()?.validity() ?: 0) +
             (include.asKnown().getOrNull()?.sumOf { it.validity().toInt() } ?: 0) +
             (if (instructions.asKnown().isPresent) 1 else 0) +
             (maxOutputTokens.asKnown().getOrNull()?.validity() ?: 0) +
@@ -791,8 +809,7 @@ private constructor(
             (toolChoice.asKnown().getOrNull()?.validity() ?: 0) +
             (tools.asKnown().getOrNull()?.sumOf { it.validity().toInt() } ?: 0) +
             (tracing.asKnown().getOrNull()?.validity() ?: 0) +
-            (truncation.asKnown().getOrNull()?.validity() ?: 0) +
-            (type.asKnown().getOrNull()?.validity() ?: 0)
+            (truncation.asKnown().getOrNull()?.validity() ?: 0)
 
     /** Configuration for input and output audio. */
     class Audio
@@ -1517,7 +1534,7 @@ private constructor(
 
                 /**
                  * Optional idle timeout after which turn detection will auto-timeout when no
-                 * additional audio is received.
+                 * additional audio is received and emits a `timeout_triggered` event.
                  *
                  * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g.
                  *   if the server responded with an unexpected value).
@@ -1737,7 +1754,7 @@ private constructor(
 
                     /**
                      * Optional idle timeout after which turn detection will auto-timeout when no
-                     * additional audio is received.
+                     * additional audio is received and emits a `timeout_triggered` event.
                      */
                     fun idleTimeoutMs(idleTimeoutMs: Long?) =
                         idleTimeoutMs(JsonField.ofNullable(idleTimeoutMs))
@@ -3626,12 +3643,13 @@ private constructor(
     @JsonSerialize(using = Tool.Serializer::class)
     class Tool
     private constructor(
-        private val models: Models? = null,
+        private val realtimeFunction: RealtimeFunctionTool? = null,
         private val mcp: McpTool? = null,
         private val _json: JsonValue? = null,
     ) {
 
-        fun models(): Optional<Models> = Optional.ofNullable(models)
+        fun realtimeFunction(): Optional<RealtimeFunctionTool> =
+            Optional.ofNullable(realtimeFunction)
 
         /**
          * Give the model access to additional tools via remote Model Context Protocol (MCP)
@@ -3640,11 +3658,12 @@ private constructor(
          */
         fun mcp(): Optional<McpTool> = Optional.ofNullable(mcp)
 
-        fun isModels(): Boolean = models != null
+        fun isRealtimeFunction(): Boolean = realtimeFunction != null
 
         fun isMcp(): Boolean = mcp != null
 
-        fun asModels(): Models = models.getOrThrow("models")
+        fun asRealtimeFunction(): RealtimeFunctionTool =
+            realtimeFunction.getOrThrow("realtimeFunction")
 
         /**
          * Give the model access to additional tools via remote Model Context Protocol (MCP)
@@ -3657,7 +3676,7 @@ private constructor(
 
         fun <T> accept(visitor: Visitor<T>): T =
             when {
-                models != null -> visitor.visitModels(models)
+                realtimeFunction != null -> visitor.visitRealtimeFunction(realtimeFunction)
                 mcp != null -> visitor.visitMcp(mcp)
                 else -> visitor.unknown(_json)
             }
@@ -3671,8 +3690,8 @@ private constructor(
 
             accept(
                 object : Visitor<Unit> {
-                    override fun visitModels(models: Models) {
-                        models.validate()
+                    override fun visitRealtimeFunction(realtimeFunction: RealtimeFunctionTool) {
+                        realtimeFunction.validate()
                     }
 
                     override fun visitMcp(mcp: McpTool) {
@@ -3701,7 +3720,8 @@ private constructor(
         internal fun validity(): Int =
             accept(
                 object : Visitor<Int> {
-                    override fun visitModels(models: Models) = models.validity()
+                    override fun visitRealtimeFunction(realtimeFunction: RealtimeFunctionTool) =
+                        realtimeFunction.validity()
 
                     override fun visitMcp(mcp: McpTool) = mcp.validity()
 
@@ -3714,14 +3734,14 @@ private constructor(
                 return true
             }
 
-            return other is Tool && models == other.models && mcp == other.mcp
+            return other is Tool && realtimeFunction == other.realtimeFunction && mcp == other.mcp
         }
 
-        override fun hashCode(): Int = Objects.hash(models, mcp)
+        override fun hashCode(): Int = Objects.hash(realtimeFunction, mcp)
 
         override fun toString(): String =
             when {
-                models != null -> "Tool{models=$models}"
+                realtimeFunction != null -> "Tool{realtimeFunction=$realtimeFunction}"
                 mcp != null -> "Tool{mcp=$mcp}"
                 _json != null -> "Tool{_unknown=$_json}"
                 else -> throw IllegalStateException("Invalid Tool")
@@ -3729,7 +3749,9 @@ private constructor(
 
         companion object {
 
-            @JvmStatic fun ofModels(models: Models) = Tool(models = models)
+            @JvmStatic
+            fun ofRealtimeFunction(realtimeFunction: RealtimeFunctionTool) =
+                Tool(realtimeFunction = realtimeFunction)
 
             /**
              * Give the model access to additional tools via remote Model Context Protocol (MCP)
@@ -3742,7 +3764,7 @@ private constructor(
         /** An interface that defines how to map each variant of [Tool] to a value of type [T]. */
         interface Visitor<out T> {
 
-            fun visitModels(models: Models): T
+            fun visitRealtimeFunction(realtimeFunction: RealtimeFunctionTool): T
 
             /**
              * Give the model access to additional tools via remote Model Context Protocol (MCP)
@@ -3772,8 +3794,8 @@ private constructor(
 
                 val bestMatches =
                     sequenceOf(
-                            tryDeserialize(node, jacksonTypeRef<Models>())?.let {
-                                Tool(models = it, _json = json)
+                            tryDeserialize(node, jacksonTypeRef<RealtimeFunctionTool>())?.let {
+                                Tool(realtimeFunction = it, _json = json)
                             },
                             tryDeserialize(node, jacksonTypeRef<McpTool>())?.let {
                                 Tool(mcp = it, _json = json)
@@ -3803,7 +3825,7 @@ private constructor(
                 provider: SerializerProvider,
             ) {
                 when {
-                    value.models != null -> generator.writeObject(value.models)
+                    value.realtimeFunction != null -> generator.writeObject(value.realtimeFunction)
                     value.mcp != null -> generator.writeObject(value.mcp)
                     value._json != null -> generator.writeObject(value._json)
                     else -> throw IllegalStateException("Invalid Tool")
@@ -6604,134 +6626,15 @@ private constructor(
         }
     }
 
-    /** The type of session to create. Always `realtime` for the Realtime API. */
-    class Type @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
-
-        /**
-         * Returns this class instance's raw value.
-         *
-         * This is usually only useful if this instance was deserialized from data that doesn't
-         * match any known member, and you want to know that value. For example, if the SDK is on an
-         * older version than the API, then the API may respond with new members that the SDK is
-         * unaware of.
-         */
-        @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
-
-        companion object {
-
-            @JvmField val REALTIME = of("realtime")
-
-            @JvmStatic fun of(value: String) = Type(JsonField.of(value))
-        }
-
-        /** An enum containing [Type]'s known values. */
-        enum class Known {
-            REALTIME
-        }
-
-        /**
-         * An enum containing [Type]'s known values, as well as an [_UNKNOWN] member.
-         *
-         * An instance of [Type] can contain an unknown value in a couple of cases:
-         * - It was deserialized from data that doesn't match any known member. For example, if the
-         *   SDK is on an older version than the API, then the API may respond with new members that
-         *   the SDK is unaware of.
-         * - It was constructed with an arbitrary value using the [of] method.
-         */
-        enum class Value {
-            REALTIME,
-            /** An enum member indicating that [Type] was instantiated with an unknown value. */
-            _UNKNOWN,
-        }
-
-        /**
-         * Returns an enum member corresponding to this class instance's value, or [Value._UNKNOWN]
-         * if the class was instantiated with an unknown value.
-         *
-         * Use the [known] method instead if you're certain the value is always known or if you want
-         * to throw for the unknown case.
-         */
-        fun value(): Value =
-            when (this) {
-                REALTIME -> Value.REALTIME
-                else -> Value._UNKNOWN
-            }
-
-        /**
-         * Returns an enum member corresponding to this class instance's value.
-         *
-         * Use the [value] method instead if you're uncertain the value is always known and don't
-         * want to throw for the unknown case.
-         *
-         * @throws OpenAIInvalidDataException if this class instance's value is a not a known
-         *   member.
-         */
-        fun known(): Known =
-            when (this) {
-                REALTIME -> Known.REALTIME
-                else -> throw OpenAIInvalidDataException("Unknown Type: $value")
-            }
-
-        /**
-         * Returns this class instance's primitive wire representation.
-         *
-         * This differs from the [toString] method because that method is primarily for debugging
-         * and generally doesn't throw.
-         *
-         * @throws OpenAIInvalidDataException if this class instance's value does not have the
-         *   expected primitive type.
-         */
-        fun asString(): String =
-            _value().asString().orElseThrow { OpenAIInvalidDataException("Value is not a String") }
-
-        private var validated: Boolean = false
-
-        fun validate(): Type = apply {
-            if (validated) {
-                return@apply
-            }
-
-            known()
-            validated = true
-        }
-
-        fun isValid(): Boolean =
-            try {
-                validate()
-                true
-            } catch (e: OpenAIInvalidDataException) {
-                false
-            }
-
-        /**
-         * Returns a score indicating how many valid values are contained in this object
-         * recursively.
-         *
-         * Used for best match union deserialization.
-         */
-        @JvmSynthetic internal fun validity(): Int = if (value() == Value._UNKNOWN) 0 else 1
-
-        override fun equals(other: Any?): Boolean {
-            if (this === other) {
-                return true
-            }
-
-            return other is Type && value == other.value
-        }
-
-        override fun hashCode() = value.hashCode()
-
-        override fun toString() = value.toString()
-    }
-
     override fun equals(other: Any?): Boolean {
         if (this === other) {
             return true
         }
 
         return other is RealtimeSessionCreateResponse &&
-            audio == other.audio &&
             clientSecret == other.clientSecret &&
+            type == other.type &&
+            audio == other.audio &&
             include == other.include &&
             instructions == other.instructions &&
             maxOutputTokens == other.maxOutputTokens &&
@@ -6742,14 +6645,14 @@ private constructor(
             tools == other.tools &&
             tracing == other.tracing &&
             truncation == other.truncation &&
-            type == other.type &&
             additionalProperties == other.additionalProperties
     }
 
     private val hashCode: Int by lazy {
         Objects.hash(
-            audio,
             clientSecret,
+            type,
+            audio,
             include,
             instructions,
             maxOutputTokens,
@@ -6760,7 +6663,6 @@ private constructor(
             tools,
             tracing,
             truncation,
-            type,
             additionalProperties,
         )
     }
@@ -6768,5 +6670,5 @@ private constructor(
     override fun hashCode(): Int = hashCode
 
     override fun toString() =
-        "RealtimeSessionCreateResponse{audio=$audio, clientSecret=$clientSecret, include=$include, instructions=$instructions, maxOutputTokens=$maxOutputTokens, model=$model, outputModalities=$outputModalities, prompt=$prompt, toolChoice=$toolChoice, tools=$tools, tracing=$tracing, truncation=$truncation, type=$type, additionalProperties=$additionalProperties}"
+        "RealtimeSessionCreateResponse{clientSecret=$clientSecret, type=$type, audio=$audio, include=$include, instructions=$instructions, maxOutputTokens=$maxOutputTokens, model=$model, outputModalities=$outputModalities, prompt=$prompt, toolChoice=$toolChoice, tools=$tools, tracing=$tracing, truncation=$truncation, additionalProperties=$additionalProperties}"
 }

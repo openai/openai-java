@@ -68,8 +68,6 @@ private constructor(
     private val responseOutputTextDone: ResponseTextDoneEvent? = null,
     private val sessionCreated: SessionCreatedEvent? = null,
     private val sessionUpdated: SessionUpdatedEvent? = null,
-    private val transcriptionSessionUpdated: TranscriptionSessionUpdatedEvent? = null,
-    private val transcriptionSessionCreated: TranscriptionSessionCreated? = null,
     private val outputAudioBufferStarted: OutputAudioBufferStarted? = null,
     private val outputAudioBufferStopped: OutputAudioBufferStopped? = null,
     private val outputAudioBufferCleared: OutputAudioBufferCleared? = null,
@@ -320,17 +318,6 @@ private constructor(
     fun sessionUpdated(): Optional<SessionUpdatedEvent> = Optional.ofNullable(sessionUpdated)
 
     /**
-     * Returned when a transcription session is updated with a `transcription_session.update` event,
-     * unless there is an error.
-     */
-    fun transcriptionSessionUpdated(): Optional<TranscriptionSessionUpdatedEvent> =
-        Optional.ofNullable(transcriptionSessionUpdated)
-
-    /** Returned when a transcription session is created. */
-    fun transcriptionSessionCreated(): Optional<TranscriptionSessionCreated> =
-        Optional.ofNullable(transcriptionSessionCreated)
-
-    /**
      * **WebRTC Only:** Emitted when the server begins streaming audio to the client. This event is
      * emitted after an audio content part has been added (`response.content_part.added`) to the
      * response.
@@ -486,10 +473,6 @@ private constructor(
     fun isSessionCreated(): Boolean = sessionCreated != null
 
     fun isSessionUpdated(): Boolean = sessionUpdated != null
-
-    fun isTranscriptionSessionUpdated(): Boolean = transcriptionSessionUpdated != null
-
-    fun isTranscriptionSessionCreated(): Boolean = transcriptionSessionCreated != null
 
     fun isOutputAudioBufferStarted(): Boolean = outputAudioBufferStarted != null
 
@@ -758,17 +741,6 @@ private constructor(
     fun asSessionUpdated(): SessionUpdatedEvent = sessionUpdated.getOrThrow("sessionUpdated")
 
     /**
-     * Returned when a transcription session is updated with a `transcription_session.update` event,
-     * unless there is an error.
-     */
-    fun asTranscriptionSessionUpdated(): TranscriptionSessionUpdatedEvent =
-        transcriptionSessionUpdated.getOrThrow("transcriptionSessionUpdated")
-
-    /** Returned when a transcription session is created. */
-    fun asTranscriptionSessionCreated(): TranscriptionSessionCreated =
-        transcriptionSessionCreated.getOrThrow("transcriptionSessionCreated")
-
-    /**
      * **WebRTC Only:** Emitted when the server begins streaming audio to the client. This event is
      * emitted after an audio content part has been added (`response.content_part.added`) to the
      * response.
@@ -928,10 +900,6 @@ private constructor(
                 visitor.visitResponseOutputTextDone(responseOutputTextDone)
             sessionCreated != null -> visitor.visitSessionCreated(sessionCreated)
             sessionUpdated != null -> visitor.visitSessionUpdated(sessionUpdated)
-            transcriptionSessionUpdated != null ->
-                visitor.visitTranscriptionSessionUpdated(transcriptionSessionUpdated)
-            transcriptionSessionCreated != null ->
-                visitor.visitTranscriptionSessionCreated(transcriptionSessionCreated)
             outputAudioBufferStarted != null ->
                 visitor.visitOutputAudioBufferStarted(outputAudioBufferStarted)
             outputAudioBufferStopped != null ->
@@ -1143,18 +1111,6 @@ private constructor(
 
                 override fun visitSessionUpdated(sessionUpdated: SessionUpdatedEvent) {
                     sessionUpdated.validate()
-                }
-
-                override fun visitTranscriptionSessionUpdated(
-                    transcriptionSessionUpdated: TranscriptionSessionUpdatedEvent
-                ) {
-                    transcriptionSessionUpdated.validate()
-                }
-
-                override fun visitTranscriptionSessionCreated(
-                    transcriptionSessionCreated: TranscriptionSessionCreated
-                ) {
-                    transcriptionSessionCreated.validate()
                 }
 
                 override fun visitOutputAudioBufferStarted(
@@ -1381,14 +1337,6 @@ private constructor(
                 override fun visitSessionUpdated(sessionUpdated: SessionUpdatedEvent) =
                     sessionUpdated.validity()
 
-                override fun visitTranscriptionSessionUpdated(
-                    transcriptionSessionUpdated: TranscriptionSessionUpdatedEvent
-                ) = transcriptionSessionUpdated.validity()
-
-                override fun visitTranscriptionSessionCreated(
-                    transcriptionSessionCreated: TranscriptionSessionCreated
-                ) = transcriptionSessionCreated.validity()
-
                 override fun visitOutputAudioBufferStarted(
                     outputAudioBufferStarted: OutputAudioBufferStarted
                 ) = outputAudioBufferStarted.validity()
@@ -1491,8 +1439,6 @@ private constructor(
             responseOutputTextDone == other.responseOutputTextDone &&
             sessionCreated == other.sessionCreated &&
             sessionUpdated == other.sessionUpdated &&
-            transcriptionSessionUpdated == other.transcriptionSessionUpdated &&
-            transcriptionSessionCreated == other.transcriptionSessionCreated &&
             outputAudioBufferStarted == other.outputAudioBufferStarted &&
             outputAudioBufferStopped == other.outputAudioBufferStopped &&
             outputAudioBufferCleared == other.outputAudioBufferCleared &&
@@ -1543,8 +1489,6 @@ private constructor(
             responseOutputTextDone,
             sessionCreated,
             sessionUpdated,
-            transcriptionSessionUpdated,
-            transcriptionSessionCreated,
             outputAudioBufferStarted,
             outputAudioBufferStopped,
             outputAudioBufferCleared,
@@ -1618,10 +1562,6 @@ private constructor(
                 "RealtimeServerEvent{responseOutputTextDone=$responseOutputTextDone}"
             sessionCreated != null -> "RealtimeServerEvent{sessionCreated=$sessionCreated}"
             sessionUpdated != null -> "RealtimeServerEvent{sessionUpdated=$sessionUpdated}"
-            transcriptionSessionUpdated != null ->
-                "RealtimeServerEvent{transcriptionSessionUpdated=$transcriptionSessionUpdated}"
-            transcriptionSessionCreated != null ->
-                "RealtimeServerEvent{transcriptionSessionCreated=$transcriptionSessionCreated}"
             outputAudioBufferStarted != null ->
                 "RealtimeServerEvent{outputAudioBufferStarted=$outputAudioBufferStarted}"
             outputAudioBufferStopped != null ->
@@ -1955,21 +1895,6 @@ private constructor(
         @JvmStatic
         fun ofSessionUpdated(sessionUpdated: SessionUpdatedEvent) =
             RealtimeServerEvent(sessionUpdated = sessionUpdated)
-
-        /**
-         * Returned when a transcription session is updated with a `transcription_session.update`
-         * event, unless there is an error.
-         */
-        @JvmStatic
-        fun ofTranscriptionSessionUpdated(
-            transcriptionSessionUpdated: TranscriptionSessionUpdatedEvent
-        ) = RealtimeServerEvent(transcriptionSessionUpdated = transcriptionSessionUpdated)
-
-        /** Returned when a transcription session is created. */
-        @JvmStatic
-        fun ofTranscriptionSessionCreated(
-            transcriptionSessionCreated: TranscriptionSessionCreated
-        ) = RealtimeServerEvent(transcriptionSessionCreated = transcriptionSessionCreated)
 
         /**
          * **WebRTC Only:** Emitted when the server begins streaming audio to the client. This event
@@ -2328,19 +2253,6 @@ private constructor(
         fun visitSessionUpdated(sessionUpdated: SessionUpdatedEvent): T
 
         /**
-         * Returned when a transcription session is updated with a `transcription_session.update`
-         * event, unless there is an error.
-         */
-        fun visitTranscriptionSessionUpdated(
-            transcriptionSessionUpdated: TranscriptionSessionUpdatedEvent
-        ): T
-
-        /** Returned when a transcription session is created. */
-        fun visitTranscriptionSessionCreated(
-            transcriptionSessionCreated: TranscriptionSessionCreated
-        ): T
-
-        /**
          * **WebRTC Only:** Emitted when the server begins streaming audio to the client. This event
          * is emitted after an audio content part has been added (`response.content_part.added`) to
          * the response.
@@ -2652,18 +2564,6 @@ private constructor(
                         RealtimeServerEvent(sessionUpdated = it, _json = json)
                     } ?: RealtimeServerEvent(_json = json)
                 }
-                "transcription_session.updated" -> {
-                    return tryDeserialize(node, jacksonTypeRef<TranscriptionSessionUpdatedEvent>())
-                        ?.let {
-                            RealtimeServerEvent(transcriptionSessionUpdated = it, _json = json)
-                        } ?: RealtimeServerEvent(_json = json)
-                }
-                "transcription_session.created" -> {
-                    return tryDeserialize(node, jacksonTypeRef<TranscriptionSessionCreated>())
-                        ?.let {
-                            RealtimeServerEvent(transcriptionSessionCreated = it, _json = json)
-                        } ?: RealtimeServerEvent(_json = json)
-                }
                 "output_audio_buffer.started" -> {
                     return tryDeserialize(node, jacksonTypeRef<OutputAudioBufferStarted>())?.let {
                         RealtimeServerEvent(outputAudioBufferStarted = it, _json = json)
@@ -2817,10 +2717,6 @@ private constructor(
                     generator.writeObject(value.responseOutputTextDone)
                 value.sessionCreated != null -> generator.writeObject(value.sessionCreated)
                 value.sessionUpdated != null -> generator.writeObject(value.sessionUpdated)
-                value.transcriptionSessionUpdated != null ->
-                    generator.writeObject(value.transcriptionSessionUpdated)
-                value.transcriptionSessionCreated != null ->
-                    generator.writeObject(value.transcriptionSessionCreated)
                 value.outputAudioBufferStarted != null ->
                     generator.writeObject(value.outputAudioBufferStarted)
                 value.outputAudioBufferStopped != null ->
