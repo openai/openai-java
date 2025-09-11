@@ -41,19 +41,13 @@ internal class SessionUpdateEventTest {
                                                 .build()
                                         )
                                         .turnDetection(
-                                            RealtimeAudioInputTurnDetection.builder()
+                                            RealtimeAudioInputTurnDetection.ServerVad.builder()
                                                 .createResponse(true)
-                                                .eagerness(
-                                                    RealtimeAudioInputTurnDetection.Eagerness.LOW
-                                                )
-                                                .idleTimeoutMs(0L)
+                                                .idleTimeoutMs(5000L)
                                                 .interruptResponse(true)
                                                 .prefixPaddingMs(0L)
                                                 .silenceDurationMs(0L)
                                                 .threshold(0.0)
-                                                .type(
-                                                    RealtimeAudioInputTurnDetection.Type.SERVER_VAD
-                                                )
                                                 .build()
                                         )
                                         .build()
@@ -134,19 +128,13 @@ internal class SessionUpdateEventTest {
                                                 .build()
                                         )
                                         .turnDetection(
-                                            RealtimeAudioInputTurnDetection.builder()
+                                            RealtimeAudioInputTurnDetection.ServerVad.builder()
                                                 .createResponse(true)
-                                                .eagerness(
-                                                    RealtimeAudioInputTurnDetection.Eagerness.LOW
-                                                )
-                                                .idleTimeoutMs(0L)
+                                                .idleTimeoutMs(5000L)
                                                 .interruptResponse(true)
                                                 .prefixPaddingMs(0L)
                                                 .silenceDurationMs(0L)
                                                 .threshold(0.0)
-                                                .type(
-                                                    RealtimeAudioInputTurnDetection.Type.SERVER_VAD
-                                                )
                                                 .build()
                                         )
                                         .build()
@@ -231,19 +219,13 @@ internal class SessionUpdateEventTest {
                                                 .build()
                                         )
                                         .turnDetection(
-                                            RealtimeAudioInputTurnDetection.builder()
+                                            RealtimeAudioInputTurnDetection.ServerVad.builder()
                                                 .createResponse(true)
-                                                .eagerness(
-                                                    RealtimeAudioInputTurnDetection.Eagerness.LOW
-                                                )
-                                                .idleTimeoutMs(0L)
+                                                .idleTimeoutMs(5000L)
                                                 .interruptResponse(true)
                                                 .prefixPaddingMs(0L)
                                                 .silenceDurationMs(0L)
                                                 .threshold(0.0)
-                                                .type(
-                                                    RealtimeAudioInputTurnDetection.Type.SERVER_VAD
-                                                )
                                                 .build()
                                         )
                                         .build()

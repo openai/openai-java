@@ -3,56 +3,51 @@
 package com.openai.models.realtime
 
 import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
+import com.openai.core.JsonValue
 import com.openai.core.jsonMapper
+import com.openai.errors.OpenAIInvalidDataException
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.EnumSource
 
 internal class RealtimeTranscriptionSessionAudioInputTurnDetectionTest {
 
     @Test
-    fun create() {
-        val realtimeTranscriptionSessionAudioInputTurnDetection =
-            RealtimeTranscriptionSessionAudioInputTurnDetection.builder()
+    fun ofServerVad() {
+        val serverVad =
+            RealtimeTranscriptionSessionAudioInputTurnDetection.ServerVad.builder()
                 .createResponse(true)
-                .eagerness(RealtimeTranscriptionSessionAudioInputTurnDetection.Eagerness.LOW)
-                .idleTimeoutMs(0L)
+                .idleTimeoutMs(5000L)
                 .interruptResponse(true)
                 .prefixPaddingMs(0L)
                 .silenceDurationMs(0L)
                 .threshold(0.0)
-                .type(RealtimeTranscriptionSessionAudioInputTurnDetection.Type.SERVER_VAD)
                 .build()
 
-        assertThat(realtimeTranscriptionSessionAudioInputTurnDetection.createResponse())
-            .contains(true)
-        assertThat(realtimeTranscriptionSessionAudioInputTurnDetection.eagerness())
-            .contains(RealtimeTranscriptionSessionAudioInputTurnDetection.Eagerness.LOW)
-        assertThat(realtimeTranscriptionSessionAudioInputTurnDetection.idleTimeoutMs()).contains(0L)
-        assertThat(realtimeTranscriptionSessionAudioInputTurnDetection.interruptResponse())
-            .contains(true)
-        assertThat(realtimeTranscriptionSessionAudioInputTurnDetection.prefixPaddingMs())
-            .contains(0L)
-        assertThat(realtimeTranscriptionSessionAudioInputTurnDetection.silenceDurationMs())
-            .contains(0L)
-        assertThat(realtimeTranscriptionSessionAudioInputTurnDetection.threshold()).contains(0.0)
-        assertThat(realtimeTranscriptionSessionAudioInputTurnDetection.type())
-            .contains(RealtimeTranscriptionSessionAudioInputTurnDetection.Type.SERVER_VAD)
+        val realtimeTranscriptionSessionAudioInputTurnDetection =
+            RealtimeTranscriptionSessionAudioInputTurnDetection.ofServerVad(serverVad)
+
+        assertThat(realtimeTranscriptionSessionAudioInputTurnDetection.serverVad())
+            .contains(serverVad)
+        assertThat(realtimeTranscriptionSessionAudioInputTurnDetection.semanticVad()).isEmpty
     }
 
     @Test
-    fun roundtrip() {
+    fun ofServerVadRoundtrip() {
         val jsonMapper = jsonMapper()
         val realtimeTranscriptionSessionAudioInputTurnDetection =
-            RealtimeTranscriptionSessionAudioInputTurnDetection.builder()
-                .createResponse(true)
-                .eagerness(RealtimeTranscriptionSessionAudioInputTurnDetection.Eagerness.LOW)
-                .idleTimeoutMs(0L)
-                .interruptResponse(true)
-                .prefixPaddingMs(0L)
-                .silenceDurationMs(0L)
-                .threshold(0.0)
-                .type(RealtimeTranscriptionSessionAudioInputTurnDetection.Type.SERVER_VAD)
-                .build()
+            RealtimeTranscriptionSessionAudioInputTurnDetection.ofServerVad(
+                RealtimeTranscriptionSessionAudioInputTurnDetection.ServerVad.builder()
+                    .createResponse(true)
+                    .idleTimeoutMs(5000L)
+                    .interruptResponse(true)
+                    .prefixPaddingMs(0L)
+                    .silenceDurationMs(0L)
+                    .threshold(0.0)
+                    .build()
+            )
 
         val roundtrippedRealtimeTranscriptionSessionAudioInputTurnDetection =
             jsonMapper.readValue(
@@ -62,5 +57,74 @@ internal class RealtimeTranscriptionSessionAudioInputTurnDetectionTest {
 
         assertThat(roundtrippedRealtimeTranscriptionSessionAudioInputTurnDetection)
             .isEqualTo(realtimeTranscriptionSessionAudioInputTurnDetection)
+    }
+
+    @Test
+    fun ofSemanticVad() {
+        val semanticVad =
+            RealtimeTranscriptionSessionAudioInputTurnDetection.SemanticVad.builder()
+                .createResponse(true)
+                .eagerness(
+                    RealtimeTranscriptionSessionAudioInputTurnDetection.SemanticVad.Eagerness.LOW
+                )
+                .interruptResponse(true)
+                .build()
+
+        val realtimeTranscriptionSessionAudioInputTurnDetection =
+            RealtimeTranscriptionSessionAudioInputTurnDetection.ofSemanticVad(semanticVad)
+
+        assertThat(realtimeTranscriptionSessionAudioInputTurnDetection.serverVad()).isEmpty
+        assertThat(realtimeTranscriptionSessionAudioInputTurnDetection.semanticVad())
+            .contains(semanticVad)
+    }
+
+    @Test
+    fun ofSemanticVadRoundtrip() {
+        val jsonMapper = jsonMapper()
+        val realtimeTranscriptionSessionAudioInputTurnDetection =
+            RealtimeTranscriptionSessionAudioInputTurnDetection.ofSemanticVad(
+                RealtimeTranscriptionSessionAudioInputTurnDetection.SemanticVad.builder()
+                    .createResponse(true)
+                    .eagerness(
+                        RealtimeTranscriptionSessionAudioInputTurnDetection.SemanticVad.Eagerness
+                            .LOW
+                    )
+                    .interruptResponse(true)
+                    .build()
+            )
+
+        val roundtrippedRealtimeTranscriptionSessionAudioInputTurnDetection =
+            jsonMapper.readValue(
+                jsonMapper.writeValueAsString(realtimeTranscriptionSessionAudioInputTurnDetection),
+                jacksonTypeRef<RealtimeTranscriptionSessionAudioInputTurnDetection>(),
+            )
+
+        assertThat(roundtrippedRealtimeTranscriptionSessionAudioInputTurnDetection)
+            .isEqualTo(realtimeTranscriptionSessionAudioInputTurnDetection)
+    }
+
+    enum class IncompatibleJsonShapeTestCase(val value: JsonValue) {
+        BOOLEAN(JsonValue.from(false)),
+        STRING(JsonValue.from("invalid")),
+        INTEGER(JsonValue.from(-1)),
+        FLOAT(JsonValue.from(3.14)),
+        ARRAY(JsonValue.from(listOf("invalid", "array"))),
+    }
+
+    @ParameterizedTest
+    @EnumSource
+    fun incompatibleJsonShapeDeserializesToUnknown(testCase: IncompatibleJsonShapeTestCase) {
+        val realtimeTranscriptionSessionAudioInputTurnDetection =
+            jsonMapper()
+                .convertValue(
+                    testCase.value,
+                    jacksonTypeRef<RealtimeTranscriptionSessionAudioInputTurnDetection>(),
+                )
+
+        val e =
+            assertThrows<OpenAIInvalidDataException> {
+                realtimeTranscriptionSessionAudioInputTurnDetection.validate()
+            }
+        assertThat(e).hasMessageStartingWith("Unknown ")
     }
 }
