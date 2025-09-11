@@ -1,0 +1,39 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+cd "$(dirname "$0")/.."
+
+if [ $# -eq 0 ]; then
+    echo "Usage: $0 <file-with-paths> [additional-formatter-args...]"
+    echo "The file should contain one file path per line"
+    exit 1
+fi
+
+FILE_LIST="$1"
+
+if [ ! -f "$FILE_LIST" ]; then
+    echo "Error: File '$FILE_LIST' not found"
+    exit 1
+fi
+
+if command -v ktfmt-fast-format &> /dev/null; then
+    echo "Error: ktfmt-fast-format not found"
+    exit 1
+fi
+
+# Process Kotlin files
+kt_files=$(grep -E '\.kt$' "$FILE_LIST" | grep -v './buildSrc/build/')
+kt_files=$(grep -E '\.kt$' "$FILE_LIST" | grep -v './buildSrc/build/')
+echo "==> Found $(echo "$kt_files" | wc -l) Kotlin files:"
+
+if [[ -n "$kt_files" ]]; then
+    echo "==> will format Kotlin files"
+    echo "$kt_files" | tr '\n' '\0' | xargs -0 ktfmt --kotlinlang-style "$@"
+else
+    echo "No Kotlin files to format -- expected outcome during incremental formatting"
+fi
+
+# TODO(mbudayr): support palantir-java-format
+# Process Java files
+# grep -E '\.java$' "$FILE_LIST" | grep -v './buildSrc/build/' | tr '\n' '\0' | xargs -0 -r palantir-java-format --palantir --replace "$@"
