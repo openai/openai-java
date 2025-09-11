@@ -32,17 +32,13 @@ internal class RealtimeTranscriptionSessionAudioInputTest {
                         .build()
                 )
                 .turnDetection(
-                    RealtimeTranscriptionSessionAudioInputTurnDetection.builder()
+                    RealtimeTranscriptionSessionAudioInputTurnDetection.ServerVad.builder()
                         .createResponse(true)
-                        .eagerness(
-                            RealtimeTranscriptionSessionAudioInputTurnDetection.Eagerness.LOW
-                        )
-                        .idleTimeoutMs(0L)
+                        .idleTimeoutMs(5000L)
                         .interruptResponse(true)
                         .prefixPaddingMs(0L)
                         .silenceDurationMs(0L)
                         .threshold(0.0)
-                        .type(RealtimeTranscriptionSessionAudioInputTurnDetection.Type.SERVER_VAD)
                         .build()
                 )
                 .build()
@@ -72,16 +68,16 @@ internal class RealtimeTranscriptionSessionAudioInputTest {
             )
         assertThat(realtimeTranscriptionSessionAudioInput.turnDetection())
             .contains(
-                RealtimeTranscriptionSessionAudioInputTurnDetection.builder()
-                    .createResponse(true)
-                    .eagerness(RealtimeTranscriptionSessionAudioInputTurnDetection.Eagerness.LOW)
-                    .idleTimeoutMs(0L)
-                    .interruptResponse(true)
-                    .prefixPaddingMs(0L)
-                    .silenceDurationMs(0L)
-                    .threshold(0.0)
-                    .type(RealtimeTranscriptionSessionAudioInputTurnDetection.Type.SERVER_VAD)
-                    .build()
+                RealtimeTranscriptionSessionAudioInputTurnDetection.ofServerVad(
+                    RealtimeTranscriptionSessionAudioInputTurnDetection.ServerVad.builder()
+                        .createResponse(true)
+                        .idleTimeoutMs(5000L)
+                        .interruptResponse(true)
+                        .prefixPaddingMs(0L)
+                        .silenceDurationMs(0L)
+                        .threshold(0.0)
+                        .build()
+                )
             )
     }
 
@@ -109,17 +105,13 @@ internal class RealtimeTranscriptionSessionAudioInputTest {
                         .build()
                 )
                 .turnDetection(
-                    RealtimeTranscriptionSessionAudioInputTurnDetection.builder()
+                    RealtimeTranscriptionSessionAudioInputTurnDetection.ServerVad.builder()
                         .createResponse(true)
-                        .eagerness(
-                            RealtimeTranscriptionSessionAudioInputTurnDetection.Eagerness.LOW
-                        )
-                        .idleTimeoutMs(0L)
+                        .idleTimeoutMs(5000L)
                         .interruptResponse(true)
                         .prefixPaddingMs(0L)
                         .silenceDurationMs(0L)
                         .threshold(0.0)
-                        .type(RealtimeTranscriptionSessionAudioInputTurnDetection.Type.SERVER_VAD)
                         .build()
                 )
                 .build()

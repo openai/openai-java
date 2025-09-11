@@ -50,23 +50,14 @@ internal class RealtimeSessionCreateResponseTest {
                                 )
                                 .turnDetection(
                                     RealtimeSessionCreateResponse.Audio.Input.TurnDetection
+                                        .ServerVad
                                         .builder()
                                         .createResponse(true)
-                                        .eagerness(
-                                            RealtimeSessionCreateResponse.Audio.Input.TurnDetection
-                                                .Eagerness
-                                                .LOW
-                                        )
-                                        .idleTimeoutMs(0L)
+                                        .idleTimeoutMs(5000L)
                                         .interruptResponse(true)
                                         .prefixPaddingMs(0L)
                                         .silenceDurationMs(0L)
                                         .threshold(0.0)
-                                        .type(
-                                            RealtimeSessionCreateResponse.Audio.Input.TurnDetection
-                                                .Type
-                                                .SERVER_VAD
-                                        )
                                         .build()
                                 )
                                 .build()
@@ -142,22 +133,14 @@ internal class RealtimeSessionCreateResponseTest {
                                     .build()
                             )
                             .turnDetection(
-                                RealtimeSessionCreateResponse.Audio.Input.TurnDetection.builder()
+                                RealtimeSessionCreateResponse.Audio.Input.TurnDetection.ServerVad
+                                    .builder()
                                     .createResponse(true)
-                                    .eagerness(
-                                        RealtimeSessionCreateResponse.Audio.Input.TurnDetection
-                                            .Eagerness
-                                            .LOW
-                                    )
-                                    .idleTimeoutMs(0L)
+                                    .idleTimeoutMs(5000L)
                                     .interruptResponse(true)
                                     .prefixPaddingMs(0L)
                                     .silenceDurationMs(0L)
                                     .threshold(0.0)
-                                    .type(
-                                        RealtimeSessionCreateResponse.Audio.Input.TurnDetection.Type
-                                            .SERVER_VAD
-                                    )
                                     .build()
                             )
                             .build()
@@ -253,23 +236,14 @@ internal class RealtimeSessionCreateResponseTest {
                                 )
                                 .turnDetection(
                                     RealtimeSessionCreateResponse.Audio.Input.TurnDetection
+                                        .ServerVad
                                         .builder()
                                         .createResponse(true)
-                                        .eagerness(
-                                            RealtimeSessionCreateResponse.Audio.Input.TurnDetection
-                                                .Eagerness
-                                                .LOW
-                                        )
-                                        .idleTimeoutMs(0L)
+                                        .idleTimeoutMs(5000L)
                                         .interruptResponse(true)
                                         .prefixPaddingMs(0L)
                                         .silenceDurationMs(0L)
                                         .threshold(0.0)
-                                        .type(
-                                            RealtimeSessionCreateResponse.Audio.Input.TurnDetection
-                                                .Type
-                                                .SERVER_VAD
-                                        )
                                         .build()
                                 )
                                 .build()

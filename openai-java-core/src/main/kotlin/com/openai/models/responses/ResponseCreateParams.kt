@@ -336,10 +336,10 @@ private constructor(
 
     /**
      * The truncation strategy to use for the model response.
-     * - `auto`: If the context of this response and previous ones exceeds the model's context
-     *   window size, the model will truncate the response to fit the context window by dropping
-     *   input items in the middle of the conversation.
-     * - `disabled` (default): If a model response will exceed the context window size for a model,
+     * - `auto`: If the input to this Response exceeds the model's context window size, the model
+     *   will truncate the response to fit the context window by dropping items from the beginning
+     *   of the conversation.
+     * - `disabled` (default): If the input size will exceed the context window size for a model,
      *   the request will fail with a 400 error.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
@@ -1303,10 +1303,10 @@ private constructor(
 
         /**
          * The truncation strategy to use for the model response.
-         * - `auto`: If the context of this response and previous ones exceeds the model's context
-         *   window size, the model will truncate the response to fit the context window by dropping
-         *   input items in the middle of the conversation.
-         * - `disabled` (default): If a model response will exceed the context window size for a
+         * - `auto`: If the input to this Response exceeds the model's context window size, the
+         *   model will truncate the response to fit the context window by dropping items from the
+         *   beginning of the conversation.
+         * - `disabled` (default): If the input size will exceed the context window size for a
          *   model, the request will fail with a 400 error.
          */
         fun truncation(truncation: Truncation?) = apply { body.truncation(truncation) }
@@ -1894,10 +1894,10 @@ private constructor(
 
         /**
          * The truncation strategy to use for the model response.
-         * - `auto`: If the context of this response and previous ones exceeds the model's context
-         *   window size, the model will truncate the response to fit the context window by dropping
-         *   input items in the middle of the conversation.
-         * - `disabled` (default): If a model response will exceed the context window size for a
+         * - `auto`: If the input to this Response exceeds the model's context window size, the
+         *   model will truncate the response to fit the context window by dropping items from the
+         *   beginning of the conversation.
+         * - `disabled` (default): If the input size will exceed the context window size for a
          *   model, the request will fail with a 400 error.
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
@@ -2974,10 +2974,10 @@ private constructor(
 
             /**
              * The truncation strategy to use for the model response.
-             * - `auto`: If the context of this response and previous ones exceeds the model's
-             *   context window size, the model will truncate the response to fit the context window
-             *   by dropping input items in the middle of the conversation.
-             * - `disabled` (default): If a model response will exceed the context window size for a
+             * - `auto`: If the input to this Response exceeds the model's context window size, the
+             *   model will truncate the response to fit the context window by dropping items from
+             *   the beginning of the conversation.
+             * - `disabled` (default): If the input size will exceed the context window size for a
              *   model, the request will fail with a 400 error.
              */
             fun truncation(truncation: Truncation?) = truncation(JsonField.ofNullable(truncation))
@@ -4402,10 +4402,10 @@ private constructor(
 
     /**
      * The truncation strategy to use for the model response.
-     * - `auto`: If the context of this response and previous ones exceeds the model's context
-     *   window size, the model will truncate the response to fit the context window by dropping
-     *   input items in the middle of the conversation.
-     * - `disabled` (default): If a model response will exceed the context window size for a model,
+     * - `auto`: If the input to this Response exceeds the model's context window size, the model
+     *   will truncate the response to fit the context window by dropping items from the beginning
+     *   of the conversation.
+     * - `disabled` (default): If the input size will exceed the context window size for a model,
      *   the request will fail with a 400 error.
      */
     class Truncation @JsonCreator private constructor(private val value: JsonField<String>) : Enum {

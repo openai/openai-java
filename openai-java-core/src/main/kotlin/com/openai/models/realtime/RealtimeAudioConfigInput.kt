@@ -76,14 +76,16 @@ private constructor(
 
     /**
      * Configuration for turn detection, ether Server VAD or Semantic VAD. This can be set to `null`
-     * to turn off, in which case the client must manually trigger model response. Server VAD means
-     * that the model will detect the start and end of speech based on audio volume and respond at
-     * the end of user speech. Semantic VAD is more advanced and uses a turn detection model (in
-     * conjunction with VAD) to semantically estimate whether the user has finished speaking, then
-     * dynamically sets a timeout based on this probability. For example, if user audio trails off
-     * with "uhhm", the model will score a low probability of turn end and wait longer for the user
-     * to continue speaking. This can be useful for more natural conversations, but may have a
-     * higher latency.
+     * to turn off, in which case the client must manually trigger model response.
+     *
+     * Server VAD means that the model will detect the start and end of speech based on audio volume
+     * and respond at the end of user speech.
+     *
+     * Semantic VAD is more advanced and uses a turn detection model (in conjunction with VAD) to
+     * semantically estimate whether the user has finished speaking, then dynamically sets a timeout
+     * based on this probability. For example, if user audio trails off with "uhhm", the model will
+     * score a low probability of turn end and wait longer for the user to continue speaking. This
+     * can be useful for more natural conversations, but may have a higher latency.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -230,17 +232,24 @@ private constructor(
 
         /**
          * Configuration for turn detection, ether Server VAD or Semantic VAD. This can be set to
-         * `null` to turn off, in which case the client must manually trigger model response. Server
-         * VAD means that the model will detect the start and end of speech based on audio volume
-         * and respond at the end of user speech. Semantic VAD is more advanced and uses a turn
-         * detection model (in conjunction with VAD) to semantically estimate whether the user has
-         * finished speaking, then dynamically sets a timeout based on this probability. For
-         * example, if user audio trails off with "uhhm", the model will score a low probability of
-         * turn end and wait longer for the user to continue speaking. This can be useful for more
-         * natural conversations, but may have a higher latency.
+         * `null` to turn off, in which case the client must manually trigger model response.
+         *
+         * Server VAD means that the model will detect the start and end of speech based on audio
+         * volume and respond at the end of user speech.
+         *
+         * Semantic VAD is more advanced and uses a turn detection model (in conjunction with VAD)
+         * to semantically estimate whether the user has finished speaking, then dynamically sets a
+         * timeout based on this probability. For example, if user audio trails off with "uhhm", the
+         * model will score a low probability of turn end and wait longer for the user to continue
+         * speaking. This can be useful for more natural conversations, but may have a higher
+         * latency.
          */
-        fun turnDetection(turnDetection: RealtimeAudioInputTurnDetection) =
-            turnDetection(JsonField.of(turnDetection))
+        fun turnDetection(turnDetection: RealtimeAudioInputTurnDetection?) =
+            turnDetection(JsonField.ofNullable(turnDetection))
+
+        /** Alias for calling [Builder.turnDetection] with `turnDetection.orElse(null)`. */
+        fun turnDetection(turnDetection: Optional<RealtimeAudioInputTurnDetection>) =
+            turnDetection(turnDetection.getOrNull())
 
         /**
          * Sets [Builder.turnDetection] to an arbitrary JSON value.
@@ -252,6 +261,20 @@ private constructor(
         fun turnDetection(turnDetection: JsonField<RealtimeAudioInputTurnDetection>) = apply {
             this.turnDetection = turnDetection
         }
+
+        /**
+         * Alias for calling [turnDetection] with
+         * `RealtimeAudioInputTurnDetection.ofServerVad(serverVad)`.
+         */
+        fun turnDetection(serverVad: RealtimeAudioInputTurnDetection.ServerVad) =
+            turnDetection(RealtimeAudioInputTurnDetection.ofServerVad(serverVad))
+
+        /**
+         * Alias for calling [turnDetection] with
+         * `RealtimeAudioInputTurnDetection.ofSemanticVad(semanticVad)`.
+         */
+        fun turnDetection(semanticVad: RealtimeAudioInputTurnDetection.SemanticVad) =
+            turnDetection(RealtimeAudioInputTurnDetection.ofSemanticVad(semanticVad))
 
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
             this.additionalProperties.clear()
