@@ -1,5 +1,17 @@
 # Changelog
 
+## 3.5.2 (2025-09-12)
+
+Full Changelog: [v3.5.1...v3.5.2](https://github.com/openai/openai-java/compare/v3.5.1...v3.5.2)
+
+### Chores
+
+* **api:** Minor docs and type updates for realtime ([63ad148](https://github.com/openai/openai-java/commit/63ad148f1f998de1c9d66021037d7d5e04615022))
+* improve formatter performance ([be0acb7](https://github.com/openai/openai-java/commit/be0acb7a7779c4df1bf3e4678c40f4bd6d2b50d6))
+* **internal:** codegen related update ([18a0e64](https://github.com/openai/openai-java/commit/18a0e645fd3ea28957e55633f2a271287b56c312))
+* **internal:** codegen related update ([ab87009](https://github.com/openai/openai-java/commit/ab870095a749e00bcc2e864476553f782d098525))
+* **internal:** remove redundant deserializer symbols ([8c63a5b](https://github.com/openai/openai-java/commit/8c63a5b4983039ace361ab08b89a0c227a88cf90))
+
 ## 3.5.1 (2025-09-10)
 
 Full Changelog: [v3.5.0...v3.5.1](https://github.com/openai/openai-java/compare/v3.5.0...v3.5.1)
