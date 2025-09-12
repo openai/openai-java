@@ -17,7 +17,7 @@ if [ ! -f "$FILE_LIST" ]; then
     exit 1
 fi
 
-if command -v ktfmt-fast-format &> /dev/null; then
+if ! command -v ktfmt-fast-format &> /dev/null; then
     echo "Error: ktfmt-fast-format not found"
     exit 1
 fi
