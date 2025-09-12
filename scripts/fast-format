@@ -29,7 +29,7 @@ echo "==> Found $(echo "$kt_files" | wc -l) Kotlin files:"
 
 if [[ -n "$kt_files" ]]; then
     echo "==> will format Kotlin files"
-    echo "$kt_files" | tr '\n' '\0' | xargs -0 ktfmt --kotlinlang-style "$@"
+    echo "$kt_files" | tr '\n' '\0' | xargs -0 ktfmt-fast-format --kotlinlang-style "$@"
 else
     echo "No Kotlin files to format -- expected outcome during incremental formatting"
 fi
