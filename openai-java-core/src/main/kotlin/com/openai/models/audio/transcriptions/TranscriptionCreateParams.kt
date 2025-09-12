@@ -7,13 +7,8 @@ import com.fasterxml.jackson.annotation.JsonAnySetter
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.core.JsonGenerator
-import com.fasterxml.jackson.core.ObjectCodec
-import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.SerializerProvider
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import com.fasterxml.jackson.databind.annotation.JsonSerialize
-import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
-import com.openai.core.BaseDeserializer
 import com.openai.core.BaseSerializer
 import com.openai.core.Enum
 import com.openai.core.ExcludeMissing
@@ -21,7 +16,6 @@ import com.openai.core.JsonField
 import com.openai.core.JsonValue
 import com.openai.core.MultipartField
 import com.openai.core.Params
-import com.openai.core.allMaxBy
 import com.openai.core.checkKnown
 import com.openai.core.checkRequired
 import com.openai.core.getOrThrow
@@ -1220,7 +1214,6 @@ private constructor(
      * object can be provided to tweak VAD detection parameters manually. If unset, the audio is
      * transcribed as a single block.
      */
-    @JsonDeserialize(using = ChunkingStrategy.Deserializer::class)
     @JsonSerialize(using = ChunkingStrategy.Serializer::class)
     class ChunkingStrategy
     private constructor(
@@ -1285,25 +1278,6 @@ private constructor(
                 false
             }
 
-        /**
-         * Returns a score indicating how many valid values are contained in this object
-         * recursively.
-         *
-         * Used for best match union deserialization.
-         */
-        @JvmSynthetic
-        internal fun validity(): Int =
-            accept(
-                object : Visitor<Int> {
-                    override fun visitAuto(auto: JsonValue) =
-                        auto.let { if (it == JsonValue.from("auto")) 1 else 0 }
-
-                    override fun visitVadConfig(vadConfig: VadConfig) = 1
-
-                    override fun unknown(json: JsonValue?) = 0
-                }
-            )
-
         override fun equals(other: Any?): Boolean {
             if (this === other) {
                 return true
@@ -1358,36 +1332,6 @@ private constructor(
              */
             fun unknown(json: JsonValue?): T {
                 throw OpenAIInvalidDataException("Unknown ChunkingStrategy: $json")
-            }
-        }
-
-        internal class Deserializer : BaseDeserializer<ChunkingStrategy>(ChunkingStrategy::class) {
-
-            override fun ObjectCodec.deserialize(node: JsonNode): ChunkingStrategy {
-                val json = JsonValue.fromJsonNode(node)
-
-                val bestMatches =
-                    sequenceOf(
-                            tryDeserialize(node, jacksonTypeRef<JsonValue>())
-                                ?.let { ChunkingStrategy(auto = it, _json = json) }
-                                ?.takeIf { it.isValid() },
-                            tryDeserialize(node, jacksonTypeRef<VadConfig>())?.let {
-                                ChunkingStrategy(vadConfig = it, _json = json)
-                            },
-                        )
-                        .filterNotNull()
-                        .allMaxBy { it.validity() }
-                        .toList()
-                return when (bestMatches.size) {
-                    // This can happen if what we're deserializing is completely incompatible with
-                    // all the possible variants (e.g. deserializing from array).
-                    0 -> ChunkingStrategy(_json = json)
-                    1 -> bestMatches.single()
-                    // If there's more than one match with the highest validity, then use the first
-                    // completely valid match, or simply the first match if none are completely
-                    // valid.
-                    else -> bestMatches.firstOrNull { it.isValid() } ?: bestMatches.first()
-                }
             }
         }
 
