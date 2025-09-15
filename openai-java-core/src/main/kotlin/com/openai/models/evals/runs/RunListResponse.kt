@@ -2725,8 +2725,11 @@ private constructor(
                     fun model(): Optional<String> = model.getOptional("model")
 
                     /**
-                     * Optional reasoning effort parameter. This is a query parameter used to select
-                     * responses.
+                     * Constrains effort on reasoning for
+                     * [reasoning models](https://platform.openai.com/docs/guides/reasoning).
+                     * Currently supported values are `minimal`, `low`, `medium`, and `high`.
+                     * Reducing reasoning effort can result in faster responses and fewer tokens
+                     * used on reasoning in a response.
                      *
                      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type
                      *   (e.g. if the server responded with an unexpected value).
@@ -3037,8 +3040,11 @@ private constructor(
                         fun model(model: JsonField<String>) = apply { this.model = model }
 
                         /**
-                         * Optional reasoning effort parameter. This is a query parameter used to
-                         * select responses.
+                         * Constrains effort on reasoning for
+                         * [reasoning models](https://platform.openai.com/docs/guides/reasoning).
+                         * Currently supported values are `minimal`, `low`, `medium`, and `high`.
+                         * Reducing reasoning effort can result in faster responses and fewer tokens
+                         * used on reasoning in a response.
                          */
                         fun reasoningEffort(reasoningEffort: ReasoningEffort?) =
                             reasoningEffort(JsonField.ofNullable(reasoningEffort))
