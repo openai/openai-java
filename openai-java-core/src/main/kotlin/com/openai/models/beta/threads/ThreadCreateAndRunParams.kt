@@ -4449,20 +4449,20 @@ private constructor(
                          * Alias for calling [chunkingStrategy] with
                          * `ChunkingStrategy.ofStatic(static_)`.
                          */
-                        fun chunkingStrategy(static_: ChunkingStrategy.StaticObject) =
+                        fun chunkingStrategy(static_: ChunkingStrategy.Static) =
                             chunkingStrategy(ChunkingStrategy.ofStatic(static_))
 
                         /**
                          * Alias for calling [chunkingStrategy] with the following:
                          * ```java
-                         * ChunkingStrategy.StaticObject.builder()
+                         * ChunkingStrategy.Static.builder()
                          *     .static_(static_)
                          *     .build()
                          * ```
                          */
-                        fun staticChunkingStrategy(static_: ChunkingStrategy.StaticObject.Static) =
+                        fun staticChunkingStrategy(static_: ChunkingStrategy.Static.InnerStatic) =
                             chunkingStrategy(
-                                ChunkingStrategy.StaticObject.builder().static_(static_).build()
+                                ChunkingStrategy.Static.builder().static_(static_).build()
                             )
 
                         /**
@@ -4598,7 +4598,7 @@ private constructor(
                     class ChunkingStrategy
                     private constructor(
                         private val auto: JsonValue? = null,
-                        private val static_: StaticObject? = null,
+                        private val static_: Static? = null,
                         private val _json: JsonValue? = null,
                     ) {
 
@@ -4608,7 +4608,7 @@ private constructor(
                          */
                         fun auto(): Optional<JsonValue> = Optional.ofNullable(auto)
 
-                        fun static_(): Optional<StaticObject> = Optional.ofNullable(static_)
+                        fun static_(): Optional<Static> = Optional.ofNullable(static_)
 
                         fun isAuto(): Boolean = auto != null
 
@@ -4620,7 +4620,7 @@ private constructor(
                          */
                         fun asAuto(): JsonValue = auto.getOrThrow("auto")
 
-                        fun asStatic(): StaticObject = static_.getOrThrow("static_")
+                        fun asStatic(): Static = static_.getOrThrow("static_")
 
                         fun _json(): Optional<JsonValue> = Optional.ofNullable(_json)
 
@@ -4650,7 +4650,7 @@ private constructor(
                                         }
                                     }
 
-                                    override fun visitStatic(static_: StaticObject) {
+                                    override fun visitStatic(static_: Static) {
                                         static_.validate()
                                     }
                                 }
@@ -4682,8 +4682,7 @@ private constructor(
                                             else 0
                                         }
 
-                                    override fun visitStatic(static_: StaticObject) =
-                                        static_.validity()
+                                    override fun visitStatic(static_: Static) = static_.validity()
 
                                     override fun unknown(json: JsonValue?) = 0
                                 }
@@ -4720,8 +4719,7 @@ private constructor(
                                 ChunkingStrategy(auto = JsonValue.from(mapOf("type" to "auto")))
 
                             @JvmStatic
-                            fun ofStatic(static_: StaticObject) =
-                                ChunkingStrategy(static_ = static_)
+                            fun ofStatic(static_: Static) = ChunkingStrategy(static_ = static_)
                         }
 
                         /**
@@ -4736,7 +4734,7 @@ private constructor(
                              */
                             fun visitAuto(auto: JsonValue): T
 
-                            fun visitStatic(static_: StaticObject): T
+                            fun visitStatic(static_: Static): T
 
                             /**
                              * Maps an unknown variant of [ChunkingStrategy] to a value of type [T].
@@ -4774,9 +4772,9 @@ private constructor(
                                             ?: ChunkingStrategy(_json = json)
                                     }
                                     "static" -> {
-                                        return tryDeserialize(node, jacksonTypeRef<StaticObject>())
-                                            ?.let { ChunkingStrategy(static_ = it, _json = json) }
-                                            ?: ChunkingStrategy(_json = json)
+                                        return tryDeserialize(node, jacksonTypeRef<Static>())?.let {
+                                            ChunkingStrategy(static_ = it, _json = json)
+                                        } ?: ChunkingStrategy(_json = json)
                                     }
                                 }
 
@@ -4801,9 +4799,9 @@ private constructor(
                             }
                         }
 
-                        class StaticObject
+                        class Static
                         private constructor(
-                            private val static_: JsonField<Static>,
+                            private val static_: JsonField<InnerStatic>,
                             private val type: JsonValue,
                             private val additionalProperties: MutableMap<String, JsonValue>,
                         ) {
@@ -4812,7 +4810,7 @@ private constructor(
                             private constructor(
                                 @JsonProperty("static")
                                 @ExcludeMissing
-                                static_: JsonField<Static> = JsonMissing.of(),
+                                static_: JsonField<InnerStatic> = JsonMissing.of(),
                                 @JsonProperty("type")
                                 @ExcludeMissing
                                 type: JsonValue = JsonMissing.of(),
@@ -4823,7 +4821,7 @@ private constructor(
                              *   unexpected type or is unexpectedly missing or null (e.g. if the
                              *   server responded with an unexpected value).
                              */
-                            fun static_(): Static = static_.getRequired("static")
+                            fun static_(): InnerStatic = static_.getRequired("static")
 
                             /**
                              * Always `static`.
@@ -4846,7 +4844,7 @@ private constructor(
                              */
                             @JsonProperty("static")
                             @ExcludeMissing
-                            fun _static_(): JsonField<Static> = static_
+                            fun _static_(): JsonField<InnerStatic> = static_
 
                             @JsonAnySetter
                             private fun putAdditionalProperty(key: String, value: JsonValue) {
@@ -4864,7 +4862,7 @@ private constructor(
 
                                 /**
                                  * Returns a mutable builder for constructing an instance of
-                                 * [StaticObject].
+                                 * [Static].
                                  *
                                  * The following fields are required:
                                  * ```java
@@ -4874,32 +4872,32 @@ private constructor(
                                 @JvmStatic fun builder() = Builder()
                             }
 
-                            /** A builder for [StaticObject]. */
+                            /** A builder for [Static]. */
                             class Builder internal constructor() {
 
-                                private var static_: JsonField<Static>? = null
+                                private var static_: JsonField<InnerStatic>? = null
                                 private var type: JsonValue = JsonValue.from("static")
                                 private var additionalProperties: MutableMap<String, JsonValue> =
                                     mutableMapOf()
 
                                 @JvmSynthetic
-                                internal fun from(staticObject: StaticObject) = apply {
-                                    static_ = staticObject.static_
-                                    type = staticObject.type
+                                internal fun from(static_: Static) = apply {
+                                    this.static_ = static_.static_
+                                    type = static_.type
                                     additionalProperties =
-                                        staticObject.additionalProperties.toMutableMap()
+                                        static_.additionalProperties.toMutableMap()
                                 }
 
-                                fun static_(static_: Static) = static_(JsonField.of(static_))
+                                fun static_(static_: InnerStatic) = static_(JsonField.of(static_))
 
                                 /**
                                  * Sets [Builder.static_] to an arbitrary JSON value.
                                  *
                                  * You should usually call [Builder.static_] with a well-typed
-                                 * [Static] value instead. This method is primarily for setting the
-                                 * field to an undocumented or not yet supported value.
+                                 * [InnerStatic] value instead. This method is primarily for setting
+                                 * the field to an undocumented or not yet supported value.
                                  */
-                                fun static_(static_: JsonField<Static>) = apply {
+                                fun static_(static_: JsonField<InnerStatic>) = apply {
                                     this.static_ = static_
                                 }
 
@@ -4941,7 +4939,7 @@ private constructor(
                                 }
 
                                 /**
-                                 * Returns an immutable instance of [StaticObject].
+                                 * Returns an immutable instance of [Static].
                                  *
                                  * Further updates to this [Builder] will not mutate the returned
                                  * instance.
@@ -4953,8 +4951,8 @@ private constructor(
                                  *
                                  * @throws IllegalStateException if any required field is unset.
                                  */
-                                fun build(): StaticObject =
-                                    StaticObject(
+                                fun build(): Static =
+                                    Static(
                                         checkRequired("static_", static_),
                                         type,
                                         additionalProperties.toMutableMap(),
@@ -4963,7 +4961,7 @@ private constructor(
 
                             private var validated: Boolean = false
 
-                            fun validate(): StaticObject = apply {
+                            fun validate(): Static = apply {
                                 if (validated) {
                                     return@apply
                                 }
@@ -4998,7 +4996,7 @@ private constructor(
                                 (static_.asKnown().getOrNull()?.validity() ?: 0) +
                                     type.let { if (it == JsonValue.from("static")) 1 else 0 }
 
-                            class Static
+                            class InnerStatic
                             private constructor(
                                 private val chunkOverlapTokens: JsonField<Long>,
                                 private val maxChunkSizeTokens: JsonField<Long>,
@@ -5077,7 +5075,7 @@ private constructor(
 
                                     /**
                                      * Returns a mutable builder for constructing an instance of
-                                     * [Static].
+                                     * [InnerStatic].
                                      *
                                      * The following fields are required:
                                      * ```java
@@ -5088,7 +5086,7 @@ private constructor(
                                     @JvmStatic fun builder() = Builder()
                                 }
 
-                                /** A builder for [Static]. */
+                                /** A builder for [InnerStatic]. */
                                 class Builder internal constructor() {
 
                                     private var chunkOverlapTokens: JsonField<Long>? = null
@@ -5098,11 +5096,11 @@ private constructor(
                                         mutableMapOf()
 
                                     @JvmSynthetic
-                                    internal fun from(static_: Static) = apply {
-                                        chunkOverlapTokens = static_.chunkOverlapTokens
-                                        maxChunkSizeTokens = static_.maxChunkSizeTokens
+                                    internal fun from(innerStatic: InnerStatic) = apply {
+                                        chunkOverlapTokens = innerStatic.chunkOverlapTokens
+                                        maxChunkSizeTokens = innerStatic.maxChunkSizeTokens
                                         additionalProperties =
-                                            static_.additionalProperties.toMutableMap()
+                                            innerStatic.additionalProperties.toMutableMap()
                                     }
 
                                     /**
@@ -5176,7 +5174,7 @@ private constructor(
                                     }
 
                                     /**
-                                     * Returns an immutable instance of [Static].
+                                     * Returns an immutable instance of [InnerStatic].
                                      *
                                      * Further updates to this [Builder] will not mutate the
                                      * returned instance.
@@ -5189,8 +5187,8 @@ private constructor(
                                      *
                                      * @throws IllegalStateException if any required field is unset.
                                      */
-                                    fun build(): Static =
-                                        Static(
+                                    fun build(): InnerStatic =
+                                        InnerStatic(
                                             checkRequired("chunkOverlapTokens", chunkOverlapTokens),
                                             checkRequired("maxChunkSizeTokens", maxChunkSizeTokens),
                                             additionalProperties.toMutableMap(),
@@ -5199,7 +5197,7 @@ private constructor(
 
                                 private var validated: Boolean = false
 
-                                fun validate(): Static = apply {
+                                fun validate(): InnerStatic = apply {
                                     if (validated) {
                                         return@apply
                                     }
@@ -5233,7 +5231,7 @@ private constructor(
                                         return true
                                     }
 
-                                    return other is Static &&
+                                    return other is InnerStatic &&
                                         chunkOverlapTokens == other.chunkOverlapTokens &&
                                         maxChunkSizeTokens == other.maxChunkSizeTokens &&
                                         additionalProperties == other.additionalProperties
@@ -5250,7 +5248,7 @@ private constructor(
                                 override fun hashCode(): Int = hashCode
 
                                 override fun toString() =
-                                    "Static{chunkOverlapTokens=$chunkOverlapTokens, maxChunkSizeTokens=$maxChunkSizeTokens, additionalProperties=$additionalProperties}"
+                                    "InnerStatic{chunkOverlapTokens=$chunkOverlapTokens, maxChunkSizeTokens=$maxChunkSizeTokens, additionalProperties=$additionalProperties}"
                             }
 
                             override fun equals(other: Any?): Boolean {
@@ -5258,7 +5256,7 @@ private constructor(
                                     return true
                                 }
 
-                                return other is StaticObject &&
+                                return other is Static &&
                                     static_ == other.static_ &&
                                     type == other.type &&
                                     additionalProperties == other.additionalProperties
@@ -5271,7 +5269,7 @@ private constructor(
                             override fun hashCode(): Int = hashCode
 
                             override fun toString() =
-                                "StaticObject{static_=$static_, type=$type, additionalProperties=$additionalProperties}"
+                                "Static{static_=$static_, type=$type, additionalProperties=$additionalProperties}"
                         }
                     }
 
