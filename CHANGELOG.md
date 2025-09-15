@@ -1,5 +1,18 @@
 # Changelog
 
+## 3.5.3 (2025-09-15)
+
+Full Changelog: [v3.5.2...v3.5.3](https://github.com/openai/openai-java/compare/v3.5.2...v3.5.3)
+
+### Bug Fixes
+
+* **client:** incorrect `getPackageVersion` impl ([51a0e59](https://github.com/openai/openai-java/commit/51a0e594bc1a2b42f5e5fde308f8608eb65796df))
+
+
+### Chores
+
+* **api:** docs and spec refactoring ([02720cf](https://github.com/openai/openai-java/commit/02720cf00517f874eb76b5f3b31c040361da8720))
+
 ## 3.5.2 (2025-09-12)
 
 Full Changelog: [v3.5.1...v3.5.2](https://github.com/openai/openai-java/compare/v3.5.1...v3.5.2)
