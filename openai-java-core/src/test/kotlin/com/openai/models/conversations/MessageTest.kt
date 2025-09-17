@@ -4,6 +4,7 @@ package com.openai.models.conversations
 
 import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
 import com.openai.core.jsonMapper
+import com.openai.models.responses.ResponseInputText
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
@@ -22,7 +23,7 @@ internal class MessageTest {
         assertThat(message.id()).isEqualTo("id")
         assertThat(message.content())
             .containsExactly(
-                Message.Content.ofInputText(InputTextContent.builder().text("text").build())
+                Message.Content.ofInputText(ResponseInputText.builder().text("text").build())
             )
         assertThat(message.role()).isEqualTo(Message.Role.UNKNOWN)
         assertThat(message.status()).isEqualTo(Message.Status.IN_PROGRESS)

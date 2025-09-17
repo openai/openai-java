@@ -15,6 +15,7 @@ import com.openai.errors.OpenAIInvalidDataException
 import java.util.Collections
 import java.util.Objects
 
+/** A text content. */
 class TextContent
 private constructor(
     private val text: JsonField<String>,

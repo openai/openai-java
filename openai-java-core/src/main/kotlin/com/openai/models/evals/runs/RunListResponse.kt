@@ -5979,6 +5979,7 @@ private constructor(
             class SamplingParams
             private constructor(
                 private val maxCompletionTokens: JsonField<Long>,
+                private val reasoningEffort: JsonField<ReasoningEffort>,
                 private val seed: JsonField<Long>,
                 private val temperature: JsonField<Double>,
                 private val text: JsonField<Text>,
@@ -5992,6 +5993,9 @@ private constructor(
                     @JsonProperty("max_completion_tokens")
                     @ExcludeMissing
                     maxCompletionTokens: JsonField<Long> = JsonMissing.of(),
+                    @JsonProperty("reasoning_effort")
+                    @ExcludeMissing
+                    reasoningEffort: JsonField<ReasoningEffort> = JsonMissing.of(),
                     @JsonProperty("seed") @ExcludeMissing seed: JsonField<Long> = JsonMissing.of(),
                     @JsonProperty("temperature")
                     @ExcludeMissing
@@ -6003,7 +6007,16 @@ private constructor(
                     @JsonProperty("top_p")
                     @ExcludeMissing
                     topP: JsonField<Double> = JsonMissing.of(),
-                ) : this(maxCompletionTokens, seed, temperature, text, tools, topP, mutableMapOf())
+                ) : this(
+                    maxCompletionTokens,
+                    reasoningEffort,
+                    seed,
+                    temperature,
+                    text,
+                    tools,
+                    topP,
+                    mutableMapOf(),
+                )
 
                 /**
                  * The maximum number of tokens in the generated output.
@@ -6013,6 +6026,19 @@ private constructor(
                  */
                 fun maxCompletionTokens(): Optional<Long> =
                     maxCompletionTokens.getOptional("max_completion_tokens")
+
+                /**
+                 * Constrains effort on reasoning for
+                 * [reasoning models](https://platform.openai.com/docs/guides/reasoning). Currently
+                 * supported values are `minimal`, `low`, `medium`, and `high`. Reducing reasoning
+                 * effort can result in faster responses and fewer tokens used on reasoning in a
+                 * response.
+                 *
+                 * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g.
+                 *   if the server responded with an unexpected value).
+                 */
+                fun reasoningEffort(): Optional<ReasoningEffort> =
+                    reasoningEffort.getOptional("reasoning_effort")
 
                 /**
                  * A seed value to initialize the randomness, during sampling.
@@ -6080,6 +6106,16 @@ private constructor(
                 fun _maxCompletionTokens(): JsonField<Long> = maxCompletionTokens
 
                 /**
+                 * Returns the raw JSON value of [reasoningEffort].
+                 *
+                 * Unlike [reasoningEffort], this method doesn't throw if the JSON field has an
+                 * unexpected type.
+                 */
+                @JsonProperty("reasoning_effort")
+                @ExcludeMissing
+                fun _reasoningEffort(): JsonField<ReasoningEffort> = reasoningEffort
+
+                /**
                  * Returns the raw JSON value of [seed].
                  *
                  * Unlike [seed], this method doesn't throw if the JSON field has an unexpected
@@ -6145,6 +6181,7 @@ private constructor(
                 class Builder internal constructor() {
 
                     private var maxCompletionTokens: JsonField<Long> = JsonMissing.of()
+                    private var reasoningEffort: JsonField<ReasoningEffort> = JsonMissing.of()
                     private var seed: JsonField<Long> = JsonMissing.of()
                     private var temperature: JsonField<Double> = JsonMissing.of()
                     private var text: JsonField<Text> = JsonMissing.of()
@@ -6155,6 +6192,7 @@ private constructor(
                     @JvmSynthetic
                     internal fun from(samplingParams: SamplingParams) = apply {
                         maxCompletionTokens = samplingParams.maxCompletionTokens
+                        reasoningEffort = samplingParams.reasoningEffort
                         seed = samplingParams.seed
                         temperature = samplingParams.temperature
                         text = samplingParams.text
@@ -6176,6 +6214,34 @@ private constructor(
                      */
                     fun maxCompletionTokens(maxCompletionTokens: JsonField<Long>) = apply {
                         this.maxCompletionTokens = maxCompletionTokens
+                    }
+
+                    /**
+                     * Constrains effort on reasoning for
+                     * [reasoning models](https://platform.openai.com/docs/guides/reasoning).
+                     * Currently supported values are `minimal`, `low`, `medium`, and `high`.
+                     * Reducing reasoning effort can result in faster responses and fewer tokens
+                     * used on reasoning in a response.
+                     */
+                    fun reasoningEffort(reasoningEffort: ReasoningEffort?) =
+                        reasoningEffort(JsonField.ofNullable(reasoningEffort))
+
+                    /**
+                     * Alias for calling [Builder.reasoningEffort] with
+                     * `reasoningEffort.orElse(null)`.
+                     */
+                    fun reasoningEffort(reasoningEffort: Optional<ReasoningEffort>) =
+                        reasoningEffort(reasoningEffort.getOrNull())
+
+                    /**
+                     * Sets [Builder.reasoningEffort] to an arbitrary JSON value.
+                     *
+                     * You should usually call [Builder.reasoningEffort] with a well-typed
+                     * [ReasoningEffort] value instead. This method is primarily for setting the
+                     * field to an undocumented or not yet supported value.
+                     */
+                    fun reasoningEffort(reasoningEffort: JsonField<ReasoningEffort>) = apply {
+                        this.reasoningEffort = reasoningEffort
                     }
 
                     /** A seed value to initialize the randomness, during sampling. */
@@ -6414,6 +6480,7 @@ private constructor(
                     fun build(): SamplingParams =
                         SamplingParams(
                             maxCompletionTokens,
+                            reasoningEffort,
                             seed,
                             temperature,
                             text,
@@ -6431,6 +6498,7 @@ private constructor(
                     }
 
                     maxCompletionTokens()
+                    reasoningEffort().ifPresent { it.validate() }
                     seed()
                     temperature()
                     text().ifPresent { it.validate() }
@@ -6456,6 +6524,7 @@ private constructor(
                 @JvmSynthetic
                 internal fun validity(): Int =
                     (if (maxCompletionTokens.asKnown().isPresent) 1 else 0) +
+                        (reasoningEffort.asKnown().getOrNull()?.validity() ?: 0) +
                         (if (seed.asKnown().isPresent) 1 else 0) +
                         (if (temperature.asKnown().isPresent) 1 else 0) +
                         (text.asKnown().getOrNull()?.validity() ?: 0) +
@@ -6674,6 +6743,7 @@ private constructor(
 
                     return other is SamplingParams &&
                         maxCompletionTokens == other.maxCompletionTokens &&
+                        reasoningEffort == other.reasoningEffort &&
                         seed == other.seed &&
                         temperature == other.temperature &&
                         text == other.text &&
@@ -6685,6 +6755,7 @@ private constructor(
                 private val hashCode: Int by lazy {
                     Objects.hash(
                         maxCompletionTokens,
+                        reasoningEffort,
                         seed,
                         temperature,
                         text,
@@ -6697,7 +6768,7 @@ private constructor(
                 override fun hashCode(): Int = hashCode
 
                 override fun toString() =
-                    "SamplingParams{maxCompletionTokens=$maxCompletionTokens, seed=$seed, temperature=$temperature, text=$text, tools=$tools, topP=$topP, additionalProperties=$additionalProperties}"
+                    "SamplingParams{maxCompletionTokens=$maxCompletionTokens, reasoningEffort=$reasoningEffort, seed=$seed, temperature=$temperature, text=$text, tools=$tools, topP=$topP, additionalProperties=$additionalProperties}"
             }
 
             override fun equals(other: Any?): Boolean {

@@ -7,6 +7,7 @@ import com.openai.core.JsonValue
 import com.openai.core.jsonMapper
 import com.openai.models.FunctionDefinition
 import com.openai.models.FunctionParameters
+import com.openai.models.ReasoningEffort
 import com.openai.models.ResponseFormatText
 import com.openai.models.chat.completions.ChatCompletionFunctionTool
 import com.openai.models.responses.EasyInputMessage
@@ -54,6 +55,7 @@ internal class CreateEvalCompletionsRunDataSourceTest {
                 .samplingParams(
                     CreateEvalCompletionsRunDataSource.SamplingParams.builder()
                         .maxCompletionTokens(0L)
+                        .reasoningEffort(ReasoningEffort.MINIMAL)
                         .responseFormat(ResponseFormatText.builder().build())
                         .seed(0L)
                         .temperature(0.0)
@@ -124,6 +126,7 @@ internal class CreateEvalCompletionsRunDataSourceTest {
             .contains(
                 CreateEvalCompletionsRunDataSource.SamplingParams.builder()
                     .maxCompletionTokens(0L)
+                    .reasoningEffort(ReasoningEffort.MINIMAL)
                     .responseFormat(ResponseFormatText.builder().build())
                     .seed(0L)
                     .temperature(0.0)
@@ -188,6 +191,7 @@ internal class CreateEvalCompletionsRunDataSourceTest {
                 .samplingParams(
                     CreateEvalCompletionsRunDataSource.SamplingParams.builder()
                         .maxCompletionTokens(0L)
+                        .reasoningEffort(ReasoningEffort.MINIMAL)
                         .responseFormat(ResponseFormatText.builder().build())
                         .seed(0L)
                         .temperature(0.0)
