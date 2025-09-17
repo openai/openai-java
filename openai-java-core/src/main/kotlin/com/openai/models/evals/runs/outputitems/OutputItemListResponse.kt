@@ -122,7 +122,7 @@ private constructor(
     @JsonProperty("object") @ExcludeMissing fun _object_(): JsonValue = object_
 
     /**
-     * A list of results from the evaluation run.
+     * A list of grader results for this output item.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
      *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
@@ -361,7 +361,7 @@ private constructor(
          */
         fun object_(object_: JsonValue) = apply { this.object_ = object_ }
 
-        /** A list of results from the evaluation run. */
+        /** A list of grader results for this output item. */
         fun results(results: List<Result>) = results(JsonField.of(results))
 
         /**
@@ -625,35 +625,210 @@ private constructor(
         override fun toString() = "DatasourceItem{additionalProperties=$additionalProperties}"
     }
 
-    /** A result object. */
+    /** A single grader result for an evaluation run output item. */
     class Result
-    @JsonCreator
     private constructor(
-        @com.fasterxml.jackson.annotation.JsonValue
-        private val additionalProperties: Map<String, JsonValue>
+        private val name: JsonField<String>,
+        private val passed: JsonField<Boolean>,
+        private val score: JsonField<Double>,
+        private val sample: JsonField<Sample>,
+        private val type: JsonField<String>,
+        private val additionalProperties: MutableMap<String, JsonValue>,
     ) {
+
+        @JsonCreator
+        private constructor(
+            @JsonProperty("name") @ExcludeMissing name: JsonField<String> = JsonMissing.of(),
+            @JsonProperty("passed") @ExcludeMissing passed: JsonField<Boolean> = JsonMissing.of(),
+            @JsonProperty("score") @ExcludeMissing score: JsonField<Double> = JsonMissing.of(),
+            @JsonProperty("sample") @ExcludeMissing sample: JsonField<Sample> = JsonMissing.of(),
+            @JsonProperty("type") @ExcludeMissing type: JsonField<String> = JsonMissing.of(),
+        ) : this(name, passed, score, sample, type, mutableMapOf())
+
+        /**
+         * The name of the grader.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         */
+        fun name(): String = name.getRequired("name")
+
+        /**
+         * Whether the grader considered the output a pass.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         */
+        fun passed(): Boolean = passed.getRequired("passed")
+
+        /**
+         * The numeric score produced by the grader.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         */
+        fun score(): Double = score.getRequired("score")
+
+        /**
+         * Optional sample or intermediate data produced by the grader.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun sample(): Optional<Sample> = sample.getOptional("sample")
+
+        /**
+         * The grader type (for example, "string-check-grader").
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun type(): Optional<String> = type.getOptional("type")
+
+        /**
+         * Returns the raw JSON value of [name].
+         *
+         * Unlike [name], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("name") @ExcludeMissing fun _name(): JsonField<String> = name
+
+        /**
+         * Returns the raw JSON value of [passed].
+         *
+         * Unlike [passed], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("passed") @ExcludeMissing fun _passed(): JsonField<Boolean> = passed
+
+        /**
+         * Returns the raw JSON value of [score].
+         *
+         * Unlike [score], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("score") @ExcludeMissing fun _score(): JsonField<Double> = score
+
+        /**
+         * Returns the raw JSON value of [sample].
+         *
+         * Unlike [sample], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("sample") @ExcludeMissing fun _sample(): JsonField<Sample> = sample
+
+        /**
+         * Returns the raw JSON value of [type].
+         *
+         * Unlike [type], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<String> = type
+
+        @JsonAnySetter
+        private fun putAdditionalProperty(key: String, value: JsonValue) {
+            additionalProperties.put(key, value)
+        }
 
         @JsonAnyGetter
         @ExcludeMissing
-        fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
+        fun _additionalProperties(): Map<String, JsonValue> =
+            Collections.unmodifiableMap(additionalProperties)
 
         fun toBuilder() = Builder().from(this)
 
         companion object {
 
-            /** Returns a mutable builder for constructing an instance of [Result]. */
+            /**
+             * Returns a mutable builder for constructing an instance of [Result].
+             *
+             * The following fields are required:
+             * ```java
+             * .name()
+             * .passed()
+             * .score()
+             * ```
+             */
             @JvmStatic fun builder() = Builder()
         }
 
         /** A builder for [Result]. */
         class Builder internal constructor() {
 
+            private var name: JsonField<String>? = null
+            private var passed: JsonField<Boolean>? = null
+            private var score: JsonField<Double>? = null
+            private var sample: JsonField<Sample> = JsonMissing.of()
+            private var type: JsonField<String> = JsonMissing.of()
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
             @JvmSynthetic
             internal fun from(result: Result) = apply {
+                name = result.name
+                passed = result.passed
+                score = result.score
+                sample = result.sample
+                type = result.type
                 additionalProperties = result.additionalProperties.toMutableMap()
             }
+
+            /** The name of the grader. */
+            fun name(name: String) = name(JsonField.of(name))
+
+            /**
+             * Sets [Builder.name] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.name] with a well-typed [String] value instead. This
+             * method is primarily for setting the field to an undocumented or not yet supported
+             * value.
+             */
+            fun name(name: JsonField<String>) = apply { this.name = name }
+
+            /** Whether the grader considered the output a pass. */
+            fun passed(passed: Boolean) = passed(JsonField.of(passed))
+
+            /**
+             * Sets [Builder.passed] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.passed] with a well-typed [Boolean] value instead.
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun passed(passed: JsonField<Boolean>) = apply { this.passed = passed }
+
+            /** The numeric score produced by the grader. */
+            fun score(score: Double) = score(JsonField.of(score))
+
+            /**
+             * Sets [Builder.score] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.score] with a well-typed [Double] value instead.
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun score(score: JsonField<Double>) = apply { this.score = score }
+
+            /** Optional sample or intermediate data produced by the grader. */
+            fun sample(sample: Sample?) = sample(JsonField.ofNullable(sample))
+
+            /** Alias for calling [Builder.sample] with `sample.orElse(null)`. */
+            fun sample(sample: Optional<Sample>) = sample(sample.getOrNull())
+
+            /**
+             * Sets [Builder.sample] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.sample] with a well-typed [Sample] value instead.
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun sample(sample: JsonField<Sample>) = apply { this.sample = sample }
+
+            /** The grader type (for example, "string-check-grader"). */
+            fun type(type: String) = type(JsonField.of(type))
+
+            /**
+             * Sets [Builder.type] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.type] with a well-typed [String] value instead. This
+             * method is primarily for setting the field to an undocumented or not yet supported
+             * value.
+             */
+            fun type(type: JsonField<String>) = apply { this.type = type }
 
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.clear()
@@ -678,8 +853,25 @@ private constructor(
              * Returns an immutable instance of [Result].
              *
              * Further updates to this [Builder] will not mutate the returned instance.
+             *
+             * The following fields are required:
+             * ```java
+             * .name()
+             * .passed()
+             * .score()
+             * ```
+             *
+             * @throws IllegalStateException if any required field is unset.
              */
-            fun build(): Result = Result(additionalProperties.toImmutable())
+            fun build(): Result =
+                Result(
+                    checkRequired("name", name),
+                    checkRequired("passed", passed),
+                    checkRequired("score", score),
+                    sample,
+                    type,
+                    additionalProperties.toMutableMap(),
+                )
         }
 
         private var validated: Boolean = false
@@ -689,6 +881,11 @@ private constructor(
                 return@apply
             }
 
+            name()
+            passed()
+            score()
+            sample().ifPresent { it.validate() }
+            type()
             validated = true
         }
 
@@ -708,21 +905,137 @@ private constructor(
          */
         @JvmSynthetic
         internal fun validity(): Int =
-            additionalProperties.count { (_, value) -> !value.isNull() && !value.isMissing() }
+            (if (name.asKnown().isPresent) 1 else 0) +
+                (if (passed.asKnown().isPresent) 1 else 0) +
+                (if (score.asKnown().isPresent) 1 else 0) +
+                (sample.asKnown().getOrNull()?.validity() ?: 0) +
+                (if (type.asKnown().isPresent) 1 else 0)
+
+        /** Optional sample or intermediate data produced by the grader. */
+        class Sample
+        @JsonCreator
+        private constructor(
+            @com.fasterxml.jackson.annotation.JsonValue
+            private val additionalProperties: Map<String, JsonValue>
+        ) {
+
+            @JsonAnyGetter
+            @ExcludeMissing
+            fun _additionalProperties(): Map<String, JsonValue> = additionalProperties
+
+            fun toBuilder() = Builder().from(this)
+
+            companion object {
+
+                /** Returns a mutable builder for constructing an instance of [Sample]. */
+                @JvmStatic fun builder() = Builder()
+            }
+
+            /** A builder for [Sample]. */
+            class Builder internal constructor() {
+
+                private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
+
+                @JvmSynthetic
+                internal fun from(sample: Sample) = apply {
+                    additionalProperties = sample.additionalProperties.toMutableMap()
+                }
+
+                fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                    this.additionalProperties.clear()
+                    putAllAdditionalProperties(additionalProperties)
+                }
+
+                fun putAdditionalProperty(key: String, value: JsonValue) = apply {
+                    additionalProperties.put(key, value)
+                }
+
+                fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) =
+                    apply {
+                        this.additionalProperties.putAll(additionalProperties)
+                    }
+
+                fun removeAdditionalProperty(key: String) = apply {
+                    additionalProperties.remove(key)
+                }
+
+                fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                    keys.forEach(::removeAdditionalProperty)
+                }
+
+                /**
+                 * Returns an immutable instance of [Sample].
+                 *
+                 * Further updates to this [Builder] will not mutate the returned instance.
+                 */
+                fun build(): Sample = Sample(additionalProperties.toImmutable())
+            }
+
+            private var validated: Boolean = false
+
+            fun validate(): Sample = apply {
+                if (validated) {
+                    return@apply
+                }
+
+                validated = true
+            }
+
+            fun isValid(): Boolean =
+                try {
+                    validate()
+                    true
+                } catch (e: OpenAIInvalidDataException) {
+                    false
+                }
+
+            /**
+             * Returns a score indicating how many valid values are contained in this object
+             * recursively.
+             *
+             * Used for best match union deserialization.
+             */
+            @JvmSynthetic
+            internal fun validity(): Int =
+                additionalProperties.count { (_, value) -> !value.isNull() && !value.isMissing() }
+
+            override fun equals(other: Any?): Boolean {
+                if (this === other) {
+                    return true
+                }
+
+                return other is Sample && additionalProperties == other.additionalProperties
+            }
+
+            private val hashCode: Int by lazy { Objects.hash(additionalProperties) }
+
+            override fun hashCode(): Int = hashCode
+
+            override fun toString() = "Sample{additionalProperties=$additionalProperties}"
+        }
 
         override fun equals(other: Any?): Boolean {
             if (this === other) {
                 return true
             }
 
-            return other is Result && additionalProperties == other.additionalProperties
+            return other is Result &&
+                name == other.name &&
+                passed == other.passed &&
+                score == other.score &&
+                sample == other.sample &&
+                type == other.type &&
+                additionalProperties == other.additionalProperties
         }
 
-        private val hashCode: Int by lazy { Objects.hash(additionalProperties) }
+        private val hashCode: Int by lazy {
+            Objects.hash(name, passed, score, sample, type, additionalProperties)
+        }
 
         override fun hashCode(): Int = hashCode
 
-        override fun toString() = "Result{additionalProperties=$additionalProperties}"
+        override fun toString() =
+            "Result{name=$name, passed=$passed, score=$score, sample=$sample, type=$type, additionalProperties=$additionalProperties}"
     }
 
     /** A sample containing the input and output of the evaluation run. */

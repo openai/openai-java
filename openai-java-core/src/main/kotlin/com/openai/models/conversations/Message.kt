@@ -25,11 +25,17 @@ import com.openai.core.checkRequired
 import com.openai.core.getOrThrow
 import com.openai.core.toImmutable
 import com.openai.errors.OpenAIInvalidDataException
+import com.openai.models.responses.ResponseInputFile
+import com.openai.models.responses.ResponseInputImage
+import com.openai.models.responses.ResponseInputText
+import com.openai.models.responses.ResponseOutputRefusal
+import com.openai.models.responses.ResponseOutputText
 import java.util.Collections
 import java.util.Objects
 import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
+/** A message to or from the model. */
 class Message
 private constructor(
     private val id: JsonField<String>,
@@ -212,21 +218,22 @@ private constructor(
         }
 
         /** Alias for calling [addContent] with `Content.ofInputText(inputText)`. */
-        fun addContent(inputText: InputTextContent) = addContent(Content.ofInputText(inputText))
+        fun addContent(inputText: ResponseInputText) = addContent(Content.ofInputText(inputText))
 
         /**
          * Alias for calling [addContent] with the following:
          * ```java
-         * InputTextContent.builder()
+         * ResponseInputText.builder()
          *     .text(text)
          *     .build()
          * ```
          */
         fun addInputTextContent(text: String) =
-            addContent(InputTextContent.builder().text(text).build())
+            addContent(ResponseInputText.builder().text(text).build())
 
         /** Alias for calling [addContent] with `Content.ofOutputText(outputText)`. */
-        fun addContent(outputText: OutputTextContent) = addContent(Content.ofOutputText(outputText))
+        fun addContent(outputText: ResponseOutputText) =
+            addContent(Content.ofOutputText(outputText))
 
         /** Alias for calling [addContent] with `Content.ofText(text)`. */
         fun addContent(text: TextContent) = addContent(Content.ofText(text))
@@ -257,21 +264,33 @@ private constructor(
             addContent(SummaryTextContent.builder().text(text).build())
 
         /** Alias for calling [addContent] with `Content.ofRefusal(refusal)`. */
-        fun addContent(refusal: RefusalContent) = addContent(Content.ofRefusal(refusal))
+        fun addContent(refusal: ResponseOutputRefusal) = addContent(Content.ofRefusal(refusal))
 
         /**
          * Alias for calling [addContent] with the following:
          * ```java
-         * RefusalContent.builder()
+         * ResponseOutputRefusal.builder()
          *     .refusal(refusal)
          *     .build()
          * ```
          */
         fun addRefusalContent(refusal: String) =
-            addContent(RefusalContent.builder().refusal(refusal).build())
+            addContent(ResponseOutputRefusal.builder().refusal(refusal).build())
 
         /** Alias for calling [addContent] with `Content.ofInputImage(inputImage)`. */
-        fun addContent(inputImage: InputImageContent) = addContent(Content.ofInputImage(inputImage))
+        fun addContent(inputImage: ResponseInputImage) =
+            addContent(Content.ofInputImage(inputImage))
+
+        /**
+         * Alias for calling [addContent] with the following:
+         * ```java
+         * ResponseInputImage.builder()
+         *     .detail(detail)
+         *     .build()
+         * ```
+         */
+        fun addInputImageContent(detail: ResponseInputImage.Detail) =
+            addContent(ResponseInputImage.builder().detail(detail).build())
 
         /**
          * Alias for calling [addContent] with `Content.ofComputerScreenshot(computerScreenshot)`.
@@ -280,21 +299,7 @@ private constructor(
             addContent(Content.ofComputerScreenshot(computerScreenshot))
 
         /** Alias for calling [addContent] with `Content.ofInputFile(inputFile)`. */
-        fun addContent(inputFile: InputFileContent) = addContent(Content.ofInputFile(inputFile))
-
-        /**
-         * Alias for calling [addContent] with the following:
-         * ```java
-         * InputFileContent.builder()
-         *     .fileId(fileId)
-         *     .build()
-         * ```
-         */
-        fun addInputFileContent(fileId: String?) =
-            addContent(InputFileContent.builder().fileId(fileId).build())
-
-        /** Alias for calling [addInputFileContent] with `fileId.orElse(null)`. */
-        fun addInputFileContent(fileId: Optional<String>) = addInputFileContent(fileId.getOrNull())
+        fun addContent(inputFile: ResponseInputFile) = addContent(Content.ofInputFile(inputFile))
 
         /**
          * The role of the message. One of `unknown`, `user`, `assistant`, `system`, `critic`,
@@ -423,37 +428,49 @@ private constructor(
             (status.asKnown().getOrNull()?.validity() ?: 0) +
             type.let { if (it == JsonValue.from("message")) 1 else 0 }
 
+    /** A text input to the model. */
     @JsonDeserialize(using = Content.Deserializer::class)
     @JsonSerialize(using = Content.Serializer::class)
     class Content
     private constructor(
-        private val inputText: InputTextContent? = null,
-        private val outputText: OutputTextContent? = null,
+        private val inputText: ResponseInputText? = null,
+        private val outputText: ResponseOutputText? = null,
         private val text: TextContent? = null,
         private val summaryText: SummaryTextContent? = null,
-        private val refusal: RefusalContent? = null,
-        private val inputImage: InputImageContent? = null,
+        private val refusal: ResponseOutputRefusal? = null,
+        private val inputImage: ResponseInputImage? = null,
         private val computerScreenshot: ComputerScreenshotContent? = null,
-        private val inputFile: InputFileContent? = null,
+        private val inputFile: ResponseInputFile? = null,
         private val _json: JsonValue? = null,
     ) {
 
-        fun inputText(): Optional<InputTextContent> = Optional.ofNullable(inputText)
+        /** A text input to the model. */
+        fun inputText(): Optional<ResponseInputText> = Optional.ofNullable(inputText)
 
-        fun outputText(): Optional<OutputTextContent> = Optional.ofNullable(outputText)
+        /** A text output from the model. */
+        fun outputText(): Optional<ResponseOutputText> = Optional.ofNullable(outputText)
 
+        /** A text content. */
         fun text(): Optional<TextContent> = Optional.ofNullable(text)
 
+        /** A summary text from the model. */
         fun summaryText(): Optional<SummaryTextContent> = Optional.ofNullable(summaryText)
 
-        fun refusal(): Optional<RefusalContent> = Optional.ofNullable(refusal)
+        /** A refusal from the model. */
+        fun refusal(): Optional<ResponseOutputRefusal> = Optional.ofNullable(refusal)
 
-        fun inputImage(): Optional<InputImageContent> = Optional.ofNullable(inputImage)
+        /**
+         * An image input to the model. Learn about
+         * [image inputs](https://platform.openai.com/docs/guides/vision).
+         */
+        fun inputImage(): Optional<ResponseInputImage> = Optional.ofNullable(inputImage)
 
+        /** A screenshot of a computer. */
         fun computerScreenshot(): Optional<ComputerScreenshotContent> =
             Optional.ofNullable(computerScreenshot)
 
-        fun inputFile(): Optional<InputFileContent> = Optional.ofNullable(inputFile)
+        /** A file input to the model. */
+        fun inputFile(): Optional<ResponseInputFile> = Optional.ofNullable(inputFile)
 
         fun isInputText(): Boolean = inputText != null
 
@@ -471,22 +488,33 @@ private constructor(
 
         fun isInputFile(): Boolean = inputFile != null
 
-        fun asInputText(): InputTextContent = inputText.getOrThrow("inputText")
+        /** A text input to the model. */
+        fun asInputText(): ResponseInputText = inputText.getOrThrow("inputText")
 
-        fun asOutputText(): OutputTextContent = outputText.getOrThrow("outputText")
+        /** A text output from the model. */
+        fun asOutputText(): ResponseOutputText = outputText.getOrThrow("outputText")
 
+        /** A text content. */
         fun asText(): TextContent = text.getOrThrow("text")
 
+        /** A summary text from the model. */
         fun asSummaryText(): SummaryTextContent = summaryText.getOrThrow("summaryText")
 
-        fun asRefusal(): RefusalContent = refusal.getOrThrow("refusal")
+        /** A refusal from the model. */
+        fun asRefusal(): ResponseOutputRefusal = refusal.getOrThrow("refusal")
 
-        fun asInputImage(): InputImageContent = inputImage.getOrThrow("inputImage")
+        /**
+         * An image input to the model. Learn about
+         * [image inputs](https://platform.openai.com/docs/guides/vision).
+         */
+        fun asInputImage(): ResponseInputImage = inputImage.getOrThrow("inputImage")
 
+        /** A screenshot of a computer. */
         fun asComputerScreenshot(): ComputerScreenshotContent =
             computerScreenshot.getOrThrow("computerScreenshot")
 
-        fun asInputFile(): InputFileContent = inputFile.getOrThrow("inputFile")
+        /** A file input to the model. */
+        fun asInputFile(): ResponseInputFile = inputFile.getOrThrow("inputFile")
 
         fun _json(): Optional<JsonValue> = Optional.ofNullable(_json)
 
@@ -512,11 +540,11 @@ private constructor(
 
             accept(
                 object : Visitor<Unit> {
-                    override fun visitInputText(inputText: InputTextContent) {
+                    override fun visitInputText(inputText: ResponseInputText) {
                         inputText.validate()
                     }
 
-                    override fun visitOutputText(outputText: OutputTextContent) {
+                    override fun visitOutputText(outputText: ResponseOutputText) {
                         outputText.validate()
                     }
 
@@ -528,11 +556,11 @@ private constructor(
                         summaryText.validate()
                     }
 
-                    override fun visitRefusal(refusal: RefusalContent) {
+                    override fun visitRefusal(refusal: ResponseOutputRefusal) {
                         refusal.validate()
                     }
 
-                    override fun visitInputImage(inputImage: InputImageContent) {
+                    override fun visitInputImage(inputImage: ResponseInputImage) {
                         inputImage.validate()
                     }
 
@@ -542,7 +570,7 @@ private constructor(
                         computerScreenshot.validate()
                     }
 
-                    override fun visitInputFile(inputFile: InputFileContent) {
+                    override fun visitInputFile(inputFile: ResponseInputFile) {
                         inputFile.validate()
                     }
                 }
@@ -568,9 +596,9 @@ private constructor(
         internal fun validity(): Int =
             accept(
                 object : Visitor<Int> {
-                    override fun visitInputText(inputText: InputTextContent) = inputText.validity()
+                    override fun visitInputText(inputText: ResponseInputText) = inputText.validity()
 
-                    override fun visitOutputText(outputText: OutputTextContent) =
+                    override fun visitOutputText(outputText: ResponseOutputText) =
                         outputText.validity()
 
                     override fun visitText(text: TextContent) = text.validity()
@@ -578,16 +606,16 @@ private constructor(
                     override fun visitSummaryText(summaryText: SummaryTextContent) =
                         summaryText.validity()
 
-                    override fun visitRefusal(refusal: RefusalContent) = refusal.validity()
+                    override fun visitRefusal(refusal: ResponseOutputRefusal) = refusal.validity()
 
-                    override fun visitInputImage(inputImage: InputImageContent) =
+                    override fun visitInputImage(inputImage: ResponseInputImage) =
                         inputImage.validity()
 
                     override fun visitComputerScreenshot(
                         computerScreenshot: ComputerScreenshotContent
                     ) = computerScreenshot.validity()
 
-                    override fun visitInputFile(inputFile: InputFileContent) = inputFile.validity()
+                    override fun visitInputFile(inputFile: ResponseInputFile) = inputFile.validity()
 
                     override fun unknown(json: JsonValue?) = 0
                 }
@@ -637,26 +665,39 @@ private constructor(
 
         companion object {
 
-            @JvmStatic fun ofInputText(inputText: InputTextContent) = Content(inputText = inputText)
-
+            /** A text input to the model. */
             @JvmStatic
-            fun ofOutputText(outputText: OutputTextContent) = Content(outputText = outputText)
+            fun ofInputText(inputText: ResponseInputText) = Content(inputText = inputText)
 
+            /** A text output from the model. */
+            @JvmStatic
+            fun ofOutputText(outputText: ResponseOutputText) = Content(outputText = outputText)
+
+            /** A text content. */
             @JvmStatic fun ofText(text: TextContent) = Content(text = text)
 
+            /** A summary text from the model. */
             @JvmStatic
             fun ofSummaryText(summaryText: SummaryTextContent) = Content(summaryText = summaryText)
 
-            @JvmStatic fun ofRefusal(refusal: RefusalContent) = Content(refusal = refusal)
+            /** A refusal from the model. */
+            @JvmStatic fun ofRefusal(refusal: ResponseOutputRefusal) = Content(refusal = refusal)
 
+            /**
+             * An image input to the model. Learn about
+             * [image inputs](https://platform.openai.com/docs/guides/vision).
+             */
             @JvmStatic
-            fun ofInputImage(inputImage: InputImageContent) = Content(inputImage = inputImage)
+            fun ofInputImage(inputImage: ResponseInputImage) = Content(inputImage = inputImage)
 
+            /** A screenshot of a computer. */
             @JvmStatic
             fun ofComputerScreenshot(computerScreenshot: ComputerScreenshotContent) =
                 Content(computerScreenshot = computerScreenshot)
 
-            @JvmStatic fun ofInputFile(inputFile: InputFileContent) = Content(inputFile = inputFile)
+            /** A file input to the model. */
+            @JvmStatic
+            fun ofInputFile(inputFile: ResponseInputFile) = Content(inputFile = inputFile)
         }
 
         /**
@@ -664,21 +705,32 @@ private constructor(
          */
         interface Visitor<out T> {
 
-            fun visitInputText(inputText: InputTextContent): T
+            /** A text input to the model. */
+            fun visitInputText(inputText: ResponseInputText): T
 
-            fun visitOutputText(outputText: OutputTextContent): T
+            /** A text output from the model. */
+            fun visitOutputText(outputText: ResponseOutputText): T
 
+            /** A text content. */
             fun visitText(text: TextContent): T
 
+            /** A summary text from the model. */
             fun visitSummaryText(summaryText: SummaryTextContent): T
 
-            fun visitRefusal(refusal: RefusalContent): T
+            /** A refusal from the model. */
+            fun visitRefusal(refusal: ResponseOutputRefusal): T
 
-            fun visitInputImage(inputImage: InputImageContent): T
+            /**
+             * An image input to the model. Learn about
+             * [image inputs](https://platform.openai.com/docs/guides/vision).
+             */
+            fun visitInputImage(inputImage: ResponseInputImage): T
 
+            /** A screenshot of a computer. */
             fun visitComputerScreenshot(computerScreenshot: ComputerScreenshotContent): T
 
-            fun visitInputFile(inputFile: InputFileContent): T
+            /** A file input to the model. */
+            fun visitInputFile(inputFile: ResponseInputFile): T
 
             /**
              * Maps an unknown variant of [Content] to a value of type [T].
@@ -703,12 +755,12 @@ private constructor(
 
                 when (type) {
                     "input_text" -> {
-                        return tryDeserialize(node, jacksonTypeRef<InputTextContent>())?.let {
+                        return tryDeserialize(node, jacksonTypeRef<ResponseInputText>())?.let {
                             Content(inputText = it, _json = json)
                         } ?: Content(_json = json)
                     }
                     "output_text" -> {
-                        return tryDeserialize(node, jacksonTypeRef<OutputTextContent>())?.let {
+                        return tryDeserialize(node, jacksonTypeRef<ResponseOutputText>())?.let {
                             Content(outputText = it, _json = json)
                         } ?: Content(_json = json)
                     }
@@ -723,12 +775,12 @@ private constructor(
                         } ?: Content(_json = json)
                     }
                     "refusal" -> {
-                        return tryDeserialize(node, jacksonTypeRef<RefusalContent>())?.let {
+                        return tryDeserialize(node, jacksonTypeRef<ResponseOutputRefusal>())?.let {
                             Content(refusal = it, _json = json)
                         } ?: Content(_json = json)
                     }
                     "input_image" -> {
-                        return tryDeserialize(node, jacksonTypeRef<InputImageContent>())?.let {
+                        return tryDeserialize(node, jacksonTypeRef<ResponseInputImage>())?.let {
                             Content(inputImage = it, _json = json)
                         } ?: Content(_json = json)
                     }
@@ -738,7 +790,7 @@ private constructor(
                             ?: Content(_json = json)
                     }
                     "input_file" -> {
-                        return tryDeserialize(node, jacksonTypeRef<InputFileContent>())?.let {
+                        return tryDeserialize(node, jacksonTypeRef<ResponseInputFile>())?.let {
                             Content(inputFile = it, _json = json)
                         } ?: Content(_json = json)
                     }
