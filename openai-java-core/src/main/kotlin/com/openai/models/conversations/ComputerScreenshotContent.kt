@@ -17,6 +17,7 @@ import java.util.Objects
 import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
+/** A screenshot of a computer. */
 class ComputerScreenshotContent
 private constructor(
     private val fileId: JsonField<String>,

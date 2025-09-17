@@ -71,6 +71,7 @@ private constructor(
     private val _json: JsonValue? = null,
 ) {
 
+    /** A message to or from the model. */
     fun message(): Optional<Message> = Optional.ofNullable(message)
 
     /**
@@ -186,6 +187,7 @@ private constructor(
 
     fun isCustomToolCallOutput(): Boolean = customToolCallOutput != null
 
+    /** A message to or from the model. */
     fun asMessage(): Message = message.getOrThrow("message")
 
     /**
@@ -538,6 +540,7 @@ private constructor(
 
     companion object {
 
+        /** A message to or from the model. */
         @JvmStatic fun ofMessage(message: Message) = ConversationItem(message = message)
 
         /**
@@ -648,6 +651,7 @@ private constructor(
      */
     interface Visitor<out T> {
 
+        /** A message to or from the model. */
         fun visitMessage(message: Message): T
 
         /**

@@ -2491,7 +2491,7 @@ private constructor(
             private val name: JsonField<String>,
             private val type: JsonValue,
             private val range: JsonField<List<Double>>,
-            private val samplingParams: JsonValue,
+            private val samplingParams: JsonField<ScoreModelGrader.SamplingParams>,
             private val passThreshold: JsonField<Double>,
             private val additionalProperties: MutableMap<String, JsonValue>,
         ) {
@@ -2509,7 +2509,7 @@ private constructor(
                 range: JsonField<List<Double>> = JsonMissing.of(),
                 @JsonProperty("sampling_params")
                 @ExcludeMissing
-                samplingParams: JsonValue = JsonMissing.of(),
+                samplingParams: JsonField<ScoreModelGrader.SamplingParams> = JsonMissing.of(),
                 @JsonProperty("pass_threshold")
                 @ExcludeMissing
                 passThreshold: JsonField<Double> = JsonMissing.of(),
@@ -2573,10 +2573,14 @@ private constructor(
              */
             fun range(): Optional<List<Double>> = range.getOptional("range")
 
-            /** The sampling parameters for the model. */
-            @JsonProperty("sampling_params")
-            @ExcludeMissing
-            fun _samplingParams(): JsonValue = samplingParams
+            /**
+             * The sampling parameters for the model.
+             *
+             * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if
+             *   the server responded with an unexpected value).
+             */
+            fun samplingParams(): Optional<ScoreModelGrader.SamplingParams> =
+                samplingParams.getOptional("sampling_params")
 
             /**
              * The threshold for the score.
@@ -2615,6 +2619,16 @@ private constructor(
              * Unlike [range], this method doesn't throw if the JSON field has an unexpected type.
              */
             @JsonProperty("range") @ExcludeMissing fun _range(): JsonField<List<Double>> = range
+
+            /**
+             * Returns the raw JSON value of [samplingParams].
+             *
+             * Unlike [samplingParams], this method doesn't throw if the JSON field has an
+             * unexpected type.
+             */
+            @JsonProperty("sampling_params")
+            @ExcludeMissing
+            fun _samplingParams(): JsonField<ScoreModelGrader.SamplingParams> = samplingParams
 
             /**
              * Returns the raw JSON value of [passThreshold].
@@ -2661,7 +2675,8 @@ private constructor(
                 private var name: JsonField<String>? = null
                 private var type: JsonValue = JsonValue.from("score_model")
                 private var range: JsonField<MutableList<Double>>? = null
-                private var samplingParams: JsonValue = JsonMissing.of()
+                private var samplingParams: JsonField<ScoreModelGrader.SamplingParams> =
+                    JsonMissing.of()
                 private var passThreshold: JsonField<Double> = JsonMissing.of()
                 private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
@@ -2768,9 +2783,20 @@ private constructor(
                 }
 
                 /** The sampling parameters for the model. */
-                fun samplingParams(samplingParams: JsonValue) = apply {
-                    this.samplingParams = samplingParams
-                }
+                fun samplingParams(samplingParams: ScoreModelGrader.SamplingParams) =
+                    samplingParams(JsonField.of(samplingParams))
+
+                /**
+                 * Sets [Builder.samplingParams] to an arbitrary JSON value.
+                 *
+                 * You should usually call [Builder.samplingParams] with a well-typed
+                 * [ScoreModelGrader.SamplingParams] value instead. This method is primarily for
+                 * setting the field to an undocumented or not yet supported value.
+                 */
+                fun samplingParams(samplingParams: JsonField<ScoreModelGrader.SamplingParams>) =
+                    apply {
+                        this.samplingParams = samplingParams
+                    }
 
                 /** The threshold for the score. */
                 fun passThreshold(passThreshold: Double) =
@@ -2852,6 +2878,7 @@ private constructor(
                     }
                 }
                 range()
+                samplingParams().ifPresent { it.validate() }
                 passThreshold()
                 validated = true
             }
@@ -2877,6 +2904,7 @@ private constructor(
                     (if (name.asKnown().isPresent) 1 else 0) +
                     type.let { if (it == JsonValue.from("score_model")) 1 else 0 } +
                     (range.asKnown().getOrNull()?.size ?: 0) +
+                    (samplingParams.asKnown().getOrNull()?.validity() ?: 0) +
                     (if (passThreshold.asKnown().isPresent) 1 else 0)
 
             override fun equals(other: Any?): Boolean {

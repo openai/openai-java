@@ -26,6 +26,7 @@ import com.openai.core.checkRequired
 import com.openai.core.getOrThrow
 import com.openai.core.toImmutable
 import com.openai.errors.OpenAIInvalidDataException
+import com.openai.models.ReasoningEffort
 import com.openai.models.responses.ResponseInputAudio
 import com.openai.models.responses.ResponseInputText
 import java.util.Collections
@@ -41,7 +42,7 @@ private constructor(
     private val name: JsonField<String>,
     private val type: JsonValue,
     private val range: JsonField<List<Double>>,
-    private val samplingParams: JsonValue,
+    private val samplingParams: JsonField<SamplingParams>,
     private val additionalProperties: MutableMap<String, JsonValue>,
 ) {
 
@@ -54,7 +55,7 @@ private constructor(
         @JsonProperty("range") @ExcludeMissing range: JsonField<List<Double>> = JsonMissing.of(),
         @JsonProperty("sampling_params")
         @ExcludeMissing
-        samplingParams: JsonValue = JsonMissing.of(),
+        samplingParams: JsonField<SamplingParams> = JsonMissing.of(),
     ) : this(input, model, name, type, range, samplingParams, mutableMapOf())
 
     /**
@@ -102,10 +103,13 @@ private constructor(
      */
     fun range(): Optional<List<Double>> = range.getOptional("range")
 
-    /** The sampling parameters for the model. */
-    @JsonProperty("sampling_params")
-    @ExcludeMissing
-    fun _samplingParams(): JsonValue = samplingParams
+    /**
+     * The sampling parameters for the model.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun samplingParams(): Optional<SamplingParams> = samplingParams.getOptional("sampling_params")
 
     /**
      * Returns the raw JSON value of [input].
@@ -134,6 +138,15 @@ private constructor(
      * Unlike [range], this method doesn't throw if the JSON field has an unexpected type.
      */
     @JsonProperty("range") @ExcludeMissing fun _range(): JsonField<List<Double>> = range
+
+    /**
+     * Returns the raw JSON value of [samplingParams].
+     *
+     * Unlike [samplingParams], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    @JsonProperty("sampling_params")
+    @ExcludeMissing
+    fun _samplingParams(): JsonField<SamplingParams> = samplingParams
 
     @JsonAnySetter
     private fun putAdditionalProperty(key: String, value: JsonValue) {
@@ -170,7 +183,7 @@ private constructor(
         private var name: JsonField<String>? = null
         private var type: JsonValue = JsonValue.from("score_model")
         private var range: JsonField<MutableList<Double>>? = null
-        private var samplingParams: JsonValue = JsonMissing.of()
+        private var samplingParams: JsonField<SamplingParams> = JsonMissing.of()
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
         @JvmSynthetic
@@ -273,7 +286,17 @@ private constructor(
         }
 
         /** The sampling parameters for the model. */
-        fun samplingParams(samplingParams: JsonValue) = apply {
+        fun samplingParams(samplingParams: SamplingParams) =
+            samplingParams(JsonField.of(samplingParams))
+
+        /**
+         * Sets [Builder.samplingParams] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.samplingParams] with a well-typed [SamplingParams] value
+         * instead. This method is primarily for setting the field to an undocumented or not yet
+         * supported value.
+         */
+        fun samplingParams(samplingParams: JsonField<SamplingParams>) = apply {
             this.samplingParams = samplingParams
         }
 
@@ -338,6 +361,7 @@ private constructor(
             }
         }
         range()
+        samplingParams().ifPresent { it.validate() }
         validated = true
     }
 
@@ -360,7 +384,8 @@ private constructor(
             (if (model.asKnown().isPresent) 1 else 0) +
             (if (name.asKnown().isPresent) 1 else 0) +
             type.let { if (it == JsonValue.from("score_model")) 1 else 0 } +
-            (range.asKnown().getOrNull()?.size ?: 0)
+            (range.asKnown().getOrNull()?.size ?: 0) +
+            (samplingParams.asKnown().getOrNull()?.validity() ?: 0)
 
     /**
      * A message input to the model with a role indicating instruction following hierarchy.
@@ -1716,6 +1741,384 @@ private constructor(
 
         override fun toString() =
             "Input{content=$content, role=$role, type=$type, additionalProperties=$additionalProperties}"
+    }
+
+    /** The sampling parameters for the model. */
+    class SamplingParams
+    private constructor(
+        private val maxCompletionsTokens: JsonField<Long>,
+        private val reasoningEffort: JsonField<ReasoningEffort>,
+        private val seed: JsonField<Long>,
+        private val temperature: JsonField<Double>,
+        private val topP: JsonField<Double>,
+        private val additionalProperties: MutableMap<String, JsonValue>,
+    ) {
+
+        @JsonCreator
+        private constructor(
+            @JsonProperty("max_completions_tokens")
+            @ExcludeMissing
+            maxCompletionsTokens: JsonField<Long> = JsonMissing.of(),
+            @JsonProperty("reasoning_effort")
+            @ExcludeMissing
+            reasoningEffort: JsonField<ReasoningEffort> = JsonMissing.of(),
+            @JsonProperty("seed") @ExcludeMissing seed: JsonField<Long> = JsonMissing.of(),
+            @JsonProperty("temperature")
+            @ExcludeMissing
+            temperature: JsonField<Double> = JsonMissing.of(),
+            @JsonProperty("top_p") @ExcludeMissing topP: JsonField<Double> = JsonMissing.of(),
+        ) : this(maxCompletionsTokens, reasoningEffort, seed, temperature, topP, mutableMapOf())
+
+        /**
+         * The maximum number of tokens the grader model may generate in its response.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun maxCompletionsTokens(): Optional<Long> =
+            maxCompletionsTokens.getOptional("max_completions_tokens")
+
+        /**
+         * Constrains effort on reasoning for
+         * [reasoning models](https://platform.openai.com/docs/guides/reasoning). Currently
+         * supported values are `minimal`, `low`, `medium`, and `high`. Reducing reasoning effort
+         * can result in faster responses and fewer tokens used on reasoning in a response.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun reasoningEffort(): Optional<ReasoningEffort> =
+            reasoningEffort.getOptional("reasoning_effort")
+
+        /**
+         * A seed value to initialize the randomness, during sampling.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun seed(): Optional<Long> = seed.getOptional("seed")
+
+        /**
+         * A higher temperature increases randomness in the outputs.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun temperature(): Optional<Double> = temperature.getOptional("temperature")
+
+        /**
+         * An alternative to temperature for nucleus sampling; 1.0 includes all tokens.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun topP(): Optional<Double> = topP.getOptional("top_p")
+
+        /**
+         * Returns the raw JSON value of [maxCompletionsTokens].
+         *
+         * Unlike [maxCompletionsTokens], this method doesn't throw if the JSON field has an
+         * unexpected type.
+         */
+        @JsonProperty("max_completions_tokens")
+        @ExcludeMissing
+        fun _maxCompletionsTokens(): JsonField<Long> = maxCompletionsTokens
+
+        /**
+         * Returns the raw JSON value of [reasoningEffort].
+         *
+         * Unlike [reasoningEffort], this method doesn't throw if the JSON field has an unexpected
+         * type.
+         */
+        @JsonProperty("reasoning_effort")
+        @ExcludeMissing
+        fun _reasoningEffort(): JsonField<ReasoningEffort> = reasoningEffort
+
+        /**
+         * Returns the raw JSON value of [seed].
+         *
+         * Unlike [seed], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("seed") @ExcludeMissing fun _seed(): JsonField<Long> = seed
+
+        /**
+         * Returns the raw JSON value of [temperature].
+         *
+         * Unlike [temperature], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("temperature")
+        @ExcludeMissing
+        fun _temperature(): JsonField<Double> = temperature
+
+        /**
+         * Returns the raw JSON value of [topP].
+         *
+         * Unlike [topP], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("top_p") @ExcludeMissing fun _topP(): JsonField<Double> = topP
+
+        @JsonAnySetter
+        private fun putAdditionalProperty(key: String, value: JsonValue) {
+            additionalProperties.put(key, value)
+        }
+
+        @JsonAnyGetter
+        @ExcludeMissing
+        fun _additionalProperties(): Map<String, JsonValue> =
+            Collections.unmodifiableMap(additionalProperties)
+
+        fun toBuilder() = Builder().from(this)
+
+        companion object {
+
+            /** Returns a mutable builder for constructing an instance of [SamplingParams]. */
+            @JvmStatic fun builder() = Builder()
+        }
+
+        /** A builder for [SamplingParams]. */
+        class Builder internal constructor() {
+
+            private var maxCompletionsTokens: JsonField<Long> = JsonMissing.of()
+            private var reasoningEffort: JsonField<ReasoningEffort> = JsonMissing.of()
+            private var seed: JsonField<Long> = JsonMissing.of()
+            private var temperature: JsonField<Double> = JsonMissing.of()
+            private var topP: JsonField<Double> = JsonMissing.of()
+            private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
+
+            @JvmSynthetic
+            internal fun from(samplingParams: SamplingParams) = apply {
+                maxCompletionsTokens = samplingParams.maxCompletionsTokens
+                reasoningEffort = samplingParams.reasoningEffort
+                seed = samplingParams.seed
+                temperature = samplingParams.temperature
+                topP = samplingParams.topP
+                additionalProperties = samplingParams.additionalProperties.toMutableMap()
+            }
+
+            /** The maximum number of tokens the grader model may generate in its response. */
+            fun maxCompletionsTokens(maxCompletionsTokens: Long?) =
+                maxCompletionsTokens(JsonField.ofNullable(maxCompletionsTokens))
+
+            /**
+             * Alias for [Builder.maxCompletionsTokens].
+             *
+             * This unboxed primitive overload exists for backwards compatibility.
+             */
+            fun maxCompletionsTokens(maxCompletionsTokens: Long) =
+                maxCompletionsTokens(maxCompletionsTokens as Long?)
+
+            /**
+             * Alias for calling [Builder.maxCompletionsTokens] with
+             * `maxCompletionsTokens.orElse(null)`.
+             */
+            fun maxCompletionsTokens(maxCompletionsTokens: Optional<Long>) =
+                maxCompletionsTokens(maxCompletionsTokens.getOrNull())
+
+            /**
+             * Sets [Builder.maxCompletionsTokens] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.maxCompletionsTokens] with a well-typed [Long] value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun maxCompletionsTokens(maxCompletionsTokens: JsonField<Long>) = apply {
+                this.maxCompletionsTokens = maxCompletionsTokens
+            }
+
+            /**
+             * Constrains effort on reasoning for
+             * [reasoning models](https://platform.openai.com/docs/guides/reasoning). Currently
+             * supported values are `minimal`, `low`, `medium`, and `high`. Reducing reasoning
+             * effort can result in faster responses and fewer tokens used on reasoning in a
+             * response.
+             */
+            fun reasoningEffort(reasoningEffort: ReasoningEffort?) =
+                reasoningEffort(JsonField.ofNullable(reasoningEffort))
+
+            /** Alias for calling [Builder.reasoningEffort] with `reasoningEffort.orElse(null)`. */
+            fun reasoningEffort(reasoningEffort: Optional<ReasoningEffort>) =
+                reasoningEffort(reasoningEffort.getOrNull())
+
+            /**
+             * Sets [Builder.reasoningEffort] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.reasoningEffort] with a well-typed [ReasoningEffort]
+             * value instead. This method is primarily for setting the field to an undocumented or
+             * not yet supported value.
+             */
+            fun reasoningEffort(reasoningEffort: JsonField<ReasoningEffort>) = apply {
+                this.reasoningEffort = reasoningEffort
+            }
+
+            /** A seed value to initialize the randomness, during sampling. */
+            fun seed(seed: Long?) = seed(JsonField.ofNullable(seed))
+
+            /**
+             * Alias for [Builder.seed].
+             *
+             * This unboxed primitive overload exists for backwards compatibility.
+             */
+            fun seed(seed: Long) = seed(seed as Long?)
+
+            /** Alias for calling [Builder.seed] with `seed.orElse(null)`. */
+            fun seed(seed: Optional<Long>) = seed(seed.getOrNull())
+
+            /**
+             * Sets [Builder.seed] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.seed] with a well-typed [Long] value instead. This
+             * method is primarily for setting the field to an undocumented or not yet supported
+             * value.
+             */
+            fun seed(seed: JsonField<Long>) = apply { this.seed = seed }
+
+            /** A higher temperature increases randomness in the outputs. */
+            fun temperature(temperature: Double?) = temperature(JsonField.ofNullable(temperature))
+
+            /**
+             * Alias for [Builder.temperature].
+             *
+             * This unboxed primitive overload exists for backwards compatibility.
+             */
+            fun temperature(temperature: Double) = temperature(temperature as Double?)
+
+            /** Alias for calling [Builder.temperature] with `temperature.orElse(null)`. */
+            fun temperature(temperature: Optional<Double>) = temperature(temperature.getOrNull())
+
+            /**
+             * Sets [Builder.temperature] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.temperature] with a well-typed [Double] value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun temperature(temperature: JsonField<Double>) = apply {
+                this.temperature = temperature
+            }
+
+            /** An alternative to temperature for nucleus sampling; 1.0 includes all tokens. */
+            fun topP(topP: Double?) = topP(JsonField.ofNullable(topP))
+
+            /**
+             * Alias for [Builder.topP].
+             *
+             * This unboxed primitive overload exists for backwards compatibility.
+             */
+            fun topP(topP: Double) = topP(topP as Double?)
+
+            /** Alias for calling [Builder.topP] with `topP.orElse(null)`. */
+            fun topP(topP: Optional<Double>) = topP(topP.getOrNull())
+
+            /**
+             * Sets [Builder.topP] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.topP] with a well-typed [Double] value instead. This
+             * method is primarily for setting the field to an undocumented or not yet supported
+             * value.
+             */
+            fun topP(topP: JsonField<Double>) = apply { this.topP = topP }
+
+            fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                this.additionalProperties.clear()
+                putAllAdditionalProperties(additionalProperties)
+            }
+
+            fun putAdditionalProperty(key: String, value: JsonValue) = apply {
+                additionalProperties.put(key, value)
+            }
+
+            fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                this.additionalProperties.putAll(additionalProperties)
+            }
+
+            fun removeAdditionalProperty(key: String) = apply { additionalProperties.remove(key) }
+
+            fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                keys.forEach(::removeAdditionalProperty)
+            }
+
+            /**
+             * Returns an immutable instance of [SamplingParams].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             */
+            fun build(): SamplingParams =
+                SamplingParams(
+                    maxCompletionsTokens,
+                    reasoningEffort,
+                    seed,
+                    temperature,
+                    topP,
+                    additionalProperties.toMutableMap(),
+                )
+        }
+
+        private var validated: Boolean = false
+
+        fun validate(): SamplingParams = apply {
+            if (validated) {
+                return@apply
+            }
+
+            maxCompletionsTokens()
+            reasoningEffort().ifPresent { it.validate() }
+            seed()
+            temperature()
+            topP()
+            validated = true
+        }
+
+        fun isValid(): Boolean =
+            try {
+                validate()
+                true
+            } catch (e: OpenAIInvalidDataException) {
+                false
+            }
+
+        /**
+         * Returns a score indicating how many valid values are contained in this object
+         * recursively.
+         *
+         * Used for best match union deserialization.
+         */
+        @JvmSynthetic
+        internal fun validity(): Int =
+            (if (maxCompletionsTokens.asKnown().isPresent) 1 else 0) +
+                (reasoningEffort.asKnown().getOrNull()?.validity() ?: 0) +
+                (if (seed.asKnown().isPresent) 1 else 0) +
+                (if (temperature.asKnown().isPresent) 1 else 0) +
+                (if (topP.asKnown().isPresent) 1 else 0)
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) {
+                return true
+            }
+
+            return other is SamplingParams &&
+                maxCompletionsTokens == other.maxCompletionsTokens &&
+                reasoningEffort == other.reasoningEffort &&
+                seed == other.seed &&
+                temperature == other.temperature &&
+                topP == other.topP &&
+                additionalProperties == other.additionalProperties
+        }
+
+        private val hashCode: Int by lazy {
+            Objects.hash(
+                maxCompletionsTokens,
+                reasoningEffort,
+                seed,
+                temperature,
+                topP,
+                additionalProperties,
+            )
+        }
+
+        override fun hashCode(): Int = hashCode
+
+        override fun toString() =
+            "SamplingParams{maxCompletionsTokens=$maxCompletionsTokens, reasoningEffort=$reasoningEffort, seed=$seed, temperature=$temperature, topP=$topP, additionalProperties=$additionalProperties}"
     }
 
     override fun equals(other: Any?): Boolean {

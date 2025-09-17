@@ -15,6 +15,7 @@ import com.openai.errors.OpenAIInvalidDataException
 import java.util.Collections
 import java.util.Objects
 
+/** A summary text from the model. */
 class SummaryTextContent
 private constructor(
     private val text: JsonField<String>,

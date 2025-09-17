@@ -3,8 +3,8 @@
 package com.openai.models.graders.gradermodels
 
 import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
-import com.openai.core.JsonValue
 import com.openai.core.jsonMapper
+import com.openai.models.ReasoningEffort
 import kotlin.jvm.optionals.getOrNull
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
@@ -25,7 +25,15 @@ internal class ScoreModelGraderTest {
                 .model("model")
                 .name("name")
                 .addRange(0.0)
-                .samplingParams(JsonValue.from(mapOf<String, Any>()))
+                .samplingParams(
+                    ScoreModelGrader.SamplingParams.builder()
+                        .maxCompletionsTokens(1L)
+                        .reasoningEffort(ReasoningEffort.MINIMAL)
+                        .seed(0L)
+                        .temperature(0.0)
+                        .topP(1.0)
+                        .build()
+                )
                 .build()
 
         assertThat(scoreModelGrader.input())
@@ -39,8 +47,16 @@ internal class ScoreModelGraderTest {
         assertThat(scoreModelGrader.model()).isEqualTo("model")
         assertThat(scoreModelGrader.name()).isEqualTo("name")
         assertThat(scoreModelGrader.range().getOrNull()).containsExactly(0.0)
-        assertThat(scoreModelGrader._samplingParams())
-            .isEqualTo(JsonValue.from(mapOf<String, Any>()))
+        assertThat(scoreModelGrader.samplingParams())
+            .contains(
+                ScoreModelGrader.SamplingParams.builder()
+                    .maxCompletionsTokens(1L)
+                    .reasoningEffort(ReasoningEffort.MINIMAL)
+                    .seed(0L)
+                    .temperature(0.0)
+                    .topP(1.0)
+                    .build()
+            )
     }
 
     @Test
@@ -58,7 +74,15 @@ internal class ScoreModelGraderTest {
                 .model("model")
                 .name("name")
                 .addRange(0.0)
-                .samplingParams(JsonValue.from(mapOf<String, Any>()))
+                .samplingParams(
+                    ScoreModelGrader.SamplingParams.builder()
+                        .maxCompletionsTokens(1L)
+                        .reasoningEffort(ReasoningEffort.MINIMAL)
+                        .seed(0L)
+                        .temperature(0.0)
+                        .topP(1.0)
+                        .build()
+                )
                 .build()
 
         val roundtrippedScoreModelGrader =
