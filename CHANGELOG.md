@@ -1,5 +1,20 @@
 # Changelog
 
+## 3.6.0 (2025-09-19)
+
+Full Changelog: [v3.5.3...v3.6.0](https://github.com/openai/openai-java/compare/v3.5.3...v3.6.0)
+
+### Features
+
+* **api:** add reasoning_text ([2bde290](https://github.com/openai/openai-java/commit/2bde29036040664aa4ae54f6522e5e5336ed2c87))
+* **api:** type updates for conversations, reasoning_effort and results for evals ([364a176](https://github.com/openai/openai-java/commit/364a1766d34b6cc19fca81a445b287fc9ccefe2c))
+* **client:** expose sleeper option ([a5ffd57](https://github.com/openai/openai-java/commit/a5ffd57e75b6f0abe14d326c87f58abd2048cf73))
+
+
+### Bug Fixes
+
+* **client:** ensure single timer is created per client ([a5ffd57](https://github.com/openai/openai-java/commit/a5ffd57e75b6f0abe14d326c87f58abd2048cf73))
+
 ## 3.5.3 (2025-09-15)
 
 Full Changelog: [v3.5.2...v3.5.3](https://github.com/openai/openai-java/compare/v3.5.2...v3.5.3)
