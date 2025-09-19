@@ -11,15 +11,15 @@ internal class ResponseConversationParamTest {
 
     @Test
     fun create() {
-        val responseConversationParam = ResponseConversationParam.builder().id("id").build()
+        val responseConversationParam = ResponseConversationParam.builder().id("conv_123").build()
 
-        assertThat(responseConversationParam.id()).isEqualTo("id")
+        assertThat(responseConversationParam.id()).isEqualTo("conv_123")
     }
 
     @Test
     fun roundtrip() {
         val jsonMapper = jsonMapper()
-        val responseConversationParam = ResponseConversationParam.builder().id("id").build()
+        val responseConversationParam = ResponseConversationParam.builder().id("conv_123").build()
 
         val roundtrippedResponseConversationParam =
             jsonMapper.readValue(

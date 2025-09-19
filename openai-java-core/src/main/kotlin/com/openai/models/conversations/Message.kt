@@ -263,6 +263,21 @@ private constructor(
         fun addSummaryTextContent(text: String) =
             addContent(SummaryTextContent.builder().text(text).build())
 
+        /** Alias for calling [addContent] with `Content.ofReasoningText(reasoningText)`. */
+        fun addContent(reasoningText: Content.ReasoningText) =
+            addContent(Content.ofReasoningText(reasoningText))
+
+        /**
+         * Alias for calling [addContent] with the following:
+         * ```java
+         * Content.ReasoningText.builder()
+         *     .text(text)
+         *     .build()
+         * ```
+         */
+        fun addReasoningTextContent(text: String) =
+            addContent(Content.ReasoningText.builder().text(text).build())
+
         /** Alias for calling [addContent] with `Content.ofRefusal(refusal)`. */
         fun addContent(refusal: ResponseOutputRefusal) = addContent(Content.ofRefusal(refusal))
 
@@ -437,6 +452,7 @@ private constructor(
         private val outputText: ResponseOutputText? = null,
         private val text: TextContent? = null,
         private val summaryText: SummaryTextContent? = null,
+        private val reasoningText: ReasoningText? = null,
         private val refusal: ResponseOutputRefusal? = null,
         private val inputImage: ResponseInputImage? = null,
         private val computerScreenshot: ComputerScreenshotContent? = null,
@@ -455,6 +471,9 @@ private constructor(
 
         /** A summary text from the model. */
         fun summaryText(): Optional<SummaryTextContent> = Optional.ofNullable(summaryText)
+
+        /** Reasoning text from the model. */
+        fun reasoningText(): Optional<ReasoningText> = Optional.ofNullable(reasoningText)
 
         /** A refusal from the model. */
         fun refusal(): Optional<ResponseOutputRefusal> = Optional.ofNullable(refusal)
@@ -480,6 +499,8 @@ private constructor(
 
         fun isSummaryText(): Boolean = summaryText != null
 
+        fun isReasoningText(): Boolean = reasoningText != null
+
         fun isRefusal(): Boolean = refusal != null
 
         fun isInputImage(): Boolean = inputImage != null
@@ -499,6 +520,9 @@ private constructor(
 
         /** A summary text from the model. */
         fun asSummaryText(): SummaryTextContent = summaryText.getOrThrow("summaryText")
+
+        /** Reasoning text from the model. */
+        fun asReasoningText(): ReasoningText = reasoningText.getOrThrow("reasoningText")
 
         /** A refusal from the model. */
         fun asRefusal(): ResponseOutputRefusal = refusal.getOrThrow("refusal")
@@ -524,6 +548,7 @@ private constructor(
                 outputText != null -> visitor.visitOutputText(outputText)
                 text != null -> visitor.visitText(text)
                 summaryText != null -> visitor.visitSummaryText(summaryText)
+                reasoningText != null -> visitor.visitReasoningText(reasoningText)
                 refusal != null -> visitor.visitRefusal(refusal)
                 inputImage != null -> visitor.visitInputImage(inputImage)
                 computerScreenshot != null -> visitor.visitComputerScreenshot(computerScreenshot)
@@ -554,6 +579,10 @@ private constructor(
 
                     override fun visitSummaryText(summaryText: SummaryTextContent) {
                         summaryText.validate()
+                    }
+
+                    override fun visitReasoningText(reasoningText: ReasoningText) {
+                        reasoningText.validate()
                     }
 
                     override fun visitRefusal(refusal: ResponseOutputRefusal) {
@@ -606,6 +635,9 @@ private constructor(
                     override fun visitSummaryText(summaryText: SummaryTextContent) =
                         summaryText.validity()
 
+                    override fun visitReasoningText(reasoningText: ReasoningText) =
+                        reasoningText.validity()
+
                     override fun visitRefusal(refusal: ResponseOutputRefusal) = refusal.validity()
 
                     override fun visitInputImage(inputImage: ResponseInputImage) =
@@ -631,6 +663,7 @@ private constructor(
                 outputText == other.outputText &&
                 text == other.text &&
                 summaryText == other.summaryText &&
+                reasoningText == other.reasoningText &&
                 refusal == other.refusal &&
                 inputImage == other.inputImage &&
                 computerScreenshot == other.computerScreenshot &&
@@ -643,6 +676,7 @@ private constructor(
                 outputText,
                 text,
                 summaryText,
+                reasoningText,
                 refusal,
                 inputImage,
                 computerScreenshot,
@@ -655,6 +689,7 @@ private constructor(
                 outputText != null -> "Content{outputText=$outputText}"
                 text != null -> "Content{text=$text}"
                 summaryText != null -> "Content{summaryText=$summaryText}"
+                reasoningText != null -> "Content{reasoningText=$reasoningText}"
                 refusal != null -> "Content{refusal=$refusal}"
                 inputImage != null -> "Content{inputImage=$inputImage}"
                 computerScreenshot != null -> "Content{computerScreenshot=$computerScreenshot}"
@@ -679,6 +714,11 @@ private constructor(
             /** A summary text from the model. */
             @JvmStatic
             fun ofSummaryText(summaryText: SummaryTextContent) = Content(summaryText = summaryText)
+
+            /** Reasoning text from the model. */
+            @JvmStatic
+            fun ofReasoningText(reasoningText: ReasoningText) =
+                Content(reasoningText = reasoningText)
 
             /** A refusal from the model. */
             @JvmStatic fun ofRefusal(refusal: ResponseOutputRefusal) = Content(refusal = refusal)
@@ -716,6 +756,9 @@ private constructor(
 
             /** A summary text from the model. */
             fun visitSummaryText(summaryText: SummaryTextContent): T
+
+            /** Reasoning text from the model. */
+            fun visitReasoningText(reasoningText: ReasoningText): T
 
             /** A refusal from the model. */
             fun visitRefusal(refusal: ResponseOutputRefusal): T
@@ -774,6 +817,11 @@ private constructor(
                             Content(summaryText = it, _json = json)
                         } ?: Content(_json = json)
                     }
+                    "reasoning_text" -> {
+                        return tryDeserialize(node, jacksonTypeRef<ReasoningText>())?.let {
+                            Content(reasoningText = it, _json = json)
+                        } ?: Content(_json = json)
+                    }
                     "refusal" -> {
                         return tryDeserialize(node, jacksonTypeRef<ResponseOutputRefusal>())?.let {
                             Content(refusal = it, _json = json)
@@ -812,6 +860,7 @@ private constructor(
                     value.outputText != null -> generator.writeObject(value.outputText)
                     value.text != null -> generator.writeObject(value.text)
                     value.summaryText != null -> generator.writeObject(value.summaryText)
+                    value.reasoningText != null -> generator.writeObject(value.reasoningText)
                     value.refusal != null -> generator.writeObject(value.refusal)
                     value.inputImage != null -> generator.writeObject(value.inputImage)
                     value.computerScreenshot != null ->
@@ -821,6 +870,210 @@ private constructor(
                     else -> throw IllegalStateException("Invalid Content")
                 }
             }
+        }
+
+        /** Reasoning text from the model. */
+        class ReasoningText
+        private constructor(
+            private val text: JsonField<String>,
+            private val type: JsonValue,
+            private val additionalProperties: MutableMap<String, JsonValue>,
+        ) {
+
+            @JsonCreator
+            private constructor(
+                @JsonProperty("text") @ExcludeMissing text: JsonField<String> = JsonMissing.of(),
+                @JsonProperty("type") @ExcludeMissing type: JsonValue = JsonMissing.of(),
+            ) : this(text, type, mutableMapOf())
+
+            /**
+             * The reasoning text from the model.
+             *
+             * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+             *   unexpectedly missing or null (e.g. if the server responded with an unexpected
+             *   value).
+             */
+            fun text(): String = text.getRequired("text")
+
+            /**
+             * The type of the reasoning text. Always `reasoning_text`.
+             *
+             * Expected to always return the following:
+             * ```java
+             * JsonValue.from("reasoning_text")
+             * ```
+             *
+             * However, this method can be useful for debugging and logging (e.g. if the server
+             * responded with an unexpected value).
+             */
+            @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
+
+            /**
+             * Returns the raw JSON value of [text].
+             *
+             * Unlike [text], this method doesn't throw if the JSON field has an unexpected type.
+             */
+            @JsonProperty("text") @ExcludeMissing fun _text(): JsonField<String> = text
+
+            @JsonAnySetter
+            private fun putAdditionalProperty(key: String, value: JsonValue) {
+                additionalProperties.put(key, value)
+            }
+
+            @JsonAnyGetter
+            @ExcludeMissing
+            fun _additionalProperties(): Map<String, JsonValue> =
+                Collections.unmodifiableMap(additionalProperties)
+
+            fun toBuilder() = Builder().from(this)
+
+            companion object {
+
+                /**
+                 * Returns a mutable builder for constructing an instance of [ReasoningText].
+                 *
+                 * The following fields are required:
+                 * ```java
+                 * .text()
+                 * ```
+                 */
+                @JvmStatic fun builder() = Builder()
+            }
+
+            /** A builder for [ReasoningText]. */
+            class Builder internal constructor() {
+
+                private var text: JsonField<String>? = null
+                private var type: JsonValue = JsonValue.from("reasoning_text")
+                private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
+
+                @JvmSynthetic
+                internal fun from(reasoningText: ReasoningText) = apply {
+                    text = reasoningText.text
+                    type = reasoningText.type
+                    additionalProperties = reasoningText.additionalProperties.toMutableMap()
+                }
+
+                /** The reasoning text from the model. */
+                fun text(text: String) = text(JsonField.of(text))
+
+                /**
+                 * Sets [Builder.text] to an arbitrary JSON value.
+                 *
+                 * You should usually call [Builder.text] with a well-typed [String] value instead.
+                 * This method is primarily for setting the field to an undocumented or not yet
+                 * supported value.
+                 */
+                fun text(text: JsonField<String>) = apply { this.text = text }
+
+                /**
+                 * Sets the field to an arbitrary JSON value.
+                 *
+                 * It is usually unnecessary to call this method because the field defaults to the
+                 * following:
+                 * ```java
+                 * JsonValue.from("reasoning_text")
+                 * ```
+                 *
+                 * This method is primarily for setting the field to an undocumented or not yet
+                 * supported value.
+                 */
+                fun type(type: JsonValue) = apply { this.type = type }
+
+                fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                    this.additionalProperties.clear()
+                    putAllAdditionalProperties(additionalProperties)
+                }
+
+                fun putAdditionalProperty(key: String, value: JsonValue) = apply {
+                    additionalProperties.put(key, value)
+                }
+
+                fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) =
+                    apply {
+                        this.additionalProperties.putAll(additionalProperties)
+                    }
+
+                fun removeAdditionalProperty(key: String) = apply {
+                    additionalProperties.remove(key)
+                }
+
+                fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                    keys.forEach(::removeAdditionalProperty)
+                }
+
+                /**
+                 * Returns an immutable instance of [ReasoningText].
+                 *
+                 * Further updates to this [Builder] will not mutate the returned instance.
+                 *
+                 * The following fields are required:
+                 * ```java
+                 * .text()
+                 * ```
+                 *
+                 * @throws IllegalStateException if any required field is unset.
+                 */
+                fun build(): ReasoningText =
+                    ReasoningText(
+                        checkRequired("text", text),
+                        type,
+                        additionalProperties.toMutableMap(),
+                    )
+            }
+
+            private var validated: Boolean = false
+
+            fun validate(): ReasoningText = apply {
+                if (validated) {
+                    return@apply
+                }
+
+                text()
+                _type().let {
+                    if (it != JsonValue.from("reasoning_text")) {
+                        throw OpenAIInvalidDataException("'type' is invalid, received $it")
+                    }
+                }
+                validated = true
+            }
+
+            fun isValid(): Boolean =
+                try {
+                    validate()
+                    true
+                } catch (e: OpenAIInvalidDataException) {
+                    false
+                }
+
+            /**
+             * Returns a score indicating how many valid values are contained in this object
+             * recursively.
+             *
+             * Used for best match union deserialization.
+             */
+            @JvmSynthetic
+            internal fun validity(): Int =
+                (if (text.asKnown().isPresent) 1 else 0) +
+                    type.let { if (it == JsonValue.from("reasoning_text")) 1 else 0 }
+
+            override fun equals(other: Any?): Boolean {
+                if (this === other) {
+                    return true
+                }
+
+                return other is ReasoningText &&
+                    text == other.text &&
+                    type == other.type &&
+                    additionalProperties == other.additionalProperties
+            }
+
+            private val hashCode: Int by lazy { Objects.hash(text, type, additionalProperties) }
+
+            override fun hashCode(): Int = hashCode
+
+            override fun toString() =
+                "ReasoningText{text=$text, type=$type, additionalProperties=$additionalProperties}"
         }
     }
 
