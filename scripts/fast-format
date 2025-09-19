@@ -2,7 +2,12 @@
 
 set -euo pipefail
 
+echo "Script started with $# arguments"
+echo "Arguments: $*"
+echo "Script location: $(dirname "$0")"
+
 cd "$(dirname "$0")/.."
+echo "Changed to directory: $(pwd)"
 
 if [ $# -eq 0 ]; then
     echo "Usage: $0 <file-with-paths> [additional-formatter-args...]"
@@ -11,6 +16,8 @@ if [ $# -eq 0 ]; then
 fi
 
 FILE_LIST="$1"
+
+echo "Looking for file: $FILE_LIST"
 
 if [ ! -f "$FILE_LIST" ]; then
     echo "Error: File '$FILE_LIST' not found"
@@ -23,9 +30,9 @@ if ! command -v ktfmt-fast-format &> /dev/null; then
 fi
 
 # Process Kotlin files
-kt_files=$(grep -E '\.kt$' "$FILE_LIST" | grep -v './buildSrc/build/')
-kt_files=$(grep -E '\.kt$' "$FILE_LIST" | grep -v './buildSrc/build/')
-echo "==> Found $(echo "$kt_files" | wc -l) Kotlin files:"
+echo "==> Looking for Kotlin files"
+kt_files=$(grep -E '\.kt$' "$FILE_LIST" | grep -v './buildSrc/build/' || true)
+echo "==> Done looking for Kotlin files"
 
 if [[ -n "$kt_files" ]]; then
     echo "==> will format Kotlin files"
