@@ -408,7 +408,7 @@ internal class ResponseInputItemTest {
                         .imageUrl("image_url")
                         .build()
                 )
-                .id("id")
+                .id("cuo_123")
                 .addAcknowledgedSafetyCheck(
                     ResponseInputItem.ComputerCallOutput.AcknowledgedSafetyCheck.builder()
                         .id("id")
@@ -457,7 +457,7 @@ internal class ResponseInputItemTest {
                             .imageUrl("image_url")
                             .build()
                     )
-                    .id("id")
+                    .id("cuo_123")
                     .addAcknowledgedSafetyCheck(
                         ResponseInputItem.ComputerCallOutput.AcknowledgedSafetyCheck.builder()
                             .id("id")
@@ -616,7 +616,7 @@ internal class ResponseInputItemTest {
             ResponseInputItem.FunctionCallOutput.builder()
                 .callId("x")
                 .output("output")
-                .id("id")
+                .id("fc_123")
                 .status(ResponseInputItem.FunctionCallOutput.Status.IN_PROGRESS)
                 .build()
 
@@ -653,7 +653,7 @@ internal class ResponseInputItemTest {
                 ResponseInputItem.FunctionCallOutput.builder()
                     .callId("x")
                     .output("output")
-                    .id("id")
+                    .id("fc_123")
                     .status(ResponseInputItem.FunctionCallOutput.Status.IN_PROGRESS)
                     .build()
             )

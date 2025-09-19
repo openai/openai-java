@@ -30,12 +30,16 @@ private constructor(
     ) : this(text, type, mutableMapOf())
 
     /**
+     * A summary of the reasoning output from the model so far.
+     *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
      *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
      */
     fun text(): String = text.getRequired("text")
 
     /**
+     * The type of the object. Always `summary_text`.
+     *
      * Expected to always return the following:
      * ```java
      * JsonValue.from("summary_text")
@@ -92,6 +96,7 @@ private constructor(
             additionalProperties = summaryTextContent.additionalProperties.toMutableMap()
         }
 
+        /** A summary of the reasoning output from the model so far. */
         fun text(text: String) = text(JsonField.of(text))
 
         /**
