@@ -26,6 +26,7 @@ internal class ResponseContentTest {
         assertThat(responseContent.inputAudio()).isEmpty
         assertThat(responseContent.outputText()).isEmpty
         assertThat(responseContent.outputRefusal()).isEmpty
+        assertThat(responseContent.reasoningText()).isEmpty
     }
 
     @Test
@@ -60,6 +61,7 @@ internal class ResponseContentTest {
         assertThat(responseContent.inputAudio()).isEmpty
         assertThat(responseContent.outputText()).isEmpty
         assertThat(responseContent.outputRefusal()).isEmpty
+        assertThat(responseContent.reasoningText()).isEmpty
     }
 
     @Test
@@ -101,6 +103,7 @@ internal class ResponseContentTest {
         assertThat(responseContent.inputAudio()).isEmpty
         assertThat(responseContent.outputText()).isEmpty
         assertThat(responseContent.outputRefusal()).isEmpty
+        assertThat(responseContent.reasoningText()).isEmpty
     }
 
     @Test
@@ -145,6 +148,7 @@ internal class ResponseContentTest {
         assertThat(responseContent.inputAudio()).contains(inputAudio)
         assertThat(responseContent.outputText()).isEmpty
         assertThat(responseContent.outputRefusal()).isEmpty
+        assertThat(responseContent.reasoningText()).isEmpty
     }
 
     @Test
@@ -207,6 +211,7 @@ internal class ResponseContentTest {
         assertThat(responseContent.inputAudio()).isEmpty
         assertThat(responseContent.outputText()).contains(outputText)
         assertThat(responseContent.outputRefusal()).isEmpty
+        assertThat(responseContent.reasoningText()).isEmpty
     }
 
     @Test
@@ -261,6 +266,7 @@ internal class ResponseContentTest {
         assertThat(responseContent.inputAudio()).isEmpty
         assertThat(responseContent.outputText()).isEmpty
         assertThat(responseContent.outputRefusal()).contains(outputRefusal)
+        assertThat(responseContent.reasoningText()).isEmpty
     }
 
     @Test
@@ -269,6 +275,38 @@ internal class ResponseContentTest {
         val responseContent =
             ResponseContent.ofOutputRefusal(
                 ResponseOutputRefusal.builder().refusal("refusal").build()
+            )
+
+        val roundtrippedResponseContent =
+            jsonMapper.readValue(
+                jsonMapper.writeValueAsString(responseContent),
+                jacksonTypeRef<ResponseContent>(),
+            )
+
+        assertThat(roundtrippedResponseContent).isEqualTo(responseContent)
+    }
+
+    @Test
+    fun ofReasoningText() {
+        val reasoningText = ResponseContent.ReasoningTextContent.builder().text("text").build()
+
+        val responseContent = ResponseContent.ofReasoningText(reasoningText)
+
+        assertThat(responseContent.inputText()).isEmpty
+        assertThat(responseContent.inputImage()).isEmpty
+        assertThat(responseContent.inputFile()).isEmpty
+        assertThat(responseContent.inputAudio()).isEmpty
+        assertThat(responseContent.outputText()).isEmpty
+        assertThat(responseContent.outputRefusal()).isEmpty
+        assertThat(responseContent.reasoningText()).contains(reasoningText)
+    }
+
+    @Test
+    fun ofReasoningTextRoundtrip() {
+        val jsonMapper = jsonMapper()
+        val responseContent =
+            ResponseContent.ofReasoningText(
+                ResponseContent.ReasoningTextContent.builder().text("text").build()
             )
 
         val roundtrippedResponseContent =

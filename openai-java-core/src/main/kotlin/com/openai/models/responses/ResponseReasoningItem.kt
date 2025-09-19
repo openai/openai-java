@@ -393,6 +393,7 @@ private constructor(
             (if (encryptedContent.asKnown().isPresent) 1 else 0) +
             (status.asKnown().getOrNull()?.validity() ?: 0)
 
+    /** A summary text from the model. */
     class Summary
     private constructor(
         private val text: JsonField<String>,
@@ -588,6 +589,7 @@ private constructor(
             "Summary{text=$text, type=$type, additionalProperties=$additionalProperties}"
     }
 
+    /** Reasoning text from the model. */
     class Content
     private constructor(
         private val text: JsonField<String>,
@@ -602,7 +604,7 @@ private constructor(
         ) : this(text, type, mutableMapOf())
 
         /**
-         * Reasoning text output from the model.
+         * The reasoning text from the model.
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
          *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
@@ -610,7 +612,7 @@ private constructor(
         fun text(): String = text.getRequired("text")
 
         /**
-         * The type of the object. Always `reasoning_text`.
+         * The type of the reasoning text. Always `reasoning_text`.
          *
          * Expected to always return the following:
          * ```java
@@ -668,7 +670,7 @@ private constructor(
                 additionalProperties = content.additionalProperties.toMutableMap()
             }
 
-            /** Reasoning text output from the model. */
+            /** The reasoning text from the model. */
             fun text(text: String) = text(JsonField.of(text))
 
             /**
