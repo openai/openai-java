@@ -1,6 +1,8 @@
 package com.openai.core.http
 
+import com.openai.core.DefaultSleeper
 import com.openai.core.RequestOptions
+import com.openai.core.Sleeper
 import com.openai.core.checkRequired
 import com.openai.errors.OpenAIIoException
 import com.openai.errors.OpenAIRetryableException
@@ -11,8 +13,6 @@ import java.time.OffsetDateTime
 import java.time.format.DateTimeFormatter
 import java.time.format.DateTimeParseException
 import java.time.temporal.ChronoUnit
-import java.util.Timer
-import java.util.TimerTask
 import java.util.UUID
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.ThreadLocalRandom
@@ -130,7 +130,10 @@ private constructor(
         return executeWithRetries(modifiedRequest, requestOptions)
     }
 
-    override fun close() = httpClient.close()
+    override fun close() {
+        httpClient.close()
+        sleeper.close()
+    }
 
     private fun isRetryable(request: HttpRequest): Boolean =
         // Some requests, such as when a request body is being streamed, cannot be retried because
@@ -235,33 +238,14 @@ private constructor(
     class Builder internal constructor() {
 
         private var httpClient: HttpClient? = null
-        private var sleeper: Sleeper =
-            object : Sleeper {
-
-                private val timer = Timer("RetryingHttpClient", true)
-
-                override fun sleep(duration: Duration) = Thread.sleep(duration.toMillis())
-
-                override fun sleepAsync(duration: Duration): CompletableFuture<Void> {
-                    val future = CompletableFuture<Void>()
-                    timer.schedule(
-                        object : TimerTask() {
-                            override fun run() {
-                                future.complete(null)
-                            }
-                        },
-                        duration.toMillis(),
-                    )
-                    return future
-                }
-            }
+        private var sleeper: Sleeper? = null
         private var clock: Clock = Clock.systemUTC()
         private var maxRetries: Int = 2
         private var idempotencyHeader: String? = null
 
         fun httpClient(httpClient: HttpClient) = apply { this.httpClient = httpClient }
 
-        @JvmSynthetic internal fun sleeper(sleeper: Sleeper) = apply { this.sleeper = sleeper }
+        fun sleeper(sleeper: Sleeper) = apply { this.sleeper = sleeper }
 
         fun clock(clock: Clock) = apply { this.clock = clock }
 
@@ -272,17 +256,10 @@ private constructor(
         fun build(): HttpClient =
             RetryingHttpClient(
                 checkRequired("httpClient", httpClient),
-                sleeper,
+                sleeper ?: DefaultSleeper(),
                 clock,
                 maxRetries,
                 idempotencyHeader,
             )
-    }
-
-    internal interface Sleeper {
-
-        fun sleep(duration: Duration)
-
-        fun sleepAsync(duration: Duration): CompletableFuture<Void>
     }
 }
