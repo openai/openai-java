@@ -61,6 +61,16 @@ private constructor(
      */
     @get:JvmName("streamHandlerExecutor") val streamHandlerExecutor: Executor,
     /**
+     * The interface to use for delaying execution, like during retries.
+     *
+     * This is primarily useful for using fake delays in tests.
+     *
+     * Defaults to real execution delays.
+     *
+     * This class takes ownership of the sleeper and closes it when closed.
+     */
+    @get:JvmName("sleeper") val sleeper: Sleeper,
+    /**
      * The clock to use for operations that require timing, like retries.
      *
      * This is primarily useful for using a fake clock in tests.
@@ -162,6 +172,7 @@ private constructor(
         private var checkJacksonVersionCompatibility: Boolean = true
         private var jsonMapper: JsonMapper = jsonMapper()
         private var streamHandlerExecutor: Executor? = null
+        private var sleeper: Sleeper? = null
         private var clock: Clock = Clock.systemUTC()
         private var baseUrl: String? = null
         private var headers: Headers.Builder = Headers.builder()
@@ -182,6 +193,7 @@ private constructor(
             checkJacksonVersionCompatibility = clientOptions.checkJacksonVersionCompatibility
             jsonMapper = clientOptions.jsonMapper
             streamHandlerExecutor = clientOptions.streamHandlerExecutor
+            sleeper = clientOptions.sleeper
             clock = clientOptions.clock
             baseUrl = clientOptions.baseUrl
             headers = clientOptions.headers.toBuilder()
@@ -240,6 +252,17 @@ private constructor(
                     PhantomReachableExecutorService(streamHandlerExecutor)
                 else streamHandlerExecutor
         }
+
+        /**
+         * The interface to use for delaying execution, like during retries.
+         *
+         * This is primarily useful for using fake delays in tests.
+         *
+         * Defaults to real execution delays.
+         *
+         * This class takes ownership of the sleeper and closes it when closed.
+         */
+        fun sleeper(sleeper: Sleeper) = apply { this.sleeper = PhantomReachableSleeper(sleeper) }
 
         /**
          * The clock to use for operations that require timing, like retries.
@@ -479,6 +502,25 @@ private constructor(
          */
         fun build(): ClientOptions {
             val httpClient = checkRequired("httpClient", httpClient)
+            val streamHandlerExecutor =
+                streamHandlerExecutor
+                    ?: PhantomReachableExecutorService(
+                        Executors.newCachedThreadPool(
+                            object : ThreadFactory {
+
+                                private val threadFactory: ThreadFactory =
+                                    Executors.defaultThreadFactory()
+                                private val count = AtomicLong(0)
+
+                                override fun newThread(runnable: Runnable): Thread =
+                                    threadFactory.newThread(runnable).also {
+                                        it.name =
+                                            "openai-stream-handler-thread-${count.getAndIncrement()}"
+                                    }
+                            }
+                        )
+                    )
+            val sleeper = sleeper ?: PhantomReachableSleeper(DefaultSleeper())
             val credential = checkRequired("credential", credential)
 
             val headers = Headers.builder()
@@ -530,26 +572,14 @@ private constructor(
                 httpClient,
                 RetryingHttpClient.builder()
                     .httpClient(httpClient)
+                    .sleeper(sleeper)
                     .clock(clock)
                     .maxRetries(maxRetries)
                     .build(),
                 checkJacksonVersionCompatibility,
                 jsonMapper,
-                streamHandlerExecutor
-                    ?: Executors.newCachedThreadPool(
-                        object : ThreadFactory {
-
-                            private val threadFactory: ThreadFactory =
-                                Executors.defaultThreadFactory()
-                            private val count = AtomicLong(0)
-
-                            override fun newThread(runnable: Runnable): Thread =
-                                threadFactory.newThread(runnable).also {
-                                    it.name =
-                                        "openai-stream-handler-thread-${count.getAndIncrement()}"
-                                }
-                        }
-                    ),
+                streamHandlerExecutor,
+                sleeper,
                 clock,
                 baseUrl,
                 headers.build(),
@@ -580,5 +610,6 @@ private constructor(
     fun close() {
         httpClient.close()
         (streamHandlerExecutor as? ExecutorService)?.shutdown()
+        sleeper.close()
     }
 }
