@@ -1,5 +1,13 @@
 # Changelog
 
+## 3.6.1 (2025-09-20)
+
+Full Changelog: [v3.6.0...v3.6.1](https://github.com/openai/openai-java/compare/v3.6.0...v3.6.1)
+
+### Chores
+
+* improve formatter performance ([3fce946](https://github.com/openai/openai-java/commit/3fce946567568c0dc92b247c984c4dfcb34f603d))
+
 ## 3.6.0 (2025-09-19)
 
 Full Changelog: [v3.5.3...v3.6.0](https://github.com/openai/openai-java/compare/v3.5.3...v3.6.0)
