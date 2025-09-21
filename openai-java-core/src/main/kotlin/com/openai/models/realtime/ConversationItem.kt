@@ -34,7 +34,7 @@ private constructor(
     private val functionCallOutput: RealtimeConversationItemFunctionCallOutput? = null,
     private val mcpApprovalResponse: RealtimeMcpApprovalResponse? = null,
     private val mcpListTools: RealtimeMcpListTools? = null,
-    private val mcpToolCall: RealtimeMcpToolCall? = null,
+    private val mcpCall: RealtimeMcpToolCall? = null,
     private val mcpApprovalRequest: RealtimeMcpApprovalRequest? = null,
     private val _json: JsonValue? = null,
 ) {
@@ -74,7 +74,7 @@ private constructor(
     fun mcpListTools(): Optional<RealtimeMcpListTools> = Optional.ofNullable(mcpListTools)
 
     /** A Realtime item representing an invocation of a tool on an MCP server. */
-    fun mcpToolCall(): Optional<RealtimeMcpToolCall> = Optional.ofNullable(mcpToolCall)
+    fun mcpCall(): Optional<RealtimeMcpToolCall> = Optional.ofNullable(mcpCall)
 
     /** A Realtime item requesting human approval of a tool invocation. */
     fun mcpApprovalRequest(): Optional<RealtimeMcpApprovalRequest> =
@@ -97,7 +97,7 @@ private constructor(
 
     fun isMcpListTools(): Boolean = mcpListTools != null
 
-    fun isMcpToolCall(): Boolean = mcpToolCall != null
+    fun isMcpCall(): Boolean = mcpCall != null
 
     fun isMcpApprovalRequest(): Boolean = mcpApprovalRequest != null
 
@@ -137,7 +137,7 @@ private constructor(
     fun asMcpListTools(): RealtimeMcpListTools = mcpListTools.getOrThrow("mcpListTools")
 
     /** A Realtime item representing an invocation of a tool on an MCP server. */
-    fun asMcpToolCall(): RealtimeMcpToolCall = mcpToolCall.getOrThrow("mcpToolCall")
+    fun asMcpCall(): RealtimeMcpToolCall = mcpCall.getOrThrow("mcpCall")
 
     /** A Realtime item requesting human approval of a tool invocation. */
     fun asMcpApprovalRequest(): RealtimeMcpApprovalRequest =
@@ -163,7 +163,7 @@ private constructor(
             functionCallOutput != null -> visitor.visitFunctionCallOutput(functionCallOutput)
             mcpApprovalResponse != null -> visitor.visitMcpApprovalResponse(mcpApprovalResponse)
             mcpListTools != null -> visitor.visitMcpListTools(mcpListTools)
-            mcpToolCall != null -> visitor.visitMcpToolCall(mcpToolCall)
+            mcpCall != null -> visitor.visitMcpCall(mcpCall)
             mcpApprovalRequest != null -> visitor.visitMcpApprovalRequest(mcpApprovalRequest)
             else -> visitor.unknown(_json)
         }
@@ -216,8 +216,8 @@ private constructor(
                     mcpListTools.validate()
                 }
 
-                override fun visitMcpToolCall(mcpToolCall: RealtimeMcpToolCall) {
-                    mcpToolCall.validate()
+                override fun visitMcpCall(mcpCall: RealtimeMcpToolCall) {
+                    mcpCall.validate()
                 }
 
                 override fun visitMcpApprovalRequest(
@@ -274,8 +274,7 @@ private constructor(
                 override fun visitMcpListTools(mcpListTools: RealtimeMcpListTools) =
                     mcpListTools.validity()
 
-                override fun visitMcpToolCall(mcpToolCall: RealtimeMcpToolCall) =
-                    mcpToolCall.validity()
+                override fun visitMcpCall(mcpCall: RealtimeMcpToolCall) = mcpCall.validity()
 
                 override fun visitMcpApprovalRequest(
                     mcpApprovalRequest: RealtimeMcpApprovalRequest
@@ -299,7 +298,7 @@ private constructor(
             functionCallOutput == other.functionCallOutput &&
             mcpApprovalResponse == other.mcpApprovalResponse &&
             mcpListTools == other.mcpListTools &&
-            mcpToolCall == other.mcpToolCall &&
+            mcpCall == other.mcpCall &&
             mcpApprovalRequest == other.mcpApprovalRequest
     }
 
@@ -312,7 +311,7 @@ private constructor(
             functionCallOutput,
             mcpApprovalResponse,
             mcpListTools,
-            mcpToolCall,
+            mcpCall,
             mcpApprovalRequest,
         )
 
@@ -329,7 +328,7 @@ private constructor(
             mcpApprovalResponse != null ->
                 "ConversationItem{mcpApprovalResponse=$mcpApprovalResponse}"
             mcpListTools != null -> "ConversationItem{mcpListTools=$mcpListTools}"
-            mcpToolCall != null -> "ConversationItem{mcpToolCall=$mcpToolCall}"
+            mcpCall != null -> "ConversationItem{mcpCall=$mcpCall}"
             mcpApprovalRequest != null -> "ConversationItem{mcpApprovalRequest=$mcpApprovalRequest}"
             _json != null -> "ConversationItem{_unknown=$_json}"
             else -> throw IllegalStateException("Invalid ConversationItem")
@@ -392,9 +391,7 @@ private constructor(
             ConversationItem(mcpListTools = mcpListTools)
 
         /** A Realtime item representing an invocation of a tool on an MCP server. */
-        @JvmStatic
-        fun ofMcpToolCall(mcpToolCall: RealtimeMcpToolCall) =
-            ConversationItem(mcpToolCall = mcpToolCall)
+        @JvmStatic fun ofMcpCall(mcpCall: RealtimeMcpToolCall) = ConversationItem(mcpCall = mcpCall)
 
         /** A Realtime item requesting human approval of a tool invocation. */
         @JvmStatic
@@ -445,7 +442,7 @@ private constructor(
         fun visitMcpListTools(mcpListTools: RealtimeMcpListTools): T
 
         /** A Realtime item representing an invocation of a tool on an MCP server. */
-        fun visitMcpToolCall(mcpToolCall: RealtimeMcpToolCall): T
+        fun visitMcpCall(mcpCall: RealtimeMcpToolCall): T
 
         /** A Realtime item requesting human approval of a tool invocation. */
         fun visitMcpApprovalRequest(mcpApprovalRequest: RealtimeMcpApprovalRequest): T
@@ -546,9 +543,9 @@ private constructor(
                         ConversationItem(mcpListTools = it, _json = json)
                     } ?: ConversationItem(_json = json)
                 }
-                "mcp_tool_call" -> {
+                "mcp_call" -> {
                     return tryDeserialize(node, jacksonTypeRef<RealtimeMcpToolCall>())?.let {
-                        ConversationItem(mcpToolCall = it, _json = json)
+                        ConversationItem(mcpCall = it, _json = json)
                     } ?: ConversationItem(_json = json)
                 }
                 "mcp_approval_request" -> {
@@ -581,7 +578,7 @@ private constructor(
                 value.mcpApprovalResponse != null ->
                     generator.writeObject(value.mcpApprovalResponse)
                 value.mcpListTools != null -> generator.writeObject(value.mcpListTools)
-                value.mcpToolCall != null -> generator.writeObject(value.mcpToolCall)
+                value.mcpCall != null -> generator.writeObject(value.mcpCall)
                 value.mcpApprovalRequest != null -> generator.writeObject(value.mcpApprovalRequest)
                 value._json != null -> generator.writeObject(value._json)
                 else -> throw IllegalStateException("Invalid ConversationItem")
