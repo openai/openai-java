@@ -498,9 +498,8 @@ private constructor(
         fun addInput(mcpListTools: RealtimeMcpListTools) =
             addInput(ConversationItem.ofMcpListTools(mcpListTools))
 
-        /** Alias for calling [addInput] with `ConversationItem.ofMcpToolCall(mcpToolCall)`. */
-        fun addInput(mcpToolCall: RealtimeMcpToolCall) =
-            addInput(ConversationItem.ofMcpToolCall(mcpToolCall))
+        /** Alias for calling [addInput] with `ConversationItem.ofMcpCall(mcpCall)`. */
+        fun addInput(mcpCall: RealtimeMcpToolCall) = addInput(ConversationItem.ofMcpCall(mcpCall))
 
         /**
          * Alias for calling [addInput] with
