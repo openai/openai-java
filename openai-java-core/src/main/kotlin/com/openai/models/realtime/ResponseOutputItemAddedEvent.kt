@@ -277,9 +277,8 @@ private constructor(
         fun item(mcpListTools: RealtimeMcpListTools) =
             item(ConversationItem.ofMcpListTools(mcpListTools))
 
-        /** Alias for calling [item] with `ConversationItem.ofMcpToolCall(mcpToolCall)`. */
-        fun item(mcpToolCall: RealtimeMcpToolCall) =
-            item(ConversationItem.ofMcpToolCall(mcpToolCall))
+        /** Alias for calling [item] with `ConversationItem.ofMcpCall(mcpCall)`. */
+        fun item(mcpCall: RealtimeMcpToolCall) = item(ConversationItem.ofMcpCall(mcpCall))
 
         /**
          * Alias for calling [item] with

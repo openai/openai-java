@@ -42,7 +42,7 @@ internal class ConversationItemTest {
         assertThat(conversationItem.functionCallOutput()).isEmpty
         assertThat(conversationItem.mcpApprovalResponse()).isEmpty
         assertThat(conversationItem.mcpListTools()).isEmpty
-        assertThat(conversationItem.mcpToolCall()).isEmpty
+        assertThat(conversationItem.mcpCall()).isEmpty
         assertThat(conversationItem.mcpApprovalRequest()).isEmpty
     }
 
@@ -105,7 +105,7 @@ internal class ConversationItemTest {
         assertThat(conversationItem.functionCallOutput()).isEmpty
         assertThat(conversationItem.mcpApprovalResponse()).isEmpty
         assertThat(conversationItem.mcpListTools()).isEmpty
-        assertThat(conversationItem.mcpToolCall()).isEmpty
+        assertThat(conversationItem.mcpCall()).isEmpty
         assertThat(conversationItem.mcpApprovalRequest()).isEmpty
     }
 
@@ -170,7 +170,7 @@ internal class ConversationItemTest {
         assertThat(conversationItem.functionCallOutput()).isEmpty
         assertThat(conversationItem.mcpApprovalResponse()).isEmpty
         assertThat(conversationItem.mcpListTools()).isEmpty
-        assertThat(conversationItem.mcpToolCall()).isEmpty
+        assertThat(conversationItem.mcpCall()).isEmpty
         assertThat(conversationItem.mcpApprovalRequest()).isEmpty
     }
 
@@ -224,7 +224,7 @@ internal class ConversationItemTest {
         assertThat(conversationItem.functionCallOutput()).isEmpty
         assertThat(conversationItem.mcpApprovalResponse()).isEmpty
         assertThat(conversationItem.mcpListTools()).isEmpty
-        assertThat(conversationItem.mcpToolCall()).isEmpty
+        assertThat(conversationItem.mcpCall()).isEmpty
         assertThat(conversationItem.mcpApprovalRequest()).isEmpty
     }
 
@@ -272,7 +272,7 @@ internal class ConversationItemTest {
         assertThat(conversationItem.functionCallOutput()).contains(functionCallOutput)
         assertThat(conversationItem.mcpApprovalResponse()).isEmpty
         assertThat(conversationItem.mcpListTools()).isEmpty
-        assertThat(conversationItem.mcpToolCall()).isEmpty
+        assertThat(conversationItem.mcpCall()).isEmpty
         assertThat(conversationItem.mcpApprovalRequest()).isEmpty
     }
 
@@ -318,7 +318,7 @@ internal class ConversationItemTest {
         assertThat(conversationItem.functionCallOutput()).isEmpty
         assertThat(conversationItem.mcpApprovalResponse()).contains(mcpApprovalResponse)
         assertThat(conversationItem.mcpListTools()).isEmpty
-        assertThat(conversationItem.mcpToolCall()).isEmpty
+        assertThat(conversationItem.mcpCall()).isEmpty
         assertThat(conversationItem.mcpApprovalRequest()).isEmpty
     }
 
@@ -369,7 +369,7 @@ internal class ConversationItemTest {
         assertThat(conversationItem.functionCallOutput()).isEmpty
         assertThat(conversationItem.mcpApprovalResponse()).isEmpty
         assertThat(conversationItem.mcpListTools()).contains(mcpListTools)
-        assertThat(conversationItem.mcpToolCall()).isEmpty
+        assertThat(conversationItem.mcpCall()).isEmpty
         assertThat(conversationItem.mcpApprovalRequest()).isEmpty
     }
 
@@ -402,8 +402,8 @@ internal class ConversationItemTest {
     }
 
     @Test
-    fun ofMcpToolCall() {
-        val mcpToolCall =
+    fun ofMcpCall() {
+        val mcpCall =
             RealtimeMcpToolCall.builder()
                 .id("id")
                 .arguments("arguments")
@@ -414,7 +414,7 @@ internal class ConversationItemTest {
                 .output("output")
                 .build()
 
-        val conversationItem = ConversationItem.ofMcpToolCall(mcpToolCall)
+        val conversationItem = ConversationItem.ofMcpCall(mcpCall)
 
         assertThat(conversationItem.realtimeConversationItemSystemMessage()).isEmpty
         assertThat(conversationItem.realtimeConversationItemUserMessage()).isEmpty
@@ -423,15 +423,15 @@ internal class ConversationItemTest {
         assertThat(conversationItem.functionCallOutput()).isEmpty
         assertThat(conversationItem.mcpApprovalResponse()).isEmpty
         assertThat(conversationItem.mcpListTools()).isEmpty
-        assertThat(conversationItem.mcpToolCall()).contains(mcpToolCall)
+        assertThat(conversationItem.mcpCall()).contains(mcpCall)
         assertThat(conversationItem.mcpApprovalRequest()).isEmpty
     }
 
     @Test
-    fun ofMcpToolCallRoundtrip() {
+    fun ofMcpCallRoundtrip() {
         val jsonMapper = jsonMapper()
         val conversationItem =
-            ConversationItem.ofMcpToolCall(
+            ConversationItem.ofMcpCall(
                 RealtimeMcpToolCall.builder()
                     .id("id")
                     .arguments("arguments")
@@ -471,7 +471,7 @@ internal class ConversationItemTest {
         assertThat(conversationItem.functionCallOutput()).isEmpty
         assertThat(conversationItem.mcpApprovalResponse()).isEmpty
         assertThat(conversationItem.mcpListTools()).isEmpty
-        assertThat(conversationItem.mcpToolCall()).isEmpty
+        assertThat(conversationItem.mcpCall()).isEmpty
         assertThat(conversationItem.mcpApprovalRequest()).contains(mcpApprovalRequest)
     }
 

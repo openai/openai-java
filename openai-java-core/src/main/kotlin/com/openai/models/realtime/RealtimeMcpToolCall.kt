@@ -100,11 +100,11 @@ private constructor(
     fun serverLabel(): String = serverLabel.getRequired("server_label")
 
     /**
-     * The type of the item. Always `mcp_tool_call`.
+     * The type of the item. Always `mcp_call`.
      *
      * Expected to always return the following:
      * ```java
-     * JsonValue.from("mcp_tool_call")
+     * JsonValue.from("mcp_call")
      * ```
      *
      * However, this method can be useful for debugging and logging (e.g. if the server responded
@@ -225,7 +225,7 @@ private constructor(
         private var arguments: JsonField<String>? = null
         private var name: JsonField<String>? = null
         private var serverLabel: JsonField<String>? = null
-        private var type: JsonValue = JsonValue.from("mcp_tool_call")
+        private var type: JsonValue = JsonValue.from("mcp_call")
         private var approvalRequestId: JsonField<String> = JsonMissing.of()
         private var error: JsonField<Error> = JsonMissing.of()
         private var output: JsonField<String> = JsonMissing.of()
@@ -296,7 +296,7 @@ private constructor(
          * It is usually unnecessary to call this method because the field defaults to the
          * following:
          * ```java
-         * JsonValue.from("mcp_tool_call")
+         * JsonValue.from("mcp_call")
          * ```
          *
          * This method is primarily for setting the field to an undocumented or not yet supported
@@ -432,7 +432,7 @@ private constructor(
         name()
         serverLabel()
         _type().let {
-            if (it != JsonValue.from("mcp_tool_call")) {
+            if (it != JsonValue.from("mcp_call")) {
                 throw OpenAIInvalidDataException("'type' is invalid, received $it")
             }
         }
@@ -461,7 +461,7 @@ private constructor(
             (if (arguments.asKnown().isPresent) 1 else 0) +
             (if (name.asKnown().isPresent) 1 else 0) +
             (if (serverLabel.asKnown().isPresent) 1 else 0) +
-            type.let { if (it == JsonValue.from("mcp_tool_call")) 1 else 0 } +
+            type.let { if (it == JsonValue.from("mcp_call")) 1 else 0 } +
             (if (approvalRequestId.asKnown().isPresent) 1 else 0) +
             (error.asKnown().getOrNull()?.validity() ?: 0) +
             (if (output.asKnown().isPresent) 1 else 0)
