@@ -1,5 +1,20 @@
 # Changelog
 
+## 3.6.1 (2025-09-22)
+
+Full Changelog: [v3.6.0...v3.6.1](https://github.com/openai/openai-java/compare/v3.6.0...v3.6.1)
+
+### Bug Fixes
+
+* **api:** fix mcp tool name ([d2e947d](https://github.com/openai/openai-java/commit/d2e947dc5a8585f0200c6ff96d093fa0997a39e7))
+
+
+### Chores
+
+* **api:** openapi updates for conversations ([0dbcc0a](https://github.com/openai/openai-java/commit/0dbcc0a4c7cdd514a3405213fc173708ca1b5013))
+* improve example values ([109a350](https://github.com/openai/openai-java/commit/109a350313bb39d7d62d56020fdc458d798924ee))
+* improve formatter performance ([3fce946](https://github.com/openai/openai-java/commit/3fce946567568c0dc92b247c984c4dfcb34f603d))
+
 ## 3.6.0 (2025-09-19)
 
 Full Changelog: [v3.5.3...v3.6.0](https://github.com/openai/openai-java/compare/v3.5.3...v3.6.0)
