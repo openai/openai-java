@@ -48,7 +48,7 @@ interface ConversationService {
     fun create(requestOptions: RequestOptions): Conversation =
         create(ConversationCreateParams.none(), requestOptions)
 
-    /** Get a conversation with the given ID. */
+    /** Get a conversation */
     fun retrieve(conversationId: String): Conversation =
         retrieve(conversationId, ConversationRetrieveParams.none())
 
@@ -80,7 +80,7 @@ interface ConversationService {
     fun retrieve(conversationId: String, requestOptions: RequestOptions): Conversation =
         retrieve(conversationId, ConversationRetrieveParams.none(), requestOptions)
 
-    /** Update a conversation's metadata with the given ID. */
+    /** Update a conversation */
     fun update(conversationId: String, params: ConversationUpdateParams): Conversation =
         update(conversationId, params, RequestOptions.none())
 
@@ -102,7 +102,7 @@ interface ConversationService {
         requestOptions: RequestOptions = RequestOptions.none(),
     ): Conversation
 
-    /** Delete a conversation with the given ID. */
+    /** Delete a conversation. Items in the conversation will not be deleted. */
     fun delete(conversationId: String): ConversationDeletedResource =
         delete(conversationId, ConversationDeleteParams.none())
 

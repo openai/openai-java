@@ -11,7 +11,7 @@ import java.util.Objects
 import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
-/** Delete a conversation with the given ID. */
+/** Delete a conversation. Items in the conversation will not be deleted. */
 class ConversationDeleteParams
 private constructor(
     private val conversationId: String?,

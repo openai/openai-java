@@ -52,7 +52,7 @@ internal class ConversationUpdateParamsTest {
         val body = params._body()
 
         assertThat(body.metadata())
-            .isEqualTo(
+            .contains(
                 ConversationUpdateParams.Metadata.builder()
                     .putAdditionalProperty("foo", JsonValue.from("string"))
                     .build()
