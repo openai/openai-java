@@ -9,7 +9,7 @@ import java.util.Objects
 import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
-/** Get a conversation with the given ID. */
+/** Get a conversation */
 class ConversationRetrieveParams
 private constructor(
     private val conversationId: String?,

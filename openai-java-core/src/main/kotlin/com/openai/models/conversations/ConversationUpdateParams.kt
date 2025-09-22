@@ -21,7 +21,7 @@ import java.util.Objects
 import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
-/** Update a conversation's metadata with the given ID. */
+/** Update a conversation */
 class ConversationUpdateParams
 private constructor(
     private val conversationId: String?,
@@ -35,13 +35,15 @@ private constructor(
     /**
      * Set of 16 key-value pairs that can be attached to an object. This can be useful for storing
      * additional information about the object in a structured format, and querying for objects via
-     * API or the dashboard. Keys are strings with a maximum length of 64 characters. Values are
-     * strings with a maximum length of 512 characters.
+     * API or the dashboard.
      *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     * Keys are strings with a maximum length of 64 characters. Values are strings with a maximum
+     * length of 512 characters.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
      */
-    fun metadata(): Metadata = body.metadata()
+    fun metadata(): Optional<Metadata> = body.metadata()
 
     /**
      * Returns the raw JSON value of [metadata].
@@ -107,10 +109,15 @@ private constructor(
         /**
          * Set of 16 key-value pairs that can be attached to an object. This can be useful for
          * storing additional information about the object in a structured format, and querying for
-         * objects via API or the dashboard. Keys are strings with a maximum length of 64
-         * characters. Values are strings with a maximum length of 512 characters.
+         * objects via API or the dashboard.
+         *
+         * Keys are strings with a maximum length of 64 characters. Values are strings with a
+         * maximum length of 512 characters.
          */
-        fun metadata(metadata: Metadata) = apply { body.metadata(metadata) }
+        fun metadata(metadata: Metadata?) = apply { body.metadata(metadata) }
+
+        /** Alias for calling [Builder.metadata] with `metadata.orElse(null)`. */
+        fun metadata(metadata: Optional<Metadata>) = metadata(metadata.getOrNull())
 
         /**
          * Sets [Builder.metadata] to an arbitrary JSON value.
@@ -287,13 +294,15 @@ private constructor(
         /**
          * Set of 16 key-value pairs that can be attached to an object. This can be useful for
          * storing additional information about the object in a structured format, and querying for
-         * objects via API or the dashboard. Keys are strings with a maximum length of 64
-         * characters. Values are strings with a maximum length of 512 characters.
+         * objects via API or the dashboard.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         * Keys are strings with a maximum length of 64 characters. Values are strings with a
+         * maximum length of 512 characters.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
          */
-        fun metadata(): Metadata = metadata.getRequired("metadata")
+        fun metadata(): Optional<Metadata> = metadata.getOptional("metadata")
 
         /**
          * Returns the raw JSON value of [metadata].
@@ -342,10 +351,15 @@ private constructor(
             /**
              * Set of 16 key-value pairs that can be attached to an object. This can be useful for
              * storing additional information about the object in a structured format, and querying
-             * for objects via API or the dashboard. Keys are strings with a maximum length of 64
-             * characters. Values are strings with a maximum length of 512 characters.
+             * for objects via API or the dashboard.
+             *
+             * Keys are strings with a maximum length of 64 characters. Values are strings with a
+             * maximum length of 512 characters.
              */
-            fun metadata(metadata: Metadata) = metadata(JsonField.of(metadata))
+            fun metadata(metadata: Metadata?) = metadata(JsonField.ofNullable(metadata))
+
+            /** Alias for calling [Builder.metadata] with `metadata.orElse(null)`. */
+            fun metadata(metadata: Optional<Metadata>) = metadata(metadata.getOrNull())
 
             /**
              * Sets [Builder.metadata] to an arbitrary JSON value.
@@ -398,7 +412,7 @@ private constructor(
                 return@apply
             }
 
-            metadata().validate()
+            metadata().ifPresent { it.validate() }
             validated = true
         }
 
@@ -440,8 +454,10 @@ private constructor(
     /**
      * Set of 16 key-value pairs that can be attached to an object. This can be useful for storing
      * additional information about the object in a structured format, and querying for objects via
-     * API or the dashboard. Keys are strings with a maximum length of 64 characters. Values are
-     * strings with a maximum length of 512 characters.
+     * API or the dashboard.
+     *
+     * Keys are strings with a maximum length of 64 characters. Values are strings with a maximum
+     * length of 512 characters.
      */
     class Metadata
     @JsonCreator

@@ -438,7 +438,6 @@ private constructor(
 
     override fun _queryParams(): QueryParams = additionalQueryParams
 
-    /** Create a conversation */
     class Body
     private constructor(
         private val items: JsonField<List<ResponseInputItem>>,
