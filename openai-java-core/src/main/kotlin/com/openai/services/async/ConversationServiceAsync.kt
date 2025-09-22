@@ -49,7 +49,7 @@ interface ConversationServiceAsync {
     fun create(requestOptions: RequestOptions): CompletableFuture<Conversation> =
         create(ConversationCreateParams.none(), requestOptions)
 
-    /** Get a conversation with the given ID. */
+    /** Get a conversation */
     fun retrieve(conversationId: String): CompletableFuture<Conversation> =
         retrieve(conversationId, ConversationRetrieveParams.none())
 
@@ -84,7 +84,7 @@ interface ConversationServiceAsync {
     ): CompletableFuture<Conversation> =
         retrieve(conversationId, ConversationRetrieveParams.none(), requestOptions)
 
-    /** Update a conversation's metadata with the given ID. */
+    /** Update a conversation */
     fun update(
         conversationId: String,
         params: ConversationUpdateParams,
@@ -108,7 +108,7 @@ interface ConversationServiceAsync {
         requestOptions: RequestOptions = RequestOptions.none(),
     ): CompletableFuture<Conversation>
 
-    /** Delete a conversation with the given ID. */
+    /** Delete a conversation. Items in the conversation will not be deleted. */
     fun delete(conversationId: String): CompletableFuture<ConversationDeletedResource> =
         delete(conversationId, ConversationDeleteParams.none())
 
