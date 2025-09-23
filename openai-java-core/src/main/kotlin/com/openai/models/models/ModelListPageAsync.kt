@@ -28,7 +28,7 @@ private constructor(
      */
     fun data(): List<Model> = response._data().getOptional("data").getOrNull() ?: emptyList()
 
-    /** @see ModelListPageResponse.object\_ */
+    /** @see ModelListPageResponse.object_ */
     fun object_(): JsonValue = response._object_()
 
     override fun items(): List<Model> = data()
