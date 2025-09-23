@@ -1,5 +1,13 @@
 # Changelog
 
+## 3.7.0 (2025-09-23)
+
+Full Changelog: [v3.6.1...v3.7.0](https://github.com/openai/openai-java/compare/v3.6.1...v3.7.0)
+
+### Features
+
+* **api:** gpt-5-codex ([cf7d02f](https://github.com/openai/openai-java/commit/cf7d02ff2624397628eefd5bdcd025b60980691c))
+
 ## 3.6.1 (2025-09-22)
 
 Full Changelog: [v3.6.0...v3.6.1](https://github.com/openai/openai-java/compare/v3.6.0...v3.6.1)
