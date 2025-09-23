@@ -326,9 +326,9 @@ private constructor(
      *   processed with the corresponding service tier.
      * - When not set, the default behavior is 'auto'.
      *
-     * When the `service_tier` parameter is set, the response body will include the `service_tier`
-     * value based on the processing mode actually used to serve the request. This response value
-     * may be different from the value set in the parameter.
+     *   When the `service_tier` parameter is set, the response body will include the `service_tier`
+     *   value based on the processing mode actually used to serve the request. This response value
+     *   may be different from the value set in the parameter.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -1491,9 +1491,9 @@ private constructor(
          *   processed with the corresponding service tier.
          * - When not set, the default behavior is 'auto'.
          *
-         * When the `service_tier` parameter is set, the response body will include the
-         * `service_tier` value based on the processing mode actually used to serve the request.
-         * This response value may be different from the value set in the parameter.
+         *   When the `service_tier` parameter is set, the response body will include the
+         *   `service_tier` value based on the processing mode actually used to serve the request.
+         *   This response value may be different from the value set in the parameter.
          */
         fun serviceTier(serviceTier: ServiceTier?) = apply { body.serviceTier(serviceTier) }
 
@@ -2408,9 +2408,9 @@ private constructor(
          *   processed with the corresponding service tier.
          * - When not set, the default behavior is 'auto'.
          *
-         * When the `service_tier` parameter is set, the response body will include the
-         * `service_tier` value based on the processing mode actually used to serve the request.
-         * This response value may be different from the value set in the parameter.
+         *   When the `service_tier` parameter is set, the response body will include the
+         *   `service_tier` value based on the processing mode actually used to serve the request.
+         *   This response value may be different from the value set in the parameter.
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
@@ -3722,9 +3722,9 @@ private constructor(
              *   processed with the corresponding service tier.
              * - When not set, the default behavior is 'auto'.
              *
-             * When the `service_tier` parameter is set, the response body will include the
-             * `service_tier` value based on the processing mode actually used to serve the request.
-             * This response value may be different from the value set in the parameter.
+             *   When the `service_tier` parameter is set, the response body will include the
+             *   `service_tier` value based on the processing mode actually used to serve the
+             *   request. This response value may be different from the value set in the parameter.
              */
             fun serviceTier(serviceTier: ServiceTier?) =
                 serviceTier(JsonField.ofNullable(serviceTier))
@@ -5563,9 +5563,9 @@ private constructor(
      *   processed with the corresponding service tier.
      * - When not set, the default behavior is 'auto'.
      *
-     * When the `service_tier` parameter is set, the response body will include the `service_tier`
-     * value based on the processing mode actually used to serve the request. This response value
-     * may be different from the value set in the parameter.
+     *   When the `service_tier` parameter is set, the response body will include the `service_tier`
+     *   value based on the processing mode actually used to serve the request. This response value
+     *   may be different from the value set in the parameter.
      */
     class ServiceTier @JsonCreator private constructor(private val value: JsonField<String>) :
         Enum {

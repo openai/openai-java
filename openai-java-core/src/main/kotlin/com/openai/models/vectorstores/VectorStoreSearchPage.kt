@@ -26,7 +26,7 @@ private constructor(
     fun data(): List<VectorStoreSearchResponse> =
         response._data().getOptional("data").getOrNull() ?: emptyList()
 
-    /** @see VectorStoreSearchPageResponse.object\_ */
+    /** @see VectorStoreSearchPageResponse.object_ */
     fun object_(): JsonValue = response._object_()
 
     override fun items(): List<VectorStoreSearchResponse> = data()

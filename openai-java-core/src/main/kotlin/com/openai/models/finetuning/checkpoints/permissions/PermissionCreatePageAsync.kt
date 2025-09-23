@@ -29,7 +29,7 @@ private constructor(
     fun data(): List<PermissionCreateResponse> =
         response._data().getOptional("data").getOrNull() ?: emptyList()
 
-    /** @see PermissionCreatePageResponse.object\_ */
+    /** @see PermissionCreatePageResponse.object_ */
     fun object_(): JsonValue = response._object_()
 
     override fun items(): List<PermissionCreateResponse> = data()

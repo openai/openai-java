@@ -26,7 +26,7 @@ private constructor(
     fun data(): List<FileContentResponse> =
         response._data().getOptional("data").getOrNull() ?: emptyList()
 
-    /** @see FileContentPageResponse.object\_ */
+    /** @see FileContentPageResponse.object_ */
     fun object_(): JsonValue = response._object_()
 
     override fun items(): List<FileContentResponse> = data()
