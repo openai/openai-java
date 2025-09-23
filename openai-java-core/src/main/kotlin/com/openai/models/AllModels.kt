@@ -252,6 +252,8 @@ private constructor(
 
             @JvmField val COMPUTER_USE_PREVIEW_2025_03_11 = of("computer-use-preview-2025-03-11")
 
+            @JvmField val GPT_5_CODEX = of("gpt-5-codex")
+
             @JvmStatic fun of(value: String) = ResponsesOnlyModel(JsonField.of(value))
         }
 
@@ -267,6 +269,7 @@ private constructor(
             O4_MINI_DEEP_RESEARCH_2025_06_26,
             COMPUTER_USE_PREVIEW,
             COMPUTER_USE_PREVIEW_2025_03_11,
+            GPT_5_CODEX,
         }
 
         /**
@@ -289,6 +292,7 @@ private constructor(
             O4_MINI_DEEP_RESEARCH_2025_06_26,
             COMPUTER_USE_PREVIEW,
             COMPUTER_USE_PREVIEW_2025_03_11,
+            GPT_5_CODEX,
             /**
              * An enum member indicating that [ResponsesOnlyModel] was instantiated with an unknown
              * value.
@@ -315,6 +319,7 @@ private constructor(
                 O4_MINI_DEEP_RESEARCH_2025_06_26 -> Value.O4_MINI_DEEP_RESEARCH_2025_06_26
                 COMPUTER_USE_PREVIEW -> Value.COMPUTER_USE_PREVIEW
                 COMPUTER_USE_PREVIEW_2025_03_11 -> Value.COMPUTER_USE_PREVIEW_2025_03_11
+                GPT_5_CODEX -> Value.GPT_5_CODEX
                 else -> Value._UNKNOWN
             }
 
@@ -339,6 +344,7 @@ private constructor(
                 O4_MINI_DEEP_RESEARCH_2025_06_26 -> Known.O4_MINI_DEEP_RESEARCH_2025_06_26
                 COMPUTER_USE_PREVIEW -> Known.COMPUTER_USE_PREVIEW
                 COMPUTER_USE_PREVIEW_2025_03_11 -> Known.COMPUTER_USE_PREVIEW_2025_03_11
+                GPT_5_CODEX -> Known.GPT_5_CODEX
                 else -> throw OpenAIInvalidDataException("Unknown ResponsesOnlyModel: $value")
             }
 
