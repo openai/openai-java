@@ -34,6 +34,7 @@ import kotlin.jvm.optionals.getOrNull
  * user. With o1 models and newer, `developer` messages replace the previous `system` messages.
  */
 class ChatCompletionDeveloperMessageParam
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val content: JsonField<Content>,
     private val role: JsonValue,

@@ -19,6 +19,7 @@ import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
 class GraderRunResponse
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val metadata: JsonField<Metadata>,
     private val modelGraderTokenUsagePerModel: JsonField<ModelGraderTokenUsagePerModel>,
@@ -270,6 +271,7 @@ private constructor(
             (subRewards.asKnown().getOrNull()?.validity() ?: 0)
 
     class Metadata
+    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(
         private val errors: JsonField<Errors>,
         private val executionTime: JsonField<Double>,
@@ -650,6 +652,7 @@ private constructor(
                 (if (type.asKnown().isPresent) 1 else 0)
 
         class Errors
+        @JsonCreator(mode = JsonCreator.Mode.DISABLED)
         private constructor(
             private val formulaParseError: JsonField<Boolean>,
             private val invalidVariableError: JsonField<Boolean>,

@@ -17,6 +17,7 @@ import java.util.Objects
 
 /** Returned when an MCP tool call has failed. */
 class ResponseMcpCallFailed
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val eventId: JsonField<String>,
     private val itemId: JsonField<String>,

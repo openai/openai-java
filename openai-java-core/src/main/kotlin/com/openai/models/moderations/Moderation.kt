@@ -21,6 +21,7 @@ import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
 class Moderation
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val categories: JsonField<Categories>,
     private val categoryAppliedInputTypes: JsonField<CategoryAppliedInputTypes>,
@@ -291,6 +292,7 @@ private constructor(
 
     /** A list of the categories, and whether they are flagged or not. */
     class Categories
+    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(
         private val harassment: JsonField<Boolean>,
         private val harassmentThreatening: JsonField<Boolean>,
@@ -1058,6 +1060,7 @@ private constructor(
 
     /** A list of the categories along with the input type(s) that the score applies to. */
     class CategoryAppliedInputTypes
+    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(
         private val harassment: JsonField<List<Harassment>>,
         private val harassmentThreatening: JsonField<List<HarassmentThreatening>>,
@@ -3615,6 +3618,7 @@ private constructor(
 
     /** A list of the categories along with their scores as predicted by model. */
     class CategoryScores
+    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(
         private val harassment: JsonField<Double>,
         private val harassmentThreatening: JsonField<Double>,

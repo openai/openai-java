@@ -17,6 +17,7 @@ import java.util.Objects
 
 /** Emitted when there is a delta (partial update) to the arguments of an MCP tool call. */
 class ResponseMcpCallArgumentsDeltaEvent
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val delta: JsonField<String>,
     private val itemId: JsonField<String>,

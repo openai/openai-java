@@ -578,6 +578,7 @@ private constructor(
      * [Learn more about MCP](https://platform.openai.com/docs/guides/tools-remote-mcp).
      */
     class Mcp
+    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(
         private val serverLabel: JsonField<String>,
         private val type: JsonValue,
@@ -1312,6 +1313,7 @@ private constructor(
 
             /** A filter object to specify which tools are allowed. */
             class McpToolFilter
+            @JsonCreator(mode = JsonCreator.Mode.DISABLED)
             private constructor(
                 private val readOnly: JsonField<Boolean>,
                 private val toolNames: JsonField<List<String>>,
@@ -2062,6 +2064,7 @@ private constructor(
              * or a filter object associated with tools that require approval.
              */
             class McpToolApprovalFilter
+            @JsonCreator(mode = JsonCreator.Mode.DISABLED)
             private constructor(
                 private val always: JsonField<Always>,
                 private val never: JsonField<Never>,
@@ -2234,6 +2237,7 @@ private constructor(
 
                 /** A filter object to specify which tools are allowed. */
                 class Always
+                @JsonCreator(mode = JsonCreator.Mode.DISABLED)
                 private constructor(
                     private val readOnly: JsonField<Boolean>,
                     private val toolNames: JsonField<List<String>>,
@@ -2457,6 +2461,7 @@ private constructor(
 
                 /** A filter object to specify which tools are allowed. */
                 class Never
+                @JsonCreator(mode = JsonCreator.Mode.DISABLED)
                 private constructor(
                     private val readOnly: JsonField<Boolean>,
                     private val toolNames: JsonField<List<String>>,
@@ -2883,6 +2888,7 @@ private constructor(
 
     /** A tool that runs Python code to help generate a response to a prompt. */
     class CodeInterpreter
+    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(
         private val container: JsonField<Container>,
         private val type: JsonValue,
@@ -3294,6 +3300,7 @@ private constructor(
              * files to run the code on.
              */
             class CodeInterpreterToolAuto
+            @JsonCreator(mode = JsonCreator.Mode.DISABLED)
             private constructor(
                 private val type: JsonValue,
                 private val fileIds: JsonField<List<String>>,
@@ -3528,6 +3535,7 @@ private constructor(
 
     /** A tool that generates images using a model like `gpt-image-1`. */
     class ImageGeneration
+    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(
         private val type: JsonValue,
         private val background: JsonField<Background>,
@@ -4378,6 +4386,7 @@ private constructor(
          * (string, optional).
          */
         class InputImageMask
+        @JsonCreator(mode = JsonCreator.Mode.DISABLED)
         private constructor(
             private val fileId: JsonField<String>,
             private val imageUrl: JsonField<String>,

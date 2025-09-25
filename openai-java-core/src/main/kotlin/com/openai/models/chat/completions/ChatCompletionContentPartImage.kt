@@ -20,6 +20,7 @@ import kotlin.jvm.optionals.getOrNull
 
 /** Learn about [image inputs](https://platform.openai.com/docs/guides/vision). */
 class ChatCompletionContentPartImage
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val imageUrl: JsonField<ImageUrl>,
     private val type: JsonValue,
@@ -198,6 +199,7 @@ private constructor(
             type.let { if (it == JsonValue.from("image_url")) 1 else 0 }
 
     class ImageUrl
+    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(
         private val url: JsonField<String>,
         private val detail: JsonField<Detail>,

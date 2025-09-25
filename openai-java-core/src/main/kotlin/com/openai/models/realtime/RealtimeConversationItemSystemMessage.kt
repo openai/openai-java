@@ -28,6 +28,7 @@ import kotlin.jvm.optionals.getOrNull
  * "the user is now asking about a different topic"), use system messages.
  */
 class RealtimeConversationItemSystemMessage
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val content: JsonField<List<Content>>,
     private val role: JsonValue,
@@ -370,6 +371,7 @@ private constructor(
             (status.asKnown().getOrNull()?.validity() ?: 0)
 
     class Content
+    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(
         private val text: JsonField<String>,
         private val type: JsonField<Type>,

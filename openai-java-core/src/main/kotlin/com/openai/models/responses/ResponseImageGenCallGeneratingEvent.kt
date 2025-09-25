@@ -19,6 +19,7 @@ import java.util.Objects
  * Emitted when an image generation tool call is actively generating an image (intermediate state).
  */
 class ResponseImageGenCallGeneratingEvent
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val itemId: JsonField<String>,
     private val outputIndex: JsonField<Long>,

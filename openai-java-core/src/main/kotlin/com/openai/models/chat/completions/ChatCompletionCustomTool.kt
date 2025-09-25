@@ -30,6 +30,7 @@ import kotlin.jvm.optionals.getOrNull
 
 /** A custom tool that processes input using a specified format. */
 class ChatCompletionCustomTool
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val custom: JsonField<Custom>,
     private val type: JsonValue,
@@ -209,6 +210,7 @@ private constructor(
 
     /** Properties of the custom tool. */
     class Custom
+    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(
         private val name: JsonField<String>,
         private val description: JsonField<String>,
@@ -624,6 +626,7 @@ private constructor(
 
             /** A grammar defined by the user. */
             class Grammar
+            @JsonCreator(mode = JsonCreator.Mode.DISABLED)
             private constructor(
                 private val grammar: JsonField<InnerGrammar>,
                 private val type: JsonValue,
@@ -814,6 +817,7 @@ private constructor(
 
                 /** Your chosen grammar. */
                 class InnerGrammar
+                @JsonCreator(mode = JsonCreator.Mode.DISABLED)
                 private constructor(
                     private val definition: JsonField<String>,
                     private val syntax: JsonField<Syntax>,

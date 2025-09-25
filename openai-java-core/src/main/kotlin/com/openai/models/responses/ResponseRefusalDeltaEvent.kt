@@ -17,6 +17,7 @@ import java.util.Objects
 
 /** Emitted when there is a partial refusal text. */
 class ResponseRefusalDeltaEvent
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val contentIndex: JsonField<Long>,
     private val delta: JsonField<String>,

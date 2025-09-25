@@ -21,6 +21,7 @@ import kotlin.jvm.optionals.getOrNull
 
 /** The delta containing the fields that have changed on the Message. */
 class MessageDelta
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val content: JsonField<List<MessageContentDelta>>,
     private val role: JsonField<Role>,

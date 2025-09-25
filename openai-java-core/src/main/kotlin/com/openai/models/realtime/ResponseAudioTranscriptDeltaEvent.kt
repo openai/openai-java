@@ -17,6 +17,7 @@ import java.util.Objects
 
 /** Returned when the model-generated transcription of audio output is updated. */
 class ResponseAudioTranscriptDeltaEvent
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val contentIndex: JsonField<Long>,
     private val delta: JsonField<String>,

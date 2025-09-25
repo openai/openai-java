@@ -21,6 +21,7 @@ import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
 class FileSearchToolCall
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val id: JsonField<String>,
     private val fileSearch: JsonField<FileSearch>,
@@ -240,6 +241,7 @@ private constructor(
 
     /** For now, this is always going to be an empty object. */
     class FileSearch
+    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(
         private val rankingOptions: JsonField<RankingOptions>,
         private val results: JsonField<List<Result>>,
@@ -428,6 +430,7 @@ private constructor(
 
         /** The ranking options for the file search. */
         class RankingOptions
+        @JsonCreator(mode = JsonCreator.Mode.DISABLED)
         private constructor(
             private val ranker: JsonField<Ranker>,
             private val scoreThreshold: JsonField<Double>,
@@ -784,6 +787,7 @@ private constructor(
 
         /** A result instance of the file search. */
         class Result
+        @JsonCreator(mode = JsonCreator.Mode.DISABLED)
         private constructor(
             private val fileId: JsonField<String>,
             private val fileName: JsonField<String>,
@@ -1068,6 +1072,7 @@ private constructor(
                     (content.asKnown().getOrNull()?.sumOf { it.validity().toInt() } ?: 0)
 
             class Content
+            @JsonCreator(mode = JsonCreator.Mode.DISABLED)
             private constructor(
                 private val text: JsonField<String>,
                 private val type: JsonField<Type>,

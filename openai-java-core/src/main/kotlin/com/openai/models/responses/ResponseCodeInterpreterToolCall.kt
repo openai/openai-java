@@ -32,6 +32,7 @@ import kotlin.jvm.optionals.getOrNull
 
 /** A tool call to run code. */
 class ResponseCodeInterpreterToolCall
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val id: JsonField<String>,
     private val code: JsonField<String>,
@@ -588,6 +589,7 @@ private constructor(
 
         /** The logs output from the code interpreter. */
         class Logs
+        @JsonCreator(mode = JsonCreator.Mode.DISABLED)
         private constructor(
             private val logs: JsonField<String>,
             private val type: JsonValue,
@@ -788,6 +790,7 @@ private constructor(
 
         /** The image output from the code interpreter. */
         class Image
+        @JsonCreator(mode = JsonCreator.Mode.DISABLED)
         private constructor(
             private val type: JsonValue,
             private val url: JsonField<String>,

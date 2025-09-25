@@ -31,6 +31,7 @@ import kotlin.jvm.optionals.getOrNull
 
 /** A text output from the model. */
 class ResponseOutputText
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val annotations: JsonField<List<Annotation>>,
     private val text: JsonField<String>,
@@ -581,6 +582,7 @@ private constructor(
 
         /** A citation to a file. */
         class FileCitation
+        @JsonCreator(mode = JsonCreator.Mode.DISABLED)
         private constructor(
             private val fileId: JsonField<String>,
             private val filename: JsonField<String>,
@@ -868,6 +870,7 @@ private constructor(
 
         /** A citation for a web resource used to generate a model response. */
         class UrlCitation
+        @JsonCreator(mode = JsonCreator.Mode.DISABLED)
         private constructor(
             private val endIndex: JsonField<Long>,
             private val startIndex: JsonField<Long>,
@@ -1196,6 +1199,7 @@ private constructor(
 
         /** A citation for a container file used to generate a model response. */
         class ContainerFileCitation
+        @JsonCreator(mode = JsonCreator.Mode.DISABLED)
         private constructor(
             private val containerId: JsonField<String>,
             private val endIndex: JsonField<Long>,
@@ -1587,6 +1591,7 @@ private constructor(
 
         /** A path to a file. */
         class FilePath
+        @JsonCreator(mode = JsonCreator.Mode.DISABLED)
         private constructor(
             private val fileId: JsonField<String>,
             private val index: JsonField<Long>,
@@ -1834,6 +1839,7 @@ private constructor(
 
     /** The log probability of a token. */
     class Logprob
+    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(
         private val token: JsonField<String>,
         private val bytes: JsonField<List<Long>>,
@@ -2105,6 +2111,7 @@ private constructor(
 
         /** The top log probability of a token. */
         class TopLogprob
+        @JsonCreator(mode = JsonCreator.Mode.DISABLED)
         private constructor(
             private val token: JsonField<String>,
             private val bytes: JsonField<List<Long>>,

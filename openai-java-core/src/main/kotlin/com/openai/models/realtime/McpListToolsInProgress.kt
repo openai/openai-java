@@ -17,6 +17,7 @@ import java.util.Objects
 
 /** Returned when listing MCP tools is in progress for an item. */
 class McpListToolsInProgress
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val eventId: JsonField<String>,
     private val itemId: JsonField<String>,

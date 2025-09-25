@@ -29,6 +29,7 @@ import kotlin.jvm.optionals.getOrNull
 
 /** Response from creating a session and client secret for the Realtime API. */
 class ClientSecretCreateResponse
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val expiresAt: JsonField<Long>,
     private val session: JsonField<Session>,

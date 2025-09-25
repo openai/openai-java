@@ -22,6 +22,7 @@ import kotlin.jvm.optionals.getOrNull
 
 /** A schema representing an evaluation run output item. */
 class OutputItemListResponse
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val id: JsonField<String>,
     private val createdAt: JsonField<Long>,
@@ -627,6 +628,7 @@ private constructor(
 
     /** A single grader result for an evaluation run output item. */
     class Result
+    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(
         private val name: JsonField<String>,
         private val passed: JsonField<Boolean>,
@@ -1040,6 +1042,7 @@ private constructor(
 
     /** A sample containing the input and output of the evaluation run. */
     class Sample
+    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(
         private val error: JsonField<EvalApiError>,
         private val finishReason: JsonField<String>,
@@ -1572,6 +1575,7 @@ private constructor(
 
         /** An input message. */
         class Input
+        @JsonCreator(mode = JsonCreator.Mode.DISABLED)
         private constructor(
             private val content: JsonField<String>,
             private val role: JsonField<String>,
@@ -1776,6 +1780,7 @@ private constructor(
         }
 
         class Output
+        @JsonCreator(mode = JsonCreator.Mode.DISABLED)
         private constructor(
             private val content: JsonField<String>,
             private val role: JsonField<String>,
@@ -1958,6 +1963,7 @@ private constructor(
 
         /** Token usage details for the sample. */
         class Usage
+        @JsonCreator(mode = JsonCreator.Mode.DISABLED)
         private constructor(
             private val cachedTokens: JsonField<Long>,
             private val completionTokens: JsonField<Long>,

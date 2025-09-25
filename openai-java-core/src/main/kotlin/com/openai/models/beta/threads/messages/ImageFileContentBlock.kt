@@ -21,6 +21,7 @@ import kotlin.jvm.optionals.getOrNull
  * of a message.
  */
 class ImageFileContentBlock
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val imageFile: JsonField<ImageFile>,
     private val type: JsonValue,

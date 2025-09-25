@@ -36,6 +36,7 @@ import kotlin.jvm.optionals.getOrNull
  * information.
  */
 class ResponseComputerToolCall
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val id: JsonField<String>,
     private val action: JsonField<Action>,
@@ -839,6 +840,7 @@ private constructor(
 
         /** A click action. */
         class Click
+        @JsonCreator(mode = JsonCreator.Mode.DISABLED)
         private constructor(
             private val button: JsonField<Button>,
             private val type: JsonValue,
@@ -1280,6 +1282,7 @@ private constructor(
 
         /** A double click action. */
         class DoubleClick
+        @JsonCreator(mode = JsonCreator.Mode.DISABLED)
         private constructor(
             private val type: JsonValue,
             private val x: JsonField<Long>,
@@ -1523,6 +1526,7 @@ private constructor(
 
         /** A drag action. */
         class Drag
+        @JsonCreator(mode = JsonCreator.Mode.DISABLED)
         private constructor(
             private val path: JsonField<List<Path>>,
             private val type: JsonValue,
@@ -1742,6 +1746,7 @@ private constructor(
 
             /** A series of x/y coordinate pairs in the drag path. */
             class Path
+            @JsonCreator(mode = JsonCreator.Mode.DISABLED)
             private constructor(
                 private val x: JsonField<Long>,
                 private val y: JsonField<Long>,
@@ -1963,6 +1968,7 @@ private constructor(
 
         /** A collection of keypresses the model would like to perform. */
         class Keypress
+        @JsonCreator(mode = JsonCreator.Mode.DISABLED)
         private constructor(
             private val keys: JsonField<List<String>>,
             private val type: JsonValue,
@@ -2188,6 +2194,7 @@ private constructor(
 
         /** A mouse move action. */
         class Move
+        @JsonCreator(mode = JsonCreator.Mode.DISABLED)
         private constructor(
             private val type: JsonValue,
             private val x: JsonField<Long>,
@@ -2430,6 +2437,7 @@ private constructor(
 
         /** A scroll action. */
         class Scroll
+        @JsonCreator(mode = JsonCreator.Mode.DISABLED)
         private constructor(
             private val scrollX: JsonField<Long>,
             private val scrollY: JsonField<Long>,
@@ -2755,6 +2763,7 @@ private constructor(
 
         /** An action to type in text. */
         class Type
+        @JsonCreator(mode = JsonCreator.Mode.DISABLED)
         private constructor(
             private val text: JsonField<String>,
             private val type: JsonValue,
@@ -2956,6 +2965,7 @@ private constructor(
 
     /** A pending safety check for the computer call. */
     class PendingSafetyCheck
+    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(
         private val id: JsonField<String>,
         private val code: JsonField<String>,

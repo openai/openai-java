@@ -19,6 +19,7 @@ import kotlin.jvm.optionals.getOrNull
 
 /** Represents an embedding vector returned by embedding endpoint. */
 class Embedding
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val embedding: JsonField<EmbeddingValue>,
     private val index: JsonField<Long>,

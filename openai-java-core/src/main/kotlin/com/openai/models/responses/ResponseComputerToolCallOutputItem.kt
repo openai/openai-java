@@ -21,6 +21,7 @@ import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
 class ResponseComputerToolCallOutputItem
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val id: JsonField<String>,
     private val callId: JsonField<String>,
@@ -379,6 +380,7 @@ private constructor(
 
     /** A pending safety check for the computer call. */
     class AcknowledgedSafetyCheck
+    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(
         private val id: JsonField<String>,
         private val code: JsonField<String>,

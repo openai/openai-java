@@ -31,6 +31,7 @@ import java.util.Objects
  * something relevant to the conversation or a prompt to continue speaking.
  */
 class InputAudioBufferTimeoutTriggered
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val audioEndMs: JsonField<Long>,
     private val audioStartMs: JsonField<Long>,

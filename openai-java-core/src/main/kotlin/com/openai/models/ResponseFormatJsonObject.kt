@@ -19,6 +19,7 @@ import java.util.Objects
  * system or user message instructing it to do so.
  */
 class ResponseFormatJsonObject
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val type: JsonValue,
     private val additionalProperties: MutableMap<String, JsonValue>,

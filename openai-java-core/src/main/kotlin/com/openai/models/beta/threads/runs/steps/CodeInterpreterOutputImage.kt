@@ -18,6 +18,7 @@ import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
 class CodeInterpreterOutputImage
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val index: JsonField<Long>,
     private val type: JsonValue,
@@ -226,6 +227,7 @@ private constructor(
             (image.asKnown().getOrNull()?.validity() ?: 0)
 
     class Image
+    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(
         private val fileId: JsonField<String>,
         private val additionalProperties: MutableMap<String, JsonValue>,

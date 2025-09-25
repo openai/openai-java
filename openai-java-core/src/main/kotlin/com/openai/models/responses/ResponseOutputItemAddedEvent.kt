@@ -18,6 +18,7 @@ import kotlin.jvm.optionals.getOrNull
 
 /** Emitted when a new output item is added. */
 class ResponseOutputItemAddedEvent
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val item: JsonField<ResponseOutputItem>,
     private val outputIndex: JsonField<Long>,

@@ -19,6 +19,7 @@ import kotlin.jvm.optionals.getOrNull
 
 /** Emitted when a partial image is available during image generation streaming. */
 class ImageGenPartialImageEvent
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val b64Json: JsonField<String>,
     private val background: JsonField<Background>,

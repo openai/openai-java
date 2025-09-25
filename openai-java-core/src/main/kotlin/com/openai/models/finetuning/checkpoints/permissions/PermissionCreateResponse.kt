@@ -17,6 +17,7 @@ import java.util.Objects
 
 /** The `checkpoint.permission` object represents a permission for a fine-tuned model checkpoint. */
 class PermissionCreateResponse
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val id: JsonField<String>,
     private val createdAt: JsonField<Long>,

@@ -23,6 +23,7 @@ import kotlin.jvm.optionals.getOrNull
  * [Structured Outputs](https://platform.openai.com/docs/guides/structured-outputs).
  */
 class ResponseFormatTextJsonSchemaConfig
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val name: JsonField<String>,
     private val schema: JsonField<Schema>,

@@ -26,6 +26,7 @@ import kotlin.jvm.optionals.getOrNull
  * with the `Stream` parameter set to `true`.
  */
 class TranscriptionTextDeltaEvent
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val delta: JsonField<String>,
     private val type: JsonValue,
@@ -260,6 +261,7 @@ private constructor(
             (logprobs.asKnown().getOrNull()?.sumOf { it.validity().toInt() } ?: 0)
 
     class Logprob
+    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(
         private val token: JsonField<String>,
         private val bytes: JsonField<List<Long>>,

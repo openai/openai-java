@@ -21,6 +21,7 @@ import java.util.Objects
  * token usage.
  */
 class RealtimeTruncationRetentionRatio
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val retentionRatio: JsonField<Double>,
     private val type: JsonValue,

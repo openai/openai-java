@@ -31,6 +31,7 @@ import kotlin.jvm.optionals.getOrNull
 
 /** Details of the Code Interpreter tool call the run step was involved in. */
 class CodeInterpreterToolCall
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val id: JsonField<String>,
     private val codeInterpreter: JsonField<CodeInterpreter>,
@@ -254,6 +255,7 @@ private constructor(
 
     /** The Code Interpreter tool call definition. */
     class CodeInterpreter
+    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(
         private val input: JsonField<String>,
         private val outputs: JsonField<List<Output>>,
@@ -653,6 +655,7 @@ private constructor(
 
             /** Text output from the Code Interpreter tool call as part of a run step. */
             class LogsOutput
+            @JsonCreator(mode = JsonCreator.Mode.DISABLED)
             private constructor(
                 private val logs: JsonField<String>,
                 private val type: JsonValue,
@@ -859,6 +862,7 @@ private constructor(
             }
 
             class ImageOutput
+            @JsonCreator(mode = JsonCreator.Mode.DISABLED)
             private constructor(
                 private val image: JsonField<Image>,
                 private val type: JsonValue,
@@ -1043,6 +1047,7 @@ private constructor(
                         type.let { if (it == JsonValue.from("image")) 1 else 0 }
 
                 class Image
+                @JsonCreator(mode = JsonCreator.Mode.DISABLED)
                 private constructor(
                     private val fileId: JsonField<String>,
                     private val additionalProperties: MutableMap<String, JsonValue>,

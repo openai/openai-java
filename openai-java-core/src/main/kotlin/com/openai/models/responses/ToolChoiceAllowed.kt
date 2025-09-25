@@ -21,6 +21,7 @@ import kotlin.jvm.optionals.getOrNull
 
 /** Constrains the tools available to the model to a pre-defined set. */
 class ToolChoiceAllowed
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val mode: JsonField<Mode>,
     private val tools: JsonField<List<Tool>>,

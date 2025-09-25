@@ -18,6 +18,7 @@ import kotlin.jvm.optionals.getOrNull
 
 /** An object describing an image to classify. */
 class ModerationImageUrlInput
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val imageUrl: JsonField<ImageUrl>,
     private val type: JsonValue,
@@ -198,6 +199,7 @@ private constructor(
 
     /** Contains either an image URL or a data URL for a base64 encoded image. */
     class ImageUrl
+    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(
         private val url: JsonField<String>,
         private val additionalProperties: MutableMap<String, JsonValue>,

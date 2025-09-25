@@ -250,6 +250,7 @@ private constructor(
      * off after a period of silence.
      */
     class ServerVad
+    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(
         private val type: JsonValue,
         private val createResponse: JsonField<Boolean>,
@@ -731,6 +732,7 @@ private constructor(
      * finished speaking.
      */
     class SemanticVad
+    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(
         private val type: JsonValue,
         private val createResponse: JsonField<Boolean>,

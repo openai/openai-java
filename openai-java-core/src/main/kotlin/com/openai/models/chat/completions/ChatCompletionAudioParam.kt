@@ -22,6 +22,7 @@ import kotlin.jvm.optionals.getOrNull
  * ["audio"]`. [Learn more](https://platform.openai.com/docs/guides/audio).
  */
 class ChatCompletionAudioParam
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val format: JsonField<Format>,
     private val voice: JsonField<Voice>,

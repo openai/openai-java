@@ -40,6 +40,7 @@ import kotlin.jvm.optionals.getOrNull
  * raw Items and references to existing Items.
  */
 class ResponseCreateEvent
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val type: JsonValue,
     private val eventId: JsonField<String>,

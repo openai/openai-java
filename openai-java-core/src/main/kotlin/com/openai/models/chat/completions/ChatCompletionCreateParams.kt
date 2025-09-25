@@ -1981,6 +1981,7 @@ private constructor(
     override fun _queryParams(): QueryParams = additionalQueryParams
 
     class Body
+    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(
         private val messages: JsonField<List<ChatCompletionMessageParam>>,
         private val model: JsonField<ChatModel>,
@@ -4690,6 +4691,7 @@ private constructor(
 
     @Deprecated("deprecated")
     class Function
+    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(
         private val name: JsonField<String>,
         private val description: JsonField<String>,
@@ -6028,6 +6030,7 @@ private constructor(
      * [web search tool](https://platform.openai.com/docs/guides/tools-web-search?api-mode=chat).
      */
     class WebSearchOptions
+    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(
         private val searchContextSize: JsonField<SearchContextSize>,
         private val userLocation: JsonField<UserLocation>,
@@ -6359,6 +6362,7 @@ private constructor(
 
         /** Approximate location parameters for the search. */
         class UserLocation
+        @JsonCreator(mode = JsonCreator.Mode.DISABLED)
         private constructor(
             private val approximate: JsonField<Approximate>,
             private val type: JsonValue,
@@ -6551,6 +6555,7 @@ private constructor(
 
             /** Approximate location parameters for the search. */
             class Approximate
+            @JsonCreator(mode = JsonCreator.Mode.DISABLED)
             private constructor(
                 private val city: JsonField<String>,
                 private val country: JsonField<String>,

@@ -23,6 +23,7 @@ import kotlin.jvm.optionals.getOrNull
  * [Learn more](https://platform.openai.com/docs/guides/text?api-mode=responses#reusable-prompts).
  */
 class ResponsePrompt
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val id: JsonField<String>,
     private val variables: JsonField<Variables>,

@@ -29,6 +29,7 @@ import kotlin.jvm.optionals.getOrNull
 
 /** The hyperparameters used for the fine-tuning job. */
 class SupervisedHyperparameters
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val batchSize: JsonField<BatchSize>,
     private val learningRateMultiplier: JsonField<LearningRateMultiplier>,

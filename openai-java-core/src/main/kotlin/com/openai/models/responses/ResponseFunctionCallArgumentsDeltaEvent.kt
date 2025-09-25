@@ -17,6 +17,7 @@ import java.util.Objects
 
 /** Emitted when there is a partial function-call arguments delta. */
 class ResponseFunctionCallArgumentsDeltaEvent
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val delta: JsonField<String>,
     private val itemId: JsonField<String>,

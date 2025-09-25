@@ -408,6 +408,7 @@ private constructor(
     override fun _queryParams(): QueryParams = additionalQueryParams
 
     class Body
+    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(
         private val chunkingStrategy: JsonField<FileChunkingStrategyParam>,
         private val expiresAfter: JsonField<ExpiresAfter>,
@@ -787,6 +788,7 @@ private constructor(
 
     /** The expiration policy for a vector store. */
     class ExpiresAfter
+    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(
         private val anchor: JsonValue,
         private val days: JsonField<Long>,

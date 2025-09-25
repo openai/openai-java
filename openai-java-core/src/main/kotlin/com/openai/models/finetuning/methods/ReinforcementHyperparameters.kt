@@ -30,6 +30,7 @@ import kotlin.jvm.optionals.getOrNull
 
 /** The hyperparameters used for the reinforcement fine-tuning job. */
 class ReinforcementHyperparameters
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val batchSize: JsonField<BatchSize>,
     private val computeMultiplier: JsonField<ComputeMultiplier>,

@@ -23,6 +23,7 @@ import kotlin.jvm.optionals.getOrNull
  * Represents a verbose json transcription response returned by model, based on the provided input.
  */
 class TranscriptionVerbose
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val duration: JsonField<Double>,
     private val language: JsonField<String>,
@@ -367,6 +368,7 @@ private constructor(
 
     /** Usage statistics for models billed by audio input duration. */
     class Usage
+    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(
         private val seconds: JsonField<Double>,
         private val type: JsonValue,

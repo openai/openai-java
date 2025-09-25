@@ -21,6 +21,7 @@ import kotlin.jvm.optionals.getOrNull
  * or cancelled.
  */
 class ResponseOutputItemDoneEvent
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val eventId: JsonField<String>,
     private val item: JsonField<ConversationItem>,

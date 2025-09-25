@@ -1092,6 +1092,7 @@ private constructor(
             .build()
 
     class Body
+    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(
         private val assistantId: JsonField<String>,
         private val additionalInstructions: JsonField<String>,
@@ -2254,6 +2255,7 @@ private constructor(
     }
 
     class AdditionalMessage
+    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(
         private val content: JsonField<Content>,
         private val role: JsonField<Role>,
@@ -2906,6 +2908,7 @@ private constructor(
         }
 
         class Attachment
+        @JsonCreator(mode = JsonCreator.Mode.DISABLED)
         private constructor(
             private val fileId: JsonField<String>,
             private val tools: JsonField<List<Tool>>,
@@ -3549,6 +3552,7 @@ private constructor(
      * context window of the run.
      */
     class TruncationStrategy
+    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(
         private val type: JsonField<Type>,
         private val lastMessages: JsonField<Long>,

@@ -17,6 +17,7 @@ import java.util.Objects
 
 /** Event representing a delta (partial update) to the input of a custom tool call. */
 class ResponseCustomToolCallInputDeltaEvent
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val delta: JsonField<String>,
     private val itemId: JsonField<String>,

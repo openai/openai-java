@@ -389,6 +389,7 @@ private constructor(
     override fun _queryParams(): QueryParams = additionalQueryParams
 
     class Body
+    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(
         private val dataSource: JsonField<DataSource>,
         private val metadata: JsonField<Metadata>,
@@ -918,6 +919,7 @@ private constructor(
 
         /** A ResponsesRunDataSource object describing a model sampling configuration. */
         class CreateEvalResponsesRunDataSource
+        @JsonCreator(mode = JsonCreator.Mode.DISABLED)
         private constructor(
             private val source: JsonField<Source>,
             private val type: JsonField<Type>,
@@ -1499,6 +1501,7 @@ private constructor(
                 }
 
                 class FileContent
+                @JsonCreator(mode = JsonCreator.Mode.DISABLED)
                 private constructor(
                     private val content: JsonField<List<Content>>,
                     private val type: JsonValue,
@@ -1704,6 +1707,7 @@ private constructor(
                             type.let { if (it == JsonValue.from("file_content")) 1 else 0 }
 
                     class Content
+                    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
                     private constructor(
                         private val item: JsonField<Item>,
                         private val sample: JsonField<Sample>,
@@ -2156,6 +2160,7 @@ private constructor(
                 }
 
                 class FileId
+                @JsonCreator(mode = JsonCreator.Mode.DISABLED)
                 private constructor(
                     private val id: JsonField<String>,
                     private val type: JsonValue,
@@ -2366,6 +2371,7 @@ private constructor(
 
                 /** A EvalResponsesSource object describing a run data source configuration. */
                 class Responses
+                @JsonCreator(mode = JsonCreator.Mode.DISABLED)
                 private constructor(
                     private val type: JsonValue,
                     private val createdAfter: JsonField<Long>,
@@ -3392,6 +3398,7 @@ private constructor(
                 }
 
                 class Template
+                @JsonCreator(mode = JsonCreator.Mode.DISABLED)
                 private constructor(
                     private val template: JsonField<List<InnerTemplate>>,
                     private val type: JsonValue,
@@ -3838,6 +3845,7 @@ private constructor(
                         }
 
                         class ChatMessage
+                        @JsonCreator(mode = JsonCreator.Mode.DISABLED)
                         private constructor(
                             private val content: JsonField<String>,
                             private val role: JsonField<String>,
@@ -4066,6 +4074,7 @@ private constructor(
                          * previous interactions.
                          */
                         class EvalItem
+                        @JsonCreator(mode = JsonCreator.Mode.DISABLED)
                         private constructor(
                             private val content: JsonField<Content>,
                             private val role: JsonField<Role>,
@@ -4784,6 +4793,7 @@ private constructor(
 
                                 /** A text output from the model. */
                                 class OutputText
+                                @JsonCreator(mode = JsonCreator.Mode.DISABLED)
                                 private constructor(
                                     private val text: JsonField<String>,
                                     private val type: JsonValue,
@@ -5020,6 +5030,7 @@ private constructor(
 
                                 /** An image input to the model. */
                                 class InputImage
+                                @JsonCreator(mode = JsonCreator.Mode.DISABLED)
                                 private constructor(
                                     private val imageUrl: JsonField<String>,
                                     private val type: JsonValue,
@@ -5646,6 +5657,7 @@ private constructor(
                 }
 
                 class ItemReference
+                @JsonCreator(mode = JsonCreator.Mode.DISABLED)
                 private constructor(
                     private val itemReference: JsonField<String>,
                     private val type: JsonValue,
@@ -5862,6 +5874,7 @@ private constructor(
             }
 
             class SamplingParams
+            @JsonCreator(mode = JsonCreator.Mode.DISABLED)
             private constructor(
                 private val maxCompletionTokens: JsonField<Long>,
                 private val reasoningEffort: JsonField<ReasoningEffort>,
@@ -6424,6 +6437,7 @@ private constructor(
                  *   Outputs](https://platform.openai.com/docs/guides/structured-outputs)
                  */
                 class Text
+                @JsonCreator(mode = JsonCreator.Mode.DISABLED)
                 private constructor(
                     private val format: JsonField<ResponseFormatTextConfig>,
                     private val additionalProperties: MutableMap<String, JsonValue>,

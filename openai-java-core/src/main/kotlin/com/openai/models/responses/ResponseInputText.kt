@@ -17,6 +17,7 @@ import java.util.Objects
 
 /** A text input to the model. */
 class ResponseInputText
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val text: JsonField<String>,
     private val type: JsonValue,

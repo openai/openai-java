@@ -19,6 +19,7 @@ import kotlin.jvm.optionals.getOrNull
 
 /** A batch of files attached to a vector store. */
 class VectorStoreFileBatch
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val id: JsonField<String>,
     private val createdAt: JsonField<Long>,
@@ -356,6 +357,7 @@ private constructor(
             (if (vectorStoreId.asKnown().isPresent) 1 else 0)
 
     class FileCounts
+    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(
         private val cancelled: JsonField<Long>,
         private val completed: JsonField<Long>,

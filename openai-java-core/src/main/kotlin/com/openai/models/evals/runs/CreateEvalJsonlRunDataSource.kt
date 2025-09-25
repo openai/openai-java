@@ -31,6 +31,7 @@ import kotlin.jvm.optionals.getOrNull
 
 /** A JsonlRunDataSource object with that specifies a JSONL file that matches the eval */
 class CreateEvalJsonlRunDataSource
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val source: JsonField<Source>,
     private val type: JsonValue,
@@ -401,6 +402,7 @@ private constructor(
         }
 
         class FileContent
+        @JsonCreator(mode = JsonCreator.Mode.DISABLED)
         private constructor(
             private val content: JsonField<List<Content>>,
             private val type: JsonValue,
@@ -603,6 +605,7 @@ private constructor(
                     type.let { if (it == JsonValue.from("file_content")) 1 else 0 }
 
             class Content
+            @JsonCreator(mode = JsonCreator.Mode.DISABLED)
             private constructor(
                 private val item: JsonField<Item>,
                 private val sample: JsonField<Sample>,
@@ -1031,6 +1034,7 @@ private constructor(
         }
 
         class FileId
+        @JsonCreator(mode = JsonCreator.Mode.DISABLED)
         private constructor(
             private val id: JsonField<String>,
             private val type: JsonValue,

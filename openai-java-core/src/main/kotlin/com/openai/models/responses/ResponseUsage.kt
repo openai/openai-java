@@ -21,6 +21,7 @@ import kotlin.jvm.optionals.getOrNull
  * tokens, and the total tokens used.
  */
 class ResponseUsage
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val inputTokens: JsonField<Long>,
     private val inputTokensDetails: JsonField<InputTokensDetails>,
@@ -340,6 +341,7 @@ private constructor(
 
     /** A detailed breakdown of the input tokens. */
     class InputTokensDetails
+    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(
         private val cachedTokens: JsonField<Long>,
         private val additionalProperties: MutableMap<String, JsonValue>,
@@ -511,6 +513,7 @@ private constructor(
 
     /** A detailed breakdown of the output tokens. */
     class OutputTokensDetails
+    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(
         private val reasoningTokens: JsonField<Long>,
         private val additionalProperties: MutableMap<String, JsonValue>,

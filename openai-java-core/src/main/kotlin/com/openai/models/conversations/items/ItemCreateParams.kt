@@ -460,6 +460,7 @@ private constructor(
             .build()
 
     class Body
+    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(
         private val items: JsonField<List<ResponseInputItem>>,
         private val additionalProperties: MutableMap<String, JsonValue>,

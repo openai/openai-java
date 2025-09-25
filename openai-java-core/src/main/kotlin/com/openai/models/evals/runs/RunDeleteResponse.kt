@@ -16,6 +16,7 @@ import java.util.Objects
 import java.util.Optional
 
 class RunDeleteResponse
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val deleted: JsonField<Boolean>,
     private val object_: JsonField<String>,

@@ -41,6 +41,7 @@ import kotlin.jvm.optionals.getOrNull
 
 /** A CompletionsRunDataSource object describing a model sampling configuration. */
 class CreateEvalCompletionsRunDataSource
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val source: JsonField<Source>,
     private val type: JsonField<Type>,
@@ -604,6 +605,7 @@ private constructor(
         }
 
         class FileContent
+        @JsonCreator(mode = JsonCreator.Mode.DISABLED)
         private constructor(
             private val content: JsonField<List<Content>>,
             private val type: JsonValue,
@@ -806,6 +808,7 @@ private constructor(
                     type.let { if (it == JsonValue.from("file_content")) 1 else 0 }
 
             class Content
+            @JsonCreator(mode = JsonCreator.Mode.DISABLED)
             private constructor(
                 private val item: JsonField<Item>,
                 private val sample: JsonField<Sample>,
@@ -1234,6 +1237,7 @@ private constructor(
         }
 
         class FileId
+        @JsonCreator(mode = JsonCreator.Mode.DISABLED)
         private constructor(
             private val id: JsonField<String>,
             private val type: JsonValue,
@@ -1434,6 +1438,7 @@ private constructor(
 
         /** A StoredCompletionsRunDataSource configuration describing a set of filters */
         class StoredCompletions
+        @JsonCreator(mode = JsonCreator.Mode.DISABLED)
         private constructor(
             private val type: JsonValue,
             private val createdAfter: JsonField<Long>,
@@ -2254,6 +2259,7 @@ private constructor(
         }
 
         class Template
+        @JsonCreator(mode = JsonCreator.Mode.DISABLED)
         private constructor(
             private val template: JsonField<List<InnerTemplate>>,
             private val type: JsonValue,
@@ -2726,6 +2732,7 @@ private constructor(
                  * interactions.
                  */
                 class EvalItem
+                @JsonCreator(mode = JsonCreator.Mode.DISABLED)
                 private constructor(
                     private val content: JsonField<Content>,
                     private val role: JsonField<Role>,
@@ -3382,6 +3389,7 @@ private constructor(
 
                         /** A text output from the model. */
                         class OutputText
+                        @JsonCreator(mode = JsonCreator.Mode.DISABLED)
                         private constructor(
                             private val text: JsonField<String>,
                             private val type: JsonValue,
@@ -3602,6 +3610,7 @@ private constructor(
 
                         /** An image input to the model. */
                         class InputImage
+                        @JsonCreator(mode = JsonCreator.Mode.DISABLED)
                         private constructor(
                             private val imageUrl: JsonField<String>,
                             private val type: JsonValue,
@@ -4194,6 +4203,7 @@ private constructor(
         }
 
         class ItemReference
+        @JsonCreator(mode = JsonCreator.Mode.DISABLED)
         private constructor(
             private val itemReference: JsonField<String>,
             private val type: JsonValue,
@@ -4410,6 +4420,7 @@ private constructor(
     }
 
     class SamplingParams
+    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(
         private val maxCompletionTokens: JsonField<Long>,
         private val reasoningEffort: JsonField<ReasoningEffort>,

@@ -19,6 +19,7 @@ import kotlin.jvm.optionals.getOrNull
 
 /** An error object returned when the model fails to generate a Response. */
 class ResponseError
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val code: JsonField<Code>,
     private val message: JsonField<String>,

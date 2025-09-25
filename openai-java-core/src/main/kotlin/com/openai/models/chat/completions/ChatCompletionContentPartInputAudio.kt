@@ -19,6 +19,7 @@ import kotlin.jvm.optionals.getOrNull
 
 /** Learn about [audio inputs](https://platform.openai.com/docs/guides/audio). */
 class ChatCompletionContentPartInputAudio
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val inputAudio: JsonField<InputAudio>,
     private val type: JsonValue,
@@ -203,6 +204,7 @@ private constructor(
             type.let { if (it == JsonValue.from("input_audio")) 1 else 0 }
 
     class InputAudio
+    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(
         private val data: JsonField<String>,
         private val format: JsonField<Format>,

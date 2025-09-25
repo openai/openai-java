@@ -21,6 +21,7 @@ import kotlin.jvm.optionals.getOrNull
 
 /** The item to add to the conversation. */
 class ConversationItemWithReference
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val id: JsonField<String>,
     private val arguments: JsonField<String>,
@@ -516,6 +517,7 @@ private constructor(
             (type.asKnown().getOrNull()?.validity() ?: 0)
 
     class Content
+    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(
         private val id: JsonField<String>,
         private val audio: JsonField<String>,

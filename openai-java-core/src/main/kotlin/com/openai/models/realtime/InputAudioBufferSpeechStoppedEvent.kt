@@ -21,6 +21,7 @@ import java.util.Objects
  * created from the audio buffer.
  */
 class InputAudioBufferSpeechStoppedEvent
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val audioEndMs: JsonField<Long>,
     private val eventId: JsonField<String>,

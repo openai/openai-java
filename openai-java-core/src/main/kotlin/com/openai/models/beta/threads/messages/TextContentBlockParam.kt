@@ -17,6 +17,7 @@ import java.util.Objects
 
 /** The text content that is part of a message. */
 class TextContentBlockParam
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val text: JsonField<String>,
     private val type: JsonValue,

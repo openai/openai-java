@@ -17,6 +17,7 @@ import java.util.Objects
 
 /** Emitted when a partial code snippet is streamed by the code interpreter. */
 class ResponseCodeInterpreterCallCodeDeltaEvent
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val delta: JsonField<String>,
     private val itemId: JsonField<String>,

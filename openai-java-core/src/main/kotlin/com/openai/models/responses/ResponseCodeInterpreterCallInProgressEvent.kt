@@ -17,6 +17,7 @@ import java.util.Objects
 
 /** Emitted when a code interpreter call is in progress. */
 class ResponseCodeInterpreterCallInProgressEvent
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val itemId: JsonField<String>,
     private val outputIndex: JsonField<Long>,

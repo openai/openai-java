@@ -21,6 +21,7 @@ import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
 class VectorStoreSearchResponse
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val attributes: JsonField<Attributes>,
     private val content: JsonField<List<Content>>,
@@ -440,6 +441,7 @@ private constructor(
     }
 
     class Content
+    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(
         private val text: JsonField<String>,
         private val type: JsonField<Type>,

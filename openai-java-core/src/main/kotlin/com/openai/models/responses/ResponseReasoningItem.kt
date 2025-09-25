@@ -27,6 +27,7 @@ import kotlin.jvm.optionals.getOrNull
  * [managing context](https://platform.openai.com/docs/guides/conversation-state).
  */
 class ResponseReasoningItem
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val id: JsonField<String>,
     private val summary: JsonField<List<Summary>>,
@@ -395,6 +396,7 @@ private constructor(
 
     /** A summary text from the model. */
     class Summary
+    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(
         private val text: JsonField<String>,
         private val type: JsonValue,
@@ -591,6 +593,7 @@ private constructor(
 
     /** Reasoning text from the model. */
     class Content
+    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(
         private val text: JsonField<String>,
         private val type: JsonValue,

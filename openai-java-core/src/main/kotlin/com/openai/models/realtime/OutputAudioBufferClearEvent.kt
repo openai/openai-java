@@ -22,6 +22,7 @@ import java.util.Optional
  * [Learn more](https://platform.openai.com/docs/guides/realtime-conversations#client-and-server-events-for-audio-in-webrtc).
  */
 class OutputAudioBufferClearEvent
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val type: JsonValue,
     private val eventId: JsonField<String>,

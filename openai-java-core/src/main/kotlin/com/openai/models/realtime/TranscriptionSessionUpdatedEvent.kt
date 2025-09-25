@@ -25,6 +25,7 @@ import kotlin.jvm.optionals.getOrNull
  * unless there is an error.
  */
 class TranscriptionSessionUpdatedEvent
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val eventId: JsonField<String>,
     private val session: JsonField<Session>,
@@ -258,6 +259,7 @@ private constructor(
      * session is updated via the WebSocket API.
      */
     class Session
+    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(
         private val clientSecret: JsonField<ClientSecret>,
         private val inputAudioFormat: JsonField<String>,
@@ -612,6 +614,7 @@ private constructor(
          * via REST API.
          */
         class ClientSecret
+        @JsonCreator(mode = JsonCreator.Mode.DISABLED)
         private constructor(
             private val expiresAt: JsonField<Long>,
             private val value: JsonField<String>,
@@ -965,6 +968,7 @@ private constructor(
          * the end of user speech.
          */
         class TurnDetection
+        @JsonCreator(mode = JsonCreator.Mode.DISABLED)
         private constructor(
             private val prefixPaddingMs: JsonField<Long>,
             private val silenceDurationMs: JsonField<Long>,

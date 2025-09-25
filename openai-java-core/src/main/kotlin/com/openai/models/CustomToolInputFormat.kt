@@ -212,6 +212,7 @@ private constructor(
 
     /** A grammar defined by the user. */
     class Grammar
+    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(
         private val definition: JsonField<String>,
         private val syntax: JsonField<Syntax>,

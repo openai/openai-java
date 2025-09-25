@@ -17,6 +17,7 @@ import java.util.Objects
 
 /** Returned when the model-generated function call arguments are updated. */
 class ResponseFunctionCallArgumentsDeltaEvent
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val callId: JsonField<String>,
     private val delta: JsonField<String>,

@@ -31,6 +31,7 @@ import kotlin.jvm.optionals.getOrNull
 
 /** A list of Conversation items. */
 class ConversationItemList
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val data: JsonField<List<ConversationItem>>,
     private val firstId: JsonField<String>,

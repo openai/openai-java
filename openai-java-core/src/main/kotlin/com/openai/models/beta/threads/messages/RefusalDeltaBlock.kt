@@ -18,6 +18,7 @@ import java.util.Optional
 
 /** The refusal content that is part of a message. */
 class RefusalDeltaBlock
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val index: JsonField<Long>,
     private val type: JsonValue,

@@ -19,6 +19,7 @@ import kotlin.jvm.optionals.getOrNull
 
 @Deprecated("deprecated")
 class ChatCompletionFunctionMessageParam
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val content: JsonField<String>,
     private val name: JsonField<String>,

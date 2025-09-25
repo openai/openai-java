@@ -17,6 +17,7 @@ import java.util.Objects
 
 /** Emitted when a file search call is completed (results found). */
 class ResponseFileSearchCallCompletedEvent
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val itemId: JsonField<String>,
     private val outputIndex: JsonField<Long>,

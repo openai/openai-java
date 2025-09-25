@@ -25,6 +25,7 @@ import kotlin.jvm.optionals.getOrNull
 
 /** A list of files attached to a vector store. */
 class VectorStoreFile
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val id: JsonField<String>,
     private val createdAt: JsonField<Long>,
@@ -536,6 +537,7 @@ private constructor(
      * The last error associated with this vector store file. Will be `null` if there are no errors.
      */
     class LastError
+    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(
         private val code: JsonField<Code>,
         private val message: JsonField<String>,

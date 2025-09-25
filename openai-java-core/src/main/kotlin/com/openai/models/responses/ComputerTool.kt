@@ -22,6 +22,7 @@ import kotlin.jvm.optionals.getOrNull
  * [computer tool](https://platform.openai.com/docs/guides/tools-computer-use).
  */
 class ComputerTool
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val displayHeight: JsonField<Long>,
     private val displayWidth: JsonField<Long>,

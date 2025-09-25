@@ -17,6 +17,7 @@ import java.util.Objects
 
 /** Learn about [text inputs](https://platform.openai.com/docs/guides/text-generation). */
 class ChatCompletionContentPartText
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val text: JsonField<String>,
     private val type: JsonValue,

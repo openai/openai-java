@@ -22,6 +22,7 @@ import kotlin.jvm.optionals.getOrNull
 
 /** An assistant message item in a Realtime conversation. */
 class RealtimeConversationItemAssistantMessage
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val content: JsonField<List<Content>>,
     private val role: JsonValue,
@@ -364,6 +365,7 @@ private constructor(
             (status.asKnown().getOrNull()?.validity() ?: 0)
 
     class Content
+    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(
         private val audio: JsonField<String>,
         private val text: JsonField<String>,

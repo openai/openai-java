@@ -17,6 +17,7 @@ import java.util.Objects
 
 /** Emitted when refusal text is finalized. */
 class ResponseRefusalDoneEvent
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val contentIndex: JsonField<Long>,
     private val itemId: JsonField<String>,

@@ -21,6 +21,7 @@ import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
 class CompletionChoice
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val finishReason: JsonField<FinishReason>,
     private val index: JsonField<Long>,
@@ -416,6 +417,7 @@ private constructor(
     }
 
     class Logprobs
+    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(
         private val textOffset: JsonField<List<Long>>,
         private val tokenLogprobs: JsonField<List<Double>>,

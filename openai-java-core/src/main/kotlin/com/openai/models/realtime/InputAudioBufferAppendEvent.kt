@@ -31,6 +31,7 @@ import java.util.Optional
  * most other client events, the server will not send a confirmation response to this event.
  */
 class InputAudioBufferAppendEvent
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val audio: JsonField<String>,
     private val type: JsonValue,

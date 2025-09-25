@@ -20,6 +20,7 @@ import kotlin.jvm.optionals.getOrNull
 
 /** Represents if a given text input is potentially harmful. */
 class ModerationCreateResponse
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val id: JsonField<String>,
     private val model: JsonField<String>,

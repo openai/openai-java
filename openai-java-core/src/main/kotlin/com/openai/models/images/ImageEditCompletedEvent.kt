@@ -19,6 +19,7 @@ import kotlin.jvm.optionals.getOrNull
 
 /** Emitted when image editing has completed and the final image is available. */
 class ImageEditCompletedEvent
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val b64Json: JsonField<String>,
     private val background: JsonField<Background>,
@@ -975,6 +976,7 @@ private constructor(
 
     /** For `gpt-image-1` only, the token usage information for the image generation. */
     class Usage
+    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(
         private val inputTokens: JsonField<Long>,
         private val inputTokensDetails: JsonField<InputTokensDetails>,
@@ -1250,6 +1252,7 @@ private constructor(
 
         /** The input tokens detailed information for the image generation. */
         class InputTokensDetails
+        @JsonCreator(mode = JsonCreator.Mode.DISABLED)
         private constructor(
             private val imageTokens: JsonField<Long>,
             private val textTokens: JsonField<Long>,

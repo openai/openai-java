@@ -21,6 +21,7 @@ import kotlin.jvm.optionals.getOrNull
 /** Deprecated in favor of LogsDataSourceConfig. */
 @Deprecated("deprecated")
 class EvalStoredCompletionsDataSourceConfig
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val schema: JsonField<Schema>,
     private val type: JsonValue,

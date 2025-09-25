@@ -18,6 +18,7 @@ import kotlin.jvm.optionals.getOrNull
 
 /** Configuration for the supervised fine-tuning method. */
 class SupervisedMethod
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val hyperparameters: JsonField<SupervisedHyperparameters>,
     private val additionalProperties: MutableMap<String, JsonValue>,

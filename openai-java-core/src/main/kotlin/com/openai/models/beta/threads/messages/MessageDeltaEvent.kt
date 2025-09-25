@@ -18,6 +18,7 @@ import kotlin.jvm.optionals.getOrNull
 
 /** Represents a message delta i.e. any changed fields on a message during streaming. */
 class MessageDeltaEvent
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val id: JsonField<String>,
     private val delta: JsonField<MessageDelta>,

@@ -20,6 +20,7 @@ import kotlin.jvm.optionals.getOrNull
 
 /** Returned when a conversation is created. Emitted right after session creation. */
 class ConversationCreatedEvent
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val conversation: JsonField<Conversation>,
     private val eventId: JsonField<String>,
@@ -241,6 +242,7 @@ private constructor(
 
     /** The conversation resource. */
     class Conversation
+    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(
         private val id: JsonField<String>,
         private val object_: JsonField<Object>,

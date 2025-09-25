@@ -43,6 +43,7 @@ import kotlin.jvm.optionals.getOrNull
  * - Check if o4-mini is better at my usecase than gpt-4o
  */
 class EvalRetrieveResponse
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val id: JsonField<String>,
     private val createdAt: JsonField<Long>,
@@ -813,6 +814,7 @@ private constructor(
          * `item` and `sample` are both defined when using this data source config.
          */
         class Logs
+        @JsonCreator(mode = JsonCreator.Mode.DISABLED)
         private constructor(
             private val schema: JsonField<Schema>,
             private val type: JsonValue,
@@ -1744,6 +1746,7 @@ private constructor(
 
         /** A TextSimilarityGrader object which grades text based on similarity metrics. */
         class EvalGraderTextSimilarity
+        @JsonCreator(mode = JsonCreator.Mode.DISABLED)
         private constructor(
             private val evaluationMetric: JsonField<TextSimilarityGrader.EvaluationMetric>,
             private val input: JsonField<String>,
@@ -2150,6 +2153,7 @@ private constructor(
 
         /** A PythonGrader object that runs a python script on the input. */
         class EvalGraderPython
+        @JsonCreator(mode = JsonCreator.Mode.DISABLED)
         private constructor(
             private val name: JsonField<String>,
             private val source: JsonField<String>,
@@ -2485,6 +2489,7 @@ private constructor(
 
         /** A ScoreModelGrader object that uses a model to assign a score to the input. */
         class EvalGraderScoreModel
+        @JsonCreator(mode = JsonCreator.Mode.DISABLED)
         private constructor(
             private val input: JsonField<List<ScoreModelGrader.Input>>,
             private val model: JsonField<String>,

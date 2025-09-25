@@ -18,6 +18,7 @@ import kotlin.jvm.optionals.getOrNull
 
 /** Customize your own chunking strategy by setting chunk size and chunk overlap. */
 class StaticFileChunkingStrategyObjectParam
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val static_: JsonField<StaticFileChunkingStrategy>,
     private val type: JsonValue,

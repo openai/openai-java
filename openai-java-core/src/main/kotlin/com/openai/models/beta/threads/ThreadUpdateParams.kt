@@ -310,6 +310,7 @@ private constructor(
     override fun _queryParams(): QueryParams = additionalQueryParams
 
     class Body
+    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(
         private val metadata: JsonField<Metadata>,
         private val toolResources: JsonField<ToolResources>,
@@ -637,6 +638,7 @@ private constructor(
      * a list of file IDs, while the `file_search` tool requires a list of vector store IDs.
      */
     class ToolResources
+    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(
         private val codeInterpreter: JsonField<CodeInterpreter>,
         private val fileSearch: JsonField<FileSearch>,
@@ -804,6 +806,7 @@ private constructor(
                 (fileSearch.asKnown().getOrNull()?.validity() ?: 0)
 
         class CodeInterpreter
+        @JsonCreator(mode = JsonCreator.Mode.DISABLED)
         private constructor(
             private val fileIds: JsonField<List<String>>,
             private val additionalProperties: MutableMap<String, JsonValue>,
@@ -975,6 +978,7 @@ private constructor(
         }
 
         class FileSearch
+        @JsonCreator(mode = JsonCreator.Mode.DISABLED)
         private constructor(
             private val vectorStoreIds: JsonField<List<String>>,
             private val additionalProperties: MutableMap<String, JsonValue>,

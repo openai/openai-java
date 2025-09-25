@@ -19,6 +19,7 @@ import kotlin.jvm.optionals.getOrNull
 
 /** Returned when MCP tool call arguments are updated during response generation. */
 class ResponseMcpCallArgumentsDelta
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val delta: JsonField<String>,
     private val eventId: JsonField<String>,

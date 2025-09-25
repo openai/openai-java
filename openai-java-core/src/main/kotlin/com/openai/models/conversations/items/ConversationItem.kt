@@ -887,6 +887,7 @@ private constructor(
 
     /** An image generation request made by the model. */
     class ImageGenerationCall
+    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(
         private val id: JsonField<String>,
         private val result: JsonField<String>,
@@ -1308,6 +1309,7 @@ private constructor(
 
     /** A tool call to run a command on the local shell. */
     class LocalShellCall
+    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(
         private val id: JsonField<String>,
         private val action: JsonField<Action>,
@@ -1597,6 +1599,7 @@ private constructor(
 
         /** Execute a shell command on the server. */
         class Action
+        @JsonCreator(mode = JsonCreator.Mode.DISABLED)
         private constructor(
             private val command: JsonField<List<String>>,
             private val env: JsonField<Env>,
@@ -2271,6 +2274,7 @@ private constructor(
 
     /** The output of a local shell tool call. */
     class LocalShellCallOutput
+    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(
         private val id: JsonField<String>,
         private val output: JsonField<String>,
@@ -2684,6 +2688,7 @@ private constructor(
 
     /** A list of tools available on an MCP server. */
     class McpListTools
+    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(
         private val id: JsonField<String>,
         private val serverLabel: JsonField<String>,
@@ -2994,6 +2999,7 @@ private constructor(
 
         /** A tool available on an MCP server. */
         class Tool
+        @JsonCreator(mode = JsonCreator.Mode.DISABLED)
         private constructor(
             private val inputSchema: JsonValue,
             private val name: JsonField<String>,
@@ -3264,6 +3270,7 @@ private constructor(
 
     /** A request for human approval of a tool invocation. */
     class McpApprovalRequest
+    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(
         private val id: JsonField<String>,
         private val arguments: JsonField<String>,
@@ -3585,6 +3592,7 @@ private constructor(
 
     /** A response to an MCP approval request. */
     class McpApprovalResponse
+    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(
         private val id: JsonField<String>,
         private val approvalRequestId: JsonField<String>,
@@ -3907,6 +3915,7 @@ private constructor(
 
     /** An invocation of a tool on an MCP server. */
     class McpCall
+    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(
         private val id: JsonField<String>,
         private val arguments: JsonField<String>,

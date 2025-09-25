@@ -420,6 +420,7 @@ private constructor(
     override fun _queryParams(): QueryParams = additionalQueryParams
 
     class Body
+    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(
         private val completionWindow: JsonField<CompletionWindow>,
         private val endpoint: JsonField<Endpoint>,
@@ -1192,6 +1193,7 @@ private constructor(
 
     /** The expiration policy for the output and/or error file that are generated for a batch. */
     class OutputExpiresAfter
+    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(
         private val anchor: JsonValue,
         private val seconds: JsonField<Long>,

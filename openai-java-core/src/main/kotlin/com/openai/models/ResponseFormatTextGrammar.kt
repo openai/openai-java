@@ -20,6 +20,7 @@ import java.util.Objects
  * [custom grammars guide](https://platform.openai.com/docs/guides/custom-grammars).
  */
 class ResponseFormatTextGrammar
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val grammar: JsonField<String>,
     private val type: JsonValue,

@@ -37,6 +37,7 @@ import kotlin.jvm.optionals.getOrNull
  * in previous interactions.
  */
 class EasyInputMessage
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val content: JsonField<Content>,
     private val role: JsonField<Role>,

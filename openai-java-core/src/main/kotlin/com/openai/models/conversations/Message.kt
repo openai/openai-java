@@ -37,6 +37,7 @@ import kotlin.jvm.optionals.getOrNull
 
 /** A message to or from the model. */
 class Message
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val id: JsonField<String>,
     private val content: JsonField<List<Content>>,
@@ -874,6 +875,7 @@ private constructor(
 
         /** Reasoning text from the model. */
         class ReasoningText
+        @JsonCreator(mode = JsonCreator.Mode.DISABLED)
         private constructor(
             private val text: JsonField<String>,
             private val type: JsonValue,

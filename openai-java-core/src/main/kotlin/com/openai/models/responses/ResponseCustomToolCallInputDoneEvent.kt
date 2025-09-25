@@ -17,6 +17,7 @@ import java.util.Objects
 
 /** Event indicating that input for a custom tool call is complete. */
 class ResponseCustomToolCallInputDoneEvent
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val input: JsonField<String>,
     private val itemId: JsonField<String>,

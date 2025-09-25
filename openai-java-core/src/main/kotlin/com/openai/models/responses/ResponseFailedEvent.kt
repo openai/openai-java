@@ -18,6 +18,7 @@ import kotlin.jvm.optionals.getOrNull
 
 /** An event that is emitted when a response fails. */
 class ResponseFailedEvent
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val response: JsonField<Response>,
     private val sequenceNumber: JsonField<Long>,

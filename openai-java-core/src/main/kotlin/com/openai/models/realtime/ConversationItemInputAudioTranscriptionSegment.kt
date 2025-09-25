@@ -17,6 +17,7 @@ import java.util.Objects
 
 /** Returned when an input audio transcription segment is identified for an item. */
 class ConversationItemInputAudioTranscriptionSegment
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val id: JsonField<String>,
     private val contentIndex: JsonField<Long>,

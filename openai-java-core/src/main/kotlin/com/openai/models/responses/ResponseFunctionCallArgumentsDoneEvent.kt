@@ -17,6 +17,7 @@ import java.util.Objects
 
 /** Emitted when function-call arguments are finalized. */
 class ResponseFunctionCallArgumentsDoneEvent
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val arguments: JsonField<String>,
     private val itemId: JsonField<String>,

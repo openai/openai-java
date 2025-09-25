@@ -32,6 +32,7 @@ import kotlin.jvm.optionals.getOrNull
 
 /** The response resource. */
 class RealtimeResponse
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val id: JsonField<String>,
     private val audio: JsonField<Audio>,
@@ -731,6 +732,7 @@ private constructor(
 
     /** Configuration for audio output. */
     class Audio
+    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(
         private val output: JsonField<Output>,
         private val additionalProperties: MutableMap<String, JsonValue>,
@@ -850,6 +852,7 @@ private constructor(
         @JvmSynthetic internal fun validity(): Int = (output.asKnown().getOrNull()?.validity() ?: 0)
 
         class Output
+        @JsonCreator(mode = JsonCreator.Mode.DISABLED)
         private constructor(
             private val format: JsonField<RealtimeAudioFormats>,
             private val voice: JsonField<Voice>,

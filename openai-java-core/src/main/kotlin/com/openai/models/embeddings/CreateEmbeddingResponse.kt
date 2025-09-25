@@ -19,6 +19,7 @@ import java.util.Objects
 import kotlin.jvm.optionals.getOrNull
 
 class CreateEmbeddingResponse
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val data: JsonField<List<Embedding>>,
     private val model: JsonField<String>,
@@ -283,6 +284,7 @@ private constructor(
 
     /** The usage information for the request. */
     class Usage
+    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(
         private val promptTokens: JsonField<Long>,
         private val totalTokens: JsonField<Long>,

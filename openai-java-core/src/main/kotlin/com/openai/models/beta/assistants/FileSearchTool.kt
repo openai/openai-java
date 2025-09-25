@@ -19,6 +19,7 @@ import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
 class FileSearchTool
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val type: JsonValue,
     private val fileSearch: JsonField<FileSearch>,
@@ -185,6 +186,7 @@ private constructor(
 
     /** Overrides for the file search tool. */
     class FileSearch
+    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(
         private val maxNumResults: JsonField<Long>,
         private val rankingOptions: JsonField<RankingOptions>,
@@ -394,6 +396,7 @@ private constructor(
          * for more information.
          */
         class RankingOptions
+        @JsonCreator(mode = JsonCreator.Mode.DISABLED)
         private constructor(
             private val scoreThreshold: JsonField<Double>,
             private val ranker: JsonField<Ranker>,

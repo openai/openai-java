@@ -17,6 +17,7 @@ import java.util.Objects
 
 /** Emitted when a web search call is executing. */
 class ResponseWebSearchCallSearchingEvent
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val itemId: JsonField<String>,
     private val outputIndex: JsonField<Long>,

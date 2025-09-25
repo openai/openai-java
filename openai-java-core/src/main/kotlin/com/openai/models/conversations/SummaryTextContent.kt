@@ -17,6 +17,7 @@ import java.util.Objects
 
 /** A summary text from the model. */
 class SummaryTextContent
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val text: JsonField<String>,
     private val type: JsonValue,

@@ -17,6 +17,7 @@ import java.util.Objects
 
 /** Emitted when an MCP tool call has completed successfully. */
 class ResponseMcpCallCompletedEvent
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val itemId: JsonField<String>,
     private val outputIndex: JsonField<Long>,

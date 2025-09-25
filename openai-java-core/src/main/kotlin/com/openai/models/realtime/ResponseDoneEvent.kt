@@ -28,6 +28,7 @@ import kotlin.jvm.optionals.getOrNull
  * audio content.
  */
 class ResponseDoneEvent
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val eventId: JsonField<String>,
     private val response: JsonField<RealtimeResponse>,

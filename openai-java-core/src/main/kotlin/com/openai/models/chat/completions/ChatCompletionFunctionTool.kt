@@ -19,6 +19,7 @@ import kotlin.jvm.optionals.getOrNull
 
 /** A function tool that can be used to generate a response. */
 class ChatCompletionFunctionTool
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val function: JsonField<FunctionDefinition>,
     private val type: JsonValue,

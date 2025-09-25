@@ -29,6 +29,7 @@ import kotlin.jvm.optionals.getOrNull
 
 /** The hyperparameters used for the DPO fine-tuning job. */
 class DpoHyperparameters
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val batchSize: JsonField<BatchSize>,
     private val beta: JsonField<Beta>,

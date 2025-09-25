@@ -18,6 +18,7 @@ import java.util.Objects
 import kotlin.jvm.optionals.getOrNull
 
 class FunctionTool
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val function: JsonField<FunctionDefinition>,
     private val type: JsonValue,

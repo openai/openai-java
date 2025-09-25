@@ -25,6 +25,7 @@ import kotlin.jvm.optionals.getOrNull
  * [web search tool](https://platform.openai.com/docs/guides/tools-web-search).
  */
 class WebSearchTool
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val type: JsonField<Type>,
     private val filters: JsonField<Filters>,
@@ -420,6 +421,7 @@ private constructor(
 
     /** Filters for the search. */
     class Filters
+    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(
         private val allowedDomains: JsonField<List<String>>,
         private val additionalProperties: MutableMap<String, JsonValue>,
@@ -737,6 +739,7 @@ private constructor(
 
     /** The approximate location of the user. */
     class UserLocation
+    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(
         private val city: JsonField<String>,
         private val country: JsonField<String>,

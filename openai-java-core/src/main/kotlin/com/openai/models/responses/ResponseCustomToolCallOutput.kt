@@ -18,6 +18,7 @@ import java.util.Optional
 
 /** The output of a custom tool call from your code, being sent back to the model. */
 class ResponseCustomToolCallOutput
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val callId: JsonField<String>,
     private val output: JsonField<String>,

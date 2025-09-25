@@ -17,6 +17,7 @@ import java.util.Objects
 import kotlin.jvm.optionals.getOrNull
 
 class StaticFileChunkingStrategyObject
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val static_: JsonField<StaticFileChunkingStrategy>,
     private val type: JsonValue,

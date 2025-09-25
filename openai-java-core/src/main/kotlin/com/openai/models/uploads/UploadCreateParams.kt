@@ -400,6 +400,7 @@ private constructor(
     override fun _queryParams(): QueryParams = additionalQueryParams
 
     class Body
+    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(
         private val bytes: JsonField<Long>,
         private val filename: JsonField<String>,
@@ -745,6 +746,7 @@ private constructor(
      * and all other files are persisted until they are manually deleted.
      */
     class ExpiresAfter
+    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(
         private val anchor: JsonValue,
         private val seconds: JsonField<Long>,

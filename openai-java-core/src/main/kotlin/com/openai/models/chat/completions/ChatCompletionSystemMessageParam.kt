@@ -34,6 +34,7 @@ import kotlin.jvm.optionals.getOrNull
  * user. With o1 models and newer, use `developer` messages for this purpose instead.
  */
 class ChatCompletionSystemMessageParam
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val content: JsonField<Content>,
     private val role: JsonValue,

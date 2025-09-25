@@ -17,6 +17,7 @@ import java.util.Optional
 
 /** Options for streaming response. Only set this when you set `stream: true`. */
 class ChatCompletionStreamOptions
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val includeObfuscation: JsonField<Boolean>,
     private val includeUsage: JsonField<Boolean>,

@@ -18,6 +18,7 @@ import java.util.Objects
  * `chunk_overlap_tokens` of `400`.
  */
 class AutoFileChunkingStrategyParam
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val type: JsonValue,
     private val additionalProperties: MutableMap<String, JsonValue>,

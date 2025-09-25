@@ -29,6 +29,7 @@ import kotlin.jvm.optionals.getOrNull
 
 /** Emitted when a content part is done. */
 class ResponseContentPartDoneEvent
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val contentIndex: JsonField<Long>,
     private val itemId: JsonField<String>,
@@ -600,6 +601,7 @@ private constructor(
 
         /** Reasoning text from the model. */
         class ReasoningText
+        @JsonCreator(mode = JsonCreator.Mode.DISABLED)
         private constructor(
             private val text: JsonField<String>,
             private val type: JsonValue,

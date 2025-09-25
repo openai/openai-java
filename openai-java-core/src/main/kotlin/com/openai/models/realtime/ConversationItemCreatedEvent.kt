@@ -28,6 +28,7 @@ import kotlin.jvm.optionals.getOrNull
  * - The client has sent a `conversation.item.create` event to add a new Item to the Conversation.
  */
 class ConversationItemCreatedEvent
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val eventId: JsonField<String>,
     private val item: JsonField<ConversationItem>,
