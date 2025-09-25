@@ -22,6 +22,7 @@ import kotlin.jvm.optionals.getOrNull
  * of a message.
  */
 class ImageFileDeltaBlock
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val index: JsonField<Long>,
     private val type: JsonValue,

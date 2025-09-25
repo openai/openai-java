@@ -27,6 +27,7 @@ import java.util.Objects
  * client manually commits the audio buffer during VAD activation).
  */
 class InputAudioBufferSpeechStartedEvent
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val audioStartMs: JsonField<Long>,
     private val eventId: JsonField<String>,

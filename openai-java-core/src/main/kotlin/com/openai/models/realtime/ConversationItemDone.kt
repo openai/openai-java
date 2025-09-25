@@ -24,6 +24,7 @@ import kotlin.jvm.optionals.getOrNull
  * separately with a `conversation.item.retrieve` event if needed.
  */
 class ConversationItemDone
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val eventId: JsonField<String>,
     private val item: JsonField<ConversationItem>,

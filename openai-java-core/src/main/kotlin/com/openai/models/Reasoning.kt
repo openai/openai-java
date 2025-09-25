@@ -23,6 +23,7 @@ import kotlin.jvm.optionals.getOrNull
  * Configuration options for [reasoning models](https://platform.openai.com/docs/guides/reasoning).
  */
 class Reasoning
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val effort: JsonField<ReasoningEffort>,
     private val generateSummary: JsonField<GenerateSummary>,

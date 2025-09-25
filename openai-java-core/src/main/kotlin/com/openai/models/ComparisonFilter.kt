@@ -34,6 +34,7 @@ import kotlin.jvm.optionals.getOrNull
  * operation.
  */
 class ComparisonFilter
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val key: JsonField<String>,
     private val type: JsonField<Type>,

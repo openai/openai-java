@@ -20,6 +20,7 @@ import java.util.Objects
  * function.
  */
 class ChatCompletionFunctionCallOption
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val name: JsonField<String>,
     private val additionalProperties: MutableMap<String, JsonValue>,

@@ -17,6 +17,7 @@ import java.util.Optional
 
 /** Details about the output tokens used in the Response. */
 class RealtimeResponseUsageOutputTokenDetails
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val audioTokens: JsonField<Long>,
     private val textTokens: JsonField<Long>,

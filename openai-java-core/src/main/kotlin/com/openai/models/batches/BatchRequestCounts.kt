@@ -17,6 +17,7 @@ import java.util.Objects
 
 /** The request counts for different statuses within the batch. */
 class BatchRequestCounts
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val completed: JsonField<Long>,
     private val failed: JsonField<Long>,

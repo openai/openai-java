@@ -18,6 +18,7 @@ import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
 class RealtimeAudioConfigOutput
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val format: JsonField<RealtimeAudioFormats>,
     private val speed: JsonField<Double>,

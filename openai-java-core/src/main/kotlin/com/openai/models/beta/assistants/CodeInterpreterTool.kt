@@ -14,6 +14,7 @@ import java.util.Collections
 import java.util.Objects
 
 class CodeInterpreterTool
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val type: JsonValue,
     private val additionalProperties: MutableMap<String, JsonValue>,

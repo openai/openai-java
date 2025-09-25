@@ -27,6 +27,7 @@ import kotlin.jvm.optionals.getOrNull
  * `error` event will be sent.
  */
 class ConversationItemCreateEvent
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val item: JsonField<ConversationItem>,
     private val type: JsonValue,

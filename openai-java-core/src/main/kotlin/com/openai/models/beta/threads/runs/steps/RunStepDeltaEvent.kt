@@ -18,6 +18,7 @@ import kotlin.jvm.optionals.getOrNull
 
 /** Represents a run step delta i.e. any changed fields on a run step during streaming. */
 class RunStepDeltaEvent
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val id: JsonField<String>,
     private val delta: JsonField<RunStepDelta>,

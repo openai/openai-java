@@ -412,6 +412,7 @@ private constructor(
     override fun _queryParams(): QueryParams = additionalQueryParams
 
     class Body
+    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(
         private val query: JsonField<Query>,
         private val filters: JsonField<Filters>,
@@ -1133,6 +1134,7 @@ private constructor(
 
     /** Ranking options for search. */
     class RankingOptions
+    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(
         private val ranker: JsonField<Ranker>,
         private val scoreThreshold: JsonField<Double>,

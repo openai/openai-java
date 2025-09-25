@@ -24,6 +24,7 @@ import kotlin.jvm.optionals.getOrNull
  * objects share the same shape (unlike the chat endpoint).
  */
 class Completion
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val id: JsonField<String>,
     private val choices: JsonField<List<CompletionChoice>>,

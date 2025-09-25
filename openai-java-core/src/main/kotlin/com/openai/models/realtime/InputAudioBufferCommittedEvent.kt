@@ -23,6 +23,7 @@ import kotlin.jvm.optionals.getOrNull
  * `conversation.item.created` event will also be sent to the client.
  */
 class InputAudioBufferCommittedEvent
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val eventId: JsonField<String>,
     private val itemId: JsonField<String>,

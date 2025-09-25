@@ -22,6 +22,7 @@ import kotlin.jvm.optionals.getOrNull
  * specified operation.
  */
 class StringCheckGrader
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val input: JsonField<String>,
     private val name: JsonField<String>,

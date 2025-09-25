@@ -18,6 +18,7 @@ import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
 class FunctionToolCallDelta
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val index: JsonField<Long>,
     private val type: JsonValue,
@@ -264,6 +265,7 @@ private constructor(
 
     /** The definition of the function that was called. */
     class Function
+    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(
         private val arguments: JsonField<String>,
         private val name: JsonField<String>,

@@ -16,6 +16,7 @@ import java.util.Collections
 import java.util.Objects
 
 class EvalDeleteResponse
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val deleted: JsonField<Boolean>,
     private val evalId: JsonField<String>,

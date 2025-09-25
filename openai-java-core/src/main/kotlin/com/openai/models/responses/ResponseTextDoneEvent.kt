@@ -21,6 +21,7 @@ import kotlin.jvm.optionals.getOrNull
 
 /** Emitted when text content is finalized. */
 class ResponseTextDoneEvent
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val contentIndex: JsonField<Long>,
     private val itemId: JsonField<String>,
@@ -420,6 +421,7 @@ private constructor(
      * greater model confidence in that token choice.
      */
     class Logprob
+    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(
         private val token: JsonField<String>,
         private val logprob: JsonField<Double>,
@@ -650,6 +652,7 @@ private constructor(
                 (topLogprobs.asKnown().getOrNull()?.sumOf { it.validity().toInt() } ?: 0)
 
         class TopLogprob
+        @JsonCreator(mode = JsonCreator.Mode.DISABLED)
         private constructor(
             private val token: JsonField<String>,
             private val logprob: JsonField<Double>,

@@ -36,6 +36,7 @@ import kotlin.jvm.optionals.getOrNull
  * Represents a message within a [thread](https://platform.openai.com/docs/api-reference/threads).
  */
 class Message
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val id: JsonField<String>,
     private val assistantId: JsonField<String>,
@@ -838,6 +839,7 @@ private constructor(
             (if (threadId.asKnown().isPresent) 1 else 0)
 
     class Attachment
+    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(
         private val fileId: JsonField<String>,
         private val tools: JsonField<List<Tool>>,
@@ -1254,6 +1256,7 @@ private constructor(
 
     /** On an incomplete message, details about why the message is incomplete. */
     class IncompleteDetails
+    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(
         private val reason: JsonField<Reason>,
         private val additionalProperties: MutableMap<String, JsonValue>,

@@ -20,6 +20,7 @@ import kotlin.jvm.optionals.getOrNull
 
 /** An object representing a list of runs for an evaluation. */
 class RunListPageResponse
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val data: JsonField<List<RunListResponse>>,
     private val firstId: JsonField<String>,

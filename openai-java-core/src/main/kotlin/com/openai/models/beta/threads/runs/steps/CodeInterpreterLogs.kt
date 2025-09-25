@@ -18,6 +18,7 @@ import java.util.Optional
 
 /** Text output from the Code Interpreter tool call as part of a run step. */
 class CodeInterpreterLogs
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val index: JsonField<Long>,
     private val type: JsonValue,

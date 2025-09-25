@@ -230,6 +230,7 @@ private constructor(
 
     /** Granular configuration for tracing. */
     class TracingConfiguration
+    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(
         private val groupId: JsonField<String>,
         private val metadata: JsonValue,

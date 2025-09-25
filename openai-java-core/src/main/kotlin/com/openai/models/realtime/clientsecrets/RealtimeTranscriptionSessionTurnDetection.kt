@@ -21,6 +21,7 @@ import java.util.Optional
  * user speech.
  */
 class RealtimeTranscriptionSessionTurnDetection
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val prefixPaddingMs: JsonField<Long>,
     private val silenceDurationMs: JsonField<Long>,

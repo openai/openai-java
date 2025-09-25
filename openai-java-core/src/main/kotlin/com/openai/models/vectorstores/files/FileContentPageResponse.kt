@@ -21,6 +21,7 @@ import kotlin.jvm.optionals.getOrNull
 
 /** Represents the parsed content of a vector store file. */
 class FileContentPageResponse
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val data: JsonField<List<FileContentResponse>>,
     private val hasMore: JsonField<Boolean>,

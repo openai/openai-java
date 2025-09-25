@@ -36,6 +36,7 @@ import kotlin.jvm.optionals.getOrNull
  * information.
  */
 class ResponseFunctionWebSearch
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val id: JsonField<String>,
     private val action: JsonField<Action>,
@@ -525,6 +526,7 @@ private constructor(
 
         /** Action type "search" - Performs a web search query. */
         class Search
+        @JsonCreator(mode = JsonCreator.Mode.DISABLED)
         private constructor(
             private val query: JsonField<String>,
             private val type: JsonValue,
@@ -762,6 +764,7 @@ private constructor(
 
             /** A source used in the search. */
             class Source
+            @JsonCreator(mode = JsonCreator.Mode.DISABLED)
             private constructor(
                 private val type: JsonValue,
                 private val url: JsonField<String>,
@@ -984,6 +987,7 @@ private constructor(
 
         /** Action type "open_page" - Opens a specific URL from search results. */
         class OpenPage
+        @JsonCreator(mode = JsonCreator.Mode.DISABLED)
         private constructor(
             private val type: JsonValue,
             private val url: JsonField<String>,
@@ -1184,6 +1188,7 @@ private constructor(
 
         /** Action type "find": Searches for a pattern within a loaded page. */
         class Find
+        @JsonCreator(mode = JsonCreator.Mode.DISABLED)
         private constructor(
             private val pattern: JsonField<String>,
             private val type: JsonValue,

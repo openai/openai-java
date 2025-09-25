@@ -21,6 +21,7 @@ import kotlin.jvm.optionals.getOrNull
  * is in an initial state of `in_progress`.
  */
 class ResponseCreatedEvent
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val eventId: JsonField<String>,
     private val response: JsonField<RealtimeResponse>,

@@ -289,6 +289,7 @@ private constructor(
     override fun _queryParams(): QueryParams = additionalQueryParams
 
     class Body
+    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(
         private val toolOutputs: JsonField<List<ToolOutput>>,
         private val additionalProperties: MutableMap<String, JsonValue>,
@@ -467,6 +468,7 @@ private constructor(
     }
 
     class ToolOutput
+    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(
         private val output: JsonField<String>,
         private val toolCallId: JsonField<String>,

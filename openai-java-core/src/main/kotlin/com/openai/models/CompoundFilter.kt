@@ -33,6 +33,7 @@ import kotlin.jvm.optionals.getOrNull
 
 /** Combine multiple filters using `and` or `or`. */
 class CompoundFilter
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val filters: JsonField<List<Filter>>,
     private val type: JsonField<Type>,

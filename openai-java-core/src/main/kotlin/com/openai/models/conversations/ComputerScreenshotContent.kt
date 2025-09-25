@@ -19,6 +19,7 @@ import kotlin.jvm.optionals.getOrNull
 
 /** A screenshot of a computer. */
 class ComputerScreenshotContent
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val fileId: JsonField<String>,
     private val imageUrl: JsonField<String>,

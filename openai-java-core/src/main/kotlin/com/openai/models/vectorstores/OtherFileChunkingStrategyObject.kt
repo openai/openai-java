@@ -18,6 +18,7 @@ import java.util.Objects
  * indexed before the `chunking_strategy` concept was introduced in the API.
  */
 class OtherFileChunkingStrategyObject
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val type: JsonValue,
     private val additionalProperties: MutableMap<String, JsonValue>,

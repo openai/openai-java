@@ -17,6 +17,7 @@ import java.util.Objects
 
 /** Ephemeral key returned by the API. */
 class RealtimeSessionClientSecret
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val expiresAt: JsonField<Long>,
     private val value: JsonField<String>,

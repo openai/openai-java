@@ -31,6 +31,7 @@ import kotlin.jvm.optionals.getOrNull
 
 /** Represents a step in execution of a run. */
 class RunStep
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val id: JsonField<String>,
     private val assistantId: JsonField<String>,
@@ -860,6 +861,7 @@ private constructor(
 
     /** The last error associated with this run step. Will be `null` if there are no errors. */
     class LastError
+    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(
         private val code: JsonField<Code>,
         private val message: JsonField<String>,
@@ -1754,6 +1756,7 @@ private constructor(
      * status is `in_progress`.
      */
     class Usage
+    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(
         private val completionTokens: JsonField<Long>,
         private val promptTokens: JsonField<Long>,

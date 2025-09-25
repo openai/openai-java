@@ -21,6 +21,7 @@ import kotlin.jvm.optionals.getOrNull
  * generate a file.
  */
 class FilePathAnnotation
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val endIndex: JsonField<Long>,
     private val filePath: JsonField<FilePath>,
@@ -296,6 +297,7 @@ private constructor(
             type.let { if (it == JsonValue.from("file_path")) 1 else 0 }
 
     class FilePath
+    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(
         private val fileId: JsonField<String>,
         private val additionalProperties: MutableMap<String, JsonValue>,

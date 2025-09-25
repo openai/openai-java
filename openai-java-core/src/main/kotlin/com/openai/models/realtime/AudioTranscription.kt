@@ -18,6 +18,7 @@ import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
 class AudioTranscription
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val language: JsonField<String>,
     private val model: JsonField<Model>,

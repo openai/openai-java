@@ -19,6 +19,7 @@ import kotlin.jvm.optionals.getOrNull
 
 /** A TextSimilarityGrader object which grades text based on similarity metrics. */
 class TextSimilarityGrader
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val evaluationMetric: JsonField<EvaluationMetric>,
     private val input: JsonField<String>,

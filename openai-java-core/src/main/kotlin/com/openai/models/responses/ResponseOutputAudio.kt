@@ -17,6 +17,7 @@ import java.util.Objects
 
 /** An audio output from the model. */
 class ResponseOutputAudio
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val data: JsonField<String>,
     private val transcript: JsonField<String>,

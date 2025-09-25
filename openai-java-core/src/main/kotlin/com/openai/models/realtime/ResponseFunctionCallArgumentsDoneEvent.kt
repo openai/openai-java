@@ -20,6 +20,7 @@ import java.util.Objects
  * Response is interrupted, incomplete, or cancelled.
  */
 class ResponseFunctionCallArgumentsDoneEvent
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val arguments: JsonField<String>,
     private val callId: JsonField<String>,

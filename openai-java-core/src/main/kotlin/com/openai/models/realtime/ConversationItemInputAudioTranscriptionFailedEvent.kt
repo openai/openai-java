@@ -23,6 +23,7 @@ import kotlin.jvm.optionals.getOrNull
  * identify the related Item.
  */
 class ConversationItemInputAudioTranscriptionFailedEvent
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val contentIndex: JsonField<Long>,
     private val error: JsonField<Error>,
@@ -322,6 +323,7 @@ private constructor(
 
     /** Details of the transcription error. */
     class Error
+    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(
         private val code: JsonField<String>,
         private val message: JsonField<String>,

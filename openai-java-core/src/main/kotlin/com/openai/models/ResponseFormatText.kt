@@ -15,6 +15,7 @@ import java.util.Objects
 
 /** Default response format. Used to generate text responses. */
 class ResponseFormatText
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val type: JsonValue,
     private val additionalProperties: MutableMap<String, JsonValue>,

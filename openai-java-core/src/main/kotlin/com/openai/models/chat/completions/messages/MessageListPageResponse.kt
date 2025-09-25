@@ -21,6 +21,7 @@ import kotlin.jvm.optionals.getOrNull
 
 /** An object representing a list of chat completion messages. */
 class MessageListPageResponse
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val data: JsonField<List<ChatCompletionStoreMessage>>,
     private val firstId: JsonField<String>,

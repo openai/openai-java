@@ -22,6 +22,7 @@ import kotlin.jvm.optionals.getOrNull
  * previous turns (text and audio tokens) will become the input for later turns.
  */
 class RealtimeResponseUsage
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val inputTokenDetails: JsonField<RealtimeResponseUsageInputTokenDetails>,
     private val inputTokens: JsonField<Long>,

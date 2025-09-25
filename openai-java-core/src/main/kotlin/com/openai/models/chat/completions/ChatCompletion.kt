@@ -23,6 +23,7 @@ import kotlin.jvm.optionals.getOrNull
 
 /** Represents a chat completion response returned by model, based on the provided input. */
 class ChatCompletion
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val id: JsonField<String>,
     private val choices: JsonField<List<Choice>>,
@@ -490,6 +491,7 @@ private constructor(
             (usage.asKnown().getOrNull()?.validity() ?: 0)
 
     class Choice
+    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(
         private val finishReason: JsonField<FinishReason>,
         private val index: JsonField<Long>,
@@ -925,6 +927,7 @@ private constructor(
 
         /** Log probability information for the choice. */
         class Logprobs
+        @JsonCreator(mode = JsonCreator.Mode.DISABLED)
         private constructor(
             private val content: JsonField<List<ChatCompletionTokenLogprob>>,
             private val refusal: JsonField<List<ChatCompletionTokenLogprob>>,

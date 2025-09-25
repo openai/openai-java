@@ -1477,6 +1477,7 @@ private constructor(
     override fun _queryParams(): QueryParams = additionalQueryParams
 
     class Body
+    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(
         private val background: JsonField<Boolean>,
         private val conversation: JsonField<Conversation>,
@@ -3886,6 +3887,7 @@ private constructor(
 
     /** Options for streaming responses. Only set this when you set `stream: true`. */
     class StreamOptions
+    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(
         private val includeObfuscation: JsonField<Boolean>,
         private val additionalProperties: MutableMap<String, JsonValue>,

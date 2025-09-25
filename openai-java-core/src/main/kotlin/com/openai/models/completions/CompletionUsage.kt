@@ -19,6 +19,7 @@ import kotlin.jvm.optionals.getOrNull
 
 /** Usage statistics for the completion request. */
 class CompletionUsage
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val completionTokens: JsonField<Long>,
     private val promptTokens: JsonField<Long>,
@@ -341,6 +342,7 @@ private constructor(
 
     /** Breakdown of tokens used in a completion. */
     class CompletionTokensDetails
+    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(
         private val acceptedPredictionTokens: JsonField<Long>,
         private val audioTokens: JsonField<Long>,
@@ -650,6 +652,7 @@ private constructor(
 
     /** Breakdown of tokens used in the prompt. */
     class PromptTokensDetails
+    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(
         private val audioTokens: JsonField<Long>,
         private val cachedTokens: JsonField<Long>,

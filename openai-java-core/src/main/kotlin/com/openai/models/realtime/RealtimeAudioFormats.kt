@@ -238,6 +238,7 @@ private constructor(
 
     /** The PCM audio format. Only a 24kHz sample rate is supported. */
     class AudioPcm
+    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(
         private val rate: JsonField<Rate>,
         private val type: JsonField<Type>,
@@ -656,6 +657,7 @@ private constructor(
 
     /** The G.711 μ-law format. */
     class AudioPcmu
+    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(
         private val type: JsonField<Type>,
         private val additionalProperties: MutableMap<String, JsonValue>,
@@ -919,6 +921,7 @@ private constructor(
 
     /** The G.711 A-law format. */
     class AudioPcma
+    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(
         private val type: JsonField<Type>,
         private val additionalProperties: MutableMap<String, JsonValue>,

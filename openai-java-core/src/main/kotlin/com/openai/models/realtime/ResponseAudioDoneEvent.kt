@@ -20,6 +20,7 @@ import java.util.Objects
  * incomplete, or cancelled.
  */
 class ResponseAudioDoneEvent
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val contentIndex: JsonField<Long>,
     private val eventId: JsonField<String>,

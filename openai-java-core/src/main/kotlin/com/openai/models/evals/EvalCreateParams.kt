@@ -459,6 +459,7 @@ private constructor(
     override fun _queryParams(): QueryParams = additionalQueryParams
 
     class Body
+    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(
         private val dataSourceConfig: JsonField<DataSourceConfig>,
         private val testingCriteria: JsonField<List<TestingCriterion>>,
@@ -1106,6 +1107,7 @@ private constructor(
          * - What data is required when creating a run
          */
         class Custom
+        @JsonCreator(mode = JsonCreator.Mode.DISABLED)
         private constructor(
             private val itemSchema: JsonField<ItemSchema>,
             private val type: JsonValue,
@@ -1475,6 +1477,7 @@ private constructor(
          * usually metadata like `usecase=chatbot` or `prompt-version=v2`, etc.
          */
         class Logs
+        @JsonCreator(mode = JsonCreator.Mode.DISABLED)
         private constructor(
             private val type: JsonValue,
             private val metadata: JsonField<Metadata>,
@@ -1770,6 +1773,7 @@ private constructor(
         /** Deprecated in favor of LogsDataSourceConfig. */
         @Deprecated("deprecated")
         class StoredCompletions
+        @JsonCreator(mode = JsonCreator.Mode.DISABLED)
         private constructor(
             private val type: JsonValue,
             private val metadata: JsonField<Metadata>,
@@ -2373,6 +2377,7 @@ private constructor(
          * evaluation.
          */
         class LabelModel
+        @JsonCreator(mode = JsonCreator.Mode.DISABLED)
         private constructor(
             private val input: JsonField<List<Input>>,
             private val labels: JsonField<List<String>>,
@@ -2989,6 +2994,7 @@ private constructor(
                 }
 
                 class SimpleInputMessage
+                @JsonCreator(mode = JsonCreator.Mode.DISABLED)
                 private constructor(
                     private val content: JsonField<String>,
                     private val role: JsonField<String>,
@@ -3211,6 +3217,7 @@ private constructor(
                  * interactions.
                  */
                 class EvalItem
+                @JsonCreator(mode = JsonCreator.Mode.DISABLED)
                 private constructor(
                     private val content: JsonField<Content>,
                     private val role: JsonField<Role>,
@@ -3867,6 +3874,7 @@ private constructor(
 
                         /** A text output from the model. */
                         class OutputText
+                        @JsonCreator(mode = JsonCreator.Mode.DISABLED)
                         private constructor(
                             private val text: JsonField<String>,
                             private val type: JsonValue,
@@ -4087,6 +4095,7 @@ private constructor(
 
                         /** An image input to the model. */
                         class InputImage
+                        @JsonCreator(mode = JsonCreator.Mode.DISABLED)
                         private constructor(
                             private val imageUrl: JsonField<String>,
                             private val type: JsonValue,
@@ -4686,6 +4695,7 @@ private constructor(
 
         /** A TextSimilarityGrader object which grades text based on similarity metrics. */
         class TextSimilarity
+        @JsonCreator(mode = JsonCreator.Mode.DISABLED)
         private constructor(
             private val evaluationMetric: JsonField<TextSimilarityGrader.EvaluationMetric>,
             private val input: JsonField<String>,
@@ -5090,6 +5100,7 @@ private constructor(
 
         /** A PythonGrader object that runs a python script on the input. */
         class Python
+        @JsonCreator(mode = JsonCreator.Mode.DISABLED)
         private constructor(
             private val name: JsonField<String>,
             private val source: JsonField<String>,
@@ -5425,6 +5436,7 @@ private constructor(
 
         /** A ScoreModelGrader object that uses a model to assign a score to the input. */
         class ScoreModel
+        @JsonCreator(mode = JsonCreator.Mode.DISABLED)
         private constructor(
             private val input: JsonField<List<ScoreModelGrader.Input>>,
             private val model: JsonField<String>,

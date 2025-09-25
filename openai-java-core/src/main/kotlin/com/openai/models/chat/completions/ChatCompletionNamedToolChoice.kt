@@ -18,6 +18,7 @@ import kotlin.jvm.optionals.getOrNull
 
 /** Specifies a tool the model should use. Use to force the model to call a specific function. */
 class ChatCompletionNamedToolChoice
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val function: JsonField<Function>,
     private val type: JsonValue,
@@ -195,6 +196,7 @@ private constructor(
             type.let { if (it == JsonValue.from("function")) 1 else 0 }
 
     class Function
+    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(
         private val name: JsonField<String>,
         private val additionalProperties: MutableMap<String, JsonValue>,

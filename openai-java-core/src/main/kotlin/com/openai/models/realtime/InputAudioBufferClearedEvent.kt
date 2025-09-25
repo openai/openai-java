@@ -20,6 +20,7 @@ import java.util.Objects
  * event.
  */
 class InputAudioBufferClearedEvent
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val eventId: JsonField<String>,
     private val type: JsonValue,

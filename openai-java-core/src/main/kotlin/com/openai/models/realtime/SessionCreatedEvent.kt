@@ -33,6 +33,7 @@ import kotlin.jvm.optionals.getOrNull
  * the first server event. This event will contain the default Session configuration.
  */
 class SessionCreatedEvent
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val eventId: JsonField<String>,
     private val session: JsonField<Session>,

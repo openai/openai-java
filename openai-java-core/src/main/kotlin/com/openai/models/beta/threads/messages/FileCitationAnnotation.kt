@@ -22,6 +22,7 @@ import kotlin.jvm.optionals.getOrNull
  * search files.
  */
 class FileCitationAnnotation
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val endIndex: JsonField<Long>,
     private val fileCitation: JsonField<FileCitation>,
@@ -303,6 +304,7 @@ private constructor(
             type.let { if (it == JsonValue.from("file_citation")) 1 else 0 }
 
     class FileCitation
+    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(
         private val fileId: JsonField<String>,
         private val additionalProperties: MutableMap<String, JsonValue>,

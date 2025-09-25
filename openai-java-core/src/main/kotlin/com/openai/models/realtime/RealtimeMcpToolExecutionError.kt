@@ -16,6 +16,7 @@ import java.util.Collections
 import java.util.Objects
 
 class RealtimeMcpToolExecutionError
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val message: JsonField<String>,
     private val type: JsonValue,

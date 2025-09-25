@@ -17,6 +17,7 @@ import java.util.Objects
 
 /** Emitted when the full audio transcript is completed. */
 class ResponseAudioTranscriptDoneEvent
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val sequenceNumber: JsonField<Long>,
     private val type: JsonValue,

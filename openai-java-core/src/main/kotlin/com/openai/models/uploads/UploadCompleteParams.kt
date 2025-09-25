@@ -313,6 +313,7 @@ private constructor(
     override fun _queryParams(): QueryParams = additionalQueryParams
 
     class Body
+    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(
         private val partIds: JsonField<List<String>>,
         private val md5: JsonField<String>,

@@ -28,6 +28,7 @@ import kotlin.jvm.optionals.getOrNull
 
 /** The delta containing the fields that have changed on the run step. */
 class RunStepDelta
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val stepDetails: JsonField<StepDetails>,
     private val additionalProperties: MutableMap<String, JsonValue>,

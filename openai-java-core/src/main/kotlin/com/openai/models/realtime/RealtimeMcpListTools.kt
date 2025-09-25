@@ -21,6 +21,7 @@ import kotlin.jvm.optionals.getOrNull
 
 /** A Realtime item listing tools available on an MCP server. */
 class RealtimeMcpListTools
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val serverLabel: JsonField<String>,
     private val tools: JsonField<List<Tool>>,
@@ -286,6 +287,7 @@ private constructor(
 
     /** A tool available on an MCP server. */
     class Tool
+    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(
         private val inputSchema: JsonValue,
         private val name: JsonField<String>,

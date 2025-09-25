@@ -18,6 +18,7 @@ import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
 class ImageFileDelta
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val detail: JsonField<Detail>,
     private val fileId: JsonField<String>,

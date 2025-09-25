@@ -18,6 +18,7 @@ import kotlin.jvm.optionals.getOrNull
 
 /** Constrains the tools available to the model to a pre-defined set. */
 class ChatCompletionAllowedToolChoice
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val allowedTools: JsonField<ChatCompletionAllowedTools>,
     private val type: JsonValue,

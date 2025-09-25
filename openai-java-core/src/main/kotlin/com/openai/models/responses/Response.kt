@@ -35,6 +35,7 @@ import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
 class Response
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val id: JsonField<String>,
     private val createdAt: JsonField<Double>,
@@ -1857,6 +1858,7 @@ private constructor(
 
     /** Details about why the response is incomplete. */
     class IncompleteDetails
+    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(
         private val reason: JsonField<Reason>,
         private val additionalProperties: MutableMap<String, JsonValue>,
@@ -2787,6 +2789,7 @@ private constructor(
      * response are automatically added to this conversation.
      */
     class Conversation
+    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(
         private val id: JsonField<String>,
         private val additionalProperties: MutableMap<String, JsonValue>,

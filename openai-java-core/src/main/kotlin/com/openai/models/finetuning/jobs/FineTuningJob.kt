@@ -38,6 +38,7 @@ import kotlin.jvm.optionals.getOrNull
  * The `fine_tuning.job` object represents a fine-tuning job that has been created through the API.
  */
 class FineTuningJob
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val id: JsonField<String>,
     private val createdAt: JsonField<Long>,
@@ -1037,6 +1038,7 @@ private constructor(
      * the failure.
      */
     class Error
+    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(
         private val code: JsonField<String>,
         private val message: JsonField<String>,
@@ -1284,6 +1286,7 @@ private constructor(
      * running `supervised` jobs.
      */
     class Hyperparameters
+    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(
         private val batchSize: JsonField<BatchSize>,
         private val learningRateMultiplier: JsonField<LearningRateMultiplier>,
@@ -2370,6 +2373,7 @@ private constructor(
 
     /** The method used for fine-tuning. */
     class Method
+    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(
         private val type: JsonField<Type>,
         private val dpo: JsonField<DpoMethod>,

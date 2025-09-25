@@ -17,6 +17,7 @@ import java.util.Objects
 
 /** Emitted when a partial image is available during image generation streaming. */
 class ResponseImageGenCallPartialImageEvent
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val itemId: JsonField<String>,
     private val outputIndex: JsonField<Long>,

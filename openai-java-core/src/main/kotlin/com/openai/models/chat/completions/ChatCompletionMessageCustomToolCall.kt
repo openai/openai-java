@@ -18,6 +18,7 @@ import kotlin.jvm.optionals.getOrNull
 
 /** A call to a custom tool created by the model. */
 class ChatCompletionMessageCustomToolCall
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val id: JsonField<String>,
     private val custom: JsonField<Custom>,
@@ -236,6 +237,7 @@ private constructor(
 
     /** The custom tool that the model called. */
     class Custom
+    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(
         private val input: JsonField<String>,
         private val name: JsonField<String>,

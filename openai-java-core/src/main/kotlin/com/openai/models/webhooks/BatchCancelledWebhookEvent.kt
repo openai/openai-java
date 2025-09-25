@@ -20,6 +20,7 @@ import kotlin.jvm.optionals.getOrNull
 
 /** Sent when a batch API request has been cancelled. */
 class BatchCancelledWebhookEvent
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val id: JsonField<String>,
     private val createdAt: JsonField<Long>,
@@ -302,6 +303,7 @@ private constructor(
 
     /** Event data payload. */
     class Data
+    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(
         private val id: JsonField<String>,
         private val additionalProperties: MutableMap<String, JsonValue>,

@@ -20,6 +20,7 @@ import kotlin.jvm.optionals.getOrNull
 
 /** An object representing a list of evals. */
 class EvalListPageResponse
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val data: JsonField<List<EvalListResponse>>,
     private val firstId: JsonField<String>,

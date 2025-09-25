@@ -18,6 +18,7 @@ import kotlin.jvm.optionals.getOrNull
 
 /** The text content that is part of a message. */
 class TextContentBlock
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val text: JsonField<Text>,
     private val type: JsonValue,

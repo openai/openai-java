@@ -18,6 +18,7 @@ import kotlin.jvm.optionals.getOrNull
 
 /** Details of the message creation by the run step. */
 class RunStepDeltaMessageDelta
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val type: JsonValue,
     private val messageCreation: JsonField<MessageCreation>,
@@ -184,6 +185,7 @@ private constructor(
             (messageCreation.asKnown().getOrNull()?.validity() ?: 0)
 
     class MessageCreation
+    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(
         private val messageId: JsonField<String>,
         private val additionalProperties: MutableMap<String, JsonValue>,

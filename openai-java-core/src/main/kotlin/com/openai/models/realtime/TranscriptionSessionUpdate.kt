@@ -22,6 +22,7 @@ import kotlin.jvm.optionals.getOrNull
 
 /** Send this event to update a transcription session. */
 class TranscriptionSessionUpdate
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val session: JsonField<Session>,
     private val type: JsonValue,
@@ -234,6 +235,7 @@ private constructor(
 
     /** Realtime transcription session object configuration. */
     class Session
+    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(
         private val include: JsonField<List<Include>>,
         private val inputAudioFormat: JsonField<InputAudioFormat>,
@@ -868,6 +870,7 @@ private constructor(
          * false positives) and model performance by improving perception of the input audio.
          */
         class InputAudioNoiseReduction
+        @JsonCreator(mode = JsonCreator.Mode.DISABLED)
         private constructor(
             private val type: JsonField<NoiseReductionType>,
             private val additionalProperties: MutableMap<String, JsonValue>,
@@ -1030,6 +1033,7 @@ private constructor(
          * the end of user speech.
          */
         class TurnDetection
+        @JsonCreator(mode = JsonCreator.Mode.DISABLED)
         private constructor(
             private val prefixPaddingMs: JsonField<Long>,
             private val silenceDurationMs: JsonField<Long>,

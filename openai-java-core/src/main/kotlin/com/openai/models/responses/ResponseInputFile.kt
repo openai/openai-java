@@ -18,6 +18,7 @@ import kotlin.jvm.optionals.getOrNull
 
 /** A file input to the model. */
 class ResponseInputFile
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val type: JsonValue,
     private val fileData: JsonField<String>,

@@ -18,6 +18,7 @@ import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
 class ImageUrlDelta
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val detail: JsonField<Detail>,
     private val url: JsonField<String>,

@@ -17,6 +17,7 @@ import java.util.Objects
 
 /** Emitted when the arguments for an MCP tool call are finalized. */
 class ResponseMcpCallArgumentsDoneEvent
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val arguments: JsonField<String>,
     private val itemId: JsonField<String>,

@@ -19,6 +19,7 @@ import java.util.Objects
  * details.
  */
 class ResponseFormatTextPython
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val type: JsonValue,
     private val additionalProperties: MutableMap<String, JsonValue>,

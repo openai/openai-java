@@ -20,6 +20,7 @@ import kotlin.jvm.optionals.getOrNull
 
 /** An object representing a list of output items for an evaluation run. */
 class OutputItemListPageResponse
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val data: JsonField<List<OutputItemListResponse>>,
     private val firstId: JsonField<String>,

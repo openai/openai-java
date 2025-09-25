@@ -17,6 +17,7 @@ import java.util.Objects
 
 /** Returned when the text value of an "output_text" content part is updated. */
 class ResponseTextDeltaEvent
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val contentIndex: JsonField<Long>,
     private val delta: JsonField<String>,

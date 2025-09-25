@@ -17,6 +17,7 @@ import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
 class RealtimeTranscriptionSessionAudioInput
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val format: JsonField<RealtimeAudioFormats>,
     private val noiseReduction: JsonField<NoiseReduction>,
@@ -369,6 +370,7 @@ private constructor(
      * positives) and model performance by improving perception of the input audio.
      */
     class NoiseReduction
+    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(
         private val type: JsonField<NoiseReductionType>,
         private val additionalProperties: MutableMap<String, JsonValue>,

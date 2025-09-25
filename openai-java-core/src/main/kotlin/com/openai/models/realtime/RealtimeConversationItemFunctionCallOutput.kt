@@ -20,6 +20,7 @@ import kotlin.jvm.optionals.getOrNull
 
 /** A function call output item in a Realtime conversation. */
 class RealtimeConversationItemFunctionCallOutput
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val callId: JsonField<String>,
     private val output: JsonField<String>,

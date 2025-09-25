@@ -41,6 +41,7 @@ import kotlin.jvm.optionals.getOrNull
  * the model's interpretation, and should be treated as a rough guide.
  */
 class ConversationItemInputAudioTranscriptionCompletedEvent
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val contentIndex: JsonField<Long>,
     private val eventId: JsonField<String>,
@@ -665,6 +666,7 @@ private constructor(
 
         /** Usage statistics for models billed by token usage. */
         class TranscriptTextUsageTokens
+        @JsonCreator(mode = JsonCreator.Mode.DISABLED)
         private constructor(
             private val inputTokens: JsonField<Long>,
             private val outputTokens: JsonField<Long>,
@@ -997,6 +999,7 @@ private constructor(
 
             /** Details about the input tokens billed for this request. */
             class InputTokenDetails
+            @JsonCreator(mode = JsonCreator.Mode.DISABLED)
             private constructor(
                 private val audioTokens: JsonField<Long>,
                 private val textTokens: JsonField<Long>,
@@ -1232,6 +1235,7 @@ private constructor(
 
         /** Usage statistics for models billed by audio input duration. */
         class TranscriptTextUsageDuration
+        @JsonCreator(mode = JsonCreator.Mode.DISABLED)
         private constructor(
             private val seconds: JsonField<Double>,
             private val type: JsonValue,

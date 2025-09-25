@@ -18,6 +18,7 @@ import kotlin.jvm.optionals.getOrNull
 
 /** Details of the message creation by the run step. */
 class MessageCreationStepDetails
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val messageCreation: JsonField<MessageCreation>,
     private val type: JsonValue,
@@ -201,6 +202,7 @@ private constructor(
             type.let { if (it == JsonValue.from("message_creation")) 1 else 0 }
 
     class MessageCreation
+    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(
         private val messageId: JsonField<String>,
         private val additionalProperties: MutableMap<String, JsonValue>,

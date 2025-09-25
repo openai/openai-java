@@ -32,6 +32,7 @@ import kotlin.jvm.optionals.getOrNull
  * event if necessary.
  */
 class ConversationItemAdded
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val eventId: JsonField<String>,
     private val item: JsonField<ConversationItem>,

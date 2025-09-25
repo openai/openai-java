@@ -19,6 +19,7 @@ import kotlin.jvm.optionals.getOrNull
 
 /** Details of the error. */
 class RealtimeError
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val message: JsonField<String>,
     private val type: JsonField<String>,

@@ -22,6 +22,7 @@ import kotlin.jvm.optionals.getOrNull
  * [Learn more about built-in tools](https://platform.openai.com/docs/guides/tools).
  */
 class ToolChoiceTypes
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val type: JsonField<Type>,
     private val additionalProperties: MutableMap<String, JsonValue>,

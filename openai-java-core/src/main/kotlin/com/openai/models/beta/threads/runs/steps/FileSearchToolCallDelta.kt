@@ -17,6 +17,7 @@ import java.util.Objects
 import java.util.Optional
 
 class FileSearchToolCallDelta
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val fileSearch: JsonValue,
     private val index: JsonField<Long>,

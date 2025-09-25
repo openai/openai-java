@@ -17,6 +17,7 @@ import java.util.Optional
 
 /** A computer screenshot image used with the computer use tool. */
 class ResponseComputerToolCallOutputScreenshot
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val type: JsonValue,
     private val fileId: JsonField<String>,

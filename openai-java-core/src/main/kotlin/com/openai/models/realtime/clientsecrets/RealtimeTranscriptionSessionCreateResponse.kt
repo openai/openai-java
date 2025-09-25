@@ -25,6 +25,7 @@ import kotlin.jvm.optionals.getOrNull
 
 /** A Realtime transcription session configuration object. */
 class RealtimeTranscriptionSessionCreateResponse
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val id: JsonField<String>,
     private val object_: JsonField<String>,
@@ -364,6 +365,7 @@ private constructor(
 
     /** Configuration for input audio for the session. */
     class Audio
+    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(
         private val input: JsonField<Input>,
         private val additionalProperties: MutableMap<String, JsonValue>,
@@ -483,6 +485,7 @@ private constructor(
         @JvmSynthetic internal fun validity(): Int = (input.asKnown().getOrNull()?.validity() ?: 0)
 
         class Input
+        @JsonCreator(mode = JsonCreator.Mode.DISABLED)
         private constructor(
             private val format: JsonField<RealtimeAudioFormats>,
             private val noiseReduction: JsonField<NoiseReduction>,
@@ -773,6 +776,7 @@ private constructor(
 
             /** Configuration for input audio noise reduction. */
             class NoiseReduction
+            @JsonCreator(mode = JsonCreator.Mode.DISABLED)
             private constructor(
                 private val type: JsonField<NoiseReductionType>,
                 private val additionalProperties: MutableMap<String, JsonValue>,

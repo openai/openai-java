@@ -23,6 +23,7 @@ import kotlin.jvm.optionals.getOrNull
  * search files.
  */
 class FileCitationDeltaAnnotation
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val index: JsonField<Long>,
     private val type: JsonValue,
@@ -331,6 +332,7 @@ private constructor(
             (if (text.asKnown().isPresent) 1 else 0)
 
     class FileCitation
+    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(
         private val fileId: JsonField<String>,
         private val quote: JsonField<String>,

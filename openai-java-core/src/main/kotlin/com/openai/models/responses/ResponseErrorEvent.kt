@@ -19,6 +19,7 @@ import kotlin.jvm.optionals.getOrNull
 
 /** Emitted when an error occurs. */
 class ResponseErrorEvent
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val code: JsonField<String>,
     private val message: JsonField<String>,

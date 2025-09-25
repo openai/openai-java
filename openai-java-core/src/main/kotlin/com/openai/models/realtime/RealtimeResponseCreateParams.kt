@@ -36,6 +36,7 @@ import kotlin.jvm.optionals.getOrNull
 
 /** Create a new Realtime response with these parameters */
 class RealtimeResponseCreateParams
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val audio: JsonField<RealtimeResponseCreateAudioOutput>,
     private val conversation: JsonField<Conversation>,
