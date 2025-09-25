@@ -30,6 +30,7 @@ import kotlin.jvm.optionals.getOrNull
 
 /** A list of Response items. */
 class ResponseItemList
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val data: JsonField<List<ResponseItem>>,
     private val firstId: JsonField<String>,

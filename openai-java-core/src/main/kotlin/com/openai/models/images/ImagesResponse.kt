@@ -22,6 +22,7 @@ import kotlin.jvm.optionals.getOrNull
 
 /** The response from the image generation endpoint. */
 class ImagesResponse
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val created: JsonField<Long>,
     private val background: JsonField<Background>,
@@ -917,6 +918,7 @@ private constructor(
 
     /** For `gpt-image-1` only, the token usage information for the image generation. */
     class Usage
+    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(
         private val inputTokens: JsonField<Long>,
         private val inputTokensDetails: JsonField<InputTokensDetails>,
@@ -1192,6 +1194,7 @@ private constructor(
 
         /** The input tokens detailed information for the image generation. */
         class InputTokensDetails
+        @JsonCreator(mode = JsonCreator.Mode.DISABLED)
         private constructor(
             private val imageTokens: JsonField<Long>,
             private val textTokens: JsonField<Long>,

@@ -22,6 +22,7 @@ import kotlin.jvm.optionals.getOrNull
  * error messages by default.
  */
 class RealtimeErrorEvent
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val error: JsonField<RealtimeError>,
     private val eventId: JsonField<String>,

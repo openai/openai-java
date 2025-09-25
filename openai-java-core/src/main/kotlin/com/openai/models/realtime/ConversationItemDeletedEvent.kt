@@ -21,6 +21,7 @@ import java.util.Objects
  * the conversation history with the client's view.
  */
 class ConversationItemDeletedEvent
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val eventId: JsonField<String>,
     private val itemId: JsonField<String>,

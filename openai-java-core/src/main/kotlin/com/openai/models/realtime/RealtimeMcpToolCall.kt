@@ -29,6 +29,7 @@ import kotlin.jvm.optionals.getOrNull
 
 /** A Realtime item representing an invocation of a tool on an MCP server. */
 class RealtimeMcpToolCall
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val id: JsonField<String>,
     private val arguments: JsonField<String>,

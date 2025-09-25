@@ -18,6 +18,7 @@ import java.util.Optional
 
 /** A PythonGrader object that runs a python script on the input. */
 class PythonGrader
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val name: JsonField<String>,
     private val source: JsonField<String>,

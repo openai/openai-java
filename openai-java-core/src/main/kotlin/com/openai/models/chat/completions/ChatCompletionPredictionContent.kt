@@ -33,6 +33,7 @@ import kotlin.jvm.optionals.getOrNull
  * Static predicted output content, such as the content of a text file that is being regenerated.
  */
 class ChatCompletionPredictionContent
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val content: JsonField<Content>,
     private val type: JsonValue,

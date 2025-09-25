@@ -18,6 +18,7 @@ import kotlin.jvm.optionals.getOrNull
 
 /** Emitted when a new reasoning summary part is added. */
 class ResponseReasoningSummaryPartAddedEvent
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val itemId: JsonField<String>,
     private val outputIndex: JsonField<Long>,
@@ -356,6 +357,7 @@ private constructor(
 
     /** The summary part that was added. */
     class Part
+    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(
         private val text: JsonField<String>,
         private val type: JsonValue,

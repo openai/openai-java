@@ -17,6 +17,7 @@ import java.util.Objects
 
 /** A Realtime item requesting human approval of a tool invocation. */
 class RealtimeMcpApprovalRequest
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val id: JsonField<String>,
     private val arguments: JsonField<String>,

@@ -21,6 +21,7 @@ import kotlin.jvm.optionals.getOrNull
 
 /** Realtime transcription session object configuration. */
 class RealtimeTranscriptionSessionCreateRequest
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val type: JsonValue,
     private val audio: JsonField<RealtimeTranscriptionSessionAudio>,

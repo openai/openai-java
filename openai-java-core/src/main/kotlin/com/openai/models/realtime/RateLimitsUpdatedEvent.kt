@@ -26,6 +26,7 @@ import kotlin.jvm.optionals.getOrNull
  * that reservation, which is then adjusted accordingly once the Response is completed.
  */
 class RateLimitsUpdatedEvent
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val eventId: JsonField<String>,
     private val rateLimits: JsonField<List<RateLimit>>,
@@ -258,6 +259,7 @@ private constructor(
             type.let { if (it == JsonValue.from("rate_limits.updated")) 1 else 0 }
 
     class RateLimit
+    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(
         private val limit: JsonField<Long>,
         private val name: JsonField<Name>,

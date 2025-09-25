@@ -20,6 +20,7 @@ import kotlin.jvm.optionals.getOrNull
 
 /** Specifies a tool the model should use. Use to force the model to call a specific tool. */
 class AssistantToolChoice
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val type: JsonField<Type>,
     private val function: JsonField<AssistantToolChoiceFunction>,

@@ -23,6 +23,7 @@ import kotlin.jvm.optionals.getOrNull
  * [function calling](https://platform.openai.com/docs/guides/function-calling).
  */
 class FunctionTool
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val name: JsonField<String>,
     private val parameters: JsonField<Parameters>,

@@ -45,6 +45,7 @@ import kotlin.jvm.optionals.getOrNull
  * A new Realtime session configuration, with an ephemeral key. Default TTL for keys is one minute.
  */
 class RealtimeSessionCreateResponse
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val clientSecret: JsonField<RealtimeSessionClientSecret>,
     private val type: JsonValue,
@@ -813,6 +814,7 @@ private constructor(
 
     /** Configuration for input and output audio. */
     class Audio
+    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(
         private val input: JsonField<Input>,
         private val output: JsonField<Output>,
@@ -964,6 +966,7 @@ private constructor(
                 (output.asKnown().getOrNull()?.validity() ?: 0)
 
         class Input
+        @JsonCreator(mode = JsonCreator.Mode.DISABLED)
         private constructor(
             private val format: JsonField<RealtimeAudioFormats>,
             private val noiseReduction: JsonField<NoiseReduction>,
@@ -1318,6 +1321,7 @@ private constructor(
              * audio.
              */
             class NoiseReduction
+            @JsonCreator(mode = JsonCreator.Mode.DISABLED)
             private constructor(
                 private val type: JsonField<NoiseReductionType>,
                 private val additionalProperties: MutableMap<String, JsonValue>,
@@ -1699,6 +1703,7 @@ private constructor(
                  * detected and off after a period of silence.
                  */
                 class ServerVad
+                @JsonCreator(mode = JsonCreator.Mode.DISABLED)
                 private constructor(
                     private val type: JsonValue,
                     private val createResponse: JsonField<Boolean>,
@@ -2208,6 +2213,7 @@ private constructor(
                  * has finished speaking.
                  */
                 class SemanticVad
+                @JsonCreator(mode = JsonCreator.Mode.DISABLED)
                 private constructor(
                     private val type: JsonValue,
                     private val createResponse: JsonField<Boolean>,
@@ -2706,6 +2712,7 @@ private constructor(
         }
 
         class Output
+        @JsonCreator(mode = JsonCreator.Mode.DISABLED)
         private constructor(
             private val format: JsonField<RealtimeAudioFormats>,
             private val speed: JsonField<Double>,
@@ -4238,6 +4245,7 @@ private constructor(
          * [Learn more about MCP](https://platform.openai.com/docs/guides/tools-remote-mcp).
          */
         class McpTool
+        @JsonCreator(mode = JsonCreator.Mode.DISABLED)
         private constructor(
             private val serverLabel: JsonField<String>,
             private val type: JsonValue,
@@ -4995,6 +5003,7 @@ private constructor(
 
                 /** A filter object to specify which tools are allowed. */
                 class McpToolFilter
+                @JsonCreator(mode = JsonCreator.Mode.DISABLED)
                 private constructor(
                     private val readOnly: JsonField<Boolean>,
                     private val toolNames: JsonField<List<String>>,
@@ -5764,6 +5773,7 @@ private constructor(
                  * `never`, or a filter object associated with tools that require approval.
                  */
                 class McpToolApprovalFilter
+                @JsonCreator(mode = JsonCreator.Mode.DISABLED)
                 private constructor(
                     private val always: JsonField<Always>,
                     private val never: JsonField<Never>,
@@ -5943,6 +5953,7 @@ private constructor(
 
                     /** A filter object to specify which tools are allowed. */
                     class Always
+                    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
                     private constructor(
                         private val readOnly: JsonField<Boolean>,
                         private val toolNames: JsonField<List<String>>,
@@ -6171,6 +6182,7 @@ private constructor(
 
                     /** A filter object to specify which tools are allowed. */
                     class Never
+                    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
                     private constructor(
                         private val readOnly: JsonField<Boolean>,
                         private val toolNames: JsonField<List<String>>,
@@ -6802,6 +6814,7 @@ private constructor(
 
         /** Granular configuration for tracing. */
         class TracingConfiguration
+        @JsonCreator(mode = JsonCreator.Mode.DISABLED)
         private constructor(
             private val groupId: JsonField<String>,
             private val metadata: JsonValue,

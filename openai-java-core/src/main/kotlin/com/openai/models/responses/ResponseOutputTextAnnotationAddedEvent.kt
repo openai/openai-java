@@ -17,6 +17,7 @@ import java.util.Objects
 
 /** Emitted when an annotation is added to output text content. */
 class ResponseOutputTextAnnotationAddedEvent
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val annotation: JsonValue,
     private val annotationIndex: JsonField<Long>,

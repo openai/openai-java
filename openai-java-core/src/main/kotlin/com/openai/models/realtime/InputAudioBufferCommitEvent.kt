@@ -26,6 +26,7 @@ import java.util.Optional
  * `input_audio_buffer.committed` event.
  */
 class InputAudioBufferCommitEvent
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val type: JsonValue,
     private val eventId: JsonField<String>,

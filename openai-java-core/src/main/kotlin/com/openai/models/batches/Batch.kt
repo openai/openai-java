@@ -21,6 +21,7 @@ import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
 class Batch
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val id: JsonField<String>,
     private val completionWindow: JsonField<String>,
@@ -1052,6 +1053,7 @@ private constructor(
     }
 
     class Errors
+    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(
         private val data: JsonField<List<BatchError>>,
         private val object_: JsonField<String>,

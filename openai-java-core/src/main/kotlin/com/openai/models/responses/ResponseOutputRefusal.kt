@@ -17,6 +17,7 @@ import java.util.Objects
 
 /** A refusal from the model. */
 class ResponseOutputRefusal
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val refusal: JsonField<String>,
     private val type: JsonValue,

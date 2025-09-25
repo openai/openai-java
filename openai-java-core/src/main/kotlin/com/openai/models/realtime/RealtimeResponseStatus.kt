@@ -19,6 +19,7 @@ import kotlin.jvm.optionals.getOrNull
 
 /** Additional details about the status. */
 class RealtimeResponseStatus
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val error: JsonField<Error>,
     private val reason: JsonField<Reason>,
@@ -227,6 +228,7 @@ private constructor(
      * `failed`.
      */
     class Error
+    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(
         private val code: JsonField<String>,
         private val type: JsonField<String>,

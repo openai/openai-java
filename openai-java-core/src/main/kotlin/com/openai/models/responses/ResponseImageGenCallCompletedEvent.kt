@@ -17,6 +17,7 @@ import java.util.Objects
 
 /** Emitted when an image generation tool call has completed and the final image is available. */
 class ResponseImageGenCallCompletedEvent
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val itemId: JsonField<String>,
     private val outputIndex: JsonField<Long>,

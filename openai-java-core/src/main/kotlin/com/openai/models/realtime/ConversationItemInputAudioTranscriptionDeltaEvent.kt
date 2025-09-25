@@ -24,6 +24,7 @@ import kotlin.jvm.optionals.getOrNull
  * incremental transcription results.
  */
 class ConversationItemInputAudioTranscriptionDeltaEvent
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val eventId: JsonField<String>,
     private val itemId: JsonField<String>,

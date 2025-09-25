@@ -35,6 +35,7 @@ import kotlin.jvm.optionals.getOrNull
 
 /** Configuration for the reinforcement fine-tuning method. */
 class ReinforcementMethod
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val grader: JsonField<Grader>,
     private val hyperparameters: JsonField<ReinforcementHyperparameters>,

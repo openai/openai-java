@@ -417,6 +417,7 @@ private constructor(
      * created.
      */
     class ThreadMessageCreated
+    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(
         private val data: JsonField<Message>,
         private val event: JsonValue,
@@ -622,6 +623,7 @@ private constructor(
      * to an `in_progress` state.
      */
     class ThreadMessageInProgress
+    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(
         private val data: JsonField<Message>,
         private val event: JsonValue,
@@ -827,6 +829,7 @@ private constructor(
      * [Message](https://platform.openai.com/docs/api-reference/messages/object) are being streamed.
      */
     class ThreadMessageDelta
+    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(
         private val data: JsonField<MessageDeltaEvent>,
         private val event: JsonValue,
@@ -1030,6 +1033,7 @@ private constructor(
      * completed.
      */
     class ThreadMessageCompleted
+    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(
         private val data: JsonField<Message>,
         private val event: JsonValue,
@@ -1235,6 +1239,7 @@ private constructor(
      * before it is completed.
      */
     class ThreadMessageIncomplete
+    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(
         private val data: JsonField<Message>,
         private val event: JsonValue,

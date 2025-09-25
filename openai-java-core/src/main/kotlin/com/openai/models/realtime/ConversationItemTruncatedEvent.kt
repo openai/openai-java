@@ -24,6 +24,7 @@ import java.util.Objects
  * no text in the context that hasn't been heard by the user.
  */
 class ConversationItemTruncatedEvent
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val audioEndMs: JsonField<Long>,
     private val contentIndex: JsonField<Long>,

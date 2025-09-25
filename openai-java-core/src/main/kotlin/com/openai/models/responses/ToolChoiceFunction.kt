@@ -17,6 +17,7 @@ import java.util.Objects
 
 /** Use this option to force the model to call a specific function. */
 class ToolChoiceFunction
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val name: JsonField<String>,
     private val type: JsonValue,

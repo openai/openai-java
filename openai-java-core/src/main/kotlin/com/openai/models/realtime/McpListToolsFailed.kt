@@ -17,6 +17,7 @@ import java.util.Objects
 
 /** Returned when listing MCP tools has failed for an item. */
 class McpListToolsFailed
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val eventId: JsonField<String>,
     private val itemId: JsonField<String>,

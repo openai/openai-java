@@ -290,6 +290,7 @@ private constructor(
      * Learn about [file inputs](https://platform.openai.com/docs/guides/text) for text generation.
      */
     class File
+    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(
         private val file: JsonField<FileObject>,
         private val type: JsonValue,
@@ -463,6 +464,7 @@ private constructor(
                 type.let { if (it == JsonValue.from("file")) 1 else 0 }
 
         class FileObject
+        @JsonCreator(mode = JsonCreator.Mode.DISABLED)
         private constructor(
             private val fileData: JsonField<String>,
             private val fileId: JsonField<String>,

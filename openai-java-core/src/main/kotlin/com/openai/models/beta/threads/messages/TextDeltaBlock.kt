@@ -19,6 +19,7 @@ import kotlin.jvm.optionals.getOrNull
 
 /** The text content that is part of a message. */
 class TextDeltaBlock
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val index: JsonField<Long>,
     private val type: JsonValue,

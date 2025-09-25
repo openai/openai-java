@@ -383,6 +383,7 @@ private constructor(
 
     /** Reasoning text from the model. */
     class ReasoningTextContent
+    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(
         private val text: JsonField<String>,
         private val type: JsonValue,

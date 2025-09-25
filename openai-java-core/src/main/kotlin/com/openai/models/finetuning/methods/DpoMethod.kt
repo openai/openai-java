@@ -18,6 +18,7 @@ import kotlin.jvm.optionals.getOrNull
 
 /** Configuration for the DPO fine-tuning method. */
 class DpoMethod
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val hyperparameters: JsonField<DpoHyperparameters>,
     private val additionalProperties: MutableMap<String, JsonValue>,

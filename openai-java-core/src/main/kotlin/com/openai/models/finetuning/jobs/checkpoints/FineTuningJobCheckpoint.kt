@@ -22,6 +22,7 @@ import kotlin.jvm.optionals.getOrNull
  * is ready to use.
  */
 class FineTuningJobCheckpoint
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val id: JsonField<String>,
     private val createdAt: JsonField<Long>,
@@ -403,6 +404,7 @@ private constructor(
 
     /** Metrics at the step number during the fine-tuning job. */
     class Metrics
+    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(
         private val fullValidLoss: JsonField<Double>,
         private val fullValidMeanTokenAccuracy: JsonField<Double>,

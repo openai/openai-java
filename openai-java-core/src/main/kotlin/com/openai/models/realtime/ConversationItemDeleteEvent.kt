@@ -22,6 +22,7 @@ import java.util.Optional
  * conversation history, in which case the server will respond with an error.
  */
 class ConversationItemDeleteEvent
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val itemId: JsonField<String>,
     private val type: JsonValue,

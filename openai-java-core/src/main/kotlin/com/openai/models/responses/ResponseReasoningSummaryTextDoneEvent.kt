@@ -17,6 +17,7 @@ import java.util.Objects
 
 /** Emitted when a reasoning summary text is completed. */
 class ResponseReasoningSummaryTextDoneEvent
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val itemId: JsonField<String>,
     private val outputIndex: JsonField<Long>,

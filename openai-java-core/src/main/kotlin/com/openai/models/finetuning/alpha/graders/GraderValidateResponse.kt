@@ -33,6 +33,7 @@ import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
 class GraderValidateResponse
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val grader: JsonField<Grader>,
     private val additionalProperties: MutableMap<String, JsonValue>,

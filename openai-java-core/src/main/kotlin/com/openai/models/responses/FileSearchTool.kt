@@ -38,6 +38,7 @@ import kotlin.jvm.optionals.getOrNull
  * [file search tool](https://platform.openai.com/docs/guides/tools-file-search).
  */
 class FileSearchTool
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val type: JsonValue,
     private val vectorStoreIds: JsonField<List<String>>,
@@ -567,6 +568,7 @@ private constructor(
 
     /** Ranking options for search. */
     class RankingOptions
+    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(
         private val ranker: JsonField<Ranker>,
         private val scoreThreshold: JsonField<Double>,

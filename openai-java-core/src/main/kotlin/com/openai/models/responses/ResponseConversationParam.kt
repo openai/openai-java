@@ -17,6 +17,7 @@ import java.util.Objects
 
 /** The conversation that this response belongs to. */
 class ResponseConversationParam
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val id: JsonField<String>,
     private val additionalProperties: MutableMap<String, JsonValue>,

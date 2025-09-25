@@ -22,6 +22,7 @@ import kotlin.jvm.optionals.getOrNull
  * generate a file.
  */
 class FilePathDeltaAnnotation
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val index: JsonField<Long>,
     private val type: JsonValue,
@@ -324,6 +325,7 @@ private constructor(
             (if (text.asKnown().isPresent) 1 else 0)
 
     class FilePath
+    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(
         private val fileId: JsonField<String>,
         private val additionalProperties: MutableMap<String, JsonValue>,

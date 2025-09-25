@@ -23,6 +23,7 @@ import kotlin.jvm.optionals.getOrNull
  * [image inputs](https://platform.openai.com/docs/guides/vision).
  */
 class ResponseInputImage
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val detail: JsonField<Detail>,
     private val type: JsonValue,

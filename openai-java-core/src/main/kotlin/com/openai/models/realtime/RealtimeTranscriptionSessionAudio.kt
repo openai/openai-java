@@ -18,6 +18,7 @@ import kotlin.jvm.optionals.getOrNull
 
 /** Configuration for input and output audio. */
 class RealtimeTranscriptionSessionAudio
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val input: JsonField<RealtimeTranscriptionSessionAudioInput>,
     private val additionalProperties: MutableMap<String, JsonValue>,

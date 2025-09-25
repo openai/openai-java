@@ -40,6 +40,7 @@ import kotlin.jvm.optionals.getOrNull
  * `null`.
  */
 class SessionUpdateEvent
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val session: JsonField<Session>,
     private val type: JsonValue,

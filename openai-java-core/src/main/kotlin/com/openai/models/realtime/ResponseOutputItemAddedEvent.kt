@@ -18,6 +18,7 @@ import kotlin.jvm.optionals.getOrNull
 
 /** Returned when a new Item is created during Response generation. */
 class ResponseOutputItemAddedEvent
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val eventId: JsonField<String>,
     private val item: JsonField<ConversationItem>,

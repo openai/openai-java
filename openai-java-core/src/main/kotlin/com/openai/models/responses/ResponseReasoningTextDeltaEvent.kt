@@ -17,6 +17,7 @@ import java.util.Objects
 
 /** Emitted when a delta is added to a reasoning text. */
 class ResponseReasoningTextDeltaEvent
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val contentIndex: JsonField<Long>,
     private val delta: JsonField<String>,

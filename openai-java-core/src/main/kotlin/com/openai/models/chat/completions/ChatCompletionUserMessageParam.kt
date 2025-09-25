@@ -31,6 +31,7 @@ import kotlin.jvm.optionals.getOrNull
 
 /** Messages sent by an end user, containing prompts or additional context information. */
 class ChatCompletionUserMessageParam
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val content: JsonField<Content>,
     private val role: JsonValue,

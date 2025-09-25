@@ -19,6 +19,7 @@ import kotlin.jvm.optionals.getOrNull
 
 /** Use this option to force the model to call a specific tool on a remote MCP server. */
 class ToolChoiceMcp
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val serverLabel: JsonField<String>,
     private val type: JsonValue,

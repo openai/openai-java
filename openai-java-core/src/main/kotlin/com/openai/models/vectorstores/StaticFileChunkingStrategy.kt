@@ -16,6 +16,7 @@ import java.util.Collections
 import java.util.Objects
 
 class StaticFileChunkingStrategy
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val chunkOverlapTokens: JsonField<Long>,
     private val maxChunkSizeTokens: JsonField<Long>,

@@ -19,6 +19,7 @@ import kotlin.jvm.optionals.getOrNull
 
 /** References an image URL in the content of a message. */
 class ImageUrlDeltaBlock
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val index: JsonField<Long>,
     private val type: JsonValue,

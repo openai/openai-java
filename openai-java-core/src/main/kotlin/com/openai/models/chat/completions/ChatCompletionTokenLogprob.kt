@@ -20,6 +20,7 @@ import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
 class ChatCompletionTokenLogprob
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val token: JsonField<String>,
     private val bytes: JsonField<List<Long>>,
@@ -316,6 +317,7 @@ private constructor(
             (topLogprobs.asKnown().getOrNull()?.sumOf { it.validity().toInt() } ?: 0)
 
     class TopLogprob
+    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(
         private val token: JsonField<String>,
         private val bytes: JsonField<List<Long>>,

@@ -21,6 +21,7 @@ import kotlin.jvm.optionals.getOrNull
 
 /** A vector store is a collection of processed files can be used by the `file_search` tool. */
 class VectorStore
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val id: JsonField<String>,
     private val createdAt: JsonField<Long>,
@@ -577,6 +578,7 @@ private constructor(
             (if (expiresAt.asKnown().isPresent) 1 else 0)
 
     class FileCounts
+    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(
         private val cancelled: JsonField<Long>,
         private val completed: JsonField<Long>,
@@ -1136,6 +1138,7 @@ private constructor(
 
     /** The expiration policy for a vector store. */
     class ExpiresAfter
+    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(
         private val anchor: JsonValue,
         private val days: JsonField<Long>,

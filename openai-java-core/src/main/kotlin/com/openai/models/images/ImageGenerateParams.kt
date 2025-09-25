@@ -740,6 +740,7 @@ private constructor(
     override fun _queryParams(): QueryParams = additionalQueryParams
 
     class Body
+    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(
         private val prompt: JsonField<String>,
         private val background: JsonField<Background>,

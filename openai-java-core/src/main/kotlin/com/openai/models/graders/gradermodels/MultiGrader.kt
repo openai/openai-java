@@ -30,6 +30,7 @@ import kotlin.jvm.optionals.getOrNull
 
 /** A MultiGrader object combines the output of multiple graders to produce a single score. */
 class MultiGrader
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val calculateOutput: JsonField<String>,
     private val graders: JsonField<Graders>,

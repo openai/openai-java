@@ -533,6 +533,7 @@ private constructor(
      * [run step](https://platform.openai.com/docs/api-reference/run-steps/step-object) is created.
      */
     class ThreadRunStepCreated
+    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(
         private val data: JsonField<RunStep>,
         private val event: JsonValue,
@@ -735,6 +736,7 @@ private constructor(
      * `in_progress` state.
      */
     class ThreadRunStepInProgress
+    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(
         private val data: JsonField<RunStep>,
         private val event: JsonValue,
@@ -937,6 +939,7 @@ private constructor(
      * streamed.
      */
     class ThreadRunStepDelta
+    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(
         private val data: JsonField<RunStepDeltaEvent>,
         private val event: JsonValue,
@@ -1143,6 +1146,7 @@ private constructor(
      * completed.
      */
     class ThreadRunStepCompleted
+    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(
         private val data: JsonField<RunStep>,
         private val event: JsonValue,
@@ -1344,6 +1348,7 @@ private constructor(
      * [run step](https://platform.openai.com/docs/api-reference/run-steps/step-object) fails.
      */
     class ThreadRunStepFailed
+    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(
         private val data: JsonField<RunStep>,
         private val event: JsonValue,
@@ -1546,6 +1551,7 @@ private constructor(
      * cancelled.
      */
     class ThreadRunStepCancelled
+    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(
         private val data: JsonField<RunStep>,
         private val event: JsonValue,
@@ -1747,6 +1753,7 @@ private constructor(
      * [run step](https://platform.openai.com/docs/api-reference/run-steps/step-object) expires.
      */
     class ThreadRunStepExpired
+    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(
         private val data: JsonField<RunStep>,
         private val event: JsonValue,

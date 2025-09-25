@@ -17,6 +17,7 @@ import java.util.Objects
 
 /** The upload Part represents a chunk of bytes we can add to an Upload object. */
 class UploadPart
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val id: JsonField<String>,
     private val createdAt: JsonField<Long>,

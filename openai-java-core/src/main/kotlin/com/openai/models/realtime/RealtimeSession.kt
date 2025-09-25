@@ -33,6 +33,7 @@ import kotlin.jvm.optionals.getOrNull
 
 /** Realtime session object for the beta interface. */
 class RealtimeSession
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val id: JsonField<String>,
     private val expiresAt: JsonField<Long>,
@@ -1379,6 +1380,7 @@ private constructor(
      * positives) and model performance by improving perception of the input audio.
      */
     class InputAudioNoiseReduction
+    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(
         private val type: JsonField<NoiseReductionType>,
         private val additionalProperties: MutableMap<String, JsonValue>,
@@ -2463,6 +2465,7 @@ private constructor(
 
         /** Granular configuration for tracing. */
         class TracingConfiguration
+        @JsonCreator(mode = JsonCreator.Mode.DISABLED)
         private constructor(
             private val groupId: JsonField<String>,
             private val metadata: JsonValue,
@@ -2905,6 +2908,7 @@ private constructor(
          * and off after a period of silence.
          */
         class ServerVad
+        @JsonCreator(mode = JsonCreator.Mode.DISABLED)
         private constructor(
             private val type: JsonValue,
             private val createResponse: JsonField<Boolean>,
@@ -3396,6 +3400,7 @@ private constructor(
          * finished speaking.
          */
         class SemanticVad
+        @JsonCreator(mode = JsonCreator.Mode.DISABLED)
         private constructor(
             private val type: JsonValue,
             private val createResponse: JsonField<Boolean>,

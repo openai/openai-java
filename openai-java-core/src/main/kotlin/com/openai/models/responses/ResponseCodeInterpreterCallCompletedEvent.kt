@@ -17,6 +17,7 @@ import java.util.Objects
 
 /** Emitted when the code interpreter call is completed. */
 class ResponseCodeInterpreterCallCompletedEvent
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val itemId: JsonField<String>,
     private val outputIndex: JsonField<Long>,

@@ -23,6 +23,7 @@ import java.util.Optional
  * not exist in the conversation history, in which case the server will respond with an error.
  */
 class ConversationItemRetrieveEvent
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val itemId: JsonField<String>,
     private val type: JsonValue,

@@ -20,6 +20,7 @@ import kotlin.jvm.optionals.getOrNull
 
 /** An object representing a list of Chat Completions. */
 class ChatCompletionListPageResponse
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val data: JsonField<List<ChatCompletion>>,
     private val firstId: JsonField<String>,

@@ -32,6 +32,7 @@ import kotlin.jvm.optionals.getOrNull
 
 /** An output message from the model. */
 class ResponseOutputMessage
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val id: JsonField<String>,
     private val content: JsonField<List<Content>>,

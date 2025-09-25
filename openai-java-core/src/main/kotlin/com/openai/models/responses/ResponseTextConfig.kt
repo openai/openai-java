@@ -27,6 +27,7 @@ import kotlin.jvm.optionals.getOrNull
  * - [Structured Outputs](https://platform.openai.com/docs/guides/structured-outputs)
  */
 class ResponseTextConfig
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val format: JsonField<ResponseFormatTextConfig>,
     private val verbosity: JsonField<Verbosity>,

@@ -28,6 +28,7 @@ import java.util.Optional
  * If successful, the server will respond with a `conversation.item.truncated` event.
  */
 class ConversationItemTruncateEvent
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val audioEndMs: JsonField<Long>,
     private val contentIndex: JsonField<Long>,

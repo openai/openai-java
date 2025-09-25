@@ -20,6 +20,7 @@ import kotlin.jvm.optionals.getOrNull
 
 /** Details of the tool call. */
 class ToolCallsStepDetails
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val toolCalls: JsonField<List<ToolCall>>,
     private val type: JsonValue,

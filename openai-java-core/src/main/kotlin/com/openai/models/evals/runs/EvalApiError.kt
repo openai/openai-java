@@ -17,6 +17,7 @@ import java.util.Objects
 
 /** An object representing an error response from the Eval API. */
 class EvalApiError
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val code: JsonField<String>,
     private val message: JsonField<String>,

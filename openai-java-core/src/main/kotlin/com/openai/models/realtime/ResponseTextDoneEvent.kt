@@ -20,6 +20,7 @@ import java.util.Objects
  * when a Response is interrupted, incomplete, or cancelled.
  */
 class ResponseTextDoneEvent
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val contentIndex: JsonField<Long>,
     private val eventId: JsonField<String>,

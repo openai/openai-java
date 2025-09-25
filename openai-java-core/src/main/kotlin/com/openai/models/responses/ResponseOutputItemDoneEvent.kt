@@ -18,6 +18,7 @@ import kotlin.jvm.optionals.getOrNull
 
 /** Emitted when an output item is marked done. */
 class ResponseOutputItemDoneEvent
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val item: JsonField<ResponseOutputItem>,
     private val outputIndex: JsonField<Long>,

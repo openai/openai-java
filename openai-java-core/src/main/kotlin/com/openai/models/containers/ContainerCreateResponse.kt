@@ -19,6 +19,7 @@ import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
 class ContainerCreateResponse
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val id: JsonField<String>,
     private val createdAt: JsonField<Long>,
@@ -350,6 +351,7 @@ private constructor(
      * expires.
      */
     class ExpiresAfter
+    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(
         private val anchor: JsonField<Anchor>,
         private val minutes: JsonField<Long>,

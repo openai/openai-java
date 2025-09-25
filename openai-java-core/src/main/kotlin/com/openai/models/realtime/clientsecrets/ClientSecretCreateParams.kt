@@ -299,6 +299,7 @@ private constructor(
      * [Learn more about the Realtime API](https://platform.openai.com/docs/guides/realtime).
      */
     class Body
+    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(
         private val expiresAfter: JsonField<ExpiresAfter>,
         private val session: JsonField<Session>,
@@ -510,6 +511,7 @@ private constructor(
      * expires.
      */
     class ExpiresAfter
+    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(
         private val anchor: JsonField<Anchor>,
         private val seconds: JsonField<Long>,

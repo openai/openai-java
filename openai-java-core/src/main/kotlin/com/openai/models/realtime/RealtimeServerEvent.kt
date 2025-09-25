@@ -2819,6 +2819,7 @@ private constructor(
      * content of the Item, including audio data.
      */
     class ConversationItemRetrieved
+    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(
         private val eventId: JsonField<String>,
         private val item: JsonField<ConversationItem>,
@@ -3169,6 +3170,7 @@ private constructor(
      * [Learn more](https://platform.openai.com/docs/guides/realtime-conversations#client-and-server-events-for-audio-in-webrtc).
      */
     class OutputAudioBufferStarted
+    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(
         private val eventId: JsonField<String>,
         private val responseId: JsonField<String>,
@@ -3417,6 +3419,7 @@ private constructor(
      * [Learn more](https://platform.openai.com/docs/guides/realtime-conversations#client-and-server-events-for-audio-in-webrtc).
      */
     class OutputAudioBufferStopped
+    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(
         private val eventId: JsonField<String>,
         private val responseId: JsonField<String>,
@@ -3666,6 +3669,7 @@ private constructor(
      * [Learn more](https://platform.openai.com/docs/guides/realtime-conversations#client-and-server-events-for-audio-in-webrtc).
      */
     class OutputAudioBufferCleared
+    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(
         private val eventId: JsonField<String>,
         private val responseId: JsonField<String>,

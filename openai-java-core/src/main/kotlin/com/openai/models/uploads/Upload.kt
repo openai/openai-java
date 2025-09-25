@@ -21,6 +21,7 @@ import kotlin.jvm.optionals.getOrNull
 
 /** The Upload object can accept byte chunks in the form of Parts. */
 class Upload
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val id: JsonField<String>,
     private val bytes: JsonField<Long>,

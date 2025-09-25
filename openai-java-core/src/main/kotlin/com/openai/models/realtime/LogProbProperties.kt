@@ -20,6 +20,7 @@ import kotlin.jvm.optionals.getOrNull
 
 /** A log probability object. */
 class LogProbProperties
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val token: JsonField<String>,
     private val bytes: JsonField<List<Long>>,

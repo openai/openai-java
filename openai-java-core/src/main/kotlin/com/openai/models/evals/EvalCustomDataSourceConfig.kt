@@ -24,6 +24,7 @@ import kotlin.jvm.optionals.getOrNull
  * - What data is required when creating a run
  */
 class EvalCustomDataSourceConfig
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val schema: JsonField<Schema>,
     private val type: JsonValue,

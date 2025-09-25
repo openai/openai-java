@@ -614,6 +614,7 @@ private constructor(
      * created.
      */
     class ThreadRunCreated
+    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(
         private val data: JsonField<Run>,
         private val event: JsonValue,
@@ -819,6 +820,7 @@ private constructor(
      * `queued` status.
      */
     class ThreadRunQueued
+    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(
         private val data: JsonField<Run>,
         private val event: JsonValue,
@@ -1024,6 +1026,7 @@ private constructor(
      * `in_progress` status.
      */
     class ThreadRunInProgress
+    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(
         private val data: JsonField<Run>,
         private val event: JsonValue,
@@ -1229,6 +1232,7 @@ private constructor(
      * `requires_action` status.
      */
     class ThreadRunRequiresAction
+    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(
         private val data: JsonField<Run>,
         private val event: JsonValue,
@@ -1433,6 +1437,7 @@ private constructor(
      * Occurs when a [run](https://platform.openai.com/docs/api-reference/runs/object) is completed.
      */
     class ThreadRunCompleted
+    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(
         private val data: JsonField<Run>,
         private val event: JsonValue,
@@ -1638,6 +1643,7 @@ private constructor(
      * status `incomplete`.
      */
     class ThreadRunIncomplete
+    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(
         private val data: JsonField<Run>,
         private val event: JsonValue,
@@ -1840,6 +1846,7 @@ private constructor(
 
     /** Occurs when a [run](https://platform.openai.com/docs/api-reference/runs/object) fails. */
     class ThreadRunFailed
+    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(
         private val data: JsonField<Run>,
         private val event: JsonValue,
@@ -2045,6 +2052,7 @@ private constructor(
      * `cancelling` status.
      */
     class ThreadRunCancelling
+    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(
         private val data: JsonField<Run>,
         private val event: JsonValue,
@@ -2249,6 +2257,7 @@ private constructor(
      * Occurs when a [run](https://platform.openai.com/docs/api-reference/runs/object) is cancelled.
      */
     class ThreadRunCancelled
+    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(
         private val data: JsonField<Run>,
         private val event: JsonValue,
@@ -2451,6 +2460,7 @@ private constructor(
 
     /** Occurs when a [run](https://platform.openai.com/docs/api-reference/runs/object) expires. */
     class ThreadRunExpired
+    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(
         private val data: JsonField<Run>,
         private val event: JsonValue,

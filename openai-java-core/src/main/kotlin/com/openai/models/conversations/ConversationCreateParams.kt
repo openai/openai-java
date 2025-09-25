@@ -439,6 +439,7 @@ private constructor(
     override fun _queryParams(): QueryParams = additionalQueryParams
 
     class Body
+    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(
         private val items: JsonField<List<ResponseInputItem>>,
         private val metadata: JsonField<Metadata>,

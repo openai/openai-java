@@ -31,6 +31,7 @@ import kotlin.jvm.optionals.getOrNull
 
 /** Details of the Code Interpreter tool call the run step was involved in. */
 class CodeInterpreterToolCallDelta
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val index: JsonField<Long>,
     private val type: JsonValue,
@@ -286,6 +287,7 @@ private constructor(
 
     /** The Code Interpreter tool call definition. */
     class CodeInterpreter
+    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(
         private val input: JsonField<String>,
         private val outputs: JsonField<List<Output>>,

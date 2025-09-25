@@ -23,6 +23,7 @@ import kotlin.jvm.optionals.getOrNull
  * generation.
  */
 class ResponseContentPartAddedEvent
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val contentIndex: JsonField<Long>,
     private val eventId: JsonField<String>,
@@ -389,6 +390,7 @@ private constructor(
 
     /** The content part that was added. */
     class Part
+    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(
         private val audio: JsonField<String>,
         private val text: JsonField<String>,

@@ -23,6 +23,7 @@ import kotlin.jvm.optionals.getOrNull
  * information.
  */
 class ResponseFunctionToolCallItem
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val arguments: JsonField<String>,
     private val callId: JsonField<String>,

@@ -18,6 +18,7 @@ import kotlin.jvm.optionals.getOrNull
 
 /** References an image URL in the content of a message. */
 class ImageUrlContentBlock
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val imageUrl: JsonField<ImageUrl>,
     private val type: JsonValue,

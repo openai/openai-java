@@ -17,6 +17,7 @@ import java.util.Objects
 
 /** Describes an OpenAI model offering that can be used with the API. */
 class Model
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val id: JsonField<String>,
     private val created: JsonField<Long>,

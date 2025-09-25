@@ -17,6 +17,7 @@ import java.util.Objects
 
 /** Emitted when the list of available MCP tools has been successfully retrieved. */
 class ResponseMcpListToolsCompletedEvent
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val itemId: JsonField<String>,
     private val outputIndex: JsonField<Long>,

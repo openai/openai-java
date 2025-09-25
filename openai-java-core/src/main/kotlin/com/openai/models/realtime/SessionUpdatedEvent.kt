@@ -30,6 +30,7 @@ import kotlin.jvm.optionals.getOrNull
 
 /** Returned when a session is updated with a `session.update` event, unless there is an error. */
 class SessionUpdatedEvent
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val eventId: JsonField<String>,
     private val session: JsonField<Session>,

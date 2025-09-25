@@ -23,6 +23,7 @@ import kotlin.jvm.optionals.getOrNull
  * tokens.
  */
 class RealtimeResponseUsageInputTokenDetails
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val audioTokens: JsonField<Long>,
     private val cachedTokens: JsonField<Long>,
@@ -316,6 +317,7 @@ private constructor(
 
     /** Details about the cached tokens used as input for the Response. */
     class CachedTokensDetails
+    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(
         private val audioTokens: JsonField<Long>,
         private val imageTokens: JsonField<Long>,

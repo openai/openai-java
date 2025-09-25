@@ -22,6 +22,7 @@ import kotlin.jvm.optionals.getOrNull
 
 /** Sent when Realtime API Receives a incoming SIP call. */
 class RealtimeCallIncomingWebhookEvent
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val id: JsonField<String>,
     private val createdAt: JsonField<Long>,
@@ -307,6 +308,7 @@ private constructor(
 
     /** Event data payload. */
     class Data
+    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(
         private val callId: JsonField<String>,
         private val sipHeaders: JsonField<List<SipHeader>>,
@@ -504,6 +506,7 @@ private constructor(
 
         /** A header from the SIP Invite. */
         class SipHeader
+        @JsonCreator(mode = JsonCreator.Mode.DISABLED)
         private constructor(
             private val name: JsonField<String>,
             private val value: JsonField<String>,

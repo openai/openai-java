@@ -18,6 +18,7 @@ import kotlin.jvm.optionals.getOrNull
 
 /** Emitted when the response is in progress. */
 class ResponseInProgressEvent
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val response: JsonField<Response>,
     private val sequenceNumber: JsonField<Long>,

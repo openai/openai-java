@@ -36,6 +36,7 @@ import kotlin.jvm.optionals.getOrNull
  * [thread](https://platform.openai.com/docs/api-reference/threads).
  */
 class Run
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val id: JsonField<String>,
     private val assistantId: JsonField<String>,
@@ -1522,6 +1523,7 @@ private constructor(
 
     /** Details on why the run is incomplete. Will be `null` if the run is not incomplete. */
     class IncompleteDetails
+    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(
         private val reason: JsonField<Reason>,
         private val additionalProperties: MutableMap<String, JsonValue>,
@@ -1801,6 +1803,7 @@ private constructor(
 
     /** The last error associated with this run. Will be `null` if there are no errors. */
     class LastError
+    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(
         private val code: JsonField<Code>,
         private val message: JsonField<String>,
@@ -2242,6 +2245,7 @@ private constructor(
      * Details on the action required to continue the run. Will be `null` if no action is required.
      */
     class RequiredAction
+    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(
         private val submitToolOutputs: JsonField<SubmitToolOutputs>,
         private val type: JsonValue,
@@ -2432,6 +2436,7 @@ private constructor(
 
         /** Details on the tool outputs needed for this run to continue. */
         class SubmitToolOutputs
+        @JsonCreator(mode = JsonCreator.Mode.DISABLED)
         private constructor(
             private val toolCalls: JsonField<List<RequiredActionFunctionToolCall>>,
             private val additionalProperties: MutableMap<String, JsonValue>,
@@ -2643,6 +2648,7 @@ private constructor(
      * context window of the run.
      */
     class TruncationStrategy
+    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(
         private val type: JsonField<Type>,
         private val lastMessages: JsonField<Long>,
@@ -3004,6 +3010,7 @@ private constructor(
      * terminal state (i.e. `in_progress`, `queued`, etc.).
      */
     class Usage
+    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(
         private val completionTokens: JsonField<Long>,
         private val promptTokens: JsonField<Long>,

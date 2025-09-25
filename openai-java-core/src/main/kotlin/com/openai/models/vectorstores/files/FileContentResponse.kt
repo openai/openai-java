@@ -16,6 +16,7 @@ import java.util.Objects
 import java.util.Optional
 
 class FileContentResponse
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val text: JsonField<String>,
     private val type: JsonField<String>,

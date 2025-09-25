@@ -26,6 +26,7 @@ import kotlin.jvm.optionals.getOrNull
  * information.
  */
 class ResponseFileSearchToolCall
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val id: JsonField<String>,
     private val queries: JsonField<List<String>>,
@@ -493,6 +494,7 @@ private constructor(
     }
 
     class Result
+    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(
         private val attributes: JsonField<Attributes>,
         private val fileId: JsonField<String>,

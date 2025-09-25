@@ -747,6 +747,7 @@ private constructor(
     override fun _queryParams(): QueryParams = additionalQueryParams
 
     class Body
+    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(
         private val model: JsonField<ChatModel>,
         private val description: JsonField<String>,
@@ -1669,6 +1670,7 @@ private constructor(
      * `file_search` tool requires a list of vector store IDs.
      */
     class ToolResources
+    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(
         private val codeInterpreter: JsonField<CodeInterpreter>,
         private val fileSearch: JsonField<FileSearch>,
@@ -1836,6 +1838,7 @@ private constructor(
                 (fileSearch.asKnown().getOrNull()?.validity() ?: 0)
 
         class CodeInterpreter
+        @JsonCreator(mode = JsonCreator.Mode.DISABLED)
         private constructor(
             private val fileIds: JsonField<List<String>>,
             private val additionalProperties: MutableMap<String, JsonValue>,
@@ -2007,6 +2010,7 @@ private constructor(
         }
 
         class FileSearch
+        @JsonCreator(mode = JsonCreator.Mode.DISABLED)
         private constructor(
             private val vectorStoreIds: JsonField<List<String>>,
             private val vectorStores: JsonField<List<VectorStore>>,
@@ -2230,6 +2234,7 @@ private constructor(
                     (vectorStores.asKnown().getOrNull()?.sumOf { it.validity().toInt() } ?: 0)
 
             class VectorStore
+            @JsonCreator(mode = JsonCreator.Mode.DISABLED)
             private constructor(
                 private val chunkingStrategy: JsonField<ChunkingStrategy>,
                 private val fileIds: JsonField<List<String>>,
@@ -2710,6 +2715,7 @@ private constructor(
                     }
 
                     class Static
+                    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
                     private constructor(
                         private val static_: JsonField<InnerStatic>,
                         private val type: JsonValue,
@@ -2902,6 +2908,7 @@ private constructor(
                                 type.let { if (it == JsonValue.from("static")) 1 else 0 }
 
                         class InnerStatic
+                        @JsonCreator(mode = JsonCreator.Mode.DISABLED)
                         private constructor(
                             private val chunkOverlapTokens: JsonField<Long>,
                             private val maxChunkSizeTokens: JsonField<Long>,

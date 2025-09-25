@@ -17,6 +17,7 @@ import java.util.Objects
 
 /** Emitted when there is a partial transcript of audio. */
 class ResponseAudioTranscriptDeltaEvent
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val delta: JsonField<String>,
     private val sequenceNumber: JsonField<Long>,

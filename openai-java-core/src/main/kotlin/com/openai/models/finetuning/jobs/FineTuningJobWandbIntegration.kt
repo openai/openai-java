@@ -25,6 +25,7 @@ import kotlin.jvm.optionals.getOrNull
  * tags to your run, and set a default entity (team, username, etc) to be associated with your run.
  */
 class FineTuningJobWandbIntegration
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val project: JsonField<String>,
     private val entity: JsonField<String>,

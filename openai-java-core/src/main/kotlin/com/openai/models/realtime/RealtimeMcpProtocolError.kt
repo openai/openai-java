@@ -16,6 +16,7 @@ import java.util.Collections
 import java.util.Objects
 
 class RealtimeMcpProtocolError
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val code: JsonField<Long>,
     private val message: JsonField<String>,

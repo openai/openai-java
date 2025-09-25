@@ -22,6 +22,7 @@ import java.util.Optional
  * progress, an error will be returned the session will remain unaffected.
  */
 class ResponseCancelEvent
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val type: JsonValue,
     private val eventId: JsonField<String>,

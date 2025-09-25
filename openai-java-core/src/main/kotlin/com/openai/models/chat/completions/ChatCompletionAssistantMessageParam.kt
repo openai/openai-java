@@ -32,6 +32,7 @@ import kotlin.jvm.optionals.getOrNull
 
 /** Messages sent by the model in response to user messages. */
 class ChatCompletionAssistantMessageParam
+@JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val role: JsonValue,
     private val audio: JsonField<Audio>,
@@ -457,6 +458,7 @@ private constructor(
      * [Learn more](https://platform.openai.com/docs/guides/audio).
      */
     class Audio
+    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(
         private val id: JsonField<String>,
         private val additionalProperties: MutableMap<String, JsonValue>,
@@ -1055,6 +1057,7 @@ private constructor(
      */
     @Deprecated("deprecated")
     class FunctionCall
+    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(
         private val arguments: JsonField<String>,
         private val name: JsonField<String>,
