@@ -1,5 +1,18 @@
 # Changelog
 
+## 3.7.1 (2025-09-26)
+
+Full Changelog: [v3.7.0...v3.7.1](https://github.com/openai/openai-java/compare/v3.7.0...v3.7.1)
+
+### Bug Fixes
+
+* **client:** deserialization of empty objects ([9a1f927](https://github.com/openai/openai-java/commit/9a1f927f3f966ada762ba4764ba9fe448dd8edc7))
+
+
+### Chores
+
+* **internal:** change some comment formatting ([3ae2e58](https://github.com/openai/openai-java/commit/3ae2e58c926ea789e986a12d4644a06c01fe3f84))
+
 ## 3.7.0 (2025-09-23)
 
 Full Changelog: [v3.6.1...v3.7.0](https://github.com/openai/openai-java/compare/v3.6.1...v3.7.0)
