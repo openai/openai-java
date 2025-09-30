@@ -47,9 +47,23 @@ internal class BatchTest {
                         .putAdditionalProperty("foo", JsonValue.from("string"))
                         .build()
                 )
+                .model("model")
                 .outputFileId("output_file_id")
                 .requestCounts(
                     BatchRequestCounts.builder().completed(0L).failed(0L).total(0L).build()
+                )
+                .usage(
+                    BatchUsage.builder()
+                        .inputTokens(0L)
+                        .inputTokensDetails(
+                            BatchUsage.InputTokensDetails.builder().cachedTokens(0L).build()
+                        )
+                        .outputTokens(0L)
+                        .outputTokensDetails(
+                            BatchUsage.OutputTokensDetails.builder().reasoningTokens(0L).build()
+                        )
+                        .totalTokens(0L)
+                        .build()
                 )
                 .build()
 
@@ -88,9 +102,24 @@ internal class BatchTest {
                     .putAdditionalProperty("foo", JsonValue.from("string"))
                     .build()
             )
+        assertThat(batch.model()).contains("model")
         assertThat(batch.outputFileId()).contains("output_file_id")
         assertThat(batch.requestCounts())
             .contains(BatchRequestCounts.builder().completed(0L).failed(0L).total(0L).build())
+        assertThat(batch.usage())
+            .contains(
+                BatchUsage.builder()
+                    .inputTokens(0L)
+                    .inputTokensDetails(
+                        BatchUsage.InputTokensDetails.builder().cachedTokens(0L).build()
+                    )
+                    .outputTokens(0L)
+                    .outputTokensDetails(
+                        BatchUsage.OutputTokensDetails.builder().reasoningTokens(0L).build()
+                    )
+                    .totalTokens(0L)
+                    .build()
+            )
     }
 
     @Test
@@ -131,9 +160,23 @@ internal class BatchTest {
                         .putAdditionalProperty("foo", JsonValue.from("string"))
                         .build()
                 )
+                .model("model")
                 .outputFileId("output_file_id")
                 .requestCounts(
                     BatchRequestCounts.builder().completed(0L).failed(0L).total(0L).build()
+                )
+                .usage(
+                    BatchUsage.builder()
+                        .inputTokens(0L)
+                        .inputTokensDetails(
+                            BatchUsage.InputTokensDetails.builder().cachedTokens(0L).build()
+                        )
+                        .outputTokens(0L)
+                        .outputTokensDetails(
+                            BatchUsage.OutputTokensDetails.builder().reasoningTokens(0L).build()
+                        )
+                        .totalTokens(0L)
+                        .build()
                 )
                 .build()
 

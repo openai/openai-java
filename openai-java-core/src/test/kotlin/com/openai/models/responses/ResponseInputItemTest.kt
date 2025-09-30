@@ -615,7 +615,7 @@ internal class ResponseInputItemTest {
         val functionCallOutput =
             ResponseInputItem.FunctionCallOutput.builder()
                 .callId("x")
-                .output("output")
+                .output("string")
                 .id("fc_123")
                 .status(ResponseInputItem.FunctionCallOutput.Status.IN_PROGRESS)
                 .build()
@@ -652,7 +652,7 @@ internal class ResponseInputItemTest {
             ResponseInputItem.ofFunctionCallOutput(
                 ResponseInputItem.FunctionCallOutput.builder()
                     .callId("x")
-                    .output("output")
+                    .output("string")
                     .id("fc_123")
                     .status(ResponseInputItem.FunctionCallOutput.Status.IN_PROGRESS)
                     .build()
@@ -1227,7 +1227,7 @@ internal class ResponseInputItemTest {
         val customToolCallOutput =
             ResponseCustomToolCallOutput.builder()
                 .callId("call_id")
-                .output("output")
+                .output("string")
                 .id("id")
                 .build()
 
@@ -1263,7 +1263,7 @@ internal class ResponseInputItemTest {
             ResponseInputItem.ofCustomToolCallOutput(
                 ResponseCustomToolCallOutput.builder()
                     .callId("call_id")
-                    .output("output")
+                    .output("string")
                     .id("id")
                     .build()
             )

@@ -41,8 +41,10 @@ private constructor(
     private val finalizingAt: JsonField<Long>,
     private val inProgressAt: JsonField<Long>,
     private val metadata: JsonField<Metadata>,
+    private val model: JsonField<String>,
     private val outputFileId: JsonField<String>,
     private val requestCounts: JsonField<BatchRequestCounts>,
+    private val usage: JsonField<BatchUsage>,
     private val additionalProperties: MutableMap<String, JsonValue>,
 ) {
 
@@ -82,12 +84,14 @@ private constructor(
         @ExcludeMissing
         inProgressAt: JsonField<Long> = JsonMissing.of(),
         @JsonProperty("metadata") @ExcludeMissing metadata: JsonField<Metadata> = JsonMissing.of(),
+        @JsonProperty("model") @ExcludeMissing model: JsonField<String> = JsonMissing.of(),
         @JsonProperty("output_file_id")
         @ExcludeMissing
         outputFileId: JsonField<String> = JsonMissing.of(),
         @JsonProperty("request_counts")
         @ExcludeMissing
         requestCounts: JsonField<BatchRequestCounts> = JsonMissing.of(),
+        @JsonProperty("usage") @ExcludeMissing usage: JsonField<BatchUsage> = JsonMissing.of(),
     ) : this(
         id,
         completionWindow,
@@ -107,8 +111,10 @@ private constructor(
         finalizingAt,
         inProgressAt,
         metadata,
+        model,
         outputFileId,
         requestCounts,
+        usage,
         mutableMapOf(),
     )
 
@@ -263,6 +269,17 @@ private constructor(
     fun metadata(): Optional<Metadata> = metadata.getOptional("metadata")
 
     /**
+     * Model ID used to process the batch, like `gpt-5-2025-08-07`. OpenAI offers a wide range of
+     * models with different capabilities, performance characteristics, and price points. Refer to
+     * the [model guide](https://platform.openai.com/docs/models) to browse and compare available
+     * models.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun model(): Optional<String> = model.getOptional("model")
+
+    /**
      * The ID of the file containing the outputs of successfully executed requests.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
@@ -277,6 +294,15 @@ private constructor(
      *   server responded with an unexpected value).
      */
     fun requestCounts(): Optional<BatchRequestCounts> = requestCounts.getOptional("request_counts")
+
+    /**
+     * Represents token usage details including input tokens, output tokens, a breakdown of output
+     * tokens, and the total tokens used. Only populated on batches created after September 7, 2025.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun usage(): Optional<BatchUsage> = usage.getOptional("usage")
 
     /**
      * Returns the raw JSON value of [id].
@@ -411,6 +437,13 @@ private constructor(
     @JsonProperty("metadata") @ExcludeMissing fun _metadata(): JsonField<Metadata> = metadata
 
     /**
+     * Returns the raw JSON value of [model].
+     *
+     * Unlike [model], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    @JsonProperty("model") @ExcludeMissing fun _model(): JsonField<String> = model
+
+    /**
      * Returns the raw JSON value of [outputFileId].
      *
      * Unlike [outputFileId], this method doesn't throw if the JSON field has an unexpected type.
@@ -427,6 +460,13 @@ private constructor(
     @JsonProperty("request_counts")
     @ExcludeMissing
     fun _requestCounts(): JsonField<BatchRequestCounts> = requestCounts
+
+    /**
+     * Returns the raw JSON value of [usage].
+     *
+     * Unlike [usage], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    @JsonProperty("usage") @ExcludeMissing fun _usage(): JsonField<BatchUsage> = usage
 
     @JsonAnySetter
     private fun putAdditionalProperty(key: String, value: JsonValue) {
@@ -479,8 +519,10 @@ private constructor(
         private var finalizingAt: JsonField<Long> = JsonMissing.of()
         private var inProgressAt: JsonField<Long> = JsonMissing.of()
         private var metadata: JsonField<Metadata> = JsonMissing.of()
+        private var model: JsonField<String> = JsonMissing.of()
         private var outputFileId: JsonField<String> = JsonMissing.of()
         private var requestCounts: JsonField<BatchRequestCounts> = JsonMissing.of()
+        private var usage: JsonField<BatchUsage> = JsonMissing.of()
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
         @JvmSynthetic
@@ -503,8 +545,10 @@ private constructor(
             finalizingAt = batch.finalizingAt
             inProgressAt = batch.inProgressAt
             metadata = batch.metadata
+            model = batch.model
             outputFileId = batch.outputFileId
             requestCounts = batch.requestCounts
+            usage = batch.usage
             additionalProperties = batch.additionalProperties.toMutableMap()
         }
 
@@ -729,6 +773,22 @@ private constructor(
          */
         fun metadata(metadata: JsonField<Metadata>) = apply { this.metadata = metadata }
 
+        /**
+         * Model ID used to process the batch, like `gpt-5-2025-08-07`. OpenAI offers a wide range
+         * of models with different capabilities, performance characteristics, and price points.
+         * Refer to the [model guide](https://platform.openai.com/docs/models) to browse and compare
+         * available models.
+         */
+        fun model(model: String) = model(JsonField.of(model))
+
+        /**
+         * Sets [Builder.model] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.model] with a well-typed [String] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
+        fun model(model: JsonField<String>) = apply { this.model = model }
+
         /** The ID of the file containing the outputs of successfully executed requests. */
         fun outputFileId(outputFileId: String) = outputFileId(JsonField.of(outputFileId))
 
@@ -757,6 +817,22 @@ private constructor(
         fun requestCounts(requestCounts: JsonField<BatchRequestCounts>) = apply {
             this.requestCounts = requestCounts
         }
+
+        /**
+         * Represents token usage details including input tokens, output tokens, a breakdown of
+         * output tokens, and the total tokens used. Only populated on batches created after
+         * September 7, 2025.
+         */
+        fun usage(usage: BatchUsage) = usage(JsonField.of(usage))
+
+        /**
+         * Sets [Builder.usage] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.usage] with a well-typed [BatchUsage] value instead.
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
+         */
+        fun usage(usage: JsonField<BatchUsage>) = apply { this.usage = usage }
 
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
             this.additionalProperties.clear()
@@ -814,8 +890,10 @@ private constructor(
                 finalizingAt,
                 inProgressAt,
                 metadata,
+                model,
                 outputFileId,
                 requestCounts,
+                usage,
                 additionalProperties.toMutableMap(),
             )
     }
@@ -849,8 +927,10 @@ private constructor(
         finalizingAt()
         inProgressAt()
         metadata().ifPresent { it.validate() }
+        model()
         outputFileId()
         requestCounts().ifPresent { it.validate() }
+        usage().ifPresent { it.validate() }
         validated = true
     }
 
@@ -887,8 +967,10 @@ private constructor(
             (if (finalizingAt.asKnown().isPresent) 1 else 0) +
             (if (inProgressAt.asKnown().isPresent) 1 else 0) +
             (metadata.asKnown().getOrNull()?.validity() ?: 0) +
+            (if (model.asKnown().isPresent) 1 else 0) +
             (if (outputFileId.asKnown().isPresent) 1 else 0) +
-            (requestCounts.asKnown().getOrNull()?.validity() ?: 0)
+            (requestCounts.asKnown().getOrNull()?.validity() ?: 0) +
+            (usage.asKnown().getOrNull()?.validity() ?: 0)
 
     /** The current status of the batch. */
     class Status @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
@@ -1378,8 +1460,10 @@ private constructor(
             finalizingAt == other.finalizingAt &&
             inProgressAt == other.inProgressAt &&
             metadata == other.metadata &&
+            model == other.model &&
             outputFileId == other.outputFileId &&
             requestCounts == other.requestCounts &&
+            usage == other.usage &&
             additionalProperties == other.additionalProperties
     }
 
@@ -1403,8 +1487,10 @@ private constructor(
             finalizingAt,
             inProgressAt,
             metadata,
+            model,
             outputFileId,
             requestCounts,
+            usage,
             additionalProperties,
         )
     }
@@ -1412,5 +1498,5 @@ private constructor(
     override fun hashCode(): Int = hashCode
 
     override fun toString() =
-        "Batch{id=$id, completionWindow=$completionWindow, createdAt=$createdAt, endpoint=$endpoint, inputFileId=$inputFileId, object_=$object_, status=$status, cancelledAt=$cancelledAt, cancellingAt=$cancellingAt, completedAt=$completedAt, errorFileId=$errorFileId, errors=$errors, expiredAt=$expiredAt, expiresAt=$expiresAt, failedAt=$failedAt, finalizingAt=$finalizingAt, inProgressAt=$inProgressAt, metadata=$metadata, outputFileId=$outputFileId, requestCounts=$requestCounts, additionalProperties=$additionalProperties}"
+        "Batch{id=$id, completionWindow=$completionWindow, createdAt=$createdAt, endpoint=$endpoint, inputFileId=$inputFileId, object_=$object_, status=$status, cancelledAt=$cancelledAt, cancellingAt=$cancellingAt, completedAt=$completedAt, errorFileId=$errorFileId, errors=$errors, expiredAt=$expiredAt, expiresAt=$expiresAt, failedAt=$failedAt, finalizingAt=$finalizingAt, inProgressAt=$inProgressAt, metadata=$metadata, model=$model, outputFileId=$outputFileId, requestCounts=$requestCounts, usage=$usage, additionalProperties=$additionalProperties}"
 }

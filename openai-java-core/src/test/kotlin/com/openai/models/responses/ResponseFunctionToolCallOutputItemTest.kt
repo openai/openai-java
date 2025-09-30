@@ -15,13 +15,14 @@ internal class ResponseFunctionToolCallOutputItemTest {
             ResponseFunctionToolCallOutputItem.builder()
                 .id("id")
                 .callId("call_id")
-                .output("output")
+                .output("string")
                 .status(ResponseFunctionToolCallOutputItem.Status.IN_PROGRESS)
                 .build()
 
         assertThat(responseFunctionToolCallOutputItem.id()).isEqualTo("id")
         assertThat(responseFunctionToolCallOutputItem.callId()).isEqualTo("call_id")
-        assertThat(responseFunctionToolCallOutputItem.output()).isEqualTo("output")
+        assertThat(responseFunctionToolCallOutputItem.output())
+            .isEqualTo(ResponseFunctionToolCallOutputItem.Output.ofString("string"))
         assertThat(responseFunctionToolCallOutputItem.status())
             .contains(ResponseFunctionToolCallOutputItem.Status.IN_PROGRESS)
     }
@@ -33,7 +34,7 @@ internal class ResponseFunctionToolCallOutputItemTest {
             ResponseFunctionToolCallOutputItem.builder()
                 .id("id")
                 .callId("call_id")
-                .output("output")
+                .output("string")
                 .status(ResponseFunctionToolCallOutputItem.Status.IN_PROGRESS)
                 .build()
 
