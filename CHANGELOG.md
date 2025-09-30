@@ -1,5 +1,22 @@
 # Changelog
 
+## 4.0.0 (2025-09-30)
+
+Full Changelog: [v3.7.1...v4.0.0](https://github.com/openai/openai-java/compare/v3.7.1...v4.0.0)
+
+### ⚠ BREAKING CHANGES
+
+* **api:** `ResponseFunctionToolCallOutputItem.output` and `ResponseCustomToolCallOutput.output` now return `string | Array<ResponseInputText | ResponseInputImage | ResponseInputFile>` instead of `string` only. This may break existing callsites that assume `output` is always a string.
+
+### Features
+
+* **api:** Support images and files for function call outputs in responses, BatchUsage ([de7a6c1](https://github.com/openai/openai-java/commit/de7a6c18862af4f94ce7bbc3a3ae447520be5880))
+
+
+### Bug Fixes
+
+* **client:** remove duplicate outputAsJson function ([4718871](https://github.com/openai/openai-java/commit/4718871e7e281b0a75c914d013e3b644340d5c4b))
+
 ## 3.7.1 (2025-09-26)
 
 Full Changelog: [v3.7.0...v3.7.1](https://github.com/openai/openai-java/compare/v3.7.0...v3.7.1)
