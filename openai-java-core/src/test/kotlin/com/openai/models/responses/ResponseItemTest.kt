@@ -528,7 +528,7 @@ internal class ResponseItemTest {
             ResponseFunctionToolCallOutputItem.builder()
                 .id("id")
                 .callId("call_id")
-                .output("output")
+                .output("string")
                 .status(ResponseFunctionToolCallOutputItem.Status.IN_PROGRESS)
                 .build()
 
@@ -560,7 +560,7 @@ internal class ResponseItemTest {
                 ResponseFunctionToolCallOutputItem.builder()
                     .id("id")
                     .callId("call_id")
-                    .output("output")
+                    .output("string")
                     .status(ResponseFunctionToolCallOutputItem.Status.IN_PROGRESS)
                     .build()
             )

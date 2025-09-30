@@ -2583,7 +2583,7 @@ private constructor(
     @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(
         private val callId: JsonField<String>,
-        private val output: JsonField<String>,
+        private val output: JsonField<Output>,
         private val type: JsonValue,
         private val id: JsonField<String>,
         private val status: JsonField<Status>,
@@ -2593,7 +2593,7 @@ private constructor(
         @JsonCreator
         private constructor(
             @JsonProperty("call_id") @ExcludeMissing callId: JsonField<String> = JsonMissing.of(),
-            @JsonProperty("output") @ExcludeMissing output: JsonField<String> = JsonMissing.of(),
+            @JsonProperty("output") @ExcludeMissing output: JsonField<Output> = JsonMissing.of(),
             @JsonProperty("type") @ExcludeMissing type: JsonValue = JsonMissing.of(),
             @JsonProperty("id") @ExcludeMissing id: JsonField<String> = JsonMissing.of(),
             @JsonProperty("status") @ExcludeMissing status: JsonField<Status> = JsonMissing.of(),
@@ -2608,12 +2608,12 @@ private constructor(
         fun callId(): String = callId.getRequired("call_id")
 
         /**
-         * A JSON string of the output of the function tool call.
+         * Text, image, or file output of the function tool call.
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
          *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
          */
-        fun output(): String = output.getRequired("output")
+        fun output(): Output = output.getRequired("output")
 
         /**
          * The type of the function tool call output. Always `function_call_output`.
@@ -2658,7 +2658,7 @@ private constructor(
          *
          * Unlike [output], this method doesn't throw if the JSON field has an unexpected type.
          */
-        @JsonProperty("output") @ExcludeMissing fun _output(): JsonField<String> = output
+        @JsonProperty("output") @ExcludeMissing fun _output(): JsonField<Output> = output
 
         /**
          * Returns the raw JSON value of [id].
@@ -2704,7 +2704,7 @@ private constructor(
         class Builder internal constructor() {
 
             private var callId: JsonField<String>? = null
-            private var output: JsonField<String>? = null
+            private var output: JsonField<Output>? = null
             private var type: JsonValue = JsonValue.from("function_call_output")
             private var id: JsonField<String> = JsonMissing.of()
             private var status: JsonField<Status> = JsonMissing.of()
@@ -2732,8 +2732,8 @@ private constructor(
              */
             fun callId(callId: JsonField<String>) = apply { this.callId = callId }
 
-            /** A JSON string of the output of the function tool call. */
-            fun output(output: String) = output(JsonField.of(output))
+            /** Text, image, or file output of the function tool call. */
+            fun output(output: Output) = output(JsonField.of(output))
 
             /**
              * Sets the output to text representing the JSON serialized form of a given object. This
@@ -2746,11 +2746,33 @@ private constructor(
             /**
              * Sets [Builder.output] to an arbitrary JSON value.
              *
-             * You should usually call [Builder.output] with a well-typed [String] value instead.
+             * You should usually call [Builder.output] with a well-typed [Output] value instead.
              * This method is primarily for setting the field to an undocumented or not yet
              * supported value.
              */
-            fun output(output: JsonField<String>) = apply { this.output = output }
+            fun output(output: JsonField<Output>) = apply { this.output = output }
+
+            /** Alias for calling [output] with `Output.ofString(string)`. */
+            fun output(string: String) = output(Output.ofString(string))
+
+            /**
+             * Sets the output to text representing the JSON serialized form of a given object. This
+             * is useful when passing data that is the result of a function call.
+             *
+             * @see output
+             */
+            fun outputAsJson(functionResult: Any) = apply { output(toJsonString(functionResult)) }
+
+            /**
+             * Alias for calling [output] with
+             * `Output.ofResponseFunctionCallOutputItemList(responseFunctionCallOutputItemList)`.
+             */
+            fun outputOfResponseFunctionCallOutputItemList(
+                responseFunctionCallOutputItemList: List<ResponseFunctionCallOutputItem>
+            ) =
+                output(
+                    Output.ofResponseFunctionCallOutputItemList(responseFunctionCallOutputItemList)
+                )
 
             /**
              * Sets the field to an arbitrary JSON value.
@@ -2853,7 +2875,7 @@ private constructor(
             }
 
             callId()
-            output()
+            output().validate()
             _type().let {
                 if (it != JsonValue.from("function_call_output")) {
                     throw OpenAIInvalidDataException("'type' is invalid, received $it")
@@ -2881,10 +2903,218 @@ private constructor(
         @JvmSynthetic
         internal fun validity(): Int =
             (if (callId.asKnown().isPresent) 1 else 0) +
-                (if (output.asKnown().isPresent) 1 else 0) +
+                (output.asKnown().getOrNull()?.validity() ?: 0) +
                 type.let { if (it == JsonValue.from("function_call_output")) 1 else 0 } +
                 (if (id.asKnown().isPresent) 1 else 0) +
                 (status.asKnown().getOrNull()?.validity() ?: 0)
+
+        /** Text, image, or file output of the function tool call. */
+        @JsonDeserialize(using = Output.Deserializer::class)
+        @JsonSerialize(using = Output.Serializer::class)
+        class Output
+        private constructor(
+            private val string: String? = null,
+            private val responseFunctionCallOutputItemList: List<ResponseFunctionCallOutputItem>? =
+                null,
+            private val _json: JsonValue? = null,
+        ) {
+
+            /** A JSON string of the output of the function tool call. */
+            fun string(): Optional<String> = Optional.ofNullable(string)
+
+            fun responseFunctionCallOutputItemList():
+                Optional<List<ResponseFunctionCallOutputItem>> =
+                Optional.ofNullable(responseFunctionCallOutputItemList)
+
+            fun isString(): Boolean = string != null
+
+            fun isResponseFunctionCallOutputItemList(): Boolean =
+                responseFunctionCallOutputItemList != null
+
+            /** A JSON string of the output of the function tool call. */
+            fun asString(): String = string.getOrThrow("string")
+
+            fun asResponseFunctionCallOutputItemList(): List<ResponseFunctionCallOutputItem> =
+                responseFunctionCallOutputItemList.getOrThrow("responseFunctionCallOutputItemList")
+
+            fun _json(): Optional<JsonValue> = Optional.ofNullable(_json)
+
+            fun <T> accept(visitor: Visitor<T>): T =
+                when {
+                    string != null -> visitor.visitString(string)
+                    responseFunctionCallOutputItemList != null ->
+                        visitor.visitResponseFunctionCallOutputItemList(
+                            responseFunctionCallOutputItemList
+                        )
+                    else -> visitor.unknown(_json)
+                }
+
+            private var validated: Boolean = false
+
+            fun validate(): Output = apply {
+                if (validated) {
+                    return@apply
+                }
+
+                accept(
+                    object : Visitor<Unit> {
+                        override fun visitString(string: String) {}
+
+                        override fun visitResponseFunctionCallOutputItemList(
+                            responseFunctionCallOutputItemList: List<ResponseFunctionCallOutputItem>
+                        ) {
+                            responseFunctionCallOutputItemList.forEach { it.validate() }
+                        }
+                    }
+                )
+                validated = true
+            }
+
+            fun isValid(): Boolean =
+                try {
+                    validate()
+                    true
+                } catch (e: OpenAIInvalidDataException) {
+                    false
+                }
+
+            /**
+             * Returns a score indicating how many valid values are contained in this object
+             * recursively.
+             *
+             * Used for best match union deserialization.
+             */
+            @JvmSynthetic
+            internal fun validity(): Int =
+                accept(
+                    object : Visitor<Int> {
+                        override fun visitString(string: String) = 1
+
+                        override fun visitResponseFunctionCallOutputItemList(
+                            responseFunctionCallOutputItemList: List<ResponseFunctionCallOutputItem>
+                        ) = responseFunctionCallOutputItemList.sumOf { it.validity().toInt() }
+
+                        override fun unknown(json: JsonValue?) = 0
+                    }
+                )
+
+            override fun equals(other: Any?): Boolean {
+                if (this === other) {
+                    return true
+                }
+
+                return other is Output &&
+                    string == other.string &&
+                    responseFunctionCallOutputItemList == other.responseFunctionCallOutputItemList
+            }
+
+            override fun hashCode(): Int = Objects.hash(string, responseFunctionCallOutputItemList)
+
+            override fun toString(): String =
+                when {
+                    string != null -> "Output{string=$string}"
+                    responseFunctionCallOutputItemList != null ->
+                        "Output{responseFunctionCallOutputItemList=$responseFunctionCallOutputItemList}"
+                    _json != null -> "Output{_unknown=$_json}"
+                    else -> throw IllegalStateException("Invalid Output")
+                }
+
+            companion object {
+
+                /** A JSON string of the output of the function tool call. */
+                @JvmStatic fun ofString(string: String) = Output(string = string)
+
+                @JvmStatic
+                fun ofResponseFunctionCallOutputItemList(
+                    responseFunctionCallOutputItemList: List<ResponseFunctionCallOutputItem>
+                ) =
+                    Output(
+                        responseFunctionCallOutputItemList =
+                            responseFunctionCallOutputItemList.toImmutable()
+                    )
+            }
+
+            /**
+             * An interface that defines how to map each variant of [Output] to a value of type [T].
+             */
+            interface Visitor<out T> {
+
+                /** A JSON string of the output of the function tool call. */
+                fun visitString(string: String): T
+
+                fun visitResponseFunctionCallOutputItemList(
+                    responseFunctionCallOutputItemList: List<ResponseFunctionCallOutputItem>
+                ): T
+
+                /**
+                 * Maps an unknown variant of [Output] to a value of type [T].
+                 *
+                 * An instance of [Output] can contain an unknown variant if it was deserialized
+                 * from data that doesn't match any known variant. For example, if the SDK is on an
+                 * older version than the API, then the API may respond with new variants that the
+                 * SDK is unaware of.
+                 *
+                 * @throws OpenAIInvalidDataException in the default implementation.
+                 */
+                fun unknown(json: JsonValue?): T {
+                    throw OpenAIInvalidDataException("Unknown Output: $json")
+                }
+            }
+
+            internal class Deserializer : BaseDeserializer<Output>(Output::class) {
+
+                override fun ObjectCodec.deserialize(node: JsonNode): Output {
+                    val json = JsonValue.fromJsonNode(node)
+
+                    val bestMatches =
+                        sequenceOf(
+                                tryDeserialize(node, jacksonTypeRef<String>())?.let {
+                                    Output(string = it, _json = json)
+                                },
+                                tryDeserialize(
+                                        node,
+                                        jacksonTypeRef<List<ResponseFunctionCallOutputItem>>(),
+                                    )
+                                    ?.let {
+                                        Output(
+                                            responseFunctionCallOutputItemList = it,
+                                            _json = json,
+                                        )
+                                    },
+                            )
+                            .filterNotNull()
+                            .allMaxBy { it.validity() }
+                            .toList()
+                    return when (bestMatches.size) {
+                        // This can happen if what we're deserializing is completely incompatible
+                        // with all the possible variants (e.g. deserializing from object).
+                        0 -> Output(_json = json)
+                        1 -> bestMatches.single()
+                        // If there's more than one match with the highest validity, then use the
+                        // first completely valid match, or simply the first match if none are
+                        // completely valid.
+                        else -> bestMatches.firstOrNull { it.isValid() } ?: bestMatches.first()
+                    }
+                }
+            }
+
+            internal class Serializer : BaseSerializer<Output>(Output::class) {
+
+                override fun serialize(
+                    value: Output,
+                    generator: JsonGenerator,
+                    provider: SerializerProvider,
+                ) {
+                    when {
+                        value.string != null -> generator.writeObject(value.string)
+                        value.responseFunctionCallOutputItemList != null ->
+                            generator.writeObject(value.responseFunctionCallOutputItemList)
+                        value._json != null -> generator.writeObject(value._json)
+                        else -> throw IllegalStateException("Invalid Output")
+                    }
+                }
+            }
+        }
 
         /**
          * The status of the item. One of `in_progress`, `completed`, or `incomplete`. Populated
