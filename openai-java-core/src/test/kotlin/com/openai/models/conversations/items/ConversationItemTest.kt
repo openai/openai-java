@@ -143,7 +143,7 @@ internal class ConversationItemTest {
             ResponseFunctionToolCallOutputItem.builder()
                 .id("id")
                 .callId("call_id")
-                .output("output")
+                .output("string")
                 .status(ResponseFunctionToolCallOutputItem.Status.IN_PROGRESS)
                 .build()
 
@@ -177,7 +177,7 @@ internal class ConversationItemTest {
                 ResponseFunctionToolCallOutputItem.builder()
                     .id("id")
                     .callId("call_id")
-                    .output("output")
+                    .output("string")
                     .status(ResponseFunctionToolCallOutputItem.Status.IN_PROGRESS)
                     .build()
             )
@@ -1086,7 +1086,7 @@ internal class ConversationItemTest {
         val customToolCallOutput =
             ResponseCustomToolCallOutput.builder()
                 .callId("call_id")
-                .output("output")
+                .output("string")
                 .id("id")
                 .build()
 
@@ -1119,7 +1119,7 @@ internal class ConversationItemTest {
             ConversationItem.ofCustomToolCallOutput(
                 ResponseCustomToolCallOutput.builder()
                     .callId("call_id")
-                    .output("output")
+                    .output("string")
                     .id("id")
                     .build()
             )

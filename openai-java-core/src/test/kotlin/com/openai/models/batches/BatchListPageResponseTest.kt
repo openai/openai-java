@@ -49,9 +49,25 @@ internal class BatchListPageResponseTest {
                                 .putAdditionalProperty("foo", JsonValue.from("string"))
                                 .build()
                         )
+                        .model("model")
                         .outputFileId("output_file_id")
                         .requestCounts(
                             BatchRequestCounts.builder().completed(0L).failed(0L).total(0L).build()
+                        )
+                        .usage(
+                            BatchUsage.builder()
+                                .inputTokens(0L)
+                                .inputTokensDetails(
+                                    BatchUsage.InputTokensDetails.builder().cachedTokens(0L).build()
+                                )
+                                .outputTokens(0L)
+                                .outputTokensDetails(
+                                    BatchUsage.OutputTokensDetails.builder()
+                                        .reasoningTokens(0L)
+                                        .build()
+                                )
+                                .totalTokens(0L)
+                                .build()
                         )
                         .build()
                 )
@@ -96,9 +112,23 @@ internal class BatchListPageResponseTest {
                             .putAdditionalProperty("foo", JsonValue.from("string"))
                             .build()
                     )
+                    .model("model")
                     .outputFileId("output_file_id")
                     .requestCounts(
                         BatchRequestCounts.builder().completed(0L).failed(0L).total(0L).build()
+                    )
+                    .usage(
+                        BatchUsage.builder()
+                            .inputTokens(0L)
+                            .inputTokensDetails(
+                                BatchUsage.InputTokensDetails.builder().cachedTokens(0L).build()
+                            )
+                            .outputTokens(0L)
+                            .outputTokensDetails(
+                                BatchUsage.OutputTokensDetails.builder().reasoningTokens(0L).build()
+                            )
+                            .totalTokens(0L)
+                            .build()
                     )
                     .build()
             )
@@ -147,9 +177,25 @@ internal class BatchListPageResponseTest {
                                 .putAdditionalProperty("foo", JsonValue.from("string"))
                                 .build()
                         )
+                        .model("model")
                         .outputFileId("output_file_id")
                         .requestCounts(
                             BatchRequestCounts.builder().completed(0L).failed(0L).total(0L).build()
+                        )
+                        .usage(
+                            BatchUsage.builder()
+                                .inputTokens(0L)
+                                .inputTokensDetails(
+                                    BatchUsage.InputTokensDetails.builder().cachedTokens(0L).build()
+                                )
+                                .outputTokens(0L)
+                                .outputTokensDetails(
+                                    BatchUsage.OutputTokensDetails.builder()
+                                        .reasoningTokens(0L)
+                                        .build()
+                                )
+                                .totalTokens(0L)
+                                .build()
                         )
                         .build()
                 )

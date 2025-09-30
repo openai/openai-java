@@ -14,12 +14,13 @@ internal class ResponseCustomToolCallOutputTest {
         val responseCustomToolCallOutput =
             ResponseCustomToolCallOutput.builder()
                 .callId("call_id")
-                .output("output")
+                .output("string")
                 .id("id")
                 .build()
 
         assertThat(responseCustomToolCallOutput.callId()).isEqualTo("call_id")
-        assertThat(responseCustomToolCallOutput.output()).isEqualTo("output")
+        assertThat(responseCustomToolCallOutput.output())
+            .isEqualTo(ResponseCustomToolCallOutput.Output.ofString("string"))
         assertThat(responseCustomToolCallOutput.id()).contains("id")
     }
 
@@ -29,7 +30,7 @@ internal class ResponseCustomToolCallOutputTest {
         val responseCustomToolCallOutput =
             ResponseCustomToolCallOutput.builder()
                 .callId("call_id")
-                .output("output")
+                .output("string")
                 .id("id")
                 .build()
 
