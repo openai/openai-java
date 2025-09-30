@@ -2736,14 +2736,6 @@ private constructor(
             fun output(output: Output) = output(JsonField.of(output))
 
             /**
-             * Sets the output to text representing the JSON serialized form of a given object. This
-             * is useful when passing data that is the result of a function call.
-             *
-             * @see output
-             */
-            fun outputAsJson(functionResult: Any) = apply { output(toJsonString(functionResult)) }
-
-            /**
              * Sets [Builder.output] to an arbitrary JSON value.
              *
              * You should usually call [Builder.output] with a well-typed [Output] value instead.
