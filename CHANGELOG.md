@@ -1,5 +1,13 @@
 # Changelog
 
+## 4.0.1 (2025-10-01)
+
+Full Changelog: [v4.0.0...v4.0.1](https://github.com/openai/openai-java/compare/v4.0.0...v4.0.1)
+
+### Bug Fixes
+
+* **api:** add status, approval_request_id to MCP tool call ([56ed867](https://github.com/openai/openai-java/commit/56ed86777a63590b79559e850ce1c34d0c0b9af0))
+
 ## 4.0.0 (2025-09-30)
 
 Full Changelog: [v3.7.1...v4.0.0](https://github.com/openai/openai-java/compare/v3.7.1...v4.0.0)
