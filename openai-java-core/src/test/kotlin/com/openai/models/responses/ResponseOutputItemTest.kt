@@ -607,8 +607,10 @@ internal class ResponseOutputItemTest {
                 .arguments("arguments")
                 .name("name")
                 .serverLabel("server_label")
+                .approvalRequestId("approval_request_id")
                 .error("error")
                 .output("output")
+                .status(ResponseOutputItem.McpCall.Status.IN_PROGRESS)
                 .build()
 
         val responseOutputItem = ResponseOutputItem.ofMcpCall(mcpCall)
@@ -638,8 +640,10 @@ internal class ResponseOutputItemTest {
                     .arguments("arguments")
                     .name("name")
                     .serverLabel("server_label")
+                    .approvalRequestId("approval_request_id")
                     .error("error")
                     .output("output")
+                    .status(ResponseOutputItem.McpCall.Status.IN_PROGRESS)
                     .build()
             )
 
