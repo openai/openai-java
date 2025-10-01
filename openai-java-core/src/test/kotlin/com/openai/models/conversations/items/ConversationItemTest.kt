@@ -977,8 +977,10 @@ internal class ConversationItemTest {
                 .arguments("arguments")
                 .name("name")
                 .serverLabel("server_label")
+                .approvalRequestId("approval_request_id")
                 .error("error")
                 .output("output")
+                .status(ConversationItem.McpCall.Status.IN_PROGRESS)
                 .build()
 
         val conversationItem = ConversationItem.ofMcpCall(mcpCall)
@@ -1013,8 +1015,10 @@ internal class ConversationItemTest {
                     .arguments("arguments")
                     .name("name")
                     .serverLabel("server_label")
+                    .approvalRequestId("approval_request_id")
                     .error("error")
                     .output("output")
+                    .status(ConversationItem.McpCall.Status.IN_PROGRESS)
                     .build()
             )
 

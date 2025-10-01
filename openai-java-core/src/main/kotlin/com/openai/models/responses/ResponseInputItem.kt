@@ -6300,8 +6300,10 @@ private constructor(
         private val name: JsonField<String>,
         private val serverLabel: JsonField<String>,
         private val type: JsonValue,
+        private val approvalRequestId: JsonField<String>,
         private val error: JsonField<String>,
         private val output: JsonField<String>,
+        private val status: JsonField<Status>,
         private val additionalProperties: MutableMap<String, JsonValue>,
     ) {
 
@@ -6316,9 +6318,24 @@ private constructor(
             @ExcludeMissing
             serverLabel: JsonField<String> = JsonMissing.of(),
             @JsonProperty("type") @ExcludeMissing type: JsonValue = JsonMissing.of(),
+            @JsonProperty("approval_request_id")
+            @ExcludeMissing
+            approvalRequestId: JsonField<String> = JsonMissing.of(),
             @JsonProperty("error") @ExcludeMissing error: JsonField<String> = JsonMissing.of(),
             @JsonProperty("output") @ExcludeMissing output: JsonField<String> = JsonMissing.of(),
-        ) : this(id, arguments, name, serverLabel, type, error, output, mutableMapOf())
+            @JsonProperty("status") @ExcludeMissing status: JsonField<Status> = JsonMissing.of(),
+        ) : this(
+            id,
+            arguments,
+            name,
+            serverLabel,
+            type,
+            approvalRequestId,
+            error,
+            output,
+            status,
+            mutableMapOf(),
+        )
 
         /**
          * The unique ID of the tool call.
@@ -6366,6 +6383,17 @@ private constructor(
         @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
 
         /**
+         * Unique identifier for the MCP tool call approval request. Include this value in a
+         * subsequent `mcp_approval_response` input to approve or reject the corresponding tool
+         * call.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun approvalRequestId(): Optional<String> =
+            approvalRequestId.getOptional("approval_request_id")
+
+        /**
          * The error from the tool call, if any.
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
@@ -6380,6 +6408,15 @@ private constructor(
          *   server responded with an unexpected value).
          */
         fun output(): Optional<String> = output.getOptional("output")
+
+        /**
+         * The status of the tool call. One of `in_progress`, `completed`, `incomplete`, `calling`,
+         * or `failed`.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun status(): Optional<Status> = status.getOptional("status")
 
         /**
          * Returns the raw JSON value of [id].
@@ -6412,6 +6449,16 @@ private constructor(
         fun _serverLabel(): JsonField<String> = serverLabel
 
         /**
+         * Returns the raw JSON value of [approvalRequestId].
+         *
+         * Unlike [approvalRequestId], this method doesn't throw if the JSON field has an unexpected
+         * type.
+         */
+        @JsonProperty("approval_request_id")
+        @ExcludeMissing
+        fun _approvalRequestId(): JsonField<String> = approvalRequestId
+
+        /**
          * Returns the raw JSON value of [error].
          *
          * Unlike [error], this method doesn't throw if the JSON field has an unexpected type.
@@ -6424,6 +6471,13 @@ private constructor(
          * Unlike [output], this method doesn't throw if the JSON field has an unexpected type.
          */
         @JsonProperty("output") @ExcludeMissing fun _output(): JsonField<String> = output
+
+        /**
+         * Returns the raw JSON value of [status].
+         *
+         * Unlike [status], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("status") @ExcludeMissing fun _status(): JsonField<Status> = status
 
         @JsonAnySetter
         private fun putAdditionalProperty(key: String, value: JsonValue) {
@@ -6461,8 +6515,10 @@ private constructor(
             private var name: JsonField<String>? = null
             private var serverLabel: JsonField<String>? = null
             private var type: JsonValue = JsonValue.from("mcp_call")
+            private var approvalRequestId: JsonField<String> = JsonMissing.of()
             private var error: JsonField<String> = JsonMissing.of()
             private var output: JsonField<String> = JsonMissing.of()
+            private var status: JsonField<Status> = JsonMissing.of()
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
             @JvmSynthetic
@@ -6472,8 +6528,10 @@ private constructor(
                 name = mcpCall.name
                 serverLabel = mcpCall.serverLabel
                 type = mcpCall.type
+                approvalRequestId = mcpCall.approvalRequestId
                 error = mcpCall.error
                 output = mcpCall.output
+                status = mcpCall.status
                 additionalProperties = mcpCall.additionalProperties.toMutableMap()
             }
 
@@ -6541,6 +6599,31 @@ private constructor(
              */
             fun type(type: JsonValue) = apply { this.type = type }
 
+            /**
+             * Unique identifier for the MCP tool call approval request. Include this value in a
+             * subsequent `mcp_approval_response` input to approve or reject the corresponding tool
+             * call.
+             */
+            fun approvalRequestId(approvalRequestId: String?) =
+                approvalRequestId(JsonField.ofNullable(approvalRequestId))
+
+            /**
+             * Alias for calling [Builder.approvalRequestId] with `approvalRequestId.orElse(null)`.
+             */
+            fun approvalRequestId(approvalRequestId: Optional<String>) =
+                approvalRequestId(approvalRequestId.getOrNull())
+
+            /**
+             * Sets [Builder.approvalRequestId] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.approvalRequestId] with a well-typed [String] value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun approvalRequestId(approvalRequestId: JsonField<String>) = apply {
+                this.approvalRequestId = approvalRequestId
+            }
+
             /** The error from the tool call, if any. */
             fun error(error: String?) = error(JsonField.ofNullable(error))
 
@@ -6570,6 +6653,21 @@ private constructor(
              * supported value.
              */
             fun output(output: JsonField<String>) = apply { this.output = output }
+
+            /**
+             * The status of the tool call. One of `in_progress`, `completed`, `incomplete`,
+             * `calling`, or `failed`.
+             */
+            fun status(status: Status) = status(JsonField.of(status))
+
+            /**
+             * Sets [Builder.status] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.status] with a well-typed [Status] value instead.
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun status(status: JsonField<Status>) = apply { this.status = status }
 
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.clear()
@@ -6612,8 +6710,10 @@ private constructor(
                     checkRequired("name", name),
                     checkRequired("serverLabel", serverLabel),
                     type,
+                    approvalRequestId,
                     error,
                     output,
+                    status,
                     additionalProperties.toMutableMap(),
                 )
         }
@@ -6634,8 +6734,10 @@ private constructor(
                     throw OpenAIInvalidDataException("'type' is invalid, received $it")
                 }
             }
+            approvalRequestId()
             error()
             output()
+            status().ifPresent { it.validate() }
             validated = true
         }
 
@@ -6660,8 +6762,161 @@ private constructor(
                 (if (name.asKnown().isPresent) 1 else 0) +
                 (if (serverLabel.asKnown().isPresent) 1 else 0) +
                 type.let { if (it == JsonValue.from("mcp_call")) 1 else 0 } +
+                (if (approvalRequestId.asKnown().isPresent) 1 else 0) +
                 (if (error.asKnown().isPresent) 1 else 0) +
-                (if (output.asKnown().isPresent) 1 else 0)
+                (if (output.asKnown().isPresent) 1 else 0) +
+                (status.asKnown().getOrNull()?.validity() ?: 0)
+
+        /**
+         * The status of the tool call. One of `in_progress`, `completed`, `incomplete`, `calling`,
+         * or `failed`.
+         */
+        class Status @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
+
+            /**
+             * Returns this class instance's raw value.
+             *
+             * This is usually only useful if this instance was deserialized from data that doesn't
+             * match any known member, and you want to know that value. For example, if the SDK is
+             * on an older version than the API, then the API may respond with new members that the
+             * SDK is unaware of.
+             */
+            @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
+
+            companion object {
+
+                @JvmField val IN_PROGRESS = of("in_progress")
+
+                @JvmField val COMPLETED = of("completed")
+
+                @JvmField val INCOMPLETE = of("incomplete")
+
+                @JvmField val CALLING = of("calling")
+
+                @JvmField val FAILED = of("failed")
+
+                @JvmStatic fun of(value: String) = Status(JsonField.of(value))
+            }
+
+            /** An enum containing [Status]'s known values. */
+            enum class Known {
+                IN_PROGRESS,
+                COMPLETED,
+                INCOMPLETE,
+                CALLING,
+                FAILED,
+            }
+
+            /**
+             * An enum containing [Status]'s known values, as well as an [_UNKNOWN] member.
+             *
+             * An instance of [Status] can contain an unknown value in a couple of cases:
+             * - It was deserialized from data that doesn't match any known member. For example, if
+             *   the SDK is on an older version than the API, then the API may respond with new
+             *   members that the SDK is unaware of.
+             * - It was constructed with an arbitrary value using the [of] method.
+             */
+            enum class Value {
+                IN_PROGRESS,
+                COMPLETED,
+                INCOMPLETE,
+                CALLING,
+                FAILED,
+                /**
+                 * An enum member indicating that [Status] was instantiated with an unknown value.
+                 */
+                _UNKNOWN,
+            }
+
+            /**
+             * Returns an enum member corresponding to this class instance's value, or
+             * [Value._UNKNOWN] if the class was instantiated with an unknown value.
+             *
+             * Use the [known] method instead if you're certain the value is always known or if you
+             * want to throw for the unknown case.
+             */
+            fun value(): Value =
+                when (this) {
+                    IN_PROGRESS -> Value.IN_PROGRESS
+                    COMPLETED -> Value.COMPLETED
+                    INCOMPLETE -> Value.INCOMPLETE
+                    CALLING -> Value.CALLING
+                    FAILED -> Value.FAILED
+                    else -> Value._UNKNOWN
+                }
+
+            /**
+             * Returns an enum member corresponding to this class instance's value.
+             *
+             * Use the [value] method instead if you're uncertain the value is always known and
+             * don't want to throw for the unknown case.
+             *
+             * @throws OpenAIInvalidDataException if this class instance's value is a not a known
+             *   member.
+             */
+            fun known(): Known =
+                when (this) {
+                    IN_PROGRESS -> Known.IN_PROGRESS
+                    COMPLETED -> Known.COMPLETED
+                    INCOMPLETE -> Known.INCOMPLETE
+                    CALLING -> Known.CALLING
+                    FAILED -> Known.FAILED
+                    else -> throw OpenAIInvalidDataException("Unknown Status: $value")
+                }
+
+            /**
+             * Returns this class instance's primitive wire representation.
+             *
+             * This differs from the [toString] method because that method is primarily for
+             * debugging and generally doesn't throw.
+             *
+             * @throws OpenAIInvalidDataException if this class instance's value does not have the
+             *   expected primitive type.
+             */
+            fun asString(): String =
+                _value().asString().orElseThrow {
+                    OpenAIInvalidDataException("Value is not a String")
+                }
+
+            private var validated: Boolean = false
+
+            fun validate(): Status = apply {
+                if (validated) {
+                    return@apply
+                }
+
+                known()
+                validated = true
+            }
+
+            fun isValid(): Boolean =
+                try {
+                    validate()
+                    true
+                } catch (e: OpenAIInvalidDataException) {
+                    false
+                }
+
+            /**
+             * Returns a score indicating how many valid values are contained in this object
+             * recursively.
+             *
+             * Used for best match union deserialization.
+             */
+            @JvmSynthetic internal fun validity(): Int = if (value() == Value._UNKNOWN) 0 else 1
+
+            override fun equals(other: Any?): Boolean {
+                if (this === other) {
+                    return true
+                }
+
+                return other is Status && value == other.value
+            }
+
+            override fun hashCode() = value.hashCode()
+
+            override fun toString() = value.toString()
+        }
 
         override fun equals(other: Any?): Boolean {
             if (this === other) {
@@ -6674,8 +6929,10 @@ private constructor(
                 name == other.name &&
                 serverLabel == other.serverLabel &&
                 type == other.type &&
+                approvalRequestId == other.approvalRequestId &&
                 error == other.error &&
                 output == other.output &&
+                status == other.status &&
                 additionalProperties == other.additionalProperties
         }
 
@@ -6686,8 +6943,10 @@ private constructor(
                 name,
                 serverLabel,
                 type,
+                approvalRequestId,
                 error,
                 output,
+                status,
                 additionalProperties,
             )
         }
@@ -6695,7 +6954,7 @@ private constructor(
         override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "McpCall{id=$id, arguments=$arguments, name=$name, serverLabel=$serverLabel, type=$type, error=$error, output=$output, additionalProperties=$additionalProperties}"
+            "McpCall{id=$id, arguments=$arguments, name=$name, serverLabel=$serverLabel, type=$type, approvalRequestId=$approvalRequestId, error=$error, output=$output, status=$status, additionalProperties=$additionalProperties}"
     }
 
     /** An internal identifier for an item to reference. */
