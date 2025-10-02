@@ -1,5 +1,13 @@
 # Changelog
 
+## 4.1.0 (2025-10-02)
+
+Full Changelog: [v4.0.1...v4.1.0](https://github.com/openai/openai-java/compare/v4.0.1...v4.1.0)
+
+### Features
+
+* **api:** add support for realtime calls ([c4d224c](https://github.com/openai/openai-java/commit/c4d224cf9b37aa0535c2857f3159421898304ff6))
+
 ## 4.0.1 (2025-10-01)
 
 Full Changelog: [v4.0.0...v4.0.1](https://github.com/openai/openai-java/compare/v4.0.0...v4.0.1)
