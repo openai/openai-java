@@ -3,6 +3,8 @@
 package com.openai.services.async
 
 import com.openai.core.ClientOptions
+import com.openai.services.async.realtime.CallServiceAsync
+import com.openai.services.async.realtime.CallServiceAsyncImpl
 import com.openai.services.async.realtime.ClientSecretServiceAsync
 import com.openai.services.async.realtime.ClientSecretServiceAsyncImpl
 import java.util.function.Consumer
@@ -18,6 +20,8 @@ class RealtimeServiceAsyncImpl internal constructor(private val clientOptions: C
         ClientSecretServiceAsyncImpl(clientOptions)
     }
 
+    private val calls: CallServiceAsync by lazy { CallServiceAsyncImpl(clientOptions) }
+
     override fun withRawResponse(): RealtimeServiceAsync.WithRawResponse = withRawResponse
 
     override fun withOptions(modifier: Consumer<ClientOptions.Builder>): RealtimeServiceAsync =
@@ -25,11 +29,17 @@ class RealtimeServiceAsyncImpl internal constructor(private val clientOptions: C
 
     override fun clientSecrets(): ClientSecretServiceAsync = clientSecrets
 
+    override fun calls(): CallServiceAsync = calls
+
     class WithRawResponseImpl internal constructor(private val clientOptions: ClientOptions) :
         RealtimeServiceAsync.WithRawResponse {
 
         private val clientSecrets: ClientSecretServiceAsync.WithRawResponse by lazy {
             ClientSecretServiceAsyncImpl.WithRawResponseImpl(clientOptions)
+        }
+
+        private val calls: CallServiceAsync.WithRawResponse by lazy {
+            CallServiceAsyncImpl.WithRawResponseImpl(clientOptions)
         }
 
         override fun withOptions(
@@ -40,5 +50,7 @@ class RealtimeServiceAsyncImpl internal constructor(private val clientOptions: C
             )
 
         override fun clientSecrets(): ClientSecretServiceAsync.WithRawResponse = clientSecrets
+
+        override fun calls(): CallServiceAsync.WithRawResponse = calls
     }
 }

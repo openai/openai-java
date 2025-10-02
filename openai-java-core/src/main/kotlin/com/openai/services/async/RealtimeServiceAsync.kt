@@ -3,6 +3,7 @@
 package com.openai.services.async
 
 import com.openai.core.ClientOptions
+import com.openai.services.async.realtime.CallServiceAsync
 import com.openai.services.async.realtime.ClientSecretServiceAsync
 import java.util.function.Consumer
 
@@ -22,6 +23,8 @@ interface RealtimeServiceAsync {
 
     fun clientSecrets(): ClientSecretServiceAsync
 
+    fun calls(): CallServiceAsync
+
     /**
      * A view of [RealtimeServiceAsync] that provides access to raw HTTP responses for each method.
      */
@@ -37,5 +40,7 @@ interface RealtimeServiceAsync {
         ): RealtimeServiceAsync.WithRawResponse
 
         fun clientSecrets(): ClientSecretServiceAsync.WithRawResponse
+
+        fun calls(): CallServiceAsync.WithRawResponse
     }
 }
