@@ -42,6 +42,8 @@ import com.openai.services.blocking.UploadService
 import com.openai.services.blocking.UploadServiceImpl
 import com.openai.services.blocking.VectorStoreService
 import com.openai.services.blocking.VectorStoreServiceImpl
+import com.openai.services.blocking.VideoService
+import com.openai.services.blocking.VideoServiceImpl
 import com.openai.services.blocking.WebhookService
 import com.openai.services.blocking.WebhookServiceImpl
 import java.util.function.Consumer
@@ -121,6 +123,8 @@ class OpenAIClientImpl(private val clientOptions: ClientOptions) : OpenAIClient 
         ContainerServiceImpl(clientOptionsWithUserAgent)
     }
 
+    private val videos: VideoService by lazy { VideoServiceImpl(clientOptionsWithUserAgent) }
+
     override fun async(): OpenAIClientAsync = async
 
     override fun withRawResponse(): OpenAIClient.WithRawResponse = withRawResponse
@@ -167,6 +171,8 @@ class OpenAIClientImpl(private val clientOptions: ClientOptions) : OpenAIClient 
     override fun evals(): EvalService = evals
 
     override fun containers(): ContainerService = containers
+
+    override fun videos(): VideoService = videos
 
     override fun close() = clientOptions.close()
 
@@ -253,6 +259,10 @@ class OpenAIClientImpl(private val clientOptions: ClientOptions) : OpenAIClient 
             ContainerServiceImpl.WithRawResponseImpl(clientOptions)
         }
 
+        private val videos: VideoService.WithRawResponse by lazy {
+            VideoServiceImpl.WithRawResponseImpl(clientOptions)
+        }
+
         override fun withOptions(
             modifier: Consumer<ClientOptions.Builder>
         ): OpenAIClient.WithRawResponse =
@@ -299,5 +309,7 @@ class OpenAIClientImpl(private val clientOptions: ClientOptions) : OpenAIClient 
         override fun evals(): EvalService.WithRawResponse = evals
 
         override fun containers(): ContainerService.WithRawResponse = containers
+
+        override fun videos(): VideoService.WithRawResponse = videos
     }
 }

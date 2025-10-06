@@ -4,6 +4,7 @@ package com.openai.services.async
 
 import com.openai.core.ClientOptions
 import com.openai.services.async.beta.AssistantServiceAsync
+import com.openai.services.async.beta.ChatKitServiceAsync
 import com.openai.services.async.beta.ThreadServiceAsync
 import java.util.function.Consumer
 
@@ -21,6 +22,8 @@ interface BetaServiceAsync {
      */
     fun withOptions(modifier: Consumer<ClientOptions.Builder>): BetaServiceAsync
 
+    fun chatkit(): ChatKitServiceAsync
+
     fun assistants(): AssistantServiceAsync
 
     @Deprecated("The Assistants API is deprecated in favor of the Responses API")
@@ -35,6 +38,8 @@ interface BetaServiceAsync {
          * The original service is not modified.
          */
         fun withOptions(modifier: Consumer<ClientOptions.Builder>): BetaServiceAsync.WithRawResponse
+
+        fun chatkit(): ChatKitServiceAsync.WithRawResponse
 
         fun assistants(): AssistantServiceAsync.WithRawResponse
 

@@ -1876,6 +1876,14 @@ private constructor(
             val GPT_4O_MINI_REALTIME_PREVIEW_2024_12_17 =
                 of("gpt-4o-mini-realtime-preview-2024-12-17")
 
+            @JvmField val GPT_REALTIME_MINI = of("gpt-realtime-mini")
+
+            @JvmField val GPT_REALTIME_MINI_2025_10_06 = of("gpt-realtime-mini-2025-10-06")
+
+            @JvmField val GPT_AUDIO_MINI = of("gpt-audio-mini")
+
+            @JvmField val GPT_AUDIO_MINI_2025_10_06 = of("gpt-audio-mini-2025-10-06")
+
             @JvmStatic fun of(value: String) = Model(JsonField.of(value))
         }
 
@@ -1889,6 +1897,10 @@ private constructor(
             GPT_4O_REALTIME_PREVIEW_2025_06_03,
             GPT_4O_MINI_REALTIME_PREVIEW,
             GPT_4O_MINI_REALTIME_PREVIEW_2024_12_17,
+            GPT_REALTIME_MINI,
+            GPT_REALTIME_MINI_2025_10_06,
+            GPT_AUDIO_MINI,
+            GPT_AUDIO_MINI_2025_10_06,
         }
 
         /**
@@ -1909,6 +1921,10 @@ private constructor(
             GPT_4O_REALTIME_PREVIEW_2025_06_03,
             GPT_4O_MINI_REALTIME_PREVIEW,
             GPT_4O_MINI_REALTIME_PREVIEW_2024_12_17,
+            GPT_REALTIME_MINI,
+            GPT_REALTIME_MINI_2025_10_06,
+            GPT_AUDIO_MINI,
+            GPT_AUDIO_MINI_2025_10_06,
             /** An enum member indicating that [Model] was instantiated with an unknown value. */
             _UNKNOWN,
         }
@@ -1931,6 +1947,10 @@ private constructor(
                 GPT_4O_MINI_REALTIME_PREVIEW -> Value.GPT_4O_MINI_REALTIME_PREVIEW
                 GPT_4O_MINI_REALTIME_PREVIEW_2024_12_17 ->
                     Value.GPT_4O_MINI_REALTIME_PREVIEW_2024_12_17
+                GPT_REALTIME_MINI -> Value.GPT_REALTIME_MINI
+                GPT_REALTIME_MINI_2025_10_06 -> Value.GPT_REALTIME_MINI_2025_10_06
+                GPT_AUDIO_MINI -> Value.GPT_AUDIO_MINI
+                GPT_AUDIO_MINI_2025_10_06 -> Value.GPT_AUDIO_MINI_2025_10_06
                 else -> Value._UNKNOWN
             }
 
@@ -1954,6 +1974,10 @@ private constructor(
                 GPT_4O_MINI_REALTIME_PREVIEW -> Known.GPT_4O_MINI_REALTIME_PREVIEW
                 GPT_4O_MINI_REALTIME_PREVIEW_2024_12_17 ->
                     Known.GPT_4O_MINI_REALTIME_PREVIEW_2024_12_17
+                GPT_REALTIME_MINI -> Known.GPT_REALTIME_MINI
+                GPT_REALTIME_MINI_2025_10_06 -> Known.GPT_REALTIME_MINI_2025_10_06
+                GPT_AUDIO_MINI -> Known.GPT_AUDIO_MINI
+                GPT_AUDIO_MINI_2025_10_06 -> Known.GPT_AUDIO_MINI_2025_10_06
                 else -> throw OpenAIInvalidDataException("Unknown Model: $value")
             }
 

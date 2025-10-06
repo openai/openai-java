@@ -5,6 +5,8 @@ package com.openai.services.blocking
 import com.openai.core.ClientOptions
 import com.openai.services.blocking.beta.AssistantService
 import com.openai.services.blocking.beta.AssistantServiceImpl
+import com.openai.services.blocking.beta.ChatKitService
+import com.openai.services.blocking.beta.ChatKitServiceImpl
 import com.openai.services.blocking.beta.ThreadService
 import com.openai.services.blocking.beta.ThreadServiceImpl
 import java.util.function.Consumer
@@ -15,6 +17,8 @@ class BetaServiceImpl internal constructor(private val clientOptions: ClientOpti
         WithRawResponseImpl(clientOptions)
     }
 
+    private val chatkit: ChatKitService by lazy { ChatKitServiceImpl(clientOptions) }
+
     private val assistants: AssistantService by lazy { AssistantServiceImpl(clientOptions) }
 
     private val threads: ThreadService by lazy { ThreadServiceImpl(clientOptions) }
@@ -24,6 +28,8 @@ class BetaServiceImpl internal constructor(private val clientOptions: ClientOpti
     override fun withOptions(modifier: Consumer<ClientOptions.Builder>): BetaService =
         BetaServiceImpl(clientOptions.toBuilder().apply(modifier::accept).build())
 
+    override fun chatkit(): ChatKitService = chatkit
+
     override fun assistants(): AssistantService = assistants
 
     @Deprecated("The Assistants API is deprecated in favor of the Responses API")
@@ -31,6 +37,10 @@ class BetaServiceImpl internal constructor(private val clientOptions: ClientOpti
 
     class WithRawResponseImpl internal constructor(private val clientOptions: ClientOptions) :
         BetaService.WithRawResponse {
+
+        private val chatkit: ChatKitService.WithRawResponse by lazy {
+            ChatKitServiceImpl.WithRawResponseImpl(clientOptions)
+        }
 
         private val assistants: AssistantService.WithRawResponse by lazy {
             AssistantServiceImpl.WithRawResponseImpl(clientOptions)
@@ -46,6 +56,8 @@ class BetaServiceImpl internal constructor(private val clientOptions: ClientOpti
             BetaServiceImpl.WithRawResponseImpl(
                 clientOptions.toBuilder().apply(modifier::accept).build()
             )
+
+        override fun chatkit(): ChatKitService.WithRawResponse = chatkit
 
         override fun assistants(): AssistantService.WithRawResponse = assistants
 
