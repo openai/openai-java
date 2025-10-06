@@ -1,5 +1,13 @@
 # Changelog
 
+## 4.2.0 (2025-10-06)
+
+Full Changelog: [v4.1.0...v4.2.0](https://github.com/openai/openai-java/compare/v4.1.0...v4.2.0)
+
+### Features
+
+* **api:** dev day 2025 launches ([d4f0999](https://github.com/openai/openai-java/commit/d4f09991051ca1554f2452dd014941b3e5b77f73))
+
 ## 4.1.0 (2025-10-02)
 
 Full Changelog: [v4.0.1...v4.1.0](https://github.com/openai/openai-java/compare/v4.0.1...v4.1.0)
