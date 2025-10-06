@@ -4,6 +4,7 @@ package com.openai.services.blocking
 
 import com.openai.core.ClientOptions
 import com.openai.services.blocking.beta.AssistantService
+import com.openai.services.blocking.beta.ChatKitService
 import com.openai.services.blocking.beta.RealtimeService
 import com.openai.services.blocking.beta.ThreadService
 import java.util.function.Consumer
@@ -27,6 +28,8 @@ interface BetaService {
     )
     fun realtime(): RealtimeService
 
+    fun chatkit(): ChatKitService
+
     fun assistants(): AssistantService
 
     @Deprecated("The Assistants API is deprecated in favor of the Responses API")
@@ -46,6 +49,8 @@ interface BetaService {
             "Realtime has now launched and is generally available. The old beta API is now deprecated."
         )
         fun realtime(): RealtimeService.WithRawResponse
+
+        fun chatkit(): ChatKitService.WithRawResponse
 
         fun assistants(): AssistantService.WithRawResponse
 

@@ -5,6 +5,8 @@ package com.openai.services.async
 import com.openai.core.ClientOptions
 import com.openai.services.async.beta.AssistantServiceAsync
 import com.openai.services.async.beta.AssistantServiceAsyncImpl
+import com.openai.services.async.beta.ChatKitServiceAsync
+import com.openai.services.async.beta.ChatKitServiceAsyncImpl
 import com.openai.services.async.beta.RealtimeServiceAsync
 import com.openai.services.async.beta.RealtimeServiceAsyncImpl
 import com.openai.services.async.beta.ThreadServiceAsync
@@ -19,6 +21,8 @@ class BetaServiceAsyncImpl internal constructor(private val clientOptions: Clien
     }
 
     private val realtime: RealtimeServiceAsync by lazy { RealtimeServiceAsyncImpl(clientOptions) }
+
+    private val chatkit: ChatKitServiceAsync by lazy { ChatKitServiceAsyncImpl(clientOptions) }
 
     private val assistants: AssistantServiceAsync by lazy {
         AssistantServiceAsyncImpl(clientOptions)
@@ -36,6 +40,8 @@ class BetaServiceAsyncImpl internal constructor(private val clientOptions: Clien
     )
     override fun realtime(): RealtimeServiceAsync = realtime
 
+    override fun chatkit(): ChatKitServiceAsync = chatkit
+
     override fun assistants(): AssistantServiceAsync = assistants
 
     @Deprecated("The Assistants API is deprecated in favor of the Responses API")
@@ -46,6 +52,10 @@ class BetaServiceAsyncImpl internal constructor(private val clientOptions: Clien
 
         private val realtime: RealtimeServiceAsync.WithRawResponse by lazy {
             RealtimeServiceAsyncImpl.WithRawResponseImpl(clientOptions)
+        }
+
+        private val chatkit: ChatKitServiceAsync.WithRawResponse by lazy {
+            ChatKitServiceAsyncImpl.WithRawResponseImpl(clientOptions)
         }
 
         private val assistants: AssistantServiceAsync.WithRawResponse by lazy {
@@ -67,6 +77,8 @@ class BetaServiceAsyncImpl internal constructor(private val clientOptions: Clien
             "Realtime has now launched and is generally available. The old beta API is now deprecated."
         )
         override fun realtime(): RealtimeServiceAsync.WithRawResponse = realtime
+
+        override fun chatkit(): ChatKitServiceAsync.WithRawResponse = chatkit
 
         override fun assistants(): AssistantServiceAsync.WithRawResponse = assistants
 

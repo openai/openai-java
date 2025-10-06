@@ -59,6 +59,9 @@ jobs:
         uses: gradle/actions/setup-gradle@v4
 
       - name: Build SDK
+        # disable gradle daemon in CI because it is flakey
+        env:
+          GRADLE_OPTS: "-Dkotlin.compiler.execution.strategy=in-process"
         run: ./scripts/build
 
   test:

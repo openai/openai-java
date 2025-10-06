@@ -3618,7 +3618,7 @@ private constructor(
         /**
          * Control how much effort the model will exert to match the style and features, especially
          * facial features, of input images. This parameter is only supported for `gpt-image-1`.
-         * Supports `high` and `low`. Defaults to `low`.
+         * Unsupported for `gpt-image-1-mini`. Supports `high` and `low`. Defaults to `low`.
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
@@ -3868,7 +3868,8 @@ private constructor(
             /**
              * Control how much effort the model will exert to match the style and features,
              * especially facial features, of input images. This parameter is only supported for
-             * `gpt-image-1`. Supports `high` and `low`. Defaults to `low`.
+             * `gpt-image-1`. Unsupported for `gpt-image-1-mini`. Supports `high` and `low`.
+             * Defaults to `low`.
              */
             fun inputFidelity(inputFidelity: InputFidelity?) =
                 inputFidelity(JsonField.ofNullable(inputFidelity))
@@ -4248,7 +4249,7 @@ private constructor(
         /**
          * Control how much effort the model will exert to match the style and features, especially
          * facial features, of input images. This parameter is only supported for `gpt-image-1`.
-         * Supports `high` and `low`. Defaults to `low`.
+         * Unsupported for `gpt-image-1-mini`. Supports `high` and `low`. Defaults to `low`.
          */
         class InputFidelity @JsonCreator private constructor(private val value: JsonField<String>) :
             Enum {
@@ -4590,12 +4591,15 @@ private constructor(
 
                 @JvmField val GPT_IMAGE_1 = of("gpt-image-1")
 
+                @JvmField val GPT_IMAGE_1_MINI = of("gpt-image-1-mini")
+
                 @JvmStatic fun of(value: String) = Model(JsonField.of(value))
             }
 
             /** An enum containing [Model]'s known values. */
             enum class Known {
-                GPT_IMAGE_1
+                GPT_IMAGE_1,
+                GPT_IMAGE_1_MINI,
             }
 
             /**
@@ -4609,6 +4613,7 @@ private constructor(
              */
             enum class Value {
                 GPT_IMAGE_1,
+                GPT_IMAGE_1_MINI,
                 /**
                  * An enum member indicating that [Model] was instantiated with an unknown value.
                  */
@@ -4625,6 +4630,7 @@ private constructor(
             fun value(): Value =
                 when (this) {
                     GPT_IMAGE_1 -> Value.GPT_IMAGE_1
+                    GPT_IMAGE_1_MINI -> Value.GPT_IMAGE_1_MINI
                     else -> Value._UNKNOWN
                 }
 
@@ -4640,6 +4646,7 @@ private constructor(
             fun known(): Known =
                 when (this) {
                     GPT_IMAGE_1 -> Known.GPT_IMAGE_1
+                    GPT_IMAGE_1_MINI -> Known.GPT_IMAGE_1_MINI
                     else -> throw OpenAIInvalidDataException("Unknown Model: $value")
                 }
 

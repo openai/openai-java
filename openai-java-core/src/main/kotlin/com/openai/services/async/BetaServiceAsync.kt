@@ -4,6 +4,7 @@ package com.openai.services.async
 
 import com.openai.core.ClientOptions
 import com.openai.services.async.beta.AssistantServiceAsync
+import com.openai.services.async.beta.ChatKitServiceAsync
 import com.openai.services.async.beta.RealtimeServiceAsync
 import com.openai.services.async.beta.ThreadServiceAsync
 import java.util.function.Consumer
@@ -27,6 +28,8 @@ interface BetaServiceAsync {
     )
     fun realtime(): RealtimeServiceAsync
 
+    fun chatkit(): ChatKitServiceAsync
+
     fun assistants(): AssistantServiceAsync
 
     @Deprecated("The Assistants API is deprecated in favor of the Responses API")
@@ -46,6 +49,8 @@ interface BetaServiceAsync {
             "Realtime has now launched and is generally available. The old beta API is now deprecated."
         )
         fun realtime(): RealtimeServiceAsync.WithRawResponse
+
+        fun chatkit(): ChatKitServiceAsync.WithRawResponse
 
         fun assistants(): AssistantServiceAsync.WithRawResponse
 

@@ -82,7 +82,7 @@ private constructor(
     /**
      * Control how much effort the model will exert to match the style and features, especially
      * facial features, of input images. This parameter is only supported for `gpt-image-1`.
-     * Supports `high` and `low`. Defaults to `low`.
+     * Unsupported for `gpt-image-1-mini`. Supports `high` and `low`. Defaults to `low`.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -433,7 +433,7 @@ private constructor(
         /**
          * Control how much effort the model will exert to match the style and features, especially
          * facial features, of input images. This parameter is only supported for `gpt-image-1`.
-         * Supports `high` and `low`. Defaults to `low`.
+         * Unsupported for `gpt-image-1-mini`. Supports `high` and `low`. Defaults to `low`.
          */
         fun inputFidelity(inputFidelity: InputFidelity?) = apply {
             body.inputFidelity(inputFidelity)
@@ -909,7 +909,7 @@ private constructor(
         /**
          * Control how much effort the model will exert to match the style and features, especially
          * facial features, of input images. This parameter is only supported for `gpt-image-1`.
-         * Supports `high` and `low`. Defaults to `low`.
+         * Unsupported for `gpt-image-1-mini`. Supports `high` and `low`. Defaults to `low`.
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
@@ -1305,7 +1305,8 @@ private constructor(
             /**
              * Control how much effort the model will exert to match the style and features,
              * especially facial features, of input images. This parameter is only supported for
-             * `gpt-image-1`. Supports `high` and `low`. Defaults to `low`.
+             * `gpt-image-1`. Unsupported for `gpt-image-1-mini`. Supports `high` and `low`.
+             * Defaults to `low`.
              */
             fun inputFidelity(inputFidelity: InputFidelity?) =
                 inputFidelity(MultipartField.of(inputFidelity))
@@ -1991,7 +1992,7 @@ private constructor(
     /**
      * Control how much effort the model will exert to match the style and features, especially
      * facial features, of input images. This parameter is only supported for `gpt-image-1`.
-     * Supports `high` and `low`. Defaults to `low`.
+     * Unsupported for `gpt-image-1-mini`. Supports `high` and `low`. Defaults to `low`.
      */
     class InputFidelity @JsonCreator private constructor(private val value: JsonField<String>) :
         Enum {
