@@ -22,6 +22,7 @@ import com.openai.services.async.RealtimeServiceAsync
 import com.openai.services.async.ResponseServiceAsync
 import com.openai.services.async.UploadServiceAsync
 import com.openai.services.async.VectorStoreServiceAsync
+import com.openai.services.async.VideoServiceAsync
 import com.openai.services.async.WebhookServiceAsync
 import java.util.function.Consumer
 
@@ -101,6 +102,8 @@ interface OpenAIClientAsync {
 
     fun containers(): ContainerServiceAsync
 
+    fun videos(): VideoServiceAsync
+
     /**
      * Closes this client, relinquishing any underlying resources.
      *
@@ -165,5 +168,7 @@ interface OpenAIClientAsync {
         fun evals(): EvalServiceAsync.WithRawResponse
 
         fun containers(): ContainerServiceAsync.WithRawResponse
+
+        fun videos(): VideoServiceAsync.WithRawResponse
     }
 }

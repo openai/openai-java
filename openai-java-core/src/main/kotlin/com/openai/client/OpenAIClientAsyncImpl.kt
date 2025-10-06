@@ -42,6 +42,8 @@ import com.openai.services.async.UploadServiceAsync
 import com.openai.services.async.UploadServiceAsyncImpl
 import com.openai.services.async.VectorStoreServiceAsync
 import com.openai.services.async.VectorStoreServiceAsyncImpl
+import com.openai.services.async.VideoServiceAsync
+import com.openai.services.async.VideoServiceAsyncImpl
 import com.openai.services.async.WebhookServiceAsync
 import com.openai.services.async.WebhookServiceAsyncImpl
 import java.util.function.Consumer
@@ -135,6 +137,10 @@ class OpenAIClientAsyncImpl(private val clientOptions: ClientOptions) : OpenAICl
         ContainerServiceAsyncImpl(clientOptionsWithUserAgent)
     }
 
+    private val videos: VideoServiceAsync by lazy {
+        VideoServiceAsyncImpl(clientOptionsWithUserAgent)
+    }
+
     override fun sync(): OpenAIClient = sync
 
     override fun withRawResponse(): OpenAIClientAsync.WithRawResponse = withRawResponse
@@ -181,6 +187,8 @@ class OpenAIClientAsyncImpl(private val clientOptions: ClientOptions) : OpenAICl
     override fun evals(): EvalServiceAsync = evals
 
     override fun containers(): ContainerServiceAsync = containers
+
+    override fun videos(): VideoServiceAsync = videos
 
     override fun close() = clientOptions.close()
 
@@ -267,6 +275,10 @@ class OpenAIClientAsyncImpl(private val clientOptions: ClientOptions) : OpenAICl
             ContainerServiceAsyncImpl.WithRawResponseImpl(clientOptions)
         }
 
+        private val videos: VideoServiceAsync.WithRawResponse by lazy {
+            VideoServiceAsyncImpl.WithRawResponseImpl(clientOptions)
+        }
+
         override fun withOptions(
             modifier: Consumer<ClientOptions.Builder>
         ): OpenAIClientAsync.WithRawResponse =
@@ -313,5 +325,7 @@ class OpenAIClientAsyncImpl(private val clientOptions: ClientOptions) : OpenAICl
         override fun evals(): EvalServiceAsync.WithRawResponse = evals
 
         override fun containers(): ContainerServiceAsync.WithRawResponse = containers
+
+        override fun videos(): VideoServiceAsync.WithRawResponse = videos
     }
 }

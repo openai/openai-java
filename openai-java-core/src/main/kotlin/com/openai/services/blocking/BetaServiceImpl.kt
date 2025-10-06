@@ -5,6 +5,8 @@ package com.openai.services.blocking
 import com.openai.core.ClientOptions
 import com.openai.services.blocking.beta.AssistantService
 import com.openai.services.blocking.beta.AssistantServiceImpl
+import com.openai.services.blocking.beta.ChatKitService
+import com.openai.services.blocking.beta.ChatKitServiceImpl
 import com.openai.services.blocking.beta.RealtimeService
 import com.openai.services.blocking.beta.RealtimeServiceImpl
 import com.openai.services.blocking.beta.ThreadService
@@ -18,6 +20,8 @@ class BetaServiceImpl internal constructor(private val clientOptions: ClientOpti
     }
 
     private val realtime: RealtimeService by lazy { RealtimeServiceImpl(clientOptions) }
+
+    private val chatkit: ChatKitService by lazy { ChatKitServiceImpl(clientOptions) }
 
     private val assistants: AssistantService by lazy { AssistantServiceImpl(clientOptions) }
 
@@ -33,6 +37,8 @@ class BetaServiceImpl internal constructor(private val clientOptions: ClientOpti
     )
     override fun realtime(): RealtimeService = realtime
 
+    override fun chatkit(): ChatKitService = chatkit
+
     override fun assistants(): AssistantService = assistants
 
     @Deprecated("The Assistants API is deprecated in favor of the Responses API")
@@ -43,6 +49,10 @@ class BetaServiceImpl internal constructor(private val clientOptions: ClientOpti
 
         private val realtime: RealtimeService.WithRawResponse by lazy {
             RealtimeServiceImpl.WithRawResponseImpl(clientOptions)
+        }
+
+        private val chatkit: ChatKitService.WithRawResponse by lazy {
+            ChatKitServiceImpl.WithRawResponseImpl(clientOptions)
         }
 
         private val assistants: AssistantService.WithRawResponse by lazy {
@@ -64,6 +74,8 @@ class BetaServiceImpl internal constructor(private val clientOptions: ClientOpti
             "Realtime has now launched and is generally available. The old beta API is now deprecated."
         )
         override fun realtime(): RealtimeService.WithRawResponse = realtime
+
+        override fun chatkit(): ChatKitService.WithRawResponse = chatkit
 
         override fun assistants(): AssistantService.WithRawResponse = assistants
 
