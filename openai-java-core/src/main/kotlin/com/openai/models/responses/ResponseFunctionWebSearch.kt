@@ -71,6 +71,15 @@ private constructor(
     fun action(): Action = action.getRequired("action")
 
     /**
+     * Returns the action if present.
+     *
+     * Unlike [action], this method returns an empty optional when the server omits the field,
+     * allowing callers to gracefully handle scenarios where the model did not provide tool
+     * parameters (for example, when `maxToolCalls` limits are reached).
+     */
+    fun actionOptional(): Optional<Action> = action.getOptional("action")
+
+    /**
      * The status of the web search tool call.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
@@ -287,7 +296,7 @@ private constructor(
         }
 
         id()
-        action().validate()
+        action.getOptional("action").ifPresent { it.validate() }
         status().validate()
         _type().let {
             if (it != JsonValue.from("web_search_call")) {
