@@ -1294,6 +1294,32 @@ private constructor(
         }
 
         /**
+         * Alias for calling [prediction] with the following:
+         * ```java
+         * ChatCompletionPredictionContent.builder()
+         *     .content(content)
+         *     .build()
+         * ```
+         */
+        fun contentPrediction(content: ChatCompletionPredictionContent.Content) = apply {
+            body.contentPrediction(content)
+        }
+
+        /**
+         * Alias for calling [contentPrediction] with
+         * `ChatCompletionPredictionContent.Content.ofText(text)`.
+         */
+        fun contentPrediction(text: String) = apply { body.contentPrediction(text) }
+
+        /**
+         * Alias for calling [contentPrediction] with
+         * `ChatCompletionPredictionContent.Content.ofArrayOfContentParts(arrayOfContentParts)`.
+         */
+        fun contentPredictionOfArrayOfContentParts(
+            arrayOfContentParts: List<ChatCompletionContentPartText>
+        ) = apply { body.contentPredictionOfArrayOfContentParts(arrayOfContentParts) }
+
+        /**
          * Number between -2.0 and 2.0. Positive values penalize new tokens based on whether they
          * appear in the text so far, increasing the model's likelihood to talk about new topics.
          */
@@ -3503,6 +3529,37 @@ private constructor(
             fun prediction(prediction: JsonField<ChatCompletionPredictionContent>) = apply {
                 this.prediction = prediction
             }
+
+            /**
+             * Alias for calling [prediction] with the following:
+             * ```java
+             * ChatCompletionPredictionContent.builder()
+             *     .content(content)
+             *     .build()
+             * ```
+             */
+            fun contentPrediction(content: ChatCompletionPredictionContent.Content) =
+                prediction(ChatCompletionPredictionContent.builder().content(content).build())
+
+            /**
+             * Alias for calling [contentPrediction] with
+             * `ChatCompletionPredictionContent.Content.ofText(text)`.
+             */
+            fun contentPrediction(text: String) =
+                contentPrediction(ChatCompletionPredictionContent.Content.ofText(text))
+
+            /**
+             * Alias for calling [contentPrediction] with
+             * `ChatCompletionPredictionContent.Content.ofArrayOfContentParts(arrayOfContentParts)`.
+             */
+            fun contentPredictionOfArrayOfContentParts(
+                arrayOfContentParts: List<ChatCompletionContentPartText>
+            ) =
+                contentPrediction(
+                    ChatCompletionPredictionContent.Content.ofArrayOfContentParts(
+                        arrayOfContentParts
+                    )
+                )
 
             /**
              * Number between -2.0 and 2.0. Positive values penalize new tokens based on whether
