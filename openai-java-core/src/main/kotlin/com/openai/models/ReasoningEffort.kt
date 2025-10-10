@@ -12,6 +12,8 @@ import com.openai.errors.OpenAIInvalidDataException
  * [reasoning models](https://platform.openai.com/docs/guides/reasoning). Currently supported values
  * are `minimal`, `low`, `medium`, and `high`. Reducing reasoning effort can result in faster
  * responses and fewer tokens used on reasoning in a response.
+ *
+ * Note: The `gpt-5-pro` model defaults to (and only supports) `high` reasoning effort.
  */
 class ReasoningEffort @JsonCreator private constructor(private val value: JsonField<String>) :
     Enum {

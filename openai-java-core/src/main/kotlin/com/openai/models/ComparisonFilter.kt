@@ -23,6 +23,7 @@ import com.openai.core.JsonValue
 import com.openai.core.allMaxBy
 import com.openai.core.checkRequired
 import com.openai.core.getOrThrow
+import com.openai.core.toImmutable
 import com.openai.errors.OpenAIInvalidDataException
 import java.util.Collections
 import java.util.Objects
@@ -58,13 +59,15 @@ private constructor(
     fun key(): String = key.getRequired("key")
 
     /**
-     * Specifies the comparison operator: `eq`, `ne`, `gt`, `gte`, `lt`, `lte`.
+     * Specifies the comparison operator: `eq`, `ne`, `gt`, `gte`, `lt`, `lte`, `in`, `nin`.
      * - `eq`: equals
      * - `ne`: not equal
      * - `gt`: greater than
      * - `gte`: greater than or equal
      * - `lt`: less than
      * - `lte`: less than or equal
+     * - `in`: in
+     * - `nin`: not in
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
      *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
@@ -155,13 +158,15 @@ private constructor(
         fun key(key: JsonField<String>) = apply { this.key = key }
 
         /**
-         * Specifies the comparison operator: `eq`, `ne`, `gt`, `gte`, `lt`, `lte`.
+         * Specifies the comparison operator: `eq`, `ne`, `gt`, `gte`, `lt`, `lte`, `in`, `nin`.
          * - `eq`: equals
          * - `ne`: not equal
          * - `gt`: greater than
          * - `gte`: greater than or equal
          * - `lt`: less than
          * - `lte`: less than or equal
+         * - `in`: in
+         * - `nin`: not in
          */
         fun type(type: Type) = type(JsonField.of(type))
 
@@ -195,6 +200,14 @@ private constructor(
 
         /** Alias for calling [value] with `Value.ofBool(bool)`. */
         fun value(bool: Boolean) = value(Value.ofBool(bool))
+
+        /**
+         * Alias for calling [value] with
+         * `Value.ofComparisonFilterValueItems(comparisonFilterValueItems)`.
+         */
+        fun valueOfComparisonFilterValueItems(
+            comparisonFilterValueItems: List<Value.ComparisonFilterValueItem>
+        ) = value(Value.ofComparisonFilterValueItems(comparisonFilterValueItems))
 
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
             this.additionalProperties.clear()
@@ -271,13 +284,15 @@ private constructor(
             (value.asKnown().getOrNull()?.validity() ?: 0)
 
     /**
-     * Specifies the comparison operator: `eq`, `ne`, `gt`, `gte`, `lt`, `lte`.
+     * Specifies the comparison operator: `eq`, `ne`, `gt`, `gte`, `lt`, `lte`, `in`, `nin`.
      * - `eq`: equals
      * - `ne`: not equal
      * - `gt`: greater than
      * - `gte`: greater than or equal
      * - `lt`: less than
      * - `lte`: less than or equal
+     * - `in`: in
+     * - `nin`: not in
      */
     class Type @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
 
@@ -438,6 +453,7 @@ private constructor(
         private val string: String? = null,
         private val number: Double? = null,
         private val bool: Boolean? = null,
+        private val comparisonFilterValueItems: List<ComparisonFilterValueItem>? = null,
         private val _json: JsonValue? = null,
     ) {
 
@@ -447,17 +463,25 @@ private constructor(
 
         fun bool(): Optional<Boolean> = Optional.ofNullable(bool)
 
+        fun comparisonFilterValueItems(): Optional<List<ComparisonFilterValueItem>> =
+            Optional.ofNullable(comparisonFilterValueItems)
+
         fun isString(): Boolean = string != null
 
         fun isNumber(): Boolean = number != null
 
         fun isBool(): Boolean = bool != null
 
+        fun isComparisonFilterValueItems(): Boolean = comparisonFilterValueItems != null
+
         fun asString(): String = string.getOrThrow("string")
 
         fun asNumber(): Double = number.getOrThrow("number")
 
         fun asBool(): Boolean = bool.getOrThrow("bool")
+
+        fun asComparisonFilterValueItems(): List<ComparisonFilterValueItem> =
+            comparisonFilterValueItems.getOrThrow("comparisonFilterValueItems")
 
         fun _json(): Optional<JsonValue> = Optional.ofNullable(_json)
 
@@ -466,6 +490,8 @@ private constructor(
                 string != null -> visitor.visitString(string)
                 number != null -> visitor.visitNumber(number)
                 bool != null -> visitor.visitBool(bool)
+                comparisonFilterValueItems != null ->
+                    visitor.visitComparisonFilterValueItems(comparisonFilterValueItems)
                 else -> visitor.unknown(_json)
             }
 
@@ -483,6 +509,12 @@ private constructor(
                     override fun visitNumber(number: Double) {}
 
                     override fun visitBool(bool: Boolean) {}
+
+                    override fun visitComparisonFilterValueItems(
+                        comparisonFilterValueItems: List<ComparisonFilterValueItem>
+                    ) {
+                        comparisonFilterValueItems.forEach { it.validate() }
+                    }
                 }
             )
             validated = true
@@ -512,6 +544,10 @@ private constructor(
 
                     override fun visitBool(bool: Boolean) = 1
 
+                    override fun visitComparisonFilterValueItems(
+                        comparisonFilterValueItems: List<ComparisonFilterValueItem>
+                    ) = comparisonFilterValueItems.sumOf { it.validity().toInt() }
+
                     override fun unknown(json: JsonValue?) = 0
                 }
             )
@@ -524,16 +560,20 @@ private constructor(
             return other is Value &&
                 string == other.string &&
                 number == other.number &&
-                bool == other.bool
+                bool == other.bool &&
+                comparisonFilterValueItems == other.comparisonFilterValueItems
         }
 
-        override fun hashCode(): Int = Objects.hash(string, number, bool)
+        override fun hashCode(): Int =
+            Objects.hash(string, number, bool, comparisonFilterValueItems)
 
         override fun toString(): String =
             when {
                 string != null -> "Value{string=$string}"
                 number != null -> "Value{number=$number}"
                 bool != null -> "Value{bool=$bool}"
+                comparisonFilterValueItems != null ->
+                    "Value{comparisonFilterValueItems=$comparisonFilterValueItems}"
                 _json != null -> "Value{_unknown=$_json}"
                 else -> throw IllegalStateException("Invalid Value")
             }
@@ -545,6 +585,11 @@ private constructor(
             @JvmStatic fun ofNumber(number: Double) = Value(number = number)
 
             @JvmStatic fun ofBool(bool: Boolean) = Value(bool = bool)
+
+            @JvmStatic
+            fun ofComparisonFilterValueItems(
+                comparisonFilterValueItems: List<ComparisonFilterValueItem>
+            ) = Value(comparisonFilterValueItems = comparisonFilterValueItems.toImmutable())
         }
 
         /** An interface that defines how to map each variant of [Value] to a value of type [T]. */
@@ -555,6 +600,10 @@ private constructor(
             fun visitNumber(number: Double): T
 
             fun visitBool(bool: Boolean): T
+
+            fun visitComparisonFilterValueItems(
+                comparisonFilterValueItems: List<ComparisonFilterValueItem>
+            ): T
 
             /**
              * Maps an unknown variant of [Value] to a value of type [T].
@@ -587,6 +636,8 @@ private constructor(
                             tryDeserialize(node, jacksonTypeRef<Boolean>())?.let {
                                 Value(bool = it, _json = json)
                             },
+                            tryDeserialize(node, jacksonTypeRef<List<ComparisonFilterValueItem>>())
+                                ?.let { Value(comparisonFilterValueItems = it, _json = json) },
                         )
                         .filterNotNull()
                         .allMaxBy { it.validity() }
@@ -615,8 +666,184 @@ private constructor(
                     value.string != null -> generator.writeObject(value.string)
                     value.number != null -> generator.writeObject(value.number)
                     value.bool != null -> generator.writeObject(value.bool)
+                    value.comparisonFilterValueItems != null ->
+                        generator.writeObject(value.comparisonFilterValueItems)
                     value._json != null -> generator.writeObject(value._json)
                     else -> throw IllegalStateException("Invalid Value")
+                }
+            }
+        }
+
+        @JsonDeserialize(using = ComparisonFilterValueItem.Deserializer::class)
+        @JsonSerialize(using = ComparisonFilterValueItem.Serializer::class)
+        class ComparisonFilterValueItem
+        private constructor(
+            private val string: String? = null,
+            private val number: Double? = null,
+            private val _json: JsonValue? = null,
+        ) {
+
+            fun string(): Optional<String> = Optional.ofNullable(string)
+
+            fun number(): Optional<Double> = Optional.ofNullable(number)
+
+            fun isString(): Boolean = string != null
+
+            fun isNumber(): Boolean = number != null
+
+            fun asString(): String = string.getOrThrow("string")
+
+            fun asNumber(): Double = number.getOrThrow("number")
+
+            fun _json(): Optional<JsonValue> = Optional.ofNullable(_json)
+
+            fun <T> accept(visitor: Visitor<T>): T =
+                when {
+                    string != null -> visitor.visitString(string)
+                    number != null -> visitor.visitNumber(number)
+                    else -> visitor.unknown(_json)
+                }
+
+            private var validated: Boolean = false
+
+            fun validate(): ComparisonFilterValueItem = apply {
+                if (validated) {
+                    return@apply
+                }
+
+                accept(
+                    object : Visitor<Unit> {
+                        override fun visitString(string: String) {}
+
+                        override fun visitNumber(number: Double) {}
+                    }
+                )
+                validated = true
+            }
+
+            fun isValid(): Boolean =
+                try {
+                    validate()
+                    true
+                } catch (e: OpenAIInvalidDataException) {
+                    false
+                }
+
+            /**
+             * Returns a score indicating how many valid values are contained in this object
+             * recursively.
+             *
+             * Used for best match union deserialization.
+             */
+            @JvmSynthetic
+            internal fun validity(): Int =
+                accept(
+                    object : Visitor<Int> {
+                        override fun visitString(string: String) = 1
+
+                        override fun visitNumber(number: Double) = 1
+
+                        override fun unknown(json: JsonValue?) = 0
+                    }
+                )
+
+            override fun equals(other: Any?): Boolean {
+                if (this === other) {
+                    return true
+                }
+
+                return other is ComparisonFilterValueItem &&
+                    string == other.string &&
+                    number == other.number
+            }
+
+            override fun hashCode(): Int = Objects.hash(string, number)
+
+            override fun toString(): String =
+                when {
+                    string != null -> "ComparisonFilterValueItem{string=$string}"
+                    number != null -> "ComparisonFilterValueItem{number=$number}"
+                    _json != null -> "ComparisonFilterValueItem{_unknown=$_json}"
+                    else -> throw IllegalStateException("Invalid ComparisonFilterValueItem")
+                }
+
+            companion object {
+
+                @JvmStatic fun ofString(string: String) = ComparisonFilterValueItem(string = string)
+
+                @JvmStatic fun ofNumber(number: Double) = ComparisonFilterValueItem(number = number)
+            }
+
+            /**
+             * An interface that defines how to map each variant of [ComparisonFilterValueItem] to a
+             * value of type [T].
+             */
+            interface Visitor<out T> {
+
+                fun visitString(string: String): T
+
+                fun visitNumber(number: Double): T
+
+                /**
+                 * Maps an unknown variant of [ComparisonFilterValueItem] to a value of type [T].
+                 *
+                 * An instance of [ComparisonFilterValueItem] can contain an unknown variant if it
+                 * was deserialized from data that doesn't match any known variant. For example, if
+                 * the SDK is on an older version than the API, then the API may respond with new
+                 * variants that the SDK is unaware of.
+                 *
+                 * @throws OpenAIInvalidDataException in the default implementation.
+                 */
+                fun unknown(json: JsonValue?): T {
+                    throw OpenAIInvalidDataException("Unknown ComparisonFilterValueItem: $json")
+                }
+            }
+
+            internal class Deserializer :
+                BaseDeserializer<ComparisonFilterValueItem>(ComparisonFilterValueItem::class) {
+
+                override fun ObjectCodec.deserialize(node: JsonNode): ComparisonFilterValueItem {
+                    val json = JsonValue.fromJsonNode(node)
+
+                    val bestMatches =
+                        sequenceOf(
+                                tryDeserialize(node, jacksonTypeRef<String>())?.let {
+                                    ComparisonFilterValueItem(string = it, _json = json)
+                                },
+                                tryDeserialize(node, jacksonTypeRef<Double>())?.let {
+                                    ComparisonFilterValueItem(number = it, _json = json)
+                                },
+                            )
+                            .filterNotNull()
+                            .allMaxBy { it.validity() }
+                            .toList()
+                    return when (bestMatches.size) {
+                        // This can happen if what we're deserializing is completely incompatible
+                        // with all the possible variants (e.g. deserializing from object).
+                        0 -> ComparisonFilterValueItem(_json = json)
+                        1 -> bestMatches.single()
+                        // If there's more than one match with the highest validity, then use the
+                        // first completely valid match, or simply the first match if none are
+                        // completely valid.
+                        else -> bestMatches.firstOrNull { it.isValid() } ?: bestMatches.first()
+                    }
+                }
+            }
+
+            internal class Serializer :
+                BaseSerializer<ComparisonFilterValueItem>(ComparisonFilterValueItem::class) {
+
+                override fun serialize(
+                    value: ComparisonFilterValueItem,
+                    generator: JsonGenerator,
+                    provider: SerializerProvider,
+                ) {
+                    when {
+                        value.string != null -> generator.writeObject(value.string)
+                        value.number != null -> generator.writeObject(value.number)
+                        value._json != null -> generator.writeObject(value._json)
+                        else -> throw IllegalStateException("Invalid ComparisonFilterValueItem")
+                    }
                 }
             }
         }
