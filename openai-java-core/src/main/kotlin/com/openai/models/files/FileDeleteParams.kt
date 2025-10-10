@@ -11,7 +11,7 @@ import java.util.Objects
 import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
-/** Delete a file. */
+/** Delete a file and remove it from all vector stores. */
 class FileDeleteParams
 private constructor(
     private val fileId: String?,

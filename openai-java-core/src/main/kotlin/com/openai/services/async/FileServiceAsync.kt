@@ -108,7 +108,7 @@ interface FileServiceAsync {
     fun list(requestOptions: RequestOptions): CompletableFuture<FileListPageAsync> =
         list(FileListParams.none(), requestOptions)
 
-    /** Delete a file. */
+    /** Delete a file and remove it from all vector stores. */
     fun delete(fileId: String): CompletableFuture<FileDeleted> =
         delete(fileId, FileDeleteParams.none())
 

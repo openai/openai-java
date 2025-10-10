@@ -104,7 +104,7 @@ interface FileService {
     fun list(requestOptions: RequestOptions): FileListPage =
         list(FileListParams.none(), requestOptions)
 
-    /** Delete a file. */
+    /** Delete a file and remove it from all vector stores. */
     fun delete(fileId: String): FileDeleted = delete(fileId, FileDeleteParams.none())
 
     /** @see delete */

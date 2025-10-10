@@ -551,7 +551,7 @@ private constructor(
         ) : this(code, message, mutableMapOf())
 
         /**
-         * One of `server_error` or `rate_limit_exceeded`.
+         * One of `server_error`, `unsupported_file`, or `invalid_file`.
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
          *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
@@ -620,7 +620,7 @@ private constructor(
                 additionalProperties = lastError.additionalProperties.toMutableMap()
             }
 
-            /** One of `server_error` or `rate_limit_exceeded`. */
+            /** One of `server_error`, `unsupported_file`, or `invalid_file`. */
             fun code(code: Code) = code(JsonField.of(code))
 
             /**
@@ -715,7 +715,7 @@ private constructor(
             (code.asKnown().getOrNull()?.validity() ?: 0) +
                 (if (message.asKnown().isPresent) 1 else 0)
 
-        /** One of `server_error` or `rate_limit_exceeded`. */
+        /** One of `server_error`, `unsupported_file`, or `invalid_file`. */
         class Code @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
 
             /**
