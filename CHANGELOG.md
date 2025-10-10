@@ -1,5 +1,19 @@
 # Changelog
 
+## 4.3.0 (2025-10-10)
+
+Full Changelog: [v4.2.0...v4.3.0](https://github.com/openai/openai-java/compare/v4.2.0...v4.3.0)
+
+### Features
+
+* add more helper methods to instantiate union objects ([e5e61b5](https://github.com/openai/openai-java/commit/e5e61b5a56e5eb6269a99171b8ce3bfe4e5bdc6f))
+* **api:** comparison filter in/not in ([29b6606](https://github.com/openai/openai-java/commit/29b66068d56cc7afb9485eed34a6744c47296785))
+
+
+### Bug Fixes
+
+* **api:** manual updates ([8d54d5d](https://github.com/openai/openai-java/commit/8d54d5d5bc0be0cda7648a28a2817d3cfaab2e6a))
+
 ## 4.2.0 (2025-10-06)
 
 Full Changelog: [v4.1.0...v4.2.0](https://github.com/openai/openai-java/compare/v4.1.0...v4.2.0)
