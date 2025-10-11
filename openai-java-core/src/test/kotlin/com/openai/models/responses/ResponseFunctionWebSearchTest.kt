@@ -5,6 +5,7 @@ package com.openai.models.responses
 import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
 import com.openai.core.jsonMapper
 import org.assertj.core.api.Assertions.assertThat
+import org.assertj.core.api.Assertions.assertThatCode
 import org.junit.jupiter.api.Test
 
 internal class ResponseFunctionWebSearchTest {
@@ -71,5 +72,21 @@ internal class ResponseFunctionWebSearchTest {
             )
 
         assertThat(roundtrippedResponseFunctionWebSearch).isEqualTo(responseFunctionWebSearch)
+    }
+
+    @Test
+    fun deserializeWithoutAction() {
+        val jsonMapper = jsonMapper()
+        val payload = """
+            {"id":"ws_missing","status":"completed","type":"web_search_call"}
+        """.trimIndent()
+
+        val responseFunctionWebSearch =
+            jsonMapper.readValue(payload, jacksonTypeRef<ResponseFunctionWebSearch>())
+
+        assertThat(responseFunctionWebSearch.actionOptional()).isEmpty
+        assertThat(responseFunctionWebSearch.status())
+            .isEqualTo(ResponseFunctionWebSearch.Status.COMPLETED)
+        assertThatCode { responseFunctionWebSearch.validate() }.doesNotThrowAnyException()
     }
 }
