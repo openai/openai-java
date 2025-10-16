@@ -24,12 +24,19 @@ import java.util.Optional
 class TranscriptionCreateResponse
 private constructor(
     private val transcription: Transcription? = null,
+    private val diarized: TranscriptionDiarized? = null,
     private val verbose: TranscriptionVerbose? = null,
     private val _json: JsonValue? = null,
 ) {
 
     /** Represents a transcription response returned by model, based on the provided input. */
     fun transcription(): Optional<Transcription> = Optional.ofNullable(transcription)
+
+    /**
+     * Represents a diarized transcription response returned by the model, including the combined
+     * transcript and speaker-segment annotations.
+     */
+    fun diarized(): Optional<TranscriptionDiarized> = Optional.ofNullable(diarized)
 
     /**
      * Represents a verbose json transcription response returned by model, based on the provided
@@ -39,10 +46,18 @@ private constructor(
 
     fun isTranscription(): Boolean = transcription != null
 
+    fun isDiarized(): Boolean = diarized != null
+
     fun isVerbose(): Boolean = verbose != null
 
     /** Represents a transcription response returned by model, based on the provided input. */
     fun asTranscription(): Transcription = transcription.getOrThrow("transcription")
+
+    /**
+     * Represents a diarized transcription response returned by the model, including the combined
+     * transcript and speaker-segment annotations.
+     */
+    fun asDiarized(): TranscriptionDiarized = diarized.getOrThrow("diarized")
 
     /**
      * Represents a verbose json transcription response returned by model, based on the provided
@@ -55,6 +70,7 @@ private constructor(
     fun <T> accept(visitor: Visitor<T>): T =
         when {
             transcription != null -> visitor.visitTranscription(transcription)
+            diarized != null -> visitor.visitDiarized(diarized)
             verbose != null -> visitor.visitVerbose(verbose)
             else -> visitor.unknown(_json)
         }
@@ -70,6 +86,10 @@ private constructor(
             object : Visitor<Unit> {
                 override fun visitTranscription(transcription: Transcription) {
                     transcription.validate()
+                }
+
+                override fun visitDiarized(diarized: TranscriptionDiarized) {
+                    diarized.validate()
                 }
 
                 override fun visitVerbose(verbose: TranscriptionVerbose) {
@@ -100,6 +120,8 @@ private constructor(
                 override fun visitTranscription(transcription: Transcription) =
                     transcription.validity()
 
+                override fun visitDiarized(diarized: TranscriptionDiarized) = diarized.validity()
+
                 override fun visitVerbose(verbose: TranscriptionVerbose) = verbose.validity()
 
                 override fun unknown(json: JsonValue?) = 0
@@ -113,14 +135,16 @@ private constructor(
 
         return other is TranscriptionCreateResponse &&
             transcription == other.transcription &&
+            diarized == other.diarized &&
             verbose == other.verbose
     }
 
-    override fun hashCode(): Int = Objects.hash(transcription, verbose)
+    override fun hashCode(): Int = Objects.hash(transcription, diarized, verbose)
 
     override fun toString(): String =
         when {
             transcription != null -> "TranscriptionCreateResponse{transcription=$transcription}"
+            diarized != null -> "TranscriptionCreateResponse{diarized=$diarized}"
             verbose != null -> "TranscriptionCreateResponse{verbose=$verbose}"
             _json != null -> "TranscriptionCreateResponse{_unknown=$_json}"
             else -> throw IllegalStateException("Invalid TranscriptionCreateResponse")
@@ -132,6 +156,14 @@ private constructor(
         @JvmStatic
         fun ofTranscription(transcription: Transcription) =
             TranscriptionCreateResponse(transcription = transcription)
+
+        /**
+         * Represents a diarized transcription response returned by the model, including the
+         * combined transcript and speaker-segment annotations.
+         */
+        @JvmStatic
+        fun ofDiarized(diarized: TranscriptionDiarized) =
+            TranscriptionCreateResponse(diarized = diarized)
 
         /**
          * Represents a verbose json transcription response returned by model, based on the provided
@@ -150,6 +182,12 @@ private constructor(
 
         /** Represents a transcription response returned by model, based on the provided input. */
         fun visitTranscription(transcription: Transcription): T
+
+        /**
+         * Represents a diarized transcription response returned by the model, including the
+         * combined transcript and speaker-segment annotations.
+         */
+        fun visitDiarized(diarized: TranscriptionDiarized): T
 
         /**
          * Represents a verbose json transcription response returned by model, based on the provided
@@ -183,6 +221,9 @@ private constructor(
                         tryDeserialize(node, jacksonTypeRef<Transcription>())?.let {
                             TranscriptionCreateResponse(transcription = it, _json = json)
                         },
+                        tryDeserialize(node, jacksonTypeRef<TranscriptionDiarized>())?.let {
+                            TranscriptionCreateResponse(diarized = it, _json = json)
+                        },
                         tryDeserialize(node, jacksonTypeRef<TranscriptionVerbose>())?.let {
                             TranscriptionCreateResponse(verbose = it, _json = json)
                         },
@@ -212,6 +253,7 @@ private constructor(
         ) {
             when {
                 value.transcription != null -> generator.writeObject(value.transcription)
+                value.diarized != null -> generator.writeObject(value.diarized)
                 value.verbose != null -> generator.writeObject(value.verbose)
                 value._json != null -> generator.writeObject(value._json)
                 else -> throw IllegalStateException("Invalid TranscriptionCreateResponse")

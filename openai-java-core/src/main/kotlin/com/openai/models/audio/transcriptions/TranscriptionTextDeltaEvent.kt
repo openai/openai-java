@@ -31,6 +31,7 @@ private constructor(
     private val delta: JsonField<String>,
     private val type: JsonValue,
     private val logprobs: JsonField<List<Logprob>>,
+    private val segmentId: JsonField<String>,
     private val additionalProperties: MutableMap<String, JsonValue>,
 ) {
 
@@ -41,7 +42,8 @@ private constructor(
         @JsonProperty("logprobs")
         @ExcludeMissing
         logprobs: JsonField<List<Logprob>> = JsonMissing.of(),
-    ) : this(delta, type, logprobs, mutableMapOf())
+        @JsonProperty("segment_id") @ExcludeMissing segmentId: JsonField<String> = JsonMissing.of(),
+    ) : this(delta, type, logprobs, segmentId, mutableMapOf())
 
     /**
      * The text delta that was additionally transcribed.
@@ -75,6 +77,15 @@ private constructor(
     fun logprobs(): Optional<List<Logprob>> = logprobs.getOptional("logprobs")
 
     /**
+     * Identifier of the diarized segment that this delta belongs to. Only present when using
+     * `gpt-4o-transcribe-diarize`.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun segmentId(): Optional<String> = segmentId.getOptional("segment_id")
+
+    /**
      * Returns the raw JSON value of [delta].
      *
      * Unlike [delta], this method doesn't throw if the JSON field has an unexpected type.
@@ -87,6 +98,13 @@ private constructor(
      * Unlike [logprobs], this method doesn't throw if the JSON field has an unexpected type.
      */
     @JsonProperty("logprobs") @ExcludeMissing fun _logprobs(): JsonField<List<Logprob>> = logprobs
+
+    /**
+     * Returns the raw JSON value of [segmentId].
+     *
+     * Unlike [segmentId], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    @JsonProperty("segment_id") @ExcludeMissing fun _segmentId(): JsonField<String> = segmentId
 
     @JsonAnySetter
     private fun putAdditionalProperty(key: String, value: JsonValue) {
@@ -119,6 +137,7 @@ private constructor(
         private var delta: JsonField<String>? = null
         private var type: JsonValue = JsonValue.from("transcript.text.delta")
         private var logprobs: JsonField<MutableList<Logprob>>? = null
+        private var segmentId: JsonField<String> = JsonMissing.of()
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
         @JvmSynthetic
@@ -126,6 +145,7 @@ private constructor(
             delta = transcriptionTextDeltaEvent.delta
             type = transcriptionTextDeltaEvent.type
             logprobs = transcriptionTextDeltaEvent.logprobs.map { it.toMutableList() }
+            segmentId = transcriptionTextDeltaEvent.segmentId
             additionalProperties = transcriptionTextDeltaEvent.additionalProperties.toMutableMap()
         }
 
@@ -184,6 +204,21 @@ private constructor(
                 }
         }
 
+        /**
+         * Identifier of the diarized segment that this delta belongs to. Only present when using
+         * `gpt-4o-transcribe-diarize`.
+         */
+        fun segmentId(segmentId: String) = segmentId(JsonField.of(segmentId))
+
+        /**
+         * Sets [Builder.segmentId] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.segmentId] with a well-typed [String] value instead.
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
+         */
+        fun segmentId(segmentId: JsonField<String>) = apply { this.segmentId = segmentId }
+
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
             this.additionalProperties.clear()
             putAllAdditionalProperties(additionalProperties)
@@ -220,6 +255,7 @@ private constructor(
                 checkRequired("delta", delta),
                 type,
                 (logprobs ?: JsonMissing.of()).map { it.toImmutable() },
+                segmentId,
                 additionalProperties.toMutableMap(),
             )
     }
@@ -238,6 +274,7 @@ private constructor(
             }
         }
         logprobs().ifPresent { it.forEach { it.validate() } }
+        segmentId()
         validated = true
     }
 
@@ -258,7 +295,8 @@ private constructor(
     internal fun validity(): Int =
         (if (delta.asKnown().isPresent) 1 else 0) +
             type.let { if (it == JsonValue.from("transcript.text.delta")) 1 else 0 } +
-            (logprobs.asKnown().getOrNull()?.sumOf { it.validity().toInt() } ?: 0)
+            (logprobs.asKnown().getOrNull()?.sumOf { it.validity().toInt() } ?: 0) +
+            (if (segmentId.asKnown().isPresent) 1 else 0)
 
     class Logprob
     @JsonCreator(mode = JsonCreator.Mode.DISABLED)
@@ -502,13 +540,16 @@ private constructor(
             delta == other.delta &&
             type == other.type &&
             logprobs == other.logprobs &&
+            segmentId == other.segmentId &&
             additionalProperties == other.additionalProperties
     }
 
-    private val hashCode: Int by lazy { Objects.hash(delta, type, logprobs, additionalProperties) }
+    private val hashCode: Int by lazy {
+        Objects.hash(delta, type, logprobs, segmentId, additionalProperties)
+    }
 
     override fun hashCode(): Int = hashCode
 
     override fun toString() =
-        "TranscriptionTextDeltaEvent{delta=$delta, type=$type, logprobs=$logprobs, additionalProperties=$additionalProperties}"
+        "TranscriptionTextDeltaEvent{delta=$delta, type=$type, logprobs=$logprobs, segmentId=$segmentId, additionalProperties=$additionalProperties}"
 }

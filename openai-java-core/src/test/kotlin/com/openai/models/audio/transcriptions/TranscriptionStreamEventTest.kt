@@ -15,6 +15,48 @@ import org.junit.jupiter.params.provider.EnumSource
 internal class TranscriptionStreamEventTest {
 
     @Test
+    fun ofTranscriptTextSegment() {
+        val transcriptTextSegment =
+            TranscriptionTextSegmentEvent.builder()
+                .id("id")
+                .end(0.0f)
+                .speaker("speaker")
+                .start(0.0f)
+                .text("text")
+                .build()
+
+        val transcriptionStreamEvent =
+            TranscriptionStreamEvent.ofTranscriptTextSegment(transcriptTextSegment)
+
+        assertThat(transcriptionStreamEvent.transcriptTextSegment()).contains(transcriptTextSegment)
+        assertThat(transcriptionStreamEvent.transcriptTextDelta()).isEmpty
+        assertThat(transcriptionStreamEvent.transcriptTextDone()).isEmpty
+    }
+
+    @Test
+    fun ofTranscriptTextSegmentRoundtrip() {
+        val jsonMapper = jsonMapper()
+        val transcriptionStreamEvent =
+            TranscriptionStreamEvent.ofTranscriptTextSegment(
+                TranscriptionTextSegmentEvent.builder()
+                    .id("id")
+                    .end(0.0f)
+                    .speaker("speaker")
+                    .start(0.0f)
+                    .text("text")
+                    .build()
+            )
+
+        val roundtrippedTranscriptionStreamEvent =
+            jsonMapper.readValue(
+                jsonMapper.writeValueAsString(transcriptionStreamEvent),
+                jacksonTypeRef<TranscriptionStreamEvent>(),
+            )
+
+        assertThat(roundtrippedTranscriptionStreamEvent).isEqualTo(transcriptionStreamEvent)
+    }
+
+    @Test
     fun ofTranscriptTextDelta() {
         val transcriptTextDelta =
             TranscriptionTextDeltaEvent.builder()
@@ -26,11 +68,13 @@ internal class TranscriptionStreamEventTest {
                         .logprob(0.0)
                         .build()
                 )
+                .segmentId("segment_id")
                 .build()
 
         val transcriptionStreamEvent =
             TranscriptionStreamEvent.ofTranscriptTextDelta(transcriptTextDelta)
 
+        assertThat(transcriptionStreamEvent.transcriptTextSegment()).isEmpty
         assertThat(transcriptionStreamEvent.transcriptTextDelta()).contains(transcriptTextDelta)
         assertThat(transcriptionStreamEvent.transcriptTextDone()).isEmpty
     }
@@ -49,6 +93,7 @@ internal class TranscriptionStreamEventTest {
                             .logprob(0.0)
                             .build()
                     )
+                    .segmentId("segment_id")
                     .build()
             )
 
@@ -91,6 +136,7 @@ internal class TranscriptionStreamEventTest {
         val transcriptionStreamEvent =
             TranscriptionStreamEvent.ofTranscriptTextDone(transcriptTextDone)
 
+        assertThat(transcriptionStreamEvent.transcriptTextSegment()).isEmpty
         assertThat(transcriptionStreamEvent.transcriptTextDelta()).isEmpty
         assertThat(transcriptionStreamEvent.transcriptTextDone()).contains(transcriptTextDone)
     }

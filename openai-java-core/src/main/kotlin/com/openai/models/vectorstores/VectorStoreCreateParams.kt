@@ -40,6 +40,14 @@ private constructor(
     fun chunkingStrategy(): Optional<FileChunkingStrategyParam> = body.chunkingStrategy()
 
     /**
+     * A description for the vector store. Can be used to describe the vector store's purpose.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun description(): Optional<String> = body.description()
+
+    /**
      * The expiration policy for a vector store.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
@@ -84,6 +92,13 @@ private constructor(
      * type.
      */
     fun _chunkingStrategy(): JsonField<FileChunkingStrategyParam> = body._chunkingStrategy()
+
+    /**
+     * Returns the raw JSON value of [description].
+     *
+     * Unlike [description], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    fun _description(): JsonField<String> = body._description()
 
     /**
      * Returns the raw JSON value of [expiresAfter].
@@ -151,10 +166,10 @@ private constructor(
          * This is generally only useful if you are already constructing the body separately.
          * Otherwise, it's more convenient to use the top-level setters instead:
          * - [chunkingStrategy]
+         * - [description]
          * - [expiresAfter]
          * - [fileIds]
          * - [metadata]
-         * - [name]
          * - etc.
          */
         fun body(body: Body) = apply { this.body = body.toBuilder() }
@@ -201,6 +216,20 @@ private constructor(
         fun staticChunkingStrategy(static_: StaticFileChunkingStrategy) = apply {
             body.staticChunkingStrategy(static_)
         }
+
+        /**
+         * A description for the vector store. Can be used to describe the vector store's purpose.
+         */
+        fun description(description: String) = apply { body.description(description) }
+
+        /**
+         * Sets [Builder.description] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.description] with a well-typed [String] value instead.
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
+         */
+        fun description(description: JsonField<String>) = apply { body.description(description) }
 
         /** The expiration policy for a vector store. */
         fun expiresAfter(expiresAfter: ExpiresAfter) = apply { body.expiresAfter(expiresAfter) }
@@ -411,6 +440,7 @@ private constructor(
     @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(
         private val chunkingStrategy: JsonField<FileChunkingStrategyParam>,
+        private val description: JsonField<String>,
         private val expiresAfter: JsonField<ExpiresAfter>,
         private val fileIds: JsonField<List<String>>,
         private val metadata: JsonField<Metadata>,
@@ -423,6 +453,9 @@ private constructor(
             @JsonProperty("chunking_strategy")
             @ExcludeMissing
             chunkingStrategy: JsonField<FileChunkingStrategyParam> = JsonMissing.of(),
+            @JsonProperty("description")
+            @ExcludeMissing
+            description: JsonField<String> = JsonMissing.of(),
             @JsonProperty("expires_after")
             @ExcludeMissing
             expiresAfter: JsonField<ExpiresAfter> = JsonMissing.of(),
@@ -433,7 +466,15 @@ private constructor(
             @ExcludeMissing
             metadata: JsonField<Metadata> = JsonMissing.of(),
             @JsonProperty("name") @ExcludeMissing name: JsonField<String> = JsonMissing.of(),
-        ) : this(chunkingStrategy, expiresAfter, fileIds, metadata, name, mutableMapOf())
+        ) : this(
+            chunkingStrategy,
+            description,
+            expiresAfter,
+            fileIds,
+            metadata,
+            name,
+            mutableMapOf(),
+        )
 
         /**
          * The chunking strategy used to chunk the file(s). If not set, will use the `auto`
@@ -444,6 +485,14 @@ private constructor(
          */
         fun chunkingStrategy(): Optional<FileChunkingStrategyParam> =
             chunkingStrategy.getOptional("chunking_strategy")
+
+        /**
+         * A description for the vector store. Can be used to describe the vector store's purpose.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun description(): Optional<String> = description.getOptional("description")
 
         /**
          * The expiration policy for a vector store.
@@ -492,6 +541,15 @@ private constructor(
         @JsonProperty("chunking_strategy")
         @ExcludeMissing
         fun _chunkingStrategy(): JsonField<FileChunkingStrategyParam> = chunkingStrategy
+
+        /**
+         * Returns the raw JSON value of [description].
+         *
+         * Unlike [description], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("description")
+        @ExcludeMissing
+        fun _description(): JsonField<String> = description
 
         /**
          * Returns the raw JSON value of [expiresAfter].
@@ -546,6 +604,7 @@ private constructor(
         class Builder internal constructor() {
 
             private var chunkingStrategy: JsonField<FileChunkingStrategyParam> = JsonMissing.of()
+            private var description: JsonField<String> = JsonMissing.of()
             private var expiresAfter: JsonField<ExpiresAfter> = JsonMissing.of()
             private var fileIds: JsonField<MutableList<String>>? = null
             private var metadata: JsonField<Metadata> = JsonMissing.of()
@@ -555,6 +614,7 @@ private constructor(
             @JvmSynthetic
             internal fun from(body: Body) = apply {
                 chunkingStrategy = body.chunkingStrategy
+                description = body.description
                 expiresAfter = body.expiresAfter
                 fileIds = body.fileIds.map { it.toMutableList() }
                 metadata = body.metadata
@@ -605,6 +665,23 @@ private constructor(
                 chunkingStrategy(
                     StaticFileChunkingStrategyObjectParam.builder().static_(static_).build()
                 )
+
+            /**
+             * A description for the vector store. Can be used to describe the vector store's
+             * purpose.
+             */
+            fun description(description: String) = description(JsonField.of(description))
+
+            /**
+             * Sets [Builder.description] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.description] with a well-typed [String] value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun description(description: JsonField<String>) = apply {
+                this.description = description
+            }
 
             /** The expiration policy for a vector store. */
             fun expiresAfter(expiresAfter: ExpiresAfter) = expiresAfter(JsonField.of(expiresAfter))
@@ -710,6 +787,7 @@ private constructor(
             fun build(): Body =
                 Body(
                     chunkingStrategy,
+                    description,
                     expiresAfter,
                     (fileIds ?: JsonMissing.of()).map { it.toImmutable() },
                     metadata,
@@ -726,6 +804,7 @@ private constructor(
             }
 
             chunkingStrategy().ifPresent { it.validate() }
+            description()
             expiresAfter().ifPresent { it.validate() }
             fileIds()
             metadata().ifPresent { it.validate() }
@@ -750,6 +829,7 @@ private constructor(
         @JvmSynthetic
         internal fun validity(): Int =
             (chunkingStrategy.asKnown().getOrNull()?.validity() ?: 0) +
+                (if (description.asKnown().isPresent) 1 else 0) +
                 (expiresAfter.asKnown().getOrNull()?.validity() ?: 0) +
                 (fileIds.asKnown().getOrNull()?.size ?: 0) +
                 (metadata.asKnown().getOrNull()?.validity() ?: 0) +
@@ -762,6 +842,7 @@ private constructor(
 
             return other is Body &&
                 chunkingStrategy == other.chunkingStrategy &&
+                description == other.description &&
                 expiresAfter == other.expiresAfter &&
                 fileIds == other.fileIds &&
                 metadata == other.metadata &&
@@ -772,6 +853,7 @@ private constructor(
         private val hashCode: Int by lazy {
             Objects.hash(
                 chunkingStrategy,
+                description,
                 expiresAfter,
                 fileIds,
                 metadata,
@@ -783,7 +865,7 @@ private constructor(
         override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "Body{chunkingStrategy=$chunkingStrategy, expiresAfter=$expiresAfter, fileIds=$fileIds, metadata=$metadata, name=$name, additionalProperties=$additionalProperties}"
+            "Body{chunkingStrategy=$chunkingStrategy, description=$description, expiresAfter=$expiresAfter, fileIds=$fileIds, metadata=$metadata, name=$name, additionalProperties=$additionalProperties}"
     }
 
     /** The expiration policy for a vector store. */
