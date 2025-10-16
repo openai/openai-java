@@ -19,19 +19,29 @@ import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
 /**
- * Emitted when there is an additional text delta. This is also the first event emitted when the
- * transcription starts. Only emitted when you
+ * Emitted when a diarized transcription returns a completed segment with speaker information. Only
+ * emitted when you
  * [create a transcription](https://platform.openai.com/docs/api-reference/audio/create-transcription)
- * with the `Stream` parameter set to `true`.
+ * with `stream` set to `true` and `response_format` set to `diarized_json`.
  */
 @JsonDeserialize(using = TranscriptionStreamEvent.Deserializer::class)
 @JsonSerialize(using = TranscriptionStreamEvent.Serializer::class)
 class TranscriptionStreamEvent
 private constructor(
+    private val transcriptTextSegment: TranscriptionTextSegmentEvent? = null,
     private val transcriptTextDelta: TranscriptionTextDeltaEvent? = null,
     private val transcriptTextDone: TranscriptionTextDoneEvent? = null,
     private val _json: JsonValue? = null,
 ) {
+
+    /**
+     * Emitted when a diarized transcription returns a completed segment with speaker information.
+     * Only emitted when you
+     * [create a transcription](https://platform.openai.com/docs/api-reference/audio/create-transcription)
+     * with `stream` set to `true` and `response_format` set to `diarized_json`.
+     */
+    fun transcriptTextSegment(): Optional<TranscriptionTextSegmentEvent> =
+        Optional.ofNullable(transcriptTextSegment)
 
     /**
      * Emitted when there is an additional text delta. This is also the first event emitted when the
@@ -51,9 +61,20 @@ private constructor(
     fun transcriptTextDone(): Optional<TranscriptionTextDoneEvent> =
         Optional.ofNullable(transcriptTextDone)
 
+    fun isTranscriptTextSegment(): Boolean = transcriptTextSegment != null
+
     fun isTranscriptTextDelta(): Boolean = transcriptTextDelta != null
 
     fun isTranscriptTextDone(): Boolean = transcriptTextDone != null
+
+    /**
+     * Emitted when a diarized transcription returns a completed segment with speaker information.
+     * Only emitted when you
+     * [create a transcription](https://platform.openai.com/docs/api-reference/audio/create-transcription)
+     * with `stream` set to `true` and `response_format` set to `diarized_json`.
+     */
+    fun asTranscriptTextSegment(): TranscriptionTextSegmentEvent =
+        transcriptTextSegment.getOrThrow("transcriptTextSegment")
 
     /**
      * Emitted when there is an additional text delta. This is also the first event emitted when the
@@ -77,6 +98,8 @@ private constructor(
 
     fun <T> accept(visitor: Visitor<T>): T =
         when {
+            transcriptTextSegment != null ->
+                visitor.visitTranscriptTextSegment(transcriptTextSegment)
             transcriptTextDelta != null -> visitor.visitTranscriptTextDelta(transcriptTextDelta)
             transcriptTextDone != null -> visitor.visitTranscriptTextDone(transcriptTextDone)
             else -> visitor.unknown(_json)
@@ -91,6 +114,12 @@ private constructor(
 
         accept(
             object : Visitor<Unit> {
+                override fun visitTranscriptTextSegment(
+                    transcriptTextSegment: TranscriptionTextSegmentEvent
+                ) {
+                    transcriptTextSegment.validate()
+                }
+
                 override fun visitTranscriptTextDelta(
                     transcriptTextDelta: TranscriptionTextDeltaEvent
                 ) {
@@ -124,6 +153,10 @@ private constructor(
     internal fun validity(): Int =
         accept(
             object : Visitor<Int> {
+                override fun visitTranscriptTextSegment(
+                    transcriptTextSegment: TranscriptionTextSegmentEvent
+                ) = transcriptTextSegment.validity()
+
                 override fun visitTranscriptTextDelta(
                     transcriptTextDelta: TranscriptionTextDeltaEvent
                 ) = transcriptTextDelta.validity()
@@ -142,14 +175,18 @@ private constructor(
         }
 
         return other is TranscriptionStreamEvent &&
+            transcriptTextSegment == other.transcriptTextSegment &&
             transcriptTextDelta == other.transcriptTextDelta &&
             transcriptTextDone == other.transcriptTextDone
     }
 
-    override fun hashCode(): Int = Objects.hash(transcriptTextDelta, transcriptTextDone)
+    override fun hashCode(): Int =
+        Objects.hash(transcriptTextSegment, transcriptTextDelta, transcriptTextDone)
 
     override fun toString(): String =
         when {
+            transcriptTextSegment != null ->
+                "TranscriptionStreamEvent{transcriptTextSegment=$transcriptTextSegment}"
             transcriptTextDelta != null ->
                 "TranscriptionStreamEvent{transcriptTextDelta=$transcriptTextDelta}"
             transcriptTextDone != null ->
@@ -159,6 +196,16 @@ private constructor(
         }
 
     companion object {
+
+        /**
+         * Emitted when a diarized transcription returns a completed segment with speaker
+         * information. Only emitted when you
+         * [create a transcription](https://platform.openai.com/docs/api-reference/audio/create-transcription)
+         * with `stream` set to `true` and `response_format` set to `diarized_json`.
+         */
+        @JvmStatic
+        fun ofTranscriptTextSegment(transcriptTextSegment: TranscriptionTextSegmentEvent) =
+            TranscriptionStreamEvent(transcriptTextSegment = transcriptTextSegment)
 
         /**
          * Emitted when there is an additional text delta. This is also the first event emitted when
@@ -186,6 +233,14 @@ private constructor(
      * type [T].
      */
     interface Visitor<out T> {
+
+        /**
+         * Emitted when a diarized transcription returns a completed segment with speaker
+         * information. Only emitted when you
+         * [create a transcription](https://platform.openai.com/docs/api-reference/audio/create-transcription)
+         * with `stream` set to `true` and `response_format` set to `diarized_json`.
+         */
+        fun visitTranscriptTextSegment(transcriptTextSegment: TranscriptionTextSegmentEvent): T
 
         /**
          * Emitted when there is an additional text delta. This is also the first event emitted when
@@ -226,6 +281,11 @@ private constructor(
             val type = json.asObject().getOrNull()?.get("type")?.asString()?.getOrNull()
 
             when (type) {
+                "transcript.text.segment" -> {
+                    return tryDeserialize(node, jacksonTypeRef<TranscriptionTextSegmentEvent>())
+                        ?.let { TranscriptionStreamEvent(transcriptTextSegment = it, _json = json) }
+                        ?: TranscriptionStreamEvent(_json = json)
+                }
                 "transcript.text.delta" -> {
                     return tryDeserialize(node, jacksonTypeRef<TranscriptionTextDeltaEvent>())
                         ?.let { TranscriptionStreamEvent(transcriptTextDelta = it, _json = json) }
@@ -251,6 +311,8 @@ private constructor(
             provider: SerializerProvider,
         ) {
             when {
+                value.transcriptTextSegment != null ->
+                    generator.writeObject(value.transcriptTextSegment)
                 value.transcriptTextDelta != null ->
                     generator.writeObject(value.transcriptTextDelta)
                 value.transcriptTextDone != null -> generator.writeObject(value.transcriptTextDone)

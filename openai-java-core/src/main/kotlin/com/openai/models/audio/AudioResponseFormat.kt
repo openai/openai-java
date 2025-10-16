@@ -8,8 +8,10 @@ import com.openai.core.JsonField
 import com.openai.errors.OpenAIInvalidDataException
 
 /**
- * The format of the output, in one of these options: `json`, `text`, `srt`, `verbose_json`, or
- * `vtt`. For `gpt-4o-transcribe` and `gpt-4o-mini-transcribe`, the only supported format is `json`.
+ * The format of the output, in one of these options: `json`, `text`, `srt`, `verbose_json`, `vtt`,
+ * or `diarized_json`. For `gpt-4o-transcribe` and `gpt-4o-mini-transcribe`, the only supported
+ * format is `json`. For `gpt-4o-transcribe-diarize`, the supported formats are `json`, `text`, and
+ * `diarized_json`, with `diarized_json` required to receive speaker annotations.
  */
 class AudioResponseFormat @JsonCreator private constructor(private val value: JsonField<String>) :
     Enum {
@@ -35,6 +37,8 @@ class AudioResponseFormat @JsonCreator private constructor(private val value: Js
 
         @JvmField val VTT = of("vtt")
 
+        @JvmField val DIARIZED_JSON = of("diarized_json")
+
         @JvmStatic fun of(value: String) = AudioResponseFormat(JsonField.of(value))
     }
 
@@ -45,6 +49,7 @@ class AudioResponseFormat @JsonCreator private constructor(private val value: Js
         SRT,
         VERBOSE_JSON,
         VTT,
+        DIARIZED_JSON,
     }
 
     /**
@@ -62,6 +67,7 @@ class AudioResponseFormat @JsonCreator private constructor(private val value: Js
         SRT,
         VERBOSE_JSON,
         VTT,
+        DIARIZED_JSON,
         /**
          * An enum member indicating that [AudioResponseFormat] was instantiated with an unknown
          * value.
@@ -83,6 +89,7 @@ class AudioResponseFormat @JsonCreator private constructor(private val value: Js
             SRT -> Value.SRT
             VERBOSE_JSON -> Value.VERBOSE_JSON
             VTT -> Value.VTT
+            DIARIZED_JSON -> Value.DIARIZED_JSON
             else -> Value._UNKNOWN
         }
 
@@ -101,6 +108,7 @@ class AudioResponseFormat @JsonCreator private constructor(private val value: Js
             SRT -> Known.SRT
             VERBOSE_JSON -> Known.VERBOSE_JSON
             VTT -> Known.VTT
+            DIARIZED_JSON -> Known.DIARIZED_JSON
             else -> throw OpenAIInvalidDataException("Unknown AudioResponseFormat: $value")
         }
 

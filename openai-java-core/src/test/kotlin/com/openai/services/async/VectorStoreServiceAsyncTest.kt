@@ -28,6 +28,7 @@ internal class VectorStoreServiceAsyncTest {
             vectorStoreServiceAsync.create(
                 VectorStoreCreateParams.builder()
                     .chunkingStrategy(AutoFileChunkingStrategyParam.builder().build())
+                    .description("description")
                     .expiresAfter(VectorStoreCreateParams.ExpiresAfter.builder().days(1L).build())
                     .addFileId("string")
                     .metadata(

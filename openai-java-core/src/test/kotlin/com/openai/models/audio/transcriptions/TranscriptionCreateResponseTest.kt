@@ -40,6 +40,7 @@ internal class TranscriptionCreateResponseTest {
         val transcriptionCreateResponse = TranscriptionCreateResponse.ofTranscription(transcription)
 
         assertThat(transcriptionCreateResponse.transcription()).contains(transcription)
+        assertThat(transcriptionCreateResponse.diarized()).isEmpty
         assertThat(transcriptionCreateResponse.verbose()).isEmpty
     }
 
@@ -64,6 +65,85 @@ internal class TranscriptionCreateResponseTest {
                             .totalTokens(0L)
                             .inputTokenDetails(
                                 Transcription.Usage.Tokens.InputTokenDetails.builder()
+                                    .audioTokens(0L)
+                                    .textTokens(0L)
+                                    .build()
+                            )
+                            .build()
+                    )
+                    .build()
+            )
+
+        val roundtrippedTranscriptionCreateResponse =
+            jsonMapper.readValue(
+                jsonMapper.writeValueAsString(transcriptionCreateResponse),
+                jacksonTypeRef<TranscriptionCreateResponse>(),
+            )
+
+        assertThat(roundtrippedTranscriptionCreateResponse).isEqualTo(transcriptionCreateResponse)
+    }
+
+    @Test
+    fun ofDiarized() {
+        val diarized =
+            TranscriptionDiarized.builder()
+                .duration(0.0)
+                .addSegment(
+                    TranscriptionDiarizedSegment.builder()
+                        .id("id")
+                        .end(0.0f)
+                        .speaker("speaker")
+                        .start(0.0f)
+                        .text("text")
+                        .build()
+                )
+                .text("text")
+                .usage(
+                    TranscriptionDiarized.Usage.Tokens.builder()
+                        .inputTokens(0L)
+                        .outputTokens(0L)
+                        .totalTokens(0L)
+                        .inputTokenDetails(
+                            TranscriptionDiarized.Usage.Tokens.InputTokenDetails.builder()
+                                .audioTokens(0L)
+                                .textTokens(0L)
+                                .build()
+                        )
+                        .build()
+                )
+                .build()
+
+        val transcriptionCreateResponse = TranscriptionCreateResponse.ofDiarized(diarized)
+
+        assertThat(transcriptionCreateResponse.transcription()).isEmpty
+        assertThat(transcriptionCreateResponse.diarized()).contains(diarized)
+        assertThat(transcriptionCreateResponse.verbose()).isEmpty
+    }
+
+    @Test
+    fun ofDiarizedRoundtrip() {
+        val jsonMapper = jsonMapper()
+        val transcriptionCreateResponse =
+            TranscriptionCreateResponse.ofDiarized(
+                TranscriptionDiarized.builder()
+                    .duration(0.0)
+                    .addSegment(
+                        TranscriptionDiarizedSegment.builder()
+                            .id("id")
+                            .end(0.0f)
+                            .speaker("speaker")
+                            .start(0.0f)
+                            .text("text")
+                            .build()
+                    )
+                    .text("text")
+                    .usage(
+                        TranscriptionDiarized.Usage.Tokens.builder()
+                            .inputTokens(0L)
+                            .outputTokens(0L)
+                            .totalTokens(0L)
+                            .inputTokenDetails(
+                                TranscriptionDiarized.Usage.Tokens.InputTokenDetails.builder()
                                     .audioTokens(0L)
                                     .textTokens(0L)
                                     .build()
@@ -110,6 +190,7 @@ internal class TranscriptionCreateResponseTest {
         val transcriptionCreateResponse = TranscriptionCreateResponse.ofVerbose(verbose)
 
         assertThat(transcriptionCreateResponse.transcription()).isEmpty
+        assertThat(transcriptionCreateResponse.diarized()).isEmpty
         assertThat(transcriptionCreateResponse.verbose()).contains(verbose)
     }
 

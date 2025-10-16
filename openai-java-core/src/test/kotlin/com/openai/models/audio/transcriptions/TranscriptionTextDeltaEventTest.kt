@@ -22,6 +22,7 @@ internal class TranscriptionTextDeltaEventTest {
                         .logprob(0.0)
                         .build()
                 )
+                .segmentId("segment_id")
                 .build()
 
         assertThat(transcriptionTextDeltaEvent.delta()).isEqualTo("delta")
@@ -33,6 +34,7 @@ internal class TranscriptionTextDeltaEventTest {
                     .logprob(0.0)
                     .build()
             )
+        assertThat(transcriptionTextDeltaEvent.segmentId()).contains("segment_id")
     }
 
     @Test
@@ -48,6 +50,7 @@ internal class TranscriptionTextDeltaEventTest {
                         .logprob(0.0)
                         .build()
                 )
+                .segmentId("segment_id")
                 .build()
 
         val roundtrippedTranscriptionTextDeltaEvent =

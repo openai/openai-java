@@ -52,8 +52,9 @@ private constructor(
     fun file(): InputStream = body.file()
 
     /**
-     * ID of the model to use. The options are `gpt-4o-transcribe`, `gpt-4o-mini-transcribe`, and
-     * `whisper-1` (which is powered by our open source Whisper V2 model).
+     * ID of the model to use. The options are `gpt-4o-transcribe`, `gpt-4o-mini-transcribe`,
+     * `whisper-1` (which is powered by our open source Whisper V2 model), and
+     * `gpt-4o-transcribe-diarize`.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
      *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
@@ -64,7 +65,8 @@ private constructor(
      * Controls how the audio is cut into chunks. When set to `"auto"`, the server first normalizes
      * loudness and then uses voice activity detection (VAD) to choose boundaries. `server_vad`
      * object can be provided to tweak VAD detection parameters manually. If unset, the audio is
-     * transcribed as a single block.
+     * transcribed as a single block. Required when using `gpt-4o-transcribe-diarize` for inputs
+     * longer than 30 seconds.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -75,12 +77,35 @@ private constructor(
      * Additional information to include in the transcription response. `logprobs` will return the
      * log probabilities of the tokens in the response to understand the model's confidence in the
      * transcription. `logprobs` only works with response_format set to `json` and only with the
-     * models `gpt-4o-transcribe` and `gpt-4o-mini-transcribe`.
+     * models `gpt-4o-transcribe` and `gpt-4o-mini-transcribe`. This field is not supported when
+     * using `gpt-4o-transcribe-diarize`.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
      */
     fun include(): Optional<List<TranscriptionInclude>> = body.include()
+
+    /**
+     * Optional list of speaker names that correspond to the audio samples provided in
+     * `known_speaker_references[]`. Each entry should be a short identifier (for example `customer`
+     * or `agent`). Up to 4 speakers are supported.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun knownSpeakerNames(): Optional<List<String>> = body.knownSpeakerNames()
+
+    /**
+     * Optional list of audio samples (as
+     * [data URLs](https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/Data_URLs)) that
+     * contain known speaker references matching `known_speaker_names[]`. Each sample must be
+     * between 2 and 10 seconds, and can use any of the same input audio formats supported by
+     * `file`.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun knownSpeakerReferences(): Optional<List<String>> = body.knownSpeakerReferences()
 
     /**
      * The language of the input audio. Supplying the input language in
@@ -95,7 +120,7 @@ private constructor(
     /**
      * An optional text to guide the model's style or continue a previous audio segment. The
      * [prompt](https://platform.openai.com/docs/guides/speech-to-text#prompting) should match the
-     * audio language.
+     * audio language. This field is not supported when using `gpt-4o-transcribe-diarize`.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -103,9 +128,11 @@ private constructor(
     fun prompt(): Optional<String> = body.prompt()
 
     /**
-     * The format of the output, in one of these options: `json`, `text`, `srt`, `verbose_json`, or
-     * `vtt`. For `gpt-4o-transcribe` and `gpt-4o-mini-transcribe`, the only supported format is
-     * `json`.
+     * The format of the output, in one of these options: `json`, `text`, `srt`, `verbose_json`,
+     * `vtt`, or `diarized_json`. For `gpt-4o-transcribe` and `gpt-4o-mini-transcribe`, the only
+     * supported format is `json`. For `gpt-4o-transcribe-diarize`, the supported formats are
+     * `json`, `text`, and `diarized_json`, with `diarized_json` required to receive speaker
+     * annotations.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -127,7 +154,8 @@ private constructor(
      * The timestamp granularities to populate for this transcription. `response_format` must be set
      * `verbose_json` to use timestamp granularities. Either or both of these options are supported:
      * `word`, or `segment`. Note: There is no additional latency for segment timestamps, but
-     * generating word timestamps incurs additional latency.
+     * generating word timestamps incurs additional latency. This option is not available for
+     * `gpt-4o-transcribe-diarize`.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -163,6 +191,22 @@ private constructor(
      * Unlike [include], this method doesn't throw if the multipart field has an unexpected type.
      */
     fun _include(): MultipartField<List<TranscriptionInclude>> = body._include()
+
+    /**
+     * Returns the raw multipart value of [knownSpeakerNames].
+     *
+     * Unlike [knownSpeakerNames], this method doesn't throw if the multipart field has an
+     * unexpected type.
+     */
+    fun _knownSpeakerNames(): MultipartField<List<String>> = body._knownSpeakerNames()
+
+    /**
+     * Returns the raw multipart value of [knownSpeakerReferences].
+     *
+     * Unlike [knownSpeakerReferences], this method doesn't throw if the multipart field has an
+     * unexpected type.
+     */
+    fun _knownSpeakerReferences(): MultipartField<List<String>> = body._knownSpeakerReferences()
 
     /**
      * Returns the raw multipart value of [language].
@@ -250,7 +294,7 @@ private constructor(
          * - [model]
          * - [chunkingStrategy]
          * - [include]
-         * - [language]
+         * - [knownSpeakerNames]
          * - etc.
          */
         fun body(body: Body) = apply { this.body = body.toBuilder() }
@@ -284,7 +328,8 @@ private constructor(
 
         /**
          * ID of the model to use. The options are `gpt-4o-transcribe`, `gpt-4o-mini-transcribe`,
-         * and `whisper-1` (which is powered by our open source Whisper V2 model).
+         * `whisper-1` (which is powered by our open source Whisper V2 model), and
+         * `gpt-4o-transcribe-diarize`.
          */
         fun model(model: AudioModel) = apply { body.model(model) }
 
@@ -309,7 +354,8 @@ private constructor(
          * Controls how the audio is cut into chunks. When set to `"auto"`, the server first
          * normalizes loudness and then uses voice activity detection (VAD) to choose boundaries.
          * `server_vad` object can be provided to tweak VAD detection parameters manually. If unset,
-         * the audio is transcribed as a single block.
+         * the audio is transcribed as a single block. Required when using
+         * `gpt-4o-transcribe-diarize` for inputs longer than 30 seconds.
          */
         fun chunkingStrategy(chunkingStrategy: ChunkingStrategy?) = apply {
             body.chunkingStrategy(chunkingStrategy)
@@ -342,7 +388,8 @@ private constructor(
          * Additional information to include in the transcription response. `logprobs` will return
          * the log probabilities of the tokens in the response to understand the model's confidence
          * in the transcription. `logprobs` only works with response_format set to `json` and only
-         * with the models `gpt-4o-transcribe` and `gpt-4o-mini-transcribe`.
+         * with the models `gpt-4o-transcribe` and `gpt-4o-mini-transcribe`. This field is not
+         * supported when using `gpt-4o-transcribe-diarize`.
          */
         fun include(include: List<TranscriptionInclude>) = apply { body.include(include) }
 
@@ -365,6 +412,66 @@ private constructor(
         fun addInclude(include: TranscriptionInclude) = apply { body.addInclude(include) }
 
         /**
+         * Optional list of speaker names that correspond to the audio samples provided in
+         * `known_speaker_references[]`. Each entry should be a short identifier (for example
+         * `customer` or `agent`). Up to 4 speakers are supported.
+         */
+        fun knownSpeakerNames(knownSpeakerNames: List<String>) = apply {
+            body.knownSpeakerNames(knownSpeakerNames)
+        }
+
+        /**
+         * Sets [Builder.knownSpeakerNames] to an arbitrary multipart value.
+         *
+         * You should usually call [Builder.knownSpeakerNames] with a well-typed `List<String>`
+         * value instead. This method is primarily for setting the field to an undocumented or not
+         * yet supported value.
+         */
+        fun knownSpeakerNames(knownSpeakerNames: MultipartField<List<String>>) = apply {
+            body.knownSpeakerNames(knownSpeakerNames)
+        }
+
+        /**
+         * Adds a single [String] to [knownSpeakerNames].
+         *
+         * @throws IllegalStateException if the field was previously set to a non-list.
+         */
+        fun addKnownSpeakerName(knownSpeakerName: String) = apply {
+            body.addKnownSpeakerName(knownSpeakerName)
+        }
+
+        /**
+         * Optional list of audio samples (as
+         * [data URLs](https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/Data_URLs))
+         * that contain known speaker references matching `known_speaker_names[]`. Each sample must
+         * be between 2 and 10 seconds, and can use any of the same input audio formats supported by
+         * `file`.
+         */
+        fun knownSpeakerReferences(knownSpeakerReferences: List<String>) = apply {
+            body.knownSpeakerReferences(knownSpeakerReferences)
+        }
+
+        /**
+         * Sets [Builder.knownSpeakerReferences] to an arbitrary multipart value.
+         *
+         * You should usually call [Builder.knownSpeakerReferences] with a well-typed `List<String>`
+         * value instead. This method is primarily for setting the field to an undocumented or not
+         * yet supported value.
+         */
+        fun knownSpeakerReferences(knownSpeakerReferences: MultipartField<List<String>>) = apply {
+            body.knownSpeakerReferences(knownSpeakerReferences)
+        }
+
+        /**
+         * Adds a single [String] to [knownSpeakerReferences].
+         *
+         * @throws IllegalStateException if the field was previously set to a non-list.
+         */
+        fun addKnownSpeakerReference(knownSpeakerReference: String) = apply {
+            body.addKnownSpeakerReference(knownSpeakerReference)
+        }
+
+        /**
          * The language of the input audio. Supplying the input language in
          * [ISO-639-1](https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes) (e.g. `en`) format
          * will improve accuracy and latency.
@@ -382,7 +489,7 @@ private constructor(
         /**
          * An optional text to guide the model's style or continue a previous audio segment. The
          * [prompt](https://platform.openai.com/docs/guides/speech-to-text#prompting) should match
-         * the audio language.
+         * the audio language. This field is not supported when using `gpt-4o-transcribe-diarize`.
          */
         fun prompt(prompt: String) = apply { body.prompt(prompt) }
 
@@ -396,8 +503,10 @@ private constructor(
 
         /**
          * The format of the output, in one of these options: `json`, `text`, `srt`, `verbose_json`,
-         * or `vtt`. For `gpt-4o-transcribe` and `gpt-4o-mini-transcribe`, the only supported format
-         * is `json`.
+         * `vtt`, or `diarized_json`. For `gpt-4o-transcribe` and `gpt-4o-mini-transcribe`, the only
+         * supported format is `json`. For `gpt-4o-transcribe-diarize`, the supported formats are
+         * `json`, `text`, and `diarized_json`, with `diarized_json` required to receive speaker
+         * annotations.
          */
         fun responseFormat(responseFormat: AudioResponseFormat) = apply {
             body.responseFormat(responseFormat)
@@ -438,7 +547,8 @@ private constructor(
          * The timestamp granularities to populate for this transcription. `response_format` must be
          * set `verbose_json` to use timestamp granularities. Either or both of these options are
          * supported: `word`, or `segment`. Note: There is no additional latency for segment
-         * timestamps, but generating word timestamps incurs additional latency.
+         * timestamps, but generating word timestamps incurs additional latency. This option is not
+         * available for `gpt-4o-transcribe-diarize`.
          */
         fun timestampGranularities(timestampGranularities: List<TimestampGranularity>) = apply {
             body.timestampGranularities(timestampGranularities)
@@ -608,6 +718,8 @@ private constructor(
                 "model" to _model(),
                 "chunking_strategy" to _chunkingStrategy(),
                 "include" to _include(),
+                "known_speaker_names" to _knownSpeakerNames(),
+                "known_speaker_references" to _knownSpeakerReferences(),
                 "language" to _language(),
                 "prompt" to _prompt(),
                 "response_format" to _responseFormat(),
@@ -626,6 +738,8 @@ private constructor(
         private val model: MultipartField<AudioModel>,
         private val chunkingStrategy: MultipartField<ChunkingStrategy>,
         private val include: MultipartField<List<TranscriptionInclude>>,
+        private val knownSpeakerNames: MultipartField<List<String>>,
+        private val knownSpeakerReferences: MultipartField<List<String>>,
         private val language: MultipartField<String>,
         private val prompt: MultipartField<String>,
         private val responseFormat: MultipartField<AudioResponseFormat>,
@@ -645,7 +759,8 @@ private constructor(
 
         /**
          * ID of the model to use. The options are `gpt-4o-transcribe`, `gpt-4o-mini-transcribe`,
-         * and `whisper-1` (which is powered by our open source Whisper V2 model).
+         * `whisper-1` (which is powered by our open source Whisper V2 model), and
+         * `gpt-4o-transcribe-diarize`.
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
          *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
@@ -656,7 +771,8 @@ private constructor(
          * Controls how the audio is cut into chunks. When set to `"auto"`, the server first
          * normalizes loudness and then uses voice activity detection (VAD) to choose boundaries.
          * `server_vad` object can be provided to tweak VAD detection parameters manually. If unset,
-         * the audio is transcribed as a single block.
+         * the audio is transcribed as a single block. Required when using
+         * `gpt-4o-transcribe-diarize` for inputs longer than 30 seconds.
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
@@ -668,12 +784,37 @@ private constructor(
          * Additional information to include in the transcription response. `logprobs` will return
          * the log probabilities of the tokens in the response to understand the model's confidence
          * in the transcription. `logprobs` only works with response_format set to `json` and only
-         * with the models `gpt-4o-transcribe` and `gpt-4o-mini-transcribe`.
+         * with the models `gpt-4o-transcribe` and `gpt-4o-mini-transcribe`. This field is not
+         * supported when using `gpt-4o-transcribe-diarize`.
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
          */
         fun include(): Optional<List<TranscriptionInclude>> = include.value.getOptional("include")
+
+        /**
+         * Optional list of speaker names that correspond to the audio samples provided in
+         * `known_speaker_references[]`. Each entry should be a short identifier (for example
+         * `customer` or `agent`). Up to 4 speakers are supported.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun knownSpeakerNames(): Optional<List<String>> =
+            knownSpeakerNames.value.getOptional("known_speaker_names")
+
+        /**
+         * Optional list of audio samples (as
+         * [data URLs](https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/Data_URLs))
+         * that contain known speaker references matching `known_speaker_names[]`. Each sample must
+         * be between 2 and 10 seconds, and can use any of the same input audio formats supported by
+         * `file`.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun knownSpeakerReferences(): Optional<List<String>> =
+            knownSpeakerReferences.value.getOptional("known_speaker_references")
 
         /**
          * The language of the input audio. Supplying the input language in
@@ -688,7 +829,7 @@ private constructor(
         /**
          * An optional text to guide the model's style or continue a previous audio segment. The
          * [prompt](https://platform.openai.com/docs/guides/speech-to-text#prompting) should match
-         * the audio language.
+         * the audio language. This field is not supported when using `gpt-4o-transcribe-diarize`.
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
@@ -697,8 +838,10 @@ private constructor(
 
         /**
          * The format of the output, in one of these options: `json`, `text`, `srt`, `verbose_json`,
-         * or `vtt`. For `gpt-4o-transcribe` and `gpt-4o-mini-transcribe`, the only supported format
-         * is `json`.
+         * `vtt`, or `diarized_json`. For `gpt-4o-transcribe` and `gpt-4o-mini-transcribe`, the only
+         * supported format is `json`. For `gpt-4o-transcribe-diarize`, the supported formats are
+         * `json`, `text`, and `diarized_json`, with `diarized_json` required to receive speaker
+         * annotations.
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
@@ -722,7 +865,8 @@ private constructor(
          * The timestamp granularities to populate for this transcription. `response_format` must be
          * set `verbose_json` to use timestamp granularities. Either or both of these options are
          * supported: `word`, or `segment`. Note: There is no additional latency for segment
-         * timestamps, but generating word timestamps incurs additional latency.
+         * timestamps, but generating word timestamps incurs additional latency. This option is not
+         * available for `gpt-4o-transcribe-diarize`.
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
@@ -763,6 +907,26 @@ private constructor(
         @JsonProperty("include")
         @ExcludeMissing
         fun _include(): MultipartField<List<TranscriptionInclude>> = include
+
+        /**
+         * Returns the raw multipart value of [knownSpeakerNames].
+         *
+         * Unlike [knownSpeakerNames], this method doesn't throw if the multipart field has an
+         * unexpected type.
+         */
+        @JsonProperty("known_speaker_names")
+        @ExcludeMissing
+        fun _knownSpeakerNames(): MultipartField<List<String>> = knownSpeakerNames
+
+        /**
+         * Returns the raw multipart value of [knownSpeakerReferences].
+         *
+         * Unlike [knownSpeakerReferences], this method doesn't throw if the multipart field has an
+         * unexpected type.
+         */
+        @JsonProperty("known_speaker_references")
+        @ExcludeMissing
+        fun _knownSpeakerReferences(): MultipartField<List<String>> = knownSpeakerReferences
 
         /**
          * Returns the raw multipart value of [language].
@@ -843,6 +1007,8 @@ private constructor(
             private var model: MultipartField<AudioModel>? = null
             private var chunkingStrategy: MultipartField<ChunkingStrategy> = MultipartField.of(null)
             private var include: MultipartField<MutableList<TranscriptionInclude>>? = null
+            private var knownSpeakerNames: MultipartField<MutableList<String>>? = null
+            private var knownSpeakerReferences: MultipartField<MutableList<String>>? = null
             private var language: MultipartField<String> = MultipartField.of(null)
             private var prompt: MultipartField<String> = MultipartField.of(null)
             private var responseFormat: MultipartField<AudioResponseFormat> =
@@ -858,6 +1024,8 @@ private constructor(
                 model = body.model
                 chunkingStrategy = body.chunkingStrategy
                 include = body.include.map { it.toMutableList() }
+                knownSpeakerNames = body.knownSpeakerNames.map { it.toMutableList() }
+                knownSpeakerReferences = body.knownSpeakerReferences.map { it.toMutableList() }
                 language = body.language
                 prompt = body.prompt
                 responseFormat = body.responseFormat
@@ -901,8 +1069,8 @@ private constructor(
 
             /**
              * ID of the model to use. The options are `gpt-4o-transcribe`,
-             * `gpt-4o-mini-transcribe`, and `whisper-1` (which is powered by our open source
-             * Whisper V2 model).
+             * `gpt-4o-mini-transcribe`, `whisper-1` (which is powered by our open source Whisper V2
+             * model), and `gpt-4o-transcribe-diarize`.
              */
             fun model(model: AudioModel) = model(MultipartField.of(model))
 
@@ -928,7 +1096,8 @@ private constructor(
              * Controls how the audio is cut into chunks. When set to `"auto"`, the server first
              * normalizes loudness and then uses voice activity detection (VAD) to choose
              * boundaries. `server_vad` object can be provided to tweak VAD detection parameters
-             * manually. If unset, the audio is transcribed as a single block.
+             * manually. If unset, the audio is transcribed as a single block. Required when using
+             * `gpt-4o-transcribe-diarize` for inputs longer than 30 seconds.
              */
             fun chunkingStrategy(chunkingStrategy: ChunkingStrategy?) =
                 chunkingStrategy(MultipartField.of(chunkingStrategy))
@@ -964,6 +1133,7 @@ private constructor(
              * return the log probabilities of the tokens in the response to understand the model's
              * confidence in the transcription. `logprobs` only works with response_format set to
              * `json` and only with the models `gpt-4o-transcribe` and `gpt-4o-mini-transcribe`.
+             * This field is not supported when using `gpt-4o-transcribe-diarize`.
              */
             fun include(include: List<TranscriptionInclude>) = include(MultipartField.of(include))
 
@@ -991,6 +1161,71 @@ private constructor(
             }
 
             /**
+             * Optional list of speaker names that correspond to the audio samples provided in
+             * `known_speaker_references[]`. Each entry should be a short identifier (for example
+             * `customer` or `agent`). Up to 4 speakers are supported.
+             */
+            fun knownSpeakerNames(knownSpeakerNames: List<String>) =
+                knownSpeakerNames(MultipartField.of(knownSpeakerNames))
+
+            /**
+             * Sets [Builder.knownSpeakerNames] to an arbitrary multipart value.
+             *
+             * You should usually call [Builder.knownSpeakerNames] with a well-typed `List<String>`
+             * value instead. This method is primarily for setting the field to an undocumented or
+             * not yet supported value.
+             */
+            fun knownSpeakerNames(knownSpeakerNames: MultipartField<List<String>>) = apply {
+                this.knownSpeakerNames = knownSpeakerNames.map { it.toMutableList() }
+            }
+
+            /**
+             * Adds a single [String] to [knownSpeakerNames].
+             *
+             * @throws IllegalStateException if the field was previously set to a non-list.
+             */
+            fun addKnownSpeakerName(knownSpeakerName: String) = apply {
+                knownSpeakerNames =
+                    (knownSpeakerNames ?: MultipartField.of(mutableListOf())).also {
+                        checkKnown("knownSpeakerNames", it).add(knownSpeakerName)
+                    }
+            }
+
+            /**
+             * Optional list of audio samples (as
+             * [data URLs](https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/Data_URLs))
+             * that contain known speaker references matching `known_speaker_names[]`. Each sample
+             * must be between 2 and 10 seconds, and can use any of the same input audio formats
+             * supported by `file`.
+             */
+            fun knownSpeakerReferences(knownSpeakerReferences: List<String>) =
+                knownSpeakerReferences(MultipartField.of(knownSpeakerReferences))
+
+            /**
+             * Sets [Builder.knownSpeakerReferences] to an arbitrary multipart value.
+             *
+             * You should usually call [Builder.knownSpeakerReferences] with a well-typed
+             * `List<String>` value instead. This method is primarily for setting the field to an
+             * undocumented or not yet supported value.
+             */
+            fun knownSpeakerReferences(knownSpeakerReferences: MultipartField<List<String>>) =
+                apply {
+                    this.knownSpeakerReferences = knownSpeakerReferences.map { it.toMutableList() }
+                }
+
+            /**
+             * Adds a single [String] to [knownSpeakerReferences].
+             *
+             * @throws IllegalStateException if the field was previously set to a non-list.
+             */
+            fun addKnownSpeakerReference(knownSpeakerReference: String) = apply {
+                knownSpeakerReferences =
+                    (knownSpeakerReferences ?: MultipartField.of(mutableListOf())).also {
+                        checkKnown("knownSpeakerReferences", it).add(knownSpeakerReference)
+                    }
+            }
+
+            /**
              * The language of the input audio. Supplying the input language in
              * [ISO-639-1](https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes) (e.g. `en`) format
              * will improve accuracy and latency.
@@ -1009,7 +1244,8 @@ private constructor(
             /**
              * An optional text to guide the model's style or continue a previous audio segment. The
              * [prompt](https://platform.openai.com/docs/guides/speech-to-text#prompting) should
-             * match the audio language.
+             * match the audio language. This field is not supported when using
+             * `gpt-4o-transcribe-diarize`.
              */
             fun prompt(prompt: String) = prompt(MultipartField.of(prompt))
 
@@ -1024,8 +1260,10 @@ private constructor(
 
             /**
              * The format of the output, in one of these options: `json`, `text`, `srt`,
-             * `verbose_json`, or `vtt`. For `gpt-4o-transcribe` and `gpt-4o-mini-transcribe`, the
-             * only supported format is `json`.
+             * `verbose_json`, `vtt`, or `diarized_json`. For `gpt-4o-transcribe` and
+             * `gpt-4o-mini-transcribe`, the only supported format is `json`. For
+             * `gpt-4o-transcribe-diarize`, the supported formats are `json`, `text`, and
+             * `diarized_json`, with `diarized_json` required to receive speaker annotations.
              */
             fun responseFormat(responseFormat: AudioResponseFormat) =
                 responseFormat(MultipartField.of(responseFormat))
@@ -1065,7 +1303,8 @@ private constructor(
              * The timestamp granularities to populate for this transcription. `response_format`
              * must be set `verbose_json` to use timestamp granularities. Either or both of these
              * options are supported: `word`, or `segment`. Note: There is no additional latency for
-             * segment timestamps, but generating word timestamps incurs additional latency.
+             * segment timestamps, but generating word timestamps incurs additional latency. This
+             * option is not available for `gpt-4o-transcribe-diarize`.
              */
             fun timestampGranularities(timestampGranularities: List<TimestampGranularity>) =
                 timestampGranularities(MultipartField.of(timestampGranularities))
@@ -1133,6 +1372,8 @@ private constructor(
                     checkRequired("model", model),
                     chunkingStrategy,
                     (include ?: MultipartField.of(null)).map { it.toImmutable() },
+                    (knownSpeakerNames ?: MultipartField.of(null)).map { it.toImmutable() },
+                    (knownSpeakerReferences ?: MultipartField.of(null)).map { it.toImmutable() },
                     language,
                     prompt,
                     responseFormat,
@@ -1153,6 +1394,8 @@ private constructor(
             model().validate()
             chunkingStrategy().ifPresent { it.validate() }
             include().ifPresent { it.forEach { it.validate() } }
+            knownSpeakerNames()
+            knownSpeakerReferences()
             language()
             prompt()
             responseFormat().ifPresent { it.validate() }
@@ -1179,6 +1422,8 @@ private constructor(
                 model == other.model &&
                 chunkingStrategy == other.chunkingStrategy &&
                 include == other.include &&
+                knownSpeakerNames == other.knownSpeakerNames &&
+                knownSpeakerReferences == other.knownSpeakerReferences &&
                 language == other.language &&
                 prompt == other.prompt &&
                 responseFormat == other.responseFormat &&
@@ -1193,6 +1438,8 @@ private constructor(
                 model,
                 chunkingStrategy,
                 include,
+                knownSpeakerNames,
+                knownSpeakerReferences,
                 language,
                 prompt,
                 responseFormat,
@@ -1205,14 +1452,15 @@ private constructor(
         override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "Body{file=$file, model=$model, chunkingStrategy=$chunkingStrategy, include=$include, language=$language, prompt=$prompt, responseFormat=$responseFormat, temperature=$temperature, timestampGranularities=$timestampGranularities, additionalProperties=$additionalProperties}"
+            "Body{file=$file, model=$model, chunkingStrategy=$chunkingStrategy, include=$include, knownSpeakerNames=$knownSpeakerNames, knownSpeakerReferences=$knownSpeakerReferences, language=$language, prompt=$prompt, responseFormat=$responseFormat, temperature=$temperature, timestampGranularities=$timestampGranularities, additionalProperties=$additionalProperties}"
     }
 
     /**
      * Controls how the audio is cut into chunks. When set to `"auto"`, the server first normalizes
      * loudness and then uses voice activity detection (VAD) to choose boundaries. `server_vad`
      * object can be provided to tweak VAD detection parameters manually. If unset, the audio is
-     * transcribed as a single block.
+     * transcribed as a single block. Required when using `gpt-4o-transcribe-diarize` for inputs
+     * longer than 30 seconds.
      */
     @JsonSerialize(using = ChunkingStrategy.Serializer::class)
     class ChunkingStrategy
