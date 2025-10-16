@@ -1,5 +1,13 @@
 # Changelog
 
+## 4.4.0 (2025-10-16)
+
+Full Changelog: [v4.3.0...v4.4.0](https://github.com/openai/openai-java/compare/v4.3.0...v4.4.0)
+
+### Features
+
+* **api:** Add support for gpt-4o-transcribe-diarize on audio/transcriptions endpoint ([dc2c297](https://github.com/openai/openai-java/commit/dc2c297526f2ebe4003642dfe8b1c2499d0a4b56))
+
 ## 4.3.0 (2025-10-10)
 
 Full Changelog: [v4.2.0...v4.3.0](https://github.com/openai/openai-java/compare/v4.2.0...v4.3.0)
