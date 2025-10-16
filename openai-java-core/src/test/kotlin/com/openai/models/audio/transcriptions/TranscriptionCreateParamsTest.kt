@@ -18,6 +18,8 @@ internal class TranscriptionCreateParamsTest {
             .model(AudioModel.WHISPER_1)
             .chunkingStrategyAuto()
             .addInclude(TranscriptionInclude.LOGPROBS)
+            .addKnownSpeakerName("string")
+            .addKnownSpeakerReference("string")
             .language("language")
             .prompt("prompt")
             .responseFormat(AudioResponseFormat.JSON)
@@ -34,6 +36,8 @@ internal class TranscriptionCreateParamsTest {
                 .model(AudioModel.WHISPER_1)
                 .chunkingStrategyAuto()
                 .addInclude(TranscriptionInclude.LOGPROBS)
+                .addKnownSpeakerName("string")
+                .addKnownSpeakerReference("string")
                 .language("language")
                 .prompt("prompt")
                 .responseFormat(AudioResponseFormat.JSON)
@@ -58,6 +62,8 @@ internal class TranscriptionCreateParamsTest {
                         "chunking_strategy" to
                             MultipartField.of(TranscriptionCreateParams.ChunkingStrategy.ofAuto()),
                         "include" to MultipartField.of(listOf(TranscriptionInclude.LOGPROBS)),
+                        "known_speaker_names" to MultipartField.of(listOf("string")),
+                        "known_speaker_references" to MultipartField.of(listOf("string")),
                         "language" to MultipartField.of("language"),
                         "prompt" to MultipartField.of("prompt"),
                         "response_format" to MultipartField.of(AudioResponseFormat.JSON),

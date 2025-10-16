@@ -13,6 +13,7 @@ internal class VectorStoreCreateParamsTest {
     fun create() {
         VectorStoreCreateParams.builder()
             .chunkingStrategy(AutoFileChunkingStrategyParam.builder().build())
+            .description("description")
             .expiresAfter(VectorStoreCreateParams.ExpiresAfter.builder().days(1L).build())
             .addFileId("string")
             .metadata(
@@ -29,6 +30,7 @@ internal class VectorStoreCreateParamsTest {
         val params =
             VectorStoreCreateParams.builder()
                 .chunkingStrategy(AutoFileChunkingStrategyParam.builder().build())
+                .description("description")
                 .expiresAfter(VectorStoreCreateParams.ExpiresAfter.builder().days(1L).build())
                 .addFileId("string")
                 .metadata(
@@ -45,6 +47,7 @@ internal class VectorStoreCreateParamsTest {
             .contains(
                 FileChunkingStrategyParam.ofAuto(AutoFileChunkingStrategyParam.builder().build())
             )
+        assertThat(body.description()).contains("description")
         assertThat(body.expiresAfter())
             .contains(VectorStoreCreateParams.ExpiresAfter.builder().days(1L).build())
         assertThat(body.fileIds().getOrNull()).containsExactly("string")
