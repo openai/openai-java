@@ -406,18 +406,18 @@ private constructor(
         /**
          * The type of the pending safety check.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
          */
-        fun code(): String = code.getRequired("code")
+        fun code(): Optional<String> = code.getOptional("code")
 
         /**
          * Details about the pending safety check.
          *
-         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
          */
-        fun message(): String = message.getRequired("message")
+        fun message(): Optional<String> = message.getOptional("message")
 
         /**
          * Returns the raw JSON value of [id].
@@ -460,8 +460,6 @@ private constructor(
              * The following fields are required:
              * ```java
              * .id()
-             * .code()
-             * .message()
              * ```
              */
             @JvmStatic fun builder() = Builder()
@@ -471,8 +469,8 @@ private constructor(
         class Builder internal constructor() {
 
             private var id: JsonField<String>? = null
-            private var code: JsonField<String>? = null
-            private var message: JsonField<String>? = null
+            private var code: JsonField<String> = JsonMissing.of()
+            private var message: JsonField<String> = JsonMissing.of()
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
             @JvmSynthetic
@@ -496,7 +494,10 @@ private constructor(
             fun id(id: JsonField<String>) = apply { this.id = id }
 
             /** The type of the pending safety check. */
-            fun code(code: String) = code(JsonField.of(code))
+            fun code(code: String?) = code(JsonField.ofNullable(code))
+
+            /** Alias for calling [Builder.code] with `code.orElse(null)`. */
+            fun code(code: Optional<String>) = code(code.getOrNull())
 
             /**
              * Sets [Builder.code] to an arbitrary JSON value.
@@ -508,7 +509,10 @@ private constructor(
             fun code(code: JsonField<String>) = apply { this.code = code }
 
             /** Details about the pending safety check. */
-            fun message(message: String) = message(JsonField.of(message))
+            fun message(message: String?) = message(JsonField.ofNullable(message))
+
+            /** Alias for calling [Builder.message] with `message.orElse(null)`. */
+            fun message(message: Optional<String>) = message(message.getOrNull())
 
             /**
              * Sets [Builder.message] to an arbitrary JSON value.
@@ -546,8 +550,6 @@ private constructor(
              * The following fields are required:
              * ```java
              * .id()
-             * .code()
-             * .message()
              * ```
              *
              * @throws IllegalStateException if any required field is unset.
@@ -555,8 +557,8 @@ private constructor(
             fun build(): AcknowledgedSafetyCheck =
                 AcknowledgedSafetyCheck(
                     checkRequired("id", id),
-                    checkRequired("code", code),
-                    checkRequired("message", message),
+                    code,
+                    message,
                     additionalProperties.toMutableMap(),
                 )
         }
