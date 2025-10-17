@@ -85,13 +85,8 @@ private constructor(
     /** A tool that generates images using a model like `gpt-image-1`. */
     fun imageGeneration(): Optional<ImageGeneration> = Optional.ofNullable(imageGeneration)
 
-    /** A tool that allows the model to execute shell commands in a local environment. */
     fun localShell(): Optional<JsonValue> = Optional.ofNullable(localShell)
 
-    /**
-     * A custom tool that processes input using a specified format. Learn more about
-     * [custom tools](https://platform.openai.com/docs/guides/function-calling#custom-tools).
-     */
     fun custom(): Optional<CustomTool> = Optional.ofNullable(custom)
 
     /**
@@ -156,13 +151,8 @@ private constructor(
     /** A tool that generates images using a model like `gpt-image-1`. */
     fun asImageGeneration(): ImageGeneration = imageGeneration.getOrThrow("imageGeneration")
 
-    /** A tool that allows the model to execute shell commands in a local environment. */
     fun asLocalShell(): JsonValue = localShell.getOrThrow("localShell")
 
-    /**
-     * A custom tool that processes input using a specified format. Learn more about
-     * [custom tools](https://platform.openai.com/docs/guides/function-calling#custom-tools).
-     */
     fun asCustom(): CustomTool = custom.getOrThrow("custom")
 
     /**
@@ -388,14 +378,9 @@ private constructor(
         fun ofImageGeneration(imageGeneration: ImageGeneration) =
             Tool(imageGeneration = imageGeneration)
 
-        /** A tool that allows the model to execute shell commands in a local environment. */
         @JvmStatic
         fun ofLocalShell() = Tool(localShell = JsonValue.from(mapOf("type" to "local_shell")))
 
-        /**
-         * A custom tool that processes input using a specified format. Learn more about
-         * [custom tools](https://platform.openai.com/docs/guides/function-calling#custom-tools).
-         */
         @JvmStatic fun ofCustom(custom: CustomTool) = Tool(custom = custom)
 
         /**
@@ -447,13 +432,8 @@ private constructor(
         /** A tool that generates images using a model like `gpt-image-1`. */
         fun visitImageGeneration(imageGeneration: ImageGeneration): T
 
-        /** A tool that allows the model to execute shell commands in a local environment. */
         fun visitLocalShell(localShell: JsonValue): T
 
-        /**
-         * A custom tool that processes input using a specified format. Learn more about
-         * [custom tools](https://platform.openai.com/docs/guides/function-calling#custom-tools).
-         */
         fun visitCustom(custom: CustomTool): T
 
         /**
@@ -3616,9 +3596,7 @@ private constructor(
         fun background(): Optional<Background> = background.getOptional("background")
 
         /**
-         * Control how much effort the model will exert to match the style and features, especially
-         * facial features, of input images. This parameter is only supported for `gpt-image-1`.
-         * Unsupported for `gpt-image-1-mini`. Supports `high` and `low`. Defaults to `low`.
+         *             Control how much effort the model will exert to match the style and features, especially facial features, of input images. This parameter is only supported for `gpt-image-1`. Unsupported for `gpt-image-1-mini`. Supports `high` and `low`. Defaults to `low`.
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
@@ -3866,10 +3844,7 @@ private constructor(
             }
 
             /**
-             * Control how much effort the model will exert to match the style and features,
-             * especially facial features, of input images. This parameter is only supported for
-             * `gpt-image-1`. Unsupported for `gpt-image-1-mini`. Supports `high` and `low`.
-             * Defaults to `low`.
+             *             Control how much effort the model will exert to match the style and features, especially facial features, of input images. This parameter is only supported for `gpt-image-1`. Unsupported for `gpt-image-1-mini`. Supports `high` and `low`. Defaults to `low`.
              */
             fun inputFidelity(inputFidelity: InputFidelity?) =
                 inputFidelity(JsonField.ofNullable(inputFidelity))
@@ -4247,9 +4222,7 @@ private constructor(
         }
 
         /**
-         * Control how much effort the model will exert to match the style and features, especially
-         * facial features, of input images. This parameter is only supported for `gpt-image-1`.
-         * Unsupported for `gpt-image-1-mini`. Supports `high` and `low`. Defaults to `low`.
+         *             Control how much effort the model will exert to match the style and features, especially facial features, of input images. This parameter is only supported for `gpt-image-1`. Unsupported for `gpt-image-1-mini`. Supports `high` and `low`. Defaults to `low`.
          */
         class InputFidelity @JsonCreator private constructor(private val value: JsonField<String>) :
             Enum {

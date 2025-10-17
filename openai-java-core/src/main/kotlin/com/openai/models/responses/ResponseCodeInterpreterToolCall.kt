@@ -612,7 +612,7 @@ private constructor(
             fun logs(): String = logs.getRequired("logs")
 
             /**
-             * The type of the output. Always 'logs'.
+             * The type of the output. Always `logs`.
              *
              * Expected to always return the following:
              * ```java
@@ -804,7 +804,7 @@ private constructor(
             ) : this(type, url, mutableMapOf())
 
             /**
-             * The type of the output. Always 'image'.
+             * The type of the output. Always `image`.
              *
              * Expected to always return the following:
              * ```java

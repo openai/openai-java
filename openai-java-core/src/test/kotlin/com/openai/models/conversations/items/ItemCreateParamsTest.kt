@@ -15,7 +15,7 @@ internal class ItemCreateParamsTest {
     fun create() {
         ItemCreateParams.builder()
             .conversationId("conv_123")
-            .addInclude(ResponseIncludable.CODE_INTERPRETER_CALL_OUTPUTS)
+            .addInclude(ResponseIncludable.FILE_SEARCH_CALL_RESULTS)
             .addItem(
                 EasyInputMessage.builder()
                     .content("string")
@@ -50,7 +50,7 @@ internal class ItemCreateParamsTest {
         val params =
             ItemCreateParams.builder()
                 .conversationId("conv_123")
-                .addInclude(ResponseIncludable.CODE_INTERPRETER_CALL_OUTPUTS)
+                .addInclude(ResponseIncludable.FILE_SEARCH_CALL_RESULTS)
                 .addItem(
                     EasyInputMessage.builder()
                         .content("string")
@@ -63,9 +63,7 @@ internal class ItemCreateParamsTest {
         val queryParams = params._queryParams()
 
         assertThat(queryParams)
-            .isEqualTo(
-                QueryParams.builder().put("include[]", "code_interpreter_call.outputs").build()
-            )
+            .isEqualTo(QueryParams.builder().put("include[]", "file_search_call.results").build())
     }
 
     @Test
@@ -92,7 +90,7 @@ internal class ItemCreateParamsTest {
         val params =
             ItemCreateParams.builder()
                 .conversationId("conv_123")
-                .addInclude(ResponseIncludable.CODE_INTERPRETER_CALL_OUTPUTS)
+                .addInclude(ResponseIncludable.FILE_SEARCH_CALL_RESULTS)
                 .addItem(
                     EasyInputMessage.builder()
                         .content("string")
