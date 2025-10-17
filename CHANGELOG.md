@@ -1,5 +1,13 @@
 # Changelog
 
+## 4.5.0 (2025-10-17)
+
+Full Changelog: [v4.4.0...v4.5.0](https://github.com/openai/openai-java/compare/v4.4.0...v4.5.0)
+
+### Features
+
+* **api:** api update ([09dd95f](https://github.com/openai/openai-java/commit/09dd95f948bca9e26597a9971d7799a1defb6a28))
+
 ## 4.4.0 (2025-10-16)
 
 Full Changelog: [v4.3.0...v4.4.0](https://github.com/openai/openai-java/compare/v4.3.0...v4.4.0)
