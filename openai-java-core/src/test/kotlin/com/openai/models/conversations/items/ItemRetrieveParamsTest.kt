@@ -14,7 +14,7 @@ internal class ItemRetrieveParamsTest {
         ItemRetrieveParams.builder()
             .conversationId("conv_123")
             .itemId("msg_abc")
-            .addInclude(ResponseIncludable.CODE_INTERPRETER_CALL_OUTPUTS)
+            .addInclude(ResponseIncludable.FILE_SEARCH_CALL_RESULTS)
             .build()
     }
 
@@ -35,15 +35,13 @@ internal class ItemRetrieveParamsTest {
             ItemRetrieveParams.builder()
                 .conversationId("conv_123")
                 .itemId("msg_abc")
-                .addInclude(ResponseIncludable.CODE_INTERPRETER_CALL_OUTPUTS)
+                .addInclude(ResponseIncludable.FILE_SEARCH_CALL_RESULTS)
                 .build()
 
         val queryParams = params._queryParams()
 
         assertThat(queryParams)
-            .isEqualTo(
-                QueryParams.builder().put("include[]", "code_interpreter_call.outputs").build()
-            )
+            .isEqualTo(QueryParams.builder().put("include[]", "file_search_call.results").build())
     }
 
     @Test
