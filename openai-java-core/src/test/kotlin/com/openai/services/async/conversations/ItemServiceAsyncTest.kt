@@ -28,7 +28,7 @@ internal class ItemServiceAsyncTest {
             itemServiceAsync.create(
                 ItemCreateParams.builder()
                     .conversationId("conv_123")
-                    .addInclude(ResponseIncludable.CODE_INTERPRETER_CALL_OUTPUTS)
+                    .addInclude(ResponseIncludable.FILE_SEARCH_CALL_RESULTS)
                     .addItem(
                         EasyInputMessage.builder()
                             .content("string")
@@ -57,7 +57,7 @@ internal class ItemServiceAsyncTest {
                 ItemRetrieveParams.builder()
                     .conversationId("conv_123")
                     .itemId("msg_abc")
-                    .addInclude(ResponseIncludable.CODE_INTERPRETER_CALL_OUTPUTS)
+                    .addInclude(ResponseIncludable.FILE_SEARCH_CALL_RESULTS)
                     .build()
             )
 
