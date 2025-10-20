@@ -1,5 +1,18 @@
 # Changelog
 
+## 4.6.0 (2025-10-20)
+
+Full Changelog: [v4.5.0...v4.6.0](https://github.com/openai/openai-java/compare/v4.5.0...v4.6.0)
+
+### Features
+
+* **api:** Add responses.input_tokens.count ([4cc3097](https://github.com/openai/openai-java/commit/4cc3097bbcc97071d41ba46d114ac24045e7e1f0))
+
+
+### Bug Fixes
+
+* **api:** internal openapi updates ([faead94](https://github.com/openai/openai-java/commit/faead94dc548f0ae623c6a132b84459d7fb4bb23))
+
 ## 4.5.0 (2025-10-17)
 
 Full Changelog: [v4.4.0...v4.5.0](https://github.com/openai/openai-java/compare/v4.4.0...v4.5.0)
