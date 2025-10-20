@@ -32,6 +32,8 @@ import com.openai.models.responses.ResponseRetrieveParams
 import com.openai.models.responses.ResponseStreamEvent
 import com.openai.services.async.responses.InputItemServiceAsync
 import com.openai.services.async.responses.InputItemServiceAsyncImpl
+import com.openai.services.async.responses.InputTokenServiceAsync
+import com.openai.services.async.responses.InputTokenServiceAsyncImpl
 import java.util.concurrent.CompletableFuture
 import java.util.function.Consumer
 import kotlin.jvm.optionals.getOrNull
@@ -47,12 +49,18 @@ class ResponseServiceAsyncImpl internal constructor(private val clientOptions: C
         InputItemServiceAsyncImpl(clientOptions)
     }
 
+    private val inputTokens: InputTokenServiceAsync by lazy {
+        InputTokenServiceAsyncImpl(clientOptions)
+    }
+
     override fun withRawResponse(): ResponseServiceAsync.WithRawResponse = withRawResponse
 
     override fun withOptions(modifier: Consumer<ClientOptions.Builder>): ResponseServiceAsync =
         ResponseServiceAsyncImpl(clientOptions.toBuilder().apply(modifier::accept).build())
 
     override fun inputItems(): InputItemServiceAsync = inputItems
+
+    override fun inputTokens(): InputTokenServiceAsync = inputTokens
 
     override fun create(
         params: ResponseCreateParams,
@@ -112,6 +120,10 @@ class ResponseServiceAsyncImpl internal constructor(private val clientOptions: C
             InputItemServiceAsyncImpl.WithRawResponseImpl(clientOptions)
         }
 
+        private val inputTokens: InputTokenServiceAsync.WithRawResponse by lazy {
+            InputTokenServiceAsyncImpl.WithRawResponseImpl(clientOptions)
+        }
+
         override fun withOptions(
             modifier: Consumer<ClientOptions.Builder>
         ): ResponseServiceAsync.WithRawResponse =
@@ -120,6 +132,8 @@ class ResponseServiceAsyncImpl internal constructor(private val clientOptions: C
             )
 
         override fun inputItems(): InputItemServiceAsync.WithRawResponse = inputItems
+
+        override fun inputTokens(): InputTokenServiceAsync.WithRawResponse = inputTokens
 
         private val createHandler: Handler<Response> =
             jsonHandler<Response>(clientOptions.jsonMapper)

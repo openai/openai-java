@@ -30,6 +30,8 @@ import com.openai.models.responses.ResponseRetrieveParams
 import com.openai.models.responses.ResponseStreamEvent
 import com.openai.services.blocking.responses.InputItemService
 import com.openai.services.blocking.responses.InputItemServiceImpl
+import com.openai.services.blocking.responses.InputTokenService
+import com.openai.services.blocking.responses.InputTokenServiceImpl
 import java.util.function.Consumer
 import kotlin.jvm.optionals.getOrNull
 
@@ -42,12 +44,16 @@ class ResponseServiceImpl internal constructor(private val clientOptions: Client
 
     private val inputItems: InputItemService by lazy { InputItemServiceImpl(clientOptions) }
 
+    private val inputTokens: InputTokenService by lazy { InputTokenServiceImpl(clientOptions) }
+
     override fun withRawResponse(): ResponseService.WithRawResponse = withRawResponse
 
     override fun withOptions(modifier: Consumer<ClientOptions.Builder>): ResponseService =
         ResponseServiceImpl(clientOptions.toBuilder().apply(modifier::accept).build())
 
     override fun inputItems(): InputItemService = inputItems
+
+    override fun inputTokens(): InputTokenService = inputTokens
 
     override fun create(params: ResponseCreateParams, requestOptions: RequestOptions): Response =
         // post /responses
@@ -93,6 +99,10 @@ class ResponseServiceImpl internal constructor(private val clientOptions: Client
             InputItemServiceImpl.WithRawResponseImpl(clientOptions)
         }
 
+        private val inputTokens: InputTokenService.WithRawResponse by lazy {
+            InputTokenServiceImpl.WithRawResponseImpl(clientOptions)
+        }
+
         override fun withOptions(
             modifier: Consumer<ClientOptions.Builder>
         ): ResponseService.WithRawResponse =
@@ -101,6 +111,8 @@ class ResponseServiceImpl internal constructor(private val clientOptions: Client
             )
 
         override fun inputItems(): InputItemService.WithRawResponse = inputItems
+
+        override fun inputTokens(): InputTokenService.WithRawResponse = inputTokens
 
         private val createHandler: Handler<Response> =
             jsonHandler<Response>(clientOptions.jsonMapper)
