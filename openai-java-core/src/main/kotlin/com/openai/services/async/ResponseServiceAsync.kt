@@ -16,6 +16,7 @@ import com.openai.models.responses.ResponseDeleteParams
 import com.openai.models.responses.ResponseRetrieveParams
 import com.openai.models.responses.ResponseStreamEvent
 import com.openai.services.async.responses.InputItemServiceAsync
+import com.openai.services.async.responses.InputTokenServiceAsync
 import java.util.concurrent.CompletableFuture
 import java.util.function.Consumer
 
@@ -34,6 +35,8 @@ interface ResponseServiceAsync {
     fun withOptions(modifier: Consumer<ClientOptions.Builder>): ResponseServiceAsync
 
     fun inputItems(): InputItemServiceAsync
+
+    fun inputTokens(): InputTokenServiceAsync
 
     /**
      * Creates a model response. Provide [text](https://platform.openai.com/docs/guides/text) or
@@ -244,6 +247,8 @@ interface ResponseServiceAsync {
         ): ResponseServiceAsync.WithRawResponse
 
         fun inputItems(): InputItemServiceAsync.WithRawResponse
+
+        fun inputTokens(): InputTokenServiceAsync.WithRawResponse
 
         /**
          * Returns a raw HTTP response for `post /responses`, but is otherwise the same as
