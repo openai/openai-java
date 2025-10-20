@@ -1,5 +1,13 @@
 # Changelog
 
+## 4.6.1 (2025-10-20)
+
+Full Changelog: [v4.6.0...v4.6.1](https://github.com/openai/openai-java/compare/v4.6.0...v4.6.1)
+
+### Bug Fixes
+
+* **api:** fix discriminator propertyName for ResponseFormatJsonSchema ([a54219b](https://github.com/openai/openai-java/commit/a54219baeeba6968a2645a4f6b1b24746f057401))
+
 ## 4.6.0 (2025-10-20)
 
 Full Changelog: [v4.5.0...v4.6.0](https://github.com/openai/openai-java/compare/v4.5.0...v4.6.0)
