@@ -17,6 +17,7 @@ import com.openai.models.responses.ResponseStreamEvent
 import com.openai.models.responses.StructuredResponse
 import com.openai.models.responses.StructuredResponseCreateParams
 import com.openai.services.blocking.responses.InputItemService
+import com.openai.services.blocking.responses.InputTokenService
 import java.util.function.Consumer
 
 interface ResponseService {
@@ -34,6 +35,8 @@ interface ResponseService {
     fun withOptions(modifier: Consumer<ClientOptions.Builder>): ResponseService
 
     fun inputItems(): InputItemService
+
+    fun inputTokens(): InputTokenService
 
     /**
      * Creates a model response. Provide [text](https://platform.openai.com/docs/guides/text) or
@@ -277,6 +280,8 @@ interface ResponseService {
         fun withOptions(modifier: Consumer<ClientOptions.Builder>): ResponseService.WithRawResponse
 
         fun inputItems(): InputItemService.WithRawResponse
+
+        fun inputTokens(): InputTokenService.WithRawResponse
 
         /**
          * Returns a raw HTTP response for `post /responses`, but is otherwise the same as
