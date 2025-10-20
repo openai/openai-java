@@ -1406,6 +1406,18 @@ private constructor(
             body.responseFormat(jsonSchema)
         }
 
+        /**
+         * Alias for calling [responseFormat] with the following:
+         * ```java
+         * ResponseFormatJsonSchema.builder()
+         *     .jsonSchema(jsonSchema)
+         *     .build()
+         * ```
+         */
+        fun jsonSchemaResponseFormat(jsonSchema: ResponseFormatJsonSchema.JsonSchema) = apply {
+            body.jsonSchemaResponseFormat(jsonSchema)
+        }
+
         /** Alias for calling [responseFormat] with `ResponseFormat.ofJsonObject(jsonObject)`. */
         fun responseFormat(jsonObject: ResponseFormatJsonObject) = apply {
             body.responseFormat(jsonObject)
@@ -3666,6 +3678,17 @@ private constructor(
                 responseFormat(ResponseFormat.ofJsonSchema(jsonSchema))
 
             /**
+             * Alias for calling [responseFormat] with the following:
+             * ```java
+             * ResponseFormatJsonSchema.builder()
+             *     .jsonSchema(jsonSchema)
+             *     .build()
+             * ```
+             */
+            fun jsonSchemaResponseFormat(jsonSchema: ResponseFormatJsonSchema.JsonSchema) =
+                responseFormat(ResponseFormatJsonSchema.builder().jsonSchema(jsonSchema).build())
+
+            /**
              * Alias for calling [responseFormat] with `ResponseFormat.ofJsonObject(jsonObject)`.
              */
             fun responseFormat(jsonObject: ResponseFormatJsonObject) =
@@ -5515,32 +5538,27 @@ private constructor(
 
             override fun ObjectCodec.deserialize(node: JsonNode): ResponseFormat {
                 val json = JsonValue.fromJsonNode(node)
+                val type = json.asObject().getOrNull()?.get("type")?.asString()?.getOrNull()
 
-                val bestMatches =
-                    sequenceOf(
-                            tryDeserialize(node, jacksonTypeRef<ResponseFormatText>())?.let {
-                                ResponseFormat(text = it, _json = json)
-                            },
-                            tryDeserialize(node, jacksonTypeRef<ResponseFormatJsonSchema>())?.let {
-                                ResponseFormat(jsonSchema = it, _json = json)
-                            },
-                            tryDeserialize(node, jacksonTypeRef<ResponseFormatJsonObject>())?.let {
-                                ResponseFormat(jsonObject = it, _json = json)
-                            },
-                        )
-                        .filterNotNull()
-                        .allMaxBy { it.validity() }
-                        .toList()
-                return when (bestMatches.size) {
-                    // This can happen if what we're deserializing is completely incompatible with
-                    // all the possible variants (e.g. deserializing from boolean).
-                    0 -> ResponseFormat(_json = json)
-                    1 -> bestMatches.single()
-                    // If there's more than one match with the highest validity, then use the first
-                    // completely valid match, or simply the first match if none are completely
-                    // valid.
-                    else -> bestMatches.firstOrNull { it.isValid() } ?: bestMatches.first()
+                when (type) {
+                    "text" -> {
+                        return tryDeserialize(node, jacksonTypeRef<ResponseFormatText>())?.let {
+                            ResponseFormat(text = it, _json = json)
+                        } ?: ResponseFormat(_json = json)
+                    }
+                    "json_schema" -> {
+                        return tryDeserialize(node, jacksonTypeRef<ResponseFormatJsonSchema>())
+                            ?.let { ResponseFormat(jsonSchema = it, _json = json) }
+                            ?: ResponseFormat(_json = json)
+                    }
+                    "json_object" -> {
+                        return tryDeserialize(node, jacksonTypeRef<ResponseFormatJsonObject>())
+                            ?.let { ResponseFormat(jsonObject = it, _json = json) }
+                            ?: ResponseFormat(_json = json)
+                    }
                 }
+
+                return ResponseFormat(_json = json)
             }
         }
 
