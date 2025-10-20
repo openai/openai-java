@@ -27,6 +27,7 @@ import com.openai.core.http.QueryParams
 import com.openai.core.responseFormatFromClass
 import com.openai.models.ChatModel
 import com.openai.models.FunctionDefinition
+import com.openai.models.ResponseFormatJsonSchema
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.MethodSource
@@ -118,6 +119,8 @@ internal class StructuredChatCompletionCreateParamsTest {
             ChatCompletionCustomTool.Custom.builder().name(STRING).build()
         private val FUNCTION_TOOL =
             ChatCompletionFunctionTool.builder().function(FUNCTION_DEFINITION).build()
+        private val RESPONSE_FORMAT_JSON_SCHEMA =
+            ResponseFormatJsonSchema.JsonSchema.builder().name("json_schema").build()
         private val ALLOWED_TOOL_CHOICE =
             ChatCompletionAllowedToolChoice.builder()
                 .allowedTools(
@@ -224,6 +227,7 @@ internal class StructuredChatCompletionCreateParamsTest {
                 DelegationWriteTestCase("reasoningEffort", NULLABLE),
                 DelegationWriteTestCase("reasoningEffort", OPTIONAL),
                 DelegationWriteTestCase("reasoningEffort", JSON_FIELD),
+                DelegationWriteTestCase("jsonSchemaResponseFormat", RESPONSE_FORMAT_JSON_SCHEMA),
                 // `responseFormat()` is a special case and has its own unit test.
                 DelegationWriteTestCase("safetyIdentifier", STRING),
                 DelegationWriteTestCase("safetyIdentifier", JSON_FIELD),
