@@ -9,6 +9,7 @@ import com.openai.core.http.QueryParams
 import com.openai.core.responseFormatFromClass
 import com.openai.models.ChatModel
 import com.openai.models.ReasoningEffort
+import com.openai.models.ResponseFormatJsonSchema
 import java.util.Objects
 import java.util.Optional
 
@@ -440,6 +441,11 @@ internal constructor(
         /** @see ChatCompletionCreateParams.Builder.safetyIdentifier */
         fun safetyIdentifier(safetyIdentifier: JsonField<String>) = apply {
             paramsBuilder.safetyIdentifier(safetyIdentifier)
+        }
+
+        /** @see ChatCompletionCreateParams.Builder.jsonSchemaResponseFormat */
+        fun jsonSchemaResponseFormat(jsonSchema: ResponseFormatJsonSchema.JsonSchema) = apply {
+            paramsBuilder.jsonSchemaResponseFormat(jsonSchema)
         }
 
         /**
