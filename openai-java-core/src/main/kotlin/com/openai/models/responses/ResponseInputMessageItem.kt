@@ -238,21 +238,6 @@ private constructor(
         fun addContent(inputFile: ResponseInputFile) =
             addContent(ResponseInputContent.ofInputFile(inputFile))
 
-        /** Alias for calling [addContent] with `ResponseInputContent.ofInputAudio(inputAudio)`. */
-        fun addContent(inputAudio: ResponseInputAudio) =
-            addContent(ResponseInputContent.ofInputAudio(inputAudio))
-
-        /**
-         * Alias for calling [addContent] with the following:
-         * ```java
-         * ResponseInputAudio.builder()
-         *     .inputAudio(inputAudio)
-         *     .build()
-         * ```
-         */
-        fun addInputAudioContent(inputAudio: ResponseInputAudio.InputAudio) =
-            addContent(ResponseInputAudio.builder().inputAudio(inputAudio).build())
-
         /** The role of the message input. One of `user`, `system`, or `developer`. */
         fun role(role: Role) = role(JsonField.of(role))
 
