@@ -85,8 +85,13 @@ private constructor(
     /** A tool that generates images using a model like `gpt-image-1`. */
     fun imageGeneration(): Optional<ImageGeneration> = Optional.ofNullable(imageGeneration)
 
+    /** A tool that allows the model to execute shell commands in a local environment. */
     fun localShell(): Optional<JsonValue> = Optional.ofNullable(localShell)
 
+    /**
+     * A custom tool that processes input using a specified format. Learn more about
+     * [custom tools](https://platform.openai.com/docs/guides/function-calling#custom-tools)
+     */
     fun custom(): Optional<CustomTool> = Optional.ofNullable(custom)
 
     /**
@@ -151,8 +156,13 @@ private constructor(
     /** A tool that generates images using a model like `gpt-image-1`. */
     fun asImageGeneration(): ImageGeneration = imageGeneration.getOrThrow("imageGeneration")
 
+    /** A tool that allows the model to execute shell commands in a local environment. */
     fun asLocalShell(): JsonValue = localShell.getOrThrow("localShell")
 
+    /**
+     * A custom tool that processes input using a specified format. Learn more about
+     * [custom tools](https://platform.openai.com/docs/guides/function-calling#custom-tools)
+     */
     fun asCustom(): CustomTool = custom.getOrThrow("custom")
 
     /**
@@ -378,9 +388,14 @@ private constructor(
         fun ofImageGeneration(imageGeneration: ImageGeneration) =
             Tool(imageGeneration = imageGeneration)
 
+        /** A tool that allows the model to execute shell commands in a local environment. */
         @JvmStatic
         fun ofLocalShell() = Tool(localShell = JsonValue.from(mapOf("type" to "local_shell")))
 
+        /**
+         * A custom tool that processes input using a specified format. Learn more about
+         * [custom tools](https://platform.openai.com/docs/guides/function-calling#custom-tools)
+         */
         @JvmStatic fun ofCustom(custom: CustomTool) = Tool(custom = custom)
 
         /**
@@ -432,8 +447,13 @@ private constructor(
         /** A tool that generates images using a model like `gpt-image-1`. */
         fun visitImageGeneration(imageGeneration: ImageGeneration): T
 
+        /** A tool that allows the model to execute shell commands in a local environment. */
         fun visitLocalShell(localShell: JsonValue): T
 
+        /**
+         * A custom tool that processes input using a specified format. Learn more about
+         * [custom tools](https://platform.openai.com/docs/guides/function-calling#custom-tools)
+         */
         fun visitCustom(custom: CustomTool): T
 
         /**

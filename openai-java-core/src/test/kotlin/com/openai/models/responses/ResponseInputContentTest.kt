@@ -23,7 +23,6 @@ internal class ResponseInputContentTest {
         assertThat(responseInputContent.inputText()).contains(inputText)
         assertThat(responseInputContent.inputImage()).isEmpty
         assertThat(responseInputContent.inputFile()).isEmpty
-        assertThat(responseInputContent.inputAudio()).isEmpty
     }
 
     @Test
@@ -55,7 +54,6 @@ internal class ResponseInputContentTest {
         assertThat(responseInputContent.inputText()).isEmpty
         assertThat(responseInputContent.inputImage()).contains(inputImage)
         assertThat(responseInputContent.inputFile()).isEmpty
-        assertThat(responseInputContent.inputAudio()).isEmpty
     }
 
     @Test
@@ -94,7 +92,6 @@ internal class ResponseInputContentTest {
         assertThat(responseInputContent.inputText()).isEmpty
         assertThat(responseInputContent.inputImage()).isEmpty
         assertThat(responseInputContent.inputFile()).contains(inputFile)
-        assertThat(responseInputContent.inputAudio()).isEmpty
     }
 
     @Test
@@ -107,50 +104,6 @@ internal class ResponseInputContentTest {
                     .fileId("file_id")
                     .fileUrl("file_url")
                     .filename("filename")
-                    .build()
-            )
-
-        val roundtrippedResponseInputContent =
-            jsonMapper.readValue(
-                jsonMapper.writeValueAsString(responseInputContent),
-                jacksonTypeRef<ResponseInputContent>(),
-            )
-
-        assertThat(roundtrippedResponseInputContent).isEqualTo(responseInputContent)
-    }
-
-    @Test
-    fun ofInputAudio() {
-        val inputAudio =
-            ResponseInputAudio.builder()
-                .inputAudio(
-                    ResponseInputAudio.InputAudio.builder()
-                        .data("data")
-                        .format(ResponseInputAudio.InputAudio.Format.MP3)
-                        .build()
-                )
-                .build()
-
-        val responseInputContent = ResponseInputContent.ofInputAudio(inputAudio)
-
-        assertThat(responseInputContent.inputText()).isEmpty
-        assertThat(responseInputContent.inputImage()).isEmpty
-        assertThat(responseInputContent.inputFile()).isEmpty
-        assertThat(responseInputContent.inputAudio()).contains(inputAudio)
-    }
-
-    @Test
-    fun ofInputAudioRoundtrip() {
-        val jsonMapper = jsonMapper()
-        val responseInputContent =
-            ResponseInputContent.ofInputAudio(
-                ResponseInputAudio.builder()
-                    .inputAudio(
-                        ResponseInputAudio.InputAudio.builder()
-                            .data("data")
-                            .format(ResponseInputAudio.InputAudio.Format.MP3)
-                            .build()
-                    )
                     .build()
             )
 

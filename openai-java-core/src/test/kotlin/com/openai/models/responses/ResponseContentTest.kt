@@ -23,7 +23,6 @@ internal class ResponseContentTest {
         assertThat(responseContent.inputText()).contains(inputText)
         assertThat(responseContent.inputImage()).isEmpty
         assertThat(responseContent.inputFile()).isEmpty
-        assertThat(responseContent.inputAudio()).isEmpty
         assertThat(responseContent.outputText()).isEmpty
         assertThat(responseContent.outputRefusal()).isEmpty
         assertThat(responseContent.reasoningText()).isEmpty
@@ -58,7 +57,6 @@ internal class ResponseContentTest {
         assertThat(responseContent.inputText()).isEmpty
         assertThat(responseContent.inputImage()).contains(inputImage)
         assertThat(responseContent.inputFile()).isEmpty
-        assertThat(responseContent.inputAudio()).isEmpty
         assertThat(responseContent.outputText()).isEmpty
         assertThat(responseContent.outputRefusal()).isEmpty
         assertThat(responseContent.reasoningText()).isEmpty
@@ -100,7 +98,6 @@ internal class ResponseContentTest {
         assertThat(responseContent.inputText()).isEmpty
         assertThat(responseContent.inputImage()).isEmpty
         assertThat(responseContent.inputFile()).contains(inputFile)
-        assertThat(responseContent.inputAudio()).isEmpty
         assertThat(responseContent.outputText()).isEmpty
         assertThat(responseContent.outputRefusal()).isEmpty
         assertThat(responseContent.reasoningText()).isEmpty
@@ -116,53 +113,6 @@ internal class ResponseContentTest {
                     .fileId("file_id")
                     .fileUrl("file_url")
                     .filename("filename")
-                    .build()
-            )
-
-        val roundtrippedResponseContent =
-            jsonMapper.readValue(
-                jsonMapper.writeValueAsString(responseContent),
-                jacksonTypeRef<ResponseContent>(),
-            )
-
-        assertThat(roundtrippedResponseContent).isEqualTo(responseContent)
-    }
-
-    @Test
-    fun ofInputAudio() {
-        val inputAudio =
-            ResponseInputAudio.builder()
-                .inputAudio(
-                    ResponseInputAudio.InputAudio.builder()
-                        .data("data")
-                        .format(ResponseInputAudio.InputAudio.Format.MP3)
-                        .build()
-                )
-                .build()
-
-        val responseContent = ResponseContent.ofInputAudio(inputAudio)
-
-        assertThat(responseContent.inputText()).isEmpty
-        assertThat(responseContent.inputImage()).isEmpty
-        assertThat(responseContent.inputFile()).isEmpty
-        assertThat(responseContent.inputAudio()).contains(inputAudio)
-        assertThat(responseContent.outputText()).isEmpty
-        assertThat(responseContent.outputRefusal()).isEmpty
-        assertThat(responseContent.reasoningText()).isEmpty
-    }
-
-    @Test
-    fun ofInputAudioRoundtrip() {
-        val jsonMapper = jsonMapper()
-        val responseContent =
-            ResponseContent.ofInputAudio(
-                ResponseInputAudio.builder()
-                    .inputAudio(
-                        ResponseInputAudio.InputAudio.builder()
-                            .data("data")
-                            .format(ResponseInputAudio.InputAudio.Format.MP3)
-                            .build()
-                    )
                     .build()
             )
 
@@ -208,7 +158,6 @@ internal class ResponseContentTest {
         assertThat(responseContent.inputText()).isEmpty
         assertThat(responseContent.inputImage()).isEmpty
         assertThat(responseContent.inputFile()).isEmpty
-        assertThat(responseContent.inputAudio()).isEmpty
         assertThat(responseContent.outputText()).contains(outputText)
         assertThat(responseContent.outputRefusal()).isEmpty
         assertThat(responseContent.reasoningText()).isEmpty
@@ -263,7 +212,6 @@ internal class ResponseContentTest {
         assertThat(responseContent.inputText()).isEmpty
         assertThat(responseContent.inputImage()).isEmpty
         assertThat(responseContent.inputFile()).isEmpty
-        assertThat(responseContent.inputAudio()).isEmpty
         assertThat(responseContent.outputText()).isEmpty
         assertThat(responseContent.outputRefusal()).contains(outputRefusal)
         assertThat(responseContent.reasoningText()).isEmpty
@@ -295,7 +243,6 @@ internal class ResponseContentTest {
         assertThat(responseContent.inputText()).isEmpty
         assertThat(responseContent.inputImage()).isEmpty
         assertThat(responseContent.inputFile()).isEmpty
-        assertThat(responseContent.inputAudio()).isEmpty
         assertThat(responseContent.outputText()).isEmpty
         assertThat(responseContent.outputRefusal()).isEmpty
         assertThat(responseContent.reasoningText()).contains(reasoningText)

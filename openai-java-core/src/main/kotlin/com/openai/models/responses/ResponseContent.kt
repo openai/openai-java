@@ -35,7 +35,6 @@ private constructor(
     private val inputText: ResponseInputText? = null,
     private val inputImage: ResponseInputImage? = null,
     private val inputFile: ResponseInputFile? = null,
-    private val inputAudio: ResponseInputAudio? = null,
     private val outputText: ResponseOutputText? = null,
     private val outputRefusal: ResponseOutputRefusal? = null,
     private val reasoningText: ReasoningTextContent? = null,
@@ -54,9 +53,6 @@ private constructor(
     /** A file input to the model. */
     fun inputFile(): Optional<ResponseInputFile> = Optional.ofNullable(inputFile)
 
-    /** An audio input to the model. */
-    fun inputAudio(): Optional<ResponseInputAudio> = Optional.ofNullable(inputAudio)
-
     /** A text output from the model. */
     fun outputText(): Optional<ResponseOutputText> = Optional.ofNullable(outputText)
 
@@ -71,8 +67,6 @@ private constructor(
     fun isInputImage(): Boolean = inputImage != null
 
     fun isInputFile(): Boolean = inputFile != null
-
-    fun isInputAudio(): Boolean = inputAudio != null
 
     fun isOutputText(): Boolean = outputText != null
 
@@ -92,9 +86,6 @@ private constructor(
     /** A file input to the model. */
     fun asInputFile(): ResponseInputFile = inputFile.getOrThrow("inputFile")
 
-    /** An audio input to the model. */
-    fun asInputAudio(): ResponseInputAudio = inputAudio.getOrThrow("inputAudio")
-
     /** A text output from the model. */
     fun asOutputText(): ResponseOutputText = outputText.getOrThrow("outputText")
 
@@ -111,7 +102,6 @@ private constructor(
             inputText != null -> visitor.visitInputText(inputText)
             inputImage != null -> visitor.visitInputImage(inputImage)
             inputFile != null -> visitor.visitInputFile(inputFile)
-            inputAudio != null -> visitor.visitInputAudio(inputAudio)
             outputText != null -> visitor.visitOutputText(outputText)
             outputRefusal != null -> visitor.visitOutputRefusal(outputRefusal)
             reasoningText != null -> visitor.visitReasoningText(reasoningText)
@@ -137,10 +127,6 @@ private constructor(
 
                 override fun visitInputFile(inputFile: ResponseInputFile) {
                     inputFile.validate()
-                }
-
-                override fun visitInputAudio(inputAudio: ResponseInputAudio) {
-                    inputAudio.validate()
                 }
 
                 override fun visitOutputText(outputText: ResponseOutputText) {
@@ -182,8 +168,6 @@ private constructor(
 
                 override fun visitInputFile(inputFile: ResponseInputFile) = inputFile.validity()
 
-                override fun visitInputAudio(inputAudio: ResponseInputAudio) = inputAudio.validity()
-
                 override fun visitOutputText(outputText: ResponseOutputText) = outputText.validity()
 
                 override fun visitOutputRefusal(outputRefusal: ResponseOutputRefusal) =
@@ -205,29 +189,19 @@ private constructor(
             inputText == other.inputText &&
             inputImage == other.inputImage &&
             inputFile == other.inputFile &&
-            inputAudio == other.inputAudio &&
             outputText == other.outputText &&
             outputRefusal == other.outputRefusal &&
             reasoningText == other.reasoningText
     }
 
     override fun hashCode(): Int =
-        Objects.hash(
-            inputText,
-            inputImage,
-            inputFile,
-            inputAudio,
-            outputText,
-            outputRefusal,
-            reasoningText,
-        )
+        Objects.hash(inputText, inputImage, inputFile, outputText, outputRefusal, reasoningText)
 
     override fun toString(): String =
         when {
             inputText != null -> "ResponseContent{inputText=$inputText}"
             inputImage != null -> "ResponseContent{inputImage=$inputImage}"
             inputFile != null -> "ResponseContent{inputFile=$inputFile}"
-            inputAudio != null -> "ResponseContent{inputAudio=$inputAudio}"
             outputText != null -> "ResponseContent{outputText=$outputText}"
             outputRefusal != null -> "ResponseContent{outputRefusal=$outputRefusal}"
             reasoningText != null -> "ResponseContent{reasoningText=$reasoningText}"
@@ -251,10 +225,6 @@ private constructor(
         /** A file input to the model. */
         @JvmStatic
         fun ofInputFile(inputFile: ResponseInputFile) = ResponseContent(inputFile = inputFile)
-
-        /** An audio input to the model. */
-        @JvmStatic
-        fun ofInputAudio(inputAudio: ResponseInputAudio) = ResponseContent(inputAudio = inputAudio)
 
         /** A text output from the model. */
         @JvmStatic
@@ -288,9 +258,6 @@ private constructor(
 
         /** A file input to the model. */
         fun visitInputFile(inputFile: ResponseInputFile): T
-
-        /** An audio input to the model. */
-        fun visitInputAudio(inputAudio: ResponseInputAudio): T
 
         /** A text output from the model. */
         fun visitOutputText(outputText: ResponseOutputText): T
@@ -332,9 +299,6 @@ private constructor(
                         tryDeserialize(node, jacksonTypeRef<ResponseInputFile>())?.let {
                             ResponseContent(inputFile = it, _json = json)
                         },
-                        tryDeserialize(node, jacksonTypeRef<ResponseInputAudio>())?.let {
-                            ResponseContent(inputAudio = it, _json = json)
-                        },
                         tryDeserialize(node, jacksonTypeRef<ResponseOutputText>())?.let {
                             ResponseContent(outputText = it, _json = json)
                         },
@@ -371,7 +335,6 @@ private constructor(
                 value.inputText != null -> generator.writeObject(value.inputText)
                 value.inputImage != null -> generator.writeObject(value.inputImage)
                 value.inputFile != null -> generator.writeObject(value.inputFile)
-                value.inputAudio != null -> generator.writeObject(value.inputAudio)
                 value.outputText != null -> generator.writeObject(value.outputText)
                 value.outputRefusal != null -> generator.writeObject(value.outputRefusal)
                 value.reasoningText != null -> generator.writeObject(value.reasoningText)

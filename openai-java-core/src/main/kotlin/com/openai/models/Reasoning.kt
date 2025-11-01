@@ -72,6 +72,8 @@ private constructor(
      * A summary of the reasoning performed by the model. This can be useful for debugging and
      * understanding the model's reasoning process. One of `auto`, `concise`, or `detailed`.
      *
+     * `concise` is only supported for `computer-use-preview` models.
+     *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
      */
@@ -187,6 +189,8 @@ private constructor(
         /**
          * A summary of the reasoning performed by the model. This can be useful for debugging and
          * understanding the model's reasoning process. One of `auto`, `concise`, or `detailed`.
+         *
+         * `concise` is only supported for `computer-use-preview` models.
          */
         fun summary(summary: Summary?) = summary(JsonField.ofNullable(summary))
 
@@ -406,6 +410,8 @@ private constructor(
     /**
      * A summary of the reasoning performed by the model. This can be useful for debugging and
      * understanding the model's reasoning process. One of `auto`, `concise`, or `detailed`.
+     *
+     * `concise` is only supported for `computer-use-preview` models.
      */
     class Summary @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
 

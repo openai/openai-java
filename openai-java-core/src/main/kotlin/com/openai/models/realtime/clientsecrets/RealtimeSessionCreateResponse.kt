@@ -6657,7 +6657,9 @@ private constructor(
         private val _json: JsonValue? = null,
     ) {
 
-        /** Default tracing mode for the session. */
+        /**
+         * Enables tracing and sets default values for tracing configuration options. Always `auto`.
+         */
         fun auto(): Optional<JsonValue> = Optional.ofNullable(auto)
 
         /** Granular configuration for tracing. */
@@ -6667,7 +6669,9 @@ private constructor(
 
         fun isConfiguration(): Boolean = configuration != null
 
-        /** Default tracing mode for the session. */
+        /**
+         * Enables tracing and sets default values for tracing configuration options. Always `auto`.
+         */
         fun asAuto(): JsonValue = auto.getOrThrow("auto")
 
         /** Granular configuration for tracing. */
@@ -6755,7 +6759,10 @@ private constructor(
 
         companion object {
 
-            /** Default tracing mode for the session. */
+            /**
+             * Enables tracing and sets default values for tracing configuration options. Always
+             * `auto`.
+             */
             @JvmStatic fun ofAuto() = Tracing(auto = JsonValue.from("auto"))
 
             /** Granular configuration for tracing. */
@@ -6769,7 +6776,10 @@ private constructor(
          */
         interface Visitor<out T> {
 
-            /** Default tracing mode for the session. */
+            /**
+             * Enables tracing and sets default values for tracing configuration options. Always
+             * `auto`.
+             */
             fun visitAuto(auto: JsonValue): T
 
             /** Granular configuration for tracing. */
