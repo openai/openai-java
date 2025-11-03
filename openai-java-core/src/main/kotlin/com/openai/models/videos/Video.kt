@@ -30,6 +30,7 @@ private constructor(
     private val model: JsonField<VideoModel>,
     private val object_: JsonValue,
     private val progress: JsonField<Long>,
+    private val prompt: JsonField<String>,
     private val remixedFromVideoId: JsonField<String>,
     private val seconds: JsonField<VideoSeconds>,
     private val size: JsonField<VideoSize>,
@@ -51,6 +52,7 @@ private constructor(
         @JsonProperty("model") @ExcludeMissing model: JsonField<VideoModel> = JsonMissing.of(),
         @JsonProperty("object") @ExcludeMissing object_: JsonValue = JsonMissing.of(),
         @JsonProperty("progress") @ExcludeMissing progress: JsonField<Long> = JsonMissing.of(),
+        @JsonProperty("prompt") @ExcludeMissing prompt: JsonField<String> = JsonMissing.of(),
         @JsonProperty("remixed_from_video_id")
         @ExcludeMissing
         remixedFromVideoId: JsonField<String> = JsonMissing.of(),
@@ -68,6 +70,7 @@ private constructor(
         model,
         object_,
         progress,
+        prompt,
         remixedFromVideoId,
         seconds,
         size,
@@ -143,6 +146,14 @@ private constructor(
      *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
      */
     fun progress(): Long = progress.getRequired("progress")
+
+    /**
+     * The prompt that was used to generate the video.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun prompt(): Optional<String> = prompt.getOptional("prompt")
 
     /**
      * Identifier of the source video if this video is a remix.
@@ -227,6 +238,13 @@ private constructor(
     @JsonProperty("progress") @ExcludeMissing fun _progress(): JsonField<Long> = progress
 
     /**
+     * Returns the raw JSON value of [prompt].
+     *
+     * Unlike [prompt], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    @JsonProperty("prompt") @ExcludeMissing fun _prompt(): JsonField<String> = prompt
+
+    /**
      * Returns the raw JSON value of [remixedFromVideoId].
      *
      * Unlike [remixedFromVideoId], this method doesn't throw if the JSON field has an unexpected
@@ -283,6 +301,7 @@ private constructor(
          * .expiresAt()
          * .model()
          * .progress()
+         * .prompt()
          * .remixedFromVideoId()
          * .seconds()
          * .size()
@@ -303,6 +322,7 @@ private constructor(
         private var model: JsonField<VideoModel>? = null
         private var object_: JsonValue = JsonValue.from("video")
         private var progress: JsonField<Long>? = null
+        private var prompt: JsonField<String>? = null
         private var remixedFromVideoId: JsonField<String>? = null
         private var seconds: JsonField<VideoSeconds>? = null
         private var size: JsonField<VideoSize>? = null
@@ -319,6 +339,7 @@ private constructor(
             model = video.model
             object_ = video.object_
             progress = video.progress
+            prompt = video.prompt
             remixedFromVideoId = video.remixedFromVideoId
             seconds = video.seconds
             size = video.size
@@ -443,6 +464,20 @@ private constructor(
          */
         fun progress(progress: JsonField<Long>) = apply { this.progress = progress }
 
+        /** The prompt that was used to generate the video. */
+        fun prompt(prompt: String?) = prompt(JsonField.ofNullable(prompt))
+
+        /** Alias for calling [Builder.prompt] with `prompt.orElse(null)`. */
+        fun prompt(prompt: Optional<String>) = prompt(prompt.getOrNull())
+
+        /**
+         * Sets [Builder.prompt] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.prompt] with a well-typed [String] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
+        fun prompt(prompt: JsonField<String>) = apply { this.prompt = prompt }
+
         /** Identifier of the source video if this video is a remix. */
         fun remixedFromVideoId(remixedFromVideoId: String?) =
             remixedFromVideoId(JsonField.ofNullable(remixedFromVideoId))
@@ -531,6 +566,7 @@ private constructor(
          * .expiresAt()
          * .model()
          * .progress()
+         * .prompt()
          * .remixedFromVideoId()
          * .seconds()
          * .size()
@@ -549,6 +585,7 @@ private constructor(
                 checkRequired("model", model),
                 object_,
                 checkRequired("progress", progress),
+                checkRequired("prompt", prompt),
                 checkRequired("remixedFromVideoId", remixedFromVideoId),
                 checkRequired("seconds", seconds),
                 checkRequired("size", size),
@@ -576,6 +613,7 @@ private constructor(
             }
         }
         progress()
+        prompt()
         remixedFromVideoId()
         seconds().validate()
         size().validate()
@@ -606,6 +644,7 @@ private constructor(
             (model.asKnown().getOrNull()?.validity() ?: 0) +
             object_.let { if (it == JsonValue.from("video")) 1 else 0 } +
             (if (progress.asKnown().isPresent) 1 else 0) +
+            (if (prompt.asKnown().isPresent) 1 else 0) +
             (if (remixedFromVideoId.asKnown().isPresent) 1 else 0) +
             (seconds.asKnown().getOrNull()?.validity() ?: 0) +
             (size.asKnown().getOrNull()?.validity() ?: 0) +
@@ -763,6 +802,7 @@ private constructor(
             model == other.model &&
             object_ == other.object_ &&
             progress == other.progress &&
+            prompt == other.prompt &&
             remixedFromVideoId == other.remixedFromVideoId &&
             seconds == other.seconds &&
             size == other.size &&
@@ -780,6 +820,7 @@ private constructor(
             model,
             object_,
             progress,
+            prompt,
             remixedFromVideoId,
             seconds,
             size,
@@ -791,5 +832,5 @@ private constructor(
     override fun hashCode(): Int = hashCode
 
     override fun toString() =
-        "Video{id=$id, completedAt=$completedAt, createdAt=$createdAt, error=$error, expiresAt=$expiresAt, model=$model, object_=$object_, progress=$progress, remixedFromVideoId=$remixedFromVideoId, seconds=$seconds, size=$size, status=$status, additionalProperties=$additionalProperties}"
+        "Video{id=$id, completedAt=$completedAt, createdAt=$createdAt, error=$error, expiresAt=$expiresAt, model=$model, object_=$object_, progress=$progress, prompt=$prompt, remixedFromVideoId=$remixedFromVideoId, seconds=$seconds, size=$size, status=$status, additionalProperties=$additionalProperties}"
 }

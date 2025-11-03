@@ -4,7 +4,6 @@ package com.openai.models.responses
 
 import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
 import com.openai.core.jsonMapper
-import kotlin.jvm.optionals.getOrNull
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
@@ -21,7 +20,6 @@ internal class ResponseOutputTextTest {
                         .index(0L)
                         .build()
                 )
-                .text("text")
                 .addLogprob(
                     ResponseOutputText.Logprob.builder()
                         .token("token")
@@ -36,6 +34,7 @@ internal class ResponseOutputTextTest {
                         )
                         .build()
                 )
+                .text("text")
                 .build()
 
         assertThat(responseOutputText.annotations())
@@ -48,8 +47,7 @@ internal class ResponseOutputTextTest {
                         .build()
                 )
             )
-        assertThat(responseOutputText.text()).isEqualTo("text")
-        assertThat(responseOutputText.logprobs().getOrNull())
+        assertThat(responseOutputText.logprobs())
             .containsExactly(
                 ResponseOutputText.Logprob.builder()
                     .token("token")
@@ -64,6 +62,7 @@ internal class ResponseOutputTextTest {
                     )
                     .build()
             )
+        assertThat(responseOutputText.text()).isEqualTo("text")
     }
 
     @Test
@@ -78,7 +77,6 @@ internal class ResponseOutputTextTest {
                         .index(0L)
                         .build()
                 )
-                .text("text")
                 .addLogprob(
                     ResponseOutputText.Logprob.builder()
                         .token("token")
@@ -93,6 +91,7 @@ internal class ResponseOutputTextTest {
                         )
                         .build()
                 )
+                .text("text")
                 .build()
 
         val roundtrippedResponseOutputText =

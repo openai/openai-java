@@ -39,7 +39,15 @@ internal class RealtimeTruncationTest {
 
     @Test
     fun ofRetentionRatio() {
-        val retentionRatio = RealtimeTruncationRetentionRatio.builder().retentionRatio(0.0).build()
+        val retentionRatio =
+            RealtimeTruncationRetentionRatio.builder()
+                .retentionRatio(0.0)
+                .tokenLimits(
+                    RealtimeTruncationRetentionRatio.TokenLimits.builder()
+                        .postInstructions(0L)
+                        .build()
+                )
+                .build()
 
         val realtimeTruncation = RealtimeTruncation.ofRetentionRatio(retentionRatio)
 
@@ -52,7 +60,14 @@ internal class RealtimeTruncationTest {
         val jsonMapper = jsonMapper()
         val realtimeTruncation =
             RealtimeTruncation.ofRetentionRatio(
-                RealtimeTruncationRetentionRatio.builder().retentionRatio(0.0).build()
+                RealtimeTruncationRetentionRatio.builder()
+                    .retentionRatio(0.0)
+                    .tokenLimits(
+                        RealtimeTruncationRetentionRatio.TokenLimits.builder()
+                            .postInstructions(0L)
+                            .build()
+                    )
+                    .build()
             )
 
         val roundtrippedRealtimeTruncation =

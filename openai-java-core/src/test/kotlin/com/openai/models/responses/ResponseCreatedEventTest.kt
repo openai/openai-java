@@ -52,7 +52,6 @@ internal class ResponseCreatedEventTest {
                                                 .index(0L)
                                                 .build()
                                         )
-                                        .text("text")
                                         .addLogprob(
                                             ResponseOutputText.Logprob.builder()
                                                 .token("token")
@@ -67,6 +66,7 @@ internal class ResponseCreatedEventTest {
                                                 )
                                                 .build()
                                         )
+                                        .text("text")
                                         .build()
                                 )
                                 .status(ResponseOutputMessage.Status.IN_PROGRESS)
@@ -181,7 +181,6 @@ internal class ResponseCreatedEventTest {
                                             .index(0L)
                                             .build()
                                     )
-                                    .text("text")
                                     .addLogprob(
                                         ResponseOutputText.Logprob.builder()
                                             .token("token")
@@ -196,6 +195,7 @@ internal class ResponseCreatedEventTest {
                                             )
                                             .build()
                                     )
+                                    .text("text")
                                     .build()
                             )
                             .status(ResponseOutputMessage.Status.IN_PROGRESS)
@@ -312,7 +312,6 @@ internal class ResponseCreatedEventTest {
                                                 .index(0L)
                                                 .build()
                                         )
-                                        .text("text")
                                         .addLogprob(
                                             ResponseOutputText.Logprob.builder()
                                                 .token("token")
@@ -327,6 +326,7 @@ internal class ResponseCreatedEventTest {
                                                 )
                                                 .build()
                                         )
+                                        .text("text")
                                         .build()
                                 )
                                 .status(ResponseOutputMessage.Status.IN_PROGRESS)

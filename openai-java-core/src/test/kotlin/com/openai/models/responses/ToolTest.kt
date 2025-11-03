@@ -81,6 +81,12 @@ internal class ToolTest {
                 .maxNumResults(0L)
                 .rankingOptions(
                     FileSearchTool.RankingOptions.builder()
+                        .hybridSearch(
+                            FileSearchTool.RankingOptions.HybridSearch.builder()
+                                .embeddingWeight(0.0)
+                                .textWeight(0.0)
+                                .build()
+                        )
                         .ranker(FileSearchTool.RankingOptions.Ranker.AUTO)
                         .scoreThreshold(0.0)
                         .build()
@@ -118,6 +124,12 @@ internal class ToolTest {
                     .maxNumResults(0L)
                     .rankingOptions(
                         FileSearchTool.RankingOptions.builder()
+                            .hybridSearch(
+                                FileSearchTool.RankingOptions.HybridSearch.builder()
+                                    .embeddingWeight(0.0)
+                                    .textWeight(0.0)
+                                    .build()
+                            )
                             .ranker(FileSearchTool.RankingOptions.Ranker.AUTO)
                             .scoreThreshold(0.0)
                             .build()
