@@ -140,7 +140,6 @@ internal class ResponseInputItemTest {
                                 .index(0L)
                                 .build()
                         )
-                        .text("text")
                         .addLogprob(
                             ResponseOutputText.Logprob.builder()
                                 .token("token")
@@ -155,6 +154,7 @@ internal class ResponseInputItemTest {
                                 )
                                 .build()
                         )
+                        .text("text")
                         .build()
                 )
                 .status(ResponseOutputMessage.Status.IN_PROGRESS)
@@ -201,7 +201,6 @@ internal class ResponseInputItemTest {
                                     .index(0L)
                                     .build()
                             )
-                            .text("text")
                             .addLogprob(
                                 ResponseOutputText.Logprob.builder()
                                     .token("token")
@@ -216,6 +215,7 @@ internal class ResponseInputItemTest {
                                     )
                                     .build()
                             )
+                            .text("text")
                             .build()
                     )
                     .status(ResponseOutputMessage.Status.IN_PROGRESS)

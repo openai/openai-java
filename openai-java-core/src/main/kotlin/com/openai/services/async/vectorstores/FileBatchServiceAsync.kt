@@ -29,19 +29,29 @@ interface FileBatchServiceAsync {
     fun withOptions(modifier: Consumer<ClientOptions.Builder>): FileBatchServiceAsync
 
     /** Create a vector store file batch. */
+    fun create(vectorStoreId: String): CompletableFuture<VectorStoreFileBatch> =
+        create(vectorStoreId, FileBatchCreateParams.none())
+
+    /** @see create */
     fun create(
         vectorStoreId: String,
-        params: FileBatchCreateParams,
+        params: FileBatchCreateParams = FileBatchCreateParams.none(),
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): CompletableFuture<VectorStoreFileBatch> =
+        create(params.toBuilder().vectorStoreId(vectorStoreId).build(), requestOptions)
+
+    /** @see create */
+    fun create(
+        vectorStoreId: String,
+        params: FileBatchCreateParams = FileBatchCreateParams.none(),
     ): CompletableFuture<VectorStoreFileBatch> =
         create(vectorStoreId, params, RequestOptions.none())
 
     /** @see create */
     fun create(
-        vectorStoreId: String,
         params: FileBatchCreateParams,
         requestOptions: RequestOptions = RequestOptions.none(),
-    ): CompletableFuture<VectorStoreFileBatch> =
-        create(params.toBuilder().vectorStoreId(vectorStoreId).build(), requestOptions)
+    ): CompletableFuture<VectorStoreFileBatch>
 
     /** @see create */
     fun create(params: FileBatchCreateParams): CompletableFuture<VectorStoreFileBatch> =
@@ -49,9 +59,10 @@ interface FileBatchServiceAsync {
 
     /** @see create */
     fun create(
-        params: FileBatchCreateParams,
-        requestOptions: RequestOptions = RequestOptions.none(),
-    ): CompletableFuture<VectorStoreFileBatch>
+        vectorStoreId: String,
+        requestOptions: RequestOptions,
+    ): CompletableFuture<VectorStoreFileBatch> =
+        create(vectorStoreId, FileBatchCreateParams.none(), requestOptions)
 
     /** Retrieves a vector store file batch. */
     fun retrieve(
@@ -149,18 +160,30 @@ interface FileBatchServiceAsync {
          * is otherwise the same as [FileBatchServiceAsync.create].
          */
         fun create(
+            vectorStoreId: String
+        ): CompletableFuture<HttpResponseFor<VectorStoreFileBatch>> =
+            create(vectorStoreId, FileBatchCreateParams.none())
+
+        /** @see create */
+        fun create(
             vectorStoreId: String,
-            params: FileBatchCreateParams,
+            params: FileBatchCreateParams = FileBatchCreateParams.none(),
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): CompletableFuture<HttpResponseFor<VectorStoreFileBatch>> =
+            create(params.toBuilder().vectorStoreId(vectorStoreId).build(), requestOptions)
+
+        /** @see create */
+        fun create(
+            vectorStoreId: String,
+            params: FileBatchCreateParams = FileBatchCreateParams.none(),
         ): CompletableFuture<HttpResponseFor<VectorStoreFileBatch>> =
             create(vectorStoreId, params, RequestOptions.none())
 
         /** @see create */
         fun create(
-            vectorStoreId: String,
             params: FileBatchCreateParams,
             requestOptions: RequestOptions = RequestOptions.none(),
-        ): CompletableFuture<HttpResponseFor<VectorStoreFileBatch>> =
-            create(params.toBuilder().vectorStoreId(vectorStoreId).build(), requestOptions)
+        ): CompletableFuture<HttpResponseFor<VectorStoreFileBatch>>
 
         /** @see create */
         fun create(
@@ -170,9 +193,10 @@ interface FileBatchServiceAsync {
 
         /** @see create */
         fun create(
-            params: FileBatchCreateParams,
-            requestOptions: RequestOptions = RequestOptions.none(),
-        ): CompletableFuture<HttpResponseFor<VectorStoreFileBatch>>
+            vectorStoreId: String,
+            requestOptions: RequestOptions,
+        ): CompletableFuture<HttpResponseFor<VectorStoreFileBatch>> =
+            create(vectorStoreId, FileBatchCreateParams.none(), requestOptions)
 
         /**
          * Returns a raw HTTP response for `get

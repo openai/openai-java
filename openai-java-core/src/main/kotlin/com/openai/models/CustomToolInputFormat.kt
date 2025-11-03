@@ -38,16 +38,20 @@ private constructor(
     private val _json: JsonValue? = null,
 ) {
 
+    /** Unconstrained free-form text. */
     fun text(): Optional<JsonValue> = Optional.ofNullable(text)
 
+    /** A grammar defined by the user. */
     fun grammar(): Optional<Grammar> = Optional.ofNullable(grammar)
 
     fun isText(): Boolean = text != null
 
     fun isGrammar(): Boolean = grammar != null
 
+    /** Unconstrained free-form text. */
     fun asText(): JsonValue = text.getOrThrow("text")
 
+    /** A grammar defined by the user. */
     fun asGrammar(): Grammar = grammar.getOrThrow("grammar")
 
     fun _json(): Optional<JsonValue> = Optional.ofNullable(_json)
@@ -130,9 +134,11 @@ private constructor(
 
     companion object {
 
+        /** Unconstrained free-form text. */
         @JvmStatic
         fun ofText() = CustomToolInputFormat(text = JsonValue.from(mapOf("type" to "text")))
 
+        /** A grammar defined by the user. */
         @JvmStatic fun ofGrammar(grammar: Grammar) = CustomToolInputFormat(grammar = grammar)
     }
 
@@ -142,8 +148,10 @@ private constructor(
      */
     interface Visitor<out T> {
 
+        /** Unconstrained free-form text. */
         fun visitText(text: JsonValue): T
 
+        /** A grammar defined by the user. */
         fun visitGrammar(grammar: Grammar): T
 
         /**
@@ -202,6 +210,7 @@ private constructor(
         }
     }
 
+    /** A grammar defined by the user. */
     class Grammar
     @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(

@@ -570,6 +570,7 @@ private constructor(
     class RankingOptions
     @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(
+        private val hybridSearch: JsonField<HybridSearch>,
         private val ranker: JsonField<Ranker>,
         private val scoreThreshold: JsonField<Double>,
         private val additionalProperties: MutableMap<String, JsonValue>,
@@ -577,11 +578,23 @@ private constructor(
 
         @JsonCreator
         private constructor(
+            @JsonProperty("hybrid_search")
+            @ExcludeMissing
+            hybridSearch: JsonField<HybridSearch> = JsonMissing.of(),
             @JsonProperty("ranker") @ExcludeMissing ranker: JsonField<Ranker> = JsonMissing.of(),
             @JsonProperty("score_threshold")
             @ExcludeMissing
             scoreThreshold: JsonField<Double> = JsonMissing.of(),
-        ) : this(ranker, scoreThreshold, mutableMapOf())
+        ) : this(hybridSearch, ranker, scoreThreshold, mutableMapOf())
+
+        /**
+         * Weights that control how reciprocal rank fusion balances semantic embedding matches
+         * versus sparse keyword matches when hybrid search is enabled.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun hybridSearch(): Optional<HybridSearch> = hybridSearch.getOptional("hybrid_search")
 
         /**
          * The ranker to use for the file search.
@@ -599,6 +612,16 @@ private constructor(
          *   server responded with an unexpected value).
          */
         fun scoreThreshold(): Optional<Double> = scoreThreshold.getOptional("score_threshold")
+
+        /**
+         * Returns the raw JSON value of [hybridSearch].
+         *
+         * Unlike [hybridSearch], this method doesn't throw if the JSON field has an unexpected
+         * type.
+         */
+        @JsonProperty("hybrid_search")
+        @ExcludeMissing
+        fun _hybridSearch(): JsonField<HybridSearch> = hybridSearch
 
         /**
          * Returns the raw JSON value of [ranker].
@@ -638,15 +661,34 @@ private constructor(
         /** A builder for [RankingOptions]. */
         class Builder internal constructor() {
 
+            private var hybridSearch: JsonField<HybridSearch> = JsonMissing.of()
             private var ranker: JsonField<Ranker> = JsonMissing.of()
             private var scoreThreshold: JsonField<Double> = JsonMissing.of()
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
             @JvmSynthetic
             internal fun from(rankingOptions: RankingOptions) = apply {
+                hybridSearch = rankingOptions.hybridSearch
                 ranker = rankingOptions.ranker
                 scoreThreshold = rankingOptions.scoreThreshold
                 additionalProperties = rankingOptions.additionalProperties.toMutableMap()
+            }
+
+            /**
+             * Weights that control how reciprocal rank fusion balances semantic embedding matches
+             * versus sparse keyword matches when hybrid search is enabled.
+             */
+            fun hybridSearch(hybridSearch: HybridSearch) = hybridSearch(JsonField.of(hybridSearch))
+
+            /**
+             * Sets [Builder.hybridSearch] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.hybridSearch] with a well-typed [HybridSearch] value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun hybridSearch(hybridSearch: JsonField<HybridSearch>) = apply {
+                this.hybridSearch = hybridSearch
             }
 
             /** The ranker to use for the file search. */
@@ -705,7 +747,12 @@ private constructor(
              * Further updates to this [Builder] will not mutate the returned instance.
              */
             fun build(): RankingOptions =
-                RankingOptions(ranker, scoreThreshold, additionalProperties.toMutableMap())
+                RankingOptions(
+                    hybridSearch,
+                    ranker,
+                    scoreThreshold,
+                    additionalProperties.toMutableMap(),
+                )
         }
 
         private var validated: Boolean = false
@@ -715,6 +762,7 @@ private constructor(
                 return@apply
             }
 
+            hybridSearch().ifPresent { it.validate() }
             ranker().ifPresent { it.validate() }
             scoreThreshold()
             validated = true
@@ -736,8 +784,233 @@ private constructor(
          */
         @JvmSynthetic
         internal fun validity(): Int =
-            (ranker.asKnown().getOrNull()?.validity() ?: 0) +
+            (hybridSearch.asKnown().getOrNull()?.validity() ?: 0) +
+                (ranker.asKnown().getOrNull()?.validity() ?: 0) +
                 (if (scoreThreshold.asKnown().isPresent) 1 else 0)
+
+        /**
+         * Weights that control how reciprocal rank fusion balances semantic embedding matches
+         * versus sparse keyword matches when hybrid search is enabled.
+         */
+        class HybridSearch
+        @JsonCreator(mode = JsonCreator.Mode.DISABLED)
+        private constructor(
+            private val embeddingWeight: JsonField<Double>,
+            private val textWeight: JsonField<Double>,
+            private val additionalProperties: MutableMap<String, JsonValue>,
+        ) {
+
+            @JsonCreator
+            private constructor(
+                @JsonProperty("embedding_weight")
+                @ExcludeMissing
+                embeddingWeight: JsonField<Double> = JsonMissing.of(),
+                @JsonProperty("text_weight")
+                @ExcludeMissing
+                textWeight: JsonField<Double> = JsonMissing.of(),
+            ) : this(embeddingWeight, textWeight, mutableMapOf())
+
+            /**
+             * The weight of the embedding in the reciprocal ranking fusion.
+             *
+             * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+             *   unexpectedly missing or null (e.g. if the server responded with an unexpected
+             *   value).
+             */
+            fun embeddingWeight(): Double = embeddingWeight.getRequired("embedding_weight")
+
+            /**
+             * The weight of the text in the reciprocal ranking fusion.
+             *
+             * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+             *   unexpectedly missing or null (e.g. if the server responded with an unexpected
+             *   value).
+             */
+            fun textWeight(): Double = textWeight.getRequired("text_weight")
+
+            /**
+             * Returns the raw JSON value of [embeddingWeight].
+             *
+             * Unlike [embeddingWeight], this method doesn't throw if the JSON field has an
+             * unexpected type.
+             */
+            @JsonProperty("embedding_weight")
+            @ExcludeMissing
+            fun _embeddingWeight(): JsonField<Double> = embeddingWeight
+
+            /**
+             * Returns the raw JSON value of [textWeight].
+             *
+             * Unlike [textWeight], this method doesn't throw if the JSON field has an unexpected
+             * type.
+             */
+            @JsonProperty("text_weight")
+            @ExcludeMissing
+            fun _textWeight(): JsonField<Double> = textWeight
+
+            @JsonAnySetter
+            private fun putAdditionalProperty(key: String, value: JsonValue) {
+                additionalProperties.put(key, value)
+            }
+
+            @JsonAnyGetter
+            @ExcludeMissing
+            fun _additionalProperties(): Map<String, JsonValue> =
+                Collections.unmodifiableMap(additionalProperties)
+
+            fun toBuilder() = Builder().from(this)
+
+            companion object {
+
+                /**
+                 * Returns a mutable builder for constructing an instance of [HybridSearch].
+                 *
+                 * The following fields are required:
+                 * ```java
+                 * .embeddingWeight()
+                 * .textWeight()
+                 * ```
+                 */
+                @JvmStatic fun builder() = Builder()
+            }
+
+            /** A builder for [HybridSearch]. */
+            class Builder internal constructor() {
+
+                private var embeddingWeight: JsonField<Double>? = null
+                private var textWeight: JsonField<Double>? = null
+                private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
+
+                @JvmSynthetic
+                internal fun from(hybridSearch: HybridSearch) = apply {
+                    embeddingWeight = hybridSearch.embeddingWeight
+                    textWeight = hybridSearch.textWeight
+                    additionalProperties = hybridSearch.additionalProperties.toMutableMap()
+                }
+
+                /** The weight of the embedding in the reciprocal ranking fusion. */
+                fun embeddingWeight(embeddingWeight: Double) =
+                    embeddingWeight(JsonField.of(embeddingWeight))
+
+                /**
+                 * Sets [Builder.embeddingWeight] to an arbitrary JSON value.
+                 *
+                 * You should usually call [Builder.embeddingWeight] with a well-typed [Double]
+                 * value instead. This method is primarily for setting the field to an undocumented
+                 * or not yet supported value.
+                 */
+                fun embeddingWeight(embeddingWeight: JsonField<Double>) = apply {
+                    this.embeddingWeight = embeddingWeight
+                }
+
+                /** The weight of the text in the reciprocal ranking fusion. */
+                fun textWeight(textWeight: Double) = textWeight(JsonField.of(textWeight))
+
+                /**
+                 * Sets [Builder.textWeight] to an arbitrary JSON value.
+                 *
+                 * You should usually call [Builder.textWeight] with a well-typed [Double] value
+                 * instead. This method is primarily for setting the field to an undocumented or not
+                 * yet supported value.
+                 */
+                fun textWeight(textWeight: JsonField<Double>) = apply {
+                    this.textWeight = textWeight
+                }
+
+                fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                    this.additionalProperties.clear()
+                    putAllAdditionalProperties(additionalProperties)
+                }
+
+                fun putAdditionalProperty(key: String, value: JsonValue) = apply {
+                    additionalProperties.put(key, value)
+                }
+
+                fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) =
+                    apply {
+                        this.additionalProperties.putAll(additionalProperties)
+                    }
+
+                fun removeAdditionalProperty(key: String) = apply {
+                    additionalProperties.remove(key)
+                }
+
+                fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                    keys.forEach(::removeAdditionalProperty)
+                }
+
+                /**
+                 * Returns an immutable instance of [HybridSearch].
+                 *
+                 * Further updates to this [Builder] will not mutate the returned instance.
+                 *
+                 * The following fields are required:
+                 * ```java
+                 * .embeddingWeight()
+                 * .textWeight()
+                 * ```
+                 *
+                 * @throws IllegalStateException if any required field is unset.
+                 */
+                fun build(): HybridSearch =
+                    HybridSearch(
+                        checkRequired("embeddingWeight", embeddingWeight),
+                        checkRequired("textWeight", textWeight),
+                        additionalProperties.toMutableMap(),
+                    )
+            }
+
+            private var validated: Boolean = false
+
+            fun validate(): HybridSearch = apply {
+                if (validated) {
+                    return@apply
+                }
+
+                embeddingWeight()
+                textWeight()
+                validated = true
+            }
+
+            fun isValid(): Boolean =
+                try {
+                    validate()
+                    true
+                } catch (e: OpenAIInvalidDataException) {
+                    false
+                }
+
+            /**
+             * Returns a score indicating how many valid values are contained in this object
+             * recursively.
+             *
+             * Used for best match union deserialization.
+             */
+            @JvmSynthetic
+            internal fun validity(): Int =
+                (if (embeddingWeight.asKnown().isPresent) 1 else 0) +
+                    (if (textWeight.asKnown().isPresent) 1 else 0)
+
+            override fun equals(other: Any?): Boolean {
+                if (this === other) {
+                    return true
+                }
+
+                return other is HybridSearch &&
+                    embeddingWeight == other.embeddingWeight &&
+                    textWeight == other.textWeight &&
+                    additionalProperties == other.additionalProperties
+            }
+
+            private val hashCode: Int by lazy {
+                Objects.hash(embeddingWeight, textWeight, additionalProperties)
+            }
+
+            override fun hashCode(): Int = hashCode
+
+            override fun toString() =
+                "HybridSearch{embeddingWeight=$embeddingWeight, textWeight=$textWeight, additionalProperties=$additionalProperties}"
+        }
 
         /** The ranker to use for the file search. */
         class Ranker @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
@@ -875,19 +1148,20 @@ private constructor(
             }
 
             return other is RankingOptions &&
+                hybridSearch == other.hybridSearch &&
                 ranker == other.ranker &&
                 scoreThreshold == other.scoreThreshold &&
                 additionalProperties == other.additionalProperties
         }
 
         private val hashCode: Int by lazy {
-            Objects.hash(ranker, scoreThreshold, additionalProperties)
+            Objects.hash(hybridSearch, ranker, scoreThreshold, additionalProperties)
         }
 
         override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "RankingOptions{ranker=$ranker, scoreThreshold=$scoreThreshold, additionalProperties=$additionalProperties}"
+            "RankingOptions{hybridSearch=$hybridSearch, ranker=$ranker, scoreThreshold=$scoreThreshold, additionalProperties=$additionalProperties}"
     }
 
     override fun equals(other: Any?): Boolean {

@@ -3304,6 +3304,7 @@ private constructor(
             private constructor(
                 private val type: JsonValue,
                 private val fileIds: JsonField<List<String>>,
+                private val memoryLimit: JsonField<MemoryLimit>,
                 private val additionalProperties: MutableMap<String, JsonValue>,
             ) {
 
@@ -3313,7 +3314,10 @@ private constructor(
                     @JsonProperty("file_ids")
                     @ExcludeMissing
                     fileIds: JsonField<List<String>> = JsonMissing.of(),
-                ) : this(type, fileIds, mutableMapOf())
+                    @JsonProperty("memory_limit")
+                    @ExcludeMissing
+                    memoryLimit: JsonField<MemoryLimit> = JsonMissing.of(),
+                ) : this(type, fileIds, memoryLimit, mutableMapOf())
 
                 /**
                  * Always `auto`.
@@ -3337,6 +3341,12 @@ private constructor(
                 fun fileIds(): Optional<List<String>> = fileIds.getOptional("file_ids")
 
                 /**
+                 * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g.
+                 *   if the server responded with an unexpected value).
+                 */
+                fun memoryLimit(): Optional<MemoryLimit> = memoryLimit.getOptional("memory_limit")
+
+                /**
                  * Returns the raw JSON value of [fileIds].
                  *
                  * Unlike [fileIds], this method doesn't throw if the JSON field has an unexpected
@@ -3345,6 +3355,16 @@ private constructor(
                 @JsonProperty("file_ids")
                 @ExcludeMissing
                 fun _fileIds(): JsonField<List<String>> = fileIds
+
+                /**
+                 * Returns the raw JSON value of [memoryLimit].
+                 *
+                 * Unlike [memoryLimit], this method doesn't throw if the JSON field has an
+                 * unexpected type.
+                 */
+                @JsonProperty("memory_limit")
+                @ExcludeMissing
+                fun _memoryLimit(): JsonField<MemoryLimit> = memoryLimit
 
                 @JsonAnySetter
                 private fun putAdditionalProperty(key: String, value: JsonValue) {
@@ -3372,12 +3392,14 @@ private constructor(
 
                     private var type: JsonValue = JsonValue.from("auto")
                     private var fileIds: JsonField<MutableList<String>>? = null
+                    private var memoryLimit: JsonField<MemoryLimit> = JsonMissing.of()
                     private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
                     @JvmSynthetic
                     internal fun from(codeInterpreterToolAuto: CodeInterpreterToolAuto) = apply {
                         type = codeInterpreterToolAuto.type
                         fileIds = codeInterpreterToolAuto.fileIds.map { it.toMutableList() }
+                        memoryLimit = codeInterpreterToolAuto.memoryLimit
                         additionalProperties =
                             codeInterpreterToolAuto.additionalProperties.toMutableMap()
                     }
@@ -3422,6 +3444,24 @@ private constructor(
                             }
                     }
 
+                    fun memoryLimit(memoryLimit: MemoryLimit?) =
+                        memoryLimit(JsonField.ofNullable(memoryLimit))
+
+                    /** Alias for calling [Builder.memoryLimit] with `memoryLimit.orElse(null)`. */
+                    fun memoryLimit(memoryLimit: Optional<MemoryLimit>) =
+                        memoryLimit(memoryLimit.getOrNull())
+
+                    /**
+                     * Sets [Builder.memoryLimit] to an arbitrary JSON value.
+                     *
+                     * You should usually call [Builder.memoryLimit] with a well-typed [MemoryLimit]
+                     * value instead. This method is primarily for setting the field to an
+                     * undocumented or not yet supported value.
+                     */
+                    fun memoryLimit(memoryLimit: JsonField<MemoryLimit>) = apply {
+                        this.memoryLimit = memoryLimit
+                    }
+
                     fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                         this.additionalProperties.clear()
                         putAllAdditionalProperties(additionalProperties)
@@ -3453,6 +3493,7 @@ private constructor(
                         CodeInterpreterToolAuto(
                             type,
                             (fileIds ?: JsonMissing.of()).map { it.toImmutable() },
+                            memoryLimit,
                             additionalProperties.toMutableMap(),
                         )
                 }
@@ -3470,6 +3511,7 @@ private constructor(
                         }
                     }
                     fileIds()
+                    memoryLimit().ifPresent { it.validate() }
                     validated = true
                 }
 
@@ -3490,7 +3532,156 @@ private constructor(
                 @JvmSynthetic
                 internal fun validity(): Int =
                     type.let { if (it == JsonValue.from("auto")) 1 else 0 } +
-                        (fileIds.asKnown().getOrNull()?.size ?: 0)
+                        (fileIds.asKnown().getOrNull()?.size ?: 0) +
+                        (memoryLimit.asKnown().getOrNull()?.validity() ?: 0)
+
+                class MemoryLimit
+                @JsonCreator
+                private constructor(private val value: JsonField<String>) : Enum {
+
+                    /**
+                     * Returns this class instance's raw value.
+                     *
+                     * This is usually only useful if this instance was deserialized from data that
+                     * doesn't match any known member, and you want to know that value. For example,
+                     * if the SDK is on an older version than the API, then the API may respond with
+                     * new members that the SDK is unaware of.
+                     */
+                    @com.fasterxml.jackson.annotation.JsonValue
+                    fun _value(): JsonField<String> = value
+
+                    companion object {
+
+                        @JvmField val _1G = of("1g")
+
+                        @JvmField val _4G = of("4g")
+
+                        @JvmField val _16G = of("16g")
+
+                        @JvmField val _64G = of("64g")
+
+                        @JvmStatic fun of(value: String) = MemoryLimit(JsonField.of(value))
+                    }
+
+                    /** An enum containing [MemoryLimit]'s known values. */
+                    enum class Known {
+                        _1G,
+                        _4G,
+                        _16G,
+                        _64G,
+                    }
+
+                    /**
+                     * An enum containing [MemoryLimit]'s known values, as well as an [_UNKNOWN]
+                     * member.
+                     *
+                     * An instance of [MemoryLimit] can contain an unknown value in a couple of
+                     * cases:
+                     * - It was deserialized from data that doesn't match any known member. For
+                     *   example, if the SDK is on an older version than the API, then the API may
+                     *   respond with new members that the SDK is unaware of.
+                     * - It was constructed with an arbitrary value using the [of] method.
+                     */
+                    enum class Value {
+                        _1G,
+                        _4G,
+                        _16G,
+                        _64G,
+                        /**
+                         * An enum member indicating that [MemoryLimit] was instantiated with an
+                         * unknown value.
+                         */
+                        _UNKNOWN,
+                    }
+
+                    /**
+                     * Returns an enum member corresponding to this class instance's value, or
+                     * [Value._UNKNOWN] if the class was instantiated with an unknown value.
+                     *
+                     * Use the [known] method instead if you're certain the value is always known or
+                     * if you want to throw for the unknown case.
+                     */
+                    fun value(): Value =
+                        when (this) {
+                            _1G -> Value._1G
+                            _4G -> Value._4G
+                            _16G -> Value._16G
+                            _64G -> Value._64G
+                            else -> Value._UNKNOWN
+                        }
+
+                    /**
+                     * Returns an enum member corresponding to this class instance's value.
+                     *
+                     * Use the [value] method instead if you're uncertain the value is always known
+                     * and don't want to throw for the unknown case.
+                     *
+                     * @throws OpenAIInvalidDataException if this class instance's value is a not a
+                     *   known member.
+                     */
+                    fun known(): Known =
+                        when (this) {
+                            _1G -> Known._1G
+                            _4G -> Known._4G
+                            _16G -> Known._16G
+                            _64G -> Known._64G
+                            else -> throw OpenAIInvalidDataException("Unknown MemoryLimit: $value")
+                        }
+
+                    /**
+                     * Returns this class instance's primitive wire representation.
+                     *
+                     * This differs from the [toString] method because that method is primarily for
+                     * debugging and generally doesn't throw.
+                     *
+                     * @throws OpenAIInvalidDataException if this class instance's value does not
+                     *   have the expected primitive type.
+                     */
+                    fun asString(): String =
+                        _value().asString().orElseThrow {
+                            OpenAIInvalidDataException("Value is not a String")
+                        }
+
+                    private var validated: Boolean = false
+
+                    fun validate(): MemoryLimit = apply {
+                        if (validated) {
+                            return@apply
+                        }
+
+                        known()
+                        validated = true
+                    }
+
+                    fun isValid(): Boolean =
+                        try {
+                            validate()
+                            true
+                        } catch (e: OpenAIInvalidDataException) {
+                            false
+                        }
+
+                    /**
+                     * Returns a score indicating how many valid values are contained in this object
+                     * recursively.
+                     *
+                     * Used for best match union deserialization.
+                     */
+                    @JvmSynthetic
+                    internal fun validity(): Int = if (value() == Value._UNKNOWN) 0 else 1
+
+                    override fun equals(other: Any?): Boolean {
+                        if (this === other) {
+                            return true
+                        }
+
+                        return other is MemoryLimit && value == other.value
+                    }
+
+                    override fun hashCode() = value.hashCode()
+
+                    override fun toString() = value.toString()
+                }
 
                 override fun equals(other: Any?): Boolean {
                     if (this === other) {
@@ -3500,17 +3691,18 @@ private constructor(
                     return other is CodeInterpreterToolAuto &&
                         type == other.type &&
                         fileIds == other.fileIds &&
+                        memoryLimit == other.memoryLimit &&
                         additionalProperties == other.additionalProperties
                 }
 
                 private val hashCode: Int by lazy {
-                    Objects.hash(type, fileIds, additionalProperties)
+                    Objects.hash(type, fileIds, memoryLimit, additionalProperties)
                 }
 
                 override fun hashCode(): Int = hashCode
 
                 override fun toString() =
-                    "CodeInterpreterToolAuto{type=$type, fileIds=$fileIds, additionalProperties=$additionalProperties}"
+                    "CodeInterpreterToolAuto{type=$type, fileIds=$fileIds, memoryLimit=$memoryLimit, additionalProperties=$additionalProperties}"
             }
         }
 
@@ -3616,7 +3808,9 @@ private constructor(
         fun background(): Optional<Background> = background.getOptional("background")
 
         /**
-         *             Control how much effort the model will exert to match the style and features, especially facial features, of input images. This parameter is only supported for `gpt-image-1`. Unsupported for `gpt-image-1-mini`. Supports `high` and `low`. Defaults to `low`.
+         * Control how much effort the model will exert to match the style and features, especially
+         * facial features, of input images. This parameter is only supported for `gpt-image-1`.
+         * Unsupported for `gpt-image-1-mini`. Supports `high` and `low`. Defaults to `low`.
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
@@ -3864,7 +4058,10 @@ private constructor(
             }
 
             /**
-             *             Control how much effort the model will exert to match the style and features, especially facial features, of input images. This parameter is only supported for `gpt-image-1`. Unsupported for `gpt-image-1-mini`. Supports `high` and `low`. Defaults to `low`.
+             * Control how much effort the model will exert to match the style and features,
+             * especially facial features, of input images. This parameter is only supported for
+             * `gpt-image-1`. Unsupported for `gpt-image-1-mini`. Supports `high` and `low`.
+             * Defaults to `low`.
              */
             fun inputFidelity(inputFidelity: InputFidelity?) =
                 inputFidelity(JsonField.ofNullable(inputFidelity))
@@ -4242,7 +4439,9 @@ private constructor(
         }
 
         /**
-         *             Control how much effort the model will exert to match the style and features, especially facial features, of input images. This parameter is only supported for `gpt-image-1`. Unsupported for `gpt-image-1-mini`. Supports `high` and `low`. Defaults to `low`.
+         * Control how much effort the model will exert to match the style and features, especially
+         * facial features, of input images. This parameter is only supported for `gpt-image-1`.
+         * Unsupported for `gpt-image-1-mini`. Supports `high` and `low`. Defaults to `low`.
          */
         class InputFidelity @JsonCreator private constructor(private val value: JsonField<String>) :
             Enum {
