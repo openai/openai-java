@@ -25,7 +25,6 @@ internal class ResponseOutputItemAddedEventTest {
                                         .index(0L)
                                         .build()
                                 )
-                                .text("text")
                                 .addLogprob(
                                     ResponseOutputText.Logprob.builder()
                                         .token("token")
@@ -40,6 +39,7 @@ internal class ResponseOutputItemAddedEventTest {
                                         )
                                         .build()
                                 )
+                                .text("text")
                                 .build()
                         )
                         .status(ResponseOutputMessage.Status.IN_PROGRESS)
@@ -63,7 +63,6 @@ internal class ResponseOutputItemAddedEventTest {
                                         .index(0L)
                                         .build()
                                 )
-                                .text("text")
                                 .addLogprob(
                                     ResponseOutputText.Logprob.builder()
                                         .token("token")
@@ -78,6 +77,7 @@ internal class ResponseOutputItemAddedEventTest {
                                         )
                                         .build()
                                 )
+                                .text("text")
                                 .build()
                         )
                         .status(ResponseOutputMessage.Status.IN_PROGRESS)
@@ -105,7 +105,6 @@ internal class ResponseOutputItemAddedEventTest {
                                         .index(0L)
                                         .build()
                                 )
-                                .text("text")
                                 .addLogprob(
                                     ResponseOutputText.Logprob.builder()
                                         .token("token")
@@ -120,6 +119,7 @@ internal class ResponseOutputItemAddedEventTest {
                                         )
                                         .build()
                                 )
+                                .text("text")
                                 .build()
                         )
                         .status(ResponseOutputMessage.Status.IN_PROGRESS)

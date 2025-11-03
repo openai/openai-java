@@ -29,26 +29,36 @@ interface FileBatchService {
     fun withOptions(modifier: Consumer<ClientOptions.Builder>): FileBatchService
 
     /** Create a vector store file batch. */
-    fun create(vectorStoreId: String, params: FileBatchCreateParams): VectorStoreFileBatch =
-        create(vectorStoreId, params, RequestOptions.none())
+    fun create(vectorStoreId: String): VectorStoreFileBatch =
+        create(vectorStoreId, FileBatchCreateParams.none())
 
     /** @see create */
     fun create(
         vectorStoreId: String,
-        params: FileBatchCreateParams,
+        params: FileBatchCreateParams = FileBatchCreateParams.none(),
         requestOptions: RequestOptions = RequestOptions.none(),
     ): VectorStoreFileBatch =
         create(params.toBuilder().vectorStoreId(vectorStoreId).build(), requestOptions)
 
     /** @see create */
-    fun create(params: FileBatchCreateParams): VectorStoreFileBatch =
-        create(params, RequestOptions.none())
+    fun create(
+        vectorStoreId: String,
+        params: FileBatchCreateParams = FileBatchCreateParams.none(),
+    ): VectorStoreFileBatch = create(vectorStoreId, params, RequestOptions.none())
 
     /** @see create */
     fun create(
         params: FileBatchCreateParams,
         requestOptions: RequestOptions = RequestOptions.none(),
     ): VectorStoreFileBatch
+
+    /** @see create */
+    fun create(params: FileBatchCreateParams): VectorStoreFileBatch =
+        create(params, RequestOptions.none())
+
+    /** @see create */
+    fun create(vectorStoreId: String, requestOptions: RequestOptions): VectorStoreFileBatch =
+        create(vectorStoreId, FileBatchCreateParams.none(), requestOptions)
 
     /** Retrieves a vector store file batch. */
     fun retrieve(batchId: String, params: FileBatchRetrieveParams): VectorStoreFileBatch =
@@ -132,20 +142,32 @@ interface FileBatchService {
          * is otherwise the same as [FileBatchService.create].
          */
         @MustBeClosed
+        fun create(vectorStoreId: String): HttpResponseFor<VectorStoreFileBatch> =
+            create(vectorStoreId, FileBatchCreateParams.none())
+
+        /** @see create */
+        @MustBeClosed
         fun create(
             vectorStoreId: String,
-            params: FileBatchCreateParams,
+            params: FileBatchCreateParams = FileBatchCreateParams.none(),
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): HttpResponseFor<VectorStoreFileBatch> =
+            create(params.toBuilder().vectorStoreId(vectorStoreId).build(), requestOptions)
+
+        /** @see create */
+        @MustBeClosed
+        fun create(
+            vectorStoreId: String,
+            params: FileBatchCreateParams = FileBatchCreateParams.none(),
         ): HttpResponseFor<VectorStoreFileBatch> =
             create(vectorStoreId, params, RequestOptions.none())
 
         /** @see create */
         @MustBeClosed
         fun create(
-            vectorStoreId: String,
             params: FileBatchCreateParams,
             requestOptions: RequestOptions = RequestOptions.none(),
-        ): HttpResponseFor<VectorStoreFileBatch> =
-            create(params.toBuilder().vectorStoreId(vectorStoreId).build(), requestOptions)
+        ): HttpResponseFor<VectorStoreFileBatch>
 
         /** @see create */
         @MustBeClosed
@@ -155,9 +177,10 @@ interface FileBatchService {
         /** @see create */
         @MustBeClosed
         fun create(
-            params: FileBatchCreateParams,
-            requestOptions: RequestOptions = RequestOptions.none(),
-        ): HttpResponseFor<VectorStoreFileBatch>
+            vectorStoreId: String,
+            requestOptions: RequestOptions,
+        ): HttpResponseFor<VectorStoreFileBatch> =
+            create(vectorStoreId, FileBatchCreateParams.none(), requestOptions)
 
         /**
          * Returns a raw HTTP response for `get

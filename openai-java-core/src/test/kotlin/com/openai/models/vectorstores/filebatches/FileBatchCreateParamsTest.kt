@@ -5,6 +5,7 @@ package com.openai.models.vectorstores.filebatches
 import com.openai.core.JsonValue
 import com.openai.models.vectorstores.AutoFileChunkingStrategyParam
 import com.openai.models.vectorstores.FileChunkingStrategyParam
+import kotlin.jvm.optionals.getOrNull
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
@@ -14,20 +15,30 @@ internal class FileBatchCreateParamsTest {
     fun create() {
         FileBatchCreateParams.builder()
             .vectorStoreId("vs_abc123")
-            .addFileId("string")
             .attributes(
                 FileBatchCreateParams.Attributes.builder()
                     .putAdditionalProperty("foo", JsonValue.from("string"))
                     .build()
             )
             .chunkingStrategy(AutoFileChunkingStrategyParam.builder().build())
+            .addFileId("string")
+            .addFile(
+                FileBatchCreateParams.File.builder()
+                    .fileId("file_id")
+                    .attributes(
+                        FileBatchCreateParams.File.Attributes.builder()
+                            .putAdditionalProperty("foo", JsonValue.from("string"))
+                            .build()
+                    )
+                    .chunkingStrategy(AutoFileChunkingStrategyParam.builder().build())
+                    .build()
+            )
             .build()
     }
 
     @Test
     fun pathParams() {
-        val params =
-            FileBatchCreateParams.builder().vectorStoreId("vs_abc123").addFileId("string").build()
+        val params = FileBatchCreateParams.builder().vectorStoreId("vs_abc123").build()
 
         assertThat(params._pathParam(0)).isEqualTo("vs_abc123")
         // out-of-bound path param
@@ -39,18 +50,28 @@ internal class FileBatchCreateParamsTest {
         val params =
             FileBatchCreateParams.builder()
                 .vectorStoreId("vs_abc123")
-                .addFileId("string")
                 .attributes(
                     FileBatchCreateParams.Attributes.builder()
                         .putAdditionalProperty("foo", JsonValue.from("string"))
                         .build()
                 )
                 .chunkingStrategy(AutoFileChunkingStrategyParam.builder().build())
+                .addFileId("string")
+                .addFile(
+                    FileBatchCreateParams.File.builder()
+                        .fileId("file_id")
+                        .attributes(
+                            FileBatchCreateParams.File.Attributes.builder()
+                                .putAdditionalProperty("foo", JsonValue.from("string"))
+                                .build()
+                        )
+                        .chunkingStrategy(AutoFileChunkingStrategyParam.builder().build())
+                        .build()
+                )
                 .build()
 
         val body = params._body()
 
-        assertThat(body.fileIds()).containsExactly("string")
         assertThat(body.attributes())
             .contains(
                 FileBatchCreateParams.Attributes.builder()
@@ -61,15 +82,25 @@ internal class FileBatchCreateParamsTest {
             .contains(
                 FileChunkingStrategyParam.ofAuto(AutoFileChunkingStrategyParam.builder().build())
             )
+        assertThat(body.fileIds().getOrNull()).containsExactly("string")
+        assertThat(body.files().getOrNull())
+            .containsExactly(
+                FileBatchCreateParams.File.builder()
+                    .fileId("file_id")
+                    .attributes(
+                        FileBatchCreateParams.File.Attributes.builder()
+                            .putAdditionalProperty("foo", JsonValue.from("string"))
+                            .build()
+                    )
+                    .chunkingStrategy(AutoFileChunkingStrategyParam.builder().build())
+                    .build()
+            )
     }
 
     @Test
     fun bodyWithoutOptionalFields() {
-        val params =
-            FileBatchCreateParams.builder().vectorStoreId("vs_abc123").addFileId("string").build()
+        val params = FileBatchCreateParams.builder().vectorStoreId("vs_abc123").build()
 
         val body = params._body()
-
-        assertThat(body.fileIds()).containsExactly("string")
     }
 }
