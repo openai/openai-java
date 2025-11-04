@@ -34,9 +34,9 @@ class ResponseOutputText
 @JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val annotations: JsonField<List<Annotation>>,
-    private val logprobs: JsonField<List<Logprob>>,
     private val text: JsonField<String>,
     private val type: JsonValue,
+    private val logprobs: JsonField<List<Logprob>>,
     private val additionalProperties: MutableMap<String, JsonValue>,
 ) {
 
@@ -45,12 +45,12 @@ private constructor(
         @JsonProperty("annotations")
         @ExcludeMissing
         annotations: JsonField<List<Annotation>> = JsonMissing.of(),
+        @JsonProperty("text") @ExcludeMissing text: JsonField<String> = JsonMissing.of(),
+        @JsonProperty("type") @ExcludeMissing type: JsonValue = JsonMissing.of(),
         @JsonProperty("logprobs")
         @ExcludeMissing
         logprobs: JsonField<List<Logprob>> = JsonMissing.of(),
-        @JsonProperty("text") @ExcludeMissing text: JsonField<String> = JsonMissing.of(),
-        @JsonProperty("type") @ExcludeMissing type: JsonValue = JsonMissing.of(),
-    ) : this(annotations, logprobs, text, type, mutableMapOf())
+    ) : this(annotations, text, type, logprobs, mutableMapOf())
 
     /**
      * The annotations of the text output.
@@ -59,12 +59,6 @@ private constructor(
      *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
      */
     fun annotations(): List<Annotation> = annotations.getRequired("annotations")
-
-    /**
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
-     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
-     */
-    fun logprobs(): List<Logprob> = logprobs.getRequired("logprobs")
 
     /**
      * The text output from the model.
@@ -88,6 +82,12 @@ private constructor(
     @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
 
     /**
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun logprobs(): Optional<List<Logprob>> = logprobs.getOptional("logprobs")
+
+    /**
      * Returns the raw JSON value of [annotations].
      *
      * Unlike [annotations], this method doesn't throw if the JSON field has an unexpected type.
@@ -97,18 +97,18 @@ private constructor(
     fun _annotations(): JsonField<List<Annotation>> = annotations
 
     /**
-     * Returns the raw JSON value of [logprobs].
-     *
-     * Unlike [logprobs], this method doesn't throw if the JSON field has an unexpected type.
-     */
-    @JsonProperty("logprobs") @ExcludeMissing fun _logprobs(): JsonField<List<Logprob>> = logprobs
-
-    /**
      * Returns the raw JSON value of [text].
      *
      * Unlike [text], this method doesn't throw if the JSON field has an unexpected type.
      */
     @JsonProperty("text") @ExcludeMissing fun _text(): JsonField<String> = text
+
+    /**
+     * Returns the raw JSON value of [logprobs].
+     *
+     * Unlike [logprobs], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    @JsonProperty("logprobs") @ExcludeMissing fun _logprobs(): JsonField<List<Logprob>> = logprobs
 
     @JsonAnySetter
     private fun putAdditionalProperty(key: String, value: JsonValue) {
@@ -130,7 +130,6 @@ private constructor(
          * The following fields are required:
          * ```java
          * .annotations()
-         * .logprobs()
          * .text()
          * ```
          */
@@ -141,17 +140,17 @@ private constructor(
     class Builder internal constructor() {
 
         private var annotations: JsonField<MutableList<Annotation>>? = null
-        private var logprobs: JsonField<MutableList<Logprob>>? = null
         private var text: JsonField<String>? = null
         private var type: JsonValue = JsonValue.from("output_text")
+        private var logprobs: JsonField<MutableList<Logprob>>? = null
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
         @JvmSynthetic
         internal fun from(responseOutputText: ResponseOutputText) = apply {
             annotations = responseOutputText.annotations.map { it.toMutableList() }
-            logprobs = responseOutputText.logprobs.map { it.toMutableList() }
             text = responseOutputText.text
             type = responseOutputText.type
+            logprobs = responseOutputText.logprobs.map { it.toMutableList() }
             additionalProperties = responseOutputText.additionalProperties.toMutableMap()
         }
 
@@ -200,31 +199,6 @@ private constructor(
         fun addAnnotation(filePath: Annotation.FilePath) =
             addAnnotation(Annotation.ofFilePath(filePath))
 
-        fun logprobs(logprobs: List<Logprob>) = logprobs(JsonField.of(logprobs))
-
-        /**
-         * Sets [Builder.logprobs] to an arbitrary JSON value.
-         *
-         * You should usually call [Builder.logprobs] with a well-typed `List<Logprob>` value
-         * instead. This method is primarily for setting the field to an undocumented or not yet
-         * supported value.
-         */
-        fun logprobs(logprobs: JsonField<List<Logprob>>) = apply {
-            this.logprobs = logprobs.map { it.toMutableList() }
-        }
-
-        /**
-         * Adds a single [Logprob] to [logprobs].
-         *
-         * @throws IllegalStateException if the field was previously set to a non-list.
-         */
-        fun addLogprob(logprob: Logprob) = apply {
-            logprobs =
-                (logprobs ?: JsonField.of(mutableListOf())).also {
-                    checkKnown("logprobs", it).add(logprob)
-                }
-        }
-
         /** The text output from the model. */
         fun text(text: String) = text(JsonField.of(text))
 
@@ -249,6 +223,31 @@ private constructor(
          * value.
          */
         fun type(type: JsonValue) = apply { this.type = type }
+
+        fun logprobs(logprobs: List<Logprob>) = logprobs(JsonField.of(logprobs))
+
+        /**
+         * Sets [Builder.logprobs] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.logprobs] with a well-typed `List<Logprob>` value
+         * instead. This method is primarily for setting the field to an undocumented or not yet
+         * supported value.
+         */
+        fun logprobs(logprobs: JsonField<List<Logprob>>) = apply {
+            this.logprobs = logprobs.map { it.toMutableList() }
+        }
+
+        /**
+         * Adds a single [Logprob] to [logprobs].
+         *
+         * @throws IllegalStateException if the field was previously set to a non-list.
+         */
+        fun addLogprob(logprob: Logprob) = apply {
+            logprobs =
+                (logprobs ?: JsonField.of(mutableListOf())).also {
+                    checkKnown("logprobs", it).add(logprob)
+                }
+        }
 
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
             this.additionalProperties.clear()
@@ -277,7 +276,6 @@ private constructor(
          * The following fields are required:
          * ```java
          * .annotations()
-         * .logprobs()
          * .text()
          * ```
          *
@@ -286,9 +284,9 @@ private constructor(
         fun build(): ResponseOutputText =
             ResponseOutputText(
                 checkRequired("annotations", annotations).map { it.toImmutable() },
-                checkRequired("logprobs", logprobs).map { it.toImmutable() },
                 checkRequired("text", text),
                 type,
+                (logprobs ?: JsonMissing.of()).map { it.toImmutable() },
                 additionalProperties.toMutableMap(),
             )
     }
@@ -301,13 +299,13 @@ private constructor(
         }
 
         annotations().forEach { it.validate() }
-        logprobs().forEach { it.validate() }
         text()
         _type().let {
             if (it != JsonValue.from("output_text")) {
                 throw OpenAIInvalidDataException("'type' is invalid, received $it")
             }
         }
+        logprobs().ifPresent { it.forEach { it.validate() } }
         validated = true
     }
 
@@ -327,9 +325,9 @@ private constructor(
     @JvmSynthetic
     internal fun validity(): Int =
         (annotations.asKnown().getOrNull()?.sumOf { it.validity().toInt() } ?: 0) +
-            (logprobs.asKnown().getOrNull()?.sumOf { it.validity().toInt() } ?: 0) +
             (if (text.asKnown().isPresent) 1 else 0) +
-            type.let { if (it == JsonValue.from("output_text")) 1 else 0 }
+            type.let { if (it == JsonValue.from("output_text")) 1 else 0 } +
+            (logprobs.asKnown().getOrNull()?.sumOf { it.validity().toInt() } ?: 0)
 
     /** A citation to a file. */
     @JsonDeserialize(using = Annotation.Deserializer::class)
@@ -2394,18 +2392,18 @@ private constructor(
 
         return other is ResponseOutputText &&
             annotations == other.annotations &&
-            logprobs == other.logprobs &&
             text == other.text &&
             type == other.type &&
+            logprobs == other.logprobs &&
             additionalProperties == other.additionalProperties
     }
 
     private val hashCode: Int by lazy {
-        Objects.hash(annotations, logprobs, text, type, additionalProperties)
+        Objects.hash(annotations, text, type, logprobs, additionalProperties)
     }
 
     override fun hashCode(): Int = hashCode
 
     override fun toString() =
-        "ResponseOutputText{annotations=$annotations, logprobs=$logprobs, text=$text, type=$type, additionalProperties=$additionalProperties}"
+        "ResponseOutputText{annotations=$annotations, text=$text, type=$type, logprobs=$logprobs, additionalProperties=$additionalProperties}"
 }
