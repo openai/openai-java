@@ -25,6 +25,7 @@ internal class ResponseContentPartDoneEventTest {
                                 .index(0L)
                                 .build()
                         )
+                        .text("text")
                         .addLogprob(
                             ResponseOutputText.Logprob.builder()
                                 .token("token")
@@ -39,7 +40,6 @@ internal class ResponseContentPartDoneEventTest {
                                 )
                                 .build()
                         )
-                        .text("text")
                         .build()
                 )
                 .sequenceNumber(0L)
@@ -59,6 +59,7 @@ internal class ResponseContentPartDoneEventTest {
                                 .index(0L)
                                 .build()
                         )
+                        .text("text")
                         .addLogprob(
                             ResponseOutputText.Logprob.builder()
                                 .token("token")
@@ -73,7 +74,6 @@ internal class ResponseContentPartDoneEventTest {
                                 )
                                 .build()
                         )
-                        .text("text")
                         .build()
                 )
             )
@@ -97,6 +97,7 @@ internal class ResponseContentPartDoneEventTest {
                                 .index(0L)
                                 .build()
                         )
+                        .text("text")
                         .addLogprob(
                             ResponseOutputText.Logprob.builder()
                                 .token("token")
@@ -111,7 +112,6 @@ internal class ResponseContentPartDoneEventTest {
                                 )
                                 .build()
                         )
-                        .text("text")
                         .build()
                 )
                 .sequenceNumber(0L)
