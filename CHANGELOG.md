@@ -1,5 +1,13 @@
 # Changelog
 
+## 4.7.1 (2025-11-04)
+
+Full Changelog: [v4.7.0...v4.7.1](https://github.com/openai/openai-java/compare/v4.7.0...v4.7.1)
+
+### Bug Fixes
+
+* **api:** fix nullability of logprobs ([f1733f8](https://github.com/openai/openai-java/commit/f1733f8e81580b4e6c1a29ea6913af5e98d41607))
+
 ## 4.7.0 (2025-11-04)
 
 Full Changelog: [v4.6.1...v4.7.0](https://github.com/openai/openai-java/compare/v4.6.1...v4.7.0)
