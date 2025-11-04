@@ -1,5 +1,19 @@
 # Changelog
 
+## 4.7.0 (2025-11-04)
+
+Full Changelog: [v4.6.1...v4.7.0](https://github.com/openai/openai-java/compare/v4.6.1...v4.7.0)
+
+### Features
+
+* **api:** Realtime API token_limits, Hybrid searching ranking options ([bd9bcfd](https://github.com/openai/openai-java/commit/bd9bcfdd560cfc8df2a9336d162a0ee1f6604b84))
+* **api:** remove InputAudio from ResponseInputContent ([630fecf](https://github.com/openai/openai-java/commit/630fecf8f0e04ce82ac0f0df9b5d60df4edd0655))
+
+
+### Bug Fixes
+
+* **api:** docs updates ([3e970ec](https://github.com/openai/openai-java/commit/3e970ec8c9b3895b087f5722a0bfae23ca9e4e2c))
+
 ## 4.6.1 (2025-10-20)
 
 Full Changelog: [v4.6.0...v4.6.1](https://github.com/openai/openai-java/compare/v4.6.0...v4.6.1)
