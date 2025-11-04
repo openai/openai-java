@@ -162,5 +162,9 @@ internal class ResponseAccumulatorTest {
             .build()
 
     private fun responseOutputText() =
-        ResponseOutputText.builder().text("Hello World").annotations(listOf()).build()
+        ResponseOutputText.builder()
+            .text("Hello World")
+            .annotations(listOf())
+            .logprobs(listOf())
+            .build()
 }

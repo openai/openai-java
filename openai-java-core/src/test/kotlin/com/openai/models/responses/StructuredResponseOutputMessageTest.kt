@@ -39,7 +39,11 @@ internal class StructuredResponseOutputMessageTest {
     companion object {
         private val MESSAGE_STATUS = ResponseOutputMessage.Status.COMPLETED
         private val OUTPUT_TEXT =
-            ResponseOutputText.builder().annotations(listOf()).text(STRING).build()
+            ResponseOutputText.builder()
+                .annotations(listOf())
+                .logprobs(listOf<ResponseOutputText.Logprob>())
+                .text(STRING)
+                .build()
         private val OUTPUT_REFUSAL = ResponseOutputRefusal.builder().refusal(STRING).build()
         private val CONTENT = ResponseOutputMessage.Content.ofOutputText(OUTPUT_TEXT)
 
@@ -218,6 +222,7 @@ internal class StructuredResponseOutputMessageTest {
             Optional.of(
                 ResponseOutputText.builder()
                     .annotations(listOf())
+                    .logprobs(listOf<ResponseOutputText.Logprob>())
                     .text("{\"s\" : \"hello\"}")
                     .build()
             )
@@ -240,6 +245,7 @@ internal class StructuredResponseOutputMessageTest {
             Optional.of(
                 ResponseOutputText.builder()
                     .annotations(listOf())
+                    .logprobs(listOf<ResponseOutputText.Logprob>())
                     .text("{\"s\" : \"hello\"}")
                     .build()
             )
