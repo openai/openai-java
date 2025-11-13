@@ -39,8 +39,10 @@ internal class ToolTest {
         assertThat(tool.codeInterpreter()).isEmpty
         assertThat(tool.imageGeneration()).isEmpty
         assertThat(tool.localShell()).isEmpty
+        assertThat(tool.shell()).isEmpty
         assertThat(tool.custom()).isEmpty
         assertThat(tool.webSearchPreview()).isEmpty
+        assertThat(tool.applyPatch()).isEmpty
     }
 
     @Test
@@ -103,8 +105,10 @@ internal class ToolTest {
         assertThat(tool.codeInterpreter()).isEmpty
         assertThat(tool.imageGeneration()).isEmpty
         assertThat(tool.localShell()).isEmpty
+        assertThat(tool.shell()).isEmpty
         assertThat(tool.custom()).isEmpty
         assertThat(tool.webSearchPreview()).isEmpty
+        assertThat(tool.applyPatch()).isEmpty
     }
 
     @Test
@@ -162,8 +166,10 @@ internal class ToolTest {
         assertThat(tool.codeInterpreter()).isEmpty
         assertThat(tool.imageGeneration()).isEmpty
         assertThat(tool.localShell()).isEmpty
+        assertThat(tool.shell()).isEmpty
         assertThat(tool.custom()).isEmpty
         assertThat(tool.webSearchPreview()).isEmpty
+        assertThat(tool.applyPatch()).isEmpty
     }
 
     @Test
@@ -212,8 +218,10 @@ internal class ToolTest {
         assertThat(tool.codeInterpreter()).isEmpty
         assertThat(tool.imageGeneration()).isEmpty
         assertThat(tool.localShell()).isEmpty
+        assertThat(tool.shell()).isEmpty
         assertThat(tool.custom()).isEmpty
         assertThat(tool.webSearchPreview()).isEmpty
+        assertThat(tool.applyPatch()).isEmpty
     }
 
     @Test
@@ -286,8 +294,10 @@ internal class ToolTest {
         assertThat(tool.codeInterpreter()).isEmpty
         assertThat(tool.imageGeneration()).isEmpty
         assertThat(tool.localShell()).isEmpty
+        assertThat(tool.shell()).isEmpty
         assertThat(tool.custom()).isEmpty
         assertThat(tool.webSearchPreview()).isEmpty
+        assertThat(tool.applyPatch()).isEmpty
     }
 
     @Test
@@ -346,8 +356,10 @@ internal class ToolTest {
         assertThat(tool.codeInterpreter()).contains(codeInterpreter)
         assertThat(tool.imageGeneration()).isEmpty
         assertThat(tool.localShell()).isEmpty
+        assertThat(tool.shell()).isEmpty
         assertThat(tool.custom()).isEmpty
         assertThat(tool.webSearchPreview()).isEmpty
+        assertThat(tool.applyPatch()).isEmpty
     }
 
     @Test
@@ -393,8 +405,10 @@ internal class ToolTest {
         assertThat(tool.codeInterpreter()).isEmpty
         assertThat(tool.imageGeneration()).contains(imageGeneration)
         assertThat(tool.localShell()).isEmpty
+        assertThat(tool.shell()).isEmpty
         assertThat(tool.custom()).isEmpty
         assertThat(tool.webSearchPreview()).isEmpty
+        assertThat(tool.applyPatch()).isEmpty
     }
 
     @Test
@@ -439,14 +453,47 @@ internal class ToolTest {
         assertThat(tool.codeInterpreter()).isEmpty
         assertThat(tool.imageGeneration()).isEmpty
         assertThat(tool.localShell()).contains(JsonValue.from(mapOf("type" to "local_shell")))
+        assertThat(tool.shell()).isEmpty
         assertThat(tool.custom()).isEmpty
         assertThat(tool.webSearchPreview()).isEmpty
+        assertThat(tool.applyPatch()).isEmpty
     }
 
     @Test
     fun ofLocalShellRoundtrip() {
         val jsonMapper = jsonMapper()
         val tool = Tool.ofLocalShell()
+
+        val roundtrippedTool =
+            jsonMapper.readValue(jsonMapper.writeValueAsString(tool), jacksonTypeRef<Tool>())
+
+        assertThat(roundtrippedTool).isEqualTo(tool)
+    }
+
+    @Test
+    fun ofShell() {
+        val shell = FunctionShellTool.builder().build()
+
+        val tool = Tool.ofShell(shell)
+
+        assertThat(tool.function()).isEmpty
+        assertThat(tool.fileSearch()).isEmpty
+        assertThat(tool.computerUsePreview()).isEmpty
+        assertThat(tool.webSearch()).isEmpty
+        assertThat(tool.mcp()).isEmpty
+        assertThat(tool.codeInterpreter()).isEmpty
+        assertThat(tool.imageGeneration()).isEmpty
+        assertThat(tool.localShell()).isEmpty
+        assertThat(tool.shell()).contains(shell)
+        assertThat(tool.custom()).isEmpty
+        assertThat(tool.webSearchPreview()).isEmpty
+        assertThat(tool.applyPatch()).isEmpty
+    }
+
+    @Test
+    fun ofShellRoundtrip() {
+        val jsonMapper = jsonMapper()
+        val tool = Tool.ofShell(FunctionShellTool.builder().build())
 
         val roundtrippedTool =
             jsonMapper.readValue(jsonMapper.writeValueAsString(tool), jacksonTypeRef<Tool>())
@@ -469,8 +516,10 @@ internal class ToolTest {
         assertThat(tool.codeInterpreter()).isEmpty
         assertThat(tool.imageGeneration()).isEmpty
         assertThat(tool.localShell()).isEmpty
+        assertThat(tool.shell()).isEmpty
         assertThat(tool.custom()).contains(custom)
         assertThat(tool.webSearchPreview()).isEmpty
+        assertThat(tool.applyPatch()).isEmpty
     }
 
     @Test
@@ -513,8 +562,10 @@ internal class ToolTest {
         assertThat(tool.codeInterpreter()).isEmpty
         assertThat(tool.imageGeneration()).isEmpty
         assertThat(tool.localShell()).isEmpty
+        assertThat(tool.shell()).isEmpty
         assertThat(tool.custom()).isEmpty
         assertThat(tool.webSearchPreview()).contains(webSearchPreview)
+        assertThat(tool.applyPatch()).isEmpty
     }
 
     @Test
@@ -535,6 +586,37 @@ internal class ToolTest {
                     )
                     .build()
             )
+
+        val roundtrippedTool =
+            jsonMapper.readValue(jsonMapper.writeValueAsString(tool), jacksonTypeRef<Tool>())
+
+        assertThat(roundtrippedTool).isEqualTo(tool)
+    }
+
+    @Test
+    fun ofApplyPatch() {
+        val applyPatch = ApplyPatchTool.builder().build()
+
+        val tool = Tool.ofApplyPatch(applyPatch)
+
+        assertThat(tool.function()).isEmpty
+        assertThat(tool.fileSearch()).isEmpty
+        assertThat(tool.computerUsePreview()).isEmpty
+        assertThat(tool.webSearch()).isEmpty
+        assertThat(tool.mcp()).isEmpty
+        assertThat(tool.codeInterpreter()).isEmpty
+        assertThat(tool.imageGeneration()).isEmpty
+        assertThat(tool.localShell()).isEmpty
+        assertThat(tool.shell()).isEmpty
+        assertThat(tool.custom()).isEmpty
+        assertThat(tool.webSearchPreview()).isEmpty
+        assertThat(tool.applyPatch()).contains(applyPatch)
+    }
+
+    @Test
+    fun ofApplyPatchRoundtrip() {
+        val jsonMapper = jsonMapper()
+        val tool = Tool.ofApplyPatch(ApplyPatchTool.builder().build())
 
         val roundtrippedTool =
             jsonMapper.readValue(jsonMapper.writeValueAsString(tool), jacksonTypeRef<Tool>())

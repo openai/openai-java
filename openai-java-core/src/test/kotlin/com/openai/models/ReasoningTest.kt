@@ -13,12 +13,12 @@ internal class ReasoningTest {
     fun create() {
         val reasoning =
             Reasoning.builder()
-                .effort(ReasoningEffort.MINIMAL)
+                .effort(ReasoningEffort.NONE)
                 .generateSummary(Reasoning.GenerateSummary.AUTO)
                 .summary(Reasoning.Summary.AUTO)
                 .build()
 
-        assertThat(reasoning.effort()).contains(ReasoningEffort.MINIMAL)
+        assertThat(reasoning.effort()).contains(ReasoningEffort.NONE)
         assertThat(reasoning.generateSummary()).contains(Reasoning.GenerateSummary.AUTO)
         assertThat(reasoning.summary()).contains(Reasoning.Summary.AUTO)
     }
@@ -28,7 +28,7 @@ internal class ReasoningTest {
         val jsonMapper = jsonMapper()
         val reasoning =
             Reasoning.builder()
-                .effort(ReasoningEffort.MINIMAL)
+                .effort(ReasoningEffort.NONE)
                 .generateSummary(Reasoning.GenerateSummary.AUTO)
                 .summary(Reasoning.Summary.AUTO)
                 .build()

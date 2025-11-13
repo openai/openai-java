@@ -55,6 +55,10 @@ private constructor(
     private val codeInterpreterCall: ResponseCodeInterpreterToolCall? = null,
     private val localShellCall: LocalShellCall? = null,
     private val localShellCallOutput: LocalShellCallOutput? = null,
+    private val shellCall: ShellCall? = null,
+    private val shellCallOutput: ShellCallOutput? = null,
+    private val applyPatchCall: ApplyPatchCall? = null,
+    private val applyPatchCallOutput: ApplyPatchCallOutput? = null,
     private val mcpListTools: McpListTools? = null,
     private val mcpApprovalRequest: McpApprovalRequest? = null,
     private val mcpApprovalResponse: McpApprovalResponse? = null,
@@ -141,6 +145,19 @@ private constructor(
     fun localShellCallOutput(): Optional<LocalShellCallOutput> =
         Optional.ofNullable(localShellCallOutput)
 
+    /** A tool representing a request to execute one or more shell commands. */
+    fun shellCall(): Optional<ShellCall> = Optional.ofNullable(shellCall)
+
+    /** The streamed output items emitted by a function shell tool call. */
+    fun shellCallOutput(): Optional<ShellCallOutput> = Optional.ofNullable(shellCallOutput)
+
+    /** A tool call representing a request to create, delete, or update files using diff patches. */
+    fun applyPatchCall(): Optional<ApplyPatchCall> = Optional.ofNullable(applyPatchCall)
+
+    /** The streamed output emitted by an apply patch tool call. */
+    fun applyPatchCallOutput(): Optional<ApplyPatchCallOutput> =
+        Optional.ofNullable(applyPatchCallOutput)
+
     /** A list of tools available on an MCP server. */
     fun mcpListTools(): Optional<McpListTools> = Optional.ofNullable(mcpListTools)
 
@@ -191,6 +208,14 @@ private constructor(
     fun isLocalShellCall(): Boolean = localShellCall != null
 
     fun isLocalShellCallOutput(): Boolean = localShellCallOutput != null
+
+    fun isShellCall(): Boolean = shellCall != null
+
+    fun isShellCallOutput(): Boolean = shellCallOutput != null
+
+    fun isApplyPatchCall(): Boolean = applyPatchCall != null
+
+    fun isApplyPatchCallOutput(): Boolean = applyPatchCallOutput != null
 
     fun isMcpListTools(): Boolean = mcpListTools != null
 
@@ -284,6 +309,19 @@ private constructor(
     fun asLocalShellCallOutput(): LocalShellCallOutput =
         localShellCallOutput.getOrThrow("localShellCallOutput")
 
+    /** A tool representing a request to execute one or more shell commands. */
+    fun asShellCall(): ShellCall = shellCall.getOrThrow("shellCall")
+
+    /** The streamed output items emitted by a function shell tool call. */
+    fun asShellCallOutput(): ShellCallOutput = shellCallOutput.getOrThrow("shellCallOutput")
+
+    /** A tool call representing a request to create, delete, or update files using diff patches. */
+    fun asApplyPatchCall(): ApplyPatchCall = applyPatchCall.getOrThrow("applyPatchCall")
+
+    /** The streamed output emitted by an apply patch tool call. */
+    fun asApplyPatchCallOutput(): ApplyPatchCallOutput =
+        applyPatchCallOutput.getOrThrow("applyPatchCallOutput")
+
     /** A list of tools available on an MCP server. */
     fun asMcpListTools(): McpListTools = mcpListTools.getOrThrow("mcpListTools")
 
@@ -327,6 +365,10 @@ private constructor(
             codeInterpreterCall != null -> visitor.visitCodeInterpreterCall(codeInterpreterCall)
             localShellCall != null -> visitor.visitLocalShellCall(localShellCall)
             localShellCallOutput != null -> visitor.visitLocalShellCallOutput(localShellCallOutput)
+            shellCall != null -> visitor.visitShellCall(shellCall)
+            shellCallOutput != null -> visitor.visitShellCallOutput(shellCallOutput)
+            applyPatchCall != null -> visitor.visitApplyPatchCall(applyPatchCall)
+            applyPatchCallOutput != null -> visitor.visitApplyPatchCallOutput(applyPatchCallOutput)
             mcpListTools != null -> visitor.visitMcpListTools(mcpListTools)
             mcpApprovalRequest != null -> visitor.visitMcpApprovalRequest(mcpApprovalRequest)
             mcpApprovalResponse != null -> visitor.visitMcpApprovalResponse(mcpApprovalResponse)
@@ -404,6 +446,22 @@ private constructor(
 
                 override fun visitLocalShellCallOutput(localShellCallOutput: LocalShellCallOutput) {
                     localShellCallOutput.validate()
+                }
+
+                override fun visitShellCall(shellCall: ShellCall) {
+                    shellCall.validate()
+                }
+
+                override fun visitShellCallOutput(shellCallOutput: ShellCallOutput) {
+                    shellCallOutput.validate()
+                }
+
+                override fun visitApplyPatchCall(applyPatchCall: ApplyPatchCall) {
+                    applyPatchCall.validate()
+                }
+
+                override fun visitApplyPatchCallOutput(applyPatchCallOutput: ApplyPatchCallOutput) {
+                    applyPatchCallOutput.validate()
                 }
 
                 override fun visitMcpListTools(mcpListTools: McpListTools) {
@@ -499,6 +557,17 @@ private constructor(
                 override fun visitLocalShellCallOutput(localShellCallOutput: LocalShellCallOutput) =
                     localShellCallOutput.validity()
 
+                override fun visitShellCall(shellCall: ShellCall) = shellCall.validity()
+
+                override fun visitShellCallOutput(shellCallOutput: ShellCallOutput) =
+                    shellCallOutput.validity()
+
+                override fun visitApplyPatchCall(applyPatchCall: ApplyPatchCall) =
+                    applyPatchCall.validity()
+
+                override fun visitApplyPatchCallOutput(applyPatchCallOutput: ApplyPatchCallOutput) =
+                    applyPatchCallOutput.validity()
+
                 override fun visitMcpListTools(mcpListTools: McpListTools) = mcpListTools.validity()
 
                 override fun visitMcpApprovalRequest(mcpApprovalRequest: McpApprovalRequest) =
@@ -543,6 +612,10 @@ private constructor(
             codeInterpreterCall == other.codeInterpreterCall &&
             localShellCall == other.localShellCall &&
             localShellCallOutput == other.localShellCallOutput &&
+            shellCall == other.shellCall &&
+            shellCallOutput == other.shellCallOutput &&
+            applyPatchCall == other.applyPatchCall &&
+            applyPatchCallOutput == other.applyPatchCallOutput &&
             mcpListTools == other.mcpListTools &&
             mcpApprovalRequest == other.mcpApprovalRequest &&
             mcpApprovalResponse == other.mcpApprovalResponse &&
@@ -568,6 +641,10 @@ private constructor(
             codeInterpreterCall,
             localShellCall,
             localShellCallOutput,
+            shellCall,
+            shellCallOutput,
+            applyPatchCall,
+            applyPatchCallOutput,
             mcpListTools,
             mcpApprovalRequest,
             mcpApprovalResponse,
@@ -599,6 +676,11 @@ private constructor(
             localShellCall != null -> "ResponseInputItem{localShellCall=$localShellCall}"
             localShellCallOutput != null ->
                 "ResponseInputItem{localShellCallOutput=$localShellCallOutput}"
+            shellCall != null -> "ResponseInputItem{shellCall=$shellCall}"
+            shellCallOutput != null -> "ResponseInputItem{shellCallOutput=$shellCallOutput}"
+            applyPatchCall != null -> "ResponseInputItem{applyPatchCall=$applyPatchCall}"
+            applyPatchCallOutput != null ->
+                "ResponseInputItem{applyPatchCallOutput=$applyPatchCallOutput}"
             mcpListTools != null -> "ResponseInputItem{mcpListTools=$mcpListTools}"
             mcpApprovalRequest != null ->
                 "ResponseInputItem{mcpApprovalRequest=$mcpApprovalRequest}"
@@ -712,6 +794,26 @@ private constructor(
         fun ofLocalShellCallOutput(localShellCallOutput: LocalShellCallOutput) =
             ResponseInputItem(localShellCallOutput = localShellCallOutput)
 
+        /** A tool representing a request to execute one or more shell commands. */
+        @JvmStatic fun ofShellCall(shellCall: ShellCall) = ResponseInputItem(shellCall = shellCall)
+
+        /** The streamed output items emitted by a function shell tool call. */
+        @JvmStatic
+        fun ofShellCallOutput(shellCallOutput: ShellCallOutput) =
+            ResponseInputItem(shellCallOutput = shellCallOutput)
+
+        /**
+         * A tool call representing a request to create, delete, or update files using diff patches.
+         */
+        @JvmStatic
+        fun ofApplyPatchCall(applyPatchCall: ApplyPatchCall) =
+            ResponseInputItem(applyPatchCall = applyPatchCall)
+
+        /** The streamed output emitted by an apply patch tool call. */
+        @JvmStatic
+        fun ofApplyPatchCallOutput(applyPatchCallOutput: ApplyPatchCallOutput) =
+            ResponseInputItem(applyPatchCallOutput = applyPatchCallOutput)
+
         /** A list of tools available on an MCP server. */
         @JvmStatic
         fun ofMcpListTools(mcpListTools: McpListTools) =
@@ -823,6 +925,20 @@ private constructor(
 
         /** The output of a local shell tool call. */
         fun visitLocalShellCallOutput(localShellCallOutput: LocalShellCallOutput): T
+
+        /** A tool representing a request to execute one or more shell commands. */
+        fun visitShellCall(shellCall: ShellCall): T
+
+        /** The streamed output items emitted by a function shell tool call. */
+        fun visitShellCallOutput(shellCallOutput: ShellCallOutput): T
+
+        /**
+         * A tool call representing a request to create, delete, or update files using diff patches.
+         */
+        fun visitApplyPatchCall(applyPatchCall: ApplyPatchCall): T
+
+        /** The streamed output emitted by an apply patch tool call. */
+        fun visitApplyPatchCallOutput(applyPatchCallOutput: ApplyPatchCallOutput): T
 
         /** A list of tools available on an MCP server. */
         fun visitMcpListTools(mcpListTools: McpListTools): T
@@ -949,6 +1065,26 @@ private constructor(
                         ResponseInputItem(localShellCallOutput = it, _json = json)
                     } ?: ResponseInputItem(_json = json)
                 }
+                "shell_call" -> {
+                    return tryDeserialize(node, jacksonTypeRef<ShellCall>())?.let {
+                        ResponseInputItem(shellCall = it, _json = json)
+                    } ?: ResponseInputItem(_json = json)
+                }
+                "shell_call_output" -> {
+                    return tryDeserialize(node, jacksonTypeRef<ShellCallOutput>())?.let {
+                        ResponseInputItem(shellCallOutput = it, _json = json)
+                    } ?: ResponseInputItem(_json = json)
+                }
+                "apply_patch_call" -> {
+                    return tryDeserialize(node, jacksonTypeRef<ApplyPatchCall>())?.let {
+                        ResponseInputItem(applyPatchCall = it, _json = json)
+                    } ?: ResponseInputItem(_json = json)
+                }
+                "apply_patch_call_output" -> {
+                    return tryDeserialize(node, jacksonTypeRef<ApplyPatchCallOutput>())?.let {
+                        ResponseInputItem(applyPatchCallOutput = it, _json = json)
+                    } ?: ResponseInputItem(_json = json)
+                }
                 "mcp_list_tools" -> {
                     return tryDeserialize(node, jacksonTypeRef<McpListTools>())?.let {
                         ResponseInputItem(mcpListTools = it, _json = json)
@@ -1016,6 +1152,11 @@ private constructor(
                 value.localShellCall != null -> generator.writeObject(value.localShellCall)
                 value.localShellCallOutput != null ->
                     generator.writeObject(value.localShellCallOutput)
+                value.shellCall != null -> generator.writeObject(value.shellCall)
+                value.shellCallOutput != null -> generator.writeObject(value.shellCallOutput)
+                value.applyPatchCall != null -> generator.writeObject(value.applyPatchCall)
+                value.applyPatchCallOutput != null ->
+                    generator.writeObject(value.applyPatchCallOutput)
                 value.mcpListTools != null -> generator.writeObject(value.mcpListTools)
                 value.mcpApprovalRequest != null -> generator.writeObject(value.mcpApprovalRequest)
                 value.mcpApprovalResponse != null ->
@@ -5044,6 +5185,2967 @@ private constructor(
 
         override fun toString() =
             "LocalShellCallOutput{id=$id, output=$output, type=$type, status=$status, additionalProperties=$additionalProperties}"
+    }
+
+    /** A tool representing a request to execute one or more shell commands. */
+    class ShellCall
+    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
+    private constructor(
+        private val action: JsonField<Action>,
+        private val callId: JsonField<String>,
+        private val type: JsonValue,
+        private val id: JsonField<String>,
+        private val status: JsonField<Status>,
+        private val additionalProperties: MutableMap<String, JsonValue>,
+    ) {
+
+        @JsonCreator
+        private constructor(
+            @JsonProperty("action") @ExcludeMissing action: JsonField<Action> = JsonMissing.of(),
+            @JsonProperty("call_id") @ExcludeMissing callId: JsonField<String> = JsonMissing.of(),
+            @JsonProperty("type") @ExcludeMissing type: JsonValue = JsonMissing.of(),
+            @JsonProperty("id") @ExcludeMissing id: JsonField<String> = JsonMissing.of(),
+            @JsonProperty("status") @ExcludeMissing status: JsonField<Status> = JsonMissing.of(),
+        ) : this(action, callId, type, id, status, mutableMapOf())
+
+        /**
+         * The shell commands and limits that describe how to run the tool call.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         */
+        fun action(): Action = action.getRequired("action")
+
+        /**
+         * The unique ID of the function shell tool call generated by the model.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         */
+        fun callId(): String = callId.getRequired("call_id")
+
+        /**
+         * The type of the item. Always `function_shell_call`.
+         *
+         * Expected to always return the following:
+         * ```java
+         * JsonValue.from("shell_call")
+         * ```
+         *
+         * However, this method can be useful for debugging and logging (e.g. if the server
+         * responded with an unexpected value).
+         */
+        @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
+
+        /**
+         * The unique ID of the function shell tool call. Populated when this item is returned via
+         * API.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun id(): Optional<String> = id.getOptional("id")
+
+        /**
+         * The status of the shell call. One of `in_progress`, `completed`, or `incomplete`.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun status(): Optional<Status> = status.getOptional("status")
+
+        /**
+         * Returns the raw JSON value of [action].
+         *
+         * Unlike [action], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("action") @ExcludeMissing fun _action(): JsonField<Action> = action
+
+        /**
+         * Returns the raw JSON value of [callId].
+         *
+         * Unlike [callId], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("call_id") @ExcludeMissing fun _callId(): JsonField<String> = callId
+
+        /**
+         * Returns the raw JSON value of [id].
+         *
+         * Unlike [id], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("id") @ExcludeMissing fun _id(): JsonField<String> = id
+
+        /**
+         * Returns the raw JSON value of [status].
+         *
+         * Unlike [status], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("status") @ExcludeMissing fun _status(): JsonField<Status> = status
+
+        @JsonAnySetter
+        private fun putAdditionalProperty(key: String, value: JsonValue) {
+            additionalProperties.put(key, value)
+        }
+
+        @JsonAnyGetter
+        @ExcludeMissing
+        fun _additionalProperties(): Map<String, JsonValue> =
+            Collections.unmodifiableMap(additionalProperties)
+
+        fun toBuilder() = Builder().from(this)
+
+        companion object {
+
+            /**
+             * Returns a mutable builder for constructing an instance of [ShellCall].
+             *
+             * The following fields are required:
+             * ```java
+             * .action()
+             * .callId()
+             * ```
+             */
+            @JvmStatic fun builder() = Builder()
+        }
+
+        /** A builder for [ShellCall]. */
+        class Builder internal constructor() {
+
+            private var action: JsonField<Action>? = null
+            private var callId: JsonField<String>? = null
+            private var type: JsonValue = JsonValue.from("shell_call")
+            private var id: JsonField<String> = JsonMissing.of()
+            private var status: JsonField<Status> = JsonMissing.of()
+            private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
+
+            @JvmSynthetic
+            internal fun from(shellCall: ShellCall) = apply {
+                action = shellCall.action
+                callId = shellCall.callId
+                type = shellCall.type
+                id = shellCall.id
+                status = shellCall.status
+                additionalProperties = shellCall.additionalProperties.toMutableMap()
+            }
+
+            /** The shell commands and limits that describe how to run the tool call. */
+            fun action(action: Action) = action(JsonField.of(action))
+
+            /**
+             * Sets [Builder.action] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.action] with a well-typed [Action] value instead.
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun action(action: JsonField<Action>) = apply { this.action = action }
+
+            /** The unique ID of the function shell tool call generated by the model. */
+            fun callId(callId: String) = callId(JsonField.of(callId))
+
+            /**
+             * Sets [Builder.callId] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.callId] with a well-typed [String] value instead.
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun callId(callId: JsonField<String>) = apply { this.callId = callId }
+
+            /**
+             * Sets the field to an arbitrary JSON value.
+             *
+             * It is usually unnecessary to call this method because the field defaults to the
+             * following:
+             * ```java
+             * JsonValue.from("shell_call")
+             * ```
+             *
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun type(type: JsonValue) = apply { this.type = type }
+
+            /**
+             * The unique ID of the function shell tool call. Populated when this item is returned
+             * via API.
+             */
+            fun id(id: String?) = id(JsonField.ofNullable(id))
+
+            /** Alias for calling [Builder.id] with `id.orElse(null)`. */
+            fun id(id: Optional<String>) = id(id.getOrNull())
+
+            /**
+             * Sets [Builder.id] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.id] with a well-typed [String] value instead. This
+             * method is primarily for setting the field to an undocumented or not yet supported
+             * value.
+             */
+            fun id(id: JsonField<String>) = apply { this.id = id }
+
+            /** The status of the shell call. One of `in_progress`, `completed`, or `incomplete`. */
+            fun status(status: Status?) = status(JsonField.ofNullable(status))
+
+            /** Alias for calling [Builder.status] with `status.orElse(null)`. */
+            fun status(status: Optional<Status>) = status(status.getOrNull())
+
+            /**
+             * Sets [Builder.status] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.status] with a well-typed [Status] value instead.
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun status(status: JsonField<Status>) = apply { this.status = status }
+
+            fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                this.additionalProperties.clear()
+                putAllAdditionalProperties(additionalProperties)
+            }
+
+            fun putAdditionalProperty(key: String, value: JsonValue) = apply {
+                additionalProperties.put(key, value)
+            }
+
+            fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                this.additionalProperties.putAll(additionalProperties)
+            }
+
+            fun removeAdditionalProperty(key: String) = apply { additionalProperties.remove(key) }
+
+            fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                keys.forEach(::removeAdditionalProperty)
+            }
+
+            /**
+             * Returns an immutable instance of [ShellCall].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             *
+             * The following fields are required:
+             * ```java
+             * .action()
+             * .callId()
+             * ```
+             *
+             * @throws IllegalStateException if any required field is unset.
+             */
+            fun build(): ShellCall =
+                ShellCall(
+                    checkRequired("action", action),
+                    checkRequired("callId", callId),
+                    type,
+                    id,
+                    status,
+                    additionalProperties.toMutableMap(),
+                )
+        }
+
+        private var validated: Boolean = false
+
+        fun validate(): ShellCall = apply {
+            if (validated) {
+                return@apply
+            }
+
+            action().validate()
+            callId()
+            _type().let {
+                if (it != JsonValue.from("shell_call")) {
+                    throw OpenAIInvalidDataException("'type' is invalid, received $it")
+                }
+            }
+            id()
+            status().ifPresent { it.validate() }
+            validated = true
+        }
+
+        fun isValid(): Boolean =
+            try {
+                validate()
+                true
+            } catch (e: OpenAIInvalidDataException) {
+                false
+            }
+
+        /**
+         * Returns a score indicating how many valid values are contained in this object
+         * recursively.
+         *
+         * Used for best match union deserialization.
+         */
+        @JvmSynthetic
+        internal fun validity(): Int =
+            (action.asKnown().getOrNull()?.validity() ?: 0) +
+                (if (callId.asKnown().isPresent) 1 else 0) +
+                type.let { if (it == JsonValue.from("shell_call")) 1 else 0 } +
+                (if (id.asKnown().isPresent) 1 else 0) +
+                (status.asKnown().getOrNull()?.validity() ?: 0)
+
+        /** The shell commands and limits that describe how to run the tool call. */
+        class Action
+        @JsonCreator(mode = JsonCreator.Mode.DISABLED)
+        private constructor(
+            private val commands: JsonField<List<String>>,
+            private val maxOutputLength: JsonField<Long>,
+            private val timeoutMs: JsonField<Long>,
+            private val additionalProperties: MutableMap<String, JsonValue>,
+        ) {
+
+            @JsonCreator
+            private constructor(
+                @JsonProperty("commands")
+                @ExcludeMissing
+                commands: JsonField<List<String>> = JsonMissing.of(),
+                @JsonProperty("max_output_length")
+                @ExcludeMissing
+                maxOutputLength: JsonField<Long> = JsonMissing.of(),
+                @JsonProperty("timeout_ms")
+                @ExcludeMissing
+                timeoutMs: JsonField<Long> = JsonMissing.of(),
+            ) : this(commands, maxOutputLength, timeoutMs, mutableMapOf())
+
+            /**
+             * Ordered shell commands for the execution environment to run.
+             *
+             * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+             *   unexpectedly missing or null (e.g. if the server responded with an unexpected
+             *   value).
+             */
+            fun commands(): List<String> = commands.getRequired("commands")
+
+            /**
+             * Maximum number of UTF-8 characters to capture from combined stdout and stderr output.
+             *
+             * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if
+             *   the server responded with an unexpected value).
+             */
+            fun maxOutputLength(): Optional<Long> = maxOutputLength.getOptional("max_output_length")
+
+            /**
+             * Maximum wall-clock time in milliseconds to allow the shell commands to run.
+             *
+             * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if
+             *   the server responded with an unexpected value).
+             */
+            fun timeoutMs(): Optional<Long> = timeoutMs.getOptional("timeout_ms")
+
+            /**
+             * Returns the raw JSON value of [commands].
+             *
+             * Unlike [commands], this method doesn't throw if the JSON field has an unexpected
+             * type.
+             */
+            @JsonProperty("commands")
+            @ExcludeMissing
+            fun _commands(): JsonField<List<String>> = commands
+
+            /**
+             * Returns the raw JSON value of [maxOutputLength].
+             *
+             * Unlike [maxOutputLength], this method doesn't throw if the JSON field has an
+             * unexpected type.
+             */
+            @JsonProperty("max_output_length")
+            @ExcludeMissing
+            fun _maxOutputLength(): JsonField<Long> = maxOutputLength
+
+            /**
+             * Returns the raw JSON value of [timeoutMs].
+             *
+             * Unlike [timeoutMs], this method doesn't throw if the JSON field has an unexpected
+             * type.
+             */
+            @JsonProperty("timeout_ms")
+            @ExcludeMissing
+            fun _timeoutMs(): JsonField<Long> = timeoutMs
+
+            @JsonAnySetter
+            private fun putAdditionalProperty(key: String, value: JsonValue) {
+                additionalProperties.put(key, value)
+            }
+
+            @JsonAnyGetter
+            @ExcludeMissing
+            fun _additionalProperties(): Map<String, JsonValue> =
+                Collections.unmodifiableMap(additionalProperties)
+
+            fun toBuilder() = Builder().from(this)
+
+            companion object {
+
+                /**
+                 * Returns a mutable builder for constructing an instance of [Action].
+                 *
+                 * The following fields are required:
+                 * ```java
+                 * .commands()
+                 * ```
+                 */
+                @JvmStatic fun builder() = Builder()
+            }
+
+            /** A builder for [Action]. */
+            class Builder internal constructor() {
+
+                private var commands: JsonField<MutableList<String>>? = null
+                private var maxOutputLength: JsonField<Long> = JsonMissing.of()
+                private var timeoutMs: JsonField<Long> = JsonMissing.of()
+                private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
+
+                @JvmSynthetic
+                internal fun from(action: Action) = apply {
+                    commands = action.commands.map { it.toMutableList() }
+                    maxOutputLength = action.maxOutputLength
+                    timeoutMs = action.timeoutMs
+                    additionalProperties = action.additionalProperties.toMutableMap()
+                }
+
+                /** Ordered shell commands for the execution environment to run. */
+                fun commands(commands: List<String>) = commands(JsonField.of(commands))
+
+                /**
+                 * Sets [Builder.commands] to an arbitrary JSON value.
+                 *
+                 * You should usually call [Builder.commands] with a well-typed `List<String>` value
+                 * instead. This method is primarily for setting the field to an undocumented or not
+                 * yet supported value.
+                 */
+                fun commands(commands: JsonField<List<String>>) = apply {
+                    this.commands = commands.map { it.toMutableList() }
+                }
+
+                /**
+                 * Adds a single [String] to [commands].
+                 *
+                 * @throws IllegalStateException if the field was previously set to a non-list.
+                 */
+                fun addCommand(command: String) = apply {
+                    commands =
+                        (commands ?: JsonField.of(mutableListOf())).also {
+                            checkKnown("commands", it).add(command)
+                        }
+                }
+
+                /**
+                 * Maximum number of UTF-8 characters to capture from combined stdout and stderr
+                 * output.
+                 */
+                fun maxOutputLength(maxOutputLength: Long?) =
+                    maxOutputLength(JsonField.ofNullable(maxOutputLength))
+
+                /**
+                 * Alias for [Builder.maxOutputLength].
+                 *
+                 * This unboxed primitive overload exists for backwards compatibility.
+                 */
+                fun maxOutputLength(maxOutputLength: Long) =
+                    maxOutputLength(maxOutputLength as Long?)
+
+                /**
+                 * Alias for calling [Builder.maxOutputLength] with `maxOutputLength.orElse(null)`.
+                 */
+                fun maxOutputLength(maxOutputLength: Optional<Long>) =
+                    maxOutputLength(maxOutputLength.getOrNull())
+
+                /**
+                 * Sets [Builder.maxOutputLength] to an arbitrary JSON value.
+                 *
+                 * You should usually call [Builder.maxOutputLength] with a well-typed [Long] value
+                 * instead. This method is primarily for setting the field to an undocumented or not
+                 * yet supported value.
+                 */
+                fun maxOutputLength(maxOutputLength: JsonField<Long>) = apply {
+                    this.maxOutputLength = maxOutputLength
+                }
+
+                /** Maximum wall-clock time in milliseconds to allow the shell commands to run. */
+                fun timeoutMs(timeoutMs: Long?) = timeoutMs(JsonField.ofNullable(timeoutMs))
+
+                /**
+                 * Alias for [Builder.timeoutMs].
+                 *
+                 * This unboxed primitive overload exists for backwards compatibility.
+                 */
+                fun timeoutMs(timeoutMs: Long) = timeoutMs(timeoutMs as Long?)
+
+                /** Alias for calling [Builder.timeoutMs] with `timeoutMs.orElse(null)`. */
+                fun timeoutMs(timeoutMs: Optional<Long>) = timeoutMs(timeoutMs.getOrNull())
+
+                /**
+                 * Sets [Builder.timeoutMs] to an arbitrary JSON value.
+                 *
+                 * You should usually call [Builder.timeoutMs] with a well-typed [Long] value
+                 * instead. This method is primarily for setting the field to an undocumented or not
+                 * yet supported value.
+                 */
+                fun timeoutMs(timeoutMs: JsonField<Long>) = apply { this.timeoutMs = timeoutMs }
+
+                fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                    this.additionalProperties.clear()
+                    putAllAdditionalProperties(additionalProperties)
+                }
+
+                fun putAdditionalProperty(key: String, value: JsonValue) = apply {
+                    additionalProperties.put(key, value)
+                }
+
+                fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) =
+                    apply {
+                        this.additionalProperties.putAll(additionalProperties)
+                    }
+
+                fun removeAdditionalProperty(key: String) = apply {
+                    additionalProperties.remove(key)
+                }
+
+                fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                    keys.forEach(::removeAdditionalProperty)
+                }
+
+                /**
+                 * Returns an immutable instance of [Action].
+                 *
+                 * Further updates to this [Builder] will not mutate the returned instance.
+                 *
+                 * The following fields are required:
+                 * ```java
+                 * .commands()
+                 * ```
+                 *
+                 * @throws IllegalStateException if any required field is unset.
+                 */
+                fun build(): Action =
+                    Action(
+                        checkRequired("commands", commands).map { it.toImmutable() },
+                        maxOutputLength,
+                        timeoutMs,
+                        additionalProperties.toMutableMap(),
+                    )
+            }
+
+            private var validated: Boolean = false
+
+            fun validate(): Action = apply {
+                if (validated) {
+                    return@apply
+                }
+
+                commands()
+                maxOutputLength()
+                timeoutMs()
+                validated = true
+            }
+
+            fun isValid(): Boolean =
+                try {
+                    validate()
+                    true
+                } catch (e: OpenAIInvalidDataException) {
+                    false
+                }
+
+            /**
+             * Returns a score indicating how many valid values are contained in this object
+             * recursively.
+             *
+             * Used for best match union deserialization.
+             */
+            @JvmSynthetic
+            internal fun validity(): Int =
+                (commands.asKnown().getOrNull()?.size ?: 0) +
+                    (if (maxOutputLength.asKnown().isPresent) 1 else 0) +
+                    (if (timeoutMs.asKnown().isPresent) 1 else 0)
+
+            override fun equals(other: Any?): Boolean {
+                if (this === other) {
+                    return true
+                }
+
+                return other is Action &&
+                    commands == other.commands &&
+                    maxOutputLength == other.maxOutputLength &&
+                    timeoutMs == other.timeoutMs &&
+                    additionalProperties == other.additionalProperties
+            }
+
+            private val hashCode: Int by lazy {
+                Objects.hash(commands, maxOutputLength, timeoutMs, additionalProperties)
+            }
+
+            override fun hashCode(): Int = hashCode
+
+            override fun toString() =
+                "Action{commands=$commands, maxOutputLength=$maxOutputLength, timeoutMs=$timeoutMs, additionalProperties=$additionalProperties}"
+        }
+
+        /** The status of the shell call. One of `in_progress`, `completed`, or `incomplete`. */
+        class Status @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
+
+            /**
+             * Returns this class instance's raw value.
+             *
+             * This is usually only useful if this instance was deserialized from data that doesn't
+             * match any known member, and you want to know that value. For example, if the SDK is
+             * on an older version than the API, then the API may respond with new members that the
+             * SDK is unaware of.
+             */
+            @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
+
+            companion object {
+
+                @JvmField val IN_PROGRESS = of("in_progress")
+
+                @JvmField val COMPLETED = of("completed")
+
+                @JvmField val INCOMPLETE = of("incomplete")
+
+                @JvmStatic fun of(value: String) = Status(JsonField.of(value))
+            }
+
+            /** An enum containing [Status]'s known values. */
+            enum class Known {
+                IN_PROGRESS,
+                COMPLETED,
+                INCOMPLETE,
+            }
+
+            /**
+             * An enum containing [Status]'s known values, as well as an [_UNKNOWN] member.
+             *
+             * An instance of [Status] can contain an unknown value in a couple of cases:
+             * - It was deserialized from data that doesn't match any known member. For example, if
+             *   the SDK is on an older version than the API, then the API may respond with new
+             *   members that the SDK is unaware of.
+             * - It was constructed with an arbitrary value using the [of] method.
+             */
+            enum class Value {
+                IN_PROGRESS,
+                COMPLETED,
+                INCOMPLETE,
+                /**
+                 * An enum member indicating that [Status] was instantiated with an unknown value.
+                 */
+                _UNKNOWN,
+            }
+
+            /**
+             * Returns an enum member corresponding to this class instance's value, or
+             * [Value._UNKNOWN] if the class was instantiated with an unknown value.
+             *
+             * Use the [known] method instead if you're certain the value is always known or if you
+             * want to throw for the unknown case.
+             */
+            fun value(): Value =
+                when (this) {
+                    IN_PROGRESS -> Value.IN_PROGRESS
+                    COMPLETED -> Value.COMPLETED
+                    INCOMPLETE -> Value.INCOMPLETE
+                    else -> Value._UNKNOWN
+                }
+
+            /**
+             * Returns an enum member corresponding to this class instance's value.
+             *
+             * Use the [value] method instead if you're uncertain the value is always known and
+             * don't want to throw for the unknown case.
+             *
+             * @throws OpenAIInvalidDataException if this class instance's value is a not a known
+             *   member.
+             */
+            fun known(): Known =
+                when (this) {
+                    IN_PROGRESS -> Known.IN_PROGRESS
+                    COMPLETED -> Known.COMPLETED
+                    INCOMPLETE -> Known.INCOMPLETE
+                    else -> throw OpenAIInvalidDataException("Unknown Status: $value")
+                }
+
+            /**
+             * Returns this class instance's primitive wire representation.
+             *
+             * This differs from the [toString] method because that method is primarily for
+             * debugging and generally doesn't throw.
+             *
+             * @throws OpenAIInvalidDataException if this class instance's value does not have the
+             *   expected primitive type.
+             */
+            fun asString(): String =
+                _value().asString().orElseThrow {
+                    OpenAIInvalidDataException("Value is not a String")
+                }
+
+            private var validated: Boolean = false
+
+            fun validate(): Status = apply {
+                if (validated) {
+                    return@apply
+                }
+
+                known()
+                validated = true
+            }
+
+            fun isValid(): Boolean =
+                try {
+                    validate()
+                    true
+                } catch (e: OpenAIInvalidDataException) {
+                    false
+                }
+
+            /**
+             * Returns a score indicating how many valid values are contained in this object
+             * recursively.
+             *
+             * Used for best match union deserialization.
+             */
+            @JvmSynthetic internal fun validity(): Int = if (value() == Value._UNKNOWN) 0 else 1
+
+            override fun equals(other: Any?): Boolean {
+                if (this === other) {
+                    return true
+                }
+
+                return other is Status && value == other.value
+            }
+
+            override fun hashCode() = value.hashCode()
+
+            override fun toString() = value.toString()
+        }
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) {
+                return true
+            }
+
+            return other is ShellCall &&
+                action == other.action &&
+                callId == other.callId &&
+                type == other.type &&
+                id == other.id &&
+                status == other.status &&
+                additionalProperties == other.additionalProperties
+        }
+
+        private val hashCode: Int by lazy {
+            Objects.hash(action, callId, type, id, status, additionalProperties)
+        }
+
+        override fun hashCode(): Int = hashCode
+
+        override fun toString() =
+            "ShellCall{action=$action, callId=$callId, type=$type, id=$id, status=$status, additionalProperties=$additionalProperties}"
+    }
+
+    /** The streamed output items emitted by a function shell tool call. */
+    class ShellCallOutput
+    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
+    private constructor(
+        private val callId: JsonField<String>,
+        private val output: JsonField<List<ResponseFunctionShellCallOutputContent>>,
+        private val type: JsonValue,
+        private val id: JsonField<String>,
+        private val maxOutputLength: JsonField<Long>,
+        private val additionalProperties: MutableMap<String, JsonValue>,
+    ) {
+
+        @JsonCreator
+        private constructor(
+            @JsonProperty("call_id") @ExcludeMissing callId: JsonField<String> = JsonMissing.of(),
+            @JsonProperty("output")
+            @ExcludeMissing
+            output: JsonField<List<ResponseFunctionShellCallOutputContent>> = JsonMissing.of(),
+            @JsonProperty("type") @ExcludeMissing type: JsonValue = JsonMissing.of(),
+            @JsonProperty("id") @ExcludeMissing id: JsonField<String> = JsonMissing.of(),
+            @JsonProperty("max_output_length")
+            @ExcludeMissing
+            maxOutputLength: JsonField<Long> = JsonMissing.of(),
+        ) : this(callId, output, type, id, maxOutputLength, mutableMapOf())
+
+        /**
+         * The unique ID of the function shell tool call generated by the model.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         */
+        fun callId(): String = callId.getRequired("call_id")
+
+        /**
+         * Captured chunks of stdout and stderr output, along with their associated outcomes.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         */
+        fun output(): List<ResponseFunctionShellCallOutputContent> = output.getRequired("output")
+
+        /**
+         * The type of the item. Always `function_shell_call_output`.
+         *
+         * Expected to always return the following:
+         * ```java
+         * JsonValue.from("shell_call_output")
+         * ```
+         *
+         * However, this method can be useful for debugging and logging (e.g. if the server
+         * responded with an unexpected value).
+         */
+        @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
+
+        /**
+         * The unique ID of the function shell tool call output. Populated when this item is
+         * returned via API.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun id(): Optional<String> = id.getOptional("id")
+
+        /**
+         * The maximum number of UTF-8 characters captured for this shell call's combined output.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun maxOutputLength(): Optional<Long> = maxOutputLength.getOptional("max_output_length")
+
+        /**
+         * Returns the raw JSON value of [callId].
+         *
+         * Unlike [callId], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("call_id") @ExcludeMissing fun _callId(): JsonField<String> = callId
+
+        /**
+         * Returns the raw JSON value of [output].
+         *
+         * Unlike [output], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("output")
+        @ExcludeMissing
+        fun _output(): JsonField<List<ResponseFunctionShellCallOutputContent>> = output
+
+        /**
+         * Returns the raw JSON value of [id].
+         *
+         * Unlike [id], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("id") @ExcludeMissing fun _id(): JsonField<String> = id
+
+        /**
+         * Returns the raw JSON value of [maxOutputLength].
+         *
+         * Unlike [maxOutputLength], this method doesn't throw if the JSON field has an unexpected
+         * type.
+         */
+        @JsonProperty("max_output_length")
+        @ExcludeMissing
+        fun _maxOutputLength(): JsonField<Long> = maxOutputLength
+
+        @JsonAnySetter
+        private fun putAdditionalProperty(key: String, value: JsonValue) {
+            additionalProperties.put(key, value)
+        }
+
+        @JsonAnyGetter
+        @ExcludeMissing
+        fun _additionalProperties(): Map<String, JsonValue> =
+            Collections.unmodifiableMap(additionalProperties)
+
+        fun toBuilder() = Builder().from(this)
+
+        companion object {
+
+            /**
+             * Returns a mutable builder for constructing an instance of [ShellCallOutput].
+             *
+             * The following fields are required:
+             * ```java
+             * .callId()
+             * .output()
+             * ```
+             */
+            @JvmStatic fun builder() = Builder()
+        }
+
+        /** A builder for [ShellCallOutput]. */
+        class Builder internal constructor() {
+
+            private var callId: JsonField<String>? = null
+            private var output: JsonField<MutableList<ResponseFunctionShellCallOutputContent>>? =
+                null
+            private var type: JsonValue = JsonValue.from("shell_call_output")
+            private var id: JsonField<String> = JsonMissing.of()
+            private var maxOutputLength: JsonField<Long> = JsonMissing.of()
+            private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
+
+            @JvmSynthetic
+            internal fun from(shellCallOutput: ShellCallOutput) = apply {
+                callId = shellCallOutput.callId
+                output = shellCallOutput.output.map { it.toMutableList() }
+                type = shellCallOutput.type
+                id = shellCallOutput.id
+                maxOutputLength = shellCallOutput.maxOutputLength
+                additionalProperties = shellCallOutput.additionalProperties.toMutableMap()
+            }
+
+            /** The unique ID of the function shell tool call generated by the model. */
+            fun callId(callId: String) = callId(JsonField.of(callId))
+
+            /**
+             * Sets [Builder.callId] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.callId] with a well-typed [String] value instead.
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun callId(callId: JsonField<String>) = apply { this.callId = callId }
+
+            /**
+             * Captured chunks of stdout and stderr output, along with their associated outcomes.
+             */
+            fun output(output: List<ResponseFunctionShellCallOutputContent>) =
+                output(JsonField.of(output))
+
+            /**
+             * Sets [Builder.output] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.output] with a well-typed
+             * `List<ResponseFunctionShellCallOutputContent>` value instead. This method is
+             * primarily for setting the field to an undocumented or not yet supported value.
+             */
+            fun output(output: JsonField<List<ResponseFunctionShellCallOutputContent>>) = apply {
+                this.output = output.map { it.toMutableList() }
+            }
+
+            /**
+             * Adds a single [ResponseFunctionShellCallOutputContent] to [Builder.output].
+             *
+             * @throws IllegalStateException if the field was previously set to a non-list.
+             */
+            fun addOutput(output: ResponseFunctionShellCallOutputContent) = apply {
+                this.output =
+                    (this.output ?: JsonField.of(mutableListOf())).also {
+                        checkKnown("output", it).add(output)
+                    }
+            }
+
+            /**
+             * Sets the field to an arbitrary JSON value.
+             *
+             * It is usually unnecessary to call this method because the field defaults to the
+             * following:
+             * ```java
+             * JsonValue.from("shell_call_output")
+             * ```
+             *
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun type(type: JsonValue) = apply { this.type = type }
+
+            /**
+             * The unique ID of the function shell tool call output. Populated when this item is
+             * returned via API.
+             */
+            fun id(id: String?) = id(JsonField.ofNullable(id))
+
+            /** Alias for calling [Builder.id] with `id.orElse(null)`. */
+            fun id(id: Optional<String>) = id(id.getOrNull())
+
+            /**
+             * Sets [Builder.id] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.id] with a well-typed [String] value instead. This
+             * method is primarily for setting the field to an undocumented or not yet supported
+             * value.
+             */
+            fun id(id: JsonField<String>) = apply { this.id = id }
+
+            /**
+             * The maximum number of UTF-8 characters captured for this shell call's combined
+             * output.
+             */
+            fun maxOutputLength(maxOutputLength: Long?) =
+                maxOutputLength(JsonField.ofNullable(maxOutputLength))
+
+            /**
+             * Alias for [Builder.maxOutputLength].
+             *
+             * This unboxed primitive overload exists for backwards compatibility.
+             */
+            fun maxOutputLength(maxOutputLength: Long) = maxOutputLength(maxOutputLength as Long?)
+
+            /** Alias for calling [Builder.maxOutputLength] with `maxOutputLength.orElse(null)`. */
+            fun maxOutputLength(maxOutputLength: Optional<Long>) =
+                maxOutputLength(maxOutputLength.getOrNull())
+
+            /**
+             * Sets [Builder.maxOutputLength] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.maxOutputLength] with a well-typed [Long] value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun maxOutputLength(maxOutputLength: JsonField<Long>) = apply {
+                this.maxOutputLength = maxOutputLength
+            }
+
+            fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                this.additionalProperties.clear()
+                putAllAdditionalProperties(additionalProperties)
+            }
+
+            fun putAdditionalProperty(key: String, value: JsonValue) = apply {
+                additionalProperties.put(key, value)
+            }
+
+            fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                this.additionalProperties.putAll(additionalProperties)
+            }
+
+            fun removeAdditionalProperty(key: String) = apply { additionalProperties.remove(key) }
+
+            fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                keys.forEach(::removeAdditionalProperty)
+            }
+
+            /**
+             * Returns an immutable instance of [ShellCallOutput].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             *
+             * The following fields are required:
+             * ```java
+             * .callId()
+             * .output()
+             * ```
+             *
+             * @throws IllegalStateException if any required field is unset.
+             */
+            fun build(): ShellCallOutput =
+                ShellCallOutput(
+                    checkRequired("callId", callId),
+                    checkRequired("output", output).map { it.toImmutable() },
+                    type,
+                    id,
+                    maxOutputLength,
+                    additionalProperties.toMutableMap(),
+                )
+        }
+
+        private var validated: Boolean = false
+
+        fun validate(): ShellCallOutput = apply {
+            if (validated) {
+                return@apply
+            }
+
+            callId()
+            output().forEach { it.validate() }
+            _type().let {
+                if (it != JsonValue.from("shell_call_output")) {
+                    throw OpenAIInvalidDataException("'type' is invalid, received $it")
+                }
+            }
+            id()
+            maxOutputLength()
+            validated = true
+        }
+
+        fun isValid(): Boolean =
+            try {
+                validate()
+                true
+            } catch (e: OpenAIInvalidDataException) {
+                false
+            }
+
+        /**
+         * Returns a score indicating how many valid values are contained in this object
+         * recursively.
+         *
+         * Used for best match union deserialization.
+         */
+        @JvmSynthetic
+        internal fun validity(): Int =
+            (if (callId.asKnown().isPresent) 1 else 0) +
+                (output.asKnown().getOrNull()?.sumOf { it.validity().toInt() } ?: 0) +
+                type.let { if (it == JsonValue.from("shell_call_output")) 1 else 0 } +
+                (if (id.asKnown().isPresent) 1 else 0) +
+                (if (maxOutputLength.asKnown().isPresent) 1 else 0)
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) {
+                return true
+            }
+
+            return other is ShellCallOutput &&
+                callId == other.callId &&
+                output == other.output &&
+                type == other.type &&
+                id == other.id &&
+                maxOutputLength == other.maxOutputLength &&
+                additionalProperties == other.additionalProperties
+        }
+
+        private val hashCode: Int by lazy {
+            Objects.hash(callId, output, type, id, maxOutputLength, additionalProperties)
+        }
+
+        override fun hashCode(): Int = hashCode
+
+        override fun toString() =
+            "ShellCallOutput{callId=$callId, output=$output, type=$type, id=$id, maxOutputLength=$maxOutputLength, additionalProperties=$additionalProperties}"
+    }
+
+    /** A tool call representing a request to create, delete, or update files using diff patches. */
+    class ApplyPatchCall
+    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
+    private constructor(
+        private val callId: JsonField<String>,
+        private val operation: JsonField<Operation>,
+        private val status: JsonField<Status>,
+        private val type: JsonValue,
+        private val id: JsonField<String>,
+        private val additionalProperties: MutableMap<String, JsonValue>,
+    ) {
+
+        @JsonCreator
+        private constructor(
+            @JsonProperty("call_id") @ExcludeMissing callId: JsonField<String> = JsonMissing.of(),
+            @JsonProperty("operation")
+            @ExcludeMissing
+            operation: JsonField<Operation> = JsonMissing.of(),
+            @JsonProperty("status") @ExcludeMissing status: JsonField<Status> = JsonMissing.of(),
+            @JsonProperty("type") @ExcludeMissing type: JsonValue = JsonMissing.of(),
+            @JsonProperty("id") @ExcludeMissing id: JsonField<String> = JsonMissing.of(),
+        ) : this(callId, operation, status, type, id, mutableMapOf())
+
+        /**
+         * The unique ID of the apply patch tool call generated by the model.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         */
+        fun callId(): String = callId.getRequired("call_id")
+
+        /**
+         * The specific create, delete, or update instruction for the apply_patch tool call.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         */
+        fun operation(): Operation = operation.getRequired("operation")
+
+        /**
+         * The status of the apply patch tool call. One of `in_progress` or `completed`.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         */
+        fun status(): Status = status.getRequired("status")
+
+        /**
+         * The type of the item. Always `apply_patch_call`.
+         *
+         * Expected to always return the following:
+         * ```java
+         * JsonValue.from("apply_patch_call")
+         * ```
+         *
+         * However, this method can be useful for debugging and logging (e.g. if the server
+         * responded with an unexpected value).
+         */
+        @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
+
+        /**
+         * The unique ID of the apply patch tool call. Populated when this item is returned via API.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun id(): Optional<String> = id.getOptional("id")
+
+        /**
+         * Returns the raw JSON value of [callId].
+         *
+         * Unlike [callId], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("call_id") @ExcludeMissing fun _callId(): JsonField<String> = callId
+
+        /**
+         * Returns the raw JSON value of [operation].
+         *
+         * Unlike [operation], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("operation")
+        @ExcludeMissing
+        fun _operation(): JsonField<Operation> = operation
+
+        /**
+         * Returns the raw JSON value of [status].
+         *
+         * Unlike [status], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("status") @ExcludeMissing fun _status(): JsonField<Status> = status
+
+        /**
+         * Returns the raw JSON value of [id].
+         *
+         * Unlike [id], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("id") @ExcludeMissing fun _id(): JsonField<String> = id
+
+        @JsonAnySetter
+        private fun putAdditionalProperty(key: String, value: JsonValue) {
+            additionalProperties.put(key, value)
+        }
+
+        @JsonAnyGetter
+        @ExcludeMissing
+        fun _additionalProperties(): Map<String, JsonValue> =
+            Collections.unmodifiableMap(additionalProperties)
+
+        fun toBuilder() = Builder().from(this)
+
+        companion object {
+
+            /**
+             * Returns a mutable builder for constructing an instance of [ApplyPatchCall].
+             *
+             * The following fields are required:
+             * ```java
+             * .callId()
+             * .operation()
+             * .status()
+             * ```
+             */
+            @JvmStatic fun builder() = Builder()
+        }
+
+        /** A builder for [ApplyPatchCall]. */
+        class Builder internal constructor() {
+
+            private var callId: JsonField<String>? = null
+            private var operation: JsonField<Operation>? = null
+            private var status: JsonField<Status>? = null
+            private var type: JsonValue = JsonValue.from("apply_patch_call")
+            private var id: JsonField<String> = JsonMissing.of()
+            private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
+
+            @JvmSynthetic
+            internal fun from(applyPatchCall: ApplyPatchCall) = apply {
+                callId = applyPatchCall.callId
+                operation = applyPatchCall.operation
+                status = applyPatchCall.status
+                type = applyPatchCall.type
+                id = applyPatchCall.id
+                additionalProperties = applyPatchCall.additionalProperties.toMutableMap()
+            }
+
+            /** The unique ID of the apply patch tool call generated by the model. */
+            fun callId(callId: String) = callId(JsonField.of(callId))
+
+            /**
+             * Sets [Builder.callId] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.callId] with a well-typed [String] value instead.
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun callId(callId: JsonField<String>) = apply { this.callId = callId }
+
+            /** The specific create, delete, or update instruction for the apply_patch tool call. */
+            fun operation(operation: Operation) = operation(JsonField.of(operation))
+
+            /**
+             * Sets [Builder.operation] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.operation] with a well-typed [Operation] value
+             * instead. This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun operation(operation: JsonField<Operation>) = apply { this.operation = operation }
+
+            /** Alias for calling [operation] with `Operation.ofCreateFile(createFile)`. */
+            fun operation(createFile: Operation.CreateFile) =
+                operation(Operation.ofCreateFile(createFile))
+
+            /** Alias for calling [operation] with `Operation.ofDeleteFile(deleteFile)`. */
+            fun operation(deleteFile: Operation.DeleteFile) =
+                operation(Operation.ofDeleteFile(deleteFile))
+
+            /**
+             * Alias for calling [operation] with the following:
+             * ```java
+             * Operation.DeleteFile.builder()
+             *     .path(path)
+             *     .build()
+             * ```
+             */
+            fun deleteFileOperation(path: String) =
+                operation(Operation.DeleteFile.builder().path(path).build())
+
+            /** Alias for calling [operation] with `Operation.ofUpdateFile(updateFile)`. */
+            fun operation(updateFile: Operation.UpdateFile) =
+                operation(Operation.ofUpdateFile(updateFile))
+
+            /** The status of the apply patch tool call. One of `in_progress` or `completed`. */
+            fun status(status: Status) = status(JsonField.of(status))
+
+            /**
+             * Sets [Builder.status] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.status] with a well-typed [Status] value instead.
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun status(status: JsonField<Status>) = apply { this.status = status }
+
+            /**
+             * Sets the field to an arbitrary JSON value.
+             *
+             * It is usually unnecessary to call this method because the field defaults to the
+             * following:
+             * ```java
+             * JsonValue.from("apply_patch_call")
+             * ```
+             *
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun type(type: JsonValue) = apply { this.type = type }
+
+            /**
+             * The unique ID of the apply patch tool call. Populated when this item is returned via
+             * API.
+             */
+            fun id(id: String?) = id(JsonField.ofNullable(id))
+
+            /** Alias for calling [Builder.id] with `id.orElse(null)`. */
+            fun id(id: Optional<String>) = id(id.getOrNull())
+
+            /**
+             * Sets [Builder.id] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.id] with a well-typed [String] value instead. This
+             * method is primarily for setting the field to an undocumented or not yet supported
+             * value.
+             */
+            fun id(id: JsonField<String>) = apply { this.id = id }
+
+            fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                this.additionalProperties.clear()
+                putAllAdditionalProperties(additionalProperties)
+            }
+
+            fun putAdditionalProperty(key: String, value: JsonValue) = apply {
+                additionalProperties.put(key, value)
+            }
+
+            fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                this.additionalProperties.putAll(additionalProperties)
+            }
+
+            fun removeAdditionalProperty(key: String) = apply { additionalProperties.remove(key) }
+
+            fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                keys.forEach(::removeAdditionalProperty)
+            }
+
+            /**
+             * Returns an immutable instance of [ApplyPatchCall].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             *
+             * The following fields are required:
+             * ```java
+             * .callId()
+             * .operation()
+             * .status()
+             * ```
+             *
+             * @throws IllegalStateException if any required field is unset.
+             */
+            fun build(): ApplyPatchCall =
+                ApplyPatchCall(
+                    checkRequired("callId", callId),
+                    checkRequired("operation", operation),
+                    checkRequired("status", status),
+                    type,
+                    id,
+                    additionalProperties.toMutableMap(),
+                )
+        }
+
+        private var validated: Boolean = false
+
+        fun validate(): ApplyPatchCall = apply {
+            if (validated) {
+                return@apply
+            }
+
+            callId()
+            operation().validate()
+            status().validate()
+            _type().let {
+                if (it != JsonValue.from("apply_patch_call")) {
+                    throw OpenAIInvalidDataException("'type' is invalid, received $it")
+                }
+            }
+            id()
+            validated = true
+        }
+
+        fun isValid(): Boolean =
+            try {
+                validate()
+                true
+            } catch (e: OpenAIInvalidDataException) {
+                false
+            }
+
+        /**
+         * Returns a score indicating how many valid values are contained in this object
+         * recursively.
+         *
+         * Used for best match union deserialization.
+         */
+        @JvmSynthetic
+        internal fun validity(): Int =
+            (if (callId.asKnown().isPresent) 1 else 0) +
+                (operation.asKnown().getOrNull()?.validity() ?: 0) +
+                (status.asKnown().getOrNull()?.validity() ?: 0) +
+                type.let { if (it == JsonValue.from("apply_patch_call")) 1 else 0 } +
+                (if (id.asKnown().isPresent) 1 else 0)
+
+        /** The specific create, delete, or update instruction for the apply_patch tool call. */
+        @JsonDeserialize(using = Operation.Deserializer::class)
+        @JsonSerialize(using = Operation.Serializer::class)
+        class Operation
+        private constructor(
+            private val createFile: CreateFile? = null,
+            private val deleteFile: DeleteFile? = null,
+            private val updateFile: UpdateFile? = null,
+            private val _json: JsonValue? = null,
+        ) {
+
+            /** Instruction for creating a new file via the apply_patch tool. */
+            fun createFile(): Optional<CreateFile> = Optional.ofNullable(createFile)
+
+            /** Instruction for deleting an existing file via the apply_patch tool. */
+            fun deleteFile(): Optional<DeleteFile> = Optional.ofNullable(deleteFile)
+
+            /** Instruction for updating an existing file via the apply_patch tool. */
+            fun updateFile(): Optional<UpdateFile> = Optional.ofNullable(updateFile)
+
+            fun isCreateFile(): Boolean = createFile != null
+
+            fun isDeleteFile(): Boolean = deleteFile != null
+
+            fun isUpdateFile(): Boolean = updateFile != null
+
+            /** Instruction for creating a new file via the apply_patch tool. */
+            fun asCreateFile(): CreateFile = createFile.getOrThrow("createFile")
+
+            /** Instruction for deleting an existing file via the apply_patch tool. */
+            fun asDeleteFile(): DeleteFile = deleteFile.getOrThrow("deleteFile")
+
+            /** Instruction for updating an existing file via the apply_patch tool. */
+            fun asUpdateFile(): UpdateFile = updateFile.getOrThrow("updateFile")
+
+            fun _json(): Optional<JsonValue> = Optional.ofNullable(_json)
+
+            fun <T> accept(visitor: Visitor<T>): T =
+                when {
+                    createFile != null -> visitor.visitCreateFile(createFile)
+                    deleteFile != null -> visitor.visitDeleteFile(deleteFile)
+                    updateFile != null -> visitor.visitUpdateFile(updateFile)
+                    else -> visitor.unknown(_json)
+                }
+
+            private var validated: Boolean = false
+
+            fun validate(): Operation = apply {
+                if (validated) {
+                    return@apply
+                }
+
+                accept(
+                    object : Visitor<Unit> {
+                        override fun visitCreateFile(createFile: CreateFile) {
+                            createFile.validate()
+                        }
+
+                        override fun visitDeleteFile(deleteFile: DeleteFile) {
+                            deleteFile.validate()
+                        }
+
+                        override fun visitUpdateFile(updateFile: UpdateFile) {
+                            updateFile.validate()
+                        }
+                    }
+                )
+                validated = true
+            }
+
+            fun isValid(): Boolean =
+                try {
+                    validate()
+                    true
+                } catch (e: OpenAIInvalidDataException) {
+                    false
+                }
+
+            /**
+             * Returns a score indicating how many valid values are contained in this object
+             * recursively.
+             *
+             * Used for best match union deserialization.
+             */
+            @JvmSynthetic
+            internal fun validity(): Int =
+                accept(
+                    object : Visitor<Int> {
+                        override fun visitCreateFile(createFile: CreateFile) = createFile.validity()
+
+                        override fun visitDeleteFile(deleteFile: DeleteFile) = deleteFile.validity()
+
+                        override fun visitUpdateFile(updateFile: UpdateFile) = updateFile.validity()
+
+                        override fun unknown(json: JsonValue?) = 0
+                    }
+                )
+
+            override fun equals(other: Any?): Boolean {
+                if (this === other) {
+                    return true
+                }
+
+                return other is Operation &&
+                    createFile == other.createFile &&
+                    deleteFile == other.deleteFile &&
+                    updateFile == other.updateFile
+            }
+
+            override fun hashCode(): Int = Objects.hash(createFile, deleteFile, updateFile)
+
+            override fun toString(): String =
+                when {
+                    createFile != null -> "Operation{createFile=$createFile}"
+                    deleteFile != null -> "Operation{deleteFile=$deleteFile}"
+                    updateFile != null -> "Operation{updateFile=$updateFile}"
+                    _json != null -> "Operation{_unknown=$_json}"
+                    else -> throw IllegalStateException("Invalid Operation")
+                }
+
+            companion object {
+
+                /** Instruction for creating a new file via the apply_patch tool. */
+                @JvmStatic
+                fun ofCreateFile(createFile: CreateFile) = Operation(createFile = createFile)
+
+                /** Instruction for deleting an existing file via the apply_patch tool. */
+                @JvmStatic
+                fun ofDeleteFile(deleteFile: DeleteFile) = Operation(deleteFile = deleteFile)
+
+                /** Instruction for updating an existing file via the apply_patch tool. */
+                @JvmStatic
+                fun ofUpdateFile(updateFile: UpdateFile) = Operation(updateFile = updateFile)
+            }
+
+            /**
+             * An interface that defines how to map each variant of [Operation] to a value of type
+             * [T].
+             */
+            interface Visitor<out T> {
+
+                /** Instruction for creating a new file via the apply_patch tool. */
+                fun visitCreateFile(createFile: CreateFile): T
+
+                /** Instruction for deleting an existing file via the apply_patch tool. */
+                fun visitDeleteFile(deleteFile: DeleteFile): T
+
+                /** Instruction for updating an existing file via the apply_patch tool. */
+                fun visitUpdateFile(updateFile: UpdateFile): T
+
+                /**
+                 * Maps an unknown variant of [Operation] to a value of type [T].
+                 *
+                 * An instance of [Operation] can contain an unknown variant if it was deserialized
+                 * from data that doesn't match any known variant. For example, if the SDK is on an
+                 * older version than the API, then the API may respond with new variants that the
+                 * SDK is unaware of.
+                 *
+                 * @throws OpenAIInvalidDataException in the default implementation.
+                 */
+                fun unknown(json: JsonValue?): T {
+                    throw OpenAIInvalidDataException("Unknown Operation: $json")
+                }
+            }
+
+            internal class Deserializer : BaseDeserializer<Operation>(Operation::class) {
+
+                override fun ObjectCodec.deserialize(node: JsonNode): Operation {
+                    val json = JsonValue.fromJsonNode(node)
+                    val type = json.asObject().getOrNull()?.get("type")?.asString()?.getOrNull()
+
+                    when (type) {
+                        "create_file" -> {
+                            return tryDeserialize(node, jacksonTypeRef<CreateFile>())?.let {
+                                Operation(createFile = it, _json = json)
+                            } ?: Operation(_json = json)
+                        }
+                        "delete_file" -> {
+                            return tryDeserialize(node, jacksonTypeRef<DeleteFile>())?.let {
+                                Operation(deleteFile = it, _json = json)
+                            } ?: Operation(_json = json)
+                        }
+                        "update_file" -> {
+                            return tryDeserialize(node, jacksonTypeRef<UpdateFile>())?.let {
+                                Operation(updateFile = it, _json = json)
+                            } ?: Operation(_json = json)
+                        }
+                    }
+
+                    return Operation(_json = json)
+                }
+            }
+
+            internal class Serializer : BaseSerializer<Operation>(Operation::class) {
+
+                override fun serialize(
+                    value: Operation,
+                    generator: JsonGenerator,
+                    provider: SerializerProvider,
+                ) {
+                    when {
+                        value.createFile != null -> generator.writeObject(value.createFile)
+                        value.deleteFile != null -> generator.writeObject(value.deleteFile)
+                        value.updateFile != null -> generator.writeObject(value.updateFile)
+                        value._json != null -> generator.writeObject(value._json)
+                        else -> throw IllegalStateException("Invalid Operation")
+                    }
+                }
+            }
+
+            /** Instruction for creating a new file via the apply_patch tool. */
+            class CreateFile
+            @JsonCreator(mode = JsonCreator.Mode.DISABLED)
+            private constructor(
+                private val diff: JsonField<String>,
+                private val path: JsonField<String>,
+                private val type: JsonValue,
+                private val additionalProperties: MutableMap<String, JsonValue>,
+            ) {
+
+                @JsonCreator
+                private constructor(
+                    @JsonProperty("diff")
+                    @ExcludeMissing
+                    diff: JsonField<String> = JsonMissing.of(),
+                    @JsonProperty("path")
+                    @ExcludeMissing
+                    path: JsonField<String> = JsonMissing.of(),
+                    @JsonProperty("type") @ExcludeMissing type: JsonValue = JsonMissing.of(),
+                ) : this(diff, path, type, mutableMapOf())
+
+                /**
+                 * Unified diff content to apply when creating the file.
+                 *
+                 * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+                 *   unexpectedly missing or null (e.g. if the server responded with an unexpected
+                 *   value).
+                 */
+                fun diff(): String = diff.getRequired("diff")
+
+                /**
+                 * Path of the file to create relative to the workspace root.
+                 *
+                 * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+                 *   unexpectedly missing or null (e.g. if the server responded with an unexpected
+                 *   value).
+                 */
+                fun path(): String = path.getRequired("path")
+
+                /**
+                 * The operation type. Always `create_file`.
+                 *
+                 * Expected to always return the following:
+                 * ```java
+                 * JsonValue.from("create_file")
+                 * ```
+                 *
+                 * However, this method can be useful for debugging and logging (e.g. if the server
+                 * responded with an unexpected value).
+                 */
+                @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
+
+                /**
+                 * Returns the raw JSON value of [diff].
+                 *
+                 * Unlike [diff], this method doesn't throw if the JSON field has an unexpected
+                 * type.
+                 */
+                @JsonProperty("diff") @ExcludeMissing fun _diff(): JsonField<String> = diff
+
+                /**
+                 * Returns the raw JSON value of [path].
+                 *
+                 * Unlike [path], this method doesn't throw if the JSON field has an unexpected
+                 * type.
+                 */
+                @JsonProperty("path") @ExcludeMissing fun _path(): JsonField<String> = path
+
+                @JsonAnySetter
+                private fun putAdditionalProperty(key: String, value: JsonValue) {
+                    additionalProperties.put(key, value)
+                }
+
+                @JsonAnyGetter
+                @ExcludeMissing
+                fun _additionalProperties(): Map<String, JsonValue> =
+                    Collections.unmodifiableMap(additionalProperties)
+
+                fun toBuilder() = Builder().from(this)
+
+                companion object {
+
+                    /**
+                     * Returns a mutable builder for constructing an instance of [CreateFile].
+                     *
+                     * The following fields are required:
+                     * ```java
+                     * .diff()
+                     * .path()
+                     * ```
+                     */
+                    @JvmStatic fun builder() = Builder()
+                }
+
+                /** A builder for [CreateFile]. */
+                class Builder internal constructor() {
+
+                    private var diff: JsonField<String>? = null
+                    private var path: JsonField<String>? = null
+                    private var type: JsonValue = JsonValue.from("create_file")
+                    private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
+
+                    @JvmSynthetic
+                    internal fun from(createFile: CreateFile) = apply {
+                        diff = createFile.diff
+                        path = createFile.path
+                        type = createFile.type
+                        additionalProperties = createFile.additionalProperties.toMutableMap()
+                    }
+
+                    /** Unified diff content to apply when creating the file. */
+                    fun diff(diff: String) = diff(JsonField.of(diff))
+
+                    /**
+                     * Sets [Builder.diff] to an arbitrary JSON value.
+                     *
+                     * You should usually call [Builder.diff] with a well-typed [String] value
+                     * instead. This method is primarily for setting the field to an undocumented or
+                     * not yet supported value.
+                     */
+                    fun diff(diff: JsonField<String>) = apply { this.diff = diff }
+
+                    /** Path of the file to create relative to the workspace root. */
+                    fun path(path: String) = path(JsonField.of(path))
+
+                    /**
+                     * Sets [Builder.path] to an arbitrary JSON value.
+                     *
+                     * You should usually call [Builder.path] with a well-typed [String] value
+                     * instead. This method is primarily for setting the field to an undocumented or
+                     * not yet supported value.
+                     */
+                    fun path(path: JsonField<String>) = apply { this.path = path }
+
+                    /**
+                     * Sets the field to an arbitrary JSON value.
+                     *
+                     * It is usually unnecessary to call this method because the field defaults to
+                     * the following:
+                     * ```java
+                     * JsonValue.from("create_file")
+                     * ```
+                     *
+                     * This method is primarily for setting the field to an undocumented or not yet
+                     * supported value.
+                     */
+                    fun type(type: JsonValue) = apply { this.type = type }
+
+                    fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                        this.additionalProperties.clear()
+                        putAllAdditionalProperties(additionalProperties)
+                    }
+
+                    fun putAdditionalProperty(key: String, value: JsonValue) = apply {
+                        additionalProperties.put(key, value)
+                    }
+
+                    fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) =
+                        apply {
+                            this.additionalProperties.putAll(additionalProperties)
+                        }
+
+                    fun removeAdditionalProperty(key: String) = apply {
+                        additionalProperties.remove(key)
+                    }
+
+                    fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                        keys.forEach(::removeAdditionalProperty)
+                    }
+
+                    /**
+                     * Returns an immutable instance of [CreateFile].
+                     *
+                     * Further updates to this [Builder] will not mutate the returned instance.
+                     *
+                     * The following fields are required:
+                     * ```java
+                     * .diff()
+                     * .path()
+                     * ```
+                     *
+                     * @throws IllegalStateException if any required field is unset.
+                     */
+                    fun build(): CreateFile =
+                        CreateFile(
+                            checkRequired("diff", diff),
+                            checkRequired("path", path),
+                            type,
+                            additionalProperties.toMutableMap(),
+                        )
+                }
+
+                private var validated: Boolean = false
+
+                fun validate(): CreateFile = apply {
+                    if (validated) {
+                        return@apply
+                    }
+
+                    diff()
+                    path()
+                    _type().let {
+                        if (it != JsonValue.from("create_file")) {
+                            throw OpenAIInvalidDataException("'type' is invalid, received $it")
+                        }
+                    }
+                    validated = true
+                }
+
+                fun isValid(): Boolean =
+                    try {
+                        validate()
+                        true
+                    } catch (e: OpenAIInvalidDataException) {
+                        false
+                    }
+
+                /**
+                 * Returns a score indicating how many valid values are contained in this object
+                 * recursively.
+                 *
+                 * Used for best match union deserialization.
+                 */
+                @JvmSynthetic
+                internal fun validity(): Int =
+                    (if (diff.asKnown().isPresent) 1 else 0) +
+                        (if (path.asKnown().isPresent) 1 else 0) +
+                        type.let { if (it == JsonValue.from("create_file")) 1 else 0 }
+
+                override fun equals(other: Any?): Boolean {
+                    if (this === other) {
+                        return true
+                    }
+
+                    return other is CreateFile &&
+                        diff == other.diff &&
+                        path == other.path &&
+                        type == other.type &&
+                        additionalProperties == other.additionalProperties
+                }
+
+                private val hashCode: Int by lazy {
+                    Objects.hash(diff, path, type, additionalProperties)
+                }
+
+                override fun hashCode(): Int = hashCode
+
+                override fun toString() =
+                    "CreateFile{diff=$diff, path=$path, type=$type, additionalProperties=$additionalProperties}"
+            }
+
+            /** Instruction for deleting an existing file via the apply_patch tool. */
+            class DeleteFile
+            @JsonCreator(mode = JsonCreator.Mode.DISABLED)
+            private constructor(
+                private val path: JsonField<String>,
+                private val type: JsonValue,
+                private val additionalProperties: MutableMap<String, JsonValue>,
+            ) {
+
+                @JsonCreator
+                private constructor(
+                    @JsonProperty("path")
+                    @ExcludeMissing
+                    path: JsonField<String> = JsonMissing.of(),
+                    @JsonProperty("type") @ExcludeMissing type: JsonValue = JsonMissing.of(),
+                ) : this(path, type, mutableMapOf())
+
+                /**
+                 * Path of the file to delete relative to the workspace root.
+                 *
+                 * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+                 *   unexpectedly missing or null (e.g. if the server responded with an unexpected
+                 *   value).
+                 */
+                fun path(): String = path.getRequired("path")
+
+                /**
+                 * The operation type. Always `delete_file`.
+                 *
+                 * Expected to always return the following:
+                 * ```java
+                 * JsonValue.from("delete_file")
+                 * ```
+                 *
+                 * However, this method can be useful for debugging and logging (e.g. if the server
+                 * responded with an unexpected value).
+                 */
+                @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
+
+                /**
+                 * Returns the raw JSON value of [path].
+                 *
+                 * Unlike [path], this method doesn't throw if the JSON field has an unexpected
+                 * type.
+                 */
+                @JsonProperty("path") @ExcludeMissing fun _path(): JsonField<String> = path
+
+                @JsonAnySetter
+                private fun putAdditionalProperty(key: String, value: JsonValue) {
+                    additionalProperties.put(key, value)
+                }
+
+                @JsonAnyGetter
+                @ExcludeMissing
+                fun _additionalProperties(): Map<String, JsonValue> =
+                    Collections.unmodifiableMap(additionalProperties)
+
+                fun toBuilder() = Builder().from(this)
+
+                companion object {
+
+                    /**
+                     * Returns a mutable builder for constructing an instance of [DeleteFile].
+                     *
+                     * The following fields are required:
+                     * ```java
+                     * .path()
+                     * ```
+                     */
+                    @JvmStatic fun builder() = Builder()
+                }
+
+                /** A builder for [DeleteFile]. */
+                class Builder internal constructor() {
+
+                    private var path: JsonField<String>? = null
+                    private var type: JsonValue = JsonValue.from("delete_file")
+                    private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
+
+                    @JvmSynthetic
+                    internal fun from(deleteFile: DeleteFile) = apply {
+                        path = deleteFile.path
+                        type = deleteFile.type
+                        additionalProperties = deleteFile.additionalProperties.toMutableMap()
+                    }
+
+                    /** Path of the file to delete relative to the workspace root. */
+                    fun path(path: String) = path(JsonField.of(path))
+
+                    /**
+                     * Sets [Builder.path] to an arbitrary JSON value.
+                     *
+                     * You should usually call [Builder.path] with a well-typed [String] value
+                     * instead. This method is primarily for setting the field to an undocumented or
+                     * not yet supported value.
+                     */
+                    fun path(path: JsonField<String>) = apply { this.path = path }
+
+                    /**
+                     * Sets the field to an arbitrary JSON value.
+                     *
+                     * It is usually unnecessary to call this method because the field defaults to
+                     * the following:
+                     * ```java
+                     * JsonValue.from("delete_file")
+                     * ```
+                     *
+                     * This method is primarily for setting the field to an undocumented or not yet
+                     * supported value.
+                     */
+                    fun type(type: JsonValue) = apply { this.type = type }
+
+                    fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                        this.additionalProperties.clear()
+                        putAllAdditionalProperties(additionalProperties)
+                    }
+
+                    fun putAdditionalProperty(key: String, value: JsonValue) = apply {
+                        additionalProperties.put(key, value)
+                    }
+
+                    fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) =
+                        apply {
+                            this.additionalProperties.putAll(additionalProperties)
+                        }
+
+                    fun removeAdditionalProperty(key: String) = apply {
+                        additionalProperties.remove(key)
+                    }
+
+                    fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                        keys.forEach(::removeAdditionalProperty)
+                    }
+
+                    /**
+                     * Returns an immutable instance of [DeleteFile].
+                     *
+                     * Further updates to this [Builder] will not mutate the returned instance.
+                     *
+                     * The following fields are required:
+                     * ```java
+                     * .path()
+                     * ```
+                     *
+                     * @throws IllegalStateException if any required field is unset.
+                     */
+                    fun build(): DeleteFile =
+                        DeleteFile(
+                            checkRequired("path", path),
+                            type,
+                            additionalProperties.toMutableMap(),
+                        )
+                }
+
+                private var validated: Boolean = false
+
+                fun validate(): DeleteFile = apply {
+                    if (validated) {
+                        return@apply
+                    }
+
+                    path()
+                    _type().let {
+                        if (it != JsonValue.from("delete_file")) {
+                            throw OpenAIInvalidDataException("'type' is invalid, received $it")
+                        }
+                    }
+                    validated = true
+                }
+
+                fun isValid(): Boolean =
+                    try {
+                        validate()
+                        true
+                    } catch (e: OpenAIInvalidDataException) {
+                        false
+                    }
+
+                /**
+                 * Returns a score indicating how many valid values are contained in this object
+                 * recursively.
+                 *
+                 * Used for best match union deserialization.
+                 */
+                @JvmSynthetic
+                internal fun validity(): Int =
+                    (if (path.asKnown().isPresent) 1 else 0) +
+                        type.let { if (it == JsonValue.from("delete_file")) 1 else 0 }
+
+                override fun equals(other: Any?): Boolean {
+                    if (this === other) {
+                        return true
+                    }
+
+                    return other is DeleteFile &&
+                        path == other.path &&
+                        type == other.type &&
+                        additionalProperties == other.additionalProperties
+                }
+
+                private val hashCode: Int by lazy { Objects.hash(path, type, additionalProperties) }
+
+                override fun hashCode(): Int = hashCode
+
+                override fun toString() =
+                    "DeleteFile{path=$path, type=$type, additionalProperties=$additionalProperties}"
+            }
+
+            /** Instruction for updating an existing file via the apply_patch tool. */
+            class UpdateFile
+            @JsonCreator(mode = JsonCreator.Mode.DISABLED)
+            private constructor(
+                private val diff: JsonField<String>,
+                private val path: JsonField<String>,
+                private val type: JsonValue,
+                private val additionalProperties: MutableMap<String, JsonValue>,
+            ) {
+
+                @JsonCreator
+                private constructor(
+                    @JsonProperty("diff")
+                    @ExcludeMissing
+                    diff: JsonField<String> = JsonMissing.of(),
+                    @JsonProperty("path")
+                    @ExcludeMissing
+                    path: JsonField<String> = JsonMissing.of(),
+                    @JsonProperty("type") @ExcludeMissing type: JsonValue = JsonMissing.of(),
+                ) : this(diff, path, type, mutableMapOf())
+
+                /**
+                 * Unified diff content to apply to the existing file.
+                 *
+                 * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+                 *   unexpectedly missing or null (e.g. if the server responded with an unexpected
+                 *   value).
+                 */
+                fun diff(): String = diff.getRequired("diff")
+
+                /**
+                 * Path of the file to update relative to the workspace root.
+                 *
+                 * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+                 *   unexpectedly missing or null (e.g. if the server responded with an unexpected
+                 *   value).
+                 */
+                fun path(): String = path.getRequired("path")
+
+                /**
+                 * The operation type. Always `update_file`.
+                 *
+                 * Expected to always return the following:
+                 * ```java
+                 * JsonValue.from("update_file")
+                 * ```
+                 *
+                 * However, this method can be useful for debugging and logging (e.g. if the server
+                 * responded with an unexpected value).
+                 */
+                @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
+
+                /**
+                 * Returns the raw JSON value of [diff].
+                 *
+                 * Unlike [diff], this method doesn't throw if the JSON field has an unexpected
+                 * type.
+                 */
+                @JsonProperty("diff") @ExcludeMissing fun _diff(): JsonField<String> = diff
+
+                /**
+                 * Returns the raw JSON value of [path].
+                 *
+                 * Unlike [path], this method doesn't throw if the JSON field has an unexpected
+                 * type.
+                 */
+                @JsonProperty("path") @ExcludeMissing fun _path(): JsonField<String> = path
+
+                @JsonAnySetter
+                private fun putAdditionalProperty(key: String, value: JsonValue) {
+                    additionalProperties.put(key, value)
+                }
+
+                @JsonAnyGetter
+                @ExcludeMissing
+                fun _additionalProperties(): Map<String, JsonValue> =
+                    Collections.unmodifiableMap(additionalProperties)
+
+                fun toBuilder() = Builder().from(this)
+
+                companion object {
+
+                    /**
+                     * Returns a mutable builder for constructing an instance of [UpdateFile].
+                     *
+                     * The following fields are required:
+                     * ```java
+                     * .diff()
+                     * .path()
+                     * ```
+                     */
+                    @JvmStatic fun builder() = Builder()
+                }
+
+                /** A builder for [UpdateFile]. */
+                class Builder internal constructor() {
+
+                    private var diff: JsonField<String>? = null
+                    private var path: JsonField<String>? = null
+                    private var type: JsonValue = JsonValue.from("update_file")
+                    private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
+
+                    @JvmSynthetic
+                    internal fun from(updateFile: UpdateFile) = apply {
+                        diff = updateFile.diff
+                        path = updateFile.path
+                        type = updateFile.type
+                        additionalProperties = updateFile.additionalProperties.toMutableMap()
+                    }
+
+                    /** Unified diff content to apply to the existing file. */
+                    fun diff(diff: String) = diff(JsonField.of(diff))
+
+                    /**
+                     * Sets [Builder.diff] to an arbitrary JSON value.
+                     *
+                     * You should usually call [Builder.diff] with a well-typed [String] value
+                     * instead. This method is primarily for setting the field to an undocumented or
+                     * not yet supported value.
+                     */
+                    fun diff(diff: JsonField<String>) = apply { this.diff = diff }
+
+                    /** Path of the file to update relative to the workspace root. */
+                    fun path(path: String) = path(JsonField.of(path))
+
+                    /**
+                     * Sets [Builder.path] to an arbitrary JSON value.
+                     *
+                     * You should usually call [Builder.path] with a well-typed [String] value
+                     * instead. This method is primarily for setting the field to an undocumented or
+                     * not yet supported value.
+                     */
+                    fun path(path: JsonField<String>) = apply { this.path = path }
+
+                    /**
+                     * Sets the field to an arbitrary JSON value.
+                     *
+                     * It is usually unnecessary to call this method because the field defaults to
+                     * the following:
+                     * ```java
+                     * JsonValue.from("update_file")
+                     * ```
+                     *
+                     * This method is primarily for setting the field to an undocumented or not yet
+                     * supported value.
+                     */
+                    fun type(type: JsonValue) = apply { this.type = type }
+
+                    fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                        this.additionalProperties.clear()
+                        putAllAdditionalProperties(additionalProperties)
+                    }
+
+                    fun putAdditionalProperty(key: String, value: JsonValue) = apply {
+                        additionalProperties.put(key, value)
+                    }
+
+                    fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) =
+                        apply {
+                            this.additionalProperties.putAll(additionalProperties)
+                        }
+
+                    fun removeAdditionalProperty(key: String) = apply {
+                        additionalProperties.remove(key)
+                    }
+
+                    fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                        keys.forEach(::removeAdditionalProperty)
+                    }
+
+                    /**
+                     * Returns an immutable instance of [UpdateFile].
+                     *
+                     * Further updates to this [Builder] will not mutate the returned instance.
+                     *
+                     * The following fields are required:
+                     * ```java
+                     * .diff()
+                     * .path()
+                     * ```
+                     *
+                     * @throws IllegalStateException if any required field is unset.
+                     */
+                    fun build(): UpdateFile =
+                        UpdateFile(
+                            checkRequired("diff", diff),
+                            checkRequired("path", path),
+                            type,
+                            additionalProperties.toMutableMap(),
+                        )
+                }
+
+                private var validated: Boolean = false
+
+                fun validate(): UpdateFile = apply {
+                    if (validated) {
+                        return@apply
+                    }
+
+                    diff()
+                    path()
+                    _type().let {
+                        if (it != JsonValue.from("update_file")) {
+                            throw OpenAIInvalidDataException("'type' is invalid, received $it")
+                        }
+                    }
+                    validated = true
+                }
+
+                fun isValid(): Boolean =
+                    try {
+                        validate()
+                        true
+                    } catch (e: OpenAIInvalidDataException) {
+                        false
+                    }
+
+                /**
+                 * Returns a score indicating how many valid values are contained in this object
+                 * recursively.
+                 *
+                 * Used for best match union deserialization.
+                 */
+                @JvmSynthetic
+                internal fun validity(): Int =
+                    (if (diff.asKnown().isPresent) 1 else 0) +
+                        (if (path.asKnown().isPresent) 1 else 0) +
+                        type.let { if (it == JsonValue.from("update_file")) 1 else 0 }
+
+                override fun equals(other: Any?): Boolean {
+                    if (this === other) {
+                        return true
+                    }
+
+                    return other is UpdateFile &&
+                        diff == other.diff &&
+                        path == other.path &&
+                        type == other.type &&
+                        additionalProperties == other.additionalProperties
+                }
+
+                private val hashCode: Int by lazy {
+                    Objects.hash(diff, path, type, additionalProperties)
+                }
+
+                override fun hashCode(): Int = hashCode
+
+                override fun toString() =
+                    "UpdateFile{diff=$diff, path=$path, type=$type, additionalProperties=$additionalProperties}"
+            }
+        }
+
+        /** The status of the apply patch tool call. One of `in_progress` or `completed`. */
+        class Status @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
+
+            /**
+             * Returns this class instance's raw value.
+             *
+             * This is usually only useful if this instance was deserialized from data that doesn't
+             * match any known member, and you want to know that value. For example, if the SDK is
+             * on an older version than the API, then the API may respond with new members that the
+             * SDK is unaware of.
+             */
+            @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
+
+            companion object {
+
+                @JvmField val IN_PROGRESS = of("in_progress")
+
+                @JvmField val COMPLETED = of("completed")
+
+                @JvmStatic fun of(value: String) = Status(JsonField.of(value))
+            }
+
+            /** An enum containing [Status]'s known values. */
+            enum class Known {
+                IN_PROGRESS,
+                COMPLETED,
+            }
+
+            /**
+             * An enum containing [Status]'s known values, as well as an [_UNKNOWN] member.
+             *
+             * An instance of [Status] can contain an unknown value in a couple of cases:
+             * - It was deserialized from data that doesn't match any known member. For example, if
+             *   the SDK is on an older version than the API, then the API may respond with new
+             *   members that the SDK is unaware of.
+             * - It was constructed with an arbitrary value using the [of] method.
+             */
+            enum class Value {
+                IN_PROGRESS,
+                COMPLETED,
+                /**
+                 * An enum member indicating that [Status] was instantiated with an unknown value.
+                 */
+                _UNKNOWN,
+            }
+
+            /**
+             * Returns an enum member corresponding to this class instance's value, or
+             * [Value._UNKNOWN] if the class was instantiated with an unknown value.
+             *
+             * Use the [known] method instead if you're certain the value is always known or if you
+             * want to throw for the unknown case.
+             */
+            fun value(): Value =
+                when (this) {
+                    IN_PROGRESS -> Value.IN_PROGRESS
+                    COMPLETED -> Value.COMPLETED
+                    else -> Value._UNKNOWN
+                }
+
+            /**
+             * Returns an enum member corresponding to this class instance's value.
+             *
+             * Use the [value] method instead if you're uncertain the value is always known and
+             * don't want to throw for the unknown case.
+             *
+             * @throws OpenAIInvalidDataException if this class instance's value is a not a known
+             *   member.
+             */
+            fun known(): Known =
+                when (this) {
+                    IN_PROGRESS -> Known.IN_PROGRESS
+                    COMPLETED -> Known.COMPLETED
+                    else -> throw OpenAIInvalidDataException("Unknown Status: $value")
+                }
+
+            /**
+             * Returns this class instance's primitive wire representation.
+             *
+             * This differs from the [toString] method because that method is primarily for
+             * debugging and generally doesn't throw.
+             *
+             * @throws OpenAIInvalidDataException if this class instance's value does not have the
+             *   expected primitive type.
+             */
+            fun asString(): String =
+                _value().asString().orElseThrow {
+                    OpenAIInvalidDataException("Value is not a String")
+                }
+
+            private var validated: Boolean = false
+
+            fun validate(): Status = apply {
+                if (validated) {
+                    return@apply
+                }
+
+                known()
+                validated = true
+            }
+
+            fun isValid(): Boolean =
+                try {
+                    validate()
+                    true
+                } catch (e: OpenAIInvalidDataException) {
+                    false
+                }
+
+            /**
+             * Returns a score indicating how many valid values are contained in this object
+             * recursively.
+             *
+             * Used for best match union deserialization.
+             */
+            @JvmSynthetic internal fun validity(): Int = if (value() == Value._UNKNOWN) 0 else 1
+
+            override fun equals(other: Any?): Boolean {
+                if (this === other) {
+                    return true
+                }
+
+                return other is Status && value == other.value
+            }
+
+            override fun hashCode() = value.hashCode()
+
+            override fun toString() = value.toString()
+        }
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) {
+                return true
+            }
+
+            return other is ApplyPatchCall &&
+                callId == other.callId &&
+                operation == other.operation &&
+                status == other.status &&
+                type == other.type &&
+                id == other.id &&
+                additionalProperties == other.additionalProperties
+        }
+
+        private val hashCode: Int by lazy {
+            Objects.hash(callId, operation, status, type, id, additionalProperties)
+        }
+
+        override fun hashCode(): Int = hashCode
+
+        override fun toString() =
+            "ApplyPatchCall{callId=$callId, operation=$operation, status=$status, type=$type, id=$id, additionalProperties=$additionalProperties}"
+    }
+
+    /** The streamed output emitted by an apply patch tool call. */
+    class ApplyPatchCallOutput
+    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
+    private constructor(
+        private val callId: JsonField<String>,
+        private val status: JsonField<Status>,
+        private val type: JsonValue,
+        private val id: JsonField<String>,
+        private val output: JsonField<String>,
+        private val additionalProperties: MutableMap<String, JsonValue>,
+    ) {
+
+        @JsonCreator
+        private constructor(
+            @JsonProperty("call_id") @ExcludeMissing callId: JsonField<String> = JsonMissing.of(),
+            @JsonProperty("status") @ExcludeMissing status: JsonField<Status> = JsonMissing.of(),
+            @JsonProperty("type") @ExcludeMissing type: JsonValue = JsonMissing.of(),
+            @JsonProperty("id") @ExcludeMissing id: JsonField<String> = JsonMissing.of(),
+            @JsonProperty("output") @ExcludeMissing output: JsonField<String> = JsonMissing.of(),
+        ) : this(callId, status, type, id, output, mutableMapOf())
+
+        /**
+         * The unique ID of the apply patch tool call generated by the model.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         */
+        fun callId(): String = callId.getRequired("call_id")
+
+        /**
+         * The status of the apply patch tool call output. One of `completed` or `failed`.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+         *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+         */
+        fun status(): Status = status.getRequired("status")
+
+        /**
+         * The type of the item. Always `apply_patch_call_output`.
+         *
+         * Expected to always return the following:
+         * ```java
+         * JsonValue.from("apply_patch_call_output")
+         * ```
+         *
+         * However, this method can be useful for debugging and logging (e.g. if the server
+         * responded with an unexpected value).
+         */
+        @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
+
+        /**
+         * The unique ID of the apply patch tool call output. Populated when this item is returned
+         * via API.
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun id(): Optional<String> = id.getOptional("id")
+
+        /**
+         * Optional human-readable log text from the apply patch tool (e.g., patch results or
+         * errors).
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun output(): Optional<String> = output.getOptional("output")
+
+        /**
+         * Returns the raw JSON value of [callId].
+         *
+         * Unlike [callId], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("call_id") @ExcludeMissing fun _callId(): JsonField<String> = callId
+
+        /**
+         * Returns the raw JSON value of [status].
+         *
+         * Unlike [status], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("status") @ExcludeMissing fun _status(): JsonField<Status> = status
+
+        /**
+         * Returns the raw JSON value of [id].
+         *
+         * Unlike [id], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("id") @ExcludeMissing fun _id(): JsonField<String> = id
+
+        /**
+         * Returns the raw JSON value of [output].
+         *
+         * Unlike [output], this method doesn't throw if the JSON field has an unexpected type.
+         */
+        @JsonProperty("output") @ExcludeMissing fun _output(): JsonField<String> = output
+
+        @JsonAnySetter
+        private fun putAdditionalProperty(key: String, value: JsonValue) {
+            additionalProperties.put(key, value)
+        }
+
+        @JsonAnyGetter
+        @ExcludeMissing
+        fun _additionalProperties(): Map<String, JsonValue> =
+            Collections.unmodifiableMap(additionalProperties)
+
+        fun toBuilder() = Builder().from(this)
+
+        companion object {
+
+            /**
+             * Returns a mutable builder for constructing an instance of [ApplyPatchCallOutput].
+             *
+             * The following fields are required:
+             * ```java
+             * .callId()
+             * .status()
+             * ```
+             */
+            @JvmStatic fun builder() = Builder()
+        }
+
+        /** A builder for [ApplyPatchCallOutput]. */
+        class Builder internal constructor() {
+
+            private var callId: JsonField<String>? = null
+            private var status: JsonField<Status>? = null
+            private var type: JsonValue = JsonValue.from("apply_patch_call_output")
+            private var id: JsonField<String> = JsonMissing.of()
+            private var output: JsonField<String> = JsonMissing.of()
+            private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
+
+            @JvmSynthetic
+            internal fun from(applyPatchCallOutput: ApplyPatchCallOutput) = apply {
+                callId = applyPatchCallOutput.callId
+                status = applyPatchCallOutput.status
+                type = applyPatchCallOutput.type
+                id = applyPatchCallOutput.id
+                output = applyPatchCallOutput.output
+                additionalProperties = applyPatchCallOutput.additionalProperties.toMutableMap()
+            }
+
+            /** The unique ID of the apply patch tool call generated by the model. */
+            fun callId(callId: String) = callId(JsonField.of(callId))
+
+            /**
+             * Sets [Builder.callId] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.callId] with a well-typed [String] value instead.
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun callId(callId: JsonField<String>) = apply { this.callId = callId }
+
+            /** The status of the apply patch tool call output. One of `completed` or `failed`. */
+            fun status(status: Status) = status(JsonField.of(status))
+
+            /**
+             * Sets [Builder.status] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.status] with a well-typed [Status] value instead.
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun status(status: JsonField<Status>) = apply { this.status = status }
+
+            /**
+             * Sets the field to an arbitrary JSON value.
+             *
+             * It is usually unnecessary to call this method because the field defaults to the
+             * following:
+             * ```java
+             * JsonValue.from("apply_patch_call_output")
+             * ```
+             *
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun type(type: JsonValue) = apply { this.type = type }
+
+            /**
+             * The unique ID of the apply patch tool call output. Populated when this item is
+             * returned via API.
+             */
+            fun id(id: String?) = id(JsonField.ofNullable(id))
+
+            /** Alias for calling [Builder.id] with `id.orElse(null)`. */
+            fun id(id: Optional<String>) = id(id.getOrNull())
+
+            /**
+             * Sets [Builder.id] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.id] with a well-typed [String] value instead. This
+             * method is primarily for setting the field to an undocumented or not yet supported
+             * value.
+             */
+            fun id(id: JsonField<String>) = apply { this.id = id }
+
+            /**
+             * Optional human-readable log text from the apply patch tool (e.g., patch results or
+             * errors).
+             */
+            fun output(output: String) = output(JsonField.of(output))
+
+            /**
+             * Sets [Builder.output] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.output] with a well-typed [String] value instead.
+             * This method is primarily for setting the field to an undocumented or not yet
+             * supported value.
+             */
+            fun output(output: JsonField<String>) = apply { this.output = output }
+
+            fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                this.additionalProperties.clear()
+                putAllAdditionalProperties(additionalProperties)
+            }
+
+            fun putAdditionalProperty(key: String, value: JsonValue) = apply {
+                additionalProperties.put(key, value)
+            }
+
+            fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                this.additionalProperties.putAll(additionalProperties)
+            }
+
+            fun removeAdditionalProperty(key: String) = apply { additionalProperties.remove(key) }
+
+            fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                keys.forEach(::removeAdditionalProperty)
+            }
+
+            /**
+             * Returns an immutable instance of [ApplyPatchCallOutput].
+             *
+             * Further updates to this [Builder] will not mutate the returned instance.
+             *
+             * The following fields are required:
+             * ```java
+             * .callId()
+             * .status()
+             * ```
+             *
+             * @throws IllegalStateException if any required field is unset.
+             */
+            fun build(): ApplyPatchCallOutput =
+                ApplyPatchCallOutput(
+                    checkRequired("callId", callId),
+                    checkRequired("status", status),
+                    type,
+                    id,
+                    output,
+                    additionalProperties.toMutableMap(),
+                )
+        }
+
+        private var validated: Boolean = false
+
+        fun validate(): ApplyPatchCallOutput = apply {
+            if (validated) {
+                return@apply
+            }
+
+            callId()
+            status().validate()
+            _type().let {
+                if (it != JsonValue.from("apply_patch_call_output")) {
+                    throw OpenAIInvalidDataException("'type' is invalid, received $it")
+                }
+            }
+            id()
+            output()
+            validated = true
+        }
+
+        fun isValid(): Boolean =
+            try {
+                validate()
+                true
+            } catch (e: OpenAIInvalidDataException) {
+                false
+            }
+
+        /**
+         * Returns a score indicating how many valid values are contained in this object
+         * recursively.
+         *
+         * Used for best match union deserialization.
+         */
+        @JvmSynthetic
+        internal fun validity(): Int =
+            (if (callId.asKnown().isPresent) 1 else 0) +
+                (status.asKnown().getOrNull()?.validity() ?: 0) +
+                type.let { if (it == JsonValue.from("apply_patch_call_output")) 1 else 0 } +
+                (if (id.asKnown().isPresent) 1 else 0) +
+                (if (output.asKnown().isPresent) 1 else 0)
+
+        /** The status of the apply patch tool call output. One of `completed` or `failed`. */
+        class Status @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
+
+            /**
+             * Returns this class instance's raw value.
+             *
+             * This is usually only useful if this instance was deserialized from data that doesn't
+             * match any known member, and you want to know that value. For example, if the SDK is
+             * on an older version than the API, then the API may respond with new members that the
+             * SDK is unaware of.
+             */
+            @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
+
+            companion object {
+
+                @JvmField val COMPLETED = of("completed")
+
+                @JvmField val FAILED = of("failed")
+
+                @JvmStatic fun of(value: String) = Status(JsonField.of(value))
+            }
+
+            /** An enum containing [Status]'s known values. */
+            enum class Known {
+                COMPLETED,
+                FAILED,
+            }
+
+            /**
+             * An enum containing [Status]'s known values, as well as an [_UNKNOWN] member.
+             *
+             * An instance of [Status] can contain an unknown value in a couple of cases:
+             * - It was deserialized from data that doesn't match any known member. For example, if
+             *   the SDK is on an older version than the API, then the API may respond with new
+             *   members that the SDK is unaware of.
+             * - It was constructed with an arbitrary value using the [of] method.
+             */
+            enum class Value {
+                COMPLETED,
+                FAILED,
+                /**
+                 * An enum member indicating that [Status] was instantiated with an unknown value.
+                 */
+                _UNKNOWN,
+            }
+
+            /**
+             * Returns an enum member corresponding to this class instance's value, or
+             * [Value._UNKNOWN] if the class was instantiated with an unknown value.
+             *
+             * Use the [known] method instead if you're certain the value is always known or if you
+             * want to throw for the unknown case.
+             */
+            fun value(): Value =
+                when (this) {
+                    COMPLETED -> Value.COMPLETED
+                    FAILED -> Value.FAILED
+                    else -> Value._UNKNOWN
+                }
+
+            /**
+             * Returns an enum member corresponding to this class instance's value.
+             *
+             * Use the [value] method instead if you're uncertain the value is always known and
+             * don't want to throw for the unknown case.
+             *
+             * @throws OpenAIInvalidDataException if this class instance's value is a not a known
+             *   member.
+             */
+            fun known(): Known =
+                when (this) {
+                    COMPLETED -> Known.COMPLETED
+                    FAILED -> Known.FAILED
+                    else -> throw OpenAIInvalidDataException("Unknown Status: $value")
+                }
+
+            /**
+             * Returns this class instance's primitive wire representation.
+             *
+             * This differs from the [toString] method because that method is primarily for
+             * debugging and generally doesn't throw.
+             *
+             * @throws OpenAIInvalidDataException if this class instance's value does not have the
+             *   expected primitive type.
+             */
+            fun asString(): String =
+                _value().asString().orElseThrow {
+                    OpenAIInvalidDataException("Value is not a String")
+                }
+
+            private var validated: Boolean = false
+
+            fun validate(): Status = apply {
+                if (validated) {
+                    return@apply
+                }
+
+                known()
+                validated = true
+            }
+
+            fun isValid(): Boolean =
+                try {
+                    validate()
+                    true
+                } catch (e: OpenAIInvalidDataException) {
+                    false
+                }
+
+            /**
+             * Returns a score indicating how many valid values are contained in this object
+             * recursively.
+             *
+             * Used for best match union deserialization.
+             */
+            @JvmSynthetic internal fun validity(): Int = if (value() == Value._UNKNOWN) 0 else 1
+
+            override fun equals(other: Any?): Boolean {
+                if (this === other) {
+                    return true
+                }
+
+                return other is Status && value == other.value
+            }
+
+            override fun hashCode() = value.hashCode()
+
+            override fun toString() = value.toString()
+        }
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) {
+                return true
+            }
+
+            return other is ApplyPatchCallOutput &&
+                callId == other.callId &&
+                status == other.status &&
+                type == other.type &&
+                id == other.id &&
+                output == other.output &&
+                additionalProperties == other.additionalProperties
+        }
+
+        private val hashCode: Int by lazy {
+            Objects.hash(callId, status, type, id, output, additionalProperties)
+        }
+
+        override fun hashCode(): Int = hashCode
+
+        override fun toString() =
+            "ApplyPatchCallOutput{callId=$callId, status=$status, type=$type, id=$id, output=$output, additionalProperties=$additionalProperties}"
     }
 
     /** A list of tools available on an MCP server. */

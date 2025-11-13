@@ -167,10 +167,14 @@ private constructor(
     /**
      * Constrains effort on reasoning for
      * [reasoning models](https://platform.openai.com/docs/guides/reasoning). Currently supported
-     * values are `minimal`, `low`, `medium`, and `high`. Reducing reasoning effort can result in
-     * faster responses and fewer tokens used on reasoning in a response.
-     *
-     * Note: The `gpt-5-pro` model defaults to (and only supports) `high` reasoning effort.
+     * values are `none`, `minimal`, `low`, `medium`, and `high`. Reducing reasoning effort can
+     * result in faster responses and fewer tokens used on reasoning in a response.
+     * - `gpt-5.1` defaults to `none`, which does not perform reasoning. The supported reasoning
+     *   values for `gpt-5.1` are `none`, `low`, `medium`, and `high`. Tool calls are supported for
+     *   all reasoning values in gpt-5.1.
+     * - All models before `gpt-5.1` default to `medium` reasoning effort, and do not support
+     *   `none`.
+     * - The `gpt-5-pro` model defaults to (and only supports) `high` reasoning effort.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -688,10 +692,14 @@ private constructor(
         /**
          * Constrains effort on reasoning for
          * [reasoning models](https://platform.openai.com/docs/guides/reasoning). Currently
-         * supported values are `minimal`, `low`, `medium`, and `high`. Reducing reasoning effort
-         * can result in faster responses and fewer tokens used on reasoning in a response.
-         *
-         * Note: The `gpt-5-pro` model defaults to (and only supports) `high` reasoning effort.
+         * supported values are `none`, `minimal`, `low`, `medium`, and `high`. Reducing reasoning
+         * effort can result in faster responses and fewer tokens used on reasoning in a response.
+         * - `gpt-5.1` defaults to `none`, which does not perform reasoning. The supported reasoning
+         *   values for `gpt-5.1` are `none`, `low`, `medium`, and `high`. Tool calls are supported
+         *   for all reasoning values in gpt-5.1.
+         * - All models before `gpt-5.1` default to `medium` reasoning effort, and do not support
+         *   `none`.
+         * - The `gpt-5-pro` model defaults to (and only supports) `high` reasoning effort.
          */
         fun reasoningEffort(reasoningEffort: ReasoningEffort?) = apply {
             body.reasoningEffort(reasoningEffort)
@@ -1282,10 +1290,14 @@ private constructor(
         /**
          * Constrains effort on reasoning for
          * [reasoning models](https://platform.openai.com/docs/guides/reasoning). Currently
-         * supported values are `minimal`, `low`, `medium`, and `high`. Reducing reasoning effort
-         * can result in faster responses and fewer tokens used on reasoning in a response.
-         *
-         * Note: The `gpt-5-pro` model defaults to (and only supports) `high` reasoning effort.
+         * supported values are `none`, `minimal`, `low`, `medium`, and `high`. Reducing reasoning
+         * effort can result in faster responses and fewer tokens used on reasoning in a response.
+         * - `gpt-5.1` defaults to `none`, which does not perform reasoning. The supported reasoning
+         *   values for `gpt-5.1` are `none`, `low`, `medium`, and `high`. Tool calls are supported
+         *   for all reasoning values in gpt-5.1.
+         * - All models before `gpt-5.1` default to `medium` reasoning effort, and do not support
+         *   `none`.
+         * - The `gpt-5-pro` model defaults to (and only supports) `high` reasoning effort.
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
@@ -1826,11 +1838,15 @@ private constructor(
             /**
              * Constrains effort on reasoning for
              * [reasoning models](https://platform.openai.com/docs/guides/reasoning). Currently
-             * supported values are `minimal`, `low`, `medium`, and `high`. Reducing reasoning
-             * effort can result in faster responses and fewer tokens used on reasoning in a
-             * response.
-             *
-             * Note: The `gpt-5-pro` model defaults to (and only supports) `high` reasoning effort.
+             * supported values are `none`, `minimal`, `low`, `medium`, and `high`. Reducing
+             * reasoning effort can result in faster responses and fewer tokens used on reasoning in
+             * a response.
+             * - `gpt-5.1` defaults to `none`, which does not perform reasoning. The supported
+             *   reasoning values for `gpt-5.1` are `none`, `low`, `medium`, and `high`. Tool calls
+             *   are supported for all reasoning values in gpt-5.1.
+             * - All models before `gpt-5.1` default to `medium` reasoning effort, and do not
+             *   support `none`.
+             * - The `gpt-5-pro` model defaults to (and only supports) `high` reasoning effort.
              */
             fun reasoningEffort(reasoningEffort: ReasoningEffort?) =
                 reasoningEffort(JsonField.ofNullable(reasoningEffort))

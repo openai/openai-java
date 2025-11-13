@@ -58,7 +58,7 @@ internal class ServiceParamsTest {
                         .name("name")
                         .build()
                 )
-                .model(ChatModel.GPT_5)
+                .model(ChatModel.GPT_5_1)
                 .audio(
                     ChatCompletionAudioParam.builder()
                         .format(ChatCompletionAudioParam.Format.WAV)
@@ -97,7 +97,8 @@ internal class ServiceParamsTest {
                 .prediction(ChatCompletionPredictionContent.builder().content("string").build())
                 .presencePenalty(-2.0)
                 .promptCacheKey("prompt-cache-key-1234")
-                .reasoningEffort(ReasoningEffort.MINIMAL)
+                .promptCacheRetention(ChatCompletionCreateParams.PromptCacheRetention.IN_MEMORY)
+                .reasoningEffort(ReasoningEffort.NONE)
                 .responseFormat(ResponseFormatText.builder().build())
                 .safetyIdentifier("safety-identifier-1234")
                 .seed(-9007199254740991L)

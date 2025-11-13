@@ -20,7 +20,7 @@ internal class ChatCompletionCreateParamsTest {
             .addMessage(
                 ChatCompletionDeveloperMessageParam.builder().content("string").name("name").build()
             )
-            .model(ChatModel.GPT_5)
+            .model(ChatModel.GPT_5_1)
             .audio(
                 ChatCompletionAudioParam.builder()
                     .format(ChatCompletionAudioParam.Format.WAV)
@@ -59,7 +59,8 @@ internal class ChatCompletionCreateParamsTest {
             .prediction(ChatCompletionPredictionContent.builder().content("string").build())
             .presencePenalty(-2.0)
             .promptCacheKey("prompt-cache-key-1234")
-            .reasoningEffort(ReasoningEffort.MINIMAL)
+            .promptCacheRetention(ChatCompletionCreateParams.PromptCacheRetention.IN_MEMORY)
+            .reasoningEffort(ReasoningEffort.NONE)
             .responseFormat(ResponseFormatText.builder().build())
             .safetyIdentifier("safety-identifier-1234")
             .seed(-9007199254740991L)
@@ -123,7 +124,7 @@ internal class ChatCompletionCreateParamsTest {
                         .name("name")
                         .build()
                 )
-                .model(ChatModel.GPT_5)
+                .model(ChatModel.GPT_5_1)
                 .audio(
                     ChatCompletionAudioParam.builder()
                         .format(ChatCompletionAudioParam.Format.WAV)
@@ -162,7 +163,8 @@ internal class ChatCompletionCreateParamsTest {
                 .prediction(ChatCompletionPredictionContent.builder().content("string").build())
                 .presencePenalty(-2.0)
                 .promptCacheKey("prompt-cache-key-1234")
-                .reasoningEffort(ReasoningEffort.MINIMAL)
+                .promptCacheRetention(ChatCompletionCreateParams.PromptCacheRetention.IN_MEMORY)
+                .reasoningEffort(ReasoningEffort.NONE)
                 .responseFormat(ResponseFormatText.builder().build())
                 .safetyIdentifier("safety-identifier-1234")
                 .seed(-9007199254740991L)
@@ -227,7 +229,7 @@ internal class ChatCompletionCreateParamsTest {
                         .build()
                 )
             )
-        assertThat(body.model()).isEqualTo(ChatModel.GPT_5)
+        assertThat(body.model()).isEqualTo(ChatModel.GPT_5_1)
         assertThat(body.audio())
             .contains(
                 ChatCompletionAudioParam.builder()
@@ -277,7 +279,9 @@ internal class ChatCompletionCreateParamsTest {
             .contains(ChatCompletionPredictionContent.builder().content("string").build())
         assertThat(body.presencePenalty()).contains(-2.0)
         assertThat(body.promptCacheKey()).contains("prompt-cache-key-1234")
-        assertThat(body.reasoningEffort()).contains(ReasoningEffort.MINIMAL)
+        assertThat(body.promptCacheRetention())
+            .contains(ChatCompletionCreateParams.PromptCacheRetention.IN_MEMORY)
+        assertThat(body.reasoningEffort()).contains(ReasoningEffort.NONE)
         assertThat(body.responseFormat())
             .contains(
                 ChatCompletionCreateParams.ResponseFormat.ofText(
@@ -352,7 +356,7 @@ internal class ChatCompletionCreateParamsTest {
         val params =
             ChatCompletionCreateParams.builder()
                 .addDeveloperMessage("string")
-                .model(ChatModel.GPT_5)
+                .model(ChatModel.GPT_5_1)
                 .build()
 
         val body = params._body()
@@ -363,6 +367,6 @@ internal class ChatCompletionCreateParamsTest {
                     ChatCompletionDeveloperMessageParam.builder().content("string").build()
                 )
             )
-        assertThat(body.model()).isEqualTo(ChatModel.GPT_5)
+        assertThat(body.model()).isEqualTo(ChatModel.GPT_5_1)
     }
 }

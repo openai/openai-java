@@ -29,9 +29,11 @@ import com.openai.errors.OpenAIInvalidDataException
 import com.openai.models.ReasoningEffort
 import com.openai.models.ResponseFormatJsonObject
 import com.openai.models.ResponseFormatText
+import com.openai.models.responses.ApplyPatchTool
 import com.openai.models.responses.ComputerTool
 import com.openai.models.responses.CustomTool
 import com.openai.models.responses.FileSearchTool
+import com.openai.models.responses.FunctionShellTool
 import com.openai.models.responses.FunctionTool
 import com.openai.models.responses.ResponseFormatTextConfig
 import com.openai.models.responses.ResponseFormatTextJsonSchemaConfig
@@ -2733,12 +2735,16 @@ private constructor(
                     /**
                      * Constrains effort on reasoning for
                      * [reasoning models](https://platform.openai.com/docs/guides/reasoning).
-                     * Currently supported values are `minimal`, `low`, `medium`, and `high`.
-                     * Reducing reasoning effort can result in faster responses and fewer tokens
-                     * used on reasoning in a response.
-                     *
-                     * Note: The `gpt-5-pro` model defaults to (and only supports) `high` reasoning
-                     * effort.
+                     * Currently supported values are `none`, `minimal`, `low`, `medium`, and
+                     * `high`. Reducing reasoning effort can result in faster responses and fewer
+                     * tokens used on reasoning in a response.
+                     * - `gpt-5.1` defaults to `none`, which does not perform reasoning. The
+                     *   supported reasoning values for `gpt-5.1` are `none`, `low`, `medium`, and
+                     *   `high`. Tool calls are supported for all reasoning values in gpt-5.1.
+                     * - All models before `gpt-5.1` default to `medium` reasoning effort, and do
+                     *   not support `none`.
+                     * - The `gpt-5-pro` model defaults to (and only supports) `high` reasoning
+                     *   effort.
                      *
                      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type
                      *   (e.g. if the server responded with an unexpected value).
@@ -3051,12 +3057,17 @@ private constructor(
                         /**
                          * Constrains effort on reasoning for
                          * [reasoning models](https://platform.openai.com/docs/guides/reasoning).
-                         * Currently supported values are `minimal`, `low`, `medium`, and `high`.
-                         * Reducing reasoning effort can result in faster responses and fewer tokens
-                         * used on reasoning in a response.
-                         *
-                         * Note: The `gpt-5-pro` model defaults to (and only supports) `high`
-                         * reasoning effort.
+                         * Currently supported values are `none`, `minimal`, `low`, `medium`, and
+                         * `high`. Reducing reasoning effort can result in faster responses and
+                         * fewer tokens used on reasoning in a response.
+                         * - `gpt-5.1` defaults to `none`, which does not perform reasoning. The
+                         *   supported reasoning values for `gpt-5.1` are `none`, `low`, `medium`,
+                         *   and `high`. Tool calls are supported for all reasoning values in
+                         *   gpt-5.1.
+                         * - All models before `gpt-5.1` default to `medium` reasoning effort, and
+                         *   do not support `none`.
+                         * - The `gpt-5-pro` model defaults to (and only supports) `high` reasoning
+                         *   effort.
                          */
                         fun reasoningEffort(reasoningEffort: ReasoningEffort?) =
                             reasoningEffort(JsonField.ofNullable(reasoningEffort))
@@ -6049,12 +6060,15 @@ private constructor(
                 /**
                  * Constrains effort on reasoning for
                  * [reasoning models](https://platform.openai.com/docs/guides/reasoning). Currently
-                 * supported values are `minimal`, `low`, `medium`, and `high`. Reducing reasoning
-                 * effort can result in faster responses and fewer tokens used on reasoning in a
-                 * response.
-                 *
-                 * Note: The `gpt-5-pro` model defaults to (and only supports) `high` reasoning
-                 * effort.
+                 * supported values are `none`, `minimal`, `low`, `medium`, and `high`. Reducing
+                 * reasoning effort can result in faster responses and fewer tokens used on
+                 * reasoning in a response.
+                 * - `gpt-5.1` defaults to `none`, which does not perform reasoning. The supported
+                 *   reasoning values for `gpt-5.1` are `none`, `low`, `medium`, and `high`. Tool
+                 *   calls are supported for all reasoning values in gpt-5.1.
+                 * - All models before `gpt-5.1` default to `medium` reasoning effort, and do not
+                 *   support `none`.
+                 * - The `gpt-5-pro` model defaults to (and only supports) `high` reasoning effort.
                  *
                  * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g.
                  *   if the server responded with an unexpected value).
@@ -6241,12 +6255,16 @@ private constructor(
                     /**
                      * Constrains effort on reasoning for
                      * [reasoning models](https://platform.openai.com/docs/guides/reasoning).
-                     * Currently supported values are `minimal`, `low`, `medium`, and `high`.
-                     * Reducing reasoning effort can result in faster responses and fewer tokens
-                     * used on reasoning in a response.
-                     *
-                     * Note: The `gpt-5-pro` model defaults to (and only supports) `high` reasoning
-                     * effort.
+                     * Currently supported values are `none`, `minimal`, `low`, `medium`, and
+                     * `high`. Reducing reasoning effort can result in faster responses and fewer
+                     * tokens used on reasoning in a response.
+                     * - `gpt-5.1` defaults to `none`, which does not perform reasoning. The
+                     *   supported reasoning values for `gpt-5.1` are `none`, `low`, `medium`, and
+                     *   `high`. Tool calls are supported for all reasoning values in gpt-5.1.
+                     * - All models before `gpt-5.1` default to `medium` reasoning effort, and do
+                     *   not support `none`.
+                     * - The `gpt-5-pro` model defaults to (and only supports) `high` reasoning
+                     *   effort.
                      */
                     fun reasoningEffort(reasoningEffort: ReasoningEffort?) =
                         reasoningEffort(JsonField.ofNullable(reasoningEffort))
@@ -6441,6 +6459,9 @@ private constructor(
                     /** Alias for calling [addTool] with `Tool.ofLocalShell()`. */
                     fun addToolLocalShell() = addTool(Tool.ofLocalShell())
 
+                    /** Alias for calling [addTool] with `Tool.ofShell(shell)`. */
+                    fun addTool(shell: FunctionShellTool) = addTool(Tool.ofShell(shell))
+
                     /** Alias for calling [addTool] with `Tool.ofCustom(custom)`. */
                     fun addTool(custom: CustomTool) = addTool(Tool.ofCustom(custom))
 
@@ -6460,6 +6481,9 @@ private constructor(
                      */
                     fun addTool(webSearchPreview: WebSearchPreviewTool) =
                         addTool(Tool.ofWebSearchPreview(webSearchPreview))
+
+                    /** Alias for calling [addTool] with `Tool.ofApplyPatch(applyPatch)`. */
+                    fun addTool(applyPatch: ApplyPatchTool) = addTool(Tool.ofApplyPatch(applyPatch))
 
                     /**
                      * An alternative to temperature for nucleus sampling; 1.0 includes all tokens.

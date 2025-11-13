@@ -24,7 +24,7 @@ internal class AssistantUpdateParamsTest {
             )
             .model(AssistantUpdateParams.Model.GPT_5)
             .name("name")
-            .reasoningEffort(ReasoningEffort.MINIMAL)
+            .reasoningEffort(ReasoningEffort.NONE)
             .responseFormatAuto()
             .temperature(1.0)
             .toolResources(
@@ -69,7 +69,7 @@ internal class AssistantUpdateParamsTest {
                 )
                 .model(AssistantUpdateParams.Model.GPT_5)
                 .name("name")
-                .reasoningEffort(ReasoningEffort.MINIMAL)
+                .reasoningEffort(ReasoningEffort.NONE)
                 .responseFormatAuto()
                 .temperature(1.0)
                 .toolResources(
@@ -102,7 +102,7 @@ internal class AssistantUpdateParamsTest {
             )
         assertThat(body.model()).contains(AssistantUpdateParams.Model.GPT_5)
         assertThat(body.name()).contains("name")
-        assertThat(body.reasoningEffort()).contains(ReasoningEffort.MINIMAL)
+        assertThat(body.reasoningEffort()).contains(ReasoningEffort.NONE)
         assertThat(body.responseFormat()).contains(AssistantResponseFormatOption.ofAuto())
         assertThat(body.temperature()).contains(1.0)
         assertThat(body.toolResources())

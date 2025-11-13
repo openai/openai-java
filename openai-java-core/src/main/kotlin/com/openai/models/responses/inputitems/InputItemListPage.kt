@@ -5,10 +5,14 @@ package com.openai.models.responses.inputitems
 import com.openai.core.AutoPager
 import com.openai.core.Page
 import com.openai.core.checkRequired
+import com.openai.models.responses.ResponseApplyPatchToolCall
+import com.openai.models.responses.ResponseApplyPatchToolCallOutput
 import com.openai.models.responses.ResponseCodeInterpreterToolCall
 import com.openai.models.responses.ResponseComputerToolCall
 import com.openai.models.responses.ResponseComputerToolCallOutputItem
 import com.openai.models.responses.ResponseFileSearchToolCall
+import com.openai.models.responses.ResponseFunctionShellToolCall
+import com.openai.models.responses.ResponseFunctionShellToolCallOutput
 import com.openai.models.responses.ResponseFunctionToolCallItem
 import com.openai.models.responses.ResponseFunctionToolCallOutputItem
 import com.openai.models.responses.ResponseFunctionWebSearch
@@ -101,6 +105,22 @@ private constructor(
                             override fun visitLocalShellCallOutput(
                                 localShellCallOutput: ResponseItem.LocalShellCallOutput
                             ): Optional<String> = localShellCallOutput._id().getOptional("id")
+
+                            override fun visitShellCall(
+                                shellCall: ResponseFunctionShellToolCall
+                            ): Optional<String> = shellCall._id().getOptional("id")
+
+                            override fun visitShellCallOutput(
+                                shellCallOutput: ResponseFunctionShellToolCallOutput
+                            ): Optional<String> = shellCallOutput._id().getOptional("id")
+
+                            override fun visitApplyPatchCall(
+                                applyPatchCall: ResponseApplyPatchToolCall
+                            ): Optional<String> = applyPatchCall._id().getOptional("id")
+
+                            override fun visitApplyPatchCallOutput(
+                                applyPatchCallOutput: ResponseApplyPatchToolCallOutput
+                            ): Optional<String> = applyPatchCallOutput._id().getOptional("id")
 
                             override fun visitMcpListTools(
                                 mcpListTools: ResponseItem.McpListTools

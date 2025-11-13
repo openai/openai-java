@@ -28,7 +28,7 @@ internal class ScoreModelGraderTest {
                 .samplingParams(
                     ScoreModelGrader.SamplingParams.builder()
                         .maxCompletionsTokens(1L)
-                        .reasoningEffort(ReasoningEffort.MINIMAL)
+                        .reasoningEffort(ReasoningEffort.NONE)
                         .seed(0L)
                         .temperature(0.0)
                         .topP(1.0)
@@ -51,7 +51,7 @@ internal class ScoreModelGraderTest {
             .contains(
                 ScoreModelGrader.SamplingParams.builder()
                     .maxCompletionsTokens(1L)
-                    .reasoningEffort(ReasoningEffort.MINIMAL)
+                    .reasoningEffort(ReasoningEffort.NONE)
                     .seed(0L)
                     .temperature(0.0)
                     .topP(1.0)
@@ -77,7 +77,7 @@ internal class ScoreModelGraderTest {
                 .samplingParams(
                     ScoreModelGrader.SamplingParams.builder()
                         .maxCompletionsTokens(1L)
-                        .reasoningEffort(ReasoningEffort.MINIMAL)
+                        .reasoningEffort(ReasoningEffort.NONE)
                         .seed(0L)
                         .temperature(0.0)
                         .topP(1.0)

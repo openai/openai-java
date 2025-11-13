@@ -15,7 +15,7 @@ internal class AssistantCreateParamsTest {
     @Test
     fun create() {
         AssistantCreateParams.builder()
-            .model(ChatModel.GPT_5)
+            .model(ChatModel.GPT_5_1)
             .description("description")
             .instructions("instructions")
             .metadata(
@@ -24,7 +24,7 @@ internal class AssistantCreateParamsTest {
                     .build()
             )
             .name("name")
-            .reasoningEffort(ReasoningEffort.MINIMAL)
+            .reasoningEffort(ReasoningEffort.NONE)
             .responseFormatAuto()
             .temperature(1.0)
             .toolResources(
@@ -63,7 +63,7 @@ internal class AssistantCreateParamsTest {
     fun body() {
         val params =
             AssistantCreateParams.builder()
-                .model(ChatModel.GPT_5)
+                .model(ChatModel.GPT_5_1)
                 .description("description")
                 .instructions("instructions")
                 .metadata(
@@ -72,7 +72,7 @@ internal class AssistantCreateParamsTest {
                         .build()
                 )
                 .name("name")
-                .reasoningEffort(ReasoningEffort.MINIMAL)
+                .reasoningEffort(ReasoningEffort.NONE)
                 .responseFormatAuto()
                 .temperature(1.0)
                 .toolResources(
@@ -113,7 +113,7 @@ internal class AssistantCreateParamsTest {
 
         val body = params._body()
 
-        assertThat(body.model()).isEqualTo(ChatModel.GPT_5)
+        assertThat(body.model()).isEqualTo(ChatModel.GPT_5_1)
         assertThat(body.description()).contains("description")
         assertThat(body.instructions()).contains("instructions")
         assertThat(body.metadata())
@@ -123,7 +123,7 @@ internal class AssistantCreateParamsTest {
                     .build()
             )
         assertThat(body.name()).contains("name")
-        assertThat(body.reasoningEffort()).contains(ReasoningEffort.MINIMAL)
+        assertThat(body.reasoningEffort()).contains(ReasoningEffort.NONE)
         assertThat(body.responseFormat()).contains(AssistantResponseFormatOption.ofAuto())
         assertThat(body.temperature()).contains(1.0)
         assertThat(body.toolResources())
@@ -161,10 +161,10 @@ internal class AssistantCreateParamsTest {
 
     @Test
     fun bodyWithoutOptionalFields() {
-        val params = AssistantCreateParams.builder().model(ChatModel.GPT_5).build()
+        val params = AssistantCreateParams.builder().model(ChatModel.GPT_5_1).build()
 
         val body = params._body()
 
-        assertThat(body.model()).isEqualTo(ChatModel.GPT_5)
+        assertThat(body.model()).isEqualTo(ChatModel.GPT_5_1)
     }
 }
