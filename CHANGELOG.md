@@ -1,5 +1,13 @@
 # Changelog
 
+## 4.8.0 (2025-11-13)
+
+Full Changelog: [v4.7.2...v4.8.0](https://github.com/openai/openai-java/compare/v4.7.2...v4.8.0)
+
+### Features
+
+* **api:** gpt 5.1 ([bb89ad7](https://github.com/openai/openai-java/commit/bb89ad78b91643bb1bb1578894fd2b123a4c6dae))
+
 ## 4.7.2 (2025-11-13)
 
 Full Changelog: [v4.7.1...v4.7.2](https://github.com/openai/openai-java/compare/v4.7.1...v4.7.2)
