@@ -109,19 +109,19 @@ class OkHttpClient private constructor(private val okHttpClient: okhttp3.OkHttpC
 
         val builder = Request.Builder().url(toUrl()).method(method.name, body)
         headers.names().forEach { name ->
-            headers.values(name).forEach { builder.header(name, it) }
+            headers.values(name).forEach { builder.addHeader(name, it) }
         }
 
         if (
             !headers.names().contains("X-Stainless-Read-Timeout") && client.readTimeoutMillis != 0
         ) {
-            builder.header(
+            builder.addHeader(
                 "X-Stainless-Read-Timeout",
                 Duration.ofMillis(client.readTimeoutMillis.toLong()).seconds.toString(),
             )
         }
         if (!headers.names().contains("X-Stainless-Timeout") && client.callTimeoutMillis != 0) {
-            builder.header(
+            builder.addHeader(
                 "X-Stainless-Timeout",
                 Duration.ofMillis(client.callTimeoutMillis.toLong()).seconds.toString(),
             )
