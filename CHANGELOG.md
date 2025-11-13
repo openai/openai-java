@@ -1,5 +1,13 @@
 # Changelog
 
+## 4.7.2 (2025-11-13)
+
+Full Changelog: [v4.7.1...v4.7.2](https://github.com/openai/openai-java/compare/v4.7.1...v4.7.2)
+
+### Bug Fixes
+
+* **client:** multi-value header serialization ([4a198b2](https://github.com/openai/openai-java/commit/4a198b2f0e2531295bb1bf9d4ca2fdbd74af64e5))
+
 ## 4.7.1 (2025-11-04)
 
 Full Changelog: [v4.7.0...v4.7.1](https://github.com/openai/openai-java/compare/v4.7.0...v4.7.1)
