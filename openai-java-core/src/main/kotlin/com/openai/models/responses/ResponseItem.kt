@@ -48,6 +48,10 @@ private constructor(
     private val codeInterpreterCall: ResponseCodeInterpreterToolCall? = null,
     private val localShellCall: LocalShellCall? = null,
     private val localShellCallOutput: LocalShellCallOutput? = null,
+    private val shellCall: ResponseFunctionShellToolCall? = null,
+    private val shellCallOutput: ResponseFunctionShellToolCallOutput? = null,
+    private val applyPatchCall: ResponseApplyPatchToolCall? = null,
+    private val applyPatchCallOutput: ResponseApplyPatchToolCallOutput? = null,
     private val mcpListTools: McpListTools? = null,
     private val mcpApprovalRequest: McpApprovalRequest? = null,
     private val mcpApprovalResponse: McpApprovalResponse? = null,
@@ -111,6 +115,20 @@ private constructor(
     fun localShellCallOutput(): Optional<LocalShellCallOutput> =
         Optional.ofNullable(localShellCallOutput)
 
+    /** A tool call that executes one or more shell commands in a managed environment. */
+    fun shellCall(): Optional<ResponseFunctionShellToolCall> = Optional.ofNullable(shellCall)
+
+    /** The output of a shell tool call. */
+    fun shellCallOutput(): Optional<ResponseFunctionShellToolCallOutput> =
+        Optional.ofNullable(shellCallOutput)
+
+    /** A tool call that applies file diffs by creating, deleting, or updating files. */
+    fun applyPatchCall(): Optional<ResponseApplyPatchToolCall> = Optional.ofNullable(applyPatchCall)
+
+    /** The output emitted by an apply patch tool call. */
+    fun applyPatchCallOutput(): Optional<ResponseApplyPatchToolCallOutput> =
+        Optional.ofNullable(applyPatchCallOutput)
+
     /** A list of tools available on an MCP server. */
     fun mcpListTools(): Optional<McpListTools> = Optional.ofNullable(mcpListTools)
 
@@ -147,6 +165,14 @@ private constructor(
     fun isLocalShellCall(): Boolean = localShellCall != null
 
     fun isLocalShellCallOutput(): Boolean = localShellCallOutput != null
+
+    fun isShellCall(): Boolean = shellCall != null
+
+    fun isShellCallOutput(): Boolean = shellCallOutput != null
+
+    fun isApplyPatchCall(): Boolean = applyPatchCall != null
+
+    fun isApplyPatchCallOutput(): Boolean = applyPatchCallOutput != null
 
     fun isMcpListTools(): Boolean = mcpListTools != null
 
@@ -212,6 +238,20 @@ private constructor(
     fun asLocalShellCallOutput(): LocalShellCallOutput =
         localShellCallOutput.getOrThrow("localShellCallOutput")
 
+    /** A tool call that executes one or more shell commands in a managed environment. */
+    fun asShellCall(): ResponseFunctionShellToolCall = shellCall.getOrThrow("shellCall")
+
+    /** The output of a shell tool call. */
+    fun asShellCallOutput(): ResponseFunctionShellToolCallOutput =
+        shellCallOutput.getOrThrow("shellCallOutput")
+
+    /** A tool call that applies file diffs by creating, deleting, or updating files. */
+    fun asApplyPatchCall(): ResponseApplyPatchToolCall = applyPatchCall.getOrThrow("applyPatchCall")
+
+    /** The output emitted by an apply patch tool call. */
+    fun asApplyPatchCallOutput(): ResponseApplyPatchToolCallOutput =
+        applyPatchCallOutput.getOrThrow("applyPatchCallOutput")
+
     /** A list of tools available on an MCP server. */
     fun asMcpListTools(): McpListTools = mcpListTools.getOrThrow("mcpListTools")
 
@@ -244,6 +284,10 @@ private constructor(
             codeInterpreterCall != null -> visitor.visitCodeInterpreterCall(codeInterpreterCall)
             localShellCall != null -> visitor.visitLocalShellCall(localShellCall)
             localShellCallOutput != null -> visitor.visitLocalShellCallOutput(localShellCallOutput)
+            shellCall != null -> visitor.visitShellCall(shellCall)
+            shellCallOutput != null -> visitor.visitShellCallOutput(shellCallOutput)
+            applyPatchCall != null -> visitor.visitApplyPatchCall(applyPatchCall)
+            applyPatchCallOutput != null -> visitor.visitApplyPatchCallOutput(applyPatchCallOutput)
             mcpListTools != null -> visitor.visitMcpListTools(mcpListTools)
             mcpApprovalRequest != null -> visitor.visitMcpApprovalRequest(mcpApprovalRequest)
             mcpApprovalResponse != null -> visitor.visitMcpApprovalResponse(mcpApprovalResponse)
@@ -316,6 +360,26 @@ private constructor(
 
                 override fun visitLocalShellCallOutput(localShellCallOutput: LocalShellCallOutput) {
                     localShellCallOutput.validate()
+                }
+
+                override fun visitShellCall(shellCall: ResponseFunctionShellToolCall) {
+                    shellCall.validate()
+                }
+
+                override fun visitShellCallOutput(
+                    shellCallOutput: ResponseFunctionShellToolCallOutput
+                ) {
+                    shellCallOutput.validate()
+                }
+
+                override fun visitApplyPatchCall(applyPatchCall: ResponseApplyPatchToolCall) {
+                    applyPatchCall.validate()
+                }
+
+                override fun visitApplyPatchCallOutput(
+                    applyPatchCallOutput: ResponseApplyPatchToolCallOutput
+                ) {
+                    applyPatchCallOutput.validate()
                 }
 
                 override fun visitMcpListTools(mcpListTools: McpListTools) {
@@ -396,6 +460,20 @@ private constructor(
                 override fun visitLocalShellCallOutput(localShellCallOutput: LocalShellCallOutput) =
                     localShellCallOutput.validity()
 
+                override fun visitShellCall(shellCall: ResponseFunctionShellToolCall) =
+                    shellCall.validity()
+
+                override fun visitShellCallOutput(
+                    shellCallOutput: ResponseFunctionShellToolCallOutput
+                ) = shellCallOutput.validity()
+
+                override fun visitApplyPatchCall(applyPatchCall: ResponseApplyPatchToolCall) =
+                    applyPatchCall.validity()
+
+                override fun visitApplyPatchCallOutput(
+                    applyPatchCallOutput: ResponseApplyPatchToolCallOutput
+                ) = applyPatchCallOutput.validity()
+
                 override fun visitMcpListTools(mcpListTools: McpListTools) = mcpListTools.validity()
 
                 override fun visitMcpApprovalRequest(mcpApprovalRequest: McpApprovalRequest) =
@@ -428,6 +506,10 @@ private constructor(
             codeInterpreterCall == other.codeInterpreterCall &&
             localShellCall == other.localShellCall &&
             localShellCallOutput == other.localShellCallOutput &&
+            shellCall == other.shellCall &&
+            shellCallOutput == other.shellCallOutput &&
+            applyPatchCall == other.applyPatchCall &&
+            applyPatchCallOutput == other.applyPatchCallOutput &&
             mcpListTools == other.mcpListTools &&
             mcpApprovalRequest == other.mcpApprovalRequest &&
             mcpApprovalResponse == other.mcpApprovalResponse &&
@@ -448,6 +530,10 @@ private constructor(
             codeInterpreterCall,
             localShellCall,
             localShellCallOutput,
+            shellCall,
+            shellCallOutput,
+            applyPatchCall,
+            applyPatchCallOutput,
             mcpListTools,
             mcpApprovalRequest,
             mcpApprovalResponse,
@@ -471,6 +557,11 @@ private constructor(
             localShellCall != null -> "ResponseItem{localShellCall=$localShellCall}"
             localShellCallOutput != null ->
                 "ResponseItem{localShellCallOutput=$localShellCallOutput}"
+            shellCall != null -> "ResponseItem{shellCall=$shellCall}"
+            shellCallOutput != null -> "ResponseItem{shellCallOutput=$shellCallOutput}"
+            applyPatchCall != null -> "ResponseItem{applyPatchCall=$applyPatchCall}"
+            applyPatchCallOutput != null ->
+                "ResponseItem{applyPatchCallOutput=$applyPatchCallOutput}"
             mcpListTools != null -> "ResponseItem{mcpListTools=$mcpListTools}"
             mcpApprovalRequest != null -> "ResponseItem{mcpApprovalRequest=$mcpApprovalRequest}"
             mcpApprovalResponse != null -> "ResponseItem{mcpApprovalResponse=$mcpApprovalResponse}"
@@ -554,6 +645,26 @@ private constructor(
         fun ofLocalShellCallOutput(localShellCallOutput: LocalShellCallOutput) =
             ResponseItem(localShellCallOutput = localShellCallOutput)
 
+        /** A tool call that executes one or more shell commands in a managed environment. */
+        @JvmStatic
+        fun ofShellCall(shellCall: ResponseFunctionShellToolCall) =
+            ResponseItem(shellCall = shellCall)
+
+        /** The output of a shell tool call. */
+        @JvmStatic
+        fun ofShellCallOutput(shellCallOutput: ResponseFunctionShellToolCallOutput) =
+            ResponseItem(shellCallOutput = shellCallOutput)
+
+        /** A tool call that applies file diffs by creating, deleting, or updating files. */
+        @JvmStatic
+        fun ofApplyPatchCall(applyPatchCall: ResponseApplyPatchToolCall) =
+            ResponseItem(applyPatchCall = applyPatchCall)
+
+        /** The output emitted by an apply patch tool call. */
+        @JvmStatic
+        fun ofApplyPatchCallOutput(applyPatchCallOutput: ResponseApplyPatchToolCallOutput) =
+            ResponseItem(applyPatchCallOutput = applyPatchCallOutput)
+
         /** A list of tools available on an MCP server. */
         @JvmStatic
         fun ofMcpListTools(mcpListTools: McpListTools) = ResponseItem(mcpListTools = mcpListTools)
@@ -625,6 +736,18 @@ private constructor(
 
         /** The output of a local shell tool call. */
         fun visitLocalShellCallOutput(localShellCallOutput: LocalShellCallOutput): T
+
+        /** A tool call that executes one or more shell commands in a managed environment. */
+        fun visitShellCall(shellCall: ResponseFunctionShellToolCall): T
+
+        /** The output of a shell tool call. */
+        fun visitShellCallOutput(shellCallOutput: ResponseFunctionShellToolCallOutput): T
+
+        /** A tool call that applies file diffs by creating, deleting, or updating files. */
+        fun visitApplyPatchCall(applyPatchCall: ResponseApplyPatchToolCall): T
+
+        /** The output emitted by an apply patch tool call. */
+        fun visitApplyPatchCallOutput(applyPatchCallOutput: ResponseApplyPatchToolCallOutput): T
 
         /** A list of tools available on an MCP server. */
         fun visitMcpListTools(mcpListTools: McpListTools): T
@@ -740,6 +863,29 @@ private constructor(
                         ResponseItem(localShellCallOutput = it, _json = json)
                     } ?: ResponseItem(_json = json)
                 }
+                "shell_call" -> {
+                    return tryDeserialize(node, jacksonTypeRef<ResponseFunctionShellToolCall>())
+                        ?.let { ResponseItem(shellCall = it, _json = json) }
+                        ?: ResponseItem(_json = json)
+                }
+                "shell_call_output" -> {
+                    return tryDeserialize(
+                            node,
+                            jacksonTypeRef<ResponseFunctionShellToolCallOutput>(),
+                        )
+                        ?.let { ResponseItem(shellCallOutput = it, _json = json) }
+                        ?: ResponseItem(_json = json)
+                }
+                "apply_patch_call" -> {
+                    return tryDeserialize(node, jacksonTypeRef<ResponseApplyPatchToolCall>())?.let {
+                        ResponseItem(applyPatchCall = it, _json = json)
+                    } ?: ResponseItem(_json = json)
+                }
+                "apply_patch_call_output" -> {
+                    return tryDeserialize(node, jacksonTypeRef<ResponseApplyPatchToolCallOutput>())
+                        ?.let { ResponseItem(applyPatchCallOutput = it, _json = json) }
+                        ?: ResponseItem(_json = json)
+                }
                 "mcp_list_tools" -> {
                     return tryDeserialize(node, jacksonTypeRef<McpListTools>())?.let {
                         ResponseItem(mcpListTools = it, _json = json)
@@ -791,6 +937,11 @@ private constructor(
                 value.localShellCall != null -> generator.writeObject(value.localShellCall)
                 value.localShellCallOutput != null ->
                     generator.writeObject(value.localShellCallOutput)
+                value.shellCall != null -> generator.writeObject(value.shellCall)
+                value.shellCallOutput != null -> generator.writeObject(value.shellCallOutput)
+                value.applyPatchCall != null -> generator.writeObject(value.applyPatchCall)
+                value.applyPatchCallOutput != null ->
+                    generator.writeObject(value.applyPatchCallOutput)
                 value.mcpListTools != null -> generator.writeObject(value.mcpListTools)
                 value.mcpApprovalRequest != null -> generator.writeObject(value.mcpApprovalRequest)
                 value.mcpApprovalResponse != null ->

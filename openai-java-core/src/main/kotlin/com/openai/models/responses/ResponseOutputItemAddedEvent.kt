@@ -198,6 +198,27 @@ private constructor(
         fun item(localShellCall: ResponseOutputItem.LocalShellCall) =
             item(ResponseOutputItem.ofLocalShellCall(localShellCall))
 
+        /** Alias for calling [item] with `ResponseOutputItem.ofShellCall(shellCall)`. */
+        fun item(shellCall: ResponseFunctionShellToolCall) =
+            item(ResponseOutputItem.ofShellCall(shellCall))
+
+        /**
+         * Alias for calling [item] with `ResponseOutputItem.ofShellCallOutput(shellCallOutput)`.
+         */
+        fun item(shellCallOutput: ResponseFunctionShellToolCallOutput) =
+            item(ResponseOutputItem.ofShellCallOutput(shellCallOutput))
+
+        /** Alias for calling [item] with `ResponseOutputItem.ofApplyPatchCall(applyPatchCall)`. */
+        fun item(applyPatchCall: ResponseApplyPatchToolCall) =
+            item(ResponseOutputItem.ofApplyPatchCall(applyPatchCall))
+
+        /**
+         * Alias for calling [item] with
+         * `ResponseOutputItem.ofApplyPatchCallOutput(applyPatchCallOutput)`.
+         */
+        fun item(applyPatchCallOutput: ResponseApplyPatchToolCallOutput) =
+            item(ResponseOutputItem.ofApplyPatchCallOutput(applyPatchCallOutput))
+
         /** Alias for calling [item] with `ResponseOutputItem.ofMcpCall(mcpCall)`. */
         fun item(mcpCall: ResponseOutputItem.McpCall) = item(ResponseOutputItem.ofMcpCall(mcpCall))
 

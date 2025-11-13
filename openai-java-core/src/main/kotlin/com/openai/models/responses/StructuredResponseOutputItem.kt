@@ -53,6 +53,20 @@ class StructuredResponseOutputItem<T : Any>(
     fun localShellCall(): Optional<ResponseOutputItem.LocalShellCall> =
         rawOutputItem.localShellCall()
 
+    /** @see ResponseOutputItem.shellCall */
+    fun shellCall(): Optional<ResponseFunctionShellToolCall> = rawOutputItem.shellCall()
+
+    /** @see ResponseOutputItem.shellCallOutput */
+    fun shellCallOutput(): Optional<ResponseFunctionShellToolCallOutput> =
+        rawOutputItem.shellCallOutput()
+
+    /** @see ResponseOutputItem.applyPatchCall */
+    fun applyPatchCall(): Optional<ResponseApplyPatchToolCall> = rawOutputItem.applyPatchCall()
+
+    /** @see ResponseOutputItem.applyPatchCallOutput */
+    fun applyPatchCallOutput(): Optional<ResponseApplyPatchToolCallOutput> =
+        rawOutputItem.applyPatchCallOutput()
+
     /** @see ResponseOutputItem.mcpApprovalRequest */
     fun mcpApprovalRequest(): Optional<ResponseOutputItem.McpApprovalRequest> =
         rawOutputItem.mcpApprovalRequest()
@@ -92,6 +106,18 @@ class StructuredResponseOutputItem<T : Any>(
 
     /** @see ResponseOutputItem.isLocalShellCall */
     fun isLocalShellCall(): Boolean = rawOutputItem.isLocalShellCall()
+
+    /** @see ResponseOutputItem.isShellCall */
+    fun isShellCall(): Boolean = rawOutputItem.isShellCall()
+
+    /** @see ResponseOutputItem.isShellCallOutput */
+    fun isShellCallOutput(): Boolean = rawOutputItem.isShellCallOutput()
+
+    /** @see ResponseOutputItem.isApplyPatchCall */
+    fun isApplyPatchCall(): Boolean = rawOutputItem.isApplyPatchCall()
+
+    /** @see ResponseOutputItem.isApplyPatchCallOutput */
+    fun isApplyPatchCallOutput(): Boolean = rawOutputItem.isApplyPatchCallOutput()
 
     /** @see ResponseOutputItem.isMcpApprovalRequest */
     fun isMcpApprovalRequest(): Boolean = rawOutputItem.isMcpApprovalRequest()
@@ -138,6 +164,19 @@ class StructuredResponseOutputItem<T : Any>(
     /** @see ResponseOutputItem.asLocalShellCall */
     fun asLocalShellCall(): ResponseOutputItem.LocalShellCall = rawOutputItem.asLocalShellCall()
 
+    /** @see ResponseOutputItem.asShellCall */
+    fun asShellCall(): ResponseFunctionShellToolCall = rawOutputItem.asShellCall()
+
+    /** @see ResponseOutputItem.asShellCallOutput */
+    fun asShellCallOutput(): ResponseFunctionShellToolCallOutput = rawOutputItem.asShellCallOutput()
+
+    /** @see ResponseOutputItem.asApplyPatchCall */
+    fun asApplyPatchCall(): ResponseApplyPatchToolCall = rawOutputItem.asApplyPatchCall()
+
+    /** @see ResponseOutputItem.asApplyPatchCallOutput */
+    fun asApplyPatchCallOutput(): ResponseApplyPatchToolCallOutput =
+        rawOutputItem.asApplyPatchCallOutput()
+
     /** @see ResponseOutputItem.asMcpApprovalRequest */
     fun asMcpApprovalRequest(): ResponseOutputItem.McpApprovalRequest =
         rawOutputItem.asMcpApprovalRequest()
@@ -166,6 +205,10 @@ class StructuredResponseOutputItem<T : Any>(
             isCodeInterpreterCall() -> visitor.visitCodeInterpreterCall(asCodeInterpreterCall())
             isImageGenerationCall() -> visitor.visitImageGenerationCall(asImageGenerationCall())
             isLocalShellCall() -> visitor.visitLocalShellCall(asLocalShellCall())
+            isShellCall() -> visitor.visitShellCall(asShellCall())
+            isShellCallOutput() -> visitor.visitShellCallOutput(asShellCallOutput())
+            isApplyPatchCall() -> visitor.visitApplyPatchCall(asApplyPatchCall())
+            isApplyPatchCallOutput() -> visitor.visitApplyPatchCallOutput(asApplyPatchCallOutput())
             isMcpApprovalRequest() -> visitor.visitMcpApprovalRequest(asMcpApprovalRequest())
             isMcpCall() -> visitor.visitMcpCall(asMcpCall())
             isMcpListTools() -> visitor.visitMcpListTools(asMcpListTools())
@@ -222,6 +265,26 @@ class StructuredResponseOutputItem<T : Any>(
                     localShellCall: ResponseOutputItem.LocalShellCall
                 ) {
                     localShellCall.validate()
+                }
+
+                override fun visitShellCall(shellCall: ResponseFunctionShellToolCall) {
+                    shellCall.validate()
+                }
+
+                override fun visitShellCallOutput(
+                    shellCallOutput: ResponseFunctionShellToolCallOutput
+                ) {
+                    shellCallOutput.validate()
+                }
+
+                override fun visitApplyPatchCall(applyPatchCall: ResponseApplyPatchToolCall) {
+                    applyPatchCall.validate()
+                }
+
+                override fun visitApplyPatchCallOutput(
+                    applyPatchCallOutput: ResponseApplyPatchToolCallOutput
+                ) {
+                    applyPatchCallOutput.validate()
                 }
 
                 override fun visitMcpApprovalRequest(
@@ -297,6 +360,18 @@ class StructuredResponseOutputItem<T : Any>(
 
         /** @see ResponseOutputItem.Visitor.visitLocalShellCall */
         fun visitLocalShellCall(localShellCall: ResponseOutputItem.LocalShellCall): T
+
+        /** @see ResponseOutputItem.Visitor.visitShellCall */
+        fun visitShellCall(shellCall: ResponseFunctionShellToolCall): T
+
+        /** @see ResponseOutputItem.Visitor.visitShellCallOutput */
+        fun visitShellCallOutput(shellCallOutput: ResponseFunctionShellToolCallOutput): T
+
+        /** @see ResponseOutputItem.Visitor.visitApplyPatchCall */
+        fun visitApplyPatchCall(applyPatchCall: ResponseApplyPatchToolCall): T
+
+        /** @see ResponseOutputItem.Visitor.visitApplyPatchCallOutput */
+        fun visitApplyPatchCallOutput(applyPatchCallOutput: ResponseApplyPatchToolCallOutput): T
 
         /** @see ResponseOutputItem.Visitor.visitMcpApprovalRequest */
         fun visitMcpApprovalRequest(mcpApprovalRequest: ResponseOutputItem.McpApprovalRequest): T

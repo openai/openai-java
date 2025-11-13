@@ -31,9 +31,11 @@ import com.openai.errors.OpenAIInvalidDataException
 import com.openai.models.Reasoning
 import com.openai.models.ResponseFormatJsonObject
 import com.openai.models.ResponseFormatText
+import com.openai.models.responses.ApplyPatchTool
 import com.openai.models.responses.ComputerTool
 import com.openai.models.responses.CustomTool
 import com.openai.models.responses.FileSearchTool
+import com.openai.models.responses.FunctionShellTool
 import com.openai.models.responses.FunctionTool
 import com.openai.models.responses.ResponseConversationParam
 import com.openai.models.responses.ResponseFormatTextConfig
@@ -41,10 +43,12 @@ import com.openai.models.responses.ResponseFormatTextJsonSchemaConfig
 import com.openai.models.responses.ResponseInputItem
 import com.openai.models.responses.Tool
 import com.openai.models.responses.ToolChoiceAllowed
+import com.openai.models.responses.ToolChoiceApplyPatch
 import com.openai.models.responses.ToolChoiceCustom
 import com.openai.models.responses.ToolChoiceFunction
 import com.openai.models.responses.ToolChoiceMcp
 import com.openai.models.responses.ToolChoiceOptions
+import com.openai.models.responses.ToolChoiceShell
 import com.openai.models.responses.ToolChoiceTypes
 import com.openai.models.responses.WebSearchPreviewTool
 import com.openai.models.responses.WebSearchTool
@@ -519,6 +523,12 @@ private constructor(
         /** Alias for calling [toolChoice] with `ToolChoice.ofCustom(custom)`. */
         fun toolChoice(custom: ToolChoiceCustom) = apply { body.toolChoice(custom) }
 
+        /** Alias for calling [toolChoice] with `ToolChoice.ofApplyPatch(applyPatch)`. */
+        fun toolChoice(applyPatch: ToolChoiceApplyPatch) = apply { body.toolChoice(applyPatch) }
+
+        /** Alias for calling [toolChoice] with `ToolChoice.ofShell(shell)`. */
+        fun toolChoice(shell: ToolChoiceShell) = apply { body.toolChoice(shell) }
+
         /**
          * An array of tools the model may call while generating a response. You can specify which
          * tool to use by setting the `tool_choice` parameter.
@@ -616,6 +626,9 @@ private constructor(
         /** Alias for calling [addTool] with `Tool.ofLocalShell()`. */
         fun addToolLocalShell() = apply { body.addToolLocalShell() }
 
+        /** Alias for calling [addTool] with `Tool.ofShell(shell)`. */
+        fun addTool(shell: FunctionShellTool) = apply { body.addTool(shell) }
+
         /** Alias for calling [addTool] with `Tool.ofCustom(custom)`. */
         fun addTool(custom: CustomTool) = apply { body.addTool(custom) }
 
@@ -633,6 +646,9 @@ private constructor(
         fun addTool(webSearchPreview: WebSearchPreviewTool) = apply {
             body.addTool(webSearchPreview)
         }
+
+        /** Alias for calling [addTool] with `Tool.ofApplyPatch(applyPatch)`. */
+        fun addTool(applyPatch: ApplyPatchTool) = apply { body.addTool(applyPatch) }
 
         /**
          * The truncation strategy to use for the model response. - `auto`: If the input to this
@@ -1336,6 +1352,13 @@ private constructor(
             /** Alias for calling [toolChoice] with `ToolChoice.ofCustom(custom)`. */
             fun toolChoice(custom: ToolChoiceCustom) = toolChoice(ToolChoice.ofCustom(custom))
 
+            /** Alias for calling [toolChoice] with `ToolChoice.ofApplyPatch(applyPatch)`. */
+            fun toolChoice(applyPatch: ToolChoiceApplyPatch) =
+                toolChoice(ToolChoice.ofApplyPatch(applyPatch))
+
+            /** Alias for calling [toolChoice] with `ToolChoice.ofShell(shell)`. */
+            fun toolChoice(shell: ToolChoiceShell) = toolChoice(ToolChoice.ofShell(shell))
+
             /**
              * An array of tools the model may call while generating a response. You can specify
              * which tool to use by setting the `tool_choice` parameter.
@@ -1448,6 +1471,9 @@ private constructor(
             /** Alias for calling [addTool] with `Tool.ofLocalShell()`. */
             fun addToolLocalShell() = addTool(Tool.ofLocalShell())
 
+            /** Alias for calling [addTool] with `Tool.ofShell(shell)`. */
+            fun addTool(shell: FunctionShellTool) = addTool(Tool.ofShell(shell))
+
             /** Alias for calling [addTool] with `Tool.ofCustom(custom)`. */
             fun addTool(custom: CustomTool) = addTool(Tool.ofCustom(custom))
 
@@ -1464,6 +1490,9 @@ private constructor(
             /** Alias for calling [addTool] with `Tool.ofWebSearchPreview(webSearchPreview)`. */
             fun addTool(webSearchPreview: WebSearchPreviewTool) =
                 addTool(Tool.ofWebSearchPreview(webSearchPreview))
+
+            /** Alias for calling [addTool] with `Tool.ofApplyPatch(applyPatch)`. */
+            fun addTool(applyPatch: ApplyPatchTool) = addTool(Tool.ofApplyPatch(applyPatch))
 
             /**
              * The truncation strategy to use for the model response. - `auto`: If the input to this
@@ -2400,6 +2429,8 @@ private constructor(
         private val function: ToolChoiceFunction? = null,
         private val mcp: ToolChoiceMcp? = null,
         private val custom: ToolChoiceCustom? = null,
+        private val applyPatch: ToolChoiceApplyPatch? = null,
+        private val shell: ToolChoiceShell? = null,
         private val _json: JsonValue? = null,
     ) {
 
@@ -2433,6 +2464,12 @@ private constructor(
         /** Use this option to force the model to call a specific custom tool. */
         fun custom(): Optional<ToolChoiceCustom> = Optional.ofNullable(custom)
 
+        /** Forces the model to call the apply_patch tool when executing a tool call. */
+        fun applyPatch(): Optional<ToolChoiceApplyPatch> = Optional.ofNullable(applyPatch)
+
+        /** Forces the model to call the function shell tool when a tool call is required. */
+        fun shell(): Optional<ToolChoiceShell> = Optional.ofNullable(shell)
+
         fun isOptions(): Boolean = options != null
 
         fun isAllowed(): Boolean = allowed != null
@@ -2444,6 +2481,10 @@ private constructor(
         fun isMcp(): Boolean = mcp != null
 
         fun isCustom(): Boolean = custom != null
+
+        fun isApplyPatch(): Boolean = applyPatch != null
+
+        fun isShell(): Boolean = shell != null
 
         /**
          * Controls which (if any) tool is called by the model.
@@ -2475,6 +2516,12 @@ private constructor(
         /** Use this option to force the model to call a specific custom tool. */
         fun asCustom(): ToolChoiceCustom = custom.getOrThrow("custom")
 
+        /** Forces the model to call the apply_patch tool when executing a tool call. */
+        fun asApplyPatch(): ToolChoiceApplyPatch = applyPatch.getOrThrow("applyPatch")
+
+        /** Forces the model to call the function shell tool when a tool call is required. */
+        fun asShell(): ToolChoiceShell = shell.getOrThrow("shell")
+
         fun _json(): Optional<JsonValue> = Optional.ofNullable(_json)
 
         fun <T> accept(visitor: Visitor<T>): T =
@@ -2485,6 +2532,8 @@ private constructor(
                 function != null -> visitor.visitFunction(function)
                 mcp != null -> visitor.visitMcp(mcp)
                 custom != null -> visitor.visitCustom(custom)
+                applyPatch != null -> visitor.visitApplyPatch(applyPatch)
+                shell != null -> visitor.visitShell(shell)
                 else -> visitor.unknown(_json)
             }
 
@@ -2519,6 +2568,14 @@ private constructor(
 
                     override fun visitCustom(custom: ToolChoiceCustom) {
                         custom.validate()
+                    }
+
+                    override fun visitApplyPatch(applyPatch: ToolChoiceApplyPatch) {
+                        applyPatch.validate()
+                    }
+
+                    override fun visitShell(shell: ToolChoiceShell) {
+                        shell.validate()
                     }
                 }
             )
@@ -2555,6 +2612,11 @@ private constructor(
 
                     override fun visitCustom(custom: ToolChoiceCustom) = custom.validity()
 
+                    override fun visitApplyPatch(applyPatch: ToolChoiceApplyPatch) =
+                        applyPatch.validity()
+
+                    override fun visitShell(shell: ToolChoiceShell) = shell.validity()
+
                     override fun unknown(json: JsonValue?) = 0
                 }
             )
@@ -2570,10 +2632,13 @@ private constructor(
                 types == other.types &&
                 function == other.function &&
                 mcp == other.mcp &&
-                custom == other.custom
+                custom == other.custom &&
+                applyPatch == other.applyPatch &&
+                shell == other.shell
         }
 
-        override fun hashCode(): Int = Objects.hash(options, allowed, types, function, mcp, custom)
+        override fun hashCode(): Int =
+            Objects.hash(options, allowed, types, function, mcp, custom, applyPatch, shell)
 
         override fun toString(): String =
             when {
@@ -2583,6 +2648,8 @@ private constructor(
                 function != null -> "ToolChoice{function=$function}"
                 mcp != null -> "ToolChoice{mcp=$mcp}"
                 custom != null -> "ToolChoice{custom=$custom}"
+                applyPatch != null -> "ToolChoice{applyPatch=$applyPatch}"
+                shell != null -> "ToolChoice{shell=$shell}"
                 _json != null -> "ToolChoice{_unknown=$_json}"
                 else -> throw IllegalStateException("Invalid ToolChoice")
             }
@@ -2621,6 +2688,13 @@ private constructor(
 
             /** Use this option to force the model to call a specific custom tool. */
             @JvmStatic fun ofCustom(custom: ToolChoiceCustom) = ToolChoice(custom = custom)
+
+            /** Forces the model to call the apply_patch tool when executing a tool call. */
+            @JvmStatic
+            fun ofApplyPatch(applyPatch: ToolChoiceApplyPatch) = ToolChoice(applyPatch = applyPatch)
+
+            /** Forces the model to call the function shell tool when a tool call is required. */
+            @JvmStatic fun ofShell(shell: ToolChoiceShell) = ToolChoice(shell = shell)
         }
 
         /**
@@ -2659,6 +2733,12 @@ private constructor(
 
             /** Use this option to force the model to call a specific custom tool. */
             fun visitCustom(custom: ToolChoiceCustom): T
+
+            /** Forces the model to call the apply_patch tool when executing a tool call. */
+            fun visitApplyPatch(applyPatch: ToolChoiceApplyPatch): T
+
+            /** Forces the model to call the function shell tool when a tool call is required. */
+            fun visitShell(shell: ToolChoiceShell): T
 
             /**
              * Maps an unknown variant of [ToolChoice] to a value of type [T].
@@ -2700,6 +2780,12 @@ private constructor(
                             tryDeserialize(node, jacksonTypeRef<ToolChoiceCustom>())?.let {
                                 ToolChoice(custom = it, _json = json)
                             },
+                            tryDeserialize(node, jacksonTypeRef<ToolChoiceApplyPatch>())?.let {
+                                ToolChoice(applyPatch = it, _json = json)
+                            },
+                            tryDeserialize(node, jacksonTypeRef<ToolChoiceShell>())?.let {
+                                ToolChoice(shell = it, _json = json)
+                            },
                         )
                         .filterNotNull()
                         .allMaxBy { it.validity() }
@@ -2731,6 +2817,8 @@ private constructor(
                     value.function != null -> generator.writeObject(value.function)
                     value.mcp != null -> generator.writeObject(value.mcp)
                     value.custom != null -> generator.writeObject(value.custom)
+                    value.applyPatch != null -> generator.writeObject(value.applyPatch)
+                    value.shell != null -> generator.writeObject(value.shell)
                     value._json != null -> generator.writeObject(value._json)
                     else -> throw IllegalStateException("Invalid ToolChoice")
                 }

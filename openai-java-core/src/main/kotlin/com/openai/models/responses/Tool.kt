@@ -44,8 +44,10 @@ private constructor(
     private val codeInterpreter: CodeInterpreter? = null,
     private val imageGeneration: ImageGeneration? = null,
     private val localShell: JsonValue? = null,
+    private val shell: FunctionShellTool? = null,
     private val custom: CustomTool? = null,
     private val webSearchPreview: WebSearchPreviewTool? = null,
+    private val applyPatch: ApplyPatchTool? = null,
     private val _json: JsonValue? = null,
 ) {
 
@@ -88,6 +90,9 @@ private constructor(
     /** A tool that allows the model to execute shell commands in a local environment. */
     fun localShell(): Optional<JsonValue> = Optional.ofNullable(localShell)
 
+    /** A tool that allows the model to execute shell commands. */
+    fun shell(): Optional<FunctionShellTool> = Optional.ofNullable(shell)
+
     /**
      * A custom tool that processes input using a specified format. Learn more about
      * [custom tools](https://platform.openai.com/docs/guides/function-calling#custom-tools)
@@ -99,6 +104,9 @@ private constructor(
      * [web search tool](https://platform.openai.com/docs/guides/tools-web-search).
      */
     fun webSearchPreview(): Optional<WebSearchPreviewTool> = Optional.ofNullable(webSearchPreview)
+
+    /** Allows the assistant to create, delete, or update files using unified diffs. */
+    fun applyPatch(): Optional<ApplyPatchTool> = Optional.ofNullable(applyPatch)
 
     fun isFunction(): Boolean = function != null
 
@@ -116,9 +124,13 @@ private constructor(
 
     fun isLocalShell(): Boolean = localShell != null
 
+    fun isShell(): Boolean = shell != null
+
     fun isCustom(): Boolean = custom != null
 
     fun isWebSearchPreview(): Boolean = webSearchPreview != null
+
+    fun isApplyPatch(): Boolean = applyPatch != null
 
     /**
      * Defines a function in your own code the model can choose to call. Learn more about
@@ -159,6 +171,9 @@ private constructor(
     /** A tool that allows the model to execute shell commands in a local environment. */
     fun asLocalShell(): JsonValue = localShell.getOrThrow("localShell")
 
+    /** A tool that allows the model to execute shell commands. */
+    fun asShell(): FunctionShellTool = shell.getOrThrow("shell")
+
     /**
      * A custom tool that processes input using a specified format. Learn more about
      * [custom tools](https://platform.openai.com/docs/guides/function-calling#custom-tools)
@@ -170,6 +185,9 @@ private constructor(
      * [web search tool](https://platform.openai.com/docs/guides/tools-web-search).
      */
     fun asWebSearchPreview(): WebSearchPreviewTool = webSearchPreview.getOrThrow("webSearchPreview")
+
+    /** Allows the assistant to create, delete, or update files using unified diffs. */
+    fun asApplyPatch(): ApplyPatchTool = applyPatch.getOrThrow("applyPatch")
 
     fun _json(): Optional<JsonValue> = Optional.ofNullable(_json)
 
@@ -183,8 +201,10 @@ private constructor(
             codeInterpreter != null -> visitor.visitCodeInterpreter(codeInterpreter)
             imageGeneration != null -> visitor.visitImageGeneration(imageGeneration)
             localShell != null -> visitor.visitLocalShell(localShell)
+            shell != null -> visitor.visitShell(shell)
             custom != null -> visitor.visitCustom(custom)
             webSearchPreview != null -> visitor.visitWebSearchPreview(webSearchPreview)
+            applyPatch != null -> visitor.visitApplyPatch(applyPatch)
             else -> visitor.unknown(_json)
         }
 
@@ -235,12 +255,20 @@ private constructor(
                     }
                 }
 
+                override fun visitShell(shell: FunctionShellTool) {
+                    shell.validate()
+                }
+
                 override fun visitCustom(custom: CustomTool) {
                     custom.validate()
                 }
 
                 override fun visitWebSearchPreview(webSearchPreview: WebSearchPreviewTool) {
                     webSearchPreview.validate()
+                }
+
+                override fun visitApplyPatch(applyPatch: ApplyPatchTool) {
+                    applyPatch.validate()
                 }
             }
         )
@@ -286,10 +314,14 @@ private constructor(
                         if (it == JsonValue.from(mapOf("type" to "local_shell"))) 1 else 0
                     }
 
+                override fun visitShell(shell: FunctionShellTool) = shell.validity()
+
                 override fun visitCustom(custom: CustomTool) = custom.validity()
 
                 override fun visitWebSearchPreview(webSearchPreview: WebSearchPreviewTool) =
                     webSearchPreview.validity()
+
+                override fun visitApplyPatch(applyPatch: ApplyPatchTool) = applyPatch.validity()
 
                 override fun unknown(json: JsonValue?) = 0
             }
@@ -309,8 +341,10 @@ private constructor(
             codeInterpreter == other.codeInterpreter &&
             imageGeneration == other.imageGeneration &&
             localShell == other.localShell &&
+            shell == other.shell &&
             custom == other.custom &&
-            webSearchPreview == other.webSearchPreview
+            webSearchPreview == other.webSearchPreview &&
+            applyPatch == other.applyPatch
     }
 
     override fun hashCode(): Int =
@@ -323,8 +357,10 @@ private constructor(
             codeInterpreter,
             imageGeneration,
             localShell,
+            shell,
             custom,
             webSearchPreview,
+            applyPatch,
         )
 
     override fun toString(): String =
@@ -337,8 +373,10 @@ private constructor(
             codeInterpreter != null -> "Tool{codeInterpreter=$codeInterpreter}"
             imageGeneration != null -> "Tool{imageGeneration=$imageGeneration}"
             localShell != null -> "Tool{localShell=$localShell}"
+            shell != null -> "Tool{shell=$shell}"
             custom != null -> "Tool{custom=$custom}"
             webSearchPreview != null -> "Tool{webSearchPreview=$webSearchPreview}"
+            applyPatch != null -> "Tool{applyPatch=$applyPatch}"
             _json != null -> "Tool{_unknown=$_json}"
             else -> throw IllegalStateException("Invalid Tool")
         }
@@ -392,6 +430,9 @@ private constructor(
         @JvmStatic
         fun ofLocalShell() = Tool(localShell = JsonValue.from(mapOf("type" to "local_shell")))
 
+        /** A tool that allows the model to execute shell commands. */
+        @JvmStatic fun ofShell(shell: FunctionShellTool) = Tool(shell = shell)
+
         /**
          * A custom tool that processes input using a specified format. Learn more about
          * [custom tools](https://platform.openai.com/docs/guides/function-calling#custom-tools)
@@ -405,6 +446,9 @@ private constructor(
         @JvmStatic
         fun ofWebSearchPreview(webSearchPreview: WebSearchPreviewTool) =
             Tool(webSearchPreview = webSearchPreview)
+
+        /** Allows the assistant to create, delete, or update files using unified diffs. */
+        @JvmStatic fun ofApplyPatch(applyPatch: ApplyPatchTool) = Tool(applyPatch = applyPatch)
     }
 
     /** An interface that defines how to map each variant of [Tool] to a value of type [T]. */
@@ -450,6 +494,9 @@ private constructor(
         /** A tool that allows the model to execute shell commands in a local environment. */
         fun visitLocalShell(localShell: JsonValue): T
 
+        /** A tool that allows the model to execute shell commands. */
+        fun visitShell(shell: FunctionShellTool): T
+
         /**
          * A custom tool that processes input using a specified format. Learn more about
          * [custom tools](https://platform.openai.com/docs/guides/function-calling#custom-tools)
@@ -461,6 +508,9 @@ private constructor(
          * the [web search tool](https://platform.openai.com/docs/guides/tools-web-search).
          */
         fun visitWebSearchPreview(webSearchPreview: WebSearchPreviewTool): T
+
+        /** Allows the assistant to create, delete, or update files using unified diffs. */
+        fun visitApplyPatch(applyPatch: ApplyPatchTool): T
 
         /**
          * Maps an unknown variant of [Tool] to a value of type [T].
@@ -518,9 +568,19 @@ private constructor(
                         ?.let { Tool(localShell = it, _json = json) }
                         ?.takeIf { it.isValid() } ?: Tool(_json = json)
                 }
+                "shell" -> {
+                    return tryDeserialize(node, jacksonTypeRef<FunctionShellTool>())?.let {
+                        Tool(shell = it, _json = json)
+                    } ?: Tool(_json = json)
+                }
                 "custom" -> {
                     return tryDeserialize(node, jacksonTypeRef<CustomTool>())?.let {
                         Tool(custom = it, _json = json)
+                    } ?: Tool(_json = json)
+                }
+                "apply_patch" -> {
+                    return tryDeserialize(node, jacksonTypeRef<ApplyPatchTool>())?.let {
+                        Tool(applyPatch = it, _json = json)
                     } ?: Tool(_json = json)
                 }
             }
@@ -565,8 +625,10 @@ private constructor(
                 value.codeInterpreter != null -> generator.writeObject(value.codeInterpreter)
                 value.imageGeneration != null -> generator.writeObject(value.imageGeneration)
                 value.localShell != null -> generator.writeObject(value.localShell)
+                value.shell != null -> generator.writeObject(value.shell)
                 value.custom != null -> generator.writeObject(value.custom)
                 value.webSearchPreview != null -> generator.writeObject(value.webSearchPreview)
+                value.applyPatch != null -> generator.writeObject(value.applyPatch)
                 value._json != null -> generator.writeObject(value._json)
                 else -> throw IllegalStateException("Invalid Tool")
             }

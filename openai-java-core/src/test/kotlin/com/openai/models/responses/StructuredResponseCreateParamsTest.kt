@@ -6,6 +6,7 @@ import com.openai.core.DOUBLE
 import com.openai.core.DelegationWriteTestCase
 import com.openai.core.JSON_FIELD
 import com.openai.core.JSON_VALUE
+import com.openai.core.JsonField
 import com.openai.core.JsonSchemaLocalValidation
 import com.openai.core.LIST
 import com.openai.core.LONG
@@ -29,6 +30,7 @@ import com.openai.core.textConfigFromClass
 import com.openai.models.ChatModel
 import com.openai.models.Reasoning
 import com.openai.models.ResponsesModel
+import java.util.Optional
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.MethodSource
@@ -63,6 +65,9 @@ internal class StructuredResponseCreateParamsTest {
         private val RESPONSE_CONVERSATION_PARAM =
             ResponseConversationParam.builder().id(STRING).build()
         private val CONVERSATION = ResponseCreateParams.Conversation.ofId(STRING)
+        private val PROMPT_CACHE_RETENTION = ResponseCreateParams.PromptCacheRetention.IN_MEMORY
+        private val PROMPT_CACHE_RETENTION_OPTIONAL = Optional.of(PROMPT_CACHE_RETENTION)
+        private val PROMPT_CACHE_RETENTION_JSON_FIELD = JsonField.of(PROMPT_CACHE_RETENTION)
 
         private val TOOL_CHOICE_TYPE = ToolChoiceTypes.Type.FILE_SEARCH
         private val TOOL_CHOICE_TYPES = ToolChoiceTypes.builder().type(TOOL_CHOICE_TYPE).build()
@@ -71,6 +76,8 @@ internal class StructuredResponseCreateParamsTest {
         private val TOOL_CHOICE_FUNCTION = ToolChoiceFunction.builder().name(STRING).build()
         private val TOOL_CHOICE_MCP =
             ToolChoiceMcp.builder().name(STRING).serverLabel(STRING).build()
+        private val TOOL_CHOICE_APPLY_PATCH = ToolChoiceApplyPatch.builder().build()
+        private val TOOL_CHOICE_SHELL = ToolChoiceShell.builder().build()
 
         private val FUNCTION_TOOL =
             FunctionTool.builder().name(STRING).parameters(NULLABLE).strict(BOOLEAN).build()
@@ -96,6 +103,8 @@ internal class StructuredResponseCreateParamsTest {
         private val CODE_INTERPRETER_TOOL =
             Tool.CodeInterpreter.builder().container(CODE_INTERPRETER_CONTAINER).build()
         private val IMAGE_GENERATION_TOOL = Tool.ImageGeneration.builder().build()
+        private val FUNCTION_SHELL_TOOL = FunctionShellTool.builder().build()
+        private val APPLY_PATCH_TOOL = ApplyPatchTool.builder().build()
 
         private val CUSTOM_TOOL = CustomTool.builder().name(STRING).build()
         private val STREAM_OPTIONS = ResponseCreateParams.StreamOptions.builder().build()
@@ -162,6 +171,9 @@ internal class StructuredResponseCreateParamsTest {
                 DelegationWriteTestCase("prompt", JSON_FIELD),
                 DelegationWriteTestCase("promptCacheKey", STRING),
                 DelegationWriteTestCase("promptCacheKey", JSON_FIELD),
+                DelegationWriteTestCase("promptCacheRetention", PROMPT_CACHE_RETENTION),
+                DelegationWriteTestCase("promptCacheRetention", PROMPT_CACHE_RETENTION_OPTIONAL),
+                DelegationWriteTestCase("promptCacheRetention", PROMPT_CACHE_RETENTION_JSON_FIELD),
                 DelegationWriteTestCase("reasoning", REASONING),
                 DelegationWriteTestCase("reasoning", OPTIONAL),
                 DelegationWriteTestCase("reasoning", JSON_FIELD),
@@ -190,6 +202,8 @@ internal class StructuredResponseCreateParamsTest {
                 DelegationWriteTestCase("toolChoice", TOOL_CHOICE_MCP),
                 DelegationWriteTestCase("toolChoice", TOOL_CHOICE_ALLOWED),
                 DelegationWriteTestCase("toolChoice", TOOL_CHOICE_CUSTOM),
+                DelegationWriteTestCase("toolChoice", TOOL_CHOICE_APPLY_PATCH),
+                DelegationWriteTestCase("toolChoice", TOOL_CHOICE_SHELL),
                 DelegationWriteTestCase("tools", LIST),
                 DelegationWriteTestCase("tools", JSON_FIELD),
                 DelegationWriteTestCase("addTool", TOOL),
@@ -199,6 +213,7 @@ internal class StructuredResponseCreateParamsTest {
                 DelegationWriteTestCase("addFileSearchTool", LIST),
                 DelegationWriteTestCase("addTool", WEB_SEARCH_TOOL),
                 DelegationWriteTestCase("addTool", WEB_SEARCH_PREVIEW_TOOL),
+                DelegationWriteTestCase("addTool", APPLY_PATCH_TOOL),
                 DelegationWriteTestCase("addTool", COMPUTER_TOOL),
                 DelegationWriteTestCase("addTool", MCP_TOOL),
                 DelegationWriteTestCase("addMcpTool", STRING),
@@ -207,9 +222,10 @@ internal class StructuredResponseCreateParamsTest {
                 DelegationWriteTestCase("addCodeInterpreterTool", STRING),
                 DelegationWriteTestCase("addCodeInterpreterTool", CODE_INTERPRETER_TOOL_AUTO),
                 DelegationWriteTestCase("addTool", IMAGE_GENERATION_TOOL),
+                DelegationWriteTestCase("addToolLocalShell"),
+                DelegationWriteTestCase("addTool", FUNCTION_SHELL_TOOL),
                 DelegationWriteTestCase("addTool", CUSTOM_TOOL),
                 DelegationWriteTestCase("addCustomTool", STRING),
-                DelegationWriteTestCase("addToolLocalShell"),
                 DelegationWriteTestCase("topP", NULLABLE_DOUBLE),
                 DelegationWriteTestCase("topP", DOUBLE),
                 DelegationWriteTestCase("topP", OPTIONAL),

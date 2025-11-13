@@ -28,7 +28,7 @@ internal class AssistantServiceTest {
         val assistant =
             assistantService.create(
                 AssistantCreateParams.builder()
-                    .model(ChatModel.GPT_5)
+                    .model(ChatModel.GPT_5_1)
                     .description("description")
                     .instructions("instructions")
                     .metadata(
@@ -37,7 +37,7 @@ internal class AssistantServiceTest {
                             .build()
                     )
                     .name("name")
-                    .reasoningEffort(ReasoningEffort.MINIMAL)
+                    .reasoningEffort(ReasoningEffort.NONE)
                     .responseFormatAuto()
                     .temperature(1.0)
                     .toolResources(
@@ -116,7 +116,7 @@ internal class AssistantServiceTest {
                     )
                     .model(AssistantUpdateParams.Model.GPT_5)
                     .name("name")
-                    .reasoningEffort(ReasoningEffort.MINIMAL)
+                    .reasoningEffort(ReasoningEffort.NONE)
                     .responseFormatAuto()
                     .temperature(1.0)
                     .toolResources(

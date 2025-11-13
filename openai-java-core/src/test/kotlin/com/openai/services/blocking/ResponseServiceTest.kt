@@ -61,9 +61,10 @@ internal class ResponseServiceTest {
                             .build()
                     )
                     .promptCacheKey("prompt-cache-key-1234")
+                    .promptCacheRetention(ResponseCreateParams.PromptCacheRetention.IN_MEMORY)
                     .reasoning(
                         Reasoning.builder()
-                            .effort(ReasoningEffort.MINIMAL)
+                            .effort(ReasoningEffort.NONE)
                             .generateSummary(Reasoning.GenerateSummary.AUTO)
                             .summary(Reasoning.Summary.AUTO)
                             .build()
@@ -145,9 +146,10 @@ internal class ResponseServiceTest {
                             .build()
                     )
                     .promptCacheKey("prompt-cache-key-1234")
+                    .promptCacheRetention(ResponseCreateParams.PromptCacheRetention.IN_MEMORY)
                     .reasoning(
                         Reasoning.builder()
-                            .effort(ReasoningEffort.MINIMAL)
+                            .effort(ReasoningEffort.NONE)
                             .generateSummary(Reasoning.GenerateSummary.AUTO)
                             .summary(Reasoning.Summary.AUTO)
                             .build()
