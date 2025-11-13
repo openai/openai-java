@@ -10,10 +10,13 @@ import com.openai.errors.OpenAIInvalidDataException
 /**
  * Constrains effort on reasoning for
  * [reasoning models](https://platform.openai.com/docs/guides/reasoning). Currently supported values
- * are `minimal`, `low`, `medium`, and `high`. Reducing reasoning effort can result in faster
- * responses and fewer tokens used on reasoning in a response.
- *
- * Note: The `gpt-5-pro` model defaults to (and only supports) `high` reasoning effort.
+ * are `none`, `minimal`, `low`, `medium`, and `high`. Reducing reasoning effort can result in
+ * faster responses and fewer tokens used on reasoning in a response.
+ * - `gpt-5.1` defaults to `none`, which does not perform reasoning. The supported reasoning values
+ *   for `gpt-5.1` are `none`, `low`, `medium`, and `high`. Tool calls are supported for all
+ *   reasoning values in gpt-5.1.
+ * - All models before `gpt-5.1` default to `medium` reasoning effort, and do not support `none`.
+ * - The `gpt-5-pro` model defaults to (and only supports) `high` reasoning effort.
  */
 class ReasoningEffort @JsonCreator private constructor(private val value: JsonField<String>) :
     Enum {
@@ -29,6 +32,8 @@ class ReasoningEffort @JsonCreator private constructor(private val value: JsonFi
 
     companion object {
 
+        @JvmField val NONE = of("none")
+
         @JvmField val MINIMAL = of("minimal")
 
         @JvmField val LOW = of("low")
@@ -42,6 +47,7 @@ class ReasoningEffort @JsonCreator private constructor(private val value: JsonFi
 
     /** An enum containing [ReasoningEffort]'s known values. */
     enum class Known {
+        NONE,
         MINIMAL,
         LOW,
         MEDIUM,
@@ -58,6 +64,7 @@ class ReasoningEffort @JsonCreator private constructor(private val value: JsonFi
      * - It was constructed with an arbitrary value using the [of] method.
      */
     enum class Value {
+        NONE,
         MINIMAL,
         LOW,
         MEDIUM,
@@ -77,6 +84,7 @@ class ReasoningEffort @JsonCreator private constructor(private val value: JsonFi
      */
     fun value(): Value =
         when (this) {
+            NONE -> Value.NONE
             MINIMAL -> Value.MINIMAL
             LOW -> Value.LOW
             MEDIUM -> Value.MEDIUM
@@ -94,6 +102,7 @@ class ReasoningEffort @JsonCreator private constructor(private val value: JsonFi
      */
     fun known(): Known =
         when (this) {
+            NONE -> Known.NONE
             MINIMAL -> Known.MINIMAL
             LOW -> Known.LOW
             MEDIUM -> Known.MEDIUM

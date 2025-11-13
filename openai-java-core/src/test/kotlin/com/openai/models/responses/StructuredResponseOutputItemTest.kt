@@ -87,6 +87,47 @@ internal class StructuredResponseOutputItemTest {
                 )
                 .status(ResponseOutputItem.LocalShellCall.Status.COMPLETED)
                 .build()
+        private val SHELL_TOOL_CALL =
+            ResponseFunctionShellToolCall.builder()
+                .id(STRING)
+                .callId(STRING)
+                .status(ResponseFunctionShellToolCall.Status.COMPLETED)
+                .action(
+                    ResponseFunctionShellToolCall.Action.builder()
+                        .commands(listOf("echo hello"))
+                        .maxOutputLength(1024L)
+                        .timeoutMs(1000L)
+                        .build()
+                )
+                .build()
+        private val SHELL_TOOL_CALL_OUTPUT =
+            ResponseFunctionShellToolCallOutput.builder()
+                .id(STRING)
+                .callId(STRING)
+                .maxOutputLength(1024L)
+                .output(
+                    listOf(
+                        ResponseFunctionShellToolCallOutput.Output.builder()
+                            .exitOutcome(0L)
+                            .stderr(STRING)
+                            .stdout(STRING)
+                            .build()
+                    )
+                )
+                .build()
+        private val APPLY_PATCH_TOOL_CALL =
+            ResponseApplyPatchToolCall.builder()
+                .id(STRING)
+                .callId(STRING)
+                .status(ResponseApplyPatchToolCall.Status.COMPLETED)
+                .build()
+        private val APPLY_PATCH_TOOL_CALL_OUTPUT =
+            ResponseApplyPatchToolCallOutput.builder()
+                .id(STRING)
+                .callId(STRING)
+                .output(STRING)
+                .status(ResponseApplyPatchToolCallOutput.Status.COMPLETED)
+                .build()
         private val MCP_APPROVAL_REQUEST =
             ResponseOutputItem.McpApprovalRequest.builder()
                 .id(STRING)
@@ -128,6 +169,11 @@ internal class StructuredResponseOutputItemTest {
                 DelegationReadTestCase("webSearchCall", OPTIONAL),
                 DelegationReadTestCase("computerCall", OPTIONAL),
                 DelegationReadTestCase("reasoning", OPTIONAL),
+                DelegationReadTestCase("localShellCall", OPTIONAL),
+                DelegationReadTestCase("shellCall", OPTIONAL),
+                DelegationReadTestCase("shellCallOutput", OPTIONAL),
+                DelegationReadTestCase("applyPatchCall", OPTIONAL),
+                DelegationReadTestCase("applyPatchCallOutput", OPTIONAL),
                 // `isMessage()` is a special case and has its own test function.
                 // For the Boolean functions, call each in turn with both `true` and `false` to
                 // ensure that a return value is not hard-coded.
@@ -141,6 +187,16 @@ internal class StructuredResponseOutputItemTest {
                 DelegationReadTestCase("isComputerCall", false),
                 DelegationReadTestCase("isReasoning", true),
                 DelegationReadTestCase("isReasoning", false),
+                DelegationReadTestCase("isLocalShellCall", true),
+                DelegationReadTestCase("isLocalShellCall", false),
+                DelegationReadTestCase("isShellCall", true),
+                DelegationReadTestCase("isShellCall", false),
+                DelegationReadTestCase("isShellCallOutput", true),
+                DelegationReadTestCase("isShellCallOutput", false),
+                DelegationReadTestCase("isApplyPatchCall", true),
+                DelegationReadTestCase("isApplyPatchCall", false),
+                DelegationReadTestCase("isApplyPatchCallOutput", true),
+                DelegationReadTestCase("isApplyPatchCallOutput", false),
                 // `asMessage()` is a special case and has its own test function.
                 DelegationReadTestCase("asFileSearchCall", FILE_SEARCH_TOOL_CALL),
                 DelegationReadTestCase("asFunctionCall", FUNCTION_TOOL_CALL),
@@ -150,6 +206,10 @@ internal class StructuredResponseOutputItemTest {
                 DelegationReadTestCase("asCodeInterpreterCall", CODE_INTERPRETER_CALL),
                 DelegationReadTestCase("asImageGenerationCall", IMAGE_GENERATION_CALL),
                 DelegationReadTestCase("asLocalShellCall", LOCAL_SHELL_CALL),
+                DelegationReadTestCase("asShellCall", SHELL_TOOL_CALL),
+                DelegationReadTestCase("asShellCallOutput", SHELL_TOOL_CALL_OUTPUT),
+                DelegationReadTestCase("asApplyPatchCall", APPLY_PATCH_TOOL_CALL),
+                DelegationReadTestCase("asApplyPatchCallOutput", APPLY_PATCH_TOOL_CALL_OUTPUT),
                 DelegationReadTestCase("asMcpApprovalRequest", MCP_APPROVAL_REQUEST),
                 DelegationReadTestCase("asMcpCall", MCP_CALL),
                 DelegationReadTestCase("asMcpListTools", MCP_LIST_TOOLS),
@@ -221,26 +281,23 @@ internal class StructuredResponseOutputItemTest {
                     "accept",
                     "visitCodeInterpreterCall",
                     "visitImageGenerationCall",
-                    "visitLocalShellCall",
                     "visitMcpApprovalRequest",
                     "visitMcpCall",
                     "visitMcpListTools",
+                    "visitLocalShellCall",
                     // All the functions added for new tools:
                     "asCodeInterpreterCall",
                     "asImageGenerationCall",
-                    "asLocalShellCall",
                     "asMcpApprovalRequest",
                     "asMcpCall",
                     "asMcpListTools",
                     "codeInterpreterCall",
                     "imageGenerationCall",
-                    "localShellCall",
                     "mcpApprovalRequest",
                     "mcpCall",
                     "mcpListTools",
                     "isCodeInterpreterCall",
                     "isImageGenerationCall",
-                    "isLocalShellCall",
                     "isMcpApprovalRequest",
                     "isMcpCall",
                     "isMcpListTools",

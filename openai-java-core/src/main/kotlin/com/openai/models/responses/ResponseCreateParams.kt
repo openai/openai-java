@@ -205,6 +205,16 @@ private constructor(
     fun promptCacheKey(): Optional<String> = body.promptCacheKey()
 
     /**
+     * The retention policy for the prompt cache. Set to `24h` to enable extended prompt caching,
+     * which keeps cached prefixes active for longer, up to a maximum of 24 hours.
+     * [Learn more](https://platform.openai.com/docs/guides/prompt-caching#prompt-cache-retention).
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun promptCacheRetention(): Optional<PromptCacheRetention> = body.promptCacheRetention()
+
+    /**
      * **gpt-5 and o-series models only**
      *
      * Configuration options for
@@ -453,6 +463,14 @@ private constructor(
      * Unlike [promptCacheKey], this method doesn't throw if the JSON field has an unexpected type.
      */
     fun _promptCacheKey(): JsonField<String> = body._promptCacheKey()
+
+    /**
+     * Returns the raw JSON value of [promptCacheRetention].
+     *
+     * Unlike [promptCacheRetention], this method doesn't throw if the JSON field has an unexpected
+     * type.
+     */
+    fun _promptCacheRetention(): JsonField<PromptCacheRetention> = body._promptCacheRetention()
 
     /**
      * Returns the raw JSON value of [reasoning].
@@ -936,6 +954,33 @@ private constructor(
         }
 
         /**
+         * The retention policy for the prompt cache. Set to `24h` to enable extended prompt
+         * caching, which keeps cached prefixes active for longer, up to a maximum of 24 hours.
+         * [Learn more](https://platform.openai.com/docs/guides/prompt-caching#prompt-cache-retention).
+         */
+        fun promptCacheRetention(promptCacheRetention: PromptCacheRetention?) = apply {
+            body.promptCacheRetention(promptCacheRetention)
+        }
+
+        /**
+         * Alias for calling [Builder.promptCacheRetention] with
+         * `promptCacheRetention.orElse(null)`.
+         */
+        fun promptCacheRetention(promptCacheRetention: Optional<PromptCacheRetention>) =
+            promptCacheRetention(promptCacheRetention.getOrNull())
+
+        /**
+         * Sets [Builder.promptCacheRetention] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.promptCacheRetention] with a well-typed
+         * [PromptCacheRetention] value instead. This method is primarily for setting the field to
+         * an undocumented or not yet supported value.
+         */
+        fun promptCacheRetention(promptCacheRetention: JsonField<PromptCacheRetention>) = apply {
+            body.promptCacheRetention(promptCacheRetention)
+        }
+
+        /**
          * **gpt-5 and o-series models only**
          *
          * Configuration options for
@@ -1164,6 +1209,12 @@ private constructor(
         /** Alias for calling [toolChoice] with `ToolChoice.ofCustom(custom)`. */
         fun toolChoice(custom: ToolChoiceCustom) = apply { body.toolChoice(custom) }
 
+        /** Alias for calling [toolChoice] with `ToolChoice.ofApplyPatch(applyPatch)`. */
+        fun toolChoice(applyPatch: ToolChoiceApplyPatch) = apply { body.toolChoice(applyPatch) }
+
+        /** Alias for calling [toolChoice] with `ToolChoice.ofShell(shell)`. */
+        fun toolChoice(shell: ToolChoiceShell) = apply { body.toolChoice(shell) }
+
         /**
          * An array of tools the model may call while generating a response. You can specify which
          * tool to use by setting the `tool_choice` parameter.
@@ -1289,6 +1340,9 @@ private constructor(
         /** Alias for calling [addTool] with `Tool.ofLocalShell()`. */
         fun addToolLocalShell() = apply { body.addToolLocalShell() }
 
+        /** Alias for calling [addTool] with `Tool.ofShell(shell)`. */
+        fun addTool(shell: FunctionShellTool) = apply { body.addTool(shell) }
+
         /** Alias for calling [addTool] with `Tool.ofCustom(custom)`. */
         fun addTool(custom: CustomTool) = apply { body.addTool(custom) }
 
@@ -1306,6 +1360,9 @@ private constructor(
         fun addTool(webSearchPreview: WebSearchPreviewTool) = apply {
             body.addTool(webSearchPreview)
         }
+
+        /** Alias for calling [addTool] with `Tool.ofApplyPatch(applyPatch)`. */
+        fun addTool(applyPatch: ApplyPatchTool) = apply { body.addTool(applyPatch) }
 
         /**
          * An integer between 0 and 20 specifying the number of most likely tokens to return at each
@@ -1550,6 +1607,7 @@ private constructor(
         private val previousResponseId: JsonField<String>,
         private val prompt: JsonField<ResponsePrompt>,
         private val promptCacheKey: JsonField<String>,
+        private val promptCacheRetention: JsonField<PromptCacheRetention>,
         private val reasoning: JsonField<Reasoning>,
         private val safetyIdentifier: JsonField<String>,
         private val serviceTier: JsonField<ServiceTier>,
@@ -1605,6 +1663,9 @@ private constructor(
             @JsonProperty("prompt_cache_key")
             @ExcludeMissing
             promptCacheKey: JsonField<String> = JsonMissing.of(),
+            @JsonProperty("prompt_cache_retention")
+            @ExcludeMissing
+            promptCacheRetention: JsonField<PromptCacheRetention> = JsonMissing.of(),
             @JsonProperty("reasoning")
             @ExcludeMissing
             reasoning: JsonField<Reasoning> = JsonMissing.of(),
@@ -1650,6 +1711,7 @@ private constructor(
             previousResponseId,
             prompt,
             promptCacheKey,
+            promptCacheRetention,
             reasoning,
             safetyIdentifier,
             serviceTier,
@@ -1817,6 +1879,17 @@ private constructor(
          *   server responded with an unexpected value).
          */
         fun promptCacheKey(): Optional<String> = promptCacheKey.getOptional("prompt_cache_key")
+
+        /**
+         * The retention policy for the prompt cache. Set to `24h` to enable extended prompt
+         * caching, which keeps cached prefixes active for longer, up to a maximum of 24 hours.
+         * [Learn more](https://platform.openai.com/docs/guides/prompt-caching#prompt-cache-retention).
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun promptCacheRetention(): Optional<PromptCacheRetention> =
+            promptCacheRetention.getOptional("prompt_cache_retention")
 
         /**
          * **gpt-5 and o-series models only**
@@ -2093,6 +2166,16 @@ private constructor(
         fun _promptCacheKey(): JsonField<String> = promptCacheKey
 
         /**
+         * Returns the raw JSON value of [promptCacheRetention].
+         *
+         * Unlike [promptCacheRetention], this method doesn't throw if the JSON field has an
+         * unexpected type.
+         */
+        @JsonProperty("prompt_cache_retention")
+        @ExcludeMissing
+        fun _promptCacheRetention(): JsonField<PromptCacheRetention> = promptCacheRetention
+
+        /**
          * Returns the raw JSON value of [reasoning].
          *
          * Unlike [reasoning], this method doesn't throw if the JSON field has an unexpected type.
@@ -2238,6 +2321,7 @@ private constructor(
             private var previousResponseId: JsonField<String> = JsonMissing.of()
             private var prompt: JsonField<ResponsePrompt> = JsonMissing.of()
             private var promptCacheKey: JsonField<String> = JsonMissing.of()
+            private var promptCacheRetention: JsonField<PromptCacheRetention> = JsonMissing.of()
             private var reasoning: JsonField<Reasoning> = JsonMissing.of()
             private var safetyIdentifier: JsonField<String> = JsonMissing.of()
             private var serviceTier: JsonField<ServiceTier> = JsonMissing.of()
@@ -2268,6 +2352,7 @@ private constructor(
                 previousResponseId = body.previousResponseId
                 prompt = body.prompt
                 promptCacheKey = body.promptCacheKey
+                promptCacheRetention = body.promptCacheRetention
                 reasoning = body.reasoning
                 safetyIdentifier = body.safetyIdentifier
                 serviceTier = body.serviceTier
@@ -2642,6 +2727,33 @@ private constructor(
             }
 
             /**
+             * The retention policy for the prompt cache. Set to `24h` to enable extended prompt
+             * caching, which keeps cached prefixes active for longer, up to a maximum of 24 hours.
+             * [Learn more](https://platform.openai.com/docs/guides/prompt-caching#prompt-cache-retention).
+             */
+            fun promptCacheRetention(promptCacheRetention: PromptCacheRetention?) =
+                promptCacheRetention(JsonField.ofNullable(promptCacheRetention))
+
+            /**
+             * Alias for calling [Builder.promptCacheRetention] with
+             * `promptCacheRetention.orElse(null)`.
+             */
+            fun promptCacheRetention(promptCacheRetention: Optional<PromptCacheRetention>) =
+                promptCacheRetention(promptCacheRetention.getOrNull())
+
+            /**
+             * Sets [Builder.promptCacheRetention] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.promptCacheRetention] with a well-typed
+             * [PromptCacheRetention] value instead. This method is primarily for setting the field
+             * to an undocumented or not yet supported value.
+             */
+            fun promptCacheRetention(promptCacheRetention: JsonField<PromptCacheRetention>) =
+                apply {
+                    this.promptCacheRetention = promptCacheRetention
+                }
+
+            /**
              * **gpt-5 and o-series models only**
              *
              * Configuration options for
@@ -2838,6 +2950,13 @@ private constructor(
             /** Alias for calling [toolChoice] with `ToolChoice.ofCustom(custom)`. */
             fun toolChoice(custom: ToolChoiceCustom) = toolChoice(ToolChoice.ofCustom(custom))
 
+            /** Alias for calling [toolChoice] with `ToolChoice.ofApplyPatch(applyPatch)`. */
+            fun toolChoice(applyPatch: ToolChoiceApplyPatch) =
+                toolChoice(ToolChoice.ofApplyPatch(applyPatch))
+
+            /** Alias for calling [toolChoice] with `ToolChoice.ofShell(shell)`. */
+            fun toolChoice(shell: ToolChoiceShell) = toolChoice(ToolChoice.ofShell(shell))
+
             /**
              * An array of tools the model may call while generating a response. You can specify
              * which tool to use by setting the `tool_choice` parameter.
@@ -2961,6 +3080,9 @@ private constructor(
             /** Alias for calling [addTool] with `Tool.ofLocalShell()`. */
             fun addToolLocalShell() = addTool(Tool.ofLocalShell())
 
+            /** Alias for calling [addTool] with `Tool.ofShell(shell)`. */
+            fun addTool(shell: FunctionShellTool) = addTool(Tool.ofShell(shell))
+
             /** Alias for calling [addTool] with `Tool.ofCustom(custom)`. */
             fun addTool(custom: CustomTool) = addTool(Tool.ofCustom(custom))
 
@@ -2977,6 +3099,9 @@ private constructor(
             /** Alias for calling [addTool] with `Tool.ofWebSearchPreview(webSearchPreview)`. */
             fun addTool(webSearchPreview: WebSearchPreviewTool) =
                 addTool(Tool.ofWebSearchPreview(webSearchPreview))
+
+            /** Alias for calling [addTool] with `Tool.ofApplyPatch(applyPatch)`. */
+            fun addTool(applyPatch: ApplyPatchTool) = addTool(Tool.ofApplyPatch(applyPatch))
 
             /**
              * An integer between 0 and 20 specifying the number of most likely tokens to return at
@@ -3112,6 +3237,7 @@ private constructor(
                     previousResponseId,
                     prompt,
                     promptCacheKey,
+                    promptCacheRetention,
                     reasoning,
                     safetyIdentifier,
                     serviceTier,
@@ -3149,6 +3275,7 @@ private constructor(
             previousResponseId()
             prompt().ifPresent { it.validate() }
             promptCacheKey()
+            promptCacheRetention().ifPresent { it.validate() }
             reasoning().ifPresent { it.validate() }
             safetyIdentifier()
             serviceTier().ifPresent { it.validate() }
@@ -3194,6 +3321,7 @@ private constructor(
                 (if (previousResponseId.asKnown().isPresent) 1 else 0) +
                 (prompt.asKnown().getOrNull()?.validity() ?: 0) +
                 (if (promptCacheKey.asKnown().isPresent) 1 else 0) +
+                (promptCacheRetention.asKnown().getOrNull()?.validity() ?: 0) +
                 (reasoning.asKnown().getOrNull()?.validity() ?: 0) +
                 (if (safetyIdentifier.asKnown().isPresent) 1 else 0) +
                 (serviceTier.asKnown().getOrNull()?.validity() ?: 0) +
@@ -3227,6 +3355,7 @@ private constructor(
                 previousResponseId == other.previousResponseId &&
                 prompt == other.prompt &&
                 promptCacheKey == other.promptCacheKey &&
+                promptCacheRetention == other.promptCacheRetention &&
                 reasoning == other.reasoning &&
                 safetyIdentifier == other.safetyIdentifier &&
                 serviceTier == other.serviceTier &&
@@ -3258,6 +3387,7 @@ private constructor(
                 previousResponseId,
                 prompt,
                 promptCacheKey,
+                promptCacheRetention,
                 reasoning,
                 safetyIdentifier,
                 serviceTier,
@@ -3278,7 +3408,7 @@ private constructor(
         override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "Body{background=$background, conversation=$conversation, include=$include, input=$input, instructions=$instructions, maxOutputTokens=$maxOutputTokens, maxToolCalls=$maxToolCalls, metadata=$metadata, model=$model, parallelToolCalls=$parallelToolCalls, previousResponseId=$previousResponseId, prompt=$prompt, promptCacheKey=$promptCacheKey, reasoning=$reasoning, safetyIdentifier=$safetyIdentifier, serviceTier=$serviceTier, store=$store, streamOptions=$streamOptions, temperature=$temperature, text=$text, toolChoice=$toolChoice, tools=$tools, topLogprobs=$topLogprobs, topP=$topP, truncation=$truncation, user=$user, additionalProperties=$additionalProperties}"
+            "Body{background=$background, conversation=$conversation, include=$include, input=$input, instructions=$instructions, maxOutputTokens=$maxOutputTokens, maxToolCalls=$maxToolCalls, metadata=$metadata, model=$model, parallelToolCalls=$parallelToolCalls, previousResponseId=$previousResponseId, prompt=$prompt, promptCacheKey=$promptCacheKey, promptCacheRetention=$promptCacheRetention, reasoning=$reasoning, safetyIdentifier=$safetyIdentifier, serviceTier=$serviceTier, store=$store, streamOptions=$streamOptions, temperature=$temperature, text=$text, toolChoice=$toolChoice, tools=$tools, topLogprobs=$topLogprobs, topP=$topP, truncation=$truncation, user=$user, additionalProperties=$additionalProperties}"
     }
 
     /**
@@ -3783,6 +3913,142 @@ private constructor(
     }
 
     /**
+     * The retention policy for the prompt cache. Set to `24h` to enable extended prompt caching,
+     * which keeps cached prefixes active for longer, up to a maximum of 24 hours.
+     * [Learn more](https://platform.openai.com/docs/guides/prompt-caching#prompt-cache-retention).
+     */
+    class PromptCacheRetention
+    @JsonCreator
+    private constructor(private val value: JsonField<String>) : Enum {
+
+        /**
+         * Returns this class instance's raw value.
+         *
+         * This is usually only useful if this instance was deserialized from data that doesn't
+         * match any known member, and you want to know that value. For example, if the SDK is on an
+         * older version than the API, then the API may respond with new members that the SDK is
+         * unaware of.
+         */
+        @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
+
+        companion object {
+
+            @JvmField val IN_MEMORY = of("in-memory")
+
+            @JvmField val _24H = of("24h")
+
+            @JvmStatic fun of(value: String) = PromptCacheRetention(JsonField.of(value))
+        }
+
+        /** An enum containing [PromptCacheRetention]'s known values. */
+        enum class Known {
+            IN_MEMORY,
+            _24H,
+        }
+
+        /**
+         * An enum containing [PromptCacheRetention]'s known values, as well as an [_UNKNOWN]
+         * member.
+         *
+         * An instance of [PromptCacheRetention] can contain an unknown value in a couple of cases:
+         * - It was deserialized from data that doesn't match any known member. For example, if the
+         *   SDK is on an older version than the API, then the API may respond with new members that
+         *   the SDK is unaware of.
+         * - It was constructed with an arbitrary value using the [of] method.
+         */
+        enum class Value {
+            IN_MEMORY,
+            _24H,
+            /**
+             * An enum member indicating that [PromptCacheRetention] was instantiated with an
+             * unknown value.
+             */
+            _UNKNOWN,
+        }
+
+        /**
+         * Returns an enum member corresponding to this class instance's value, or [Value._UNKNOWN]
+         * if the class was instantiated with an unknown value.
+         *
+         * Use the [known] method instead if you're certain the value is always known or if you want
+         * to throw for the unknown case.
+         */
+        fun value(): Value =
+            when (this) {
+                IN_MEMORY -> Value.IN_MEMORY
+                _24H -> Value._24H
+                else -> Value._UNKNOWN
+            }
+
+        /**
+         * Returns an enum member corresponding to this class instance's value.
+         *
+         * Use the [value] method instead if you're uncertain the value is always known and don't
+         * want to throw for the unknown case.
+         *
+         * @throws OpenAIInvalidDataException if this class instance's value is a not a known
+         *   member.
+         */
+        fun known(): Known =
+            when (this) {
+                IN_MEMORY -> Known.IN_MEMORY
+                _24H -> Known._24H
+                else -> throw OpenAIInvalidDataException("Unknown PromptCacheRetention: $value")
+            }
+
+        /**
+         * Returns this class instance's primitive wire representation.
+         *
+         * This differs from the [toString] method because that method is primarily for debugging
+         * and generally doesn't throw.
+         *
+         * @throws OpenAIInvalidDataException if this class instance's value does not have the
+         *   expected primitive type.
+         */
+        fun asString(): String =
+            _value().asString().orElseThrow { OpenAIInvalidDataException("Value is not a String") }
+
+        private var validated: Boolean = false
+
+        fun validate(): PromptCacheRetention = apply {
+            if (validated) {
+                return@apply
+            }
+
+            known()
+            validated = true
+        }
+
+        fun isValid(): Boolean =
+            try {
+                validate()
+                true
+            } catch (e: OpenAIInvalidDataException) {
+                false
+            }
+
+        /**
+         * Returns a score indicating how many valid values are contained in this object
+         * recursively.
+         *
+         * Used for best match union deserialization.
+         */
+        @JvmSynthetic internal fun validity(): Int = if (value() == Value._UNKNOWN) 0 else 1
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) {
+                return true
+            }
+
+            return other is PromptCacheRetention && value == other.value
+        }
+
+        override fun hashCode() = value.hashCode()
+
+        override fun toString() = value.toString()
+    }
+
+    /**
      * Specifies the processing type used for serving the request.
      * - If set to 'auto', then the request will be processed with the service tier configured in
      *   the Project settings. Unless otherwise configured, the Project will use 'default'.
@@ -4122,6 +4388,8 @@ private constructor(
         private val function: ToolChoiceFunction? = null,
         private val mcp: ToolChoiceMcp? = null,
         private val custom: ToolChoiceCustom? = null,
+        private val applyPatch: ToolChoiceApplyPatch? = null,
+        private val shell: ToolChoiceShell? = null,
         private val _json: JsonValue? = null,
     ) {
 
@@ -4155,6 +4423,12 @@ private constructor(
         /** Use this option to force the model to call a specific custom tool. */
         fun custom(): Optional<ToolChoiceCustom> = Optional.ofNullable(custom)
 
+        /** Forces the model to call the apply_patch tool when executing a tool call. */
+        fun applyPatch(): Optional<ToolChoiceApplyPatch> = Optional.ofNullable(applyPatch)
+
+        /** Forces the model to call the function shell tool when a tool call is required. */
+        fun shell(): Optional<ToolChoiceShell> = Optional.ofNullable(shell)
+
         fun isOptions(): Boolean = options != null
 
         fun isAllowed(): Boolean = allowed != null
@@ -4166,6 +4440,10 @@ private constructor(
         fun isMcp(): Boolean = mcp != null
 
         fun isCustom(): Boolean = custom != null
+
+        fun isApplyPatch(): Boolean = applyPatch != null
+
+        fun isShell(): Boolean = shell != null
 
         /**
          * Controls which (if any) tool is called by the model.
@@ -4197,6 +4475,12 @@ private constructor(
         /** Use this option to force the model to call a specific custom tool. */
         fun asCustom(): ToolChoiceCustom = custom.getOrThrow("custom")
 
+        /** Forces the model to call the apply_patch tool when executing a tool call. */
+        fun asApplyPatch(): ToolChoiceApplyPatch = applyPatch.getOrThrow("applyPatch")
+
+        /** Forces the model to call the function shell tool when a tool call is required. */
+        fun asShell(): ToolChoiceShell = shell.getOrThrow("shell")
+
         fun _json(): Optional<JsonValue> = Optional.ofNullable(_json)
 
         fun <T> accept(visitor: Visitor<T>): T =
@@ -4207,6 +4491,8 @@ private constructor(
                 function != null -> visitor.visitFunction(function)
                 mcp != null -> visitor.visitMcp(mcp)
                 custom != null -> visitor.visitCustom(custom)
+                applyPatch != null -> visitor.visitApplyPatch(applyPatch)
+                shell != null -> visitor.visitShell(shell)
                 else -> visitor.unknown(_json)
             }
 
@@ -4241,6 +4527,14 @@ private constructor(
 
                     override fun visitCustom(custom: ToolChoiceCustom) {
                         custom.validate()
+                    }
+
+                    override fun visitApplyPatch(applyPatch: ToolChoiceApplyPatch) {
+                        applyPatch.validate()
+                    }
+
+                    override fun visitShell(shell: ToolChoiceShell) {
+                        shell.validate()
                     }
                 }
             )
@@ -4277,6 +4571,11 @@ private constructor(
 
                     override fun visitCustom(custom: ToolChoiceCustom) = custom.validity()
 
+                    override fun visitApplyPatch(applyPatch: ToolChoiceApplyPatch) =
+                        applyPatch.validity()
+
+                    override fun visitShell(shell: ToolChoiceShell) = shell.validity()
+
                     override fun unknown(json: JsonValue?) = 0
                 }
             )
@@ -4292,10 +4591,13 @@ private constructor(
                 types == other.types &&
                 function == other.function &&
                 mcp == other.mcp &&
-                custom == other.custom
+                custom == other.custom &&
+                applyPatch == other.applyPatch &&
+                shell == other.shell
         }
 
-        override fun hashCode(): Int = Objects.hash(options, allowed, types, function, mcp, custom)
+        override fun hashCode(): Int =
+            Objects.hash(options, allowed, types, function, mcp, custom, applyPatch, shell)
 
         override fun toString(): String =
             when {
@@ -4305,6 +4607,8 @@ private constructor(
                 function != null -> "ToolChoice{function=$function}"
                 mcp != null -> "ToolChoice{mcp=$mcp}"
                 custom != null -> "ToolChoice{custom=$custom}"
+                applyPatch != null -> "ToolChoice{applyPatch=$applyPatch}"
+                shell != null -> "ToolChoice{shell=$shell}"
                 _json != null -> "ToolChoice{_unknown=$_json}"
                 else -> throw IllegalStateException("Invalid ToolChoice")
             }
@@ -4343,6 +4647,13 @@ private constructor(
 
             /** Use this option to force the model to call a specific custom tool. */
             @JvmStatic fun ofCustom(custom: ToolChoiceCustom) = ToolChoice(custom = custom)
+
+            /** Forces the model to call the apply_patch tool when executing a tool call. */
+            @JvmStatic
+            fun ofApplyPatch(applyPatch: ToolChoiceApplyPatch) = ToolChoice(applyPatch = applyPatch)
+
+            /** Forces the model to call the function shell tool when a tool call is required. */
+            @JvmStatic fun ofShell(shell: ToolChoiceShell) = ToolChoice(shell = shell)
         }
 
         /**
@@ -4381,6 +4692,12 @@ private constructor(
 
             /** Use this option to force the model to call a specific custom tool. */
             fun visitCustom(custom: ToolChoiceCustom): T
+
+            /** Forces the model to call the apply_patch tool when executing a tool call. */
+            fun visitApplyPatch(applyPatch: ToolChoiceApplyPatch): T
+
+            /** Forces the model to call the function shell tool when a tool call is required. */
+            fun visitShell(shell: ToolChoiceShell): T
 
             /**
              * Maps an unknown variant of [ToolChoice] to a value of type [T].
@@ -4422,6 +4739,12 @@ private constructor(
                             tryDeserialize(node, jacksonTypeRef<ToolChoiceCustom>())?.let {
                                 ToolChoice(custom = it, _json = json)
                             },
+                            tryDeserialize(node, jacksonTypeRef<ToolChoiceApplyPatch>())?.let {
+                                ToolChoice(applyPatch = it, _json = json)
+                            },
+                            tryDeserialize(node, jacksonTypeRef<ToolChoiceShell>())?.let {
+                                ToolChoice(shell = it, _json = json)
+                            },
                         )
                         .filterNotNull()
                         .allMaxBy { it.validity() }
@@ -4453,6 +4776,8 @@ private constructor(
                     value.function != null -> generator.writeObject(value.function)
                     value.mcp != null -> generator.writeObject(value.mcp)
                     value.custom != null -> generator.writeObject(value.custom)
+                    value.applyPatch != null -> generator.writeObject(value.applyPatch)
+                    value.shell != null -> generator.writeObject(value.shell)
                     value._json != null -> generator.writeObject(value._json)
                     else -> throw IllegalStateException("Invalid ToolChoice")
                 }

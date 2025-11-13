@@ -398,6 +398,21 @@ internal constructor(
             paramsBuilder.promptCacheKey(promptCacheKey)
         }
 
+        /** @see ChatCompletionCreateParams.Builder.promptCacheRetention */
+        fun promptCacheRetention(
+            promptCacheRetention: ChatCompletionCreateParams.PromptCacheRetention?
+        ) = apply { paramsBuilder.promptCacheRetention(promptCacheRetention) }
+
+        /** @see ChatCompletionCreateParams.Builder.promptCacheRetention */
+        fun promptCacheRetention(
+            promptCacheRetention: Optional<ChatCompletionCreateParams.PromptCacheRetention>
+        ) = apply { paramsBuilder.promptCacheRetention(promptCacheRetention) }
+
+        /** @see ChatCompletionCreateParams.Builder.promptCacheRetention */
+        fun promptCacheRetention(
+            promptCacheRetention: JsonField<ChatCompletionCreateParams.PromptCacheRetention>
+        ) = apply { paramsBuilder.promptCacheRetention(promptCacheRetention) }
+
         /** @see ChatCompletionCreateParams.Builder.presencePenalty */
         fun presencePenalty(presencePenalty: Double?) = apply {
             paramsBuilder.presencePenalty(presencePenalty)

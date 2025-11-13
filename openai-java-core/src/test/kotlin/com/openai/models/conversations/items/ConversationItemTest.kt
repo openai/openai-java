@@ -7,6 +7,8 @@ import com.openai.core.JsonValue
 import com.openai.core.jsonMapper
 import com.openai.errors.OpenAIInvalidDataException
 import com.openai.models.conversations.Message
+import com.openai.models.responses.ResponseApplyPatchToolCall
+import com.openai.models.responses.ResponseApplyPatchToolCallOutput
 import com.openai.models.responses.ResponseCodeInterpreterToolCall
 import com.openai.models.responses.ResponseComputerToolCall
 import com.openai.models.responses.ResponseComputerToolCallOutputItem
@@ -14,6 +16,8 @@ import com.openai.models.responses.ResponseComputerToolCallOutputScreenshot
 import com.openai.models.responses.ResponseCustomToolCall
 import com.openai.models.responses.ResponseCustomToolCallOutput
 import com.openai.models.responses.ResponseFileSearchToolCall
+import com.openai.models.responses.ResponseFunctionShellToolCall
+import com.openai.models.responses.ResponseFunctionShellToolCallOutput
 import com.openai.models.responses.ResponseFunctionToolCall
 import com.openai.models.responses.ResponseFunctionToolCallItem
 import com.openai.models.responses.ResponseFunctionToolCallOutputItem
@@ -51,6 +55,10 @@ internal class ConversationItemTest {
         assertThat(conversationItem.codeInterpreterCall()).isEmpty
         assertThat(conversationItem.localShellCall()).isEmpty
         assertThat(conversationItem.localShellCallOutput()).isEmpty
+        assertThat(conversationItem.shellCall()).isEmpty
+        assertThat(conversationItem.shellCallOutput()).isEmpty
+        assertThat(conversationItem.applyPatchCall()).isEmpty
+        assertThat(conversationItem.applyPatchCallOutput()).isEmpty
         assertThat(conversationItem.mcpListTools()).isEmpty
         assertThat(conversationItem.mcpApprovalRequest()).isEmpty
         assertThat(conversationItem.mcpApprovalResponse()).isEmpty
@@ -106,6 +114,10 @@ internal class ConversationItemTest {
         assertThat(conversationItem.codeInterpreterCall()).isEmpty
         assertThat(conversationItem.localShellCall()).isEmpty
         assertThat(conversationItem.localShellCallOutput()).isEmpty
+        assertThat(conversationItem.shellCall()).isEmpty
+        assertThat(conversationItem.shellCallOutput()).isEmpty
+        assertThat(conversationItem.applyPatchCall()).isEmpty
+        assertThat(conversationItem.applyPatchCallOutput()).isEmpty
         assertThat(conversationItem.mcpListTools()).isEmpty
         assertThat(conversationItem.mcpApprovalRequest()).isEmpty
         assertThat(conversationItem.mcpApprovalResponse()).isEmpty
@@ -161,6 +173,10 @@ internal class ConversationItemTest {
         assertThat(conversationItem.codeInterpreterCall()).isEmpty
         assertThat(conversationItem.localShellCall()).isEmpty
         assertThat(conversationItem.localShellCallOutput()).isEmpty
+        assertThat(conversationItem.shellCall()).isEmpty
+        assertThat(conversationItem.shellCallOutput()).isEmpty
+        assertThat(conversationItem.applyPatchCall()).isEmpty
+        assertThat(conversationItem.applyPatchCallOutput()).isEmpty
         assertThat(conversationItem.mcpListTools()).isEmpty
         assertThat(conversationItem.mcpApprovalRequest()).isEmpty
         assertThat(conversationItem.mcpApprovalResponse()).isEmpty
@@ -227,6 +243,10 @@ internal class ConversationItemTest {
         assertThat(conversationItem.codeInterpreterCall()).isEmpty
         assertThat(conversationItem.localShellCall()).isEmpty
         assertThat(conversationItem.localShellCallOutput()).isEmpty
+        assertThat(conversationItem.shellCall()).isEmpty
+        assertThat(conversationItem.shellCallOutput()).isEmpty
+        assertThat(conversationItem.applyPatchCall()).isEmpty
+        assertThat(conversationItem.applyPatchCallOutput()).isEmpty
         assertThat(conversationItem.mcpListTools()).isEmpty
         assertThat(conversationItem.mcpApprovalRequest()).isEmpty
         assertThat(conversationItem.mcpApprovalResponse()).isEmpty
@@ -301,6 +321,10 @@ internal class ConversationItemTest {
         assertThat(conversationItem.codeInterpreterCall()).isEmpty
         assertThat(conversationItem.localShellCall()).isEmpty
         assertThat(conversationItem.localShellCallOutput()).isEmpty
+        assertThat(conversationItem.shellCall()).isEmpty
+        assertThat(conversationItem.shellCallOutput()).isEmpty
+        assertThat(conversationItem.applyPatchCall()).isEmpty
+        assertThat(conversationItem.applyPatchCallOutput()).isEmpty
         assertThat(conversationItem.mcpListTools()).isEmpty
         assertThat(conversationItem.mcpApprovalRequest()).isEmpty
         assertThat(conversationItem.mcpApprovalResponse()).isEmpty
@@ -362,6 +386,10 @@ internal class ConversationItemTest {
         assertThat(conversationItem.codeInterpreterCall()).isEmpty
         assertThat(conversationItem.localShellCall()).isEmpty
         assertThat(conversationItem.localShellCallOutput()).isEmpty
+        assertThat(conversationItem.shellCall()).isEmpty
+        assertThat(conversationItem.shellCallOutput()).isEmpty
+        assertThat(conversationItem.applyPatchCall()).isEmpty
+        assertThat(conversationItem.applyPatchCallOutput()).isEmpty
         assertThat(conversationItem.mcpListTools()).isEmpty
         assertThat(conversationItem.mcpApprovalRequest()).isEmpty
         assertThat(conversationItem.mcpApprovalResponse()).isEmpty
@@ -429,6 +457,10 @@ internal class ConversationItemTest {
         assertThat(conversationItem.codeInterpreterCall()).isEmpty
         assertThat(conversationItem.localShellCall()).isEmpty
         assertThat(conversationItem.localShellCallOutput()).isEmpty
+        assertThat(conversationItem.shellCall()).isEmpty
+        assertThat(conversationItem.shellCallOutput()).isEmpty
+        assertThat(conversationItem.applyPatchCall()).isEmpty
+        assertThat(conversationItem.applyPatchCallOutput()).isEmpty
         assertThat(conversationItem.mcpListTools()).isEmpty
         assertThat(conversationItem.mcpApprovalRequest()).isEmpty
         assertThat(conversationItem.mcpApprovalResponse()).isEmpty
@@ -509,6 +541,10 @@ internal class ConversationItemTest {
         assertThat(conversationItem.codeInterpreterCall()).isEmpty
         assertThat(conversationItem.localShellCall()).isEmpty
         assertThat(conversationItem.localShellCallOutput()).isEmpty
+        assertThat(conversationItem.shellCall()).isEmpty
+        assertThat(conversationItem.shellCallOutput()).isEmpty
+        assertThat(conversationItem.applyPatchCall()).isEmpty
+        assertThat(conversationItem.applyPatchCallOutput()).isEmpty
         assertThat(conversationItem.mcpListTools()).isEmpty
         assertThat(conversationItem.mcpApprovalRequest()).isEmpty
         assertThat(conversationItem.mcpApprovalResponse()).isEmpty
@@ -576,6 +612,10 @@ internal class ConversationItemTest {
         assertThat(conversationItem.codeInterpreterCall()).isEmpty
         assertThat(conversationItem.localShellCall()).isEmpty
         assertThat(conversationItem.localShellCallOutput()).isEmpty
+        assertThat(conversationItem.shellCall()).isEmpty
+        assertThat(conversationItem.shellCallOutput()).isEmpty
+        assertThat(conversationItem.applyPatchCall()).isEmpty
+        assertThat(conversationItem.applyPatchCallOutput()).isEmpty
         assertThat(conversationItem.mcpListTools()).isEmpty
         assertThat(conversationItem.mcpApprovalRequest()).isEmpty
         assertThat(conversationItem.mcpApprovalResponse()).isEmpty
@@ -632,6 +672,10 @@ internal class ConversationItemTest {
         assertThat(conversationItem.codeInterpreterCall()).contains(codeInterpreterCall)
         assertThat(conversationItem.localShellCall()).isEmpty
         assertThat(conversationItem.localShellCallOutput()).isEmpty
+        assertThat(conversationItem.shellCall()).isEmpty
+        assertThat(conversationItem.shellCallOutput()).isEmpty
+        assertThat(conversationItem.applyPatchCall()).isEmpty
+        assertThat(conversationItem.applyPatchCallOutput()).isEmpty
         assertThat(conversationItem.mcpListTools()).isEmpty
         assertThat(conversationItem.mcpApprovalRequest()).isEmpty
         assertThat(conversationItem.mcpApprovalResponse()).isEmpty
@@ -699,6 +743,10 @@ internal class ConversationItemTest {
         assertThat(conversationItem.codeInterpreterCall()).isEmpty
         assertThat(conversationItem.localShellCall()).contains(localShellCall)
         assertThat(conversationItem.localShellCallOutput()).isEmpty
+        assertThat(conversationItem.shellCall()).isEmpty
+        assertThat(conversationItem.shellCallOutput()).isEmpty
+        assertThat(conversationItem.applyPatchCall()).isEmpty
+        assertThat(conversationItem.applyPatchCallOutput()).isEmpty
         assertThat(conversationItem.mcpListTools()).isEmpty
         assertThat(conversationItem.mcpApprovalRequest()).isEmpty
         assertThat(conversationItem.mcpApprovalResponse()).isEmpty
@@ -764,6 +812,10 @@ internal class ConversationItemTest {
         assertThat(conversationItem.codeInterpreterCall()).isEmpty
         assertThat(conversationItem.localShellCall()).isEmpty
         assertThat(conversationItem.localShellCallOutput()).contains(localShellCallOutput)
+        assertThat(conversationItem.shellCall()).isEmpty
+        assertThat(conversationItem.shellCallOutput()).isEmpty
+        assertThat(conversationItem.applyPatchCall()).isEmpty
+        assertThat(conversationItem.applyPatchCallOutput()).isEmpty
         assertThat(conversationItem.mcpListTools()).isEmpty
         assertThat(conversationItem.mcpApprovalRequest()).isEmpty
         assertThat(conversationItem.mcpApprovalResponse()).isEmpty
@@ -781,6 +833,282 @@ internal class ConversationItemTest {
                     .id("id")
                     .output("output")
                     .status(ConversationItem.LocalShellCallOutput.Status.IN_PROGRESS)
+                    .build()
+            )
+
+        val roundtrippedConversationItem =
+            jsonMapper.readValue(
+                jsonMapper.writeValueAsString(conversationItem),
+                jacksonTypeRef<ConversationItem>(),
+            )
+
+        assertThat(roundtrippedConversationItem).isEqualTo(conversationItem)
+    }
+
+    @Test
+    fun ofShellCall() {
+        val shellCall =
+            ResponseFunctionShellToolCall.builder()
+                .id("id")
+                .action(
+                    ResponseFunctionShellToolCall.Action.builder()
+                        .addCommand("string")
+                        .maxOutputLength(0L)
+                        .timeoutMs(0L)
+                        .build()
+                )
+                .callId("call_id")
+                .status(ResponseFunctionShellToolCall.Status.IN_PROGRESS)
+                .createdBy("created_by")
+                .build()
+
+        val conversationItem = ConversationItem.ofShellCall(shellCall)
+
+        assertThat(conversationItem.message()).isEmpty
+        assertThat(conversationItem.functionCall()).isEmpty
+        assertThat(conversationItem.functionCallOutput()).isEmpty
+        assertThat(conversationItem.fileSearchCall()).isEmpty
+        assertThat(conversationItem.webSearchCall()).isEmpty
+        assertThat(conversationItem.imageGenerationCall()).isEmpty
+        assertThat(conversationItem.computerCall()).isEmpty
+        assertThat(conversationItem.computerCallOutput()).isEmpty
+        assertThat(conversationItem.reasoning()).isEmpty
+        assertThat(conversationItem.codeInterpreterCall()).isEmpty
+        assertThat(conversationItem.localShellCall()).isEmpty
+        assertThat(conversationItem.localShellCallOutput()).isEmpty
+        assertThat(conversationItem.shellCall()).contains(shellCall)
+        assertThat(conversationItem.shellCallOutput()).isEmpty
+        assertThat(conversationItem.applyPatchCall()).isEmpty
+        assertThat(conversationItem.applyPatchCallOutput()).isEmpty
+        assertThat(conversationItem.mcpListTools()).isEmpty
+        assertThat(conversationItem.mcpApprovalRequest()).isEmpty
+        assertThat(conversationItem.mcpApprovalResponse()).isEmpty
+        assertThat(conversationItem.mcpCall()).isEmpty
+        assertThat(conversationItem.customToolCall()).isEmpty
+        assertThat(conversationItem.customToolCallOutput()).isEmpty
+    }
+
+    @Test
+    fun ofShellCallRoundtrip() {
+        val jsonMapper = jsonMapper()
+        val conversationItem =
+            ConversationItem.ofShellCall(
+                ResponseFunctionShellToolCall.builder()
+                    .id("id")
+                    .action(
+                        ResponseFunctionShellToolCall.Action.builder()
+                            .addCommand("string")
+                            .maxOutputLength(0L)
+                            .timeoutMs(0L)
+                            .build()
+                    )
+                    .callId("call_id")
+                    .status(ResponseFunctionShellToolCall.Status.IN_PROGRESS)
+                    .createdBy("created_by")
+                    .build()
+            )
+
+        val roundtrippedConversationItem =
+            jsonMapper.readValue(
+                jsonMapper.writeValueAsString(conversationItem),
+                jacksonTypeRef<ConversationItem>(),
+            )
+
+        assertThat(roundtrippedConversationItem).isEqualTo(conversationItem)
+    }
+
+    @Test
+    fun ofShellCallOutput() {
+        val shellCallOutput =
+            ResponseFunctionShellToolCallOutput.builder()
+                .id("id")
+                .callId("call_id")
+                .maxOutputLength(0L)
+                .addOutput(
+                    ResponseFunctionShellToolCallOutput.Output.builder()
+                        .outcomeTimeout()
+                        .stderr("stderr")
+                        .stdout("stdout")
+                        .createdBy("created_by")
+                        .build()
+                )
+                .createdBy("created_by")
+                .build()
+
+        val conversationItem = ConversationItem.ofShellCallOutput(shellCallOutput)
+
+        assertThat(conversationItem.message()).isEmpty
+        assertThat(conversationItem.functionCall()).isEmpty
+        assertThat(conversationItem.functionCallOutput()).isEmpty
+        assertThat(conversationItem.fileSearchCall()).isEmpty
+        assertThat(conversationItem.webSearchCall()).isEmpty
+        assertThat(conversationItem.imageGenerationCall()).isEmpty
+        assertThat(conversationItem.computerCall()).isEmpty
+        assertThat(conversationItem.computerCallOutput()).isEmpty
+        assertThat(conversationItem.reasoning()).isEmpty
+        assertThat(conversationItem.codeInterpreterCall()).isEmpty
+        assertThat(conversationItem.localShellCall()).isEmpty
+        assertThat(conversationItem.localShellCallOutput()).isEmpty
+        assertThat(conversationItem.shellCall()).isEmpty
+        assertThat(conversationItem.shellCallOutput()).contains(shellCallOutput)
+        assertThat(conversationItem.applyPatchCall()).isEmpty
+        assertThat(conversationItem.applyPatchCallOutput()).isEmpty
+        assertThat(conversationItem.mcpListTools()).isEmpty
+        assertThat(conversationItem.mcpApprovalRequest()).isEmpty
+        assertThat(conversationItem.mcpApprovalResponse()).isEmpty
+        assertThat(conversationItem.mcpCall()).isEmpty
+        assertThat(conversationItem.customToolCall()).isEmpty
+        assertThat(conversationItem.customToolCallOutput()).isEmpty
+    }
+
+    @Test
+    fun ofShellCallOutputRoundtrip() {
+        val jsonMapper = jsonMapper()
+        val conversationItem =
+            ConversationItem.ofShellCallOutput(
+                ResponseFunctionShellToolCallOutput.builder()
+                    .id("id")
+                    .callId("call_id")
+                    .maxOutputLength(0L)
+                    .addOutput(
+                        ResponseFunctionShellToolCallOutput.Output.builder()
+                            .outcomeTimeout()
+                            .stderr("stderr")
+                            .stdout("stdout")
+                            .createdBy("created_by")
+                            .build()
+                    )
+                    .createdBy("created_by")
+                    .build()
+            )
+
+        val roundtrippedConversationItem =
+            jsonMapper.readValue(
+                jsonMapper.writeValueAsString(conversationItem),
+                jacksonTypeRef<ConversationItem>(),
+            )
+
+        assertThat(roundtrippedConversationItem).isEqualTo(conversationItem)
+    }
+
+    @Test
+    fun ofApplyPatchCall() {
+        val applyPatchCall =
+            ResponseApplyPatchToolCall.builder()
+                .id("id")
+                .callId("call_id")
+                .status(ResponseApplyPatchToolCall.Status.IN_PROGRESS)
+                .createdBy("created_by")
+                .operation(
+                    ResponseApplyPatchToolCall.Operation.CreateFile.builder()
+                        .diff("diff")
+                        .path("path")
+                        .build()
+                )
+                .build()
+
+        val conversationItem = ConversationItem.ofApplyPatchCall(applyPatchCall)
+
+        assertThat(conversationItem.message()).isEmpty
+        assertThat(conversationItem.functionCall()).isEmpty
+        assertThat(conversationItem.functionCallOutput()).isEmpty
+        assertThat(conversationItem.fileSearchCall()).isEmpty
+        assertThat(conversationItem.webSearchCall()).isEmpty
+        assertThat(conversationItem.imageGenerationCall()).isEmpty
+        assertThat(conversationItem.computerCall()).isEmpty
+        assertThat(conversationItem.computerCallOutput()).isEmpty
+        assertThat(conversationItem.reasoning()).isEmpty
+        assertThat(conversationItem.codeInterpreterCall()).isEmpty
+        assertThat(conversationItem.localShellCall()).isEmpty
+        assertThat(conversationItem.localShellCallOutput()).isEmpty
+        assertThat(conversationItem.shellCall()).isEmpty
+        assertThat(conversationItem.shellCallOutput()).isEmpty
+        assertThat(conversationItem.applyPatchCall()).contains(applyPatchCall)
+        assertThat(conversationItem.applyPatchCallOutput()).isEmpty
+        assertThat(conversationItem.mcpListTools()).isEmpty
+        assertThat(conversationItem.mcpApprovalRequest()).isEmpty
+        assertThat(conversationItem.mcpApprovalResponse()).isEmpty
+        assertThat(conversationItem.mcpCall()).isEmpty
+        assertThat(conversationItem.customToolCall()).isEmpty
+        assertThat(conversationItem.customToolCallOutput()).isEmpty
+    }
+
+    @Test
+    fun ofApplyPatchCallRoundtrip() {
+        val jsonMapper = jsonMapper()
+        val conversationItem =
+            ConversationItem.ofApplyPatchCall(
+                ResponseApplyPatchToolCall.builder()
+                    .id("id")
+                    .callId("call_id")
+                    .status(ResponseApplyPatchToolCall.Status.IN_PROGRESS)
+                    .createdBy("created_by")
+                    .operation(
+                        ResponseApplyPatchToolCall.Operation.CreateFile.builder()
+                            .diff("diff")
+                            .path("path")
+                            .build()
+                    )
+                    .build()
+            )
+
+        val roundtrippedConversationItem =
+            jsonMapper.readValue(
+                jsonMapper.writeValueAsString(conversationItem),
+                jacksonTypeRef<ConversationItem>(),
+            )
+
+        assertThat(roundtrippedConversationItem).isEqualTo(conversationItem)
+    }
+
+    @Test
+    fun ofApplyPatchCallOutput() {
+        val applyPatchCallOutput =
+            ResponseApplyPatchToolCallOutput.builder()
+                .id("id")
+                .callId("call_id")
+                .output("output")
+                .status(ResponseApplyPatchToolCallOutput.Status.COMPLETED)
+                .createdBy("created_by")
+                .build()
+
+        val conversationItem = ConversationItem.ofApplyPatchCallOutput(applyPatchCallOutput)
+
+        assertThat(conversationItem.message()).isEmpty
+        assertThat(conversationItem.functionCall()).isEmpty
+        assertThat(conversationItem.functionCallOutput()).isEmpty
+        assertThat(conversationItem.fileSearchCall()).isEmpty
+        assertThat(conversationItem.webSearchCall()).isEmpty
+        assertThat(conversationItem.imageGenerationCall()).isEmpty
+        assertThat(conversationItem.computerCall()).isEmpty
+        assertThat(conversationItem.computerCallOutput()).isEmpty
+        assertThat(conversationItem.reasoning()).isEmpty
+        assertThat(conversationItem.codeInterpreterCall()).isEmpty
+        assertThat(conversationItem.localShellCall()).isEmpty
+        assertThat(conversationItem.localShellCallOutput()).isEmpty
+        assertThat(conversationItem.shellCall()).isEmpty
+        assertThat(conversationItem.shellCallOutput()).isEmpty
+        assertThat(conversationItem.applyPatchCall()).isEmpty
+        assertThat(conversationItem.applyPatchCallOutput()).contains(applyPatchCallOutput)
+        assertThat(conversationItem.mcpListTools()).isEmpty
+        assertThat(conversationItem.mcpApprovalRequest()).isEmpty
+        assertThat(conversationItem.mcpApprovalResponse()).isEmpty
+        assertThat(conversationItem.mcpCall()).isEmpty
+        assertThat(conversationItem.customToolCall()).isEmpty
+        assertThat(conversationItem.customToolCallOutput()).isEmpty
+    }
+
+    @Test
+    fun ofApplyPatchCallOutputRoundtrip() {
+        val jsonMapper = jsonMapper()
+        val conversationItem =
+            ConversationItem.ofApplyPatchCallOutput(
+                ResponseApplyPatchToolCallOutput.builder()
+                    .id("id")
+                    .callId("call_id")
+                    .output("output")
+                    .status(ResponseApplyPatchToolCallOutput.Status.COMPLETED)
+                    .createdBy("created_by")
                     .build()
             )
 
@@ -824,6 +1152,10 @@ internal class ConversationItemTest {
         assertThat(conversationItem.codeInterpreterCall()).isEmpty
         assertThat(conversationItem.localShellCall()).isEmpty
         assertThat(conversationItem.localShellCallOutput()).isEmpty
+        assertThat(conversationItem.shellCall()).isEmpty
+        assertThat(conversationItem.shellCallOutput()).isEmpty
+        assertThat(conversationItem.applyPatchCall()).isEmpty
+        assertThat(conversationItem.applyPatchCallOutput()).isEmpty
         assertThat(conversationItem.mcpListTools()).contains(mcpListTools)
         assertThat(conversationItem.mcpApprovalRequest()).isEmpty
         assertThat(conversationItem.mcpApprovalResponse()).isEmpty
@@ -885,6 +1217,10 @@ internal class ConversationItemTest {
         assertThat(conversationItem.codeInterpreterCall()).isEmpty
         assertThat(conversationItem.localShellCall()).isEmpty
         assertThat(conversationItem.localShellCallOutput()).isEmpty
+        assertThat(conversationItem.shellCall()).isEmpty
+        assertThat(conversationItem.shellCallOutput()).isEmpty
+        assertThat(conversationItem.applyPatchCall()).isEmpty
+        assertThat(conversationItem.applyPatchCallOutput()).isEmpty
         assertThat(conversationItem.mcpListTools()).isEmpty
         assertThat(conversationItem.mcpApprovalRequest()).contains(mcpApprovalRequest)
         assertThat(conversationItem.mcpApprovalResponse()).isEmpty
@@ -939,6 +1275,10 @@ internal class ConversationItemTest {
         assertThat(conversationItem.codeInterpreterCall()).isEmpty
         assertThat(conversationItem.localShellCall()).isEmpty
         assertThat(conversationItem.localShellCallOutput()).isEmpty
+        assertThat(conversationItem.shellCall()).isEmpty
+        assertThat(conversationItem.shellCallOutput()).isEmpty
+        assertThat(conversationItem.applyPatchCall()).isEmpty
+        assertThat(conversationItem.applyPatchCallOutput()).isEmpty
         assertThat(conversationItem.mcpListTools()).isEmpty
         assertThat(conversationItem.mcpApprovalRequest()).isEmpty
         assertThat(conversationItem.mcpApprovalResponse()).contains(mcpApprovalResponse)
@@ -997,6 +1337,10 @@ internal class ConversationItemTest {
         assertThat(conversationItem.codeInterpreterCall()).isEmpty
         assertThat(conversationItem.localShellCall()).isEmpty
         assertThat(conversationItem.localShellCallOutput()).isEmpty
+        assertThat(conversationItem.shellCall()).isEmpty
+        assertThat(conversationItem.shellCallOutput()).isEmpty
+        assertThat(conversationItem.applyPatchCall()).isEmpty
+        assertThat(conversationItem.applyPatchCallOutput()).isEmpty
         assertThat(conversationItem.mcpListTools()).isEmpty
         assertThat(conversationItem.mcpApprovalRequest()).isEmpty
         assertThat(conversationItem.mcpApprovalResponse()).isEmpty
@@ -1055,6 +1399,10 @@ internal class ConversationItemTest {
         assertThat(conversationItem.codeInterpreterCall()).isEmpty
         assertThat(conversationItem.localShellCall()).isEmpty
         assertThat(conversationItem.localShellCallOutput()).isEmpty
+        assertThat(conversationItem.shellCall()).isEmpty
+        assertThat(conversationItem.shellCallOutput()).isEmpty
+        assertThat(conversationItem.applyPatchCall()).isEmpty
+        assertThat(conversationItem.applyPatchCallOutput()).isEmpty
         assertThat(conversationItem.mcpListTools()).isEmpty
         assertThat(conversationItem.mcpApprovalRequest()).isEmpty
         assertThat(conversationItem.mcpApprovalResponse()).isEmpty
@@ -1108,6 +1456,10 @@ internal class ConversationItemTest {
         assertThat(conversationItem.codeInterpreterCall()).isEmpty
         assertThat(conversationItem.localShellCall()).isEmpty
         assertThat(conversationItem.localShellCallOutput()).isEmpty
+        assertThat(conversationItem.shellCall()).isEmpty
+        assertThat(conversationItem.shellCallOutput()).isEmpty
+        assertThat(conversationItem.applyPatchCall()).isEmpty
+        assertThat(conversationItem.applyPatchCallOutput()).isEmpty
         assertThat(conversationItem.mcpListTools()).isEmpty
         assertThat(conversationItem.mcpApprovalRequest()).isEmpty
         assertThat(conversationItem.mcpApprovalResponse()).isEmpty

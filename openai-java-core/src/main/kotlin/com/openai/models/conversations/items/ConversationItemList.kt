@@ -15,12 +15,16 @@ import com.openai.core.checkRequired
 import com.openai.core.toImmutable
 import com.openai.errors.OpenAIInvalidDataException
 import com.openai.models.conversations.Message
+import com.openai.models.responses.ResponseApplyPatchToolCall
+import com.openai.models.responses.ResponseApplyPatchToolCallOutput
 import com.openai.models.responses.ResponseCodeInterpreterToolCall
 import com.openai.models.responses.ResponseComputerToolCall
 import com.openai.models.responses.ResponseComputerToolCallOutputItem
 import com.openai.models.responses.ResponseCustomToolCall
 import com.openai.models.responses.ResponseCustomToolCallOutput
 import com.openai.models.responses.ResponseFileSearchToolCall
+import com.openai.models.responses.ResponseFunctionShellToolCall
+import com.openai.models.responses.ResponseFunctionShellToolCallOutput
 import com.openai.models.responses.ResponseFunctionToolCallItem
 import com.openai.models.responses.ResponseFunctionToolCallOutputItem
 import com.openai.models.responses.ResponseFunctionWebSearch
@@ -260,6 +264,27 @@ private constructor(
          */
         fun addData(localShellCallOutput: ConversationItem.LocalShellCallOutput) =
             addData(ConversationItem.ofLocalShellCallOutput(localShellCallOutput))
+
+        /** Alias for calling [addData] with `ConversationItem.ofShellCall(shellCall)`. */
+        fun addData(shellCall: ResponseFunctionShellToolCall) =
+            addData(ConversationItem.ofShellCall(shellCall))
+
+        /**
+         * Alias for calling [addData] with `ConversationItem.ofShellCallOutput(shellCallOutput)`.
+         */
+        fun addData(shellCallOutput: ResponseFunctionShellToolCallOutput) =
+            addData(ConversationItem.ofShellCallOutput(shellCallOutput))
+
+        /** Alias for calling [addData] with `ConversationItem.ofApplyPatchCall(applyPatchCall)`. */
+        fun addData(applyPatchCall: ResponseApplyPatchToolCall) =
+            addData(ConversationItem.ofApplyPatchCall(applyPatchCall))
+
+        /**
+         * Alias for calling [addData] with
+         * `ConversationItem.ofApplyPatchCallOutput(applyPatchCallOutput)`.
+         */
+        fun addData(applyPatchCallOutput: ResponseApplyPatchToolCallOutput) =
+            addData(ConversationItem.ofApplyPatchCallOutput(applyPatchCallOutput))
 
         /** Alias for calling [addData] with `ConversationItem.ofMcpListTools(mcpListTools)`. */
         fun addData(mcpListTools: ConversationItem.McpListTools) =

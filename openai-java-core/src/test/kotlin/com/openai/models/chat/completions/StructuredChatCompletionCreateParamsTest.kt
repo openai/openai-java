@@ -6,6 +6,7 @@ import com.openai.core.DOUBLE
 import com.openai.core.DelegationWriteTestCase
 import com.openai.core.JSON_FIELD
 import com.openai.core.JSON_VALUE
+import com.openai.core.JsonField
 import com.openai.core.JsonSchemaLocalValidation
 import com.openai.core.LIST
 import com.openai.core.LONG
@@ -28,6 +29,7 @@ import com.openai.core.responseFormatFromClass
 import com.openai.models.ChatModel
 import com.openai.models.FunctionDefinition
 import com.openai.models.ResponseFormatJsonSchema
+import java.util.Optional
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.MethodSource
@@ -78,6 +80,11 @@ internal class StructuredChatCompletionCreateParamsTest {
             ChatCompletionSystemMessageParam.Content.ofText(STRING)
         private val USER_MESSAGE_PARAM_CONTENT =
             ChatCompletionUserMessageParam.Content.ofText(STRING)
+
+        private val PROMPT_CACHE_RETENTION =
+            ChatCompletionCreateParams.PromptCacheRetention.IN_MEMORY
+        private val PROMPT_CACHE_RETENTION_OPTIONAL = Optional.of(PROMPT_CACHE_RETENTION)
+        private val PROMPT_CACHE_RETENTION_JSON_FIELD = JsonField.of(PROMPT_CACHE_RETENTION)
 
         private val PARAMS_BODY =
             ChatCompletionCreateParams.Body.builder()
@@ -220,6 +227,9 @@ internal class StructuredChatCompletionCreateParamsTest {
                 DelegationWriteTestCase("prediction", JSON_FIELD),
                 DelegationWriteTestCase("promptCacheKey", STRING),
                 DelegationWriteTestCase("promptCacheKey", JSON_FIELD),
+                DelegationWriteTestCase("promptCacheRetention", PROMPT_CACHE_RETENTION),
+                DelegationWriteTestCase("promptCacheRetention", PROMPT_CACHE_RETENTION_OPTIONAL),
+                DelegationWriteTestCase("promptCacheRetention", PROMPT_CACHE_RETENTION_JSON_FIELD),
                 DelegationWriteTestCase("presencePenalty", NULLABLE_DOUBLE),
                 DelegationWriteTestCase("presencePenalty", DOUBLE),
                 DelegationWriteTestCase("presencePenalty", OPTIONAL),

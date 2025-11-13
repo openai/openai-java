@@ -37,7 +37,7 @@ internal class InputTokenServiceTest {
                     .previousResponseId("resp_123")
                     .reasoning(
                         Reasoning.builder()
-                            .effort(ReasoningEffort.MINIMAL)
+                            .effort(ReasoningEffort.NONE)
                             .generateSummary(Reasoning.GenerateSummary.AUTO)
                             .summary(Reasoning.Summary.AUTO)
                             .build()

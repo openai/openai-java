@@ -249,6 +249,31 @@ private constructor(
             body.addItem(localShellCallOutput)
         }
 
+        /** Alias for calling [addItem] with `ResponseInputItem.ofShellCall(shellCall)`. */
+        fun addItem(shellCall: ResponseInputItem.ShellCall) = apply { body.addItem(shellCall) }
+
+        /**
+         * Alias for calling [addItem] with `ResponseInputItem.ofShellCallOutput(shellCallOutput)`.
+         */
+        fun addItem(shellCallOutput: ResponseInputItem.ShellCallOutput) = apply {
+            body.addItem(shellCallOutput)
+        }
+
+        /**
+         * Alias for calling [addItem] with `ResponseInputItem.ofApplyPatchCall(applyPatchCall)`.
+         */
+        fun addItem(applyPatchCall: ResponseInputItem.ApplyPatchCall) = apply {
+            body.addItem(applyPatchCall)
+        }
+
+        /**
+         * Alias for calling [addItem] with
+         * `ResponseInputItem.ofApplyPatchCallOutput(applyPatchCallOutput)`.
+         */
+        fun addItem(applyPatchCallOutput: ResponseInputItem.ApplyPatchCallOutput) = apply {
+            body.addItem(applyPatchCallOutput)
+        }
+
         /** Alias for calling [addItem] with `ResponseInputItem.ofMcpListTools(mcpListTools)`. */
         fun addItem(mcpListTools: ResponseInputItem.McpListTools) = apply {
             body.addItem(mcpListTools)
@@ -641,6 +666,31 @@ private constructor(
              */
             fun addItem(localShellCallOutput: ResponseInputItem.LocalShellCallOutput) =
                 addItem(ResponseInputItem.ofLocalShellCallOutput(localShellCallOutput))
+
+            /** Alias for calling [addItem] with `ResponseInputItem.ofShellCall(shellCall)`. */
+            fun addItem(shellCall: ResponseInputItem.ShellCall) =
+                addItem(ResponseInputItem.ofShellCall(shellCall))
+
+            /**
+             * Alias for calling [addItem] with
+             * `ResponseInputItem.ofShellCallOutput(shellCallOutput)`.
+             */
+            fun addItem(shellCallOutput: ResponseInputItem.ShellCallOutput) =
+                addItem(ResponseInputItem.ofShellCallOutput(shellCallOutput))
+
+            /**
+             * Alias for calling [addItem] with
+             * `ResponseInputItem.ofApplyPatchCall(applyPatchCall)`.
+             */
+            fun addItem(applyPatchCall: ResponseInputItem.ApplyPatchCall) =
+                addItem(ResponseInputItem.ofApplyPatchCall(applyPatchCall))
+
+            /**
+             * Alias for calling [addItem] with
+             * `ResponseInputItem.ofApplyPatchCallOutput(applyPatchCallOutput)`.
+             */
+            fun addItem(applyPatchCallOutput: ResponseInputItem.ApplyPatchCallOutput) =
+                addItem(ResponseInputItem.ofApplyPatchCallOutput(applyPatchCallOutput))
 
             /**
              * Alias for calling [addItem] with `ResponseInputItem.ofMcpListTools(mcpListTools)`.

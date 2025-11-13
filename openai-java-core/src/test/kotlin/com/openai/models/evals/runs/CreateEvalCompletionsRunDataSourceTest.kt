@@ -55,7 +55,7 @@ internal class CreateEvalCompletionsRunDataSourceTest {
                 .samplingParams(
                     CreateEvalCompletionsRunDataSource.SamplingParams.builder()
                         .maxCompletionTokens(0L)
-                        .reasoningEffort(ReasoningEffort.MINIMAL)
+                        .reasoningEffort(ReasoningEffort.NONE)
                         .responseFormat(ResponseFormatText.builder().build())
                         .seed(0L)
                         .temperature(0.0)
@@ -126,7 +126,7 @@ internal class CreateEvalCompletionsRunDataSourceTest {
             .contains(
                 CreateEvalCompletionsRunDataSource.SamplingParams.builder()
                     .maxCompletionTokens(0L)
-                    .reasoningEffort(ReasoningEffort.MINIMAL)
+                    .reasoningEffort(ReasoningEffort.NONE)
                     .responseFormat(ResponseFormatText.builder().build())
                     .seed(0L)
                     .temperature(0.0)
@@ -191,7 +191,7 @@ internal class CreateEvalCompletionsRunDataSourceTest {
                 .samplingParams(
                     CreateEvalCompletionsRunDataSource.SamplingParams.builder()
                         .maxCompletionTokens(0L)
-                        .reasoningEffort(ReasoningEffort.MINIMAL)
+                        .reasoningEffort(ReasoningEffort.NONE)
                         .responseFormat(ResponseFormatText.builder().build())
                         .seed(0L)
                         .temperature(0.0)

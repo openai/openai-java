@@ -266,12 +266,26 @@ private constructor(
     fun promptCacheKey(): Optional<String> = body.promptCacheKey()
 
     /**
+     * The retention policy for the prompt cache. Set to `24h` to enable extended prompt caching,
+     * which keeps cached prefixes active for longer, up to a maximum of 24 hours.
+     * [Learn more](https://platform.openai.com/docs/guides/prompt-caching#prompt-cache-retention).
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+     *   server responded with an unexpected value).
+     */
+    fun promptCacheRetention(): Optional<PromptCacheRetention> = body.promptCacheRetention()
+
+    /**
      * Constrains effort on reasoning for
      * [reasoning models](https://platform.openai.com/docs/guides/reasoning). Currently supported
-     * values are `minimal`, `low`, `medium`, and `high`. Reducing reasoning effort can result in
-     * faster responses and fewer tokens used on reasoning in a response.
-     *
-     * Note: The `gpt-5-pro` model defaults to (and only supports) `high` reasoning effort.
+     * values are `none`, `minimal`, `low`, `medium`, and `high`. Reducing reasoning effort can
+     * result in faster responses and fewer tokens used on reasoning in a response.
+     * - `gpt-5.1` defaults to `none`, which does not perform reasoning. The supported reasoning
+     *   values for `gpt-5.1` are `none`, `low`, `medium`, and `high`. Tool calls are supported for
+     *   all reasoning values in gpt-5.1.
+     * - All models before `gpt-5.1` default to `medium` reasoning effort, and do not support
+     *   `none`.
+     * - The `gpt-5-pro` model defaults to (and only supports) `high` reasoning effort.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
      *   server responded with an unexpected value).
@@ -576,6 +590,14 @@ private constructor(
      * Unlike [promptCacheKey], this method doesn't throw if the JSON field has an unexpected type.
      */
     fun _promptCacheKey(): JsonField<String> = body._promptCacheKey()
+
+    /**
+     * Returns the raw JSON value of [promptCacheRetention].
+     *
+     * Unlike [promptCacheRetention], this method doesn't throw if the JSON field has an unexpected
+     * type.
+     */
+    fun _promptCacheRetention(): JsonField<PromptCacheRetention> = body._promptCacheRetention()
 
     /**
      * Returns the raw JSON value of [reasoningEffort].
@@ -1346,12 +1368,43 @@ private constructor(
         }
 
         /**
+         * The retention policy for the prompt cache. Set to `24h` to enable extended prompt
+         * caching, which keeps cached prefixes active for longer, up to a maximum of 24 hours.
+         * [Learn more](https://platform.openai.com/docs/guides/prompt-caching#prompt-cache-retention).
+         */
+        fun promptCacheRetention(promptCacheRetention: PromptCacheRetention?) = apply {
+            body.promptCacheRetention(promptCacheRetention)
+        }
+
+        /**
+         * Alias for calling [Builder.promptCacheRetention] with
+         * `promptCacheRetention.orElse(null)`.
+         */
+        fun promptCacheRetention(promptCacheRetention: Optional<PromptCacheRetention>) =
+            promptCacheRetention(promptCacheRetention.getOrNull())
+
+        /**
+         * Sets [Builder.promptCacheRetention] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.promptCacheRetention] with a well-typed
+         * [PromptCacheRetention] value instead. This method is primarily for setting the field to
+         * an undocumented or not yet supported value.
+         */
+        fun promptCacheRetention(promptCacheRetention: JsonField<PromptCacheRetention>) = apply {
+            body.promptCacheRetention(promptCacheRetention)
+        }
+
+        /**
          * Constrains effort on reasoning for
          * [reasoning models](https://platform.openai.com/docs/guides/reasoning). Currently
-         * supported values are `minimal`, `low`, `medium`, and `high`. Reducing reasoning effort
-         * can result in faster responses and fewer tokens used on reasoning in a response.
-         *
-         * Note: The `gpt-5-pro` model defaults to (and only supports) `high` reasoning effort.
+         * supported values are `none`, `minimal`, `low`, `medium`, and `high`. Reducing reasoning
+         * effort can result in faster responses and fewer tokens used on reasoning in a response.
+         * - `gpt-5.1` defaults to `none`, which does not perform reasoning. The supported reasoning
+         *   values for `gpt-5.1` are `none`, `low`, `medium`, and `high`. Tool calls are supported
+         *   for all reasoning values in gpt-5.1.
+         * - All models before `gpt-5.1` default to `medium` reasoning effort, and do not support
+         *   `none`.
+         * - The `gpt-5-pro` model defaults to (and only supports) `high` reasoning effort.
          */
         fun reasoningEffort(reasoningEffort: ReasoningEffort?) = apply {
             body.reasoningEffort(reasoningEffort)
@@ -2016,6 +2069,7 @@ private constructor(
         private val prediction: JsonField<ChatCompletionPredictionContent>,
         private val presencePenalty: JsonField<Double>,
         private val promptCacheKey: JsonField<String>,
+        private val promptCacheRetention: JsonField<PromptCacheRetention>,
         private val reasoningEffort: JsonField<ReasoningEffort>,
         private val responseFormat: JsonField<ResponseFormat>,
         private val safetyIdentifier: JsonField<String>,
@@ -2084,6 +2138,9 @@ private constructor(
             @JsonProperty("prompt_cache_key")
             @ExcludeMissing
             promptCacheKey: JsonField<String> = JsonMissing.of(),
+            @JsonProperty("prompt_cache_retention")
+            @ExcludeMissing
+            promptCacheRetention: JsonField<PromptCacheRetention> = JsonMissing.of(),
             @JsonProperty("reasoning_effort")
             @ExcludeMissing
             reasoningEffort: JsonField<ReasoningEffort> = JsonMissing.of(),
@@ -2140,6 +2197,7 @@ private constructor(
             prediction,
             presencePenalty,
             promptCacheKey,
+            promptCacheRetention,
             reasoningEffort,
             responseFormat,
             safetyIdentifier,
@@ -2363,12 +2421,27 @@ private constructor(
         fun promptCacheKey(): Optional<String> = promptCacheKey.getOptional("prompt_cache_key")
 
         /**
+         * The retention policy for the prompt cache. Set to `24h` to enable extended prompt
+         * caching, which keeps cached prefixes active for longer, up to a maximum of 24 hours.
+         * [Learn more](https://platform.openai.com/docs/guides/prompt-caching#prompt-cache-retention).
+         *
+         * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
+         *   server responded with an unexpected value).
+         */
+        fun promptCacheRetention(): Optional<PromptCacheRetention> =
+            promptCacheRetention.getOptional("prompt_cache_retention")
+
+        /**
          * Constrains effort on reasoning for
          * [reasoning models](https://platform.openai.com/docs/guides/reasoning). Currently
-         * supported values are `minimal`, `low`, `medium`, and `high`. Reducing reasoning effort
-         * can result in faster responses and fewer tokens used on reasoning in a response.
-         *
-         * Note: The `gpt-5-pro` model defaults to (and only supports) `high` reasoning effort.
+         * supported values are `none`, `minimal`, `low`, `medium`, and `high`. Reducing reasoning
+         * effort can result in faster responses and fewer tokens used on reasoning in a response.
+         * - `gpt-5.1` defaults to `none`, which does not perform reasoning. The supported reasoning
+         *   values for `gpt-5.1` are `none`, `low`, `medium`, and `high`. Tool calls are supported
+         *   for all reasoning values in gpt-5.1.
+         * - All models before `gpt-5.1` default to `medium` reasoning effort, and do not support
+         *   `none`.
+         * - The `gpt-5-pro` model defaults to (and only supports) `high` reasoning effort.
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
@@ -2714,6 +2787,16 @@ private constructor(
         fun _promptCacheKey(): JsonField<String> = promptCacheKey
 
         /**
+         * Returns the raw JSON value of [promptCacheRetention].
+         *
+         * Unlike [promptCacheRetention], this method doesn't throw if the JSON field has an
+         * unexpected type.
+         */
+        @JsonProperty("prompt_cache_retention")
+        @ExcludeMissing
+        fun _promptCacheRetention(): JsonField<PromptCacheRetention> = promptCacheRetention
+
+        /**
          * Returns the raw JSON value of [reasoningEffort].
          *
          * Unlike [reasoningEffort], this method doesn't throw if the JSON field has an unexpected
@@ -2904,6 +2987,7 @@ private constructor(
             private var prediction: JsonField<ChatCompletionPredictionContent> = JsonMissing.of()
             private var presencePenalty: JsonField<Double> = JsonMissing.of()
             private var promptCacheKey: JsonField<String> = JsonMissing.of()
+            private var promptCacheRetention: JsonField<PromptCacheRetention> = JsonMissing.of()
             private var reasoningEffort: JsonField<ReasoningEffort> = JsonMissing.of()
             private var responseFormat: JsonField<ResponseFormat> = JsonMissing.of()
             private var safetyIdentifier: JsonField<String> = JsonMissing.of()
@@ -2941,6 +3025,7 @@ private constructor(
                 prediction = body.prediction
                 presencePenalty = body.presencePenalty
                 promptCacheKey = body.promptCacheKey
+                promptCacheRetention = body.promptCacheRetention
                 reasoningEffort = body.reasoningEffort
                 responseFormat = body.responseFormat
                 safetyIdentifier = body.safetyIdentifier
@@ -3615,13 +3700,44 @@ private constructor(
             }
 
             /**
+             * The retention policy for the prompt cache. Set to `24h` to enable extended prompt
+             * caching, which keeps cached prefixes active for longer, up to a maximum of 24 hours.
+             * [Learn more](https://platform.openai.com/docs/guides/prompt-caching#prompt-cache-retention).
+             */
+            fun promptCacheRetention(promptCacheRetention: PromptCacheRetention?) =
+                promptCacheRetention(JsonField.ofNullable(promptCacheRetention))
+
+            /**
+             * Alias for calling [Builder.promptCacheRetention] with
+             * `promptCacheRetention.orElse(null)`.
+             */
+            fun promptCacheRetention(promptCacheRetention: Optional<PromptCacheRetention>) =
+                promptCacheRetention(promptCacheRetention.getOrNull())
+
+            /**
+             * Sets [Builder.promptCacheRetention] to an arbitrary JSON value.
+             *
+             * You should usually call [Builder.promptCacheRetention] with a well-typed
+             * [PromptCacheRetention] value instead. This method is primarily for setting the field
+             * to an undocumented or not yet supported value.
+             */
+            fun promptCacheRetention(promptCacheRetention: JsonField<PromptCacheRetention>) =
+                apply {
+                    this.promptCacheRetention = promptCacheRetention
+                }
+
+            /**
              * Constrains effort on reasoning for
              * [reasoning models](https://platform.openai.com/docs/guides/reasoning). Currently
-             * supported values are `minimal`, `low`, `medium`, and `high`. Reducing reasoning
-             * effort can result in faster responses and fewer tokens used on reasoning in a
-             * response.
-             *
-             * Note: The `gpt-5-pro` model defaults to (and only supports) `high` reasoning effort.
+             * supported values are `none`, `minimal`, `low`, `medium`, and `high`. Reducing
+             * reasoning effort can result in faster responses and fewer tokens used on reasoning in
+             * a response.
+             * - `gpt-5.1` defaults to `none`, which does not perform reasoning. The supported
+             *   reasoning values for `gpt-5.1` are `none`, `low`, `medium`, and `high`. Tool calls
+             *   are supported for all reasoning values in gpt-5.1.
+             * - All models before `gpt-5.1` default to `medium` reasoning effort, and do not
+             *   support `none`.
+             * - The `gpt-5-pro` model defaults to (and only supports) `high` reasoning effort.
              */
             fun reasoningEffort(reasoningEffort: ReasoningEffort?) =
                 reasoningEffort(JsonField.ofNullable(reasoningEffort))
@@ -4151,6 +4267,7 @@ private constructor(
                     prediction,
                     presencePenalty,
                     promptCacheKey,
+                    promptCacheRetention,
                     reasoningEffort,
                     responseFormat,
                     safetyIdentifier,
@@ -4195,6 +4312,7 @@ private constructor(
             prediction().ifPresent { it.validate() }
             presencePenalty()
             promptCacheKey()
+            promptCacheRetention().ifPresent { it.validate() }
             reasoningEffort().ifPresent { it.validate() }
             responseFormat().ifPresent { it.validate() }
             safetyIdentifier()
@@ -4247,6 +4365,7 @@ private constructor(
                 (prediction.asKnown().getOrNull()?.validity() ?: 0) +
                 (if (presencePenalty.asKnown().isPresent) 1 else 0) +
                 (if (promptCacheKey.asKnown().isPresent) 1 else 0) +
+                (promptCacheRetention.asKnown().getOrNull()?.validity() ?: 0) +
                 (reasoningEffort.asKnown().getOrNull()?.validity() ?: 0) +
                 (responseFormat.asKnown().getOrNull()?.validity() ?: 0) +
                 (if (safetyIdentifier.asKnown().isPresent) 1 else 0) +
@@ -4287,6 +4406,7 @@ private constructor(
                 prediction == other.prediction &&
                 presencePenalty == other.presencePenalty &&
                 promptCacheKey == other.promptCacheKey &&
+                promptCacheRetention == other.promptCacheRetention &&
                 reasoningEffort == other.reasoningEffort &&
                 responseFormat == other.responseFormat &&
                 safetyIdentifier == other.safetyIdentifier &&
@@ -4325,6 +4445,7 @@ private constructor(
                 prediction,
                 presencePenalty,
                 promptCacheKey,
+                promptCacheRetention,
                 reasoningEffort,
                 responseFormat,
                 safetyIdentifier,
@@ -4348,7 +4469,7 @@ private constructor(
         override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "Body{messages=$messages, model=$model, audio=$audio, frequencyPenalty=$frequencyPenalty, functionCall=$functionCall, functions=$functions, logitBias=$logitBias, logprobs=$logprobs, maxCompletionTokens=$maxCompletionTokens, maxTokens=$maxTokens, metadata=$metadata, modalities=$modalities, n=$n, parallelToolCalls=$parallelToolCalls, prediction=$prediction, presencePenalty=$presencePenalty, promptCacheKey=$promptCacheKey, reasoningEffort=$reasoningEffort, responseFormat=$responseFormat, safetyIdentifier=$safetyIdentifier, seed=$seed, serviceTier=$serviceTier, stop=$stop, store=$store, streamOptions=$streamOptions, temperature=$temperature, toolChoice=$toolChoice, tools=$tools, topLogprobs=$topLogprobs, topP=$topP, user=$user, verbosity=$verbosity, webSearchOptions=$webSearchOptions, additionalProperties=$additionalProperties}"
+            "Body{messages=$messages, model=$model, audio=$audio, frequencyPenalty=$frequencyPenalty, functionCall=$functionCall, functions=$functions, logitBias=$logitBias, logprobs=$logprobs, maxCompletionTokens=$maxCompletionTokens, maxTokens=$maxTokens, metadata=$metadata, modalities=$modalities, n=$n, parallelToolCalls=$parallelToolCalls, prediction=$prediction, presencePenalty=$presencePenalty, promptCacheKey=$promptCacheKey, promptCacheRetention=$promptCacheRetention, reasoningEffort=$reasoningEffort, responseFormat=$responseFormat, safetyIdentifier=$safetyIdentifier, seed=$seed, serviceTier=$serviceTier, stop=$stop, store=$store, streamOptions=$streamOptions, temperature=$temperature, toolChoice=$toolChoice, tools=$tools, topLogprobs=$topLogprobs, topP=$topP, user=$user, verbosity=$verbosity, webSearchOptions=$webSearchOptions, additionalProperties=$additionalProperties}"
     }
 
     /**
@@ -5319,6 +5440,142 @@ private constructor(
             }
 
             return other is Modality && value == other.value
+        }
+
+        override fun hashCode() = value.hashCode()
+
+        override fun toString() = value.toString()
+    }
+
+    /**
+     * The retention policy for the prompt cache. Set to `24h` to enable extended prompt caching,
+     * which keeps cached prefixes active for longer, up to a maximum of 24 hours.
+     * [Learn more](https://platform.openai.com/docs/guides/prompt-caching#prompt-cache-retention).
+     */
+    class PromptCacheRetention
+    @JsonCreator
+    private constructor(private val value: JsonField<String>) : Enum {
+
+        /**
+         * Returns this class instance's raw value.
+         *
+         * This is usually only useful if this instance was deserialized from data that doesn't
+         * match any known member, and you want to know that value. For example, if the SDK is on an
+         * older version than the API, then the API may respond with new members that the SDK is
+         * unaware of.
+         */
+        @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
+
+        companion object {
+
+            @JvmField val IN_MEMORY = of("in-memory")
+
+            @JvmField val _24H = of("24h")
+
+            @JvmStatic fun of(value: String) = PromptCacheRetention(JsonField.of(value))
+        }
+
+        /** An enum containing [PromptCacheRetention]'s known values. */
+        enum class Known {
+            IN_MEMORY,
+            _24H,
+        }
+
+        /**
+         * An enum containing [PromptCacheRetention]'s known values, as well as an [_UNKNOWN]
+         * member.
+         *
+         * An instance of [PromptCacheRetention] can contain an unknown value in a couple of cases:
+         * - It was deserialized from data that doesn't match any known member. For example, if the
+         *   SDK is on an older version than the API, then the API may respond with new members that
+         *   the SDK is unaware of.
+         * - It was constructed with an arbitrary value using the [of] method.
+         */
+        enum class Value {
+            IN_MEMORY,
+            _24H,
+            /**
+             * An enum member indicating that [PromptCacheRetention] was instantiated with an
+             * unknown value.
+             */
+            _UNKNOWN,
+        }
+
+        /**
+         * Returns an enum member corresponding to this class instance's value, or [Value._UNKNOWN]
+         * if the class was instantiated with an unknown value.
+         *
+         * Use the [known] method instead if you're certain the value is always known or if you want
+         * to throw for the unknown case.
+         */
+        fun value(): Value =
+            when (this) {
+                IN_MEMORY -> Value.IN_MEMORY
+                _24H -> Value._24H
+                else -> Value._UNKNOWN
+            }
+
+        /**
+         * Returns an enum member corresponding to this class instance's value.
+         *
+         * Use the [value] method instead if you're uncertain the value is always known and don't
+         * want to throw for the unknown case.
+         *
+         * @throws OpenAIInvalidDataException if this class instance's value is a not a known
+         *   member.
+         */
+        fun known(): Known =
+            when (this) {
+                IN_MEMORY -> Known.IN_MEMORY
+                _24H -> Known._24H
+                else -> throw OpenAIInvalidDataException("Unknown PromptCacheRetention: $value")
+            }
+
+        /**
+         * Returns this class instance's primitive wire representation.
+         *
+         * This differs from the [toString] method because that method is primarily for debugging
+         * and generally doesn't throw.
+         *
+         * @throws OpenAIInvalidDataException if this class instance's value does not have the
+         *   expected primitive type.
+         */
+        fun asString(): String =
+            _value().asString().orElseThrow { OpenAIInvalidDataException("Value is not a String") }
+
+        private var validated: Boolean = false
+
+        fun validate(): PromptCacheRetention = apply {
+            if (validated) {
+                return@apply
+            }
+
+            known()
+            validated = true
+        }
+
+        fun isValid(): Boolean =
+            try {
+                validate()
+                true
+            } catch (e: OpenAIInvalidDataException) {
+                false
+            }
+
+        /**
+         * Returns a score indicating how many valid values are contained in this object
+         * recursively.
+         *
+         * Used for best match union deserialization.
+         */
+        @JvmSynthetic internal fun validity(): Int = if (value() == Value._UNKNOWN) 0 else 1
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) {
+                return true
+            }
+
+            return other is PromptCacheRetention && value == other.value
         }
 
         override fun hashCode() = value.hashCode()

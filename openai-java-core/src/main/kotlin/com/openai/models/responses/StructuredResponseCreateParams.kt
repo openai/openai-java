@@ -273,6 +273,22 @@ class StructuredResponseCreateParams<T : Any>(
             paramsBuilder.promptCacheKey(promptCacheKey)
         }
 
+        /** @see ResponseCreateParams.Builder.promptCacheRetention */
+        fun promptCacheRetention(promptCacheRetention: ResponseCreateParams.PromptCacheRetention?) =
+            apply {
+                paramsBuilder.promptCacheRetention(promptCacheRetention)
+            }
+
+        /** @see ResponseCreateParams.Builder.promptCacheRetention */
+        fun promptCacheRetention(
+            promptCacheRetention: Optional<ResponseCreateParams.PromptCacheRetention>
+        ) = apply { paramsBuilder.promptCacheRetention(promptCacheRetention) }
+
+        /** @see ResponseCreateParams.Builder.promptCacheRetention */
+        fun promptCacheRetention(
+            promptCacheRetention: JsonField<ResponseCreateParams.PromptCacheRetention>
+        ) = apply { paramsBuilder.promptCacheRetention(promptCacheRetention) }
+
         /** @see ResponseCreateParams.Builder.reasoning */
         fun reasoning(reasoning: Reasoning?) = apply { paramsBuilder.reasoning(reasoning) }
 
@@ -393,6 +409,14 @@ class StructuredResponseCreateParams<T : Any>(
         /** @see ResponseCreateParams.Builder.toolChoice */
         fun toolChoice(custom: ToolChoiceCustom) = apply { paramsBuilder.toolChoice(custom) }
 
+        /** @see ResponseCreateParams.Builder.toolChoice */
+        fun toolChoice(applyPatch: ToolChoiceApplyPatch) = apply {
+            paramsBuilder.toolChoice(applyPatch)
+        }
+
+        /** @see ResponseCreateParams.Builder.toolChoice */
+        fun toolChoice(shell: ToolChoiceShell) = apply { paramsBuilder.toolChoice(shell) }
+
         /** @see ResponseCreateParams.Builder.tools */
         fun tools(tools: List<Tool>) = apply { paramsBuilder.tools(tools) }
 
@@ -427,6 +451,9 @@ class StructuredResponseCreateParams<T : Any>(
         fun addTool(webSearchPreview: WebSearchPreviewTool) = apply {
             paramsBuilder.addTool(webSearchPreview)
         }
+
+        /** @see ResponseCreateParams.Builder.addTool */
+        fun addTool(applyPatch: ApplyPatchTool) = apply { paramsBuilder.addTool(applyPatch) }
 
         /** @see ResponseCreateParams.Builder.addTool */
         fun addTool(computerUsePreview: ComputerTool) = apply {
@@ -466,6 +493,9 @@ class StructuredResponseCreateParams<T : Any>(
 
         /** @see ResponseCreateParams.Builder.addToolLocalShell */
         fun addToolLocalShell() = apply { paramsBuilder.addToolLocalShell() }
+
+        /** @see ResponseCreateParams.Builder.addTool */
+        fun addTool(shell: FunctionShellTool) = apply { paramsBuilder.addTool(shell) }
 
         /** @see ResponseCreateParams.Builder.addTool */
         fun addTool(custom: CustomTool) = apply { paramsBuilder.addTool(custom) }

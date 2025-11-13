@@ -40,9 +40,9 @@ private constructor(
 
     /**
      * The endpoint to be used for all requests in the batch. Currently `/v1/responses`,
-     * `/v1/chat/completions`, `/v1/embeddings`, and `/v1/completions` are supported. Note that
-     * `/v1/embeddings` batches are also restricted to a maximum of 50,000 embedding inputs across
-     * all requests in the batch.
+     * `/v1/chat/completions`, `/v1/embeddings`, `/v1/completions`, and `/v1/moderations` are
+     * supported. Note that `/v1/embeddings` batches are also restricted to a maximum of 50,000
+     * embedding inputs across all requests in the batch.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
      *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
@@ -197,9 +197,9 @@ private constructor(
 
         /**
          * The endpoint to be used for all requests in the batch. Currently `/v1/responses`,
-         * `/v1/chat/completions`, `/v1/embeddings`, and `/v1/completions` are supported. Note that
-         * `/v1/embeddings` batches are also restricted to a maximum of 50,000 embedding inputs
-         * across all requests in the batch.
+         * `/v1/chat/completions`, `/v1/embeddings`, `/v1/completions`, and `/v1/moderations` are
+         * supported. Note that `/v1/embeddings` batches are also restricted to a maximum of 50,000
+         * embedding inputs across all requests in the batch.
          */
         fun endpoint(endpoint: Endpoint) = apply { body.endpoint(endpoint) }
 
@@ -467,9 +467,9 @@ private constructor(
 
         /**
          * The endpoint to be used for all requests in the batch. Currently `/v1/responses`,
-         * `/v1/chat/completions`, `/v1/embeddings`, and `/v1/completions` are supported. Note that
-         * `/v1/embeddings` batches are also restricted to a maximum of 50,000 embedding inputs
-         * across all requests in the batch.
+         * `/v1/chat/completions`, `/v1/embeddings`, `/v1/completions`, and `/v1/moderations` are
+         * supported. Note that `/v1/embeddings` batches are also restricted to a maximum of 50,000
+         * embedding inputs across all requests in the batch.
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
          *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
@@ -624,9 +624,9 @@ private constructor(
 
             /**
              * The endpoint to be used for all requests in the batch. Currently `/v1/responses`,
-             * `/v1/chat/completions`, `/v1/embeddings`, and `/v1/completions` are supported. Note
-             * that `/v1/embeddings` batches are also restricted to a maximum of 50,000 embedding
-             * inputs across all requests in the batch.
+             * `/v1/chat/completions`, `/v1/embeddings`, `/v1/completions`, and `/v1/moderations`
+             * are supported. Note that `/v1/embeddings` batches are also restricted to a maximum of
+             * 50,000 embedding inputs across all requests in the batch.
              */
             fun endpoint(endpoint: Endpoint) = endpoint(JsonField.of(endpoint))
 
@@ -943,9 +943,9 @@ private constructor(
 
     /**
      * The endpoint to be used for all requests in the batch. Currently `/v1/responses`,
-     * `/v1/chat/completions`, `/v1/embeddings`, and `/v1/completions` are supported. Note that
-     * `/v1/embeddings` batches are also restricted to a maximum of 50,000 embedding inputs across
-     * all requests in the batch.
+     * `/v1/chat/completions`, `/v1/embeddings`, `/v1/completions`, and `/v1/moderations` are
+     * supported. Note that `/v1/embeddings` batches are also restricted to a maximum of 50,000
+     * embedding inputs across all requests in the batch.
      */
     class Endpoint @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
 
@@ -969,6 +969,8 @@ private constructor(
 
             @JvmField val V1_COMPLETIONS = of("/v1/completions")
 
+            @JvmField val V1_MODERATIONS = of("/v1/moderations")
+
             @JvmStatic fun of(value: String) = Endpoint(JsonField.of(value))
         }
 
@@ -978,6 +980,7 @@ private constructor(
             V1_CHAT_COMPLETIONS,
             V1_EMBEDDINGS,
             V1_COMPLETIONS,
+            V1_MODERATIONS,
         }
 
         /**
@@ -994,6 +997,7 @@ private constructor(
             V1_CHAT_COMPLETIONS,
             V1_EMBEDDINGS,
             V1_COMPLETIONS,
+            V1_MODERATIONS,
             /** An enum member indicating that [Endpoint] was instantiated with an unknown value. */
             _UNKNOWN,
         }
@@ -1011,6 +1015,7 @@ private constructor(
                 V1_CHAT_COMPLETIONS -> Value.V1_CHAT_COMPLETIONS
                 V1_EMBEDDINGS -> Value.V1_EMBEDDINGS
                 V1_COMPLETIONS -> Value.V1_COMPLETIONS
+                V1_MODERATIONS -> Value.V1_MODERATIONS
                 else -> Value._UNKNOWN
             }
 
@@ -1029,6 +1034,7 @@ private constructor(
                 V1_CHAT_COMPLETIONS -> Known.V1_CHAT_COMPLETIONS
                 V1_EMBEDDINGS -> Known.V1_EMBEDDINGS
                 V1_COMPLETIONS -> Known.V1_COMPLETIONS
+                V1_MODERATIONS -> Known.V1_MODERATIONS
                 else -> throw OpenAIInvalidDataException("Unknown Endpoint: $value")
             }
 

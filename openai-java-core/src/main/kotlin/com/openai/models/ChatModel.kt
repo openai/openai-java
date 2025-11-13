@@ -20,6 +20,16 @@ class ChatModel @JsonCreator private constructor(private val value: JsonField<St
 
     companion object {
 
+        @JvmField val GPT_5_1 = of("gpt-5.1")
+
+        @JvmField val GPT_5_1_2025_11_13 = of("gpt-5.1-2025-11-13")
+
+        @JvmField val GPT_5_1_CODEX = of("gpt-5.1-codex")
+
+        @JvmField val GPT_5_1_MINI = of("gpt-5.1-mini")
+
+        @JvmField val GPT_5_1_CHAT_LATEST = of("gpt-5.1-chat-latest")
+
         @JvmField val GPT_5 = of("gpt-5")
 
         @JvmField val GPT_5_MINI = of("gpt-5-mini")
@@ -151,6 +161,11 @@ class ChatModel @JsonCreator private constructor(private val value: JsonField<St
 
     /** An enum containing [ChatModel]'s known values. */
     enum class Known {
+        GPT_5_1,
+        GPT_5_1_2025_11_13,
+        GPT_5_1_CODEX,
+        GPT_5_1_MINI,
+        GPT_5_1_CHAT_LATEST,
         GPT_5,
         GPT_5_MINI,
         GPT_5_NANO,
@@ -225,6 +240,11 @@ class ChatModel @JsonCreator private constructor(private val value: JsonField<St
      * - It was constructed with an arbitrary value using the [of] method.
      */
     enum class Value {
+        GPT_5_1,
+        GPT_5_1_2025_11_13,
+        GPT_5_1_CODEX,
+        GPT_5_1_MINI,
+        GPT_5_1_CHAT_LATEST,
         GPT_5,
         GPT_5_MINI,
         GPT_5_NANO,
@@ -300,6 +320,11 @@ class ChatModel @JsonCreator private constructor(private val value: JsonField<St
      */
     fun value(): Value =
         when (this) {
+            GPT_5_1 -> Value.GPT_5_1
+            GPT_5_1_2025_11_13 -> Value.GPT_5_1_2025_11_13
+            GPT_5_1_CODEX -> Value.GPT_5_1_CODEX
+            GPT_5_1_MINI -> Value.GPT_5_1_MINI
+            GPT_5_1_CHAT_LATEST -> Value.GPT_5_1_CHAT_LATEST
             GPT_5 -> Value.GPT_5
             GPT_5_MINI -> Value.GPT_5_MINI
             GPT_5_NANO -> Value.GPT_5_NANO
@@ -375,6 +400,11 @@ class ChatModel @JsonCreator private constructor(private val value: JsonField<St
      */
     fun known(): Known =
         when (this) {
+            GPT_5_1 -> Known.GPT_5_1
+            GPT_5_1_2025_11_13 -> Known.GPT_5_1_2025_11_13
+            GPT_5_1_CODEX -> Known.GPT_5_1_CODEX
+            GPT_5_1_MINI -> Known.GPT_5_1_MINI
+            GPT_5_1_CHAT_LATEST -> Known.GPT_5_1_CHAT_LATEST
             GPT_5 -> Known.GPT_5
             GPT_5_MINI -> Known.GPT_5_MINI
             GPT_5_NANO -> Known.GPT_5_NANO
