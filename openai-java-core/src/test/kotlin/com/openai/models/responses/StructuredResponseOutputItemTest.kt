@@ -119,6 +119,12 @@ internal class StructuredResponseOutputItemTest {
             ResponseApplyPatchToolCall.builder()
                 .id(STRING)
                 .callId(STRING)
+                .operation(
+                    ResponseApplyPatchToolCall.Operation.CreateFile.builder()
+                        .diff(STRING)
+                        .path(STRING)
+                        .build()
+                )
                 .status(ResponseApplyPatchToolCall.Status.COMPLETED)
                 .build()
         private val APPLY_PATCH_TOOL_CALL_OUTPUT =
