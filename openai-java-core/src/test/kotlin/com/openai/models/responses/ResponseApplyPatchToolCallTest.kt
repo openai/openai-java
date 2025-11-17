@@ -15,23 +15,20 @@ internal class ResponseApplyPatchToolCallTest {
             ResponseApplyPatchToolCall.builder()
                 .id("id")
                 .callId("call_id")
-                .status(ResponseApplyPatchToolCall.Status.IN_PROGRESS)
-                .createdBy("created_by")
                 .operation(
                     ResponseApplyPatchToolCall.Operation.CreateFile.builder()
                         .diff("diff")
                         .path("path")
                         .build()
                 )
+                .status(ResponseApplyPatchToolCall.Status.IN_PROGRESS)
+                .createdBy("created_by")
                 .build()
 
         assertThat(responseApplyPatchToolCall.id()).isEqualTo("id")
         assertThat(responseApplyPatchToolCall.callId()).isEqualTo("call_id")
-        assertThat(responseApplyPatchToolCall.status())
-            .isEqualTo(ResponseApplyPatchToolCall.Status.IN_PROGRESS)
-        assertThat(responseApplyPatchToolCall.createdBy()).contains("created_by")
         assertThat(responseApplyPatchToolCall.operation())
-            .contains(
+            .isEqualTo(
                 ResponseApplyPatchToolCall.Operation.ofCreateFile(
                     ResponseApplyPatchToolCall.Operation.CreateFile.builder()
                         .diff("diff")
@@ -39,6 +36,9 @@ internal class ResponseApplyPatchToolCallTest {
                         .build()
                 )
             )
+        assertThat(responseApplyPatchToolCall.status())
+            .isEqualTo(ResponseApplyPatchToolCall.Status.IN_PROGRESS)
+        assertThat(responseApplyPatchToolCall.createdBy()).contains("created_by")
     }
 
     @Test
@@ -48,14 +48,14 @@ internal class ResponseApplyPatchToolCallTest {
             ResponseApplyPatchToolCall.builder()
                 .id("id")
                 .callId("call_id")
-                .status(ResponseApplyPatchToolCall.Status.IN_PROGRESS)
-                .createdBy("created_by")
                 .operation(
                     ResponseApplyPatchToolCall.Operation.CreateFile.builder()
                         .diff("diff")
                         .path("path")
                         .build()
                 )
+                .status(ResponseApplyPatchToolCall.Status.IN_PROGRESS)
+                .createdBy("created_by")
                 .build()
 
         val roundtrippedResponseApplyPatchToolCall =
