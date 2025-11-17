@@ -7908,7 +7908,10 @@ private constructor(
              * Optional human-readable log text from the apply patch tool (e.g., patch results or
              * errors).
              */
-            fun output(output: String) = output(JsonField.of(output))
+            fun output(output: String?) = output(JsonField.ofNullable(output))
+
+            /** Alias for calling [Builder.output] with `output.orElse(null)`. */
+            fun output(output: Optional<String>) = output(output.getOrNull())
 
             /**
              * Sets [Builder.output] to an arbitrary JSON value.

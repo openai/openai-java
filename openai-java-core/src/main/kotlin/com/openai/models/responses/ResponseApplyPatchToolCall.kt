@@ -34,10 +34,10 @@ class ResponseApplyPatchToolCall
 private constructor(
     private val id: JsonField<String>,
     private val callId: JsonField<String>,
+    private val operation: JsonField<Operation>,
     private val status: JsonField<Status>,
     private val type: JsonValue,
     private val createdBy: JsonField<String>,
-    private val operation: JsonField<Operation>,
     private val additionalProperties: MutableMap<String, JsonValue>,
 ) {
 
@@ -45,13 +45,13 @@ private constructor(
     private constructor(
         @JsonProperty("id") @ExcludeMissing id: JsonField<String> = JsonMissing.of(),
         @JsonProperty("call_id") @ExcludeMissing callId: JsonField<String> = JsonMissing.of(),
-        @JsonProperty("status") @ExcludeMissing status: JsonField<Status> = JsonMissing.of(),
-        @JsonProperty("type") @ExcludeMissing type: JsonValue = JsonMissing.of(),
-        @JsonProperty("created_by") @ExcludeMissing createdBy: JsonField<String> = JsonMissing.of(),
         @JsonProperty("operation")
         @ExcludeMissing
         operation: JsonField<Operation> = JsonMissing.of(),
-    ) : this(id, callId, status, type, createdBy, operation, mutableMapOf())
+        @JsonProperty("status") @ExcludeMissing status: JsonField<Status> = JsonMissing.of(),
+        @JsonProperty("type") @ExcludeMissing type: JsonValue = JsonMissing.of(),
+        @JsonProperty("created_by") @ExcludeMissing createdBy: JsonField<String> = JsonMissing.of(),
+    ) : this(id, callId, operation, status, type, createdBy, mutableMapOf())
 
     /**
      * The unique ID of the apply patch tool call. Populated when this item is returned via API.
@@ -68,6 +68,14 @@ private constructor(
      *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
      */
     fun callId(): String = callId.getRequired("call_id")
+
+    /**
+     * One of the create_file, delete_file, or update_file operations applied via apply_patch.
+     *
+     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
+     *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
+     */
+    fun operation(): Operation = operation.getRequired("operation")
 
     /**
      * The status of the apply patch tool call. One of `in_progress` or `completed`.
@@ -99,14 +107,6 @@ private constructor(
     fun createdBy(): Optional<String> = createdBy.getOptional("created_by")
 
     /**
-     * One of the create_file, delete_file, or update_file operations applied via apply_patch.
-     *
-     * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
-     *   server responded with an unexpected value).
-     */
-    fun operation(): Optional<Operation> = operation.getOptional("operation")
-
-    /**
      * Returns the raw JSON value of [id].
      *
      * Unlike [id], this method doesn't throw if the JSON field has an unexpected type.
@@ -121,6 +121,13 @@ private constructor(
     @JsonProperty("call_id") @ExcludeMissing fun _callId(): JsonField<String> = callId
 
     /**
+     * Returns the raw JSON value of [operation].
+     *
+     * Unlike [operation], this method doesn't throw if the JSON field has an unexpected type.
+     */
+    @JsonProperty("operation") @ExcludeMissing fun _operation(): JsonField<Operation> = operation
+
+    /**
      * Returns the raw JSON value of [status].
      *
      * Unlike [status], this method doesn't throw if the JSON field has an unexpected type.
@@ -133,13 +140,6 @@ private constructor(
      * Unlike [createdBy], this method doesn't throw if the JSON field has an unexpected type.
      */
     @JsonProperty("created_by") @ExcludeMissing fun _createdBy(): JsonField<String> = createdBy
-
-    /**
-     * Returns the raw JSON value of [operation].
-     *
-     * Unlike [operation], this method doesn't throw if the JSON field has an unexpected type.
-     */
-    @JsonProperty("operation") @ExcludeMissing fun _operation(): JsonField<Operation> = operation
 
     @JsonAnySetter
     private fun putAdditionalProperty(key: String, value: JsonValue) {
@@ -162,6 +162,7 @@ private constructor(
          * ```java
          * .id()
          * .callId()
+         * .operation()
          * .status()
          * ```
          */
@@ -173,20 +174,20 @@ private constructor(
 
         private var id: JsonField<String>? = null
         private var callId: JsonField<String>? = null
+        private var operation: JsonField<Operation>? = null
         private var status: JsonField<Status>? = null
         private var type: JsonValue = JsonValue.from("apply_patch_call")
         private var createdBy: JsonField<String> = JsonMissing.of()
-        private var operation: JsonField<Operation> = JsonMissing.of()
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
         @JvmSynthetic
         internal fun from(responseApplyPatchToolCall: ResponseApplyPatchToolCall) = apply {
             id = responseApplyPatchToolCall.id
             callId = responseApplyPatchToolCall.callId
+            operation = responseApplyPatchToolCall.operation
             status = responseApplyPatchToolCall.status
             type = responseApplyPatchToolCall.type
             createdBy = responseApplyPatchToolCall.createdBy
-            operation = responseApplyPatchToolCall.operation
             additionalProperties = responseApplyPatchToolCall.additionalProperties.toMutableMap()
         }
 
@@ -213,43 +214,6 @@ private constructor(
          * method is primarily for setting the field to an undocumented or not yet supported value.
          */
         fun callId(callId: JsonField<String>) = apply { this.callId = callId }
-
-        /** The status of the apply patch tool call. One of `in_progress` or `completed`. */
-        fun status(status: Status) = status(JsonField.of(status))
-
-        /**
-         * Sets [Builder.status] to an arbitrary JSON value.
-         *
-         * You should usually call [Builder.status] with a well-typed [Status] value instead. This
-         * method is primarily for setting the field to an undocumented or not yet supported value.
-         */
-        fun status(status: JsonField<Status>) = apply { this.status = status }
-
-        /**
-         * Sets the field to an arbitrary JSON value.
-         *
-         * It is usually unnecessary to call this method because the field defaults to the
-         * following:
-         * ```java
-         * JsonValue.from("apply_patch_call")
-         * ```
-         *
-         * This method is primarily for setting the field to an undocumented or not yet supported
-         * value.
-         */
-        fun type(type: JsonValue) = apply { this.type = type }
-
-        /** The ID of the entity that created this tool call. */
-        fun createdBy(createdBy: String) = createdBy(JsonField.of(createdBy))
-
-        /**
-         * Sets [Builder.createdBy] to an arbitrary JSON value.
-         *
-         * You should usually call [Builder.createdBy] with a well-typed [String] value instead.
-         * This method is primarily for setting the field to an undocumented or not yet supported
-         * value.
-         */
-        fun createdBy(createdBy: JsonField<String>) = apply { this.createdBy = createdBy }
 
         /**
          * One of the create_file, delete_file, or update_file operations applied via apply_patch.
@@ -288,6 +252,43 @@ private constructor(
         fun operation(updateFile: Operation.UpdateFile) =
             operation(Operation.ofUpdateFile(updateFile))
 
+        /** The status of the apply patch tool call. One of `in_progress` or `completed`. */
+        fun status(status: Status) = status(JsonField.of(status))
+
+        /**
+         * Sets [Builder.status] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.status] with a well-typed [Status] value instead. This
+         * method is primarily for setting the field to an undocumented or not yet supported value.
+         */
+        fun status(status: JsonField<Status>) = apply { this.status = status }
+
+        /**
+         * Sets the field to an arbitrary JSON value.
+         *
+         * It is usually unnecessary to call this method because the field defaults to the
+         * following:
+         * ```java
+         * JsonValue.from("apply_patch_call")
+         * ```
+         *
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
+         */
+        fun type(type: JsonValue) = apply { this.type = type }
+
+        /** The ID of the entity that created this tool call. */
+        fun createdBy(createdBy: String) = createdBy(JsonField.of(createdBy))
+
+        /**
+         * Sets [Builder.createdBy] to an arbitrary JSON value.
+         *
+         * You should usually call [Builder.createdBy] with a well-typed [String] value instead.
+         * This method is primarily for setting the field to an undocumented or not yet supported
+         * value.
+         */
+        fun createdBy(createdBy: JsonField<String>) = apply { this.createdBy = createdBy }
+
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
             this.additionalProperties.clear()
             putAllAdditionalProperties(additionalProperties)
@@ -316,6 +317,7 @@ private constructor(
          * ```java
          * .id()
          * .callId()
+         * .operation()
          * .status()
          * ```
          *
@@ -325,10 +327,10 @@ private constructor(
             ResponseApplyPatchToolCall(
                 checkRequired("id", id),
                 checkRequired("callId", callId),
+                checkRequired("operation", operation),
                 checkRequired("status", status),
                 type,
                 createdBy,
-                operation,
                 additionalProperties.toMutableMap(),
             )
     }
@@ -342,6 +344,7 @@ private constructor(
 
         id()
         callId()
+        operation().validate()
         status().validate()
         _type().let {
             if (it != JsonValue.from("apply_patch_call")) {
@@ -349,7 +352,6 @@ private constructor(
             }
         }
         createdBy()
-        operation().ifPresent { it.validate() }
         validated = true
     }
 
@@ -370,136 +372,10 @@ private constructor(
     internal fun validity(): Int =
         (if (id.asKnown().isPresent) 1 else 0) +
             (if (callId.asKnown().isPresent) 1 else 0) +
+            (operation.asKnown().getOrNull()?.validity() ?: 0) +
             (status.asKnown().getOrNull()?.validity() ?: 0) +
             type.let { if (it == JsonValue.from("apply_patch_call")) 1 else 0 } +
-            (if (createdBy.asKnown().isPresent) 1 else 0) +
-            (operation.asKnown().getOrNull()?.validity() ?: 0)
-
-    /** The status of the apply patch tool call. One of `in_progress` or `completed`. */
-    class Status @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
-
-        /**
-         * Returns this class instance's raw value.
-         *
-         * This is usually only useful if this instance was deserialized from data that doesn't
-         * match any known member, and you want to know that value. For example, if the SDK is on an
-         * older version than the API, then the API may respond with new members that the SDK is
-         * unaware of.
-         */
-        @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
-
-        companion object {
-
-            @JvmField val IN_PROGRESS = of("in_progress")
-
-            @JvmField val COMPLETED = of("completed")
-
-            @JvmStatic fun of(value: String) = Status(JsonField.of(value))
-        }
-
-        /** An enum containing [Status]'s known values. */
-        enum class Known {
-            IN_PROGRESS,
-            COMPLETED,
-        }
-
-        /**
-         * An enum containing [Status]'s known values, as well as an [_UNKNOWN] member.
-         *
-         * An instance of [Status] can contain an unknown value in a couple of cases:
-         * - It was deserialized from data that doesn't match any known member. For example, if the
-         *   SDK is on an older version than the API, then the API may respond with new members that
-         *   the SDK is unaware of.
-         * - It was constructed with an arbitrary value using the [of] method.
-         */
-        enum class Value {
-            IN_PROGRESS,
-            COMPLETED,
-            /** An enum member indicating that [Status] was instantiated with an unknown value. */
-            _UNKNOWN,
-        }
-
-        /**
-         * Returns an enum member corresponding to this class instance's value, or [Value._UNKNOWN]
-         * if the class was instantiated with an unknown value.
-         *
-         * Use the [known] method instead if you're certain the value is always known or if you want
-         * to throw for the unknown case.
-         */
-        fun value(): Value =
-            when (this) {
-                IN_PROGRESS -> Value.IN_PROGRESS
-                COMPLETED -> Value.COMPLETED
-                else -> Value._UNKNOWN
-            }
-
-        /**
-         * Returns an enum member corresponding to this class instance's value.
-         *
-         * Use the [value] method instead if you're uncertain the value is always known and don't
-         * want to throw for the unknown case.
-         *
-         * @throws OpenAIInvalidDataException if this class instance's value is a not a known
-         *   member.
-         */
-        fun known(): Known =
-            when (this) {
-                IN_PROGRESS -> Known.IN_PROGRESS
-                COMPLETED -> Known.COMPLETED
-                else -> throw OpenAIInvalidDataException("Unknown Status: $value")
-            }
-
-        /**
-         * Returns this class instance's primitive wire representation.
-         *
-         * This differs from the [toString] method because that method is primarily for debugging
-         * and generally doesn't throw.
-         *
-         * @throws OpenAIInvalidDataException if this class instance's value does not have the
-         *   expected primitive type.
-         */
-        fun asString(): String =
-            _value().asString().orElseThrow { OpenAIInvalidDataException("Value is not a String") }
-
-        private var validated: Boolean = false
-
-        fun validate(): Status = apply {
-            if (validated) {
-                return@apply
-            }
-
-            known()
-            validated = true
-        }
-
-        fun isValid(): Boolean =
-            try {
-                validate()
-                true
-            } catch (e: OpenAIInvalidDataException) {
-                false
-            }
-
-        /**
-         * Returns a score indicating how many valid values are contained in this object
-         * recursively.
-         *
-         * Used for best match union deserialization.
-         */
-        @JvmSynthetic internal fun validity(): Int = if (value() == Value._UNKNOWN) 0 else 1
-
-        override fun equals(other: Any?): Boolean {
-            if (this === other) {
-                return true
-            }
-
-            return other is Status && value == other.value
-        }
-
-        override fun hashCode() = value.hashCode()
-
-        override fun toString() = value.toString()
-    }
+            (if (createdBy.asKnown().isPresent) 1 else 0)
 
     /** One of the create_file, delete_file, or update_file operations applied via apply_patch. */
     @JsonDeserialize(using = Operation.Deserializer::class)
@@ -1403,6 +1279,132 @@ private constructor(
         }
     }
 
+    /** The status of the apply patch tool call. One of `in_progress` or `completed`. */
+    class Status @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
+
+        /**
+         * Returns this class instance's raw value.
+         *
+         * This is usually only useful if this instance was deserialized from data that doesn't
+         * match any known member, and you want to know that value. For example, if the SDK is on an
+         * older version than the API, then the API may respond with new members that the SDK is
+         * unaware of.
+         */
+        @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
+
+        companion object {
+
+            @JvmField val IN_PROGRESS = of("in_progress")
+
+            @JvmField val COMPLETED = of("completed")
+
+            @JvmStatic fun of(value: String) = Status(JsonField.of(value))
+        }
+
+        /** An enum containing [Status]'s known values. */
+        enum class Known {
+            IN_PROGRESS,
+            COMPLETED,
+        }
+
+        /**
+         * An enum containing [Status]'s known values, as well as an [_UNKNOWN] member.
+         *
+         * An instance of [Status] can contain an unknown value in a couple of cases:
+         * - It was deserialized from data that doesn't match any known member. For example, if the
+         *   SDK is on an older version than the API, then the API may respond with new members that
+         *   the SDK is unaware of.
+         * - It was constructed with an arbitrary value using the [of] method.
+         */
+        enum class Value {
+            IN_PROGRESS,
+            COMPLETED,
+            /** An enum member indicating that [Status] was instantiated with an unknown value. */
+            _UNKNOWN,
+        }
+
+        /**
+         * Returns an enum member corresponding to this class instance's value, or [Value._UNKNOWN]
+         * if the class was instantiated with an unknown value.
+         *
+         * Use the [known] method instead if you're certain the value is always known or if you want
+         * to throw for the unknown case.
+         */
+        fun value(): Value =
+            when (this) {
+                IN_PROGRESS -> Value.IN_PROGRESS
+                COMPLETED -> Value.COMPLETED
+                else -> Value._UNKNOWN
+            }
+
+        /**
+         * Returns an enum member corresponding to this class instance's value.
+         *
+         * Use the [value] method instead if you're uncertain the value is always known and don't
+         * want to throw for the unknown case.
+         *
+         * @throws OpenAIInvalidDataException if this class instance's value is a not a known
+         *   member.
+         */
+        fun known(): Known =
+            when (this) {
+                IN_PROGRESS -> Known.IN_PROGRESS
+                COMPLETED -> Known.COMPLETED
+                else -> throw OpenAIInvalidDataException("Unknown Status: $value")
+            }
+
+        /**
+         * Returns this class instance's primitive wire representation.
+         *
+         * This differs from the [toString] method because that method is primarily for debugging
+         * and generally doesn't throw.
+         *
+         * @throws OpenAIInvalidDataException if this class instance's value does not have the
+         *   expected primitive type.
+         */
+        fun asString(): String =
+            _value().asString().orElseThrow { OpenAIInvalidDataException("Value is not a String") }
+
+        private var validated: Boolean = false
+
+        fun validate(): Status = apply {
+            if (validated) {
+                return@apply
+            }
+
+            known()
+            validated = true
+        }
+
+        fun isValid(): Boolean =
+            try {
+                validate()
+                true
+            } catch (e: OpenAIInvalidDataException) {
+                false
+            }
+
+        /**
+         * Returns a score indicating how many valid values are contained in this object
+         * recursively.
+         *
+         * Used for best match union deserialization.
+         */
+        @JvmSynthetic internal fun validity(): Int = if (value() == Value._UNKNOWN) 0 else 1
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) {
+                return true
+            }
+
+            return other is Status && value == other.value
+        }
+
+        override fun hashCode() = value.hashCode()
+
+        override fun toString() = value.toString()
+    }
+
     override fun equals(other: Any?): Boolean {
         if (this === other) {
             return true
@@ -1411,19 +1413,19 @@ private constructor(
         return other is ResponseApplyPatchToolCall &&
             id == other.id &&
             callId == other.callId &&
+            operation == other.operation &&
             status == other.status &&
             type == other.type &&
             createdBy == other.createdBy &&
-            operation == other.operation &&
             additionalProperties == other.additionalProperties
     }
 
     private val hashCode: Int by lazy {
-        Objects.hash(id, callId, status, type, createdBy, operation, additionalProperties)
+        Objects.hash(id, callId, operation, status, type, createdBy, additionalProperties)
     }
 
     override fun hashCode(): Int = hashCode
 
     override fun toString() =
-        "ResponseApplyPatchToolCall{id=$id, callId=$callId, status=$status, type=$type, createdBy=$createdBy, operation=$operation, additionalProperties=$additionalProperties}"
+        "ResponseApplyPatchToolCall{id=$id, callId=$callId, operation=$operation, status=$status, type=$type, createdBy=$createdBy, additionalProperties=$additionalProperties}"
 }
