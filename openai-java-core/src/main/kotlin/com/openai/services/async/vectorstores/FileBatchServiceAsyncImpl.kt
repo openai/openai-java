@@ -44,18 +44,10 @@ class FileBatchServiceAsyncImpl internal constructor(private val clientOptions: 
 
     override fun withRawResponse(): FileBatchServiceAsync.WithRawResponse = withRawResponse
 
-
     override fun withOptions(modifier: Consumer<ClientOptions.Builder>): FileBatchServiceAsync =
         FileBatchServiceAsyncImpl(clientOptions.toBuilder().apply(modifier::accept).build())
 
     override fun create(
-        params: FileBatchCreateParams,
-        requestOptions: RequestOptions,
-        FileBatchServiceAsyncImpl(clientOptions.toBuilder().apply(modifier::accept).build())
-
-    override fun create(
-        params: FileBatchCreateParams,
-        requestOptions: RequestOptions,
         params: FileBatchCreateParams,
         requestOptions: RequestOptions,
     ): CompletableFuture<VectorStoreFileBatch> =
@@ -65,8 +57,6 @@ class FileBatchServiceAsyncImpl internal constructor(private val clientOptions: 
     override fun retrieve(
         params: FileBatchRetrieveParams,
         requestOptions: RequestOptions,
-        params: FileBatchRetrieveParams,
-        requestOptions: RequestOptions,
     ): CompletableFuture<VectorStoreFileBatch> =
         // get /vector_stores/{vector_store_id}/file_batches/{batch_id}
         withRawResponse().retrieve(params, requestOptions).thenApply { it.parse() }
@@ -74,15 +64,11 @@ class FileBatchServiceAsyncImpl internal constructor(private val clientOptions: 
     override fun cancel(
         params: FileBatchCancelParams,
         requestOptions: RequestOptions,
-        params: FileBatchCancelParams,
-        requestOptions: RequestOptions,
     ): CompletableFuture<VectorStoreFileBatch> =
         // post /vector_stores/{vector_store_id}/file_batches/{batch_id}/cancel
         withRawResponse().cancel(params, requestOptions).thenApply { it.parse() }
 
     override fun listFiles(
-        params: FileBatchListFilesParams,
-        requestOptions: RequestOptions,
         params: FileBatchListFilesParams,
         requestOptions: RequestOptions,
     ): CompletableFuture<FileBatchListFilesPageAsync> =
@@ -96,7 +82,6 @@ class FileBatchServiceAsyncImpl internal constructor(private val clientOptions: 
             errorHandler(errorBodyHandler(clientOptions.jsonMapper))
 
         override fun withOptions(
-            val cancellationTokenSource = CancellationTokenSource()
             modifier: Consumer<ClientOptions.Builder>
         ): FileBatchServiceAsync.WithRawResponse =
             FileBatchServiceAsyncImpl.WithRawResponseImpl(
@@ -124,8 +109,7 @@ class FileBatchServiceAsyncImpl internal constructor(private val clientOptions: 
                     .build()
                     .prepareAsync(clientOptions, params)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
-            return
-                    request
+            return request
                         .thenComposeAsync {
                             clientOptions.httpClient.executeAsync(
                                 it,
@@ -140,13 +124,6 @@ class FileBatchServiceAsyncImpl internal constructor(private val clientOptions: 
                             .also {
                                 if (requestOptions.responseValidation!!) {
                                     it.validate()
-                                }
-
-            .withCancellation(cancellationTokenSource)
-                            }
-                    }
-                }
-        }
 
         private val retrieveHandler: Handler<VectorStoreFileBatch> =
             jsonHandler<VectorStoreFileBatch>(clientOptions.jsonMapper)
@@ -173,8 +150,7 @@ class FileBatchServiceAsyncImpl internal constructor(private val clientOptions: 
                     .build()
                     .prepareAsync(clientOptions, params)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
-            return
-                    request
+            return request
                         .thenComposeAsync {
                             clientOptions.httpClient.executeAsync(
                                 it,
@@ -189,13 +165,6 @@ class FileBatchServiceAsyncImpl internal constructor(private val clientOptions: 
                             .also {
                                 if (requestOptions.responseValidation!!) {
                                     it.validate()
-                                }
-
-            .withCancellation(cancellationTokenSource)
-                            }
-                    }
-                }
-        }
 
         private val cancelHandler: Handler<VectorStoreFileBatch> =
             jsonHandler<VectorStoreFileBatch>(clientOptions.jsonMapper)
@@ -224,8 +193,7 @@ class FileBatchServiceAsyncImpl internal constructor(private val clientOptions: 
                     .build()
                     .prepareAsync(clientOptions, params)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
-            return
-                    request
+            return request
                         .thenComposeAsync {
                             clientOptions.httpClient.executeAsync(
                                 it,
@@ -240,13 +208,6 @@ class FileBatchServiceAsyncImpl internal constructor(private val clientOptions: 
                             .also {
                                 if (requestOptions.responseValidation!!) {
                                     it.validate()
-                                }
-
-            .withCancellation(cancellationTokenSource)
-                            }
-                    }
-                }
-        }
 
         private val listFilesHandler: Handler<FileBatchListFilesPageResponse> =
             jsonHandler<FileBatchListFilesPageResponse>(clientOptions.jsonMapper)
@@ -274,8 +235,7 @@ class FileBatchServiceAsyncImpl internal constructor(private val clientOptions: 
                     .build()
                     .prepareAsync(clientOptions, params)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
-            return
-                    request
+            return request
                         .thenComposeAsync {
                             clientOptions.httpClient.executeAsync(
                                 it,

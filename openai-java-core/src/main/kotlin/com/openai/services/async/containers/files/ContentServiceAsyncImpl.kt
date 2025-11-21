@@ -32,14 +32,8 @@ class ContentServiceAsyncImpl internal constructor(private val clientOptions: Cl
     override fun withOptions(modifier: Consumer<ClientOptions.Builder>): ContentServiceAsync =
         ContentServiceAsyncImpl(clientOptions.toBuilder().apply(modifier::accept).build())
 
-    override fun retrieve(
-        params: ContentRetrieveParams,
-        requestOptions: RequestOptions,
-        ContentServiceAsyncImpl(clientOptions.toBuilder().apply(modifier::accept).build())
 
     override fun retrieve(
-        params: ContentRetrieveParams,
-        requestOptions: RequestOptions,
         params: ContentRetrieveParams,
         requestOptions: RequestOptions,
     ): CompletableFuture<HttpResponse> =
@@ -53,7 +47,6 @@ class ContentServiceAsyncImpl internal constructor(private val clientOptions: Cl
             errorHandler(errorBodyHandler(clientOptions.jsonMapper))
 
         override fun withOptions(
-            val cancellationTokenSource = CancellationTokenSource()
             modifier: Consumer<ClientOptions.Builder>
         ): ContentServiceAsync.WithRawResponse =
             ContentServiceAsyncImpl.WithRawResponseImpl(

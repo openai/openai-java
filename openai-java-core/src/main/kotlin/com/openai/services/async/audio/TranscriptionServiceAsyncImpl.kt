@@ -46,14 +46,8 @@ class TranscriptionServiceAsyncImpl internal constructor(private val clientOptio
     override fun withOptions(modifier: Consumer<ClientOptions.Builder>): TranscriptionServiceAsync =
         TranscriptionServiceAsyncImpl(clientOptions.toBuilder().apply(modifier::accept).build())
 
-    override fun create(
-        params: TranscriptionCreateParams,
-        requestOptions: RequestOptions,
-        TranscriptionServiceAsyncImpl(clientOptions.toBuilder().apply(modifier::accept).build())
 
     override fun create(
-        params: TranscriptionCreateParams,
-        requestOptions: RequestOptions,
         params: TranscriptionCreateParams,
         requestOptions: RequestOptions,
     ): CompletableFuture<TranscriptionCreateResponse> =
@@ -61,8 +55,6 @@ class TranscriptionServiceAsyncImpl internal constructor(private val clientOptio
         withRawResponse().create(params, requestOptions).thenApply { it.parse() }
 
     override fun createStreaming(
-        params: TranscriptionCreateParams,
-        requestOptions: RequestOptions,
         params: TranscriptionCreateParams,
         requestOptions: RequestOptions,
     ): AsyncStreamResponse<TranscriptionStreamEvent> =
@@ -114,8 +106,7 @@ class TranscriptionServiceAsyncImpl internal constructor(private val clientOptio
                     .build()
                     .prepareAsync(clientOptions, params)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
-            return
-                    request
+            return request
                         .thenComposeAsync {
                             clientOptions.httpClient.executeAsync(
                                 it,
@@ -134,13 +125,6 @@ class TranscriptionServiceAsyncImpl internal constructor(private val clientOptio
                             .also {
                                 if (requestOptions.responseValidation!!) {
                                     it.validate()
-                                }
-
-            .withCancellation(cancellationTokenSource)
-                            }
-                    }
-                }
-        }
 
         private val createStreamingHandler: Handler<StreamResponse<TranscriptionStreamEvent>> =
             sseHandler(clientOptions.jsonMapper).mapJson<TranscriptionStreamEvent>()
@@ -164,8 +148,7 @@ class TranscriptionServiceAsyncImpl internal constructor(private val clientOptio
                     .build()
                     .prepareAsync(clientOptions, params)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
-            return
-                    request
+            return request
                         .thenComposeAsync {
                             clientOptions.httpClient.executeAsync(
                                 it,
@@ -182,12 +165,4 @@ class TranscriptionServiceAsyncImpl internal constructor(private val clientOptio
                                     streamResponse.map { it.validate() }
                                 } else {
                                     streamResponse
-                                }
-
-            .withCancellation(cancellationTokenSource)
-                            }
-                    }
-                }
-        }
-    }
 }

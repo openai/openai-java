@@ -59,24 +59,14 @@ class VectorStoreServiceAsyncImpl internal constructor(private val clientOptions
 
     override fun withRawResponse(): VectorStoreServiceAsync.WithRawResponse = withRawResponse
 
-
     override fun withOptions(modifier: Consumer<ClientOptions.Builder>): VectorStoreServiceAsync =
-        VectorStoreServiceAsyncImpl(clientOptions.toBuilder().apply(modifier::accept).build())
-
         VectorStoreServiceAsyncImpl(clientOptions.toBuilder().apply(modifier::accept).build())
 
     override fun files(): FileServiceAsync = files
 
-
     override fun fileBatches(): FileBatchServiceAsync = fileBatches
 
     override fun create(
-        params: VectorStoreCreateParams,
-        requestOptions: RequestOptions,
-
-    override fun create(
-        params: VectorStoreCreateParams,
-        requestOptions: RequestOptions,
         params: VectorStoreCreateParams,
         requestOptions: RequestOptions,
     ): CompletableFuture<VectorStore> =
@@ -86,15 +76,11 @@ class VectorStoreServiceAsyncImpl internal constructor(private val clientOptions
     override fun retrieve(
         params: VectorStoreRetrieveParams,
         requestOptions: RequestOptions,
-        params: VectorStoreRetrieveParams,
-        requestOptions: RequestOptions,
     ): CompletableFuture<VectorStore> =
         // get /vector_stores/{vector_store_id}
         withRawResponse().retrieve(params, requestOptions).thenApply { it.parse() }
 
     override fun update(
-        params: VectorStoreUpdateParams,
-        requestOptions: RequestOptions,
         params: VectorStoreUpdateParams,
         requestOptions: RequestOptions,
     ): CompletableFuture<VectorStore> =
@@ -104,8 +90,6 @@ class VectorStoreServiceAsyncImpl internal constructor(private val clientOptions
     override fun list(
         params: VectorStoreListParams,
         requestOptions: RequestOptions,
-        params: VectorStoreListParams,
-        requestOptions: RequestOptions,
     ): CompletableFuture<VectorStoreListPageAsync> =
         // get /vector_stores
         withRawResponse().list(params, requestOptions).thenApply { it.parse() }
@@ -113,15 +97,11 @@ class VectorStoreServiceAsyncImpl internal constructor(private val clientOptions
     override fun delete(
         params: VectorStoreDeleteParams,
         requestOptions: RequestOptions,
-        params: VectorStoreDeleteParams,
-        requestOptions: RequestOptions,
     ): CompletableFuture<VectorStoreDeleted> =
         // delete /vector_stores/{vector_store_id}
         withRawResponse().delete(params, requestOptions).thenApply { it.parse() }
 
     override fun search(
-        params: VectorStoreSearchParams,
-        requestOptions: RequestOptions,
         params: VectorStoreSearchParams,
         requestOptions: RequestOptions,
     ): CompletableFuture<VectorStoreSearchPageAsync> =
@@ -143,7 +123,6 @@ class VectorStoreServiceAsyncImpl internal constructor(private val clientOptions
         }
 
         override fun withOptions(
-            val cancellationTokenSource = CancellationTokenSource()
             modifier: Consumer<ClientOptions.Builder>
         ): VectorStoreServiceAsync.WithRawResponse =
             VectorStoreServiceAsyncImpl.WithRawResponseImpl(
@@ -151,10 +130,8 @@ class VectorStoreServiceAsyncImpl internal constructor(private val clientOptions
             )
 
         override fun files(): FileServiceAsync.WithRawResponse = files
-            val cancellationTokenSource = CancellationTokenSource()
 
         override fun fileBatches(): FileBatchServiceAsync.WithRawResponse = fileBatches
-            val cancellationTokenSource = CancellationTokenSource()
 
         private val createHandler: Handler<VectorStore> =
             jsonHandler<VectorStore>(clientOptions.jsonMapper)
@@ -174,8 +151,7 @@ class VectorStoreServiceAsyncImpl internal constructor(private val clientOptions
                     .build()
                     .prepareAsync(clientOptions, params)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
-            return
-                    request
+            return request
                         .thenComposeAsync {
                             clientOptions.httpClient.executeAsync(
                                 it,
@@ -190,13 +166,6 @@ class VectorStoreServiceAsyncImpl internal constructor(private val clientOptions
                             .also {
                                 if (requestOptions.responseValidation!!) {
                                     it.validate()
-                                }
-
-            .withCancellation(cancellationTokenSource)
-                            }
-                    }
-                }
-        }
 
         private val retrieveHandler: Handler<VectorStore> =
             jsonHandler<VectorStore>(clientOptions.jsonMapper)
@@ -218,8 +187,7 @@ class VectorStoreServiceAsyncImpl internal constructor(private val clientOptions
                     .build()
                     .prepareAsync(clientOptions, params)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
-            return
-                    request
+            return request
                         .thenComposeAsync {
                             clientOptions.httpClient.executeAsync(
                                 it,
@@ -234,13 +202,6 @@ class VectorStoreServiceAsyncImpl internal constructor(private val clientOptions
                             .also {
                                 if (requestOptions.responseValidation!!) {
                                     it.validate()
-                                }
-
-            .withCancellation(cancellationTokenSource)
-                            }
-                    }
-                }
-        }
 
         private val updateHandler: Handler<VectorStore> =
             jsonHandler<VectorStore>(clientOptions.jsonMapper)
@@ -263,8 +224,7 @@ class VectorStoreServiceAsyncImpl internal constructor(private val clientOptions
                     .build()
                     .prepareAsync(clientOptions, params)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
-            return
-                    request
+            return request
                         .thenComposeAsync {
                             clientOptions.httpClient.executeAsync(
                                 it,
@@ -279,13 +239,6 @@ class VectorStoreServiceAsyncImpl internal constructor(private val clientOptions
                             .also {
                                 if (requestOptions.responseValidation!!) {
                                     it.validate()
-                                }
-
-            .withCancellation(cancellationTokenSource)
-                            }
-                    }
-                }
-        }
 
         private val listHandler: Handler<VectorStoreListPageResponse> =
             jsonHandler<VectorStoreListPageResponse>(clientOptions.jsonMapper)
@@ -304,8 +257,7 @@ class VectorStoreServiceAsyncImpl internal constructor(private val clientOptions
                     .build()
                     .prepareAsync(clientOptions, params)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
-            return
-                    request
+            return request
                         .thenComposeAsync {
                             clientOptions.httpClient.executeAsync(
                                 it,
@@ -357,8 +309,7 @@ class VectorStoreServiceAsyncImpl internal constructor(private val clientOptions
                     .build()
                     .prepareAsync(clientOptions, params)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
-            return
-                    request
+            return request
                         .thenComposeAsync {
                             clientOptions.httpClient.executeAsync(
                                 it,
@@ -373,13 +324,6 @@ class VectorStoreServiceAsyncImpl internal constructor(private val clientOptions
                             .also {
                                 if (requestOptions.responseValidation!!) {
                                     it.validate()
-                                }
-
-            .withCancellation(cancellationTokenSource)
-                            }
-                    }
-                }
-        }
 
         private val searchHandler: Handler<VectorStoreSearchPageResponse> =
             jsonHandler<VectorStoreSearchPageResponse>(clientOptions.jsonMapper)
@@ -402,8 +346,7 @@ class VectorStoreServiceAsyncImpl internal constructor(private val clientOptions
                     .build()
                     .prepareAsync(clientOptions, params)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
-            return
-                    request
+            return request
                         .thenComposeAsync {
                             clientOptions.httpClient.executeAsync(
                                 it,

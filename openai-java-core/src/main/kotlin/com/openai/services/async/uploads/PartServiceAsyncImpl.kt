@@ -37,14 +37,8 @@ class PartServiceAsyncImpl internal constructor(private val clientOptions: Clien
     override fun withOptions(modifier: Consumer<ClientOptions.Builder>): PartServiceAsync =
         PartServiceAsyncImpl(clientOptions.toBuilder().apply(modifier::accept).build())
 
-    override fun create(
-        params: PartCreateParams,
-        requestOptions: RequestOptions,
-        PartServiceAsyncImpl(clientOptions.toBuilder().apply(modifier::accept).build())
 
     override fun create(
-        params: PartCreateParams,
-        requestOptions: RequestOptions,
         params: PartCreateParams,
         requestOptions: RequestOptions,
     ): CompletableFuture<UploadPart> =
@@ -58,7 +52,6 @@ class PartServiceAsyncImpl internal constructor(private val clientOptions: Clien
             errorHandler(errorBodyHandler(clientOptions.jsonMapper))
 
         override fun withOptions(
-            val cancellationTokenSource = CancellationTokenSource()
             modifier: Consumer<ClientOptions.Builder>
         ): PartServiceAsync.WithRawResponse =
             PartServiceAsyncImpl.WithRawResponseImpl(
@@ -85,8 +78,7 @@ class PartServiceAsyncImpl internal constructor(private val clientOptions: Clien
                     .build()
                     .prepareAsync(clientOptions, params)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
-            return
-                    request
+            return request
                         .thenComposeAsync {
                             clientOptions.httpClient.executeAsync(
                                 it,
@@ -101,12 +93,4 @@ class PartServiceAsyncImpl internal constructor(private val clientOptions: Clien
                             .also {
                                 if (requestOptions.responseValidation!!) {
                                     it.validate()
-                                }
-
-            .withCancellation(cancellationTokenSource)
-                            }
-                    }
-                }
-        }
-    }
 }

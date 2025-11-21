@@ -58,17 +58,11 @@ class FileServiceAsyncImpl internal constructor(private val clientOptions: Clien
         requestOptions: RequestOptions,
 
     override fun create(
-        params: FileCreateParams,
-        requestOptions: RequestOptions,
-        params: FileCreateParams,
-        requestOptions: RequestOptions,
     ): CompletableFuture<FileCreateResponse> =
         // post /containers/{container_id}/files
         withRawResponse().create(params, requestOptions).thenApply { it.parse() }
 
     override fun retrieve(
-        params: FileRetrieveParams,
-        requestOptions: RequestOptions,
         params: FileRetrieveParams,
         requestOptions: RequestOptions,
     ): CompletableFuture<FileRetrieveResponse> =
@@ -78,15 +72,11 @@ class FileServiceAsyncImpl internal constructor(private val clientOptions: Clien
     override fun list(
         params: FileListParams,
         requestOptions: RequestOptions,
-        params: FileListParams,
-        requestOptions: RequestOptions,
     ): CompletableFuture<FileListPageAsync> =
         // get /containers/{container_id}/files
         withRawResponse().list(params, requestOptions).thenApply { it.parse() }
 
     override fun delete(
-        params: FileDeleteParams,
-        requestOptions: RequestOptions,
         params: FileDeleteParams,
         requestOptions: RequestOptions,
     ): CompletableFuture<Void?> =
@@ -104,7 +94,6 @@ class FileServiceAsyncImpl internal constructor(private val clientOptions: Clien
         }
 
         override fun withOptions(
-            val cancellationTokenSource = CancellationTokenSource()
             modifier: Consumer<ClientOptions.Builder>
         ): FileServiceAsync.WithRawResponse =
             FileServiceAsyncImpl.WithRawResponseImpl(
@@ -134,8 +123,7 @@ class FileServiceAsyncImpl internal constructor(private val clientOptions: Clien
                     .build()
                     .prepareAsync(clientOptions, params)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
-            return
-                    request
+            return request
                         .thenComposeAsync {
                             clientOptions.httpClient.executeAsync(
                                 it,
@@ -150,13 +138,6 @@ class FileServiceAsyncImpl internal constructor(private val clientOptions: Clien
                             .also {
                                 if (requestOptions.responseValidation!!) {
                                     it.validate()
-                                }
-
-            .withCancellation(cancellationTokenSource)
-                            }
-                    }
-                }
-        }
 
         private val retrieveHandler: Handler<FileRetrieveResponse> =
             jsonHandler<FileRetrieveResponse>(clientOptions.jsonMapper)
@@ -182,8 +163,7 @@ class FileServiceAsyncImpl internal constructor(private val clientOptions: Clien
                     .build()
                     .prepareAsync(clientOptions, params)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
-            return
-                    request
+            return request
                         .thenComposeAsync {
                             clientOptions.httpClient.executeAsync(
                                 it,
@@ -198,13 +178,6 @@ class FileServiceAsyncImpl internal constructor(private val clientOptions: Clien
                             .also {
                                 if (requestOptions.responseValidation!!) {
                                     it.validate()
-                                }
-
-            .withCancellation(cancellationTokenSource)
-                            }
-                    }
-                }
-        }
 
         private val listHandler: Handler<FileListPageResponse> =
             jsonHandler<FileListPageResponse>(clientOptions.jsonMapper)
@@ -225,8 +198,7 @@ class FileServiceAsyncImpl internal constructor(private val clientOptions: Clien
                     .build()
                     .prepareAsync(clientOptions, params)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
-            return
-                    request
+            return request
                         .thenComposeAsync {
                             clientOptions.httpClient.executeAsync(
                                 it,
@@ -281,8 +253,7 @@ class FileServiceAsyncImpl internal constructor(private val clientOptions: Clien
                     .build()
                     .prepareAsync(clientOptions, params)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
-            return
-                    request
+            return request
                         .thenComposeAsync {
                             clientOptions.httpClient.executeAsync(
                                 it,
@@ -295,9 +266,4 @@ class FileServiceAsyncImpl internal constructor(private val clientOptions: Clien
                         response.use { deleteHandler.handle(it) }
                     }
                 return delegate.withCancellation(cancellationTokenSource)
-                }
-
-            .withCancellation(cancellationTokenSource)
-        }
-    }
 }

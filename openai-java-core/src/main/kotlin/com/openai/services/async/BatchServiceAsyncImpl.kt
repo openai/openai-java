@@ -42,14 +42,8 @@ class BatchServiceAsyncImpl internal constructor(private val clientOptions: Clie
     override fun withOptions(modifier: Consumer<ClientOptions.Builder>): BatchServiceAsync =
         BatchServiceAsyncImpl(clientOptions.toBuilder().apply(modifier::accept).build())
 
-    override fun create(
-        params: BatchCreateParams,
-        requestOptions: RequestOptions,
-        BatchServiceAsyncImpl(clientOptions.toBuilder().apply(modifier::accept).build())
 
     override fun create(
-        params: BatchCreateParams,
-        requestOptions: RequestOptions,
         params: BatchCreateParams,
         requestOptions: RequestOptions,
     ): CompletableFuture<Batch> =
@@ -59,8 +53,6 @@ class BatchServiceAsyncImpl internal constructor(private val clientOptions: Clie
     override fun retrieve(
         params: BatchRetrieveParams,
         requestOptions: RequestOptions,
-        params: BatchRetrieveParams,
-        requestOptions: RequestOptions,
     ): CompletableFuture<Batch> =
         // get /batches/{batch_id}
         withRawResponse().retrieve(params, requestOptions).thenApply { it.parse() }
@@ -68,15 +60,11 @@ class BatchServiceAsyncImpl internal constructor(private val clientOptions: Clie
     override fun list(
         params: BatchListParams,
         requestOptions: RequestOptions,
-        params: BatchListParams,
-        requestOptions: RequestOptions,
     ): CompletableFuture<BatchListPageAsync> =
         // get /batches
         withRawResponse().list(params, requestOptions).thenApply { it.parse() }
 
     override fun cancel(
-        params: BatchCancelParams,
-        requestOptions: RequestOptions,
         params: BatchCancelParams,
         requestOptions: RequestOptions,
     ): CompletableFuture<Batch> =
@@ -90,7 +78,6 @@ class BatchServiceAsyncImpl internal constructor(private val clientOptions: Clie
             errorHandler(errorBodyHandler(clientOptions.jsonMapper))
 
         override fun withOptions(
-            modifier: Consumer<ClientOptions.Builder>
             modifier: Consumer<ClientOptions.Builder>
         ): BatchServiceAsync.WithRawResponse =
             BatchServiceAsyncImpl.WithRawResponseImpl(
@@ -113,8 +100,7 @@ class BatchServiceAsyncImpl internal constructor(private val clientOptions: Clie
                     .build()
                     .prepareAsync(clientOptions, params)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
-            return
-                request
+            return request
                     .thenComposeAsync {
                         clientOptions.httpClient.executeAsync(
                             it,
@@ -130,12 +116,10 @@ class BatchServiceAsyncImpl internal constructor(private val clientOptions: Clie
                                     if (requestOptions.responseValidation!!) {
                                         it.validate()
                                     }
-
-            .withCancellation(cancellationTokenSource)
                                 }
                         }
                     }
-            return delegate.withCancellation(cancellationTokenSource)
+                    .withCancellation(cancellationTokenSource)
         }
 
         private val retrieveHandler: Handler<Batch> = jsonHandler<Batch>(clientOptions.jsonMapper)
@@ -156,8 +140,7 @@ class BatchServiceAsyncImpl internal constructor(private val clientOptions: Clie
                     .build()
                     .prepareAsync(clientOptions, params)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
-            return
-                    request
+            return request
                         .thenComposeAsync {
                             clientOptions.httpClient.executeAsync(
                                 it,
@@ -173,11 +156,10 @@ class BatchServiceAsyncImpl internal constructor(private val clientOptions: Clie
                                 if (requestOptions.responseValidation!!) {
                                     it.validate()
                                 }
-
-            .withCancellation(cancellationTokenSource)
                             }
                     }
                 }
+                .withCancellation(cancellationTokenSource)
         }
 
         private val listHandler: Handler<BatchListPageResponse> =
@@ -196,8 +178,7 @@ class BatchServiceAsyncImpl internal constructor(private val clientOptions: Clie
                     .build()
                     .prepareAsync(clientOptions, params)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
-            return
-                    request
+            return request
                         .thenComposeAsync {
                             clientOptions.httpClient.executeAsync(
                                 it,
@@ -213,8 +194,6 @@ class BatchServiceAsyncImpl internal constructor(private val clientOptions: Clie
                                 if (requestOptions.responseValidation!!) {
                                     it.validate()
                                 }
-
-            .withCancellation(cancellationTokenSource)
                             }
                             .let {
                                 BatchListPageAsync.builder()
@@ -226,6 +205,7 @@ class BatchServiceAsyncImpl internal constructor(private val clientOptions: Clie
                             }
                     }
                 }
+                .withCancellation(cancellationTokenSource)
         }
 
         private val cancelHandler: Handler<Batch> = jsonHandler<Batch>(clientOptions.jsonMapper)
@@ -247,8 +227,7 @@ class BatchServiceAsyncImpl internal constructor(private val clientOptions: Clie
                     .build()
                     .prepareAsync(clientOptions, params)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
-            return
-                    request
+            return request
                         .thenComposeAsync {
                             clientOptions.httpClient.executeAsync(
                                 it,
@@ -264,11 +243,10 @@ class BatchServiceAsyncImpl internal constructor(private val clientOptions: Clie
                                 if (requestOptions.responseValidation!!) {
                                     it.validate()
                                 }
-
-            .withCancellation(cancellationTokenSource)
                             }
                     }
                 }
+                .withCancellation(cancellationTokenSource)
         }
     }
 }

@@ -37,14 +37,8 @@ class CheckpointServiceAsyncImpl internal constructor(private val clientOptions:
     override fun withOptions(modifier: Consumer<ClientOptions.Builder>): CheckpointServiceAsync =
         CheckpointServiceAsyncImpl(clientOptions.toBuilder().apply(modifier::accept).build())
 
-    override fun list(
-        params: CheckpointListParams,
-        requestOptions: RequestOptions,
-        CheckpointServiceAsyncImpl(clientOptions.toBuilder().apply(modifier::accept).build())
 
     override fun list(
-        params: CheckpointListParams,
-        requestOptions: RequestOptions,
         params: CheckpointListParams,
         requestOptions: RequestOptions,
     ): CompletableFuture<CheckpointListPageAsync> =
@@ -58,7 +52,6 @@ class CheckpointServiceAsyncImpl internal constructor(private val clientOptions:
             errorHandler(errorBodyHandler(clientOptions.jsonMapper))
 
         override fun withOptions(
-            val cancellationTokenSource = CancellationTokenSource()
             modifier: Consumer<ClientOptions.Builder>
         ): CheckpointServiceAsync.WithRawResponse =
             CheckpointServiceAsyncImpl.WithRawResponseImpl(
@@ -84,8 +77,7 @@ class CheckpointServiceAsyncImpl internal constructor(private val clientOptions:
                     .build()
                     .prepareAsync(clientOptions, params)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
-            return
-                    request
+            return request
                         .thenComposeAsync {
                             clientOptions.httpClient.executeAsync(
                                 it,

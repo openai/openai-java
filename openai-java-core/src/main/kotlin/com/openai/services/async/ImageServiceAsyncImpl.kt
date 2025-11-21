@@ -48,14 +48,8 @@ class ImageServiceAsyncImpl internal constructor(private val clientOptions: Clie
     override fun withOptions(modifier: Consumer<ClientOptions.Builder>): ImageServiceAsync =
         ImageServiceAsyncImpl(clientOptions.toBuilder().apply(modifier::accept).build())
 
-    override fun createVariation(
-        params: ImageCreateVariationParams,
-        requestOptions: RequestOptions,
-        ImageServiceAsyncImpl(clientOptions.toBuilder().apply(modifier::accept).build())
 
     override fun createVariation(
-        params: ImageCreateVariationParams,
-        requestOptions: RequestOptions,
         params: ImageCreateVariationParams,
         requestOptions: RequestOptions,
     ): CompletableFuture<ImagesResponse> =
@@ -65,15 +59,11 @@ class ImageServiceAsyncImpl internal constructor(private val clientOptions: Clie
     override fun edit(
         params: ImageEditParams,
         requestOptions: RequestOptions,
-        params: ImageEditParams,
-        requestOptions: RequestOptions,
     ): CompletableFuture<ImagesResponse> =
         // post /images/edits
         withRawResponse().edit(params, requestOptions).thenApply { it.parse() }
 
     override fun editStreaming(
-        params: ImageEditParams,
-        requestOptions: RequestOptions,
         params: ImageEditParams,
         requestOptions: RequestOptions,
     ): AsyncStreamResponse<ImageEditStreamEvent> =
@@ -86,15 +76,11 @@ class ImageServiceAsyncImpl internal constructor(private val clientOptions: Clie
     override fun generate(
         params: ImageGenerateParams,
         requestOptions: RequestOptions,
-        params: ImageGenerateParams,
-        requestOptions: RequestOptions,
     ): CompletableFuture<ImagesResponse> =
         // post /images/generations
         withRawResponse().generate(params, requestOptions).thenApply { it.parse() }
 
     override fun generateStreaming(
-        params: ImageGenerateParams,
-        requestOptions: RequestOptions,
         params: ImageGenerateParams,
         requestOptions: RequestOptions,
     ): AsyncStreamResponse<ImageGenStreamEvent> =
@@ -111,7 +97,6 @@ class ImageServiceAsyncImpl internal constructor(private val clientOptions: Clie
             errorHandler(errorBodyHandler(clientOptions.jsonMapper))
 
         override fun withOptions(
-            val cancellationTokenSource = CancellationTokenSource()
             modifier: Consumer<ClientOptions.Builder>
         ): ImageServiceAsync.WithRawResponse =
             ImageServiceAsyncImpl.WithRawResponseImpl(
@@ -135,8 +120,7 @@ class ImageServiceAsyncImpl internal constructor(private val clientOptions: Clie
                     .build()
                     .prepareAsync(clientOptions, params)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
-            return
-                    request
+            return request
                         .thenComposeAsync {
                             clientOptions.httpClient.executeAsync(
                                 it,
@@ -152,11 +136,10 @@ class ImageServiceAsyncImpl internal constructor(private val clientOptions: Clie
                                 if (requestOptions.responseValidation!!) {
                                     it.validate()
                                 }
-
-            .withCancellation(cancellationTokenSource)
                             }
                     }
                 }
+                .withCancellation(cancellationTokenSource)
         }
 
         private val editHandler: Handler<ImagesResponse> =
@@ -176,8 +159,7 @@ class ImageServiceAsyncImpl internal constructor(private val clientOptions: Clie
                     .build()
                     .prepareAsync(clientOptions, params)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
-            return
-                    request
+            return request
                         .thenComposeAsync {
                             clientOptions.httpClient.executeAsync(
                                 it,
@@ -193,11 +175,10 @@ class ImageServiceAsyncImpl internal constructor(private val clientOptions: Clie
                                 if (requestOptions.responseValidation!!) {
                                     it.validate()
                                 }
-
-            .withCancellation(cancellationTokenSource)
                             }
                     }
                 }
+                .withCancellation(cancellationTokenSource)
         }
 
         private val editStreamingHandler: Handler<StreamResponse<ImageEditStreamEvent>> =
@@ -222,8 +203,7 @@ class ImageServiceAsyncImpl internal constructor(private val clientOptions: Clie
                     .build()
                     .prepareAsync(clientOptions, params)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
-            return
-                    request
+            return request
                         .thenComposeAsync {
                             clientOptions.httpClient.executeAsync(
                                 it,
@@ -241,11 +221,10 @@ class ImageServiceAsyncImpl internal constructor(private val clientOptions: Clie
                                 } else {
                                     streamResponse
                                 }
-
-            .withCancellation(cancellationTokenSource)
                             }
                     }
                 }
+                .withCancellation(cancellationTokenSource)
         }
 
         private val generateHandler: Handler<ImagesResponse> =
@@ -265,8 +244,7 @@ class ImageServiceAsyncImpl internal constructor(private val clientOptions: Clie
                     .build()
                     .prepareAsync(clientOptions, params)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
-            return
-                    request
+            return request
                         .thenComposeAsync {
                             clientOptions.httpClient.executeAsync(
                                 it,
@@ -282,11 +260,10 @@ class ImageServiceAsyncImpl internal constructor(private val clientOptions: Clie
                                 if (requestOptions.responseValidation!!) {
                                     it.validate()
                                 }
-
-            .withCancellation(cancellationTokenSource)
                             }
                     }
                 }
+                .withCancellation(cancellationTokenSource)
         }
 
         private val generateStreamingHandler: Handler<StreamResponse<ImageGenStreamEvent>> =
@@ -315,8 +292,7 @@ class ImageServiceAsyncImpl internal constructor(private val clientOptions: Clie
                     .build()
                     .prepareAsync(clientOptions, params)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
-            return
-                    request
+            return request
                         .thenComposeAsync {
                             clientOptions.httpClient.executeAsync(
                                 it,
@@ -334,11 +310,10 @@ class ImageServiceAsyncImpl internal constructor(private val clientOptions: Clie
                                 } else {
                                     streamResponse
                                 }
-
-            .withCancellation(cancellationTokenSource)
                             }
                     }
                 }
+                .withCancellation(cancellationTokenSource)
         }
     }
 }

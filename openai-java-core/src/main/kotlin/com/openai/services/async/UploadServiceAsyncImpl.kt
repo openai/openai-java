@@ -39,21 +39,12 @@ class UploadServiceAsyncImpl internal constructor(private val clientOptions: Cli
 
     override fun withRawResponse(): UploadServiceAsync.WithRawResponse = withRawResponse
 
-
     override fun withOptions(modifier: Consumer<ClientOptions.Builder>): UploadServiceAsync =
-        UploadServiceAsyncImpl(clientOptions.toBuilder().apply(modifier::accept).build())
-
         UploadServiceAsyncImpl(clientOptions.toBuilder().apply(modifier::accept).build())
 
     override fun parts(): PartServiceAsync = parts
 
     override fun create(
-        params: UploadCreateParams,
-        requestOptions: RequestOptions,
-
-    override fun create(
-        params: UploadCreateParams,
-        requestOptions: RequestOptions,
         params: UploadCreateParams,
         requestOptions: RequestOptions,
     ): CompletableFuture<Upload> =
@@ -63,15 +54,11 @@ class UploadServiceAsyncImpl internal constructor(private val clientOptions: Cli
     override fun cancel(
         params: UploadCancelParams,
         requestOptions: RequestOptions,
-        params: UploadCancelParams,
-        requestOptions: RequestOptions,
     ): CompletableFuture<Upload> =
         // post /uploads/{upload_id}/cancel
         withRawResponse().cancel(params, requestOptions).thenApply { it.parse() }
 
     override fun complete(
-        params: UploadCompleteParams,
-        requestOptions: RequestOptions,
         params: UploadCompleteParams,
         requestOptions: RequestOptions,
     ): CompletableFuture<Upload> =
@@ -89,7 +76,6 @@ class UploadServiceAsyncImpl internal constructor(private val clientOptions: Cli
         }
 
         override fun withOptions(
-            val cancellationTokenSource = CancellationTokenSource()
             modifier: Consumer<ClientOptions.Builder>
         ): UploadServiceAsync.WithRawResponse =
             UploadServiceAsyncImpl.WithRawResponseImpl(
@@ -97,7 +83,6 @@ class UploadServiceAsyncImpl internal constructor(private val clientOptions: Cli
             )
 
         override fun parts(): PartServiceAsync.WithRawResponse = parts
-            val cancellationTokenSource = CancellationTokenSource()
 
         private val createHandler: Handler<Upload> = jsonHandler<Upload>(clientOptions.jsonMapper)
 
@@ -115,8 +100,7 @@ class UploadServiceAsyncImpl internal constructor(private val clientOptions: Cli
                     .build()
                     .prepareAsync(clientOptions, params)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
-            return
-                    request
+            return request
                         .thenComposeAsync {
                             clientOptions.httpClient.executeAsync(
                                 it,
@@ -131,13 +115,6 @@ class UploadServiceAsyncImpl internal constructor(private val clientOptions: Cli
                             .also {
                                 if (requestOptions.responseValidation!!) {
                                     it.validate()
-                                }
-
-            .withCancellation(cancellationTokenSource)
-                            }
-                    }
-                }
-        }
 
         private val cancelHandler: Handler<Upload> = jsonHandler<Upload>(clientOptions.jsonMapper)
 
@@ -158,8 +135,7 @@ class UploadServiceAsyncImpl internal constructor(private val clientOptions: Cli
                     .build()
                     .prepareAsync(clientOptions, params)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
-            return
-                    request
+            return request
                         .thenComposeAsync {
                             clientOptions.httpClient.executeAsync(
                                 it,
@@ -174,13 +150,6 @@ class UploadServiceAsyncImpl internal constructor(private val clientOptions: Cli
                             .also {
                                 if (requestOptions.responseValidation!!) {
                                     it.validate()
-                                }
-
-            .withCancellation(cancellationTokenSource)
-                            }
-                    }
-                }
-        }
 
         private val completeHandler: Handler<Upload> = jsonHandler<Upload>(clientOptions.jsonMapper)
 
@@ -201,8 +170,7 @@ class UploadServiceAsyncImpl internal constructor(private val clientOptions: Cli
                     .build()
                     .prepareAsync(clientOptions, params)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
-            return
-                    request
+            return request
                         .thenComposeAsync {
                             clientOptions.httpClient.executeAsync(
                                 it,
@@ -217,12 +185,4 @@ class UploadServiceAsyncImpl internal constructor(private val clientOptions: Cli
                             .also {
                                 if (requestOptions.responseValidation!!) {
                                     it.validate()
-                                }
-
-            .withCancellation(cancellationTokenSource)
-                            }
-                    }
-                }
-        }
-    }
 }

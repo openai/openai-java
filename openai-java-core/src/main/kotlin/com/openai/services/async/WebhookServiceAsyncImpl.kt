@@ -25,7 +25,6 @@ class WebhookServiceAsyncImpl internal constructor(private val clientOptions: Cl
     override fun unwrap(params: WebhookVerificationParams): UnwrapWebhookEvent =
         WebhookServiceImpl(clientOptions).unwrap(params)
 
-    override fun verifySignature(params: WebhookVerificationParams) =
         WebhookServiceImpl(clientOptions).verifySignature(params)
 
     class WithRawResponseImpl internal constructor(private val clientOptions: ClientOptions) :

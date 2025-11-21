@@ -42,14 +42,8 @@ class CompletionServiceAsyncImpl internal constructor(private val clientOptions:
     override fun withOptions(modifier: Consumer<ClientOptions.Builder>): CompletionServiceAsync =
         CompletionServiceAsyncImpl(clientOptions.toBuilder().apply(modifier::accept).build())
 
-    override fun create(
-        params: CompletionCreateParams,
-        requestOptions: RequestOptions,
-        CompletionServiceAsyncImpl(clientOptions.toBuilder().apply(modifier::accept).build())
 
     override fun create(
-        params: CompletionCreateParams,
-        requestOptions: RequestOptions,
         params: CompletionCreateParams,
         requestOptions: RequestOptions,
     ): CompletableFuture<Completion> =
@@ -57,8 +51,6 @@ class CompletionServiceAsyncImpl internal constructor(private val clientOptions:
         withRawResponse().create(params, requestOptions).thenApply { it.parse() }
 
     override fun createStreaming(
-        params: CompletionCreateParams,
-        requestOptions: RequestOptions,
         params: CompletionCreateParams,
         requestOptions: RequestOptions,
     ): AsyncStreamResponse<Completion> =
@@ -75,7 +67,6 @@ class CompletionServiceAsyncImpl internal constructor(private val clientOptions:
             errorHandler(errorBodyHandler(clientOptions.jsonMapper))
 
         override fun withOptions(
-            val cancellationTokenSource = CancellationTokenSource()
             modifier: Consumer<ClientOptions.Builder>
         ): CompletionServiceAsync.WithRawResponse =
             CompletionServiceAsyncImpl.WithRawResponseImpl(
@@ -99,8 +90,7 @@ class CompletionServiceAsyncImpl internal constructor(private val clientOptions:
                     .build()
                     .prepareAsync(clientOptions, params)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
-            return
-                    request
+            return request
                         .thenComposeAsync {
                             clientOptions.httpClient.executeAsync(
                                 it,
@@ -116,11 +106,10 @@ class CompletionServiceAsyncImpl internal constructor(private val clientOptions:
                                 if (requestOptions.responseValidation!!) {
                                     it.validate()
                                 }
-
-            .withCancellation(cancellationTokenSource)
                             }
                     }
                 }
+                .withCancellation(cancellationTokenSource)
         }
 
         private val createStreamingHandler: Handler<StreamResponse<Completion>> =
@@ -149,8 +138,7 @@ class CompletionServiceAsyncImpl internal constructor(private val clientOptions:
                     .build()
                     .prepareAsync(clientOptions, params)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
-            return
-                    request
+            return request
                         .thenComposeAsync {
                             clientOptions.httpClient.executeAsync(
                                 it,
@@ -168,11 +156,10 @@ class CompletionServiceAsyncImpl internal constructor(private val clientOptions:
                                 } else {
                                     streamResponse
                                 }
-
-            .withCancellation(cancellationTokenSource)
                             }
                     }
                 }
+                .withCancellation(cancellationTokenSource)
         }
     }
 }

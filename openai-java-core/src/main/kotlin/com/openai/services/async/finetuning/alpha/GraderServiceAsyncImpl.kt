@@ -37,14 +37,8 @@ class GraderServiceAsyncImpl internal constructor(private val clientOptions: Cli
     override fun withOptions(modifier: Consumer<ClientOptions.Builder>): GraderServiceAsync =
         GraderServiceAsyncImpl(clientOptions.toBuilder().apply(modifier::accept).build())
 
-    override fun run(
-        params: GraderRunParams,
-        requestOptions: RequestOptions,
-        GraderServiceAsyncImpl(clientOptions.toBuilder().apply(modifier::accept).build())
 
     override fun run(
-        params: GraderRunParams,
-        requestOptions: RequestOptions,
         params: GraderRunParams,
         requestOptions: RequestOptions,
     ): CompletableFuture<GraderRunResponse> =
@@ -52,8 +46,6 @@ class GraderServiceAsyncImpl internal constructor(private val clientOptions: Cli
         withRawResponse().run(params, requestOptions).thenApply { it.parse() }
 
     override fun validate(
-        params: GraderValidateParams,
-        requestOptions: RequestOptions,
         params: GraderValidateParams,
         requestOptions: RequestOptions,
     ): CompletableFuture<GraderValidateResponse> =
@@ -67,7 +59,6 @@ class GraderServiceAsyncImpl internal constructor(private val clientOptions: Cli
             errorHandler(errorBodyHandler(clientOptions.jsonMapper))
 
         override fun withOptions(
-            val cancellationTokenSource = CancellationTokenSource()
             modifier: Consumer<ClientOptions.Builder>
         ): GraderServiceAsync.WithRawResponse =
             GraderServiceAsyncImpl.WithRawResponseImpl(
@@ -91,8 +82,7 @@ class GraderServiceAsyncImpl internal constructor(private val clientOptions: Cli
                     .build()
                     .prepareAsync(clientOptions, params)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
-            return
-                    request
+            return request
                         .thenComposeAsync {
                             clientOptions.httpClient.executeAsync(
                                 it,
@@ -107,13 +97,6 @@ class GraderServiceAsyncImpl internal constructor(private val clientOptions: Cli
                             .also {
                                 if (requestOptions.responseValidation!!) {
                                     it.validate()
-                                }
-
-            .withCancellation(cancellationTokenSource)
-                            }
-                    }
-                }
-        }
 
         private val validateHandler: Handler<GraderValidateResponse> =
             jsonHandler<GraderValidateResponse>(clientOptions.jsonMapper)
@@ -132,8 +115,7 @@ class GraderServiceAsyncImpl internal constructor(private val clientOptions: Cli
                     .build()
                     .prepareAsync(clientOptions, params)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
-            return
-                    request
+            return request
                         .thenComposeAsync {
                             clientOptions.httpClient.executeAsync(
                                 it,
@@ -148,12 +130,4 @@ class GraderServiceAsyncImpl internal constructor(private val clientOptions: Cli
                             .also {
                                 if (requestOptions.responseValidation!!) {
                                     it.validate()
-                                }
-
-            .withCancellation(cancellationTokenSource)
-                            }
-                    }
-                }
-        }
-    }
 }

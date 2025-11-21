@@ -35,14 +35,8 @@ class InputTokenServiceAsyncImpl internal constructor(private val clientOptions:
     override fun withOptions(modifier: Consumer<ClientOptions.Builder>): InputTokenServiceAsync =
         InputTokenServiceAsyncImpl(clientOptions.toBuilder().apply(modifier::accept).build())
 
-    override fun count(
-        params: InputTokenCountParams,
-        requestOptions: RequestOptions,
-        InputTokenServiceAsyncImpl(clientOptions.toBuilder().apply(modifier::accept).build())
 
     override fun count(
-        params: InputTokenCountParams,
-        requestOptions: RequestOptions,
         params: InputTokenCountParams,
         requestOptions: RequestOptions,
     ): CompletableFuture<InputTokenCountResponse> =
@@ -56,7 +50,6 @@ class InputTokenServiceAsyncImpl internal constructor(private val clientOptions:
             errorHandler(errorBodyHandler(clientOptions.jsonMapper))
 
         override fun withOptions(
-            val cancellationTokenSource = CancellationTokenSource()
             modifier: Consumer<ClientOptions.Builder>
         ): InputTokenServiceAsync.WithRawResponse =
             InputTokenServiceAsyncImpl.WithRawResponseImpl(
@@ -80,8 +73,7 @@ class InputTokenServiceAsyncImpl internal constructor(private val clientOptions:
                     .build()
                     .prepareAsync(clientOptions, params)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
-            return
-                    request
+            return request
                         .thenComposeAsync {
                             clientOptions.httpClient.executeAsync(
                                 it,
@@ -96,12 +88,4 @@ class InputTokenServiceAsyncImpl internal constructor(private val clientOptions:
                             .also {
                                 if (requestOptions.responseValidation!!) {
                                     it.validate()
-                                }
-
-            .withCancellation(cancellationTokenSource)
-                            }
-                    }
-                }
-        }
-    }
 }

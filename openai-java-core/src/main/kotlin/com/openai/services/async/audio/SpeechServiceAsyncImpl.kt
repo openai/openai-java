@@ -31,14 +31,8 @@ class SpeechServiceAsyncImpl internal constructor(private val clientOptions: Cli
     override fun withOptions(modifier: Consumer<ClientOptions.Builder>): SpeechServiceAsync =
         SpeechServiceAsyncImpl(clientOptions.toBuilder().apply(modifier::accept).build())
 
-    override fun create(
-        params: SpeechCreateParams,
-        requestOptions: RequestOptions,
-        SpeechServiceAsyncImpl(clientOptions.toBuilder().apply(modifier::accept).build())
 
     override fun create(
-        params: SpeechCreateParams,
-        requestOptions: RequestOptions,
         params: SpeechCreateParams,
         requestOptions: RequestOptions,
     ): CompletableFuture<HttpResponse> =
@@ -52,7 +46,6 @@ class SpeechServiceAsyncImpl internal constructor(private val clientOptions: Cli
             errorHandler(errorBodyHandler(clientOptions.jsonMapper))
 
         override fun withOptions(
-            val cancellationTokenSource = CancellationTokenSource()
             modifier: Consumer<ClientOptions.Builder>
         ): SpeechServiceAsync.WithRawResponse =
             SpeechServiceAsyncImpl.WithRawResponseImpl(

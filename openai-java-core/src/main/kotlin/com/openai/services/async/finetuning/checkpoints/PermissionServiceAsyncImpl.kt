@@ -42,14 +42,8 @@ class PermissionServiceAsyncImpl internal constructor(private val clientOptions:
     override fun withOptions(modifier: Consumer<ClientOptions.Builder>): PermissionServiceAsync =
         PermissionServiceAsyncImpl(clientOptions.toBuilder().apply(modifier::accept).build())
 
-    override fun create(
-        params: PermissionCreateParams,
-        requestOptions: RequestOptions,
-        PermissionServiceAsyncImpl(clientOptions.toBuilder().apply(modifier::accept).build())
 
     override fun create(
-        params: PermissionCreateParams,
-        requestOptions: RequestOptions,
         params: PermissionCreateParams,
         requestOptions: RequestOptions,
     ): CompletableFuture<PermissionCreatePageAsync> =
@@ -59,15 +53,11 @@ class PermissionServiceAsyncImpl internal constructor(private val clientOptions:
     override fun retrieve(
         params: PermissionRetrieveParams,
         requestOptions: RequestOptions,
-        params: PermissionRetrieveParams,
-        requestOptions: RequestOptions,
     ): CompletableFuture<PermissionRetrieveResponse> =
         // get /fine_tuning/checkpoints/{fine_tuned_model_checkpoint}/permissions
         withRawResponse().retrieve(params, requestOptions).thenApply { it.parse() }
 
     override fun delete(
-        params: PermissionDeleteParams,
-        requestOptions: RequestOptions,
         params: PermissionDeleteParams,
         requestOptions: RequestOptions,
     ): CompletableFuture<PermissionDeleteResponse> =
@@ -113,8 +103,7 @@ class PermissionServiceAsyncImpl internal constructor(private val clientOptions:
                     .build()
                     .prepareAsync(clientOptions, params)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
-            return
-                    request
+            return request
                         .thenComposeAsync {
                             clientOptions.httpClient.executeAsync(
                                 it,
@@ -169,8 +158,7 @@ class PermissionServiceAsyncImpl internal constructor(private val clientOptions:
                     .build()
                     .prepareAsync(clientOptions, params)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
-            return
-                    request
+            return request
                         .thenComposeAsync {
                             clientOptions.httpClient.executeAsync(
                                 it,
@@ -185,13 +173,6 @@ class PermissionServiceAsyncImpl internal constructor(private val clientOptions:
                             .also {
                                 if (requestOptions.responseValidation!!) {
                                     it.validate()
-                                }
-
-            .withCancellation(cancellationTokenSource)
-                            }
-                    }
-                }
-        }
 
         private val deleteHandler: Handler<PermissionDeleteResponse> =
             jsonHandler<PermissionDeleteResponse>(clientOptions.jsonMapper)
@@ -219,8 +200,7 @@ class PermissionServiceAsyncImpl internal constructor(private val clientOptions:
                     .build()
                     .prepareAsync(clientOptions, params)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
-            return
-                    request
+            return request
                         .thenComposeAsync {
                             clientOptions.httpClient.executeAsync(
                                 it,
@@ -235,12 +215,4 @@ class PermissionServiceAsyncImpl internal constructor(private val clientOptions:
                             .also {
                                 if (requestOptions.responseValidation!!) {
                                     it.validate()
-                                }
-
-            .withCancellation(cancellationTokenSource)
-                            }
-                    }
-                }
-        }
-    }
 }

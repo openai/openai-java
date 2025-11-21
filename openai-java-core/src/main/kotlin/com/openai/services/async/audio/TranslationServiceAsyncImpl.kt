@@ -35,14 +35,8 @@ class TranslationServiceAsyncImpl internal constructor(private val clientOptions
     override fun withOptions(modifier: Consumer<ClientOptions.Builder>): TranslationServiceAsync =
         TranslationServiceAsyncImpl(clientOptions.toBuilder().apply(modifier::accept).build())
 
-    override fun create(
-        params: TranslationCreateParams,
-        requestOptions: RequestOptions,
-        TranslationServiceAsyncImpl(clientOptions.toBuilder().apply(modifier::accept).build())
 
     override fun create(
-        params: TranslationCreateParams,
-        requestOptions: RequestOptions,
         params: TranslationCreateParams,
         requestOptions: RequestOptions,
     ): CompletableFuture<TranslationCreateResponse> =
@@ -56,7 +50,6 @@ class TranslationServiceAsyncImpl internal constructor(private val clientOptions
             errorHandler(errorBodyHandler(clientOptions.jsonMapper))
 
         override fun withOptions(
-            val cancellationTokenSource = CancellationTokenSource()
             modifier: Consumer<ClientOptions.Builder>
         ): TranslationServiceAsync.WithRawResponse =
             TranslationServiceAsyncImpl.WithRawResponseImpl(
@@ -80,8 +73,7 @@ class TranslationServiceAsyncImpl internal constructor(private val clientOptions
                     .build()
                     .prepareAsync(clientOptions, params)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
-            return
-                    request
+            return request
                         .thenComposeAsync {
                             clientOptions.httpClient.executeAsync(
                                 it,
@@ -96,12 +88,4 @@ class TranslationServiceAsyncImpl internal constructor(private val clientOptions
                             .also {
                                 if (requestOptions.responseValidation!!) {
                                     it.validate()
-                                }
-
-            .withCancellation(cancellationTokenSource)
-                            }
-                    }
-                }
-        }
-    }
 }

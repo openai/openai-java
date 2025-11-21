@@ -35,14 +35,8 @@ class ClientSecretServiceAsyncImpl internal constructor(private val clientOption
     override fun withOptions(modifier: Consumer<ClientOptions.Builder>): ClientSecretServiceAsync =
         ClientSecretServiceAsyncImpl(clientOptions.toBuilder().apply(modifier::accept).build())
 
-    override fun create(
-        params: ClientSecretCreateParams,
-        requestOptions: RequestOptions,
-        ClientSecretServiceAsyncImpl(clientOptions.toBuilder().apply(modifier::accept).build())
 
     override fun create(
-        params: ClientSecretCreateParams,
-        requestOptions: RequestOptions,
         params: ClientSecretCreateParams,
         requestOptions: RequestOptions,
     ): CompletableFuture<ClientSecretCreateResponse> =
@@ -56,7 +50,6 @@ class ClientSecretServiceAsyncImpl internal constructor(private val clientOption
             errorHandler(errorBodyHandler(clientOptions.jsonMapper))
 
         override fun withOptions(
-            val cancellationTokenSource = CancellationTokenSource()
             modifier: Consumer<ClientOptions.Builder>
         ): ClientSecretServiceAsync.WithRawResponse =
             ClientSecretServiceAsyncImpl.WithRawResponseImpl(
@@ -80,8 +73,7 @@ class ClientSecretServiceAsyncImpl internal constructor(private val clientOption
                     .build()
                     .prepareAsync(clientOptions, params)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
-            return
-                    request
+            return request
                         .thenComposeAsync {
                             clientOptions.httpClient.executeAsync(
                                 it,
@@ -96,12 +88,4 @@ class ClientSecretServiceAsyncImpl internal constructor(private val clientOption
                             .also {
                                 if (requestOptions.responseValidation!!) {
                                     it.validate()
-                                }
-
-            .withCancellation(cancellationTokenSource)
-                            }
-                    }
-                }
-        }
-    }
 }

@@ -49,20 +49,11 @@ class VideoServiceAsyncImpl internal constructor(private val clientOptions: Clie
     override fun create(
         params: VideoCreateParams,
         requestOptions: RequestOptions,
-        VideoServiceAsyncImpl(clientOptions.toBuilder().apply(modifier::accept).build())
-
-    override fun create(
-        params: VideoCreateParams,
-        requestOptions: RequestOptions,
-        params: VideoCreateParams,
-        requestOptions: RequestOptions,
     ): CompletableFuture<Video> =
         // post /videos
         withRawResponse().create(params, requestOptions).thenApply { it.parse() }
 
     override fun retrieve(
-        params: VideoRetrieveParams,
-        requestOptions: RequestOptions,
         params: VideoRetrieveParams,
         requestOptions: RequestOptions,
     ): CompletableFuture<Video> =
@@ -72,15 +63,11 @@ class VideoServiceAsyncImpl internal constructor(private val clientOptions: Clie
     override fun list(
         params: VideoListParams,
         requestOptions: RequestOptions,
-        params: VideoListParams,
-        requestOptions: RequestOptions,
     ): CompletableFuture<VideoListPageAsync> =
         // get /videos
         withRawResponse().list(params, requestOptions).thenApply { it.parse() }
 
     override fun delete(
-        params: VideoDeleteParams,
-        requestOptions: RequestOptions,
         params: VideoDeleteParams,
         requestOptions: RequestOptions,
     ): CompletableFuture<VideoDeleteResponse> =
@@ -90,15 +77,11 @@ class VideoServiceAsyncImpl internal constructor(private val clientOptions: Clie
     override fun downloadContent(
         params: VideoDownloadContentParams,
         requestOptions: RequestOptions,
-        params: VideoDownloadContentParams,
-        requestOptions: RequestOptions,
     ): CompletableFuture<HttpResponse> =
         // get /videos/{video_id}/content
         withRawResponse().downloadContent(params, requestOptions)
 
     override fun remix(
-        params: VideoRemixParams,
-        requestOptions: RequestOptions,
         params: VideoRemixParams,
         requestOptions: RequestOptions,
     ): CompletableFuture<Video> =
@@ -112,7 +95,6 @@ class VideoServiceAsyncImpl internal constructor(private val clientOptions: Clie
             errorHandler(errorBodyHandler(clientOptions.jsonMapper))
 
         override fun withOptions(
-            val cancellationTokenSource = CancellationTokenSource()
             modifier: Consumer<ClientOptions.Builder>
         ): VideoServiceAsync.WithRawResponse =
             VideoServiceAsyncImpl.WithRawResponseImpl(
@@ -135,8 +117,7 @@ class VideoServiceAsyncImpl internal constructor(private val clientOptions: Clie
                     .build()
                     .prepareAsync(clientOptions, params)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
-            return
-                    request
+            return request
                         .thenComposeAsync {
                             clientOptions.httpClient.executeAsync(
                                 it,
@@ -151,13 +132,6 @@ class VideoServiceAsyncImpl internal constructor(private val clientOptions: Clie
                             .also {
                                 if (requestOptions.responseValidation!!) {
                                     it.validate()
-                                }
-
-            .withCancellation(cancellationTokenSource)
-                            }
-                    }
-                }
-        }
 
         private val retrieveHandler: Handler<Video> = jsonHandler<Video>(clientOptions.jsonMapper)
 
@@ -177,8 +151,7 @@ class VideoServiceAsyncImpl internal constructor(private val clientOptions: Clie
                     .build()
                     .prepareAsync(clientOptions, params)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
-            return
-                    request
+            return request
                         .thenComposeAsync {
                             clientOptions.httpClient.executeAsync(
                                 it,
@@ -193,13 +166,6 @@ class VideoServiceAsyncImpl internal constructor(private val clientOptions: Clie
                             .also {
                                 if (requestOptions.responseValidation!!) {
                                     it.validate()
-                                }
-
-            .withCancellation(cancellationTokenSource)
-                            }
-                    }
-                }
-        }
 
         private val listHandler: Handler<VideoListPageResponse> =
             jsonHandler<VideoListPageResponse>(clientOptions.jsonMapper)
@@ -217,8 +183,7 @@ class VideoServiceAsyncImpl internal constructor(private val clientOptions: Clie
                     .build()
                     .prepareAsync(clientOptions, params)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
-            return
-                    request
+            return request
                         .thenComposeAsync {
                             clientOptions.httpClient.executeAsync(
                                 it,
@@ -269,8 +234,7 @@ class VideoServiceAsyncImpl internal constructor(private val clientOptions: Clie
                     .build()
                     .prepareAsync(clientOptions, params)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
-            return
-                    request
+            return request
                         .thenComposeAsync {
                             clientOptions.httpClient.executeAsync(
                                 it,
@@ -285,13 +249,6 @@ class VideoServiceAsyncImpl internal constructor(private val clientOptions: Clie
                             .also {
                                 if (requestOptions.responseValidation!!) {
                                     it.validate()
-                                }
-
-            .withCancellation(cancellationTokenSource)
-                            }
-                    }
-                }
-        }
 
         override fun downloadContent(
             params: VideoDownloadContentParams,
@@ -309,8 +266,7 @@ class VideoServiceAsyncImpl internal constructor(private val clientOptions: Clie
                     .build()
                     .prepareAsync(clientOptions, params)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
-            return
-                    request
+            return request
                         .thenComposeAsync {
                             clientOptions.httpClient.executeAsync(
                                 it,
@@ -340,8 +296,7 @@ class VideoServiceAsyncImpl internal constructor(private val clientOptions: Clie
                     .build()
                     .prepareAsync(clientOptions, params)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
-            return
-                    request
+            return request
                         .thenComposeAsync {
                             clientOptions.httpClient.executeAsync(
                                 it,
@@ -356,12 +311,4 @@ class VideoServiceAsyncImpl internal constructor(private val clientOptions: Clie
                             .also {
                                 if (requestOptions.responseValidation!!) {
                                     it.validate()
-                                }
-
-            .withCancellation(cancellationTokenSource)
-                            }
-                    }
-                }
-        }
-    }
 }
