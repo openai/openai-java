@@ -4,6 +4,7 @@ package com.openai.services.async
 
 import com.openai.core.ClientOptions
 import com.openai.services.async.chat.ChatCompletionServiceAsync
+import java.util.concurrent.CompletableFuture
 import java.util.function.Consumer
 
 interface ChatServiceAsync {

@@ -24,6 +24,8 @@ import com.openai.models.conversations.items.ItemDeleteParams
 import com.openai.models.conversations.items.ItemListPageAsync
 import com.openai.models.conversations.items.ItemListParams
 import com.openai.models.conversations.items.ItemRetrieveParams
+import com.openai.core.http.CancellationTokenSource
+import com.openai.core.withCancellation
 import java.util.concurrent.CompletableFuture
 import java.util.function.Consumer
 import kotlin.jvm.optionals.getOrNull
@@ -88,6 +90,7 @@ class ItemServiceAsyncImpl internal constructor(private val clientOptions: Clien
             params: ItemCreateParams,
             requestOptions: RequestOptions,
         ): CompletableFuture<HttpResponseFor<ConversationItemList>> {
+            val cancellationTokenSource = CancellationTokenSource()
             // We check here instead of in the params builder because this can be specified
             // positionally or in the params class.
             checkRequired("conversationId", params.conversationId().getOrNull())
@@ -100,19 +103,27 @@ class ItemServiceAsyncImpl internal constructor(private val clientOptions: Clien
                     .build()
                     .prepareAsync(clientOptions, params)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
-            return request
-                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
-                .thenApply { response ->
-                    errorHandler.handle(response).parseable {
-                        response
-                            .use { createHandler.handle(it) }
-                            .also {
-                                if (requestOptions.responseValidation!!) {
-                                    it.validate()
-                                }
-                            }
+            val delegate =
+                request
+                    .thenComposeAsync {
+                        clientOptions.httpClient.executeAsync(
+                            it,
+                            requestOptions,
+                            cancellationTokenSource.token()
+                        )
                     }
-                }
+                    .thenApply { response ->
+                        errorHandler.handle(response).parseable {
+                            response
+                                .use { createHandler.handle(it) }
+                                .also {
+                                    if (requestOptions.responseValidation!!) {
+                                        it.validate()
+                                    }
+                                }
+                        }
+                    }
+            return delegate.withCancellation(cancellationTokenSource)
         }
 
         private val retrieveHandler: Handler<ConversationItem> =
@@ -122,6 +133,7 @@ class ItemServiceAsyncImpl internal constructor(private val clientOptions: Clien
             params: ItemRetrieveParams,
             requestOptions: RequestOptions,
         ): CompletableFuture<HttpResponseFor<ConversationItem>> {
+            val cancellationTokenSource = CancellationTokenSource()
             // We check here instead of in the params builder because this can be specified
             // positionally or in the params class.
             checkRequired("itemId", params.itemId().getOrNull())
@@ -138,19 +150,27 @@ class ItemServiceAsyncImpl internal constructor(private val clientOptions: Clien
                     .build()
                     .prepareAsync(clientOptions, params)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
-            return request
-                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
-                .thenApply { response ->
-                    errorHandler.handle(response).parseable {
-                        response
-                            .use { retrieveHandler.handle(it) }
-                            .also {
-                                if (requestOptions.responseValidation!!) {
-                                    it.validate()
-                                }
-                            }
+            val delegate =
+                request
+                    .thenComposeAsync {
+                        clientOptions.httpClient.executeAsync(
+                            it,
+                            requestOptions,
+                            cancellationTokenSource.token()
+                        )
                     }
-                }
+                    .thenApply { response ->
+                        errorHandler.handle(response).parseable {
+                            response
+                                .use { retrieveHandler.handle(it) }
+                                .also {
+                                    if (requestOptions.responseValidation!!) {
+                                        it.validate()
+                                    }
+                                }
+                        }
+                    }
+            return delegate.withCancellation(cancellationTokenSource)
         }
 
         private val listHandler: Handler<ConversationItemList> =
@@ -160,6 +180,7 @@ class ItemServiceAsyncImpl internal constructor(private val clientOptions: Clien
             params: ItemListParams,
             requestOptions: RequestOptions,
         ): CompletableFuture<HttpResponseFor<ItemListPageAsync>> {
+            val cancellationTokenSource = CancellationTokenSource()
             // We check here instead of in the params builder because this can be specified
             // positionally or in the params class.
             checkRequired("conversationId", params.conversationId().getOrNull())
@@ -171,27 +192,35 @@ class ItemServiceAsyncImpl internal constructor(private val clientOptions: Clien
                     .build()
                     .prepareAsync(clientOptions, params)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
-            return request
-                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
-                .thenApply { response ->
-                    errorHandler.handle(response).parseable {
-                        response
-                            .use { listHandler.handle(it) }
-                            .also {
-                                if (requestOptions.responseValidation!!) {
-                                    it.validate()
-                                }
-                            }
-                            .let {
-                                ItemListPageAsync.builder()
-                                    .service(ItemServiceAsyncImpl(clientOptions))
-                                    .streamHandlerExecutor(clientOptions.streamHandlerExecutor)
-                                    .params(params)
-                                    .response(it)
-                                    .build()
-                            }
+            val delegate =
+                request
+                    .thenComposeAsync {
+                        clientOptions.httpClient.executeAsync(
+                            it,
+                            requestOptions,
+                            cancellationTokenSource.token()
+                        )
                     }
-                }
+                    .thenApply { response ->
+                        errorHandler.handle(response).parseable {
+                            response
+                                .use { listHandler.handle(it) }
+                                .also {
+                                    if (requestOptions.responseValidation!!) {
+                                        it.validate()
+                                    }
+                                }
+                                .let {
+                                    ItemListPageAsync.builder()
+                                        .service(ItemServiceAsyncImpl(clientOptions))
+                                        .streamHandlerExecutor(clientOptions.streamHandlerExecutor)
+                                        .params(params)
+                                        .response(it)
+                                        .build()
+                                }
+                        }
+                    }
+            return delegate.withCancellation(cancellationTokenSource)
         }
 
         private val deleteHandler: Handler<Conversation> =
@@ -201,6 +230,7 @@ class ItemServiceAsyncImpl internal constructor(private val clientOptions: Clien
             params: ItemDeleteParams,
             requestOptions: RequestOptions,
         ): CompletableFuture<HttpResponseFor<Conversation>> {
+            val cancellationTokenSource = CancellationTokenSource()
             // We check here instead of in the params builder because this can be specified
             // positionally or in the params class.
             checkRequired("itemId", params.itemId().getOrNull())
@@ -218,19 +248,27 @@ class ItemServiceAsyncImpl internal constructor(private val clientOptions: Clien
                     .build()
                     .prepareAsync(clientOptions, params)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
-            return request
-                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
-                .thenApply { response ->
-                    errorHandler.handle(response).parseable {
-                        response
-                            .use { deleteHandler.handle(it) }
-                            .also {
-                                if (requestOptions.responseValidation!!) {
-                                    it.validate()
-                                }
-                            }
+            val delegate =
+                request
+                    .thenComposeAsync {
+                        clientOptions.httpClient.executeAsync(
+                            it,
+                            requestOptions,
+                            cancellationTokenSource.token()
+                        )
                     }
-                }
+                    .thenApply { response ->
+                        errorHandler.handle(response).parseable {
+                            response
+                                .use { deleteHandler.handle(it) }
+                                .also {
+                                    if (requestOptions.responseValidation!!) {
+                                        it.validate()
+                                    }
+                                }
+                        }
+                    }
+            return delegate.withCancellation(cancellationTokenSource)
         }
     }
 }

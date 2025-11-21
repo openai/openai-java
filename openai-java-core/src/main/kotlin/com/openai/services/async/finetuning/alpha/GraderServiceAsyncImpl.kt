@@ -19,6 +19,8 @@ import com.openai.models.finetuning.alpha.graders.GraderRunParams
 import com.openai.models.finetuning.alpha.graders.GraderRunResponse
 import com.openai.models.finetuning.alpha.graders.GraderValidateParams
 import com.openai.models.finetuning.alpha.graders.GraderValidateResponse
+import com.openai.core.http.CancellationTokenSource
+import com.openai.core.withCancellation
 import java.util.concurrent.CompletableFuture
 import java.util.function.Consumer
 
@@ -31,10 +33,18 @@ class GraderServiceAsyncImpl internal constructor(private val clientOptions: Cli
 
     override fun withRawResponse(): GraderServiceAsync.WithRawResponse = withRawResponse
 
+
     override fun withOptions(modifier: Consumer<ClientOptions.Builder>): GraderServiceAsync =
         GraderServiceAsyncImpl(clientOptions.toBuilder().apply(modifier::accept).build())
 
     override fun run(
+        params: GraderRunParams,
+        requestOptions: RequestOptions,
+        GraderServiceAsyncImpl(clientOptions.toBuilder().apply(modifier::accept).build())
+
+    override fun run(
+        params: GraderRunParams,
+        requestOptions: RequestOptions,
         params: GraderRunParams,
         requestOptions: RequestOptions,
     ): CompletableFuture<GraderRunResponse> =
@@ -42,6 +52,8 @@ class GraderServiceAsyncImpl internal constructor(private val clientOptions: Cli
         withRawResponse().run(params, requestOptions).thenApply { it.parse() }
 
     override fun validate(
+        params: GraderValidateParams,
+        requestOptions: RequestOptions,
         params: GraderValidateParams,
         requestOptions: RequestOptions,
     ): CompletableFuture<GraderValidateResponse> =
@@ -55,6 +67,7 @@ class GraderServiceAsyncImpl internal constructor(private val clientOptions: Cli
             errorHandler(errorBodyHandler(clientOptions.jsonMapper))
 
         override fun withOptions(
+            val cancellationTokenSource = CancellationTokenSource()
             modifier: Consumer<ClientOptions.Builder>
         ): GraderServiceAsync.WithRawResponse =
             GraderServiceAsyncImpl.WithRawResponseImpl(
@@ -68,6 +81,7 @@ class GraderServiceAsyncImpl internal constructor(private val clientOptions: Cli
             params: GraderRunParams,
             requestOptions: RequestOptions,
         ): CompletableFuture<HttpResponseFor<GraderRunResponse>> {
+            val cancellationTokenSource = CancellationTokenSource()
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.POST)
@@ -77,8 +91,15 @@ class GraderServiceAsyncImpl internal constructor(private val clientOptions: Cli
                     .build()
                     .prepareAsync(clientOptions, params)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
-            return request
-                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
+            return
+                    request
+                        .thenComposeAsync {
+                            clientOptions.httpClient.executeAsync(
+                                it,
+                                requestOptions,
+                                cancellationTokenSource.token()
+                            )
+                        }
                 .thenApply { response ->
                     errorHandler.handle(response).parseable {
                         response
@@ -87,6 +108,8 @@ class GraderServiceAsyncImpl internal constructor(private val clientOptions: Cli
                                 if (requestOptions.responseValidation!!) {
                                     it.validate()
                                 }
+
+            .withCancellation(cancellationTokenSource)
                             }
                     }
                 }
@@ -99,6 +122,7 @@ class GraderServiceAsyncImpl internal constructor(private val clientOptions: Cli
             params: GraderValidateParams,
             requestOptions: RequestOptions,
         ): CompletableFuture<HttpResponseFor<GraderValidateResponse>> {
+            val cancellationTokenSource = CancellationTokenSource()
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.POST)
@@ -108,8 +132,15 @@ class GraderServiceAsyncImpl internal constructor(private val clientOptions: Cli
                     .build()
                     .prepareAsync(clientOptions, params)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
-            return request
-                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
+            return
+                    request
+                        .thenComposeAsync {
+                            clientOptions.httpClient.executeAsync(
+                                it,
+                                requestOptions,
+                                cancellationTokenSource.token()
+                            )
+                        }
                 .thenApply { response ->
                     errorHandler.handle(response).parseable {
                         response
@@ -118,6 +149,8 @@ class GraderServiceAsyncImpl internal constructor(private val clientOptions: Cli
                                 if (requestOptions.responseValidation!!) {
                                     it.validate()
                                 }
+
+            .withCancellation(cancellationTokenSource)
                             }
                     }
                 }

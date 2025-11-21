@@ -18,6 +18,8 @@ import com.openai.core.prepareAsync
 import com.openai.models.chat.completions.messages.MessageListPageAsync
 import com.openai.models.chat.completions.messages.MessageListPageResponse
 import com.openai.models.chat.completions.messages.MessageListParams
+import com.openai.core.http.CancellationTokenSource
+import com.openai.core.withCancellation
 import java.util.concurrent.CompletableFuture
 import java.util.function.Consumer
 import kotlin.jvm.optionals.getOrNull
@@ -61,6 +63,7 @@ class MessageServiceAsyncImpl internal constructor(private val clientOptions: Cl
             params: MessageListParams,
             requestOptions: RequestOptions,
         ): CompletableFuture<HttpResponseFor<MessageListPageAsync>> {
+            val cancellationTokenSource = CancellationTokenSource()
             // We check here instead of in the params builder because this can be specified
             // positionally or in the params class.
             checkRequired("completionId", params.completionId().getOrNull())
@@ -72,8 +75,13 @@ class MessageServiceAsyncImpl internal constructor(private val clientOptions: Cl
                     .build()
                     .prepareAsync(clientOptions, params)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
-            return request
-                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
+            val delegate =
+                request
+                .thenComposeAsync { clientOptions.httpClient.executeAsync(
+                            it,
+                            requestOptions,
+                            cancellationTokenSource.token()
+                        ) }
                 .thenApply { response ->
                     errorHandler.handle(response).parseable {
                         response
@@ -93,6 +101,7 @@ class MessageServiceAsyncImpl internal constructor(private val clientOptions: Cl
                             }
                     }
                 }
+        return delegate.withCancellation(cancellationTokenSource)
         }
     }
 }

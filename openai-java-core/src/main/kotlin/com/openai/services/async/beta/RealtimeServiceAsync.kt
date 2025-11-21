@@ -5,6 +5,7 @@ package com.openai.services.async.beta
 import com.openai.core.ClientOptions
 import com.openai.services.async.beta.realtime.SessionServiceAsync
 import com.openai.services.async.beta.realtime.TranscriptionSessionServiceAsync
+import java.util.concurrent.CompletableFuture
 import java.util.function.Consumer
 
 @Deprecated(

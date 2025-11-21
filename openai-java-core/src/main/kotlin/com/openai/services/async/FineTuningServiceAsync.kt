@@ -7,6 +7,7 @@ import com.openai.services.async.finetuning.AlphaServiceAsync
 import com.openai.services.async.finetuning.CheckpointServiceAsync
 import com.openai.services.async.finetuning.JobServiceAsync
 import com.openai.services.async.finetuning.MethodServiceAsync
+import java.util.concurrent.CompletableFuture
 import java.util.function.Consumer
 
 interface FineTuningServiceAsync {

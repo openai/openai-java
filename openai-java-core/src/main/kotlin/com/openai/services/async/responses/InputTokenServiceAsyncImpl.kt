@@ -17,6 +17,8 @@ import com.openai.core.http.parseable
 import com.openai.core.prepareAsync
 import com.openai.models.responses.inputtokens.InputTokenCountParams
 import com.openai.models.responses.inputtokens.InputTokenCountResponse
+import com.openai.core.http.CancellationTokenSource
+import com.openai.core.withCancellation
 import java.util.concurrent.CompletableFuture
 import java.util.function.Consumer
 
@@ -29,10 +31,18 @@ class InputTokenServiceAsyncImpl internal constructor(private val clientOptions:
 
     override fun withRawResponse(): InputTokenServiceAsync.WithRawResponse = withRawResponse
 
+
     override fun withOptions(modifier: Consumer<ClientOptions.Builder>): InputTokenServiceAsync =
         InputTokenServiceAsyncImpl(clientOptions.toBuilder().apply(modifier::accept).build())
 
     override fun count(
+        params: InputTokenCountParams,
+        requestOptions: RequestOptions,
+        InputTokenServiceAsyncImpl(clientOptions.toBuilder().apply(modifier::accept).build())
+
+    override fun count(
+        params: InputTokenCountParams,
+        requestOptions: RequestOptions,
         params: InputTokenCountParams,
         requestOptions: RequestOptions,
     ): CompletableFuture<InputTokenCountResponse> =
@@ -46,6 +56,7 @@ class InputTokenServiceAsyncImpl internal constructor(private val clientOptions:
             errorHandler(errorBodyHandler(clientOptions.jsonMapper))
 
         override fun withOptions(
+            val cancellationTokenSource = CancellationTokenSource()
             modifier: Consumer<ClientOptions.Builder>
         ): InputTokenServiceAsync.WithRawResponse =
             InputTokenServiceAsyncImpl.WithRawResponseImpl(
@@ -59,6 +70,7 @@ class InputTokenServiceAsyncImpl internal constructor(private val clientOptions:
             params: InputTokenCountParams,
             requestOptions: RequestOptions,
         ): CompletableFuture<HttpResponseFor<InputTokenCountResponse>> {
+            val cancellationTokenSource = CancellationTokenSource()
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.POST)
@@ -68,8 +80,15 @@ class InputTokenServiceAsyncImpl internal constructor(private val clientOptions:
                     .build()
                     .prepareAsync(clientOptions, params)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
-            return request
-                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
+            return
+                    request
+                        .thenComposeAsync {
+                            clientOptions.httpClient.executeAsync(
+                                it,
+                                requestOptions,
+                                cancellationTokenSource.token()
+                            )
+                        }
                 .thenApply { response ->
                     errorHandler.handle(response).parseable {
                         response
@@ -78,6 +97,8 @@ class InputTokenServiceAsyncImpl internal constructor(private val clientOptions:
                                 if (requestOptions.responseValidation!!) {
                                     it.validate()
                                 }
+
+            .withCancellation(cancellationTokenSource)
                             }
                     }
                 }

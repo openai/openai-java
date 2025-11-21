@@ -3,6 +3,8 @@
 package com.openai.services.async.graders
 
 import com.openai.core.ClientOptions
+import com.openai.core.withCancellation
+import java.util.concurrent.CompletableFuture
 import java.util.function.Consumer
 
 class GraderModelServiceAsyncImpl internal constructor(private val clientOptions: ClientOptions) :

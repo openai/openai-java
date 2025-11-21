@@ -6,6 +6,7 @@ import com.openai.core.ClientOptions
 import com.openai.services.async.audio.SpeechServiceAsync
 import com.openai.services.async.audio.TranscriptionServiceAsync
 import com.openai.services.async.audio.TranslationServiceAsync
+import java.util.concurrent.CompletableFuture
 import java.util.function.Consumer
 
 interface AudioServiceAsync {

@@ -35,6 +35,8 @@ import com.openai.models.chat.completions.ChatCompletionRetrieveParams
 import com.openai.models.chat.completions.ChatCompletionUpdateParams
 import com.openai.services.async.chat.completions.MessageServiceAsync
 import com.openai.services.async.chat.completions.MessageServiceAsyncImpl
+import com.openai.core.http.CancellationTokenSource
+import com.openai.core.withCancellation
 import java.util.concurrent.CompletableFuture
 import java.util.function.Consumer
 import kotlin.jvm.optionals.getOrNull
@@ -128,6 +130,7 @@ internal constructor(private val clientOptions: ClientOptions) : ChatCompletionS
             params: ChatCompletionCreateParams,
             requestOptions: RequestOptions,
         ): CompletableFuture<HttpResponseFor<ChatCompletion>> {
+            val cancellationTokenSource = CancellationTokenSource()
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.POST)
@@ -137,8 +140,13 @@ internal constructor(private val clientOptions: ClientOptions) : ChatCompletionS
                     .build()
                     .prepareAsync(clientOptions, params)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
-            return request
-                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
+            val delegate =
+                request
+                .thenComposeAsync { clientOptions.httpClient.executeAsync(
+                            it,
+                            requestOptions,
+                            cancellationTokenSource.token()
+                        ) }
                 .thenApply { response ->
                     errorHandler.handle(response).parseable {
                         response
@@ -150,6 +158,7 @@ internal constructor(private val clientOptions: ClientOptions) : ChatCompletionS
                             }
                     }
                 }
+            return delegate.withCancellation(cancellationTokenSource)
         }
 
         private val createStreamingHandler: Handler<StreamResponse<ChatCompletionChunk>> =
@@ -159,6 +168,7 @@ internal constructor(private val clientOptions: ClientOptions) : ChatCompletionS
             params: ChatCompletionCreateParams,
             requestOptions: RequestOptions,
         ): CompletableFuture<HttpResponseFor<StreamResponse<ChatCompletionChunk>>> {
+            val cancellationTokenSource = CancellationTokenSource()
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.POST)
@@ -177,8 +187,13 @@ internal constructor(private val clientOptions: ClientOptions) : ChatCompletionS
                     .build()
                     .prepareAsync(clientOptions, params)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
-            return request
-                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
+            val delegate =
+                request
+                .thenComposeAsync { clientOptions.httpClient.executeAsync(
+                            it,
+                            requestOptions,
+                            cancellationTokenSource.token()
+                        ) }
                 .thenApply { response ->
                     errorHandler.handle(response).parseable {
                         response
@@ -192,6 +207,7 @@ internal constructor(private val clientOptions: ClientOptions) : ChatCompletionS
                             }
                     }
                 }
+            return delegate.withCancellation(cancellationTokenSource)
         }
 
         private val retrieveHandler: Handler<ChatCompletion> =
@@ -201,6 +217,7 @@ internal constructor(private val clientOptions: ClientOptions) : ChatCompletionS
             params: ChatCompletionRetrieveParams,
             requestOptions: RequestOptions,
         ): CompletableFuture<HttpResponseFor<ChatCompletion>> {
+            val cancellationTokenSource = CancellationTokenSource()
             // We check here instead of in the params builder because this can be specified
             // positionally or in the params class.
             checkRequired("completionId", params.completionId().getOrNull())
@@ -212,8 +229,13 @@ internal constructor(private val clientOptions: ClientOptions) : ChatCompletionS
                     .build()
                     .prepareAsync(clientOptions, params)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
-            return request
-                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
+            val delegate =
+                request
+                .thenComposeAsync { clientOptions.httpClient.executeAsync(
+                            it,
+                            requestOptions,
+                            cancellationTokenSource.token()
+                        ) }
                 .thenApply { response ->
                     errorHandler.handle(response).parseable {
                         response
@@ -225,6 +247,7 @@ internal constructor(private val clientOptions: ClientOptions) : ChatCompletionS
                             }
                     }
                 }
+            return delegate.withCancellation(cancellationTokenSource)
         }
 
         private val updateHandler: Handler<ChatCompletion> =
@@ -234,6 +257,7 @@ internal constructor(private val clientOptions: ClientOptions) : ChatCompletionS
             params: ChatCompletionUpdateParams,
             requestOptions: RequestOptions,
         ): CompletableFuture<HttpResponseFor<ChatCompletion>> {
+            val cancellationTokenSource = CancellationTokenSource()
             // We check here instead of in the params builder because this can be specified
             // positionally or in the params class.
             checkRequired("completionId", params.completionId().getOrNull())
@@ -246,8 +270,13 @@ internal constructor(private val clientOptions: ClientOptions) : ChatCompletionS
                     .build()
                     .prepareAsync(clientOptions, params)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
-            return request
-                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
+            val delegate =
+                request
+                .thenComposeAsync { clientOptions.httpClient.executeAsync(
+                            it,
+                            requestOptions,
+                            cancellationTokenSource.token()
+                        ) }
                 .thenApply { response ->
                     errorHandler.handle(response).parseable {
                         response
@@ -259,6 +288,7 @@ internal constructor(private val clientOptions: ClientOptions) : ChatCompletionS
                             }
                     }
                 }
+            return delegate.withCancellation(cancellationTokenSource)
         }
 
         private val listHandler: Handler<ChatCompletionListPageResponse> =
@@ -268,6 +298,7 @@ internal constructor(private val clientOptions: ClientOptions) : ChatCompletionS
             params: ChatCompletionListParams,
             requestOptions: RequestOptions,
         ): CompletableFuture<HttpResponseFor<ChatCompletionListPageAsync>> {
+            val cancellationTokenSource = CancellationTokenSource()
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.GET)
@@ -276,8 +307,13 @@ internal constructor(private val clientOptions: ClientOptions) : ChatCompletionS
                     .build()
                     .prepareAsync(clientOptions, params)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
-            return request
-                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
+            val delegate =
+                request
+                .thenComposeAsync { clientOptions.httpClient.executeAsync(
+                            it,
+                            requestOptions,
+                            cancellationTokenSource.token()
+                        ) }
                 .thenApply { response ->
                     errorHandler.handle(response).parseable {
                         response
@@ -297,6 +333,7 @@ internal constructor(private val clientOptions: ClientOptions) : ChatCompletionS
                             }
                     }
                 }
+            return delegate.withCancellation(cancellationTokenSource)
         }
 
         private val deleteHandler: Handler<ChatCompletionDeleted> =
@@ -306,6 +343,7 @@ internal constructor(private val clientOptions: ClientOptions) : ChatCompletionS
             params: ChatCompletionDeleteParams,
             requestOptions: RequestOptions,
         ): CompletableFuture<HttpResponseFor<ChatCompletionDeleted>> {
+            val cancellationTokenSource = CancellationTokenSource()
             // We check here instead of in the params builder because this can be specified
             // positionally or in the params class.
             checkRequired("completionId", params.completionId().getOrNull())
@@ -318,8 +356,13 @@ internal constructor(private val clientOptions: ClientOptions) : ChatCompletionS
                     .build()
                     .prepareAsync(clientOptions, params)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
-            return request
-                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
+            val delegate =
+                request
+                .thenComposeAsync { clientOptions.httpClient.executeAsync(
+                            it,
+                            requestOptions,
+                            cancellationTokenSource.token()
+                        ) }
                 .thenApply { response ->
                     errorHandler.handle(response).parseable {
                         response
@@ -331,6 +374,7 @@ internal constructor(private val clientOptions: ClientOptions) : ChatCompletionS
                             }
                     }
                 }
+            return delegate.withCancellation(cancellationTokenSource)
         }
     }
 }

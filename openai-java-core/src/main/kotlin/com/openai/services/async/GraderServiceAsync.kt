@@ -4,6 +4,7 @@ package com.openai.services.async
 
 import com.openai.core.ClientOptions
 import com.openai.services.async.graders.GraderModelServiceAsync
+import java.util.concurrent.CompletableFuture
 import java.util.function.Consumer
 
 interface GraderServiceAsync {

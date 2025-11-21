@@ -3,10 +3,12 @@
 package com.openai.services.async
 
 import com.openai.core.ClientOptions
+import com.openai.core.withCancellation
 import com.openai.services.async.realtime.CallServiceAsync
 import com.openai.services.async.realtime.CallServiceAsyncImpl
 import com.openai.services.async.realtime.ClientSecretServiceAsync
 import com.openai.services.async.realtime.ClientSecretServiceAsyncImpl
+import java.util.concurrent.CompletableFuture
 import java.util.function.Consumer
 
 class RealtimeServiceAsyncImpl internal constructor(private val clientOptions: ClientOptions) :

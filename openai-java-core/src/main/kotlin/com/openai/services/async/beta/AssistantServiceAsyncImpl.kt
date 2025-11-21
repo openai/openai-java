@@ -26,6 +26,8 @@ import com.openai.models.beta.assistants.AssistantListPageResponse
 import com.openai.models.beta.assistants.AssistantListParams
 import com.openai.models.beta.assistants.AssistantRetrieveParams
 import com.openai.models.beta.assistants.AssistantUpdateParams
+import com.openai.core.http.CancellationTokenSource
+import com.openai.core.withCancellation
 import java.util.concurrent.CompletableFuture
 import java.util.function.Consumer
 import kotlin.jvm.optionals.getOrNull
@@ -102,6 +104,7 @@ class AssistantServiceAsyncImpl internal constructor(private val clientOptions: 
             params: AssistantCreateParams,
             requestOptions: RequestOptions,
         ): CompletableFuture<HttpResponseFor<Assistant>> {
+            val cancellationTokenSource = CancellationTokenSource()
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.POST)
@@ -112,8 +115,13 @@ class AssistantServiceAsyncImpl internal constructor(private val clientOptions: 
                     .build()
                     .prepareAsync(clientOptions, params)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
-            return request
-                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
+            val delegate =
+                request
+                .thenComposeAsync { clientOptions.httpClient.executeAsync(
+                            it,
+                            requestOptions,
+                            cancellationTokenSource.token()
+                        ) }
                 .thenApply { response ->
                     errorHandler.handle(response).parseable {
                         response
@@ -125,6 +133,7 @@ class AssistantServiceAsyncImpl internal constructor(private val clientOptions: 
                             }
                     }
                 }
+        return delegate.withCancellation(cancellationTokenSource)
         }
 
         private val retrieveHandler: Handler<Assistant> =
@@ -134,6 +143,7 @@ class AssistantServiceAsyncImpl internal constructor(private val clientOptions: 
             params: AssistantRetrieveParams,
             requestOptions: RequestOptions,
         ): CompletableFuture<HttpResponseFor<Assistant>> {
+            val cancellationTokenSource = CancellationTokenSource()
             // We check here instead of in the params builder because this can be specified
             // positionally or in the params class.
             checkRequired("assistantId", params.assistantId().getOrNull())
@@ -146,8 +156,13 @@ class AssistantServiceAsyncImpl internal constructor(private val clientOptions: 
                     .build()
                     .prepareAsync(clientOptions, params)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
-            return request
-                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
+            val delegate =
+                request
+                .thenComposeAsync { clientOptions.httpClient.executeAsync(
+                            it,
+                            requestOptions,
+                            cancellationTokenSource.token()
+                        ) }
                 .thenApply { response ->
                     errorHandler.handle(response).parseable {
                         response
@@ -159,6 +174,7 @@ class AssistantServiceAsyncImpl internal constructor(private val clientOptions: 
                             }
                     }
                 }
+        return delegate.withCancellation(cancellationTokenSource)
         }
 
         private val updateHandler: Handler<Assistant> =
@@ -168,6 +184,7 @@ class AssistantServiceAsyncImpl internal constructor(private val clientOptions: 
             params: AssistantUpdateParams,
             requestOptions: RequestOptions,
         ): CompletableFuture<HttpResponseFor<Assistant>> {
+            val cancellationTokenSource = CancellationTokenSource()
             // We check here instead of in the params builder because this can be specified
             // positionally or in the params class.
             checkRequired("assistantId", params.assistantId().getOrNull())
@@ -181,8 +198,13 @@ class AssistantServiceAsyncImpl internal constructor(private val clientOptions: 
                     .build()
                     .prepareAsync(clientOptions, params)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
-            return request
-                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
+            val delegate =
+                request
+                .thenComposeAsync { clientOptions.httpClient.executeAsync(
+                            it,
+                            requestOptions,
+                            cancellationTokenSource.token()
+                        ) }
                 .thenApply { response ->
                     errorHandler.handle(response).parseable {
                         response
@@ -194,6 +216,7 @@ class AssistantServiceAsyncImpl internal constructor(private val clientOptions: 
                             }
                     }
                 }
+        return delegate.withCancellation(cancellationTokenSource)
         }
 
         private val listHandler: Handler<AssistantListPageResponse> =
@@ -203,6 +226,7 @@ class AssistantServiceAsyncImpl internal constructor(private val clientOptions: 
             params: AssistantListParams,
             requestOptions: RequestOptions,
         ): CompletableFuture<HttpResponseFor<AssistantListPageAsync>> {
+            val cancellationTokenSource = CancellationTokenSource()
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.GET)
@@ -212,8 +236,13 @@ class AssistantServiceAsyncImpl internal constructor(private val clientOptions: 
                     .build()
                     .prepareAsync(clientOptions, params)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
-            return request
-                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
+            val delegate =
+                request
+                .thenComposeAsync { clientOptions.httpClient.executeAsync(
+                            it,
+                            requestOptions,
+                            cancellationTokenSource.token()
+                        ) }
                 .thenApply { response ->
                     errorHandler.handle(response).parseable {
                         response
@@ -233,6 +262,7 @@ class AssistantServiceAsyncImpl internal constructor(private val clientOptions: 
                             }
                     }
                 }
+        return delegate.withCancellation(cancellationTokenSource)
         }
 
         private val deleteHandler: Handler<AssistantDeleted> =
@@ -242,6 +272,7 @@ class AssistantServiceAsyncImpl internal constructor(private val clientOptions: 
             params: AssistantDeleteParams,
             requestOptions: RequestOptions,
         ): CompletableFuture<HttpResponseFor<AssistantDeleted>> {
+            val cancellationTokenSource = CancellationTokenSource()
             // We check here instead of in the params builder because this can be specified
             // positionally or in the params class.
             checkRequired("assistantId", params.assistantId().getOrNull())
@@ -255,8 +286,13 @@ class AssistantServiceAsyncImpl internal constructor(private val clientOptions: 
                     .build()
                     .prepareAsync(clientOptions, params)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
-            return request
-                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
+            val delegate =
+                request
+                .thenComposeAsync { clientOptions.httpClient.executeAsync(
+                            it,
+                            requestOptions,
+                            cancellationTokenSource.token()
+                        ) }
                 .thenApply { response ->
                     errorHandler.handle(response).parseable {
                         response
@@ -268,6 +304,7 @@ class AssistantServiceAsyncImpl internal constructor(private val clientOptions: 
                             }
                     }
                 }
+        return delegate.withCancellation(cancellationTokenSource)
         }
     }
 }

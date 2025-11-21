@@ -30,6 +30,8 @@ import com.openai.models.finetuning.jobs.JobResumeParams
 import com.openai.models.finetuning.jobs.JobRetrieveParams
 import com.openai.services.async.finetuning.jobs.CheckpointServiceAsync
 import com.openai.services.async.finetuning.jobs.CheckpointServiceAsyncImpl
+import com.openai.core.http.CancellationTokenSource
+import com.openai.core.withCancellation
 import java.util.concurrent.CompletableFuture
 import java.util.function.Consumer
 import kotlin.jvm.optionals.getOrNull
@@ -127,6 +129,7 @@ class JobServiceAsyncImpl internal constructor(private val clientOptions: Client
             params: JobCreateParams,
             requestOptions: RequestOptions,
         ): CompletableFuture<HttpResponseFor<FineTuningJob>> {
+            val cancellationTokenSource = CancellationTokenSource()
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.POST)
@@ -136,19 +139,27 @@ class JobServiceAsyncImpl internal constructor(private val clientOptions: Client
                     .build()
                     .prepareAsync(clientOptions, params)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
-            return request
-                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
-                .thenApply { response ->
-                    errorHandler.handle(response).parseable {
-                        response
-                            .use { createHandler.handle(it) }
-                            .also {
-                                if (requestOptions.responseValidation!!) {
-                                    it.validate()
-                                }
-                            }
+            val delegate =
+                request
+                    .thenComposeAsync {
+                        clientOptions.httpClient.executeAsync(
+                            it,
+                            requestOptions,
+                            cancellationTokenSource.token()
+                        )
                     }
-                }
+                    .thenApply { response ->
+                        errorHandler.handle(response).parseable {
+                            response
+                                .use { createHandler.handle(it) }
+                                .also {
+                                    if (requestOptions.responseValidation!!) {
+                                        it.validate()
+                                    }
+                                }
+                        }
+                    }
+            return delegate.withCancellation(cancellationTokenSource)
         }
 
         private val retrieveHandler: Handler<FineTuningJob> =
@@ -158,6 +169,7 @@ class JobServiceAsyncImpl internal constructor(private val clientOptions: Client
             params: JobRetrieveParams,
             requestOptions: RequestOptions,
         ): CompletableFuture<HttpResponseFor<FineTuningJob>> {
+            val cancellationTokenSource = CancellationTokenSource()
             // We check here instead of in the params builder because this can be specified
             // positionally or in the params class.
             checkRequired("fineTuningJobId", params.fineTuningJobId().getOrNull())
@@ -169,19 +181,27 @@ class JobServiceAsyncImpl internal constructor(private val clientOptions: Client
                     .build()
                     .prepareAsync(clientOptions, params)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
-            return request
-                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
-                .thenApply { response ->
-                    errorHandler.handle(response).parseable {
-                        response
-                            .use { retrieveHandler.handle(it) }
-                            .also {
-                                if (requestOptions.responseValidation!!) {
-                                    it.validate()
-                                }
-                            }
+            val delegate =
+                request
+                    .thenComposeAsync {
+                        clientOptions.httpClient.executeAsync(
+                            it,
+                            requestOptions,
+                            cancellationTokenSource.token()
+                        )
                     }
-                }
+                    .thenApply { response ->
+                        errorHandler.handle(response).parseable {
+                            response
+                                .use { retrieveHandler.handle(it) }
+                                .also {
+                                    if (requestOptions.responseValidation!!) {
+                                        it.validate()
+                                    }
+                                }
+                        }
+                    }
+            return delegate.withCancellation(cancellationTokenSource)
         }
 
         private val listHandler: Handler<JobListPageResponse> =
@@ -191,6 +211,7 @@ class JobServiceAsyncImpl internal constructor(private val clientOptions: Client
             params: JobListParams,
             requestOptions: RequestOptions,
         ): CompletableFuture<HttpResponseFor<JobListPageAsync>> {
+            val cancellationTokenSource = CancellationTokenSource()
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.GET)
@@ -199,27 +220,35 @@ class JobServiceAsyncImpl internal constructor(private val clientOptions: Client
                     .build()
                     .prepareAsync(clientOptions, params)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
-            return request
-                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
-                .thenApply { response ->
-                    errorHandler.handle(response).parseable {
-                        response
-                            .use { listHandler.handle(it) }
-                            .also {
-                                if (requestOptions.responseValidation!!) {
-                                    it.validate()
-                                }
-                            }
-                            .let {
-                                JobListPageAsync.builder()
-                                    .service(JobServiceAsyncImpl(clientOptions))
-                                    .streamHandlerExecutor(clientOptions.streamHandlerExecutor)
-                                    .params(params)
-                                    .response(it)
-                                    .build()
-                            }
+            val delegate =
+                request
+                    .thenComposeAsync {
+                        clientOptions.httpClient.executeAsync(
+                            it,
+                            requestOptions,
+                            cancellationTokenSource.token()
+                        )
                     }
-                }
+                    .thenApply { response ->
+                        errorHandler.handle(response).parseable {
+                            response
+                                .use { listHandler.handle(it) }
+                                .also {
+                                    if (requestOptions.responseValidation!!) {
+                                        it.validate()
+                                    }
+                                }
+                                .let {
+                                    JobListPageAsync.builder()
+                                        .service(JobServiceAsyncImpl(clientOptions))
+                                        .streamHandlerExecutor(clientOptions.streamHandlerExecutor)
+                                        .params(params)
+                                        .response(it)
+                                        .build()
+                                }
+                        }
+                    }
+            return delegate.withCancellation(cancellationTokenSource)
         }
 
         private val cancelHandler: Handler<FineTuningJob> =
@@ -229,6 +258,7 @@ class JobServiceAsyncImpl internal constructor(private val clientOptions: Client
             params: JobCancelParams,
             requestOptions: RequestOptions,
         ): CompletableFuture<HttpResponseFor<FineTuningJob>> {
+            val cancellationTokenSource = CancellationTokenSource()
             // We check here instead of in the params builder because this can be specified
             // positionally or in the params class.
             checkRequired("fineTuningJobId", params.fineTuningJobId().getOrNull())
@@ -241,19 +271,27 @@ class JobServiceAsyncImpl internal constructor(private val clientOptions: Client
                     .build()
                     .prepareAsync(clientOptions, params)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
-            return request
-                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
-                .thenApply { response ->
-                    errorHandler.handle(response).parseable {
-                        response
-                            .use { cancelHandler.handle(it) }
-                            .also {
-                                if (requestOptions.responseValidation!!) {
-                                    it.validate()
-                                }
-                            }
+            val delegate =
+                request
+                    .thenComposeAsync {
+                        clientOptions.httpClient.executeAsync(
+                            it,
+                            requestOptions,
+                            cancellationTokenSource.token()
+                        )
                     }
-                }
+                    .thenApply { response ->
+                        errorHandler.handle(response).parseable {
+                            response
+                                .use { cancelHandler.handle(it) }
+                                .also {
+                                    if (requestOptions.responseValidation!!) {
+                                        it.validate()
+                                    }
+                                }
+                        }
+                    }
+            return delegate.withCancellation(cancellationTokenSource)
         }
 
         private val listEventsHandler: Handler<JobListEventsPageResponse> =
@@ -263,6 +301,7 @@ class JobServiceAsyncImpl internal constructor(private val clientOptions: Client
             params: JobListEventsParams,
             requestOptions: RequestOptions,
         ): CompletableFuture<HttpResponseFor<JobListEventsPageAsync>> {
+            val cancellationTokenSource = CancellationTokenSource()
             // We check here instead of in the params builder because this can be specified
             // positionally or in the params class.
             checkRequired("fineTuningJobId", params.fineTuningJobId().getOrNull())
@@ -274,27 +313,35 @@ class JobServiceAsyncImpl internal constructor(private val clientOptions: Client
                     .build()
                     .prepareAsync(clientOptions, params)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
-            return request
-                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
-                .thenApply { response ->
-                    errorHandler.handle(response).parseable {
-                        response
-                            .use { listEventsHandler.handle(it) }
-                            .also {
-                                if (requestOptions.responseValidation!!) {
-                                    it.validate()
-                                }
-                            }
-                            .let {
-                                JobListEventsPageAsync.builder()
-                                    .service(JobServiceAsyncImpl(clientOptions))
-                                    .streamHandlerExecutor(clientOptions.streamHandlerExecutor)
-                                    .params(params)
-                                    .response(it)
-                                    .build()
-                            }
+            val delegate =
+                request
+                    .thenComposeAsync {
+                        clientOptions.httpClient.executeAsync(
+                            it,
+                            requestOptions,
+                            cancellationTokenSource.token()
+                        )
                     }
-                }
+                    .thenApply { response ->
+                        errorHandler.handle(response).parseable {
+                            response
+                                .use { listEventsHandler.handle(it) }
+                                .also {
+                                    if (requestOptions.responseValidation!!) {
+                                        it.validate()
+                                    }
+                                }
+                                .let {
+                                    JobListEventsPageAsync.builder()
+                                        .service(JobServiceAsyncImpl(clientOptions))
+                                        .streamHandlerExecutor(clientOptions.streamHandlerExecutor)
+                                        .params(params)
+                                        .response(it)
+                                        .build()
+                                }
+                        }
+                    }
+            return delegate.withCancellation(cancellationTokenSource)
         }
 
         private val pauseHandler: Handler<FineTuningJob> =
@@ -304,6 +351,7 @@ class JobServiceAsyncImpl internal constructor(private val clientOptions: Client
             params: JobPauseParams,
             requestOptions: RequestOptions,
         ): CompletableFuture<HttpResponseFor<FineTuningJob>> {
+            val cancellationTokenSource = CancellationTokenSource()
             // We check here instead of in the params builder because this can be specified
             // positionally or in the params class.
             checkRequired("fineTuningJobId", params.fineTuningJobId().getOrNull())
@@ -316,19 +364,27 @@ class JobServiceAsyncImpl internal constructor(private val clientOptions: Client
                     .build()
                     .prepareAsync(clientOptions, params)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
-            return request
-                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
-                .thenApply { response ->
-                    errorHandler.handle(response).parseable {
-                        response
-                            .use { pauseHandler.handle(it) }
-                            .also {
-                                if (requestOptions.responseValidation!!) {
-                                    it.validate()
-                                }
-                            }
+            val delegate =
+                request
+                    .thenComposeAsync {
+                        clientOptions.httpClient.executeAsync(
+                            it,
+                            requestOptions,
+                            cancellationTokenSource.token()
+                        )
                     }
-                }
+                    .thenApply { response ->
+                        errorHandler.handle(response).parseable {
+                            response
+                                .use { pauseHandler.handle(it) }
+                                .also {
+                                    if (requestOptions.responseValidation!!) {
+                                        it.validate()
+                                    }
+                                }
+                        }
+                    }
+            return delegate.withCancellation(cancellationTokenSource)
         }
 
         private val resumeHandler: Handler<FineTuningJob> =
@@ -338,6 +394,7 @@ class JobServiceAsyncImpl internal constructor(private val clientOptions: Client
             params: JobResumeParams,
             requestOptions: RequestOptions,
         ): CompletableFuture<HttpResponseFor<FineTuningJob>> {
+            val cancellationTokenSource = CancellationTokenSource()
             // We check here instead of in the params builder because this can be specified
             // positionally or in the params class.
             checkRequired("fineTuningJobId", params.fineTuningJobId().getOrNull())
@@ -350,19 +407,27 @@ class JobServiceAsyncImpl internal constructor(private val clientOptions: Client
                     .build()
                     .prepareAsync(clientOptions, params)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
-            return request
-                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
-                .thenApply { response ->
-                    errorHandler.handle(response).parseable {
-                        response
-                            .use { resumeHandler.handle(it) }
-                            .also {
-                                if (requestOptions.responseValidation!!) {
-                                    it.validate()
-                                }
-                            }
+            val delegate =
+                request
+                    .thenComposeAsync {
+                        clientOptions.httpClient.executeAsync(
+                            it,
+                            requestOptions,
+                            cancellationTokenSource.token()
+                        )
                     }
-                }
+                    .thenApply { response ->
+                        errorHandler.handle(response).parseable {
+                            response
+                                .use { resumeHandler.handle(it) }
+                                .also {
+                                    if (requestOptions.responseValidation!!) {
+                                        it.validate()
+                                    }
+                                }
+                        }
+                    }
+            return delegate.withCancellation(cancellationTokenSource)
         }
     }
 }

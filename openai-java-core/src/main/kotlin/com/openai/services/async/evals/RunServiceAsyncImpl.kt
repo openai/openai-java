@@ -29,6 +29,8 @@ import com.openai.models.evals.runs.RunRetrieveParams
 import com.openai.models.evals.runs.RunRetrieveResponse
 import com.openai.services.async.evals.runs.OutputItemServiceAsync
 import com.openai.services.async.evals.runs.OutputItemServiceAsyncImpl
+import com.openai.core.http.CancellationTokenSource
+import com.openai.core.withCancellation
 import java.util.concurrent.CompletableFuture
 import java.util.function.Consumer
 import kotlin.jvm.optionals.getOrNull
@@ -112,6 +114,7 @@ class RunServiceAsyncImpl internal constructor(private val clientOptions: Client
             params: RunCreateParams,
             requestOptions: RequestOptions,
         ): CompletableFuture<HttpResponseFor<RunCreateResponse>> {
+            val cancellationTokenSource = CancellationTokenSource()
             // We check here instead of in the params builder because this can be specified
             // positionally or in the params class.
             checkRequired("evalId", params.evalId().getOrNull())
@@ -124,8 +127,13 @@ class RunServiceAsyncImpl internal constructor(private val clientOptions: Client
                     .build()
                     .prepareAsync(clientOptions, params)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
-            return request
-                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
+            val delegate =
+                request
+                .thenComposeAsync { clientOptions.httpClient.executeAsync(
+                            it,
+                            requestOptions,
+                            cancellationTokenSource.token()
+                        ) }
                 .thenApply { response ->
                     errorHandler.handle(response).parseable {
                         response
@@ -137,6 +145,7 @@ class RunServiceAsyncImpl internal constructor(private val clientOptions: Client
                             }
                     }
                 }
+        return delegate.withCancellation(cancellationTokenSource)
         }
 
         private val retrieveHandler: Handler<RunRetrieveResponse> =
@@ -146,6 +155,7 @@ class RunServiceAsyncImpl internal constructor(private val clientOptions: Client
             params: RunRetrieveParams,
             requestOptions: RequestOptions,
         ): CompletableFuture<HttpResponseFor<RunRetrieveResponse>> {
+            val cancellationTokenSource = CancellationTokenSource()
             // We check here instead of in the params builder because this can be specified
             // positionally or in the params class.
             checkRequired("runId", params.runId().getOrNull())
@@ -157,8 +167,13 @@ class RunServiceAsyncImpl internal constructor(private val clientOptions: Client
                     .build()
                     .prepareAsync(clientOptions, params)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
-            return request
-                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
+            val delegate =
+                request
+                .thenComposeAsync { clientOptions.httpClient.executeAsync(
+                            it,
+                            requestOptions,
+                            cancellationTokenSource.token()
+                        ) }
                 .thenApply { response ->
                     errorHandler.handle(response).parseable {
                         response
@@ -170,6 +185,7 @@ class RunServiceAsyncImpl internal constructor(private val clientOptions: Client
                             }
                     }
                 }
+        return delegate.withCancellation(cancellationTokenSource)
         }
 
         private val listHandler: Handler<RunListPageResponse> =
@@ -179,6 +195,7 @@ class RunServiceAsyncImpl internal constructor(private val clientOptions: Client
             params: RunListParams,
             requestOptions: RequestOptions,
         ): CompletableFuture<HttpResponseFor<RunListPageAsync>> {
+            val cancellationTokenSource = CancellationTokenSource()
             // We check here instead of in the params builder because this can be specified
             // positionally or in the params class.
             checkRequired("evalId", params.evalId().getOrNull())
@@ -190,8 +207,13 @@ class RunServiceAsyncImpl internal constructor(private val clientOptions: Client
                     .build()
                     .prepareAsync(clientOptions, params)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
-            return request
-                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
+            val delegate =
+                request
+                .thenComposeAsync { clientOptions.httpClient.executeAsync(
+                            it,
+                            requestOptions,
+                            cancellationTokenSource.token()
+                        ) }
                 .thenApply { response ->
                     errorHandler.handle(response).parseable {
                         response
@@ -211,6 +233,7 @@ class RunServiceAsyncImpl internal constructor(private val clientOptions: Client
                             }
                     }
                 }
+        return delegate.withCancellation(cancellationTokenSource)
         }
 
         private val deleteHandler: Handler<RunDeleteResponse> =
@@ -220,6 +243,7 @@ class RunServiceAsyncImpl internal constructor(private val clientOptions: Client
             params: RunDeleteParams,
             requestOptions: RequestOptions,
         ): CompletableFuture<HttpResponseFor<RunDeleteResponse>> {
+            val cancellationTokenSource = CancellationTokenSource()
             // We check here instead of in the params builder because this can be specified
             // positionally or in the params class.
             checkRequired("runId", params.runId().getOrNull())
@@ -232,8 +256,13 @@ class RunServiceAsyncImpl internal constructor(private val clientOptions: Client
                     .build()
                     .prepareAsync(clientOptions, params)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
-            return request
-                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
+            val delegate =
+                request
+                .thenComposeAsync { clientOptions.httpClient.executeAsync(
+                            it,
+                            requestOptions,
+                            cancellationTokenSource.token()
+                        ) }
                 .thenApply { response ->
                     errorHandler.handle(response).parseable {
                         response
@@ -245,6 +274,7 @@ class RunServiceAsyncImpl internal constructor(private val clientOptions: Client
                             }
                     }
                 }
+        return delegate.withCancellation(cancellationTokenSource)
         }
 
         private val cancelHandler: Handler<RunCancelResponse> =
@@ -254,6 +284,7 @@ class RunServiceAsyncImpl internal constructor(private val clientOptions: Client
             params: RunCancelParams,
             requestOptions: RequestOptions,
         ): CompletableFuture<HttpResponseFor<RunCancelResponse>> {
+            val cancellationTokenSource = CancellationTokenSource()
             // We check here instead of in the params builder because this can be specified
             // positionally or in the params class.
             checkRequired("runId", params.runId().getOrNull())
@@ -266,8 +297,13 @@ class RunServiceAsyncImpl internal constructor(private val clientOptions: Client
                     .build()
                     .prepareAsync(clientOptions, params)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
-            return request
-                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
+            val delegate =
+                request
+                .thenComposeAsync { clientOptions.httpClient.executeAsync(
+                            it,
+                            requestOptions,
+                            cancellationTokenSource.token()
+                        ) }
                 .thenApply { response ->
                     errorHandler.handle(response).parseable {
                         response
@@ -279,6 +315,7 @@ class RunServiceAsyncImpl internal constructor(private val clientOptions: Client
                             }
                     }
                 }
+        return delegate.withCancellation(cancellationTokenSource)
         }
     }
 }

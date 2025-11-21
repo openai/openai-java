@@ -20,6 +20,8 @@ import com.openai.models.evals.runs.outputitems.OutputItemListPageResponse
 import com.openai.models.evals.runs.outputitems.OutputItemListParams
 import com.openai.models.evals.runs.outputitems.OutputItemRetrieveParams
 import com.openai.models.evals.runs.outputitems.OutputItemRetrieveResponse
+import com.openai.core.http.CancellationTokenSource
+import com.openai.core.withCancellation
 import java.util.concurrent.CompletableFuture
 import java.util.function.Consumer
 import kotlin.jvm.optionals.getOrNull
@@ -70,6 +72,7 @@ class OutputItemServiceAsyncImpl internal constructor(private val clientOptions:
             params: OutputItemRetrieveParams,
             requestOptions: RequestOptions,
         ): CompletableFuture<HttpResponseFor<OutputItemRetrieveResponse>> {
+            val cancellationTokenSource = CancellationTokenSource()
             // We check here instead of in the params builder because this can be specified
             // positionally or in the params class.
             checkRequired("outputItemId", params.outputItemId().getOrNull())
@@ -88,8 +91,13 @@ class OutputItemServiceAsyncImpl internal constructor(private val clientOptions:
                     .build()
                     .prepareAsync(clientOptions, params)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
-            return request
-                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
+            val delegate =
+                request
+                .thenComposeAsync { clientOptions.httpClient.executeAsync(
+                            it,
+                            requestOptions,
+                            cancellationTokenSource.token()
+                        ) }
                 .thenApply { response ->
                     errorHandler.handle(response).parseable {
                         response
@@ -101,6 +109,7 @@ class OutputItemServiceAsyncImpl internal constructor(private val clientOptions:
                             }
                     }
                 }
+        return delegate.withCancellation(cancellationTokenSource)
         }
 
         private val listHandler: Handler<OutputItemListPageResponse> =
@@ -110,6 +119,7 @@ class OutputItemServiceAsyncImpl internal constructor(private val clientOptions:
             params: OutputItemListParams,
             requestOptions: RequestOptions,
         ): CompletableFuture<HttpResponseFor<OutputItemListPageAsync>> {
+            val cancellationTokenSource = CancellationTokenSource()
             // We check here instead of in the params builder because this can be specified
             // positionally or in the params class.
             checkRequired("runId", params.runId().getOrNull())
@@ -127,8 +137,13 @@ class OutputItemServiceAsyncImpl internal constructor(private val clientOptions:
                     .build()
                     .prepareAsync(clientOptions, params)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
-            return request
-                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
+            val delegate =
+                request
+                .thenComposeAsync { clientOptions.httpClient.executeAsync(
+                            it,
+                            requestOptions,
+                            cancellationTokenSource.token()
+                        ) }
                 .thenApply { response ->
                     errorHandler.handle(response).parseable {
                         response
@@ -148,6 +163,7 @@ class OutputItemServiceAsyncImpl internal constructor(private val clientOptions:
                             }
                     }
                 }
+        return delegate.withCancellation(cancellationTokenSource)
         }
     }
 }

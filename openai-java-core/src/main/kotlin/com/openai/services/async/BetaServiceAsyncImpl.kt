@@ -3,6 +3,7 @@
 package com.openai.services.async
 
 import com.openai.core.ClientOptions
+import com.openai.core.withCancellation
 import com.openai.services.async.beta.AssistantServiceAsync
 import com.openai.services.async.beta.AssistantServiceAsyncImpl
 import com.openai.services.async.beta.ChatKitServiceAsync
@@ -11,6 +12,7 @@ import com.openai.services.async.beta.RealtimeServiceAsync
 import com.openai.services.async.beta.RealtimeServiceAsyncImpl
 import com.openai.services.async.beta.ThreadServiceAsync
 import com.openai.services.async.beta.ThreadServiceAsyncImpl
+import java.util.concurrent.CompletableFuture
 import java.util.function.Consumer
 
 class BetaServiceAsyncImpl internal constructor(private val clientOptions: ClientOptions) :

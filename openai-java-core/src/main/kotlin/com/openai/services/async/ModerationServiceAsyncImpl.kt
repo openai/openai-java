@@ -17,6 +17,8 @@ import com.openai.core.http.parseable
 import com.openai.core.prepareAsync
 import com.openai.models.moderations.ModerationCreateParams
 import com.openai.models.moderations.ModerationCreateResponse
+import com.openai.core.http.CancellationTokenSource
+import com.openai.core.withCancellation
 import java.util.concurrent.CompletableFuture
 import java.util.function.Consumer
 
@@ -59,6 +61,7 @@ class ModerationServiceAsyncImpl internal constructor(private val clientOptions:
             params: ModerationCreateParams,
             requestOptions: RequestOptions,
         ): CompletableFuture<HttpResponseFor<ModerationCreateResponse>> {
+            val cancellationTokenSource = CancellationTokenSource()
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.POST)
@@ -68,8 +71,13 @@ class ModerationServiceAsyncImpl internal constructor(private val clientOptions:
                     .build()
                     .prepareAsync(clientOptions, params)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
-            return request
-                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
+            val delegate =
+                request
+                .thenComposeAsync { clientOptions.httpClient.executeAsync(
+                            it,
+                            requestOptions,
+                            cancellationTokenSource.token()
+                        ) }
                 .thenApply { response ->
                     errorHandler.handle(response).parseable {
                         response
@@ -81,6 +89,7 @@ class ModerationServiceAsyncImpl internal constructor(private val clientOptions:
                             }
                     }
                 }
+            return delegate.withCancellation(cancellationTokenSource)
         }
     }
 }

@@ -5,6 +5,7 @@ package com.openai.services.async
 import com.openai.core.ClientOptions
 import com.openai.models.webhooks.UnwrapWebhookEvent
 import com.openai.models.webhooks.WebhookVerificationParams
+import java.util.concurrent.CompletableFuture
 import java.util.function.Consumer
 
 interface WebhookServiceAsync {

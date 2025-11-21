@@ -3,10 +3,12 @@
 package com.openai.services.async.beta
 
 import com.openai.core.ClientOptions
+import com.openai.core.withCancellation
 import com.openai.services.async.beta.chatkit.SessionServiceAsync
 import com.openai.services.async.beta.chatkit.SessionServiceAsyncImpl
 import com.openai.services.async.beta.chatkit.ThreadServiceAsync
 import com.openai.services.async.beta.chatkit.ThreadServiceAsyncImpl
+import java.util.concurrent.CompletableFuture
 import java.util.function.Consumer
 
 class ChatKitServiceAsyncImpl internal constructor(private val clientOptions: ClientOptions) :

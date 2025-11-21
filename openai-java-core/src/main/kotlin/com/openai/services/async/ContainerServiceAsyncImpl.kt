@@ -27,6 +27,8 @@ import com.openai.models.containers.ContainerRetrieveParams
 import com.openai.models.containers.ContainerRetrieveResponse
 import com.openai.services.async.containers.FileServiceAsync
 import com.openai.services.async.containers.FileServiceAsyncImpl
+import com.openai.core.http.CancellationTokenSource
+import com.openai.core.withCancellation
 import java.util.concurrent.CompletableFuture
 import java.util.function.Consumer
 import kotlin.jvm.optionals.getOrNull
@@ -101,6 +103,7 @@ class ContainerServiceAsyncImpl internal constructor(private val clientOptions: 
             params: ContainerCreateParams,
             requestOptions: RequestOptions,
         ): CompletableFuture<HttpResponseFor<ContainerCreateResponse>> {
+            val cancellationTokenSource = CancellationTokenSource()
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.POST)
@@ -110,8 +113,13 @@ class ContainerServiceAsyncImpl internal constructor(private val clientOptions: 
                     .build()
                     .prepareAsync(clientOptions, params)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
-            return request
-                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
+            val delegate =
+                request
+                .thenComposeAsync { clientOptions.httpClient.executeAsync(
+                            it,
+                            requestOptions,
+                            cancellationTokenSource.token()
+                        ) }
                 .thenApply { response ->
                     errorHandler.handle(response).parseable {
                         response
@@ -123,6 +131,7 @@ class ContainerServiceAsyncImpl internal constructor(private val clientOptions: 
                             }
                     }
                 }
+        return delegate.withCancellation(cancellationTokenSource)
         }
 
         private val retrieveHandler: Handler<ContainerRetrieveResponse> =
@@ -132,6 +141,7 @@ class ContainerServiceAsyncImpl internal constructor(private val clientOptions: 
             params: ContainerRetrieveParams,
             requestOptions: RequestOptions,
         ): CompletableFuture<HttpResponseFor<ContainerRetrieveResponse>> {
+            val cancellationTokenSource = CancellationTokenSource()
             // We check here instead of in the params builder because this can be specified
             // positionally or in the params class.
             checkRequired("containerId", params.containerId().getOrNull())
@@ -143,8 +153,13 @@ class ContainerServiceAsyncImpl internal constructor(private val clientOptions: 
                     .build()
                     .prepareAsync(clientOptions, params)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
-            return request
-                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
+            val delegate =
+                request
+                .thenComposeAsync { clientOptions.httpClient.executeAsync(
+                            it,
+                            requestOptions,
+                            cancellationTokenSource.token()
+                        ) }
                 .thenApply { response ->
                     errorHandler.handle(response).parseable {
                         response
@@ -156,6 +171,7 @@ class ContainerServiceAsyncImpl internal constructor(private val clientOptions: 
                             }
                     }
                 }
+        return delegate.withCancellation(cancellationTokenSource)
         }
 
         private val listHandler: Handler<ContainerListPageResponse> =
@@ -165,6 +181,7 @@ class ContainerServiceAsyncImpl internal constructor(private val clientOptions: 
             params: ContainerListParams,
             requestOptions: RequestOptions,
         ): CompletableFuture<HttpResponseFor<ContainerListPageAsync>> {
+            val cancellationTokenSource = CancellationTokenSource()
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.GET)
@@ -173,8 +190,13 @@ class ContainerServiceAsyncImpl internal constructor(private val clientOptions: 
                     .build()
                     .prepareAsync(clientOptions, params)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
-            return request
-                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
+            val delegate =
+                request
+                .thenComposeAsync { clientOptions.httpClient.executeAsync(
+                            it,
+                            requestOptions,
+                            cancellationTokenSource.token()
+                        ) }
                 .thenApply { response ->
                     errorHandler.handle(response).parseable {
                         response
@@ -194,6 +216,7 @@ class ContainerServiceAsyncImpl internal constructor(private val clientOptions: 
                             }
                     }
                 }
+        return delegate.withCancellation(cancellationTokenSource)
         }
 
         private val deleteHandler: Handler<Void?> = emptyHandler()
@@ -202,6 +225,7 @@ class ContainerServiceAsyncImpl internal constructor(private val clientOptions: 
             params: ContainerDeleteParams,
             requestOptions: RequestOptions,
         ): CompletableFuture<HttpResponse> {
+            val cancellationTokenSource = CancellationTokenSource()
             // We check here instead of in the params builder because this can be specified
             // positionally or in the params class.
             checkRequired("containerId", params.containerId().getOrNull())
@@ -214,13 +238,19 @@ class ContainerServiceAsyncImpl internal constructor(private val clientOptions: 
                     .build()
                     .prepareAsync(clientOptions, params)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
-            return request
-                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
+            val delegate =
+                request
+                .thenComposeAsync { clientOptions.httpClient.executeAsync(
+                            it,
+                            requestOptions,
+                            cancellationTokenSource.token()
+                        ) }
                 .thenApply { response ->
                     errorHandler.handle(response).parseable {
                         response.use { deleteHandler.handle(it) }
                     }
                 }
+        return delegate.withCancellation(cancellationTokenSource)
         }
     }
 }

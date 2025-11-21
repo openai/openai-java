@@ -37,6 +37,8 @@ import com.openai.services.async.beta.threads.MessageServiceAsync
 import com.openai.services.async.beta.threads.MessageServiceAsyncImpl
 import com.openai.services.async.beta.threads.RunServiceAsync
 import com.openai.services.async.beta.threads.RunServiceAsyncImpl
+import com.openai.core.http.CancellationTokenSource
+import com.openai.core.withCancellation
 import java.util.concurrent.CompletableFuture
 import java.util.function.Consumer
 import kotlin.jvm.optionals.getOrNull
@@ -155,6 +157,7 @@ class ThreadServiceAsyncImpl internal constructor(private val clientOptions: Cli
             params: ThreadCreateParams,
             requestOptions: RequestOptions,
         ): CompletableFuture<HttpResponseFor<Thread>> {
+            val cancellationTokenSource = CancellationTokenSource()
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.POST)
@@ -165,8 +168,13 @@ class ThreadServiceAsyncImpl internal constructor(private val clientOptions: Cli
                     .build()
                     .prepareAsync(clientOptions, params)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
-            return request
-                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
+            val delegate =
+                request
+                .thenComposeAsync { clientOptions.httpClient.executeAsync(
+                            it,
+                            requestOptions,
+                            cancellationTokenSource.token()
+                        ) }
                 .thenApply { response ->
                     errorHandler.handle(response).parseable {
                         response
@@ -178,6 +186,7 @@ class ThreadServiceAsyncImpl internal constructor(private val clientOptions: Cli
                             }
                     }
                 }
+        return delegate.withCancellation(cancellationTokenSource)
         }
 
         private val retrieveHandler: Handler<Thread> = jsonHandler<Thread>(clientOptions.jsonMapper)
@@ -187,6 +196,7 @@ class ThreadServiceAsyncImpl internal constructor(private val clientOptions: Cli
             params: ThreadRetrieveParams,
             requestOptions: RequestOptions,
         ): CompletableFuture<HttpResponseFor<Thread>> {
+            val cancellationTokenSource = CancellationTokenSource()
             // We check here instead of in the params builder because this can be specified
             // positionally or in the params class.
             checkRequired("threadId", params.threadId().getOrNull())
@@ -199,8 +209,13 @@ class ThreadServiceAsyncImpl internal constructor(private val clientOptions: Cli
                     .build()
                     .prepareAsync(clientOptions, params)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
-            return request
-                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
+            val delegate =
+                request
+                .thenComposeAsync { clientOptions.httpClient.executeAsync(
+                            it,
+                            requestOptions,
+                            cancellationTokenSource.token()
+                        ) }
                 .thenApply { response ->
                     errorHandler.handle(response).parseable {
                         response
@@ -212,6 +227,7 @@ class ThreadServiceAsyncImpl internal constructor(private val clientOptions: Cli
                             }
                     }
                 }
+        return delegate.withCancellation(cancellationTokenSource)
         }
 
         private val updateHandler: Handler<Thread> = jsonHandler<Thread>(clientOptions.jsonMapper)
@@ -221,6 +237,7 @@ class ThreadServiceAsyncImpl internal constructor(private val clientOptions: Cli
             params: ThreadUpdateParams,
             requestOptions: RequestOptions,
         ): CompletableFuture<HttpResponseFor<Thread>> {
+            val cancellationTokenSource = CancellationTokenSource()
             // We check here instead of in the params builder because this can be specified
             // positionally or in the params class.
             checkRequired("threadId", params.threadId().getOrNull())
@@ -234,8 +251,13 @@ class ThreadServiceAsyncImpl internal constructor(private val clientOptions: Cli
                     .build()
                     .prepareAsync(clientOptions, params)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
-            return request
-                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
+            val delegate =
+                request
+                .thenComposeAsync { clientOptions.httpClient.executeAsync(
+                            it,
+                            requestOptions,
+                            cancellationTokenSource.token()
+                        ) }
                 .thenApply { response ->
                     errorHandler.handle(response).parseable {
                         response
@@ -247,6 +269,7 @@ class ThreadServiceAsyncImpl internal constructor(private val clientOptions: Cli
                             }
                     }
                 }
+        return delegate.withCancellation(cancellationTokenSource)
         }
 
         private val deleteHandler: Handler<ThreadDeleted> =
@@ -257,6 +280,7 @@ class ThreadServiceAsyncImpl internal constructor(private val clientOptions: Cli
             params: ThreadDeleteParams,
             requestOptions: RequestOptions,
         ): CompletableFuture<HttpResponseFor<ThreadDeleted>> {
+            val cancellationTokenSource = CancellationTokenSource()
             // We check here instead of in the params builder because this can be specified
             // positionally or in the params class.
             checkRequired("threadId", params.threadId().getOrNull())
@@ -270,8 +294,13 @@ class ThreadServiceAsyncImpl internal constructor(private val clientOptions: Cli
                     .build()
                     .prepareAsync(clientOptions, params)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
-            return request
-                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
+            val delegate =
+                request
+                .thenComposeAsync { clientOptions.httpClient.executeAsync(
+                            it,
+                            requestOptions,
+                            cancellationTokenSource.token()
+                        ) }
                 .thenApply { response ->
                     errorHandler.handle(response).parseable {
                         response
@@ -283,6 +312,7 @@ class ThreadServiceAsyncImpl internal constructor(private val clientOptions: Cli
                             }
                     }
                 }
+        return delegate.withCancellation(cancellationTokenSource)
         }
 
         private val createAndRunHandler: Handler<Run> = jsonHandler<Run>(clientOptions.jsonMapper)
@@ -292,6 +322,7 @@ class ThreadServiceAsyncImpl internal constructor(private val clientOptions: Cli
             params: ThreadCreateAndRunParams,
             requestOptions: RequestOptions,
         ): CompletableFuture<HttpResponseFor<Run>> {
+            val cancellationTokenSource = CancellationTokenSource()
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.POST)
@@ -302,8 +333,13 @@ class ThreadServiceAsyncImpl internal constructor(private val clientOptions: Cli
                     .build()
                     .prepareAsync(clientOptions, params)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
-            return request
-                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
+            val delegate =
+                request
+                .thenComposeAsync { clientOptions.httpClient.executeAsync(
+                            it,
+                            requestOptions,
+                            cancellationTokenSource.token()
+                        ) }
                 .thenApply { response ->
                     errorHandler.handle(response).parseable {
                         response
@@ -315,6 +351,7 @@ class ThreadServiceAsyncImpl internal constructor(private val clientOptions: Cli
                             }
                     }
                 }
+        return delegate.withCancellation(cancellationTokenSource)
         }
 
         private val createAndRunStreamingHandler: Handler<StreamResponse<AssistantStreamEvent>> =
@@ -326,6 +363,7 @@ class ThreadServiceAsyncImpl internal constructor(private val clientOptions: Cli
             params: ThreadCreateAndRunParams,
             requestOptions: RequestOptions,
         ): CompletableFuture<HttpResponseFor<StreamResponse<AssistantStreamEvent>>> {
+            val cancellationTokenSource = CancellationTokenSource()
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.POST)
@@ -345,8 +383,13 @@ class ThreadServiceAsyncImpl internal constructor(private val clientOptions: Cli
                     .build()
                     .prepareAsync(clientOptions, params)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
-            return request
-                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
+            val delegate =
+                request
+                .thenComposeAsync { clientOptions.httpClient.executeAsync(
+                            it,
+                            requestOptions,
+                            cancellationTokenSource.token()
+                        ) }
                 .thenApply { response ->
                     errorHandler.handle(response).parseable {
                         response
@@ -360,6 +403,7 @@ class ThreadServiceAsyncImpl internal constructor(private val clientOptions: Cli
                             }
                     }
                 }
+        return delegate.withCancellation(cancellationTokenSource)
         }
     }
 }

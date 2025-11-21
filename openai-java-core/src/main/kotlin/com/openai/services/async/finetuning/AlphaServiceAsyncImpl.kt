@@ -3,8 +3,10 @@
 package com.openai.services.async.finetuning
 
 import com.openai.core.ClientOptions
+import com.openai.core.withCancellation
 import com.openai.services.async.finetuning.alpha.GraderServiceAsync
 import com.openai.services.async.finetuning.alpha.GraderServiceAsyncImpl
+import java.util.concurrent.CompletableFuture
 import java.util.function.Consumer
 
 class AlphaServiceAsyncImpl internal constructor(private val clientOptions: ClientOptions) :

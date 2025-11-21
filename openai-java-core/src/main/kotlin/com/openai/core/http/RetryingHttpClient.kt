@@ -75,8 +75,16 @@ private constructor(
         request: HttpRequest,
         requestOptions: RequestOptions,
     ): CompletableFuture<HttpResponse> {
+        return executeAsync(request, requestOptions, CancellationToken.none())
+    }
+
+    override fun executeAsync(
+        request: HttpRequest,
+        requestOptions: RequestOptions,
+        cancellationToken: CancellationToken,
+    ): CompletableFuture<HttpResponse> {
         if (!isRetryable(request) || maxRetries <= 0) {
-            return httpClient.executeAsync(request, requestOptions)
+            return httpClient.executeAsync(request, requestOptions, cancellationToken)
         }
 
         val modifiedRequest = maybeAddIdempotencyHeader(request)
@@ -91,16 +99,35 @@ private constructor(
             request: HttpRequest,
             requestOptions: RequestOptions,
         ): CompletableFuture<HttpResponse> {
+            // Check if cancelled before attempting retry
+            if (cancellationToken.isCancellationRequested()) {
+                val cancelledFuture = CompletableFuture<HttpResponse>()
+                cancelledFuture.completeExceptionally(
+                    java.util.concurrent.CancellationException("Request was cancelled")
+                )
+                return cancelledFuture
+            }
+
             val requestWithRetryCount =
                 if (shouldSendRetryCount) setRetryCountHeader(request, retries) else request
 
             return httpClient
-                .executeAsync(requestWithRetryCount, requestOptions)
+                .executeAsync(requestWithRetryCount, requestOptions, cancellationToken)
                 .handleAsync(
                     fun(
                         response: HttpResponse?,
                         throwable: Throwable?,
                     ): CompletableFuture<HttpResponse> {
+                        // Check if this was a cancellation
+                        if (cancellationToken.isCancellationRequested()) {
+                            response?.close()
+                            val cancelledFuture = CompletableFuture<HttpResponse>()
+                            cancelledFuture.completeExceptionally(
+                                java.util.concurrent.CancellationException("Request was cancelled")
+                            )
+                            return cancelledFuture
+                        }
+
                         if (response != null) {
                             if (++retries > maxRetries || !shouldRetry(response)) {
                                 return CompletableFuture.completedFuture(response)
@@ -116,6 +143,16 @@ private constructor(
                         val backoffDuration = getRetryBackoffDuration(retries, response)
                         // All responses must be closed, so close the failed one before retrying.
                         response?.close()
+
+                        // Check cancellation before sleeping
+                        if (cancellationToken.isCancellationRequested()) {
+                            val cancelledFuture = CompletableFuture<HttpResponse>()
+                            cancelledFuture.completeExceptionally(
+                                java.util.concurrent.CancellationException("Request was cancelled")
+                            )
+                            return cancelledFuture
+                        }
+
                         return sleeper.sleepAsync(backoffDuration).thenCompose {
                             executeWithRetries(requestWithRetryCount, requestOptions)
                         }

@@ -21,6 +21,8 @@ import com.openai.models.beta.threads.runs.steps.StepListPageAsync
 import com.openai.models.beta.threads.runs.steps.StepListPageResponse
 import com.openai.models.beta.threads.runs.steps.StepListParams
 import com.openai.models.beta.threads.runs.steps.StepRetrieveParams
+import com.openai.core.http.CancellationTokenSource
+import com.openai.core.withCancellation
 import java.util.concurrent.CompletableFuture
 import java.util.function.Consumer
 import kotlin.jvm.optionals.getOrNull
@@ -81,6 +83,7 @@ class StepServiceAsyncImpl internal constructor(private val clientOptions: Clien
             params: StepRetrieveParams,
             requestOptions: RequestOptions,
         ): CompletableFuture<HttpResponseFor<RunStep>> {
+            val cancellationTokenSource = CancellationTokenSource()
             // We check here instead of in the params builder because this can be specified
             // positionally or in the params class.
             checkRequired("stepId", params.stepId().getOrNull())
@@ -100,8 +103,13 @@ class StepServiceAsyncImpl internal constructor(private val clientOptions: Clien
                     .build()
                     .prepareAsync(clientOptions, params)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
-            return request
-                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
+            val delegate =
+                request
+                .thenComposeAsync { clientOptions.httpClient.executeAsync(
+                            it,
+                            requestOptions,
+                            cancellationTokenSource.token()
+                        ) }
                 .thenApply { response ->
                     errorHandler.handle(response).parseable {
                         response
@@ -113,6 +121,7 @@ class StepServiceAsyncImpl internal constructor(private val clientOptions: Clien
                             }
                     }
                 }
+        return delegate.withCancellation(cancellationTokenSource)
         }
 
         private val listHandler: Handler<StepListPageResponse> =
@@ -123,6 +132,7 @@ class StepServiceAsyncImpl internal constructor(private val clientOptions: Clien
             params: StepListParams,
             requestOptions: RequestOptions,
         ): CompletableFuture<HttpResponseFor<StepListPageAsync>> {
+            val cancellationTokenSource = CancellationTokenSource()
             // We check here instead of in the params builder because this can be specified
             // positionally or in the params class.
             checkRequired("runId", params.runId().getOrNull())
@@ -141,8 +151,13 @@ class StepServiceAsyncImpl internal constructor(private val clientOptions: Clien
                     .build()
                     .prepareAsync(clientOptions, params)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
-            return request
-                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
+            val delegate =
+                request
+                .thenComposeAsync { clientOptions.httpClient.executeAsync(
+                            it,
+                            requestOptions,
+                            cancellationTokenSource.token()
+                        ) }
                 .thenApply { response ->
                     errorHandler.handle(response).parseable {
                         response
@@ -162,6 +177,7 @@ class StepServiceAsyncImpl internal constructor(private val clientOptions: Clien
                             }
                     }
                 }
+        return delegate.withCancellation(cancellationTokenSource)
         }
     }
 }

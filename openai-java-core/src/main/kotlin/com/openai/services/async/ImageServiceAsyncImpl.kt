@@ -30,6 +30,8 @@ import com.openai.models.images.ImageEditStreamEvent
 import com.openai.models.images.ImageGenStreamEvent
 import com.openai.models.images.ImageGenerateParams
 import com.openai.models.images.ImagesResponse
+import com.openai.core.http.CancellationTokenSource
+import com.openai.core.withCancellation
 import java.util.concurrent.CompletableFuture
 import java.util.function.Consumer
 
@@ -42,10 +44,18 @@ class ImageServiceAsyncImpl internal constructor(private val clientOptions: Clie
 
     override fun withRawResponse(): ImageServiceAsync.WithRawResponse = withRawResponse
 
+
     override fun withOptions(modifier: Consumer<ClientOptions.Builder>): ImageServiceAsync =
         ImageServiceAsyncImpl(clientOptions.toBuilder().apply(modifier::accept).build())
 
     override fun createVariation(
+        params: ImageCreateVariationParams,
+        requestOptions: RequestOptions,
+        ImageServiceAsyncImpl(clientOptions.toBuilder().apply(modifier::accept).build())
+
+    override fun createVariation(
+        params: ImageCreateVariationParams,
+        requestOptions: RequestOptions,
         params: ImageCreateVariationParams,
         requestOptions: RequestOptions,
     ): CompletableFuture<ImagesResponse> =
@@ -55,11 +65,15 @@ class ImageServiceAsyncImpl internal constructor(private val clientOptions: Clie
     override fun edit(
         params: ImageEditParams,
         requestOptions: RequestOptions,
+        params: ImageEditParams,
+        requestOptions: RequestOptions,
     ): CompletableFuture<ImagesResponse> =
         // post /images/edits
         withRawResponse().edit(params, requestOptions).thenApply { it.parse() }
 
     override fun editStreaming(
+        params: ImageEditParams,
+        requestOptions: RequestOptions,
         params: ImageEditParams,
         requestOptions: RequestOptions,
     ): AsyncStreamResponse<ImageEditStreamEvent> =
@@ -72,11 +86,15 @@ class ImageServiceAsyncImpl internal constructor(private val clientOptions: Clie
     override fun generate(
         params: ImageGenerateParams,
         requestOptions: RequestOptions,
+        params: ImageGenerateParams,
+        requestOptions: RequestOptions,
     ): CompletableFuture<ImagesResponse> =
         // post /images/generations
         withRawResponse().generate(params, requestOptions).thenApply { it.parse() }
 
     override fun generateStreaming(
+        params: ImageGenerateParams,
+        requestOptions: RequestOptions,
         params: ImageGenerateParams,
         requestOptions: RequestOptions,
     ): AsyncStreamResponse<ImageGenStreamEvent> =
@@ -93,6 +111,7 @@ class ImageServiceAsyncImpl internal constructor(private val clientOptions: Clie
             errorHandler(errorBodyHandler(clientOptions.jsonMapper))
 
         override fun withOptions(
+            val cancellationTokenSource = CancellationTokenSource()
             modifier: Consumer<ClientOptions.Builder>
         ): ImageServiceAsync.WithRawResponse =
             ImageServiceAsyncImpl.WithRawResponseImpl(
@@ -106,6 +125,7 @@ class ImageServiceAsyncImpl internal constructor(private val clientOptions: Clie
             params: ImageCreateVariationParams,
             requestOptions: RequestOptions,
         ): CompletableFuture<HttpResponseFor<ImagesResponse>> {
+            val cancellationTokenSource = CancellationTokenSource()
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.POST)
@@ -115,8 +135,15 @@ class ImageServiceAsyncImpl internal constructor(private val clientOptions: Clie
                     .build()
                     .prepareAsync(clientOptions, params)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
-            return request
-                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
+            return
+                    request
+                        .thenComposeAsync {
+                            clientOptions.httpClient.executeAsync(
+                                it,
+                                requestOptions,
+                                cancellationTokenSource.token()
+                            )
+                        }
                 .thenApply { response ->
                     errorHandler.handle(response).parseable {
                         response
@@ -125,6 +152,8 @@ class ImageServiceAsyncImpl internal constructor(private val clientOptions: Clie
                                 if (requestOptions.responseValidation!!) {
                                     it.validate()
                                 }
+
+            .withCancellation(cancellationTokenSource)
                             }
                     }
                 }
@@ -137,6 +166,7 @@ class ImageServiceAsyncImpl internal constructor(private val clientOptions: Clie
             params: ImageEditParams,
             requestOptions: RequestOptions,
         ): CompletableFuture<HttpResponseFor<ImagesResponse>> {
+            val cancellationTokenSource = CancellationTokenSource()
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.POST)
@@ -146,8 +176,15 @@ class ImageServiceAsyncImpl internal constructor(private val clientOptions: Clie
                     .build()
                     .prepareAsync(clientOptions, params)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
-            return request
-                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
+            return
+                    request
+                        .thenComposeAsync {
+                            clientOptions.httpClient.executeAsync(
+                                it,
+                                requestOptions,
+                                cancellationTokenSource.token()
+                            )
+                        }
                 .thenApply { response ->
                     errorHandler.handle(response).parseable {
                         response
@@ -156,6 +193,8 @@ class ImageServiceAsyncImpl internal constructor(private val clientOptions: Clie
                                 if (requestOptions.responseValidation!!) {
                                     it.validate()
                                 }
+
+            .withCancellation(cancellationTokenSource)
                             }
                     }
                 }
@@ -168,6 +207,7 @@ class ImageServiceAsyncImpl internal constructor(private val clientOptions: Clie
             params: ImageEditParams,
             requestOptions: RequestOptions,
         ): CompletableFuture<HttpResponseFor<StreamResponse<ImageEditStreamEvent>>> {
+            val cancellationTokenSource = CancellationTokenSource()
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.POST)
@@ -182,8 +222,15 @@ class ImageServiceAsyncImpl internal constructor(private val clientOptions: Clie
                     .build()
                     .prepareAsync(clientOptions, params)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
-            return request
-                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
+            return
+                    request
+                        .thenComposeAsync {
+                            clientOptions.httpClient.executeAsync(
+                                it,
+                                requestOptions,
+                                cancellationTokenSource.token()
+                            )
+                        }
                 .thenApply { response ->
                     errorHandler.handle(response).parseable {
                         response
@@ -194,6 +241,8 @@ class ImageServiceAsyncImpl internal constructor(private val clientOptions: Clie
                                 } else {
                                     streamResponse
                                 }
+
+            .withCancellation(cancellationTokenSource)
                             }
                     }
                 }
@@ -206,6 +255,7 @@ class ImageServiceAsyncImpl internal constructor(private val clientOptions: Clie
             params: ImageGenerateParams,
             requestOptions: RequestOptions,
         ): CompletableFuture<HttpResponseFor<ImagesResponse>> {
+            val cancellationTokenSource = CancellationTokenSource()
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.POST)
@@ -215,8 +265,15 @@ class ImageServiceAsyncImpl internal constructor(private val clientOptions: Clie
                     .build()
                     .prepareAsync(clientOptions, params)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
-            return request
-                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
+            return
+                    request
+                        .thenComposeAsync {
+                            clientOptions.httpClient.executeAsync(
+                                it,
+                                requestOptions,
+                                cancellationTokenSource.token()
+                            )
+                        }
                 .thenApply { response ->
                     errorHandler.handle(response).parseable {
                         response
@@ -225,6 +282,8 @@ class ImageServiceAsyncImpl internal constructor(private val clientOptions: Clie
                                 if (requestOptions.responseValidation!!) {
                                     it.validate()
                                 }
+
+            .withCancellation(cancellationTokenSource)
                             }
                     }
                 }
@@ -237,6 +296,7 @@ class ImageServiceAsyncImpl internal constructor(private val clientOptions: Clie
             params: ImageGenerateParams,
             requestOptions: RequestOptions,
         ): CompletableFuture<HttpResponseFor<StreamResponse<ImageGenStreamEvent>>> {
+            val cancellationTokenSource = CancellationTokenSource()
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.POST)
@@ -255,8 +315,15 @@ class ImageServiceAsyncImpl internal constructor(private val clientOptions: Clie
                     .build()
                     .prepareAsync(clientOptions, params)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
-            return request
-                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
+            return
+                    request
+                        .thenComposeAsync {
+                            clientOptions.httpClient.executeAsync(
+                                it,
+                                requestOptions,
+                                cancellationTokenSource.token()
+                            )
+                        }
                 .thenApply { response ->
                     errorHandler.handle(response).parseable {
                         response
@@ -267,6 +334,8 @@ class ImageServiceAsyncImpl internal constructor(private val clientOptions: Clie
                                 } else {
                                     streamResponse
                                 }
+
+            .withCancellation(cancellationTokenSource)
                             }
                     }
                 }

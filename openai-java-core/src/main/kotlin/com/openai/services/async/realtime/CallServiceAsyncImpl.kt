@@ -19,6 +19,8 @@ import com.openai.models.realtime.calls.CallAcceptParams
 import com.openai.models.realtime.calls.CallHangupParams
 import com.openai.models.realtime.calls.CallReferParams
 import com.openai.models.realtime.calls.CallRejectParams
+import com.openai.core.http.CancellationTokenSource
+import com.openai.core.withCancellation
 import java.util.concurrent.CompletableFuture
 import java.util.function.Consumer
 import kotlin.jvm.optionals.getOrNull

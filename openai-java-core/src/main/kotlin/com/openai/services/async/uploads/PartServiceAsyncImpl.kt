@@ -18,6 +18,8 @@ import com.openai.core.http.parseable
 import com.openai.core.prepareAsync
 import com.openai.models.uploads.parts.PartCreateParams
 import com.openai.models.uploads.parts.UploadPart
+import com.openai.core.http.CancellationTokenSource
+import com.openai.core.withCancellation
 import java.util.concurrent.CompletableFuture
 import java.util.function.Consumer
 import kotlin.jvm.optionals.getOrNull
@@ -31,10 +33,18 @@ class PartServiceAsyncImpl internal constructor(private val clientOptions: Clien
 
     override fun withRawResponse(): PartServiceAsync.WithRawResponse = withRawResponse
 
+
     override fun withOptions(modifier: Consumer<ClientOptions.Builder>): PartServiceAsync =
         PartServiceAsyncImpl(clientOptions.toBuilder().apply(modifier::accept).build())
 
     override fun create(
+        params: PartCreateParams,
+        requestOptions: RequestOptions,
+        PartServiceAsyncImpl(clientOptions.toBuilder().apply(modifier::accept).build())
+
+    override fun create(
+        params: PartCreateParams,
+        requestOptions: RequestOptions,
         params: PartCreateParams,
         requestOptions: RequestOptions,
     ): CompletableFuture<UploadPart> =
@@ -48,6 +58,7 @@ class PartServiceAsyncImpl internal constructor(private val clientOptions: Clien
             errorHandler(errorBodyHandler(clientOptions.jsonMapper))
 
         override fun withOptions(
+            val cancellationTokenSource = CancellationTokenSource()
             modifier: Consumer<ClientOptions.Builder>
         ): PartServiceAsync.WithRawResponse =
             PartServiceAsyncImpl.WithRawResponseImpl(
@@ -61,6 +72,7 @@ class PartServiceAsyncImpl internal constructor(private val clientOptions: Clien
             params: PartCreateParams,
             requestOptions: RequestOptions,
         ): CompletableFuture<HttpResponseFor<UploadPart>> {
+            val cancellationTokenSource = CancellationTokenSource()
             // We check here instead of in the params builder because this can be specified
             // positionally or in the params class.
             checkRequired("uploadId", params.uploadId().getOrNull())
@@ -73,8 +85,15 @@ class PartServiceAsyncImpl internal constructor(private val clientOptions: Clien
                     .build()
                     .prepareAsync(clientOptions, params)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
-            return request
-                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
+            return
+                    request
+                        .thenComposeAsync {
+                            clientOptions.httpClient.executeAsync(
+                                it,
+                                requestOptions,
+                                cancellationTokenSource.token()
+                            )
+                        }
                 .thenApply { response ->
                     errorHandler.handle(response).parseable {
                         response
@@ -83,6 +102,8 @@ class PartServiceAsyncImpl internal constructor(private val clientOptions: Clien
                                 if (requestOptions.responseValidation!!) {
                                     it.validate()
                                 }
+
+            .withCancellation(cancellationTokenSource)
                             }
                     }
                 }

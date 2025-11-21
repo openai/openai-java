@@ -7,6 +7,7 @@ import com.openai.services.async.beta.AssistantServiceAsync
 import com.openai.services.async.beta.ChatKitServiceAsync
 import com.openai.services.async.beta.RealtimeServiceAsync
 import com.openai.services.async.beta.ThreadServiceAsync
+import java.util.concurrent.CompletableFuture
 import java.util.function.Consumer
 
 interface BetaServiceAsync {

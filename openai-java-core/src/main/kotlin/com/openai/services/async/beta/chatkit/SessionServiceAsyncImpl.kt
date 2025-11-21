@@ -20,6 +20,8 @@ import com.openai.core.prepareAsync
 import com.openai.models.beta.chatkit.sessions.SessionCancelParams
 import com.openai.models.beta.chatkit.sessions.SessionCreateParams
 import com.openai.models.beta.chatkit.threads.ChatSession
+import com.openai.core.http.CancellationTokenSource
+import com.openai.core.withCancellation
 import java.util.concurrent.CompletableFuture
 import java.util.function.Consumer
 import kotlin.jvm.optionals.getOrNull
@@ -76,6 +78,7 @@ class SessionServiceAsyncImpl internal constructor(private val clientOptions: Cl
             params: SessionCreateParams,
             requestOptions: RequestOptions,
         ): CompletableFuture<HttpResponseFor<ChatSession>> {
+            val cancellationTokenSource = CancellationTokenSource()
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.POST)
@@ -86,8 +89,13 @@ class SessionServiceAsyncImpl internal constructor(private val clientOptions: Cl
                     .build()
                     .prepareAsync(clientOptions, params)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
-            return request
-                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
+            val delegate =
+                request
+                .thenComposeAsync { clientOptions.httpClient.executeAsync(
+                            it,
+                            requestOptions,
+                            cancellationTokenSource.token()
+                        ) }
                 .thenApply { response ->
                     errorHandler.handle(response).parseable {
                         response
@@ -99,6 +107,7 @@ class SessionServiceAsyncImpl internal constructor(private val clientOptions: Cl
                             }
                     }
                 }
+        return delegate.withCancellation(cancellationTokenSource)
         }
 
         private val cancelHandler: Handler<ChatSession> =
@@ -108,6 +117,7 @@ class SessionServiceAsyncImpl internal constructor(private val clientOptions: Cl
             params: SessionCancelParams,
             requestOptions: RequestOptions,
         ): CompletableFuture<HttpResponseFor<ChatSession>> {
+            val cancellationTokenSource = CancellationTokenSource()
             // We check here instead of in the params builder because this can be specified
             // positionally or in the params class.
             checkRequired("sessionId", params.sessionId().getOrNull())
@@ -121,8 +131,13 @@ class SessionServiceAsyncImpl internal constructor(private val clientOptions: Cl
                     .build()
                     .prepareAsync(clientOptions, params)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
-            return request
-                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
+            val delegate =
+                request
+                .thenComposeAsync { clientOptions.httpClient.executeAsync(
+                            it,
+                            requestOptions,
+                            cancellationTokenSource.token()
+                        ) }
                 .thenApply { response ->
                     errorHandler.handle(response).parseable {
                         response
@@ -134,6 +149,7 @@ class SessionServiceAsyncImpl internal constructor(private val clientOptions: Cl
                             }
                     }
                 }
+        return delegate.withCancellation(cancellationTokenSource)
         }
     }
 }

@@ -3,12 +3,14 @@
 package com.openai.services.async
 
 import com.openai.core.ClientOptions
+import com.openai.core.withCancellation
 import com.openai.services.async.audio.SpeechServiceAsync
 import com.openai.services.async.audio.SpeechServiceAsyncImpl
 import com.openai.services.async.audio.TranscriptionServiceAsync
 import com.openai.services.async.audio.TranscriptionServiceAsyncImpl
 import com.openai.services.async.audio.TranslationServiceAsync
 import com.openai.services.async.audio.TranslationServiceAsyncImpl
+import java.util.concurrent.CompletableFuture
 import java.util.function.Consumer
 
 class AudioServiceAsyncImpl internal constructor(private val clientOptions: ClientOptions) :

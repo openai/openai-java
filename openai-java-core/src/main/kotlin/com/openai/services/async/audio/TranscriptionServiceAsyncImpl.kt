@@ -27,6 +27,8 @@ import com.openai.models.audio.transcriptions.Transcription
 import com.openai.models.audio.transcriptions.TranscriptionCreateParams
 import com.openai.models.audio.transcriptions.TranscriptionCreateResponse
 import com.openai.models.audio.transcriptions.TranscriptionStreamEvent
+import com.openai.core.http.CancellationTokenSource
+import com.openai.core.withCancellation
 import java.util.concurrent.CompletableFuture
 import java.util.function.Consumer
 import kotlin.jvm.optionals.getOrNull
@@ -40,10 +42,18 @@ class TranscriptionServiceAsyncImpl internal constructor(private val clientOptio
 
     override fun withRawResponse(): TranscriptionServiceAsync.WithRawResponse = withRawResponse
 
+
     override fun withOptions(modifier: Consumer<ClientOptions.Builder>): TranscriptionServiceAsync =
         TranscriptionServiceAsyncImpl(clientOptions.toBuilder().apply(modifier::accept).build())
 
     override fun create(
+        params: TranscriptionCreateParams,
+        requestOptions: RequestOptions,
+        TranscriptionServiceAsyncImpl(clientOptions.toBuilder().apply(modifier::accept).build())
+
+    override fun create(
+        params: TranscriptionCreateParams,
+        requestOptions: RequestOptions,
         params: TranscriptionCreateParams,
         requestOptions: RequestOptions,
     ): CompletableFuture<TranscriptionCreateResponse> =
@@ -51,6 +61,8 @@ class TranscriptionServiceAsyncImpl internal constructor(private val clientOptio
         withRawResponse().create(params, requestOptions).thenApply { it.parse() }
 
     override fun createStreaming(
+        params: TranscriptionCreateParams,
+        requestOptions: RequestOptions,
         params: TranscriptionCreateParams,
         requestOptions: RequestOptions,
     ): AsyncStreamResponse<TranscriptionStreamEvent> =
@@ -68,6 +80,7 @@ class TranscriptionServiceAsyncImpl internal constructor(private val clientOptio
 
         override fun withOptions(
             modifier: Consumer<ClientOptions.Builder>
+            modifier: Consumer<ClientOptions.Builder>
         ): TranscriptionServiceAsync.WithRawResponse =
             TranscriptionServiceAsyncImpl.WithRawResponseImpl(
                 clientOptions.toBuilder().apply(modifier::accept).build()
@@ -81,6 +94,7 @@ class TranscriptionServiceAsyncImpl internal constructor(private val clientOptio
                 private val stringHandler = stringHandler()
 
                 override fun handle(response: HttpResponse): TranscriptionCreateResponse =
+            val cancellationTokenSource = CancellationTokenSource()
                     TranscriptionCreateResponse.ofTranscription(
                         Transcription.builder().text(stringHandler.handle(response)).build()
                     )
@@ -90,6 +104,7 @@ class TranscriptionServiceAsyncImpl internal constructor(private val clientOptio
             params: TranscriptionCreateParams,
             requestOptions: RequestOptions,
         ): CompletableFuture<HttpResponseFor<TranscriptionCreateResponse>> {
+            val cancellationTokenSource = CancellationTokenSource()
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.POST)
@@ -99,8 +114,15 @@ class TranscriptionServiceAsyncImpl internal constructor(private val clientOptio
                     .build()
                     .prepareAsync(clientOptions, params)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
-            return request
-                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
+            return
+                    request
+                        .thenComposeAsync {
+                            clientOptions.httpClient.executeAsync(
+                                it,
+                                requestOptions,
+                                cancellationTokenSource.token()
+                            )
+                        }
                 .thenApply { response ->
                     val handler =
                         if (params.responseFormat().getOrNull()?.isJson() != false)
@@ -113,6 +135,8 @@ class TranscriptionServiceAsyncImpl internal constructor(private val clientOptio
                                 if (requestOptions.responseValidation!!) {
                                     it.validate()
                                 }
+
+            .withCancellation(cancellationTokenSource)
                             }
                     }
                 }
@@ -125,6 +149,7 @@ class TranscriptionServiceAsyncImpl internal constructor(private val clientOptio
             params: TranscriptionCreateParams,
             requestOptions: RequestOptions,
         ): CompletableFuture<HttpResponseFor<StreamResponse<TranscriptionStreamEvent>>> {
+            val cancellationTokenSource = CancellationTokenSource()
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.POST)
@@ -139,8 +164,15 @@ class TranscriptionServiceAsyncImpl internal constructor(private val clientOptio
                     .build()
                     .prepareAsync(clientOptions, params)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
-            return request
-                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
+            return
+                    request
+                        .thenComposeAsync {
+                            clientOptions.httpClient.executeAsync(
+                                it,
+                                requestOptions,
+                                cancellationTokenSource.token()
+                            )
+                        }
                 .thenApply { response ->
                     errorHandler.handle(response).parseable {
                         response
@@ -151,6 +183,8 @@ class TranscriptionServiceAsyncImpl internal constructor(private val clientOptio
                                 } else {
                                     streamResponse
                                 }
+
+            .withCancellation(cancellationTokenSource)
                             }
                     }
                 }

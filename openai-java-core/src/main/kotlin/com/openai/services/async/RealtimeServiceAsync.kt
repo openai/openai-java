@@ -5,6 +5,7 @@ package com.openai.services.async
 import com.openai.core.ClientOptions
 import com.openai.services.async.realtime.CallServiceAsync
 import com.openai.services.async.realtime.ClientSecretServiceAsync
+import java.util.concurrent.CompletableFuture
 import java.util.function.Consumer
 
 interface RealtimeServiceAsync {

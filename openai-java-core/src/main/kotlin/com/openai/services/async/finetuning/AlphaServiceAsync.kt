@@ -4,6 +4,7 @@ package com.openai.services.async.finetuning
 
 import com.openai.core.ClientOptions
 import com.openai.services.async.finetuning.alpha.GraderServiceAsync
+import java.util.concurrent.CompletableFuture
 import java.util.function.Consumer
 
 interface AlphaServiceAsync {

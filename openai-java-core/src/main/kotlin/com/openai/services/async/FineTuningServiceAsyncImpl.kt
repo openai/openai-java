@@ -3,6 +3,7 @@
 package com.openai.services.async
 
 import com.openai.core.ClientOptions
+import com.openai.core.withCancellation
 import com.openai.services.async.finetuning.AlphaServiceAsync
 import com.openai.services.async.finetuning.AlphaServiceAsyncImpl
 import com.openai.services.async.finetuning.CheckpointServiceAsync
@@ -11,6 +12,7 @@ import com.openai.services.async.finetuning.JobServiceAsync
 import com.openai.services.async.finetuning.JobServiceAsyncImpl
 import com.openai.services.async.finetuning.MethodServiceAsync
 import com.openai.services.async.finetuning.MethodServiceAsyncImpl
+import java.util.concurrent.CompletableFuture
 import java.util.function.Consumer
 
 class FineTuningServiceAsyncImpl internal constructor(private val clientOptions: ClientOptions) :

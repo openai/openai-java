@@ -24,6 +24,8 @@ import com.openai.models.conversations.ConversationRetrieveParams
 import com.openai.models.conversations.ConversationUpdateParams
 import com.openai.services.async.conversations.ItemServiceAsync
 import com.openai.services.async.conversations.ItemServiceAsyncImpl
+import com.openai.core.http.CancellationTokenSource
+import com.openai.core.withCancellation
 import java.util.concurrent.CompletableFuture
 import java.util.function.Consumer
 import kotlin.jvm.optionals.getOrNull
@@ -98,6 +100,7 @@ class ConversationServiceAsyncImpl internal constructor(private val clientOption
             params: ConversationCreateParams,
             requestOptions: RequestOptions,
         ): CompletableFuture<HttpResponseFor<Conversation>> {
+            val cancellationTokenSource = CancellationTokenSource()
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.POST)
@@ -107,8 +110,13 @@ class ConversationServiceAsyncImpl internal constructor(private val clientOption
                     .build()
                     .prepareAsync(clientOptions, params)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
-            return request
-                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
+            val delegate =
+                request
+                .thenComposeAsync { clientOptions.httpClient.executeAsync(
+                            it,
+                            requestOptions,
+                            cancellationTokenSource.token()
+                        ) }
                 .thenApply { response ->
                     errorHandler.handle(response).parseable {
                         response
@@ -120,6 +128,7 @@ class ConversationServiceAsyncImpl internal constructor(private val clientOption
                             }
                     }
                 }
+            return delegate.withCancellation(cancellationTokenSource)
         }
 
         private val retrieveHandler: Handler<Conversation> =
@@ -129,6 +138,7 @@ class ConversationServiceAsyncImpl internal constructor(private val clientOption
             params: ConversationRetrieveParams,
             requestOptions: RequestOptions,
         ): CompletableFuture<HttpResponseFor<Conversation>> {
+            val cancellationTokenSource = CancellationTokenSource()
             // We check here instead of in the params builder because this can be specified
             // positionally or in the params class.
             checkRequired("conversationId", params.conversationId().getOrNull())
@@ -140,8 +150,13 @@ class ConversationServiceAsyncImpl internal constructor(private val clientOption
                     .build()
                     .prepareAsync(clientOptions, params)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
-            return request
-                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
+            val delegate =
+                request
+                .thenComposeAsync { clientOptions.httpClient.executeAsync(
+                            it,
+                            requestOptions,
+                            cancellationTokenSource.token()
+                        ) }
                 .thenApply { response ->
                     errorHandler.handle(response).parseable {
                         response
@@ -153,6 +168,7 @@ class ConversationServiceAsyncImpl internal constructor(private val clientOption
                             }
                     }
                 }
+            return delegate.withCancellation(cancellationTokenSource)
         }
 
         private val updateHandler: Handler<Conversation> =
@@ -162,6 +178,7 @@ class ConversationServiceAsyncImpl internal constructor(private val clientOption
             params: ConversationUpdateParams,
             requestOptions: RequestOptions,
         ): CompletableFuture<HttpResponseFor<Conversation>> {
+            val cancellationTokenSource = CancellationTokenSource()
             // We check here instead of in the params builder because this can be specified
             // positionally or in the params class.
             checkRequired("conversationId", params.conversationId().getOrNull())
@@ -174,8 +191,13 @@ class ConversationServiceAsyncImpl internal constructor(private val clientOption
                     .build()
                     .prepareAsync(clientOptions, params)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
-            return request
-                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
+            val delegate =
+                request
+                .thenComposeAsync { clientOptions.httpClient.executeAsync(
+                            it,
+                            requestOptions,
+                            cancellationTokenSource.token()
+                        ) }
                 .thenApply { response ->
                     errorHandler.handle(response).parseable {
                         response
@@ -187,6 +209,7 @@ class ConversationServiceAsyncImpl internal constructor(private val clientOption
                             }
                     }
                 }
+            return delegate.withCancellation(cancellationTokenSource)
         }
 
         private val deleteHandler: Handler<ConversationDeletedResource> =
@@ -196,6 +219,7 @@ class ConversationServiceAsyncImpl internal constructor(private val clientOption
             params: ConversationDeleteParams,
             requestOptions: RequestOptions,
         ): CompletableFuture<HttpResponseFor<ConversationDeletedResource>> {
+            val cancellationTokenSource = CancellationTokenSource()
             // We check here instead of in the params builder because this can be specified
             // positionally or in the params class.
             checkRequired("conversationId", params.conversationId().getOrNull())
@@ -208,8 +232,13 @@ class ConversationServiceAsyncImpl internal constructor(private val clientOption
                     .build()
                     .prepareAsync(clientOptions, params)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
-            return request
-                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
+            val delegate =
+                request
+                .thenComposeAsync { clientOptions.httpClient.executeAsync(
+                            it,
+                            requestOptions,
+                            cancellationTokenSource.token()
+                        ) }
                 .thenApply { response ->
                     errorHandler.handle(response).parseable {
                         response
@@ -221,6 +250,7 @@ class ConversationServiceAsyncImpl internal constructor(private val clientOption
                             }
                     }
                 }
+            return delegate.withCancellation(cancellationTokenSource)
         }
     }
 }

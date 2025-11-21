@@ -3,9 +3,11 @@
 package com.openai.services.async
 
 import com.openai.core.ClientOptions
+import com.openai.core.withCancellation
 import com.openai.models.webhooks.UnwrapWebhookEvent
 import com.openai.models.webhooks.WebhookVerificationParams
 import com.openai.services.blocking.WebhookServiceImpl
+import java.util.concurrent.CompletableFuture
 import java.util.function.Consumer
 
 class WebhookServiceAsyncImpl internal constructor(private val clientOptions: ClientOptions) :

@@ -18,6 +18,8 @@ import com.openai.core.prepareAsync
 import com.openai.models.finetuning.jobs.checkpoints.CheckpointListPageAsync
 import com.openai.models.finetuning.jobs.checkpoints.CheckpointListPageResponse
 import com.openai.models.finetuning.jobs.checkpoints.CheckpointListParams
+import com.openai.core.http.CancellationTokenSource
+import com.openai.core.withCancellation
 import java.util.concurrent.CompletableFuture
 import java.util.function.Consumer
 import kotlin.jvm.optionals.getOrNull
@@ -31,10 +33,18 @@ class CheckpointServiceAsyncImpl internal constructor(private val clientOptions:
 
     override fun withRawResponse(): CheckpointServiceAsync.WithRawResponse = withRawResponse
 
+
     override fun withOptions(modifier: Consumer<ClientOptions.Builder>): CheckpointServiceAsync =
         CheckpointServiceAsyncImpl(clientOptions.toBuilder().apply(modifier::accept).build())
 
     override fun list(
+        params: CheckpointListParams,
+        requestOptions: RequestOptions,
+        CheckpointServiceAsyncImpl(clientOptions.toBuilder().apply(modifier::accept).build())
+
+    override fun list(
+        params: CheckpointListParams,
+        requestOptions: RequestOptions,
         params: CheckpointListParams,
         requestOptions: RequestOptions,
     ): CompletableFuture<CheckpointListPageAsync> =
@@ -48,6 +58,7 @@ class CheckpointServiceAsyncImpl internal constructor(private val clientOptions:
             errorHandler(errorBodyHandler(clientOptions.jsonMapper))
 
         override fun withOptions(
+            val cancellationTokenSource = CancellationTokenSource()
             modifier: Consumer<ClientOptions.Builder>
         ): CheckpointServiceAsync.WithRawResponse =
             CheckpointServiceAsyncImpl.WithRawResponseImpl(
@@ -61,6 +72,7 @@ class CheckpointServiceAsyncImpl internal constructor(private val clientOptions:
             params: CheckpointListParams,
             requestOptions: RequestOptions,
         ): CompletableFuture<HttpResponseFor<CheckpointListPageAsync>> {
+            val cancellationTokenSource = CancellationTokenSource()
             // We check here instead of in the params builder because this can be specified
             // positionally or in the params class.
             checkRequired("fineTuningJobId", params.fineTuningJobId().getOrNull())
@@ -72,8 +84,15 @@ class CheckpointServiceAsyncImpl internal constructor(private val clientOptions:
                     .build()
                     .prepareAsync(clientOptions, params)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
-            return request
-                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
+            return
+                    request
+                        .thenComposeAsync {
+                            clientOptions.httpClient.executeAsync(
+                                it,
+                                requestOptions,
+                                cancellationTokenSource.token()
+                            )
+                        }
                 .thenApply { response ->
                     errorHandler.handle(response).parseable {
                         response
@@ -82,6 +101,8 @@ class CheckpointServiceAsyncImpl internal constructor(private val clientOptions:
                                 if (requestOptions.responseValidation!!) {
                                     it.validate()
                                 }
+
+            .withCancellation(cancellationTokenSource)
                             }
                             .let {
                                 CheckpointListPageAsync.builder()

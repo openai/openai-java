@@ -3,8 +3,10 @@
 package com.openai.services.async.finetuning
 
 import com.openai.core.ClientOptions
+import com.openai.core.withCancellation
 import com.openai.services.async.finetuning.checkpoints.PermissionServiceAsync
 import com.openai.services.async.finetuning.checkpoints.PermissionServiceAsyncImpl
+import java.util.concurrent.CompletableFuture
 import java.util.function.Consumer
 
 class CheckpointServiceAsyncImpl internal constructor(private val clientOptions: ClientOptions) :

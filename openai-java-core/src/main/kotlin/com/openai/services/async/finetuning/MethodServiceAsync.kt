@@ -3,6 +3,7 @@
 package com.openai.services.async.finetuning
 
 import com.openai.core.ClientOptions
+import java.util.concurrent.CompletableFuture
 import java.util.function.Consumer
 
 interface MethodServiceAsync {

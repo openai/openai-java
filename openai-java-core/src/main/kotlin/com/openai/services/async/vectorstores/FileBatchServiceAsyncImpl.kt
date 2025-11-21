@@ -24,6 +24,8 @@ import com.openai.models.vectorstores.filebatches.FileBatchListFilesPageResponse
 import com.openai.models.vectorstores.filebatches.FileBatchListFilesParams
 import com.openai.models.vectorstores.filebatches.FileBatchRetrieveParams
 import com.openai.models.vectorstores.filebatches.VectorStoreFileBatch
+import com.openai.core.http.CancellationTokenSource
+import com.openai.core.withCancellation
 import java.util.concurrent.CompletableFuture
 import java.util.function.Consumer
 import kotlin.jvm.optionals.getOrNull
@@ -42,10 +44,18 @@ class FileBatchServiceAsyncImpl internal constructor(private val clientOptions: 
 
     override fun withRawResponse(): FileBatchServiceAsync.WithRawResponse = withRawResponse
 
+
     override fun withOptions(modifier: Consumer<ClientOptions.Builder>): FileBatchServiceAsync =
         FileBatchServiceAsyncImpl(clientOptions.toBuilder().apply(modifier::accept).build())
 
     override fun create(
+        params: FileBatchCreateParams,
+        requestOptions: RequestOptions,
+        FileBatchServiceAsyncImpl(clientOptions.toBuilder().apply(modifier::accept).build())
+
+    override fun create(
+        params: FileBatchCreateParams,
+        requestOptions: RequestOptions,
         params: FileBatchCreateParams,
         requestOptions: RequestOptions,
     ): CompletableFuture<VectorStoreFileBatch> =
@@ -55,6 +65,8 @@ class FileBatchServiceAsyncImpl internal constructor(private val clientOptions: 
     override fun retrieve(
         params: FileBatchRetrieveParams,
         requestOptions: RequestOptions,
+        params: FileBatchRetrieveParams,
+        requestOptions: RequestOptions,
     ): CompletableFuture<VectorStoreFileBatch> =
         // get /vector_stores/{vector_store_id}/file_batches/{batch_id}
         withRawResponse().retrieve(params, requestOptions).thenApply { it.parse() }
@@ -62,11 +74,15 @@ class FileBatchServiceAsyncImpl internal constructor(private val clientOptions: 
     override fun cancel(
         params: FileBatchCancelParams,
         requestOptions: RequestOptions,
+        params: FileBatchCancelParams,
+        requestOptions: RequestOptions,
     ): CompletableFuture<VectorStoreFileBatch> =
         // post /vector_stores/{vector_store_id}/file_batches/{batch_id}/cancel
         withRawResponse().cancel(params, requestOptions).thenApply { it.parse() }
 
     override fun listFiles(
+        params: FileBatchListFilesParams,
+        requestOptions: RequestOptions,
         params: FileBatchListFilesParams,
         requestOptions: RequestOptions,
     ): CompletableFuture<FileBatchListFilesPageAsync> =
@@ -80,6 +96,7 @@ class FileBatchServiceAsyncImpl internal constructor(private val clientOptions: 
             errorHandler(errorBodyHandler(clientOptions.jsonMapper))
 
         override fun withOptions(
+            val cancellationTokenSource = CancellationTokenSource()
             modifier: Consumer<ClientOptions.Builder>
         ): FileBatchServiceAsync.WithRawResponse =
             FileBatchServiceAsyncImpl.WithRawResponseImpl(
@@ -93,6 +110,7 @@ class FileBatchServiceAsyncImpl internal constructor(private val clientOptions: 
             params: FileBatchCreateParams,
             requestOptions: RequestOptions,
         ): CompletableFuture<HttpResponseFor<VectorStoreFileBatch>> {
+            val cancellationTokenSource = CancellationTokenSource()
             // We check here instead of in the params builder because this can be specified
             // positionally or in the params class.
             checkRequired("vectorStoreId", params.vectorStoreId().getOrNull())
@@ -106,8 +124,15 @@ class FileBatchServiceAsyncImpl internal constructor(private val clientOptions: 
                     .build()
                     .prepareAsync(clientOptions, params)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
-            return request
-                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
+            return
+                    request
+                        .thenComposeAsync {
+                            clientOptions.httpClient.executeAsync(
+                                it,
+                                requestOptions,
+                                cancellationTokenSource.token()
+                            )
+                        }
                 .thenApply { response ->
                     errorHandler.handle(response).parseable {
                         response
@@ -116,6 +141,8 @@ class FileBatchServiceAsyncImpl internal constructor(private val clientOptions: 
                                 if (requestOptions.responseValidation!!) {
                                     it.validate()
                                 }
+
+            .withCancellation(cancellationTokenSource)
                             }
                     }
                 }
@@ -128,6 +155,7 @@ class FileBatchServiceAsyncImpl internal constructor(private val clientOptions: 
             params: FileBatchRetrieveParams,
             requestOptions: RequestOptions,
         ): CompletableFuture<HttpResponseFor<VectorStoreFileBatch>> {
+            val cancellationTokenSource = CancellationTokenSource()
             // We check here instead of in the params builder because this can be specified
             // positionally or in the params class.
             checkRequired("batchId", params.batchId().getOrNull())
@@ -145,8 +173,15 @@ class FileBatchServiceAsyncImpl internal constructor(private val clientOptions: 
                     .build()
                     .prepareAsync(clientOptions, params)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
-            return request
-                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
+            return
+                    request
+                        .thenComposeAsync {
+                            clientOptions.httpClient.executeAsync(
+                                it,
+                                requestOptions,
+                                cancellationTokenSource.token()
+                            )
+                        }
                 .thenApply { response ->
                     errorHandler.handle(response).parseable {
                         response
@@ -155,6 +190,8 @@ class FileBatchServiceAsyncImpl internal constructor(private val clientOptions: 
                                 if (requestOptions.responseValidation!!) {
                                     it.validate()
                                 }
+
+            .withCancellation(cancellationTokenSource)
                             }
                     }
                 }
@@ -167,6 +204,7 @@ class FileBatchServiceAsyncImpl internal constructor(private val clientOptions: 
             params: FileBatchCancelParams,
             requestOptions: RequestOptions,
         ): CompletableFuture<HttpResponseFor<VectorStoreFileBatch>> {
+            val cancellationTokenSource = CancellationTokenSource()
             // We check here instead of in the params builder because this can be specified
             // positionally or in the params class.
             checkRequired("batchId", params.batchId().getOrNull())
@@ -186,8 +224,15 @@ class FileBatchServiceAsyncImpl internal constructor(private val clientOptions: 
                     .build()
                     .prepareAsync(clientOptions, params)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
-            return request
-                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
+            return
+                    request
+                        .thenComposeAsync {
+                            clientOptions.httpClient.executeAsync(
+                                it,
+                                requestOptions,
+                                cancellationTokenSource.token()
+                            )
+                        }
                 .thenApply { response ->
                     errorHandler.handle(response).parseable {
                         response
@@ -196,6 +241,8 @@ class FileBatchServiceAsyncImpl internal constructor(private val clientOptions: 
                                 if (requestOptions.responseValidation!!) {
                                     it.validate()
                                 }
+
+            .withCancellation(cancellationTokenSource)
                             }
                     }
                 }
@@ -208,6 +255,7 @@ class FileBatchServiceAsyncImpl internal constructor(private val clientOptions: 
             params: FileBatchListFilesParams,
             requestOptions: RequestOptions,
         ): CompletableFuture<HttpResponseFor<FileBatchListFilesPageAsync>> {
+            val cancellationTokenSource = CancellationTokenSource()
             // We check here instead of in the params builder because this can be specified
             // positionally or in the params class.
             checkRequired("batchId", params.batchId().getOrNull())
@@ -226,8 +274,15 @@ class FileBatchServiceAsyncImpl internal constructor(private val clientOptions: 
                     .build()
                     .prepareAsync(clientOptions, params)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
-            return request
-                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
+            return
+                    request
+                        .thenComposeAsync {
+                            clientOptions.httpClient.executeAsync(
+                                it,
+                                requestOptions,
+                                cancellationTokenSource.token()
+                            )
+                        }
                 .thenApply { response ->
                     errorHandler.handle(response).parseable {
                         response
@@ -236,6 +291,8 @@ class FileBatchServiceAsyncImpl internal constructor(private val clientOptions: 
                                 if (requestOptions.responseValidation!!) {
                                     it.validate()
                                 }
+
+            .withCancellation(cancellationTokenSource)
                             }
                             .let {
                                 FileBatchListFilesPageAsync.builder()

@@ -27,6 +27,8 @@ import com.openai.models.videos.VideoListPageResponse
 import com.openai.models.videos.VideoListParams
 import com.openai.models.videos.VideoRemixParams
 import com.openai.models.videos.VideoRetrieveParams
+import com.openai.core.http.CancellationTokenSource
+import com.openai.core.withCancellation
 import java.util.concurrent.CompletableFuture
 import java.util.function.Consumer
 import kotlin.jvm.optionals.getOrNull
@@ -40,10 +42,18 @@ class VideoServiceAsyncImpl internal constructor(private val clientOptions: Clie
 
     override fun withRawResponse(): VideoServiceAsync.WithRawResponse = withRawResponse
 
+
     override fun withOptions(modifier: Consumer<ClientOptions.Builder>): VideoServiceAsync =
         VideoServiceAsyncImpl(clientOptions.toBuilder().apply(modifier::accept).build())
 
     override fun create(
+        params: VideoCreateParams,
+        requestOptions: RequestOptions,
+        VideoServiceAsyncImpl(clientOptions.toBuilder().apply(modifier::accept).build())
+
+    override fun create(
+        params: VideoCreateParams,
+        requestOptions: RequestOptions,
         params: VideoCreateParams,
         requestOptions: RequestOptions,
     ): CompletableFuture<Video> =
@@ -53,11 +63,15 @@ class VideoServiceAsyncImpl internal constructor(private val clientOptions: Clie
     override fun retrieve(
         params: VideoRetrieveParams,
         requestOptions: RequestOptions,
+        params: VideoRetrieveParams,
+        requestOptions: RequestOptions,
     ): CompletableFuture<Video> =
         // get /videos/{video_id}
         withRawResponse().retrieve(params, requestOptions).thenApply { it.parse() }
 
     override fun list(
+        params: VideoListParams,
+        requestOptions: RequestOptions,
         params: VideoListParams,
         requestOptions: RequestOptions,
     ): CompletableFuture<VideoListPageAsync> =
@@ -67,6 +81,8 @@ class VideoServiceAsyncImpl internal constructor(private val clientOptions: Clie
     override fun delete(
         params: VideoDeleteParams,
         requestOptions: RequestOptions,
+        params: VideoDeleteParams,
+        requestOptions: RequestOptions,
     ): CompletableFuture<VideoDeleteResponse> =
         // delete /videos/{video_id}
         withRawResponse().delete(params, requestOptions).thenApply { it.parse() }
@@ -74,11 +90,15 @@ class VideoServiceAsyncImpl internal constructor(private val clientOptions: Clie
     override fun downloadContent(
         params: VideoDownloadContentParams,
         requestOptions: RequestOptions,
+        params: VideoDownloadContentParams,
+        requestOptions: RequestOptions,
     ): CompletableFuture<HttpResponse> =
         // get /videos/{video_id}/content
         withRawResponse().downloadContent(params, requestOptions)
 
     override fun remix(
+        params: VideoRemixParams,
+        requestOptions: RequestOptions,
         params: VideoRemixParams,
         requestOptions: RequestOptions,
     ): CompletableFuture<Video> =
@@ -92,6 +112,7 @@ class VideoServiceAsyncImpl internal constructor(private val clientOptions: Clie
             errorHandler(errorBodyHandler(clientOptions.jsonMapper))
 
         override fun withOptions(
+            val cancellationTokenSource = CancellationTokenSource()
             modifier: Consumer<ClientOptions.Builder>
         ): VideoServiceAsync.WithRawResponse =
             VideoServiceAsyncImpl.WithRawResponseImpl(
@@ -104,6 +125,7 @@ class VideoServiceAsyncImpl internal constructor(private val clientOptions: Clie
             params: VideoCreateParams,
             requestOptions: RequestOptions,
         ): CompletableFuture<HttpResponseFor<Video>> {
+            val cancellationTokenSource = CancellationTokenSource()
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.POST)
@@ -113,8 +135,15 @@ class VideoServiceAsyncImpl internal constructor(private val clientOptions: Clie
                     .build()
                     .prepareAsync(clientOptions, params)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
-            return request
-                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
+            return
+                    request
+                        .thenComposeAsync {
+                            clientOptions.httpClient.executeAsync(
+                                it,
+                                requestOptions,
+                                cancellationTokenSource.token()
+                            )
+                        }
                 .thenApply { response ->
                     errorHandler.handle(response).parseable {
                         response
@@ -123,6 +152,8 @@ class VideoServiceAsyncImpl internal constructor(private val clientOptions: Clie
                                 if (requestOptions.responseValidation!!) {
                                     it.validate()
                                 }
+
+            .withCancellation(cancellationTokenSource)
                             }
                     }
                 }
@@ -134,6 +165,7 @@ class VideoServiceAsyncImpl internal constructor(private val clientOptions: Clie
             params: VideoRetrieveParams,
             requestOptions: RequestOptions,
         ): CompletableFuture<HttpResponseFor<Video>> {
+            val cancellationTokenSource = CancellationTokenSource()
             // We check here instead of in the params builder because this can be specified
             // positionally or in the params class.
             checkRequired("videoId", params.videoId().getOrNull())
@@ -145,8 +177,15 @@ class VideoServiceAsyncImpl internal constructor(private val clientOptions: Clie
                     .build()
                     .prepareAsync(clientOptions, params)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
-            return request
-                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
+            return
+                    request
+                        .thenComposeAsync {
+                            clientOptions.httpClient.executeAsync(
+                                it,
+                                requestOptions,
+                                cancellationTokenSource.token()
+                            )
+                        }
                 .thenApply { response ->
                     errorHandler.handle(response).parseable {
                         response
@@ -155,6 +194,8 @@ class VideoServiceAsyncImpl internal constructor(private val clientOptions: Clie
                                 if (requestOptions.responseValidation!!) {
                                     it.validate()
                                 }
+
+            .withCancellation(cancellationTokenSource)
                             }
                     }
                 }
@@ -167,6 +208,7 @@ class VideoServiceAsyncImpl internal constructor(private val clientOptions: Clie
             params: VideoListParams,
             requestOptions: RequestOptions,
         ): CompletableFuture<HttpResponseFor<VideoListPageAsync>> {
+            val cancellationTokenSource = CancellationTokenSource()
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.GET)
@@ -175,8 +217,15 @@ class VideoServiceAsyncImpl internal constructor(private val clientOptions: Clie
                     .build()
                     .prepareAsync(clientOptions, params)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
-            return request
-                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
+            return
+                    request
+                        .thenComposeAsync {
+                            clientOptions.httpClient.executeAsync(
+                                it,
+                                requestOptions,
+                                cancellationTokenSource.token()
+                            )
+                        }
                 .thenApply { response ->
                     errorHandler.handle(response).parseable {
                         response
@@ -185,6 +234,8 @@ class VideoServiceAsyncImpl internal constructor(private val clientOptions: Clie
                                 if (requestOptions.responseValidation!!) {
                                     it.validate()
                                 }
+
+            .withCancellation(cancellationTokenSource)
                             }
                             .let {
                                 VideoListPageAsync.builder()
@@ -205,6 +256,7 @@ class VideoServiceAsyncImpl internal constructor(private val clientOptions: Clie
             params: VideoDeleteParams,
             requestOptions: RequestOptions,
         ): CompletableFuture<HttpResponseFor<VideoDeleteResponse>> {
+            val cancellationTokenSource = CancellationTokenSource()
             // We check here instead of in the params builder because this can be specified
             // positionally or in the params class.
             checkRequired("videoId", params.videoId().getOrNull())
@@ -217,8 +269,15 @@ class VideoServiceAsyncImpl internal constructor(private val clientOptions: Clie
                     .build()
                     .prepareAsync(clientOptions, params)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
-            return request
-                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
+            return
+                    request
+                        .thenComposeAsync {
+                            clientOptions.httpClient.executeAsync(
+                                it,
+                                requestOptions,
+                                cancellationTokenSource.token()
+                            )
+                        }
                 .thenApply { response ->
                     errorHandler.handle(response).parseable {
                         response
@@ -227,6 +286,8 @@ class VideoServiceAsyncImpl internal constructor(private val clientOptions: Clie
                                 if (requestOptions.responseValidation!!) {
                                     it.validate()
                                 }
+
+            .withCancellation(cancellationTokenSource)
                             }
                     }
                 }
@@ -236,6 +297,7 @@ class VideoServiceAsyncImpl internal constructor(private val clientOptions: Clie
             params: VideoDownloadContentParams,
             requestOptions: RequestOptions,
         ): CompletableFuture<HttpResponse> {
+            val cancellationTokenSource = CancellationTokenSource()
             // We check here instead of in the params builder because this can be specified
             // positionally or in the params class.
             checkRequired("videoId", params.videoId().getOrNull())
@@ -247,8 +309,15 @@ class VideoServiceAsyncImpl internal constructor(private val clientOptions: Clie
                     .build()
                     .prepareAsync(clientOptions, params)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
-            return request
-                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
+            return
+                    request
+                        .thenComposeAsync {
+                            clientOptions.httpClient.executeAsync(
+                                it,
+                                requestOptions,
+                                cancellationTokenSource.token()
+                            )
+                        }
                 .thenApply { response -> errorHandler.handle(response) }
         }
 
@@ -258,6 +327,7 @@ class VideoServiceAsyncImpl internal constructor(private val clientOptions: Clie
             params: VideoRemixParams,
             requestOptions: RequestOptions,
         ): CompletableFuture<HttpResponseFor<Video>> {
+            val cancellationTokenSource = CancellationTokenSource()
             // We check here instead of in the params builder because this can be specified
             // positionally or in the params class.
             checkRequired("videoId", params.videoId().getOrNull())
@@ -270,8 +340,15 @@ class VideoServiceAsyncImpl internal constructor(private val clientOptions: Clie
                     .build()
                     .prepareAsync(clientOptions, params)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
-            return request
-                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
+            return
+                    request
+                        .thenComposeAsync {
+                            clientOptions.httpClient.executeAsync(
+                                it,
+                                requestOptions,
+                                cancellationTokenSource.token()
+                            )
+                        }
                 .thenApply { response ->
                     errorHandler.handle(response).parseable {
                         response
@@ -280,6 +357,8 @@ class VideoServiceAsyncImpl internal constructor(private val clientOptions: Clie
                                 if (requestOptions.responseValidation!!) {
                                     it.validate()
                                 }
+
+            .withCancellation(cancellationTokenSource)
                             }
                     }
                 }

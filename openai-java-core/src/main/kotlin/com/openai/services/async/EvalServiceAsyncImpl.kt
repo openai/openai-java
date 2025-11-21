@@ -29,6 +29,8 @@ import com.openai.models.evals.EvalUpdateParams
 import com.openai.models.evals.EvalUpdateResponse
 import com.openai.services.async.evals.RunServiceAsync
 import com.openai.services.async.evals.RunServiceAsyncImpl
+import com.openai.core.http.CancellationTokenSource
+import com.openai.core.withCancellation
 import java.util.concurrent.CompletableFuture
 import java.util.function.Consumer
 import kotlin.jvm.optionals.getOrNull
@@ -110,6 +112,7 @@ class EvalServiceAsyncImpl internal constructor(private val clientOptions: Clien
             params: EvalCreateParams,
             requestOptions: RequestOptions,
         ): CompletableFuture<HttpResponseFor<EvalCreateResponse>> {
+            val cancellationTokenSource = CancellationTokenSource()
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.POST)
@@ -119,8 +122,13 @@ class EvalServiceAsyncImpl internal constructor(private val clientOptions: Clien
                     .build()
                     .prepareAsync(clientOptions, params)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
-            return request
-                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
+            val delegate =
+                request
+                .thenComposeAsync { clientOptions.httpClient.executeAsync(
+                            it,
+                            requestOptions,
+                            cancellationTokenSource.token()
+                        ) }
                 .thenApply { response ->
                     errorHandler.handle(response).parseable {
                         response
@@ -132,6 +140,7 @@ class EvalServiceAsyncImpl internal constructor(private val clientOptions: Clien
                             }
                     }
                 }
+        return delegate.withCancellation(cancellationTokenSource)
         }
 
         private val retrieveHandler: Handler<EvalRetrieveResponse> =
@@ -141,6 +150,7 @@ class EvalServiceAsyncImpl internal constructor(private val clientOptions: Clien
             params: EvalRetrieveParams,
             requestOptions: RequestOptions,
         ): CompletableFuture<HttpResponseFor<EvalRetrieveResponse>> {
+            val cancellationTokenSource = CancellationTokenSource()
             // We check here instead of in the params builder because this can be specified
             // positionally or in the params class.
             checkRequired("evalId", params.evalId().getOrNull())
@@ -152,8 +162,13 @@ class EvalServiceAsyncImpl internal constructor(private val clientOptions: Clien
                     .build()
                     .prepareAsync(clientOptions, params)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
-            return request
-                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
+            val delegate =
+                request
+                .thenComposeAsync { clientOptions.httpClient.executeAsync(
+                            it,
+                            requestOptions,
+                            cancellationTokenSource.token()
+                        ) }
                 .thenApply { response ->
                     errorHandler.handle(response).parseable {
                         response
@@ -165,6 +180,7 @@ class EvalServiceAsyncImpl internal constructor(private val clientOptions: Clien
                             }
                     }
                 }
+        return delegate.withCancellation(cancellationTokenSource)
         }
 
         private val updateHandler: Handler<EvalUpdateResponse> =
@@ -174,6 +190,7 @@ class EvalServiceAsyncImpl internal constructor(private val clientOptions: Clien
             params: EvalUpdateParams,
             requestOptions: RequestOptions,
         ): CompletableFuture<HttpResponseFor<EvalUpdateResponse>> {
+            val cancellationTokenSource = CancellationTokenSource()
             // We check here instead of in the params builder because this can be specified
             // positionally or in the params class.
             checkRequired("evalId", params.evalId().getOrNull())
@@ -186,8 +203,13 @@ class EvalServiceAsyncImpl internal constructor(private val clientOptions: Clien
                     .build()
                     .prepareAsync(clientOptions, params)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
-            return request
-                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
+            val delegate =
+                request
+                .thenComposeAsync { clientOptions.httpClient.executeAsync(
+                            it,
+                            requestOptions,
+                            cancellationTokenSource.token()
+                        ) }
                 .thenApply { response ->
                     errorHandler.handle(response).parseable {
                         response
@@ -199,6 +221,7 @@ class EvalServiceAsyncImpl internal constructor(private val clientOptions: Clien
                             }
                     }
                 }
+        return delegate.withCancellation(cancellationTokenSource)
         }
 
         private val listHandler: Handler<EvalListPageResponse> =
@@ -208,6 +231,7 @@ class EvalServiceAsyncImpl internal constructor(private val clientOptions: Clien
             params: EvalListParams,
             requestOptions: RequestOptions,
         ): CompletableFuture<HttpResponseFor<EvalListPageAsync>> {
+            val cancellationTokenSource = CancellationTokenSource()
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.GET)
@@ -216,8 +240,13 @@ class EvalServiceAsyncImpl internal constructor(private val clientOptions: Clien
                     .build()
                     .prepareAsync(clientOptions, params)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
-            return request
-                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
+            val delegate =
+                request
+                .thenComposeAsync { clientOptions.httpClient.executeAsync(
+                            it,
+                            requestOptions,
+                            cancellationTokenSource.token()
+                        ) }
                 .thenApply { response ->
                     errorHandler.handle(response).parseable {
                         response
@@ -237,6 +266,7 @@ class EvalServiceAsyncImpl internal constructor(private val clientOptions: Clien
                             }
                     }
                 }
+        return delegate.withCancellation(cancellationTokenSource)
         }
 
         private val deleteHandler: Handler<EvalDeleteResponse> =
@@ -246,6 +276,7 @@ class EvalServiceAsyncImpl internal constructor(private val clientOptions: Clien
             params: EvalDeleteParams,
             requestOptions: RequestOptions,
         ): CompletableFuture<HttpResponseFor<EvalDeleteResponse>> {
+            val cancellationTokenSource = CancellationTokenSource()
             // We check here instead of in the params builder because this can be specified
             // positionally or in the params class.
             checkRequired("evalId", params.evalId().getOrNull())
@@ -258,8 +289,13 @@ class EvalServiceAsyncImpl internal constructor(private val clientOptions: Clien
                     .build()
                     .prepareAsync(clientOptions, params)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
-            return request
-                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
+            val delegate =
+                request
+                .thenComposeAsync { clientOptions.httpClient.executeAsync(
+                            it,
+                            requestOptions,
+                            cancellationTokenSource.token()
+                        ) }
                 .thenApply { response ->
                     errorHandler.handle(response).parseable {
                         response
@@ -271,6 +307,7 @@ class EvalServiceAsyncImpl internal constructor(private val clientOptions: Clien
                             }
                     }
                 }
+        return delegate.withCancellation(cancellationTokenSource)
         }
     }
 }

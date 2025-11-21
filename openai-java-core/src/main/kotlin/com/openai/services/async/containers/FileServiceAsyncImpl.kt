@@ -28,6 +28,8 @@ import com.openai.models.containers.files.FileRetrieveParams
 import com.openai.models.containers.files.FileRetrieveResponse
 import com.openai.services.async.containers.files.ContentServiceAsync
 import com.openai.services.async.containers.files.ContentServiceAsyncImpl
+import com.openai.core.http.CancellationTokenSource
+import com.openai.core.withCancellation
 import java.util.concurrent.CompletableFuture
 import java.util.function.Consumer
 import kotlin.jvm.optionals.getOrNull
@@ -43,12 +45,21 @@ class FileServiceAsyncImpl internal constructor(private val clientOptions: Clien
 
     override fun withRawResponse(): FileServiceAsync.WithRawResponse = withRawResponse
 
+
     override fun withOptions(modifier: Consumer<ClientOptions.Builder>): FileServiceAsync =
+        FileServiceAsyncImpl(clientOptions.toBuilder().apply(modifier::accept).build())
+
         FileServiceAsyncImpl(clientOptions.toBuilder().apply(modifier::accept).build())
 
     override fun content(): ContentServiceAsync = content
 
     override fun create(
+        params: FileCreateParams,
+        requestOptions: RequestOptions,
+
+    override fun create(
+        params: FileCreateParams,
+        requestOptions: RequestOptions,
         params: FileCreateParams,
         requestOptions: RequestOptions,
     ): CompletableFuture<FileCreateResponse> =
@@ -58,6 +69,8 @@ class FileServiceAsyncImpl internal constructor(private val clientOptions: Clien
     override fun retrieve(
         params: FileRetrieveParams,
         requestOptions: RequestOptions,
+        params: FileRetrieveParams,
+        requestOptions: RequestOptions,
     ): CompletableFuture<FileRetrieveResponse> =
         // get /containers/{container_id}/files/{file_id}
         withRawResponse().retrieve(params, requestOptions).thenApply { it.parse() }
@@ -65,11 +78,15 @@ class FileServiceAsyncImpl internal constructor(private val clientOptions: Clien
     override fun list(
         params: FileListParams,
         requestOptions: RequestOptions,
+        params: FileListParams,
+        requestOptions: RequestOptions,
     ): CompletableFuture<FileListPageAsync> =
         // get /containers/{container_id}/files
         withRawResponse().list(params, requestOptions).thenApply { it.parse() }
 
     override fun delete(
+        params: FileDeleteParams,
+        requestOptions: RequestOptions,
         params: FileDeleteParams,
         requestOptions: RequestOptions,
     ): CompletableFuture<Void?> =
@@ -87,6 +104,7 @@ class FileServiceAsyncImpl internal constructor(private val clientOptions: Clien
         }
 
         override fun withOptions(
+            val cancellationTokenSource = CancellationTokenSource()
             modifier: Consumer<ClientOptions.Builder>
         ): FileServiceAsync.WithRawResponse =
             FileServiceAsyncImpl.WithRawResponseImpl(
@@ -94,6 +112,7 @@ class FileServiceAsyncImpl internal constructor(private val clientOptions: Clien
             )
 
         override fun content(): ContentServiceAsync.WithRawResponse = content
+            val cancellationTokenSource = CancellationTokenSource()
 
         private val createHandler: Handler<FileCreateResponse> =
             jsonHandler<FileCreateResponse>(clientOptions.jsonMapper)
@@ -102,6 +121,7 @@ class FileServiceAsyncImpl internal constructor(private val clientOptions: Clien
             params: FileCreateParams,
             requestOptions: RequestOptions,
         ): CompletableFuture<HttpResponseFor<FileCreateResponse>> {
+            val cancellationTokenSource = CancellationTokenSource()
             // We check here instead of in the params builder because this can be specified
             // positionally or in the params class.
             checkRequired("containerId", params.containerId().getOrNull())
@@ -114,8 +134,15 @@ class FileServiceAsyncImpl internal constructor(private val clientOptions: Clien
                     .build()
                     .prepareAsync(clientOptions, params)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
-            return request
-                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
+            return
+                    request
+                        .thenComposeAsync {
+                            clientOptions.httpClient.executeAsync(
+                                it,
+                                requestOptions,
+                                cancellationTokenSource.token()
+                            )
+                        }
                 .thenApply { response ->
                     errorHandler.handle(response).parseable {
                         response
@@ -124,6 +151,8 @@ class FileServiceAsyncImpl internal constructor(private val clientOptions: Clien
                                 if (requestOptions.responseValidation!!) {
                                     it.validate()
                                 }
+
+            .withCancellation(cancellationTokenSource)
                             }
                     }
                 }
@@ -136,6 +165,7 @@ class FileServiceAsyncImpl internal constructor(private val clientOptions: Clien
             params: FileRetrieveParams,
             requestOptions: RequestOptions,
         ): CompletableFuture<HttpResponseFor<FileRetrieveResponse>> {
+            val cancellationTokenSource = CancellationTokenSource()
             // We check here instead of in the params builder because this can be specified
             // positionally or in the params class.
             checkRequired("fileId", params.fileId().getOrNull())
@@ -152,8 +182,15 @@ class FileServiceAsyncImpl internal constructor(private val clientOptions: Clien
                     .build()
                     .prepareAsync(clientOptions, params)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
-            return request
-                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
+            return
+                    request
+                        .thenComposeAsync {
+                            clientOptions.httpClient.executeAsync(
+                                it,
+                                requestOptions,
+                                cancellationTokenSource.token()
+                            )
+                        }
                 .thenApply { response ->
                     errorHandler.handle(response).parseable {
                         response
@@ -162,6 +199,8 @@ class FileServiceAsyncImpl internal constructor(private val clientOptions: Clien
                                 if (requestOptions.responseValidation!!) {
                                     it.validate()
                                 }
+
+            .withCancellation(cancellationTokenSource)
                             }
                     }
                 }
@@ -174,6 +213,7 @@ class FileServiceAsyncImpl internal constructor(private val clientOptions: Clien
             params: FileListParams,
             requestOptions: RequestOptions,
         ): CompletableFuture<HttpResponseFor<FileListPageAsync>> {
+            val cancellationTokenSource = CancellationTokenSource()
             // We check here instead of in the params builder because this can be specified
             // positionally or in the params class.
             checkRequired("containerId", params.containerId().getOrNull())
@@ -185,8 +225,15 @@ class FileServiceAsyncImpl internal constructor(private val clientOptions: Clien
                     .build()
                     .prepareAsync(clientOptions, params)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
-            return request
-                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
+            return
+                    request
+                        .thenComposeAsync {
+                            clientOptions.httpClient.executeAsync(
+                                it,
+                                requestOptions,
+                                cancellationTokenSource.token()
+                            )
+                        }
                 .thenApply { response ->
                     errorHandler.handle(response).parseable {
                         response
@@ -195,6 +242,8 @@ class FileServiceAsyncImpl internal constructor(private val clientOptions: Clien
                                 if (requestOptions.responseValidation!!) {
                                     it.validate()
                                 }
+
+            .withCancellation(cancellationTokenSource)
                             }
                             .let {
                                 FileListPageAsync.builder()
@@ -214,6 +263,7 @@ class FileServiceAsyncImpl internal constructor(private val clientOptions: Clien
             params: FileDeleteParams,
             requestOptions: RequestOptions,
         ): CompletableFuture<HttpResponse> {
+            val cancellationTokenSource = CancellationTokenSource()
             // We check here instead of in the params builder because this can be specified
             // positionally or in the params class.
             checkRequired("fileId", params.fileId().getOrNull())
@@ -231,13 +281,23 @@ class FileServiceAsyncImpl internal constructor(private val clientOptions: Clien
                     .build()
                     .prepareAsync(clientOptions, params)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
-            return request
-                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
+            return
+                    request
+                        .thenComposeAsync {
+                            clientOptions.httpClient.executeAsync(
+                                it,
+                                requestOptions,
+                                cancellationTokenSource.token()
+                            )
+                        }
                 .thenApply { response ->
                     errorHandler.handle(response).parseable {
                         response.use { deleteHandler.handle(it) }
                     }
+                return delegate.withCancellation(cancellationTokenSource)
                 }
+
+            .withCancellation(cancellationTokenSource)
         }
     }
 }

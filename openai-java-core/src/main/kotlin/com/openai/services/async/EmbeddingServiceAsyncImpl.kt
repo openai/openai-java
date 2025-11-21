@@ -7,6 +7,7 @@ import com.openai.core.RequestOptions
 import com.openai.core.handlers.errorBodyHandler
 import com.openai.core.handlers.errorHandler
 import com.openai.core.handlers.jsonHandler
+import com.openai.core.http.CancellationTokenSource
 import com.openai.core.http.HttpMethod
 import com.openai.core.http.HttpRequest
 import com.openai.core.http.HttpResponse
@@ -15,6 +16,7 @@ import com.openai.core.http.HttpResponseFor
 import com.openai.core.http.json
 import com.openai.core.http.parseable
 import com.openai.core.prepareAsync
+import com.openai.core.withCancellation
 import com.openai.models.embeddings.CreateEmbeddingResponse
 import com.openai.models.embeddings.EmbeddingCreateParams
 import java.util.concurrent.CompletableFuture
@@ -59,6 +61,7 @@ class EmbeddingServiceAsyncImpl internal constructor(private val clientOptions: 
             params: EmbeddingCreateParams,
             requestOptions: RequestOptions,
         ): CompletableFuture<HttpResponseFor<CreateEmbeddingResponse>> {
+            val cancellationTokenSource = CancellationTokenSource()
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.POST)
@@ -69,7 +72,13 @@ class EmbeddingServiceAsyncImpl internal constructor(private val clientOptions: 
                     .prepareAsync(clientOptions, params)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
             return request
-                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
+                .thenComposeAsync {
+                    clientOptions.httpClient.executeAsync(
+                        it,
+                        requestOptions,
+                        cancellationTokenSource.token()
+                    )
+                }
                 .thenApply { response ->
                     errorHandler.handle(response).parseable {
                         response
@@ -81,6 +90,7 @@ class EmbeddingServiceAsyncImpl internal constructor(private val clientOptions: 
                             }
                     }
                 }
+                .withCancellation(cancellationTokenSource)
         }
     }
 }

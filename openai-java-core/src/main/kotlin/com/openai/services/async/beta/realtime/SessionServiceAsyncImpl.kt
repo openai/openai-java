@@ -18,6 +18,8 @@ import com.openai.core.http.parseable
 import com.openai.core.prepareAsync
 import com.openai.models.beta.realtime.sessions.SessionCreateParams
 import com.openai.models.beta.realtime.sessions.SessionCreateResponse
+import com.openai.core.http.CancellationTokenSource
+import com.openai.core.withCancellation
 import java.util.concurrent.CompletableFuture
 import java.util.function.Consumer
 
@@ -65,6 +67,7 @@ class SessionServiceAsyncImpl internal constructor(private val clientOptions: Cl
             params: SessionCreateParams,
             requestOptions: RequestOptions,
         ): CompletableFuture<HttpResponseFor<SessionCreateResponse>> {
+            val cancellationTokenSource = CancellationTokenSource()
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.POST)
@@ -75,8 +78,13 @@ class SessionServiceAsyncImpl internal constructor(private val clientOptions: Cl
                     .build()
                     .prepareAsync(clientOptions, params)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
-            return request
-                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
+            val delegate =
+                request
+                .thenComposeAsync { clientOptions.httpClient.executeAsync(
+                            it,
+                            requestOptions,
+                            cancellationTokenSource.token()
+                        ) }
                 .thenApply { response ->
                     errorHandler.handle(response).parseable {
                         response
@@ -88,6 +96,7 @@ class SessionServiceAsyncImpl internal constructor(private val clientOptions: Cl
                             }
                     }
                 }
+        return delegate.withCancellation(cancellationTokenSource)
         }
     }
 }

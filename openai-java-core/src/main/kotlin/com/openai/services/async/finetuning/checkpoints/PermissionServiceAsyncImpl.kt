@@ -23,6 +23,8 @@ import com.openai.models.finetuning.checkpoints.permissions.PermissionDeletePara
 import com.openai.models.finetuning.checkpoints.permissions.PermissionDeleteResponse
 import com.openai.models.finetuning.checkpoints.permissions.PermissionRetrieveParams
 import com.openai.models.finetuning.checkpoints.permissions.PermissionRetrieveResponse
+import com.openai.core.http.CancellationTokenSource
+import com.openai.core.withCancellation
 import java.util.concurrent.CompletableFuture
 import java.util.function.Consumer
 import kotlin.jvm.optionals.getOrNull
@@ -36,10 +38,18 @@ class PermissionServiceAsyncImpl internal constructor(private val clientOptions:
 
     override fun withRawResponse(): PermissionServiceAsync.WithRawResponse = withRawResponse
 
+
     override fun withOptions(modifier: Consumer<ClientOptions.Builder>): PermissionServiceAsync =
         PermissionServiceAsyncImpl(clientOptions.toBuilder().apply(modifier::accept).build())
 
     override fun create(
+        params: PermissionCreateParams,
+        requestOptions: RequestOptions,
+        PermissionServiceAsyncImpl(clientOptions.toBuilder().apply(modifier::accept).build())
+
+    override fun create(
+        params: PermissionCreateParams,
+        requestOptions: RequestOptions,
         params: PermissionCreateParams,
         requestOptions: RequestOptions,
     ): CompletableFuture<PermissionCreatePageAsync> =
@@ -49,11 +59,15 @@ class PermissionServiceAsyncImpl internal constructor(private val clientOptions:
     override fun retrieve(
         params: PermissionRetrieveParams,
         requestOptions: RequestOptions,
+        params: PermissionRetrieveParams,
+        requestOptions: RequestOptions,
     ): CompletableFuture<PermissionRetrieveResponse> =
         // get /fine_tuning/checkpoints/{fine_tuned_model_checkpoint}/permissions
         withRawResponse().retrieve(params, requestOptions).thenApply { it.parse() }
 
     override fun delete(
+        params: PermissionDeleteParams,
+        requestOptions: RequestOptions,
         params: PermissionDeleteParams,
         requestOptions: RequestOptions,
     ): CompletableFuture<PermissionDeleteResponse> =
@@ -68,6 +82,7 @@ class PermissionServiceAsyncImpl internal constructor(private val clientOptions:
 
         override fun withOptions(
             modifier: Consumer<ClientOptions.Builder>
+            modifier: Consumer<ClientOptions.Builder>
         ): PermissionServiceAsync.WithRawResponse =
             PermissionServiceAsyncImpl.WithRawResponseImpl(
                 clientOptions.toBuilder().apply(modifier::accept).build()
@@ -80,6 +95,7 @@ class PermissionServiceAsyncImpl internal constructor(private val clientOptions:
             params: PermissionCreateParams,
             requestOptions: RequestOptions,
         ): CompletableFuture<HttpResponseFor<PermissionCreatePageAsync>> {
+            val cancellationTokenSource = CancellationTokenSource()
             // We check here instead of in the params builder because this can be specified
             // positionally or in the params class.
             checkRequired("fineTunedModelCheckpoint", params.fineTunedModelCheckpoint().getOrNull())
@@ -97,8 +113,15 @@ class PermissionServiceAsyncImpl internal constructor(private val clientOptions:
                     .build()
                     .prepareAsync(clientOptions, params)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
-            return request
-                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
+            return
+                    request
+                        .thenComposeAsync {
+                            clientOptions.httpClient.executeAsync(
+                                it,
+                                requestOptions,
+                                cancellationTokenSource.token()
+                            )
+                        }
                 .thenApply { response ->
                     errorHandler.handle(response).parseable {
                         response
@@ -107,6 +130,8 @@ class PermissionServiceAsyncImpl internal constructor(private val clientOptions:
                                 if (requestOptions.responseValidation!!) {
                                     it.validate()
                                 }
+
+            .withCancellation(cancellationTokenSource)
                             }
                             .let {
                                 PermissionCreatePageAsync.builder()
@@ -127,6 +152,7 @@ class PermissionServiceAsyncImpl internal constructor(private val clientOptions:
             params: PermissionRetrieveParams,
             requestOptions: RequestOptions,
         ): CompletableFuture<HttpResponseFor<PermissionRetrieveResponse>> {
+            val cancellationTokenSource = CancellationTokenSource()
             // We check here instead of in the params builder because this can be specified
             // positionally or in the params class.
             checkRequired("fineTunedModelCheckpoint", params.fineTunedModelCheckpoint().getOrNull())
@@ -143,8 +169,15 @@ class PermissionServiceAsyncImpl internal constructor(private val clientOptions:
                     .build()
                     .prepareAsync(clientOptions, params)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
-            return request
-                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
+            return
+                    request
+                        .thenComposeAsync {
+                            clientOptions.httpClient.executeAsync(
+                                it,
+                                requestOptions,
+                                cancellationTokenSource.token()
+                            )
+                        }
                 .thenApply { response ->
                     errorHandler.handle(response).parseable {
                         response
@@ -153,6 +186,8 @@ class PermissionServiceAsyncImpl internal constructor(private val clientOptions:
                                 if (requestOptions.responseValidation!!) {
                                     it.validate()
                                 }
+
+            .withCancellation(cancellationTokenSource)
                             }
                     }
                 }
@@ -165,6 +200,7 @@ class PermissionServiceAsyncImpl internal constructor(private val clientOptions:
             params: PermissionDeleteParams,
             requestOptions: RequestOptions,
         ): CompletableFuture<HttpResponseFor<PermissionDeleteResponse>> {
+            val cancellationTokenSource = CancellationTokenSource()
             // We check here instead of in the params builder because this can be specified
             // positionally or in the params class.
             checkRequired("permissionId", params.permissionId().getOrNull())
@@ -183,8 +219,15 @@ class PermissionServiceAsyncImpl internal constructor(private val clientOptions:
                     .build()
                     .prepareAsync(clientOptions, params)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
-            return request
-                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
+            return
+                    request
+                        .thenComposeAsync {
+                            clientOptions.httpClient.executeAsync(
+                                it,
+                                requestOptions,
+                                cancellationTokenSource.token()
+                            )
+                        }
                 .thenApply { response ->
                     errorHandler.handle(response).parseable {
                         response
@@ -193,6 +236,8 @@ class PermissionServiceAsyncImpl internal constructor(private val clientOptions:
                                 if (requestOptions.responseValidation!!) {
                                     it.validate()
                                 }
+
+            .withCancellation(cancellationTokenSource)
                             }
                     }
                 }

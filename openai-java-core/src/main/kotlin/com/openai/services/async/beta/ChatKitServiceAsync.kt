@@ -5,6 +5,7 @@ package com.openai.services.async.beta
 import com.openai.core.ClientOptions
 import com.openai.services.async.beta.chatkit.SessionServiceAsync
 import com.openai.services.async.beta.chatkit.ThreadServiceAsync
+import java.util.concurrent.CompletableFuture
 import java.util.function.Consumer
 
 interface ChatKitServiceAsync {

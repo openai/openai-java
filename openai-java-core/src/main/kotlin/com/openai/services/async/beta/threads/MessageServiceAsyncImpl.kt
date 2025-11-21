@@ -26,6 +26,8 @@ import com.openai.models.beta.threads.messages.MessageListPageResponse
 import com.openai.models.beta.threads.messages.MessageListParams
 import com.openai.models.beta.threads.messages.MessageRetrieveParams
 import com.openai.models.beta.threads.messages.MessageUpdateParams
+import com.openai.core.http.CancellationTokenSource
+import com.openai.core.withCancellation
 import java.util.concurrent.CompletableFuture
 import java.util.function.Consumer
 import kotlin.jvm.optionals.getOrNull
@@ -109,6 +111,7 @@ class MessageServiceAsyncImpl internal constructor(private val clientOptions: Cl
             params: MessageCreateParams,
             requestOptions: RequestOptions,
         ): CompletableFuture<HttpResponseFor<Message>> {
+            val cancellationTokenSource = CancellationTokenSource()
             // We check here instead of in the params builder because this can be specified
             // positionally or in the params class.
             checkRequired("threadId", params.threadId().getOrNull())
@@ -122,8 +125,13 @@ class MessageServiceAsyncImpl internal constructor(private val clientOptions: Cl
                     .build()
                     .prepareAsync(clientOptions, params)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
-            return request
-                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
+            val delegate =
+                request
+                .thenComposeAsync { clientOptions.httpClient.executeAsync(
+                            it,
+                            requestOptions,
+                            cancellationTokenSource.token()
+                        ) }
                 .thenApply { response ->
                     errorHandler.handle(response).parseable {
                         response
@@ -135,6 +143,7 @@ class MessageServiceAsyncImpl internal constructor(private val clientOptions: Cl
                             }
                     }
                 }
+        return delegate.withCancellation(cancellationTokenSource)
         }
 
         private val retrieveHandler: Handler<Message> =
@@ -145,6 +154,7 @@ class MessageServiceAsyncImpl internal constructor(private val clientOptions: Cl
             params: MessageRetrieveParams,
             requestOptions: RequestOptions,
         ): CompletableFuture<HttpResponseFor<Message>> {
+            val cancellationTokenSource = CancellationTokenSource()
             // We check here instead of in the params builder because this can be specified
             // positionally or in the params class.
             checkRequired("messageId", params.messageId().getOrNull())
@@ -162,8 +172,13 @@ class MessageServiceAsyncImpl internal constructor(private val clientOptions: Cl
                     .build()
                     .prepareAsync(clientOptions, params)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
-            return request
-                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
+            val delegate =
+                request
+                .thenComposeAsync { clientOptions.httpClient.executeAsync(
+                            it,
+                            requestOptions,
+                            cancellationTokenSource.token()
+                        ) }
                 .thenApply { response ->
                     errorHandler.handle(response).parseable {
                         response
@@ -175,6 +190,7 @@ class MessageServiceAsyncImpl internal constructor(private val clientOptions: Cl
                             }
                     }
                 }
+        return delegate.withCancellation(cancellationTokenSource)
         }
 
         private val updateHandler: Handler<Message> = jsonHandler<Message>(clientOptions.jsonMapper)
@@ -184,6 +200,7 @@ class MessageServiceAsyncImpl internal constructor(private val clientOptions: Cl
             params: MessageUpdateParams,
             requestOptions: RequestOptions,
         ): CompletableFuture<HttpResponseFor<Message>> {
+            val cancellationTokenSource = CancellationTokenSource()
             // We check here instead of in the params builder because this can be specified
             // positionally or in the params class.
             checkRequired("messageId", params.messageId().getOrNull())
@@ -202,8 +219,13 @@ class MessageServiceAsyncImpl internal constructor(private val clientOptions: Cl
                     .build()
                     .prepareAsync(clientOptions, params)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
-            return request
-                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
+            val delegate =
+                request
+                .thenComposeAsync { clientOptions.httpClient.executeAsync(
+                            it,
+                            requestOptions,
+                            cancellationTokenSource.token()
+                        ) }
                 .thenApply { response ->
                     errorHandler.handle(response).parseable {
                         response
@@ -215,6 +237,7 @@ class MessageServiceAsyncImpl internal constructor(private val clientOptions: Cl
                             }
                     }
                 }
+        return delegate.withCancellation(cancellationTokenSource)
         }
 
         private val listHandler: Handler<MessageListPageResponse> =
@@ -225,6 +248,7 @@ class MessageServiceAsyncImpl internal constructor(private val clientOptions: Cl
             params: MessageListParams,
             requestOptions: RequestOptions,
         ): CompletableFuture<HttpResponseFor<MessageListPageAsync>> {
+            val cancellationTokenSource = CancellationTokenSource()
             // We check here instead of in the params builder because this can be specified
             // positionally or in the params class.
             checkRequired("threadId", params.threadId().getOrNull())
@@ -237,8 +261,13 @@ class MessageServiceAsyncImpl internal constructor(private val clientOptions: Cl
                     .build()
                     .prepareAsync(clientOptions, params)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
-            return request
-                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
+            val delegate =
+                request
+                .thenComposeAsync { clientOptions.httpClient.executeAsync(
+                            it,
+                            requestOptions,
+                            cancellationTokenSource.token()
+                        ) }
                 .thenApply { response ->
                     errorHandler.handle(response).parseable {
                         response
@@ -258,6 +287,7 @@ class MessageServiceAsyncImpl internal constructor(private val clientOptions: Cl
                             }
                     }
                 }
+        return delegate.withCancellation(cancellationTokenSource)
         }
 
         private val deleteHandler: Handler<MessageDeleted> =
@@ -268,6 +298,7 @@ class MessageServiceAsyncImpl internal constructor(private val clientOptions: Cl
             params: MessageDeleteParams,
             requestOptions: RequestOptions,
         ): CompletableFuture<HttpResponseFor<MessageDeleted>> {
+            val cancellationTokenSource = CancellationTokenSource()
             // We check here instead of in the params builder because this can be specified
             // positionally or in the params class.
             checkRequired("messageId", params.messageId().getOrNull())
@@ -286,8 +317,13 @@ class MessageServiceAsyncImpl internal constructor(private val clientOptions: Cl
                     .build()
                     .prepareAsync(clientOptions, params)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
-            return request
-                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
+            val delegate =
+                request
+                .thenComposeAsync { clientOptions.httpClient.executeAsync(
+                            it,
+                            requestOptions,
+                            cancellationTokenSource.token()
+                        ) }
                 .thenApply { response ->
                     errorHandler.handle(response).parseable {
                         response
@@ -299,6 +335,7 @@ class MessageServiceAsyncImpl internal constructor(private val clientOptions: Cl
                             }
                     }
                 }
+        return delegate.withCancellation(cancellationTokenSource)
         }
     }
 }

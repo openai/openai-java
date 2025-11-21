@@ -13,6 +13,8 @@ import com.openai.core.http.HttpResponse.Handler
 import com.openai.core.http.json
 import com.openai.core.prepareAsync
 import com.openai.models.audio.speech.SpeechCreateParams
+import com.openai.core.http.CancellationTokenSource
+import com.openai.core.withCancellation
 import java.util.concurrent.CompletableFuture
 import java.util.function.Consumer
 
@@ -25,10 +27,18 @@ class SpeechServiceAsyncImpl internal constructor(private val clientOptions: Cli
 
     override fun withRawResponse(): SpeechServiceAsync.WithRawResponse = withRawResponse
 
+
     override fun withOptions(modifier: Consumer<ClientOptions.Builder>): SpeechServiceAsync =
         SpeechServiceAsyncImpl(clientOptions.toBuilder().apply(modifier::accept).build())
 
     override fun create(
+        params: SpeechCreateParams,
+        requestOptions: RequestOptions,
+        SpeechServiceAsyncImpl(clientOptions.toBuilder().apply(modifier::accept).build())
+
+    override fun create(
+        params: SpeechCreateParams,
+        requestOptions: RequestOptions,
         params: SpeechCreateParams,
         requestOptions: RequestOptions,
     ): CompletableFuture<HttpResponse> =
@@ -42,6 +52,7 @@ class SpeechServiceAsyncImpl internal constructor(private val clientOptions: Cli
             errorHandler(errorBodyHandler(clientOptions.jsonMapper))
 
         override fun withOptions(
+            val cancellationTokenSource = CancellationTokenSource()
             modifier: Consumer<ClientOptions.Builder>
         ): SpeechServiceAsync.WithRawResponse =
             SpeechServiceAsyncImpl.WithRawResponseImpl(
@@ -52,6 +63,7 @@ class SpeechServiceAsyncImpl internal constructor(private val clientOptions: Cli
             params: SpeechCreateParams,
             requestOptions: RequestOptions,
         ): CompletableFuture<HttpResponse> {
+            val cancellationTokenSource = CancellationTokenSource()
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.POST)
@@ -61,9 +73,17 @@ class SpeechServiceAsyncImpl internal constructor(private val clientOptions: Cli
                     .build()
                     .prepareAsync(clientOptions, params)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
-            return request
-                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
+            val delegate =
+                    request
+                        .thenComposeAsync {
+                            clientOptions.httpClient.executeAsync(
+                                it,
+                                requestOptions,
+                                cancellationTokenSource.token()
+                            )
+                        }
                 .thenApply { response -> errorHandler.handle(response) }
         }
+    return delegate.withCancellation(cancellationTokenSource)
     }
 }

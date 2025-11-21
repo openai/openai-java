@@ -17,6 +17,8 @@ import com.openai.core.http.parseable
 import com.openai.core.prepareAsync
 import com.openai.models.realtime.clientsecrets.ClientSecretCreateParams
 import com.openai.models.realtime.clientsecrets.ClientSecretCreateResponse
+import com.openai.core.http.CancellationTokenSource
+import com.openai.core.withCancellation
 import java.util.concurrent.CompletableFuture
 import java.util.function.Consumer
 
@@ -29,10 +31,18 @@ class ClientSecretServiceAsyncImpl internal constructor(private val clientOption
 
     override fun withRawResponse(): ClientSecretServiceAsync.WithRawResponse = withRawResponse
 
+
     override fun withOptions(modifier: Consumer<ClientOptions.Builder>): ClientSecretServiceAsync =
         ClientSecretServiceAsyncImpl(clientOptions.toBuilder().apply(modifier::accept).build())
 
     override fun create(
+        params: ClientSecretCreateParams,
+        requestOptions: RequestOptions,
+        ClientSecretServiceAsyncImpl(clientOptions.toBuilder().apply(modifier::accept).build())
+
+    override fun create(
+        params: ClientSecretCreateParams,
+        requestOptions: RequestOptions,
         params: ClientSecretCreateParams,
         requestOptions: RequestOptions,
     ): CompletableFuture<ClientSecretCreateResponse> =
@@ -46,6 +56,7 @@ class ClientSecretServiceAsyncImpl internal constructor(private val clientOption
             errorHandler(errorBodyHandler(clientOptions.jsonMapper))
 
         override fun withOptions(
+            val cancellationTokenSource = CancellationTokenSource()
             modifier: Consumer<ClientOptions.Builder>
         ): ClientSecretServiceAsync.WithRawResponse =
             ClientSecretServiceAsyncImpl.WithRawResponseImpl(
@@ -59,6 +70,7 @@ class ClientSecretServiceAsyncImpl internal constructor(private val clientOption
             params: ClientSecretCreateParams,
             requestOptions: RequestOptions,
         ): CompletableFuture<HttpResponseFor<ClientSecretCreateResponse>> {
+            val cancellationTokenSource = CancellationTokenSource()
             val request =
                 HttpRequest.builder()
                     .method(HttpMethod.POST)
@@ -68,8 +80,15 @@ class ClientSecretServiceAsyncImpl internal constructor(private val clientOption
                     .build()
                     .prepareAsync(clientOptions, params)
             val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
-            return request
-                .thenComposeAsync { clientOptions.httpClient.executeAsync(it, requestOptions) }
+            return
+                    request
+                        .thenComposeAsync {
+                            clientOptions.httpClient.executeAsync(
+                                it,
+                                requestOptions,
+                                cancellationTokenSource.token()
+                            )
+                        }
                 .thenApply { response ->
                     errorHandler.handle(response).parseable {
                         response
@@ -78,6 +97,8 @@ class ClientSecretServiceAsyncImpl internal constructor(private val clientOption
                                 if (requestOptions.responseValidation!!) {
                                     it.validate()
                                 }
+
+            .withCancellation(cancellationTokenSource)
                             }
                     }
                 }
