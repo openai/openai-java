@@ -2,6 +2,7 @@ package com.openai.client.okhttp
 
 import com.openai.core.RequestOptions
 import com.openai.core.Timeout
+import com.openai.core.http.CancellationToken
 import com.openai.core.http.Headers
 import com.openai.core.http.HttpClient
 import com.openai.core.http.HttpMethod
@@ -48,22 +49,67 @@ class OkHttpClient private constructor(private val okHttpClient: okhttp3.OkHttpC
         request: HttpRequest,
         requestOptions: RequestOptions,
     ): CompletableFuture<HttpResponse> {
+        return executeAsync(request, requestOptions, CancellationToken.none())
+    }
+
+    override fun executeAsync(
+        request: HttpRequest,
+        requestOptions: RequestOptions,
+        cancellationToken: CancellationToken,
+    ): CompletableFuture<HttpResponse> {
         val future = CompletableFuture<HttpResponse>()
+
+        // Check if already cancelled
+        if (cancellationToken.isCancellationRequested()) {
+            future.completeExceptionally(
+                java.util.concurrent.CancellationException("Request was cancelled before execution")
+            )
+            request.body?.close()
+            return future
+        }
 
         request.body?.run { future.whenComplete { _, _ -> close() } }
 
-        newCall(request, requestOptions)
-            .enqueue(
-                object : Callback {
-                    override fun onResponse(call: Call, response: Response) {
-                        future.complete(response.toResponse())
-                    }
+        val call = newCall(request, requestOptions)
 
-                    override fun onFailure(call: Call, e: IOException) {
-                        future.completeExceptionally(OpenAIIoException("Request failed", e))
-                    }
+        // Register cancellation callback
+        val registration =
+            cancellationToken.register(
+                Runnable {
+                    // Cancel the OkHttp call
+                    call.cancel()
+                    // Complete the future with cancellation exception
+                    future.completeExceptionally(
+                        java.util.concurrent.CancellationException("Request was cancelled")
+                    )
                 }
             )
+
+        // Enqueue the call
+        call.enqueue(
+            object : Callback {
+                override fun onResponse(call: Call, response: Response) {
+                    registration.unregister()
+                    if (!future.isDone) {
+                        future.complete(response.toResponse())
+                    }
+                }
+
+                override fun onFailure(call: Call, e: IOException) {
+                    registration.unregister()
+                    if (!future.isDone) {
+                        // Check if this was a cancellation
+                        if (cancellationToken.isCancellationRequested()) {
+                            future.completeExceptionally(
+                                java.util.concurrent.CancellationException("Request was cancelled")
+                            )
+                        } else {
+                            future.completeExceptionally(OpenAIIoException("Request failed", e))
+                        }
+                    }
+                }
+            }
+        )
 
         return future
     }
