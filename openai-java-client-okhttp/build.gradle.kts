@@ -11,4 +11,5 @@ dependencies {
 
     testImplementation(kotlin("test"))
     testImplementation("org.assertj:assertj-core:3.25.3")
+    testImplementation("com.github.tomakehurst:wiremock-jre8:2.35.2")
 }
