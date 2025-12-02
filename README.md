@@ -1310,13 +1310,13 @@ The SDK uses the standard [OkHttp logging interceptor](https://github.com/square
 Enable logging by setting the `OPENAI_LOG` environment variable to `info`:
 
 ```sh
-$ export OPENAI_LOG=info
+export OPENAI_LOG=info
 ```
 
 Or to `debug` for more verbose logging:
 
 ```sh
-$ export OPENAI_LOG=debug
+export OPENAI_LOG=debug
 ```
 
 ## ProGuard and R8
