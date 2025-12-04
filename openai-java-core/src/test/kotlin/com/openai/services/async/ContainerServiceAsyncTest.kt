@@ -31,6 +31,7 @@ internal class ContainerServiceAsyncTest {
                             .build()
                     )
                     .addFileId("string")
+                    .memoryLimit(ContainerCreateParams.MemoryLimit._1G)
                     .build()
             )
 

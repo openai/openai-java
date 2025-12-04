@@ -61,6 +61,8 @@ internal class StructuredResponseOutputItemTest {
                 .build()
         private val REASONING_ITEM =
             ResponseReasoningItem.builder().id(STRING).summary(listOf()).build()
+        private val COMPACTION_ITEM =
+            ResponseCompactionItem.builder().id(STRING).encryptedContent(STRING).build()
         private val CODE_INTERPRETER_CALL =
             ResponseCodeInterpreterToolCall.builder()
                 .id(STRING)
@@ -175,6 +177,7 @@ internal class StructuredResponseOutputItemTest {
                 DelegationReadTestCase("webSearchCall", OPTIONAL),
                 DelegationReadTestCase("computerCall", OPTIONAL),
                 DelegationReadTestCase("reasoning", OPTIONAL),
+                DelegationReadTestCase("compaction", OPTIONAL),
                 DelegationReadTestCase("localShellCall", OPTIONAL),
                 DelegationReadTestCase("shellCall", OPTIONAL),
                 DelegationReadTestCase("shellCallOutput", OPTIONAL),
@@ -193,6 +196,8 @@ internal class StructuredResponseOutputItemTest {
                 DelegationReadTestCase("isComputerCall", false),
                 DelegationReadTestCase("isReasoning", true),
                 DelegationReadTestCase("isReasoning", false),
+                DelegationReadTestCase("isCompaction", true),
+                DelegationReadTestCase("isCompaction", false),
                 DelegationReadTestCase("isLocalShellCall", true),
                 DelegationReadTestCase("isLocalShellCall", false),
                 DelegationReadTestCase("isShellCall", true),
@@ -209,6 +214,7 @@ internal class StructuredResponseOutputItemTest {
                 DelegationReadTestCase("asWebSearchCall", FUNCTION_WEB_SEARCH),
                 DelegationReadTestCase("asComputerCall", COMPUTER_TOOL_CALL),
                 DelegationReadTestCase("asReasoning", REASONING_ITEM),
+                DelegationReadTestCase("asCompaction", COMPACTION_ITEM),
                 DelegationReadTestCase("asCodeInterpreterCall", CODE_INTERPRETER_CALL),
                 DelegationReadTestCase("asImageGenerationCall", IMAGE_GENERATION_CALL),
                 DelegationReadTestCase("asLocalShellCall", LOCAL_SHELL_CALL),
@@ -287,6 +293,7 @@ internal class StructuredResponseOutputItemTest {
                     "accept",
                     "visitCodeInterpreterCall",
                     "visitImageGenerationCall",
+                    "visitCompaction",
                     "visitMcpApprovalRequest",
                     "visitMcpCall",
                     "visitMcpListTools",

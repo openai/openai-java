@@ -29,7 +29,7 @@ internal class ResponseCreateParamsTest {
                     .putAdditionalProperty("foo", JsonValue.from("string"))
                     .build()
             )
-            .model(ChatModel.GPT_4O)
+            .model(ChatModel.GPT_5_1)
             .parallelToolCalls(true)
             .previousResponseId("previous_response_id")
             .prompt(
@@ -101,7 +101,7 @@ internal class ResponseCreateParamsTest {
                         .putAdditionalProperty("foo", JsonValue.from("string"))
                         .build()
                 )
-                .model(ChatModel.GPT_4O)
+                .model(ChatModel.GPT_5_1)
                 .parallelToolCalls(true)
                 .previousResponseId("previous_response_id")
                 .prompt(
@@ -172,7 +172,7 @@ internal class ResponseCreateParamsTest {
                     .putAdditionalProperty("foo", JsonValue.from("string"))
                     .build()
             )
-        assertThat(body.model()).contains(ResponsesModel.ofChat(ChatModel.GPT_4O))
+        assertThat(body.model()).contains(ResponsesModel.ofChat(ChatModel.GPT_5_1))
         assertThat(body.parallelToolCalls()).contains(true)
         assertThat(body.previousResponseId()).contains("previous_response_id")
         assertThat(body.prompt())

@@ -27,7 +27,7 @@ import java.util.Objects
 import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
-/** Captured stdout and stderr for a portion of a function shell tool call output. */
+/** Captured stdout and stderr for a portion of a shell tool call output. */
 class ResponseFunctionShellCallOutputContent
 @JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
@@ -45,7 +45,7 @@ private constructor(
     ) : this(outcome, stderr, stdout, mutableMapOf())
 
     /**
-     * The exit or timeout outcome associated with this chunk.
+     * The exit or timeout outcome associated with this shell call.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
      *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
@@ -53,7 +53,7 @@ private constructor(
     fun outcome(): Outcome = outcome.getRequired("outcome")
 
     /**
-     * Captured stderr output for this chunk of the shell call.
+     * Captured stderr output for the shell call.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
      *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
@@ -61,7 +61,7 @@ private constructor(
     fun stderr(): String = stderr.getRequired("stderr")
 
     /**
-     * Captured stdout output for this chunk of the shell call.
+     * Captured stdout output for the shell call.
      *
      * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
      *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
@@ -136,7 +136,7 @@ private constructor(
                 responseFunctionShellCallOutputContent.additionalProperties.toMutableMap()
         }
 
-        /** The exit or timeout outcome associated with this chunk. */
+        /** The exit or timeout outcome associated with this shell call. */
         fun outcome(outcome: Outcome) = outcome(JsonField.of(outcome))
 
         /**
@@ -163,7 +163,7 @@ private constructor(
          */
         fun exitOutcome(exitCode: Long) = outcome(Outcome.Exit.builder().exitCode(exitCode).build())
 
-        /** Captured stderr output for this chunk of the shell call. */
+        /** Captured stderr output for the shell call. */
         fun stderr(stderr: String) = stderr(JsonField.of(stderr))
 
         /**
@@ -174,7 +174,7 @@ private constructor(
          */
         fun stderr(stderr: JsonField<String>) = apply { this.stderr = stderr }
 
-        /** Captured stdout output for this chunk of the shell call. */
+        /** Captured stdout output for the shell call. */
         fun stdout(stdout: String) = stdout(JsonField.of(stdout))
 
         /**
@@ -259,7 +259,7 @@ private constructor(
             (if (stderr.asKnown().isPresent) 1 else 0) +
             (if (stdout.asKnown().isPresent) 1 else 0)
 
-    /** The exit or timeout outcome associated with this chunk. */
+    /** The exit or timeout outcome associated with this shell call. */
     @JsonDeserialize(using = Outcome.Deserializer::class)
     @JsonSerialize(using = Outcome.Serializer::class)
     class Outcome
@@ -269,7 +269,7 @@ private constructor(
         private val _json: JsonValue? = null,
     ) {
 
-        /** Indicates that the function shell call exceeded its configured time limit. */
+        /** Indicates that the shell call exceeded its configured time limit. */
         fun timeout(): Optional<JsonValue> = Optional.ofNullable(timeout)
 
         /** Indicates that the shell commands finished and returned an exit code. */
@@ -279,7 +279,7 @@ private constructor(
 
         fun isExit(): Boolean = exit != null
 
-        /** Indicates that the function shell call exceeded its configured time limit. */
+        /** Indicates that the shell call exceeded its configured time limit. */
         fun asTimeout(): JsonValue = timeout.getOrThrow("timeout")
 
         /** Indicates that the shell commands finished and returned an exit code. */
@@ -370,7 +370,7 @@ private constructor(
 
         companion object {
 
-            /** Indicates that the function shell call exceeded its configured time limit. */
+            /** Indicates that the shell call exceeded its configured time limit. */
             @JvmStatic
             fun ofTimeout() = Outcome(timeout = JsonValue.from(mapOf("type" to "timeout")))
 
@@ -383,7 +383,7 @@ private constructor(
          */
         interface Visitor<out T> {
 
-            /** Indicates that the function shell call exceeded its configured time limit. */
+            /** Indicates that the shell call exceeded its configured time limit. */
             fun visitTimeout(timeout: JsonValue): T
 
             /** Indicates that the shell commands finished and returned an exit code. */

@@ -24,6 +24,8 @@ internal class ContainerListResponseTest {
                         .minutes(0L)
                         .build()
                 )
+                .lastActiveAt(0L)
+                .memoryLimit(ContainerListResponse.MemoryLimit._1G)
                 .build()
 
         assertThat(containerListResponse.id()).isEqualTo("id")
@@ -38,6 +40,9 @@ internal class ContainerListResponseTest {
                     .minutes(0L)
                     .build()
             )
+        assertThat(containerListResponse.lastActiveAt()).contains(0L)
+        assertThat(containerListResponse.memoryLimit())
+            .contains(ContainerListResponse.MemoryLimit._1G)
     }
 
     @Test
@@ -56,6 +61,8 @@ internal class ContainerListResponseTest {
                         .minutes(0L)
                         .build()
                 )
+                .lastActiveAt(0L)
+                .memoryLimit(ContainerListResponse.MemoryLimit._1G)
                 .build()
 
         val roundtrippedContainerListResponse =
