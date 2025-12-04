@@ -4368,7 +4368,7 @@ private constructor(
         /** Forces the model to call the apply_patch tool when executing a tool call. */
         fun applyPatch(): Optional<ToolChoiceApplyPatch> = Optional.ofNullable(applyPatch)
 
-        /** Forces the model to call the function shell tool when a tool call is required. */
+        /** Forces the model to call the shell tool when a tool call is required. */
         fun shell(): Optional<ToolChoiceShell> = Optional.ofNullable(shell)
 
         fun isOptions(): Boolean = options != null
@@ -4420,7 +4420,7 @@ private constructor(
         /** Forces the model to call the apply_patch tool when executing a tool call. */
         fun asApplyPatch(): ToolChoiceApplyPatch = applyPatch.getOrThrow("applyPatch")
 
-        /** Forces the model to call the function shell tool when a tool call is required. */
+        /** Forces the model to call the shell tool when a tool call is required. */
         fun asShell(): ToolChoiceShell = shell.getOrThrow("shell")
 
         fun _json(): Optional<JsonValue> = Optional.ofNullable(_json)
@@ -4594,7 +4594,7 @@ private constructor(
             @JvmStatic
             fun ofApplyPatch(applyPatch: ToolChoiceApplyPatch) = ToolChoice(applyPatch = applyPatch)
 
-            /** Forces the model to call the function shell tool when a tool call is required. */
+            /** Forces the model to call the shell tool when a tool call is required. */
             @JvmStatic fun ofShell(shell: ToolChoiceShell) = ToolChoice(shell = shell)
         }
 
@@ -4638,7 +4638,7 @@ private constructor(
             /** Forces the model to call the apply_patch tool when executing a tool call. */
             fun visitApplyPatch(applyPatch: ToolChoiceApplyPatch): T
 
-            /** Forces the model to call the function shell tool when a tool call is required. */
+            /** Forces the model to call the shell tool when a tool call is required. */
             fun visitShell(shell: ToolChoiceShell): T
 
             /**

@@ -8,8 +8,10 @@ import com.openai.core.RequestOptions
 import com.openai.core.http.HttpResponse
 import com.openai.core.http.HttpResponseFor
 import com.openai.core.http.StreamResponse
+import com.openai.models.responses.CompactedResponse
 import com.openai.models.responses.Response
 import com.openai.models.responses.ResponseCancelParams
+import com.openai.models.responses.ResponseCompactParams
 import com.openai.models.responses.ResponseCreateParams
 import com.openai.models.responses.ResponseDeleteParams
 import com.openai.models.responses.ResponseRetrieveParams
@@ -223,6 +225,23 @@ interface ResponseService {
     /** @see cancel */
     fun cancel(responseId: String, requestOptions: RequestOptions): Response =
         cancel(responseId, ResponseCancelParams.none(), requestOptions)
+
+    /** Compact conversation */
+    fun compact(): CompactedResponse = compact(ResponseCompactParams.none())
+
+    /** @see compact */
+    fun compact(
+        params: ResponseCompactParams = ResponseCompactParams.none(),
+        requestOptions: RequestOptions = RequestOptions.none(),
+    ): CompactedResponse
+
+    /** @see compact */
+    fun compact(params: ResponseCompactParams = ResponseCompactParams.none()): CompactedResponse =
+        compact(params, RequestOptions.none())
+
+    /** @see compact */
+    fun compact(requestOptions: RequestOptions): CompactedResponse =
+        compact(ResponseCompactParams.none(), requestOptions)
 
     /** A view of [ResponseService] that provides access to raw HTTP responses for each method. */
     interface WithRawResponse {
@@ -464,5 +483,30 @@ interface ResponseService {
         @MustBeClosed
         fun cancel(responseId: String, requestOptions: RequestOptions): HttpResponseFor<Response> =
             cancel(responseId, ResponseCancelParams.none(), requestOptions)
+
+        /**
+         * Returns a raw HTTP response for `post /responses/compact`, but is otherwise the same as
+         * [ResponseService.compact].
+         */
+        @MustBeClosed
+        fun compact(): HttpResponseFor<CompactedResponse> = compact(ResponseCompactParams.none())
+
+        /** @see compact */
+        @MustBeClosed
+        fun compact(
+            params: ResponseCompactParams = ResponseCompactParams.none(),
+            requestOptions: RequestOptions = RequestOptions.none(),
+        ): HttpResponseFor<CompactedResponse>
+
+        /** @see compact */
+        @MustBeClosed
+        fun compact(
+            params: ResponseCompactParams = ResponseCompactParams.none()
+        ): HttpResponseFor<CompactedResponse> = compact(params, RequestOptions.none())
+
+        /** @see compact */
+        @MustBeClosed
+        fun compact(requestOptions: RequestOptions): HttpResponseFor<CompactedResponse> =
+            compact(ResponseCompactParams.none(), requestOptions)
     }
 }

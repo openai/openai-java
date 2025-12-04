@@ -180,6 +180,10 @@ private constructor(
         /** Alias for calling [item] with `ResponseOutputItem.ofReasoning(reasoning)`. */
         fun item(reasoning: ResponseReasoningItem) = item(ResponseOutputItem.ofReasoning(reasoning))
 
+        /** Alias for calling [item] with `ResponseOutputItem.ofCompaction(compaction)`. */
+        fun item(compaction: ResponseCompactionItem) =
+            item(ResponseOutputItem.ofCompaction(compaction))
+
         /**
          * Alias for calling [item] with
          * `ResponseOutputItem.ofImageGenerationCall(imageGenerationCall)`.

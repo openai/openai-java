@@ -13,7 +13,7 @@ import com.openai.errors.OpenAIInvalidDataException
 import java.util.Collections
 import java.util.Objects
 
-/** Forces the model to call the function shell tool when a tool call is required. */
+/** Forces the model to call the shell tool when a tool call is required. */
 class ToolChoiceShell
 @JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(

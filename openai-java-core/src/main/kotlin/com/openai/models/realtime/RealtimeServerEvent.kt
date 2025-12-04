@@ -49,6 +49,7 @@ private constructor(
     private val error: RealtimeErrorEvent? = null,
     private val inputAudioBufferCleared: InputAudioBufferClearedEvent? = null,
     private val inputAudioBufferCommitted: InputAudioBufferCommittedEvent? = null,
+    private val inputAudioBufferDtmfEventReceived: InputAudioBufferDtmfEventReceivedEvent? = null,
     private val inputAudioBufferSpeechStarted: InputAudioBufferSpeechStartedEvent? = null,
     private val inputAudioBufferSpeechStopped: InputAudioBufferSpeechStoppedEvent? = null,
     private val rateLimitsUpdated: RateLimitsUpdatedEvent? = null,
@@ -188,6 +189,15 @@ private constructor(
         Optional.ofNullable(inputAudioBufferCommitted)
 
     /**
+     * **SIP Only:** Returned when an DTMF event is received. A DTMF event is a message that
+     * represents a telephone keypad press (0–9, *, #, A–D). The `event` property is the keypad that
+     * the user press. The `received_at` is the UTC Unix Timestamp that the server received the
+     * event.
+     */
+    fun inputAudioBufferDtmfEventReceived(): Optional<InputAudioBufferDtmfEventReceivedEvent> =
+        Optional.ofNullable(inputAudioBufferDtmfEventReceived)
+
+    /**
      * Sent by the server when in `server_vad` mode to indicate that speech has been detected in the
      * audio buffer. This can happen any time audio is added to the buffer (unless speech is already
      * detected). The client may want to use this event to interrupt audio playback or provide
@@ -318,8 +328,8 @@ private constructor(
     fun sessionUpdated(): Optional<SessionUpdatedEvent> = Optional.ofNullable(sessionUpdated)
 
     /**
-     * **WebRTC Only:** Emitted when the server begins streaming audio to the client. This event is
-     * emitted after an audio content part has been added (`response.content_part.added`) to the
+     * **WebRTC/SIP Only:** Emitted when the server begins streaming audio to the client. This event
+     * is emitted after an audio content part has been added (`response.content_part.added`) to the
      * response.
      * [Learn more](https://platform.openai.com/docs/guides/realtime-conversations#client-and-server-events-for-audio-in-webrtc).
      */
@@ -327,7 +337,7 @@ private constructor(
         Optional.ofNullable(outputAudioBufferStarted)
 
     /**
-     * **WebRTC Only:** Emitted when the output audio buffer has been completely drained on the
+     * **WebRTC/SIP Only:** Emitted when the output audio buffer has been completely drained on the
      * server, and no more audio is forthcoming. This event is emitted after the full response data
      * has been sent to the client (`response.done`).
      * [Learn more](https://platform.openai.com/docs/guides/realtime-conversations#client-and-server-events-for-audio-in-webrtc).
@@ -336,10 +346,10 @@ private constructor(
         Optional.ofNullable(outputAudioBufferStopped)
 
     /**
-     * **WebRTC Only:** Emitted when the output audio buffer is cleared. This happens either in VAD
-     * mode when the user has interrupted (`input_audio_buffer.speech_started`), or when the client
-     * has emitted the `output_audio_buffer.clear` event to manually cut off the current audio
-     * response.
+     * **WebRTC/SIP Only:** Emitted when the output audio buffer is cleared. This happens either in
+     * VAD mode when the user has interrupted (`input_audio_buffer.speech_started`), or when the
+     * client has emitted the `output_audio_buffer.clear` event to manually cut off the current
+     * audio response.
      * [Learn more](https://platform.openai.com/docs/guides/realtime-conversations#client-and-server-events-for-audio-in-webrtc).
      */
     fun outputAudioBufferCleared(): Optional<OutputAudioBufferCleared> =
@@ -449,6 +459,8 @@ private constructor(
     fun isInputAudioBufferCleared(): Boolean = inputAudioBufferCleared != null
 
     fun isInputAudioBufferCommitted(): Boolean = inputAudioBufferCommitted != null
+
+    fun isInputAudioBufferDtmfEventReceived(): Boolean = inputAudioBufferDtmfEventReceived != null
 
     fun isInputAudioBufferSpeechStarted(): Boolean = inputAudioBufferSpeechStarted != null
 
@@ -625,6 +637,15 @@ private constructor(
         inputAudioBufferCommitted.getOrThrow("inputAudioBufferCommitted")
 
     /**
+     * **SIP Only:** Returned when an DTMF event is received. A DTMF event is a message that
+     * represents a telephone keypad press (0–9, *, #, A–D). The `event` property is the keypad that
+     * the user press. The `received_at` is the UTC Unix Timestamp that the server received the
+     * event.
+     */
+    fun asInputAudioBufferDtmfEventReceived(): InputAudioBufferDtmfEventReceivedEvent =
+        inputAudioBufferDtmfEventReceived.getOrThrow("inputAudioBufferDtmfEventReceived")
+
+    /**
      * Sent by the server when in `server_vad` mode to indicate that speech has been detected in the
      * audio buffer. This can happen any time audio is added to the buffer (unless speech is already
      * detected). The client may want to use this event to interrupt audio playback or provide
@@ -755,8 +776,8 @@ private constructor(
     fun asSessionUpdated(): SessionUpdatedEvent = sessionUpdated.getOrThrow("sessionUpdated")
 
     /**
-     * **WebRTC Only:** Emitted when the server begins streaming audio to the client. This event is
-     * emitted after an audio content part has been added (`response.content_part.added`) to the
+     * **WebRTC/SIP Only:** Emitted when the server begins streaming audio to the client. This event
+     * is emitted after an audio content part has been added (`response.content_part.added`) to the
      * response.
      * [Learn more](https://platform.openai.com/docs/guides/realtime-conversations#client-and-server-events-for-audio-in-webrtc).
      */
@@ -764,7 +785,7 @@ private constructor(
         outputAudioBufferStarted.getOrThrow("outputAudioBufferStarted")
 
     /**
-     * **WebRTC Only:** Emitted when the output audio buffer has been completely drained on the
+     * **WebRTC/SIP Only:** Emitted when the output audio buffer has been completely drained on the
      * server, and no more audio is forthcoming. This event is emitted after the full response data
      * has been sent to the client (`response.done`).
      * [Learn more](https://platform.openai.com/docs/guides/realtime-conversations#client-and-server-events-for-audio-in-webrtc).
@@ -773,10 +794,10 @@ private constructor(
         outputAudioBufferStopped.getOrThrow("outputAudioBufferStopped")
 
     /**
-     * **WebRTC Only:** Emitted when the output audio buffer is cleared. This happens either in VAD
-     * mode when the user has interrupted (`input_audio_buffer.speech_started`), or when the client
-     * has emitted the `output_audio_buffer.clear` event to manually cut off the current audio
-     * response.
+     * **WebRTC/SIP Only:** Emitted when the output audio buffer is cleared. This happens either in
+     * VAD mode when the user has interrupted (`input_audio_buffer.speech_started`), or when the
+     * client has emitted the `output_audio_buffer.clear` event to manually cut off the current
+     * audio response.
      * [Learn more](https://platform.openai.com/docs/guides/realtime-conversations#client-and-server-events-for-audio-in-webrtc).
      */
     fun asOutputAudioBufferCleared(): OutputAudioBufferCleared =
@@ -895,6 +916,8 @@ private constructor(
                 visitor.visitInputAudioBufferCleared(inputAudioBufferCleared)
             inputAudioBufferCommitted != null ->
                 visitor.visitInputAudioBufferCommitted(inputAudioBufferCommitted)
+            inputAudioBufferDtmfEventReceived != null ->
+                visitor.visitInputAudioBufferDtmfEventReceived(inputAudioBufferDtmfEventReceived)
             inputAudioBufferSpeechStarted != null ->
                 visitor.visitInputAudioBufferSpeechStarted(inputAudioBufferSpeechStarted)
             inputAudioBufferSpeechStopped != null ->
@@ -1035,6 +1058,12 @@ private constructor(
                     inputAudioBufferCommitted: InputAudioBufferCommittedEvent
                 ) {
                     inputAudioBufferCommitted.validate()
+                }
+
+                override fun visitInputAudioBufferDtmfEventReceived(
+                    inputAudioBufferDtmfEventReceived: InputAudioBufferDtmfEventReceivedEvent
+                ) {
+                    inputAudioBufferDtmfEventReceived.validate()
                 }
 
                 override fun visitInputAudioBufferSpeechStarted(
@@ -1294,6 +1323,10 @@ private constructor(
                     inputAudioBufferCommitted: InputAudioBufferCommittedEvent
                 ) = inputAudioBufferCommitted.validity()
 
+                override fun visitInputAudioBufferDtmfEventReceived(
+                    inputAudioBufferDtmfEventReceived: InputAudioBufferDtmfEventReceivedEvent
+                ) = inputAudioBufferDtmfEventReceived.validity()
+
                 override fun visitInputAudioBufferSpeechStarted(
                     inputAudioBufferSpeechStarted: InputAudioBufferSpeechStartedEvent
                 ) = inputAudioBufferSpeechStarted.validity()
@@ -1448,6 +1481,7 @@ private constructor(
             error == other.error &&
             inputAudioBufferCleared == other.inputAudioBufferCleared &&
             inputAudioBufferCommitted == other.inputAudioBufferCommitted &&
+            inputAudioBufferDtmfEventReceived == other.inputAudioBufferDtmfEventReceived &&
             inputAudioBufferSpeechStarted == other.inputAudioBufferSpeechStarted &&
             inputAudioBufferSpeechStopped == other.inputAudioBufferSpeechStopped &&
             rateLimitsUpdated == other.rateLimitsUpdated &&
@@ -1498,6 +1532,7 @@ private constructor(
             error,
             inputAudioBufferCleared,
             inputAudioBufferCommitted,
+            inputAudioBufferDtmfEventReceived,
             inputAudioBufferSpeechStarted,
             inputAudioBufferSpeechStopped,
             rateLimitsUpdated,
@@ -1557,6 +1592,8 @@ private constructor(
                 "RealtimeServerEvent{inputAudioBufferCleared=$inputAudioBufferCleared}"
             inputAudioBufferCommitted != null ->
                 "RealtimeServerEvent{inputAudioBufferCommitted=$inputAudioBufferCommitted}"
+            inputAudioBufferDtmfEventReceived != null ->
+                "RealtimeServerEvent{inputAudioBufferDtmfEventReceived=$inputAudioBufferDtmfEventReceived}"
             inputAudioBufferSpeechStarted != null ->
                 "RealtimeServerEvent{inputAudioBufferSpeechStarted=$inputAudioBufferSpeechStarted}"
             inputAudioBufferSpeechStopped != null ->
@@ -1751,6 +1788,20 @@ private constructor(
             RealtimeServerEvent(inputAudioBufferCommitted = inputAudioBufferCommitted)
 
         /**
+         * **SIP Only:** Returned when an DTMF event is received. A DTMF event is a message that
+         * represents a telephone keypad press (0–9, *, #, A–D). The `event` property is the keypad
+         * that the user press. The `received_at` is the UTC Unix Timestamp that the server received
+         * the event.
+         */
+        @JvmStatic
+        fun ofInputAudioBufferDtmfEventReceived(
+            inputAudioBufferDtmfEventReceived: InputAudioBufferDtmfEventReceivedEvent
+        ) =
+            RealtimeServerEvent(
+                inputAudioBufferDtmfEventReceived = inputAudioBufferDtmfEventReceived
+            )
+
+        /**
          * Sent by the server when in `server_vad` mode to indicate that speech has been detected in
          * the audio buffer. This can happen any time audio is added to the buffer (unless speech is
          * already detected). The client may want to use this event to interrupt audio playback or
@@ -1925,9 +1976,9 @@ private constructor(
             RealtimeServerEvent(sessionUpdated = sessionUpdated)
 
         /**
-         * **WebRTC Only:** Emitted when the server begins streaming audio to the client. This event
-         * is emitted after an audio content part has been added (`response.content_part.added`) to
-         * the response.
+         * **WebRTC/SIP Only:** Emitted when the server begins streaming audio to the client. This
+         * event is emitted after an audio content part has been added
+         * (`response.content_part.added`) to the response.
          * [Learn more](https://platform.openai.com/docs/guides/realtime-conversations#client-and-server-events-for-audio-in-webrtc).
          */
         @JvmStatic
@@ -1935,9 +1986,9 @@ private constructor(
             RealtimeServerEvent(outputAudioBufferStarted = outputAudioBufferStarted)
 
         /**
-         * **WebRTC Only:** Emitted when the output audio buffer has been completely drained on the
-         * server, and no more audio is forthcoming. This event is emitted after the full response
-         * data has been sent to the client (`response.done`).
+         * **WebRTC/SIP Only:** Emitted when the output audio buffer has been completely drained on
+         * the server, and no more audio is forthcoming. This event is emitted after the full
+         * response data has been sent to the client (`response.done`).
          * [Learn more](https://platform.openai.com/docs/guides/realtime-conversations#client-and-server-events-for-audio-in-webrtc).
          */
         @JvmStatic
@@ -1945,10 +1996,10 @@ private constructor(
             RealtimeServerEvent(outputAudioBufferStopped = outputAudioBufferStopped)
 
         /**
-         * **WebRTC Only:** Emitted when the output audio buffer is cleared. This happens either in
-         * VAD mode when the user has interrupted (`input_audio_buffer.speech_started`), or when the
-         * client has emitted the `output_audio_buffer.clear` event to manually cut off the current
-         * audio response.
+         * **WebRTC/SIP Only:** Emitted when the output audio buffer is cleared. This happens either
+         * in VAD mode when the user has interrupted (`input_audio_buffer.speech_started`), or when
+         * the client has emitted the `output_audio_buffer.clear` event to manually cut off the
+         * current audio response.
          * [Learn more](https://platform.openai.com/docs/guides/realtime-conversations#client-and-server-events-for-audio-in-webrtc).
          */
         @JvmStatic
@@ -2165,6 +2216,16 @@ private constructor(
         ): T
 
         /**
+         * **SIP Only:** Returned when an DTMF event is received. A DTMF event is a message that
+         * represents a telephone keypad press (0–9, *, #, A–D). The `event` property is the keypad
+         * that the user press. The `received_at` is the UTC Unix Timestamp that the server received
+         * the event.
+         */
+        fun visitInputAudioBufferDtmfEventReceived(
+            inputAudioBufferDtmfEventReceived: InputAudioBufferDtmfEventReceivedEvent
+        ): T
+
+        /**
          * Sent by the server when in `server_vad` mode to indicate that speech has been detected in
          * the audio buffer. This can happen any time audio is added to the buffer (unless speech is
          * already detected). The client may want to use this event to interrupt audio playback or
@@ -2297,26 +2358,26 @@ private constructor(
         fun visitSessionUpdated(sessionUpdated: SessionUpdatedEvent): T
 
         /**
-         * **WebRTC Only:** Emitted when the server begins streaming audio to the client. This event
-         * is emitted after an audio content part has been added (`response.content_part.added`) to
-         * the response.
+         * **WebRTC/SIP Only:** Emitted when the server begins streaming audio to the client. This
+         * event is emitted after an audio content part has been added
+         * (`response.content_part.added`) to the response.
          * [Learn more](https://platform.openai.com/docs/guides/realtime-conversations#client-and-server-events-for-audio-in-webrtc).
          */
         fun visitOutputAudioBufferStarted(outputAudioBufferStarted: OutputAudioBufferStarted): T
 
         /**
-         * **WebRTC Only:** Emitted when the output audio buffer has been completely drained on the
-         * server, and no more audio is forthcoming. This event is emitted after the full response
-         * data has been sent to the client (`response.done`).
+         * **WebRTC/SIP Only:** Emitted when the output audio buffer has been completely drained on
+         * the server, and no more audio is forthcoming. This event is emitted after the full
+         * response data has been sent to the client (`response.done`).
          * [Learn more](https://platform.openai.com/docs/guides/realtime-conversations#client-and-server-events-for-audio-in-webrtc).
          */
         fun visitOutputAudioBufferStopped(outputAudioBufferStopped: OutputAudioBufferStopped): T
 
         /**
-         * **WebRTC Only:** Emitted when the output audio buffer is cleared. This happens either in
-         * VAD mode when the user has interrupted (`input_audio_buffer.speech_started`), or when the
-         * client has emitted the `output_audio_buffer.clear` event to manually cut off the current
-         * audio response.
+         * **WebRTC/SIP Only:** Emitted when the output audio buffer is cleared. This happens either
+         * in VAD mode when the user has interrupted (`input_audio_buffer.speech_started`), or when
+         * the client has emitted the `output_audio_buffer.clear` event to manually cut off the
+         * current audio response.
          * [Learn more](https://platform.openai.com/docs/guides/realtime-conversations#client-and-server-events-for-audio-in-webrtc).
          */
         fun visitOutputAudioBufferCleared(outputAudioBufferCleared: OutputAudioBufferCleared): T
@@ -2498,6 +2559,18 @@ private constructor(
                     return tryDeserialize(node, jacksonTypeRef<InputAudioBufferCommittedEvent>())
                         ?.let { RealtimeServerEvent(inputAudioBufferCommitted = it, _json = json) }
                         ?: RealtimeServerEvent(_json = json)
+                }
+                "input_audio_buffer.dtmf_event_received" -> {
+                    return tryDeserialize(
+                            node,
+                            jacksonTypeRef<InputAudioBufferDtmfEventReceivedEvent>(),
+                        )
+                        ?.let {
+                            RealtimeServerEvent(
+                                inputAudioBufferDtmfEventReceived = it,
+                                _json = json,
+                            )
+                        } ?: RealtimeServerEvent(_json = json)
                 }
                 "input_audio_buffer.speech_started" -> {
                     return tryDeserialize(
@@ -2744,6 +2817,8 @@ private constructor(
                     generator.writeObject(value.inputAudioBufferCleared)
                 value.inputAudioBufferCommitted != null ->
                     generator.writeObject(value.inputAudioBufferCommitted)
+                value.inputAudioBufferDtmfEventReceived != null ->
+                    generator.writeObject(value.inputAudioBufferDtmfEventReceived)
                 value.inputAudioBufferSpeechStarted != null ->
                     generator.writeObject(value.inputAudioBufferSpeechStarted)
                 value.inputAudioBufferSpeechStopped != null ->
@@ -3164,8 +3239,8 @@ private constructor(
     }
 
     /**
-     * **WebRTC Only:** Emitted when the server begins streaming audio to the client. This event is
-     * emitted after an audio content part has been added (`response.content_part.added`) to the
+     * **WebRTC/SIP Only:** Emitted when the server begins streaming audio to the client. This event
+     * is emitted after an audio content part has been added (`response.content_part.added`) to the
      * response.
      * [Learn more](https://platform.openai.com/docs/guides/realtime-conversations#client-and-server-events-for-audio-in-webrtc).
      */
@@ -3413,7 +3488,7 @@ private constructor(
     }
 
     /**
-     * **WebRTC Only:** Emitted when the output audio buffer has been completely drained on the
+     * **WebRTC/SIP Only:** Emitted when the output audio buffer has been completely drained on the
      * server, and no more audio is forthcoming. This event is emitted after the full response data
      * has been sent to the client (`response.done`).
      * [Learn more](https://platform.openai.com/docs/guides/realtime-conversations#client-and-server-events-for-audio-in-webrtc).
@@ -3662,10 +3737,10 @@ private constructor(
     }
 
     /**
-     * **WebRTC Only:** Emitted when the output audio buffer is cleared. This happens either in VAD
-     * mode when the user has interrupted (`input_audio_buffer.speech_started`), or when the client
-     * has emitted the `output_audio_buffer.clear` event to manually cut off the current audio
-     * response.
+     * **WebRTC/SIP Only:** Emitted when the output audio buffer is cleared. This happens either in
+     * VAD mode when the user has interrupted (`input_audio_buffer.speech_started`), or when the
+     * client has emitted the `output_audio_buffer.clear` event to manually cut off the current
+     * audio response.
      * [Learn more](https://platform.openai.com/docs/guides/realtime-conversations#client-and-server-events-for-audio-in-webrtc).
      */
     class OutputAudioBufferCleared

@@ -10,6 +10,7 @@ import com.openai.models.Reasoning
 import com.openai.models.ReasoningEffort
 import com.openai.models.ResponseFormatText
 import com.openai.models.responses.FunctionTool
+import com.openai.models.responses.ResponseCompactParams
 import com.openai.models.responses.ResponseCreateParams
 import com.openai.models.responses.ResponseIncludable
 import com.openai.models.responses.ResponsePrompt
@@ -46,7 +47,7 @@ internal class ResponseServiceAsyncTest {
                             .putAdditionalProperty("foo", JsonValue.from("string"))
                             .build()
                     )
-                    .model(ChatModel.GPT_4O)
+                    .model(ChatModel.GPT_5_1)
                     .parallelToolCalls(true)
                     .previousResponseId("previous_response_id")
                     .prompt(
@@ -132,7 +133,7 @@ internal class ResponseServiceAsyncTest {
                             .putAdditionalProperty("foo", JsonValue.from("string"))
                             .build()
                     )
-                    .model(ChatModel.GPT_4O)
+                    .model(ChatModel.GPT_5_1)
                     .parallelToolCalls(true)
                     .previousResponseId("previous_response_id")
                     .prompt(
@@ -269,5 +270,28 @@ internal class ResponseServiceAsyncTest {
 
         val response = responseFuture.get()
         response.validate()
+    }
+
+    @Test
+    fun compact() {
+        val client =
+            OpenAIOkHttpClientAsync.builder()
+                .baseUrl(TestServerExtension.BASE_URL)
+                .apiKey("My API Key")
+                .build()
+        val responseServiceAsync = client.responses()
+
+        val compactedResponseFuture =
+            responseServiceAsync.compact(
+                ResponseCompactParams.builder()
+                    .input("string")
+                    .instructions("instructions")
+                    .model(ResponseCompactParams.Model.GPT_5_1)
+                    .previousResponseId("resp_123")
+                    .build()
+            )
+
+        val compactedResponse = compactedResponseFuture.get()
+        compactedResponse.validate()
     }
 }

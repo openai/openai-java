@@ -56,6 +56,7 @@ internal class ResponseOutputItemTest {
         assertThat(responseOutputItem.webSearchCall()).isEmpty
         assertThat(responseOutputItem.computerCall()).isEmpty
         assertThat(responseOutputItem.reasoning()).isEmpty
+        assertThat(responseOutputItem.compaction()).isEmpty
         assertThat(responseOutputItem.imageGenerationCall()).isEmpty
         assertThat(responseOutputItem.codeInterpreterCall()).isEmpty
         assertThat(responseOutputItem.localShellCall()).isEmpty
@@ -145,6 +146,7 @@ internal class ResponseOutputItemTest {
         assertThat(responseOutputItem.webSearchCall()).isEmpty
         assertThat(responseOutputItem.computerCall()).isEmpty
         assertThat(responseOutputItem.reasoning()).isEmpty
+        assertThat(responseOutputItem.compaction()).isEmpty
         assertThat(responseOutputItem.imageGenerationCall()).isEmpty
         assertThat(responseOutputItem.codeInterpreterCall()).isEmpty
         assertThat(responseOutputItem.localShellCall()).isEmpty
@@ -211,6 +213,7 @@ internal class ResponseOutputItemTest {
         assertThat(responseOutputItem.webSearchCall()).isEmpty
         assertThat(responseOutputItem.computerCall()).isEmpty
         assertThat(responseOutputItem.reasoning()).isEmpty
+        assertThat(responseOutputItem.compaction()).isEmpty
         assertThat(responseOutputItem.imageGenerationCall()).isEmpty
         assertThat(responseOutputItem.codeInterpreterCall()).isEmpty
         assertThat(responseOutputItem.localShellCall()).isEmpty
@@ -273,6 +276,7 @@ internal class ResponseOutputItemTest {
         assertThat(responseOutputItem.webSearchCall()).contains(webSearchCall)
         assertThat(responseOutputItem.computerCall()).isEmpty
         assertThat(responseOutputItem.reasoning()).isEmpty
+        assertThat(responseOutputItem.compaction()).isEmpty
         assertThat(responseOutputItem.imageGenerationCall()).isEmpty
         assertThat(responseOutputItem.codeInterpreterCall()).isEmpty
         assertThat(responseOutputItem.localShellCall()).isEmpty
@@ -348,6 +352,7 @@ internal class ResponseOutputItemTest {
         assertThat(responseOutputItem.webSearchCall()).isEmpty
         assertThat(responseOutputItem.computerCall()).contains(computerCall)
         assertThat(responseOutputItem.reasoning()).isEmpty
+        assertThat(responseOutputItem.compaction()).isEmpty
         assertThat(responseOutputItem.imageGenerationCall()).isEmpty
         assertThat(responseOutputItem.codeInterpreterCall()).isEmpty
         assertThat(responseOutputItem.localShellCall()).isEmpty
@@ -416,6 +421,7 @@ internal class ResponseOutputItemTest {
         assertThat(responseOutputItem.webSearchCall()).isEmpty
         assertThat(responseOutputItem.computerCall()).isEmpty
         assertThat(responseOutputItem.reasoning()).contains(reasoning)
+        assertThat(responseOutputItem.compaction()).isEmpty
         assertThat(responseOutputItem.imageGenerationCall()).isEmpty
         assertThat(responseOutputItem.codeInterpreterCall()).isEmpty
         assertThat(responseOutputItem.localShellCall()).isEmpty
@@ -453,6 +459,58 @@ internal class ResponseOutputItemTest {
     }
 
     @Test
+    fun ofCompaction() {
+        val compaction =
+            ResponseCompactionItem.builder()
+                .id("id")
+                .encryptedContent("encrypted_content")
+                .createdBy("created_by")
+                .build()
+
+        val responseOutputItem = ResponseOutputItem.ofCompaction(compaction)
+
+        assertThat(responseOutputItem.message()).isEmpty
+        assertThat(responseOutputItem.fileSearchCall()).isEmpty
+        assertThat(responseOutputItem.functionCall()).isEmpty
+        assertThat(responseOutputItem.webSearchCall()).isEmpty
+        assertThat(responseOutputItem.computerCall()).isEmpty
+        assertThat(responseOutputItem.reasoning()).isEmpty
+        assertThat(responseOutputItem.compaction()).contains(compaction)
+        assertThat(responseOutputItem.imageGenerationCall()).isEmpty
+        assertThat(responseOutputItem.codeInterpreterCall()).isEmpty
+        assertThat(responseOutputItem.localShellCall()).isEmpty
+        assertThat(responseOutputItem.shellCall()).isEmpty
+        assertThat(responseOutputItem.shellCallOutput()).isEmpty
+        assertThat(responseOutputItem.applyPatchCall()).isEmpty
+        assertThat(responseOutputItem.applyPatchCallOutput()).isEmpty
+        assertThat(responseOutputItem.mcpCall()).isEmpty
+        assertThat(responseOutputItem.mcpListTools()).isEmpty
+        assertThat(responseOutputItem.mcpApprovalRequest()).isEmpty
+        assertThat(responseOutputItem.customToolCall()).isEmpty
+    }
+
+    @Test
+    fun ofCompactionRoundtrip() {
+        val jsonMapper = jsonMapper()
+        val responseOutputItem =
+            ResponseOutputItem.ofCompaction(
+                ResponseCompactionItem.builder()
+                    .id("id")
+                    .encryptedContent("encrypted_content")
+                    .createdBy("created_by")
+                    .build()
+            )
+
+        val roundtrippedResponseOutputItem =
+            jsonMapper.readValue(
+                jsonMapper.writeValueAsString(responseOutputItem),
+                jacksonTypeRef<ResponseOutputItem>(),
+            )
+
+        assertThat(roundtrippedResponseOutputItem).isEqualTo(responseOutputItem)
+    }
+
+    @Test
     fun ofImageGenerationCall() {
         val imageGenerationCall =
             ResponseOutputItem.ImageGenerationCall.builder()
@@ -469,6 +527,7 @@ internal class ResponseOutputItemTest {
         assertThat(responseOutputItem.webSearchCall()).isEmpty
         assertThat(responseOutputItem.computerCall()).isEmpty
         assertThat(responseOutputItem.reasoning()).isEmpty
+        assertThat(responseOutputItem.compaction()).isEmpty
         assertThat(responseOutputItem.imageGenerationCall()).contains(imageGenerationCall)
         assertThat(responseOutputItem.codeInterpreterCall()).isEmpty
         assertThat(responseOutputItem.localShellCall()).isEmpty
@@ -522,6 +581,7 @@ internal class ResponseOutputItemTest {
         assertThat(responseOutputItem.webSearchCall()).isEmpty
         assertThat(responseOutputItem.computerCall()).isEmpty
         assertThat(responseOutputItem.reasoning()).isEmpty
+        assertThat(responseOutputItem.compaction()).isEmpty
         assertThat(responseOutputItem.imageGenerationCall()).isEmpty
         assertThat(responseOutputItem.codeInterpreterCall()).contains(codeInterpreterCall)
         assertThat(responseOutputItem.localShellCall()).isEmpty
@@ -588,6 +648,7 @@ internal class ResponseOutputItemTest {
         assertThat(responseOutputItem.webSearchCall()).isEmpty
         assertThat(responseOutputItem.computerCall()).isEmpty
         assertThat(responseOutputItem.reasoning()).isEmpty
+        assertThat(responseOutputItem.compaction()).isEmpty
         assertThat(responseOutputItem.imageGenerationCall()).isEmpty
         assertThat(responseOutputItem.codeInterpreterCall()).isEmpty
         assertThat(responseOutputItem.localShellCall()).contains(localShellCall)
@@ -660,6 +721,7 @@ internal class ResponseOutputItemTest {
         assertThat(responseOutputItem.webSearchCall()).isEmpty
         assertThat(responseOutputItem.computerCall()).isEmpty
         assertThat(responseOutputItem.reasoning()).isEmpty
+        assertThat(responseOutputItem.compaction()).isEmpty
         assertThat(responseOutputItem.imageGenerationCall()).isEmpty
         assertThat(responseOutputItem.codeInterpreterCall()).isEmpty
         assertThat(responseOutputItem.localShellCall()).isEmpty
@@ -728,6 +790,7 @@ internal class ResponseOutputItemTest {
         assertThat(responseOutputItem.webSearchCall()).isEmpty
         assertThat(responseOutputItem.computerCall()).isEmpty
         assertThat(responseOutputItem.reasoning()).isEmpty
+        assertThat(responseOutputItem.compaction()).isEmpty
         assertThat(responseOutputItem.imageGenerationCall()).isEmpty
         assertThat(responseOutputItem.codeInterpreterCall()).isEmpty
         assertThat(responseOutputItem.localShellCall()).isEmpty
@@ -795,6 +858,7 @@ internal class ResponseOutputItemTest {
         assertThat(responseOutputItem.webSearchCall()).isEmpty
         assertThat(responseOutputItem.computerCall()).isEmpty
         assertThat(responseOutputItem.reasoning()).isEmpty
+        assertThat(responseOutputItem.compaction()).isEmpty
         assertThat(responseOutputItem.imageGenerationCall()).isEmpty
         assertThat(responseOutputItem.codeInterpreterCall()).isEmpty
         assertThat(responseOutputItem.localShellCall()).isEmpty
@@ -855,6 +919,7 @@ internal class ResponseOutputItemTest {
         assertThat(responseOutputItem.webSearchCall()).isEmpty
         assertThat(responseOutputItem.computerCall()).isEmpty
         assertThat(responseOutputItem.reasoning()).isEmpty
+        assertThat(responseOutputItem.compaction()).isEmpty
         assertThat(responseOutputItem.imageGenerationCall()).isEmpty
         assertThat(responseOutputItem.codeInterpreterCall()).isEmpty
         assertThat(responseOutputItem.localShellCall()).isEmpty
@@ -913,6 +978,7 @@ internal class ResponseOutputItemTest {
         assertThat(responseOutputItem.webSearchCall()).isEmpty
         assertThat(responseOutputItem.computerCall()).isEmpty
         assertThat(responseOutputItem.reasoning()).isEmpty
+        assertThat(responseOutputItem.compaction()).isEmpty
         assertThat(responseOutputItem.imageGenerationCall()).isEmpty
         assertThat(responseOutputItem.codeInterpreterCall()).isEmpty
         assertThat(responseOutputItem.localShellCall()).isEmpty
@@ -977,6 +1043,7 @@ internal class ResponseOutputItemTest {
         assertThat(responseOutputItem.webSearchCall()).isEmpty
         assertThat(responseOutputItem.computerCall()).isEmpty
         assertThat(responseOutputItem.reasoning()).isEmpty
+        assertThat(responseOutputItem.compaction()).isEmpty
         assertThat(responseOutputItem.imageGenerationCall()).isEmpty
         assertThat(responseOutputItem.codeInterpreterCall()).isEmpty
         assertThat(responseOutputItem.localShellCall()).isEmpty
@@ -1037,6 +1104,7 @@ internal class ResponseOutputItemTest {
         assertThat(responseOutputItem.webSearchCall()).isEmpty
         assertThat(responseOutputItem.computerCall()).isEmpty
         assertThat(responseOutputItem.reasoning()).isEmpty
+        assertThat(responseOutputItem.compaction()).isEmpty
         assertThat(responseOutputItem.imageGenerationCall()).isEmpty
         assertThat(responseOutputItem.codeInterpreterCall()).isEmpty
         assertThat(responseOutputItem.localShellCall()).isEmpty
@@ -1090,6 +1158,7 @@ internal class ResponseOutputItemTest {
         assertThat(responseOutputItem.webSearchCall()).isEmpty
         assertThat(responseOutputItem.computerCall()).isEmpty
         assertThat(responseOutputItem.reasoning()).isEmpty
+        assertThat(responseOutputItem.compaction()).isEmpty
         assertThat(responseOutputItem.imageGenerationCall()).isEmpty
         assertThat(responseOutputItem.codeInterpreterCall()).isEmpty
         assertThat(responseOutputItem.localShellCall()).isEmpty

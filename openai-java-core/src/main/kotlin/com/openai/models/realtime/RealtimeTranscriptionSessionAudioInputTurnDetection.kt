@@ -331,7 +331,12 @@ private constructor(
         @JsonProperty("type") @ExcludeMissing fun _type(): JsonValue = type
 
         /**
-         * Whether or not to automatically generate a response when a VAD stop event occurs.
+         * Whether or not to automatically generate a response when a VAD stop event occurs. If
+         * `interrupt_response` is set to `false` this may fail to create a response if the model is
+         * already responding.
+         *
+         * If both `create_response` and `interrupt_response` are set to `false`, the model will
+         * never respond automatically but VAD events will still be emitted.
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
@@ -357,8 +362,12 @@ private constructor(
         fun idleTimeoutMs(): Optional<Long> = idleTimeoutMs.getOptional("idle_timeout_ms")
 
         /**
-         * Whether or not to automatically interrupt any ongoing response with output to the default
-         * conversation (i.e. `conversation` of `auto`) when a VAD start event occurs.
+         * Whether or not to automatically interrupt (cancel) any ongoing response with output to
+         * the default conversation (i.e. `conversation` of `auto`) when a VAD start event occurs.
+         * If `true` then the response will be cancelled, otherwise it will continue until complete.
+         *
+         * If both `create_response` and `interrupt_response` are set to `false`, the model will
+         * never respond automatically but VAD events will still be emitted.
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type (e.g. if the
          *   server responded with an unexpected value).
@@ -509,7 +518,14 @@ private constructor(
              */
             fun type(type: JsonValue) = apply { this.type = type }
 
-            /** Whether or not to automatically generate a response when a VAD stop event occurs. */
+            /**
+             * Whether or not to automatically generate a response when a VAD stop event occurs. If
+             * `interrupt_response` is set to `false` this may fail to create a response if the
+             * model is already responding.
+             *
+             * If both `create_response` and `interrupt_response` are set to `false`, the model will
+             * never respond automatically but VAD events will still be emitted.
+             */
             fun createResponse(createResponse: Boolean) =
                 createResponse(JsonField.of(createResponse))
 
@@ -563,8 +579,13 @@ private constructor(
             }
 
             /**
-             * Whether or not to automatically interrupt any ongoing response with output to the
-             * default conversation (i.e. `conversation` of `auto`) when a VAD start event occurs.
+             * Whether or not to automatically interrupt (cancel) any ongoing response with output
+             * to the default conversation (i.e. `conversation` of `auto`) when a VAD start event
+             * occurs. If `true` then the response will be cancelled, otherwise it will continue
+             * until complete.
+             *
+             * If both `create_response` and `interrupt_response` are set to `false`, the model will
+             * never respond automatically but VAD events will still be emitted.
              */
             fun interruptResponse(interruptResponse: Boolean) =
                 interruptResponse(JsonField.of(interruptResponse))

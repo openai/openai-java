@@ -22,8 +22,10 @@ import com.openai.core.http.json
 import com.openai.core.http.map
 import com.openai.core.http.parseable
 import com.openai.core.prepare
+import com.openai.models.responses.CompactedResponse
 import com.openai.models.responses.Response
 import com.openai.models.responses.ResponseCancelParams
+import com.openai.models.responses.ResponseCompactParams
 import com.openai.models.responses.ResponseCreateParams
 import com.openai.models.responses.ResponseDeleteParams
 import com.openai.models.responses.ResponseRetrieveParams
@@ -88,6 +90,13 @@ class ResponseServiceImpl internal constructor(private val clientOptions: Client
     override fun cancel(params: ResponseCancelParams, requestOptions: RequestOptions): Response =
         // post /responses/{response_id}/cancel
         withRawResponse().cancel(params, requestOptions).parse()
+
+    override fun compact(
+        params: ResponseCompactParams,
+        requestOptions: RequestOptions,
+    ): CompactedResponse =
+        // post /responses/compact
+        withRawResponse().compact(params, requestOptions).parse()
 
     class WithRawResponseImpl internal constructor(private val clientOptions: ClientOptions) :
         ResponseService.WithRawResponse {
@@ -291,6 +300,34 @@ class ResponseServiceImpl internal constructor(private val clientOptions: Client
             return errorHandler.handle(response).parseable {
                 response
                     .use { cancelHandler.handle(it) }
+                    .also {
+                        if (requestOptions.responseValidation!!) {
+                            it.validate()
+                        }
+                    }
+            }
+        }
+
+        private val compactHandler: Handler<CompactedResponse> =
+            jsonHandler<CompactedResponse>(clientOptions.jsonMapper)
+
+        override fun compact(
+            params: ResponseCompactParams,
+            requestOptions: RequestOptions,
+        ): HttpResponseFor<CompactedResponse> {
+            val request =
+                HttpRequest.builder()
+                    .method(HttpMethod.POST)
+                    .baseUrl(clientOptions.baseUrl())
+                    .addPathSegments("responses", "compact")
+                    .body(json(clientOptions.jsonMapper, params._body()))
+                    .build()
+                    .prepare(clientOptions, params)
+            val requestOptions = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
+            val response = clientOptions.httpClient.execute(request, requestOptions)
+            return errorHandler.handle(response).parseable {
+                response
+                    .use { compactHandler.handle(it) }
                     .also {
                         if (requestOptions.responseValidation!!) {
                             it.validate()

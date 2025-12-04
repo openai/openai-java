@@ -2967,7 +2967,8 @@ private constructor(
 
         /**
          * The code interpreter container. Can be a container ID or an object that specifies
-         * uploaded file IDs to make available to your code.
+         * uploaded file IDs to make available to your code, along with an optional `memory_limit`
+         * setting.
          *
          * @throws OpenAIInvalidDataException if the JSON field has an unexpected type or is
          *   unexpectedly missing or null (e.g. if the server responded with an unexpected value).
@@ -3037,7 +3038,8 @@ private constructor(
 
             /**
              * The code interpreter container. Can be a container ID or an object that specifies
-             * uploaded file IDs to make available to your code.
+             * uploaded file IDs to make available to your code, along with an optional
+             * `memory_limit` setting.
              */
             fun container(container: Container) = container(JsonField.of(container))
 
@@ -3150,7 +3152,8 @@ private constructor(
 
         /**
          * The code interpreter container. Can be a container ID or an object that specifies
-         * uploaded file IDs to make available to your code.
+         * uploaded file IDs to make available to your code, along with an optional `memory_limit`
+         * setting.
          */
         @JsonDeserialize(using = Container.Deserializer::class)
         @JsonSerialize(using = Container.Serializer::class)
